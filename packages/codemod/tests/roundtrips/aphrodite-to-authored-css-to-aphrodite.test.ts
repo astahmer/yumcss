@@ -44,14 +44,14 @@ test("aphrodite -> authored-css -> aphrodite: preserves an actionable concrete r
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-		export const styles = // pandwind:migrate-skip (route: aphrodite -> authored-css | capability-blocked: named-rules: named style rule: card | available: static, residual, named-map)
+		export const styles = // pandwind:migrate-skip (route: aphrodite -> authored-css | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
 		StyleSheet.create({ card: { color: "red", padding: "1rem" } });
 		export const App = () => <div className={styles.card} />;",
 		    "converted": 0,
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "named-map",
+		        "representation": "portable-artifact",
 		      },
 		    ],
 		    "residuals": [
@@ -68,22 +68,21 @@ test("aphrodite -> authored-css -> aphrodite: preserves an actionable concrete r
 		    "changed": false,
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
 		import { StyleSheet } from "aphrodite";
-		export const styles = // pandwind:migrate-skip (route: aphrodite -> authored-css | capability-blocked: named-rules: named style rule: card | available: static, residual, named-map)
+		export const styles = // pandwind:migrate-skip (route: aphrodite -> authored-css | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
 		StyleSheet.create({ card: { color: "red", padding: "1rem" } });
 		export const App = () => <div className={styles.card} />;",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
-		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
 		      {
 		        "hint": "stylesheet statement is preserved outside the style program",
 		        "kind": "parse",
@@ -110,7 +109,7 @@ test("aphrodite -> authored-css -> aphrodite: preserves an actionable concrete r
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 7,
+		    "skipped": 5,
 		    "validations": [],
 		  },
 		}
@@ -129,25 +128,20 @@ test("aphrodite -> authored-css -> aphrodite: retains edge semantics without sil
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-		export const styles = // pandwind:migrate-skip (route: aphrodite -> authored-css | lowering-residual: dynamic | capability-blocked: named-rules: named style rule: card; dynamic-values: dynamic: theme.foreground | available: residual)
+		export const styles = // pandwind:migrate-skip (route: aphrodite -> authored-css | capability-blocked: named-rules: named style rule: card | available: residual, portable-artifact)
 		StyleSheet.create({ card: { color: theme.foreground, padding: "1rem" } });
 		export const App = () => <div className={styles.card} />;",
 		    "converted": 0,
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "residual",
+		        "representation": "portable-artifact",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "named-rules: named style rule: card; dynamic-values: dynamic: theme.foreground",
+		        "hint": "named-rules: named style rule: card",
 		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "target lacks runtime dynamic values",
-		        "kind": "dynamic",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -158,22 +152,21 @@ test("aphrodite -> authored-css -> aphrodite: retains edge semantics without sil
 		    "changed": false,
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
 		import { StyleSheet } from "aphrodite";
-		export const styles = // pandwind:migrate-skip (route: aphrodite -> authored-css | lowering-residual: dynamic | capability-blocked: named-rules: named style rule: card; dynamic-values: dynamic: theme.foreground | available: residual)
+		export const styles = // pandwind:migrate-skip (route: aphrodite -> authored-css | capability-blocked: named-rules: named style rule: card | available: residual, portable-artifact)
 		StyleSheet.create({ card: { color: theme.foreground, padding: "1rem" } });
 		export const App = () => <div className={styles.card} />;",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
-		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
 		      {
 		        "hint": "stylesheet statement is preserved outside the style program",
 		        "kind": "parse",
@@ -200,7 +193,7 @@ test("aphrodite -> authored-css -> aphrodite: retains edge semantics without sil
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 7,
+		    "skipped": 5,
 		    "validations": [],
 		  },
 		}
@@ -229,25 +222,20 @@ test("aphrodite -> authored-css -> aphrodite: preserves concrete theme and proje
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "aphrodite";
-		export const styles = // pandwind:migrate-skip (route: aphrodite -> authored-css | lowering-residual: dynamic | capability-blocked: named-rules: named style rule: card; dynamic-values: dynamic: theme.colors.brand | available: residual)
+		export const styles = // pandwind:migrate-skip (route: aphrodite -> authored-css | capability-blocked: named-rules: named style rule: card | available: residual, portable-artifact)
 		StyleSheet.create({ card: { color: theme.colors.brand, padding: "1rem" } });
 		export const App = () => <div className={styles.card} />;",
 		      "converted": 0,
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
-		          "representation": "residual",
+		          "representation": "portable-artifact",
 		        },
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "named-rules: named style rule: card; dynamic-values: dynamic: theme.colors.brand",
+		          "hint": "named-rules: named style rule: card",
 		          "kind": "capability",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "target lacks runtime dynamic values",
-		          "kind": "dynamic",
 		          "preserved": undefined,
 		        },
 		      ],
@@ -258,22 +246,21 @@ test("aphrodite -> authored-css -> aphrodite: preserves concrete theme and proje
 		      "changed": false,
 		      "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
 		import { StyleSheet } from "aphrodite";
-		export const styles = // pandwind:migrate-skip (route: aphrodite -> authored-css | lowering-residual: dynamic | capability-blocked: named-rules: named style rule: card; dynamic-values: dynamic: theme.colors.brand | available: residual)
+		export const styles = // pandwind:migrate-skip (route: aphrodite -> authored-css | capability-blocked: named-rules: named style rule: card | available: residual, portable-artifact)
 		StyleSheet.create({ card: { color: theme.colors.brand, padding: "1rem" } });
 		export const App = () => <div className={styles.card} />;",
 		      "converted": 0,
-		      "outcomes": [],
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		      ],
 		      "residuals": [
-		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
 		        {
 		          "hint": "stylesheet statement is preserved outside the style program",
 		          "kind": "parse",
@@ -300,7 +287,7 @@ test("aphrodite -> authored-css -> aphrodite: preserves concrete theme and proje
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 7,
+		      "skipped": 5,
 		      "validations": [],
 		    },
 		  },
@@ -308,25 +295,20 @@ test("aphrodite -> authored-css -> aphrodite: preserves concrete theme and proje
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "aphrodite";
-		export const styles = // pandwind:migrate-skip (route: aphrodite -> authored-css | lowering-residual: dynamic | capability-blocked: named-rules: named style rule: card; dynamic-values: dynamic: theme.colors.brand | available: residual)
+		export const styles = // pandwind:migrate-skip (route: aphrodite -> authored-css | capability-blocked: named-rules: named style rule: card | available: residual, portable-artifact)
 		StyleSheet.create({ card: { color: theme.colors.brand, padding: "1rem" } });
 		export const App = () => <div className={styles.card} />;",
 		      "converted": 0,
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
-		          "representation": "residual",
+		          "representation": "portable-artifact",
 		        },
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "named-rules: named style rule: card; dynamic-values: dynamic: theme.colors.brand",
+		          "hint": "named-rules: named style rule: card",
 		          "kind": "capability",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "target lacks runtime dynamic values",
-		          "kind": "dynamic",
 		          "preserved": undefined,
 		        },
 		      ],
@@ -337,22 +319,21 @@ test("aphrodite -> authored-css -> aphrodite: preserves concrete theme and proje
 		      "changed": false,
 		      "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
 		import { StyleSheet } from "aphrodite";
-		export const styles = // pandwind:migrate-skip (route: aphrodite -> authored-css | lowering-residual: dynamic | capability-blocked: named-rules: named style rule: card; dynamic-values: dynamic: theme.colors.brand | available: residual)
+		export const styles = // pandwind:migrate-skip (route: aphrodite -> authored-css | capability-blocked: named-rules: named style rule: card | available: residual, portable-artifact)
 		StyleSheet.create({ card: { color: theme.colors.brand, padding: "1rem" } });
 		export const App = () => <div className={styles.card} />;",
 		      "converted": 0,
-		      "outcomes": [],
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		      ],
 		      "residuals": [
-		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
 		        {
 		          "hint": "stylesheet statement is preserved outside the style program",
 		          "kind": "parse",
@@ -379,7 +360,7 @@ test("aphrodite -> authored-css -> aphrodite: preserves concrete theme and proje
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 7,
+		      "skipped": 5,
 		      "validations": [],
 		    },
 		  },
@@ -399,14 +380,14 @@ test("aphrodite -> authored-css -> aphrodite: resolves token references across b
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-		export const styles = // pandwind:migrate-skip (route: aphrodite -> authored-css | capability-blocked: named-rules: named style rule: card | available: static, residual, named-map)
+		export const styles = // pandwind:migrate-skip (route: aphrodite -> authored-css | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
 		StyleSheet.create({ card: { color: "$colors.brand", padding: "1rem" } });
 		export const App = () => <div className={styles.card} />;",
 		    "converted": 0,
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "named-map",
+		        "representation": "portable-artifact",
 		      },
 		    ],
 		    "residuals": [
@@ -423,22 +404,21 @@ test("aphrodite -> authored-css -> aphrodite: resolves token references across b
 		    "changed": false,
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
 		import { StyleSheet } from "aphrodite";
-		export const styles = // pandwind:migrate-skip (route: aphrodite -> authored-css | capability-blocked: named-rules: named style rule: card | available: static, residual, named-map)
+		export const styles = // pandwind:migrate-skip (route: aphrodite -> authored-css | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
 		StyleSheet.create({ card: { color: "$colors.brand", padding: "1rem" } });
 		export const App = () => <div className={styles.card} />;",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
-		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
 		      {
 		        "hint": "stylesheet statement is preserved outside the style program",
 		        "kind": "parse",
@@ -465,7 +445,7 @@ test("aphrodite -> authored-css -> aphrodite: resolves token references across b
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 7,
+		    "skipped": 5,
 		    "validations": [],
 		  },
 		}

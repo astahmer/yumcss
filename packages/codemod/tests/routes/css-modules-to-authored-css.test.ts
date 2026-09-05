@@ -45,7 +45,16 @@ test("css-modules -> authored-css: migrates concrete css-modules syntax to autho
 		.card { color: red; padding: 1rem; }
 		.cardTitle { font-weight: 600; }",
 		  "converted": 0,
-		  "outcomes": [],
+		  "outcomes": [
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		  ],
 		  "residuals": [
 		    {
 		      "hint": "CSS Modules local class scoping does not survive the authored-css target",
@@ -70,7 +79,16 @@ test("css-modules -> authored-css: carries concrete css-modules dynamics or edge
 		.card { color: theme.foreground; padding: 1rem; }
 		.cardTitle { font-weight: 600; }",
 		  "converted": 0,
-		  "outcomes": [],
+		  "outcomes": [
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		  ],
 		  "residuals": [
 		    {
 		      "hint": "CSS Modules local class scoping does not survive the authored-css target",
@@ -99,7 +117,16 @@ test("css-modules -> authored-css: lowers concrete theme and project context var
 		.card { color: \${theme.colors.brand}; padding: 1rem; }
 		.cardTitle { font-weight: 600; }",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
 		      {
 		        "hint": "CSS Modules local class scoping does not survive the authored-css target",
@@ -116,7 +143,16 @@ test("css-modules -> authored-css: lowers concrete theme and project context var
 		.card { color: \${theme.colors.brand}; padding: 1rem; }
 		.cardTitle { font-weight: 600; }",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
 		      {
 		        "hint": "CSS Modules local class scoping does not survive the authored-css target",
@@ -142,7 +178,16 @@ test("css-modules -> authored-css: resolves concrete token references with proje
 		.card { color: var(--colors-brand); padding: 1rem; }
 		.cardTitle { font-weight: 600; }",
 		  "converted": 0,
-		  "outcomes": [],
+		  "outcomes": [
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		  ],
 		  "residuals": [
 		    {
 		      "hint": "CSS Modules local class scoping does not survive the authored-css target",
@@ -168,7 +213,16 @@ test("css-modules -> authored-css: preserves malformed concrete css-modules inpu
 		.cardTitle { font-weight: 600; }
 		const unfinished = { /* unfinished css-modules */",
 		  "converted": 0,
-		  "outcomes": [],
+		  "outcomes": [
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		  ],
 		  "residuals": [
 		    {
 		      "hint": "CSS Modules local class scoping does not survive the authored-css target",

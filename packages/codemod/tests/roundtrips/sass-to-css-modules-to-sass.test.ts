@@ -47,7 +47,12 @@ test("sass -> css-modules -> sass: preserves an actionable concrete round trip",
 		.card { color: red; padding: 1rem; &__title { font-weight: 600; } }
 		$title-color: blue;",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
 		      {
 		        "hint": "stylesheet statement is preserved outside the style program",
@@ -70,7 +75,12 @@ test("sass -> css-modules -> sass: preserves an actionable concrete round trip",
 		.card { color: red; padding: 1rem; &__title { font-weight: 600; } }
 		$title-color: blue;",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
 		      {
 		        "hint": "stylesheet statement is preserved outside the style program",
@@ -105,7 +115,12 @@ test("sass -> css-modules -> sass: retains edge semantics without silent loss", 
 		.card { color: theme.foreground; padding: 1rem; &__title { font-weight: 600; } }
 		$title-color: blue;",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
 		      {
 		        "hint": "stylesheet statement is preserved outside the style program",
@@ -128,7 +143,12 @@ test("sass -> css-modules -> sass: retains edge semantics without silent loss", 
 		.card { color: theme.foreground; padding: 1rem; &__title { font-weight: 600; } }
 		$title-color: blue;",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
 		      {
 		        "hint": "stylesheet statement is preserved outside the style program",
@@ -169,17 +189,17 @@ test("sass -> css-modules -> sass: preserves concrete theme and project context 
 		  "amber": {
 		    "forward": {
 		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting)
+		      "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting, dynamic)
 		.card { color: \${theme.colors.brand}; padding: 1rem; &__title { font-weight: 600; } }
 		$title-color: blue;",
 		      "converted": 0,
-		      "outcomes": [],
-		      "residuals": [
+		      "outcomes": [
 		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
-		          "preserved": undefined,
+		          "outcome": "residual",
+		          "representation": "residual",
 		        },
+		      ],
+		      "residuals": [
 		        {
 		          "hint": "stylesheet statement is preserved outside the style program",
 		          "kind": "parse",
@@ -191,28 +211,28 @@ test("sass -> css-modules -> sass: preserves concrete theme and project context 
 		          "preserved": undefined,
 		        },
 		        {
-		          "hint": "nested stylesheet rules require selector-aware lowering",
-		          "kind": "nesting",
+		          "hint": "authored stylesheet values must be statically resolved",
+		          "kind": "dynamic",
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 4,
+		      "skipped": 3,
 		      "validations": [],
 		    },
 		    "reverse": {
 		      "changed": false,
 		      "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		// pandwind:migrate-skip (lowering-residual: parse, nesting)
+		// pandwind:migrate-skip (lowering-residual: parse, nesting, dynamic)
 		.card { color: \${theme.colors.brand}; padding: 1rem; &__title { font-weight: 600; } }
 		$title-color: blue;",
 		      "converted": 0,
-		      "outcomes": [],
-		      "residuals": [
+		      "outcomes": [
 		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
-		          "preserved": undefined,
+		          "outcome": "residual",
+		          "representation": "residual",
 		        },
+		      ],
+		      "residuals": [
 		        {
 		          "hint": "stylesheet statement is preserved outside the style program",
 		          "kind": "parse",
@@ -224,24 +244,24 @@ test("sass -> css-modules -> sass: preserves concrete theme and project context 
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 3,
+		      "skipped": 2,
 		      "validations": [],
 		    },
 		  },
 		  "blue": {
 		    "forward": {
 		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting)
+		      "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting, dynamic)
 		.card { color: \${theme.colors.brand}; padding: 1rem; &__title { font-weight: 600; } }
 		$title-color: blue;",
 		      "converted": 0,
-		      "outcomes": [],
-		      "residuals": [
+		      "outcomes": [
 		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
-		          "preserved": undefined,
+		          "outcome": "residual",
+		          "representation": "residual",
 		        },
+		      ],
+		      "residuals": [
 		        {
 		          "hint": "stylesheet statement is preserved outside the style program",
 		          "kind": "parse",
@@ -253,28 +273,28 @@ test("sass -> css-modules -> sass: preserves concrete theme and project context 
 		          "preserved": undefined,
 		        },
 		        {
-		          "hint": "nested stylesheet rules require selector-aware lowering",
-		          "kind": "nesting",
+		          "hint": "authored stylesheet values must be statically resolved",
+		          "kind": "dynamic",
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 4,
+		      "skipped": 3,
 		      "validations": [],
 		    },
 		    "reverse": {
 		      "changed": false,
 		      "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		// pandwind:migrate-skip (lowering-residual: parse, nesting)
+		// pandwind:migrate-skip (lowering-residual: parse, nesting, dynamic)
 		.card { color: \${theme.colors.brand}; padding: 1rem; &__title { font-weight: 600; } }
 		$title-color: blue;",
 		      "converted": 0,
-		      "outcomes": [],
-		      "residuals": [
+		      "outcomes": [
 		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
-		          "preserved": undefined,
+		          "outcome": "residual",
+		          "representation": "residual",
 		        },
+		      ],
+		      "residuals": [
 		        {
 		          "hint": "stylesheet statement is preserved outside the style program",
 		          "kind": "parse",
@@ -286,7 +306,7 @@ test("sass -> css-modules -> sass: preserves concrete theme and project context 
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 3,
+		      "skipped": 2,
 		      "validations": [],
 		    },
 		  },
@@ -309,7 +329,12 @@ test("sass -> css-modules -> sass: resolves token references across both concret
 		.card { color: var(--colors-brand); padding: 1rem; &__title { font-weight: 600; } }
 		$title-color: blue;",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
 		      {
 		        "hint": "stylesheet statement is preserved outside the style program",
@@ -332,7 +357,12 @@ test("sass -> css-modules -> sass: resolves token references across both concret
 		.card { color: var(--colors-brand); padding: 1rem; &__title { font-weight: 600; } }
 		$title-color: blue;",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
 		      {
 		        "hint": "stylesheet statement is preserved outside the style program",

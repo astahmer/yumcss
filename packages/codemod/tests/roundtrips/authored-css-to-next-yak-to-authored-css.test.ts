@@ -47,7 +47,16 @@ test("authored-css -> next-yak -> authored-css: preserves an actionable concrete
 		.card { color: red; padding: 1rem; }
 		.card:hover { color: blue; }",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
 		      {
 		        "hint": "stylesheet migration requires a single local class selector",
@@ -88,7 +97,16 @@ test("authored-css -> next-yak -> authored-css: retains edge semantics without s
 		.card { color: theme.foreground; padding: 1rem; }
 		.card:hover { color: blue; }",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
 		      {
 		        "hint": "stylesheet migration requires a single local class selector",
@@ -135,34 +153,33 @@ test("authored-css -> next-yak -> authored-css: preserves concrete theme and pro
 		  "amber": {
 		    "forward": {
 		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting, capability)
+		      "code": "// pandwind:migrate-skip (lowering-residual: capability)
 		.card { color: \${theme.colors.brand}; padding: 1rem; }
 		.card:hover { color: blue; }",
 		      "converted": 0,
-		      "outcomes": [],
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		      ],
 		      "residuals": [
-		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "nested stylesheet rules require selector-aware lowering",
-		          "kind": "nesting",
-		          "preserved": undefined,
-		        },
 		        {
 		          "hint": "stylesheet migration requires a single local class selector",
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 3,
+		      "skipped": 1,
 		      "validations": [],
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting, capability)
+		      "code": "// pandwind:migrate-skip (lowering-residual: capability)
 		.card { color: \${theme.colors.brand}; padding: 1rem; }
 		.card:hover { color: blue; }",
 		      "converted": 0,
@@ -175,34 +192,33 @@ test("authored-css -> next-yak -> authored-css: preserves concrete theme and pro
 		  "blue": {
 		    "forward": {
 		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting, capability)
+		      "code": "// pandwind:migrate-skip (lowering-residual: capability)
 		.card { color: \${theme.colors.brand}; padding: 1rem; }
 		.card:hover { color: blue; }",
 		      "converted": 0,
-		      "outcomes": [],
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		      ],
 		      "residuals": [
-		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "nested stylesheet rules require selector-aware lowering",
-		          "kind": "nesting",
-		          "preserved": undefined,
-		        },
 		        {
 		          "hint": "stylesheet migration requires a single local class selector",
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 3,
+		      "skipped": 1,
 		      "validations": [],
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting, capability)
+		      "code": "// pandwind:migrate-skip (lowering-residual: capability)
 		.card { color: \${theme.colors.brand}; padding: 1rem; }
 		.card:hover { color: blue; }",
 		      "converted": 0,
@@ -231,7 +247,16 @@ test("authored-css -> next-yak -> authored-css: resolves token references across
 		.card { color: var(--colors-brand); padding: 1rem; }
 		.card:hover { color: blue; }",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
 		      {
 		        "hint": "stylesheet migration requires a single local class selector",

@@ -207,7 +207,16 @@ describe("official adapter API families", () => {
 			export const styles = { "card": css.class({ color: "white" }), "pulse": (css.sheet.registerSemanticRules([{ kind: "keyframes", name: "pw-kf-animation", children: [{ kind: "style", selector: "from", declarations: [{ property: "opacity", value: "0" }] }, { kind: "style", selector: "to", declarations: [{ property: "opacity", value: "1" }] }] }]), "pw-kf-animation") };
 			export default styles;",
 			    "converted": 2,
-			    "outcomes": [],
+			    "outcomes": [
+			      {
+			        "outcome": "target-native",
+			        "representation": "named-map",
+			      },
+			      {
+			        "outcome": "target-native",
+			        "representation": "named-map",
+			      },
+			    ],
 			    "residuals": [],
 			    "skipped": 0,
 			    "validations": [
@@ -232,7 +241,16 @@ describe("official adapter API families", () => {
 			export const styles = { "card": css.class({ color: "red" }), "title": css.class({ fontWeight: "600" }) };
 			export default styles;",
 			    "converted": 2,
-			    "outcomes": [],
+			    "outcomes": [
+			      {
+			        "outcome": "target-native",
+			        "representation": "named-map",
+			      },
+			      {
+			        "outcome": "target-native",
+			        "representation": "named-map",
+			      },
+			    ],
 			    "residuals": [],
 			    "skipped": 0,
 			    "validations": [
@@ -254,7 +272,16 @@ describe("official adapter API families", () => {
 			:root { --brand: red; }
 			[data-theme="dark"] .card { color: white; }",
 			    "converted": 0,
-			    "outcomes": [],
+			    "outcomes": [
+			      {
+			        "outcome": "residual",
+			        "representation": "residual",
+			      },
+			      {
+			        "outcome": "residual",
+			        "representation": "residual",
+			      },
+			    ],
 			    "residuals": [
 			      {
 			        "hint": "stylesheet migration requires a single local class selector",
@@ -470,7 +497,16 @@ describe("official adapter API families", () => {
 			.card { color: red; }
 			.primary { composes: card; font-weight: 600; }",
 			    "converted": 0,
-			    "outcomes": [],
+			    "outcomes": [
+			      {
+			        "outcome": "residual",
+			        "representation": "residual",
+			      },
+			      {
+			        "outcome": "residual",
+			        "representation": "residual",
+			      },
+			    ],
 			    "residuals": [
 			      {
 			        "hint": "preprocessor or CSS Modules composition needs its source context",
@@ -487,7 +523,16 @@ describe("official adapter API families", () => {
 			:global(.footer) { color: gray; }
 			.card:hover { color: red; }",
 			    "converted": 0,
-			    "outcomes": [],
+			    "outcomes": [
+			      {
+			        "outcome": "residual",
+			        "representation": "residual",
+			      },
+			      {
+			        "outcome": "residual",
+			        "representation": "residual",
+			      },
+			    ],
 			    "residuals": [
 			      {
 			        "hint": "stylesheet migration requires a single local class selector",
@@ -510,7 +555,16 @@ describe("official adapter API families", () => {
 			export const styles = { "card": css.class({ padding: "1rem", color: "red" }), "title": css.class({ fontWeight: "600" }) };
 			export default styles;",
 			    "converted": 2,
-			    "outcomes": [],
+			    "outcomes": [
+			      {
+			        "outcome": "target-native",
+			        "representation": "named-map",
+			      },
+			      {
+			        "outcome": "target-native",
+			        "representation": "named-map",
+			      },
+			    ],
 			    "residuals": [],
 			    "skipped": 0,
 			    "validations": [
@@ -860,7 +914,12 @@ describe("official adapter API families", () => {
 			    "code": "// pandwind:migrate-skip (lowering-residual: parse)
 			.card { .shadow(); color: red; }",
 			    "converted": 0,
-			    "outcomes": [],
+			    "outcomes": [
+			      {
+			        "outcome": "residual",
+			        "representation": "residual",
+			      },
+			    ],
 			    "residuals": [
 			      {
 			        "hint": "stylesheet declaration requires a property and value",
@@ -878,7 +937,16 @@ describe("official adapter API families", () => {
 			export const styles = { "card": css.class({ color: "red" }), "title": css.class({ fontWeight: "600" }) };
 			export default styles;",
 			    "converted": 2,
-			    "outcomes": [],
+			    "outcomes": [
+			      {
+			        "outcome": "target-native",
+			        "representation": "named-map",
+			      },
+			      {
+			        "outcome": "target-native",
+			        "representation": "named-map",
+			      },
+			    ],
 			    "residuals": [],
 			    "skipped": 0,
 			    "validations": [
@@ -900,7 +968,12 @@ describe("official adapter API families", () => {
 			@brand: red;
 			.card { color: @brand; padding: 1rem; &__title { font-weight: 600; } }",
 			    "converted": 0,
-			    "outcomes": [],
+			    "outcomes": [
+			      {
+			        "outcome": "residual",
+			        "representation": "residual",
+			      },
+			    ],
 			    "residuals": [
 			      {
 			        "hint": "stylesheet statement is preserved outside the style program",
@@ -1381,7 +1454,12 @@ describe("official adapter API families", () => {
 			@mixin flex($gap) { display: flex; gap: $gap; }
 			.card { @include flex(1rem); }",
 			    "converted": 0,
-			    "outcomes": [],
+			    "outcomes": [
+			      {
+			        "outcome": "residual",
+			        "representation": "residual",
+			      },
+			    ],
 			    "residuals": [
 			      {
 			        "hint": "stylesheet at-rule is not safely representable by the selected style target",
@@ -1403,7 +1481,12 @@ describe("official adapter API families", () => {
 			@use "sass:math";
 			.card { padding: 1rem; }",
 			    "converted": 0,
-			    "outcomes": [],
+			    "outcomes": [
+			      {
+			        "outcome": "residual",
+			        "representation": "residual",
+			      },
+			    ],
 			    "residuals": [
 			      {
 			        "hint": "stylesheet statement is preserved outside the style program",
@@ -1420,7 +1503,12 @@ describe("official adapter API families", () => {
 			$brand: red;
 			.card { color: $brand; padding: 1rem; &__title { font-weight: 600; } }",
 			    "converted": 0,
-			    "outcomes": [],
+			    "outcomes": [
+			      {
+			        "outcome": "residual",
+			        "representation": "residual",
+			      },
+			    ],
 			    "residuals": [
 			      {
 			        "hint": "stylesheet statement is preserved outside the style program",

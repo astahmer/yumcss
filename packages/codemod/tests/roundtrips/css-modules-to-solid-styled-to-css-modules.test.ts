@@ -47,7 +47,16 @@ test("css-modules -> solid-styled -> css-modules: preserves an actionable concre
 		export const styles = { "card": styled.div({ "padding": "1rem", "color": "red" }), "cardTitle": styled.div({ "fontWeight": "600" }) };
 		export default styles;",
 		    "converted": 2,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "target-native",
+		        "representation": "named-map",
+		      },
+		      {
+		        "outcome": "target-native",
+		        "representation": "named-map",
+		      },
+		    ],
 		    "residuals": [],
 		    "skipped": 0,
 		    "validations": [
@@ -66,19 +75,19 @@ test("css-modules -> solid-styled -> css-modules: preserves an actionable concre
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-		export const styles = { "card": // pandwind:migrate-skip (route: solid-styled -> css-modules | lowering-residual: framework-semantics | capability-blocked: components: component subject: styled.div | available: residual)
-		styled.div({ "padding": "1rem", "color": "red" }), "cardTitle": // pandwind:migrate-skip (route: solid-styled -> css-modules | lowering-residual: framework-semantics | capability-blocked: components: component subject: styled.div | available: residual)
+		export const styles = { "card": // pandwind:migrate-skip (route: solid-styled -> css-modules | lowering-residual: framework-semantics | capability-blocked: components: component subject: styled.div | available: residual, portable-artifact)
+		styled.div({ "padding": "1rem", "color": "red" }), "cardTitle": // pandwind:migrate-skip (route: solid-styled -> css-modules | lowering-residual: framework-semantics | capability-blocked: components: component subject: styled.div | available: residual, portable-artifact)
 		styled.div({ "fontWeight": "600" }) };
 		export default styles;",
 		    "converted": 0,
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "residual",
+		        "representation": "portable-artifact",
 		      },
 		      {
 		        "outcome": "residual",
-		        "representation": "residual",
+		        "representation": "portable-artifact",
 		      },
 		    ],
 		    "residuals": [
@@ -125,7 +134,16 @@ test("css-modules -> solid-styled -> css-modules: retains edge semantics without
 		export const styles = { "card": styled.div({ "padding": "1rem", "color": "theme.foreground" }), "cardTitle": styled.div({ "fontWeight": "600" }) };
 		export default styles;",
 		    "converted": 2,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "target-native",
+		        "representation": "named-map",
+		      },
+		      {
+		        "outcome": "target-native",
+		        "representation": "named-map",
+		      },
+		    ],
 		    "residuals": [],
 		    "skipped": 0,
 		    "validations": [
@@ -144,19 +162,19 @@ test("css-modules -> solid-styled -> css-modules: retains edge semantics without
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-		export const styles = { "card": // pandwind:migrate-skip (route: solid-styled -> css-modules | lowering-residual: framework-semantics | capability-blocked: components: component subject: styled.div | available: residual)
-		styled.div({ "padding": "1rem", "color": "theme.foreground" }), "cardTitle": // pandwind:migrate-skip (route: solid-styled -> css-modules | lowering-residual: framework-semantics | capability-blocked: components: component subject: styled.div | available: residual)
+		export const styles = { "card": // pandwind:migrate-skip (route: solid-styled -> css-modules | lowering-residual: framework-semantics | capability-blocked: components: component subject: styled.div | available: residual, portable-artifact)
+		styled.div({ "padding": "1rem", "color": "theme.foreground" }), "cardTitle": // pandwind:migrate-skip (route: solid-styled -> css-modules | lowering-residual: framework-semantics | capability-blocked: components: component subject: styled.div | available: residual, portable-artifact)
 		styled.div({ "fontWeight": "600" }) };
 		export default styles;",
 		    "converted": 0,
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "residual",
+		        "representation": "portable-artifact",
 		      },
 		      {
 		        "outcome": "residual",
-		        "representation": "residual",
+		        "representation": "portable-artifact",
 		      },
 		    ],
 		    "residuals": [
@@ -208,71 +226,153 @@ test("css-modules -> solid-styled -> css-modules: preserves concrete theme and p
 		{
 		  "amber": {
 		    "forward": {
-		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting)
-		.card { color: \${theme.colors.brand}; padding: 1rem; }
-		.cardTitle { font-weight: 600; }",
+		      "changed": true,
+		      "code": "import { styled } from "solid-styled-components";
+		export const styles = { "card": styled.div({ "padding": "1rem", "color": theme.colors.brand }), "cardTitle": styled.div({ "fontWeight": "600" }) };
+		export default styles;",
+		      "converted": 2,
+		      "outcomes": [
+		        {
+		          "outcome": "host-runtime",
+		          "representation": "named-map",
+		        },
+		        {
+		          "outcome": "target-native",
+		          "representation": "named-map",
+		        },
+		      ],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
+		    },
+		    "reverse": {
+		      "changed": true,
+		      "code": "import { styled } from "solid-styled-components";
+		export const styles = { "card": // pandwind:migrate-skip (route: solid-styled -> css-modules | lowering-residual: framework-semantics | capability-blocked: components: component subject: styled.div | available: residual, portable-artifact)
+		styled.div({ "padding": "1rem", "color": theme.colors.brand }), "cardTitle": // pandwind:migrate-skip (route: solid-styled -> css-modules | lowering-residual: framework-semantics | capability-blocked: components: component subject: styled.div | available: residual, portable-artifact)
+		styled.div({ "fontWeight": "600" }) };
+		export default styles;",
 		      "converted": 0,
-		      "outcomes": [],
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "portable-artifact",
+		        },
+		        {
+		          "outcome": "residual",
+		          "representation": "portable-artifact",
+		        },
+		      ],
 		      "residuals": [
 		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
+		          "hint": "components: component subject: styled.div",
+		          "kind": "capability",
 		          "preserved": undefined,
 		        },
 		        {
-		          "hint": "nested stylesheet rules require selector-aware lowering",
-		          "kind": "nesting",
+		          "hint": "target lacks framework semantics",
+		          "kind": "framework-semantics",
+		          "preserved": undefined,
+		        },
+		        {
+		          "hint": "components: component subject: styled.div",
+		          "kind": "capability",
+		          "preserved": undefined,
+		        },
+		        {
+		          "hint": "target lacks framework semantics",
+		          "kind": "framework-semantics",
 		          "preserved": undefined,
 		        },
 		      ],
 		      "skipped": 2,
-		      "validations": [],
-		    },
-		    "reverse": {
-		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting)
-		.card { color: \${theme.colors.brand}; padding: 1rem; }
-		.cardTitle { font-weight: 600; }",
-		      "converted": 0,
-		      "outcomes": [],
-		      "residuals": [],
-		      "skipped": 0,
 		      "validations": [],
 		    },
 		  },
 		  "blue": {
 		    "forward": {
-		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting)
-		.card { color: \${theme.colors.brand}; padding: 1rem; }
-		.cardTitle { font-weight: 600; }",
+		      "changed": true,
+		      "code": "import { styled } from "solid-styled-components";
+		export const styles = { "card": styled.div({ "padding": "1rem", "color": theme.colors.brand }), "cardTitle": styled.div({ "fontWeight": "600" }) };
+		export default styles;",
+		      "converted": 2,
+		      "outcomes": [
+		        {
+		          "outcome": "host-runtime",
+		          "representation": "named-map",
+		        },
+		        {
+		          "outcome": "target-native",
+		          "representation": "named-map",
+		        },
+		      ],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
+		    },
+		    "reverse": {
+		      "changed": true,
+		      "code": "import { styled } from "solid-styled-components";
+		export const styles = { "card": // pandwind:migrate-skip (route: solid-styled -> css-modules | lowering-residual: framework-semantics | capability-blocked: components: component subject: styled.div | available: residual, portable-artifact)
+		styled.div({ "padding": "1rem", "color": theme.colors.brand }), "cardTitle": // pandwind:migrate-skip (route: solid-styled -> css-modules | lowering-residual: framework-semantics | capability-blocked: components: component subject: styled.div | available: residual, portable-artifact)
+		styled.div({ "fontWeight": "600" }) };
+		export default styles;",
 		      "converted": 0,
-		      "outcomes": [],
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "portable-artifact",
+		        },
+		        {
+		          "outcome": "residual",
+		          "representation": "portable-artifact",
+		        },
+		      ],
 		      "residuals": [
 		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
+		          "hint": "components: component subject: styled.div",
+		          "kind": "capability",
 		          "preserved": undefined,
 		        },
 		        {
-		          "hint": "nested stylesheet rules require selector-aware lowering",
-		          "kind": "nesting",
+		          "hint": "target lacks framework semantics",
+		          "kind": "framework-semantics",
+		          "preserved": undefined,
+		        },
+		        {
+		          "hint": "components: component subject: styled.div",
+		          "kind": "capability",
+		          "preserved": undefined,
+		        },
+		        {
+		          "hint": "target lacks framework semantics",
+		          "kind": "framework-semantics",
 		          "preserved": undefined,
 		        },
 		      ],
 		      "skipped": 2,
-		      "validations": [],
-		    },
-		    "reverse": {
-		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting)
-		.card { color: \${theme.colors.brand}; padding: 1rem; }
-		.cardTitle { font-weight: 600; }",
-		      "converted": 0,
-		      "outcomes": [],
-		      "residuals": [],
-		      "skipped": 0,
 		      "validations": [],
 		    },
 		  },
@@ -295,7 +395,16 @@ test("css-modules -> solid-styled -> css-modules: resolves token references acro
 		export const styles = { "card": styled.div({ "padding": "1rem", "color": "var(--colors-brand)" }), "cardTitle": styled.div({ "fontWeight": "600" }) };
 		export default styles;",
 		    "converted": 2,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "target-native",
+		        "representation": "named-map",
+		      },
+		      {
+		        "outcome": "target-native",
+		        "representation": "named-map",
+		      },
+		    ],
 		    "residuals": [],
 		    "skipped": 0,
 		    "validations": [
@@ -314,19 +423,19 @@ test("css-modules -> solid-styled -> css-modules: resolves token references acro
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-		export const styles = { "card": // pandwind:migrate-skip (route: solid-styled -> css-modules | lowering-residual: framework-semantics | capability-blocked: components: component subject: styled.div | available: residual)
-		styled.div({ "padding": "1rem", "color": "var(--colors-brand)" }), "cardTitle": // pandwind:migrate-skip (route: solid-styled -> css-modules | lowering-residual: framework-semantics | capability-blocked: components: component subject: styled.div | available: residual)
+		export const styles = { "card": // pandwind:migrate-skip (route: solid-styled -> css-modules | lowering-residual: framework-semantics | capability-blocked: components: component subject: styled.div | available: residual, portable-artifact)
+		styled.div({ "padding": "1rem", "color": "var(--colors-brand)" }), "cardTitle": // pandwind:migrate-skip (route: solid-styled -> css-modules | lowering-residual: framework-semantics | capability-blocked: components: component subject: styled.div | available: residual, portable-artifact)
 		styled.div({ "fontWeight": "600" }) };
 		export default styles;",
 		    "converted": 0,
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "residual",
+		        "representation": "portable-artifact",
 		      },
 		      {
 		        "outcome": "residual",
-		        "representation": "residual",
+		        "representation": "portable-artifact",
 		      },
 		    ],
 		    "residuals": [

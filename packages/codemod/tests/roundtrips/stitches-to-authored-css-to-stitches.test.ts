@@ -43,52 +43,50 @@ test("stitches -> authored-css -> stitches: preserves an actionable concrete rou
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@stitches/react";
-		export const card = // pandwind:migrate-skip (route: stitches -> authored-css | lowering-residual: validation)
-		css({ color: "red", padding: "1rem" });
+		    "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const card = css.class({ "padding": "1rem", "color": "red" });
 		export const App = () => <div className={card()} />;",
-		    "converted": 0,
+		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
-		        "representation": "static",
+		        "outcome": "portable-artifact",
+		        "representation": "portable-artifact",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "2 residual conversion(s)",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "2 residual conversion(s)",
-		        ],
-		        "lossiness": "lossy",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },
 		  "reverse": {
 		    "changed": false,
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import { css } from "@stitches/react";
-		export const card = // pandwind:migrate-skip (route: stitches -> authored-css | lowering-residual: validation)
-		css({ color: "red", padding: "1rem" });
+		import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const card = css.class({ "padding": "1rem", "color": "red" });
 		export const App = () => <div className={card()} />;",
 		    "converted": 0,
-		    "outcomes": [],
-		    "residuals": [
+		    "outcomes": [
 		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
+		        "outcome": "residual",
+		        "representation": "residual",
 		      },
 		      {
-		        "hint": "stylesheet statement has no terminator",
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
+		    "residuals": [
+		      {
+		        "hint": "stylesheet statement is preserved outside the style program",
 		        "kind": "parse",
 		        "preserved": undefined,
 		      },
@@ -118,7 +116,7 @@ test("stitches -> authored-css -> stitches: preserves an actionable concrete rou
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 7,
+		    "skipped": 6,
 		    "validations": [],
 		  },
 		}
@@ -136,52 +134,66 @@ test("stitches -> authored-css -> stitches: retains edge semantics without silen
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@stitches/react";
-		export const card = // pandwind:migrate-skip (route: stitches -> authored-css | lowering-residual: validation)
-		css({ color: theme.foreground, padding: "1rem" });
+		    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+		import { pandwindPreset } from "pandwind/preset";
+		const css = createRuntimeCss(pandwindPreset);
+
+		export const card = css.vars({ "padding": "1rem", "color": theme.foreground });
 		export const App = () => <div className={card()} />;",
-		    "converted": 0,
+		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "portable-artifact",
 		        "representation": "portable-artifact",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "1 residual conversion(s)",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "1 residual conversion(s)",
-		        ],
-		        "lossiness": "lossy",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },
 		  "reverse": {
 		    "changed": false,
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import { css } from "@stitches/react";
-		export const card = // pandwind:migrate-skip (route: stitches -> authored-css | lowering-residual: validation)
-		css({ color: theme.foreground, padding: "1rem" });
+		import { createRuntimeCss } from "pandwind/css/runtime";
+		import { pandwindPreset } from "pandwind/preset";
+		const css = createRuntimeCss(pandwindPreset);
+
+		export const card = css.vars({ "padding": "1rem", "color": theme.foreground });
 		export const App = () => <div className={card()} />;",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
 		      {
-		        "hint": "stylesheet statement has no terminator",
+		        "hint": "stylesheet statement is preserved outside the style program",
 		        "kind": "parse",
 		        "preserved": undefined,
 		      },
 		      {
-		        "hint": "stylesheet statement has no terminator",
+		        "hint": "stylesheet statement is preserved outside the style program",
+		        "kind": "parse",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "stylesheet statement is preserved outside the style program",
 		        "kind": "parse",
 		        "preserved": undefined,
 		      },
@@ -196,8 +208,8 @@ test("stitches -> authored-css -> stitches: retains edge semantics without silen
 		        "preserved": undefined,
 		      },
 		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
+		        "hint": "stylesheet migration requires a single local class selector",
+		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		      {
@@ -211,7 +223,7 @@ test("stitches -> authored-css -> stitches: retains edge semantics without silen
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 7,
+		    "skipped": 8,
 		    "validations": [],
 		  },
 		}
@@ -239,52 +251,50 @@ test("stitches -> authored-css -> stitches: preserves concrete theme and project
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "@stitches/react";
-		export const card = // pandwind:migrate-skip (route: stitches -> authored-css | lowering-residual: validation)
-		css({ color: theme.colors.brand, padding: "1rem" });
+		      "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const card = css.class({ "padding": "1rem", "color": "#f97316" });
 		export const App = () => <div className={card()} />;",
-		      "converted": 0,
+		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
-		          "representation": "static",
+		          "outcome": "portable-artifact",
+		          "representation": "portable-artifact",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "2 residual conversion(s)",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "2 residual conversion(s)",
-		          ],
-		          "lossiness": "lossy",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
 		    "reverse": {
 		      "changed": false,
 		      "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import { css } from "@stitches/react";
-		export const card = // pandwind:migrate-skip (route: stitches -> authored-css | lowering-residual: validation)
-		css({ color: theme.colors.brand, padding: "1rem" });
+		import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const card = css.class({ "padding": "1rem", "color": "#f97316" });
 		export const App = () => <div className={card()} />;",
 		      "converted": 0,
-		      "outcomes": [],
-		      "residuals": [
+		      "outcomes": [
 		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
-		          "preserved": undefined,
+		          "outcome": "residual",
+		          "representation": "residual",
 		        },
 		        {
-		          "hint": "stylesheet statement has no terminator",
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		      ],
+		      "residuals": [
+		        {
+		          "hint": "stylesheet statement is preserved outside the style program",
 		          "kind": "parse",
 		          "preserved": undefined,
 		        },
@@ -314,59 +324,57 @@ test("stitches -> authored-css -> stitches: preserves concrete theme and project
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 7,
+		      "skipped": 6,
 		      "validations": [],
 		    },
 		  },
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "@stitches/react";
-		export const card = // pandwind:migrate-skip (route: stitches -> authored-css | lowering-residual: validation)
-		css({ color: theme.colors.brand, padding: "1rem" });
+		      "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const card = css.class({ "padding": "1rem", "color": "#2563eb" });
 		export const App = () => <div className={card()} />;",
-		      "converted": 0,
+		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
-		          "representation": "static",
+		          "outcome": "portable-artifact",
+		          "representation": "portable-artifact",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "2 residual conversion(s)",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "2 residual conversion(s)",
-		          ],
-		          "lossiness": "lossy",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
 		    "reverse": {
 		      "changed": false,
 		      "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import { css } from "@stitches/react";
-		export const card = // pandwind:migrate-skip (route: stitches -> authored-css | lowering-residual: validation)
-		css({ color: theme.colors.brand, padding: "1rem" });
+		import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const card = css.class({ "padding": "1rem", "color": "#2563eb" });
 		export const App = () => <div className={card()} />;",
 		      "converted": 0,
-		      "outcomes": [],
-		      "residuals": [
+		      "outcomes": [
 		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
-		          "preserved": undefined,
+		          "outcome": "residual",
+		          "representation": "residual",
 		        },
 		        {
-		          "hint": "stylesheet statement has no terminator",
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		      ],
+		      "residuals": [
+		        {
+		          "hint": "stylesheet statement is preserved outside the style program",
 		          "kind": "parse",
 		          "preserved": undefined,
 		        },
@@ -396,7 +404,7 @@ test("stitches -> authored-css -> stitches: preserves concrete theme and project
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 7,
+		      "skipped": 6,
 		      "validations": [],
 		    },
 		  },
@@ -415,52 +423,50 @@ test("stitches -> authored-css -> stitches: resolves token references across bot
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@stitches/react";
-		export const card = // pandwind:migrate-skip (route: stitches -> authored-css | lowering-residual: validation)
-		css({ color: "$colors.brand", padding: "1rem" });
+		    "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const card = css.class({ "padding": "1rem", "color": "$colors.brand" });
 		export const App = () => <div className={card()} />;",
-		    "converted": 0,
+		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
-		        "representation": "static",
+		        "outcome": "portable-artifact",
+		        "representation": "portable-artifact",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "2 residual conversion(s)",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "2 residual conversion(s)",
-		        ],
-		        "lossiness": "lossy",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },
 		  "reverse": {
 		    "changed": false,
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import { css } from "@stitches/react";
-		export const card = // pandwind:migrate-skip (route: stitches -> authored-css | lowering-residual: validation)
-		css({ color: "$colors.brand", padding: "1rem" });
+		import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const card = css.class({ "padding": "1rem", "color": "$colors.brand" });
 		export const App = () => <div className={card()} />;",
 		    "converted": 0,
-		    "outcomes": [],
-		    "residuals": [
+		    "outcomes": [
 		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
+		        "outcome": "residual",
+		        "representation": "residual",
 		      },
 		      {
-		        "hint": "stylesheet statement has no terminator",
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
+		    "residuals": [
+		      {
+		        "hint": "stylesheet statement is preserved outside the style program",
 		        "kind": "parse",
 		        "preserved": undefined,
 		      },
@@ -490,7 +496,7 @@ test("stitches -> authored-css -> stitches: resolves token references across bot
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 7,
+		    "skipped": 6,
 		    "validations": [],
 		  },
 		}

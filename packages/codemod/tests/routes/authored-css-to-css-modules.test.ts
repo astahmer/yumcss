@@ -45,7 +45,16 @@ test("authored-css -> css-modules: migrates concrete authored-css syntax to css-
 		.card { color: red; padding: 1rem; }
 		.card:hover { color: blue; }",
 		  "converted": 0,
-		  "outcomes": [],
+		  "outcomes": [
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		  ],
 		  "residuals": [
 		    {
 		      "hint": "stylesheet migration requires a single local class selector",
@@ -70,7 +79,16 @@ test("authored-css -> css-modules: carries concrete authored-css dynamics or edg
 		.card { color: theme.foreground; padding: 1rem; }
 		.card:hover { color: blue; }",
 		  "converted": 0,
-		  "outcomes": [],
+		  "outcomes": [
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		  ],
 		  "residuals": [
 		    {
 		      "hint": "stylesheet migration requires a single local class selector",
@@ -95,20 +113,24 @@ test("authored-css -> css-modules: lowers concrete theme and project context var
 		{
 		  "amber": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting, capability)
+		    "code": "// pandwind:migrate-skip (lowering-residual: dynamic, capability)
 		.card { color: \${theme.colors.brand}; padding: 1rem; }
 		.card:hover { color: blue; }",
 		    "converted": 0,
-		    "outcomes": [],
-		    "residuals": [
+		    "outcomes": [
 		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
+		        "outcome": "residual",
+		        "representation": "residual",
 		      },
 		      {
-		        "hint": "nested stylesheet rules require selector-aware lowering",
-		        "kind": "nesting",
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
+		    "residuals": [
+		      {
+		        "hint": "authored stylesheet values must be statically resolved",
+		        "kind": "dynamic",
 		        "preserved": undefined,
 		      },
 		      {
@@ -117,25 +139,29 @@ test("authored-css -> css-modules: lowers concrete theme and project context var
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 3,
+		    "skipped": 2,
 		    "validations": [],
 		  },
 		  "blue": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting, capability)
+		    "code": "// pandwind:migrate-skip (lowering-residual: dynamic, capability)
 		.card { color: \${theme.colors.brand}; padding: 1rem; }
 		.card:hover { color: blue; }",
 		    "converted": 0,
-		    "outcomes": [],
-		    "residuals": [
+		    "outcomes": [
 		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
+		        "outcome": "residual",
+		        "representation": "residual",
 		      },
 		      {
-		        "hint": "nested stylesheet rules require selector-aware lowering",
-		        "kind": "nesting",
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
+		    "residuals": [
+		      {
+		        "hint": "authored stylesheet values must be statically resolved",
+		        "kind": "dynamic",
 		        "preserved": undefined,
 		      },
 		      {
@@ -144,7 +170,7 @@ test("authored-css -> css-modules: lowers concrete theme and project context var
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 3,
+		    "skipped": 2,
 		    "validations": [],
 		  },
 		}
@@ -162,7 +188,16 @@ test("authored-css -> css-modules: resolves concrete token references with proje
 		.card { color: var(--colors-brand); padding: 1rem; }
 		.card:hover { color: blue; }",
 		  "converted": 0,
-		  "outcomes": [],
+		  "outcomes": [
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		  ],
 		  "residuals": [
 		    {
 		      "hint": "stylesheet migration requires a single local class selector",
@@ -188,7 +223,16 @@ test("authored-css -> css-modules: preserves malformed concrete authored-css inp
 		.card:hover { color: blue; }
 		const unfinished = { /* unfinished authored-css */",
 		  "converted": 0,
-		  "outcomes": [],
+		  "outcomes": [
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		  ],
 		  "residuals": [
 		    {
 		      "hint": "stylesheet block is unbalanced",

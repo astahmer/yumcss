@@ -47,7 +47,16 @@ test("css-modules -> emotion -> css-modules: preserves an actionable concrete ro
 		export const styles = { "card": css({ padding: "1rem", color: "red" }), "cardTitle": css({ fontWeight: "600" }) };
 		export default styles;",
 		    "converted": 2,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "target-native",
+		        "representation": "named-map",
+		      },
+		      {
+		        "outcome": "target-native",
+		        "representation": "named-map",
+		      },
+		    ],
 		    "residuals": [],
 		    "skipped": 0,
 		    "validations": [
@@ -65,49 +74,34 @@ test("css-modules -> emotion -> css-modules: preserves an actionable concrete ro
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@emotion/css";
-		export const styles = { "card": // pandwind:migrate-skip (route: emotion -> css-modules | lowering-residual: validation)
-		css({ padding: "1rem", color: "red" }), "cardTitle": // pandwind:migrate-skip (route: emotion -> css-modules | lowering-residual: validation)
-		css({ fontWeight: "600" }) };
+		    "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const styles = { "card": css.class({ "padding": "1rem", "color": "red" }), "cardTitle": css.class({ "fontWeight": "600" }) };
 		export default styles;",
-		    "converted": 0,
+		    "converted": 2,
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
-		        "representation": "static",
+		        "outcome": "portable-artifact",
+		        "representation": "portable-artifact",
 		      },
 		      {
-		        "outcome": "residual",
-		        "representation": "static",
+		        "outcome": "portable-artifact",
+		        "representation": "portable-artifact",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "2 residual conversion(s)",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "1 residual conversion(s)",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 2,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "2 residual conversion(s)",
-		        ],
-		        "lossiness": "lossy",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		      {
-		        "differences": [
-		          "1 residual conversion(s)",
-		        ],
-		        "lossiness": "lossy",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },
@@ -130,7 +124,16 @@ test("css-modules -> emotion -> css-modules: retains edge semantics without sile
 		export const styles = { "card": css({ padding: "1rem", color: "theme.foreground" }), "cardTitle": css({ fontWeight: "600" }) };
 		export default styles;",
 		    "converted": 2,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "target-native",
+		        "representation": "named-map",
+		      },
+		      {
+		        "outcome": "target-native",
+		        "representation": "named-map",
+		      },
+		    ],
 		    "residuals": [],
 		    "skipped": 0,
 		    "validations": [
@@ -148,49 +151,34 @@ test("css-modules -> emotion -> css-modules: retains edge semantics without sile
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@emotion/css";
-		export const styles = { "card": // pandwind:migrate-skip (route: emotion -> css-modules | lowering-residual: validation)
-		css({ padding: "1rem", color: "theme.foreground" }), "cardTitle": // pandwind:migrate-skip (route: emotion -> css-modules | lowering-residual: validation)
-		css({ fontWeight: "600" }) };
+		    "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const styles = { "card": css.class({ "padding": "1rem", "color": "theme.foreground" }), "cardTitle": css.class({ "fontWeight": "600" }) };
 		export default styles;",
-		    "converted": 0,
+		    "converted": 2,
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
-		        "representation": "static",
+		        "outcome": "portable-artifact",
+		        "representation": "portable-artifact",
 		      },
 		      {
-		        "outcome": "residual",
-		        "representation": "static",
+		        "outcome": "portable-artifact",
+		        "representation": "portable-artifact",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "2 residual conversion(s)",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "1 residual conversion(s)",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 2,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "2 residual conversion(s)",
-		        ],
-		        "lossiness": "lossy",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		      {
-		        "differences": [
-		          "1 residual conversion(s)",
-		        ],
-		        "lossiness": "lossy",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },
@@ -218,72 +206,134 @@ test("css-modules -> emotion -> css-modules: preserves concrete theme and projec
 		{
 		  "amber": {
 		    "forward": {
-		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting)
-		.card { color: \${theme.colors.brand}; padding: 1rem; }
-		.cardTitle { font-weight: 600; }",
-		      "converted": 0,
-		      "outcomes": [],
-		      "residuals": [
+		      "changed": true,
+		      "code": "import { css } from "@emotion/css";
+		export const styles = { "card": css({ padding: "1rem", color: theme.colors.brand }), "cardTitle": css({ fontWeight: "600" }) };
+		export default styles;",
+		      "converted": 2,
+		      "outcomes": [
 		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
-		          "preserved": undefined,
+		          "outcome": "host-runtime",
+		          "representation": "named-map",
 		        },
 		        {
-		          "hint": "nested stylesheet rules require selector-aware lowering",
-		          "kind": "nesting",
-		          "preserved": undefined,
+		          "outcome": "target-native",
+		          "representation": "named-map",
 		        },
 		      ],
-		      "skipped": 2,
-		      "validations": [],
-		    },
-		    "reverse": {
-		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting)
-		.card { color: \${theme.colors.brand}; padding: 1rem; }
-		.cardTitle { font-weight: 600; }",
-		      "converted": 0,
-		      "outcomes": [],
 		      "residuals": [],
 		      "skipped": 0,
-		      "validations": [],
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
+		    },
+		    "reverse": {
+		      "changed": true,
+		      "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const styles = { "card": css.class({ "padding": "1rem", "color": "#f97316" }), "cardTitle": css.class({ "fontWeight": "600" }) };
+		export default styles;",
+		      "converted": 2,
+		      "outcomes": [
+		        {
+		          "outcome": "portable-artifact",
+		          "representation": "portable-artifact",
+		        },
+		        {
+		          "outcome": "portable-artifact",
+		          "representation": "portable-artifact",
+		        },
+		      ],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
 		    },
 		  },
 		  "blue": {
 		    "forward": {
-		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting)
-		.card { color: \${theme.colors.brand}; padding: 1rem; }
-		.cardTitle { font-weight: 600; }",
-		      "converted": 0,
-		      "outcomes": [],
-		      "residuals": [
+		      "changed": true,
+		      "code": "import { css } from "@emotion/css";
+		export const styles = { "card": css({ padding: "1rem", color: theme.colors.brand }), "cardTitle": css({ fontWeight: "600" }) };
+		export default styles;",
+		      "converted": 2,
+		      "outcomes": [
 		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
-		          "preserved": undefined,
+		          "outcome": "host-runtime",
+		          "representation": "named-map",
 		        },
 		        {
-		          "hint": "nested stylesheet rules require selector-aware lowering",
-		          "kind": "nesting",
-		          "preserved": undefined,
+		          "outcome": "target-native",
+		          "representation": "named-map",
 		        },
 		      ],
-		      "skipped": 2,
-		      "validations": [],
-		    },
-		    "reverse": {
-		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting)
-		.card { color: \${theme.colors.brand}; padding: 1rem; }
-		.cardTitle { font-weight: 600; }",
-		      "converted": 0,
-		      "outcomes": [],
 		      "residuals": [],
 		      "skipped": 0,
-		      "validations": [],
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
+		    },
+		    "reverse": {
+		      "changed": true,
+		      "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const styles = { "card": css.class({ "padding": "1rem", "color": "#2563eb" }), "cardTitle": css.class({ "fontWeight": "600" }) };
+		export default styles;",
+		      "converted": 2,
+		      "outcomes": [
+		        {
+		          "outcome": "portable-artifact",
+		          "representation": "portable-artifact",
+		        },
+		        {
+		          "outcome": "portable-artifact",
+		          "representation": "portable-artifact",
+		        },
+		      ],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
 		    },
 		  },
 		}
@@ -305,7 +355,16 @@ test("css-modules -> emotion -> css-modules: resolves token references across bo
 		export const styles = { "card": css({ padding: "1rem", color: "var(--colors-brand)" }), "cardTitle": css({ fontWeight: "600" }) };
 		export default styles;",
 		    "converted": 2,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "target-native",
+		        "representation": "named-map",
+		      },
+		      {
+		        "outcome": "target-native",
+		        "representation": "named-map",
+		      },
+		    ],
 		    "residuals": [],
 		    "skipped": 0,
 		    "validations": [
@@ -323,49 +382,34 @@ test("css-modules -> emotion -> css-modules: resolves token references across bo
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@emotion/css";
-		export const styles = { "card": // pandwind:migrate-skip (route: emotion -> css-modules | lowering-residual: validation)
-		css({ padding: "1rem", color: "var(--colors-brand)" }), "cardTitle": // pandwind:migrate-skip (route: emotion -> css-modules | lowering-residual: validation)
-		css({ fontWeight: "600" }) };
+		    "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const styles = { "card": css.class({ "padding": "1rem", "color": "var(--colors-brand)" }), "cardTitle": css.class({ "fontWeight": "600" }) };
 		export default styles;",
-		    "converted": 0,
+		    "converted": 2,
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
-		        "representation": "static",
+		        "outcome": "portable-artifact",
+		        "representation": "portable-artifact",
 		      },
 		      {
-		        "outcome": "residual",
-		        "representation": "static",
+		        "outcome": "portable-artifact",
+		        "representation": "portable-artifact",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "2 residual conversion(s)",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "1 residual conversion(s)",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 2,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "2 residual conversion(s)",
-		        ],
-		        "lossiness": "lossy",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		      {
-		        "differences": [
-		          "1 residual conversion(s)",
-		        ],
-		        "lossiness": "lossy",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },

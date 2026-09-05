@@ -47,7 +47,16 @@ test("css-modules -> tamagui -> css-modules: preserves an actionable concrete ro
 		export const styles = { "card": styled(View, { padding: "1rem", color: "red" }), "cardTitle": styled(View, { fontWeight: "600" }) };
 		export default styles;",
 		    "converted": 2,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "target-native",
+		        "representation": "named-map",
+		      },
+		      {
+		        "outcome": "target-native",
+		        "representation": "named-map",
+		      },
+		    ],
 		    "residuals": [],
 		    "skipped": 0,
 		    "validations": [
@@ -66,19 +75,19 @@ test("css-modules -> tamagui -> css-modules: preserves an actionable concrete ro
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { styled, View } from "@tamagui/core";
-		export const styles = { "card": // pandwind:migrate-skip (route: tamagui -> css-modules | capability-blocked: components: component subject: styled(View) | available: static, residual)
-		styled(View, { padding: "1rem", color: "red" }), "cardTitle": // pandwind:migrate-skip (route: tamagui -> css-modules | capability-blocked: components: component subject: styled(View) | available: static, residual)
+		export const styles = { "card": // pandwind:migrate-skip (route: tamagui -> css-modules | capability-blocked: components: component subject: styled(View) | available: static, residual, portable-artifact)
+		styled(View, { padding: "1rem", color: "red" }), "cardTitle": // pandwind:migrate-skip (route: tamagui -> css-modules | capability-blocked: components: component subject: styled(View) | available: static, residual, portable-artifact)
 		styled(View, { fontWeight: "600" }) };
 		export default styles;",
 		    "converted": 0,
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "static",
+		        "representation": "portable-artifact",
 		      },
 		      {
 		        "outcome": "residual",
-		        "representation": "static",
+		        "representation": "portable-artifact",
 		      },
 		    ],
 		    "residuals": [
@@ -115,7 +124,16 @@ test("css-modules -> tamagui -> css-modules: retains edge semantics without sile
 		export const styles = { "card": styled(View, { padding: "1rem", color: "theme.foreground" }), "cardTitle": styled(View, { fontWeight: "600" }) };
 		export default styles;",
 		    "converted": 2,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "target-native",
+		        "representation": "named-map",
+		      },
+		      {
+		        "outcome": "target-native",
+		        "representation": "named-map",
+		      },
+		    ],
 		    "residuals": [],
 		    "skipped": 0,
 		    "validations": [
@@ -134,19 +152,19 @@ test("css-modules -> tamagui -> css-modules: retains edge semantics without sile
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { styled, View } from "@tamagui/core";
-		export const styles = { "card": // pandwind:migrate-skip (route: tamagui -> css-modules | capability-blocked: components: component subject: styled(View) | available: static, residual)
-		styled(View, { padding: "1rem", color: "theme.foreground" }), "cardTitle": // pandwind:migrate-skip (route: tamagui -> css-modules | capability-blocked: components: component subject: styled(View) | available: static, residual)
+		export const styles = { "card": // pandwind:migrate-skip (route: tamagui -> css-modules | capability-blocked: components: component subject: styled(View) | available: static, residual, portable-artifact)
+		styled(View, { padding: "1rem", color: "theme.foreground" }), "cardTitle": // pandwind:migrate-skip (route: tamagui -> css-modules | capability-blocked: components: component subject: styled(View) | available: static, residual, portable-artifact)
 		styled(View, { fontWeight: "600" }) };
 		export default styles;",
 		    "converted": 0,
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "static",
+		        "representation": "portable-artifact",
 		      },
 		      {
 		        "outcome": "residual",
-		        "representation": "static",
+		        "representation": "portable-artifact",
 		      },
 		    ],
 		    "residuals": [
@@ -188,71 +206,133 @@ test("css-modules -> tamagui -> css-modules: preserves concrete theme and projec
 		{
 		  "amber": {
 		    "forward": {
-		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting)
-		.card { color: \${theme.colors.brand}; padding: 1rem; }
-		.cardTitle { font-weight: 600; }",
+		      "changed": true,
+		      "code": "import { styled, View } from "@tamagui/core";
+		export const styles = { "card": styled(View, { padding: "1rem", color: theme.colors.brand }), "cardTitle": styled(View, { fontWeight: "600" }) };
+		export default styles;",
+		      "converted": 2,
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		        {
+		          "outcome": "target-native",
+		          "representation": "named-map",
+		        },
+		      ],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
+		    },
+		    "reverse": {
+		      "changed": true,
+		      "code": "import { styled, View } from "@tamagui/core";
+		export const styles = { "card": // pandwind:migrate-skip (route: tamagui -> css-modules | capability-blocked: components: component subject: styled(View) | available: residual, portable-artifact)
+		styled(View, { padding: "1rem", color: theme.colors.brand }), "cardTitle": // pandwind:migrate-skip (route: tamagui -> css-modules | capability-blocked: components: component subject: styled(View) | available: static, residual, portable-artifact)
+		styled(View, { fontWeight: "600" }) };
+		export default styles;",
 		      "converted": 0,
-		      "outcomes": [],
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "portable-artifact",
+		        },
+		        {
+		          "outcome": "residual",
+		          "representation": "portable-artifact",
+		        },
+		      ],
 		      "residuals": [
 		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
+		          "hint": "components: component subject: styled(View)",
+		          "kind": "capability",
 		          "preserved": undefined,
 		        },
 		        {
-		          "hint": "nested stylesheet rules require selector-aware lowering",
-		          "kind": "nesting",
+		          "hint": "components: component subject: styled(View)",
+		          "kind": "capability",
 		          "preserved": undefined,
 		        },
 		      ],
 		      "skipped": 2,
-		      "validations": [],
-		    },
-		    "reverse": {
-		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting)
-		.card { color: \${theme.colors.brand}; padding: 1rem; }
-		.cardTitle { font-weight: 600; }",
-		      "converted": 0,
-		      "outcomes": [],
-		      "residuals": [],
-		      "skipped": 0,
 		      "validations": [],
 		    },
 		  },
 		  "blue": {
 		    "forward": {
-		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting)
-		.card { color: \${theme.colors.brand}; padding: 1rem; }
-		.cardTitle { font-weight: 600; }",
+		      "changed": true,
+		      "code": "import { styled, View } from "@tamagui/core";
+		export const styles = { "card": styled(View, { padding: "1rem", color: theme.colors.brand }), "cardTitle": styled(View, { fontWeight: "600" }) };
+		export default styles;",
+		      "converted": 2,
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		        {
+		          "outcome": "target-native",
+		          "representation": "named-map",
+		        },
+		      ],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
+		    },
+		    "reverse": {
+		      "changed": true,
+		      "code": "import { styled, View } from "@tamagui/core";
+		export const styles = { "card": // pandwind:migrate-skip (route: tamagui -> css-modules | capability-blocked: components: component subject: styled(View) | available: residual, portable-artifact)
+		styled(View, { padding: "1rem", color: theme.colors.brand }), "cardTitle": // pandwind:migrate-skip (route: tamagui -> css-modules | capability-blocked: components: component subject: styled(View) | available: static, residual, portable-artifact)
+		styled(View, { fontWeight: "600" }) };
+		export default styles;",
 		      "converted": 0,
-		      "outcomes": [],
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "portable-artifact",
+		        },
+		        {
+		          "outcome": "residual",
+		          "representation": "portable-artifact",
+		        },
+		      ],
 		      "residuals": [
 		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
+		          "hint": "components: component subject: styled(View)",
+		          "kind": "capability",
 		          "preserved": undefined,
 		        },
 		        {
-		          "hint": "nested stylesheet rules require selector-aware lowering",
-		          "kind": "nesting",
+		          "hint": "components: component subject: styled(View)",
+		          "kind": "capability",
 		          "preserved": undefined,
 		        },
 		      ],
 		      "skipped": 2,
-		      "validations": [],
-		    },
-		    "reverse": {
-		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting)
-		.card { color: \${theme.colors.brand}; padding: 1rem; }
-		.cardTitle { font-weight: 600; }",
-		      "converted": 0,
-		      "outcomes": [],
-		      "residuals": [],
-		      "skipped": 0,
 		      "validations": [],
 		    },
 		  },
@@ -275,7 +355,16 @@ test("css-modules -> tamagui -> css-modules: resolves token references across bo
 		export const styles = { "card": styled(View, { padding: "1rem", color: "var(--colors-brand)" }), "cardTitle": styled(View, { fontWeight: "600" }) };
 		export default styles;",
 		    "converted": 2,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "target-native",
+		        "representation": "named-map",
+		      },
+		      {
+		        "outcome": "target-native",
+		        "representation": "named-map",
+		      },
+		    ],
 		    "residuals": [],
 		    "skipped": 0,
 		    "validations": [
@@ -294,19 +383,19 @@ test("css-modules -> tamagui -> css-modules: resolves token references across bo
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { styled, View } from "@tamagui/core";
-		export const styles = { "card": // pandwind:migrate-skip (route: tamagui -> css-modules | capability-blocked: components: component subject: styled(View) | available: static, residual)
-		styled(View, { padding: "1rem", color: "var(--colors-brand)" }), "cardTitle": // pandwind:migrate-skip (route: tamagui -> css-modules | capability-blocked: components: component subject: styled(View) | available: static, residual)
+		export const styles = { "card": // pandwind:migrate-skip (route: tamagui -> css-modules | capability-blocked: components: component subject: styled(View) | available: static, residual, portable-artifact)
+		styled(View, { padding: "1rem", color: "var(--colors-brand)" }), "cardTitle": // pandwind:migrate-skip (route: tamagui -> css-modules | capability-blocked: components: component subject: styled(View) | available: static, residual, portable-artifact)
 		styled(View, { fontWeight: "600" }) };
 		export default styles;",
 		    "converted": 0,
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "static",
+		        "representation": "portable-artifact",
 		      },
 		      {
 		        "outcome": "residual",
-		        "representation": "static",
+		        "representation": "portable-artifact",
 		      },
 		    ],
 		    "residuals": [

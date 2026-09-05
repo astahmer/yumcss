@@ -78,13 +78,13 @@ test("mantine -> css-modules -> mantine: preserves an actionable concrete round 
 		export const App = () => // pandwind:migrate-skip (route: mantine -> css-modules | lowering-residual: validation)
 		<Box c="red" p="md" />;",
 		    "converted": 0,
-		    "outcomes": [],
-		    "residuals": [
+		    "outcomes": [
 		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
+		        "outcome": "residual",
+		        "representation": "residual",
 		      },
+		    ],
+		    "residuals": [
 		      {
 		        "hint": "stylesheet statement is preserved outside the style program",
 		        "kind": "parse",
@@ -101,7 +101,7 @@ test("mantine -> css-modules -> mantine: preserves an actionable concrete round 
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 4,
+		    "skipped": 3,
 		    "validations": [],
 		  },
 		}
@@ -154,13 +154,13 @@ test("mantine -> css-modules -> mantine: retains edge semantics without silent l
 		export const App = () => // pandwind:migrate-skip (route: mantine -> css-modules | lowering-residual: validation)
 		<Box c=theme.foreground p="md" />;",
 		    "converted": 0,
-		    "outcomes": [],
-		    "residuals": [
+		    "outcomes": [
 		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
+		        "outcome": "residual",
+		        "representation": "residual",
 		      },
+		    ],
+		    "residuals": [
 		      {
 		        "hint": "stylesheet statement is preserved outside the style program",
 		        "kind": "parse",
@@ -177,7 +177,7 @@ test("mantine -> css-modules -> mantine: retains edge semantics without silent l
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 4,
+		    "skipped": 3,
 		    "validations": [],
 		  },
 		}
@@ -240,13 +240,13 @@ test("mantine -> css-modules -> mantine: preserves concrete theme and project co
 		export const App = () => // pandwind:migrate-skip (route: mantine -> css-modules | lowering-residual: validation)
 		<Box c=theme.colors.brand p="md" />;",
 		      "converted": 0,
-		      "outcomes": [],
-		      "residuals": [
+		      "outcomes": [
 		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
-		          "preserved": undefined,
+		          "outcome": "residual",
+		          "representation": "residual",
 		        },
+		      ],
+		      "residuals": [
 		        {
 		          "hint": "stylesheet statement is preserved outside the style program",
 		          "kind": "parse",
@@ -263,7 +263,7 @@ test("mantine -> css-modules -> mantine: preserves concrete theme and project co
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 4,
+		      "skipped": 3,
 		      "validations": [],
 		    },
 		  },
@@ -305,13 +305,13 @@ test("mantine -> css-modules -> mantine: preserves concrete theme and project co
 		export const App = () => // pandwind:migrate-skip (route: mantine -> css-modules | lowering-residual: validation)
 		<Box c=theme.colors.brand p="md" />;",
 		      "converted": 0,
-		      "outcomes": [],
-		      "residuals": [
+		      "outcomes": [
 		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
-		          "preserved": undefined,
+		          "outcome": "residual",
+		          "representation": "residual",
 		        },
+		      ],
+		      "residuals": [
 		        {
 		          "hint": "stylesheet statement is preserved outside the style program",
 		          "kind": "parse",
@@ -328,7 +328,7 @@ test("mantine -> css-modules -> mantine: preserves concrete theme and project co
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 4,
+		      "skipped": 3,
 		      "validations": [],
 		    },
 		  },
@@ -382,13 +382,13 @@ test("mantine -> css-modules -> mantine: resolves token references across both c
 		export const App = () => // pandwind:migrate-skip (route: mantine -> css-modules | lowering-residual: validation)
 		<Box c="brand.0" p="md" />;",
 		    "converted": 0,
-		    "outcomes": [],
-		    "residuals": [
+		    "outcomes": [
 		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
+		        "outcome": "residual",
+		        "representation": "residual",
 		      },
+		    ],
+		    "residuals": [
 		      {
 		        "hint": "stylesheet statement is preserved outside the style program",
 		        "kind": "parse",
@@ -405,7 +405,7 @@ test("mantine -> css-modules -> mantine: resolves token references across both c
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 4,
+		    "skipped": 3,
 		    "validations": [],
 		  },
 		}

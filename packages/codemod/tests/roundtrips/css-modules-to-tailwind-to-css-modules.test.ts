@@ -46,7 +46,16 @@ test("css-modules -> tailwind -> css-modules: preserves an actionable concrete r
 		    "code": "export const styles = { "card": "[padding:1rem] [color:red]", "cardTitle": "[font-weight:600]" };
 		export default styles;",
 		    "converted": 2,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "target-native",
+		        "representation": "named-map",
+		      },
+		      {
+		        "outcome": "target-native",
+		        "representation": "named-map",
+		      },
+		    ],
 		    "residuals": [],
 		    "skipped": 0,
 		    "validations": [
@@ -64,14 +73,14 @@ test("css-modules -> tailwind -> css-modules: preserves an actionable concrete r
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "export const styles = // pandwind:migrate-skip (route: tailwind -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, named-map)
+		    "code": "export const styles = // pandwind:migrate-skip (route: tailwind -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
 		{ "card": "[padding:1rem] [color:red]", "cardTitle": "[font-weight:600]" };
 		export default styles;",
 		    "converted": 0,
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "named-map",
+		        "representation": "portable-artifact",
 		      },
 		    ],
 		    "residuals": [
@@ -102,7 +111,16 @@ test("css-modules -> tailwind -> css-modules: retains edge semantics without sil
 		    "code": "export const styles = { "card": "[padding:1rem] [color:theme.foreground]", "cardTitle": "[font-weight:600]" };
 		export default styles;",
 		    "converted": 2,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "target-native",
+		        "representation": "named-map",
+		      },
+		      {
+		        "outcome": "target-native",
+		        "representation": "named-map",
+		      },
+		    ],
 		    "residuals": [],
 		    "skipped": 0,
 		    "validations": [
@@ -120,14 +138,14 @@ test("css-modules -> tailwind -> css-modules: retains edge semantics without sil
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "export const styles = // pandwind:migrate-skip (route: tailwind -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, named-map)
+		    "code": "export const styles = // pandwind:migrate-skip (route: tailwind -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
 		{ "card": "[padding:1rem] [color:theme.foreground]", "cardTitle": "[font-weight:600]" };
 		export default styles;",
 		    "converted": 0,
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "named-map",
+		        "representation": "portable-artifact",
 		      },
 		    ],
 		    "residuals": [
@@ -165,29 +183,33 @@ test("css-modules -> tailwind -> css-modules: preserves concrete theme and proje
 		  "amber": {
 		    "forward": {
 		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse, rule-level)
+		      "code": "// pandwind:migrate-skip (lowering-residual: dynamic)
 		.card { color: \${theme.colors.brand}; padding: 1rem; }
 		.cardTitle { font-weight: 600; }",
 		      "converted": 0,
-		      "outcomes": [],
-		      "residuals": [
+		      "outcomes": [
 		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
-		          "preserved": undefined,
+		          "outcome": "residual",
+		          "representation": "residual",
 		        },
 		        {
-		          "hint": "Tailwind class output supports style declarations and nested conditions only",
-		          "kind": "rule-level",
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		      ],
+		      "residuals": [
+		        {
+		          "hint": "Tailwind output requires a literal declaration or a host runtime carrier",
+		          "kind": "dynamic",
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 2,
+		      "skipped": 1,
 		      "validations": [],
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse, rule-level)
+		      "code": "// pandwind:migrate-skip (lowering-residual: dynamic)
 		.card { color: \${theme.colors.brand}; padding: 1rem; }
 		.cardTitle { font-weight: 600; }",
 		      "converted": 0,
@@ -200,29 +222,33 @@ test("css-modules -> tailwind -> css-modules: preserves concrete theme and proje
 		  "blue": {
 		    "forward": {
 		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse, rule-level)
+		      "code": "// pandwind:migrate-skip (lowering-residual: dynamic)
 		.card { color: \${theme.colors.brand}; padding: 1rem; }
 		.cardTitle { font-weight: 600; }",
 		      "converted": 0,
-		      "outcomes": [],
-		      "residuals": [
+		      "outcomes": [
 		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
-		          "preserved": undefined,
+		          "outcome": "residual",
+		          "representation": "residual",
 		        },
 		        {
-		          "hint": "Tailwind class output supports style declarations and nested conditions only",
-		          "kind": "rule-level",
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		      ],
+		      "residuals": [
+		        {
+		          "hint": "Tailwind output requires a literal declaration or a host runtime carrier",
+		          "kind": "dynamic",
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 2,
+		      "skipped": 1,
 		      "validations": [],
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse, rule-level)
+		      "code": "// pandwind:migrate-skip (lowering-residual: dynamic)
 		.card { color: \${theme.colors.brand}; padding: 1rem; }
 		.cardTitle { font-weight: 600; }",
 		      "converted": 0,
@@ -250,7 +276,16 @@ test("css-modules -> tailwind -> css-modules: resolves token references across b
 		    "code": "export const styles = { "card": "[padding:1rem] [color:var(--colors-brand)]", "cardTitle": "[font-weight:600]" };
 		export default styles;",
 		    "converted": 2,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "target-native",
+		        "representation": "named-map",
+		      },
+		      {
+		        "outcome": "target-native",
+		        "representation": "named-map",
+		      },
+		    ],
 		    "residuals": [],
 		    "skipped": 0,
 		    "validations": [
@@ -268,14 +303,14 @@ test("css-modules -> tailwind -> css-modules: resolves token references across b
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "export const styles = // pandwind:migrate-skip (route: tailwind -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, named-map)
+		    "code": "export const styles = // pandwind:migrate-skip (route: tailwind -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
 		{ "card": "[padding:1rem] [color:var(--colors-brand)]", "cardTitle": "[font-weight:600]" };
 		export default styles;",
 		    "converted": 0,
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "named-map",
+		        "representation": "portable-artifact",
 		      },
 		    ],
 		    "residuals": [

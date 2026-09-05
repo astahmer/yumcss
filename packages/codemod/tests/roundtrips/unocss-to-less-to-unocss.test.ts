@@ -129,18 +129,13 @@ test("unocss -> less -> unocss: retains edge semantics without silent loss", () 
 		// pandwind:migrate-skip (route: unocss -> less | parse-residual: dynamic)
 		export const App = () => <div className={\`[display:flex] [gap:1rem] \${runtimeClass}\`} />;",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
-		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
 		      {
 		        "hint": "stylesheet statement is preserved outside the style program",
 		        "kind": "parse",
@@ -152,7 +147,7 @@ test("unocss -> less -> unocss: retains edge semantics without silent loss", () 
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 4,
+		    "skipped": 2,
 		    "validations": [],
 		  },
 		}

@@ -44,14 +44,14 @@ test("react-native -> authored-css -> react-native: preserves an actionable conc
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet, View } from "react-native";
-		export const styles = // pandwind:migrate-skip (route: react-native -> authored-css | capability-blocked: named-rules: named style rule: card | available: static, residual, named-map)
+		export const styles = // pandwind:migrate-skip (route: react-native -> authored-css | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
 		StyleSheet.create({ card: { color: "red", padding: 16 } });
 		export const App = () => <View style={styles.card} />;",
 		    "converted": 0,
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "named-map",
+		        "representation": "portable-artifact",
 		      },
 		    ],
 		    "residuals": [
@@ -68,22 +68,21 @@ test("react-native -> authored-css -> react-native: preserves an actionable conc
 		    "changed": false,
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
 		import { StyleSheet, View } from "react-native";
-		export const styles = // pandwind:migrate-skip (route: react-native -> authored-css | capability-blocked: named-rules: named style rule: card | available: static, residual, named-map)
+		export const styles = // pandwind:migrate-skip (route: react-native -> authored-css | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
 		StyleSheet.create({ card: { color: "red", padding: 16 } });
 		export const App = () => <View style={styles.card} />;",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
-		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
 		      {
 		        "hint": "stylesheet statement is preserved outside the style program",
 		        "kind": "parse",
@@ -110,7 +109,7 @@ test("react-native -> authored-css -> react-native: preserves an actionable conc
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 7,
+		    "skipped": 5,
 		    "validations": [],
 		  },
 		}
@@ -129,25 +128,20 @@ test("react-native -> authored-css -> react-native: retains edge semantics witho
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet, View } from "react-native";
-		export const styles = // pandwind:migrate-skip (route: react-native -> authored-css | lowering-residual: dynamic | capability-blocked: named-rules: named style rule: card; dynamic-values: dynamic: theme.foreground | available: residual)
+		export const styles = // pandwind:migrate-skip (route: react-native -> authored-css | capability-blocked: named-rules: named style rule: card | available: residual, portable-artifact)
 		StyleSheet.create({ card: { color: theme.foreground, padding: 16 } });
 		export const App = () => <View style={styles.card} />;",
 		    "converted": 0,
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "residual",
+		        "representation": "portable-artifact",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "named-rules: named style rule: card; dynamic-values: dynamic: theme.foreground",
+		        "hint": "named-rules: named style rule: card",
 		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "target lacks runtime dynamic values",
-		        "kind": "dynamic",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -158,22 +152,21 @@ test("react-native -> authored-css -> react-native: retains edge semantics witho
 		    "changed": false,
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
 		import { StyleSheet, View } from "react-native";
-		export const styles = // pandwind:migrate-skip (route: react-native -> authored-css | lowering-residual: dynamic | capability-blocked: named-rules: named style rule: card; dynamic-values: dynamic: theme.foreground | available: residual)
+		export const styles = // pandwind:migrate-skip (route: react-native -> authored-css | capability-blocked: named-rules: named style rule: card | available: residual, portable-artifact)
 		StyleSheet.create({ card: { color: theme.foreground, padding: 16 } });
 		export const App = () => <View style={styles.card} />;",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
-		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
 		      {
 		        "hint": "stylesheet statement is preserved outside the style program",
 		        "kind": "parse",
@@ -200,7 +193,7 @@ test("react-native -> authored-css -> react-native: retains edge semantics witho
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 7,
+		    "skipped": 5,
 		    "validations": [],
 		  },
 		}
@@ -229,25 +222,20 @@ test("react-native -> authored-css -> react-native: preserves concrete theme and
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet, View } from "react-native";
-		export const styles = // pandwind:migrate-skip (route: react-native -> authored-css | lowering-residual: dynamic | capability-blocked: named-rules: named style rule: card; dynamic-values: dynamic: theme.colors.brand | available: residual)
+		export const styles = // pandwind:migrate-skip (route: react-native -> authored-css | capability-blocked: named-rules: named style rule: card | available: residual, portable-artifact)
 		StyleSheet.create({ card: { color: theme.colors.brand, padding: 16 } });
 		export const App = () => <View style={styles.card} />;",
 		      "converted": 0,
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
-		          "representation": "residual",
+		          "representation": "portable-artifact",
 		        },
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "named-rules: named style rule: card; dynamic-values: dynamic: theme.colors.brand",
+		          "hint": "named-rules: named style rule: card",
 		          "kind": "capability",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "target lacks runtime dynamic values",
-		          "kind": "dynamic",
 		          "preserved": undefined,
 		        },
 		      ],
@@ -258,22 +246,21 @@ test("react-native -> authored-css -> react-native: preserves concrete theme and
 		      "changed": false,
 		      "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
 		import { StyleSheet, View } from "react-native";
-		export const styles = // pandwind:migrate-skip (route: react-native -> authored-css | lowering-residual: dynamic | capability-blocked: named-rules: named style rule: card; dynamic-values: dynamic: theme.colors.brand | available: residual)
+		export const styles = // pandwind:migrate-skip (route: react-native -> authored-css | capability-blocked: named-rules: named style rule: card | available: residual, portable-artifact)
 		StyleSheet.create({ card: { color: theme.colors.brand, padding: 16 } });
 		export const App = () => <View style={styles.card} />;",
 		      "converted": 0,
-		      "outcomes": [],
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		      ],
 		      "residuals": [
-		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
 		        {
 		          "hint": "stylesheet statement is preserved outside the style program",
 		          "kind": "parse",
@@ -300,7 +287,7 @@ test("react-native -> authored-css -> react-native: preserves concrete theme and
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 7,
+		      "skipped": 5,
 		      "validations": [],
 		    },
 		  },
@@ -308,25 +295,20 @@ test("react-native -> authored-css -> react-native: preserves concrete theme and
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet, View } from "react-native";
-		export const styles = // pandwind:migrate-skip (route: react-native -> authored-css | lowering-residual: dynamic | capability-blocked: named-rules: named style rule: card; dynamic-values: dynamic: theme.colors.brand | available: residual)
+		export const styles = // pandwind:migrate-skip (route: react-native -> authored-css | capability-blocked: named-rules: named style rule: card | available: residual, portable-artifact)
 		StyleSheet.create({ card: { color: theme.colors.brand, padding: 16 } });
 		export const App = () => <View style={styles.card} />;",
 		      "converted": 0,
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
-		          "representation": "residual",
+		          "representation": "portable-artifact",
 		        },
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "named-rules: named style rule: card; dynamic-values: dynamic: theme.colors.brand",
+		          "hint": "named-rules: named style rule: card",
 		          "kind": "capability",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "target lacks runtime dynamic values",
-		          "kind": "dynamic",
 		          "preserved": undefined,
 		        },
 		      ],
@@ -337,22 +319,21 @@ test("react-native -> authored-css -> react-native: preserves concrete theme and
 		      "changed": false,
 		      "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
 		import { StyleSheet, View } from "react-native";
-		export const styles = // pandwind:migrate-skip (route: react-native -> authored-css | lowering-residual: dynamic | capability-blocked: named-rules: named style rule: card; dynamic-values: dynamic: theme.colors.brand | available: residual)
+		export const styles = // pandwind:migrate-skip (route: react-native -> authored-css | capability-blocked: named-rules: named style rule: card | available: residual, portable-artifact)
 		StyleSheet.create({ card: { color: theme.colors.brand, padding: 16 } });
 		export const App = () => <View style={styles.card} />;",
 		      "converted": 0,
-		      "outcomes": [],
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		      ],
 		      "residuals": [
-		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
 		        {
 		          "hint": "stylesheet statement is preserved outside the style program",
 		          "kind": "parse",
@@ -379,7 +360,7 @@ test("react-native -> authored-css -> react-native: preserves concrete theme and
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 7,
+		      "skipped": 5,
 		      "validations": [],
 		    },
 		  },
@@ -399,14 +380,14 @@ test("react-native -> authored-css -> react-native: resolves token references ac
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet, View } from "react-native";
-		export const styles = // pandwind:migrate-skip (route: react-native -> authored-css | capability-blocked: named-rules: named style rule: card | available: static, residual, named-map)
+		export const styles = // pandwind:migrate-skip (route: react-native -> authored-css | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
 		StyleSheet.create({ card: { color: "$colors.brand", padding: 16 } });
 		export const App = () => <View style={styles.card} />;",
 		    "converted": 0,
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "named-map",
+		        "representation": "portable-artifact",
 		      },
 		    ],
 		    "residuals": [
@@ -423,22 +404,21 @@ test("react-native -> authored-css -> react-native: resolves token references ac
 		    "changed": false,
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
 		import { StyleSheet, View } from "react-native";
-		export const styles = // pandwind:migrate-skip (route: react-native -> authored-css | capability-blocked: named-rules: named style rule: card | available: static, residual, named-map)
+		export const styles = // pandwind:migrate-skip (route: react-native -> authored-css | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
 		StyleSheet.create({ card: { color: "$colors.brand", padding: 16 } });
 		export const App = () => <View style={styles.card} />;",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
-		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
 		      {
 		        "hint": "stylesheet statement is preserved outside the style program",
 		        "kind": "parse",
@@ -465,7 +445,7 @@ test("react-native -> authored-css -> react-native: resolves token references ac
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 7,
+		    "skipped": 5,
 		    "validations": [],
 		  },
 		}

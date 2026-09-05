@@ -44,7 +44,16 @@ test("css-modules -> unocss: migrates concrete css-modules syntax to unocss", ()
 		  "code": "export const styles = { "card": "[padding:1rem] [color:red]", "cardTitle": "[font-weight:600]" };
 		export default styles;",
 		  "converted": 2,
-		  "outcomes": [],
+		  "outcomes": [
+		    {
+		      "outcome": "target-native",
+		      "representation": "named-map",
+		    },
+		    {
+		      "outcome": "target-native",
+		      "representation": "named-map",
+		    },
+		  ],
 		  "residuals": [],
 		  "skipped": 0,
 		  "validations": [
@@ -73,7 +82,16 @@ test("css-modules -> unocss: carries concrete css-modules dynamics or edge synta
 		  "code": "export const styles = { "card": "[padding:1rem] [color:theme.foreground]", "cardTitle": "[font-weight:600]" };
 		export default styles;",
 		  "converted": 2,
-		  "outcomes": [],
+		  "outcomes": [
+		    {
+		      "outcome": "target-native",
+		      "representation": "named-map",
+		    },
+		    {
+		      "outcome": "target-native",
+		      "representation": "named-map",
+		    },
+		  ],
 		  "residuals": [],
 		  "skipped": 0,
 		  "validations": [
@@ -103,15 +121,24 @@ test("css-modules -> unocss: lowers concrete theme and project context variants"
 		{
 		  "amber": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: parse)
+		    "code": "// pandwind:migrate-skip (lowering-residual: dynamic)
 		.card { color: \${theme.colors.brand}; padding: 1rem; }
 		.cardTitle { font-weight: 600; }",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
 		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
+		        "hint": "UnoCSS arbitrary utility projection requires a literal declaration",
+		        "kind": "dynamic",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -120,15 +147,24 @@ test("css-modules -> unocss: lowers concrete theme and project context variants"
 		  },
 		  "blue": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: parse)
+		    "code": "// pandwind:migrate-skip (lowering-residual: dynamic)
 		.card { color: \${theme.colors.brand}; padding: 1rem; }
 		.cardTitle { font-weight: 600; }",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
 		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
+		        "hint": "UnoCSS arbitrary utility projection requires a literal declaration",
+		        "kind": "dynamic",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -149,7 +185,16 @@ test("css-modules -> unocss: resolves concrete token references with project con
 		  "code": "export const styles = { "card": "[padding:1rem] [color:var(--colors-brand)]", "cardTitle": "[font-weight:600]" };
 		export default styles;",
 		  "converted": 2,
-		  "outcomes": [],
+		  "outcomes": [
+		    {
+		      "outcome": "target-native",
+		      "representation": "named-map",
+		    },
+		    {
+		      "outcome": "target-native",
+		      "representation": "named-map",
+		    },
+		  ],
 		  "residuals": [],
 		  "skipped": 0,
 		  "validations": [
@@ -180,7 +225,16 @@ test("css-modules -> unocss: preserves malformed concrete css-modules input", ()
 		.cardTitle { font-weight: 600; }
 		const unfinished = { /* unfinished css-modules */",
 		  "converted": 0,
-		  "outcomes": [],
+		  "outcomes": [
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		  ],
 		  "residuals": [
 		    {
 		      "hint": "stylesheet block is unbalanced",

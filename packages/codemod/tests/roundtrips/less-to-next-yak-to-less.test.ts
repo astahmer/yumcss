@@ -47,7 +47,12 @@ test("less -> next-yak -> less: preserves an actionable concrete round trip", ()
 		.card { color: red; padding: 1rem; .title { font-weight: 600; } }
 		@title-color: blue;",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
 		      {
 		        "hint": "stylesheet statement is preserved outside the style program",
@@ -93,7 +98,12 @@ test("less -> next-yak -> less: retains edge semantics without silent loss", () 
 		.card { color: theme.foreground; padding: 1rem; .title { font-weight: 600; } }
 		@title-color: blue;",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
 		      {
 		        "hint": "stylesheet statement is preserved outside the style program",
@@ -149,13 +159,13 @@ test("less -> next-yak -> less: preserves concrete theme and project context var
 		.card { color: \${theme.colors.brand}; padding: 1rem; .title { font-weight: 600; } }
 		@title-color: blue;",
 		      "converted": 0,
-		      "outcomes": [],
-		      "residuals": [
+		      "outcomes": [
 		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
-		          "preserved": undefined,
+		          "outcome": "residual",
+		          "representation": "residual",
 		        },
+		      ],
+		      "residuals": [
 		        {
 		          "hint": "stylesheet statement is preserved outside the style program",
 		          "kind": "parse",
@@ -166,13 +176,8 @@ test("less -> next-yak -> less: preserves concrete theme and project context var
 		          "kind": "nesting",
 		          "preserved": undefined,
 		        },
-		        {
-		          "hint": "nested stylesheet rules require selector-aware lowering",
-		          "kind": "nesting",
-		          "preserved": undefined,
-		        },
 		      ],
-		      "skipped": 4,
+		      "skipped": 2,
 		      "validations": [],
 		    },
 		    "reverse": {
@@ -194,13 +199,13 @@ test("less -> next-yak -> less: preserves concrete theme and project context var
 		.card { color: \${theme.colors.brand}; padding: 1rem; .title { font-weight: 600; } }
 		@title-color: blue;",
 		      "converted": 0,
-		      "outcomes": [],
-		      "residuals": [
+		      "outcomes": [
 		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
-		          "preserved": undefined,
+		          "outcome": "residual",
+		          "representation": "residual",
 		        },
+		      ],
+		      "residuals": [
 		        {
 		          "hint": "stylesheet statement is preserved outside the style program",
 		          "kind": "parse",
@@ -211,13 +216,8 @@ test("less -> next-yak -> less: preserves concrete theme and project context var
 		          "kind": "nesting",
 		          "preserved": undefined,
 		        },
-		        {
-		          "hint": "nested stylesheet rules require selector-aware lowering",
-		          "kind": "nesting",
-		          "preserved": undefined,
-		        },
 		      ],
-		      "skipped": 4,
+		      "skipped": 2,
 		      "validations": [],
 		    },
 		    "reverse": {
@@ -251,7 +251,12 @@ test("less -> next-yak -> less: resolves token references across both concrete l
 		.card { color: var(--colors-brand); padding: 1rem; .title { font-weight: 600; } }
 		@title-color: blue;",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
 		      {
 		        "hint": "stylesheet statement is preserved outside the style program",

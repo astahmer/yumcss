@@ -46,7 +46,16 @@ test("css-modules -> unocss -> css-modules: preserves an actionable concrete rou
 		    "code": "export const styles = { "card": "[padding:1rem] [color:red]", "cardTitle": "[font-weight:600]" };
 		export default styles;",
 		    "converted": 2,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "target-native",
+		        "representation": "named-map",
+		      },
+		      {
+		        "outcome": "target-native",
+		        "representation": "named-map",
+		      },
+		    ],
 		    "residuals": [],
 		    "skipped": 0,
 		    "validations": [
@@ -64,19 +73,19 @@ test("css-modules -> unocss -> css-modules: preserves an actionable concrete rou
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "export const styles = { "card": // pandwind:migrate-skip (route: unocss -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, named-map)
-		"[padding:1rem] [color:red]", "cardTitle": // pandwind:migrate-skip (route: unocss -> css-modules | capability-blocked: named-rules: named style rule: cardTitle | available: static, residual, named-map)
+		    "code": "export const styles = { "card": // pandwind:migrate-skip (route: unocss -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
+		"[padding:1rem] [color:red]", "cardTitle": // pandwind:migrate-skip (route: unocss -> css-modules | capability-blocked: named-rules: named style rule: cardTitle | available: static, residual, portable-artifact)
 		"[font-weight:600]" };
 		export default styles;",
 		    "converted": 0,
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "named-map",
+		        "representation": "portable-artifact",
 		      },
 		      {
 		        "outcome": "residual",
-		        "representation": "named-map",
+		        "representation": "portable-artifact",
 		      },
 		    ],
 		    "residuals": [
@@ -112,7 +121,16 @@ test("css-modules -> unocss -> css-modules: retains edge semantics without silen
 		    "code": "export const styles = { "card": "[padding:1rem] [color:theme.foreground]", "cardTitle": "[font-weight:600]" };
 		export default styles;",
 		    "converted": 2,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "target-native",
+		        "representation": "named-map",
+		      },
+		      {
+		        "outcome": "target-native",
+		        "representation": "named-map",
+		      },
+		    ],
 		    "residuals": [],
 		    "skipped": 0,
 		    "validations": [
@@ -130,19 +148,19 @@ test("css-modules -> unocss -> css-modules: retains edge semantics without silen
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "export const styles = { "card": // pandwind:migrate-skip (route: unocss -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, named-map)
-		"[padding:1rem] [color:theme.foreground]", "cardTitle": // pandwind:migrate-skip (route: unocss -> css-modules | capability-blocked: named-rules: named style rule: cardTitle | available: static, residual, named-map)
+		    "code": "export const styles = { "card": // pandwind:migrate-skip (route: unocss -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
+		"[padding:1rem] [color:theme.foreground]", "cardTitle": // pandwind:migrate-skip (route: unocss -> css-modules | capability-blocked: named-rules: named style rule: cardTitle | available: static, residual, portable-artifact)
 		"[font-weight:600]" };
 		export default styles;",
 		    "converted": 0,
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "named-map",
+		        "representation": "portable-artifact",
 		      },
 		      {
 		        "outcome": "residual",
-		        "representation": "named-map",
+		        "representation": "portable-artifact",
 		      },
 		    ],
 		    "residuals": [
@@ -185,15 +203,24 @@ test("css-modules -> unocss -> css-modules: preserves concrete theme and project
 		  "amber": {
 		    "forward": {
 		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse)
+		      "code": "// pandwind:migrate-skip (lowering-residual: dynamic)
 		.card { color: \${theme.colors.brand}; padding: 1rem; }
 		.cardTitle { font-weight: 600; }",
 		      "converted": 0,
-		      "outcomes": [],
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		      ],
 		      "residuals": [
 		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
+		          "hint": "UnoCSS arbitrary utility projection requires a literal declaration",
+		          "kind": "dynamic",
 		          "preserved": undefined,
 		        },
 		      ],
@@ -202,7 +229,7 @@ test("css-modules -> unocss -> css-modules: preserves concrete theme and project
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse)
+		      "code": "// pandwind:migrate-skip (lowering-residual: dynamic)
 		.card { color: \${theme.colors.brand}; padding: 1rem; }
 		.cardTitle { font-weight: 600; }",
 		      "converted": 0,
@@ -215,15 +242,24 @@ test("css-modules -> unocss -> css-modules: preserves concrete theme and project
 		  "blue": {
 		    "forward": {
 		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse)
+		      "code": "// pandwind:migrate-skip (lowering-residual: dynamic)
 		.card { color: \${theme.colors.brand}; padding: 1rem; }
 		.cardTitle { font-weight: 600; }",
 		      "converted": 0,
-		      "outcomes": [],
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		      ],
 		      "residuals": [
 		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
+		          "hint": "UnoCSS arbitrary utility projection requires a literal declaration",
+		          "kind": "dynamic",
 		          "preserved": undefined,
 		        },
 		      ],
@@ -232,7 +268,7 @@ test("css-modules -> unocss -> css-modules: preserves concrete theme and project
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse)
+		      "code": "// pandwind:migrate-skip (lowering-residual: dynamic)
 		.card { color: \${theme.colors.brand}; padding: 1rem; }
 		.cardTitle { font-weight: 600; }",
 		      "converted": 0,
@@ -260,7 +296,16 @@ test("css-modules -> unocss -> css-modules: resolves token references across bot
 		    "code": "export const styles = { "card": "[padding:1rem] [color:var(--colors-brand)]", "cardTitle": "[font-weight:600]" };
 		export default styles;",
 		    "converted": 2,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "target-native",
+		        "representation": "named-map",
+		      },
+		      {
+		        "outcome": "target-native",
+		        "representation": "named-map",
+		      },
+		    ],
 		    "residuals": [],
 		    "skipped": 0,
 		    "validations": [
@@ -278,19 +323,19 @@ test("css-modules -> unocss -> css-modules: resolves token references across bot
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "export const styles = { "card": // pandwind:migrate-skip (route: unocss -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, named-map)
-		"[padding:1rem] [color:var(--colors-brand)]", "cardTitle": // pandwind:migrate-skip (route: unocss -> css-modules | capability-blocked: named-rules: named style rule: cardTitle | available: static, residual, named-map)
+		    "code": "export const styles = { "card": // pandwind:migrate-skip (route: unocss -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
+		"[padding:1rem] [color:var(--colors-brand)]", "cardTitle": // pandwind:migrate-skip (route: unocss -> css-modules | capability-blocked: named-rules: named style rule: cardTitle | available: static, residual, portable-artifact)
 		"[font-weight:600]" };
 		export default styles;",
 		    "converted": 0,
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "named-map",
+		        "representation": "portable-artifact",
 		      },
 		      {
 		        "outcome": "residual",
-		        "representation": "named-map",
+		        "representation": "portable-artifact",
 		      },
 		    ],
 		    "residuals": [

@@ -45,7 +45,16 @@ test("authored-css -> mantine: migrates concrete authored-css syntax to mantine"
 		.card { color: red; padding: 1rem; }
 		.card:hover { color: blue; }",
 		  "converted": 0,
-		  "outcomes": [],
+		  "outcomes": [
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		  ],
 		  "residuals": [
 		    {
 		      "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
@@ -75,7 +84,16 @@ test("authored-css -> mantine: carries concrete authored-css dynamics or edge sy
 		.card { color: theme.foreground; padding: 1rem; }
 		.card:hover { color: blue; }",
 		  "converted": 0,
-		  "outcomes": [],
+		  "outcomes": [
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		  ],
 		  "residuals": [
 		    {
 		      "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
@@ -105,22 +123,21 @@ test("authored-css -> mantine: lowers concrete theme and project context variant
 		{
 		  "amber": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting, host-framework, capability)
+		    "code": "// pandwind:migrate-skip (lowering-residual: host-framework, capability)
 		.card { color: \${theme.colors.brand}; padding: 1rem; }
 		.card:hover { color: blue; }",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
-		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "nested stylesheet rules require selector-aware lowering",
-		        "kind": "nesting",
-		        "preserved": undefined,
-		      },
 		      {
 		        "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
 		        "kind": "host-framework",
@@ -132,27 +149,26 @@ test("authored-css -> mantine: lowers concrete theme and project context variant
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 4,
+		    "skipped": 2,
 		    "validations": [],
 		  },
 		  "blue": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting, host-framework, capability)
+		    "code": "// pandwind:migrate-skip (lowering-residual: host-framework, capability)
 		.card { color: \${theme.colors.brand}; padding: 1rem; }
 		.card:hover { color: blue; }",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
-		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "nested stylesheet rules require selector-aware lowering",
-		        "kind": "nesting",
-		        "preserved": undefined,
-		      },
 		      {
 		        "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
 		        "kind": "host-framework",
@@ -164,7 +180,7 @@ test("authored-css -> mantine: lowers concrete theme and project context variant
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 4,
+		    "skipped": 2,
 		    "validations": [],
 		  },
 		}
@@ -182,7 +198,16 @@ test("authored-css -> mantine: resolves concrete token references with project c
 		.card { color: var(--colors-brand); padding: 1rem; }
 		.card:hover { color: blue; }",
 		  "converted": 0,
-		  "outcomes": [],
+		  "outcomes": [
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		  ],
 		  "residuals": [
 		    {
 		      "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
@@ -213,7 +238,16 @@ test("authored-css -> mantine: preserves malformed concrete authored-css input",
 		.card:hover { color: blue; }
 		const unfinished = { /* unfinished authored-css */",
 		  "converted": 0,
-		  "outcomes": [],
+		  "outcomes": [
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		  ],
 		  "residuals": [
 		    {
 		      "hint": "stylesheet block is unbalanced",

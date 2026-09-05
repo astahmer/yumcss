@@ -80,18 +80,17 @@ test("goober -> sass -> goober: preserves an actionable concrete round trip", ()
 		css({ color: "red", padding: "1rem" });
 		export const App = () => <div className={card} />;",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
-		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
 		      {
 		        "hint": "stylesheet statement is preserved outside the style program",
 		        "kind": "parse",
@@ -118,7 +117,7 @@ test("goober -> sass -> goober: preserves an actionable concrete round trip", ()
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 7,
+		    "skipped": 5,
 		    "validations": [],
 		  },
 		}
@@ -170,18 +169,17 @@ test("goober -> sass -> goober: retains edge semantics without silent loss", () 
 		css({ color: theme.foreground, padding: "1rem" });
 		export const App = () => <div className={card} />;",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
-		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
 		      {
 		        "hint": "stylesheet statement is preserved outside the style program",
 		        "kind": "parse",
@@ -208,7 +206,7 @@ test("goober -> sass -> goober: retains edge semantics without silent loss", () 
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 7,
+		    "skipped": 5,
 		    "validations": [],
 		  },
 		}
@@ -270,18 +268,17 @@ test("goober -> sass -> goober: preserves concrete theme and project context var
 		css({ color: theme.colors.brand, padding: "1rem" });
 		export const App = () => <div className={card} />;",
 		      "converted": 0,
-		      "outcomes": [],
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		      ],
 		      "residuals": [
-		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
 		        {
 		          "hint": "stylesheet statement is preserved outside the style program",
 		          "kind": "parse",
@@ -308,7 +305,7 @@ test("goober -> sass -> goober: preserves concrete theme and project context var
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 7,
+		      "skipped": 5,
 		      "validations": [],
 		    },
 		  },
@@ -349,18 +346,17 @@ test("goober -> sass -> goober: preserves concrete theme and project context var
 		css({ color: theme.colors.brand, padding: "1rem" });
 		export const App = () => <div className={card} />;",
 		      "converted": 0,
-		      "outcomes": [],
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		      ],
 		      "residuals": [
-		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
 		        {
 		          "hint": "stylesheet statement is preserved outside the style program",
 		          "kind": "parse",
@@ -387,7 +383,7 @@ test("goober -> sass -> goober: preserves concrete theme and project context var
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 7,
+		      "skipped": 5,
 		      "validations": [],
 		    },
 		  },
@@ -443,18 +439,17 @@ test("goober -> sass -> goober: resolves token references across both concrete l
 		css({ color: "$colors.brand", padding: "1rem" });
 		export const App = () => <div className={card} />;",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
-		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
 		      {
 		        "hint": "stylesheet statement is preserved outside the style program",
 		        "kind": "parse",
@@ -481,7 +476,7 @@ test("goober -> sass -> goober: resolves token references across both concrete l
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 7,
+		    "skipped": 5,
 		    "validations": [],
 		  },
 		}

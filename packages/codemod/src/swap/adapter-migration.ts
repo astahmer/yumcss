@@ -227,6 +227,25 @@ export interface AdapterMigrationOutcome {
 	readonly detail?: string;
 }
 
+/**
+ * File migrations may omit per-rule outcomes; derive one explicit outcome per
+ * lowering plan so conservative skips stay visible to the contract gates.
+ */
+function derivedFileOutcomes(
+	source: string,
+	plans: readonly StyleLoweringPlan[],
+): AdapterMigrationOutcome[] {
+	return plans.map((plan) => ({
+		sourceStart: 0,
+		sourceText: source,
+		outcome:
+			plan.representation === StyleRepresentationKind.Residual
+				? StyleMigrationOutcome.Residual
+				: StyleMigrationOutcome.TargetNative,
+		representation: plan.representation,
+	}));
+}
+
 function migrationContext(source: string, options: AdapterMigrationOptions) {
 	return {
 		file: options.file,
@@ -454,8 +473,8 @@ export async function runAdapterMigrationAsync(
 			...(result.sourceMaps === undefined ? {} : { sourceMaps: result.sourceMaps }),
 			reports: [],
 			validations: result.validations ?? [],
-			loweringPlans: [],
-			outcomes: [],
+			loweringPlans: result.loweringPlans,
+			outcomes: result.outcomes ?? derivedFileOutcomes(source, result.loweringPlans),
 		};
 	}
 	return runAdapterMigrationInternal(
@@ -541,8 +560,8 @@ function runAdapterMigrationInternal(
 			...(result.sourceMaps === undefined ? {} : { sourceMaps: result.sourceMaps }),
 			reports: [],
 			validations: result.validations ?? [],
-			loweringPlans: [],
-			outcomes: [],
+			loweringPlans: result.loweringPlans,
+			outcomes: result.outcomes ?? derivedFileOutcomes(source, result.loweringPlans),
 		};
 	}
 	const document = SOURCE_SCANNER_SERVICE.scan({
@@ -740,6 +759,7 @@ function runAdapterMigrationInternal(
 		const hasFunctionDynamic =
 			sourceHasFunctionDynamic || StyleProgramAnalysis.hasFunctionDynamic(program);
 		const sourceSubject = program.source?.subject;
+		let sourceSubjectDiscarded = false;
 		const targetPolicy = targetAdapter.migration?.targetPolicy;
 		let hostRepresentation = targetPolicy?.hostRepresentation;
 		const sourceHostFramework = frameworkForHost(options.file, document, options.semantic, program);
@@ -768,11 +788,13 @@ function runAdapterMigrationInternal(
 			!StyleProgramAnalysis.hasDynamic(program) &&
 			!hasHostContext &&
 			isDiscardedExpressionStatement(source, match.start, match.end);
-		if (discardableStaticSubject)
+		if (discardableStaticSubject) {
+			sourceSubjectDiscarded = true;
 			program = {
 				...program,
 				source: { ...program.source, subject: undefined },
 			};
+		}
 		const hostFramework = targetHostFramework(targetPolicy, sourceHostFramework, {
 			...hostConversionContext,
 			program,
@@ -1126,8 +1148,8 @@ function runAdapterMigrationInternal(
 					styleExpression: DynamicClassHost.styleExpression(carrierResiduals),
 				});
 			}
-			if (
-				hasTargetComponentUsage &&
+		if (
+			hasTargetComponentUsage &&
 				(!hasDynamic || targetPolicy?.handlesDynamicComponentValues === true) &&
 				!hasDynamicCarrier &&
 				!hasFunctionDynamic &&
@@ -1315,7 +1337,7 @@ function runAdapterMigrationInternal(
 			host: {
 				...(bindingBeforeMatch === undefined ? {} : { binding: bindingBeforeMatch }),
 				...(hostFramework === undefined ? {} : { framework: hostFramework }),
-				...(sourceSubject ? { subject: sourceSubject } : {}),
+				...(sourceSubjectDiscarded ? {} : sourceSubject ? { subject: sourceSubject } : {}),
 				...(emittedHostRepresentation === undefined
 					? {}
 					: { representation: emittedHostRepresentation }),
@@ -1365,7 +1387,7 @@ function runAdapterMigrationInternal(
 			const tag = componentTagForSubject(sourceSubject);
 			const framework = hostFramework;
 			if (tag !== undefined && framework !== undefined && hostRepresentation !== undefined)
-				targetComponentRewrites.push({
+			targetComponentRewrites.push({
 					program,
 					binding: bindingBeforeMatch,
 					tag,
@@ -1402,31 +1424,42 @@ function runAdapterMigrationInternal(
 				...(sourceHostFramework === undefined ? {} : { sourceFramework: sourceHostFramework }),
 			});
 		}
-		const reparsed = targetAdapter.parse(emittedForValidation, {
-			file: options.file,
-			source: emittedForValidation,
-			root: options.root,
-			config: targetConfig,
-			readFile,
-			meta: options.meta,
-			document,
-			semantic: options.semantic,
-		});
-		const targetProgram =
-			emitted.semantic ??
-			(reparsed.matches.length === 0
-				? program
-				: styleProgramFromRules(
-						reparsed.matches.flatMap((candidate) => candidate.program.rules),
-						{
-							source: program.source,
-							residuals: reparsed.residuals,
-							canonicalization: program.canonicalization,
-						},
-					));
+		// A portable artifact emission already carries its semantic program from
+		// the registry. Reparsing the TS carrier through the target parser would
+		// only fabricate parse residuals for valid emitted source.
+		const portableSemanticEmission =
+			emitted.semantic !== undefined &&
+			targetRepresentationKind === StyleRepresentationKind.PortableArtifact;
+		const reparsed = portableSemanticEmission
+			? undefined
+			: targetAdapter.parse(emittedForValidation, {
+				file: options.file,
+				source: emittedForValidation,
+				root: options.root,
+				config: targetConfig,
+				readFile,
+				meta: options.meta,
+				document,
+				semantic: options.semantic,
+			});
+		const targetProgram = portableSemanticEmission
+			? emitted.semantic
+			: (emitted.semantic ??
+				(reparsed!.matches.length === 0
+					? program
+					: styleProgramFromRules(
+							reparsed!.matches.flatMap((candidate) => candidate.program.rules),
+							{
+								source: program.source,
+								residuals: reparsed!.residuals,
+								canonicalization: program.canonicalization,
+							},
+						)));
 		const validation = targetAdapter.validate(emitted.semantic ?? program, targetProgram, [
 			...emitted.residuals,
-			...reparsed.residuals.filter((residual) => !preservedResidualKinds.has(residual.kind)),
+			...(reparsed === undefined
+				? []
+				: reparsed.residuals.filter((residual) => !preservedResidualKinds.has(residual.kind))),
 		]);
 		validations.push(validation);
 		if (!validation.valid) {

@@ -80,18 +80,17 @@ test("bamboo -> authored-css -> bamboo: preserves an actionable concrete round t
 		css({ color: "red", padding: "1rem" });
 		export const App = () => <div className={card} />;",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
-		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
 		      {
 		        "hint": "stylesheet statement is preserved outside the style program",
 		        "kind": "parse",
@@ -118,7 +117,7 @@ test("bamboo -> authored-css -> bamboo: preserves an actionable concrete round t
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 7,
+		    "skipped": 5,
 		    "validations": [],
 		  },
 		}
@@ -170,18 +169,17 @@ test("bamboo -> authored-css -> bamboo: retains edge semantics without silent lo
 		css({ color: theme.foreground, padding: "1rem" });
 		export const App = () => <div className={card} />;",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
-		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
 		      {
 		        "hint": "stylesheet statement is preserved outside the style program",
 		        "kind": "parse",
@@ -208,7 +206,7 @@ test("bamboo -> authored-css -> bamboo: retains edge semantics without silent lo
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 7,
+		    "skipped": 5,
 		    "validations": [],
 		  },
 		}
@@ -273,18 +271,17 @@ test("bamboo -> authored-css -> bamboo: preserves concrete theme and project con
 		css({ color: theme.colors.brand, padding: "1rem" });
 		export const App = () => <div className={card} />;",
 		      "converted": 0,
-		      "outcomes": [],
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		      ],
 		      "residuals": [
-		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
 		        {
 		          "hint": "stylesheet statement is preserved outside the style program",
 		          "kind": "parse",
@@ -311,7 +308,7 @@ test("bamboo -> authored-css -> bamboo: preserves concrete theme and project con
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 7,
+		      "skipped": 5,
 		      "validations": [],
 		    },
 		  },
@@ -355,18 +352,17 @@ test("bamboo -> authored-css -> bamboo: preserves concrete theme and project con
 		css({ color: theme.colors.brand, padding: "1rem" });
 		export const App = () => <div className={card} />;",
 		      "converted": 0,
-		      "outcomes": [],
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		      ],
 		      "residuals": [
-		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
 		        {
 		          "hint": "stylesheet statement is preserved outside the style program",
 		          "kind": "parse",
@@ -393,7 +389,7 @@ test("bamboo -> authored-css -> bamboo: preserves concrete theme and project con
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 7,
+		      "skipped": 5,
 		      "validations": [],
 		    },
 		  },
@@ -449,18 +445,17 @@ test("bamboo -> authored-css -> bamboo: resolves token references across both co
 		css({ color: "$colors.brand", padding: "1rem" });
 		export const App = () => <div className={card} />;",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
-		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
 		      {
 		        "hint": "stylesheet statement is preserved outside the style program",
 		        "kind": "parse",
@@ -487,7 +482,7 @@ test("bamboo -> authored-css -> bamboo: resolves token references across both co
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 7,
+		    "skipped": 5,
 		    "validations": [],
 		  },
 		}

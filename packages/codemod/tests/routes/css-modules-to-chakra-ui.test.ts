@@ -45,7 +45,16 @@ test("css-modules -> chakra-ui: migrates concrete css-modules syntax to chakra-u
 		export const styles = { "card": defaultSystem.css({ padding: "1rem", color: "red" }), "cardTitle": defaultSystem.css({ fontWeight: "600" }) };
 		export default styles;",
 		  "converted": 2,
-		  "outcomes": [],
+		  "outcomes": [
+		    {
+		      "outcome": "target-native",
+		      "representation": "named-map",
+		    },
+		    {
+		      "outcome": "target-native",
+		      "representation": "named-map",
+		    },
+		  ],
 		  "residuals": [],
 		  "skipped": 0,
 		  "validations": [
@@ -75,7 +84,16 @@ test("css-modules -> chakra-ui: carries concrete css-modules dynamics or edge sy
 		export const styles = { "card": defaultSystem.css({ padding: "1rem", color: "theme.foreground" }), "cardTitle": defaultSystem.css({ fontWeight: "600" }) };
 		export default styles;",
 		  "converted": 2,
-		  "outcomes": [],
+		  "outcomes": [
+		    {
+		      "outcome": "target-native",
+		      "representation": "named-map",
+		    },
+		    {
+		      "outcome": "target-native",
+		      "representation": "named-map",
+		    },
+		  ],
 		  "residuals": [],
 		  "skipped": 0,
 		  "validations": [
@@ -106,48 +124,66 @@ test("css-modules -> chakra-ui: lowers concrete theme and project context varian
 	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
 		{
 		  "amber": {
-		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting)
-		.card { color: \${theme.colors.brand}; padding: 1rem; }
-		.cardTitle { font-weight: 600; }",
-		    "converted": 0,
-		    "outcomes": [],
-		    "residuals": [
+		    "changed": true,
+		    "code": "import { defaultSystem } from "@chakra-ui/react";
+		export const styles = { "card": defaultSystem.css({ padding: "1rem", color: theme.colors.brand }), "cardTitle": defaultSystem.css({ fontWeight: "600" }) };
+		export default styles;",
+		    "converted": 2,
+		    "outcomes": [
 		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
+		        "outcome": "residual",
+		        "representation": "custom-property",
 		      },
 		      {
-		        "hint": "nested stylesheet rules require selector-aware lowering",
-		        "kind": "nesting",
-		        "preserved": undefined,
+		        "outcome": "target-native",
+		        "representation": "named-map",
 		      },
 		    ],
-		    "skipped": 2,
-		    "validations": [],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		  "blue": {
-		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting)
-		.card { color: \${theme.colors.brand}; padding: 1rem; }
-		.cardTitle { font-weight: 600; }",
-		    "converted": 0,
-		    "outcomes": [],
-		    "residuals": [
+		    "changed": true,
+		    "code": "import { defaultSystem } from "@chakra-ui/react";
+		export const styles = { "card": defaultSystem.css({ padding: "1rem", color: theme.colors.brand }), "cardTitle": defaultSystem.css({ fontWeight: "600" }) };
+		export default styles;",
+		    "converted": 2,
+		    "outcomes": [
 		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
+		        "outcome": "residual",
+		        "representation": "custom-property",
 		      },
 		      {
-		        "hint": "nested stylesheet rules require selector-aware lowering",
-		        "kind": "nesting",
-		        "preserved": undefined,
+		        "outcome": "target-native",
+		        "representation": "named-map",
 		      },
 		    ],
-		    "skipped": 2,
-		    "validations": [],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		}
 	`);
@@ -164,7 +200,16 @@ test("css-modules -> chakra-ui: resolves concrete token references with project 
 		export const styles = { "card": defaultSystem.css({ padding: "1rem", color: "var(--colors-brand)" }), "cardTitle": defaultSystem.css({ fontWeight: "600" }) };
 		export default styles;",
 		  "converted": 2,
-		  "outcomes": [],
+		  "outcomes": [
+		    {
+		      "outcome": "target-native",
+		      "representation": "named-map",
+		    },
+		    {
+		      "outcome": "target-native",
+		      "representation": "named-map",
+		    },
+		  ],
 		  "residuals": [],
 		  "skipped": 0,
 		  "validations": [
@@ -195,7 +240,16 @@ test("css-modules -> chakra-ui: preserves malformed concrete css-modules input",
 		.cardTitle { font-weight: 600; }
 		const unfinished = { /* unfinished css-modules */",
 		  "converted": 0,
-		  "outcomes": [],
+		  "outcomes": [
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		  ],
 		  "residuals": [
 		    {
 		      "hint": "stylesheet block is unbalanced",

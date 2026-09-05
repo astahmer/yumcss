@@ -43,47 +43,46 @@ test("fela -> sass -> fela: preserves an actionable concrete round trip", () => 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createRenderer } from "fela";
+		    "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
+
 		const renderer = createRenderer();
-		export const card = // pandwind:migrate-skip (route: fela -> sass | lowering-residual: validation)
-		renderer.renderRule(() => ({ color: "red", padding: "1rem" }));",
-		    "converted": 0,
+		export const card = css.class({ "padding": "1rem", "color": "red" });",
+		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
-		        "representation": "static",
+		        "outcome": "portable-artifact",
+		        "representation": "portable-artifact",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "2 residual conversion(s)",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "2 residual conversion(s)",
-		        ],
-		        "lossiness": "lossy",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },
 		  "reverse": {
 		    "changed": false,
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import { createRenderer } from "fela";
+		import { createCss } from "pandwind/css";
+		const css = createCss();
+
 		const renderer = createRenderer();
-		export const card = // pandwind:migrate-skip (route: fela -> sass | lowering-residual: validation)
-		renderer.renderRule(() => ({ color: "red", padding: "1rem" }));",
+		export const card = css.class({ "padding": "1rem", "color": "red" });",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
 		      {
-		        "hint": "stylesheet statement has no terminator",
+		        "hint": "stylesheet statement is preserved outside the style program",
 		        "kind": "parse",
 		        "preserved": undefined,
 		      },
@@ -126,47 +125,57 @@ test("fela -> sass -> fela: retains edge semantics without silent loss", () => {
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createRenderer } from "fela";
+		    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+		import { pandwindPreset } from "pandwind/preset";
+		const css = createRuntimeCss(pandwindPreset);
+
 		const renderer = createRenderer();
-		export const card = // pandwind:migrate-skip (route: fela -> sass | lowering-residual: validation)
-		renderer.renderRule(() => ({ color: theme.foreground, padding: "1rem" }));",
-		    "converted": 0,
+		export const card = css.vars({ "padding": "1rem", "color": theme.foreground });",
+		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "portable-artifact",
 		        "representation": "portable-artifact",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "1 residual conversion(s)",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "1 residual conversion(s)",
-		        ],
-		        "lossiness": "lossy",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },
 		  "reverse": {
 		    "changed": false,
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import { createRenderer } from "fela";
+		import { createRuntimeCss } from "pandwind/css/runtime";
+		import { pandwindPreset } from "pandwind/preset";
+		const css = createRuntimeCss(pandwindPreset);
+
 		const renderer = createRenderer();
-		export const card = // pandwind:migrate-skip (route: fela -> sass | lowering-residual: validation)
-		renderer.renderRule(() => ({ color: theme.foreground, padding: "1rem" }));",
+		export const card = css.vars({ "padding": "1rem", "color": theme.foreground });",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
 		      {
-		        "hint": "stylesheet statement has no terminator",
+		        "hint": "stylesheet statement is preserved outside the style program",
+		        "kind": "parse",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "stylesheet statement is preserved outside the style program",
 		        "kind": "parse",
 		        "preserved": undefined,
 		      },
@@ -190,8 +199,13 @@ test("fela -> sass -> fela: retains edge semantics without silent loss", () => {
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
+		      {
+		        "hint": "stylesheet migration requires a single local class selector",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
 		    ],
-		    "skipped": 5,
+		    "skipped": 7,
 		    "validations": [],
 		  },
 		}
@@ -219,47 +233,57 @@ test("fela -> sass -> fela: preserves concrete theme and project context variant
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createRenderer } from "fela";
+		      "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+		import { pandwindPreset } from "pandwind/preset";
+		const css = createRuntimeCss(pandwindPreset);
+
 		const renderer = createRenderer();
-		export const card = // pandwind:migrate-skip (route: fela -> sass | lowering-residual: validation)
-		renderer.renderRule(() => ({ color: theme.colors.brand, padding: "1rem" }));",
-		      "converted": 0,
+		export const card = css.vars({ "padding": "1rem", "color": theme.colors.brand });",
+		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "portable-artifact",
 		          "representation": "portable-artifact",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "1 residual conversion(s)",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "1 residual conversion(s)",
-		          ],
-		          "lossiness": "lossy",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
 		    "reverse": {
 		      "changed": false,
 		      "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import { createRenderer } from "fela";
+		import { createRuntimeCss } from "pandwind/css/runtime";
+		import { pandwindPreset } from "pandwind/preset";
+		const css = createRuntimeCss(pandwindPreset);
+
 		const renderer = createRenderer();
-		export const card = // pandwind:migrate-skip (route: fela -> sass | lowering-residual: validation)
-		renderer.renderRule(() => ({ color: theme.colors.brand, padding: "1rem" }));",
+		export const card = css.vars({ "padding": "1rem", "color": theme.colors.brand });",
 		      "converted": 0,
-		      "outcomes": [],
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		      ],
 		      "residuals": [
 		        {
-		          "hint": "stylesheet statement has no terminator",
+		          "hint": "stylesheet statement is preserved outside the style program",
+		          "kind": "parse",
+		          "preserved": undefined,
+		        },
+		        {
+		          "hint": "stylesheet statement is preserved outside the style program",
 		          "kind": "parse",
 		          "preserved": undefined,
 		        },
@@ -283,55 +307,70 @@ test("fela -> sass -> fela: preserves concrete theme and project context variant
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
+		        {
+		          "hint": "stylesheet migration requires a single local class selector",
+		          "kind": "capability",
+		          "preserved": undefined,
+		        },
 		      ],
-		      "skipped": 5,
+		      "skipped": 7,
 		      "validations": [],
 		    },
 		  },
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createRenderer } from "fela";
+		      "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+		import { pandwindPreset } from "pandwind/preset";
+		const css = createRuntimeCss(pandwindPreset);
+
 		const renderer = createRenderer();
-		export const card = // pandwind:migrate-skip (route: fela -> sass | lowering-residual: validation)
-		renderer.renderRule(() => ({ color: theme.colors.brand, padding: "1rem" }));",
-		      "converted": 0,
+		export const card = css.vars({ "padding": "1rem", "color": theme.colors.brand });",
+		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "portable-artifact",
 		          "representation": "portable-artifact",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "1 residual conversion(s)",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "1 residual conversion(s)",
-		          ],
-		          "lossiness": "lossy",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
 		    "reverse": {
 		      "changed": false,
 		      "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import { createRenderer } from "fela";
+		import { createRuntimeCss } from "pandwind/css/runtime";
+		import { pandwindPreset } from "pandwind/preset";
+		const css = createRuntimeCss(pandwindPreset);
+
 		const renderer = createRenderer();
-		export const card = // pandwind:migrate-skip (route: fela -> sass | lowering-residual: validation)
-		renderer.renderRule(() => ({ color: theme.colors.brand, padding: "1rem" }));",
+		export const card = css.vars({ "padding": "1rem", "color": theme.colors.brand });",
 		      "converted": 0,
-		      "outcomes": [],
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		      ],
 		      "residuals": [
 		        {
-		          "hint": "stylesheet statement has no terminator",
+		          "hint": "stylesheet statement is preserved outside the style program",
+		          "kind": "parse",
+		          "preserved": undefined,
+		        },
+		        {
+		          "hint": "stylesheet statement is preserved outside the style program",
 		          "kind": "parse",
 		          "preserved": undefined,
 		        },
@@ -355,8 +394,13 @@ test("fela -> sass -> fela: preserves concrete theme and project context variant
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
+		        {
+		          "hint": "stylesheet migration requires a single local class selector",
+		          "kind": "capability",
+		          "preserved": undefined,
+		        },
 		      ],
-		      "skipped": 5,
+		      "skipped": 7,
 		      "validations": [],
 		    },
 		  },
@@ -375,47 +419,46 @@ test("fela -> sass -> fela: resolves token references across both concrete legs"
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createRenderer } from "fela";
+		    "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
+
 		const renderer = createRenderer();
-		export const card = // pandwind:migrate-skip (route: fela -> sass | lowering-residual: validation)
-		renderer.renderRule(() => ({ color: "$colors.brand", padding: "1rem" }));",
-		    "converted": 0,
+		export const card = css.class({ "padding": "1rem", "color": "$colors.brand" });",
+		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
-		        "representation": "static",
+		        "outcome": "portable-artifact",
+		        "representation": "portable-artifact",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "2 residual conversion(s)",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "2 residual conversion(s)",
-		        ],
-		        "lossiness": "lossy",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },
 		  "reverse": {
 		    "changed": false,
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import { createRenderer } from "fela";
+		import { createCss } from "pandwind/css";
+		const css = createCss();
+
 		const renderer = createRenderer();
-		export const card = // pandwind:migrate-skip (route: fela -> sass | lowering-residual: validation)
-		renderer.renderRule(() => ({ color: "$colors.brand", padding: "1rem" }));",
+		export const card = css.class({ "padding": "1rem", "color": "$colors.brand" });",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
 		      {
-		        "hint": "stylesheet statement has no terminator",
+		        "hint": "stylesheet statement is preserved outside the style program",
 		        "kind": "parse",
 		        "preserved": undefined,
 		      },

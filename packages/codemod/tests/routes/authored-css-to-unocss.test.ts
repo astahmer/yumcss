@@ -45,7 +45,16 @@ test("authored-css -> unocss: migrates concrete authored-css syntax to unocss", 
 		.card { color: red; padding: 1rem; }
 		.card:hover { color: blue; }",
 		  "converted": 0,
-		  "outcomes": [],
+		  "outcomes": [
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		  ],
 		  "residuals": [
 		    {
 		      "hint": "stylesheet migration requires a single local class selector",
@@ -70,7 +79,16 @@ test("authored-css -> unocss: carries concrete authored-css dynamics or edge syn
 		.card { color: theme.foreground; padding: 1rem; }
 		.card:hover { color: blue; }",
 		  "converted": 0,
-		  "outcomes": [],
+		  "outcomes": [
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		  ],
 		  "residuals": [
 		    {
 		      "hint": "stylesheet migration requires a single local class selector",
@@ -95,15 +113,24 @@ test("authored-css -> unocss: lowers concrete theme and project context variants
 		{
 		  "amber": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
+		    "code": "// pandwind:migrate-skip (lowering-residual: dynamic, capability)
 		.card { color: \${theme.colors.brand}; padding: 1rem; }
 		.card:hover { color: blue; }",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
 		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
+		        "hint": "UnoCSS arbitrary utility projection requires a literal declaration",
+		        "kind": "dynamic",
 		        "preserved": undefined,
 		      },
 		      {
@@ -117,15 +144,24 @@ test("authored-css -> unocss: lowers concrete theme and project context variants
 		  },
 		  "blue": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
+		    "code": "// pandwind:migrate-skip (lowering-residual: dynamic, capability)
 		.card { color: \${theme.colors.brand}; padding: 1rem; }
 		.card:hover { color: blue; }",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
 		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
+		        "hint": "UnoCSS arbitrary utility projection requires a literal declaration",
+		        "kind": "dynamic",
 		        "preserved": undefined,
 		      },
 		      {
@@ -152,7 +188,16 @@ test("authored-css -> unocss: resolves concrete token references with project co
 		.card { color: var(--colors-brand); padding: 1rem; }
 		.card:hover { color: blue; }",
 		  "converted": 0,
-		  "outcomes": [],
+		  "outcomes": [
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		  ],
 		  "residuals": [
 		    {
 		      "hint": "stylesheet migration requires a single local class selector",
@@ -178,7 +223,16 @@ test("authored-css -> unocss: preserves malformed concrete authored-css input", 
 		.card:hover { color: blue; }
 		const unfinished = { /* unfinished authored-css */",
 		  "converted": 0,
-		  "outcomes": [],
+		  "outcomes": [
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		  ],
 		  "residuals": [
 		    {
 		      "hint": "stylesheet block is unbalanced",

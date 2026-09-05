@@ -15,8 +15,12 @@ import type {
 	StyleThemeBinding,
 } from "./semantic-ir.ts";
 import type { SourceBinding, SourceBindingIndex, SourceScanResult } from "pandwind/source";
-import type { StyleLowering } from "./lowering.ts";
-import type { StyleHostRepresentationKind, StyleRepresentationKind } from "./identifiers.ts";
+import type { StyleLowering, StyleLoweringPlan } from "./lowering.ts";
+import type {
+	StyleHostRepresentationKind,
+	StyleMigrationOutcome,
+	StyleRepresentationKind,
+} from "./identifiers.ts";
 import type { HostFramework } from "./host-adapters.ts";
 import type {
 	AdapterConfigEvidence,
@@ -343,6 +347,19 @@ export interface AdapterFileMigrationResult {
 	readonly dependencies: readonly AdapterDependencies[];
 	/** Canonical source/target parity evidence produced by the migration itself. */
 	readonly validations?: readonly AdapterValidationResult[];
+	/** One inspectable representation decision for each converted source rule. */
+	readonly loweringPlans: readonly StyleLoweringPlan[];
+	/** Final, validated outcome for each converted rule; the runner derives it when absent. */
+	readonly outcomes?: readonly AdapterMigrationOutcome[];
+}
+
+/** One final, validated outcome for a converted style construct. */
+export interface AdapterMigrationOutcome {
+	readonly sourceStart: number;
+	readonly sourceText: string;
+	readonly outcome: StyleMigrationOutcome;
+	readonly representation: StyleRepresentationKind;
+	readonly detail?: string;
 }
 
 export interface AdapterFileChange {

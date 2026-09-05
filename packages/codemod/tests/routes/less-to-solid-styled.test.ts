@@ -45,7 +45,12 @@ test("less -> solid-styled: migrates concrete less syntax to solid-styled", () =
 		.card { color: red; padding: 1rem; .title { font-weight: 600; } }
 		@title-color: blue;",
 		  "converted": 0,
-		  "outcomes": [],
+		  "outcomes": [
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		  ],
 		  "residuals": [
 		    {
 		      "hint": "stylesheet statement is preserved outside the style program",
@@ -75,7 +80,12 @@ test("less -> solid-styled: carries concrete less dynamics or edge syntax explic
 		.card { color: theme.foreground; padding: 1rem; .title { font-weight: 600; } }
 		@title-color: blue;",
 		  "converted": 0,
-		  "outcomes": [],
+		  "outcomes": [
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		  ],
 		  "residuals": [
 		    {
 		      "hint": "stylesheet statement is preserved outside the style program",
@@ -109,13 +119,13 @@ test("less -> solid-styled: lowers concrete theme and project context variants",
 		.card { color: \${theme.colors.brand}; padding: 1rem; .title { font-weight: 600; } }
 		@title-color: blue;",
 		    "converted": 0,
-		    "outcomes": [],
-		    "residuals": [
+		    "outcomes": [
 		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
+		        "outcome": "residual",
+		        "representation": "residual",
 		      },
+		    ],
+		    "residuals": [
 		      {
 		        "hint": "stylesheet statement is preserved outside the style program",
 		        "kind": "parse",
@@ -126,13 +136,8 @@ test("less -> solid-styled: lowers concrete theme and project context variants",
 		        "kind": "nesting",
 		        "preserved": undefined,
 		      },
-		      {
-		        "hint": "nested stylesheet rules require selector-aware lowering",
-		        "kind": "nesting",
-		        "preserved": undefined,
-		      },
 		    ],
-		    "skipped": 4,
+		    "skipped": 2,
 		    "validations": [],
 		  },
 		  "blue": {
@@ -141,13 +146,13 @@ test("less -> solid-styled: lowers concrete theme and project context variants",
 		.card { color: \${theme.colors.brand}; padding: 1rem; .title { font-weight: 600; } }
 		@title-color: blue;",
 		    "converted": 0,
-		    "outcomes": [],
-		    "residuals": [
+		    "outcomes": [
 		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
+		        "outcome": "residual",
+		        "representation": "residual",
 		      },
+		    ],
+		    "residuals": [
 		      {
 		        "hint": "stylesheet statement is preserved outside the style program",
 		        "kind": "parse",
@@ -158,13 +163,8 @@ test("less -> solid-styled: lowers concrete theme and project context variants",
 		        "kind": "nesting",
 		        "preserved": undefined,
 		      },
-		      {
-		        "hint": "nested stylesheet rules require selector-aware lowering",
-		        "kind": "nesting",
-		        "preserved": undefined,
-		      },
 		    ],
-		    "skipped": 4,
+		    "skipped": 2,
 		    "validations": [],
 		  },
 		}
@@ -182,7 +182,12 @@ test("less -> solid-styled: resolves concrete token references with project cont
 		.card { color: var(--colors-brand); padding: 1rem; .title { font-weight: 600; } }
 		@title-color: blue;",
 		  "converted": 0,
-		  "outcomes": [],
+		  "outcomes": [
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		  ],
 		  "residuals": [
 		    {
 		      "hint": "stylesheet statement is preserved outside the style program",
@@ -213,7 +218,12 @@ test("less -> solid-styled: preserves malformed concrete less input", () => {
 		@title-color: blue;
 		const unfinished = { /* unfinished less */",
 		  "converted": 0,
-		  "outcomes": [],
+		  "outcomes": [
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		  ],
 		  "residuals": [
 		    {
 		      "hint": "stylesheet block is unbalanced",

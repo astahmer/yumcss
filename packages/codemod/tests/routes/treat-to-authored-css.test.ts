@@ -42,30 +42,23 @@ test("treat -> authored-css: migrates concrete treat syntax to authored-css", ()
 		{
 		  "changed": true,
 		  "code": "import { style } from "@treatjs/treat";
-		export const card = // pandwind:migrate-skip (route: treat -> authored-css | lowering-residual: validation)
-		style({ color: "red", padding: "1rem" });",
-		  "converted": 0,
+		import { createCss } from "pandwind/css";
+		const css = createCss();
+		export const card = css.class({ "padding": "1rem", "color": "red" });",
+		  "converted": 1,
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
-		      "representation": "static",
+		      "outcome": "portable-artifact",
+		      "representation": "portable-artifact",
 		    },
 		  ],
-		  "residuals": [
-		    {
-		      "hint": "2 residual conversion(s)",
-		      "kind": "validation",
-		      "preserved": undefined,
-		    },
-		  ],
-		  "skipped": 1,
+		  "residuals": [],
+		  "skipped": 0,
 		  "validations": [
 		    {
-		      "differences": [
-		        "2 residual conversion(s)",
-		      ],
-		      "lossiness": "lossy",
-		      "valid": false,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
 		}
@@ -80,30 +73,24 @@ test("treat -> authored-css: carries concrete treat dynamics or edge syntax expl
 		{
 		  "changed": true,
 		  "code": "import { style } from "@treatjs/treat";
-		export const card = // pandwind:migrate-skip (route: treat -> authored-css | lowering-residual: validation)
-		style({ color: theme.foreground, padding: "1rem" });",
-		  "converted": 0,
+		import { createRuntimeCss } from "pandwind/css/runtime";
+		import { pandwindPreset } from "pandwind/preset";
+		const css = createRuntimeCss(pandwindPreset);
+		export const card = css.vars({ "padding": "1rem", "color": theme.foreground });",
+		  "converted": 1,
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
+		      "outcome": "portable-artifact",
 		      "representation": "portable-artifact",
 		    },
 		  ],
-		  "residuals": [
-		    {
-		      "hint": "1 residual conversion(s)",
-		      "kind": "validation",
-		      "preserved": undefined,
-		    },
-		  ],
-		  "skipped": 1,
+		  "residuals": [],
+		  "skipped": 0,
 		  "validations": [
 		    {
-		      "differences": [
-		        "1 residual conversion(s)",
-		      ],
-		      "lossiness": "lossy",
-		      "valid": false,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
 		}
@@ -122,60 +109,48 @@ test("treat -> authored-css: lowers concrete theme and project context variants"
 		  "amber": {
 		    "changed": true,
 		    "code": "import { style } from "@treatjs/treat";
-		export const card = // pandwind:migrate-skip (route: treat -> authored-css | lowering-residual: validation)
-		style({ color: theme.colors.brand, padding: "1rem" });",
-		    "converted": 0,
+		import { createRuntimeCss } from "pandwind/css/runtime";
+		import { pandwindPreset } from "pandwind/preset";
+		const css = createRuntimeCss(pandwindPreset);
+		export const card = css.vars({ "padding": "1rem", "color": theme.colors.brand });",
+		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "portable-artifact",
 		        "representation": "portable-artifact",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "1 residual conversion(s)",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "1 residual conversion(s)",
-		        ],
-		        "lossiness": "lossy",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },
 		  "blue": {
 		    "changed": true,
 		    "code": "import { style } from "@treatjs/treat";
-		export const card = // pandwind:migrate-skip (route: treat -> authored-css | lowering-residual: validation)
-		style({ color: theme.colors.brand, padding: "1rem" });",
-		    "converted": 0,
+		import { createRuntimeCss } from "pandwind/css/runtime";
+		import { pandwindPreset } from "pandwind/preset";
+		const css = createRuntimeCss(pandwindPreset);
+		export const card = css.vars({ "padding": "1rem", "color": theme.colors.brand });",
+		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "portable-artifact",
 		        "representation": "portable-artifact",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "1 residual conversion(s)",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "1 residual conversion(s)",
-		        ],
-		        "lossiness": "lossy",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },
@@ -191,30 +166,23 @@ test("treat -> authored-css: resolves concrete token references with project con
 		{
 		  "changed": true,
 		  "code": "import { style } from "@treatjs/treat";
-		export const card = // pandwind:migrate-skip (route: treat -> authored-css | lowering-residual: validation)
-		style({ color: "$colors.brand", padding: "1rem" });",
-		  "converted": 0,
+		import { createCss } from "pandwind/css";
+		const css = createCss();
+		export const card = css.class({ "padding": "1rem", "color": "$colors.brand" });",
+		  "converted": 1,
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
-		      "representation": "static",
+		      "outcome": "portable-artifact",
+		      "representation": "portable-artifact",
 		    },
 		  ],
-		  "residuals": [
-		    {
-		      "hint": "2 residual conversion(s)",
-		      "kind": "validation",
-		      "preserved": undefined,
-		    },
-		  ],
-		  "skipped": 1,
+		  "residuals": [],
+		  "skipped": 0,
 		  "validations": [
 		    {
-		      "differences": [
-		        "2 residual conversion(s)",
-		      ],
-		      "lossiness": "lossy",
-		      "valid": false,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
 		}
@@ -229,31 +197,24 @@ test("treat -> authored-css: preserves malformed concrete treat input", () => {
 		{
 		  "changed": true,
 		  "code": "import { style } from "@treatjs/treat";
-		export const card = // pandwind:migrate-skip (route: treat -> authored-css | lowering-residual: validation)
-		style({ color: "red", padding: "1rem" });
+		import { createCss } from "pandwind/css";
+		const css = createCss();
+		export const card = css.class({ "padding": "1rem", "color": "red" });
 		const unfinished = { /* unfinished treat */",
-		  "converted": 0,
+		  "converted": 1,
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
-		      "representation": "static",
+		      "outcome": "portable-artifact",
+		      "representation": "portable-artifact",
 		    },
 		  ],
-		  "residuals": [
-		    {
-		      "hint": "2 residual conversion(s)",
-		      "kind": "validation",
-		      "preserved": undefined,
-		    },
-		  ],
-		  "skipped": 1,
+		  "residuals": [],
+		  "skipped": 0,
 		  "validations": [
 		    {
-		      "differences": [
-		        "2 residual conversion(s)",
-		      ],
-		      "lossiness": "lossy",
-		      "valid": false,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
 		}

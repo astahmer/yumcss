@@ -43,45 +43,44 @@ test("vanilla-extract -> sass -> vanilla-extract: preserves an actionable concre
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { style } from "@vanilla-extract/css";
-		export const card = // pandwind:migrate-skip (route: vanilla-extract -> sass | lowering-residual: validation)
-		style({ color: "red", padding: "1rem" });",
-		    "converted": 0,
+		    "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const card = css.class({ "padding": "1rem", "color": "red" });",
+		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
-		        "representation": "static",
+		        "outcome": "portable-artifact",
+		        "representation": "portable-artifact",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "2 residual conversion(s)",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "2 residual conversion(s)",
-		        ],
-		        "lossiness": "lossy",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },
 		  "reverse": {
 		    "changed": false,
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import { style } from "@vanilla-extract/css";
-		export const card = // pandwind:migrate-skip (route: vanilla-extract -> sass | lowering-residual: validation)
-		style({ color: "red", padding: "1rem" });",
+		import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const card = css.class({ "padding": "1rem", "color": "red" });",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
 		      {
-		        "hint": "stylesheet statement has no terminator",
+		        "hint": "stylesheet statement is preserved outside the style program",
 		        "kind": "parse",
 		        "preserved": undefined,
 		      },
@@ -119,45 +118,55 @@ test("vanilla-extract -> sass -> vanilla-extract: retains edge semantics without
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { style } from "@vanilla-extract/css";
-		export const card = // pandwind:migrate-skip (route: vanilla-extract -> sass | lowering-residual: validation)
-		style({ color: theme.foreground, padding: "1rem" });",
-		    "converted": 0,
+		    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+		import { pandwindPreset } from "pandwind/preset";
+		const css = createRuntimeCss(pandwindPreset);
+
+		export const card = css.vars({ "padding": "1rem", "color": theme.foreground });",
+		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "portable-artifact",
 		        "representation": "portable-artifact",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "1 residual conversion(s)",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "1 residual conversion(s)",
-		        ],
-		        "lossiness": "lossy",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },
 		  "reverse": {
 		    "changed": false,
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import { style } from "@vanilla-extract/css";
-		export const card = // pandwind:migrate-skip (route: vanilla-extract -> sass | lowering-residual: validation)
-		style({ color: theme.foreground, padding: "1rem" });",
+		import { createRuntimeCss } from "pandwind/css/runtime";
+		import { pandwindPreset } from "pandwind/preset";
+		const css = createRuntimeCss(pandwindPreset);
+
+		export const card = css.vars({ "padding": "1rem", "color": theme.foreground });",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
 		      {
-		        "hint": "stylesheet statement has no terminator",
+		        "hint": "stylesheet statement is preserved outside the style program",
+		        "kind": "parse",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "stylesheet statement is preserved outside the style program",
 		        "kind": "parse",
 		        "preserved": undefined,
 		      },
@@ -176,8 +185,13 @@ test("vanilla-extract -> sass -> vanilla-extract: retains edge semantics without
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
+		      {
+		        "hint": "stylesheet migration requires a single local class selector",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
 		    ],
-		    "skipped": 4,
+		    "skipped": 6,
 		    "validations": [],
 		  },
 		}
@@ -205,45 +219,44 @@ test("vanilla-extract -> sass -> vanilla-extract: preserves concrete theme and p
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { style } from "@vanilla-extract/css";
-		export const card = // pandwind:migrate-skip (route: vanilla-extract -> sass | lowering-residual: validation)
-		style({ color: theme.colors.brand, padding: "1rem" });",
-		      "converted": 0,
+		      "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const card = css.class({ "padding": "1rem", "color": "#f97316" });",
+		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
-		          "representation": "static",
+		          "outcome": "portable-artifact",
+		          "representation": "portable-artifact",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "2 residual conversion(s)",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "2 residual conversion(s)",
-		          ],
-		          "lossiness": "lossy",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
 		    "reverse": {
 		      "changed": false,
 		      "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import { style } from "@vanilla-extract/css";
-		export const card = // pandwind:migrate-skip (route: vanilla-extract -> sass | lowering-residual: validation)
-		style({ color: theme.colors.brand, padding: "1rem" });",
+		import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const card = css.class({ "padding": "1rem", "color": "#f97316" });",
 		      "converted": 0,
-		      "outcomes": [],
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		      ],
 		      "residuals": [
 		        {
-		          "hint": "stylesheet statement has no terminator",
+		          "hint": "stylesheet statement is preserved outside the style program",
 		          "kind": "parse",
 		          "preserved": undefined,
 		        },
@@ -270,45 +283,44 @@ test("vanilla-extract -> sass -> vanilla-extract: preserves concrete theme and p
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { style } from "@vanilla-extract/css";
-		export const card = // pandwind:migrate-skip (route: vanilla-extract -> sass | lowering-residual: validation)
-		style({ color: theme.colors.brand, padding: "1rem" });",
-		      "converted": 0,
+		      "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const card = css.class({ "padding": "1rem", "color": "#2563eb" });",
+		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
-		          "representation": "static",
+		          "outcome": "portable-artifact",
+		          "representation": "portable-artifact",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "2 residual conversion(s)",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "2 residual conversion(s)",
-		          ],
-		          "lossiness": "lossy",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
 		    "reverse": {
 		      "changed": false,
 		      "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import { style } from "@vanilla-extract/css";
-		export const card = // pandwind:migrate-skip (route: vanilla-extract -> sass | lowering-residual: validation)
-		style({ color: theme.colors.brand, padding: "1rem" });",
+		import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const card = css.class({ "padding": "1rem", "color": "#2563eb" });",
 		      "converted": 0,
-		      "outcomes": [],
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		      ],
 		      "residuals": [
 		        {
-		          "hint": "stylesheet statement has no terminator",
+		          "hint": "stylesheet statement is preserved outside the style program",
 		          "kind": "parse",
 		          "preserved": undefined,
 		        },
@@ -347,45 +359,44 @@ test("vanilla-extract -> sass -> vanilla-extract: resolves token references acro
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { style } from "@vanilla-extract/css";
-		export const card = // pandwind:migrate-skip (route: vanilla-extract -> sass | lowering-residual: validation)
-		style({ color: "$colors.brand", padding: "1rem" });",
-		    "converted": 0,
+		    "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const card = css.class({ "padding": "1rem", "color": "$colors.brand" });",
+		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
-		        "representation": "static",
+		        "outcome": "portable-artifact",
+		        "representation": "portable-artifact",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "2 residual conversion(s)",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "2 residual conversion(s)",
-		        ],
-		        "lossiness": "lossy",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },
 		  "reverse": {
 		    "changed": false,
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import { style } from "@vanilla-extract/css";
-		export const card = // pandwind:migrate-skip (route: vanilla-extract -> sass | lowering-residual: validation)
-		style({ color: "$colors.brand", padding: "1rem" });",
+		import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const card = css.class({ "padding": "1rem", "color": "$colors.brand" });",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
 		      {
-		        "hint": "stylesheet statement has no terminator",
+		        "hint": "stylesheet statement is preserved outside the style program",
 		        "kind": "parse",
 		        "preserved": undefined,
 		      },

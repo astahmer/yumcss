@@ -1,24 +1,37 @@
 import {
 	SemanticConditionKindTag,
+	StyleValueKindTag,
 	StyleProgramResidualKindTag,
 	StyleRuleKindTag,
 	styleProgramFromRules,
+	styleProgramToCanonicalCss,
 	type StyleCondition,
 	type StyleDeclaration,
 	type StyleProgram,
 	type StyleProgramResidual,
+	type StyleRule,
 } from "./semantic-ir.ts";
 import { MigrationDiagnostics } from "./migration-diagnostics.ts";
 import { MigrationOutput } from "./migration-output.ts";
 import type {
+	AdapterFileMigrationContext,
 	AdapterFileMigration,
 	AdapterFileMigrationResult,
 	AdapterValidationResult,
 	AdapterParseContext,
 	AdapterParseResult,
 	AdapterEmitContext,
+	AdapterProjectConfig,
+	AdapterMatch,
+	AdapterMigrationOutcome,
 } from "./adapter-contract.ts";
-import { CodemodAdapterId } from "./identifiers.ts";
+import { STYLE_LOWERING_REGISTRY, type StyleLoweringPlan } from "./lowering.ts";
+import { StyleProgramAnalysis } from "./style-program-analysis.ts";
+import {
+	CodemodAdapterId,
+	StyleMigrationOutcome,
+	StyleRepresentationKind,
+} from "./identifiers.ts";
 import {
 	dirnameDocumentPath,
 	isAbsoluteDocumentPath,
@@ -59,7 +72,37 @@ export interface StylesheetCompilerPort {
 	): Promise<StylesheetCompilerResult>;
 }
 
-function skipTrivia(source: string, start: number, end: number): number {
+/**
+ * Config key a stylesheet-family adapter sets in its own loaded project
+ * config. Targets declare their family through adapter-owned evidence, so
+ * migrations compose on the declared contract instead of adapter name checks.
+ */
+export const STYLESHEET_FAMILY_CONFIG_KEY = "sourceFamily";
+
+/** A target whose declared config marks it as a stylesheet-family member. */
+export const isStylesheetFamilyConfig = (config: AdapterProjectConfig): boolean =>
+	typeof config.values[STYLESHEET_FAMILY_CONFIG_KEY] === "string";
+
+/**
+ * A stylesheet-family target produces a document in its own dialect, so the
+ * migrated file carries the target family's extension. The evidence comes from
+ * the target adapter's declared source family, never a hardcoded route table.
+ */
+export function stylesheetFamilyExtension(config: AdapterProjectConfig): string | undefined {
+	const family = config.values[STYLESHEET_FAMILY_CONFIG_KEY];
+	if (family === CodemodAdapterId.CssModules) return ".module.css";
+	if (family === CodemodAdapterId.Sass) return ".scss";
+	if (family === CodemodAdapterId.Less) return ".less";
+	if (family === CodemodAdapterId.AuthoredCss) return ".css";
+	return undefined;
+}
+
+function skipTrivia(
+	source: string,
+	start: number,
+	end: number,
+	residuals: StyleProgramResidual[],
+): number {
 	let index = start;
 	while (index < end) {
 		if (/\s/u.test(source[index] ?? "")) {
@@ -68,7 +111,18 @@ function skipTrivia(source: string, start: number, end: number): number {
 		}
 		if (source[index] === "/" && source[index + 1] === "*") {
 			const close = source.indexOf("*/", index + 2);
-			index = close === -1 ? end : close + 2;
+			if (close === -1) {
+				// An unterminated comment is malformed source; residualizing it
+				// keeps the text recoverable instead of silently consumed.
+				residuals.push({
+					kind: StyleProgramResidualKindTag.Parse,
+					text: source.slice(index, end),
+					hint: "stylesheet comment is never closed",
+				});
+				index = end;
+			} else {
+				index = close + 2;
+			}
 			continue;
 		}
 		break;
@@ -93,6 +147,10 @@ function delimiterAt(
 		}
 		if (character === "'" || character === '"') {
 			quote = character;
+			continue;
+		}
+		if (character === "$" && source[index + 1] === "{") {
+			index = skipInterpolation(source, index, end) - 1;
 			continue;
 		}
 		if (character === "(") parens++;
@@ -130,6 +188,10 @@ function closingBrace(source: string, open: number, end: number): number | undef
 			quote = character;
 			continue;
 		}
+		if (character === "$" && source[index + 1] === "{") {
+			index = skipInterpolation(source, index, end) - 1;
+			continue;
+		}
 		if (character === "{" && (source[index - 1] === "#" || source[index - 1] === "@")) {
 			while (++index < end && source[index] !== "}") continue;
 			continue;
@@ -149,15 +211,15 @@ function parseNodes(
 	const residuals: StyleProgramResidual[] = [];
 	let cursor = start;
 	while (cursor < end) {
-		const contentStart = skipTrivia(source, cursor, end);
+		const contentStart = skipTrivia(source, cursor, end, residuals);
 		if (contentStart >= end) break;
 		const delimiter = delimiterAt(source, contentStart, end);
 		if (delimiter === undefined) {
-			residuals.push({
-				kind: "parse",
-				text: source.slice(contentStart, end),
-				hint: "stylesheet statement has no terminator",
-			});
+			// CSS permits the final declaration of a block to omit the trailing
+			// semicolon; the remaining content is one statement.
+			const trailing = source.slice(contentStart, end).trim();
+			if (trailing !== "")
+				nodes.push({ kind: "statement", prelude: trailing, start: contentStart, end });
 			break;
 		}
 		if (delimiter.kind === "}") {
@@ -251,10 +313,23 @@ function declarations(
 			});
 			continue;
 		}
+		const expressionStart = value.indexOf("${");
+		if (expressionStart >= 0) {
+			// A `${...}` value is a runtime expression; keep its exact source text
+			// so host adapters can re-emit the authored interpolation.
+			const close = value.indexOf("}", expressionStart + 1);
+			const expression = close === -1 ? value.slice(expressionStart + 2) : value.slice(expressionStart + 2, close);
+			values.push({
+				conditions: [],
+				property: propertyName(property),
+				value: { kind: StyleValueKindTag.Dynamic, expression: expression.trim() },
+			});
+			continue;
+		}
 		values.push({
 			conditions: [],
 			property: propertyName(property),
-			value: { kind: "literal", value },
+			value: { kind: StyleValueKindTag.Literal, value },
 		});
 	}
 	return { declarations: values, residuals };
@@ -580,6 +655,30 @@ export function createStylesheetFileMigration(
 	return {
 		run(context): AdapterFileMigrationResult {
 			if (context.target.id === CodemodAdapterId.AuthoredCss) {
+				// The conservative skip is still a lowering decision per parsed
+				// rule; the matrix/contract gates consume the same evidence the
+				// converted path emits.
+				const skipParse = parseStylesheetPrograms(context.source, {
+					file: context.file,
+					source: context.source,
+					root: context.root,
+					config: context.sourceConfig,
+					...(context.readFile === undefined ? {} : { readFile: context.readFile }),
+				});
+				const skipLoweringPlans: StyleLoweringPlan[] = skipParse.matches.map((match) => ({
+					...STYLE_LOWERING_REGISTRY.plan({
+						program: match.program,
+						target: context.target.capabilities,
+						mode: "safe",
+					}),
+				}));
+				const skipOutcomes: AdapterMigrationOutcome[] = skipParse.matches.map((match) => ({
+					sourceStart: match.start,
+					sourceText: match.sourceText,
+					outcome: StyleMigrationOutcome.Residual,
+					representation: StyleRepresentationKind.Residual,
+					detail: "stylesheet rules are preserved by the conservative authored-css path",
+				}));
 				// Without the compiler the preprocessor features cannot be
 				// inlined, so this outcome is an explicit skip: preserved
 				// source, visible marker, and a capability residual.
@@ -623,6 +722,8 @@ export function createStylesheetFileMigration(
 					converted: 0,
 					skipped: capabilityResiduals.length === 0 ? 0 : 1,
 					generatedFiles: [],
+					loweringPlans: skipLoweringPlans,
+					outcomes: skipOutcomes,
 					residuals: capabilityResiduals,
 					dependencies: [],
 				};
@@ -737,9 +838,6 @@ export function createStylesheetFileMigration(
 				emittedTexts.push(emission.text);
 			}
 			if (residuals.length > 0 || entries.length !== matches.length || entries.length === 0) {
-				// A skip is only visible when the preserved source carries the same
-				// compact marker every other migration path emits; the residual
-				// report stays authoritative for the underlying reason.
 				const skipResiduals: StyleProgramResidual[] =
 					residuals.length > 0
 						? residuals
@@ -750,6 +848,26 @@ export function createStylesheetFileMigration(
 									hint: "stylesheet rules could not be lowered to the target without loss",
 								},
 							];
+				// The matrix/contract gates consume the same lowering evidence the
+				// per-match runner emits; a conservative skip without a plan would
+				// hide the decision the route actually made. Each skipped match
+				// stays visible as an explicit residual outcome.
+				const skipLoweringPlans: StyleLoweringPlan[] = matches.map((match) => ({
+					...STYLE_LOWERING_REGISTRY.plan({
+						program: match.program,
+						target: context.target.capabilities,
+						mode: "safe",
+						hostFramework:
+							context.target.migration?.targetPolicy?.handlesFrameworkSemantics === true,
+					}),
+				}));
+				const skipOutcomes: AdapterMigrationOutcome[] = matches.map((match) => ({
+					sourceStart: match.start,
+					sourceText: match.sourceText,
+					outcome: StyleMigrationOutcome.Residual,
+					representation: StyleRepresentationKind.Residual,
+					detail: "stylesheet migration preserved the source with residuals",
+				}));
 				return {
 					code:
 						MigrationDiagnostics.skipMarker({
@@ -762,11 +880,60 @@ export function createStylesheetFileMigration(
 					converted: 0,
 					skipped: Math.max(1, skipResiduals.length),
 					generatedFiles: [],
+					loweringPlans: skipLoweringPlans,
 					fileChanges: [],
 					residuals: skipResiduals,
+					outcomes: skipOutcomes,
 					dependencies: [],
 				};
 			}
+			// The matrix/contract gates consume the same lowering evidence the
+			// per-match runner emits; a converted rule without a plan would be an
+			// uninspectable decision.
+			const loweringPlans: StyleLoweringPlan[] = matches.map((match) => ({
+				...STYLE_LOWERING_REGISTRY.plan({
+					program: match.program,
+					target: context.target.capabilities,
+					mode: "safe",
+					hostFramework:
+						context.target.migration?.targetPolicy?.handlesFrameworkSemantics === true,
+				}),
+			}));
+			const outcomes = matches.map((match, index) => {
+				const plan = loweringPlans[index];
+				const representation = plan?.representation ?? StyleRepresentationKind.Static;
+				const hasDynamic =
+					StyleProgramAnalysis.hasDynamic(match.program) ||
+					StyleProgramAnalysis.hasDynamic(plan?.program ?? match.program);
+				if ((plan?.residuals.length ?? 0) > 0 || (plan?.program.residuals.length ?? 0) > 0) {
+					return {
+						sourceStart: match.start,
+						sourceText: match.sourceText,
+						outcome: StyleMigrationOutcome.Residual,
+						representation,
+						detail: "semantic residual remains after lowering",
+					};
+				}
+				if (representation === StyleRepresentationKind.PortableArtifact || hasDynamic) {
+					return {
+						sourceStart: match.start,
+						sourceText: match.sourceText,
+						outcome: StyleMigrationOutcome.HostRuntime,
+						representation,
+					};
+				}
+				return {
+					sourceStart: match.start,
+					sourceText: match.sourceText,
+					outcome:
+						representation === StyleRepresentationKind.Static
+							? StyleMigrationOutcome.Static
+							: StyleMigrationOutcome.TargetNative,
+					representation,
+				};
+			});
+			if (isStylesheetFamilyConfig(context.targetConfig))
+				return stylesheetFamilyArtifact(context, matches, loweringPlans, outcomes);
 			const code = [
 				[...imports].join("\n"),
 				`export const styles = { ${entries.join(", ")} };`,
@@ -827,11 +994,85 @@ export function createStylesheetFileMigration(
 				residuals: [],
 				dependencies: [context.target.dependencies],
 				validations,
+				loweringPlans,
+				outcomes,
 			};
 		},
 	};
 }
 
+/**
+ * A stylesheet-family target stays in the authored document dialect: the
+ * artifact is authored CSS with the original selector preserved, not a TS
+ * class-map, which is not valid source for that family.
+ */
+function stylesheetFamilyArtifact(
+	context: AdapterFileMigrationContext,
+	matches: readonly AdapterMatch[],
+	loweringPlans: readonly StyleLoweringPlan[],
+	outcomes: readonly AdapterMigrationOutcome[],
+): AdapterFileMigrationResult {
+	const dashCase = (property: string): string =>
+		property.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
+	// The artifact is authored CSS for a stylesheet-family target: property
+	// names must be hyphenated even though the style IR stores the camelCase
+	// object-key spelling. The parser applied the exact reverse transform, so
+	// this is a lossless re-render, and the validation reparse camelCases the
+	// artifact back to the identical canonical shape.
+	const authoredRule = (rule: StyleRule): StyleRule => ({
+		...rule,
+		declarations: rule.declarations.map((declaration) => ({
+			...declaration,
+			property: dashCase(declaration.property),
+		})),
+		children: rule.children.map(authoredRule),
+	});
+	const authoredProgram = (match: AdapterMatch): StyleProgram => ({
+		...match.program,
+		rules: match.program.rules.map(authoredRule),
+	});
+	const code = matches.map((match) => styleProgramToCanonicalCss(authoredProgram(match))).join("\n\n");
+	const validations: AdapterValidationResult[] = matches.map((match) => {
+		// Each match is emitted as its own canonical slice of the artifact, so
+		// the semantic round trip compares that slice, not the whole document:
+		// the full-document reparse would fold sibling rules into every
+		// per-rule validation and mark correct conversions invalid.
+		const matchCode = styleProgramToCanonicalCss(authoredProgram(match));
+		const reparsed = context.target.parse(matchCode, {
+			file: context.file,
+			source: matchCode,
+			root: context.sourceConfig.root,
+			config: context.targetConfig,
+			...(context.readFile === undefined ? {} : { readFile: context.readFile }),
+		});
+		const targetProgram =
+			reparsed.matches.length === 0
+				? match.program
+				: styleProgramFromRules(
+						reparsed.matches.flatMap((candidate) => candidate.program.rules),
+						{
+							source: match.program.source,
+							residuals: reparsed.residuals,
+							canonicalization: match.program.canonicalization,
+						},
+					);
+		return context.target.validate(match.program, targetProgram, reparsed.residuals);
+	});
+	return {
+		code,
+		outputExtension: stylesheetFamilyExtension(context.targetConfig),
+		changed: code !== context.source,
+		converted: matches.length,
+		skipped: 0,
+		generatedFiles: [],
+		fileChanges: [],
+		residuals: [],
+		dependencies: [context.target.dependencies],
+		validations,
+		loweringPlans,
+		outcomes,
+	};
+}
 export function createPreprocessorFileMigration(
 	base: AdapterFileMigration,
 	compiler: StylesheetCompilerPort | undefined,
@@ -858,6 +1099,7 @@ export function createPreprocessorFileMigration(
 					converted: 0,
 					skipped: 1,
 					generatedFiles: [],
+					loweringPlans: [],
 					fileChanges: [],
 					residuals: [
 						{
@@ -902,6 +1144,7 @@ export function createPreprocessorFileMigration(
 							hint: `official preprocessor compilation failed: ${error instanceof Error ? error.message : String(error)}`,
 						},
 					],
+					loweringPlans: [],
 					dependencies: [],
 				};
 			}
@@ -917,6 +1160,7 @@ export function createPreprocessorFileMigration(
 					converted: 0,
 					skipped: 0,
 					generatedFiles: [],
+					loweringPlans: [],
 					fileChanges: [],
 					residuals: [],
 					dependencies:
@@ -1004,3 +1248,30 @@ function cssModuleConsumerChanges(
 	}
 	return changes;
 }
+export interface StylesheetSourcePort {
+	parse(source: string): StylesheetSourceDocument;
+}
+
+/**
+ * Delimiter scanning must treat a ${` + q(`...`) + `} interpolation as an opaque unit:
+ * its braces and semicolons belong to the embedded expression, never to the
+ * surrounding CSS grammar.
+ */
+const skipInterpolation = (source: string, start: number, end: number): number => {
+	if (source[start] !== "$" || source[start + 1] !== "{") return start;
+	let depth = 1;
+	let index = start + 2;
+	while (index < end && depth > 0) {
+		const character = source[index]!;
+		if (character === "'") {
+			const close = source.indexOf('"', index + 1);
+			index = close === -1 ? end : close;
+		} else if (character === '"') {
+			const close = source.indexOf('"', index + 1);
+			index = close === -1 ? end : close;
+		} else if (character === "{") depth++;
+		else if (character === "}") depth--;
+		index++;
+	}
+	return depth === 0 ? index : end + 1;
+};

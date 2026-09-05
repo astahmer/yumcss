@@ -44,14 +44,14 @@ test("stylex -> css-modules -> stylex: preserves an actionable concrete round tr
 		  "forward": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-		export const styles = // pandwind:migrate-skip (route: stylex -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, named-map)
+		export const styles = // pandwind:migrate-skip (route: stylex -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
 		stylex.create({ card: { color: "red", padding: "1rem" } });
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		    "converted": 0,
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "named-map",
+		        "representation": "portable-artifact",
 		      },
 		    ],
 		    "residuals": [
@@ -68,17 +68,17 @@ test("stylex -> css-modules -> stylex: preserves an actionable concrete round tr
 		    "changed": false,
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
 		import * as stylex from "@stylexjs/stylex";
-		export const styles = // pandwind:migrate-skip (route: stylex -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, named-map)
+		export const styles = // pandwind:migrate-skip (route: stylex -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
 		stylex.create({ card: { color: "red", padding: "1rem" } });
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		    "converted": 0,
-		    "outcomes": [],
-		    "residuals": [
+		    "outcomes": [
 		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
+		        "outcome": "residual",
+		        "representation": "residual",
 		      },
+		    ],
+		    "residuals": [
 		      {
 		        "hint": "stylesheet statement is preserved outside the style program",
 		        "kind": "parse",
@@ -100,7 +100,7 @@ test("stylex -> css-modules -> stylex: preserves an actionable concrete round tr
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 5,
+		    "skipped": 4,
 		    "validations": [],
 		  },
 		}
@@ -119,25 +119,20 @@ test("stylex -> css-modules -> stylex: retains edge semantics without silent los
 		  "forward": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-		export const styles = // pandwind:migrate-skip (route: stylex -> css-modules | lowering-residual: dynamic | capability-blocked: named-rules: named style rule: card; dynamic-values: dynamic: theme.foreground | available: residual)
+		export const styles = // pandwind:migrate-skip (route: stylex -> css-modules | capability-blocked: named-rules: named style rule: card | available: residual, portable-artifact)
 		stylex.create({ card: { color: theme.foreground, padding: "1rem" } });
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		    "converted": 0,
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "residual",
+		        "representation": "portable-artifact",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "named-rules: named style rule: card; dynamic-values: dynamic: theme.foreground",
+		        "hint": "named-rules: named style rule: card",
 		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "target lacks runtime dynamic values",
-		        "kind": "dynamic",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -148,17 +143,17 @@ test("stylex -> css-modules -> stylex: retains edge semantics without silent los
 		    "changed": false,
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
 		import * as stylex from "@stylexjs/stylex";
-		export const styles = // pandwind:migrate-skip (route: stylex -> css-modules | lowering-residual: dynamic | capability-blocked: named-rules: named style rule: card; dynamic-values: dynamic: theme.foreground | available: residual)
+		export const styles = // pandwind:migrate-skip (route: stylex -> css-modules | capability-blocked: named-rules: named style rule: card | available: residual, portable-artifact)
 		stylex.create({ card: { color: theme.foreground, padding: "1rem" } });
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		    "converted": 0,
-		    "outcomes": [],
-		    "residuals": [
+		    "outcomes": [
 		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
+		        "outcome": "residual",
+		        "representation": "residual",
 		      },
+		    ],
+		    "residuals": [
 		      {
 		        "hint": "stylesheet statement is preserved outside the style program",
 		        "kind": "parse",
@@ -180,7 +175,7 @@ test("stylex -> css-modules -> stylex: retains edge semantics without silent los
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 5,
+		    "skipped": 4,
 		    "validations": [],
 		  },
 		}
@@ -209,14 +204,14 @@ test("stylex -> css-modules -> stylex: preserves concrete theme and project cont
 		    "forward": {
 		      "changed": true,
 		      "code": "import * as stylex from "@stylexjs/stylex";
-		export const styles = // pandwind:migrate-skip (route: stylex -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, named-map)
+		export const styles = // pandwind:migrate-skip (route: stylex -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
 		stylex.create({ card: { color: theme.colors.brand, padding: "1rem" } });
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		      "converted": 0,
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
-		          "representation": "named-map",
+		          "representation": "portable-artifact",
 		        },
 		      ],
 		      "residuals": [
@@ -233,17 +228,17 @@ test("stylex -> css-modules -> stylex: preserves concrete theme and project cont
 		      "changed": false,
 		      "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
 		import * as stylex from "@stylexjs/stylex";
-		export const styles = // pandwind:migrate-skip (route: stylex -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, named-map)
+		export const styles = // pandwind:migrate-skip (route: stylex -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
 		stylex.create({ card: { color: theme.colors.brand, padding: "1rem" } });
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		      "converted": 0,
-		      "outcomes": [],
-		      "residuals": [
+		      "outcomes": [
 		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
-		          "preserved": undefined,
+		          "outcome": "residual",
+		          "representation": "residual",
 		        },
+		      ],
+		      "residuals": [
 		        {
 		          "hint": "stylesheet statement is preserved outside the style program",
 		          "kind": "parse",
@@ -265,7 +260,7 @@ test("stylex -> css-modules -> stylex: preserves concrete theme and project cont
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 5,
+		      "skipped": 4,
 		      "validations": [],
 		    },
 		  },
@@ -273,14 +268,14 @@ test("stylex -> css-modules -> stylex: preserves concrete theme and project cont
 		    "forward": {
 		      "changed": true,
 		      "code": "import * as stylex from "@stylexjs/stylex";
-		export const styles = // pandwind:migrate-skip (route: stylex -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, named-map)
+		export const styles = // pandwind:migrate-skip (route: stylex -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
 		stylex.create({ card: { color: theme.colors.brand, padding: "1rem" } });
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		      "converted": 0,
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
-		          "representation": "named-map",
+		          "representation": "portable-artifact",
 		        },
 		      ],
 		      "residuals": [
@@ -297,17 +292,17 @@ test("stylex -> css-modules -> stylex: preserves concrete theme and project cont
 		      "changed": false,
 		      "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
 		import * as stylex from "@stylexjs/stylex";
-		export const styles = // pandwind:migrate-skip (route: stylex -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, named-map)
+		export const styles = // pandwind:migrate-skip (route: stylex -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
 		stylex.create({ card: { color: theme.colors.brand, padding: "1rem" } });
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		      "converted": 0,
-		      "outcomes": [],
-		      "residuals": [
+		      "outcomes": [
 		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
-		          "preserved": undefined,
+		          "outcome": "residual",
+		          "representation": "residual",
 		        },
+		      ],
+		      "residuals": [
 		        {
 		          "hint": "stylesheet statement is preserved outside the style program",
 		          "kind": "parse",
@@ -329,7 +324,7 @@ test("stylex -> css-modules -> stylex: preserves concrete theme and project cont
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 5,
+		      "skipped": 4,
 		      "validations": [],
 		    },
 		  },
@@ -349,14 +344,14 @@ test("stylex -> css-modules -> stylex: resolves token references across both con
 		  "forward": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-		export const styles = // pandwind:migrate-skip (route: stylex -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, named-map)
+		export const styles = // pandwind:migrate-skip (route: stylex -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
 		stylex.create({ card: { color: "$colors.brand", padding: "1rem" } });
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		    "converted": 0,
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "named-map",
+		        "representation": "portable-artifact",
 		      },
 		    ],
 		    "residuals": [
@@ -373,17 +368,17 @@ test("stylex -> css-modules -> stylex: resolves token references across both con
 		    "changed": false,
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
 		import * as stylex from "@stylexjs/stylex";
-		export const styles = // pandwind:migrate-skip (route: stylex -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, named-map)
+		export const styles = // pandwind:migrate-skip (route: stylex -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
 		stylex.create({ card: { color: "$colors.brand", padding: "1rem" } });
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		    "converted": 0,
-		    "outcomes": [],
-		    "residuals": [
+		    "outcomes": [
 		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
+		        "outcome": "residual",
+		        "representation": "residual",
 		      },
+		    ],
+		    "residuals": [
 		      {
 		        "hint": "stylesheet statement is preserved outside the style program",
 		        "kind": "parse",
@@ -405,7 +400,7 @@ test("stylex -> css-modules -> stylex: resolves token references across both con
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 5,
+		    "skipped": 4,
 		    "validations": [],
 		  },
 		}

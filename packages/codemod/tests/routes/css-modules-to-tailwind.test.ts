@@ -44,7 +44,16 @@ test("css-modules -> tailwind: migrates concrete css-modules syntax to tailwind"
 		  "code": "export const styles = { "card": "[padding:1rem] [color:red]", "cardTitle": "[font-weight:600]" };
 		export default styles;",
 		  "converted": 2,
-		  "outcomes": [],
+		  "outcomes": [
+		    {
+		      "outcome": "target-native",
+		      "representation": "named-map",
+		    },
+		    {
+		      "outcome": "target-native",
+		      "representation": "named-map",
+		    },
+		  ],
 		  "residuals": [],
 		  "skipped": 0,
 		  "validations": [
@@ -73,7 +82,16 @@ test("css-modules -> tailwind: carries concrete css-modules dynamics or edge syn
 		  "code": "export const styles = { "card": "[padding:1rem] [color:theme.foreground]", "cardTitle": "[font-weight:600]" };
 		export default styles;",
 		  "converted": 2,
-		  "outcomes": [],
+		  "outcomes": [
+		    {
+		      "outcome": "target-native",
+		      "representation": "named-map",
+		    },
+		    {
+		      "outcome": "target-native",
+		      "representation": "named-map",
+		    },
+		  ],
 		  "residuals": [],
 		  "skipped": 0,
 		  "validations": [
@@ -103,46 +121,54 @@ test("css-modules -> tailwind: lowers concrete theme and project context variant
 		{
 		  "amber": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: parse, rule-level)
+		    "code": "// pandwind:migrate-skip (lowering-residual: dynamic)
 		.card { color: \${theme.colors.brand}; padding: 1rem; }
 		.cardTitle { font-weight: 600; }",
 		    "converted": 0,
-		    "outcomes": [],
-		    "residuals": [
+		    "outcomes": [
 		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
+		        "outcome": "residual",
+		        "representation": "residual",
 		      },
 		      {
-		        "hint": "Tailwind class output supports style declarations and nested conditions only",
-		        "kind": "rule-level",
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
+		    "residuals": [
+		      {
+		        "hint": "Tailwind output requires a literal declaration or a host runtime carrier",
+		        "kind": "dynamic",
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 2,
+		    "skipped": 1,
 		    "validations": [],
 		  },
 		  "blue": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: parse, rule-level)
+		    "code": "// pandwind:migrate-skip (lowering-residual: dynamic)
 		.card { color: \${theme.colors.brand}; padding: 1rem; }
 		.cardTitle { font-weight: 600; }",
 		    "converted": 0,
-		    "outcomes": [],
-		    "residuals": [
+		    "outcomes": [
 		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
+		        "outcome": "residual",
+		        "representation": "residual",
 		      },
 		      {
-		        "hint": "Tailwind class output supports style declarations and nested conditions only",
-		        "kind": "rule-level",
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
+		    "residuals": [
+		      {
+		        "hint": "Tailwind output requires a literal declaration or a host runtime carrier",
+		        "kind": "dynamic",
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 2,
+		    "skipped": 1,
 		    "validations": [],
 		  },
 		}
@@ -159,7 +185,16 @@ test("css-modules -> tailwind: resolves concrete token references with project c
 		  "code": "export const styles = { "card": "[padding:1rem] [color:var(--colors-brand)]", "cardTitle": "[font-weight:600]" };
 		export default styles;",
 		  "converted": 2,
-		  "outcomes": [],
+		  "outcomes": [
+		    {
+		      "outcome": "target-native",
+		      "representation": "named-map",
+		    },
+		    {
+		      "outcome": "target-native",
+		      "representation": "named-map",
+		    },
+		  ],
 		  "residuals": [],
 		  "skipped": 0,
 		  "validations": [
@@ -190,7 +225,16 @@ test("css-modules -> tailwind: preserves malformed concrete css-modules input", 
 		.cardTitle { font-weight: 600; }
 		const unfinished = { /* unfinished css-modules */",
 		  "converted": 0,
-		  "outcomes": [],
+		  "outcomes": [
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		  ],
 		  "residuals": [
 		    {
 		      "hint": "stylesheet block is unbalanced",

@@ -42,14 +42,14 @@ test("react-native -> css-modules: migrates concrete react-native syntax to css-
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet, View } from "react-native";
-		export const styles = // pandwind:migrate-skip (route: react-native -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, named-map)
+		export const styles = // pandwind:migrate-skip (route: react-native -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
 		StyleSheet.create({ card: { color: "red", padding: 16 } });
 		export const App = () => <View style={styles.card} />;",
 		  "converted": 0,
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "named-map",
+		      "representation": "portable-artifact",
 		    },
 		  ],
 		  "residuals": [
@@ -73,25 +73,20 @@ test("react-native -> css-modules: carries concrete react-native dynamics or edg
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet, View } from "react-native";
-		export const styles = // pandwind:migrate-skip (route: react-native -> css-modules | lowering-residual: dynamic | capability-blocked: named-rules: named style rule: card; dynamic-values: dynamic: theme.foreground | available: residual)
+		export const styles = // pandwind:migrate-skip (route: react-native -> css-modules | capability-blocked: named-rules: named style rule: card | available: residual, portable-artifact)
 		StyleSheet.create({ card: { color: theme.foreground, padding: 16 } });
 		export const App = () => <View style={styles.card} />;",
 		  "converted": 0,
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "residual",
+		      "representation": "portable-artifact",
 		    },
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "named-rules: named style rule: card; dynamic-values: dynamic: theme.foreground",
+		      "hint": "named-rules: named style rule: card",
 		      "kind": "capability",
-		      "preserved": undefined,
-		    },
-		    {
-		      "hint": "target lacks runtime dynamic values",
-		      "kind": "dynamic",
 		      "preserved": undefined,
 		    },
 		  ],
@@ -113,25 +108,20 @@ test("react-native -> css-modules: lowers concrete theme and project context var
 		  "amber": {
 		    "changed": true,
 		    "code": "import { StyleSheet, View } from "react-native";
-		export const styles = // pandwind:migrate-skip (route: react-native -> css-modules | lowering-residual: dynamic | capability-blocked: named-rules: named style rule: card; dynamic-values: dynamic: theme.colors.brand | available: residual)
+		export const styles = // pandwind:migrate-skip (route: react-native -> css-modules | capability-blocked: named-rules: named style rule: card | available: residual, portable-artifact)
 		StyleSheet.create({ card: { color: theme.colors.brand, padding: 16 } });
 		export const App = () => <View style={styles.card} />;",
 		    "converted": 0,
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "residual",
+		        "representation": "portable-artifact",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "named-rules: named style rule: card; dynamic-values: dynamic: theme.colors.brand",
+		        "hint": "named-rules: named style rule: card",
 		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "target lacks runtime dynamic values",
-		        "kind": "dynamic",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -141,25 +131,20 @@ test("react-native -> css-modules: lowers concrete theme and project context var
 		  "blue": {
 		    "changed": true,
 		    "code": "import { StyleSheet, View } from "react-native";
-		export const styles = // pandwind:migrate-skip (route: react-native -> css-modules | lowering-residual: dynamic | capability-blocked: named-rules: named style rule: card; dynamic-values: dynamic: theme.colors.brand | available: residual)
+		export const styles = // pandwind:migrate-skip (route: react-native -> css-modules | capability-blocked: named-rules: named style rule: card | available: residual, portable-artifact)
 		StyleSheet.create({ card: { color: theme.colors.brand, padding: 16 } });
 		export const App = () => <View style={styles.card} />;",
 		    "converted": 0,
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "residual",
+		        "representation": "portable-artifact",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "named-rules: named style rule: card; dynamic-values: dynamic: theme.colors.brand",
+		        "hint": "named-rules: named style rule: card",
 		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "target lacks runtime dynamic values",
-		        "kind": "dynamic",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -178,14 +163,14 @@ test("react-native -> css-modules: resolves concrete token references with proje
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet, View } from "react-native";
-		export const styles = // pandwind:migrate-skip (route: react-native -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, named-map)
+		export const styles = // pandwind:migrate-skip (route: react-native -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
 		StyleSheet.create({ card: { color: "$colors.brand", padding: 16 } });
 		export const App = () => <View style={styles.card} />;",
 		  "converted": 0,
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "named-map",
+		      "representation": "portable-artifact",
 		    },
 		  ],
 		  "residuals": [
@@ -209,7 +194,7 @@ test("react-native -> css-modules: preserves malformed concrete react-native inp
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet, View } from "react-native";
-		export const styles = // pandwind:migrate-skip (route: react-native -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, named-map)
+		export const styles = // pandwind:migrate-skip (route: react-native -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
 		StyleSheet.create({ card: { color: "red", padding: 16 } });
 		export const App = () => <View style={styles.card} />;
 		const unfinished = { /* unfinished react-native */",
@@ -217,7 +202,7 @@ test("react-native -> css-modules: preserves malformed concrete react-native inp
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "named-map",
+		      "representation": "portable-artifact",
 		    },
 		  ],
 		  "residuals": [

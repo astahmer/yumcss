@@ -50,11 +50,16 @@ describe("adapter route round-trip contract", () => {
 					continue;
 				const targetFixture = happyFixtures.get(target.id);
 				if (targetFixture === undefined) throw new Error(`missing fixture for ${target.id}`);
+				// A forward route can change the document dialect (for example
+				// authored-css to css-modules); the reverse migration must run on
+				// the emitted file name, not the original source file.
 				const reverse = migrate(
 					forward.code,
 					target.id,
 					source.id,
-					sourceFixture.file,
+					forward.outputExtension === undefined
+						? sourceFixture.file
+						: sourceFixture.file.replace(/\.[^.]+$/u, forward.outputExtension),
 					targetFixture.semantic,
 				);
 				const actionable =

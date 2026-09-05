@@ -47,7 +47,16 @@ test("css-modules -> mantine -> css-modules: preserves an actionable concrete ro
 		.card { color: red; padding: 1rem; }
 		.cardTitle { font-weight: 600; }",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
 		      {
 		        "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
@@ -93,7 +102,16 @@ test("css-modules -> mantine -> css-modules: retains edge semantics without sile
 		.card { color: theme.foreground; padding: 1rem; }
 		.cardTitle { font-weight: 600; }",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
 		      {
 		        "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
@@ -145,22 +163,21 @@ test("css-modules -> mantine -> css-modules: preserves concrete theme and projec
 		  "amber": {
 		    "forward": {
 		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting, host-framework)
+		      "code": "// pandwind:migrate-skip (lowering-residual: host-framework)
 		.card { color: \${theme.colors.brand}; padding: 1rem; }
 		.cardTitle { font-weight: 600; }",
 		      "converted": 0,
-		      "outcomes": [],
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		      ],
 		      "residuals": [
-		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "nested stylesheet rules require selector-aware lowering",
-		          "kind": "nesting",
-		          "preserved": undefined,
-		        },
 		        {
 		          "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
 		          "kind": "host-framework",
@@ -172,12 +189,12 @@ test("css-modules -> mantine -> css-modules: preserves concrete theme and projec
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 4,
+		      "skipped": 2,
 		      "validations": [],
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting, host-framework)
+		      "code": "// pandwind:migrate-skip (lowering-residual: host-framework)
 		.card { color: \${theme.colors.brand}; padding: 1rem; }
 		.cardTitle { font-weight: 600; }",
 		      "converted": 0,
@@ -190,22 +207,21 @@ test("css-modules -> mantine -> css-modules: preserves concrete theme and projec
 		  "blue": {
 		    "forward": {
 		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting, host-framework)
+		      "code": "// pandwind:migrate-skip (lowering-residual: host-framework)
 		.card { color: \${theme.colors.brand}; padding: 1rem; }
 		.cardTitle { font-weight: 600; }",
 		      "converted": 0,
-		      "outcomes": [],
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		      ],
 		      "residuals": [
-		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "nested stylesheet rules require selector-aware lowering",
-		          "kind": "nesting",
-		          "preserved": undefined,
-		        },
 		        {
 		          "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
 		          "kind": "host-framework",
@@ -217,12 +233,12 @@ test("css-modules -> mantine -> css-modules: preserves concrete theme and projec
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 4,
+		      "skipped": 2,
 		      "validations": [],
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting, host-framework)
+		      "code": "// pandwind:migrate-skip (lowering-residual: host-framework)
 		.card { color: \${theme.colors.brand}; padding: 1rem; }
 		.cardTitle { font-weight: 600; }",
 		      "converted": 0,
@@ -251,7 +267,16 @@ test("css-modules -> mantine -> css-modules: resolves token references across bo
 		.card { color: var(--colors-brand); padding: 1rem; }
 		.cardTitle { font-weight: 600; }",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
 		      {
 		        "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",

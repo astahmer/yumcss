@@ -13,6 +13,7 @@ import {
 } from "../semantic-ir.ts";
 import { CodemodAdapterId, StyleHostRepresentationKind } from "../identifiers.ts";
 import type { ProjectModuleLoader } from "../project-module-loader.ts";
+import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
 import { joinDocumentPath } from "../../path-utils.ts";
 import { SourcePass } from "../../source-pass-utils.ts";
 
@@ -259,8 +260,12 @@ export function createTamaguiAdapter(
 		sourceModules: [],
 		configFiles: ["tamagui.config.ts", "tamagui.config.js", "tamagui.build.ts"],
 		detect: (context) => {
+			// Tamagui components also live inside framework documents (a Vue SFC
+			// script block, for example). Language-appropriate files stay
+			// detectable through the shared scanner instead of a hardcoded
+			// script-extension list that silently orphans whole documents.
 			const matched =
-				/(?:^|\.)tsx?$|(?:^|\.)jsx?$/u.test(context.file) &&
+				SOURCE_SCANNER_SERVICE.isSupportedFile(context.file) &&
 				/(?:@tamagui\/|from\s+["']tamagui["'])/u.test(context.source);
 			return {
 				matched,

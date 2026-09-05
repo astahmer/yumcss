@@ -45,7 +45,16 @@ test("authored-css -> mui: migrates concrete authored-css syntax to mui", () => 
 		.card { color: red; padding: 1rem; }
 		.card:hover { color: blue; }",
 		  "converted": 0,
-		  "outcomes": [],
+		  "outcomes": [
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		  ],
 		  "residuals": [
 		    {
 		      "hint": "MUI sx styles require a host component prop; no standalone sx() API exists",
@@ -75,7 +84,16 @@ test("authored-css -> mui: carries concrete authored-css dynamics or edge syntax
 		.card { color: theme.foreground; padding: 1rem; }
 		.card:hover { color: blue; }",
 		  "converted": 0,
-		  "outcomes": [],
+		  "outcomes": [
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		  ],
 		  "residuals": [
 		    {
 		      "hint": "MUI sx styles require a host component prop; no standalone sx() API exists",
@@ -105,22 +123,21 @@ test("authored-css -> mui: lowers concrete theme and project context variants", 
 		{
 		  "amber": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting, host-framework, capability)
+		    "code": "// pandwind:migrate-skip (lowering-residual: host-framework, capability)
 		.card { color: \${theme.colors.brand}; padding: 1rem; }
 		.card:hover { color: blue; }",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
-		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "nested stylesheet rules require selector-aware lowering",
-		        "kind": "nesting",
-		        "preserved": undefined,
-		      },
 		      {
 		        "hint": "MUI sx styles require a host component prop; no standalone sx() API exists",
 		        "kind": "host-framework",
@@ -132,27 +149,26 @@ test("authored-css -> mui: lowers concrete theme and project context variants", 
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 4,
+		    "skipped": 2,
 		    "validations": [],
 		  },
 		  "blue": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting, host-framework, capability)
+		    "code": "// pandwind:migrate-skip (lowering-residual: host-framework, capability)
 		.card { color: \${theme.colors.brand}; padding: 1rem; }
 		.card:hover { color: blue; }",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
-		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "nested stylesheet rules require selector-aware lowering",
-		        "kind": "nesting",
-		        "preserved": undefined,
-		      },
 		      {
 		        "hint": "MUI sx styles require a host component prop; no standalone sx() API exists",
 		        "kind": "host-framework",
@@ -164,7 +180,7 @@ test("authored-css -> mui: lowers concrete theme and project context variants", 
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 4,
+		    "skipped": 2,
 		    "validations": [],
 		  },
 		}
@@ -182,7 +198,16 @@ test("authored-css -> mui: resolves concrete token references with project conte
 		.card { color: var(--colors-brand); padding: 1rem; }
 		.card:hover { color: blue; }",
 		  "converted": 0,
-		  "outcomes": [],
+		  "outcomes": [
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		  ],
 		  "residuals": [
 		    {
 		      "hint": "MUI sx styles require a host component prop; no standalone sx() API exists",
@@ -213,7 +238,16 @@ test("authored-css -> mui: preserves malformed concrete authored-css input", () 
 		.card:hover { color: blue; }
 		const unfinished = { /* unfinished authored-css */",
 		  "converted": 0,
-		  "outcomes": [],
+		  "outcomes": [
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		  ],
 		  "residuals": [
 		    {
 		      "hint": "stylesheet block is unbalanced",

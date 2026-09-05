@@ -44,7 +44,16 @@ test("css-modules -> fela: migrates concrete css-modules syntax to fela", () => 
 		  "code": "export const styles = { "card": renderer.renderRule({ "padding": "1rem", "color": "red" }), "cardTitle": renderer.renderRule({ "fontWeight": "600" }) };
 		export default styles;",
 		  "converted": 2,
-		  "outcomes": [],
+		  "outcomes": [
+		    {
+		      "outcome": "target-native",
+		      "representation": "named-map",
+		    },
+		    {
+		      "outcome": "target-native",
+		      "representation": "named-map",
+		    },
+		  ],
 		  "residuals": [],
 		  "skipped": 0,
 		  "validations": [
@@ -73,7 +82,16 @@ test("css-modules -> fela: carries concrete css-modules dynamics or edge syntax 
 		  "code": "export const styles = { "card": renderer.renderRule({ "padding": "1rem", "color": "theme.foreground" }), "cardTitle": renderer.renderRule({ "fontWeight": "600" }) };
 		export default styles;",
 		  "converted": 2,
-		  "outcomes": [],
+		  "outcomes": [
+		    {
+		      "outcome": "target-native",
+		      "representation": "named-map",
+		    },
+		    {
+		      "outcome": "target-native",
+		      "representation": "named-map",
+		    },
+		  ],
 		  "residuals": [],
 		  "skipped": 0,
 		  "validations": [
@@ -102,48 +120,64 @@ test("css-modules -> fela: lowers concrete theme and project context variants", 
 	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
 		{
 		  "amber": {
-		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting)
-		.card { color: \${theme.colors.brand}; padding: 1rem; }
-		.cardTitle { font-weight: 600; }",
-		    "converted": 0,
-		    "outcomes": [],
-		    "residuals": [
+		    "changed": true,
+		    "code": "export const styles = { "card": renderer.renderRule({ "padding": "1rem", "color": theme.colors.brand }), "cardTitle": renderer.renderRule({ "fontWeight": "600" }) };
+		export default styles;",
+		    "converted": 2,
+		    "outcomes": [
 		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
+		        "outcome": "host-runtime",
+		        "representation": "named-map",
 		      },
 		      {
-		        "hint": "nested stylesheet rules require selector-aware lowering",
-		        "kind": "nesting",
-		        "preserved": undefined,
+		        "outcome": "target-native",
+		        "representation": "named-map",
 		      },
 		    ],
-		    "skipped": 2,
-		    "validations": [],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		  "blue": {
-		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting)
-		.card { color: \${theme.colors.brand}; padding: 1rem; }
-		.cardTitle { font-weight: 600; }",
-		    "converted": 0,
-		    "outcomes": [],
-		    "residuals": [
+		    "changed": true,
+		    "code": "export const styles = { "card": renderer.renderRule({ "padding": "1rem", "color": theme.colors.brand }), "cardTitle": renderer.renderRule({ "fontWeight": "600" }) };
+		export default styles;",
+		    "converted": 2,
+		    "outcomes": [
 		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
+		        "outcome": "host-runtime",
+		        "representation": "named-map",
 		      },
 		      {
-		        "hint": "nested stylesheet rules require selector-aware lowering",
-		        "kind": "nesting",
-		        "preserved": undefined,
+		        "outcome": "target-native",
+		        "representation": "named-map",
 		      },
 		    ],
-		    "skipped": 2,
-		    "validations": [],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		}
 	`);
@@ -159,7 +193,16 @@ test("css-modules -> fela: resolves concrete token references with project conte
 		  "code": "export const styles = { "card": renderer.renderRule({ "padding": "1rem", "color": "var(--colors-brand)" }), "cardTitle": renderer.renderRule({ "fontWeight": "600" }) };
 		export default styles;",
 		  "converted": 2,
-		  "outcomes": [],
+		  "outcomes": [
+		    {
+		      "outcome": "target-native",
+		      "representation": "named-map",
+		    },
+		    {
+		      "outcome": "target-native",
+		      "representation": "named-map",
+		    },
+		  ],
 		  "residuals": [],
 		  "skipped": 0,
 		  "validations": [
@@ -190,7 +233,16 @@ test("css-modules -> fela: preserves malformed concrete css-modules input", () =
 		.cardTitle { font-weight: 600; }
 		const unfinished = { /* unfinished css-modules */",
 		  "converted": 0,
-		  "outcomes": [],
+		  "outcomes": [
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		  ],
 		  "residuals": [
 		    {
 		      "hint": "stylesheet block is unbalanced",

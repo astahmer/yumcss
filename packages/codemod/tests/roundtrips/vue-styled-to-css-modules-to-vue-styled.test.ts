@@ -84,7 +84,7 @@ test("vue-styled -> css-modules -> vue-styled: preserves an actionable concrete 
 		    "outcomes": [],
 		    "residuals": [
 		      {
-		        "hint": "stylesheet statement has no terminator",
+		        "hint": "stylesheet statement is preserved outside the style program",
 		        "kind": "parse",
 		        "preserved": undefined,
 		      },
@@ -163,7 +163,7 @@ test("vue-styled -> css-modules -> vue-styled: retains edge semantics without si
 		    "outcomes": [],
 		    "residuals": [
 		      {
-		        "hint": "stylesheet statement has no terminator",
+		        "hint": "stylesheet statement is preserved outside the style program",
 		        "kind": "parse",
 		        "preserved": undefined,
 		      },
@@ -247,7 +247,7 @@ test("vue-styled -> css-modules -> vue-styled: preserves concrete theme and proj
 		      "outcomes": [],
 		      "residuals": [
 		        {
-		          "hint": "stylesheet statement has no terminator",
+		          "hint": "stylesheet statement is preserved outside the style program",
 		          "kind": "parse",
 		          "preserved": undefined,
 		        },
@@ -310,7 +310,7 @@ test("vue-styled -> css-modules -> vue-styled: preserves concrete theme and proj
 		      "outcomes": [],
 		      "residuals": [
 		        {
-		          "hint": "stylesheet statement has no terminator",
+		          "hint": "stylesheet statement is preserved outside the style program",
 		          "kind": "parse",
 		          "preserved": undefined,
 		        },
@@ -385,7 +385,7 @@ test("vue-styled -> css-modules -> vue-styled: resolves token references across 
 		    "outcomes": [],
 		    "residuals": [
 		      {
-		        "hint": "stylesheet statement has no terminator",
+		        "hint": "stylesheet statement is preserved outside the style program",
 		        "kind": "parse",
 		        "preserved": undefined,
 		      },

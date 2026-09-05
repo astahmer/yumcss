@@ -143,18 +143,13 @@ test("tailwind -> css-modules -> tailwind: retains edge semantics without silent
 		import "tailwindcss";
 		export const App = () => <div className={\`[display:flex] [gap:1rem] \${runtimeClass}\`} />;",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
-		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
 		      {
 		        "hint": "stylesheet statement is preserved outside the style program",
 		        "kind": "parse",
@@ -171,7 +166,7 @@ test("tailwind -> css-modules -> tailwind: retains edge semantics without silent
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 5,
+		    "skipped": 3,
 		    "validations": [],
 		  },
 		}

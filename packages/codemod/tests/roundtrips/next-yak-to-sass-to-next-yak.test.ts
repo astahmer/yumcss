@@ -80,18 +80,17 @@ test("next-yak -> sass -> next-yak: preserves an actionable concrete round trip"
 		css\`color: red; padding: 1rem;\`;
 		export const App = () => <div className={card} />;",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
-		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
 		      {
 		        "hint": "stylesheet statement is preserved outside the style program",
 		        "kind": "parse",
@@ -128,7 +127,7 @@ test("next-yak -> sass -> next-yak: preserves an actionable concrete round trip"
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 9,
+		    "skipped": 7,
 		    "validations": [],
 		  },
 		}
@@ -185,20 +184,19 @@ test("next-yak -> sass -> next-yak: retains edge semantics without silent loss",
 		css\`color: \${theme.foreground}; padding: 1rem;\`;
 		export const App = () => <div className={card} />;",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
 		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet statement has no terminator",
+		        "hint": "stylesheet statement is preserved outside the style program",
 		        "kind": "parse",
 		        "preserved": undefined,
 		      },
@@ -220,11 +218,6 @@ test("next-yak -> sass -> next-yak: retains edge semantics without silent loss",
 		      {
 		        "hint": "stylesheet statement is preserved outside the style program",
 		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet migration requires a single local class selector",
-		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		      {
@@ -238,7 +231,7 @@ test("next-yak -> sass -> next-yak: retains edge semantics without silent loss",
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 10,
+		    "skipped": 7,
 		    "validations": [],
 		  },
 		}
@@ -305,20 +298,19 @@ test("next-yak -> sass -> next-yak: preserves concrete theme and project context
 		css\`color: \${theme.colors.brand}; padding: 1rem;\`;
 		export const App = () => <div className={card} />;",
 		      "converted": 0,
-		      "outcomes": [],
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		      ],
 		      "residuals": [
 		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "stylesheet statement has no terminator",
+		          "hint": "stylesheet statement is preserved outside the style program",
 		          "kind": "parse",
 		          "preserved": undefined,
 		        },
@@ -340,11 +332,6 @@ test("next-yak -> sass -> next-yak: preserves concrete theme and project context
 		        {
 		          "hint": "stylesheet statement is preserved outside the style program",
 		          "kind": "parse",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "stylesheet migration requires a single local class selector",
-		          "kind": "capability",
 		          "preserved": undefined,
 		        },
 		        {
@@ -358,7 +345,7 @@ test("next-yak -> sass -> next-yak: preserves concrete theme and project context
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 10,
+		      "skipped": 7,
 		      "validations": [],
 		    },
 		  },
@@ -404,20 +391,19 @@ test("next-yak -> sass -> next-yak: preserves concrete theme and project context
 		css\`color: \${theme.colors.brand}; padding: 1rem;\`;
 		export const App = () => <div className={card} />;",
 		      "converted": 0,
-		      "outcomes": [],
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		      ],
 		      "residuals": [
 		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "stylesheet statement has no terminator",
+		          "hint": "stylesheet statement is preserved outside the style program",
 		          "kind": "parse",
 		          "preserved": undefined,
 		        },
@@ -439,11 +425,6 @@ test("next-yak -> sass -> next-yak: preserves concrete theme and project context
 		        {
 		          "hint": "stylesheet statement is preserved outside the style program",
 		          "kind": "parse",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "stylesheet migration requires a single local class selector",
-		          "kind": "capability",
 		          "preserved": undefined,
 		        },
 		        {
@@ -457,7 +438,7 @@ test("next-yak -> sass -> next-yak: preserves concrete theme and project context
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 10,
+		      "skipped": 7,
 		      "validations": [],
 		    },
 		  },
@@ -513,18 +494,17 @@ test("next-yak -> sass -> next-yak: resolves token references across both concre
 		css\`color: var(--colors-brand); padding: 1rem;\`;
 		export const App = () => <div className={card} />;",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
-		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
 		      {
 		        "hint": "stylesheet statement is preserved outside the style program",
 		        "kind": "parse",
@@ -561,7 +541,7 @@ test("next-yak -> sass -> next-yak: resolves token references across both concre
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 9,
+		    "skipped": 7,
 		    "validations": [],
 		  },
 		}

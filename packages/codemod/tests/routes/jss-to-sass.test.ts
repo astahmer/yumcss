@@ -42,14 +42,14 @@ test("jss -> sass: migrates concrete jss syntax to sass", () => {
 		{
 		  "changed": true,
 		  "code": "import { createUseStyles } from "react-jss";
-		export const useStyles = // pandwind:migrate-skip (route: jss -> sass | capability-blocked: named-rules: named style rule: card | available: static, residual, named-map)
+		export const useStyles = // pandwind:migrate-skip (route: jss -> sass | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
 		createUseStyles({ card: { color: "red", padding: "1rem" } });
 		export const App = () => <div className={useStyles().card} />;",
 		  "converted": 0,
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "named-map",
+		      "representation": "portable-artifact",
 		    },
 		  ],
 		  "residuals": [
@@ -73,25 +73,20 @@ test("jss -> sass: carries concrete jss dynamics or edge syntax explicitly", () 
 		{
 		  "changed": true,
 		  "code": "import { createUseStyles } from "react-jss";
-		export const useStyles = // pandwind:migrate-skip (route: jss -> sass | lowering-residual: dynamic | capability-blocked: named-rules: named style rule: card; dynamic-values: dynamic: theme.foreground | available: residual)
+		export const useStyles = // pandwind:migrate-skip (route: jss -> sass | capability-blocked: named-rules: named style rule: card | available: residual, portable-artifact)
 		createUseStyles({ card: { color: theme.foreground, padding: "1rem" } });
 		export const App = () => <div className={useStyles().card} />;",
 		  "converted": 0,
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "residual",
+		      "representation": "portable-artifact",
 		    },
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "named-rules: named style rule: card; dynamic-values: dynamic: theme.foreground",
+		      "hint": "named-rules: named style rule: card",
 		      "kind": "capability",
-		      "preserved": undefined,
-		    },
-		    {
-		      "hint": "target lacks runtime dynamic values",
-		      "kind": "dynamic",
 		      "preserved": undefined,
 		    },
 		  ],
@@ -113,14 +108,14 @@ test("jss -> sass: lowers concrete theme and project context variants", () => {
 		  "amber": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-		export const useStyles = // pandwind:migrate-skip (route: jss -> sass | capability-blocked: named-rules: named style rule: card | available: static, residual, named-map)
+		export const useStyles = // pandwind:migrate-skip (route: jss -> sass | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
 		createUseStyles({ card: { color: theme.colors.brand, padding: "1rem" } });
 		export const App = () => <div className={useStyles().card} />;",
 		    "converted": 0,
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "named-map",
+		        "representation": "portable-artifact",
 		      },
 		    ],
 		    "residuals": [
@@ -136,14 +131,14 @@ test("jss -> sass: lowers concrete theme and project context variants", () => {
 		  "blue": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-		export const useStyles = // pandwind:migrate-skip (route: jss -> sass | capability-blocked: named-rules: named style rule: card | available: static, residual, named-map)
+		export const useStyles = // pandwind:migrate-skip (route: jss -> sass | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
 		createUseStyles({ card: { color: theme.colors.brand, padding: "1rem" } });
 		export const App = () => <div className={useStyles().card} />;",
 		    "converted": 0,
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "named-map",
+		        "representation": "portable-artifact",
 		      },
 		    ],
 		    "residuals": [
@@ -168,14 +163,14 @@ test("jss -> sass: resolves concrete token references with project context", () 
 		{
 		  "changed": true,
 		  "code": "import { createUseStyles } from "react-jss";
-		export const useStyles = // pandwind:migrate-skip (route: jss -> sass | capability-blocked: named-rules: named style rule: card | available: static, residual, named-map)
+		export const useStyles = // pandwind:migrate-skip (route: jss -> sass | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
 		createUseStyles({ card: { color: "$colors.brand", padding: "1rem" } });
 		export const App = () => <div className={useStyles().card} />;",
 		  "converted": 0,
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "named-map",
+		      "representation": "portable-artifact",
 		    },
 		  ],
 		  "residuals": [
@@ -199,7 +194,7 @@ test("jss -> sass: preserves malformed concrete jss input", () => {
 		{
 		  "changed": true,
 		  "code": "import { createUseStyles } from "react-jss";
-		export const useStyles = // pandwind:migrate-skip (route: jss -> sass | capability-blocked: named-rules: named style rule: card | available: static, residual, named-map)
+		export const useStyles = // pandwind:migrate-skip (route: jss -> sass | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
 		createUseStyles({ card: { color: "red", padding: "1rem" } });
 		export const App = () => <div className={useStyles().card} />;
 		const unfinished = { /* unfinished jss */",
@@ -207,7 +202,7 @@ test("jss -> sass: preserves malformed concrete jss input", () => {
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "named-map",
+		      "representation": "portable-artifact",
 		    },
 		  ],
 		  "residuals": [

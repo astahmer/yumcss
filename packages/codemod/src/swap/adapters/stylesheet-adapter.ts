@@ -8,7 +8,12 @@ import type {
 	AdapterProjectConfig,
 	AdapterDependencies,
 } from "../adapter-contract.ts";
-import { AdapterOfficialApiStatusTag, CodemodAdapterId } from "../identifiers.ts";
+import {
+	AdapterOfficialApiStatusTag,
+	CodemodAdapterId,
+	StyleRepresentationKind,
+} from "../identifiers.ts";
+import { StyleRuleKindTag } from "../semantic-ir.ts";
 import {
 	createPreprocessorFileMigration,
 	createStylesheetFileMigration,
@@ -87,9 +92,23 @@ export function createStylesheetAdapter(definition: StylesheetAdapterDefinition)
 				definition.compiler === undefined
 					? baseMigration
 					: createPreprocessorFileMigration(baseMigration, definition.compiler),
+			targetPolicy: {
+				// Stylesheet targets own authored documents, not TS call-site
+				// carriers. A standalone static class expression still has a
+				// portable home in the generated artifact, so it resolves to the
+				// shared portable carrier instead of splicing selector-less
+				// declarations into the host source.
+				resolveRepresentation: ({ program, hasHostContext }) =>
+					hasHostContext === false &&
+					program.source?.hostOpenTag === undefined &&
+					program.rules.every((rule) => rule.kind === StyleRuleKindTag.Style) &&
+					program.residuals.length === 0
+						? StyleRepresentationKind.PortableArtifact
+						: undefined,
+			},
 		},
-		emit: (program, renderers) => ({
-			text: renderers.templateCss(program),
+	emit: (program, renderers) => ({
+		text: renderers.templateCss(program),
 			semantic: program,
 			residuals: StyleProgramAnalysis.hasDynamic(program)
 				? [

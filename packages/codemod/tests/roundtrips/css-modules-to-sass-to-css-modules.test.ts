@@ -43,35 +43,65 @@ test("css-modules -> sass -> css-modules: preserves an actionable concrete round
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const styles = { "card": padding: 1rem; color: red;, "cardTitle": font-weight: 600; };
-		export default styles;",
+		    "code": ".card{padding:1rem;color:red}
+
+		.cardTitle{font-weight:600}",
 		    "converted": 2,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "target-native",
+		        "representation": "named-map",
+		      },
+		      {
+		        "outcome": "target-native",
+		        "representation": "named-map",
+		      },
+		    ],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [],
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		export const styles = { "card": padding: 1rem; color: red;, "cardTitle": font-weight: 600; };
-		export default styles;",
-		    "converted": 0,
-		    "outcomes": [],
-		    "residuals": [
+		    "code": ".card{padding:1rem;color:red}
+
+		.cardTitle{font-weight:600}",
+		    "converted": 2,
+		    "outcomes": [
 		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
+		        "outcome": "target-native",
+		        "representation": "named-map",
 		      },
 		      {
-		        "hint": "stylesheet migration requires a single local class selector",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "outcome": "target-native",
+		        "representation": "named-map",
 		      },
 		    ],
-		    "skipped": 2,
-		    "validations": [],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		}
 	`);
@@ -88,50 +118,65 @@ test("css-modules -> sass -> css-modules: retains edge semantics without silent 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const styles = { "card": padding: 1rem; color: theme.foreground;, "cardTitle": font-weight: 600; };
-		export default styles;",
+		    "code": ".card{padding:1rem;color:theme.foreground}
+
+		.cardTitle{font-weight:600}",
 		    "converted": 2,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "target-native",
+		        "representation": "named-map",
+		      },
+		      {
+		        "outcome": "target-native",
+		        "representation": "named-map",
+		      },
+		    ],
 		    "residuals": [],
 		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "2 residual conversion(s)",
-		        ],
-		        "lossiness": "lossy",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		      {
-		        "differences": [
-		          "1 residual conversion(s)",
-		        ],
-		        "lossiness": "lossy",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		export const styles = { "card": padding: 1rem; color: theme.foreground;, "cardTitle": font-weight: 600; };
-		export default styles;",
-		    "converted": 0,
-		    "outcomes": [],
-		    "residuals": [
+		    "code": ".card{padding:1rem;color:theme.foreground}
+
+		.cardTitle{font-weight:600}",
+		    "converted": 2,
+		    "outcomes": [
 		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
+		        "outcome": "target-native",
+		        "representation": "named-map",
 		      },
 		      {
-		        "hint": "stylesheet migration requires a single local class selector",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "outcome": "target-native",
+		        "representation": "named-map",
 		      },
 		    ],
-		    "skipped": 2,
-		    "validations": [],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		}
 	`);
@@ -158,94 +203,110 @@ test("css-modules -> sass -> css-modules: preserves concrete theme and project c
 		  "amber": {
 		    "forward": {
 		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting)
+		      "code": "// pandwind:migrate-skip (lowering-residual: dynamic)
 		.card { color: \${theme.colors.brand}; padding: 1rem; }
 		.cardTitle { font-weight: 600; }",
 		      "converted": 0,
-		      "outcomes": [],
-		      "residuals": [
+		      "outcomes": [
 		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
-		          "preserved": undefined,
+		          "outcome": "residual",
+		          "representation": "residual",
 		        },
 		        {
-		          "hint": "nested stylesheet rules require selector-aware lowering",
-		          "kind": "nesting",
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		      ],
+		      "residuals": [
+		        {
+		          "hint": "authored stylesheet values must be statically resolved",
+		          "kind": "dynamic",
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 2,
+		      "skipped": 1,
 		      "validations": [],
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		// pandwind:migrate-skip (lowering-residual: parse, nesting)
+		      "code": "// pandwind:migrate-skip (lowering-residual: capability)
+		// pandwind:migrate-skip (lowering-residual: dynamic)
 		.card { color: \${theme.colors.brand}; padding: 1rem; }
 		.cardTitle { font-weight: 600; }",
 		      "converted": 0,
-		      "outcomes": [],
-		      "residuals": [
+		      "outcomes": [
 		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
-		          "preserved": undefined,
+		          "outcome": "residual",
+		          "representation": "residual",
 		        },
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		      ],
+		      "residuals": [
 		        {
 		          "hint": "stylesheet migration requires a single local class selector",
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 2,
+		      "skipped": 1,
 		      "validations": [],
 		    },
 		  },
 		  "blue": {
 		    "forward": {
 		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting)
+		      "code": "// pandwind:migrate-skip (lowering-residual: dynamic)
 		.card { color: \${theme.colors.brand}; padding: 1rem; }
 		.cardTitle { font-weight: 600; }",
 		      "converted": 0,
-		      "outcomes": [],
-		      "residuals": [
+		      "outcomes": [
 		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
-		          "preserved": undefined,
+		          "outcome": "residual",
+		          "representation": "residual",
 		        },
 		        {
-		          "hint": "nested stylesheet rules require selector-aware lowering",
-		          "kind": "nesting",
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		      ],
+		      "residuals": [
+		        {
+		          "hint": "authored stylesheet values must be statically resolved",
+		          "kind": "dynamic",
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 2,
+		      "skipped": 1,
 		      "validations": [],
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		// pandwind:migrate-skip (lowering-residual: parse, nesting)
+		      "code": "// pandwind:migrate-skip (lowering-residual: capability)
+		// pandwind:migrate-skip (lowering-residual: dynamic)
 		.card { color: \${theme.colors.brand}; padding: 1rem; }
 		.cardTitle { font-weight: 600; }",
 		      "converted": 0,
-		      "outcomes": [],
-		      "residuals": [
+		      "outcomes": [
 		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
-		          "preserved": undefined,
+		          "outcome": "residual",
+		          "representation": "residual",
 		        },
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		      ],
+		      "residuals": [
 		        {
 		          "hint": "stylesheet migration requires a single local class selector",
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 2,
+		      "skipped": 1,
 		      "validations": [],
 		    },
 		  },
@@ -264,50 +325,65 @@ test("css-modules -> sass -> css-modules: resolves token references across both 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const styles = { "card": padding: 1rem; color: var(--colors-brand);, "cardTitle": font-weight: 600; };
-		export default styles;",
+		    "code": ".card{padding:1rem;color:var(--colors-brand)}
+
+		.cardTitle{font-weight:600}",
 		    "converted": 2,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "target-native",
+		        "representation": "named-map",
+		      },
+		      {
+		        "outcome": "target-native",
+		        "representation": "named-map",
+		      },
+		    ],
 		    "residuals": [],
 		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "2 residual conversion(s)",
-		        ],
-		        "lossiness": "lossy",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		      {
-		        "differences": [
-		          "1 residual conversion(s)",
-		        ],
-		        "lossiness": "lossy",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		export const styles = { "card": padding: 1rem; color: var(--colors-brand);, "cardTitle": font-weight: 600; };
-		export default styles;",
-		    "converted": 0,
-		    "outcomes": [],
-		    "residuals": [
+		    "code": ".card{padding:1rem;color:var(--colors-brand)}
+
+		.cardTitle{font-weight:600}",
+		    "converted": 2,
+		    "outcomes": [
 		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
+		        "outcome": "target-native",
+		        "representation": "named-map",
 		      },
 		      {
-		        "hint": "stylesheet migration requires a single local class selector",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "outcome": "target-native",
+		        "representation": "named-map",
 		      },
 		    ],
-		    "skipped": 2,
-		    "validations": [],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		}
 	`);

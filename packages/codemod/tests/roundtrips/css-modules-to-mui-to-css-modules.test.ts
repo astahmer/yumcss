@@ -47,7 +47,16 @@ test("css-modules -> mui -> css-modules: preserves an actionable concrete round 
 		.card { color: red; padding: 1rem; }
 		.cardTitle { font-weight: 600; }",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
 		      {
 		        "hint": "MUI sx styles require a host component prop; no standalone sx() API exists",
@@ -93,7 +102,16 @@ test("css-modules -> mui -> css-modules: retains edge semantics without silent l
 		.card { color: theme.foreground; padding: 1rem; }
 		.cardTitle { font-weight: 600; }",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
 		      {
 		        "hint": "MUI sx styles require a host component prop; no standalone sx() API exists",
@@ -145,22 +163,21 @@ test("css-modules -> mui -> css-modules: preserves concrete theme and project co
 		  "amber": {
 		    "forward": {
 		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting, host-framework)
+		      "code": "// pandwind:migrate-skip (lowering-residual: host-framework)
 		.card { color: \${theme.colors.brand}; padding: 1rem; }
 		.cardTitle { font-weight: 600; }",
 		      "converted": 0,
-		      "outcomes": [],
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		      ],
 		      "residuals": [
-		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "nested stylesheet rules require selector-aware lowering",
-		          "kind": "nesting",
-		          "preserved": undefined,
-		        },
 		        {
 		          "hint": "MUI sx styles require a host component prop; no standalone sx() API exists",
 		          "kind": "host-framework",
@@ -172,12 +189,12 @@ test("css-modules -> mui -> css-modules: preserves concrete theme and project co
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 4,
+		      "skipped": 2,
 		      "validations": [],
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting, host-framework)
+		      "code": "// pandwind:migrate-skip (lowering-residual: host-framework)
 		.card { color: \${theme.colors.brand}; padding: 1rem; }
 		.cardTitle { font-weight: 600; }",
 		      "converted": 0,
@@ -190,22 +207,21 @@ test("css-modules -> mui -> css-modules: preserves concrete theme and project co
 		  "blue": {
 		    "forward": {
 		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting, host-framework)
+		      "code": "// pandwind:migrate-skip (lowering-residual: host-framework)
 		.card { color: \${theme.colors.brand}; padding: 1rem; }
 		.cardTitle { font-weight: 600; }",
 		      "converted": 0,
-		      "outcomes": [],
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		      ],
 		      "residuals": [
-		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "nested stylesheet rules require selector-aware lowering",
-		          "kind": "nesting",
-		          "preserved": undefined,
-		        },
 		        {
 		          "hint": "MUI sx styles require a host component prop; no standalone sx() API exists",
 		          "kind": "host-framework",
@@ -217,12 +233,12 @@ test("css-modules -> mui -> css-modules: preserves concrete theme and project co
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 4,
+		      "skipped": 2,
 		      "validations": [],
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting, host-framework)
+		      "code": "// pandwind:migrate-skip (lowering-residual: host-framework)
 		.card { color: \${theme.colors.brand}; padding: 1rem; }
 		.cardTitle { font-weight: 600; }",
 		      "converted": 0,
@@ -251,7 +267,16 @@ test("css-modules -> mui -> css-modules: resolves token references across both c
 		.card { color: var(--colors-brand); padding: 1rem; }
 		.cardTitle { font-weight: 600; }",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
 		      {
 		        "hint": "MUI sx styles require a host component prop; no standalone sx() API exists",

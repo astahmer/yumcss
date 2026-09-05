@@ -79,8 +79,146 @@ describe("non-CSS-in-JS source adapter contract", () => {
 			  "dependencies": [],
 			  "fileChanges": [],
 			  "generatedFiles": [],
-			  "loweringPlans": [],
-			  "outcomes": [],
+			  "loweringPlans": [
+			    {
+			      "applied": [],
+			      "availableRepresentations": [
+			        "static",
+			        "named-map",
+			        "residual",
+			      ],
+			      "program": {
+			        "canonicalization": undefined,
+			        "compositions": [],
+			        "declarations": [],
+			        "emissionHints": [],
+			        "plugins": [],
+			        "residuals": [],
+			        "rules": [
+			          {
+			            "children": [],
+			            "conditions": [],
+			            "declarations": [
+			              {
+			                "conditions": [],
+			                "property": "margin",
+			                "value": {
+			                  "kind": "literal",
+			                  "value": "0",
+			                },
+			              },
+			            ],
+			            "kind": "global",
+			            "name": undefined,
+			            "order": 0,
+			            "selector": ":global(.reset)",
+			            "source": {
+			              "adapter": "css-modules",
+			              "end": 30,
+			              "file": "styles.module.css",
+			              "start": 0,
+			            },
+			          },
+			        ],
+			        "runtime": undefined,
+			        "schema": "pandwind.style-program/4",
+			        "source": {
+			          "adapter": "css-modules",
+			          "end": 30,
+			          "file": "styles.module.css",
+			          "start": 0,
+			        },
+			        "sourceMap": [
+			          {
+			            "adapter": "css-modules",
+			            "end": 30,
+			            "file": "styles.module.css",
+			            "start": 0,
+			          },
+			        ],
+			        "themes": [],
+			      },
+			      "representation": "static",
+			      "residuals": [],
+			    },
+			    {
+			      "applied": [],
+			      "availableRepresentations": [
+			        "static",
+			        "named-map",
+			        "residual",
+			      ],
+			      "program": {
+			        "canonicalization": undefined,
+			        "compositions": [],
+			        "declarations": [],
+			        "emissionHints": [],
+			        "plugins": [],
+			        "residuals": [],
+			        "rules": [
+			          {
+			            "children": [],
+			            "conditions": [],
+			            "declarations": [
+			              {
+			                "conditions": [],
+			                "property": "color",
+			                "value": {
+			                  "kind": "literal",
+			                  "value": "red",
+			                },
+			              },
+			            ],
+			            "kind": "style",
+			            "name": "card",
+			            "order": 31,
+			            "selector": ".card",
+			            "source": {
+			              "adapter": "css-modules",
+			              "end": 52,
+			              "file": "styles.module.css",
+			              "start": 31,
+			            },
+			          },
+			        ],
+			        "runtime": undefined,
+			        "schema": "pandwind.style-program/4",
+			        "source": {
+			          "adapter": "css-modules",
+			          "end": 52,
+			          "file": "styles.module.css",
+			          "start": 31,
+			        },
+			        "sourceMap": [
+			          {
+			            "adapter": "css-modules",
+			            "end": 52,
+			            "file": "styles.module.css",
+			            "start": 31,
+			          },
+			        ],
+			        "themes": [],
+			      },
+			      "representation": "named-map",
+			      "residuals": [],
+			    },
+			  ],
+			  "outcomes": [
+			    {
+			      "detail": "stylesheet migration preserved the source with residuals",
+			      "outcome": "residual",
+			      "representation": "residual",
+			      "sourceStart": 0,
+			      "sourceText": ":global(.reset) { margin: 0; }",
+			    },
+			    {
+			      "detail": "stylesheet migration preserved the source with residuals",
+			      "outcome": "residual",
+			      "representation": "residual",
+			      "sourceStart": 31,
+			      "sourceText": ".card { color: red; }",
+			    },
+			  ],
 			  "reports": [],
 			  "residuals": [
 			    {
@@ -128,8 +266,77 @@ describe("non-CSS-in-JS source adapter contract", () => {
 			  ],
 			  "fileChanges": [],
 			  "generatedFiles": [],
-			  "loweringPlans": [],
-			  "outcomes": [],
+			  "loweringPlans": [
+			    {
+			      "applied": [],
+			      "availableRepresentations": [
+			        "static",
+			        "named-map",
+			        "residual",
+			      ],
+			      "program": {
+			        "canonicalization": undefined,
+			        "compositions": [],
+			        "declarations": [],
+			        "emissionHints": [],
+			        "plugins": [],
+			        "residuals": [],
+			        "rules": [
+			          {
+			            "children": [],
+			            "conditions": [],
+			            "declarations": [
+			              {
+			                "conditions": [],
+			                "property": "color",
+			                "value": {
+			                  "kind": "literal",
+			                  "value": "red",
+			                },
+			              },
+			            ],
+			            "kind": "style",
+			            "name": "card",
+			            "order": 0,
+			            "selector": ".card",
+			            "source": {
+			              "adapter": "css-modules",
+			              "end": 21,
+			              "file": "styles.module.css",
+			              "start": 0,
+			            },
+			          },
+			        ],
+			        "runtime": undefined,
+			        "schema": "pandwind.style-program/4",
+			        "source": {
+			          "adapter": "css-modules",
+			          "end": 21,
+			          "file": "styles.module.css",
+			          "start": 0,
+			        },
+			        "sourceMap": [
+			          {
+			            "adapter": "css-modules",
+			            "end": 21,
+			            "file": "styles.module.css",
+			            "start": 0,
+			          },
+			        ],
+			        "themes": [],
+			      },
+			      "representation": "named-map",
+			      "residuals": [],
+			    },
+			  ],
+			  "outcomes": [
+			    {
+			      "outcome": "target-native",
+			      "representation": "named-map",
+			      "sourceStart": 0,
+			      "sourceText": ".card { color: red; }",
+			    },
+			  ],
 			  "outputExtension": ".ts",
 			  "reports": [],
 			  "residuals": [],

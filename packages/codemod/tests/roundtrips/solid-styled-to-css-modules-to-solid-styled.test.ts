@@ -77,13 +77,13 @@ test("solid-styled -> css-modules -> solid-styled: preserves an actionable concr
 		styled.div({ color: "red", padding: "1rem" });
 		export const App = () => <Card />;",
 		    "converted": 0,
-		    "outcomes": [],
-		    "residuals": [
+		    "outcomes": [
 		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
+		        "outcome": "residual",
+		        "representation": "residual",
 		      },
+		    ],
+		    "residuals": [
 		      {
 		        "hint": "stylesheet statement is preserved outside the style program",
 		        "kind": "parse",
@@ -105,7 +105,7 @@ test("solid-styled -> css-modules -> solid-styled: preserves an actionable concr
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 5,
+		    "skipped": 4,
 		    "validations": [],
 		  },
 		}
@@ -162,13 +162,13 @@ test("solid-styled -> css-modules -> solid-styled: retains edge semantics withou
 		styled.div({ color: theme.foreground, padding: "1rem" });
 		export const App = () => <Card />;",
 		    "converted": 0,
-		    "outcomes": [],
-		    "residuals": [
+		    "outcomes": [
 		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
+		        "outcome": "residual",
+		        "representation": "residual",
 		      },
+		    ],
+		    "residuals": [
 		      {
 		        "hint": "stylesheet statement is preserved outside the style program",
 		        "kind": "parse",
@@ -190,7 +190,7 @@ test("solid-styled -> css-modules -> solid-styled: retains edge semantics withou
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 5,
+		    "skipped": 4,
 		    "validations": [],
 		  },
 		}
@@ -252,13 +252,13 @@ test("solid-styled -> css-modules -> solid-styled: preserves concrete theme and 
 		styled.div({ color: theme.colors.brand, padding: "1rem" });
 		export const App = () => <Card />;",
 		      "converted": 0,
-		      "outcomes": [],
-		      "residuals": [
+		      "outcomes": [
 		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
-		          "preserved": undefined,
+		          "outcome": "residual",
+		          "representation": "residual",
 		        },
+		      ],
+		      "residuals": [
 		        {
 		          "hint": "stylesheet statement is preserved outside the style program",
 		          "kind": "parse",
@@ -280,7 +280,7 @@ test("solid-styled -> css-modules -> solid-styled: preserves concrete theme and 
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 5,
+		      "skipped": 4,
 		      "validations": [],
 		    },
 		  },
@@ -321,13 +321,13 @@ test("solid-styled -> css-modules -> solid-styled: preserves concrete theme and 
 		styled.div({ color: theme.colors.brand, padding: "1rem" });
 		export const App = () => <Card />;",
 		      "converted": 0,
-		      "outcomes": [],
-		      "residuals": [
+		      "outcomes": [
 		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
-		          "preserved": undefined,
+		          "outcome": "residual",
+		          "representation": "residual",
 		        },
+		      ],
+		      "residuals": [
 		        {
 		          "hint": "stylesheet statement is preserved outside the style program",
 		          "kind": "parse",
@@ -349,7 +349,7 @@ test("solid-styled -> css-modules -> solid-styled: preserves concrete theme and 
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 5,
+		      "skipped": 4,
 		      "validations": [],
 		    },
 		  },
@@ -402,13 +402,13 @@ test("solid-styled -> css-modules -> solid-styled: resolves token references acr
 		styled.div({ color: "$colors.brand", padding: "1rem" });
 		export const App = () => <Card />;",
 		    "converted": 0,
-		    "outcomes": [],
-		    "residuals": [
+		    "outcomes": [
 		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
+		        "outcome": "residual",
+		        "representation": "residual",
 		      },
+		    ],
+		    "residuals": [
 		      {
 		        "hint": "stylesheet statement is preserved outside the style program",
 		        "kind": "parse",
@@ -430,7 +430,7 @@ test("solid-styled -> css-modules -> solid-styled: resolves token references acr
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 5,
+		    "skipped": 4,
 		    "validations": [],
 		  },
 		}

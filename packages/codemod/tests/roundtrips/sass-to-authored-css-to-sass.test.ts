@@ -47,7 +47,12 @@ test("sass -> authored-css -> sass: preserves an actionable concrete round trip"
 		.card { color: red; padding: 1rem; &__title { font-weight: 600; } }
 		$title-color: blue;",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
 		      {
 		        "hint": "preprocessor features require the official compiler to inline before authored-css output",
@@ -65,7 +70,12 @@ test("sass -> authored-css -> sass: preserves an actionable concrete round trip"
 		.card { color: red; padding: 1rem; &__title { font-weight: 600; } }
 		$title-color: blue;",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
 		      {
 		        "hint": "stylesheet statement is preserved outside the style program",
@@ -100,7 +110,12 @@ test("sass -> authored-css -> sass: retains edge semantics without silent loss",
 		.card { color: theme.foreground; padding: 1rem; &__title { font-weight: 600; } }
 		$title-color: blue;",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
 		      {
 		        "hint": "preprocessor features require the official compiler to inline before authored-css output",
@@ -118,7 +133,12 @@ test("sass -> authored-css -> sass: retains edge semantics without silent loss",
 		.card { color: theme.foreground; padding: 1rem; &__title { font-weight: 600; } }
 		$title-color: blue;",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
 		      {
 		        "hint": "stylesheet statement is preserved outside the style program",
@@ -163,7 +183,12 @@ test("sass -> authored-css -> sass: preserves concrete theme and project context
 		.card { color: \${theme.colors.brand}; padding: 1rem; &__title { font-weight: 600; } }
 		$title-color: blue;",
 		      "converted": 0,
-		      "outcomes": [],
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		      ],
 		      "residuals": [
 		        {
 		          "hint": "preprocessor features require the official compiler to inline before authored-css output",
@@ -181,13 +206,13 @@ test("sass -> authored-css -> sass: preserves concrete theme and project context
 		.card { color: \${theme.colors.brand}; padding: 1rem; &__title { font-weight: 600; } }
 		$title-color: blue;",
 		      "converted": 0,
-		      "outcomes": [],
-		      "residuals": [
+		      "outcomes": [
 		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
-		          "preserved": undefined,
+		          "outcome": "residual",
+		          "representation": "residual",
 		        },
+		      ],
+		      "residuals": [
 		        {
 		          "hint": "stylesheet statement is preserved outside the style program",
 		          "kind": "parse",
@@ -199,7 +224,7 @@ test("sass -> authored-css -> sass: preserves concrete theme and project context
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 3,
+		      "skipped": 2,
 		      "validations": [],
 		    },
 		  },
@@ -210,7 +235,12 @@ test("sass -> authored-css -> sass: preserves concrete theme and project context
 		.card { color: \${theme.colors.brand}; padding: 1rem; &__title { font-weight: 600; } }
 		$title-color: blue;",
 		      "converted": 0,
-		      "outcomes": [],
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		      ],
 		      "residuals": [
 		        {
 		          "hint": "preprocessor features require the official compiler to inline before authored-css output",
@@ -228,13 +258,13 @@ test("sass -> authored-css -> sass: preserves concrete theme and project context
 		.card { color: \${theme.colors.brand}; padding: 1rem; &__title { font-weight: 600; } }
 		$title-color: blue;",
 		      "converted": 0,
-		      "outcomes": [],
-		      "residuals": [
+		      "outcomes": [
 		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
-		          "preserved": undefined,
+		          "outcome": "residual",
+		          "representation": "residual",
 		        },
+		      ],
+		      "residuals": [
 		        {
 		          "hint": "stylesheet statement is preserved outside the style program",
 		          "kind": "parse",
@@ -246,7 +276,7 @@ test("sass -> authored-css -> sass: preserves concrete theme and project context
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 3,
+		      "skipped": 2,
 		      "validations": [],
 		    },
 		  },
@@ -269,7 +299,12 @@ test("sass -> authored-css -> sass: resolves token references across both concre
 		.card { color: var(--colors-brand); padding: 1rem; &__title { font-weight: 600; } }
 		$title-color: blue;",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
 		      {
 		        "hint": "preprocessor features require the official compiler to inline before authored-css output",
@@ -287,7 +322,12 @@ test("sass -> authored-css -> sass: resolves token references across both concre
 		.card { color: var(--colors-brand); padding: 1rem; &__title { font-weight: 600; } }
 		$title-color: blue;",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
 		      {
 		        "hint": "stylesheet statement is preserved outside the style program",

@@ -47,7 +47,12 @@ test("less -> tailwind -> less: preserves an actionable concrete round trip", ()
 		.card { color: red; padding: 1rem; .title { font-weight: 600; } }
 		@title-color: blue;",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
 		      {
 		        "hint": "stylesheet statement is preserved outside the style program",
@@ -88,7 +93,12 @@ test("less -> tailwind -> less: retains edge semantics without silent loss", () 
 		.card { color: theme.foreground; padding: 1rem; .title { font-weight: 600; } }
 		@title-color: blue;",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
 		      {
 		        "hint": "stylesheet statement is preserved outside the style program",
@@ -135,34 +145,34 @@ test("less -> tailwind -> less: preserves concrete theme and project context var
 		  "amber": {
 		    "forward": {
 		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse, rule-level)
+		      "code": "// pandwind:migrate-skip (lowering-residual: parse, dynamic)
 		.card { color: \${theme.colors.brand}; padding: 1rem; .title { font-weight: 600; } }
 		@title-color: blue;",
 		      "converted": 0,
-		      "outcomes": [],
-		      "residuals": [
+		      "outcomes": [
 		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
-		          "preserved": undefined,
+		          "outcome": "residual",
+		          "representation": "residual",
 		        },
+		      ],
+		      "residuals": [
 		        {
 		          "hint": "stylesheet statement is preserved outside the style program",
 		          "kind": "parse",
 		          "preserved": undefined,
 		        },
 		        {
-		          "hint": "Tailwind class output supports style declarations and nested conditions only",
-		          "kind": "rule-level",
+		          "hint": "Tailwind output requires a literal declaration or a host runtime carrier",
+		          "kind": "dynamic",
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 3,
+		      "skipped": 2,
 		      "validations": [],
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse, rule-level)
+		      "code": "// pandwind:migrate-skip (lowering-residual: parse, dynamic)
 		.card { color: \${theme.colors.brand}; padding: 1rem; .title { font-weight: 600; } }
 		@title-color: blue;",
 		      "converted": 0,
@@ -175,34 +185,34 @@ test("less -> tailwind -> less: preserves concrete theme and project context var
 		  "blue": {
 		    "forward": {
 		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse, rule-level)
+		      "code": "// pandwind:migrate-skip (lowering-residual: parse, dynamic)
 		.card { color: \${theme.colors.brand}; padding: 1rem; .title { font-weight: 600; } }
 		@title-color: blue;",
 		      "converted": 0,
-		      "outcomes": [],
-		      "residuals": [
+		      "outcomes": [
 		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
-		          "preserved": undefined,
+		          "outcome": "residual",
+		          "representation": "residual",
 		        },
+		      ],
+		      "residuals": [
 		        {
 		          "hint": "stylesheet statement is preserved outside the style program",
 		          "kind": "parse",
 		          "preserved": undefined,
 		        },
 		        {
-		          "hint": "Tailwind class output supports style declarations and nested conditions only",
-		          "kind": "rule-level",
+		          "hint": "Tailwind output requires a literal declaration or a host runtime carrier",
+		          "kind": "dynamic",
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 3,
+		      "skipped": 2,
 		      "validations": [],
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse, rule-level)
+		      "code": "// pandwind:migrate-skip (lowering-residual: parse, dynamic)
 		.card { color: \${theme.colors.brand}; padding: 1rem; .title { font-weight: 600; } }
 		@title-color: blue;",
 		      "converted": 0,
@@ -231,7 +241,12 @@ test("less -> tailwind -> less: resolves token references across both concrete l
 		.card { color: var(--colors-brand); padding: 1rem; .title { font-weight: 600; } }
 		@title-color: blue;",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
 		      {
 		        "hint": "stylesheet statement is preserved outside the style program",

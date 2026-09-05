@@ -78,13 +78,13 @@ test("chakra-ui -> authored-css -> chakra-ui: preserves an actionable concrete r
 		export const App = () => // pandwind:migrate-skip (route: chakra-ui -> authored-css | lowering-residual: validation)
 		<Box bg="tomato" p="4" />;",
 		    "converted": 0,
-		    "outcomes": [],
-		    "residuals": [
+		    "outcomes": [
 		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
+		        "outcome": "residual",
+		        "representation": "residual",
 		      },
+		    ],
+		    "residuals": [
 		      {
 		        "hint": "stylesheet statement is preserved outside the style program",
 		        "kind": "parse",
@@ -101,7 +101,7 @@ test("chakra-ui -> authored-css -> chakra-ui: preserves an actionable concrete r
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 4,
+		    "skipped": 3,
 		    "validations": [],
 		  },
 		}
@@ -156,13 +156,13 @@ test("chakra-ui -> authored-css -> chakra-ui: retains edge semantics without sil
 		<Box bg="tomato" p="4" />;
 		const unresolvedStyle = runtimeTheme.foreground;",
 		    "converted": 0,
-		    "outcomes": [],
-		    "residuals": [
+		    "outcomes": [
 		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
+		        "outcome": "residual",
+		        "representation": "residual",
 		      },
+		    ],
+		    "residuals": [
 		      {
 		        "hint": "stylesheet statement is preserved outside the style program",
 		        "kind": "parse",
@@ -184,7 +184,7 @@ test("chakra-ui -> authored-css -> chakra-ui: retains edge semantics without sil
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 5,
+		    "skipped": 4,
 		    "validations": [],
 		  },
 		}
@@ -244,18 +244,17 @@ test("chakra-ui -> authored-css -> chakra-ui: preserves concrete theme and proje
 		export const App = () => // pandwind:migrate-skip (route: chakra-ui -> authored-css | lowering-residual: dynamic | capability-blocked: dynamic-values: dynamic: theme.colors.brand | available: residual)
 		<Box bg={theme.colors.brand} p="4" />;",
 		      "converted": 0,
-		      "outcomes": [],
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		      ],
 		      "residuals": [
-		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
 		        {
 		          "hint": "stylesheet statement is preserved outside the style program",
 		          "kind": "parse",
@@ -277,7 +276,7 @@ test("chakra-ui -> authored-css -> chakra-ui: preserves concrete theme and proje
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 6,
+		      "skipped": 4,
 		      "validations": [],
 		    },
 		  },
@@ -316,18 +315,17 @@ test("chakra-ui -> authored-css -> chakra-ui: preserves concrete theme and proje
 		export const App = () => // pandwind:migrate-skip (route: chakra-ui -> authored-css | lowering-residual: dynamic | capability-blocked: dynamic-values: dynamic: theme.colors.brand | available: residual)
 		<Box bg={theme.colors.brand} p="4" />;",
 		      "converted": 0,
-		      "outcomes": [],
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		      ],
 		      "residuals": [
-		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
 		        {
 		          "hint": "stylesheet statement is preserved outside the style program",
 		          "kind": "parse",
@@ -349,7 +347,7 @@ test("chakra-ui -> authored-css -> chakra-ui: preserves concrete theme and proje
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 6,
+		      "skipped": 4,
 		      "validations": [],
 		    },
 		  },
@@ -403,13 +401,13 @@ test("chakra-ui -> authored-css -> chakra-ui: resolves token references across b
 		export const App = () => // pandwind:migrate-skip (route: chakra-ui -> authored-css | lowering-residual: validation)
 		<Box bg="$colors.brand" p="4" />;",
 		    "converted": 0,
-		    "outcomes": [],
-		    "residuals": [
+		    "outcomes": [
 		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
+		        "outcome": "residual",
+		        "representation": "residual",
 		      },
+		    ],
+		    "residuals": [
 		      {
 		        "hint": "stylesheet statement is preserved outside the style program",
 		        "kind": "parse",
@@ -426,7 +424,7 @@ test("chakra-ui -> authored-css -> chakra-ui: resolves token references across b
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 4,
+		    "skipped": 3,
 		    "validations": [],
 		  },
 		}

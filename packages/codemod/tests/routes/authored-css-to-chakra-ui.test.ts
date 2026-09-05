@@ -45,7 +45,16 @@ test("authored-css -> chakra-ui: migrates concrete authored-css syntax to chakra
 		.card { color: red; padding: 1rem; }
 		.card:hover { color: blue; }",
 		  "converted": 0,
-		  "outcomes": [],
+		  "outcomes": [
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		  ],
 		  "residuals": [
 		    {
 		      "hint": "stylesheet migration requires a single local class selector",
@@ -70,7 +79,16 @@ test("authored-css -> chakra-ui: carries concrete authored-css dynamics or edge 
 		.card { color: theme.foreground; padding: 1rem; }
 		.card:hover { color: blue; }",
 		  "converted": 0,
-		  "outcomes": [],
+		  "outcomes": [
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		  ],
 		  "residuals": [
 		    {
 		      "hint": "stylesheet migration requires a single local class selector",
@@ -95,56 +113,54 @@ test("authored-css -> chakra-ui: lowers concrete theme and project context varia
 		{
 		  "amber": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting, capability)
+		    "code": "// pandwind:migrate-skip (lowering-residual: capability)
 		.card { color: \${theme.colors.brand}; padding: 1rem; }
 		.card:hover { color: blue; }",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
-		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "nested stylesheet rules require selector-aware lowering",
-		        "kind": "nesting",
-		        "preserved": undefined,
-		      },
 		      {
 		        "hint": "stylesheet migration requires a single local class selector",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 3,
+		    "skipped": 1,
 		    "validations": [],
 		  },
 		  "blue": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting, capability)
+		    "code": "// pandwind:migrate-skip (lowering-residual: capability)
 		.card { color: \${theme.colors.brand}; padding: 1rem; }
 		.card:hover { color: blue; }",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
-		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "nested stylesheet rules require selector-aware lowering",
-		        "kind": "nesting",
-		        "preserved": undefined,
-		      },
 		      {
 		        "hint": "stylesheet migration requires a single local class selector",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 3,
+		    "skipped": 1,
 		    "validations": [],
 		  },
 		}
@@ -162,7 +178,16 @@ test("authored-css -> chakra-ui: resolves concrete token references with project
 		.card { color: var(--colors-brand); padding: 1rem; }
 		.card:hover { color: blue; }",
 		  "converted": 0,
-		  "outcomes": [],
+		  "outcomes": [
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		  ],
 		  "residuals": [
 		    {
 		      "hint": "stylesheet migration requires a single local class selector",
@@ -188,7 +213,16 @@ test("authored-css -> chakra-ui: preserves malformed concrete authored-css input
 		.card:hover { color: blue; }
 		const unfinished = { /* unfinished authored-css */",
 		  "converted": 0,
-		  "outcomes": [],
+		  "outcomes": [
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		  ],
 		  "residuals": [
 		    {
 		      "hint": "stylesheet block is unbalanced",

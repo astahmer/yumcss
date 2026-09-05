@@ -47,7 +47,16 @@ test("authored-css -> sass -> authored-css: preserves an actionable concrete rou
 		.card { color: red; padding: 1rem; }
 		.card:hover { color: blue; }",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
 		      {
 		        "hint": "stylesheet migration requires a single local class selector",
@@ -65,7 +74,16 @@ test("authored-css -> sass -> authored-css: preserves an actionable concrete rou
 		.card { color: red; padding: 1rem; }
 		.card:hover { color: blue; }",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
 		      {
 		        "hint": "preprocessor features require the official compiler to inline before authored-css output",
@@ -95,7 +113,16 @@ test("authored-css -> sass -> authored-css: retains edge semantics without silen
 		.card { color: theme.foreground; padding: 1rem; }
 		.card:hover { color: blue; }",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
 		      {
 		        "hint": "stylesheet migration requires a single local class selector",
@@ -113,7 +140,16 @@ test("authored-css -> sass -> authored-css: retains edge semantics without silen
 		.card { color: theme.foreground; padding: 1rem; }
 		.card:hover { color: blue; }",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
 		      {
 		        "hint": "preprocessor features require the official compiler to inline before authored-css output",
@@ -149,20 +185,24 @@ test("authored-css -> sass -> authored-css: preserves concrete theme and project
 		  "amber": {
 		    "forward": {
 		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting, capability)
+		      "code": "// pandwind:migrate-skip (lowering-residual: dynamic, capability)
 		.card { color: \${theme.colors.brand}; padding: 1rem; }
 		.card:hover { color: blue; }",
 		      "converted": 0,
-		      "outcomes": [],
-		      "residuals": [
+		      "outcomes": [
 		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
-		          "preserved": undefined,
+		          "outcome": "residual",
+		          "representation": "residual",
 		        },
 		        {
-		          "hint": "nested stylesheet rules require selector-aware lowering",
-		          "kind": "nesting",
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		      ],
+		      "residuals": [
+		        {
+		          "hint": "authored stylesheet values must be statically resolved",
+		          "kind": "dynamic",
 		          "preserved": undefined,
 		        },
 		        {
@@ -171,17 +211,26 @@ test("authored-css -> sass -> authored-css: preserves concrete theme and project
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 3,
+		      "skipped": 2,
 		      "validations": [],
 		    },
 		    "reverse": {
 		      "changed": true,
 		      "code": "// pandwind:migrate-skip (lowering-residual: capability)
-		// pandwind:migrate-skip (lowering-residual: parse, nesting, capability)
+		// pandwind:migrate-skip (lowering-residual: dynamic, capability)
 		.card { color: \${theme.colors.brand}; padding: 1rem; }
 		.card:hover { color: blue; }",
 		      "converted": 0,
-		      "outcomes": [],
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		      ],
 		      "residuals": [
 		        {
 		          "hint": "preprocessor features require the official compiler to inline before authored-css output",
@@ -196,20 +245,24 @@ test("authored-css -> sass -> authored-css: preserves concrete theme and project
 		  "blue": {
 		    "forward": {
 		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting, capability)
+		      "code": "// pandwind:migrate-skip (lowering-residual: dynamic, capability)
 		.card { color: \${theme.colors.brand}; padding: 1rem; }
 		.card:hover { color: blue; }",
 		      "converted": 0,
-		      "outcomes": [],
-		      "residuals": [
+		      "outcomes": [
 		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
-		          "preserved": undefined,
+		          "outcome": "residual",
+		          "representation": "residual",
 		        },
 		        {
-		          "hint": "nested stylesheet rules require selector-aware lowering",
-		          "kind": "nesting",
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		      ],
+		      "residuals": [
+		        {
+		          "hint": "authored stylesheet values must be statically resolved",
+		          "kind": "dynamic",
 		          "preserved": undefined,
 		        },
 		        {
@@ -218,17 +271,26 @@ test("authored-css -> sass -> authored-css: preserves concrete theme and project
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 3,
+		      "skipped": 2,
 		      "validations": [],
 		    },
 		    "reverse": {
 		      "changed": true,
 		      "code": "// pandwind:migrate-skip (lowering-residual: capability)
-		// pandwind:migrate-skip (lowering-residual: parse, nesting, capability)
+		// pandwind:migrate-skip (lowering-residual: dynamic, capability)
 		.card { color: \${theme.colors.brand}; padding: 1rem; }
 		.card:hover { color: blue; }",
 		      "converted": 0,
-		      "outcomes": [],
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		      ],
 		      "residuals": [
 		        {
 		          "hint": "preprocessor features require the official compiler to inline before authored-css output",
@@ -259,7 +321,16 @@ test("authored-css -> sass -> authored-css: resolves token references across bot
 		.card { color: var(--colors-brand); padding: 1rem; }
 		.card:hover { color: blue; }",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
 		      {
 		        "hint": "stylesheet migration requires a single local class selector",
@@ -277,7 +348,16 @@ test("authored-css -> sass -> authored-css: resolves token references across bot
 		.card { color: var(--colors-brand); padding: 1rem; }
 		.card:hover { color: blue; }",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
 		      {
 		        "hint": "preprocessor features require the official compiler to inline before authored-css output",

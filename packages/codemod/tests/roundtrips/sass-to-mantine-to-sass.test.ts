@@ -47,7 +47,12 @@ test("sass -> mantine -> sass: preserves an actionable concrete round trip", () 
 		.card { color: red; padding: 1rem; &__title { font-weight: 600; } }
 		$title-color: blue;",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
 		      {
 		        "hint": "stylesheet statement is preserved outside the style program",
@@ -98,7 +103,12 @@ test("sass -> mantine -> sass: retains edge semantics without silent loss", () =
 		.card { color: theme.foreground; padding: 1rem; &__title { font-weight: 600; } }
 		$title-color: blue;",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
 		      {
 		        "hint": "stylesheet statement is preserved outside the style program",
@@ -159,21 +169,16 @@ test("sass -> mantine -> sass: preserves concrete theme and project context vari
 		.card { color: \${theme.colors.brand}; padding: 1rem; &__title { font-weight: 600; } }
 		$title-color: blue;",
 		      "converted": 0,
-		      "outcomes": [],
-		      "residuals": [
+		      "outcomes": [
 		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
-		          "preserved": undefined,
+		          "outcome": "residual",
+		          "representation": "residual",
 		        },
+		      ],
+		      "residuals": [
 		        {
 		          "hint": "stylesheet statement is preserved outside the style program",
 		          "kind": "parse",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "nested stylesheet rules require selector-aware lowering",
-		          "kind": "nesting",
 		          "preserved": undefined,
 		        },
 		        {
@@ -187,7 +192,7 @@ test("sass -> mantine -> sass: preserves concrete theme and project context vari
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 5,
+		      "skipped": 3,
 		      "validations": [],
 		    },
 		    "reverse": {
@@ -209,21 +214,16 @@ test("sass -> mantine -> sass: preserves concrete theme and project context vari
 		.card { color: \${theme.colors.brand}; padding: 1rem; &__title { font-weight: 600; } }
 		$title-color: blue;",
 		      "converted": 0,
-		      "outcomes": [],
-		      "residuals": [
+		      "outcomes": [
 		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
-		          "preserved": undefined,
+		          "outcome": "residual",
+		          "representation": "residual",
 		        },
+		      ],
+		      "residuals": [
 		        {
 		          "hint": "stylesheet statement is preserved outside the style program",
 		          "kind": "parse",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "nested stylesheet rules require selector-aware lowering",
-		          "kind": "nesting",
 		          "preserved": undefined,
 		        },
 		        {
@@ -237,7 +237,7 @@ test("sass -> mantine -> sass: preserves concrete theme and project context vari
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 5,
+		      "skipped": 3,
 		      "validations": [],
 		    },
 		    "reverse": {
@@ -271,7 +271,12 @@ test("sass -> mantine -> sass: resolves token references across both concrete le
 		.card { color: var(--colors-brand); padding: 1rem; &__title { font-weight: 600; } }
 		$title-color: blue;",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
 		      {
 		        "hint": "stylesheet statement is preserved outside the style program",

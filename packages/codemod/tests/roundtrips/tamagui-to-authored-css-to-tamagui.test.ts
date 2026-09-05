@@ -72,13 +72,13 @@ test("tamagui -> authored-css -> tamagui: preserves an actionable concrete round
 		styled(View, { color: "red", padding: "$4" });
 		export const App = () => <Card />;",
 		    "converted": 0,
-		    "outcomes": [],
-		    "residuals": [
+		    "outcomes": [
 		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
+		        "outcome": "residual",
+		        "representation": "residual",
 		      },
+		    ],
+		    "residuals": [
 		      {
 		        "hint": "stylesheet statement is preserved outside the style program",
 		        "kind": "parse",
@@ -100,7 +100,7 @@ test("tamagui -> authored-css -> tamagui: preserves an actionable concrete round
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 5,
+		    "skipped": 4,
 		    "validations": [],
 		  },
 		}
@@ -152,13 +152,13 @@ test("tamagui -> authored-css -> tamagui: retains edge semantics without silent 
 		styled(View, { color: theme.foreground, padding: "$4" });
 		export const App = () => <Card />;",
 		    "converted": 0,
-		    "outcomes": [],
-		    "residuals": [
+		    "outcomes": [
 		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
+		        "outcome": "residual",
+		        "representation": "residual",
 		      },
+		    ],
+		    "residuals": [
 		      {
 		        "hint": "stylesheet statement is preserved outside the style program",
 		        "kind": "parse",
@@ -180,7 +180,7 @@ test("tamagui -> authored-css -> tamagui: retains edge semantics without silent 
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 5,
+		    "skipped": 4,
 		    "validations": [],
 		  },
 		}
@@ -242,13 +242,13 @@ test("tamagui -> authored-css -> tamagui: preserves concrete theme and project c
 		styled(View, { color: theme.colors.brand, padding: "$4" });
 		export const App = () => <Card />;",
 		      "converted": 0,
-		      "outcomes": [],
-		      "residuals": [
+		      "outcomes": [
 		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
-		          "preserved": undefined,
+		          "outcome": "residual",
+		          "representation": "residual",
 		        },
+		      ],
+		      "residuals": [
 		        {
 		          "hint": "stylesheet statement is preserved outside the style program",
 		          "kind": "parse",
@@ -270,7 +270,7 @@ test("tamagui -> authored-css -> tamagui: preserves concrete theme and project c
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 5,
+		      "skipped": 4,
 		      "validations": [],
 		    },
 		  },
@@ -311,13 +311,13 @@ test("tamagui -> authored-css -> tamagui: preserves concrete theme and project c
 		styled(View, { color: theme.colors.brand, padding: "$4" });
 		export const App = () => <Card />;",
 		      "converted": 0,
-		      "outcomes": [],
-		      "residuals": [
+		      "outcomes": [
 		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
-		          "preserved": undefined,
+		          "outcome": "residual",
+		          "representation": "residual",
 		        },
+		      ],
+		      "residuals": [
 		        {
 		          "hint": "stylesheet statement is preserved outside the style program",
 		          "kind": "parse",
@@ -339,7 +339,7 @@ test("tamagui -> authored-css -> tamagui: preserves concrete theme and project c
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 5,
+		      "skipped": 4,
 		      "validations": [],
 		    },
 		  },
@@ -387,13 +387,13 @@ test("tamagui -> authored-css -> tamagui: resolves token references across both 
 		styled(View, { color: "$colors.brand", padding: "$4" });
 		export const App = () => <Card />;",
 		    "converted": 0,
-		    "outcomes": [],
-		    "residuals": [
+		    "outcomes": [
 		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
+		        "outcome": "residual",
+		        "representation": "residual",
 		      },
+		    ],
+		    "residuals": [
 		      {
 		        "hint": "stylesheet statement is preserved outside the style program",
 		        "kind": "parse",
@@ -415,7 +415,7 @@ test("tamagui -> authored-css -> tamagui: resolves token references across both 
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 5,
+		    "skipped": 4,
 		    "validations": [],
 		  },
 		}

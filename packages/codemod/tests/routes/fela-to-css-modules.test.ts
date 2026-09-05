@@ -41,32 +41,25 @@ test("fela -> css-modules: migrates concrete fela syntax to css-modules", () => 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createRenderer } from "fela";
+		  "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
+
 		const renderer = createRenderer();
-		export const card = // pandwind:migrate-skip (route: fela -> css-modules | lowering-residual: validation)
-		renderer.renderRule(() => ({ color: "red", padding: "1rem" }));",
-		  "converted": 0,
+		export const card = css.class({ "padding": "1rem", "color": "red" });",
+		  "converted": 1,
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
-		      "representation": "static",
+		      "outcome": "portable-artifact",
+		      "representation": "portable-artifact",
 		    },
 		  ],
-		  "residuals": [
-		    {
-		      "hint": "2 residual conversion(s)",
-		      "kind": "validation",
-		      "preserved": undefined,
-		    },
-		  ],
-		  "skipped": 1,
+		  "residuals": [],
+		  "skipped": 0,
 		  "validations": [
 		    {
-		      "differences": [
-		        "2 residual conversion(s)",
-		      ],
-		      "lossiness": "lossy",
-		      "valid": false,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
 		}
@@ -80,32 +73,26 @@ test("fela -> css-modules: carries concrete fela dynamics or edge syntax explici
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createRenderer } from "fela";
+		  "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+		import { pandwindPreset } from "pandwind/preset";
+		const css = createRuntimeCss(pandwindPreset);
+
 		const renderer = createRenderer();
-		export const card = // pandwind:migrate-skip (route: fela -> css-modules | lowering-residual: validation)
-		renderer.renderRule(() => ({ color: theme.foreground, padding: "1rem" }));",
-		  "converted": 0,
+		export const card = css.vars({ "padding": "1rem", "color": theme.foreground });",
+		  "converted": 1,
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
+		      "outcome": "portable-artifact",
 		      "representation": "portable-artifact",
 		    },
 		  ],
-		  "residuals": [
-		    {
-		      "hint": "1 residual conversion(s)",
-		      "kind": "validation",
-		      "preserved": undefined,
-		    },
-		  ],
-		  "skipped": 1,
+		  "residuals": [],
+		  "skipped": 0,
 		  "validations": [
 		    {
-		      "differences": [
-		        "1 residual conversion(s)",
-		      ],
-		      "lossiness": "lossy",
-		      "valid": false,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
 		}
@@ -123,63 +110,51 @@ test("fela -> css-modules: lowers concrete theme and project context variants", 
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { createRenderer } from "fela";
+		    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+		import { pandwindPreset } from "pandwind/preset";
+		const css = createRuntimeCss(pandwindPreset);
+
 		const renderer = createRenderer();
-		export const card = // pandwind:migrate-skip (route: fela -> css-modules | lowering-residual: validation)
-		renderer.renderRule(() => ({ color: theme.colors.brand, padding: "1rem" }));",
-		    "converted": 0,
+		export const card = css.vars({ "padding": "1rem", "color": theme.colors.brand });",
+		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "portable-artifact",
 		        "representation": "portable-artifact",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "1 residual conversion(s)",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "1 residual conversion(s)",
-		        ],
-		        "lossiness": "lossy",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { createRenderer } from "fela";
+		    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+		import { pandwindPreset } from "pandwind/preset";
+		const css = createRuntimeCss(pandwindPreset);
+
 		const renderer = createRenderer();
-		export const card = // pandwind:migrate-skip (route: fela -> css-modules | lowering-residual: validation)
-		renderer.renderRule(() => ({ color: theme.colors.brand, padding: "1rem" }));",
-		    "converted": 0,
+		export const card = css.vars({ "padding": "1rem", "color": theme.colors.brand });",
+		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "portable-artifact",
 		        "representation": "portable-artifact",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "1 residual conversion(s)",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "1 residual conversion(s)",
-		        ],
-		        "lossiness": "lossy",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },
@@ -194,32 +169,25 @@ test("fela -> css-modules: resolves concrete token references with project conte
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createRenderer } from "fela";
+		  "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
+
 		const renderer = createRenderer();
-		export const card = // pandwind:migrate-skip (route: fela -> css-modules | lowering-residual: validation)
-		renderer.renderRule(() => ({ color: "$colors.brand", padding: "1rem" }));",
-		  "converted": 0,
+		export const card = css.class({ "padding": "1rem", "color": "$colors.brand" });",
+		  "converted": 1,
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
-		      "representation": "static",
+		      "outcome": "portable-artifact",
+		      "representation": "portable-artifact",
 		    },
 		  ],
-		  "residuals": [
-		    {
-		      "hint": "2 residual conversion(s)",
-		      "kind": "validation",
-		      "preserved": undefined,
-		    },
-		  ],
-		  "skipped": 1,
+		  "residuals": [],
+		  "skipped": 0,
 		  "validations": [
 		    {
-		      "differences": [
-		        "2 residual conversion(s)",
-		      ],
-		      "lossiness": "lossy",
-		      "valid": false,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
 		}
@@ -233,33 +201,26 @@ test("fela -> css-modules: preserves malformed concrete fela input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createRenderer } from "fela";
+		  "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
+
 		const renderer = createRenderer();
-		export const card = // pandwind:migrate-skip (route: fela -> css-modules | lowering-residual: validation)
-		renderer.renderRule(() => ({ color: "red", padding: "1rem" }));
+		export const card = css.class({ "padding": "1rem", "color": "red" });
 		const unfinished = { /* unfinished fela */",
-		  "converted": 0,
+		  "converted": 1,
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
-		      "representation": "static",
+		      "outcome": "portable-artifact",
+		      "representation": "portable-artifact",
 		    },
 		  ],
-		  "residuals": [
-		    {
-		      "hint": "2 residual conversion(s)",
-		      "kind": "validation",
-		      "preserved": undefined,
-		    },
-		  ],
-		  "skipped": 1,
+		  "residuals": [],
+		  "skipped": 0,
 		  "validations": [
 		    {
-		      "differences": [
-		        "2 residual conversion(s)",
-		      ],
-		      "lossiness": "lossy",
-		      "valid": false,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
 		}

@@ -42,14 +42,14 @@ test("aphrodite -> authored-css: migrates concrete aphrodite syntax to authored-
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "aphrodite";
-		export const styles = // pandwind:migrate-skip (route: aphrodite -> authored-css | capability-blocked: named-rules: named style rule: card | available: static, residual, named-map)
+		export const styles = // pandwind:migrate-skip (route: aphrodite -> authored-css | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
 		StyleSheet.create({ card: { color: "red", padding: "1rem" } });
 		export const App = () => <div className={styles.card} />;",
 		  "converted": 0,
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "named-map",
+		      "representation": "portable-artifact",
 		    },
 		  ],
 		  "residuals": [
@@ -73,25 +73,20 @@ test("aphrodite -> authored-css: carries concrete aphrodite dynamics or edge syn
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "aphrodite";
-		export const styles = // pandwind:migrate-skip (route: aphrodite -> authored-css | lowering-residual: dynamic | capability-blocked: named-rules: named style rule: card; dynamic-values: dynamic: theme.foreground | available: residual)
+		export const styles = // pandwind:migrate-skip (route: aphrodite -> authored-css | capability-blocked: named-rules: named style rule: card | available: residual, portable-artifact)
 		StyleSheet.create({ card: { color: theme.foreground, padding: "1rem" } });
 		export const App = () => <div className={styles.card} />;",
 		  "converted": 0,
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "residual",
+		      "representation": "portable-artifact",
 		    },
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "named-rules: named style rule: card; dynamic-values: dynamic: theme.foreground",
+		      "hint": "named-rules: named style rule: card",
 		      "kind": "capability",
-		      "preserved": undefined,
-		    },
-		    {
-		      "hint": "target lacks runtime dynamic values",
-		      "kind": "dynamic",
 		      "preserved": undefined,
 		    },
 		  ],
@@ -113,25 +108,20 @@ test("aphrodite -> authored-css: lowers concrete theme and project context varia
 		  "amber": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-		export const styles = // pandwind:migrate-skip (route: aphrodite -> authored-css | lowering-residual: dynamic | capability-blocked: named-rules: named style rule: card; dynamic-values: dynamic: theme.colors.brand | available: residual)
+		export const styles = // pandwind:migrate-skip (route: aphrodite -> authored-css | capability-blocked: named-rules: named style rule: card | available: residual, portable-artifact)
 		StyleSheet.create({ card: { color: theme.colors.brand, padding: "1rem" } });
 		export const App = () => <div className={styles.card} />;",
 		    "converted": 0,
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "residual",
+		        "representation": "portable-artifact",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "named-rules: named style rule: card; dynamic-values: dynamic: theme.colors.brand",
+		        "hint": "named-rules: named style rule: card",
 		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "target lacks runtime dynamic values",
-		        "kind": "dynamic",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -141,25 +131,20 @@ test("aphrodite -> authored-css: lowers concrete theme and project context varia
 		  "blue": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-		export const styles = // pandwind:migrate-skip (route: aphrodite -> authored-css | lowering-residual: dynamic | capability-blocked: named-rules: named style rule: card; dynamic-values: dynamic: theme.colors.brand | available: residual)
+		export const styles = // pandwind:migrate-skip (route: aphrodite -> authored-css | capability-blocked: named-rules: named style rule: card | available: residual, portable-artifact)
 		StyleSheet.create({ card: { color: theme.colors.brand, padding: "1rem" } });
 		export const App = () => <div className={styles.card} />;",
 		    "converted": 0,
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "residual",
+		        "representation": "portable-artifact",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "named-rules: named style rule: card; dynamic-values: dynamic: theme.colors.brand",
+		        "hint": "named-rules: named style rule: card",
 		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "target lacks runtime dynamic values",
-		        "kind": "dynamic",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -178,14 +163,14 @@ test("aphrodite -> authored-css: resolves concrete token references with project
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "aphrodite";
-		export const styles = // pandwind:migrate-skip (route: aphrodite -> authored-css | capability-blocked: named-rules: named style rule: card | available: static, residual, named-map)
+		export const styles = // pandwind:migrate-skip (route: aphrodite -> authored-css | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
 		StyleSheet.create({ card: { color: "$colors.brand", padding: "1rem" } });
 		export const App = () => <div className={styles.card} />;",
 		  "converted": 0,
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "named-map",
+		      "representation": "portable-artifact",
 		    },
 		  ],
 		  "residuals": [
@@ -209,7 +194,7 @@ test("aphrodite -> authored-css: preserves malformed concrete aphrodite input", 
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "aphrodite";
-		export const styles = // pandwind:migrate-skip (route: aphrodite -> authored-css | capability-blocked: named-rules: named style rule: card | available: static, residual, named-map)
+		export const styles = // pandwind:migrate-skip (route: aphrodite -> authored-css | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
 		StyleSheet.create({ card: { color: "red", padding: "1rem" } });
 		export const App = () => <div className={styles.card} />;
 		const unfinished = { /* unfinished aphrodite */",
@@ -217,7 +202,7 @@ test("aphrodite -> authored-css: preserves malformed concrete aphrodite input", 
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "named-map",
+		      "representation": "portable-artifact",
 		    },
 		  ],
 		  "residuals": [

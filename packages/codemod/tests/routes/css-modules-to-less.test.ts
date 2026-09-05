@@ -41,13 +41,34 @@ test("css-modules -> less: migrates concrete css-modules syntax to less", () => 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const styles = { "card": padding: 1rem; color: red;, "cardTitle": font-weight: 600; };
-		export default styles;",
+		  "code": ".card{padding:1rem;color:red}
+
+		.cardTitle{font-weight:600}",
 		  "converted": 2,
-		  "outcomes": [],
+		  "outcomes": [
+		    {
+		      "outcome": "target-native",
+		      "representation": "named-map",
+		    },
+		    {
+		      "outcome": "target-native",
+		      "representation": "named-map",
+		    },
+		  ],
 		  "residuals": [],
 		  "skipped": 0,
-		  "validations": [],
+		  "validations": [
+		    {
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
+		    },
+		    {
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
+		    },
+		  ],
 		}
 	`);
 });
@@ -59,26 +80,32 @@ test("css-modules -> less: carries concrete css-modules dynamics or edge syntax 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const styles = { "card": padding: 1rem; color: theme.foreground;, "cardTitle": font-weight: 600; };
-		export default styles;",
+		  "code": ".card{padding:1rem;color:theme.foreground}
+
+		.cardTitle{font-weight:600}",
 		  "converted": 2,
-		  "outcomes": [],
+		  "outcomes": [
+		    {
+		      "outcome": "target-native",
+		      "representation": "named-map",
+		    },
+		    {
+		      "outcome": "target-native",
+		      "representation": "named-map",
+		    },
+		  ],
 		  "residuals": [],
 		  "skipped": 0,
 		  "validations": [
 		    {
-		      "differences": [
-		        "2 residual conversion(s)",
-		      ],
-		      "lossiness": "lossy",
-		      "valid": false,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		    {
-		      "differences": [
-		        "1 residual conversion(s)",
-		      ],
-		      "lossiness": "lossy",
-		      "valid": false,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
 		}
@@ -96,46 +123,54 @@ test("css-modules -> less: lowers concrete theme and project context variants", 
 		{
 		  "amber": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting)
+		    "code": "// pandwind:migrate-skip (lowering-residual: dynamic)
 		.card { color: \${theme.colors.brand}; padding: 1rem; }
 		.cardTitle { font-weight: 600; }",
 		    "converted": 0,
-		    "outcomes": [],
-		    "residuals": [
+		    "outcomes": [
 		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
+		        "outcome": "residual",
+		        "representation": "residual",
 		      },
 		      {
-		        "hint": "nested stylesheet rules require selector-aware lowering",
-		        "kind": "nesting",
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
+		    "residuals": [
+		      {
+		        "hint": "authored stylesheet values must be statically resolved",
+		        "kind": "dynamic",
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 2,
+		    "skipped": 1,
 		    "validations": [],
 		  },
 		  "blue": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting)
+		    "code": "// pandwind:migrate-skip (lowering-residual: dynamic)
 		.card { color: \${theme.colors.brand}; padding: 1rem; }
 		.cardTitle { font-weight: 600; }",
 		    "converted": 0,
-		    "outcomes": [],
-		    "residuals": [
+		    "outcomes": [
 		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
+		        "outcome": "residual",
+		        "representation": "residual",
 		      },
 		      {
-		        "hint": "nested stylesheet rules require selector-aware lowering",
-		        "kind": "nesting",
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
+		    "residuals": [
+		      {
+		        "hint": "authored stylesheet values must be statically resolved",
+		        "kind": "dynamic",
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 2,
+		    "skipped": 1,
 		    "validations": [],
 		  },
 		}
@@ -149,26 +184,32 @@ test("css-modules -> less: resolves concrete token references with project conte
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const styles = { "card": padding: 1rem; color: var(--colors-brand);, "cardTitle": font-weight: 600; };
-		export default styles;",
+		  "code": ".card{padding:1rem;color:var(--colors-brand)}
+
+		.cardTitle{font-weight:600}",
 		  "converted": 2,
-		  "outcomes": [],
+		  "outcomes": [
+		    {
+		      "outcome": "target-native",
+		      "representation": "named-map",
+		    },
+		    {
+		      "outcome": "target-native",
+		      "representation": "named-map",
+		    },
+		  ],
 		  "residuals": [],
 		  "skipped": 0,
 		  "validations": [
 		    {
-		      "differences": [
-		        "2 residual conversion(s)",
-		      ],
-		      "lossiness": "lossy",
-		      "valid": false,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		    {
-		      "differences": [
-		        "1 residual conversion(s)",
-		      ],
-		      "lossiness": "lossy",
-		      "valid": false,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
 		}
@@ -187,7 +228,16 @@ test("css-modules -> less: preserves malformed concrete css-modules input", () =
 		.cardTitle { font-weight: 600; }
 		const unfinished = { /* unfinished css-modules */",
 		  "converted": 0,
-		  "outcomes": [],
+		  "outcomes": [
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		  ],
 		  "residuals": [
 		    {
 		      "hint": "stylesheet block is unbalanced",

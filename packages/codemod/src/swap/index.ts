@@ -261,7 +261,7 @@ export {
 } from "./capabilities.ts";
 export type { AdapterCapabilityMatrix, AdapterCapabilityMatrixEntry } from "./capabilities.ts";
 export { runAdapterMigration, runAdapterMigrationAsync } from "./adapter-migration.ts";
-export type { AdapterMigrationOutcome } from "./adapter-migration.ts";
+export type { AdapterMigrationOutcome } from "./adapter-contract.ts";
 export { CodemodAdapterKit, defineCodemodAdapter } from "./external-adapters.ts";
 export type { ExternalAdapterId } from "./external-adapters.ts";
 export { createBuiltinCodemodCatalog } from "./adapter-catalog.ts";

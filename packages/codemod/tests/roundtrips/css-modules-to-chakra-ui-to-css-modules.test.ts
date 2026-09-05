@@ -47,7 +47,16 @@ test("css-modules -> chakra-ui -> css-modules: preserves an actionable concrete 
 		export const styles = { "card": defaultSystem.css({ padding: "1rem", color: "red" }), "cardTitle": defaultSystem.css({ fontWeight: "600" }) };
 		export default styles;",
 		    "converted": 2,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "target-native",
+		        "representation": "named-map",
+		      },
+		      {
+		        "outcome": "target-native",
+		        "representation": "named-map",
+		      },
+		    ],
 		    "residuals": [],
 		    "skipped": 0,
 		    "validations": [
@@ -66,19 +75,19 @@ test("css-modules -> chakra-ui -> css-modules: preserves an actionable concrete 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
-		export const styles = { "card": // pandwind:migrate-skip (route: chakra-ui -> css-modules | lowering-residual: framework-semantics | available: residual)
-		defaultSystem.css({ padding: "1rem", color: "red" }), "cardTitle": // pandwind:migrate-skip (route: chakra-ui -> css-modules | lowering-residual: framework-semantics | available: residual)
+		export const styles = { "card": // pandwind:migrate-skip (route: chakra-ui -> css-modules | lowering-residual: framework-semantics | available: residual, portable-artifact)
+		defaultSystem.css({ padding: "1rem", color: "red" }), "cardTitle": // pandwind:migrate-skip (route: chakra-ui -> css-modules | lowering-residual: framework-semantics | available: residual, portable-artifact)
 		defaultSystem.css({ fontWeight: "600" }) };
 		export default styles;",
 		    "converted": 0,
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "residual",
+		        "representation": "portable-artifact",
 		      },
 		      {
 		        "outcome": "residual",
-		        "representation": "residual",
+		        "representation": "portable-artifact",
 		      },
 		    ],
 		    "residuals": [
@@ -115,7 +124,16 @@ test("css-modules -> chakra-ui -> css-modules: retains edge semantics without si
 		export const styles = { "card": defaultSystem.css({ padding: "1rem", color: "theme.foreground" }), "cardTitle": defaultSystem.css({ fontWeight: "600" }) };
 		export default styles;",
 		    "converted": 2,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "target-native",
+		        "representation": "named-map",
+		      },
+		      {
+		        "outcome": "target-native",
+		        "representation": "named-map",
+		      },
+		    ],
 		    "residuals": [],
 		    "skipped": 0,
 		    "validations": [
@@ -136,19 +154,19 @@ test("css-modules -> chakra-ui -> css-modules: retains edge semantics without si
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
-		export const styles = { "card": // pandwind:migrate-skip (route: chakra-ui -> css-modules | lowering-residual: framework-semantics | available: residual)
-		defaultSystem.css({ padding: "1rem", color: "theme.foreground" }), "cardTitle": // pandwind:migrate-skip (route: chakra-ui -> css-modules | lowering-residual: framework-semantics | available: residual)
+		export const styles = { "card": // pandwind:migrate-skip (route: chakra-ui -> css-modules | lowering-residual: framework-semantics | available: residual, portable-artifact)
+		defaultSystem.css({ padding: "1rem", color: "theme.foreground" }), "cardTitle": // pandwind:migrate-skip (route: chakra-ui -> css-modules | lowering-residual: framework-semantics | available: residual, portable-artifact)
 		defaultSystem.css({ fontWeight: "600" }) };
 		export default styles;",
 		    "converted": 0,
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "residual",
+		        "representation": "portable-artifact",
 		      },
 		      {
 		        "outcome": "residual",
-		        "representation": "residual",
+		        "representation": "portable-artifact",
 		      },
 		    ],
 		    "residuals": [
@@ -190,71 +208,133 @@ test("css-modules -> chakra-ui -> css-modules: preserves concrete theme and proj
 		{
 		  "amber": {
 		    "forward": {
-		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting)
-		.card { color: \${theme.colors.brand}; padding: 1rem; }
-		.cardTitle { font-weight: 600; }",
+		      "changed": true,
+		      "code": "import { defaultSystem } from "@chakra-ui/react";
+		export const styles = { "card": defaultSystem.css({ padding: "1rem", color: theme.colors.brand }), "cardTitle": defaultSystem.css({ fontWeight: "600" }) };
+		export default styles;",
+		      "converted": 2,
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "custom-property",
+		        },
+		        {
+		          "outcome": "target-native",
+		          "representation": "named-map",
+		        },
+		      ],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
+		    },
+		    "reverse": {
+		      "changed": true,
+		      "code": "import { defaultSystem } from "@chakra-ui/react";
+		export const styles = { "card": // pandwind:migrate-skip (route: chakra-ui -> css-modules | lowering-residual: framework-semantics | available: residual, portable-artifact)
+		defaultSystem.css({ padding: "1rem", color: theme.colors.brand }), "cardTitle": // pandwind:migrate-skip (route: chakra-ui -> css-modules | lowering-residual: framework-semantics | available: residual, portable-artifact)
+		defaultSystem.css({ fontWeight: "600" }) };
+		export default styles;",
 		      "converted": 0,
-		      "outcomes": [],
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "portable-artifact",
+		        },
+		        {
+		          "outcome": "residual",
+		          "representation": "portable-artifact",
+		        },
+		      ],
 		      "residuals": [
 		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
+		          "hint": "target lacks framework semantics",
+		          "kind": "framework-semantics",
 		          "preserved": undefined,
 		        },
 		        {
-		          "hint": "nested stylesheet rules require selector-aware lowering",
-		          "kind": "nesting",
+		          "hint": "target lacks framework semantics",
+		          "kind": "framework-semantics",
 		          "preserved": undefined,
 		        },
 		      ],
 		      "skipped": 2,
-		      "validations": [],
-		    },
-		    "reverse": {
-		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting)
-		.card { color: \${theme.colors.brand}; padding: 1rem; }
-		.cardTitle { font-weight: 600; }",
-		      "converted": 0,
-		      "outcomes": [],
-		      "residuals": [],
-		      "skipped": 0,
 		      "validations": [],
 		    },
 		  },
 		  "blue": {
 		    "forward": {
-		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting)
-		.card { color: \${theme.colors.brand}; padding: 1rem; }
-		.cardTitle { font-weight: 600; }",
+		      "changed": true,
+		      "code": "import { defaultSystem } from "@chakra-ui/react";
+		export const styles = { "card": defaultSystem.css({ padding: "1rem", color: theme.colors.brand }), "cardTitle": defaultSystem.css({ fontWeight: "600" }) };
+		export default styles;",
+		      "converted": 2,
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "custom-property",
+		        },
+		        {
+		          "outcome": "target-native",
+		          "representation": "named-map",
+		        },
+		      ],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
+		    },
+		    "reverse": {
+		      "changed": true,
+		      "code": "import { defaultSystem } from "@chakra-ui/react";
+		export const styles = { "card": // pandwind:migrate-skip (route: chakra-ui -> css-modules | lowering-residual: framework-semantics | available: residual, portable-artifact)
+		defaultSystem.css({ padding: "1rem", color: theme.colors.brand }), "cardTitle": // pandwind:migrate-skip (route: chakra-ui -> css-modules | lowering-residual: framework-semantics | available: residual, portable-artifact)
+		defaultSystem.css({ fontWeight: "600" }) };
+		export default styles;",
 		      "converted": 0,
-		      "outcomes": [],
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "portable-artifact",
+		        },
+		        {
+		          "outcome": "residual",
+		          "representation": "portable-artifact",
+		        },
+		      ],
 		      "residuals": [
 		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
+		          "hint": "target lacks framework semantics",
+		          "kind": "framework-semantics",
 		          "preserved": undefined,
 		        },
 		        {
-		          "hint": "nested stylesheet rules require selector-aware lowering",
-		          "kind": "nesting",
+		          "hint": "target lacks framework semantics",
+		          "kind": "framework-semantics",
 		          "preserved": undefined,
 		        },
 		      ],
 		      "skipped": 2,
-		      "validations": [],
-		    },
-		    "reverse": {
-		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting)
-		.card { color: \${theme.colors.brand}; padding: 1rem; }
-		.cardTitle { font-weight: 600; }",
-		      "converted": 0,
-		      "outcomes": [],
-		      "residuals": [],
-		      "skipped": 0,
 		      "validations": [],
 		    },
 		  },
@@ -277,7 +357,16 @@ test("css-modules -> chakra-ui -> css-modules: resolves token references across 
 		export const styles = { "card": defaultSystem.css({ padding: "1rem", color: "var(--colors-brand)" }), "cardTitle": defaultSystem.css({ fontWeight: "600" }) };
 		export default styles;",
 		    "converted": 2,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "target-native",
+		        "representation": "named-map",
+		      },
+		      {
+		        "outcome": "target-native",
+		        "representation": "named-map",
+		      },
+		    ],
 		    "residuals": [],
 		    "skipped": 0,
 		    "validations": [
@@ -296,19 +385,19 @@ test("css-modules -> chakra-ui -> css-modules: resolves token references across 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
-		export const styles = { "card": // pandwind:migrate-skip (route: chakra-ui -> css-modules | lowering-residual: framework-semantics | available: residual)
-		defaultSystem.css({ padding: "1rem", color: "var(--colors-brand)" }), "cardTitle": // pandwind:migrate-skip (route: chakra-ui -> css-modules | lowering-residual: framework-semantics | available: residual)
+		export const styles = { "card": // pandwind:migrate-skip (route: chakra-ui -> css-modules | lowering-residual: framework-semantics | available: residual, portable-artifact)
+		defaultSystem.css({ padding: "1rem", color: "var(--colors-brand)" }), "cardTitle": // pandwind:migrate-skip (route: chakra-ui -> css-modules | lowering-residual: framework-semantics | available: residual, portable-artifact)
 		defaultSystem.css({ fontWeight: "600" }) };
 		export default styles;",
 		    "converted": 0,
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "residual",
+		        "representation": "portable-artifact",
 		      },
 		      {
 		        "outcome": "residual",
-		        "representation": "residual",
+		        "representation": "portable-artifact",
 		      },
 		    ],
 		    "residuals": [

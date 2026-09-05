@@ -2,7 +2,7 @@
   "schema": "pandwind.real-repository-report/3",
   "generatedFrom": "scripts/generate-real-repository-report.ts",
   "cloneRoot": "${PANDWIND_REFERENCE_ROOT:-~/.references}",
-  "sourceFiles": 25,
+  "sourceFiles": 30,
   "reports": [
     {
       "id": "panda-website-home",
@@ -385,8 +385,8 @@
         ]
       },
       "sourceBytes": 164,
-      "outputBytes": 277,
-      "outputByteDelta": 113,
+      "outputBytes": 269,
+      "outputByteDelta": 105,
       "converted": 1,
       "skipped": 0,
       "residuals": 0,
@@ -456,7 +456,7 @@
           "@emotion/css",
           "@emotion/react"
         ],
-        "byteDelta": 113
+        "byteDelta": 105
       }
     },
     {
@@ -556,8 +556,8 @@
         "matched": true,
         "confidence": 0.9,
         "evidence": [
-          "@vanilla-extract\\/css",
-          "\\b(?:style|globalStyle|keyframes)\\s*\\("
+          "@vanilla-extract\\/(?:css|recipes)",
+          "\\b(?:style|globalStyle|keyframes|styleVariants|recipe|createRecipe)\\s*\\("
         ]
       },
       "sourceBytes": 774,
@@ -734,8 +734,8 @@
         ]
       },
       "sourceBytes": 1175,
-      "outputBytes": 1357,
-      "outputByteDelta": 182,
+      "outputBytes": 1217,
+      "outputByteDelta": 42,
       "converted": 4,
       "skipped": 0,
       "residuals": 0,
@@ -803,7 +803,7 @@
           "@linaria/core",
           "@linaria/react"
         ],
-        "byteDelta": 182
+        "byteDelta": 42
       }
     },
     {
@@ -907,12 +907,14 @@
         ]
       },
       "sourceBytes": 5663,
-      "outputBytes": 5236,
-      "outputByteDelta": -427,
+      "outputBytes": 6086,
+      "outputByteDelta": 423,
       "converted": 8,
-      "skipped": 0,
-      "residuals": 0,
-      "residualKinds": {},
+      "skipped": 7,
+      "residuals": 7,
+      "residualKinds": {
+        "configuration": 7
+      },
       "validations": 8,
       "canonicalCss": {
         "checked": true,
@@ -950,13 +952,17 @@
           }
         },
         "reasons": [
+          "7 residual conversion(s) remain",
+          "7 source match(es) were skipped",
           "real browser states have not been executed for this reference",
           "real SSR and hydration have not been executed for this reference",
           "dependency graphs are not installed by the reference runner",
           "built CSS size is not measured by the source-only runner"
         ]
       },
-      "manualFixes": [],
+      "manualFixes": [
+        "Fela renderer configuration and plugins require target-aware lowering"
+      ],
       "emittedModules": [],
       "runtimeBundleImpact": {
         "measured": false,
@@ -976,7 +982,7 @@
           "fela",
           "react-fela"
         ],
-        "byteDelta": -427
+        "byteDelta": 423
       }
     },
     {
@@ -989,16 +995,19 @@
         "matched": true,
         "confidence": 0.8,
         "evidence": [
-          "\\bcss\\s*\\(\\s*\\{"
+          "\\b(?:css|styled\\.[A-Za-z_$][\\w$]*)\\s*(?:\\(\\s*\\{|`)"
         ]
       },
       "sourceBytes": 3301,
-      "outputBytes": 3374,
-      "outputByteDelta": 73,
+      "outputBytes": 3566,
+      "outputByteDelta": 265,
       "converted": 1,
-      "skipped": 0,
-      "residuals": 0,
-      "residualKinds": {},
+      "skipped": 2,
+      "residuals": 2,
+      "residualKinds": {
+        "capability": 1,
+        "parse": 1
+      },
       "validations": 1,
       "canonicalCss": {
         "checked": true,
@@ -1036,13 +1045,18 @@
           }
         },
         "reasons": [
+          "2 residual conversion(s) remain",
+          "2 source match(es) were skipped",
           "real browser states have not been executed for this reference",
           "real SSR and hydration have not been executed for this reference",
           "dependency graphs are not installed by the reference runner",
           "built CSS size is not measured by the source-only runner"
         ]
       },
-      "manualFixes": [],
+      "manualFixes": [
+        "goober function-valued styles require a host-specific lowering",
+        "goober nested template CSS requires a rule parser"
+      ],
       "emittedModules": [],
       "runtimeBundleImpact": {
         "measured": false,
@@ -1060,7 +1074,7 @@
         "removed": [
           "goober"
         ],
-        "byteDelta": 73
+        "byteDelta": 265
       }
     },
     {
@@ -1077,8 +1091,8 @@
         ]
       },
       "sourceBytes": 16434,
-      "outputBytes": 14567,
-      "outputByteDelta": -1867,
+      "outputBytes": 14774,
+      "outputByteDelta": -1660,
       "converted": 22,
       "skipped": 0,
       "residuals": 0,
@@ -1146,7 +1160,7 @@
         "removed": [
           "aphrodite"
         ],
-        "byteDelta": -1867
+        "byteDelta": -1660
       }
     },
     {
@@ -1164,8 +1178,8 @@
         ]
       },
       "sourceBytes": 200,
-      "outputBytes": 278,
-      "outputByteDelta": 78,
+      "outputBytes": 280,
+      "outputByteDelta": 80,
       "converted": 1,
       "skipped": 0,
       "residuals": 0,
@@ -1233,7 +1247,7 @@
         "removed": [
           "style9"
         ],
-        "byteDelta": 78
+        "byteDelta": 80
       }
     },
     {
@@ -1334,22 +1348,22 @@
         "confidence": 0.8,
         "evidence": [
           "from\\s+[\"']@compiled\\/(?:react|css-in-js)[\"']",
-          "\\b(?:css|styled\\.[A-Za-z_$][\\w$]*)\\s*\\("
+          "\\b(?:css|styled\\.[A-Za-z_$][\\w$]*|ClassNames)\\s*[({]"
         ]
       },
       "sourceBytes": 1357,
-      "outputBytes": 1312,
-      "outputByteDelta": -45,
-      "converted": 4,
+      "outputBytes": 1590,
+      "outputByteDelta": 233,
+      "converted": 6,
       "skipped": 0,
       "residuals": 0,
       "residualKinds": {},
-      "validations": 4,
+      "validations": 6,
       "canonicalCss": {
         "checked": true,
         "equal": true,
-        "sourceBytes": 210,
-        "targetBytes": 210,
+        "sourceBytes": 286,
+        "targetBytes": 286,
         "byteDelta": 0
       },
       "promotion": {
@@ -1409,7 +1423,7 @@
           "@compiled/react",
           "@compiled/css-in-js"
         ],
-        "byteDelta": -45
+        "byteDelta": 233
       }
     },
     {
@@ -1426,18 +1440,20 @@
         ]
       },
       "sourceBytes": 4251,
-      "outputBytes": 5489,
-      "outputByteDelta": 1238,
-      "converted": 9,
-      "skipped": 0,
-      "residuals": 0,
-      "residualKinds": {},
-      "validations": 9,
+      "outputBytes": 4626,
+      "outputByteDelta": 375,
+      "converted": 6,
+      "skipped": 3,
+      "residuals": 6,
+      "residualKinds": {
+        "dynamic": 6
+      },
+      "validations": 6,
       "canonicalCss": {
         "checked": true,
         "equal": true,
-        "sourceBytes": 1018,
-        "targetBytes": 1018,
+        "sourceBytes": 324,
+        "targetBytes": 324,
         "byteDelta": 0
       },
       "promotion": {
@@ -1469,13 +1485,17 @@
           }
         },
         "reasons": [
+          "6 residual conversion(s) remain",
+          "3 source match(es) were skipped",
           "real browser states have not been executed for this reference",
           "real SSR and hydration have not been executed for this reference",
           "dependency graphs are not installed by the reference runner",
           "built CSS size is not measured by the source-only runner"
         ]
       },
-      "manualFixes": [],
+      "manualFixes": [
+        "solid-styled function interpolation requires a framework prop wrapper"
+      ],
       "emittedModules": [],
       "runtimeBundleImpact": {
         "measured": false,
@@ -1493,7 +1513,7 @@
         "removed": [
           "solid-styled-components"
         ],
-        "byteDelta": 1238
+        "byteDelta": 375
       }
     },
     {
@@ -1511,8 +1531,8 @@
         ]
       },
       "sourceBytes": 6953,
-      "outputBytes": 7765,
-      "outputByteDelta": 812,
+      "outputBytes": 8194,
+      "outputByteDelta": 1241,
       "converted": 7,
       "skipped": 0,
       "residuals": 0,
@@ -1521,8 +1541,8 @@
       "canonicalCss": {
         "checked": true,
         "equal": true,
-        "sourceBytes": 1481,
-        "targetBytes": 1481,
+        "sourceBytes": 1479,
+        "targetBytes": 1479,
         "byteDelta": 0
       },
       "promotion": {
@@ -1578,7 +1598,7 @@
         "removed": [
           "vue-styled-components"
         ],
-        "byteDelta": 812
+        "byteDelta": 1241
       }
     },
     {
@@ -1596,8 +1616,8 @@
         ]
       },
       "sourceBytes": 966,
-      "outputBytes": 917,
-      "outputByteDelta": -49,
+      "outputBytes": 930,
+      "outputByteDelta": -36,
       "converted": 1,
       "skipped": 0,
       "residuals": 0,
@@ -1665,7 +1685,7 @@
         "removed": [
           "@stylexjs/stylex"
         ],
-        "byteDelta": -49
+        "byteDelta": -36
       }
     },
     {
@@ -1855,8 +1875,8 @@
         ]
       },
       "sourceBytes": 3121,
-      "outputBytes": 3880,
-      "outputByteDelta": 759,
+      "outputBytes": 3864,
+      "outputByteDelta": 743,
       "converted": 2,
       "skipped": 0,
       "residuals": 0,
@@ -1924,7 +1944,7 @@
         "removed": [
           "next-yak"
         ],
-        "byteDelta": 759
+        "byteDelta": 743
       }
     },
     {
@@ -2027,12 +2047,14 @@
         ]
       },
       "sourceBytes": 561,
-      "outputBytes": 574,
-      "outputByteDelta": 13,
+      "outputBytes": 793,
+      "outputByteDelta": 232,
       "converted": 1,
-      "skipped": 0,
-      "residuals": 0,
-      "residualKinds": {},
+      "skipped": 2,
+      "residuals": 2,
+      "residualKinds": {
+        "runtime-context": 2
+      },
       "validations": 1,
       "canonicalCss": {
         "checked": true,
@@ -2071,6 +2093,8 @@
           }
         },
         "reasons": [
+          "2 residual conversion(s) remain",
+          "2 source match(es) were skipped",
           "real browser states have not been executed for this reference",
           "real SSR and hydration have not been executed for this reference",
           "RSC/streaming proof is not available in the source-only runner",
@@ -2078,7 +2102,9 @@
           "built CSS size is not measured by the source-only runner"
         ]
       },
-      "manualFixes": [],
+      "manualFixes": [
+        "MUI providers require target-aware theme and style-engine lowering"
+      ],
       "emittedModules": [],
       "runtimeBundleImpact": {
         "measured": false,
@@ -2095,7 +2121,7 @@
           "pandwind"
         ],
         "removed": [],
-        "byteDelta": 13
+        "byteDelta": 232
       }
     },
     {
@@ -2109,12 +2135,12 @@
         "confidence": 0.9,
         "evidence": [
           "@mantine\\/core",
-          "\\b(?:sx|maw|fz|c|bg)\\s*="
+          "\\b(?:style|sx|maw|fz|c|bg)\\s*="
         ]
       },
       "sourceBytes": 3131,
-      "outputBytes": 3674,
-      "outputByteDelta": 543,
+      "outputBytes": 3655,
+      "outputByteDelta": 524,
       "converted": 9,
       "skipped": 0,
       "residuals": 0,
@@ -2180,7 +2206,7 @@
           "pandwind"
         ],
         "removed": [],
-        "byteDelta": 543
+        "byteDelta": 524
       }
     },
     {
@@ -2198,8 +2224,8 @@
         ]
       },
       "sourceBytes": 1921,
-      "outputBytes": 1912,
-      "outputByteDelta": -9,
+      "outputBytes": 1883,
+      "outputByteDelta": -38,
       "converted": 2,
       "skipped": 0,
       "residuals": 0,
@@ -2208,8 +2234,8 @@
       "canonicalCss": {
         "checked": true,
         "equal": true,
-        "sourceBytes": 366,
-        "targetBytes": 366,
+        "sourceBytes": 337,
+        "targetBytes": 337,
         "byteDelta": 0
       },
       "promotion": {
@@ -2269,7 +2295,7 @@
           "@tokenami/css",
           "@tokenami/config"
         ],
-        "byteDelta": -9
+        "byteDelta": -38
       }
     },
     {
@@ -2286,107 +2312,13 @@
         ]
       },
       "sourceBytes": 2935,
-      "outputBytes": 4746,
-      "outputByteDelta": 1811,
-      "converted": 2,
-      "skipped": 10,
-      "residuals": 35,
-      "residualKinds": {
-        "unknown-utility": 35
-      },
-      "validations": 2,
-      "canonicalCss": {
-        "checked": true,
-        "equal": true,
-        "sourceBytes": 409,
-        "targetBytes": 409,
-        "byteDelta": 0
-      },
-      "promotion": {
-        "schema": "pandwind.real-repository-proof/1",
-        "status": "source-static",
-        "eligible": false,
-        "dimensions": {
-          "canonical-css": {
-            "status": "passed"
-          },
-          "browser-states": {
-            "status": "pending",
-            "reason": "real browser states have not been executed for this reference"
-          },
-          "ssr-hydration": {
-            "status": "pending",
-            "reason": "real SSR and hydration have not been executed for this reference"
-          },
-          "rsc-streaming": {
-            "status": "pending",
-            "reason": "RSC/streaming proof is not available in the source-only runner"
-          },
-          "dependencies": {
-            "status": "pending",
-            "reason": "dependency graphs are not installed by the reference runner"
-          },
-          "css-size": {
-            "status": "pending",
-            "reason": "built CSS size is not measured by the source-only runner"
-          }
-        },
-        "reasons": [
-          "35 residual conversion(s) remain",
-          "10 source match(es) were skipped",
-          "real browser states have not been executed for this reference",
-          "real SSR and hydration have not been executed for this reference",
-          "RSC/streaming proof is not available in the source-only runner",
-          "dependency graphs are not installed by the reference runner",
-          "built CSS size is not measured by the source-only runner"
-        ]
-      },
-      "manualFixes": [
-        "UnoCSS utility requires the project resolver/preset to be loaded"
-      ],
-      "emittedModules": [],
-      "runtimeBundleImpact": {
-        "measured": false,
-        "measurement": "source-artifact",
-        "notMeasuredReason": "reference repositories are intentionally not installed or bundled in CI",
-        "sourceRuntimePackages": [
-          "unocss",
-          "@unocss/core"
-        ],
-        "targetRuntimePackages": [
-          "pandwind"
-        ],
-        "added": [
-          "pandwind"
-        ],
-        "removed": [
-          "unocss",
-          "@unocss/core"
-        ],
-        "byteDelta": 1811
-      }
-    },
-    {
-      "id": "tailwindcss-docs-home",
-      "repository": "https://github.com/tailwindlabs/tailwindcss.com",
-      "commit": "bd868a314bd05ca78acd047e3da289274dd6ccd7",
-      "path": "src/app/page.tsx",
-      "adapterRoute": "tailwind -> pandwind",
-      "detection": {
-        "matched": true,
-        "confidence": 0.6,
-        "evidence": [
-          "literal-class-attribute"
-        ]
-      },
-      "sourceBytes": 2708,
-      "outputBytes": 4303,
-      "outputByteDelta": 1595,
+      "outputBytes": 4375,
+      "outputByteDelta": 1440,
       "converted": 0,
-      "skipped": 11,
-      "residuals": 58,
+      "skipped": 12,
+      "residuals": 82,
       "residualKinds": {
-        "unknown-utility": 58
+        "unknown-utility": 82
       },
       "validations": 0,
       "canonicalCss": {
@@ -2425,7 +2357,101 @@
         },
         "reasons": [
           "pipeline migration has no adapter-level canonical pair",
-          "58 residual conversion(s) remain",
+          "82 residual conversion(s) remain",
+          "12 source match(es) were skipped",
+          "adapter-level canonical CSS pair was not exposed",
+          "real browser states have not been executed for this reference",
+          "real SSR and hydration have not been executed for this reference",
+          "RSC/streaming proof is not available in the source-only runner",
+          "dependency graphs are not installed by the reference runner",
+          "built CSS size is not measured by the source-only runner"
+        ]
+      },
+      "manualFixes": [
+        "UnoCSS utility requires the project resolver/preset to be loaded"
+      ],
+      "emittedModules": [],
+      "runtimeBundleImpact": {
+        "measured": false,
+        "measurement": "source-artifact",
+        "notMeasuredReason": "reference repositories are intentionally not installed or bundled in CI",
+        "sourceRuntimePackages": [
+          "unocss",
+          "@unocss/core"
+        ],
+        "targetRuntimePackages": [
+          "pandwind"
+        ],
+        "added": [
+          "pandwind"
+        ],
+        "removed": [
+          "unocss",
+          "@unocss/core"
+        ],
+        "byteDelta": 1440
+      }
+    },
+    {
+      "id": "tailwindcss-docs-home",
+      "repository": "https://github.com/tailwindlabs/tailwindcss.com",
+      "commit": "bd868a314bd05ca78acd047e3da289274dd6ccd7",
+      "path": "src/app/page.tsx",
+      "adapterRoute": "tailwind -> pandwind",
+      "detection": {
+        "matched": true,
+        "confidence": 0.6,
+        "evidence": [
+          "literal-class-attribute"
+        ]
+      },
+      "sourceBytes": 2708,
+      "outputBytes": 4050,
+      "outputByteDelta": 1342,
+      "converted": 0,
+      "skipped": 11,
+      "residuals": 62,
+      "residualKinds": {
+        "unknown-utility": 62
+      },
+      "validations": 0,
+      "canonicalCss": {
+        "checked": false,
+        "reason": "pipeline migration did not expose an adapter-level canonical CSS pair"
+      },
+      "promotion": {
+        "schema": "pandwind.real-repository-proof/1",
+        "status": "pipeline-unpaired",
+        "eligible": false,
+        "dimensions": {
+          "canonical-css": {
+            "status": "pending",
+            "reason": "adapter-level canonical CSS pair was not exposed"
+          },
+          "browser-states": {
+            "status": "pending",
+            "reason": "real browser states have not been executed for this reference"
+          },
+          "ssr-hydration": {
+            "status": "pending",
+            "reason": "real SSR and hydration have not been executed for this reference"
+          },
+          "rsc-streaming": {
+            "status": "pending",
+            "reason": "RSC/streaming proof is not available in the source-only runner"
+          },
+          "dependencies": {
+            "status": "pending",
+            "reason": "dependency graphs are not installed by the reference runner"
+          },
+          "css-size": {
+            "status": "pending",
+            "reason": "built CSS size is not measured by the source-only runner"
+          }
+        },
+        "reasons": [
+          "pipeline migration has no adapter-level canonical pair",
+          "62 residual conversion(s) remain",
           "11 source match(es) were skipped",
           "adapter-level canonical CSS pair was not exposed",
           "real browser states have not been executed for this reference",
@@ -2457,7 +2483,415 @@
           "tailwindcss",
           "@tailwindcss/node"
         ],
-        "byteDelta": 1595
+        "byteDelta": 1342
+      }
+    },
+    {
+      "id": "tamagui-remix-starter",
+      "repository": "https://github.com/tamagui/tamagui",
+      "commit": "25d97e1ab6bc5d09e83c7776f61d6b0852048678",
+      "path": "code/starters/remix/app/routes/_index.tsx",
+      "adapterRoute": "tamagui -> pandwind",
+      "detection": {
+        "matched": true,
+        "confidence": 1,
+        "evidence": [
+          "tamagui"
+        ]
+      },
+      "sourceBytes": 4057,
+      "outputBytes": 4287,
+      "outputByteDelta": 230,
+      "converted": 3,
+      "skipped": 0,
+      "residuals": 0,
+      "residualKinds": {},
+      "validations": 3,
+      "canonicalCss": {
+        "checked": true,
+        "equal": true,
+        "sourceBytes": 332,
+        "targetBytes": 332,
+        "byteDelta": 0
+      },
+      "promotion": {
+        "schema": "pandwind.real-repository-proof/1",
+        "status": "source-static",
+        "eligible": false,
+        "dimensions": {
+          "canonical-css": {
+            "status": "passed"
+          },
+          "browser-states": {
+            "status": "pending",
+            "reason": "real browser states have not been executed for this reference"
+          },
+          "ssr-hydration": {
+            "status": "pending",
+            "reason": "real SSR and hydration have not been executed for this reference"
+          },
+          "rsc-streaming": {
+            "status": "pending",
+            "reason": "RSC/streaming proof is not available in the source-only runner"
+          },
+          "dependencies": {
+            "status": "pending",
+            "reason": "dependency graphs are not installed by the reference runner"
+          },
+          "css-size": {
+            "status": "pending",
+            "reason": "built CSS size is not measured by the source-only runner"
+          }
+        },
+        "reasons": [
+          "real browser states have not been executed for this reference",
+          "real SSR and hydration have not been executed for this reference",
+          "RSC/streaming proof is not available in the source-only runner",
+          "dependency graphs are not installed by the reference runner",
+          "built CSS size is not measured by the source-only runner"
+        ]
+      },
+      "manualFixes": [],
+      "emittedModules": [],
+      "runtimeBundleImpact": {
+        "measured": false,
+        "measurement": "source-artifact",
+        "notMeasuredReason": "reference repositories are intentionally not installed or bundled in CI",
+        "sourceRuntimePackages": [],
+        "targetRuntimePackages": [
+          "pandwind"
+        ],
+        "added": [
+          "pandwind"
+        ],
+        "removed": [],
+        "byteDelta": 230
+      }
+    },
+    {
+      "id": "astryx-not-found-module",
+      "repository": "https://github.com/facebook/astryx",
+      "commit": "8359f1a3601766e3a96ae0805e9487ac3dc17754",
+      "path": "apps/docsite/src/app/not-found.module.css",
+      "adapterRoute": "css-modules -> pandwind",
+      "detection": {
+        "matched": true,
+        "confidence": 1,
+        "evidence": [
+          "css-modules"
+        ]
+      },
+      "sourceBytes": 210,
+      "outputBytes": 290,
+      "outputByteDelta": 80,
+      "converted": 2,
+      "skipped": 0,
+      "residuals": 0,
+      "residualKinds": {},
+      "validations": 2,
+      "canonicalCss": {
+        "checked": true,
+        "equal": true,
+        "sourceBytes": 101,
+        "targetBytes": 101,
+        "byteDelta": 0
+      },
+      "promotion": {
+        "schema": "pandwind.real-repository-proof/1",
+        "status": "source-static",
+        "eligible": false,
+        "dimensions": {
+          "canonical-css": {
+            "status": "passed"
+          },
+          "browser-states": {
+            "status": "pending",
+            "reason": "real browser states have not been executed for this reference"
+          },
+          "ssr-hydration": {
+            "status": "pending",
+            "reason": "real SSR and hydration have not been executed for this reference"
+          },
+          "rsc-streaming": {
+            "status": "pending",
+            "reason": "RSC/streaming proof is not available in the source-only runner"
+          },
+          "dependencies": {
+            "status": "pending",
+            "reason": "dependency graphs are not installed by the reference runner"
+          },
+          "css-size": {
+            "status": "pending",
+            "reason": "built CSS size is not measured by the source-only runner"
+          }
+        },
+        "reasons": [
+          "real browser states have not been executed for this reference",
+          "real SSR and hydration have not been executed for this reference",
+          "RSC/streaming proof is not available in the source-only runner",
+          "dependency graphs are not installed by the reference runner",
+          "built CSS size is not measured by the source-only runner"
+        ]
+      },
+      "manualFixes": [],
+      "emittedModules": [],
+      "runtimeBundleImpact": {
+        "measured": false,
+        "measurement": "source-artifact",
+        "notMeasuredReason": "reference repositories are intentionally not installed or bundled in CI",
+        "sourceRuntimePackages": [],
+        "targetRuntimePackages": [
+          "pandwind"
+        ],
+        "added": [
+          "pandwind"
+        ],
+        "removed": [],
+        "byteDelta": 80
+      }
+    },
+    {
+      "id": "bootstrap-badge-scss",
+      "repository": "https://github.com/twbs/bootstrap",
+      "commit": "12cb8b902d175a0d612f1280f58b386a09921a16",
+      "path": "scss/helpers/_stacks.scss",
+      "adapterRoute": "sass -> pandwind",
+      "detection": {
+        "matched": true,
+        "confidence": 1,
+        "evidence": [
+          "sass"
+        ]
+      },
+      "sourceBytes": 245,
+      "outputBytes": 310,
+      "outputByteDelta": 65,
+      "converted": 0,
+      "skipped": 1,
+      "residuals": 1,
+      "residualKinds": {
+        "configuration": 1
+      },
+      "validations": 0,
+      "canonicalCss": {
+        "checked": false,
+        "reason": "pipeline migration did not expose an adapter-level canonical CSS pair"
+      },
+      "promotion": {
+        "schema": "pandwind.real-repository-proof/1",
+        "status": "pipeline-unpaired",
+        "eligible": false,
+        "dimensions": {
+          "canonical-css": {
+            "status": "pending",
+            "reason": "adapter-level canonical CSS pair was not exposed"
+          },
+          "browser-states": {
+            "status": "pending",
+            "reason": "real browser states have not been executed for this reference"
+          },
+          "ssr-hydration": {
+            "status": "pending",
+            "reason": "real SSR and hydration have not been executed for this reference"
+          },
+          "rsc-streaming": {
+            "status": "not-applicable"
+          },
+          "dependencies": {
+            "status": "pending",
+            "reason": "dependency graphs are not installed by the reference runner"
+          },
+          "css-size": {
+            "status": "pending",
+            "reason": "built CSS size is not measured by the source-only runner"
+          }
+        },
+        "reasons": [
+          "pipeline migration has no adapter-level canonical pair",
+          "1 residual conversion(s) remain",
+          "1 source match(es) were skipped",
+          "adapter-level canonical CSS pair was not exposed",
+          "real browser states have not been executed for this reference",
+          "real SSR and hydration have not been executed for this reference",
+          "dependency graphs are not installed by the reference runner",
+          "built CSS size is not measured by the source-only runner"
+        ]
+      },
+      "manualFixes": [
+        "official preprocessor compilation failed: The argument 'filename' must be a file URL object, file URL string, or absolute path string. Received 'package.json'"
+      ],
+      "emittedModules": [],
+      "runtimeBundleImpact": {
+        "measured": false,
+        "measurement": "source-artifact",
+        "notMeasuredReason": "reference repositories are intentionally not installed or bundled in CI",
+        "sourceRuntimePackages": [],
+        "targetRuntimePackages": [],
+        "added": [],
+        "removed": [],
+        "byteDelta": 65
+      }
+    },
+    {
+      "id": "less-post-processor",
+      "repository": "https://github.com/less/less.js",
+      "commit": "713331655e437401dfea6cd233893a69762734e1",
+      "path": "packages/less/test/browser/less/postProcessor/postProcessor.less",
+      "adapterRoute": "less -> pandwind",
+      "detection": {
+        "matched": true,
+        "confidence": 1,
+        "evidence": [
+          "less"
+        ]
+      },
+      "sourceBytes": 44,
+      "outputBytes": 109,
+      "outputByteDelta": 65,
+      "converted": 0,
+      "skipped": 1,
+      "residuals": 1,
+      "residualKinds": {
+        "configuration": 1
+      },
+      "validations": 0,
+      "canonicalCss": {
+        "checked": false,
+        "reason": "pipeline migration did not expose an adapter-level canonical CSS pair"
+      },
+      "promotion": {
+        "schema": "pandwind.real-repository-proof/1",
+        "status": "pipeline-unpaired",
+        "eligible": false,
+        "dimensions": {
+          "canonical-css": {
+            "status": "pending",
+            "reason": "adapter-level canonical CSS pair was not exposed"
+          },
+          "browser-states": {
+            "status": "pending",
+            "reason": "real browser states have not been executed for this reference"
+          },
+          "ssr-hydration": {
+            "status": "pending",
+            "reason": "real SSR and hydration have not been executed for this reference"
+          },
+          "rsc-streaming": {
+            "status": "not-applicable"
+          },
+          "dependencies": {
+            "status": "pending",
+            "reason": "dependency graphs are not installed by the reference runner"
+          },
+          "css-size": {
+            "status": "pending",
+            "reason": "built CSS size is not measured by the source-only runner"
+          }
+        },
+        "reasons": [
+          "pipeline migration has no adapter-level canonical pair",
+          "1 residual conversion(s) remain",
+          "1 source match(es) were skipped",
+          "adapter-level canonical CSS pair was not exposed",
+          "real browser states have not been executed for this reference",
+          "real SSR and hydration have not been executed for this reference",
+          "dependency graphs are not installed by the reference runner",
+          "built CSS size is not measured by the source-only runner"
+        ]
+      },
+      "manualFixes": [
+        "official preprocessor compilation failed: The argument 'filename' must be a file URL object, file URL string, or absolute path string. Received 'package.json'"
+      ],
+      "emittedModules": [],
+      "runtimeBundleImpact": {
+        "measured": false,
+        "measurement": "source-artifact",
+        "notMeasuredReason": "reference repositories are intentionally not installed or bundled in CI",
+        "sourceRuntimePackages": [],
+        "targetRuntimePackages": [],
+        "added": [],
+        "removed": [],
+        "byteDelta": 65
+      }
+    },
+    {
+      "id": "posthog-global-authored-css",
+      "repository": "https://github.com/PostHog/posthog.com",
+      "commit": "8a1619a0f2ec72d7d2d560d4fb5c9eca551b04ff",
+      "path": "src/components/Layout/SkeletonLoading.css",
+      "adapterRoute": "authored-css -> pandwind",
+      "detection": {
+        "matched": true,
+        "confidence": 1,
+        "evidence": [
+          "css"
+        ]
+      },
+      "sourceBytes": 283,
+      "outputBytes": 442,
+      "outputByteDelta": 159,
+      "converted": 5,
+      "skipped": 0,
+      "residuals": 0,
+      "residualKinds": {},
+      "validations": 5,
+      "canonicalCss": {
+        "checked": true,
+        "equal": true,
+        "sourceBytes": 117,
+        "targetBytes": 117,
+        "byteDelta": 0
+      },
+      "promotion": {
+        "schema": "pandwind.real-repository-proof/1",
+        "status": "source-static",
+        "eligible": false,
+        "dimensions": {
+          "canonical-css": {
+            "status": "passed"
+          },
+          "browser-states": {
+            "status": "pending",
+            "reason": "real browser states have not been executed for this reference"
+          },
+          "ssr-hydration": {
+            "status": "pending",
+            "reason": "real SSR and hydration have not been executed for this reference"
+          },
+          "rsc-streaming": {
+            "status": "not-applicable"
+          },
+          "dependencies": {
+            "status": "pending",
+            "reason": "dependency graphs are not installed by the reference runner"
+          },
+          "css-size": {
+            "status": "pending",
+            "reason": "built CSS size is not measured by the source-only runner"
+          }
+        },
+        "reasons": [
+          "real browser states have not been executed for this reference",
+          "real SSR and hydration have not been executed for this reference",
+          "dependency graphs are not installed by the reference runner",
+          "built CSS size is not measured by the source-only runner"
+        ]
+      },
+      "manualFixes": [],
+      "emittedModules": [],
+      "runtimeBundleImpact": {
+        "measured": false,
+        "measurement": "source-artifact",
+        "notMeasuredReason": "reference repositories are intentionally not installed or bundled in CI",
+        "sourceRuntimePackages": [],
+        "targetRuntimePackages": [
+          "pandwind"
+        ],
+        "added": [
+          "pandwind"
+        ],
+        "removed": [],
+        "byteDelta": 159
       }
     }
   ],

@@ -41,32 +41,25 @@ test("stitches -> less: migrates concrete stitches syntax to less", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@stitches/react";
-		export const card = // pandwind:migrate-skip (route: stitches -> less | lowering-residual: validation)
-		css({ color: "red", padding: "1rem" });
+		  "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const card = css.class({ "padding": "1rem", "color": "red" });
 		export const App = () => <div className={card()} />;",
-		  "converted": 0,
+		  "converted": 1,
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
-		      "representation": "static",
+		      "outcome": "portable-artifact",
+		      "representation": "portable-artifact",
 		    },
 		  ],
-		  "residuals": [
-		    {
-		      "hint": "2 residual conversion(s)",
-		      "kind": "validation",
-		      "preserved": undefined,
-		    },
-		  ],
-		  "skipped": 1,
+		  "residuals": [],
+		  "skipped": 0,
 		  "validations": [
 		    {
-		      "differences": [
-		        "2 residual conversion(s)",
-		      ],
-		      "lossiness": "lossy",
-		      "valid": false,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
 		}
@@ -80,32 +73,26 @@ test("stitches -> less: carries concrete stitches dynamics or edge syntax explic
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@stitches/react";
-		export const card = // pandwind:migrate-skip (route: stitches -> less | lowering-residual: validation)
-		css({ color: theme.foreground, padding: "1rem" });
+		  "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+		import { pandwindPreset } from "pandwind/preset";
+		const css = createRuntimeCss(pandwindPreset);
+
+		export const card = css.vars({ "padding": "1rem", "color": theme.foreground });
 		export const App = () => <div className={card()} />;",
-		  "converted": 0,
+		  "converted": 1,
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
+		      "outcome": "portable-artifact",
 		      "representation": "portable-artifact",
 		    },
 		  ],
-		  "residuals": [
-		    {
-		      "hint": "1 residual conversion(s)",
-		      "kind": "validation",
-		      "preserved": undefined,
-		    },
-		  ],
-		  "skipped": 1,
+		  "residuals": [],
+		  "skipped": 0,
 		  "validations": [
 		    {
-		      "differences": [
-		        "1 residual conversion(s)",
-		      ],
-		      "lossiness": "lossy",
-		      "valid": false,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
 		}
@@ -123,63 +110,49 @@ test("stitches -> less: lowers concrete theme and project context variants", () 
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { css } from "@stitches/react";
-		export const card = // pandwind:migrate-skip (route: stitches -> less | lowering-residual: validation)
-		css({ color: theme.colors.brand, padding: "1rem" });
+		    "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const card = css.class({ "padding": "1rem", "color": "#f97316" });
 		export const App = () => <div className={card()} />;",
-		    "converted": 0,
+		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
-		        "representation": "static",
+		        "outcome": "portable-artifact",
+		        "representation": "portable-artifact",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "2 residual conversion(s)",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "2 residual conversion(s)",
-		        ],
-		        "lossiness": "lossy",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { css } from "@stitches/react";
-		export const card = // pandwind:migrate-skip (route: stitches -> less | lowering-residual: validation)
-		css({ color: theme.colors.brand, padding: "1rem" });
+		    "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const card = css.class({ "padding": "1rem", "color": "#2563eb" });
 		export const App = () => <div className={card()} />;",
-		    "converted": 0,
+		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
-		        "representation": "static",
+		        "outcome": "portable-artifact",
+		        "representation": "portable-artifact",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "2 residual conversion(s)",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "2 residual conversion(s)",
-		        ],
-		        "lossiness": "lossy",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },
@@ -194,32 +167,25 @@ test("stitches -> less: resolves concrete token references with project context"
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@stitches/react";
-		export const card = // pandwind:migrate-skip (route: stitches -> less | lowering-residual: validation)
-		css({ color: "$colors.brand", padding: "1rem" });
+		  "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const card = css.class({ "padding": "1rem", "color": "$colors.brand" });
 		export const App = () => <div className={card()} />;",
-		  "converted": 0,
+		  "converted": 1,
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
-		      "representation": "static",
+		      "outcome": "portable-artifact",
+		      "representation": "portable-artifact",
 		    },
 		  ],
-		  "residuals": [
-		    {
-		      "hint": "2 residual conversion(s)",
-		      "kind": "validation",
-		      "preserved": undefined,
-		    },
-		  ],
-		  "skipped": 1,
+		  "residuals": [],
+		  "skipped": 0,
 		  "validations": [
 		    {
-		      "differences": [
-		        "2 residual conversion(s)",
-		      ],
-		      "lossiness": "lossy",
-		      "valid": false,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
 		}
@@ -233,33 +199,26 @@ test("stitches -> less: preserves malformed concrete stitches input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@stitches/react";
-		export const card = // pandwind:migrate-skip (route: stitches -> less | lowering-residual: validation)
-		css({ color: "red", padding: "1rem" });
+		  "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const card = css.class({ "padding": "1rem", "color": "red" });
 		export const App = () => <div className={card()} />;
 		const unfinished = { /* unfinished stitches */",
-		  "converted": 0,
+		  "converted": 1,
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
-		      "representation": "static",
+		      "outcome": "portable-artifact",
+		      "representation": "portable-artifact",
 		    },
 		  ],
-		  "residuals": [
-		    {
-		      "hint": "2 residual conversion(s)",
-		      "kind": "validation",
-		      "preserved": undefined,
-		    },
-		  ],
-		  "skipped": 1,
+		  "residuals": [],
+		  "skipped": 0,
 		  "validations": [
 		    {
-		      "differences": [
-		        "2 residual conversion(s)",
-		      ],
-		      "lossiness": "lossy",
-		      "valid": false,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
 		}

@@ -47,7 +47,16 @@ test("css-modules -> authored-css -> css-modules: preserves an actionable concre
 		.card { color: red; padding: 1rem; }
 		.cardTitle { font-weight: 600; }",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
 		      {
 		        "hint": "CSS Modules local class scoping does not survive the authored-css target",
@@ -65,7 +74,16 @@ test("css-modules -> authored-css -> css-modules: preserves an actionable concre
 		.card { color: red; padding: 1rem; }
 		.cardTitle { font-weight: 600; }",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
 		      {
 		        "hint": "stylesheet migration requires a single local class selector",
@@ -95,7 +113,16 @@ test("css-modules -> authored-css -> css-modules: retains edge semantics without
 		.card { color: theme.foreground; padding: 1rem; }
 		.cardTitle { font-weight: 600; }",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
 		      {
 		        "hint": "CSS Modules local class scoping does not survive the authored-css target",
@@ -113,7 +140,16 @@ test("css-modules -> authored-css -> css-modules: retains edge semantics without
 		.card { color: theme.foreground; padding: 1rem; }
 		.cardTitle { font-weight: 600; }",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
 		      {
 		        "hint": "stylesheet migration requires a single local class selector",
@@ -153,7 +189,16 @@ test("css-modules -> authored-css -> css-modules: preserves concrete theme and p
 		.card { color: \${theme.colors.brand}; padding: 1rem; }
 		.cardTitle { font-weight: 600; }",
 		      "converted": 0,
-		      "outcomes": [],
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		      ],
 		      "residuals": [
 		        {
 		          "hint": "CSS Modules local class scoping does not survive the authored-css target",
@@ -166,25 +211,29 @@ test("css-modules -> authored-css -> css-modules: preserves concrete theme and p
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
+		      "code": "// pandwind:migrate-skip (lowering-residual: capability)
 		// pandwind:migrate-skip (lowering-residual: capability)
 		.card { color: \${theme.colors.brand}; padding: 1rem; }
 		.cardTitle { font-weight: 600; }",
 		      "converted": 0,
-		      "outcomes": [],
-		      "residuals": [
+		      "outcomes": [
 		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
-		          "preserved": undefined,
+		          "outcome": "residual",
+		          "representation": "residual",
 		        },
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		      ],
+		      "residuals": [
 		        {
 		          "hint": "stylesheet migration requires a single local class selector",
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 2,
+		      "skipped": 1,
 		      "validations": [],
 		    },
 		  },
@@ -195,7 +244,16 @@ test("css-modules -> authored-css -> css-modules: preserves concrete theme and p
 		.card { color: \${theme.colors.brand}; padding: 1rem; }
 		.cardTitle { font-weight: 600; }",
 		      "converted": 0,
-		      "outcomes": [],
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		      ],
 		      "residuals": [
 		        {
 		          "hint": "CSS Modules local class scoping does not survive the authored-css target",
@@ -208,25 +266,29 @@ test("css-modules -> authored-css -> css-modules: preserves concrete theme and p
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
+		      "code": "// pandwind:migrate-skip (lowering-residual: capability)
 		// pandwind:migrate-skip (lowering-residual: capability)
 		.card { color: \${theme.colors.brand}; padding: 1rem; }
 		.cardTitle { font-weight: 600; }",
 		      "converted": 0,
-		      "outcomes": [],
-		      "residuals": [
+		      "outcomes": [
 		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
-		          "preserved": undefined,
+		          "outcome": "residual",
+		          "representation": "residual",
 		        },
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		      ],
+		      "residuals": [
 		        {
 		          "hint": "stylesheet migration requires a single local class selector",
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 2,
+		      "skipped": 1,
 		      "validations": [],
 		    },
 		  },
@@ -249,7 +311,16 @@ test("css-modules -> authored-css -> css-modules: resolves token references acro
 		.card { color: var(--colors-brand); padding: 1rem; }
 		.cardTitle { font-weight: 600; }",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
 		      {
 		        "hint": "CSS Modules local class scoping does not survive the authored-css target",
@@ -267,7 +338,16 @@ test("css-modules -> authored-css -> css-modules: resolves token references acro
 		.card { color: var(--colors-brand); padding: 1rem; }
 		.cardTitle { font-weight: 600; }",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
 		      {
 		        "hint": "stylesheet migration requires a single local class selector",

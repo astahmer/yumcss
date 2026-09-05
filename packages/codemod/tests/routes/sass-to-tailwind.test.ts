@@ -45,7 +45,12 @@ test("sass -> tailwind: migrates concrete sass syntax to tailwind", () => {
 		.card { color: red; padding: 1rem; &__title { font-weight: 600; } }
 		$title-color: blue;",
 		  "converted": 0,
-		  "outcomes": [],
+		  "outcomes": [
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		  ],
 		  "residuals": [
 		    {
 		      "hint": "stylesheet statement is preserved outside the style program",
@@ -70,7 +75,12 @@ test("sass -> tailwind: carries concrete sass dynamics or edge syntax explicitly
 		.card { color: theme.foreground; padding: 1rem; &__title { font-weight: 600; } }
 		$title-color: blue;",
 		  "converted": 0,
-		  "outcomes": [],
+		  "outcomes": [
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		  ],
 		  "residuals": [
 		    {
 		      "hint": "stylesheet statement is preserved outside the style program",
@@ -95,56 +105,56 @@ test("sass -> tailwind: lowers concrete theme and project context variants", () 
 		{
 		  "amber": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: parse, rule-level)
+		    "code": "// pandwind:migrate-skip (lowering-residual: parse, dynamic)
 		.card { color: \${theme.colors.brand}; padding: 1rem; &__title { font-weight: 600; } }
 		$title-color: blue;",
 		    "converted": 0,
-		    "outcomes": [],
-		    "residuals": [
+		    "outcomes": [
 		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
+		        "outcome": "residual",
+		        "representation": "residual",
 		      },
+		    ],
+		    "residuals": [
 		      {
 		        "hint": "stylesheet statement is preserved outside the style program",
 		        "kind": "parse",
 		        "preserved": undefined,
 		      },
 		      {
-		        "hint": "Tailwind class output supports style declarations and nested conditions only",
-		        "kind": "rule-level",
+		        "hint": "Tailwind output requires a literal declaration or a host runtime carrier",
+		        "kind": "dynamic",
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 3,
+		    "skipped": 2,
 		    "validations": [],
 		  },
 		  "blue": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: parse, rule-level)
+		    "code": "// pandwind:migrate-skip (lowering-residual: parse, dynamic)
 		.card { color: \${theme.colors.brand}; padding: 1rem; &__title { font-weight: 600; } }
 		$title-color: blue;",
 		    "converted": 0,
-		    "outcomes": [],
-		    "residuals": [
+		    "outcomes": [
 		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
+		        "outcome": "residual",
+		        "representation": "residual",
 		      },
+		    ],
+		    "residuals": [
 		      {
 		        "hint": "stylesheet statement is preserved outside the style program",
 		        "kind": "parse",
 		        "preserved": undefined,
 		      },
 		      {
-		        "hint": "Tailwind class output supports style declarations and nested conditions only",
-		        "kind": "rule-level",
+		        "hint": "Tailwind output requires a literal declaration or a host runtime carrier",
+		        "kind": "dynamic",
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 3,
+		    "skipped": 2,
 		    "validations": [],
 		  },
 		}
@@ -162,7 +172,12 @@ test("sass -> tailwind: resolves concrete token references with project context"
 		.card { color: var(--colors-brand); padding: 1rem; &__title { font-weight: 600; } }
 		$title-color: blue;",
 		  "converted": 0,
-		  "outcomes": [],
+		  "outcomes": [
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		  ],
 		  "residuals": [
 		    {
 		      "hint": "stylesheet statement is preserved outside the style program",
@@ -188,7 +203,12 @@ test("sass -> tailwind: preserves malformed concrete sass input", () => {
 		$title-color: blue;
 		const unfinished = { /* unfinished sass */",
 		  "converted": 0,
-		  "outcomes": [],
+		  "outcomes": [
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		  ],
 		  "residuals": [
 		    {
 		      "hint": "stylesheet block is unbalanced",

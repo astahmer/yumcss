@@ -80,18 +80,17 @@ test("linaria -> authored-css -> linaria: preserves an actionable concrete round
 		css\`color: red; padding: 1rem;\`;
 		export const App = () => <div className={card} />;",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
-		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
 		      {
 		        "hint": "stylesheet statement is preserved outside the style program",
 		        "kind": "parse",
@@ -128,7 +127,7 @@ test("linaria -> authored-css -> linaria: preserves an actionable concrete round
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 9,
+		    "skipped": 7,
 		    "validations": [],
 		  },
 		}
@@ -185,20 +184,19 @@ test("linaria -> authored-css -> linaria: retains edge semantics without silent 
 		css\`color: \${theme.foreground}; padding: 1rem;\`;
 		export const App = () => <div className={card} />;",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
 		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet statement has no terminator",
+		        "hint": "stylesheet statement is preserved outside the style program",
 		        "kind": "parse",
 		        "preserved": undefined,
 		      },
@@ -220,11 +218,6 @@ test("linaria -> authored-css -> linaria: retains edge semantics without silent 
 		      {
 		        "hint": "stylesheet statement is preserved outside the style program",
 		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet migration requires a single local class selector",
-		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		      {
@@ -238,7 +231,7 @@ test("linaria -> authored-css -> linaria: retains edge semantics without silent 
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 10,
+		    "skipped": 7,
 		    "validations": [],
 		  },
 		}
@@ -305,20 +298,19 @@ test("linaria -> authored-css -> linaria: preserves concrete theme and project c
 		css\`color: \${theme.colors.brand}; padding: 1rem;\`;
 		export const App = () => <div className={card} />;",
 		      "converted": 0,
-		      "outcomes": [],
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		      ],
 		      "residuals": [
 		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "stylesheet statement has no terminator",
+		          "hint": "stylesheet statement is preserved outside the style program",
 		          "kind": "parse",
 		          "preserved": undefined,
 		        },
@@ -340,11 +332,6 @@ test("linaria -> authored-css -> linaria: preserves concrete theme and project c
 		        {
 		          "hint": "stylesheet statement is preserved outside the style program",
 		          "kind": "parse",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "stylesheet migration requires a single local class selector",
-		          "kind": "capability",
 		          "preserved": undefined,
 		        },
 		        {
@@ -358,7 +345,7 @@ test("linaria -> authored-css -> linaria: preserves concrete theme and project c
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 10,
+		      "skipped": 7,
 		      "validations": [],
 		    },
 		  },
@@ -404,20 +391,19 @@ test("linaria -> authored-css -> linaria: preserves concrete theme and project c
 		css\`color: \${theme.colors.brand}; padding: 1rem;\`;
 		export const App = () => <div className={card} />;",
 		      "converted": 0,
-		      "outcomes": [],
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		      ],
 		      "residuals": [
 		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "stylesheet statement has no terminator",
+		          "hint": "stylesheet statement is preserved outside the style program",
 		          "kind": "parse",
 		          "preserved": undefined,
 		        },
@@ -439,11 +425,6 @@ test("linaria -> authored-css -> linaria: preserves concrete theme and project c
 		        {
 		          "hint": "stylesheet statement is preserved outside the style program",
 		          "kind": "parse",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "stylesheet migration requires a single local class selector",
-		          "kind": "capability",
 		          "preserved": undefined,
 		        },
 		        {
@@ -457,7 +438,7 @@ test("linaria -> authored-css -> linaria: preserves concrete theme and project c
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 10,
+		      "skipped": 7,
 		      "validations": [],
 		    },
 		  },
@@ -513,18 +494,17 @@ test("linaria -> authored-css -> linaria: resolves token references across both 
 		css\`color: var(--colors-brand); padding: 1rem;\`;
 		export const App = () => <div className={card} />;",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
-		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
 		      {
 		        "hint": "stylesheet statement is preserved outside the style program",
 		        "kind": "parse",
@@ -561,7 +541,7 @@ test("linaria -> authored-css -> linaria: resolves token references across both 
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 9,
+		    "skipped": 7,
 		    "validations": [],
 		  },
 		}

@@ -47,7 +47,16 @@ test("css-modules -> stylex -> css-modules: preserves an actionable concrete rou
 		export const styles = { "card": stylex.create({ style: { padding: "1rem", color: "red" } }).style, "cardTitle": stylex.create({ style: { fontWeight: "600" } }).style };
 		export default styles;",
 		    "converted": 2,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "target-native",
+		        "representation": "named-map",
+		      },
+		      {
+		        "outcome": "target-native",
+		        "representation": "named-map",
+		      },
+		    ],
 		    "residuals": [],
 		    "skipped": 0,
 		    "validations": [
@@ -66,19 +75,19 @@ test("css-modules -> stylex -> css-modules: preserves an actionable concrete rou
 		  "reverse": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-		export const styles = { "card": // pandwind:migrate-skip (route: stylex -> css-modules | capability-blocked: named-rules: named style rule: style | available: static, residual, named-map)
-		stylex.create({ style: { padding: "1rem", color: "red" } }).style, "cardTitle": // pandwind:migrate-skip (route: stylex -> css-modules | capability-blocked: named-rules: named style rule: style | available: static, residual, named-map)
+		export const styles = { "card": // pandwind:migrate-skip (route: stylex -> css-modules | capability-blocked: named-rules: named style rule: style | available: static, residual, portable-artifact)
+		stylex.create({ style: { padding: "1rem", color: "red" } }).style, "cardTitle": // pandwind:migrate-skip (route: stylex -> css-modules | capability-blocked: named-rules: named style rule: style | available: static, residual, portable-artifact)
 		stylex.create({ style: { fontWeight: "600" } }).style };
 		export default styles;",
 		    "converted": 0,
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "named-map",
+		        "representation": "portable-artifact",
 		      },
 		      {
 		        "outcome": "residual",
-		        "representation": "named-map",
+		        "representation": "portable-artifact",
 		      },
 		    ],
 		    "residuals": [
@@ -115,7 +124,16 @@ test("css-modules -> stylex -> css-modules: retains edge semantics without silen
 		export const styles = { "card": stylex.create({ style: { padding: "1rem", color: "theme.foreground" } }).style, "cardTitle": stylex.create({ style: { fontWeight: "600" } }).style };
 		export default styles;",
 		    "converted": 2,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "target-native",
+		        "representation": "named-map",
+		      },
+		      {
+		        "outcome": "target-native",
+		        "representation": "named-map",
+		      },
+		    ],
 		    "residuals": [],
 		    "skipped": 0,
 		    "validations": [
@@ -134,19 +152,19 @@ test("css-modules -> stylex -> css-modules: retains edge semantics without silen
 		  "reverse": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-		export const styles = { "card": // pandwind:migrate-skip (route: stylex -> css-modules | capability-blocked: named-rules: named style rule: style | available: static, residual, named-map)
-		stylex.create({ style: { padding: "1rem", color: "theme.foreground" } }).style, "cardTitle": // pandwind:migrate-skip (route: stylex -> css-modules | capability-blocked: named-rules: named style rule: style | available: static, residual, named-map)
+		export const styles = { "card": // pandwind:migrate-skip (route: stylex -> css-modules | capability-blocked: named-rules: named style rule: style | available: static, residual, portable-artifact)
+		stylex.create({ style: { padding: "1rem", color: "theme.foreground" } }).style, "cardTitle": // pandwind:migrate-skip (route: stylex -> css-modules | capability-blocked: named-rules: named style rule: style | available: static, residual, portable-artifact)
 		stylex.create({ style: { fontWeight: "600" } }).style };
 		export default styles;",
 		    "converted": 0,
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "named-map",
+		        "representation": "portable-artifact",
 		      },
 		      {
 		        "outcome": "residual",
-		        "representation": "named-map",
+		        "representation": "portable-artifact",
 		      },
 		    ],
 		    "residuals": [
@@ -188,71 +206,133 @@ test("css-modules -> stylex -> css-modules: preserves concrete theme and project
 		{
 		  "amber": {
 		    "forward": {
-		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting)
-		.card { color: \${theme.colors.brand}; padding: 1rem; }
-		.cardTitle { font-weight: 600; }",
+		      "changed": true,
+		      "code": "import * as stylex from "@stylexjs/stylex";
+		export const styles = { "card": stylex.create({ style: { padding: "1rem", color: theme.colors.brand } }).style, "cardTitle": stylex.create({ style: { fontWeight: "600" } }).style };
+		export default styles;",
+		      "converted": 2,
+		      "outcomes": [
+		        {
+		          "outcome": "host-runtime",
+		          "representation": "named-map",
+		        },
+		        {
+		          "outcome": "target-native",
+		          "representation": "named-map",
+		        },
+		      ],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
+		    },
+		    "reverse": {
+		      "changed": true,
+		      "code": "import * as stylex from "@stylexjs/stylex";
+		export const styles = { "card": // pandwind:migrate-skip (route: stylex -> css-modules | capability-blocked: named-rules: named style rule: style | available: static, residual, portable-artifact)
+		stylex.create({ style: { padding: "1rem", color: theme.colors.brand } }).style, "cardTitle": // pandwind:migrate-skip (route: stylex -> css-modules | capability-blocked: named-rules: named style rule: style | available: static, residual, portable-artifact)
+		stylex.create({ style: { fontWeight: "600" } }).style };
+		export default styles;",
 		      "converted": 0,
-		      "outcomes": [],
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "portable-artifact",
+		        },
+		        {
+		          "outcome": "residual",
+		          "representation": "portable-artifact",
+		        },
+		      ],
 		      "residuals": [
 		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
+		          "hint": "named-rules: named style rule: style",
+		          "kind": "capability",
 		          "preserved": undefined,
 		        },
 		        {
-		          "hint": "nested stylesheet rules require selector-aware lowering",
-		          "kind": "nesting",
+		          "hint": "named-rules: named style rule: style",
+		          "kind": "capability",
 		          "preserved": undefined,
 		        },
 		      ],
 		      "skipped": 2,
-		      "validations": [],
-		    },
-		    "reverse": {
-		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting)
-		.card { color: \${theme.colors.brand}; padding: 1rem; }
-		.cardTitle { font-weight: 600; }",
-		      "converted": 0,
-		      "outcomes": [],
-		      "residuals": [],
-		      "skipped": 0,
 		      "validations": [],
 		    },
 		  },
 		  "blue": {
 		    "forward": {
-		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting)
-		.card { color: \${theme.colors.brand}; padding: 1rem; }
-		.cardTitle { font-weight: 600; }",
+		      "changed": true,
+		      "code": "import * as stylex from "@stylexjs/stylex";
+		export const styles = { "card": stylex.create({ style: { padding: "1rem", color: theme.colors.brand } }).style, "cardTitle": stylex.create({ style: { fontWeight: "600" } }).style };
+		export default styles;",
+		      "converted": 2,
+		      "outcomes": [
+		        {
+		          "outcome": "host-runtime",
+		          "representation": "named-map",
+		        },
+		        {
+		          "outcome": "target-native",
+		          "representation": "named-map",
+		        },
+		      ],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
+		    },
+		    "reverse": {
+		      "changed": true,
+		      "code": "import * as stylex from "@stylexjs/stylex";
+		export const styles = { "card": // pandwind:migrate-skip (route: stylex -> css-modules | capability-blocked: named-rules: named style rule: style | available: static, residual, portable-artifact)
+		stylex.create({ style: { padding: "1rem", color: theme.colors.brand } }).style, "cardTitle": // pandwind:migrate-skip (route: stylex -> css-modules | capability-blocked: named-rules: named style rule: style | available: static, residual, portable-artifact)
+		stylex.create({ style: { fontWeight: "600" } }).style };
+		export default styles;",
 		      "converted": 0,
-		      "outcomes": [],
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "portable-artifact",
+		        },
+		        {
+		          "outcome": "residual",
+		          "representation": "portable-artifact",
+		        },
+		      ],
 		      "residuals": [
 		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
+		          "hint": "named-rules: named style rule: style",
+		          "kind": "capability",
 		          "preserved": undefined,
 		        },
 		        {
-		          "hint": "nested stylesheet rules require selector-aware lowering",
-		          "kind": "nesting",
+		          "hint": "named-rules: named style rule: style",
+		          "kind": "capability",
 		          "preserved": undefined,
 		        },
 		      ],
 		      "skipped": 2,
-		      "validations": [],
-		    },
-		    "reverse": {
-		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting)
-		.card { color: \${theme.colors.brand}; padding: 1rem; }
-		.cardTitle { font-weight: 600; }",
-		      "converted": 0,
-		      "outcomes": [],
-		      "residuals": [],
-		      "skipped": 0,
 		      "validations": [],
 		    },
 		  },
@@ -275,7 +355,16 @@ test("css-modules -> stylex -> css-modules: resolves token references across bot
 		export const styles = { "card": stylex.create({ style: { padding: "1rem", color: "var(--colors-brand)" } }).style, "cardTitle": stylex.create({ style: { fontWeight: "600" } }).style };
 		export default styles;",
 		    "converted": 2,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "target-native",
+		        "representation": "named-map",
+		      },
+		      {
+		        "outcome": "target-native",
+		        "representation": "named-map",
+		      },
+		    ],
 		    "residuals": [],
 		    "skipped": 0,
 		    "validations": [
@@ -294,19 +383,19 @@ test("css-modules -> stylex -> css-modules: resolves token references across bot
 		  "reverse": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-		export const styles = { "card": // pandwind:migrate-skip (route: stylex -> css-modules | capability-blocked: named-rules: named style rule: style | available: static, residual, named-map)
-		stylex.create({ style: { padding: "1rem", color: "var(--colors-brand)" } }).style, "cardTitle": // pandwind:migrate-skip (route: stylex -> css-modules | capability-blocked: named-rules: named style rule: style | available: static, residual, named-map)
+		export const styles = { "card": // pandwind:migrate-skip (route: stylex -> css-modules | capability-blocked: named-rules: named style rule: style | available: static, residual, portable-artifact)
+		stylex.create({ style: { padding: "1rem", color: "var(--colors-brand)" } }).style, "cardTitle": // pandwind:migrate-skip (route: stylex -> css-modules | capability-blocked: named-rules: named style rule: style | available: static, residual, portable-artifact)
 		stylex.create({ style: { fontWeight: "600" } }).style };
 		export default styles;",
 		    "converted": 0,
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "named-map",
+		        "representation": "portable-artifact",
 		      },
 		      {
 		        "outcome": "residual",
-		        "representation": "named-map",
+		        "representation": "portable-artifact",
 		      },
 		    ],
 		    "residuals": [

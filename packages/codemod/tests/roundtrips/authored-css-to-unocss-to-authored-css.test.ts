@@ -47,7 +47,16 @@ test("authored-css -> unocss -> authored-css: preserves an actionable concrete r
 		.card { color: red; padding: 1rem; }
 		.card:hover { color: blue; }",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
 		      {
 		        "hint": "stylesheet migration requires a single local class selector",
@@ -88,7 +97,16 @@ test("authored-css -> unocss -> authored-css: retains edge semantics without sil
 		.card { color: theme.foreground; padding: 1rem; }
 		.card:hover { color: blue; }",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
 		      {
 		        "hint": "stylesheet migration requires a single local class selector",
@@ -135,15 +153,24 @@ test("authored-css -> unocss -> authored-css: preserves concrete theme and proje
 		  "amber": {
 		    "forward": {
 		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
+		      "code": "// pandwind:migrate-skip (lowering-residual: dynamic, capability)
 		.card { color: \${theme.colors.brand}; padding: 1rem; }
 		.card:hover { color: blue; }",
 		      "converted": 0,
-		      "outcomes": [],
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		      ],
 		      "residuals": [
 		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
+		          "hint": "UnoCSS arbitrary utility projection requires a literal declaration",
+		          "kind": "dynamic",
 		          "preserved": undefined,
 		        },
 		        {
@@ -157,7 +184,7 @@ test("authored-css -> unocss -> authored-css: preserves concrete theme and proje
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
+		      "code": "// pandwind:migrate-skip (lowering-residual: dynamic, capability)
 		.card { color: \${theme.colors.brand}; padding: 1rem; }
 		.card:hover { color: blue; }",
 		      "converted": 0,
@@ -170,15 +197,24 @@ test("authored-css -> unocss -> authored-css: preserves concrete theme and proje
 		  "blue": {
 		    "forward": {
 		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
+		      "code": "// pandwind:migrate-skip (lowering-residual: dynamic, capability)
 		.card { color: \${theme.colors.brand}; padding: 1rem; }
 		.card:hover { color: blue; }",
 		      "converted": 0,
-		      "outcomes": [],
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		      ],
 		      "residuals": [
 		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
+		          "hint": "UnoCSS arbitrary utility projection requires a literal declaration",
+		          "kind": "dynamic",
 		          "preserved": undefined,
 		        },
 		        {
@@ -192,7 +228,7 @@ test("authored-css -> unocss -> authored-css: preserves concrete theme and proje
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
+		      "code": "// pandwind:migrate-skip (lowering-residual: dynamic, capability)
 		.card { color: \${theme.colors.brand}; padding: 1rem; }
 		.card:hover { color: blue; }",
 		      "converted": 0,
@@ -221,7 +257,16 @@ test("authored-css -> unocss -> authored-css: resolves token references across b
 		.card { color: var(--colors-brand); padding: 1rem; }
 		.card:hover { color: blue; }",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
 		      {
 		        "hint": "stylesheet migration requires a single local class selector",

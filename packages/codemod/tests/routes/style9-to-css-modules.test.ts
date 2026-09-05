@@ -42,14 +42,14 @@ test("style9 -> css-modules: migrates concrete style9 syntax to css-modules", ()
 		{
 		  "changed": true,
 		  "code": "import style9 from "style9";
-		export const styles = // pandwind:migrate-skip (route: style9 -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, named-map)
+		export const styles = // pandwind:migrate-skip (route: style9 -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
 		style9.create({ card: { color: "red", padding: "1rem" } });
 		export const App = () => <div className={styles.card} />;",
 		  "converted": 0,
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "named-map",
+		      "representation": "portable-artifact",
 		    },
 		  ],
 		  "residuals": [
@@ -73,25 +73,20 @@ test("style9 -> css-modules: carries concrete style9 dynamics or edge syntax exp
 		{
 		  "changed": true,
 		  "code": "import style9 from "style9";
-		export const styles = // pandwind:migrate-skip (route: style9 -> css-modules | lowering-residual: dynamic | capability-blocked: named-rules: named style rule: card; dynamic-values: dynamic: theme.foreground | available: residual)
+		export const styles = // pandwind:migrate-skip (route: style9 -> css-modules | capability-blocked: named-rules: named style rule: card | available: residual, portable-artifact)
 		style9.create({ card: { color: theme.foreground, padding: "1rem" } });
 		export const App = () => <div className={styles.card} />;",
 		  "converted": 0,
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "residual",
+		      "representation": "portable-artifact",
 		    },
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "named-rules: named style rule: card; dynamic-values: dynamic: theme.foreground",
+		      "hint": "named-rules: named style rule: card",
 		      "kind": "capability",
-		      "preserved": undefined,
-		    },
-		    {
-		      "hint": "target lacks runtime dynamic values",
-		      "kind": "dynamic",
 		      "preserved": undefined,
 		    },
 		  ],
@@ -113,25 +108,20 @@ test("style9 -> css-modules: lowers concrete theme and project context variants"
 		  "amber": {
 		    "changed": true,
 		    "code": "import style9 from "style9";
-		export const styles = // pandwind:migrate-skip (route: style9 -> css-modules | lowering-residual: dynamic | capability-blocked: named-rules: named style rule: card; dynamic-values: dynamic: theme.colors.brand | available: residual)
+		export const styles = // pandwind:migrate-skip (route: style9 -> css-modules | capability-blocked: named-rules: named style rule: card | available: residual, portable-artifact)
 		style9.create({ card: { color: theme.colors.brand, padding: "1rem" } });
 		export const App = () => <div className={styles.card} />;",
 		    "converted": 0,
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "residual",
+		        "representation": "portable-artifact",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "named-rules: named style rule: card; dynamic-values: dynamic: theme.colors.brand",
+		        "hint": "named-rules: named style rule: card",
 		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "target lacks runtime dynamic values",
-		        "kind": "dynamic",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -141,25 +131,20 @@ test("style9 -> css-modules: lowers concrete theme and project context variants"
 		  "blue": {
 		    "changed": true,
 		    "code": "import style9 from "style9";
-		export const styles = // pandwind:migrate-skip (route: style9 -> css-modules | lowering-residual: dynamic | capability-blocked: named-rules: named style rule: card; dynamic-values: dynamic: theme.colors.brand | available: residual)
+		export const styles = // pandwind:migrate-skip (route: style9 -> css-modules | capability-blocked: named-rules: named style rule: card | available: residual, portable-artifact)
 		style9.create({ card: { color: theme.colors.brand, padding: "1rem" } });
 		export const App = () => <div className={styles.card} />;",
 		    "converted": 0,
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "residual",
+		        "representation": "portable-artifact",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "named-rules: named style rule: card; dynamic-values: dynamic: theme.colors.brand",
+		        "hint": "named-rules: named style rule: card",
 		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "target lacks runtime dynamic values",
-		        "kind": "dynamic",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -178,14 +163,14 @@ test("style9 -> css-modules: resolves concrete token references with project con
 		{
 		  "changed": true,
 		  "code": "import style9 from "style9";
-		export const styles = // pandwind:migrate-skip (route: style9 -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, named-map)
+		export const styles = // pandwind:migrate-skip (route: style9 -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
 		style9.create({ card: { color: "$colors.brand", padding: "1rem" } });
 		export const App = () => <div className={styles.card} />;",
 		  "converted": 0,
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "named-map",
+		      "representation": "portable-artifact",
 		    },
 		  ],
 		  "residuals": [
@@ -209,7 +194,7 @@ test("style9 -> css-modules: preserves malformed concrete style9 input", () => {
 		{
 		  "changed": true,
 		  "code": "import style9 from "style9";
-		export const styles = // pandwind:migrate-skip (route: style9 -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, named-map)
+		export const styles = // pandwind:migrate-skip (route: style9 -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
 		style9.create({ card: { color: "red", padding: "1rem" } });
 		export const App = () => <div className={styles.card} />;
 		const unfinished = { /* unfinished style9 */",
@@ -217,7 +202,7 @@ test("style9 -> css-modules: preserves malformed concrete style9 input", () => {
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "named-map",
+		      "representation": "portable-artifact",
 		    },
 		  ],
 		  "residuals": [

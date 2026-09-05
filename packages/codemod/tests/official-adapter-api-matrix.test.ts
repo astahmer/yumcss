@@ -75,7 +75,12 @@ describe("official primary API forms", () => {
 			export const styles = { "card": css.class({ padding: "1rem", color: "red" }) };
 			export default styles;",
 			    "converted": 1,
-			    "outcomes": [],
+			    "outcomes": [
+			      {
+			        "outcome": "target-native",
+			        "representation": "named-map",
+			      },
+			    ],
 			    "residuals": [],
 			    "skipped": 0,
 			    "validations": [
@@ -162,7 +167,12 @@ describe("official primary API forms", () => {
 			export const styles = { "card": css.class({ padding: "1rem", color: "red" }) };
 			export default styles;",
 			    "converted": 1,
-			    "outcomes": [],
+			    "outcomes": [
+			      {
+			        "outcome": "target-native",
+			        "representation": "named-map",
+			      },
+			    ],
 			    "residuals": [],
 			    "skipped": 0,
 			    "validations": [
@@ -273,7 +283,12 @@ describe("official primary API forms", () => {
 			export const styles = { "card": css.class({ padding: "1rem", color: "red" }) };
 			export default styles;",
 			    "converted": 1,
-			    "outcomes": [],
+			    "outcomes": [
+			      {
+			        "outcome": "target-native",
+			        "representation": "named-map",
+			      },
+			    ],
 			    "residuals": [],
 			    "skipped": 0,
 			    "validations": [
@@ -451,7 +466,12 @@ describe("official primary API forms", () => {
 			export const styles = { "card": css.class({ padding: "1rem", color: "red" }) };
 			export default styles;",
 			    "converted": 1,
-			    "outcomes": [],
+			    "outcomes": [
+			      {
+			        "outcome": "target-native",
+			        "representation": "named-map",
+			      },
+			    ],
 			    "residuals": [],
 			    "skipped": 0,
 			    "validations": [

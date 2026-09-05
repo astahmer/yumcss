@@ -78,13 +78,17 @@ test("mui -> less -> mui: preserves an actionable concrete round trip", () => {
 		export const App = () => // pandwind:migrate-skip (route: mui -> less | lowering-residual: validation)
 		<Box sx={{ color: "red", p: 2 }} />;",
 		    "converted": 0,
-		    "outcomes": [],
-		    "residuals": [
+		    "outcomes": [
 		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
+		        "outcome": "residual",
+		        "representation": "residual",
 		      },
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
+		    "residuals": [
 		      {
 		        "hint": "unexpected stylesheet closing brace",
 		        "kind": "parse",
@@ -111,7 +115,7 @@ test("mui -> less -> mui: preserves an actionable concrete round trip", () => {
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 6,
+		    "skipped": 5,
 		    "validations": [],
 		  },
 		}
@@ -161,13 +165,17 @@ test("mui -> less -> mui: retains edge semantics without silent loss", () => {
 		export const App = () => // pandwind:migrate-skip (route: mui -> less | lowering-residual: dynamic | capability-blocked: dynamic-values: dynamic: theme.foreground | available: residual)
 		<Box sx={{ color: theme.foreground, p: 2 }} />;",
 		    "converted": 0,
-		    "outcomes": [],
-		    "residuals": [
+		    "outcomes": [
 		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
+		        "outcome": "residual",
+		        "representation": "residual",
 		      },
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
+		    "residuals": [
 		      {
 		        "hint": "unexpected stylesheet closing brace",
 		        "kind": "parse",
@@ -194,7 +202,7 @@ test("mui -> less -> mui: retains edge semantics without silent loss", () => {
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 6,
+		    "skipped": 5,
 		    "validations": [],
 		  },
 		}
@@ -254,13 +262,17 @@ test("mui -> less -> mui: preserves concrete theme and project context variants"
 		export const App = () => // pandwind:migrate-skip (route: mui -> less | lowering-residual: dynamic | capability-blocked: dynamic-values: dynamic: theme.palette.primary.main | available: residual)
 		<Box sx={{ color: theme.palette.primary.main, p: 2 }} />;",
 		      "converted": 0,
-		      "outcomes": [],
-		      "residuals": [
+		      "outcomes": [
 		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
-		          "preserved": undefined,
+		          "outcome": "residual",
+		          "representation": "residual",
 		        },
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		      ],
+		      "residuals": [
 		        {
 		          "hint": "unexpected stylesheet closing brace",
 		          "kind": "parse",
@@ -287,7 +299,7 @@ test("mui -> less -> mui: preserves concrete theme and project context variants"
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 6,
+		      "skipped": 5,
 		      "validations": [],
 		    },
 		  },
@@ -326,13 +338,17 @@ test("mui -> less -> mui: preserves concrete theme and project context variants"
 		export const App = () => // pandwind:migrate-skip (route: mui -> less | lowering-residual: dynamic | capability-blocked: dynamic-values: dynamic: theme.palette.primary.main | available: residual)
 		<Box sx={{ color: theme.palette.primary.main, p: 2 }} />;",
 		      "converted": 0,
-		      "outcomes": [],
-		      "residuals": [
+		      "outcomes": [
 		        {
-		          "hint": "stylesheet statement has no terminator",
-		          "kind": "parse",
-		          "preserved": undefined,
+		          "outcome": "residual",
+		          "representation": "residual",
 		        },
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		      ],
+		      "residuals": [
 		        {
 		          "hint": "unexpected stylesheet closing brace",
 		          "kind": "parse",
@@ -359,7 +375,7 @@ test("mui -> less -> mui: preserves concrete theme and project context variants"
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 6,
+		      "skipped": 5,
 		      "validations": [],
 		    },
 		  },
@@ -413,13 +429,17 @@ test("mui -> less -> mui: resolves token references across both concrete legs", 
 		export const App = () => // pandwind:migrate-skip (route: mui -> less | lowering-residual: validation)
 		<Box sx={{ color: "primary.main", p: 2 }} />;",
 		    "converted": 0,
-		    "outcomes": [],
-		    "residuals": [
+		    "outcomes": [
 		      {
-		        "hint": "stylesheet statement has no terminator",
-		        "kind": "parse",
-		        "preserved": undefined,
+		        "outcome": "residual",
+		        "representation": "residual",
 		      },
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
+		    "residuals": [
 		      {
 		        "hint": "unexpected stylesheet closing brace",
 		        "kind": "parse",
@@ -446,7 +466,7 @@ test("mui -> less -> mui: resolves token references across both concrete legs", 
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 6,
+		    "skipped": 5,
 		    "validations": [],
 		  },
 		}

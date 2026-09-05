@@ -45,7 +45,12 @@ test("sass -> authored-css: migrates concrete sass syntax to authored-css", () =
 		.card { color: red; padding: 1rem; &__title { font-weight: 600; } }
 		$title-color: blue;",
 		  "converted": 0,
-		  "outcomes": [],
+		  "outcomes": [
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		  ],
 		  "residuals": [
 		    {
 		      "hint": "preprocessor features require the official compiler to inline before authored-css output",
@@ -70,7 +75,12 @@ test("sass -> authored-css: carries concrete sass dynamics or edge syntax explic
 		.card { color: theme.foreground; padding: 1rem; &__title { font-weight: 600; } }
 		$title-color: blue;",
 		  "converted": 0,
-		  "outcomes": [],
+		  "outcomes": [
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		  ],
 		  "residuals": [
 		    {
 		      "hint": "preprocessor features require the official compiler to inline before authored-css output",
@@ -99,7 +109,12 @@ test("sass -> authored-css: lowers concrete theme and project context variants",
 		.card { color: \${theme.colors.brand}; padding: 1rem; &__title { font-weight: 600; } }
 		$title-color: blue;",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
 		      {
 		        "hint": "preprocessor features require the official compiler to inline before authored-css output",
@@ -116,7 +131,12 @@ test("sass -> authored-css: lowers concrete theme and project context variants",
 		.card { color: \${theme.colors.brand}; padding: 1rem; &__title { font-weight: 600; } }
 		$title-color: blue;",
 		    "converted": 0,
-		    "outcomes": [],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
 		    "residuals": [
 		      {
 		        "hint": "preprocessor features require the official compiler to inline before authored-css output",
@@ -142,7 +162,12 @@ test("sass -> authored-css: resolves concrete token references with project cont
 		.card { color: var(--colors-brand); padding: 1rem; &__title { font-weight: 600; } }
 		$title-color: blue;",
 		  "converted": 0,
-		  "outcomes": [],
+		  "outcomes": [
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		  ],
 		  "residuals": [
 		    {
 		      "hint": "preprocessor features require the official compiler to inline before authored-css output",
@@ -168,7 +193,12 @@ test("sass -> authored-css: preserves malformed concrete sass input", () => {
 		$title-color: blue;
 		const unfinished = { /* unfinished sass */",
 		  "converted": 0,
-		  "outcomes": [],
+		  "outcomes": [
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		  ],
 		  "residuals": [
 		    {
 		      "hint": "preprocessor features require the official compiler to inline before authored-css output",
