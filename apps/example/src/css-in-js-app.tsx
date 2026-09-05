@@ -1,67 +1,71 @@
-import { tw } from "./tw";
+import { css } from "./css";
 
 /**
- * Same design, authored with the typed `tw()` object syntax.
- * Types are generated from the real Tailwind design system (see types.d.ts).
+ * The same surface authored with Pandwind's typed atomic object syntax.
  */
 export function CssInJsApp() {
 	return (
 		<section
-			className={tw({
-				mx: "auto",
-				maxW: "md",
-				spaceY: "6",
-				rounded: "xl",
-				bg: "white",
-				p: "6",
-				shadow: "lg",
-				ring: ["1", "gray-900/5"],
+			className={css.class({
+				maxWidth: "28rem",
+				margin: "0 auto",
+				padding: "24px",
+				borderRadius: "12px",
+				backgroundColor: "#ffffff",
+				boxShadow: "0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1)",
 			})}
 		>
-			<h1 className={tw({ text: ["2xl", "gray-900"], font: "bold" })}>typed tw()</h1>
-			<p className={tw({ text: ["sm", "gray-600"], leading: "6" })}>
+			<h1 className={css.class({ fontSize: "24px", fontWeight: 700, color: "#111827" })}>
+				typed css()
+			</h1>
+			<p className={css.class({ fontSize: "14px", lineHeight: "24px", color: "#4b5563" })}>
 				Hover the button:{" "}
 				<code
-					className={tw({
-						rounded: "md",
-						bg: "gray-100",
-						px: "1",
-						py: "0.5",
-						font: "mono",
-						text: ["xs", "sky-700"],
+					className={css.class({
+						borderRadius: "6px",
+						backgroundColor: "#f3f4f6",
+						padding: "2px 4px",
+						fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+						fontSize: "12px",
+						color: "#0369a1",
 					})}
 				>
-					tw()
+					css.class()
 				</code>{" "}
-				emits the same classes Tailwind scans and compiles.
+				emits atomic CSS from the Pandwind engine.
 			</p>
 			<button
 				type="button"
-				className={tw({
-					rounded: "md",
-					bg: "sky-600",
-					px: "4",
-					py: "2",
-					text: ["sm", "white"],
-					font: "semibold",
-					shadow: "sm",
-					transition: "colors",
-					hover: { bg: "sky-700" },
-					focusVisible: {
-						outline: ["2", "sky-600"],
-						outlineOffset: "2",
-					},
+				className={css.class({
+					border: "0",
+					borderRadius: "6px",
+					backgroundColor: "#0284c7",
+					padding: "8px 16px",
+					fontSize: "14px",
+					fontWeight: 600,
+					color: "#ffffff",
+					boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
+					transition: "background-color 120ms",
+					"&:hover": { backgroundColor: "#0369a1" },
+					"&:focus-visible": { outline: "2px solid #0284c7", outlineOffset: "2px" },
 				})}
 			>
-				Typed button
+				Atomic button
 			</button>
-			<div className={tw({ flex: "col", gap: "2", sm: { flex: "row" } })}>
-				<span className={tw({ text: ["xs", "gray-500"] })}>responsive:</span>
+			<div
+				className={css.class({
+					display: "flex",
+					flexDirection: "column",
+					gap: "8px",
+					"@media (min-width: 640px)": { flexDirection: "row" },
+				})}
+			>
+				<span className={css.class({ fontSize: "12px", color: "#6b7280" })}>responsive:</span>
 				<span
-					className={tw({
-						text: ["xs", "gray-700"],
-						font: "medium",
-						dark: { text: "gray-300" },
+					className={css.class({
+						fontSize: "12px",
+						fontWeight: 500,
+						color: "#374151",
 					})}
 				>
 					stack on mobile, row on sm+

@@ -1,9 +1,17 @@
-/**
- * Shared class constants — the cross-module constant-propagation demo.
- *
- * The vite cx pass resolves imported string constants (one barrel level
- * deep, un-shadowed, never written) and folds them into cx() calls at build
- * time, exactly like same-module literals.
- */
-export const CARD_BASE = "mx-auto max-w-md rounded-xl border shadow-sm";
-export const MUTED_TEXT = "text-sm leading-6 text-gray-600 dark:text-gray-300";
+import { css } from "../design";
+
+/** Shared design atoms used by the cross-module composition demo. */
+export const CARD_BASE = css.class({
+	$frame: {
+		w: "28rem",
+		corners: "xl",
+		border: { color: "$gray-200", width: 1 },
+		pad: 24,
+	},
+	$raw: { marginInline: "auto", boxShadow: "0 1px 2px rgba(0,0,0,0.05)" },
+});
+
+export const MUTED_TEXT = css.class({
+	$text: { size: "sm", spacing: { line: "24px" }, color: "$gray-600" },
+	_dark: { $text: { color: "$gray-300" } },
+});

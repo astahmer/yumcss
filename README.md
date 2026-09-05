@@ -626,7 +626,7 @@ packages/pandwind/        the library: css engine, tw codegen/runtime, vite plug
   src/tw/                 tw() runtime, oxc scanner, type/codegen
   src/vite/               pandwindVite() tw inliner + pandwindCssVite() extractor
   tests/                  vitest + tstyche suites
-apps/example/             Vite + React app: plain Tailwind, tw(), design css() and both plugins
+apps/example/             Vite + React app: Pandwind atomic and design CSS surfaces
 ```
 
 ## Commands

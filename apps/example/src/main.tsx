@@ -4,15 +4,15 @@ import { CssInJsApp } from "./css-in-js-app.tsx";
 import { DesignApp } from "./design-app.tsx";
 import { DogfoodApp } from "./dogfood-app.tsx";
 import "pandwind:css";
-import "./tailwind.css";
-import { TwApp } from "./tw-app.tsx";
+import "./base.css";
+import { AtomicApp } from "./atomic-app.tsx";
 
 const root = document.getElementById("root");
 if (!root) throw new Error("Missing #root element");
 
 createRoot(root).render(
 	<StrictMode>
-		<TwApp />
+		<AtomicApp />
 		<CssInJsApp />
 		<DesignApp />
 		<DogfoodApp />
