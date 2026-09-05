@@ -38,8 +38,16 @@ export interface RuntimeCssOptions extends CreateCssOptions {
 	readonly sheetOptions?: RuntimeSheetOptions;
 }
 
-/** Complete typed runtime CSS surface, including its attached stylesheet. */
-export type RuntimeCssFn<TStyles extends StyleObject = StyleObject> = CssFn<TStyles> & {
+/** Complete runtime CSS surface, including its attached stylesheet.
+ *
+ * Runtime styles may contain values and properties discovered from another
+ * styling system, so keep the preset-aware overload while also exposing the
+ * neutral `StyleObject` overload used by migration output. The compile-time
+ * `createCss(preset)` surface remains strict and token-aware.
+ */
+export type RuntimeCssFn<TStyles extends StyleObject = StyleObject> =
+	CssFn<TStyles> &
+		CssFn<StyleObject> & {
 	readonly sheet: RuntimeSheet;
 };
 
@@ -116,7 +124,9 @@ export function createRuntimeCss<
 		TypedStyleObject<TPreset["_config"], TPreset["tokens"], TPreset>
 	>;
 	runtime.registerVars(css as unknown as CssFn<StyleObject>);
-	return Object.assign(css, { sheet: runtime.sheet });
+	return Object.assign(css, { sheet: runtime.sheet }) as RuntimeCssFn<
+		TypedStyleObject<TPreset["_config"], TPreset["tokens"], TPreset>
+	>;
 }
 
 /** Design-vocabulary equivalent of {@link createRuntimeCss}. */
@@ -127,7 +137,7 @@ export function createRuntimeDesignCss<TPreset extends DesignPreset>(
 	const runtime = runtimeOptions(preset, options);
 	const css = createDesignCss(preset, runtime.cssOptions) as CssFn<DesignStyleObject<TPreset>>;
 	runtime.registerVars(css as unknown as CssFn<StyleObject>);
-	return Object.assign(css, { sheet: runtime.sheet });
+	return Object.assign(css, { sheet: runtime.sheet }) as RuntimeCssFn<DesignStyleObject<TPreset>>;
 }
 
 export { createRuntimeSheet } from "./runtime-sheet.ts";
