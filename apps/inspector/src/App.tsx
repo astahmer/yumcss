@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { ui } from "./ui-css.ts";
 import { InspectorApi, type AnalyticsHistoryPoint, type HistoryListItem } from "./lib/api.ts";
 import { diffRuns, type HistoryEntry } from "./lib/history-diff.ts";
 import { InspectorExport } from "./lib/export.ts";
@@ -22,11 +23,11 @@ const stripDollar = (name: string): string => (name.startsWith("$") ? name.slice
 
 const isHex = (value: string): boolean => /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(value.trim());
 
-function CopyButton(props: { text: string }) {
+function CopyButton(props: { text: string; className?: string }) {
 	const [copied, setCopied] = useState(false);
 	return (
 		<button
-			className="copy"
+			className={props.className ?? ui.copy}
 			title={`copy ${props.text}`}
 			onClick={() => {
 				navigator.clipboard?.writeText(props.text).then(
@@ -45,10 +46,10 @@ function CopyButton(props: { text: string }) {
 
 function Card(props: { label: string; value: string; sub?: string }) {
 	return (
-		<div className="card">
-			<div className="card-value">{props.value}</div>
-			<div className="card-label">{props.label}</div>
-			{props.sub !== undefined && <div className="card-sub">{props.sub}</div>}
+		<div className={ui.card}>
+			<div className={ui.cardValue}>{props.value}</div>
+			<div className={ui.cardLabel}>{props.label}</div>
+			{props.sub !== undefined && <div className={ui.cardSub}>{props.sub}</div>}
 		</div>
 	);
 }
@@ -57,12 +58,12 @@ function Card(props: { label: string; value: string; sub?: string }) {
 function Bar(props: { label: string; value: number; max: number; suffix?: string }) {
 	const pct = props.max > 0 ? Math.max(2, Math.round((props.value / props.max) * 100)) : 2;
 	return (
-		<div className="bar-row">
-			<span className="bar-label">{props.label}</span>
-			<span className="bar-track">
-				<span className="bar-fill" style={{ width: `${pct}%` }} />
+		<div className={ui.barRow}>
+			<span className={ui.barLabel}>{props.label}</span>
+			<span className={ui.barTrack}>
+				<span className={ui.barFill} style={{ width: `${pct}%` }} />
 			</span>
-			<span className="bar-value">
+			<span className={ui.barValue}>
 				{props.value}
 				{props.suffix ?? ""}
 			</span>
@@ -99,27 +100,27 @@ function ColorSwatches(props: {
 	return (
 		<section>
 			<h2>{props.section.label}</h2>
-			<div className="swatches">
+			<div className={ui.swatches}>
 				{usable.map((s) => (
-					<div className="swatch-card" key={`${props.section.id}:${s.name}`}>
-						<div className="swatch-modes">
+					<div className={ui.swatchCard} key={`${props.section.id}:${s.name}`}>
+						<div className={ui.swatchModes}>
 							{Object.entries(s.modes).map(([mode, color]) => (
 								<button
 									key={mode}
-									className="swatch"
+									className={ui.swatch}
 									style={{ background: color }}
 									title={`${s.name}${mode === "base" ? "" : ` (${mode})`} = ${color} — click to copy`}
 									onClick={() => navigator.clipboard?.writeText(color)}
 								/>
 							))}
 						</div>
-						<div className="swatch-meta">
-							<span className="swatch-name">{stripDollar(s.name)}</span>
-							<span className="swatch-chain">
+						<div className={ui.swatchMeta}>
+							<span className={ui.swatchName}>{stripDollar(s.name)}</span>
+							<span className={ui.swatchChain}>
 								{s.chain.length > 1 ? s.chain.join(" ← ") : Object.values(s.modes).join(" ")}
 							</span>
 						</div>
-						<CopyButton text={stripDollar(s.name)} />
+						<CopyButton text={stripDollar(s.name)} className={ui.swatchCardCopy} />
 					</div>
 				))}
 			</div>
@@ -157,7 +158,7 @@ function DesignSystemView(props: {
 
 	return (
 		<>
-			<section className="cards">
+			<section className={ui.cards}>
 				<Card label="@theme variables" value={String(d.themeVars.length)} />
 				<Card label="typed utility unions" value={String(d.utilities.length)} />
 				<Card
@@ -172,14 +173,14 @@ function DesignSystemView(props: {
 			</section>
 
 			<input
-				className="search"
+				className={ui.search}
 				placeholder="filter tokens & utilities…"
 				value={props.query}
 				onChange={(e) => props.queryChange(e.target.value)}
 			/>
 
 			{(sectionsById.get("colors") !== undefined || sectionsById.get("semantic") !== undefined) && (
-				<nav className="section-nav">
+				<nav className={ui.sectionNav}>
 					<a href="#sec-colors">colors</a>
 					<a href="#sec-typography">typography</a>
 					<a href="#sec-spacing">spacing</a>
@@ -213,12 +214,12 @@ function DesignSystemView(props: {
 
 			<section id="sec-typography">
 				<h2>Typography — font sizes at real size</h2>
-				<div className="type-sizes">
+				<div className={ui.typeSizes}>
 					{fontSizeEntries
 						.filter((e) => matchText(e.name))
 						.map((e) => (
-							<div className="type-size-row" key={e.name}>
-								<span className="type-size-sample" style={{ fontSize: e.value }}>
+							<div className={ui.typeSizeRow} key={e.name}>
+								<span className={ui.typeSizeSample} style={{ fontSize: e.value }}>
 									Ag {FONT_SIZE_SAMPLE}
 								</span>
 								<code>
@@ -230,19 +231,19 @@ function DesignSystemView(props: {
 				</div>
 
 				<h3>weights</h3>
-				<div className="chip-row">
+				<div className={ui.chipRow}>
 					{filterNamed(weightEntries, matchText).map((e) => (
-						<span className="chip" key={e.name} style={{ fontWeight: Number(e.value) }}>
+						<span className={ui.chip} key={e.name} style={{ fontWeight: Number(e.value) }}>
 							{e.name} {e.value}
 						</span>
 					))}
 				</div>
 
 				<h3>families</h3>
-				<div className="family-list">
+				<div>
 					{filterNamed(familyEntries, matchText).map((e) => (
-						<div className="type-size-row" key={e.name}>
-							<span className="type-size-sample" style={{ fontFamily: e.value }}>
+						<div className={ui.typeSizeRow} key={e.name}>
+							<span className={ui.typeSizeSample} style={{ fontFamily: e.value }}>
 								{e.name}: Pandwind studio preview 123
 							</span>
 							<code>{e.value}</code>
@@ -267,7 +268,7 @@ function DesignSystemView(props: {
 											<code>{e.name}</code>
 										</td>
 										<td>{e.value}</td>
-										<td className="sample">
+										<td className={ui.sample}>
 											<span
 												style={
 													e.value.includes("em")
@@ -308,11 +309,11 @@ function DesignSystemView(props: {
 			{radiiEntries.length > 0 && (
 				<section id="sec-radii">
 					<h2>Radii</h2>
-					<div className="radii">
+					<div className={ui.radii}>
 						{radiiEntries.map((e) => (
-							<div className="radius-demo" key={e.name}>
+							<div className={ui.radiusDemo} key={e.name}>
 								<div
-									className="radius-box"
+									className={ui.radiusBox}
 									style={{ borderRadius: e.value === "9999px" ? "9999px" : e.value }}
 								/>
 								<span>{e.name}</span>
@@ -341,7 +342,7 @@ function DesignSystemView(props: {
 								<tr key={u.key}>
 									<td>{u.key}</td>
 									<td>{u.count}</td>
-									<td className="sample">{u.sample.join(", ")}</td>
+									<td className={ui.sample}>{u.sample.join(", ")}</td>
 									<td>{u.openEnded ? "∞" : ""}</td>
 								</tr>
 							))}
@@ -367,7 +368,7 @@ function DesignSystemView(props: {
 												<td>
 													{categorizeColor(v) !== null ? (
 														<span
-															className="mini-swatch"
+															className={ui.miniSwatch}
 															style={{ background: categorizeColor(v) ?? "" }}
 														/>
 													) : null}
@@ -398,23 +399,18 @@ function ClassDrillDown(props: { data: StudioPayload; query: string }) {
 	return (
 		<section>
 			<h2>class drill-down — rules per candidate</h2>
-			<p className="hint">
-				every rule the real Tailwind compiler emitted for a scanned class. click to expand.
-			</p>
-			<ul className="sites">
+			<p>every rule the real Tailwind compiler emitted for a scanned class. click to expand.</p>
+			<ul className={ui.sites}>
 				{entries.map((d) => (
 					<li key={d.candidate}>
 						<button
 							type="button"
-							className="linklike"
 							onClick={() => setOpen(open === d.candidate ? null : d.candidate)}
 						>
 							<code>{d.candidate}</code> — {d.rules.length} rule(s)
 						</button>
 						{open === d.candidate && (
-							<pre className="rules">
-								{d.rules.map((r) => `${r.selector} {\n  ${r.declarations}\n}`).join("\n")}
-							</pre>
+							<pre>{d.rules.map((r) => `${r.selector} {\n  ${r.declarations}\n}`).join("\n")}</pre>
 						)}
 					</li>
 				))}
@@ -435,12 +431,12 @@ function HistoryView(props: {
 }) {
 	return (
 		<div>
-			{props.error !== null && <p className="error">{props.error}</p>}
+			{props.error !== null && <p className={ui.error}>{props.error}</p>}
 			{(props.list ?? []).length < 2 && props.error === null && (
-				<p className="muted">need at least 2 runs — hit refresh to snapshot another one.</p>
+				<p className={ui.muted}>need at least 2 runs — hit refresh to snapshot another one.</p>
 			)}
 			{props.diffPair !== null && props.diffPair.a === props.diffPair.b && (
-				<p className="muted">select two different runs to compare</p>
+				<p className={ui.muted}>select two different runs to compare</p>
 			)}
 			<section>
 				<h2>runs</h2>
@@ -518,9 +514,9 @@ function HistoryView(props: {
 								<>
 									<h3>dead candidates</h3>
 									{d.resolvedDead.length > 0 && (
-										<p className="good">resolved: {d.resolvedDead.join(", ")}</p>
+										<p className={ui.good}>resolved: {d.resolvedDead.join(", ")}</p>
 									)}
-									{d.newDead.length > 0 && <p className="warn">new: {d.newDead.join(", ")}</p>}
+									{d.newDead.length > 0 && <p className={ui.warn}>new: {d.newDead.join(", ")}</p>}
 								</>
 							)}
 						</section>
@@ -547,7 +543,7 @@ function StatsView(props: { data: StudioPayload; query: string }) {
 
 	const sortHeader = (key: "file" | "eliminatedPct" | "cxRuntime", label: string) => (
 		<th
-			className="sortable"
+			className={ui.sortable}
 			onClick={() => {
 				if (sortKey === key) setAsc(!asc);
 				else {
@@ -563,7 +559,7 @@ function StatsView(props: { data: StudioPayload; query: string }) {
 
 	return (
 		<>
-			<section className="cards">
+			<section className={ui.cards}>
 				<Card
 					label="cx eliminated (build time)"
 					value={`${c.eliminatedPct}%`}
@@ -596,23 +592,23 @@ function StatsView(props: { data: StudioPayload; query: string }) {
 			{c.shape !== undefined && (
 				<section>
 					<h2>stylesheet shape</h2>
-					<p className="muted">
+					<p className={ui.muted}>
 						{c.shape.totalRules} rules · {InspectorApi.kb(c.shape.totalBytes)} compiled
 					</p>
 					{c.shape.categories.map((cat) => {
 						const maxBytes = Math.max(...c.shape.categories.map((x) => x.bytes), 1);
 						return (
-							<div key={cat.category} className="shape-cat">
-								<div className="shape-head">
+							<div key={cat.category} className={ui.shapeCat}>
+								<div className={ui.shapeHead}>
 									<strong>{cat.category}</strong>
 									<span>
 										{cat.rules} rules · {InspectorApi.kb(cat.bytes)}
 									</span>
 								</div>
 								<Bar label="bytes" value={cat.bytes} max={maxBytes} />
-								<div className="shape-values">
+								<div className={ui.shapeValues}>
 									{cat.topValues.map((tv) => (
-										<span key={tv.value} className="chip">
+										<span key={tv.value} className={ui.chip}>
 											{tv.value} ×{tv.count}
 										</span>
 									))}
@@ -647,7 +643,7 @@ function StatsView(props: { data: StudioPayload; query: string }) {
 							<tr key={f.file}>
 								<td>{f.file}</td>
 								<td>
-									<span className="pct">{f.eliminatedPct}%</span>
+									<span className={ui.pct}>{f.eliminatedPct}%</span>
 								</td>
 								<td>{`${f.cxFoldedFull}/${f.cxFoldedPartial}/${f.cxRuntime}`}</td>
 								<td>{f.cxRuntime}</td>
@@ -663,8 +659,10 @@ function StatsView(props: { data: StudioPayload; query: string }) {
 			{props.data.cssSources.length > 0 && (
 				<section>
 					<h2>CSS-in-JS provenance</h2>
-					<p className="muted">Source calls and the semantic rules emitted for each call site.</p>
-					<ul className="sites">
+					<p className={ui.muted}>
+						Source calls and the semantic rules emitted for each call site.
+					</p>
+					<ul className={ui.sites}>
 						{props.data.cssSources.map((site) => (
 							<li key={`${site.file}:${site.start}`}>
 								<a
@@ -697,7 +695,7 @@ function StatsView(props: { data: StudioPayload; query: string }) {
 			{c.missingCssSites.length > 0 && (
 				<section>
 					<h2>missing-css sites</h2>
-					<ul className="sites">
+					<ul className={ui.sites}>
 						{c.missingCssSites.map((s) => (
 							<li key={`${s.file}:${s.line}:${s.token}`}>
 								<a href={InspectorApi.vscodeLink(props.data.meta.root, s.file, s.line)}>
@@ -713,7 +711,7 @@ function StatsView(props: { data: StudioPayload; query: string }) {
 			{c.runtimeSites.length > 0 && (
 				<section>
 					<h2>runtime cx() sites</h2>
-					<ul className="sites">
+					<ul className={ui.sites}>
 						{c.runtimeSites.map((s) => (
 							<li key={`${s.file}:${s.line}`}>
 								<a href={InspectorApi.vscodeLink(props.data.meta.root, s.file, s.line)}>
@@ -747,9 +745,9 @@ function TokenGraphView({ graph }: { graph: TokenGraph }) {
 	const [selected, setSelected] = useState<string | null>(null);
 	if (graph.nodes.length === 0) {
 		return (
-			<div className="wrap">
+			<div className={ui.wrap}>
 				<h2>token graph</h2>
-				<p className="muted">no theme variables found in the generated bridge.</p>
+				<p className={ui.muted}>no theme variables found in the generated bridge.</p>
 			</div>
 		);
 	}
@@ -770,16 +768,16 @@ function TokenGraphView({ graph }: { graph: TokenGraph }) {
 	const cyclesSet = new Set(graph.cycles.flat());
 
 	return (
-		<div className="wrap">
+		<div className={ui.wrap}>
 			<h2>token graph</h2>
-			<p className="muted">
+			<p className={ui.muted}>
 				{graph.nodes.length} nodes · {graph.edges.length} edges · {graph.cycles.length} cycle(s) ·{" "}
 				{graph.dangling.length} dangling · {graph.orphans.length} orphaned raws
 			</p>
 			{selected !== null && byId.has(selected) ? (
-				<div className="card">
-					<div className="card-value">{selected}</div>
-					<div className="card-sub">
+				<div className={ui.card}>
+					<div className={ui.cardValue}>{selected}</div>
+					<div className={ui.cardSub}>
 						tier: {byId.get(selected)!.tier}
 						{graph.reachability[selected] !== undefined
 							? ` · resolves to: ${graph.reachability[selected]!.join(", ")}`
@@ -869,7 +867,7 @@ function UsageView(props: { data: StudioPayload }) {
 	if (a === undefined) {
 		return (
 			<div>
-				<p className="muted">no analytics in this snapshot — hit refresh.</p>
+				<p className={ui.muted}>no analytics in this snapshot — hit refresh.</p>
 			</div>
 		);
 	}
@@ -877,7 +875,7 @@ function UsageView(props: { data: StudioPayload }) {
 		<div>
 			<section>
 				<h2>usage overview</h2>
-				<p className="muted">
+				<p className={ui.muted}>
 					{a.sitesScanned} styling call site(s) scanned
 					{crawl !== undefined && ` · ${crawl.files} css file(s) crawled`}
 					{crawl !== undefined &&
@@ -977,7 +975,7 @@ function UsageView(props: { data: StudioPayload }) {
 					</tbody>
 				</table>
 				{props.data.governance !== undefined ? (
-					<p className="muted">
+					<p className={ui.muted}>
 						{props.data.governance.summary.unusedCandidates} unused candidate(s) per the governance
 						report — see the Governance tab ({props.data.governance.summary.safeToRemove} safe ·{" "}
 						{props.data.governance.summary.reviewRequired} review ·{" "}
@@ -987,7 +985,7 @@ function UsageView(props: { data: StudioPayload }) {
 					a.unusedTokens.length > 0 && (
 						<>
 							<h3>not observed in the scanned graph ({a.unusedTokens.length}) — unclassified</h3>
-							<p className="muted">{a.unusedTokens.slice(0, 40).join(", ")}</p>
+							<p className={ui.muted}>{a.unusedTokens.slice(0, 40).join(", ")}</p>
 						</>
 					)
 				)}
@@ -1012,14 +1010,14 @@ function ContrastWarningsView({
 		return (
 			<section>
 				<h2>wcag contrast</h2>
-				<p className="muted">no text/background pairs below 4.5:1 found.</p>
+				<p className={ui.muted}>no text/background pairs below 4.5:1 found.</p>
 			</section>
 		);
 	}
 	return (
 		<section>
 			<h2>wcag contrast — {warnings.length} warning(s)</h2>
-			<p className="muted">
+			<p className={ui.muted}>
 				text/background pairs within one call site. &lt;4.5 fails normal text; &lt;3 also fails
 				large text.
 			</p>
@@ -1071,7 +1069,7 @@ function PruneChangesetView({ unusedCount }: { unusedCount: number }) {
 	return (
 		<section>
 			<h2>prune changeset</h2>
-			<p className="muted">
+			<p className={ui.muted}>
 				generates a .changeset file proposing removal of the {unusedCount} zero-use token(s).
 				read-only: nothing is written server-side.
 			</p>
@@ -1081,7 +1079,7 @@ function PruneChangesetView({ unusedCount }: { unusedCount: number }) {
 			{content !== null && (
 				<button onClick={copy}>{copied ? "copied ✓" : "copy to clipboard"}</button>
 			)}
-			{content !== null && <pre className="card">{content}</pre>}
+			{content !== null && <pre className={ui.card}>{content}</pre>}
 		</section>
 	);
 }
@@ -1118,8 +1116,8 @@ function GovernanceView(props: { data: StudioPayload }) {
 	const g = props.data.governance;
 	if (g === undefined) {
 		return (
-			<div className="empty-state">
-				<p className="muted">
+			<div className={ui.emptyState}>
+				<p className={ui.muted}>
 					the current snapshot has no governance report — refresh to re-run the analysis with the
 					governance gather payload.
 				</p>
@@ -1140,14 +1138,14 @@ function GovernanceView(props: { data: StudioPayload }) {
 			{s.boundaries["configuration-failure"] > 0 && (
 				<section>
 					<h2>configuration incomplete</h2>
-					<p className="muted">
+					<p className={ui.muted}>
 						the project configuration could not be fully evaluated — usage claims are
 						provenance-linked but incomplete. wording: “not observed in the scanned graph”, not
 						“unused”.
 					</p>
 				</section>
 			)}
-			<section className="cards">
+			<section className={ui.cards}>
 				<Card label="defined" value={String(s.defined)} />
 				<Card label="used" value={String(s.used)} />
 				<Card label="unused candidates" value={String(s.unusedCandidates)} />
@@ -1162,13 +1160,13 @@ function GovernanceView(props: { data: StudioPayload }) {
 			{nonZeroBoundaries.length > 0 && (
 				<section>
 					<h2>coverage boundaries</h2>
-					<p className="muted">
+					<p className={ui.muted}>
 						conditions that prevent a definitive usage claim — nothing behind these is classified as
 						safe-to-remove.
 					</p>
-					<div className="chip-row">
+					<div className={ui.chipRow}>
 						{nonZeroBoundaries.map((b) => (
-							<span className="chip" key={b}>
+							<span className={ui.chip} key={b}>
 								{b} ({s.boundaries[b]})
 							</span>
 						))}
@@ -1178,7 +1176,7 @@ function GovernanceView(props: { data: StudioPayload }) {
 			<section>
 				<h2>strict policy</h2>
 				{policy === null ? (
-					<p className="muted">
+					<p className={ui.muted}>
 						no policy resolved — strictness is report-only/fail-open (unknown).
 					</p>
 				) : policy.resolved ? (
@@ -1205,14 +1203,14 @@ function GovernanceView(props: { data: StudioPayload }) {
 						</tbody>
 					</table>
 				) : (
-					<p className="muted">
+					<p className={ui.muted}>
 						policy for {policy.owner} could not be resolved — all strictness is unknown.
 					</p>
 				)}
 			</section>
 			<section>
 				<h2>unused candidates ({unused.length})</h2>
-				<p className="muted">
+				<p className={ui.muted}>
 					zero reachable usage after alias/composition/generated-artifact/export analysis — safety
 					is a classification, not a deletion approval.
 				</p>
@@ -1238,7 +1236,7 @@ function GovernanceView(props: { data: StudioPayload }) {
 			{suggestions.length > 0 && (
 				<section>
 					<h2>raw value suggestions ({suggestions.length}) — exact matches only</h2>
-					<p className="muted">
+					<p className={ui.muted}>
 						each suggestion is an exact resolved-value match with a legal spelling for the property;
 						ambiguous matches are rejected, not ranked.
 					</p>
@@ -1315,7 +1313,7 @@ function AnalyticsHistoryChart() {
 		return (
 			<section>
 				<h2>trend</h2>
-				<p className="muted">{error} (enable INSPECTOR_HISTORY=1 to record snapshots)</p>
+				<p className={ui.muted}>{error} (enable INSPECTOR_HISTORY=1 to record snapshots)</p>
 			</section>
 		);
 	}
@@ -1323,7 +1321,7 @@ function AnalyticsHistoryChart() {
 		return (
 			<section>
 				<h2>trend</h2>
-				<p className="muted">
+				<p className={ui.muted}>
 					need at least 2 recorded snapshots — run with INSPECTOR_HISTORY=1 and refresh twice.
 				</p>
 			</section>
@@ -1369,7 +1367,7 @@ function AnalyticsHistoryChart() {
 					call sites
 				</text>
 			</svg>
-			<p className="muted">
+			<p className={ui.muted}>
 				first {series[0]!.timestamp.slice(0, 19)} · last {series[n - 1]!.timestamp.slice(0, 19)}
 			</p>
 		</section>
@@ -1428,15 +1426,15 @@ export function App() {
 	let body: React.ReactNode;
 	if (error !== null) {
 		body = (
-			<div className="empty-state">
-				<p className="error">{error}</p>
+			<div className={ui.emptyState}>
+				<p className={ui.error}>{error}</p>
 				<button onClick={refresh}>retry</button>
 			</div>
 		);
 	} else if (data === null || loading) {
 		body = (
-			<div className="empty-state">
-				<span className="spinner" /> analyzing…
+			<div className={ui.emptyState}>
+				<span className={ui.spinner} /> analyzing…
 			</div>
 		);
 	} else {
@@ -1464,40 +1462,56 @@ export function App() {
 	}
 
 	return (
-		<main className="wrap">
+		<main className={ui.wrap}>
 			<header>
 				<h1>
-					<span className="brand-mark">◆</span> pandwind <span className="brand-thin">studio</span>
+					<span className={ui.brandMark}>◆</span> pandwind{" "}
+					<span className={ui.brandThin}>studio</span>
 				</h1>
 				<nav>
-					<button className={tab === "design" ? "active" : ""} onClick={() => setTab("design")}>
+					<button
+						className={tab === "design" ? ui.active : undefined}
+						onClick={() => setTab("design")}
+					>
 						Design system
 					</button>
-					<button className={tab === "graph" ? "active" : ""} onClick={() => setTab("graph")}>
+					<button
+						className={tab === "graph" ? ui.active : undefined}
+						onClick={() => setTab("graph")}
+					>
 						token graph
 					</button>
-					<button className={tab === "stats" ? "active" : ""} onClick={() => setTab("stats")}>
+					<button
+						className={tab === "stats" ? ui.active : undefined}
+						onClick={() => setTab("stats")}
+					>
 						Stats
 					</button>
-					<button className={tab === "usage" ? "active" : ""} onClick={() => setTab("usage")}>
+					<button
+						className={tab === "usage" ? ui.active : undefined}
+						onClick={() => setTab("usage")}
+					>
 						Usage
 					</button>
 					<button
-						className={tab === "governance" ? "active" : ""}
+						className={tab === "governance" ? ui.active : undefined}
 						onClick={() => setTab("governance")}
 					>
 						Governance
 					</button>
-					<button className={tab === "history" ? "active" : ""} onClick={() => setTab("history")}>
+					<button
+						className={tab === "history" ? ui.active : undefined}
+						onClick={() => setTab("history")}
+					>
 						History
 					</button>
 					<button onClick={refresh} disabled={loading} title="re-run analysis">
 						{loading ? "…" : "⟳ refresh"}
 					</button>
 					{data !== null && !loading && (
-						<details className="export-menu">
+						<details className={ui.exportMenu}>
 							<summary>⬇ export</summary>
-							<div className="export-items">
+							<div className={ui.exportItems}>
 								{tab === "design" ? (
 									<>
 										<button

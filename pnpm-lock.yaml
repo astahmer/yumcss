@@ -108,6 +108,9 @@ importers:
 
   apps/inspector:
     dependencies:
+      pandwind:
+        specifier: workspace:*
+        version: link:../../packages/pandwind
       pandwind-analyze:
         specifier: workspace:*
         version: link:../../packages/analyze
