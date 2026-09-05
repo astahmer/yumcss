@@ -11,6 +11,7 @@ import { SANDBOX_MODULES } from "../lib/sandbox-modules.ts";
 import { EditorPane } from "./EditorPane.tsx";
 import { ResultsPane } from "./ResultsPane.tsx";
 import { GhostButton } from "./ui.tsx";
+import { css as uiCss } from "../ui-css.ts";
 
 /** Component-like dynamics available inside evaluated code as `props`. */
 const SANDBOX_PROPS = { active: true, tone: "red-600" };
@@ -118,11 +119,11 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 	}, [props.def, run]);
 
 	return (
-		<div className="flex h-full min-h-0 flex-col gap-3 p-4">
-			<div className="flex h-6 shrink-0 items-center justify-between">
-				<div className="flex items-baseline gap-3">
-					<h1 className="text-[13px] font-medium text-zinc-200">{props.def.title}</h1>
-					<p className="hidden text-[12px] text-zinc-600 md:block">{props.def.blurb}</p>
+		<div className={uiCss.class({ display: "flex", height: "100%", minHeight: "0px", flexDirection: "column", gap: "12px", padding: "16px" })}>
+			<div className={uiCss.class({ display: "flex", height: "24px", flexShrink: "0", alignItems: "center", justifyContent: "space-between" })}>
+				<div className={uiCss.class({ display: "flex", alignItems: "baseline", gap: "12px" })}>
+					<h1 className={uiCss.class({ margin: "0", fontSize: "13px", fontWeight: "500", color: "#e4e4e7" })}>{props.def.title}</h1>
+					<p className={uiCss.class({ display: "none", margin: "0", fontSize: "12px", color: "#52525b", "@media (min-width: 768px)": { display: "block" } })}>{props.def.blurb}</p>
 				</div>
 				{dirty && (
 					<GhostButton onClick={reset} title="Restore the example code">
@@ -131,7 +132,7 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 				)}
 			</div>
 			{props.def.files.length > 1 && (
-				<div className="flex h-7 shrink-0 items-center gap-1 overflow-x-auto" role="tablist">
+				<div className={uiCss.class({ display: "flex", height: "28px", flexShrink: "0", alignItems: "center", gap: "4px", overflowX: "auto" })} role="tablist">
 					{props.def.files.map((file, index) => (
 						<button
 							key={file.name}
@@ -139,19 +140,14 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 							role="tab"
 							aria-selected={index === activeTab}
 							onClick={() => setActiveTab(index)}
-							className={
-								"rounded-md px-2.5 py-1 font-mono text-[12px] leading-5 transition-colors " +
-								(index === activeTab
-									? "bg-white/[0.07] text-zinc-100"
-									: "text-zinc-500 hover:text-zinc-300")
-							}
+							className={`${uiCss.class({ border: "0", borderRadius: "6px", padding: "4px 10px", fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", fontSize: "12px", lineHeight: "20px", transition: "color 120ms, background-color 120ms" })} ${index === activeTab ? uiCss.class({ backgroundColor: "rgba(255,255,255,0.07)", color: "#f4f4f5" }) : uiCss.class({ color: "#71717a", "&:hover": { color: "#d4d4d8" } })}`}
 						>
 							{file.name}
 						</button>
 					))}
 				</div>
 			)}
-			<div className="grid min-h-0 flex-1 grid-cols-1 gap-3 lg:grid-cols-2">
+			<div className={uiCss.class({ display: "grid", minHeight: "0px", flex: "1 1 0%", gridTemplateColumns: "1fr", gap: "12px", "@media (min-width: 1024px)": { gridTemplateColumns: "repeat(2, minmax(0, 1fr))" } })}>
 				<EditorPane
 					code={files[activeTab] ?? ""}
 					onChange={onChange}
@@ -159,7 +155,7 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 					filePath={
 						"file:///pandwind/playground/" + (props.def.files[activeTab]?.name ?? "Example.tsx")
 					}
-					className="min-h-72"
+					className={uiCss.class({ minHeight: "18rem" })}
 				/>
 				<ResultsPane result={result} />
 			</div>

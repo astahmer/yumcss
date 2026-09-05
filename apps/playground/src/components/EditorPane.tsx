@@ -1,5 +1,6 @@
 import MonacoEditor, { type Monaco } from "@monaco-editor/react";
 import { EDITOR_TYPE_LIBRARIES } from "../lib/editor-types.ts";
+import { css as uiCss } from "../ui-css.ts";
 import { Kbd, Pane } from "./ui.tsx";
 
 /**
@@ -63,8 +64,8 @@ function configureTypeScript(monaco: Monaco): void {
 /** Quiet stand-in while the Monaco chunk loads: a single breathing dot. */
 function EditorBooting() {
 	return (
-		<div className="flex h-full items-center justify-center">
-			<span className="h-1.5 w-1.5 animate-pulse rounded-full bg-zinc-600" />
+		<div className={uiCss.class({ display: "flex", height: "100%", alignItems: "center", justifyContent: "center" })}>
+			<span className={uiCss.class({ width: "6px", height: "6px", borderRadius: "9999px", backgroundColor: "#52525b", animation: "pulse 1.5s ease-in-out infinite" })} />
 		</div>
 	);
 }
@@ -81,14 +82,14 @@ export function EditorPane(props: {
 			label="Editor"
 			className={props.className}
 			right={
-				<span className="flex items-center gap-1.5 pr-1 text-[11px] text-zinc-600">
+					<span className={uiCss.class({ display: "flex", alignItems: "center", gap: "6px", paddingRight: "4px", fontSize: "11px", color: "#52525b" })}>
 					<Kbd>⌘</Kbd>
 					<Kbd>↵</Kbd>
-					<span className="ml-1 hidden sm:inline">to run</span>
+					<span className={uiCss.class({ display: "none", marginLeft: "4px", "@media (min-width: 640px)": { display: "inline" } })}>to run</span>
 				</span>
 			}
 		>
-			<div aria-label="Code editor" className="h-full min-h-0">
+			<div aria-label="Code editor" className={uiCss.class({ height: "100%", minHeight: "0px" })}>
 				<MonacoEditor
 					loading={<EditorBooting />}
 					height="100%"

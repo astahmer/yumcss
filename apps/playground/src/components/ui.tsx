@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { css as uiCss } from "../ui-css.ts";
 
 /** Shared pane chrome: hairline border, flat surface, small-caps header. */
 export function Pane(props: {
@@ -9,15 +10,15 @@ export function Pane(props: {
 }) {
 	return (
 		<section
-			className={`flex min-h-0 flex-col overflow-hidden rounded-lg border border-white/[0.07] bg-[#0e0e11] ${props.className ?? ""}`}
+			className={`${uiCss.class({ display: "flex", minHeight: "0px", flexDirection: "column", overflow: "hidden", border: "1px solid rgba(255,255,255,0.07)", borderRadius: "8px", backgroundColor: "#0e0e11" })} ${props.className ?? ""}`}
 		>
-			<header className="flex h-9 shrink-0 items-center justify-between border-b border-white/[0.07] pl-3 pr-2">
-				<h2 className="text-[11px] font-medium uppercase tracking-[0.09em] text-zinc-500">
+			<header className={uiCss.class({ display: "flex", height: "36px", flexShrink: "0", alignItems: "center", justifyContent: "space-between", borderBottom: "1px solid rgba(255,255,255,0.07)", paddingLeft: "12px", paddingRight: "8px" })}>
+				<h2 className={uiCss.class({ margin: "0", fontSize: "11px", fontWeight: "500", textTransform: "uppercase", letterSpacing: "0.09em", color: "#71717a" })}>
 					{props.label}
 				</h2>
 				{props.right}
 			</header>
-			<div className="min-h-0 flex-1 overflow-auto">{props.children}</div>
+			<div className={uiCss.class({ minHeight: "0px", flex: "1 1 0%", overflow: "auto" })}>{props.children}</div>
 		</section>
 	);
 }
@@ -25,7 +26,7 @@ export function Pane(props: {
 /** Keyboard key cap. */
 export function Kbd(props: { children: ReactNode }) {
 	return (
-		<kbd className="rounded border border-white/10 bg-white/[0.04] px-1.5 py-0.5 font-mono text-[10px] leading-none text-zinc-400">
+		<kbd className={uiCss.class({ border: "1px solid rgba(255,255,255,0.1)", borderRadius: "4px", backgroundColor: "rgba(255,255,255,0.04)", padding: "2px 6px", fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", fontSize: "10px", lineHeight: "1", color: "#a1a1aa" })}>
 			{props.children}
 		</kbd>
 	);
@@ -43,11 +44,7 @@ export function GhostButton(props: {
 			type="button"
 			title={props.title}
 			onClick={props.onClick}
-			className={`shrink-0 rounded px-2 py-1 font-mono text-[11px] leading-none transition-colors ${
-				props.active === true
-					? "text-lime-300"
-					: "text-zinc-400 hover:bg-white/[0.06] hover:text-zinc-200"
-			} focus-visible:outline focus-visible:outline-1 focus-visible:outline-orange-400/60`}
+			className={`${uiCss.class({ flexShrink: "0", borderRadius: "4px", padding: "4px 8px", fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", fontSize: "11px", lineHeight: "1", transition: "color 120ms, background-color 120ms", "&:focus-visible": { outline: "1px solid rgba(251,146,60,0.6)" } })} ${props.active === true ? uiCss.class({ color: "#bef264" }) : uiCss.class({ color: "#a1a1aa", "&:hover": { backgroundColor: "rgba(255,255,255,0.06)", color: "#e4e4e7" } })}`}
 		>
 			{props.children}
 		</button>

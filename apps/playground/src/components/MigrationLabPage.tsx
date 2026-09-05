@@ -3,6 +3,7 @@ import { codeToHtml } from "shiki";
 import { CodemodAdapterId } from "pandwind-codemod/swap/browser";
 import { EditorPane } from "./EditorPane.tsx";
 import { GhostButton, Kbd, Pane } from "./ui.tsx";
+import { css as uiCss } from "../ui-css.ts";
 import {
 	MIGRATION_LAB,
 	type MigrationLabScenario,
@@ -21,11 +22,11 @@ function endpointById(
 }
 
 const EXPECTATION_STYLE: Record<NonNullable<MigrationLabScenario["expectation"]>, string> = {
-	converted: "border-emerald-400/30 bg-emerald-400/10 text-emerald-300",
-	runtime: "border-sky-400/30 bg-sky-400/10 text-sky-300",
-	residual: "border-amber-400/30 bg-amber-400/10 text-amber-300",
-	identity: "border-zinc-400/30 bg-zinc-400/10 text-zinc-300",
-	context: "border-violet-400/30 bg-violet-400/10 text-violet-300",
+	converted: uiCss.class({ borderColor: "rgba(52,211,153,0.3)", backgroundColor: "rgba(52,211,153,0.1)", color: "#6ee7b7" }),
+	runtime: uiCss.class({ borderColor: "rgba(56,189,248,0.3)", backgroundColor: "rgba(56,189,248,0.1)", color: "#7dd3fc" }),
+	residual: uiCss.class({ borderColor: "rgba(251,191,36,0.3)", backgroundColor: "rgba(251,191,36,0.1)", color: "#fcd34d" }),
+	identity: uiCss.class({ borderColor: "rgba(161,161,170,0.3)", backgroundColor: "rgba(161,161,170,0.1)", color: "#d4d4d8" }),
+	context: uiCss.class({ borderColor: "rgba(167,139,250,0.3)", backgroundColor: "rgba(167,139,250,0.1)", color: "#c4b5fd" }),
 };
 
 function ScenarioChips(props: {
@@ -35,22 +36,18 @@ function ScenarioChips(props: {
 }) {
 	if (props.scenarios.length === 0) return null;
 	return (
-		<div className="flex flex-wrap items-center gap-1.5">
+		<div className={uiCss.class({ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "6px" })}>
 			{props.scenarios.map((scenario) => (
 				<button
 					key={scenario.key}
 					type="button"
 					onClick={() => props.onSelect(scenario)}
-					className={`flex items-center gap-1.5 rounded-full border px-2.5 py-1 font-mono text-[11px] transition-colors ${
-						scenario.key === props.activeKey
-							? "border-orange-400/50 bg-orange-400/10 text-orange-200"
-							: "border-white/10 bg-[#16161b] text-zinc-400 hover:border-white/25 hover:text-zinc-200"
-					}`}
+					className={`${uiCss.class({ display: "flex", alignItems: "center", gap: "6px", border: "1px solid", borderRadius: "9999px", padding: "4px 10px", fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", fontSize: "11px", transition: "color 120ms, background-color 120ms, border-color 120ms" })} ${scenario.key === props.activeKey ? uiCss.class({ borderColor: "rgba(251,146,60,0.5)", backgroundColor: "rgba(251,146,60,0.1)", color: "#fed7aa" }) : uiCss.class({ borderColor: "rgba(255,255,255,0.1)", backgroundColor: "#16161b", color: "#a1a1aa", "&:hover": { borderColor: "rgba(255,255,255,0.25)", color: "#e4e4e7" } })}`}
 				>
 					<span>{scenario.name}</span>
 					{scenario.expectation === undefined ? null : (
 						<span
-							className={`rounded-full border px-1.5 py-px text-[9px] uppercase tracking-[0.08em] ${EXPECTATION_STYLE[scenario.expectation]}`}
+							className={`${uiCss.class({ border: "1px solid", borderRadius: "9999px", padding: "1px 6px", fontSize: "9px", textTransform: "uppercase", letterSpacing: "0.08em" })} ${EXPECTATION_STYLE[scenario.expectation]}`}
 						>
 							{scenario.expectation}
 						</span>
@@ -68,15 +65,15 @@ function SelectField(props: {
 	onChange: (value: string) => void;
 }) {
 	return (
-		<label className="flex min-w-0 flex-1 flex-col gap-1">
-			<span className="font-mono text-[10px] uppercase tracking-[0.1em] text-zinc-600">
+		<label className={uiCss.class({ display: "flex", minWidth: "0px", flex: "1 1 0%", flexDirection: "column", gap: "4px" })}>
+			<span className={uiCss.class({ fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.1em", color: "#52525b" })}>
 				{props.label}
 			</span>
 			<select
 				aria-label={props.label}
 				value={props.value}
 				onChange={(event) => props.onChange(event.target.value)}
-				className="h-9 min-w-0 rounded-md border border-white/10 bg-[#16161b] px-2.5 font-mono text-[12px] text-zinc-200 outline-none transition-colors hover:border-white/20 focus:border-orange-400/60 focus:ring-1 focus:ring-orange-400/30"
+				className={uiCss.class({ height: "36px", minWidth: "0px", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "6px", backgroundColor: "#16161b", padding: "0 10px", fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", fontSize: "12px", color: "#e4e4e7", outline: "none", transition: "border-color 120ms", "&:hover": { borderColor: "rgba(255,255,255,0.2)" }, "&:focus": { borderColor: "rgba(251,146,60,0.6)", boxShadow: "0 0 0 1px rgba(251,146,60,0.3)" } })}
 			>
 				{props.options.map((option) => (
 					<option key={option.id} value={option.id}>
@@ -121,10 +118,10 @@ function CodeBlock(props: { code: string }) {
 			active = false;
 		};
 	}, [props.code]);
-	const base =
-		"[&_pre]:m-0 [&_pre]:max-h-[min(52vh,34rem)] [&_pre]:overflow-auto [&_pre]:bg-transparent [&_pre]:p-3 [&_pre]:font-mono [&_pre]:text-[12px] [&_pre]:leading-5";
+	const codeStyle = { margin: "0", maxHeight: "min(52vh, 34rem)", overflow: "auto", backgroundColor: "transparent", padding: "12px", fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", fontSize: "12px", lineHeight: "20px" } as const;
+	const base = uiCss.class({ "& pre": codeStyle });
 	return html === "" ? (
-		<pre className={`${base} whitespace-pre-wrap`}>
+		<pre className={uiCss.class({ ...codeStyle, whiteSpace: "pre-wrap" })}>
 			<code>{props.code}</code>
 		</pre>
 	) : (
@@ -136,20 +133,20 @@ function Summary(props: { result: MigrationLabResult }) {
 	const result = props.result;
 	const residualCount = result.residuals.length;
 	return (
-		<div className="grid grid-cols-2 gap-px overflow-hidden rounded-md border border-white/[0.07] bg-white/[0.07] sm:grid-cols-4">
+		<div className={uiCss.class({ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: "1px", overflow: "hidden", border: "1px solid rgba(255,255,255,0.07)", borderRadius: "6px", backgroundColor: "rgba(255,255,255,0.07)", "@media (min-width: 640px)": { gridTemplateColumns: "repeat(4, minmax(0, 1fr))" } })}>
 			{(
 				[
-					["converted", result.converted, "text-emerald-300"],
-					["skipped", result.skipped, result.skipped === 0 ? "text-zinc-300" : "text-amber-300"],
-					["residuals", residualCount, residualCount === 0 ? "text-emerald-300" : "text-amber-300"],
-					["changed", result.changed ? "yes" : "no", "text-orange-300"],
+					["converted", result.converted, uiCss.class({ color: "#6ee7b7" })],
+					["skipped", result.skipped, result.skipped === 0 ? uiCss.class({ color: "#d4d4d8" }) : uiCss.class({ color: "#fcd34d" })],
+					["residuals", residualCount, residualCount === 0 ? uiCss.class({ color: "#6ee7b7" }) : uiCss.class({ color: "#fcd34d" })],
+					["changed", result.changed ? "yes" : "no", uiCss.class({ color: "#fdba74" })],
 				] as const
 			).map(([label, value, color]) => (
-				<div key={label} className="bg-[#0e0e11] px-3 py-2">
-					<div className="font-mono text-[10px] uppercase tracking-[0.1em] text-zinc-600">
+				<div key={label} className={uiCss.class({ backgroundColor: "#0e0e11", padding: "8px 12px" })}>
+					<div className={uiCss.class({ fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.1em", color: "#52525b" })}>
 						{label}
 					</div>
-					<div className={`mt-0.5 font-mono text-[13px] ${color}`}>{value}</div>
+					<div className={`${uiCss.class({ marginTop: "2px", fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", fontSize: "13px" })} ${color}`}>{value}</div>
 				</div>
 			))}
 		</div>
@@ -159,21 +156,21 @@ function Summary(props: { result: MigrationLabResult }) {
 function Residuals(props: { result: MigrationLabResult }) {
 	if (props.result.residuals.length === 0)
 		return (
-			<p className="px-3 py-2 text-[12px] text-emerald-300/80">
+			<p className={uiCss.class({ margin: "0", padding: "8px 12px", fontSize: "12px", color: "rgba(110,231,183,0.8)" })}>
 				No residuals. Every matched site was converted.
 			</p>
 		);
 	return (
-		<div className="divide-y divide-white/[0.05]">
+		<div className={uiCss.class({ "& > * + *": { borderTop: "1px solid rgba(255,255,255,0.05)" } })}>
 			{props.result.residuals.map((residual, index) => (
-				<div key={`${residual.kind}:${index}`} className="px-3 py-2.5">
-					<div className="flex items-baseline gap-2">
-						<span className="rounded border border-amber-500/20 bg-amber-500/[0.06] px-1.5 py-0.5 font-mono text-[10px] text-amber-300">
+				<div key={`${residual.kind}:${index}`} className={uiCss.class({ padding: "10px 12px" })}>
+					<div className={uiCss.class({ display: "flex", alignItems: "baseline", gap: "8px" })}>
+						<span className={uiCss.class({ border: "1px solid rgba(245,158,11,0.2)", borderRadius: "4px", backgroundColor: "rgba(245,158,11,0.06)", padding: "2px 6px", fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", fontSize: "10px", color: "#fcd34d" })}>
 							{residual.kind}
 						</span>
-						<code className="min-w-0 truncate text-[11px] text-zinc-400">{residual.text}</code>
+						<code className={uiCss.class({ minWidth: "0px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontSize: "11px", color: "#a1a1aa" })}>{residual.text}</code>
 					</div>
-					<p className="mt-1 text-[12px] leading-5 text-zinc-600">
+					<p className={uiCss.class({ margin: "4px 0 0", fontSize: "12px", lineHeight: "20px", color: "#52525b" })}>
 						{residual.hint ?? "The adapter reported a residual without additional guidance."}
 					</p>
 				</div>
@@ -185,24 +182,20 @@ function Residuals(props: { result: MigrationLabResult }) {
 function Validation(props: { result: MigrationLabResult }) {
 	if (props.result.validations.length === 0)
 		return (
-			<p className="px-3 py-2 text-[12px] text-zinc-600">
+			<p className={uiCss.class({ margin: "0", padding: "8px 12px", fontSize: "12px", color: "#52525b" })}>
 				No matched program was available to validate.
 			</p>
 		);
 	return (
-		<div className="divide-y divide-white/[0.05]">
+		<div className={uiCss.class({ "& > * + *": { borderTop: "1px solid rgba(255,255,255,0.05)" } })}>
 			{props.result.validations.map((validation, index) => (
-				<div key={index} className="flex items-center justify-between gap-3 px-3 py-2.5">
+				<div key={index} className={uiCss.class({ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", padding: "10px 12px" })}>
 					<div>
-						<div className="font-mono text-[11px] text-zinc-400">program {index + 1}</div>
-						<div className="mt-0.5 text-[12px] text-zinc-600">{validation.lossiness}</div>
+						<div className={uiCss.class({ fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", fontSize: "11px", color: "#a1a1aa" })}>program {index + 1}</div>
+						<div className={uiCss.class({ marginTop: "2px", fontSize: "12px", color: "#52525b" })}>{validation.lossiness}</div>
 					</div>
 					<span
-						className={`rounded border px-1.5 py-0.5 font-mono text-[10px] ${
-							validation.valid
-								? "border-emerald-500/25 bg-emerald-500/10 text-emerald-300"
-								: "border-amber-500/25 bg-amber-500/10 text-amber-300"
-						}`}
+						className={`${uiCss.class({ border: "1px solid", borderRadius: "4px", padding: "2px 6px", fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", fontSize: "10px" })} ${validation.valid ? uiCss.class({ borderColor: "rgba(52,211,153,0.25)", backgroundColor: "rgba(16,185,129,0.1)", color: "#6ee7b7" }) : uiCss.class({ borderColor: "rgba(245,158,11,0.25)", backgroundColor: "rgba(245,158,11,0.1)", color: "#fcd34d" })}`}
 					>
 						{validation.valid ? "canonical match" : "review"}
 					</span>
@@ -214,19 +207,19 @@ function Validation(props: { result: MigrationLabResult }) {
 
 function Outcomes(props: { result: MigrationLabResult }) {
 	if (props.result.outcomes.length === 0)
-		return <p className="px-3 py-2 text-[12px] text-zinc-600">No matched style program.</p>;
+		return <p className={uiCss.class({ margin: "0", padding: "8px 12px", fontSize: "12px", color: "#52525b" })}>No matched style program.</p>;
 	return (
-		<div className="divide-y divide-white/[0.05]">
+		<div className={uiCss.class({ "& > * + *": { borderTop: "1px solid rgba(255,255,255,0.05)" } })}>
 			{props.result.outcomes.map((outcome) => (
-				<div key={`${outcome.sourceStart}:${outcome.sourceText}`} className="px-3 py-2.5">
-					<div className="flex items-baseline gap-2">
-						<span className="rounded border border-sky-500/20 bg-sky-500/[0.06] px-1.5 py-0.5 font-mono text-[10px] text-sky-300">
+				<div key={`${outcome.sourceStart}:${outcome.sourceText}`} className={uiCss.class({ padding: "10px 12px" })}>
+					<div className={uiCss.class({ display: "flex", alignItems: "baseline", gap: "8px" })}>
+						<span className={uiCss.class({ border: "1px solid rgba(14,165,233,0.2)", borderRadius: "4px", backgroundColor: "rgba(14,165,233,0.06)", padding: "2px 6px", fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", fontSize: "10px", color: "#7dd3fc" })}>
 							{outcome.outcome}
 						</span>
-						<span className="font-mono text-[10px] text-zinc-600">{outcome.representation}</span>
+						<span className={uiCss.class({ fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", fontSize: "10px", color: "#52525b" })}>{outcome.representation}</span>
 					</div>
 					{outcome.detail === undefined ? null : (
-						<p className="mt-1 text-[12px] leading-5 text-zinc-600">{outcome.detail}</p>
+						<p className={uiCss.class({ margin: "4px 0 0", fontSize: "12px", lineHeight: "20px", color: "#52525b" })}>{outcome.detail}</p>
 					)}
 				</div>
 			))}
@@ -240,22 +233,22 @@ function CapabilityReport(props: { result: MigrationLabResult }) {
 	);
 	if (blockers.length === 0)
 		return (
-			<p className="px-3 py-2 text-[12px] text-emerald-300/80">
+			<p className={uiCss.class({ margin: "0", padding: "8px 12px", fontSize: "12px", color: "rgba(110,231,183,0.8)" })}>
 				The target contract accepts the semantic program or a registered lowering; any remaining
 				host/configuration issue is listed in the residual report.
 			</p>
 		);
 	return (
-		<div className="divide-y divide-white/[0.05]">
+		<div className={uiCss.class({ "& > * + *": { borderTop: "1px solid rgba(255,255,255,0.05)" } })}>
 			{blockers.map((blocker, index) => (
-				<div key={`${blocker.adapter}:${blocker.capability}:${index}`} className="px-3 py-2.5">
-					<div className="flex items-baseline gap-2">
-						<span className="rounded border border-amber-500/20 bg-amber-500/[0.06] px-1.5 py-0.5 font-mono text-[10px] text-amber-300">
+				<div key={`${blocker.adapter}:${blocker.capability}:${index}`} className={uiCss.class({ padding: "10px 12px" })}>
+					<div className={uiCss.class({ display: "flex", alignItems: "baseline", gap: "8px" })}>
+						<span className={uiCss.class({ border: "1px solid rgba(245,158,11,0.2)", borderRadius: "4px", backgroundColor: "rgba(245,158,11,0.06)", padding: "2px 6px", fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", fontSize: "10px", color: "#fcd34d" })}>
 							{blocker.capability}
 						</span>
-						<span className="font-mono text-[10px] text-zinc-600">{blocker.level}</span>
+						<span className={uiCss.class({ fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", fontSize: "10px", color: "#52525b" })}>{blocker.level}</span>
 					</div>
-					<p className="mt-1 text-[12px] leading-5 text-zinc-600">{blocker.detail}</p>
+					<p className={uiCss.class({ margin: "4px 0 0", fontSize: "12px", lineHeight: "20px", color: "#52525b" })}>{blocker.detail}</p>
 				</div>
 			))}
 		</div>
@@ -264,11 +257,11 @@ function CapabilityReport(props: { result: MigrationLabResult }) {
 
 function Contract(props: { endpoint: MigrationLabEndpoint }) {
 	return (
-		<div className="flex flex-wrap gap-1.5 p-3">
+		<div className={uiCss.class({ display: "flex", flexWrap: "wrap", gap: "6px", padding: "12px" })}>
 			{props.endpoint.capabilities.map((capability) => (
 				<span
 					key={capability}
-					className="rounded border border-white/[0.08] bg-white/[0.03] px-1.5 py-0.5 font-mono text-[10.5px] text-zinc-500"
+					className={uiCss.class({ border: "1px solid rgba(255,255,255,0.08)", borderRadius: "4px", backgroundColor: "rgba(255,255,255,0.03)", padding: "2px 6px", fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", fontSize: "10.5px", color: "#71717a" })}
 				>
 					{capability}
 				</span>
@@ -283,14 +276,14 @@ function ResultPane(props: {
 }) {
 	if (!props.result.ok)
 		return (
-			<Pane label="Migration error" className="border-red-500/20">
-				<pre className="whitespace-pre-wrap p-3 font-mono text-[12px] leading-5 text-red-300/90">
+			<Pane label="Migration error" className={uiCss.class({ borderColor: "rgba(239,68,68,0.2)" })}>
+				<pre className={uiCss.class({ margin: "0", whiteSpace: "pre-wrap", padding: "12px", fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", fontSize: "12px", lineHeight: "20px", color: "rgba(252,165,165,0.9)" })}>
 					{props.result.message}
 				</pre>
 			</Pane>
 		);
 	return (
-		<div className="flex min-h-0 flex-col gap-3 overflow-y-auto pr-0.5">
+		<div className={uiCss.class({ display: "flex", minHeight: "0px", flexDirection: "column", gap: "12px", overflowY: "auto", paddingRight: "2px" })}>
 			<Pane
 				label={`Output · ${props.target.label}`}
 				right={<CopyButton text={props.result.code} />}
@@ -341,34 +334,34 @@ export function MigrationLabPage() {
 	};
 
 	return (
-		<div className="flex h-full min-h-0 flex-col gap-3 p-4">
-			<div className="shrink-0">
-				<div className="flex items-start justify-between gap-4">
+		<div className={uiCss.class({ display: "flex", height: "100%", minHeight: "0px", flexDirection: "column", gap: "12px", padding: "16px" })}>
+			<div className={uiCss.class({ flexShrink: "0" })}>
+				<div className={uiCss.class({ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "16px" })}>
 					<div>
-						<div className="flex items-center gap-2">
-							<span className="h-1.5 w-1.5 rounded-full bg-orange-400 shadow-[0_0_12px_#e8955c]" />
-							<h1 className="text-[13px] font-medium text-zinc-200">Migration lab</h1>
+						<div className={uiCss.class({ display: "flex", alignItems: "center", gap: "8px" })}>
+							<span className={uiCss.class({ width: "6px", height: "6px", borderRadius: "9999px", backgroundColor: "#fb923c", boxShadow: "0 0 12px #e8955c" })} />
+							<h1 className={uiCss.class({ margin: "0", fontSize: "13px", fontWeight: "500", color: "#e4e4e7" })}>Migration lab</h1>
 						</div>
-						<p className="mt-1 max-w-2xl text-[12px] leading-5 text-zinc-600">
+						<p className={uiCss.class({ maxWidth: "42rem", margin: "4px 0 0", fontSize: "12px", lineHeight: "20px", color: "#52525b" })}>
 							Route a real source adapter through Pandwind&apos;s migration contract and inspect the
 							emitted code, capability checks, and anything that needs human review.
 						</p>
 					</div>
-					<div className="hidden items-center gap-1.5 text-[11px] text-zinc-600 sm:flex">
+					<div className={uiCss.class({ display: "none", alignItems: "center", gap: "6px", fontSize: "11px", color: "#52525b", "@media (min-width: 640px)": { display: "flex" } })}>
 						<span>edit</span>
 						<Kbd>⌘</Kbd>
 						<Kbd>↵</Kbd>
 					</div>
 				</div>
-				<div className="mt-3 flex flex-col gap-2 rounded-lg border border-white/[0.07] bg-[#0e0e11] p-3 sm:flex-row sm:items-end">
-					<div className="flex flex-col gap-1.5 lg:flex-row lg:items-start">
+				<div className={uiCss.class({ display: "flex", marginTop: "12px", flexDirection: "column", gap: "8px", border: "1px solid rgba(255,255,255,0.07)", borderRadius: "8px", backgroundColor: "#0e0e11", padding: "12px", "@media (min-width: 640px)": { flexDirection: "row", alignItems: "flex-end" } })}>
+					<div className={uiCss.class({ display: "flex", flexDirection: "column", gap: "6px", "@media (min-width: 1024px)": { flexDirection: "row", alignItems: "flex-start" } })}>
 						<SelectField
 							label="from · source adapter"
 							value={from}
 							options={sourceOptions}
 							onChange={selectSource}
 						/>
-						<div className="hidden pb-2 font-mono text-[12px] text-zinc-700 sm:block">→</div>
+						<div className={uiCss.class({ display: "none", paddingBottom: "8px", fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", fontSize: "12px", color: "#3f3f46", "@media (min-width: 640px)": { display: "block" } })}>→</div>
 						<SelectField
 							label="to · target adapter"
 							value={to}
@@ -376,8 +369,8 @@ export function MigrationLabPage() {
 							onChange={setTo}
 						/>
 					</div>
-					<div className="min-w-0 flex-1">
-						<div className="mb-1 font-mono text-[10px] uppercase tracking-[0.1em] text-zinc-600">
+					<div className={uiCss.class({ minWidth: "0px", flex: "1 1 0%" })}>
+						<div className={uiCss.class({ marginBottom: "4px", fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.1em", color: "#52525b" })}>
 							documented scenarios
 						</div>
 						<ScenarioChips
@@ -386,13 +379,13 @@ export function MigrationLabPage() {
 							onSelect={selectScenario}
 						/>
 						{scenarios.length === 0 ? (
-							<div className="pb-0.5 text-[11px] leading-4 text-zinc-600">
+							<div className={uiCss.class({ paddingBottom: "2px", fontSize: "11px", lineHeight: "16px", color: "#52525b" })}>
 								no cataloged scenarios — paste any source to try this adapter
 							</div>
 						) : null}
 					</div>
-					<div className="flex items-end justify-between gap-3 sm:max-w-[18rem] sm:flex-1">
-						<div className="min-w-0 pb-0.5 text-[11px] leading-4 text-zinc-600">
+					<div className={uiCss.class({ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: "12px", "@media (min-width: 640px)": { maxWidth: "18rem", flex: "1 1 0%" } })}>
+						<div className={uiCss.class({ minWidth: "0px", paddingBottom: "2px", fontSize: "11px", lineHeight: "16px", color: "#52525b" })}>
 							{sourceEndpoint.dependencies.length > 0
 								? `source: ${sourceEndpoint.dependencies.join(", ")}`
 								: "source dependencies: none"}
@@ -406,12 +399,12 @@ export function MigrationLabPage() {
 					</div>
 				</div>
 			</div>
-			<div className="grid min-h-0 flex-1 grid-cols-1 gap-3 lg:grid-cols-2">
+			<div className={uiCss.class({ display: "grid", minHeight: "0px", flex: "1 1 0%", gridTemplateColumns: "1fr", gap: "12px", "@media (min-width: 1024px)": { gridTemplateColumns: "repeat(2, minmax(0, 1fr))" } })}>
 				<EditorPane
 					code={source}
 					onChange={setSource}
 					onRun={() => undefined}
-					className="min-h-72"
+					className={uiCss.class({ minHeight: "18rem" })}
 				/>
 				<ResultPane result={result} target={targetEndpoint} />
 			</div>

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { codeToHtml } from "shiki";
 import { GhostButton, Pane } from "./ui.tsx";
 import type { PlaygroundResult } from "../lib/eval-playground.ts";
+import { css as uiCss } from "../ui-css.ts";
 
 function CopyButton(props: { text: string }) {
 	const [copied, setCopied] = useState(false);
@@ -37,21 +38,21 @@ function Snippet(props: { code: string; lang: string }) {
 			cancelled = true;
 		};
 	}, [props.code, props.lang]);
-	const base =
-		"[&_pre]:m-0 [&_pre]:bg-transparent [&_pre]:p-3 [&_pre]:font-mono [&_pre]:text-[12.5px] [&_pre]:leading-5";
+	const snippet = uiCss.class({ margin: "0", backgroundColor: "transparent", padding: "12px", fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", fontSize: "12.5px", lineHeight: "20px" });
+	const snippetContainer = uiCss.class({ "& pre": { margin: "0", maxHeight: "none", overflow: "auto", backgroundColor: "transparent", padding: "12px", fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", fontSize: "12.5px", lineHeight: "20px" } });
 	if (html === "")
 		return (
-			<pre className={base}>
+			<pre className={snippet}>
 				<code>{props.code}</code>
 			</pre>
 		);
-	return <div className={base} dangerouslySetInnerHTML={{ __html: html }} />;
+	return <div className={snippetContainer} dangerouslySetInnerHTML={{ __html: html }} />;
 }
 
 const FOLD_CHIP: Record<string, string> = {
-	full: "border-emerald-500/25 bg-emerald-500/10 text-emerald-300",
-	partial: "border-amber-500/25 bg-amber-500/10 text-amber-300",
-	runtime: "border-orange-500/25 bg-orange-500/10 text-orange-300",
+	full: uiCss.class({ borderColor: "rgba(52,211,153,0.25)", backgroundColor: "rgba(16,185,129,0.1)", color: "#6ee7b7" }),
+	partial: uiCss.class({ borderColor: "rgba(251,191,36,0.25)", backgroundColor: "rgba(245,158,11,0.1)", color: "#fcd34d" }),
+	runtime: uiCss.class({ borderColor: "rgba(251,146,60,0.25)", backgroundColor: "rgba(249,115,22,0.1)", color: "#fdba74" }),
 };
 
 function FoldSection(props: { fold: string; note: string }) {
@@ -60,13 +61,13 @@ function FoldSection(props: { fold: string; note: string }) {
 			label="Build-time fold"
 			right={
 				<span
-					className={`mr-1 rounded border px-1.5 py-0.5 font-mono text-[10px] leading-none ${FOLD_CHIP[props.fold] ?? "border-white/10 text-zinc-400"}`}
+					className={`${uiCss.class({ marginRight: "4px", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "4px", padding: "2px 6px", fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", fontSize: "10px", lineHeight: "1" })} ${FOLD_CHIP[props.fold] ?? uiCss.class({ color: "#a1a1aa" })}`}
 				>
 					{props.fold}
 				</span>
 			}
 		>
-			<p className="px-3 py-2 text-[12px] text-zinc-500">{props.note}</p>
+			<p className={uiCss.class({ margin: "0", padding: "8px 12px", fontSize: "12px", color: "#71717a" })}>{props.note}</p>
 		</Pane>
 	);
 }
@@ -74,11 +75,7 @@ function FoldSection(props: { fold: string; note: string }) {
 function TokenPill(props: { token: string; killed: boolean }) {
 	return (
 		<span
-			className={`rounded border px-1.5 py-0.5 font-mono text-[11.5px] leading-4 ${
-				props.killed
-					? "border-red-500/20 bg-red-500/[0.07] text-red-300/80 line-through decoration-red-400/50"
-					: "border-emerald-500/20 bg-emerald-500/[0.07] text-emerald-300"
-			}`}
+			className={`${uiCss.class({ borderRadius: "4px", border: "1px solid", padding: "2px 6px", fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", fontSize: "11.5px", lineHeight: "16px" })} ${props.killed ? uiCss.class({ borderColor: "rgba(248,113,113,0.2)", backgroundColor: "rgba(239,68,68,0.07)", color: "rgba(252,165,165,0.8)", textDecoration: "line-through", textDecorationColor: "rgba(248,113,113,0.5)" }) : uiCss.class({ borderColor: "rgba(52,211,153,0.2)", backgroundColor: "rgba(16,185,129,0.07)", color: "#6ee7b7" })}`}
 		>
 			{props.token}
 		</span>
@@ -90,7 +87,7 @@ function TokensSection(props: { survived: string[]; killed: string[] }) {
 	if (survived.length === 0 && killed.length === 0) {
 		return (
 			<Pane label="Tokens">
-				<p className="px-3 py-2 text-[12px] text-zinc-600">no class tokens produced</p>
+			<p className={uiCss.class({ margin: "0", padding: "8px 12px", fontSize: "12px", color: "#52525b" })}>no class tokens produced</p>
 			</Pane>
 		);
 	}
@@ -98,18 +95,18 @@ function TokensSection(props: { survived: string[]; killed: string[] }) {
 		<Pane
 			label="Tokens"
 			right={
-				<span className="mr-1 font-mono text-[10.5px] text-zinc-600">
-					<span className="text-emerald-400/90">{survived.length} kept</span>
+				<span className={uiCss.class({ marginRight: "4px", fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", fontSize: "10.5px", color: "#52525b" })}>
+					<span className={uiCss.class({ color: "rgba(52,211,153,0.9)" })}>{survived.length} kept</span>
 					{killed.length > 0 && (
 						<>
 							{" · "}
-							<span className="text-red-400/90">{killed.length} dropped</span>
+						<span className={uiCss.class({ color: "rgba(248,113,113,0.9)" })}>{killed.length} dropped</span>
 						</>
 					)}
 				</span>
 			}
 		>
-			<div className="flex flex-wrap content-start gap-1.5 p-3">
+			<div className={uiCss.class({ display: "flex", flexWrap: "wrap", alignContent: "flex-start", gap: "6px", padding: "12px" })}>
 				{survived.map((token) => (
 					<TokenPill key={`s:${token}`} token={token} killed={false} />
 				))}
@@ -125,11 +122,11 @@ function TokensSection(props: { survived: string[]; killed: string[] }) {
 function AtomsSection(props: { atoms: Array<{ cls: string; decls: Record<string, string> }> }) {
 	return (
 		<Pane label="css() atoms">
-			<div className="divide-y divide-white/[0.05]">
+			<div className={uiCss.class({ "& > * + *": { borderTop: "1px solid rgba(255,255,255,0.05)" } })}>
 				{props.atoms.map((atom) => (
-					<div key={atom.cls} className="flex items-baseline gap-3 px-3 py-2">
-						<span className="shrink-0 font-mono text-[11.5px] text-orange-300/90">.{atom.cls}</span>
-						<span className="min-w-0 truncate font-mono text-[11.5px] text-zinc-500">
+					<div key={atom.cls} className={uiCss.class({ display: "flex", minWidth: "0px", alignItems: "baseline", gap: "12px", padding: "8px 12px" })}>
+						<span className={uiCss.class({ flexShrink: "0", fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", fontSize: "11.5px", color: "rgba(253,186,116,0.9)" })}>.{atom.cls}</span>
+						<span className={uiCss.class({ minWidth: "0px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", fontSize: "11.5px", color: "#71717a" })}>
 							{Object.entries(atom.decls)
 								.map(([prop, value]) => `${prop}: ${value}`)
 								.join("; ")}
@@ -146,10 +143,10 @@ function ErrorSection(props: { error: string }) {
 	return (
 		<Pane
 			label="Error"
-			className="border-red-500/20"
-			right={<span className="mr-1 font-mono text-[10.5px] text-red-400/70">eval failed</span>}
+			className={uiCss.class({ borderColor: "rgba(239,68,68,0.2)" })}
+			right={<span className={uiCss.class({ marginRight: "4px", fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", fontSize: "10.5px", color: "rgba(248,113,113,0.7)" })}>eval failed</span>}
 		>
-			<pre className="whitespace-pre-wrap p-3 font-mono text-[12px] leading-5 text-red-300/90">
+			<pre className={uiCss.class({ margin: "0", whiteSpace: "pre-wrap", padding: "12px", fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", fontSize: "12px", lineHeight: "20px", color: "rgba(252,165,165,0.9)" })}>
 				{props.error}
 			</pre>
 		</Pane>
@@ -160,13 +157,13 @@ export function ResultsPane(props: { result: PlaygroundResult }) {
 	const r = props.result;
 	if (!r.ok) {
 		return (
-			<div className="flex min-h-0 flex-col gap-3 overflow-y-auto">
+				<div className={uiCss.class({ display: "flex", minHeight: "0px", flexDirection: "column", gap: "12px", overflowY: "auto" })}>
 				<ErrorSection error={r.error} />
 			</div>
 		);
 	}
 	return (
-		<div className="flex min-h-0 flex-col gap-3 overflow-y-auto pr-0.5">
+		<div className={uiCss.class({ display: "flex", minHeight: "0px", flexDirection: "column", gap: "12px", overflowY: "auto", paddingRight: "2px" })}>
 			<Pane label="Class string" right={<CopyButton text={r.output} />}>
 				<Snippet code={r.output} lang="css" />
 			</Pane>
