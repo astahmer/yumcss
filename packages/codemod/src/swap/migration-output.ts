@@ -18,6 +18,12 @@ export class MigrationOutput {
 			// JSX attribute names are not references to an imported binding. This
 			// matters for source `css` imports when a target owns a `css` prop.
 			.replace(/\b(?:className|class|css)\s*=/gu, "");
+		let excluded: ReturnType<typeof SourcePass.computeExcludedRanges> | undefined;
+		try {
+			excluded = SourcePass.computeExcludedRanges(body, "pandwind-migration-output.ts");
+		} catch {
+			// Import cleanup remains conservative for incomplete snippets.
+		}
 		for (const match of code.matchAll(imports)) {
 			const moduleSpecifier = match[1];
 			if (
@@ -35,7 +41,9 @@ export class MigrationOutput {
 			}
 			const used = (binding: string): boolean =>
 				!reserved.has(binding) &&
-				new RegExp(`\\b${binding.replace(/[.*+?^${}()|[\\]\\]/g, "\\\\$&")}\\b`, "u").test(body);
+				[...body.matchAll(
+					new RegExp(`\\b${binding.replace(/[.*+?^${}()|[\\]\\]/g, "\\\\$&")}\\b`, "gu"),
+				)].some((reference) => !excluded?.isExcluded(reference.index ?? -1));
 			const imported = clause[1]!.trim();
 			const namedMatch = /\{([^}]*)\}/u.exec(imported);
 			const named =

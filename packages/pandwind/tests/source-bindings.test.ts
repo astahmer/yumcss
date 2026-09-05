@@ -147,6 +147,26 @@ describe("source binding index", () => {
 		]);
 	});
 
+	test("resolves assignments through generic call expressions", () => {
+		const source = [
+			'import { styled } from "solid-styled-components";',
+			'const Card = styled(Base)<{ color: string }>(({ color }) => ({ color }));',
+		].join("\n");
+		const index = SourceBindings.fromDocument({ file: "Card.tsx", source });
+		const call = index.callSites.find((site) => site.assignedBinding === "Card");
+
+		expect(call).toEqual(
+			expect.objectContaining({
+				kind: SourceCallSiteKind.Call,
+				localName: "styled",
+				assignedBinding: "Card",
+			}),
+		);
+		expect(source.slice(call!.start, call!.end)).toBe(
+			' styled(Base)<{ color: string }>(({ color }) => ({ color }))'.trimStart(),
+		);
+	});
+
 	test("recovers the valid prefix when a later statement is malformed", () => {
 		const source = [
 			'import { css } from "@emotion/css";',

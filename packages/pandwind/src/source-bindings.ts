@@ -392,9 +392,11 @@ const memberCallee = (node: unknown): { localName: string; property?: string } |
 		object?: unknown;
 		property?: unknown;
 		computed?: boolean;
+		callee?: unknown;
 	};
 	if (value.type === NodeKind.Identifier && typeof value.name === "string")
 		return { localName: value.name };
+	if (value.type === NodeKind.CallExpression) return memberCallee(value.callee);
 	if (
 		value.type === NodeKind.MemberExpression &&
 		value.computed !== true &&
