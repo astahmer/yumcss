@@ -28,6 +28,7 @@ import {
 } from "./capabilities.ts";
 import {
 	ADAPTER_CONTRACT_SCHEMA,
+	AdapterDependencyKindTag,
 	type AdapterConfigContext,
 	type AdapterDependencies,
 	type AdapterDetectionContext,
@@ -94,7 +95,7 @@ type CallPattern = {
 		import("./function-style-parser.ts").FunctionStyleCallParserOptions,
 		"functionCall" | "namedObjects" | "sourceObjectOptions" | "subjectFromMatch"
 	>;
-	readonly kind?: "style" | "styled" | "keyframes" | "global" | "font-face";
+	readonly kind?: CodemodCallPatternKindTag;
 	readonly objectKind?: StyleProgramOptions["nestedObjectKind"];
 	readonly sourceObjectOptions?: AdapterSourceObjectOptionsProvider;
 	/** Optional source syntax immediately following the balanced call body. */
@@ -541,12 +542,12 @@ function parseKeyframeProgram(
 	return styleProgramFromRules(
 		[
 			{
-				kind: "keyframes",
+				kind: CodemodCallPatternKindTag.Keyframes,
 				name,
 				conditions: [],
 				declarations: [],
 				children: [...groups].map(([selector, declarations], order) => ({
-					kind: "style" as const,
+					kind: CodemodCallPatternKindTag.Style,
 					selector,
 					conditions: [],
 					declarations,
@@ -578,7 +579,7 @@ function parseGlobalProgram(
 		return styleProgramFromRules(
 			[
 				{
-					kind: "global",
+					kind: CodemodCallPatternKindTag.Global,
 					selector,
 					conditions: [],
 					declarations: base.declarations,
@@ -597,7 +598,7 @@ function parseGlobalProgram(
 	}
 	return styleProgramFromRules(
 		[...groups].map(([selector, declarations], order) => ({
-			kind: "global" as const,
+			kind: CodemodCallPatternKindTag.Global,
 			selector,
 			conditions: [],
 			declarations,
@@ -825,7 +826,7 @@ function parseTemplateProgram(
 						? { kind: conditionKind, name: selector, value: conditionValue }
 						: undefined;
 				children.push({
-					kind: "style",
+					kind: CodemodCallPatternKindTag.Style,
 					...(atRuleCondition === undefined
 						? {
 								selector: selector.startsWith("&")
@@ -858,7 +859,7 @@ function parseTemplateProgram(
 	return styleProgramFromRules(
 		[
 			{
-				kind: "style",
+				kind: CodemodCallPatternKindTag.Style,
 				conditions: [],
 				declarations: parsed.declarations,
 				children: parsed.children,
@@ -880,7 +881,7 @@ function parseKeyframeTemplateProgram(
 	return styleProgramFromRules(
 		[
 			{
-				kind: "keyframes",
+				kind: CodemodCallPatternKindTag.Keyframes,
 				name,
 				conditions: [],
 				declarations: [],
@@ -1374,7 +1375,7 @@ function parseCalls(
 						program = styleProgramFromRules(
 							[
 								{
-									kind: "font-face",
+									kind: CodemodCallPatternKindTag.FontFace,
 									conditions: [],
 									declarations: base.declarations,
 									children: [],
@@ -1521,7 +1522,9 @@ export function defineCodemodAdapter(spec: CodemodAdapterSpec): StyleAdapter {
 							]
 						: ['import { createCss } from "pandwind/css";', "const css = createCss();"],
 					semantic: portableProgram,
-					dependencies: { packages: [{ name: "pandwind", kind: "runtime" }] },
+					dependencies: {
+						packages: [{ name: "pandwind", kind: AdapterDependencyKindTag.Runtime }],
+					},
 					residuals: [],
 				};
 			}

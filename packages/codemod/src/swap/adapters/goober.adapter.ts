@@ -1,4 +1,5 @@
 import { makeExtraAdapter } from "./extra-adapter-runtime.ts";
+import { AdapterDependencyKindTag } from "../adapter-contract.ts";
 import {
 	AdapterOfficialApiStatusTag,
 	CodemodAdapterId,
@@ -18,7 +19,7 @@ const goober = makeExtraAdapter({
 		ssrHooks: ["extractCss"],
 	},
 	modules: ["goober"],
-	packages: { packages: [{ name: "goober", kind: "runtime" }] },
+	packages: { packages: [{ name: "goober", kind: AdapterDependencyKindTag.Runtime }] },
 	detect: [/from\s+["']goober["']/g, /\b(?:css|styled\.[A-Za-z_$][\w$]*)\s*(?:\(\s*\{|`)/g],
 	call: /\b(?:css\s*(?:\(\s*\{|`)|styled\.[A-Za-z_$][\w$]*\s*`)/g,
 	forms: ["object", "template"],

@@ -11,6 +11,7 @@ import {
 } from "../semantic-ir.ts";
 import {
 	ADAPTER_CONTRACT_SCHEMA,
+	AdapterDependencyKindTag,
 	type AdapterConfigContext,
 	type AdapterParseContext,
 	type AdapterParseResult,
@@ -601,7 +602,7 @@ function parseUnoCss(
 		const program = styleProgramFromRules(
 			[
 				{
-					kind: "style",
+					kind: StyleRuleKindTag.Style,
 					conditions: [],
 					declarations,
 					children: [],
@@ -658,7 +659,7 @@ function parseUnoCss(
 			program: styleProgramFromRules(
 				[
 					{
-						kind: "style",
+						kind: StyleRuleKindTag.Style,
 						conditions: [],
 						declarations,
 						children: [],
@@ -697,7 +698,7 @@ function parseUnoCss(
 			program: styleProgramFromRules(
 				[
 					{
-						kind: "style",
+						kind: StyleRuleKindTag.Style,
 						conditions: [],
 						declarations,
 						children: [],
@@ -753,7 +754,7 @@ function parseUnoCss(
 			program: styleProgramFromRules(
 				[
 					{
-						kind: "style",
+						kind: StyleRuleKindTag.Style,
 						conditions: [],
 						declarations,
 						children: [],
@@ -797,7 +798,7 @@ function parseUnoCss(
 			program: styleProgramFromRules(
 				[
 					{
-						kind: "style",
+						kind: StyleRuleKindTag.Style,
 						name,
 						conditions: [],
 						declarations,
@@ -852,7 +853,9 @@ export function createUnoCssAdapter(options: UnoCssAdapterOptions = {}): StyleAd
 			compilerIntegrations: ["@unocss/config", "@unocss/core"],
 		}),
 		sourceModules: ["unocss", "@unocss/core", "@unocss/preset-wind"],
-		dependencies: { packages: [{ name: "unocss", kind: "development" }] },
+		dependencies: {
+			packages: [{ name: "unocss", kind: AdapterDependencyKindTag.Development }],
+		},
 		capabilities: {
 			schema: ADAPTER_CAPABILITIES_SCHEMA,
 			adapter: CodemodAdapterId.UnoCSS,

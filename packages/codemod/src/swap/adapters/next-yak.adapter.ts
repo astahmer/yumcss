@@ -1,6 +1,7 @@
 import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
 import {
 	AdapterOfficialApiStatusTag,
+	CodemodCallPatternKindTag,
 	CodemodAdapterId,
 	StyleHostRepresentationKind,
 	StyleNamedRuleStrategy,
@@ -28,7 +29,7 @@ export default defineCodemodAdapter({
 		{ name: "css", regex: /\bcss\s*`(?:\\.|[^`])*`/g, form: "template" },
 		{
 			name: "styled",
-			kind: "styled",
+			kind: CodemodCallPatternKindTag.Styled,
 			regex: /\bstyled\s*(?:\.\s*[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))\s*`(?:\\.|[^`])*`/g,
 			form: "template",
 		},

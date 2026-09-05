@@ -32,7 +32,7 @@ import type {
 /** Versioned source/target adapter protocol for the migration pivot. */
 export const ADAPTER_CONTRACT_SCHEMA = "pandwind.style-adapter/3" as const;
 
-export type AdapterDependencyKind = "runtime" | "development" | "peer" | "config";
+export type AdapterDependencyKind = `${AdapterDependencyKindTag}`;
 
 export const enum AdapterDependencyKindTag {
 	Runtime = "runtime",

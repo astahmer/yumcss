@@ -1,4 +1,4 @@
-import { StyleValueKindTag } from "../semantic-ir.ts";
+import { StyleRuleKindTag, StyleValueKindTag } from "../semantic-ir.ts";
 import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
 import type { StyleProgram, StyleValue } from "../semantic-ir.ts";
 import type { StyleLowering } from "../lowering.ts";
@@ -10,6 +10,7 @@ import type { OxcNode } from "pandwind/tw/literal";
 import { parseObjectLiteral } from "../parse.ts";
 import {
 	CodemodAdapterId,
+	CodemodCallPatternKindTag,
 	CodemodPatternId,
 	StyleProgramConditionOrder,
 	StyleProgramEmissionHint,
@@ -746,7 +747,7 @@ function normalizeStyleXVariables(program: StyleProgram): StyleProgram {
 				: [
 						{
 							...root,
-							kind: "global",
+							kind: StyleRuleKindTag.Global,
 							selector: ":root",
 							declarations: root.declarations.map((declaration) => ({
 								...declaration,
@@ -775,7 +776,7 @@ export function createStyleXAdapter(options: StyleXAdapterOptions = {}) {
 			{
 				name: CodemodPatternId.StyleXKeyframes,
 				regex: /\bstylex\.keyframes\s*\(\s*\{/g,
-				kind: "keyframes",
+				kind: CodemodCallPatternKindTag.Keyframes,
 			},
 			{
 				name: CodemodPatternId.StyleXDefineVars,

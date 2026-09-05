@@ -1,4 +1,5 @@
 import { StyleRuleKindTag } from "../semantic-ir.ts";
+import { AdapterDependencyKindTag } from "../adapter-contract.ts";
 import { makeExtraAdapter } from "./extra-adapter-runtime.ts";
 import {
 	AdapterOfficialApiStatusTag,
@@ -17,7 +18,7 @@ const treat = makeExtraAdapter({
 		],
 	},
 	modules: ["@/styles.treat", "treat"],
-	packages: { packages: [{ name: "treat", kind: "development" }] },
+	packages: { packages: [{ name: "treat", kind: AdapterDependencyKindTag.Development }] },
 	detect: [/from\s+["'](?:treat|[^"']+\.treat)["']/g, /\b(?:style|createTheme)\s*\(\s*\{/g],
 	call: /\bstyle\s*\(\s*\{/g,
 	prefix: "style(",

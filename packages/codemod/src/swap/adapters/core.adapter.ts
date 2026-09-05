@@ -5,6 +5,7 @@ import { OUTBOUND_EMITTERS } from "./outbound/plugin.ts";
 import { ADAPTER_CAPABILITIES_SCHEMA, type AdapterCapabilities } from "../capabilities.ts";
 import {
 	ADAPTER_CONTRACT_SCHEMA,
+	AdapterDependencyKindTag,
 	type AdapterDependencies,
 	type AdapterParseContext,
 	type AdapterParseResult,
@@ -34,7 +35,7 @@ import {
 import { AdapterEvidence } from "../adapter-evidence.ts";
 
 const CORE_DEPENDENCIES: AdapterDependencies = {
-	packages: [{ name: "pandwind", kind: "runtime" }],
+	packages: [{ name: "pandwind", kind: AdapterDependencyKindTag.Runtime }],
 };
 
 /** Public target dialects exposed by the browser migration lab and CLI. */

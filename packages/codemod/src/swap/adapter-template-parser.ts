@@ -1,5 +1,11 @@
 import { SourcePass } from "../source-pass-utils.ts";
 import { StyleDynamicExpressionKind } from "./identifiers.ts";
+import {
+	StyleDynamicLoweringTag,
+	StyleProgramResidualKindTag,
+	StyleRuleKindTag,
+	StyleValueKindTag,
+} from "./semantic-ir.ts";
 import type { AdapterParseContext } from "./adapter-contract.ts";
 import {
 	styleProgramFromRules,
@@ -81,7 +87,7 @@ export function parseAdapterTemplate(
 			const colon = trimmed.indexOf(":");
 			if (colon <= 0) {
 				residuals.push({
-					kind: "parse",
+					kind: StyleProgramResidualKindTag.Parse,
 					text: statement,
 					hint: `${adapter} nested template CSS requires a rule parser`,
 				});
@@ -97,16 +103,20 @@ export function parseAdapterTemplate(
 						: undefined;
 				if (functionValue !== undefined) {
 					value = {
-						kind: "dynamic",
+						kind: StyleValueKindTag.Dynamic,
 						expression: functionValue,
 						expressionKind: StyleDynamicExpressionKind.Function,
-						lowering: "residual",
+						lowering: StyleDynamicLoweringTag.Residual,
 					};
 				} else {
 					const expression = templateValueExpression(rawValue);
-					value = { kind: "dynamic", expression, lowering: "residual" };
+					value = {
+						kind: StyleValueKindTag.Dynamic,
+						expression,
+						lowering: StyleDynamicLoweringTag.Residual,
+					};
 					residuals.push({
-						kind: "dynamic",
+						kind: StyleProgramResidualKindTag.Dynamic,
 						text: rawValue,
 						hint: rawValue.includes("=>")
 							? `${adapter} function interpolation requires a framework prop wrapper`
@@ -114,7 +124,7 @@ export function parseAdapterTemplate(
 					});
 				}
 			} else {
-				value = { kind: "literal", value: rawValue };
+				value = { kind: StyleValueKindTag.Literal, value: rawValue };
 			}
 			declarations.push({
 				conditions: [],
@@ -158,7 +168,7 @@ export function parseAdapterTemplate(
 				const block = SourcePass.matchBlock(input, index);
 				if (block === null || selector === "") {
 					residuals.push({
-						kind: "parse",
+						kind: StyleProgramResidualKindTag.Parse,
 						text: input.slice(cursor),
 						hint: "unbalanced template CSS",
 					});
@@ -166,7 +176,7 @@ export function parseAdapterTemplate(
 				}
 				if (selector.includes("${"))
 					residuals.push({
-						kind: "dynamic",
+						kind: StyleProgramResidualKindTag.Dynamic,
 						text: selector,
 						hint: `${adapter} component selector interpolation requires a host rewrite`,
 					});
@@ -177,7 +187,7 @@ export function parseAdapterTemplate(
 						? `&${selector}`
 						: `& ${selector}`;
 				children.push({
-					kind: "style",
+					kind: StyleRuleKindTag.Style,
 					selector: normalizedSelector,
 					conditions: [],
 					declarations: nested.declarations,
@@ -202,7 +212,7 @@ export function parseAdapterTemplate(
 	return styleProgramFromRules(
 		[
 			{
-				kind: "style",
+				kind: StyleRuleKindTag.Style,
 				conditions: [],
 				declarations: parsed.declarations,
 				children: parsed.children,

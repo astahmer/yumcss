@@ -6,6 +6,7 @@ import type {
 	AdapterProjectConfig,
 	AdapterMatch,
 } from "../adapter-contract.ts";
+import { AdapterDependencyKindTag } from "../adapter-contract.ts";
 import {
 	styleProgramFromRules,
 	styleProgramFromSourceObject,
@@ -241,9 +242,9 @@ export function createTamaguiAdapter(
 		],
 		packages: {
 			packages: [
-				{ name: "tamagui", kind: "config" },
-				{ name: "@tamagui/core", kind: "config" },
-				{ name: "@tamagui/static", kind: "config" },
+				{ name: "tamagui", kind: AdapterDependencyKindTag.Config },
+				{ name: "@tamagui/core", kind: AdapterDependencyKindTag.Config },
+				{ name: "@tamagui/static", kind: AdapterDependencyKindTag.Config },
 			],
 		},
 		capabilities: CodemodAdapterKit.allRuleCapabilities(CodemodAdapterId.Tamagui, "unsupported", {

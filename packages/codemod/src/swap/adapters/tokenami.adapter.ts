@@ -9,6 +9,7 @@ import type {
 	AdapterProjectConfig,
 	AdapterParseContext,
 } from "../adapter-contract.ts";
+import { AdapterDependencyKindTag } from "../adapter-contract.ts";
 import type {
 	StyleCondition,
 	StyleDeclaration,
@@ -274,8 +275,8 @@ export function createTokenamiAdapter(
 		},
 		packages: {
 			packages: [
-				{ name: "@tokenami/css", kind: "runtime" },
-				{ name: "@tokenami/config", kind: "peer" },
+				{ name: "@tokenami/css", kind: AdapterDependencyKindTag.Runtime },
+				{ name: "@tokenami/config", kind: AdapterDependencyKindTag.Peer },
 			],
 		},
 		capabilities: CodemodAdapterKit.allRuleCapabilities(CodemodAdapterId.Tokenami, "partial", {

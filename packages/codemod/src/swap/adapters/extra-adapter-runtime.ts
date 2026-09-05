@@ -19,6 +19,7 @@ import type {
 	AdapterTargetMigrationPolicy,
 	StyleAdapter,
 } from "../adapter-contract.ts";
+import { AdapterDependencyKindTag } from "../adapter-contract.ts";
 import {
 	ADAPTER_CAPABILITIES_SCHEMA,
 	type AdapterCapability,
@@ -664,7 +665,9 @@ export function makeExtraAdapter(options: ExtraAdapterOptions): StyleAdapter {
 						: ['import { createCss } from "pandwind/css";', "const css = createCss();"],
 					semantic: portableProgram,
 					residuals: [],
-					dependencies: { packages: [{ name: "pandwind", kind: "runtime" }] },
+					dependencies: {
+						packages: [{ name: "pandwind", kind: AdapterDependencyKindTag.Runtime }],
+					},
 				};
 			}
 			const targetEmission = options.targetEmit?.(program, context, objectText);

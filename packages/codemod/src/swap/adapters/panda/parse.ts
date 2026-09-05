@@ -33,6 +33,11 @@ import { SourcePass } from "../../../source-pass-utils.ts";
 import { CSS_PROPERTY_ALIASES } from "../../property-aliases.ts";
 import { PandaUtilityCatalog } from "./utilities.ts";
 
+const enum PandaStyleTaskKindTag {
+	Style = "style",
+	Entry = "entry",
+}
+
 // Re-exported for tests/consumers that only import this module.
 export { parseObjectLiteral } from "../../parse.ts";
 
@@ -237,12 +242,12 @@ function pushEntries(ir: SwapIR, entries: Array<SwapEntry>): void {
 
 type StyleTask =
 	| {
-			readonly kind: "style";
+			readonly kind: PandaStyleTaskKindTag.Style;
 			readonly style: Record<string, unknown>;
 			readonly conditions: string[];
 	  }
 	| {
-			readonly kind: "entry";
+			readonly kind: PandaStyleTaskKindTag.Entry;
 			readonly key: string;
 			readonly raw: unknown;
 			readonly conditions: string[];
@@ -254,14 +259,14 @@ function walkStyle(
 	ir: SwapIR,
 	theme: PandaTheme,
 ): void {
-	const tasks: StyleTask[] = [{ kind: "style", style, conditions }];
+	const tasks: StyleTask[] = [{ kind: PandaStyleTaskKindTag.Style, style, conditions }];
 	while (tasks.length > 0) {
 		const task = tasks.pop()!;
-		if (task.kind === "style") {
+		if (task.kind === PandaStyleTaskKindTag.Style) {
 			const entries = Object.entries(task.style);
 			for (let index = entries.length - 1; index >= 0; index--) {
 				const [key, raw] = entries[index]!;
-				tasks.push({ kind: "entry", key, raw, conditions: task.conditions });
+				tasks.push({ kind: PandaStyleTaskKindTag.Entry, key, raw, conditions: task.conditions });
 			}
 			continue;
 		}
@@ -272,7 +277,11 @@ function walkStyle(
 				// Pandwind's stylesheet engine can preserve nested selectors and
 				// at-rules as condition paths; keep walking so Panda aliases inside
 				// them are canonicalized instead of leaving a runtime Panda call.
-				tasks.push({ kind: "style", style: raw, conditions: [...activeConditions, key] });
+				tasks.push({
+					kind: PandaStyleTaskKindTag.Style,
+					style: raw,
+					conditions: [...activeConditions, key],
+				});
 			} else {
 				ir.residuals.push({
 					kind: "unrepresentable",
@@ -293,11 +302,15 @@ function walkStyle(
 			}
 			// A literal `base:` key applies declarations under the current chain.
 			if (key === "base") {
-				tasks.push({ kind: "style", style: raw, conditions: activeConditions });
+				tasks.push({ kind: PandaStyleTaskKindTag.Style, style: raw, conditions: activeConditions });
 				continue;
 			}
 			const condition = key.startsWith("_") ? key.slice(1) : key;
-			tasks.push({ kind: "style", style: raw, conditions: [...activeConditions, condition] });
+			tasks.push({
+				kind: PandaStyleTaskKindTag.Style,
+				style: raw,
+				conditions: [...activeConditions, condition],
+			});
 			continue;
 		}
 
@@ -306,7 +319,7 @@ function walkStyle(
 		if (prop === "hideFrom" || prop === "hideBelow") {
 			if (typeof raw === "string") {
 				tasks.push({
-					kind: "entry",
+					kind: PandaStyleTaskKindTag.Entry,
 					key: "display",
 					raw: "none",
 					conditions: [...activeConditions, prop === "hideFrom" ? raw : `${raw}Down`],
@@ -322,15 +335,30 @@ function walkStyle(
 		}
 
 		if (prop === "boxSize") {
-			tasks.push({ kind: "entry", key: "height", raw, conditions: activeConditions });
-			tasks.push({ kind: "entry", key: "width", raw, conditions: activeConditions });
+			tasks.push({
+				kind: PandaStyleTaskKindTag.Entry,
+				key: "height",
+				raw,
+				conditions: activeConditions,
+			});
+			tasks.push({
+				kind: PandaStyleTaskKindTag.Entry,
+				key: "width",
+				raw,
+				conditions: activeConditions,
+			});
 			continue;
 		}
 
 		const radius = RADIUS_EXPANSIONS.get(prop);
 		if (radius !== undefined) {
 			for (let index = radius.length - 1; index >= 0; index--)
-				tasks.push({ kind: "entry", key: radius[index]!, raw, conditions: activeConditions });
+				tasks.push({
+					kind: PandaStyleTaskKindTag.Entry,
+					key: radius[index]!,
+					raw,
+					conditions: activeConditions,
+				});
 			continue;
 		}
 
@@ -345,7 +373,11 @@ function walkStyle(
 				});
 				continue;
 			}
-			tasks.push({ kind: "style", style: textStyle, conditions: activeConditions });
+			tasks.push({
+				kind: PandaStyleTaskKindTag.Style,
+				style: textStyle,
+				conditions: activeConditions,
+			});
 			continue;
 		}
 
@@ -355,12 +387,17 @@ function walkStyle(
 			for (let index = branches.length - 1; index >= 0; index--) {
 				const [cond, value] = branches[index]!;
 				if (cond === "base") {
-					tasks.push({ kind: "entry", key, raw: value, conditions: activeConditions });
+					tasks.push({
+						kind: PandaStyleTaskKindTag.Entry,
+						key,
+						raw: value,
+						conditions: activeConditions,
+					});
 					continue;
 				}
 				const nested = cond.startsWith("_") ? cond.slice(1) : cond;
 				tasks.push({
-					kind: "entry",
+					kind: PandaStyleTaskKindTag.Entry,
 					key,
 					raw: value,
 					conditions: [...activeConditions, nested],

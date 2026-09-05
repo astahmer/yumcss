@@ -9,6 +9,7 @@ import {
 } from "../host-adapters.ts";
 import {
 	CodemodAdapterId,
+	CodemodCallPatternKindTag,
 	StyleHostRepresentationKind,
 	StyleNamedRuleStrategy,
 	StyleRepresentationKind,
@@ -461,7 +462,11 @@ export function createMuiAdapter(
 				form: "jsx-style",
 				styleProps,
 			},
-			{ name: "mui-styled", kind: "styled", regex: /\bstyled\s*\(\s*[^)]+\s*\)\s*\(\s*\{/g },
+			{
+				name: "mui-styled",
+				kind: CodemodCallPatternKindTag.Styled,
+				regex: /\bstyled\s*\(\s*[^)]+\s*\)\s*\(\s*\{/g,
+			},
 			{
 				name: "mui-styled-theme-callback",
 				regex: /\bstyled\s*\(\s*[^)]+\s*\)\s*\(\s*(?:\([^)]*\)|[A-Za-z_$][\w$]*)\s*=>/g,

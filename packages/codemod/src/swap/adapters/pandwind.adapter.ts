@@ -404,7 +404,7 @@ function lowerComposedBaseProgram(
 		declarations: [],
 		rules: [
 			{
-				kind: "style",
+				kind: StyleRuleKindTag.Style,
 				conditions: [],
 				declarations: [],
 				children: rules,

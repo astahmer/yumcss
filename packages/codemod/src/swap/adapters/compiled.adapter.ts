@@ -2,6 +2,7 @@ import { StyleRuleKindTag, StyleValueKindTag, type StyleProgram } from "../seman
 import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
 import {
 	AdapterOfficialApiStatusTag,
+	CodemodCallPatternKindTag,
 	CodemodAdapterId,
 	StyleHostRepresentationKind,
 	StyleNamedRuleStrategy,
@@ -96,16 +97,20 @@ export default defineCodemodAdapter({
 		},
 		{
 			name: "styled",
-			kind: "styled",
+			kind: CodemodCallPatternKindTag.Styled,
 			regex: /\bstyled\s*(?:\.\s*[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))\s*\(\s*\{/g,
 		},
 		{
 			name: "styled-template",
-			kind: "styled",
+			kind: CodemodCallPatternKindTag.Styled,
 			regex: /\bstyled\s*(?:\.\s*[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))\s*`(?:\\.|[^`])*`/g,
 			form: "template",
 		},
-		{ name: "keyframes", kind: "keyframes", regex: /\bkeyframes\s*\(\s*\{/g },
+		{
+			name: "keyframes",
+			kind: CodemodCallPatternKindTag.Keyframes,
+			regex: /\bkeyframes\s*\(\s*\{/g,
+		},
 		{
 			name: "ClassNames",
 			regex: /<\s*ClassNames\b/g,

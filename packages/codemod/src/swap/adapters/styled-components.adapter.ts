@@ -3,6 +3,7 @@ import { StyleRuleKindTag } from "../semantic-ir.ts";
 import { BuiltinHostFramework } from "../host-adapters.ts";
 import {
 	CodemodAdapterId,
+	CodemodCallPatternKindTag,
 	StyleHostRepresentationKind,
 	StyleNamedRuleStrategy,
 } from "../identifiers.ts";
@@ -17,12 +18,12 @@ export default defineCodemodAdapter({
 	patterns: [
 		{
 			name: "styled",
-			kind: "styled",
+			kind: CodemodCallPatternKindTag.Styled,
 			regex: /\bstyled\s*(?:\.\s*[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))\s*\(\s*\{/g,
 		},
 		{
 			name: "styled-function",
-			kind: "styled",
+			kind: CodemodCallPatternKindTag.Styled,
 			regex:
 				/\bstyled\s*(?:\.\s*[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))\s*\(\s*(?:\([^)]*\)|[A-Za-z_$][\w$]*)\s*=>/g,
 			functionCall: {
@@ -37,24 +38,32 @@ export default defineCodemodAdapter({
 		},
 		{
 			name: "styled-template",
-			kind: "styled",
+			kind: CodemodCallPatternKindTag.Styled,
 			regex: /\bstyled\s*(?:\.\s*[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))\s*`(?:\\.|[^`])*`/g,
 			form: "template",
 		},
 		{
 			name: "createGlobalStyle-template",
-			kind: "global",
+			kind: CodemodCallPatternKindTag.Global,
 			regex: /\bcreateGlobalStyle\s*`(?:\\.|[^`])*`/g,
 			form: "template",
 		},
 		{
 			name: "keyframes-template",
-			kind: "keyframes",
+			kind: CodemodCallPatternKindTag.Keyframes,
 			regex: /\bkeyframes\s*`(?:\\.|[^`])*`/g,
 			form: "template",
 		},
-		{ name: "createGlobalStyle", kind: "global", regex: /\bcreateGlobalStyle\s*\(\s*\{/g },
-		{ name: "keyframes", kind: "keyframes", regex: /\bkeyframes\s*\(\s*\{/g },
+		{
+			name: "createGlobalStyle",
+			kind: CodemodCallPatternKindTag.Global,
+			regex: /\bcreateGlobalStyle\s*\(\s*\{/g,
+		},
+		{
+			name: "keyframes",
+			kind: CodemodCallPatternKindTag.Keyframes,
+			regex: /\bkeyframes\s*\(\s*\{/g,
+		},
 		{
 			name: "runtime-context",
 			regex:

@@ -2,6 +2,7 @@ import { StyleValueKindTag } from "../semantic-ir.ts";
 import { makeExtraAdapter } from "./extra-adapter-runtime.ts";
 import { BuiltinHostFramework } from "../host-adapters.ts";
 import { canConvertStaticSolidJsx, rewriteSolidJsxToVue } from "../host-adapters.ts";
+import { AdapterDependencyKindTag } from "../adapter-contract.ts";
 import type { AdapterEmitContext, AdapterEmitResult } from "../adapter-contract.ts";
 import {
 	AdapterOfficialApiStatusTag,
@@ -93,7 +94,9 @@ const vueStyled = makeExtraAdapter({
 		],
 	},
 	modules: ["vue-styled-components"],
-	packages: { packages: [{ name: "vue-styled-components", kind: "runtime" }] },
+	packages: {
+		packages: [{ name: "vue-styled-components", kind: AdapterDependencyKindTag.Runtime }],
+	},
 	detect: [
 		/from\s+["'](?:vue-styled-components|@vue-styled-components\/core)["']/g,
 		/\bstyled\.[A-Za-z_$][\w$]*[^`]*`/g,

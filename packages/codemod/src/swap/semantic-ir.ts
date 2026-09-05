@@ -326,7 +326,7 @@ function normalizeDynamicValue(value: StyleValue): StyleValue {
 		expressionKind: value.expressionKind ?? dynamicExpressionKind(value.expression),
 		staticEvaluation: value.staticEvaluation ?? {
 			attempted: true,
-			status: "unresolved",
+			status: StyleStaticEvaluationStatusTag.Unresolved,
 			reason: "expression depends on runtime or unresolved source bindings",
 		},
 	};
@@ -375,9 +375,9 @@ function collectSources(
 
 const toValue = (value: string | true | number): StyleValue => {
 	if (typeof value === "string" && value.startsWith("$")) {
-		return { kind: "token", ref: value.slice(1), authored: value };
+		return { kind: StyleValueKindTag.Token, ref: value.slice(1), authored: value };
 	}
-	return { kind: "literal", value };
+	return { kind: StyleValueKindTag.Literal, value };
 };
 
 const fromValue = (value: StyleValue): string | true | number | null => {
@@ -450,7 +450,7 @@ export function styleProgramFromSwapIR(
 	}));
 	const rules: readonly StyleRule[] = [
 		{
-			kind: "style",
+			kind: StyleRuleKindTag.Style,
 			conditions: [],
 			declarations,
 			children: [],
@@ -819,13 +819,13 @@ function literalSourceValue(node: SourceNode): StyleValue | null {
 				value += String(evaluated.value);
 			}
 		}
-		return { kind: "literal", value };
+		return { kind: StyleValueKindTag.Literal, value };
 	}
 	if (node.type === NodeKind.UnaryExpression && (node.operator === "-" || node.operator === "+")) {
 		const argument = node.argument === undefined ? null : literalSourceValue(node.argument);
 		if (argument?.kind === StyleValueKindTag.Literal && typeof argument.value === "number") {
 			return {
-				kind: "literal",
+				kind: StyleValueKindTag.Literal,
 				value: node.operator === "-" ? -argument.value : argument.value,
 			};
 		}
@@ -842,7 +842,7 @@ function literalSourceValue(node: SourceNode): StyleValue | null {
 		const right = node.right === undefined ? null : literalSourceValue(node.right);
 		if (left?.kind === StyleValueKindTag.Literal && right?.kind === StyleValueKindTag.Literal) {
 			const value = evaluateLiteralBinary(node.operator, left.value, right.value);
-			if (value !== undefined) return { kind: "literal", value };
+			if (value !== undefined) return { kind: StyleValueKindTag.Literal, value };
 		}
 	}
 	if (node.type !== NodeKind.Literal) return null;
@@ -851,7 +851,7 @@ function literalSourceValue(node: SourceNode): StyleValue | null {
 		typeof node.value === "number" ||
 		typeof node.value === "boolean"
 	) {
-		return { kind: "literal", value: node.value };
+		return { kind: StyleValueKindTag.Literal, value: node.value };
 	}
 	return null;
 }
@@ -921,7 +921,7 @@ function dynamicSourceValue(
 	const directReference = options.dynamicReferences?.[sourceExpression.trim()];
 	if (directReference !== undefined)
 		return {
-			kind: "literal",
+			kind: StyleValueKindTag.Literal,
 			value: directReference,
 		};
 	const normalizedExpression = cssVariableExpression(sourceExpression);
@@ -930,7 +930,7 @@ function dynamicSourceValue(
 			normalizedExpression.startsWith("`") && normalizedExpression.endsWith("`")
 				? normalizedExpression.slice(1, -1)
 				: normalizedExpression;
-		return { kind: "literal", value };
+		return { kind: StyleValueKindTag.Literal, value };
 	}
 	const expression = sourceExpression.replace(
 		/\$\{([A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)*)\}/g,
@@ -942,17 +942,17 @@ function dynamicSourceValue(
 		expression.trim().endsWith("`") &&
 		!expression.includes("${")
 	)
-		return { kind: "literal", value: expression.trim().slice(1, -1) };
+		return { kind: StyleValueKindTag.Literal, value: expression.trim().slice(1, -1) };
 	return {
-		kind: "dynamic",
+		kind: StyleValueKindTag.Dynamic,
 		expression,
 		expressionKind: dynamicExpressionKind(expression),
 		staticEvaluation: {
 			attempted: true,
-			status: "unresolved",
+			status: StyleStaticEvaluationStatusTag.Unresolved,
 			reason: "expression depends on runtime or unresolved source bindings",
 		},
-		lowering: "residual",
+		lowering: StyleDynamicLoweringTag.Residual,
 		source: sourceRange(options.source, options.sourceOffset ?? 0, node),
 		dependencies: [...new Set(expression.match(/[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)*/g) ?? [])],
 	};
@@ -1042,7 +1042,7 @@ export function styleProgramFromSourceObject(
 	const themePaths = new Set(themes.map((theme) => theme.path));
 	const compositionKeys = new Set(["compose", "composes", "extend", "extends"]);
 	const addDynamicResidual = (text: string, hint: string): void => {
-		residuals.push({ kind: "dynamic", text, hint });
+		residuals.push({ kind: StyleProgramResidualKindTag.Dynamic, text, hint });
 	};
 	const addDeclaration = (
 		name: string,
@@ -1277,7 +1277,7 @@ export function styleProgramFromSourceObject(
 				const ruleDeclarations = declarations.splice(declarationStart);
 				const nestedRules = specialRules.splice(specialRuleStart);
 				specialRules.push({
-					kind: "style",
+					kind: StyleRuleKindTag.Style,
 					name,
 					conditions: [],
 					declarations: ruleDeclarations,
@@ -1310,7 +1310,7 @@ export function styleProgramFromSourceObject(
 	return styleProgramFromRules(
 		[
 			{
-				kind: "style",
+				kind: StyleRuleKindTag.Style,
 				conditions: [],
 				declarations,
 				children: [],
@@ -1363,7 +1363,7 @@ export function swapIRFromStyleProgram(program: StyleProgram): SwapIR {
 			const value = fromValue(declaration.value);
 			if (value === null) {
 				residuals.push({
-					kind: "dynamic",
+					kind: StyleProgramResidualKindTag.Dynamic,
 					text:
 						declaration.value.kind === StyleValueKindTag.Dynamic
 							? declaration.value.expression

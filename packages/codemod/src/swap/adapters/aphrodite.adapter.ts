@@ -1,5 +1,6 @@
 import { makeExtraAdapter } from "./extra-adapter-runtime.ts";
 import { BuiltinHostFramework } from "../host-adapters.ts";
+import { AdapterDependencyKindTag } from "../adapter-contract.ts";
 import {
 	AdapterOfficialApiStatusTag,
 	CodemodAdapterId,
@@ -19,7 +20,7 @@ const aphrodite = makeExtraAdapter({
 		ssrHooks: ["renderStatic", "rehydrate"],
 	},
 	modules: ["aphrodite"],
-	packages: { packages: [{ name: "aphrodite", kind: "runtime" }] },
+	packages: { packages: [{ name: "aphrodite", kind: AdapterDependencyKindTag.Runtime }] },
 	detect: [/from\s+["']aphrodite["']/g, /\bStyleSheet\.create\s*\(\s*\{/g],
 	call: /\bStyleSheet\.create\s*\(\s*\{/g,
 	prefix: "StyleSheet.create(",

@@ -1,4 +1,5 @@
 import { CodemodAdapterId } from "../identifiers.ts";
+import { AdapterDependencyKindTag } from "../adapter-contract.ts";
 import type { ProjectModuleLoader } from "../project-module-loader.ts";
 import type { StylesheetCompilerPort } from "../stylesheet-source.ts";
 import { createStylesheetAdapter } from "./stylesheet-adapter.ts";
@@ -31,7 +32,7 @@ export function createLessAdapter(moduleLoader?: ProjectModuleLoader) {
 		id: CodemodAdapterId.Less,
 		name: "less",
 		extensions: [".less"],
-		packages: { packages: [{ name: "less", kind: "config" }] },
+		packages: { packages: [{ name: "less", kind: AdapterDependencyKindTag.Config }] },
 		compilerName: "less",
 		...(moduleLoader === undefined ? {} : { compiler: createLessCompiler(moduleLoader) }),
 	});

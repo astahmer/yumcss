@@ -1,6 +1,7 @@
 import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
 import { StyleRuleKindTag } from "../semantic-ir.ts";
 import {
+	CodemodCallPatternKindTag,
 	CodemodCallPatternFormTag,
 	CodemodAdapterId,
 	StyleHostRepresentationKind,
@@ -13,6 +14,7 @@ import type {
 	AdapterParseContext,
 } from "../adapter-contract.ts";
 import { SourceBindingKind, type SourceBinding } from "pandwind/source";
+import { AdapterDependencyKindTag } from "../adapter-contract.ts";
 
 function importedModulePath(context: AdapterParseContext, specifier: string): string {
 	const directory = dirnameDocumentPath(context.file);
@@ -151,12 +153,12 @@ export default defineCodemodAdapter({
 		},
 		{
 			name: "styled",
-			kind: "styled",
+			kind: CodemodCallPatternKindTag.Styled,
 			regex: /\bstyled\s*(?:\.\s*[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))\s*\(\s*\{/g,
 		},
 		{
 			name: "styled-function",
-			kind: "styled",
+			kind: CodemodCallPatternKindTag.Styled,
 			regex:
 				/\bstyled\s*(?:\.\s*[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))\s*\(\s*(?:\([^)]*\)|[A-Za-z_$][\w$]*)\s*=>/g,
 			functionCall: {
@@ -172,12 +174,20 @@ export default defineCodemodAdapter({
 		},
 		{
 			name: "styled-template",
-			kind: "styled",
+			kind: CodemodCallPatternKindTag.Styled,
 			regex: /\bstyled\s*(?:\.\s*[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))\s*`(?:\\.|[^`])*`/g,
 			form: "template",
 		},
-		{ name: "keyframes", kind: "keyframes", regex: /\bkeyframes\s*\(\s*\{/g },
-		{ name: "global", kind: "global", regex: /\b(?:injectGlobal|global)\s*\(\s*\{/g },
+		{
+			name: "keyframes",
+			kind: CodemodCallPatternKindTag.Keyframes,
+			regex: /\bkeyframes\s*\(\s*\{/g,
+		},
+		{
+			name: "global",
+			kind: CodemodCallPatternKindTag.Global,
+			regex: /\b(?:injectGlobal|global)\s*\(\s*\{/g,
+		},
 		{
 			name: "Global",
 			regex: /<\s*Global\b/g,
@@ -197,8 +207,8 @@ export default defineCodemodAdapter({
 	],
 	packages: {
 		packages: [
-			{ name: "@emotion/css", kind: "runtime" },
-			{ name: "@emotion/styled", kind: "peer" },
+			{ name: "@emotion/css", kind: AdapterDependencyKindTag.Runtime },
+			{ name: "@emotion/styled", kind: AdapterDependencyKindTag.Peer },
 		],
 	},
 	capabilities: CodemodAdapterKit.allRuleCapabilities(CodemodAdapterId.Emotion, "exact", {

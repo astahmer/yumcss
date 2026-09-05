@@ -12,6 +12,7 @@ import {
 import { StyleProgramBuilder } from "../style-program-builder.ts";
 import {
 	ADAPTER_CONTRACT_SCHEMA,
+	AdapterDependencyKindTag,
 	type AdapterConfigContext,
 	type AdapterParseContext,
 	type AdapterParseResult,
@@ -283,7 +284,7 @@ function parseTailwind(
 			const rule = parsed.rules[0];
 			if (rule === undefined)
 				return {
-					kind: "style" as const,
+					kind: StyleRuleKindTag.Style,
 					name: entry[2],
 					conditions: [],
 					declarations: [],
@@ -330,7 +331,7 @@ function parseTailwind(
 		const program = styleProgramFromRules(
 			[
 				{
-					kind: "style",
+					kind: StyleRuleKindTag.Style,
 					conditions: [],
 					declarations,
 					children: [],
@@ -827,7 +828,9 @@ export function createTailwindAdapter(options: TailwindAdapterOptions = {}): Sty
 			compilerIntegrations: ["@tailwindcss/node"],
 		}),
 		sourceModules: ["tailwindcss", "@tailwindcss/node"],
-		dependencies: { packages: [{ name: "tailwindcss", kind: "development" }] },
+		dependencies: {
+			packages: [{ name: "tailwindcss", kind: AdapterDependencyKindTag.Development }],
+		},
 		capabilities: {
 			schema: ADAPTER_CAPABILITIES_SCHEMA,
 			adapter: CodemodAdapterId.Tailwind,

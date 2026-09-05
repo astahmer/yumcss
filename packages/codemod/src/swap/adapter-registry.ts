@@ -1,5 +1,5 @@
 import type { StyleAdapter } from "./adapter-contract.ts";
-import { ADAPTER_CONTRACT_SCHEMA } from "./adapter-contract.ts";
+import { ADAPTER_CONTRACT_SCHEMA, AdapterDependencyKindTag } from "./adapter-contract.ts";
 import {
 	createStyleAdapterManifest,
 	readAdapterPackageDeclaration,
@@ -142,7 +142,9 @@ function normalizeAdapter(adapter: StyleAdapter): StyleAdapter {
 							]
 						: ['import { createCss } from "pandwind/css";', "const css = createCss();"],
 					semantic: portableProgram,
-					dependencies: { packages: [{ name: "pandwind", kind: "runtime" }] },
+					dependencies: {
+						packages: [{ name: "pandwind", kind: AdapterDependencyKindTag.Runtime }],
+					},
 					residuals: [],
 				};
 			}

@@ -108,14 +108,22 @@ function collectTokenValues(section: unknown, out: Record<string, Record<string,
 
 function resolveTokenReferences(tokens: Record<string, Record<string, unknown>>): void {
 	const resolving = new Set<string>();
+	const enum PandaThemeTaskKindTag {
+		Value = "value",
+		Leave = "leave",
+	}
 	type Task =
-		| { readonly kind: "value"; readonly value: unknown; readonly assign: (value: unknown) => void }
-		| { readonly kind: "leave"; readonly id: string };
+		| {
+				readonly kind: PandaThemeTaskKindTag.Value;
+				readonly value: unknown;
+				readonly assign: (value: unknown) => void;
+		  }
+		| { readonly kind: PandaThemeTaskKindTag.Leave; readonly id: string };
 	const resolve = (value: unknown, assign: (result: unknown) => void): void => {
-		const stack: Task[] = [{ kind: "value", value, assign }];
+		const stack: Task[] = [{ kind: PandaThemeTaskKindTag.Value, value, assign }];
 		while (stack.length > 0) {
 			const task = stack.pop()!;
-			if (task.kind === "leave") {
+			if (task.kind === PandaThemeTaskKindTag.Leave) {
 				resolving.delete(task.id);
 				continue;
 			}
@@ -135,8 +143,8 @@ function resolveTokenReferences(tokens: Record<string, Record<string, unknown>>)
 					continue;
 				}
 				resolving.add(id);
-				stack.push({ kind: "leave", id });
-				stack.push({ kind: "value", value: candidate, assign: task.assign });
+				stack.push({ kind: PandaThemeTaskKindTag.Leave, id });
+				stack.push({ kind: PandaThemeTaskKindTag.Value, value: candidate, assign: task.assign });
 				continue;
 			}
 			if (Array.isArray(task.value)) {
@@ -145,7 +153,7 @@ function resolveTokenReferences(tokens: Record<string, Record<string, unknown>>)
 				for (let index = task.value.length - 1; index >= 0; index--) {
 					const child = task.value[index]!;
 					stack.push({
-						kind: "value",
+						kind: PandaThemeTaskKindTag.Value,
 						value: child,
 						assign: (result) => (output[index] = result),
 					});
@@ -157,7 +165,7 @@ function resolveTokenReferences(tokens: Record<string, Record<string, unknown>>)
 				task.assign(output);
 				for (const [key, child] of Object.entries(task.value).toReversed()) {
 					stack.push({
-						kind: "value",
+						kind: PandaThemeTaskKindTag.Value,
 						value: child,
 						assign: (result) => (output[key] = result),
 					});

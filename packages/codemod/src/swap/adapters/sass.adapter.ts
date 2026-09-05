@@ -1,4 +1,5 @@
 import { CodemodAdapterId } from "../identifiers.ts";
+import { AdapterDependencyKindTag } from "../adapter-contract.ts";
 import type { ProjectModuleLoader } from "../project-module-loader.ts";
 import type { StylesheetCompilerPort } from "../stylesheet-source.ts";
 import { createStylesheetAdapter } from "./stylesheet-adapter.ts";
@@ -43,7 +44,7 @@ export function createSassAdapter(moduleLoader?: ProjectModuleLoader) {
 		id: CodemodAdapterId.Sass,
 		name: "sass",
 		extensions: [".sass", ".scss"],
-		packages: { packages: [{ name: "sass", kind: "config" }] },
+		packages: { packages: [{ name: "sass", kind: AdapterDependencyKindTag.Config }] },
 		compilerName: "sass",
 		...(moduleLoader === undefined ? {} : { compiler: createSassCompiler(moduleLoader) }),
 	});

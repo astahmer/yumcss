@@ -1,4 +1,5 @@
 import { makeExtraAdapter } from "./extra-adapter-runtime.ts";
+import { AdapterDependencyKindTag } from "../adapter-contract.ts";
 import {
 	AdapterOfficialApiStatusTag,
 	CodemodAdapterId,
@@ -20,8 +21,8 @@ const fela = makeExtraAdapter({
 	modules: ["fela", "react-fela"],
 	packages: {
 		packages: [
-			{ name: "fela", kind: "runtime" },
-			{ name: "react-fela", kind: "peer" },
+			{ name: "fela", kind: AdapterDependencyKindTag.Runtime },
+			{ name: "react-fela", kind: AdapterDependencyKindTag.Peer },
 		],
 	},
 	detect: [/from\s+["'](?:fela|react-fela)["']/g, /\brenderer\.renderRule\s*\(\s*\{/g],

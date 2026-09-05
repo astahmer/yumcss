@@ -5,6 +5,7 @@ import {
 	canConvertStaticVueSfc,
 	rewriteVueSfcToJsx,
 } from "../host-adapters.ts";
+import { AdapterDependencyKindTag } from "../adapter-contract.ts";
 import type { AdapterEmitContext, AdapterEmitResult } from "../adapter-contract.ts";
 import {
 	AdapterOfficialApiStatusTag,
@@ -96,7 +97,9 @@ const solidStyled = makeExtraAdapter({
 		],
 	},
 	modules: ["solid-styled-components"],
-	packages: { packages: [{ name: "solid-styled-components", kind: "runtime" }] },
+	packages: {
+		packages: [{ name: "solid-styled-components", kind: AdapterDependencyKindTag.Runtime }],
+	},
 	detect: [
 		/from\s+["']solid-styled-components["']/g,
 		/\bstyled(?:\.[A-Za-z_$][\w$]*|\([^)]*\))[^`]*`/g,

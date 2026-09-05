@@ -7,6 +7,7 @@ import {
 	rewriteVueSfcToJsx,
 } from "../host-adapters.ts";
 import {
+	CodemodCallPatternKindTag,
 	CodemodAdapterId,
 	StyleHostRepresentationKind,
 	StyleNamedRuleStrategy,
@@ -132,7 +133,7 @@ export default defineCodemodAdapter({
 		},
 		{
 			name: "styled",
-			kind: "styled",
+			kind: CodemodCallPatternKindTag.Styled,
 			regex: /\bstyled\s*\(\s*[^,]+,\s*\{/g,
 			transform: (program, context) => {
 				if (program.source === undefined) return program;
@@ -152,8 +153,16 @@ export default defineCodemodAdapter({
 						};
 			},
 		},
-		{ name: "globalCss", kind: "global", regex: /\bglobalCss\s*\(\s*\{/g },
-		{ name: "keyframes", kind: "keyframes", regex: /\bkeyframes\s*\(\s*\{/g },
+		{
+			name: "globalCss",
+			kind: CodemodCallPatternKindTag.Global,
+			regex: /\bglobalCss\s*\(\s*\{/g,
+		},
+		{
+			name: "keyframes",
+			kind: CodemodCallPatternKindTag.Keyframes,
+			regex: /\bkeyframes\s*\(\s*\{/g,
+		},
 	],
 	packages: CodemodAdapterKit.dependency("@stitches/react", "peer"),
 	capabilities: CodemodAdapterKit.allRuleCapabilities(CodemodAdapterId.Stitches, "exact", {

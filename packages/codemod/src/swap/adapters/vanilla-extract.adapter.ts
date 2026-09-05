@@ -1,6 +1,8 @@
 import { StyleRuleKindTag } from "../semantic-ir.ts";
 import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
+import { AdapterDependencyKindTag } from "../adapter-contract.ts";
 import {
+	CodemodCallPatternKindTag,
 	CodemodAdapterId,
 	StyleHostRepresentationKind,
 	StyleNamedRuleStrategy,
@@ -18,9 +20,21 @@ export default defineCodemodAdapter({
 	},
 	patterns: [
 		{ name: "style", regex: /\bstyle\s*\(\s*\{/g },
-		{ name: "globalStyle", kind: "global", regex: /\bglobalStyle\s*\([^,{]+,\s*\{/g },
-		{ name: "keyframes", kind: "keyframes", regex: /\bkeyframes\s*\(\s*\{/g },
-		{ name: "fontFace", kind: "font-face", regex: /\bfontFace\s*\(\s*\{/g },
+		{
+			name: "globalStyle",
+			kind: CodemodCallPatternKindTag.Global,
+			regex: /\bglobalStyle\s*\([^,{]+,\s*\{/g,
+		},
+		{
+			name: "keyframes",
+			kind: CodemodCallPatternKindTag.Keyframes,
+			regex: /\bkeyframes\s*\(\s*\{/g,
+		},
+		{
+			name: "fontFace",
+			kind: CodemodCallPatternKindTag.FontFace,
+			regex: /\bfontFace\s*\(\s*\{/g,
+		},
 		{
 			name: "styleVariants",
 			regex: /\bstyleVariants\s*\(/g,
@@ -78,8 +92,8 @@ export default defineCodemodAdapter({
 	],
 	packages: {
 		packages: [
-			{ name: "@vanilla-extract/css", kind: "runtime" },
-			{ name: "@vanilla-extract/recipes", kind: "runtime" },
+			{ name: "@vanilla-extract/css", kind: AdapterDependencyKindTag.Runtime },
+			{ name: "@vanilla-extract/recipes", kind: AdapterDependencyKindTag.Runtime },
 		],
 	},
 	capabilities: CodemodAdapterKit.allRuleCapabilities(

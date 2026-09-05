@@ -5,6 +5,7 @@ import {
 	canConvertStaticVueSfc,
 	rewriteVueSfcToJsx,
 } from "../host-adapters.ts";
+import { AdapterDependencyKindTag } from "../adapter-contract.ts";
 import type { AdapterHostFrameworkConversion } from "../adapter-contract.ts";
 import {
 	AdapterOfficialApiStatusTag,
@@ -379,7 +380,7 @@ const reactNative = makeExtraAdapter({
 		],
 	},
 	modules: ["react-native"],
-	packages: { packages: [{ name: "react-native", kind: "peer" }] },
+	packages: { packages: [{ name: "react-native", kind: AdapterDependencyKindTag.Peer }] },
 	detect: [/from\s+["']react-native["']/g, /\bStyleSheet\.create\s*\(\s*\{/g],
 	call: /\bStyleSheet\.create\s*\(\s*\{/g,
 	prefix: "StyleSheet.create(",
