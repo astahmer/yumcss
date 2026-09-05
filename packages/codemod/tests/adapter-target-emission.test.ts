@@ -184,12 +184,11 @@ describe("target adapter emission contract", () => {
 
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
-		expect(result.code).toContain('as import("pandwind/css").CssFn');
-		expect(result.code).toContain('sheet: import("pandwind/css/runtime").RuntimeSheet');
+		expect(result.code).toContain("const css = createRuntimeCss(pandwindPreset);");
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { createRuntimeCss } from "pandwind/css/runtime";
 			import { pandwindPreset } from "pandwind/preset";
-			const css = createRuntimeCss(pandwindPreset) as import("pandwind/css").CssFn & { sheet: import("pandwind/css/runtime").RuntimeSheet };
+			const css = createRuntimeCss(pandwindPreset);
 
 			const card = css.vars({ "padding": "0.5em 1em", "color": theme.foreground });"
 		`);

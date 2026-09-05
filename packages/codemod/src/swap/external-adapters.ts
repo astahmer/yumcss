@@ -1517,7 +1517,7 @@ export function defineCodemodAdapter(spec: CodemodAdapterSpec): StyleAdapter {
 						? [
 								'import { createRuntimeCss } from "pandwind/css/runtime";',
 								'import { pandwindPreset } from "pandwind/preset";',
-								'const css = createRuntimeCss(pandwindPreset) as import("pandwind/css").CssFn & { sheet: import("pandwind/css/runtime").RuntimeSheet };',
+								"const css = createRuntimeCss(pandwindPreset);",
 							]
 						: ['import { createCss } from "pandwind/css";', "const css = createCss();"],
 					semantic: portableProgram,

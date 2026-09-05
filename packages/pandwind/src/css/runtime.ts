@@ -38,6 +38,11 @@ export interface RuntimeCssOptions extends CreateCssOptions {
 	readonly sheetOptions?: RuntimeSheetOptions;
 }
 
+/** Complete typed runtime CSS surface, including its attached stylesheet. */
+export type RuntimeCssFn<TStyles extends StyleObject = StyleObject> = CssFn<TStyles> & {
+	readonly sheet: RuntimeSheet;
+};
+
 interface RuntimeBinding {
 	sheet: RuntimeSheet;
 	cssOptions: CreateCssOptions;
@@ -105,9 +110,7 @@ export function createRuntimeCss<
 >(
 	preset: TPreset,
 	options: RuntimeCssOptions = {},
-): CssFn<TypedStyleObject<TPreset["_config"], TPreset["tokens"], TPreset>> & {
-	sheet: RuntimeSheet;
-} {
+): RuntimeCssFn<TypedStyleObject<TPreset["_config"], TPreset["tokens"], TPreset>> {
 	const runtime = runtimeOptions(preset, options);
 	const css = createCss({ ...runtime.cssOptions, conditions: preset.conditions }) as CssFn<
 		TypedStyleObject<TPreset["_config"], TPreset["tokens"], TPreset>
@@ -120,7 +123,7 @@ export function createRuntimeCss<
 export function createRuntimeDesignCss<TPreset extends DesignPreset>(
 	preset: TPreset,
 	options: RuntimeCssOptions = {},
-): CssFn<DesignStyleObject<TPreset>> & { sheet: RuntimeSheet } {
+): RuntimeCssFn<DesignStyleObject<TPreset>> {
 	const runtime = runtimeOptions(preset, options);
 	const css = createDesignCss(preset, runtime.cssOptions) as CssFn<DesignStyleObject<TPreset>>;
 	runtime.registerVars(css as unknown as CssFn<StyleObject>);
