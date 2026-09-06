@@ -37,6 +37,11 @@ describe("Pandwind MCP tools", () => {
 		const adapters = value.adapters as Array<{ id: string }>;
 		expect(value.schema).toBe("pandwind.mcp.project/1");
 		expect(adapters.some((adapter) => adapter.id === "pandwind")).toBe(true);
+		expect(
+			(value.registeredAdapters as Array<{ id: string }>).some(
+				(adapter) => adapter.id === "pandwind",
+			),
+		).toBe(true);
 	});
 
 	it("previews a route without changing the project", async () => {
@@ -76,6 +81,20 @@ describe("Pandwind MCP tools", () => {
 			twPath: "src/tw.ts",
 		});
 		expect(structured(result).schema).toBe("pandwind.analyze/2");
+	});
+
+	it("validates a preview without executing project commands", async () => {
+		const service = project();
+		const result = await service.call(MCP_TOOL.ValidateMigration, {
+			files: ["src/button.ts"],
+			from: "pandwind",
+			to: "pandwind",
+		});
+		expect(structured(result)).toMatchObject({
+			schema: "pandwind.mcp.validate-migration/1",
+			valid: true,
+			files: [{ valid: true }],
+		});
 	});
 
 	it("rejects paths that escape the fixed project root", async () => {

@@ -15,6 +15,7 @@ import type { McpToolDefinition, McpToolResult } from "./protocol.ts";
 export const MCP_TOOL = {
 	InspectProject: "inspect_project",
 	PreviewMigration: "preview_migration",
+	ValidateMigration: "validate_migration",
 	AnalyzeProject: "analyze_project",
 } as const;
 
@@ -45,6 +46,20 @@ const inputSchema = (
 	...(required.length === 0 ? {} : { required }),
 });
 
+const MCP_MIGRATION_INPUT_SCHEMA = inputSchema(
+	{
+		files: {
+			type: "array",
+			items: { type: "string" },
+			description: "Project-relative files or globs.",
+		},
+		from: { type: "string", description: "Registered source adapter or dialect id." },
+		to: { type: "string", description: "Registered target adapter or dialect id." },
+		mode: { type: "string", enum: Object.values(MCP_MIGRATION_MODE) },
+	},
+	["files", "from", "to"],
+);
+
 export const MCP_TOOLS: readonly McpToolDefinition[] = [
 	{
 		name: MCP_TOOL.InspectProject,
@@ -61,19 +76,13 @@ export const MCP_TOOLS: readonly McpToolDefinition[] = [
 		name: MCP_TOOL.PreviewMigration,
 		description:
 			"Preview a registered source-to-target migration without writing source or generated files.",
-		inputSchema: inputSchema(
-			{
-				files: {
-					type: "array",
-					items: { type: "string" },
-					description: "Project-relative files or globs.",
-				},
-				from: { type: "string", description: "Registered source adapter or dialect id." },
-				to: { type: "string", description: "Registered target adapter or dialect id." },
-				mode: { type: "string", enum: Object.values(MCP_MIGRATION_MODE) },
-			},
-			["files", "from", "to"],
-		),
+		inputSchema: MCP_MIGRATION_INPUT_SCHEMA,
+	},
+	{
+		name: MCP_TOOL.ValidateMigration,
+		description:
+			"Run a read-only migration contract check: target validations, residuals, and generated-file conflicts.",
+		inputSchema: MCP_MIGRATION_INPUT_SCHEMA,
 	},
 	{
 		name: MCP_TOOL.AnalyzeProject,
@@ -224,6 +233,15 @@ function inspectProject(context: McpProjectContext, arguments_: unknown): McpToo
 			packageJson: packageJson === undefined ? "missing" : "present",
 			files: configFiles,
 		},
+		registeredAdapters: catalog.adapters
+			.map((adapter) => ({
+				id: adapter.id,
+				version: adapter.version,
+				sourceModules: adapter.sourceModules,
+				capabilities: adapter.capabilities.capabilities,
+				officialApi: adapter.officialApi,
+			}))
+			.toSorted((a, b) => a.id.localeCompare(b.id)),
 	});
 }
 
@@ -261,10 +279,16 @@ function serializeMigration(
 	};
 }
 
-async function previewMigration(
+async function migrationPreview(
 	context: McpProjectContext,
 	arguments_: unknown,
-): Promise<McpToolResult> {
+): Promise<{
+	readonly root: string;
+	readonly from: string;
+	readonly to: string;
+	readonly mode: AdapterCapabilityMode;
+	readonly files: readonly ReturnType<typeof serializeMigration>[];
+}> {
 	const input = asRecord(arguments_, MCP_TOOL.PreviewMigration);
 	const files = stringArray(input.files, "files");
 	const from = stringValue(input.from, "from");
@@ -302,13 +326,47 @@ async function previewMigration(
 		});
 		results.push(serializeMigration(context.root, file, result, before));
 	}
+	return { root: context.root, from, to, mode, files: results };
+}
+
+async function previewMigration(
+	context: McpProjectContext,
+	arguments_: unknown,
+): Promise<McpToolResult> {
+	const preview = await migrationPreview(context, arguments_);
+	return textToolResult({ schema: "pandwind.mcp.preview-migration/1", ...preview });
+}
+
+async function validateMigration(
+	context: McpProjectContext,
+	arguments_: unknown,
+): Promise<McpToolResult> {
+	const preview = await migrationPreview(context, arguments_);
+	const files = preview.files.map((file) => {
+		const generatedConflicts = file.generatedFiles.filter((generated) => {
+			const path = projectPath(context.root, generated.path);
+			return existsSync(path) && readFileSync(path, "utf8") !== generated.content;
+		});
+		const adapterValidations = file.validations.every((validation) => validation.valid);
+		const residualFree = file.residuals.length === 0;
+		return {
+			file: file.file,
+			valid: adapterValidations && residualFree && generatedConflicts.length === 0,
+			checks: {
+				adapterValidations,
+				residualFree,
+				generatedFilesConflictFree: generatedConflicts.length === 0,
+			},
+			residuals: file.residuals,
+			validations: file.validations,
+			generatedConflicts: generatedConflicts.map((generated) => generated.path),
+		};
+	});
 	return textToolResult({
-		schema: "pandwind.mcp.preview-migration/1",
-		root: context.root,
-		from,
-		to,
-		mode,
-		files: results,
+		schema: "pandwind.mcp.validate-migration/1",
+		...preview,
+		valid: files.every((file) => file.valid),
+		files,
 	});
 }
 
@@ -342,6 +400,7 @@ export function createMcpToolService(context: McpProjectContext): McpToolService
 	const calls = new Map<string, (arguments_: unknown) => Promise<McpToolResult> | McpToolResult>([
 		[MCP_TOOL.InspectProject, (arguments_) => inspectProject(context, arguments_)],
 		[MCP_TOOL.PreviewMigration, (arguments_) => previewMigration(context, arguments_)],
+		[MCP_TOOL.ValidateMigration, (arguments_) => validateMigration(context, arguments_)],
 		[MCP_TOOL.AnalyzeProject, (arguments_) => analyzeProject(context, arguments_)],
 	]);
 	return {
