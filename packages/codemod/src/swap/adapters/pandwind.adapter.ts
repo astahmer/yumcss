@@ -1652,6 +1652,57 @@ function recipeDefinitionObject(
 	return `{ base: ${base}, variants: { ${variantText.join(", ")} } }`;
 }
 
+function slotRecipeDefinitionObject(
+	program: StyleProgram,
+	declarationsObject: AdapterRenderers["declarationsObject"],
+): string {
+	const slots = new Map<string, StyleProgram["declarations"]>();
+	const variants = new Map<string, Map<string, Map<string, StyleProgram["declarations"]>>>();
+	for (const rule of program.rules) {
+		if (rule.kind !== StyleRuleKindTag.Style || rule.name === undefined) continue;
+		const base = slots.get(rule.name) ?? [];
+		const unconditional = rule.declarations.filter((declaration) => declaration.conditions.length === 0);
+		if (unconditional.length > 0) slots.set(rule.name, [...base, ...unconditional]);
+		for (const declaration of rule.declarations) {
+			const [variant, value] = declaration.conditions;
+			if (
+				variant?.kind !== SemanticConditionKindTag.Named ||
+				value?.kind !== SemanticConditionKindTag.Named
+			)
+				continue;
+			const values = variants.get(variant.name) ?? new Map();
+			const slotValues = values.get(value.name) ?? new Map();
+			const declarations = slotValues.get(rule.name) ?? [];
+			slotValues.set(rule.name, [...declarations, { ...declaration, conditions: [] }]);
+			values.set(value.name, slotValues);
+			variants.set(variant.name, values);
+		}
+	}
+	const slotNames =
+		program.compositions?.find((composition) => composition.kind === StyleProgramCompositionKind.Slot)
+			?.slots ?? [...slots.keys()];
+	const slotsText = slotNames
+		.map((name) => `${JSON.stringify(name)}: ${declarationsObject(slots.get(name) ?? [])}`)
+		.join(", ");
+	const variantsText = [...variants]
+		.map(
+			([name, values]) =>
+				`${JSON.stringify(name)}: { ${[...values]
+					.map(
+						([value, slotValues]) =>
+							`${JSON.stringify(value)}: { ${[...slotValues]
+								.map(
+									([slot, declarations]) =>
+										`${JSON.stringify(slot)}: ${declarationsObject(declarations)}`,
+								)
+								.join(", ")} }`,
+					)
+					.join(", ")} }`,
+		)
+		.join(", ");
+	return `{ slots: { ${slotsText} }, slotVariants: { ${variantsText} } }`;
+}
+
 export interface PandwindAdapterOptions {
 	readonly moduleLoader?: ProjectModuleLoader | null;
 }
@@ -1682,7 +1733,9 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 			components: "exact",
 		}),
 		namedRuleStrategy: StyleNamedRuleStrategy.ClassMap,
-		preserveNamedRules: (context) => context.sourceModules?.includes("style9") === true,
+		preserveNamedRules: (context) =>
+			context.sourceModules?.includes("style9") === true ||
+			context.sourceModules?.includes("styled-system/css") === true,
 		detectPatterns: [
 			/\bcss\.class\s*\(/,
 			/\bcreateCss\s*\(/,
@@ -1952,6 +2005,10 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 				program.compositions?.some(
 					(composition) => composition.kind === StyleProgramCompositionKind.Recipe,
 				) === true;
+			const slotRecipe =
+				program.compositions?.some(
+					(composition) => composition.kind === StyleProgramCompositionKind.Slot,
+				) === true;
 			const needsRuntimeCss =
 				!stylexDynamicGroup &&
 				(program.emissionHints?.includes(StyleProgramEmissionHint.RuntimeFunction) === true ||
@@ -1976,8 +2033,10 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 					],
 				});
 			return finalize({
-				text: recipeVariants
-					? `createRecipe(css, ${recipeDefinitionObject(outputProgram, declarationsObject)})`
+				text: slotRecipe
+					? `createSlotRecipe(css, ${slotRecipeDefinitionObject(outputProgram, declarationsObject)})`
+					: recipeVariants
+						? `createRecipe(css, ${recipeDefinitionObject(outputProgram, declarationsObject)})`
 					: named
 						? `css.group(${renderProgramObject(outputProgram)})`
 						: functionDynamic
@@ -1987,7 +2046,13 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 								: dynamic
 									? dynamicEmission
 									: `css.class(${renderProgramObject(outputProgram)})`,
-				imports: recipeVariants
+				imports: slotRecipe
+					? [
+							'import { createCss } from "pandwind/css";',
+							'import { createSlotRecipe } from "pandwind/recipe";',
+							"const css = createCss();",
+						]
+					: recipeVariants
 					? [
 							'import { createCss } from "pandwind/css";',
 							'import { createRecipe } from "pandwind/recipe";',

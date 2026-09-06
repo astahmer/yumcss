@@ -1,6 +1,15 @@
 import { CodemodCallPatternFormTag } from "../identifiers.ts";
-import { StyleRuleKindTag, StyleValueKindTag, type StyleProgram } from "../semantic-ir.ts";
+import {
+	StyleProgramResidualKindTag,
+	StyleRuleKindTag,
+	StyleValueKindTag,
+	styleProgramFromSourceObject,
+	type StyleProgram,
+} from "../semantic-ir.ts";
 import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
+import type { AdapterParseContext, AdapterParseResult } from "../adapter-contract.ts";
+import { JsxStyleHost } from "../jsx-style-host.ts";
+import { BuiltinHostFramework } from "../host-adapters.ts";
 import {
 	AdapterOfficialApiStatusTag,
 	CodemodCallPatternKindTag,
@@ -80,7 +89,7 @@ const serializedProgramText = (program: StyleProgram): string => {
 	return serializedObjectText(root);
 };
 
-export default defineCodemodAdapter({
+const defaultAdapter = defineCodemodAdapter({
 	id: CodemodAdapterId.Compiled,
 	officialApi: {
 		apis: [
@@ -127,7 +136,7 @@ export default defineCodemodAdapter({
 			regex: /<\s*ClassNames\b/g,
 			form: CodemodCallPatternFormTag.Residual,
 			residual: {
-				kind: "component",
+				kind: StyleProgramResidualKindTag.Component,
 				hint: "Compiled ClassNames requires a host-aware render-prop lowering",
 			},
 		},
@@ -164,3 +173,67 @@ export default defineCodemodAdapter({
 		};
 	},
 });
+
+function parseStaticClassNames(
+	source: string,
+	context: AdapterParseContext,
+): AdapterParseResult["matches"] {
+	const matches: Array<AdapterParseResult["matches"][number]> = [];
+	const wrapper =
+		/<ClassNames\s*>\s*\{\s*\(\s*\{\s*css\s*\}\s*\)\s*=>\s*(<[^>]+\/>)\s*\}\s*<\/ClassNames\s*>/gu;
+	for (const match of source.matchAll(wrapper)) {
+		const start = match.index ?? 0;
+		const openingTag = match[1];
+		if (openingTag === undefined) continue;
+		const hostStart = start + match[0].indexOf(openingTag);
+		const host = JsxStyleHost.parse(
+			source,
+			hostStart,
+			context,
+			["className"],
+			{
+				file: context.file,
+				start,
+				end: start + match[0].length,
+				adapter: context.config.adapter,
+				framework: BuiltinHostFramework.React,
+			},
+		);
+		if (host === undefined || host.body.trim() === "") continue;
+		const program = styleProgramFromSourceObject(host.body, {
+			source: {
+				...host.source,
+				start,
+				end: start + match[0].length,
+				framework: BuiltinHostFramework.React,
+			},
+			sourceOffset: hostStart,
+		});
+		if (program.residuals.length > 0 || program.rules.length === 0) continue;
+		matches.push({
+			start,
+			end: start + match[0].length,
+			program,
+			sourceText: match[0],
+		});
+	}
+	return matches;
+}
+
+export default {
+	...defaultAdapter,
+	parse(source: string, context: AdapterParseContext): AdapterParseResult {
+		const parsed = defaultAdapter.parse(source, context);
+		const staticClassNames = parseStaticClassNames(source, context);
+		if (staticClassNames.length === 0) return parsed;
+		const ranges = staticClassNames.map((match) => ({ start: match.start, end: match.end }));
+		const overlaps = (match: { readonly start: number; readonly end: number }): boolean =>
+			ranges.some((range) => match.start < range.end && match.end > range.start);
+		return {
+			matches: [...parsed.matches.filter((match) => !overlaps(match)), ...staticClassNames].toSorted(
+				(left, right) => left.start - right.start,
+			),
+			residuals: parsed.residuals,
+		};
+	},
+};

@@ -113,6 +113,7 @@ export type AdapterSourceObjectOptions = Pick<
 	| "namedRuleObjects"
 	| "propertyValueConditions"
 	| "unwrapNestedObjectKeys"
+	| "ignoredObjectKeys"
 	| "variantContainerKeys"
 	| "computedKeys"
 	| "computedKeyResolver"

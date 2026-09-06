@@ -219,6 +219,8 @@ export interface StyleThemeBinding {
 export interface StyleComposition {
 	readonly kind: StyleProgramCompositionKind;
 	readonly reference: string;
+	/** Static slot names when a source recipe declares its anatomy explicitly. */
+	readonly slots?: readonly string[];
 	readonly source?: StyleProgramSource;
 	readonly program?: StyleProgram;
 }
@@ -277,6 +279,8 @@ export interface StyleProgramOptions {
 	readonly preserveDefaultGroup?: boolean;
 	/** Adapter-owned object containers whose contents are the actual style object. */
 	readonly unwrapNestedObjectKeys?: readonly string[];
+	/** Adapter-owned metadata keys that describe a style object but are not styles. */
+	readonly ignoredObjectKeys?: readonly string[];
 	/** Source systems such as StyleX encode conditional values under a property. */
 	readonly propertyValueConditions?: boolean;
 	/** Optional adapter-owned allow-list for property-value condition keys. */
@@ -1174,6 +1178,7 @@ export function styleProgramFromSourceObject(
 				addDynamicResidual(sourceSlice(body, property), "missing style value");
 				continue;
 			}
+			if (options.ignoredObjectKeys?.includes(name) === true) continue;
 			if (
 				options.compositionArrayKeys?.includes(name) === true &&
 				valueNode.type === NodeKind.ArrayExpression

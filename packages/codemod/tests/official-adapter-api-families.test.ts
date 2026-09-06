@@ -100,6 +100,11 @@ describe("official adapter API families", () => {
 					expect(result.code).toContain("className={css.class");
 					expect(result.code).not.toContain(" css={");
 				}
+				if (api.name === "ClassNames composition" && api.adapter === CodemodAdapterId.Compiled) {
+					expect(result.code).toContain("<button className={css.class");
+					expect(result.code).not.toContain("ClassNames");
+					expect(result.code).not.toContain("migrate-skip");
+				}
 				if (api.name === "imperative applyTo") {
 					expect(result.code).toContain("element!.classList.add(sheet.card)");
 					expect(result.code).not.toContain("sheet.attach()");
@@ -124,6 +129,16 @@ describe("official adapter API families", () => {
 				) {
 					expect(result.code).toContain("createRecipe(css");
 					expect(result.code).toContain('"size": { "sm"');
+					expect(result.code).not.toContain("migrate-skip");
+				}
+				if (api.name === "sva slot recipe" && api.adapter === CodemodAdapterId.Panda) {
+					expect(result.code).toContain("createSlotRecipe(css");
+					expect(result.code).toContain('"label": {  }');
+					expect(result.code).not.toContain("migrate-skip");
+				}
+				if (api.name === "generated styled component" && api.adapter === CodemodAdapterId.Panda) {
+					expect(result.code).toContain("__pandwindSlot");
+					expect(result.code).toContain('defaultComponent: "div"');
 					expect(result.code).not.toContain("migrate-skip");
 				}
 				if (api.name === "createComponent" && api.adapter === CodemodAdapterId.Fela) {
@@ -559,37 +574,39 @@ describe("official adapter API families", () => {
 			  },
 			  "compiled/ClassNames composition": {
 			    "changed": true,
-			    "code": "import { ClassNames } from "@compiled/react";
-			export const Card = () => // pandwind:migrate-skip (route: compiled -> pandwind | parse-residual: component | available: named-map, residual)
-			<ClassNames>{null}</ClassNames>;",
-			    "converted": 0,
+			    "code": "import { createCss } from "pandwind/css";
+			const css = createCss();
+
+			export const Card = () => <button className={css.class({ color: "red" })}/>;",
+			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
 			      {
 			        "applied": [],
 			        "availableRepresentations": [
+			          "static",
 			          "named-map",
 			          "residual",
 			        ],
-			        "representation": "residual",
+			        "representation": "static",
 			        "residuals": [],
 			      },
 			    ],
 			    "outcomes": [
 			      {
-			        "outcome": "residual",
-			        "representation": "residual",
+			        "outcome": "static",
+			        "representation": "static",
 			      },
 			    ],
-			    "residuals": [
+			    "residuals": [],
+			    "skipped": 0,
+			    "validations": [
 			      {
-			        "hint": "Compiled ClassNames requires a host-aware render-prop lowering",
-			        "kind": "component",
-			        "preserved": undefined,
+			        "differences": [],
+			        "lossiness": "lossless",
+			        "valid": true,
 			      },
 			    ],
-			    "skipped": 1,
-			    "validations": [],
 			  },
 			  "compiled/cssMap": {
 			    "changed": true,
@@ -761,21 +778,10 @@ describe("official adapter API families", () => {
 			  "css-modules/global pseudo and descendant selectors": {
 			    "changed": false,
 			    "code": "// pandwind:migrate-skip (lowering-residual: capability)
-			:global(.footer) { color: gray; }
-			.card:hover { color: red; }",
+			:global(.footer) { color: gray; }",
 			    "converted": 0,
 			    "generatedFiles": [],
 			    "loweringPlans": [
-			      {
-			        "applied": [],
-			        "availableRepresentations": [
-			          "static",
-			          "named-map",
-			          "residual",
-			        ],
-			        "representation": "static",
-			        "residuals": [],
-			      },
 			      {
 			        "applied": [],
 			        "availableRepresentations": [
@@ -792,10 +798,6 @@ describe("official adapter API families", () => {
 			        "outcome": "residual",
 			        "representation": "residual",
 			      },
-			      {
-			        "outcome": "residual",
-			        "representation": "residual",
-			      },
 			    ],
 			    "residuals": [
 			      {
@@ -803,14 +805,45 @@ describe("official adapter API families", () => {
 			        "kind": "capability",
 			        "preserved": undefined,
 			      },
+			    ],
+			    "skipped": 1,
+			    "validations": [],
+			  },
+			  "css-modules/local pseudo selector": {
+			    "changed": true,
+			    "code": "import { createCss } from "pandwind/css";
+			const css = createCss();
+			export const styles = { "card": css.class({ ":hover": { color: "red" } }) };
+			export default styles;",
+			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
 			      {
-			        "hint": "stylesheet migration requires a single local class selector",
-			        "kind": "capability",
-			        "preserved": undefined,
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "static",
+			        "residuals": [],
 			      },
 			    ],
-			    "skipped": 2,
-			    "validations": [],
+			    "outcomes": [
+			      {
+			        "outcome": "static",
+			        "representation": "static",
+			      },
+			    ],
+			    "residuals": [],
+			    "skipped": 0,
+			    "validations": [
+			      {
+			        "differences": [],
+			        "lossiness": "lossless",
+			        "valid": true,
+			      },
+			    ],
 			  },
 			  "css-modules/named class map": {
 			    "changed": true,
@@ -2023,37 +2056,42 @@ describe("official adapter API families", () => {
 			  },
 			  "panda/generated styled component": {
 			    "changed": true,
-			    "code": "import { styled } from "styled-system/jsx";
-			export const Card = // pandwind:migrate-skip (route: panda -> pandwind | parse-residual: component | available: named-map, residual)
-			styled.div({ base: { color: "red" } });",
-			    "converted": 0,
+			    "code": "import { createCss } from "pandwind/css";
+			import { createCx } from "pandwind/cx";
+			const cx = createCx();
+			const css = createCss();
+			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Component {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
+
+			export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "red" }), stableClass: "pw-jifjss", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
+			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
 			      {
 			        "applied": [],
 			        "availableRepresentations": [
+			          "static",
 			          "named-map",
 			          "residual",
 			        ],
-			        "representation": "residual",
+			        "representation": "static",
 			        "residuals": [],
 			      },
 			    ],
 			    "outcomes": [
 			      {
-			        "outcome": "residual",
-			        "representation": "residual",
+			        "outcome": "static",
+			        "representation": "static",
 			      },
 			    ],
-			    "residuals": [
+			    "residuals": [],
+			    "skipped": 0,
+			    "validations": [
 			      {
-			        "hint": "Panda generated styled components require host/component lowering",
-			        "kind": "component",
-			        "preserved": undefined,
+			        "differences": [],
+			        "lossiness": "lossless",
+			        "valid": true,
 			      },
 			    ],
-			    "skipped": 1,
-			    "validations": [],
 			  },
 			  "panda/globalCss config": {
 			    "changed": false,
@@ -2070,37 +2108,40 @@ describe("official adapter API families", () => {
 			  },
 			  "panda/sva slot recipe": {
 			    "changed": true,
-			    "code": "import { sva } from "styled-system/css";
-			export const card = // pandwind:migrate-skip (route: panda -> pandwind | parse-residual: composition | available: named-map, residual)
-			sva({ slots: ["root", "label"], base: { root: { color: "red" } } });",
-			    "converted": 0,
+			    "code": "import { createCss } from "pandwind/css";
+			import { createSlotRecipe } from "pandwind/recipe";
+			const css = createCss();
+
+			export const card = createSlotRecipe(css, { slots: { "root": { color: "red" }, "label": {  } }, slotVariants: {  } });",
+			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
 			      {
 			        "applied": [],
 			        "availableRepresentations": [
+			          "static",
 			          "named-map",
 			          "residual",
 			        ],
-			        "representation": "residual",
+			        "representation": "named-map",
 			        "residuals": [],
 			      },
 			    ],
 			    "outcomes": [
 			      {
-			        "outcome": "residual",
-			        "representation": "residual",
+			        "outcome": "target-native",
+			        "representation": "named-map",
 			      },
 			    ],
-			    "residuals": [
+			    "residuals": [],
+			    "skipped": 0,
+			    "validations": [
 			      {
-			        "hint": "Panda sva slot recipes require slot-aware target lowering",
-			        "kind": "composition",
-			        "preserved": undefined,
+			        "differences": [],
+			        "lossiness": "lossless",
+			        "valid": true,
 			      },
 			    ],
-			    "skipped": 1,
-			    "validations": [],
 			  },
 			  "panda/token helper context": {
 			    "changed": false,

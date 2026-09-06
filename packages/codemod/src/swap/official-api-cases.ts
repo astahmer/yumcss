@@ -310,7 +310,7 @@ export function officialApiFamilyCases(): readonly OfficialApiFamilyCase[] {
 		{
 			adapter: CodemodAdapterId.Panda,
 			name: "sva slot recipe",
-			expectation: "residual",
+			expectation: "converted",
 			file: "styles.ts",
 			source:
 				'import { sva } from "styled-system/css";\nexport const card = sva({ slots: ["root", "label"], base: { root: { color: "red" } } });',
@@ -318,7 +318,7 @@ export function officialApiFamilyCases(): readonly OfficialApiFamilyCase[] {
 		{
 			adapter: CodemodAdapterId.Panda,
 			name: "generated styled component",
-			expectation: "residual",
+			expectation: "converted",
 			file: "styles.ts",
 			source:
 				'import { styled } from "styled-system/jsx";\nexport const Card = styled.div({ base: { color: "red" } });',
@@ -733,10 +733,10 @@ export function officialApiFamilyCases(): readonly OfficialApiFamilyCase[] {
 		{
 			adapter: CodemodAdapterId.Compiled,
 			name: "ClassNames composition",
-			expectation: "residual",
+			expectation: "converted",
 			file: "Card.tsx",
 			source:
-				'import { ClassNames } from "@compiled/react";\nexport const Card = () => <ClassNames>{null}</ClassNames>;',
+				'import { css, ClassNames } from "@compiled/react";\nexport const Card = () => <ClassNames>{({ css }) => <button className={css({ color: "red" })} />}</ClassNames>;',
 		},
 		{
 			adapter: CodemodAdapterId.Compiled,
@@ -1045,7 +1045,14 @@ export function officialApiFamilyCases(): readonly OfficialApiFamilyCase[] {
 			name: "global pseudo and descendant selectors",
 			expectation: "residual",
 			file: "Card.module.css",
-			source: ":global(.footer) { color: gray; }\n.card:hover { color: red; }",
+			source: ":global(.footer) { color: gray; }",
+		},
+		{
+			adapter: CodemodAdapterId.CssModules,
+			name: "local pseudo selector",
+			expectation: "converted",
+			file: "Card.module.css",
+			source: ".card:hover { color: red; }",
 		},
 		{
 			adapter: CodemodAdapterId.Sass,

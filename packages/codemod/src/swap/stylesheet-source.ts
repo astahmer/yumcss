@@ -393,6 +393,28 @@ function condition(prelude: string): StyleCondition | undefined {
 	return { kind, name: match[2], value: match[2], raw: prelude };
 }
 
+function localClassSelector(
+	selector: string,
+): { readonly name: string; readonly conditions: readonly StyleCondition[] } | undefined {
+	const match = /^\.([A-Za-z_$][\w$-]*)(?:(:{1,2}[A-Za-z-]+(?:\([^()]*\))?))?$/u.exec(selector);
+	if (match?.[1] === undefined) return undefined;
+	const pseudo = match[2];
+	return {
+		name: match[1],
+		conditions:
+			pseudo === undefined
+				? []
+				: [
+						{
+							kind: SemanticConditionKindTag.Pseudo,
+							name: pseudo,
+							value: pseudo,
+							raw: pseudo,
+						},
+					],
+	};
+}
+
 function styleRule(
 	node: StylesheetSourceNode,
 	context: AdapterParseContext,
@@ -446,15 +468,16 @@ function styleRule(
 		}
 	}
 	const selector = node.prelude;
-	const simpleLocalClass = /^\.[A-Za-z_$][\w$-]*$/u.test(selector);
+	const localClass = localClassSelector(selector);
+	const simpleLocalClass = localClass !== undefined;
 	const classLikeSelector =
 		simpleLocalClass || selector.startsWith(".") || selector.startsWith("&");
 	return {
 		rule: {
 			kind: classLikeSelector ? StyleRuleKindTag.Style : StyleRuleKindTag.Global,
 			selector,
-			name: /^\.([A-Za-z_$][\w$-]*)$/u.exec(selector)?.[1],
-			conditions: inherited,
+			name: localClass?.name,
+			conditions: [...inherited, ...(localClass?.conditions ?? [])],
 			declarations: parsed.declarations,
 			children,
 			order: node.start,

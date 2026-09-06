@@ -9,6 +9,7 @@ import type {
 import type { StyleProgram, StyleValue } from "../semantic-ir.ts";
 import {
 	CodemodAdapterId,
+	CodemodCallPatternKindTag,
 	StyleHostRepresentationKind,
 	StyleNamedRuleStrategy,
 } from "../identifiers.ts";
@@ -19,6 +20,9 @@ import type { PandaTheme } from "./panda/theme.ts";
 import {
 	preserveUnsupportedRecipeFields,
 	recipeSourceObjectOptions,
+	captureSlotRecipeSlots,
+	preserveUnsupportedSlotRecipeFields,
+	slotRecipeSourceObjectOptions,
 } from "./recipe-source.ts";
 
 const pandaJsxStyleProps = (context: import("../adapter-contract.ts").AdapterParseContext) =>
@@ -204,20 +208,14 @@ export function createPandaAdapter(options: PandaAdapterOptions = {}) {
 			{
 				name: "sva",
 				regex: /\bsva\s*\(\s*\{/g,
-				form: CodemodCallPatternFormTag.Residual,
-				residual: {
-					kind: StyleProgramResidualKindTag.Composition,
-					hint: "Panda sva slot recipes require slot-aware target lowering",
-				},
+				sourceObjectOptions: slotRecipeSourceObjectOptions,
+				transform: (program, context) =>
+					preserveUnsupportedSlotRecipeFields(captureSlotRecipeSlots(program, context.source)),
 			},
 			{
-				name: "generated-styled",
+				name: "styled",
 				regex: /\bstyled\.[A-Za-z_$][\w$]*\s*\(/g,
-				form: CodemodCallPatternFormTag.Residual,
-				residual: {
-					kind: "component",
-					hint: "Panda generated styled components require host/component lowering",
-				},
+				kind: CodemodCallPatternKindTag.Styled,
 			},
 		],
 		packages: {
