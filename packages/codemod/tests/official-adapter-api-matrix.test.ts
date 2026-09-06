@@ -1,6 +1,7 @@
 import { describe, expect, test } from "vitest";
 import {
 	BUILTIN_CODEMOD_ADAPTER_IDS,
+	BuiltinHostFramework,
 	CodemodAdapterId,
 	runAdapterMigration,
 	type AdapterMigrationResult,
@@ -14,7 +15,11 @@ function migrate(api: OfficialApiCase): AdapterMigrationResult {
 		to: CodemodAdapterId.Pandwind,
 		file: api.file,
 		mode: "safe",
-		semantic: { source: { framework: api.file.endsWith("x") ? "react" : undefined } },
+		semantic: {
+			source: {
+				framework: api.file.endsWith("x") ? BuiltinHostFramework.React : undefined,
+			},
+		},
 	});
 }
 
@@ -52,6 +57,19 @@ describe("official primary API forms", () => {
 
 			export const styles = { "card": css.class({ padding: 8, color: "red" }) };",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "named-map",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "target-native",
@@ -75,6 +93,19 @@ describe("official primary API forms", () => {
 			export const styles = { "card": css.class({ padding: "1rem", color: "red" }) };
 			export default styles;",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "named-map",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "target-native",
@@ -98,6 +129,19 @@ describe("official primary API forms", () => {
 
 			export const card = css.class({ color: "red" });",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "static",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "static",
@@ -121,6 +165,19 @@ describe("official primary API forms", () => {
 			const css = createCss();
 			export const App = () => <Box className={css.class({ padding: "var(--chakra-spacing-4)", backgroundColor: "var(--chakra-colors-red-200)" })}/>;",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "static",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "static",
@@ -144,6 +201,19 @@ describe("official primary API forms", () => {
 
 			export const card = css.class({ padding: 8, color: "red" });",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "static",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "static",
@@ -167,6 +237,19 @@ describe("official primary API forms", () => {
 			export const styles = { "card": css.class({ padding: "1rem", color: "red" }) };
 			export default styles;",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "named-map",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "target-native",
@@ -190,6 +273,19 @@ describe("official primary API forms", () => {
 
 			export const card = css.class({ padding: "1rem", color: "red" });",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "static",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "static",
@@ -214,6 +310,19 @@ describe("official primary API forms", () => {
 			const renderer = createRenderer();
 			export const card = css.class({ color: "red" });",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "static",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "static",
@@ -237,6 +346,19 @@ describe("official primary API forms", () => {
 
 			export const card = css.class({ padding: "1rem", color: "red" });",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "static",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "static",
@@ -260,6 +382,19 @@ describe("official primary API forms", () => {
 
 			export const useStyles = { "card": css.class({ color: "red" }) };",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "named-map",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "target-native",
@@ -283,6 +418,19 @@ describe("official primary API forms", () => {
 			export const styles = { "card": css.class({ padding: "1rem", color: "red" }) };
 			export default styles;",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "named-map",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "target-native",
@@ -306,6 +454,19 @@ describe("official primary API forms", () => {
 
 			export const card = css.class({ padding: "1rem", color: "red" });",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "static",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "static",
@@ -329,6 +490,19 @@ describe("official primary API forms", () => {
 			const css = createCss();
 			export const App = () => <Box className={css.class({ color: "blue.6", marginLeft: "var(--mantine-spacing-auto)", marginRight: "var(--mantine-spacing-auto)", maxWidth: 400 })}/>;",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "static",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "static",
@@ -352,6 +526,19 @@ describe("official primary API forms", () => {
 			const css = createCss();
 			export const App = () => <Box className={css.class({ padding: "16px", color: "red" })}/>;",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "static",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "static",
@@ -375,6 +562,19 @@ describe("official primary API forms", () => {
 
 			export const card = css.class({ padding: "1rem", color: "red" });",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "static",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "static",
@@ -398,6 +598,19 @@ describe("official primary API forms", () => {
 
 			export const card = css.class({ color: "red.300", "&:hover": { color: "blue.300" } });",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "static",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "static",
@@ -420,6 +633,8 @@ describe("official primary API forms", () => {
 			const css = createCss();
 			export const card = css.class({ color: "red", padding: "1rem" });",
 			    "converted": 0,
+			    "generatedFiles": [],
+			    "loweringPlans": [],
 			    "outcomes": [],
 			    "residuals": [],
 			    "skipped": 0,
@@ -431,6 +646,8 @@ describe("official primary API forms", () => {
 			const css = createCss();
 			export const card = css.vars({ color: "var(--card-color)" });",
 			    "converted": 0,
+			    "generatedFiles": [],
+			    "loweringPlans": [],
 			    "outcomes": [],
 			    "residuals": [],
 			    "skipped": 0,
@@ -443,6 +660,19 @@ describe("official primary API forms", () => {
 
 			export const styles = { "card": css.class({ padding: 8, color: "red" }) };",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "named-map",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "target-native",
@@ -466,6 +696,19 @@ describe("official primary API forms", () => {
 			export const styles = { "card": css.class({ padding: "1rem", color: "red" }) };
 			export default styles;",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "named-map",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "target-native",
@@ -492,6 +735,19 @@ describe("official primary API forms", () => {
 
 			export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "red" }), stableClass: "pw-t6bw3o", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "static",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "static",
@@ -515,6 +771,19 @@ describe("official primary API forms", () => {
 
 			export const card = css.class({ padding: "1rem", color: "red" });",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "static",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "static",
@@ -540,6 +809,19 @@ describe("official primary API forms", () => {
 
 			export const styles = css.group({ card: { color: "red" } });",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "named-map",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "target-native",
@@ -566,6 +848,19 @@ describe("official primary API forms", () => {
 
 			export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "red" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "static",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "static",
@@ -589,6 +884,19 @@ describe("official primary API forms", () => {
 
 			export const styles = { "card": css.class({ padding: "8px", color: "red" }) };",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "named-map",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "target-native",
@@ -611,6 +919,19 @@ describe("official primary API forms", () => {
 			const css = createCss();
 			export const App = () => <div className={css.class({ gap: "1rem", alignItems: "center", display: "flex" })}/>;",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "static",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "static",
@@ -635,6 +956,19 @@ describe("official primary API forms", () => {
 			export const Card = css.class({ padding: "$4", color: "red" });
 			export const App = () => <View className={Card} />;",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "static",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "static",
@@ -658,6 +992,19 @@ describe("official primary API forms", () => {
 
 			export const card = css.class({ cardGap: "1rem", color: "red" });",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "static",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "static",
@@ -681,6 +1028,19 @@ describe("official primary API forms", () => {
 
 			export const card = css.class({ padding: 8, color: "red" });",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "static",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "static",
@@ -703,6 +1063,19 @@ describe("official primary API forms", () => {
 			const css = createCss();
 			export const App = () => <div className={css.class({ gap: "1rem", alignItems: "center", display: "flex" })}/>;",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "static",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "static",
@@ -726,6 +1099,19 @@ describe("official primary API forms", () => {
 
 			export const card = css.class({ padding: 8, color: "red" });",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "static",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "static",
@@ -749,6 +1135,19 @@ describe("official primary API forms", () => {
 
 			export const Card = css.class({ padding: "1rem", color: "red" });",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "static",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "static",

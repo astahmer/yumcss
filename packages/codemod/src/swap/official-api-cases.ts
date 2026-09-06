@@ -421,11 +421,10 @@ export function officialApiFamilyCases(): readonly OfficialApiFamilyCase[] {
 		},
 		{
 			adapter: CodemodAdapterId.Emotion,
-			name: "injectGlobal object",
+			name: "injectGlobal tagged template",
 			expectation: "converted",
 			file: "styles.ts",
-			source:
-				'import { injectGlobal } from "@emotion/css";\ninjectGlobal({ body: { margin: 0 } });',
+			source: 'import { injectGlobal } from "@emotion/css";\ninjectGlobal`body { margin: 0; }`;',
 		},
 		{
 			adapter: CodemodAdapterId.Emotion,
@@ -469,11 +468,11 @@ export function officialApiFamilyCases(): readonly OfficialApiFamilyCase[] {
 		},
 		{
 			adapter: CodemodAdapterId.StyledComponents,
-			name: "createGlobalStyle object",
+			name: "createGlobalStyle tagged template",
 			expectation: "converted",
 			file: "styles.ts",
 			source:
-				'import { createGlobalStyle } from "styled-components";\nexport const Global = createGlobalStyle({ body: { margin: 0 } });',
+				'import { createGlobalStyle } from "styled-components";\nexport const Global = createGlobalStyle`body { margin: 0; }`;',
 		},
 		{
 			adapter: CodemodAdapterId.StyledComponents,
@@ -675,7 +674,8 @@ export function officialApiFamilyCases(): readonly OfficialApiFamilyCase[] {
 			name: "setup context",
 			expectation: "context",
 			file: "setup.ts",
-			source: 'import { setup } from "goober";\nsetup({ prefix: "pw-" });',
+			source:
+				'import React from "react";\nimport { setup } from "goober";\nsetup(React.createElement);',
 		},
 		{
 			adapter: CodemodAdapterId.Aphrodite,
@@ -751,7 +751,7 @@ export function officialApiFamilyCases(): readonly OfficialApiFamilyCase[] {
 			name: "recipe usage",
 			expectation: "residual",
 			source:
-				'import { useRecipe } from "@chakra-ui/react";\nexport const button = useRecipe(buttonRecipe);',
+				'import { defineRecipe, useRecipe } from "@chakra-ui/react";\nconst buttonRecipe = defineRecipe({ base: { color: "red" } });\nexport const button = useRecipe({ recipe: buttonRecipe });',
 		},
 		{
 			adapter: CodemodAdapterId.ChakraUi,

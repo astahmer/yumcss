@@ -1,6 +1,7 @@
 import { describe, expect, test } from "vitest";
 import {
 	BUILTIN_CODEMOD_ADAPTER_IDS,
+	BuiltinHostFramework,
 	CodemodAdapterId,
 	createBuiltinCodemodCatalog,
 	createPandaAdapter,
@@ -49,7 +50,7 @@ async function migrate(api: OfficialApiFamilyCase): Promise<AdapterMigrationResu
 		to: CodemodAdapterId.Pandwind,
 		file: api.file ?? "App.tsx",
 		mode: "safe",
-		semantic: { source: { framework: "react" } },
+		semantic: { source: { framework: BuiltinHostFramework.React } },
 	});
 }
 
@@ -161,6 +162,19 @@ describe("official adapter API families", () => {
 
 			export const styles = css.vars({ card: [{ color: "red" }, { padding: 8 }] });",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "named-map",
+			          "target-native",
+			          "residual",
+			        ],
+			        "representation": "target-native",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "host-runtime",
@@ -185,6 +199,19 @@ describe("official adapter API families", () => {
 
 			export const styles = { "fonts": (css.sheet.registerSemanticRules([{ kind: "font-face", declarations: [{ property: "fontFamily", value: "Inter" }, { property: "src", value: "url(inter.woff2)" } ] }]), css.group({  })) };",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "named-map",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "target-native",
@@ -211,6 +238,29 @@ describe("official adapter API families", () => {
 			export const styles = { "card": css.class({ color: "white" }), "pulse": (() => { const name = "pw-kf-animation"; css.sheet.registerSemanticRules([{ kind: "keyframes", name, children: [{ kind: "style", selector: "from", declarations: [{ property: "opacity", value: "0" }] }, { kind: "style", selector: "to", declarations: [{ property: "opacity", value: "1" }] }] }]); return name; })() };
 			export default styles;",
 			    "converted": 2,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "named-map",
+			        "residuals": [],
+			      },
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "named-map",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "target-native",
@@ -245,6 +295,29 @@ describe("official adapter API families", () => {
 			export const styles = { "card": css.class({ color: "red" }), "title": css.class({ fontWeight: "600" }) };
 			export default styles;",
 			    "converted": 2,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "named-map",
+			        "residuals": [],
+			      },
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "named-map",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "target-native",
@@ -276,6 +349,29 @@ describe("official adapter API families", () => {
 			:root { --brand: red; }
 			[data-theme="dark"] .card { color: white; }",
 			    "converted": 0,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "static",
+			        "residuals": [],
+			      },
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "static",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "residual",
@@ -307,6 +403,8 @@ describe("official adapter API families", () => {
 			export const avatar = circle({ size: "8" });
 			export const button = cva({ base: { padding: "2" } });",
 			    "converted": 0,
+			    "generatedFiles": [],
+			    "loweringPlans": [],
 			    "outcomes": [],
 			    "residuals": [],
 			    "skipped": 0,
@@ -319,6 +417,19 @@ describe("official adapter API families", () => {
 
 			export const card = css.class({ gap: "4", display: "flex" });",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "static",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "static",
@@ -341,6 +452,8 @@ describe("official adapter API families", () => {
 			const config = defineConfig({ globalCss: { "html, body": { margin: 0 } } });
 			export const system = createSystem(defaultConfig, config);",
 			    "converted": 0,
+			    "generatedFiles": [],
+			    "loweringPlans": [],
 			    "outcomes": [],
 			    "residuals": [],
 			    "skipped": 0,
@@ -348,10 +461,23 @@ describe("official adapter API families", () => {
 			  },
 			  "chakra-ui/recipe usage": {
 			    "changed": true,
-			    "code": "import { useRecipe } from "@chakra-ui/react";
-			export const button = // pandwind:migrate-skip (route: chakra-ui -> pandwind | parse-residual: composition | available: named-map, residual)
-			useRecipe(buttonRecipe);",
+			    "code": "import { defineRecipe, useRecipe } from "@chakra-ui/react";
+			const buttonRecipe = // pandwind:migrate-skip (route: chakra-ui -> pandwind | parse-residual: composition | available: named-map, residual)
+			defineRecipe({ base: { color: "red" } });
+			export const button = useRecipe({ recipe: buttonRecipe });",
 			    "converted": 0,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "residual",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "residual",
@@ -360,7 +486,7 @@ describe("official adapter API families", () => {
 			    ],
 			    "residuals": [
 			      {
-			        "hint": "Chakra recipe usage requires explicit variant/component lowering",
+			        "hint": "Chakra recipes and attached factory styles require explicit composition lowering",
 			        "kind": "composition",
 			        "preserved": undefined,
 			      },
@@ -373,6 +499,8 @@ describe("official adapter API families", () => {
 			    "code": "import { defaultSystem } from "@chakra-ui/react";
 			export const color = defaultSystem.token("colors.red.200");",
 			    "converted": 0,
+			    "generatedFiles": [],
+			    "loweringPlans": [],
 			    "outcomes": [],
 			    "residuals": [],
 			    "skipped": 0,
@@ -385,6 +513,19 @@ describe("official adapter API families", () => {
 
 			export const Card = () => <button className={css.class({ color: "red" })}/>;",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "static",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "static",
@@ -407,6 +548,18 @@ describe("official adapter API families", () => {
 			export const Card = () => // pandwind:migrate-skip (route: compiled -> pandwind | parse-residual: component | available: named-map, residual)
 			<ClassNames>{null}</ClassNames>;",
 			    "converted": 0,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "residual",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "residual",
@@ -430,6 +583,19 @@ describe("official adapter API families", () => {
 
 			export const colors = { "red": css.class({ color: "red" }) };",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "named-map",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "target-native",
@@ -454,6 +620,19 @@ describe("official adapter API families", () => {
 
 			export const pulse = (() => { const name = "pw-kf-pulse"; css.sheet.registerSemanticRules([{ kind: "keyframes", name, children: [{ kind: "style", selector: "from", declarations: [{ property: "opacity", value: 0 }] }, { kind: "style", selector: "to", declarations: [{ property: "opacity", value: 1 }] }] }]); return name; })();",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "named-map",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "target-native",
@@ -480,6 +659,19 @@ describe("official adapter API families", () => {
 
 			export const Card = __pandwindSlot({ defaultComponent: "button", style: css.class({ color: "red" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "static",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "static",
@@ -502,6 +694,28 @@ describe("official adapter API families", () => {
 			.card { color: red; }
 			.primary { composes: card; font-weight: 600; }",
 			    "converted": 0,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "named-map",
+			        "residuals": [],
+			      },
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "residual",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "residual",
@@ -528,6 +742,29 @@ describe("official adapter API families", () => {
 			:global(.footer) { color: gray; }
 			.card:hover { color: red; }",
 			    "converted": 0,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "static",
+			        "residuals": [],
+			      },
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "static",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "residual",
@@ -560,6 +797,29 @@ describe("official adapter API families", () => {
 			export const styles = { "card": css.class({ padding: "1rem", color: "red" }), "title": css.class({ fontWeight: "600" }) };
 			export default styles;",
 			    "converted": 2,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "named-map",
+			        "residuals": [],
+			      },
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "named-map",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "target-native",
@@ -593,6 +853,19 @@ describe("official adapter API families", () => {
 
 			export const App = () => (css.sheet.registerSemanticRules([{ kind: "global", selector: "body", declarations: [{ property: "margin", value: 0 }], children: [] }]), null);",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "static",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "static",
@@ -616,6 +889,19 @@ describe("official adapter API families", () => {
 
 			export const Card = () => <button className={css.class({ color: "red" })}/>;",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "static",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "static",
@@ -632,14 +918,26 @@ describe("official adapter API families", () => {
 			      },
 			    ],
 			  },
-			  "emotion/injectGlobal object": {
+			  "emotion/injectGlobal tagged template": {
 			    "changed": true,
-			    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-			import { pandwindPreset } from "pandwind/preset";
-			const css = createRuntimeCss(pandwindPreset);
+			    "code": "import { createCss } from "pandwind/css";
+			const css = createCss();
 
-			() => (css.sheet.registerSemanticRules([{ kind: "global", selector: "body", declarations: [{ property: "margin", value: 0 }], children: [] }]), null);",
+			css.class({ "& body": { margin: "0" } });",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "static",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "static",
@@ -664,6 +962,19 @@ describe("official adapter API families", () => {
 
 			export const pulse = (() => { const name = "pw-kf-pulse"; css.sheet.registerSemanticRules([{ kind: "keyframes", name, children: [{ kind: "style", selector: "from", declarations: [{ property: "opacity", value: 0 }] }, { kind: "style", selector: "to", declarations: [{ property: "opacity", value: 1 }] }] }]); return name; })();",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "named-map",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "target-native",
@@ -690,6 +1001,19 @@ describe("official adapter API families", () => {
 
 			export const Card = __pandwindSlot({ defaultComponent: "button", style: css.class({ color: "red" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "static",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "static",
@@ -713,6 +1037,19 @@ describe("official adapter API families", () => {
 
 			export const card = css.class({ padding: "1rem", color: "red" });",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "static",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "static",
@@ -735,6 +1072,18 @@ describe("official adapter API families", () => {
 			export const Card = // pandwind:migrate-skip (route: fela -> pandwind | parse-residual: component | available: named-map, residual)
 			createComponent(() => ({ color: "red" }));",
 			    "converted": 0,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "residual",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "residual",
@@ -758,6 +1107,18 @@ describe("official adapter API families", () => {
 			export const renderer = // pandwind:migrate-skip (route: fela -> pandwind | parse-residual: configuration | available: named-map, residual)
 			createRenderer({ plugins: [plugin] });",
 			    "converted": 0,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "residual",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "residual",
@@ -781,6 +1142,19 @@ describe("official adapter API families", () => {
 
 			export const card = css.class({ padding: "1rem", color: "red" });",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "static",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "static",
@@ -799,10 +1173,23 @@ describe("official adapter API families", () => {
 			  },
 			  "goober/setup context": {
 			    "changed": true,
-			    "code": "import { setup } from "goober";
+			    "code": "import React from "react";
+			import { setup } from "goober";
 			// pandwind:migrate-skip (route: goober -> pandwind | parse-residual: configuration | available: named-map, residual)
-			setup({ prefix: "pw-" });",
+			setup(React.createElement);",
 			    "converted": 0,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "residual",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "residual",
@@ -829,6 +1216,19 @@ describe("official adapter API families", () => {
 
 			export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "red" }), stableClass: "pw-1sqdko1", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "static",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "static",
@@ -852,6 +1252,19 @@ describe("official adapter API families", () => {
 
 			export const rule = css.class({ color: "red" });",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "static",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "static",
@@ -875,6 +1288,19 @@ describe("official adapter API families", () => {
 
 			export const sheet = { "card": css.class({ color: "red" }) };",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "named-map",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "target-native",
@@ -900,6 +1326,19 @@ describe("official adapter API families", () => {
 
 			element!.classList.add(sheet.card);",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "named-map",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "target-native",
@@ -921,6 +1360,18 @@ describe("official adapter API families", () => {
 			    "code": "// pandwind:migrate-skip (lowering-residual: parse)
 			.card { .shadow(); color: red; }",
 			    "converted": 0,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "residual",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "residual",
@@ -944,6 +1395,29 @@ describe("official adapter API families", () => {
 			export const styles = { "card": css.class({ color: "red" }), "title": css.class({ fontWeight: "600" }) };
 			export default styles;",
 			    "converted": 2,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "named-map",
+			        "residuals": [],
+			      },
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "named-map",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "target-native",
@@ -975,6 +1449,18 @@ describe("official adapter API families", () => {
 			@brand: red;
 			.card { color: @brand; padding: 1rem; &__title { font-weight: 600; } }",
 			    "converted": 0,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "residual",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "residual",
@@ -1003,6 +1489,19 @@ describe("official adapter API families", () => {
 
 			export const Card = () => <button css={css.class({ color: "red" })} />;",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "static",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "static",
@@ -1029,6 +1528,19 @@ describe("official adapter API families", () => {
 
 			export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "red" }), stableClass: "pw-1sqdko1", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "static",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "static",
@@ -1052,6 +1564,27 @@ describe("official adapter API families", () => {
 			export const App = () => // pandwind:migrate-skip (route: mantine -> pandwind | parse-residual: runtime-context | available: named-map, residual)
 			<MantineProvider theme={{ colors: { brand: ["red"] } }}><div /></MantineProvider>;",
 			    "converted": 0,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "residual",
+			        "residuals": [],
+			      },
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "residual",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "residual",
@@ -1083,6 +1616,18 @@ describe("official adapter API families", () => {
 			export const App = () => <Button // pandwind:migrate-skip (route: mantine -> pandwind | parse-residual: host-framework | available: named-map, residual)
 			classNames={{ root: "button-root" }} />;",
 			    "converted": 0,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "residual",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "residual",
@@ -1105,6 +1650,18 @@ describe("official adapter API families", () => {
 			export const App = () => <Button // pandwind:migrate-skip (route: mantine -> pandwind | parse-residual: host-framework | available: named-map, residual)
 			styles={{ root: { color: "red" } }} />;",
 			    "converted": 0,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "residual",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "residual",
@@ -1128,6 +1685,27 @@ describe("official adapter API families", () => {
 			export const App = () => // pandwind:migrate-skip (route: mui -> pandwind | parse-residual: runtime-context | available: named-map, residual)
 			<ThemeProvider theme={{ palette: { primary: { main: "red" } } }}><div /></ThemeProvider>;",
 			    "converted": 0,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "residual",
+			        "residuals": [],
+			      },
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "residual",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "residual",
@@ -1160,6 +1738,19 @@ describe("official adapter API families", () => {
 			const css = createCss();
 			export const Card = css.class({ padding: 8, color: "red" });",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "static",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "static",
@@ -1182,6 +1773,18 @@ describe("official adapter API families", () => {
 			export const Card = // pandwind:migrate-skip (route: mui -> pandwind | parse-residual: runtime-context | available: named-map, residual)
 			styled("div")(({ theme }) => ({ color: theme.palette.primary.main }));",
 			    "converted": 0,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "residual",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "residual",
@@ -1205,6 +1808,19 @@ describe("official adapter API families", () => {
 
 			export const Card = () => <button className={css.class({ color: "red" })}/>;",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "static",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "static",
@@ -1231,6 +1847,19 @@ describe("official adapter API families", () => {
 
 			export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "red" }), stableClass: "pw-1sqdko1", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "static",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "static",
@@ -1253,6 +1882,18 @@ describe("official adapter API families", () => {
 			export const button = // pandwind:migrate-skip (route: panda -> pandwind | parse-residual: composition | available: named-map, residual)
 			cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });",
 			    "converted": 0,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "residual",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "residual",
@@ -1274,6 +1915,8 @@ describe("official adapter API families", () => {
 			    "code": "import { defineRecipe } from "@pandacss/dev";
 			export const button = defineRecipe({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });",
 			    "converted": 0,
+			    "generatedFiles": [],
+			    "loweringPlans": [],
 			    "outcomes": [],
 			    "residuals": [],
 			    "skipped": 0,
@@ -1284,6 +1927,8 @@ describe("official adapter API families", () => {
 			    "code": "import { defineSlotRecipe } from "@pandacss/dev";
 			export const card = defineSlotRecipe({ slots: ["root"], base: { root: { color: "red" } } });",
 			    "converted": 0,
+			    "generatedFiles": [],
+			    "loweringPlans": [],
 			    "outcomes": [],
 			    "residuals": [],
 			    "skipped": 0,
@@ -1296,6 +1941,19 @@ describe("official adapter API families", () => {
 
 			export const Button = () => <button className={css.class({ color: "red" })} />;",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "static",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "static",
@@ -1318,6 +1976,18 @@ describe("official adapter API families", () => {
 			export const Card = // pandwind:migrate-skip (route: panda -> pandwind | parse-residual: component | available: named-map, residual)
 			styled.div({ base: { color: "red" } });",
 			    "converted": 0,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "residual",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "residual",
@@ -1340,6 +2010,8 @@ describe("official adapter API families", () => {
 			const globalCss = defineGlobalStyles({ "html, body": { margin: 0 } });
 			export default defineConfig({ globalCss });",
 			    "converted": 0,
+			    "generatedFiles": [],
+			    "loweringPlans": [],
 			    "outcomes": [],
 			    "residuals": [],
 			    "skipped": 0,
@@ -1351,6 +2023,18 @@ describe("official adapter API families", () => {
 			export const card = // pandwind:migrate-skip (route: panda -> pandwind | parse-residual: composition | available: named-map, residual)
 			sva({ slots: ["root", "label"], base: { root: { color: "red" } } });",
 			    "converted": 0,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "residual",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "residual",
@@ -1372,6 +2056,8 @@ describe("official adapter API families", () => {
 			    "code": "import { token } from "styled-system/tokens";
 			export const color = token("colors.red.400");",
 			    "converted": 0,
+			    "generatedFiles": [],
+			    "loweringPlans": [],
 			    "outcomes": [],
 			    "residuals": [],
 			    "skipped": 0,
@@ -1383,6 +2069,8 @@ describe("official adapter API families", () => {
 			const css = createCss();
 			export const styles = css.group({ card: { color: "red" }, muted: { opacity: 0.5 } });",
 			    "converted": 0,
+			    "generatedFiles": [],
+			    "loweringPlans": [],
 			    "outcomes": [],
 			    "residuals": [],
 			    "skipped": 0,
@@ -1394,6 +2082,18 @@ describe("official adapter API families", () => {
 			export const style = // pandwind:migrate-skip (route: react-native -> pandwind | parse-residual: framework-semantics | available: named-map, residual)
 			Platform.select({ ios: { padding: 8 }, android: { padding: 4 } });",
 			    "converted": 0,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "residual",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "residual",
@@ -1417,6 +2117,19 @@ describe("official adapter API families", () => {
 
 			export const styles = { "card": css.class({ padding: 8, backgroundColor: "red" }) };",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "named-map",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "target-native",
@@ -1441,6 +2154,19 @@ describe("official adapter API families", () => {
 			const css = createRuntimeCss(pandwindPreset);
 			export const App = () => <View className={css.vars({ style: [{ padding: 8 }, { backgroundColor: "red" }] }).class} style={css.vars({ style: [{ padding: 8 }, { backgroundColor: "red" }] }).style}/>;",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "named-map",
+			          "target-native",
+			          "residual",
+			        ],
+			        "representation": "target-native",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "host-runtime",
@@ -1463,6 +2189,18 @@ describe("official adapter API families", () => {
 			@mixin flex($gap) { display: flex; gap: $gap; }
 			.card { @include flex(1rem); }",
 			    "converted": 0,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "residual",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "residual",
@@ -1490,6 +2228,19 @@ describe("official adapter API families", () => {
 			@use "sass:math";
 			.card { padding: 1rem; }",
 			    "converted": 0,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "named-map",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "residual",
@@ -1512,6 +2263,18 @@ describe("official adapter API families", () => {
 			$brand: red;
 			.card { color: $brand; padding: 1rem; &__title { font-weight: 600; } }",
 			    "converted": 0,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "residual",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "residual",
@@ -1542,6 +2305,18 @@ describe("official adapter API families", () => {
 
 			export const Card = (() => { const staticClass = ""; const component = (props) => {  const dynamic = css.vars({ color: ((props) => props.color)(props) }); const Component = props.as ?? "button"; const { as: _as, ...rest } = props; const attrs = {}; return <Component {...attrs} {...rest} className={cx(staticClass, dynamic.class, "pw-1fn70s4", props.className)} style={{ ...props.style, ...dynamic.style }} />; }; component.__pandwindClassName = "pw-1fn70s4"; return component; })();",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "residual",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "host-runtime",
@@ -1568,6 +2343,19 @@ describe("official adapter API families", () => {
 
 			export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "red" }), stableClass: "pw-1sqdko1", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "static",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "static",
@@ -1589,6 +2377,8 @@ describe("official adapter API families", () => {
 			    "code": "import { createStitches } from "@stitches/react";
 			export const { createTheme } = createStitches({ theme: { colors: { brand: "red" } } });",
 			    "converted": 0,
+			    "generatedFiles": [],
+			    "loweringPlans": [],
 			    "outcomes": [],
 			    "residuals": [],
 			    "skipped": 0,
@@ -1602,6 +2392,19 @@ describe("official adapter API families", () => {
 
 			export const reset = () => (css.sheet.registerSemanticRules([{ kind: "global", selector: "body", declarations: [{ property: "margin", value: 0 }], children: [] }]), null);",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "static",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "static",
@@ -1626,6 +2429,19 @@ describe("official adapter API families", () => {
 
 			export const pulse = (() => { const name = "pw-kf-pulse"; css.sheet.registerSemanticRules([{ kind: "keyframes", name, children: [{ kind: "style", selector: "from", declarations: [{ property: "opacity", value: 0 }] }, { kind: "style", selector: "to", declarations: [{ property: "opacity", value: 1 }] }] }]); return name; })();",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "named-map",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "target-native",
@@ -1652,6 +2468,19 @@ describe("official adapter API families", () => {
 
 			export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "red" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "static",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "static",
@@ -1676,6 +2505,19 @@ describe("official adapter API families", () => {
 
 			export const button = createRecipe(css, { base: { compoundVariants: [{ size: "sm", css: { color: "red" } }] }, variants: { "size": { "sm": { padding: 4 } } } });",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "named-map",
+			          "target-native",
+			          "residual",
+			        ],
+			        "representation": "target-native",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "host-runtime",
@@ -1701,6 +2543,19 @@ describe("official adapter API families", () => {
 
 			export const styles = css.group({ card: { color: "red" }, muted: { opacity: 0.5 } });",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "named-map",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "target-native",
@@ -1727,6 +2582,19 @@ describe("official adapter API families", () => {
 			const styles = css.group({ card: { color: "red" } });
 			export const Card = () => <div className={cx(styles.card)} />;",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "named-map",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "target-native",
@@ -1750,6 +2618,27 @@ describe("official adapter API families", () => {
 			export const App = () => // pandwind:migrate-skip (route: styled-components -> pandwind | parse-residual: runtime-context | available: named-map, residual)
 			<ThemeProvider theme={{ colors: { brand: "red" } }}><div /></ThemeProvider>;",
 			    "converted": 0,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "residual",
+			        "residuals": [],
+			      },
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "residual",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "residual",
@@ -1775,14 +2664,26 @@ describe("official adapter API families", () => {
 			    "skipped": 2,
 			    "validations": [],
 			  },
-			  "styled-components/createGlobalStyle object": {
+			  "styled-components/createGlobalStyle tagged template": {
 			    "changed": true,
-			    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-			import { pandwindPreset } from "pandwind/preset";
-			const css = createRuntimeCss(pandwindPreset);
+			    "code": "import { createCss } from "pandwind/css";
+			const css = createCss();
 
-			export const Global = () => (css.sheet.registerSemanticRules([{ kind: "global", selector: "body", declarations: [{ property: "margin", value: 0 }], children: [] }]), null);",
+			export const Global = css.class({ "& body": { margin: "0" } });",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "static",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "static",
@@ -1807,6 +2708,19 @@ describe("official adapter API families", () => {
 
 			export const pulse = (() => { const name = "pw-kf-pulse"; css.sheet.registerSemanticRules([{ kind: "keyframes", name, children: [{ kind: "style", selector: "from", declarations: [{ property: "opacity", value: "0" }] }, { kind: "style", selector: "to", declarations: [{ property: "opacity", value: "1" }] }] }]); return name; })();",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "named-map",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "target-native",
@@ -1831,6 +2745,19 @@ describe("official adapter API families", () => {
 			const Card = css.class({ color: "red" });
 			export const App = () => <div as="a" href="/docs" className={Card} />;",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "static",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "static",
@@ -1858,6 +2785,19 @@ describe("official adapter API families", () => {
 			const Link = (props: { href: string }) => <a {...props} />;
 			export const Card = __pandwindSlot({ defaultComponent: (Link), style: css.class({ color: "red" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "static",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "static",
@@ -1884,6 +2824,19 @@ describe("official adapter API families", () => {
 
 			export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "red" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "static",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "static",
@@ -1909,6 +2862,19 @@ describe("official adapter API families", () => {
 
 			export const Card = (() => { const staticClass = ""; const component = (props) => {  const dynamic = css.vars({ color: (({ theme }) => theme.colors.brand)(props) }); const Component = props.as ?? "div"; const { as: _as, ...rest } = props; const attrs = {}; return <Component {...attrs} {...rest} className={cx(staticClass, dynamic.class, "pw-1fn70s4", props.className)} style={{ ...props.style, ...dynamic.style }} />; }; component.__pandwindClassName = "pw-1fn70s4"; return component; })();",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "named-map",
+			          "residual",
+			          "target-native",
+			        ],
+			        "representation": "target-native",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "host-runtime",
@@ -1932,6 +2898,19 @@ describe("official adapter API families", () => {
 
 			export const styles = { "card": css.class({ color: "red" }) };",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "named-map",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "target-native",
@@ -1950,11 +2929,23 @@ describe("official adapter API families", () => {
 			  },
 			  "stylex/createTheme context": {
 			    "changed": true,
-			  "code": "import * as stylex from "@stylexjs/stylex";
+			    "code": "import * as stylex from "@stylexjs/stylex";
 			import { vars } from "./vars";
 			export const theme = // pandwind:migrate-skip (route: stylex -> pandwind | parse-residual: configuration | available: named-map, residual)
 			stylex.createTheme(vars, { accent: "blue" });",
 			    "converted": 0,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "residual",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "residual",
@@ -1979,6 +2970,19 @@ describe("official adapter API families", () => {
 
 			export const theme = (css.sheet.registerSemanticRules([{ kind: "global", selector: ":root", declarations: [{ property: "--accent", value: "red" }] }]), { "accent": "var(--accent)" });",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "static",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "static",
@@ -2003,6 +3007,19 @@ describe("official adapter API families", () => {
 
 			export const pulse = (() => { const name = "pw-kf-pulse"; css.sheet.registerSemanticRules([{ kind: "keyframes", name, children: [{ kind: "style", selector: "from", declarations: [{ property: "opacity", value: 0 }] }, { kind: "style", selector: "to", declarations: [{ property: "opacity", value: 1 }] }] }]); return name; })();",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "named-map",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "target-native",
@@ -2027,6 +3044,19 @@ describe("official adapter API families", () => {
 			const styles = { "card": css.class({ color: "red" }) };
 			export const Card = () => <div {...css.props(styles.card)} />;",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "named-map",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "target-native",
@@ -2049,6 +3079,19 @@ describe("official adapter API families", () => {
 			const css = createCss();
 			export const App = () => <div className={css.class({ color: "rebeccapurple", md: { display: "flex" } })}/>;",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "static",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "static",
@@ -2073,6 +3116,8 @@ describe("official adapter API families", () => {
 			@custom-variant theme-midnight (&:where([data-theme="midnight"] *));
 			@plugin "@tailwindcss/forms";",
 			    "converted": 0,
+			    "generatedFiles": [],
+			    "loweringPlans": [],
 			    "outcomes": [],
 			    "residuals": [],
 			    "skipped": 0,
@@ -2084,6 +3129,19 @@ describe("official adapter API families", () => {
 			const css = createCss();
 			export const App = () => <div className={css.class({ "[&[data-state=active]]": { color: "red" } })}/>;",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "static",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "static",
@@ -2105,6 +3163,18 @@ describe("official adapter API families", () => {
 			    "code": "export const App = () => // pandwind:migrate-skip (route: tailwind -> pandwind | parse-residual: unknown-utility | available: named-map, residual)
 			<div className="btn-primary" />;",
 			    "converted": 0,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "residual",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "residual",
@@ -2127,6 +3197,8 @@ describe("official adapter API families", () => {
 			import { createTamagui, createTokens } from "tamagui";
 			export const config = createTamagui({ tokens: createTokens({ color: { red: "#ff0000" } }) });",
 			    "converted": 0,
+			    "generatedFiles": [],
+			    "loweringPlans": [],
 			    "outcomes": [
 			      {
 			        "outcome": "residual",
@@ -2154,6 +3226,18 @@ describe("official adapter API families", () => {
 			export const Card = // pandwind:migrate-skip (route: tamagui -> pandwind | parse-residual: function-dynamic | available: named-map, residual)
 			styled(View, ({ theme }) => ({ color: theme.color }));",
 			    "converted": 0,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "residual",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "residual",
@@ -2177,6 +3261,19 @@ describe("official adapter API families", () => {
 
 			export const card = css.class({ cardColor: "red", "&[data-state=active]": { color: "var(--card-color)" } });",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "static",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "static",
@@ -2197,6 +3294,8 @@ describe("official adapter API families", () => {
 			    "changed": false,
 			    "code": "export default { aliases: { ink: "color" }, responsive: { md: "@media (min-width: 48rem)" }, tokens: { brand: "red" } };",
 			    "converted": 0,
+			    "generatedFiles": [],
+			    "loweringPlans": [],
 			    "outcomes": [],
 			    "residuals": [],
 			    "skipped": 0,
@@ -2211,6 +3310,19 @@ describe("official adapter API families", () => {
 
 			export const card = () => { const className = css.class({ padding: "1rem", color: "red" }); return [(value: string | undefined) => pandwindCx(className, value), (style: Record<string, unknown> | undefined) => style ?? {}] as const; };",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "static",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "static",
@@ -2233,6 +3345,18 @@ describe("official adapter API families", () => {
 			export const theme = // pandwind:migrate-skip (route: treat -> pandwind | parse-residual: configuration | available: named-map, residual)
 			createTheme({ colors: { brand: "red" } });",
 			    "converted": 0,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "residual",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "residual",
@@ -2256,6 +3380,19 @@ describe("official adapter API families", () => {
 
 			export const card = css.class({ padding: 8, color: "red" });",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "static",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "static",
@@ -2277,6 +3414,8 @@ describe("official adapter API families", () => {
 			    "code": "import { defineConfig } from "unocss";
 			export default defineConfig({ shortcuts: { btn: "px-4 py-2" }, presets: [] });",
 			    "converted": 0,
+			    "generatedFiles": [],
+			    "loweringPlans": [],
 			    "outcomes": [],
 			    "residuals": [],
 			    "skipped": 0,
@@ -2287,6 +3426,18 @@ describe("official adapter API families", () => {
 			    "code": "export const App = () => // pandwind:migrate-skip (route: unocss -> pandwind | parse-residual: unknown-utility | available: named-map, residual)
 			<div className="btn-primary" />;",
 			    "converted": 0,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "residual",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "residual",
@@ -2309,6 +3460,19 @@ describe("official adapter API families", () => {
 			const css = createCss();
 			export const App = () => <div className={css.class({ hover: { backgroundColor: "black" }, md: { display: "flex" } })}/>;",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "static",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "static",
@@ -2331,6 +3495,18 @@ describe("official adapter API families", () => {
 			export const themeClass = // pandwind:migrate-skip (route: vanilla-extract -> pandwind | parse-residual: configuration | available: named-map, residual)
 			createTheme({ colors: { brand: "red" } });",
 			    "converted": 0,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "residual",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "residual",
@@ -2353,6 +3529,18 @@ describe("official adapter API families", () => {
 			export const brand = // pandwind:migrate-skip (route: vanilla-extract -> pandwind | parse-residual: configuration | available: named-map, residual)
 			createVar();",
 			    "converted": 0,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "residual",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "residual",
@@ -2377,6 +3565,19 @@ describe("official adapter API families", () => {
 
 			export const inter = (css.sheet.registerSemanticRules([{ kind: "font-face", declarations: [{ property: "fontFamily", value: "Inter" }, { property: "src", value: "url(inter.woff2)" } ] }]), css.group({  }));",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "static",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "static",
@@ -2401,6 +3602,19 @@ describe("official adapter API families", () => {
 
 			() => (css.sheet.registerSemanticRules([{ kind: "global", selector: "body", declarations: [{ property: "margin", value: 0 }], children: [] }]), null);",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "static",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "static",
@@ -2425,6 +3639,19 @@ describe("official adapter API families", () => {
 
 			export const pulse = (() => { const name = "pw-kf-pulse"; css.sheet.registerSemanticRules([{ kind: "keyframes", name, children: [{ kind: "style", selector: "from", declarations: [{ property: "opacity", value: 0 }] }, { kind: "style", selector: "to", declarations: [{ property: "opacity", value: 1 }] }] }]); return name; })();",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "named-map",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "target-native",
@@ -2447,6 +3674,18 @@ describe("official adapter API families", () => {
 			export const button = // pandwind:migrate-skip (route: vanilla-extract -> pandwind | parse-residual: composition | available: named-map, residual)
 			recipe({ base: { color: "red" }, variants: { size: { sm: { padding: 4 } } } });",
 			    "converted": 0,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "residual",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "residual",
@@ -2470,6 +3709,19 @@ describe("official adapter API families", () => {
 
 			export const variants = { "primary": css.class({ color: "red" }) };",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "named-map",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "target-native",
@@ -2492,6 +3744,18 @@ describe("official adapter API families", () => {
 			export const vars = // pandwind:migrate-skip (route: vanilla-extract -> pandwind | parse-residual: configuration | available: named-map, residual)
 			createThemeContract({ colors: { brand: null } });",
 			    "converted": 0,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "residual",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "residual",
@@ -2518,6 +3782,19 @@ describe("official adapter API families", () => {
 
 			export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "red" }), stableClass: "pw-1sqdko1", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "static",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "static",
@@ -2547,6 +3824,18 @@ describe("official adapter API families", () => {
 			</script>
 			<template><Card color="red" /></template>",
 			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "residual",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "host-runtime",

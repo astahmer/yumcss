@@ -971,6 +971,10 @@ function templateCss(program: StyleProgram): string {
 			)
 			.join(" ");
 		const nested = rule.children.map(renderRule).join(" ");
+		if (rule.kind === StyleRuleKindTag.Global) {
+			const selector = rule.selector ?? "*";
+			return `${selector} { ${declarations}${conditioned}${nested} }`;
+		}
 		if (rule.kind !== StyleRuleKindTag.Style) return `${declarations}${nested}`;
 		const base = `${declarations}${conditioned}${nested}`;
 		return base;

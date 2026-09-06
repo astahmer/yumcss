@@ -102,7 +102,7 @@ export default defineCodemodAdapter({
 	detectPatterns: [/styled-components/, /\bstyled\s*\./],
 	sourceModules: ["styled-components"],
 	configFiles: ["package.json"],
-	emit(program, { firstKind, programObject }) {
+	emit(program, { firstKind, programObject, templateCss }) {
 		const kind = firstKind(program);
 		if (kind === StyleRuleKindTag.Keyframes)
 			return {
@@ -111,7 +111,7 @@ export default defineCodemodAdapter({
 			};
 		if (kind === StyleRuleKindTag.Global)
 			return {
-				text: `createGlobalStyle(${programObject(program)})`,
+				text: `createGlobalStyle\`${templateCss(program)}\``,
 				imports: ['import { createGlobalStyle } from "styled-components";'],
 			};
 		return {

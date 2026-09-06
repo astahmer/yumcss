@@ -189,6 +189,12 @@ export default defineCodemodAdapter({
 			regex: /\b(?:injectGlobal|global)\s*\(\s*\{/g,
 		},
 		{
+			name: "global-template",
+			kind: CodemodCallPatternKindTag.Global,
+			regex: /\b(?:injectGlobal|global)\s*`(?:\\.|[^`])*`/g,
+			form: CodemodCallPatternFormTag.Template,
+		},
+		{
 			name: "Global",
 			regex: /<\s*Global\b/g,
 			form: CodemodCallPatternFormTag.JsxGlobal,
@@ -257,7 +263,7 @@ export default defineCodemodAdapter({
 			};
 		},
 	},
-	emit(program, { firstKind, programObject }, context) {
+	emit(program, { firstKind, programObject, templateCss }, context) {
 		const kind = firstKind(program);
 		if (kind === StyleRuleKindTag.Keyframes)
 			return {
@@ -266,7 +272,7 @@ export default defineCodemodAdapter({
 			};
 		if (kind === StyleRuleKindTag.Global)
 			return {
-				text: `injectGlobal(${programObject(program)})`,
+				text: `injectGlobal\`${templateCss(program)}\``,
 				imports: ['import { injectGlobal } from "@emotion/css";'],
 			};
 		if (
