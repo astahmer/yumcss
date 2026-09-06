@@ -203,6 +203,10 @@ describe("custom design-system context resolution", () => {
 										["--spacing-card", { value: "17px" }],
 									]),
 							},
+							getClassList: () => [
+								["text-brand", {}],
+								["p-card", {}],
+							],
 							candidatesToCss: (candidates: readonly string[]) =>
 								candidates.map((candidate) => {
 									if (candidate === "text-brand") return ".text-brand{color:var(--color-brand)}";
@@ -309,6 +313,11 @@ describe("custom design-system context resolution", () => {
 									["--spacing-card", { value: "17px" }],
 								]),
 						},
+						getClassList: () => [
+							["p-card", {}],
+							["btn-brand", {}],
+							["text-brand", {}],
+						],
 						candidatesToCss: (candidates: readonly string[]) =>
 							candidates.map((candidate) =>
 								candidate === "p-card"

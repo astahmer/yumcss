@@ -1003,12 +1003,22 @@ async function officialConfig(
 		const system = await module.__unstable__loadDesignSystem(cssFile.text, {
 			base: dirnameDocumentPath(cssFile.file),
 		});
+		const candidates = (system.getClassList?.() ?? []).map(([candidate]) => candidate);
+		const compiled = system.candidatesToCss(candidates);
+		const cache = new Map<string, readonly StyleDeclaration[] | undefined>();
+		for (let index = 0; index < candidates.length; index++) {
+			const candidate = candidates[index]!;
+			cache.set(candidate, parseEngineCss(compiled[index] ?? "", candidate));
+		}
 		const resolver: TailwindOfficialUtilityResolver = {
 			resolve(token) {
-				return parseEngineCss(system.candidatesToCss([token])[0] ?? "", token);
+				if (cache.has(token)) return cache.get(token);
+				const resolved = parseEngineCss(system.candidatesToCss([token])[0] ?? "", token);
+				cache.set(token, resolved);
+				return resolved;
 			},
 			candidates() {
-				return (system.getClassList?.() ?? []).map(([candidate]) => candidate);
+				return candidates;
 			},
 		};
 		return {
