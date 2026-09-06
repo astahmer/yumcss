@@ -2,7 +2,7 @@
  * Pack smoke test — proves a package's tarball is consumable BEFORE publishing.
  *
  * Usage (from repo root, under Nub so source imports and TypeScript work):
- *   pnpm release:smoke            (all four publishable packages)
+ *   pnpm release:smoke            (all five publishable packages)
  *   nub scripts/release/smoke-pack.mjs packages/pandwind
  *
  * Steps:
@@ -109,9 +109,14 @@ async function main() {
 		}
 
 		// 4b. whole-tarball module sweep. Tooling stages are side-effect free when
-		// imported; only the `pandwind-tw` entry executes as a CLI.
+		// imported; only the `pandwind-tw` entry executes as a CLI. Browser bundles
+		// are intentionally excluded: importing a Vite client asset in Node is not
+		// a valid package-consumption test because its module-preload bootstrap uses
+		// the browser DOM at module evaluation time.
 		// Sequential imports by design: deterministic error ordering.
 		const broken = [];
+		const pathSeparator = process.platform === "win32" ? "\\" : "/";
+		const browserBundleMarker = `${pathSeparator}dist${pathSeparator}client${pathSeparator}`;
 		const walkModules = async (dir) => {
 			for (const dirEntry of readdirSync(dir, { withFileTypes: true })) {
 				if (dirEntry.name === "node_modules") continue;
@@ -120,6 +125,7 @@ async function main() {
 					await walkModules(path);
 				} else if (/\.(js|mjs)$/.test(dirEntry.name)) {
 					if (/\.(test|spec)\.(js|mjs)$/.test(dirEntry.name)) continue;
+					if (path.includes(browserBundleMarker)) continue;
 					try {
 						await import(pathToFileURL(path).href);
 					} catch (error) {

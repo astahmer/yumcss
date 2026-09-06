@@ -5,7 +5,6 @@ export {
 } from "./store.ts";
 export type {
 	DevtoolsDiagnosticRecord,
-	DevtoolsEvidenceKind,
 	DevtoolsEvidenceSnapshot,
 	DevtoolsEvidenceStore,
 	DevtoolsMigrationRecord,

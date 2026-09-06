@@ -5,7 +5,7 @@
 	"scripts": {
 		"build": "nub run -r --if-present build",
 		"dev": "nub run --filter example dev",
-		"typecheck": "nub run --filter pandwind-analyze --filter pandwind-codemod --filter pandwind --filter @pandwind/lint-plugin --filter example --filter inspector --filter playground --filter css-example --filter opentui-example --filter rn-example --filter showcase --filter pandwind-docs --workspace-concurrency=1 typecheck",
+		"typecheck": "nub run --filter pandwind-analyze --filter pandwind-codemod --filter pandwind --filter pandwind-devtools --filter @pandwind/lint-plugin --filter example --filter inspector --filter playground --filter css-example --filter opentui-example --filter rn-example --filter showcase --filter pandwind-docs --workspace-concurrency=1 typecheck",
 		"test": "nub run --filter pandwind test && nub run --filter pandwind test:types",
 		"test:all": "nub run -r --workspace-concurrency=1 --if-present test",
 		"test:coverage": "nub run --filter pandwind test:coverage && nub run --filter pandwind-codemod test:coverage && nub run --filter pandwind-analyze test:coverage",
@@ -38,7 +38,7 @@
 		"check": "nub run --filter @pandwind/lint-plugin build && oxlint --fix --deny-warnings --report-unused-disable-directives && oxfmt",
 		"changeset": "changeset",
 		"changeset:version": "changeset version && nub install --no-frozen-lockfile",
-		"release:smoke": "for p in pandwind codemod analyze lint-plugin; do nub scripts/release/smoke-pack.mjs packages/$p || exit 1; done",
+		"release:smoke": "for p in pandwind codemod analyze devtools lint-plugin; do nub scripts/release/smoke-pack.mjs packages/$p || exit 1; done",
 		"test:e2e:playground": "bddgen test && playwright test",
 		"test:e2e:studio": "bddgen -c playwright.studio.config.ts test && playwright test -c playwright.studio.config.ts",
 		"release:check": "nub scripts/release/check-publish-ready.mjs",

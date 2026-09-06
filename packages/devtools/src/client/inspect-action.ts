@@ -1,4 +1,4 @@
-import type { DevToolsClientScriptContext } from "@vitejs/devtools-kit/client";
+import type { DockClientScriptContext } from "@vitejs/devtools-kit/client";
 import { DEVTOOLS_RPC, type DevtoolsElementInput } from "../rpc.ts";
 
 const OVERLAY_ID = "__pandwind_devtools_inspector__";
@@ -21,7 +21,7 @@ const COMPUTED_STYLE_PROPERTIES = [
 const attributesFor = (element: Element): Readonly<Record<string, string>> =>
 	Object.fromEntries([...element.attributes].map((attribute) => [attribute.name, attribute.value]));
 
-export default function setup(ctx: DevToolsClientScriptContext): void {
+export default function setup(ctx: DockClientScriptContext): void {
 	let cleanup: (() => void) | undefined;
 	ctx.current.events.on("entry:activated", () => {
 		cleanup?.();
@@ -45,10 +45,7 @@ export default function setup(ctx: DevToolsClientScriptContext): void {
 			const target = event.target;
 			if (!(target instanceof Element) || target.id === OVERLAY_ID) return;
 			const computedStyle = getComputedStyle(target);
-			const className =
-				target.className instanceof SVGAnimatedString
-					? target.className.baseVal
-					: String(target.className);
+			const className = target.getAttribute("class") ?? "";
 			const input: DevtoolsElementInput = {
 				tagName: target.tagName.toLowerCase(),
 				className,
@@ -61,7 +58,13 @@ export default function setup(ctx: DevToolsClientScriptContext): void {
 					]),
 				),
 			};
-			await ctx.current.rpc.call(DEVTOOLS_RPC.InspectElement, input);
+			// The client context currently exposes the unaugmented hub key map;
+			// the server registration and shared RPC schema remain the source of truth.
+			const call = ctx.rpc.call as unknown as (
+				name: string,
+				value: DevtoolsElementInput,
+			) => Promise<unknown>;
+			await call(DEVTOOLS_RPC.InspectElement, input);
 		};
 		document.addEventListener("mousemove", onMove, true);
 		document.addEventListener("click", onClick, true);

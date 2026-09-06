@@ -2,7 +2,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 
 const root = resolve(import.meta.dirname, "../..");
-const packages = ["pandwind", "codemod", "analyze", "lint-plugin"];
+const packages = ["pandwind", "codemod", "analyze", "devtools", "lint-plugin"];
 const required = ["name", "version", "license", "repository", "files", "publishConfig", "engines"];
 const failures = [];
 

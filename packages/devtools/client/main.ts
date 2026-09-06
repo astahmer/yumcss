@@ -15,8 +15,7 @@ let catalog: readonly { readonly id: string; readonly officialApi?: string }[] =
 let errorMessage: string | undefined;
 let rpc: Awaited<ReturnType<typeof getDevToolsRpcClient>> | undefined;
 
-const app = document.querySelector<HTMLDivElement>("#app");
-if (app === null) throw new Error("Pandwind DevTools root is missing");
+const app = typeof document === "undefined" ? null : document.querySelector<HTMLDivElement>("#app");
 
 const escapeHtml = (value: unknown): string =>
 	String(value)
@@ -27,6 +26,7 @@ const escapeHtml = (value: unknown): string =>
 		.replaceAll("'", "&#039;");
 
 function render(): void {
+	if (app === null) return;
 	const panel = PANELS.find((entry) => entry.id === activePanel) ?? PANELS[0]!;
 	const content =
 		snapshot === undefined
@@ -89,6 +89,8 @@ async function previewMigration(form: FormData): Promise<void> {
 	}
 }
 
-render();
-void refresh();
-window.setInterval(() => void refresh(), 3000);
+if (app !== null) {
+	render();
+	void refresh();
+	window.setInterval(() => void refresh(), 3000);
+}

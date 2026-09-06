@@ -12,12 +12,13 @@ import {
 import { unifiedDiff } from "pandwind-codemod/diff";
 import { createBuiltinCodemodCatalog } from "pandwind-codemod/swap";
 import { createSourceWorkspace } from "pandwind/source/workspace";
+import { createDevtoolsEvidenceStore, type DevtoolsEvidenceStore } from "./evidence/store.ts";
 import {
-	createDevtoolsEvidenceStore,
-	type DevtoolsEvidenceStore,
+	DEVTOOLS_RPC,
 	type DevtoolsElementInput,
-} from "./evidence/store.ts";
-import { DEVTOOLS_RPC, type DevtoolsMigrationInput, type DevtoolsMigrationPreview } from "./rpc.ts";
+	type DevtoolsMigrationInput,
+	type DevtoolsMigrationPreview,
+} from "./rpc.ts";
 
 export interface PandwindDevtoolsOptions {
 	/** Disable the integration while keeping the Vite config branch stable. */
@@ -36,9 +37,9 @@ const isInspectableFile = (file: string): boolean =>
 function loadInteropTokens(root: string, store: DevtoolsEvidenceStore): void {
 	const files = globSync("**/pandwind.interop.json", {
 		cwd: root,
-		absolute: true,
-		ignore: ["**/node_modules/**", "**/.git/**"],
-	});
+	})
+		.filter((file) => !file.includes("node_modules/") && !file.includes(".git/"))
+		.map((file) => resolve(root, file));
 	for (const file of files) {
 		try {
 			const value: unknown = JSON.parse(readFileSync(file, "utf8"));
@@ -272,17 +273,28 @@ export function pandwindDevtools(options: PandwindDevtoolsOptions = {}): Plugin 
 							importName: "default",
 						},
 					});
-				ctx.rpc.register(
+				const registerRpc = (definition: unknown): void => {
+					// @vitejs/devtools-kit types the definition for its Vite context,
+					// while the underlying hub register method accepts the narrower
+					// devframe context. The runtime contract is the same; bridge the
+					// contravariant context type at this single integration boundary.
+					ctx.rpc.register(definition as unknown as Parameters<typeof ctx.rpc.register>[0]);
+				};
+				registerRpc(
 					defineRpcFunction({
 						name: DEVTOOLS_RPC.GetSnapshot,
 						type: "query",
+						args: undefined,
+						returns: undefined,
 						setup: () => ({ handler: async () => currentStore().snapshot() }),
 					}),
 				);
-				ctx.rpc.register(
+				registerRpc(
 					defineRpcFunction({
 						name: DEVTOOLS_RPC.GetCatalog,
 						type: "query",
+						args: undefined,
+						returns: undefined,
 						setup: () => ({
 							handler: async () =>
 								createBuiltinCodemodCatalog().adapters.map((adapter) => ({
@@ -292,10 +304,12 @@ export function pandwindDevtools(options: PandwindDevtoolsOptions = {}): Plugin 
 						}),
 					}),
 				);
-				ctx.rpc.register(
+				registerRpc(
 					defineRpcFunction({
 						name: DEVTOOLS_RPC.InspectElement,
 						type: "action",
+						args: undefined,
+						returns: undefined,
 						setup: () => ({
 							handler: async (input: DevtoolsElementInput) => {
 								elementSelection(input, currentStore());
@@ -304,10 +318,12 @@ export function pandwindDevtools(options: PandwindDevtoolsOptions = {}): Plugin 
 						}),
 					}),
 				);
-				ctx.rpc.register(
+				registerRpc(
 					defineRpcFunction({
 						name: DEVTOOLS_RPC.PreviewMigration,
 						type: "query",
+						args: undefined,
+						returns: undefined,
 						setup: () => ({
 							handler: async (input: DevtoolsMigrationInput) => {
 								const root = config?.root;
