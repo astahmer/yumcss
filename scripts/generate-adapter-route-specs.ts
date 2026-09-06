@@ -1,6 +1,7 @@
 import { mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { CodemodAdapterId } from "pandwind-codemod/swap";
+import { officialApiCases, officialApiFamilyCases } from "pandwind-codemod/swap/official-api-cases";
 import { adapterContractFixtures } from "../packages/codemod/proof/adapter-contract-fixtures.ts";
 
 const routeDirectory = resolve(import.meta.dirname, "../packages/codemod/tests/routes");
@@ -24,8 +25,6 @@ function fileName(source: CodemodAdapterId, target: CodemodAdapterId): string {
 function roundTripFileName(source: CodemodAdapterId, target: CodemodAdapterId): string {
 	return `${source}-to-${target}-to-${source}.test.ts`;
 }
-
-const virtualProjectRoot = "/virtual/pandwind-route-project";
 
 function semanticFor(
 	adapter: CodemodAdapterId,
@@ -67,391 +66,61 @@ function themePathFor(adapter: CodemodAdapterId): string {
 	return adapter === CodemodAdapterId.Mui ? "palette.primary.main" : "colors.brand";
 }
 
-function projectFilesFor(
-	adapter: CodemodAdapterId,
-	color: string,
-): Readonly<Record<string, string>> {
-	const value = JSON.stringify(color);
-	switch (adapter) {
-		case CodemodAdapterId.Panda:
-			return {
-				[`${virtualProjectRoot}/panda.config.ts`]: `export default { theme: { extend: { tokens: { colors: { brand: { value: ${value} } } } } } };`,
-			};
-		case CodemodAdapterId.Pandwind:
-			return {
-				[`${virtualProjectRoot}/pandwind.config.ts`]: `export default { tokens: { colors: { brand: ${value} } } };`,
-			};
-		case CodemodAdapterId.ChakraUi:
-			return {
-				[`${virtualProjectRoot}/theme.ts`]: `export const chakraTheme = { theme: { tokens: { colors: { brand: { 500: { value: ${value} } } } } } };`,
-			};
-		case CodemodAdapterId.Mui:
-			return {
-				[`${virtualProjectRoot}/src/theme.ts`]: `export const muiTheme = { palette: { primary: { main: ${value} } } };`,
-			};
-		case CodemodAdapterId.Mantine:
-			return {
-				[`${virtualProjectRoot}/src/theme.ts`]: `export const mantineTheme = { colors: { brand: [${value}] } };`,
-			};
-		case CodemodAdapterId.Tailwind:
-			return {
-				[`${virtualProjectRoot}/tailwind.css`]: `@import "tailwindcss"; @theme { --color-brand: ${color}; --spacing-card: 1.125rem; }`,
-			};
-		case CodemodAdapterId.UnoCSS:
-			return {
-				[`${virtualProjectRoot}/uno.config.ts`]: `export default defineConfig({ theme: { colors: { brand: ${value} } } });`,
-				[`${virtualProjectRoot}/app/globals.css`]: `@theme { --color-brand: ${color}; --spacing-card: 1.125rem; }`,
-			};
-		case CodemodAdapterId.Tokenami:
-			return {
-				[`${virtualProjectRoot}/.tokenami/tokenami.config.ts`]: `export default { aliases: { ink: "color", pad: "padding" }, tokens: { brand: ${value} } };`,
-			};
-		case CodemodAdapterId.Stitches:
-			return {
-				[`${virtualProjectRoot}/stitches.config.ts`]: `export const config = { theme: { colors: { brand: ${value} }, space: { card: "1.125rem" } } };`,
-			};
-		case CodemodAdapterId.StyleX:
-			return {
-				[`${virtualProjectRoot}/package.json`]: `{"name":"stylex-fixture","stylex":{"aliases":{"brand":${value}}}}`,
-			};
-		case CodemodAdapterId.Emotion:
-			return {
-				[`${virtualProjectRoot}/emotion.config.js`]: `module.exports = { theme: { colors: { brand: ${value} } } };`,
-			};
-		case CodemodAdapterId.Bamboo:
-			return {
-				[`${virtualProjectRoot}/bamboo.config.ts`]: `export default { theme: { tokens: { colors: { brand: { value: ${value} } } } } };`,
-			};
-		default:
-			return {};
-	}
-}
-
-function projectFor(source: CodemodAdapterId, target: CodemodAdapterId, color: string): string {
-	const files: Record<string, string> = {};
-	for (const entries of [projectFilesFor(source, color), projectFilesFor(target, color)])
-		for (const [file, contents] of Object.entries(entries))
-			files[file] = files[file] === undefined ? contents : `${files[file]}\n${contents}`;
-	return `{ root: ${JSON.stringify(virtualProjectRoot)}, files: ${JSON.stringify(files)} }`;
-}
-
 function themedSource(adapter: CodemodAdapterId, source: string): string {
-	const themeExpression =
-		adapter === CodemodAdapterId.Mui ? "theme.palette.primary.main" : "theme.colors.brand";
-	if (adapter === CodemodAdapterId.Tailwind)
+	if (adapter === CodemodAdapterId.Tailwind || adapter === CodemodAdapterId.UnoCSS)
 		return source.replace(
-			'className="flex gap-4 p-4 text-black"',
-			'className="flex gap-4 p-4 text-brand"',
+			/className="[^"]*"/u,
+			'className="flex items-center gap-4 text-brand p-card"',
 		);
-	if (adapter === CodemodAdapterId.UnoCSS)
-		return source.replace(
-			'className="flex items-center gap-4"',
-			'className="flex items-center gap-4 text-brand"',
-		);
-	if (source.includes("color: red"))
-		return source.replace("color: red", `color: \${${themeExpression}}`);
-	if (source.includes('"red"')) return source.replaceAll('"red"', themeExpression);
-	if (source.includes("'red'")) return source.replaceAll("'red'", themeExpression);
-	if (source.includes('bg="tomato"'))
-		return source.replace('bg="tomato"', `bg={${themeExpression}}`);
-	if (source.includes('c="red"')) return source.replace('c="red"', `c={${themeExpression}}`);
-	return `${source}\nconst themedValue = ${themeExpression};`;
+	if (adapter === CodemodAdapterId.Panda) return source.replaceAll('"red.300"', '"brand"');
+	if (adapter === CodemodAdapterId.ChakraUi) return source.replaceAll('"red.200"', '"brand.500"');
+	if (adapter === CodemodAdapterId.Mui) return source.replaceAll('"red"', '"primary.main"');
+	if (adapter === CodemodAdapterId.Mantine) return source.replaceAll('"blue.6"', '"brand.0"');
+	if (adapter === CodemodAdapterId.Pandwind || adapter === CodemodAdapterId.Tokenami)
+		return source.replaceAll('"red"', '"brand"');
+	return source;
 }
 
 function tokenSource(adapter: CodemodAdapterId, source: string): string {
-	if (adapter === CodemodAdapterId.Tailwind)
+	if (adapter === CodemodAdapterId.Tailwind || adapter === CodemodAdapterId.UnoCSS)
 		return source.replace(
-			'className="flex gap-4 p-4 text-black"',
-			'className="flex gap-4 p-4 text-brand"',
+			/className="[^"]*"/u,
+			'className="flex items-center gap-4 text-brand p-card"',
 		);
-	if (adapter === CodemodAdapterId.UnoCSS)
-		return source.replace(
-			'className="flex items-center gap-4"',
-			'className="flex items-center gap-4 text-brand"',
-		);
-	if (adapter === CodemodAdapterId.ChakraUi && source.includes('bg="tomato"'))
-		return source.replace('bg="tomato"', 'bg="$colors.brand"');
-	if (adapter === CodemodAdapterId.Mantine && source.includes('c="red"'))
-		return source.replace('c="red"', 'c="brand.0"');
-	if (adapter === CodemodAdapterId.Mui && source.includes('color: "red"'))
-		return source.replace('color: "red"', 'color: "primary.main"');
-	if (source.includes('"red"')) return source.replaceAll('"red"', '"$colors.brand"');
-	if (source.includes("'red'")) return source.replaceAll("'red'", "'$colors.brand'");
-	if (source.includes("color: red"))
-		return source.replaceAll("color: red", "color: var(--colors-brand)");
-	return `${source}\nconst tokenValue = "$colors.brand";`;
+	return source
+		.replaceAll('"red.300"', '"#2563eb"')
+		.replaceAll('"red.200"', '"#2563eb"')
+		.replaceAll('"red"', '"#2563eb"')
+		.replaceAll("color: red", "color: #2563eb");
 }
 
 function edgeSource(adapter: CodemodAdapterId, source: string): string {
-	if (adapter === CodemodAdapterId.Tailwind)
-		return source.replace(
-			'className="flex gap-4 p-4 text-black"',
-			"className={`[display:flex] [gap:1rem] ${runtimeClass}`}",
-		);
-	if (adapter === CodemodAdapterId.UnoCSS)
-		return source.replace(
-			'className="flex items-center gap-4"',
-			"className={`[display:flex] [gap:1rem] ${runtimeClass}`}",
-		);
-	if (adapter === CodemodAdapterId.Mantine && source.includes("c='red'"))
-		return source.replace("c='red'", "c={theme.foreground}");
-	if (source.includes("'red'")) return source.replaceAll("'red'", "theme.foreground");
-	if (source.includes('"red"')) return source.replaceAll('"red"', "theme.foreground");
-	if (source.includes("color: red"))
-		return source.replaceAll(
-			"color: red",
-			source.includes("`") ? "color: ${theme.foreground}" : "color: theme.foreground",
-		);
-	if (source.includes("bg='tomato'")) return source.replace("bg='tomato'", "bg={theme.foreground}");
-	if (adapter === CodemodAdapterId.UnoCSS)
-		return '<div className="flex unknown-project-utility" />';
-	return `${source}\nconst unresolvedStyle = runtimeTheme.foreground;`;
+	const secondary = officialApiFamilyCases().find(
+		(candidate) => candidate.adapter === adapter && candidate.expectation !== "context",
+	);
+	return secondary?.source ?? source;
 }
 
 function happySource(adapter: CodemodAdapterId): { file: string; source: string } {
-	if (adapter === CodemodAdapterId.Pandwind)
-		return {
-			file: "Card.tsx",
-			source:
-				'import { createCss } from "pandwind/css";\n' +
-				"const css = createCss();\n" +
-				'export const card = css.class({ color: "red", padding: "1rem" });\n' +
-				"export const App = () => <div className={card} />;",
-		};
-	if (adapter === CodemodAdapterId.Panda)
-		return {
-			file: "Card.tsx",
-			source:
-				'import { css } from "styled-system/css";\n' +
-				'export const card = css({ color: "red", padding: "1rem" });\n' +
-				"export const App = () => <div className={card} />;",
-		};
-	if (adapter === CodemodAdapterId.Emotion)
-		return {
-			file: "Card.tsx",
-			source:
-				'import { css } from "@emotion/css";\n' +
-				'export const card = css({ color: "red", padding: "1rem" });\n' +
-				"export const App = () => <div className={card} />;",
-		};
-	if (adapter === CodemodAdapterId.StyledComponents)
-		return {
-			file: "Card.tsx",
-			source:
-				'import styled from "styled-components";\n' +
-				'export const Card = styled.div({ color: "red", padding: "1rem" });\n' +
-				"export const App = () => <Card />;",
-		};
-	if (adapter === CodemodAdapterId.VanillaExtract)
-		return {
-			file: "Card.css.ts",
-			source:
-				'import { style } from "@vanilla-extract/css";\n' +
-				'export const card = style({ color: "red", padding: "1rem" });',
-		};
-	if (adapter === CodemodAdapterId.Stitches)
-		return {
-			file: "Card.tsx",
-			source:
-				'import { css } from "@stitches/react";\n' +
-				'export const card = css({ color: "red", padding: "1rem" });\n' +
-				"export const App = () => <div className={card()} />;",
-		};
-	if (adapter === CodemodAdapterId.Linaria)
-		return {
-			file: "Card.tsx",
-			source:
-				'import { css } from "@linaria/core";\n' +
-				"export const card = css`color: red; padding: 1rem;`;\n" +
-				"export const App = () => <div className={card} />;",
-		};
-	if (adapter === CodemodAdapterId.Jss)
-		return {
-			file: "Card.tsx",
-			source:
-				'import { createUseStyles } from "react-jss";\n' +
-				'export const useStyles = createUseStyles({ card: { color: "red", padding: "1rem" } });\n' +
-				"export const App = () => <div className={useStyles().card} />;",
-		};
-	if (adapter === CodemodAdapterId.Fela)
-		return {
-			file: "Card.tsx",
-			source:
-				'import { createRenderer } from "fela";\n' +
-				"const renderer = createRenderer();\n" +
-				'export const card = renderer.renderRule(() => ({ color: "red", padding: "1rem" }));',
-		};
-	if (adapter === CodemodAdapterId.Goober)
-		return {
-			file: "Card.tsx",
-			source:
-				'import { css } from "goober";\n' +
-				'export const card = css({ color: "red", padding: "1rem" });\n' +
-				"export const App = () => <div className={card} />;",
-		};
-	if (adapter === CodemodAdapterId.Aphrodite)
-		return {
-			file: "Card.tsx",
-			source:
-				'import { StyleSheet } from "aphrodite";\n' +
-				'export const styles = StyleSheet.create({ card: { color: "red", padding: "1rem" } });\n' +
-				"export const App = () => <div className={styles.card} />;",
-		};
-	if (adapter === CodemodAdapterId.Style9)
-		return {
-			file: "Card.tsx",
-			source:
-				'import style9 from "style9";\n' +
-				'export const styles = style9.create({ card: { color: "red", padding: "1rem" } });\n' +
-				"export const App = () => <div className={styles.card} />;",
-		};
-	if (adapter === CodemodAdapterId.Treat)
-		return {
-			file: "Card.treat.ts",
-			source:
-				'import { style } from "@treatjs/treat";\n' +
-				'export const card = style({ color: "red", padding: "1rem" });',
-		};
-	if (adapter === CodemodAdapterId.Compiled)
-		return {
-			file: "Card.tsx",
-			source:
-				'import { css } from "@compiled/react";\n' +
-				'export const card = css({ color: "red", padding: "1rem" });\n' +
-				"export const App = () => <div className={card} />;",
-		};
-	if (adapter === CodemodAdapterId.StyleX)
-		return {
-			file: "Card.tsx",
-			source:
-				'import * as stylex from "@stylexjs/stylex";\n' +
-				'export const styles = stylex.create({ card: { color: "red", padding: "1rem" } });\n' +
-				"export const App = () => <div {...stylex.props(styles.card)} />;",
-		};
-	if (adapter === CodemodAdapterId.SolidStyled)
-		return {
-			file: "Card.tsx",
-			source:
-				'import { styled } from "solid-styled-components";\n' +
-				'export const Card = styled.div({ color: "red", padding: "1rem" });\n' +
-				"export const App = () => <Card />;",
-		};
-	if (adapter === CodemodAdapterId.VueStyled)
-		return {
-			file: "Card.vue",
-			source:
-				"<script setup>\n" +
-				'import styled from "vue-styled-components";\n' +
-				'const Card = styled.div({ color: "red", padding: "1rem" });\n' +
-				"</script>\n<template><Card /></template>",
-		};
-	if (adapter === CodemodAdapterId.ReactNative)
-		return {
-			file: "Card.tsx",
-			source:
-				'import { StyleSheet, View } from "react-native";\n' +
-				'export const styles = StyleSheet.create({ card: { color: "red", padding: 16 } });\n' +
-				"export const App = () => <View style={styles.card} />;",
-		};
-	if (adapter === CodemodAdapterId.Bamboo)
-		return {
-			file: "Card.tsx",
-			source:
-				'import { css } from "styled-system/css";\n' +
-				'export const card = css({ color: "red", padding: "1rem" });\n' +
-				"export const App = () => <div className={card} />;",
-		};
-	if (adapter === CodemodAdapterId.NextYak)
-		return {
-			file: "Card.tsx",
-			source:
-				'import { css } from "next-yak";\n' +
-				"export const card = css`color: red; padding: 1rem;`;\n" +
-				"export const App = () => <div className={card} />;",
-		};
-	if (adapter === CodemodAdapterId.ChakraUi)
-		return {
-			file: "Card.tsx",
-			source:
-				'import { Box } from "@chakra-ui/react";\n' +
-				'export const App = () => <Box bg="tomato" p="4" />;',
-		};
-	if (adapter === CodemodAdapterId.Mui)
-		return {
-			file: "Card.tsx",
-			source:
-				'import { Box } from "@mui/material";\n' +
-				'export const App = () => <Box sx={{ color: "red", p: 2 }} />;',
-		};
-	if (adapter === CodemodAdapterId.Mantine)
-		return {
-			file: "Card.tsx",
-			source:
-				'import { Box } from "@mantine/core";\n' +
-				'export const App = () => <Box c="red" p="md" />;',
-		};
-	if (adapter === CodemodAdapterId.Tokenami)
-		return {
-			file: "Card.tsx",
-			source:
-				'import { css } from "@tokenami/css";\n' +
-				'export const card = css({ color: "red", padding: "1rem" });\n' +
-				"export const App = () => <div className={card} />;",
-		};
-	if (adapter === CodemodAdapterId.Tailwind)
-		return {
-			file: "Card.tsx",
-			source:
-				'import "tailwindcss";\n' +
-				'export const App = () => <div className="flex gap-4 p-4 text-black" />;',
-		};
-	if (adapter === CodemodAdapterId.UnoCSS)
-		return {
-			file: "Card.tsx",
-			source: 'export const App = () => <div className="flex items-center gap-4" />;',
-		};
-	if (adapter === CodemodAdapterId.Tamagui)
-		return {
-			file: "Card.tsx",
-			source:
-				'import { styled, View } from "tamagui";\n' +
-				'export const Card = styled(View, { color: "red", padding: "$4" });\n' +
-				"export const App = () => <Card />;",
-		};
-	if (adapter === CodemodAdapterId.CssModules)
-		return {
-			file: "Card.module.css",
-			source: ".card { color: red; padding: 1rem; }\n.cardTitle { font-weight: 600; }",
-		};
-	if (adapter === CodemodAdapterId.Sass)
-		return {
-			file: "Card.scss",
-			source:
-				".card { color: red; padding: 1rem; &__title { font-weight: 600; } }\n$title-color: blue;",
-		};
-	if (adapter === CodemodAdapterId.Less)
-		return {
-			file: "Card.less",
-			source:
-				".card { color: red; padding: 1rem; .title { font-weight: 600; } }\n@title-color: blue;",
-		};
-	if (adapter === CodemodAdapterId.AuthoredCss)
-		return {
-			file: "Card.css",
-			source: ".card { color: red; padding: 1rem; }\n.card:hover { color: blue; }",
-		};
-
-	const fixture = adapterContractFixtures.find((candidate) => candidate.adapter === adapter);
-	if (fixture === undefined) throw new Error(`missing route example for ${adapter}`);
-	return { file: fixture.file, source: fixture.source };
+	const fixture = officialApiCases().find((candidate) => candidate.adapter === adapter);
+	if (fixture !== undefined) return { file: fixture.file, source: fixture.source };
+	const contractFixture = adapterContractFixtures.find(
+		(candidate) => candidate.adapter === adapter,
+	);
+	if (contractFixture === undefined) throw new Error(`missing route example for ${adapter}`);
+	return { file: contractFixture.file, source: contractFixture.source };
 }
 
 function sourceExample(adapter: CodemodAdapterId) {
 	const happy = happySource(adapter);
+	const secondary = officialApiFamilyCases().find(
+		(candidate) => candidate.adapter === adapter && candidate.expectation !== "context",
+	);
 	return {
 		file: happy.file,
 		happy: happy.source,
-		edge: edgeSource(adapter, happy.source),
+		edge: secondary?.source ?? edgeSource(adapter, happy.source),
+		edgeFile: secondary?.file ?? happy.file,
 		malformed: `${happy.source}\nconst unfinished = { /* unfinished ${adapter} */`,
 		semantic: semanticFor(adapter),
 	};
@@ -475,8 +144,8 @@ function sourceConstants(
 		`const amberSemantic = ${semanticFor(source, { path: sourceThemePath, resolved: "#f97316" })};`,
 		`const blueTargetSemantic = ${semanticFor(target, { path: targetThemePath, resolved: "#2563eb" })};`,
 		`const amberTargetSemantic = ${semanticFor(target, { path: targetThemePath, resolved: "#f97316" })};`,
-		`const blueProject = ${projectFor(source, target, "#2563eb")};`,
-		`const amberProject = ${projectFor(source, target, "#f97316")};`,
+		`const blueProject = createAdapterRouteProject(${identifier(source)}, ${identifier(target)}, "#2563eb");`,
+		`const amberProject = createAdapterRouteProject(${identifier(source)}, ${identifier(target)}, "#f97316");`,
 	].join("\n");
 }
 
@@ -491,6 +160,7 @@ import { expect, test } from "vitest";
 import { ${frameworkImport}CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
 	expectExplicitResidualEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
@@ -518,16 +188,16 @@ test("${source} -> ${target}: migrates concrete ${source} syntax to ${target}", 
 	expect(routeEvidence(result)).toMatchInlineSnapshot();
 });
 
-test("${source} -> ${target}: carries concrete ${source} dynamics or edge syntax explicitly", () => {
-	const result = route.run({ source: edgeSource, file: ${JSON.stringify(example.file)}, semantic: sourceSemantic });
+test("${source} -> ${target}: carries a documented secondary ${source} API explicitly", () => {
+	const result = route.run({ source: edgeSource, file: ${JSON.stringify(example.edgeFile)}, semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot();
 });
 
-test("${source} -> ${target}: lowers concrete theme and project context variants", () => {
-	const blue = route.run({ source: themedSource, file: ${JSON.stringify(example.file)}, semantic: blueSemantic, project: blueProject });
-	const amber = route.run({ source: themedSource, file: ${JSON.stringify(example.file)}, semantic: amberSemantic, project: amberProject });
+test("${source} -> ${target}: loads concrete theme and project context variants", async () => {
+	const blue = await route.runAsync({ source: themedSource, file: ${JSON.stringify(example.file)}, semantic: blueSemantic, project: blueProject });
+	const amber = await route.runAsync({ source: themedSource, file: ${JSON.stringify(example.file)}, semantic: amberSemantic, project: amberProject });
 	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
 	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
 	expectExplicitResidualEvidence(blue);
@@ -535,8 +205,8 @@ test("${source} -> ${target}: lowers concrete theme and project context variants
 	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot();
 });
 
-test("${source} -> ${target}: resolves concrete token references with project context", () => {
-	const result = route.run({ source: tokenSource, file: ${JSON.stringify(example.file)}, semantic: blueSemantic, project: blueProject });
+test("${source} -> ${target}: resolves concrete token values with project context", async () => {
+	const result = await route.runAsync({ source: tokenSource, file: ${JSON.stringify(example.file)}, semantic: blueSemantic, project: blueProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot();
@@ -564,6 +234,7 @@ import { expect, test } from "vitest";
 import { ${frameworkImport}CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
 	expectActionableRoundTrip,
 	expectExplicitResidualEvidence,
 	routeEvidence,
@@ -592,8 +263,8 @@ test("${source} -> ${target} -> ${source}: preserves an actionable concrete roun
 	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot();
 });
 
-test("${source} -> ${target} -> ${source}: retains edge semantics without silent loss", () => {
-	const first = forward.run({ source: edgeSource, file: ${JSON.stringify(example.file)}, semantic: sourceSemantic });
+test("${source} -> ${target} -> ${source}: retains the documented secondary API without silent loss", () => {
+	const first = forward.run({ source: edgeSource, file: ${JSON.stringify(example.edgeFile)}, semantic: sourceSemantic });
 	const second = reverse.run({ source: first.code, file: ${JSON.stringify(targetExample.file)}, semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectActionableRoundTrip(first, second);
@@ -602,11 +273,11 @@ test("${source} -> ${target} -> ${source}: retains edge semantics without silent
 	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot();
 });
 
-test("${source} -> ${target} -> ${source}: preserves concrete theme and project context variants", () => {
-	const firstBlue = forward.run({ source: themedSource, file: ${JSON.stringify(example.file)}, semantic: blueSemantic, project: blueProject });
-	const secondBlue = reverse.run({ source: firstBlue.code, file: ${JSON.stringify(targetExample.file)}, semantic: blueTargetSemantic, project: blueProject });
-	const firstAmber = forward.run({ source: themedSource, file: ${JSON.stringify(example.file)}, semantic: amberSemantic, project: amberProject });
-	const secondAmber = reverse.run({ source: firstAmber.code, file: ${JSON.stringify(targetExample.file)}, semantic: amberTargetSemantic, project: amberProject });
+test("${source} -> ${target} -> ${source}: preserves concrete theme and project context variants", async () => {
+	const firstBlue = await forward.runAsync({ source: themedSource, file: ${JSON.stringify(example.file)}, semantic: blueSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: ${JSON.stringify(targetExample.file)}, semantic: blueTargetSemantic, project: blueProject });
+	const firstAmber = await forward.runAsync({ source: themedSource, file: ${JSON.stringify(example.file)}, semantic: amberSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: ${JSON.stringify(targetExample.file)}, semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
 	expectActionableRoundTrip(firstBlue, secondBlue);
@@ -621,9 +292,9 @@ test("${source} -> ${target} -> ${source}: preserves concrete theme and project 
 	}).toMatchInlineSnapshot();
 });
 
-test("${source} -> ${target} -> ${source}: resolves token references across both concrete legs", () => {
-	const first = forward.run({ source: tokenSource, file: ${JSON.stringify(example.file)}, semantic: blueSemantic, project: blueProject });
-	const second = reverse.run({ source: first.code, file: ${JSON.stringify(targetExample.file)}, semantic: blueTargetSemantic, project: blueProject });
+test("${source} -> ${target} -> ${source}: resolves token values across both concrete legs", async () => {
+	const first = await forward.runAsync({ source: tokenSource, file: ${JSON.stringify(example.file)}, semantic: blueSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: ${JSON.stringify(targetExample.file)}, semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);

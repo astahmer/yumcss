@@ -129,7 +129,9 @@ function withProjectLoaderFallback(fallback: ProjectModuleLoader): ProjectModule
 			);
 		},
 		importFile<T>(file: string): Promise<T | undefined> {
-			return NODE_PROJECT_MODULE_LOADER.importFile<T>(file);
+			return NODE_PROJECT_MODULE_LOADER.importFile<T>(file).then(
+				(loaded) => loaded ?? fallback.importFile<T>(file),
+			);
 		},
 	};
 }

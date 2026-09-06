@@ -48,7 +48,7 @@ export function officialApiCases(): readonly OfficialApiCase[] {
 			name: "stylex.create",
 			file: "styles.ts",
 			source:
-				'import stylex from "@stylexjs/stylex";\nexport const styles = stylex.create({ card: { color: "red", padding: 8 } });',
+				'import * as stylex from "@stylexjs/stylex";\nexport const styles = stylex.create({ card: { color: "red", padding: 8 } });',
 			documentation: "https://stylexjs.com/docs/learn/",
 		},
 		{
@@ -369,7 +369,7 @@ export function officialApiFamilyCases(): readonly OfficialApiFamilyCase[] {
 			expectation: "converted",
 			file: "styles.ts",
 			source:
-				'import stylex from "@stylexjs/stylex";\nexport const styles = stylex.create({ card: { color: "red" } });',
+				'import * as stylex from "@stylexjs/stylex";\nexport const styles = stylex.create({ card: { color: "red" } });',
 		},
 		{
 			adapter: CodemodAdapterId.StyleX,
@@ -377,7 +377,7 @@ export function officialApiFamilyCases(): readonly OfficialApiFamilyCase[] {
 			expectation: "converted",
 			file: "styles.ts",
 			source:
-				'import stylex from "@stylexjs/stylex";\nexport const pulse = stylex.keyframes({ from: { opacity: 0 }, to: { opacity: 1 } });',
+				'import * as stylex from "@stylexjs/stylex";\nexport const pulse = stylex.keyframes({ from: { opacity: 0 }, to: { opacity: 1 } });',
 		},
 		{
 			adapter: CodemodAdapterId.StyleX,
@@ -385,7 +385,7 @@ export function officialApiFamilyCases(): readonly OfficialApiFamilyCase[] {
 			expectation: "converted",
 			file: "styles.ts",
 			source:
-				'import stylex from "@stylexjs/stylex";\nexport const theme = stylex.defineVars({ accent: "red" });',
+				'import * as stylex from "@stylexjs/stylex";\nexport const theme = stylex.defineVars({ accent: "red" });',
 		},
 		{
 			adapter: CodemodAdapterId.StyleX,
@@ -401,7 +401,7 @@ export function officialApiFamilyCases(): readonly OfficialApiFamilyCase[] {
 			expectation: "residual",
 			file: "theme.ts",
 			source:
-				'import stylex from "@stylexjs/stylex";\nimport { vars } from "./vars";\nexport const theme = stylex.createTheme(vars, { accent: "blue" });',
+				'import * as stylex from "@stylexjs/stylex";\nimport { vars } from "./vars";\nexport const theme = stylex.createTheme(vars, { accent: "blue" });',
 		},
 		{
 			adapter: CodemodAdapterId.Emotion,
