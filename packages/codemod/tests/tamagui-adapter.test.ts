@@ -32,8 +32,8 @@ describe("Tamagui adapter", () => {
 			import { createCx } from "pandwind/cx";
 			const cx = createCx();
 			const css = createCss();
-			const __pandwindSlot = (defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Component {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
-			export const Card = __pandwindSlot((View), css.class({ padding: 16, color: "red" }), "pw-1fn70s4", undefined, "className", {}, cx);"
+			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Component {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
+			export const Card = __pandwindSlot({ defaultComponent: (View), style: css.class({ padding: 16, color: "red" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });"
 		`);
 	});
 
@@ -58,6 +58,44 @@ describe("Tamagui adapter", () => {
 		expect(result.code).toContain("export const Card = __pandwindSlot(");
 		expect(result.code).toContain("export const Panel = __pandwindSlot(");
 		expect(result.code).not.toContain("export const Card = (() =>");
+	});
+
+	test("shares a generated slot module across migrated files", () => {
+		const migrate = (file: string, source: string) =>
+			runAdapterMigration(source, {
+				from: CodemodAdapterId.Tamagui,
+				to: CodemodAdapterId.Pandwind,
+				file,
+				root: "/project",
+				mode: "safe",
+				adapterRegistry: catalog.registry,
+			});
+		const card = migrate(
+			"src/Card.tsx",
+			'import { View, styled } from "@tamagui/core";\nexport const Card = styled(View, { color: "red" });',
+		);
+		const panel = migrate(
+			"src/components/Panel.tsx",
+			'import { View, styled } from "@tamagui/core";\nexport const Panel = styled(View, { padding: 16 });',
+		);
+
+		expect(card.code).toContain('import { __pandwindSlot } from "../__pandwind/slot.tsx";');
+		expect(panel.code).toContain('import { __pandwindSlot } from "../../__pandwind/slot.tsx";');
+		expect(card.code).not.toContain("const __pandwindSlot =");
+		expect(panel.code).not.toContain("const __pandwindSlot =");
+		expect(card.code).toContain(
+			'__pandwindSlot({ defaultComponent: (View), style: css.class({ color: "red" }),',
+		);
+		expect(panel.code).toContain(
+			"__pandwindSlot({ defaultComponent: (View), style: css.class({ padding: 16 }),",
+		);
+		expect(card.generatedFiles).toEqual(panel.generatedFiles);
+		expect(card.generatedFiles).toHaveLength(1);
+		expect(card.generatedFiles[0]).toMatchObject({
+			path: "__pandwind/slot.tsx",
+			purpose: "shared static component slot helper",
+		});
+		expect(card.generatedFiles[0]?.content).toContain("export const __pandwindSlot = ({");
 	});
 
 	test("keeps runtime theme callbacks visible as residuals", () => {

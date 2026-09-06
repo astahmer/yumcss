@@ -886,13 +886,13 @@ describe("CSS-in-JS adapter contract v2", () => {
 			"next-yak",
 			"App.tsx",
 			'import { styled } from "next-yak";\nconst Card = styled.div`color: red; padding: 1rem;`;',
-			'"className", {}, cx',
+			'classAttribute: "className", attrs: {}, joinClass: cx',
 		],
 		[
 			"solid-styled",
 			"App.tsx",
 			'import { styled } from "solid-styled-components";\nconst Card = styled.div`color: red; padding: 1rem;`;',
-			'"class", {}, cx',
+			'classAttribute: "class", attrs: {}, joinClass: cx',
 		],
 	] as const)(
 		"statically extracts standalone %s subjects for Pandwind",

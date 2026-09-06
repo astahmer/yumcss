@@ -13,6 +13,7 @@ import { SourcePass } from "../../source-pass-utils.ts";
 import type {
 	AdapterConfigContext,
 	AdapterEmitContext,
+	AdapterGeneratedFile,
 	AdapterProjectConfig,
 	AdapterTargetMigrationPolicy,
 	AdapterTokenPolicy,
@@ -37,7 +38,12 @@ import {
 } from "../host-component-rewriter.ts";
 import { TokenCatalog } from "../tokens.ts";
 import type { ProjectModuleLoader } from "../project-module-loader.ts";
-import { dirnameDocumentPath, isAbsoluteDocumentPath, joinDocumentPath } from "../../path-utils.ts";
+import {
+	dirnameDocumentPath,
+	isAbsoluteDocumentPath,
+	joinDocumentPath,
+	relativeDocumentPath,
+} from "../../path-utils.ts";
 
 const PANDWIND_TARGET_POLICY: AdapterTargetMigrationPolicy = {
 	handlesHostRewrites: true,
@@ -701,12 +707,70 @@ function generatedBinding(source: string | undefined, base: string): string {
 	return candidate;
 }
 
+const PANDWIND_SLOT_MODULE_PATH = "__pandwind/slot.tsx";
+const PANDWIND_SLOT_MODULE_CONTENT = `type PandwindSlotProps = Record<string, any> & { as?: any };
+type PandwindSlotOptions = {
+	readonly defaultComponent: any;
+	readonly style: string;
+	readonly stableClass: string;
+	readonly inheritedClass?: string;
+	readonly classAttribute: string;
+	readonly attrs: Record<string, any>;
+	readonly joinClass: (...values: any[]) => string;
+};
+
+export const __pandwindSlot = ({
+	defaultComponent,
+	style,
+	stableClass,
+	inheritedClass,
+	classAttribute,
+	attrs,
+	joinClass,
+}: PandwindSlotOptions) => {
+	const component = (props: PandwindSlotProps) => {
+		const Component = props.as ?? defaultComponent;
+		const { as: _as, ...rest } = props;
+		return <Component {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />;
+	};
+	component.__pandwindClassName = stableClass;
+	return component;
+};
+`;
+
+function sharedSlotModule(
+	context: AdapterEmitContext | undefined,
+): { readonly importPath: string; readonly file: AdapterGeneratedFile } | undefined {
+	const root = context?.config.root;
+	const file = context?.file;
+	if (root === undefined || file === undefined) return undefined;
+	const projectFile = isAbsoluteDocumentPath(file) ? relativeDocumentPath(root, file) : file;
+	let importPath = relativeDocumentPath(
+		dirnameDocumentPath(projectFile),
+		PANDWIND_SLOT_MODULE_PATH,
+	);
+	if (!importPath.startsWith(".")) importPath = `./${importPath}`;
+	return {
+		importPath,
+		file: {
+			path: PANDWIND_SLOT_MODULE_PATH,
+			purpose: "shared static component slot helper",
+			content: PANDWIND_SLOT_MODULE_CONTENT,
+		},
+	};
+}
+
 function staticComponent(
 	program: StyleProgram,
 	programObject: AdapterRenderers["programObject"],
 	context: AdapterEmitContext | undefined,
 ):
-	| { text: string; imports: readonly string[]; generatedStatements: readonly string[] }
+	| {
+			text: string;
+			imports: readonly string[];
+			generatedStatements: readonly string[];
+			generatedFiles?: readonly AdapterGeneratedFile[];
+	  }
 	| undefined {
 	const host = context?.host;
 	const subject = host?.subject ?? program.source?.subject;
@@ -750,8 +814,18 @@ function staticComponent(
 	const sourceText = context?.document?.document.source;
 	const composedCxBinding =
 		inheritedClass === undefined ? undefined : generatedBinding(sourceText, "composedCx");
+	const sharedModule = sharedSlotModule(context);
 	const slotBinding = generatedBinding(sourceText, "__pandwindSlot");
-	const slotHelper = `const ${slotBinding} = (defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Component {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };`;
+	const slotHelper =
+		sharedModule === undefined
+			? `const ${slotBinding} = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Component {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };`
+			: undefined;
+	const slotImport =
+		sharedModule === undefined
+			? []
+			: [
+					`import { __pandwindSlot${slotBinding === "__pandwindSlot" ? "" : ` as ${slotBinding}`} } from "${sharedModule.importPath}";`,
+				];
 	if (framework === BuiltinHostFramework.Vue) {
 		const tagExpression = tag === undefined ? `(${base})` : JSON.stringify(tag);
 		return {
@@ -771,19 +845,21 @@ function staticComponent(
 	const inheritedClassExpression =
 		inheritedClass === undefined ? "undefined" : JSON.stringify(inheritedClass);
 	return {
-		text: `${slotBinding}(${defaultComponent}, ${style}, ${JSON.stringify(stableClass)}, ${inheritedClassExpression}, ${JSON.stringify(classAttribute)}, ${attrsExpression}, ${joinClass})`,
+		text: `${slotBinding}({ defaultComponent: ${defaultComponent}, style: ${style}, stableClass: ${JSON.stringify(stableClass)}, inheritedClass: ${inheritedClassExpression}, classAttribute: ${JSON.stringify(classAttribute)}, attrs: ${attrsExpression}, joinClass: ${joinClass} })`,
 		imports: [
 			'import { createCss } from "pandwind/css";',
 			"const css = createCss();",
 			'import { createCx } from "pandwind/cx";',
 			"const cx = createCx();",
+			...slotImport,
 		],
 		generatedStatements: [
-			slotHelper,
+			...(slotHelper === undefined ? [] : [slotHelper]),
 			...(composedCxBinding === undefined
 				? []
 				: [`const ${composedCxBinding} = createCx({ css });`]),
 		],
+		...(sharedModule === undefined ? {} : { generatedFiles: [sharedModule.file] }),
 	};
 }
 
@@ -1325,8 +1401,19 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 			const outputProgram = preserveKnownPresetTokens(program, context);
 			const renderProgramObject = (value: StyleProgram): string =>
 				programObject(preserveKnownPresetTokens(value, context));
-			const finalize = (emission: { text: string; imports: readonly string[] }) => ({
+			const finalize = (emission: {
+				text: string;
+				imports: readonly string[];
+				generatedStatements?: readonly string[];
+				generatedFiles?: readonly AdapterGeneratedFile[];
+			}) => ({
 				...renameGeneratedCssBinding(emission, cssBinding),
+				...(emission.generatedStatements === undefined
+					? {}
+					: { generatedStatements: emission.generatedStatements }),
+				...(emission.generatedFiles === undefined
+					? {}
+					: { generatedFiles: emission.generatedFiles }),
 				// The target object syntax is intentionally a projection of the
 				// versioned program. Keep the program attached for validation and
 				// downstream tools so nested conditions, rule kinds, and provenance are
