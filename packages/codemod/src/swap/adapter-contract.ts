@@ -97,6 +97,16 @@ export interface AdapterProjectConfig {
 	readonly artifacts?: readonly AdapterGeneratedArtifactEvidence[];
 }
 
+/** Project-owned modules shared by generated target code. Paths are root-relative. */
+export interface AdapterProjectBindings {
+	/** Module exporting the extracted/static `css` binding. */
+	readonly cssModule?: string;
+	/** Module exporting the runtime `css` binding for dynamic/global rules. */
+	readonly runtimeCssModule?: string;
+	/** Module exporting the shared `cx` binding. */
+	readonly cxModule?: string;
+}
+
 /**
  * Project configuration is an adapter port, not a central config parser.
  * Implementations may synchronously inspect source or asynchronously evaluate
@@ -172,6 +182,8 @@ export interface AdapterEmitContext {
 	readonly sourceModules?: readonly string[];
 	/** Source-owned module patterns whose imports are removed after target emission. */
 	readonly sourceModuleMatchers?: readonly ((moduleSpecifier: string) => boolean)[];
+	/** Shared target modules prepared by a project migration. */
+	readonly project?: AdapterProjectBindings;
 	/** Host binding context for adapters that emit framework wrappers. */
 	readonly host?: {
 		readonly binding?: string;

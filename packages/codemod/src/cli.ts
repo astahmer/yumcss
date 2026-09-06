@@ -2,18 +2,10 @@
 /**
  * pandwind-codemod CLI.
  *
- * Usage:
- *   nub src/cli.ts <globs...> --to=tw|cx|css|keep [--diff] [--write]
- *   nub src/cli.ts swap --from=<auto|tw|css|design> \
- *        --to=<css.class|design|dss|tw> [--safe|--partial] [--write] [--diff] [--report[=json]] <globs...>
- *
- * Default is analysis mode: reports what WOULD change without touching
- * files. `--diff` prints unified diffs; `--write` applies. The two are not
- * mutually exclusive — `--diff --write` shows the diffs while writing.
- *
- * The `swap` subcommand converts BETWEEN pandwind APIs (plans/022): tw()
- * object literals, css.class()/css() literals and the design vocabulary,
- * plus outbound emission to plain tailwind classes via the tw target.
+ * The CLI has one migration command for both the historical class-string
+ * pass and registered adapter routes. It writes by default; `--dry-run`
+ * produces the same plan without changing files. `tokens` remains a separate
+ * data-format conversion command.
  */
 import { existsSync, mkdirSync, readFileSync, statSync, unlinkSync, writeFileSync } from "node:fs";
 import { basename, dirname, extname, resolve } from "node:path";
@@ -21,14 +13,14 @@ import cac, { type CAC, type Command } from "cac";
 import { createSourceWorkspace } from "pandwind/source/workspace";
 import { loadMetaFromSourcesAsync, type PandwindMeta } from "./meta.ts";
 import { transformSource, type MigrateMode, type TransformResult } from "./migrate.ts";
-import { parseSourceList } from "./sources.ts";
 import * as swapImport from "./swap/index.ts";
 import { CodemodAdapterId, SwapSourceId, SwapTargetId } from "./swap/identifiers.ts";
 import { tokenSetCodec } from "./swap/token-set.ts";
 import type { TokenFormatId } from "./swap/token-format-contracts.ts";
 import { TokenFormatId as TokenFormat } from "./swap/token-format-contracts.ts";
 import { unifiedDiff } from "./diff.ts";
-import { configureSwapCommand } from "./swap/cli-args.ts";
+import { configureMigrateCommand } from "./swap/cli-args.ts";
+import { createPandwindProjectSupport, type PandwindProjectSupport } from "./swap/project-bootstrap.ts";
 export { unifiedDiff } from "./diff.ts";
 
 function writeGeneratedFiles(
@@ -103,17 +95,6 @@ function applyFileChanges(
 	for (const file of files) writeFileSync(resolve(root, file.path), file.content);
 }
 
-interface CliArgs {
-	patterns: string[];
-	mode: MigrateMode;
-	diff: boolean;
-	report: boolean;
-	write: boolean;
-	metaDir: string;
-	skipMarker: string;
-	sources: ReturnType<typeof parseSourceList>;
-}
-
 type CliOptions = Readonly<Record<string, unknown>>;
 
 const optionString = (options: CliOptions, name: string): string | undefined => {
@@ -130,54 +111,6 @@ const validateCommand = (command: Command): void => {
 	command.checkUnusedArgs();
 };
 
-const configureDefaultCommand = (command: Command): void => {
-	command
-		.option("--to <mode>", "Migration mode: tw, cx, css, or keep", { default: "keep" })
-		.option("--from <sources>", "Source detectors, comma-separated")
-		.option("--diff", "Print unified diffs")
-		.option("--write", "Apply the migration to files")
-		.option("--report", "Print the migration report")
-		.option("--meta <dir>", "Generated Pandwind metadata directory")
-		.option("--skip-marker <text>", "Marker used to preserve opted-out sites", {
-			default: "pandwind:migrate-skip",
-		});
-};
-
-const MIGRATE_MODES = ["tw", "cx", "css", "keep"] as const;
-
-function parseArgs(argv: string[]): CliArgs {
-	const cli = cac("pandwind-codemod");
-	const command = cli.command(
-		"[...patterns]",
-		"Migrate Tailwind class strings and registered source adapters",
-	);
-	configureDefaultCommand(command);
-	cli.parse(["node", "pandwind-codemod", ...argv], { run: false });
-	if (cli.matchedCommand === undefined) throw new Error("codemod: no input patterns given");
-	validateCommand(cli.matchedCommand);
-	if (cli.args.length === 0) {
-		throw new Error(
-			"codemod: no input patterns given.\nusage: pandwind-codemod [options] <globs...>",
-		);
-	}
-	const options = cli.options as CliOptions;
-	const mode = optionString(options, "to") ?? "keep";
-	if (!MIGRATE_MODES.includes(mode as (typeof MIGRATE_MODES)[number])) {
-		throw new Error(`codemod: unknown --to mode '${mode}' (expected ${MIGRATE_MODES.join("|")})`);
-	}
-	const from = optionString(options, "from");
-	return {
-		patterns: [...cli.args],
-		mode: mode as MigrateMode,
-		diff: optionBoolean(options, "diff"),
-		write: optionBoolean(options, "write"),
-		metaDir: optionString(options, "meta") ?? "",
-		skipMarker: optionString(options, "skipMarker") ?? "pandwind:migrate-skip",
-		report: optionBoolean(options, "report"),
-		sources: from === undefined ? [] : parseSourceList(from),
-	};
-}
-
 const sourceWorkspace = createSourceWorkspace();
 
 const expandPatterns = (
@@ -185,6 +118,27 @@ const expandPatterns = (
 	baseDir: string,
 	includeUnsupported = false,
 ): string[] => [...sourceWorkspace.files(patterns, baseDir, { includeUnsupported })];
+
+const readProjectFile = (root: string) => (file: string): string | undefined => {
+	const absolute = file.startsWith(root) ? file : resolve(root, file);
+	try {
+		return readFileSync(absolute, "utf8");
+	} catch {
+		return undefined;
+	}
+};
+
+const projectFiles = (root: string): readonly string[] =>
+	sourceWorkspace.files(["**/*"], root, { includeUnsupported: true });
+
+function shouldBootstrapPandwindProject(args: swapImport.MigrateCliArgs): boolean {
+	if (args.to === SwapTargetId.Tw)
+		return args.from === CodemodAdapterId.Tailwind || args.from === SwapSourceId.Auto;
+	return (
+		args.to === CodemodAdapterId.Pandwind ||
+		(args.to === SwapTargetId.CssClass && isExternalAdapterId(args.from))
+	);
+}
 
 /** Ascend from cwd to the workspace root (the dir containing pnpm-workspace.yaml). */
 function findRepoRoot(): string {
@@ -201,9 +155,18 @@ function findRepoRoot(): string {
 	}
 }
 
-async function mainSwap(argv: string[]): Promise<void> {
-	const args = swapImport.parseSwapArgs(argv);
+const LEGACY_MODES: readonly MigrateMode[] = ["tw", "cx", "css", "keep"];
+
+const isLegacyMode = (args: swapImport.MigrateCliArgs): boolean =>
+	(args.to === "cx" || args.to === "css" || args.to === "keep") || args.sources.length > 0;
+
+async function mainMigrate(argv: string[]): Promise<void> {
+	const args = swapImport.parseMigrateArgs(argv);
 	const root = findRepoRoot();
+	if (isLegacyMode(args)) {
+		await runDefault(args);
+		return;
+	}
 	const filePaths = expandPatterns(args.patterns, root, isExternalSwap(args));
 	if (isExternalSwap(args)) {
 		let meta: PandwindMeta | undefined;
@@ -242,7 +205,7 @@ async function mainSwap(argv: string[]): Promise<void> {
 		});
 	} catch (error) {
 		console.error(
-			`codemod swap: failed to load generated metadata from ${metaDir}\n` +
+			`codemod migrate: failed to load generated metadata from ${metaDir}\n` +
 				"  run `nub exec pandwind-tw generate --bridge` first, or pass --meta=<dir>\n" +
 				`  (${(error as Error).message})`,
 		);
@@ -260,14 +223,14 @@ async function mainSwap(argv: string[]): Promise<void> {
 			...(args.force === undefined ? {} : { force: args.force }),
 			diff: args.diff,
 			report: args.report,
-			write: args.write,
+			write: !args.dryRun,
 			skipMarker: args.skipMarker,
 		});
 		return;
 	}
 
 	if (filePaths.length === 0) {
-		console.error("codemod swap: no matching files");
+		console.error("codemod migrate: no matching files");
 		process.exitCode = 1;
 		return;
 	}
@@ -281,7 +244,7 @@ async function mainSwap(argv: string[]): Promise<void> {
 				base: metaDir,
 			})
 			.catch((error: unknown) => {
-				console.error(`codemod swap: --engine failed to boot (${(error as Error).message})`);
+				console.error(`codemod migrate: --engine failed to boot (${(error as Error).message})`);
 				return undefined;
 			});
 	}
@@ -306,7 +269,7 @@ async function mainSwap(argv: string[]): Promise<void> {
 		}
 		const result = swapImport.runSwap(source, meta, {
 			from: args.from,
-			to: args.to,
+			to: args.to as swapImport.SwapTarget,
 			file: relative,
 			metaDir: metaDirRelative,
 			skipMarker: args.skipMarker,
@@ -328,10 +291,10 @@ async function mainSwap(argv: string[]): Promise<void> {
 		totalChanged++;
 		if (args.diff && args.reportFormat !== "json")
 			console.log(unifiedDiff(source, result.code, relative));
-		if (args.write) writeFileSync(file, result.code);
+			if (!args.dryRun) writeFileSync(file, result.code);
 		if (args.reportFormat !== "json")
 			console.log(
-				`${relative}: ${args.write ? "written" : "would change"} — ${result.converted} call site(s) swapped to ${args.to}, ` +
+				`${relative}: ${args.dryRun ? "would change" : "written"} — ${result.converted} call site(s) swapped to ${args.to}, ` +
 					`${result.unmappedTokens.length} residual(s), ${result.skippedByMarker} skipped by marker`,
 			);
 	}
@@ -340,12 +303,12 @@ async function mainSwap(argv: string[]): Promise<void> {
 		console.log(
 			`\nsummary: ${filePaths.length} file(s) scanned · ${totalChanged} changed · ` +
 				`${totalConverted} swapped · ${totalResiduals} residual(s) · swap ${args.from}->${args.to} · ` +
-				(args.write ? "WRITTEN" : "dry-run (use --write to apply)"),
+				(args.dryRun ? "dry-run (no files written)" : "WRITTEN"),
 		);
 
 	if (args.report && args.reportFormat === "text") {
 		const lines = [
-			"swap report:",
+			"migration report:",
 			`  call sites through the target API: ${totalConverted}`,
 			`  residuals needing attention: ${totalResiduals}`,
 		];
@@ -372,7 +335,7 @@ function isExternalAdapterId(value: string): value is import("./swap/index.ts").
  * adapters, but selecting them from a flat source must not silently switch
  * token-aware semantics to the generic object renderer.
  */
-function isFlatRoute(args: swapImport.SwapCliArgs): boolean {
+function isFlatRoute(args: swapImport.MigrateCliArgs): boolean {
 	const flatSources: readonly string[] = [
 		SwapSourceId.Auto,
 		SwapSourceId.Tw,
@@ -384,10 +347,10 @@ function isFlatRoute(args: swapImport.SwapCliArgs): boolean {
 		CodemodAdapterId.Tailwind,
 		CodemodAdapterId.StyleX,
 	];
-	return flatSources.includes(args.from) && flatTargets.includes(args.to);
+	return flatSources.includes(args.from) && flatTargets.includes(args.to as string);
 }
 
-function isExternalSwap(args: swapImport.SwapCliArgs): boolean {
+function isExternalSwap(args: swapImport.MigrateCliArgs): boolean {
 	if (isFlatRoute(args)) return false;
 	return isExternalAdapterId(args.from) || isExternalAdapterId(args.to);
 }
@@ -409,13 +372,13 @@ function detectExternalSource(
 }
 
 async function runExternalAdapterSwap(
-	args: swapImport.SwapCliArgs,
+	args: swapImport.MigrateCliArgs,
 	filePaths: Array<string>,
 	root: string,
 	meta?: PandwindMeta,
 ): Promise<void> {
 	if (filePaths.length === 0) {
-		console.error("codemod swap: no matching files");
+		console.error("codemod migrate: no matching files");
 		process.exitCode = 1;
 		return;
 	}
@@ -426,7 +389,7 @@ async function runExternalAdapterSwap(
 			: undefined;
 	if (target === undefined) {
 		console.error(
-			`codemod swap: external adapters currently emit to css.class (or an external adapter), not '${args.to}'`,
+			`codemod migrate: external adapters currently emit to css.class (or an external adapter), not '${args.to}'`,
 		);
 		process.exitCode = 1;
 		return;
@@ -510,7 +473,7 @@ async function runExternalAdapterSwap(
 		totalChanged++;
 		if (args.diff && args.reportFormat !== "json")
 			console.log(unifiedDiff(source, result.code, relative));
-		if (args.write) {
+		if (!args.dryRun) {
 			if (outputFile !== file && existsSync(outputFile))
 				throw new Error(
 					`codemod: refusing to overwrite existing host-conversion output ${outputFile}`,
@@ -519,7 +482,7 @@ async function runExternalAdapterSwap(
 			validatePlannedFileChanges(root, result.fileChanges, plannedFileChanges);
 			pendingWrites.push({ file, outputFile, relative, result });
 		}
-		if (!args.write && args.reportFormat !== "json")
+		if (args.dryRun && args.reportFormat !== "json")
 			console.log(
 				`${relative}: would change — ${result.converted} converted, ` +
 					`${result.skipped} skipped, ${result.residuals.length} residual(s), ${from}->${target}`,
@@ -531,7 +494,7 @@ async function runExternalAdapterSwap(
 			}
 		}
 	}
-	if (args.write) {
+	if (!args.dryRun) {
 		for (const pending of pendingWrites) {
 			writeGeneratedFiles(root, pending.result.generatedFiles);
 			if (pending.outputFile === pending.file) writeFileSync(pending.file, pending.result.code);
@@ -551,7 +514,7 @@ async function runExternalAdapterSwap(
 		console.log(
 			`\nsummary: ${filePaths.length} file(s) scanned · ${totalChanged} changed · ` +
 				`${totalConverted} converted · ${totalSkipped} skipped · ${totalResiduals} residual(s) · ` +
-				(args.write ? "WRITTEN" : "dry-run (use --write to apply)"),
+			(args.dryRun ? "dry-run (no files written)" : "WRITTEN"),
 		);
 	if (args.report && args.reportFormat === "json") {
 		console.log(
@@ -565,7 +528,7 @@ async function runExternalAdapterSwap(
 	}
 }
 
-async function runDefault(args: CliArgs): Promise<void> {
+async function runDefault(args: swapImport.MigrateCliArgs): Promise<void> {
 	const root = findRepoRoot();
 	const metaDirRelative = args.metaDir !== "" ? args.metaDir : "apps/example/src";
 	const metaDir = resolve(root, metaDirRelative);
@@ -599,6 +562,13 @@ async function runDefault(args: CliArgs): Promise<void> {
 	let totalConverted = 0;
 	let totalChanged = 0;
 	let totalUnmapped = 0;
+	const mode = LEGACY_MODES.includes(args.to as MigrateMode)
+		? (args.to as MigrateMode)
+		: args.to === SwapTargetId.Tw
+			? "tw"
+			: args.to === SwapTargetId.CssClass
+				? "css"
+				: "keep";
 
 	for (const file of filePaths) {
 		const relative = file.slice(root.length + 1);
@@ -609,7 +579,7 @@ async function runDefault(args: CliArgs): Promise<void> {
 			continue;
 		}
 		const result: TransformResult = transformSource(source, meta, {
-			mode: args.mode,
+			mode,
 			file: relative,
 			metaDir: metaDirRelative,
 			skipMarker: args.skipMarker,
@@ -625,9 +595,9 @@ async function runDefault(args: CliArgs): Promise<void> {
 		}
 		totalChanged++;
 		if (args.diff) console.log(unifiedDiff(source, result.code, relative));
-		if (args.write) writeFileSync(file, result.code);
+		if (!args.dryRun) writeFileSync(file, result.code);
 		console.log(
-			`${relative}: ${args.write ? "written" : "would change"} — ${result.converted} call site(s), ` +
+			`${relative}: ${args.dryRun ? "would change" : "written"} — ${result.converted} call site(s), ` +
 				`${result.unmappedTokens.length} token(s) left verbatim` +
 				(result.skippedByMarker > 0 ? `, ${result.skippedByMarker} skipped by marker` : ""),
 		);
@@ -635,8 +605,8 @@ async function runDefault(args: CliArgs): Promise<void> {
 
 	console.log(
 		`\nsummary: ${filePaths.length} file(s) scanned · ${totalChanged} changed · ` +
-			`${totalConverted} converted · ${totalUnmapped} verbatim token(s) · mode=${args.mode} · ` +
-			(args.write ? "WRITTEN" : "dry-run (use --write to apply)"),
+			`${totalConverted} converted · ${totalUnmapped} verbatim token(s) · mode=${mode} · ` +
+			(args.dryRun ? "dry-run (no files written)" : "WRITTEN"),
 	);
 
 	if (args.report) {
@@ -737,16 +707,19 @@ const parseTokenArgs = (argv: readonly string[]): TokenCliArgs => {
 
 const createCodemodCli = (): CAC => {
 	const cli = cac("pandwind-codemod");
-	const root = cli.command(
-		"[...patterns]",
-		"Migrate Tailwind class strings and registered source adapters",
-	);
-	configureDefaultCommand(root);
-	const swap = cli.command("swap [...patterns]", "Migrate between registered styling adapters");
-	configureSwapCommand(swap);
+	const migrate = cli.command("migrate [...patterns]", "Migrate a project between styling adapters");
+	configureMigrateCommand(migrate);
 	const tokens = cli.command("tokens <input>", "Convert token files between supported formats");
 	configureTokensCommand(tokens);
 	return cli;
+};
+
+/** Normalize the old root/swap spellings into the one migration command. */
+const normalizeCommand = (argv: readonly string[]): string[] => {
+	const [first, ...rest] = argv;
+	if (first === "migrate" || first === "tokens") return [...argv];
+	if (first === "swap") return ["migrate", ...rest];
+	return ["migrate", ...argv];
 };
 
 async function mainTokens(argv: string[]): Promise<void> {
@@ -774,18 +747,18 @@ async function mainTokens(argv: string[]): Promise<void> {
 async function main(argv = process.argv.slice(2)): Promise<void> {
 	const cli = createCodemodCli();
 	cli.help();
+	const normalizedArgv = normalizeCommand(argv);
 	try {
-		cli.parse(["node", "pandwind-codemod", ...argv], { run: false });
+		cli.parse(["node", "pandwind-codemod", ...normalizedArgv], { run: false });
 		if (cli.matchedCommand === undefined) return;
-		if (cli.matchedCommand.name === "swap") {
-			await mainSwap(argv.slice(1));
+		if (cli.matchedCommand.name === "migrate") {
+			await mainMigrate(normalizedArgv.slice(1));
 			return;
 		}
 		if (cli.matchedCommand.name === "tokens") {
-			await mainTokens(argv.slice(1));
+			await mainTokens(normalizedArgv.slice(1));
 			return;
 		}
-		await runDefault(parseArgs(argv));
 	} catch (error) {
 		console.error(`pandwind-codemod: ${error instanceof Error ? error.message : String(error)}`);
 		cli.outputHelp();

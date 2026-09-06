@@ -17,6 +17,7 @@ import type {
 	AdapterGeneratedFile,
 	AdapterParseContext,
 	AdapterParseResult,
+	AdapterProjectBindings,
 	AdapterProjectConfig,
 	AdapterTargetMigrationPolicy,
 	AdapterTokenPolicy,
@@ -632,6 +633,57 @@ function renameGeneratedCssBinding(
 	const rename = (value: string) =>
 		value.replace(/\bcss(?=\s*[.({,;}])/g, binding).replace(/\bcss(?=\s*=)/g, binding);
 	return { text: rename(emission.text), imports: emission.imports.map(rename) };
+}
+
+function projectImportSpecifier(file: string, modulePath: string): string {
+	const withoutExtension = modulePath.replace(/\.(?:[cm]?tsx?|jsx?)$/u, "");
+	let specifier = relativeDocumentPath(dirnameDocumentPath(file), withoutExtension);
+	if (!specifier.startsWith(".")) specifier = `./${specifier}`;
+	return specifier;
+}
+
+/** Replace per-file Pandwind factories with the project-owned shared modules. */
+function useProjectBindings(
+	emission: { text: string; imports: readonly string[] },
+	binding: string,
+	file: string,
+	project: AdapterProjectBindings | undefined,
+): { text: string; imports: readonly string[] } {
+	if (project === undefined) return emission;
+	const runtime = emission.imports.some((statement) =>
+		/from\s+["']pandwind\/css\/runtime["']/u.test(statement),
+	);
+	const cssModule = runtime ? project.runtimeCssModule ?? project.cssModule : project.cssModule;
+	let text = emission.text;
+	let imports = [...emission.imports];
+	if (cssModule !== undefined) {
+		imports = imports.filter(
+			(statement) =>
+				!/(?:from\s+["']pandwind\/css(?:\/runtime)?["']|from\s+["']pandwind\/preset["'])/u.test(
+					statement,
+				) &&
+				!new RegExp(`^const\\s+${binding}\\s*=\\s*create(?:Runtime)?Css\\(`, "u").test(
+					statement.trim(),
+				),
+		);
+		const specifier = projectImportSpecifier(file, cssModule);
+		imports.push(
+				binding === "css"
+					? `import { css } from "${specifier}";`
+					: `import { css as ${binding} } from "${specifier}";`,
+		);
+	}
+	if (project.cxModule !== undefined) {
+		imports = imports.filter(
+			(statement) =>
+				!/(?:from\s+["']pandwind\/cx["']|^const\s+(?:cx|pandwindCx)\s*=\s*createCx\(\s*\);?)/u.test(
+					statement.trim(),
+				),
+		);
+		text = text.replace(/\bpandwindCx\b/gu, "cx");
+		imports.push(`import { cx } from "${projectImportSpecifier(file, project.cxModule)}";`);
+	}
+	return { text, imports };
 }
 
 function hasThemeContextValues(program: StyleProgram, source: string | undefined): boolean {
@@ -1889,7 +1941,12 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 				generatedStatements?: readonly string[];
 				generatedFiles?: readonly AdapterGeneratedFile[];
 			}) => ({
-				...renameGeneratedCssBinding(emission, cssBinding),
+					...useProjectBindings(
+						renameGeneratedCssBinding(emission, cssBinding),
+						cssBinding,
+						context?.file ?? "",
+						context?.project,
+					),
 				...(emission.generatedStatements === undefined
 					? {}
 					: { generatedStatements: emission.generatedStatements }),

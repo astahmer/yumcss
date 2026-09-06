@@ -26,7 +26,7 @@ import { pandaStyleToIr, type PandaRecipeIR } from "../src/swap/adapters/panda/p
 import type { PandaProjectFileSystem } from "../src/swap/adapters/panda/panda-file-system.ts";
 import { PandaJsxStylePropsModeTag } from "../src/swap/adapters/panda/style-props.ts";
 import { PandaUtilityCatalog } from "../src/swap/adapters/panda/utilities.ts";
-import { parseSwapArgs } from "../src/swap/index.ts";
+import { CodemodAdapterId, parseMigrateArgs } from "../src/swap/index.ts";
 import type { PandwindMeta } from "../src/meta.ts";
 
 let meta: PandwindMeta;
@@ -192,7 +192,7 @@ describe("supporting migration primitives", () => {
 	});
 
 	it("supports CLI flags used by project migration", () => {
-		const args = parseSwapArgs([
+		const args = parseMigrateArgs([
 			"--from=panda",
 			"--to=css.class",
 			"--out=pandwind",
@@ -209,7 +209,7 @@ describe("supporting migration primitives", () => {
 	});
 
 	it("accepts external adapter sources and targets without requiring metadata", () => {
-		const args = parseSwapArgs([
+		const args = parseMigrateArgs([
 			"--from=emotion",
 			"--to=styled-components",
 			"--report",
@@ -220,8 +220,20 @@ describe("supporting migration primitives", () => {
 		expect(args.report).toBe(true);
 	});
 
+	it("uses the unified migrate spellings and writes by default", () => {
+		const args = parseMigrateArgs(["-f", "tailwindcss", "-t", "pandwind-tw", "src/**/*.tsx"]);
+		expect(args.from).toBe(CodemodAdapterId.Tailwind);
+		expect(args.to).toBe("tw");
+		expect(args.dryRun).toBe(false);
+	});
+
+	it("supports an explicit dry run without retaining a write flag", () => {
+		const args = parseMigrateArgs(["migrate.tsx", "--dry-run"]);
+		expect(args.dryRun).toBe(true);
+	});
+
 	it("accepts explicit capability policy and machine-readable reports", () => {
-		const args = parseSwapArgs([
+		const args = parseMigrateArgs([
 			"--from=emotion",
 			"--to=pandwind",
 			"--partial",
@@ -234,8 +246,8 @@ describe("supporting migration primitives", () => {
 	});
 
 	it("rejects unknown and conflicting command-line options", () => {
-		expect(() => parseSwapArgs(["--unknown", "Card.tsx"])).toThrow("Unknown option `--unknown`");
-		expect(() => parseSwapArgs(["--safe", "--partial", "Card.tsx"])).toThrow(
+		expect(() => parseMigrateArgs(["--unknown", "Card.tsx"])).toThrow("Unknown option `--unknown`");
+		expect(() => parseMigrateArgs(["--safe", "--partial", "Card.tsx"])).toThrow(
 			"--safe and --partial are mutually exclusive",
 		);
 	});

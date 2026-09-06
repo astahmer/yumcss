@@ -239,10 +239,9 @@ describe("swap CLI end-to-end", () => {
 			"nub",
 			[
 				"src/cli.ts",
-				"swap",
+				"migrate",
 				"--from=auto",
 				"--to=tw",
-				"--write",
 				`--meta=${resolve(repoRoot, "apps/example/src")}`,
 				file,
 			],
@@ -656,10 +655,9 @@ test("CLI spawn e2e: --to=panda emits token refs + styled-system import", () => 
 		"nub",
 		[
 			"src/cli.ts",
-			"swap",
+			"migrate",
 			"--from=auto",
 			"--to=panda",
-			"--write",
 			`--meta=${resolve(repoRoot, "apps/example/src")}`,
 			file,
 		],

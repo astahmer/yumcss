@@ -37,7 +37,7 @@ const pandaMigrationCommand: ProjectMigrationCommand = {
 			))
 				console.log(`    ${kind}: ${count}`);
 		}
-		if (!context.write) console.log("  dry-run (use --write to apply)");
+		if (!context.write) console.log("  dry-run (no files written)");
 	},
 };
 

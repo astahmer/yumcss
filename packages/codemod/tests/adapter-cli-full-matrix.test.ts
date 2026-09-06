@@ -42,11 +42,10 @@ async function runCliMatrix(
 			"nub",
 			[
 				"src/cli.ts",
-				"swap",
+				"migrate",
 				`--from=${sourceAdapter}`,
 				`--to=${targetAdapter}`,
 				"--safe",
-				"--write",
 				"--report=json",
 				...files,
 			],

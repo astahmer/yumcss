@@ -28,9 +28,9 @@ import {
 	type AdapterCapabilityReport,
 } from "./capabilities.ts";
 import { CodemodAdapterId, MigrationSkipReason, SwapTargetId } from "./identifiers.ts";
-import type { SwapCliArgs, SwapSource, SwapTarget } from "./cli-args.ts";
-export { SWAP_SOURCES, SWAP_TARGETS, parseSwapArgs } from "./cli-args.ts";
-export type { SwapCliArgs, SwapSource, SwapTarget } from "./cli-args.ts";
+import type { MigrateCliArgs, SwapSource, SwapTarget } from "./cli-args.ts";
+export { SWAP_SOURCES, SWAP_TARGETS, parseMigrateArgs } from "./cli-args.ts";
+export type { MigrateCliArgs, SwapSource, SwapTarget } from "./cli-args.ts";
 
 const builtinAdapterCatalog = createBuiltinCodemodCatalog();
 const builtinAdapterIds = builtinAdapterCatalog.adapters.map((adapter) => adapter.id);
@@ -282,6 +282,8 @@ export { NODE_PROJECT_MODULE_LOADER, NodeProjectModuleLoader } from "./project-m
 export type { ProjectModuleLoader } from "./project-module-loader.ts";
 export { getProjectMigrationCommand } from "./project-commands.ts";
 export type { ProjectMigrationCommand, ProjectMigrationContext } from "./project-command.ts";
+export { createPandwindProjectSupport } from "./project-bootstrap.ts";
+export type { PandwindProjectSupport, ProjectBootstrapRequest } from "./project-bootstrap.ts";
 export const getCodemodAdapter = (id: string) => builtinAdapterCatalog.registry.get(id);
 export function listCodemodAdapterIds(): readonly string[] {
 	return builtinAdapterIds;

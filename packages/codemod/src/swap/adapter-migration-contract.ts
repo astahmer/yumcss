@@ -7,6 +7,7 @@ import type {
 	AdapterValidationResult,
 	AdapterFileChange,
 	AdapterMigrationOutcome,
+	AdapterProjectBindings,
 } from "./adapter-contract.ts";
 import type { AdapterCapabilityMode, AdapterCapabilityReport } from "./capabilities.ts";
 import type { StyleLoweringPlan, StyleLoweringRegistry } from "./lowering.ts";
@@ -34,6 +35,8 @@ export interface AdapterMigrationOptions {
 	readonly adapterRegistry?: StyleAdapterRegistry;
 	readonly loweringRegistry?: StyleLoweringRegistry;
 	readonly semantic?: AdapterParseContext["semantic"];
+	/** Root-relative shared target modules prepared for this migration. */
+	readonly project?: AdapterProjectBindings;
 }
 
 /** Infrastructure ports used by the adapter migration application service. */

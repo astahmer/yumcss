@@ -1,10 +1,12 @@
 import cac, { type Command } from "cac";
 import { createBuiltinCodemodCatalog } from "./adapter-catalog.ts";
 import type { AdapterCapabilityMode } from "./capabilities.ts";
-import { CodemodAdapterId, SwapTargetId } from "./identifiers.ts";
+import { CodemodAdapterId, SwapSourceId, SwapTargetId } from "./identifiers.ts";
 import { SWAP_REGISTRY } from "./swap-registry.ts";
 import type { TokenRefMode } from "./tokens.ts";
 import type { ExternalAdapterId } from "./external-adapters.ts";
+import type { MigrateMode } from "../migrate.ts";
+import { parseSourceList, type SourceId } from "../sources.ts";
 
 const builtinAdapterIds = createBuiltinCodemodCatalog().adapters.map((adapter) => adapter.id);
 
@@ -21,10 +23,11 @@ export const SWAP_SOURCES = [
 ] as const;
 export type SwapSource = (typeof SWAP_SOURCES)[number];
 
-export interface SwapCliArgs {
+/** The single CLI contract for project and file migrations. */
+export interface MigrateCliArgs {
 	from: SwapSource;
-	to: SwapTarget;
-	write: boolean;
+	to: SwapTarget | MigrateMode;
+	dryRun: boolean;
 	diff: boolean;
 	report: boolean;
 	patterns: string[];
@@ -42,13 +45,16 @@ export interface SwapCliArgs {
 	/** Capability policy for adapter routes; external routes default to safe. */
 	capabilityMode?: AdapterCapabilityMode;
 	reportFormat: "text" | "json";
+	sources: readonly SourceId[];
 }
 
-export function configureSwapCommand(command: Command): void {
+export function configureMigrateCommand(command: Command): void {
 	command
-		.option("--from <adapter>", "Source adapter or auto-detect", { default: "auto" })
-		.option("--to <adapter>", "Target adapter", { default: SwapTargetId.CssClass })
-		.option("--write", "Apply the migration to files")
+		.option("-f, --from <adapter>", "Source adapter or auto-detect", { default: "auto" })
+		.option("-t, --to <adapter>", "Target adapter or Pandwind API", {
+			default: SwapTargetId.CssClass,
+		})
+		.option("--dry-run", "Preview the migration without writing files")
 		.option("--diff", "Print unified diffs")
 		.option("--report", "Print migration reports")
 		.option("--report-format <format>", "Report format: text or json", { default: "text" })
@@ -95,6 +101,22 @@ const optionString = (
 const optionBoolean = (options: Readonly<Record<string, unknown>>, name: string): boolean =>
 	options[name] === true;
 
+const CLI_IDENTIFIERS = new Map<string, string>([
+	["tailwindcss", CodemodAdapterId.Tailwind],
+	["tw", SwapTargetId.Tw],
+	["pandwind-tw", SwapTargetId.Tw],
+	["pandwind-css", SwapTargetId.CssClass],
+	["pandwind-dss", SwapTargetId.Dss],
+	["pandwind", CodemodAdapterId.Pandwind],
+	["chakra", CodemodAdapterId.ChakraUi],
+	["chakra-ui-v3", CodemodAdapterId.ChakraUi],
+	["uno", CodemodAdapterId.UnoCSS],
+	["unocss", CodemodAdapterId.UnoCSS],
+	["styled-components", CodemodAdapterId.StyledComponents],
+]);
+
+const canonicalIdentifier = (value: string): string => CLI_IDENTIFIERS.get(value) ?? value;
+
 const choice = <T extends string>(
 	name: string,
 	value: string | undefined,
@@ -102,26 +124,35 @@ const choice = <T extends string>(
 ): T => {
 	if (value !== undefined && options.includes(value as T)) return value as T;
 	throw new Error(
-		`codemod swap: unknown --${name} '${value ?? ""}' (expected ${options.join("|")})`,
+		`codemod migrate: unknown --${name} '${value ?? ""}' (expected ${options.join("|")})`,
 	);
 };
 
-export function parseSwapArgs(argv: string[]): SwapCliArgs {
-	const cli = cac("pandwind-codemod swap");
-	const command = cli.command("[...patterns]", "Migrate a source adapter into a target adapter");
-	configureSwapCommand(command);
-	cli.parse(["node", "pandwind-codemod swap", ...normalizeReportSyntax(argv)], { run: false });
+const MIGRATE_MODES: readonly MigrateMode[] = ["tw", "cx", "css", "keep"];
+
+export function parseMigrateArgs(argv: string[]): MigrateCliArgs {
+	const cli = cac("pandwind-codemod migrate");
+	const command = cli.command("[...patterns]", "Migrate a project between styling adapters");
+	configureMigrateCommand(command);
+	cli.parse(["node", "pandwind-codemod migrate", ...normalizeReportSyntax(argv)], { run: false });
 	const matched = cli.matchedCommand;
-	if (matched === undefined) throw new Error("codemod swap: no input patterns given");
+	if (matched === undefined) throw new Error("codemod migrate: no input patterns given");
 	validateCommand(matched);
 	if (cli.args.length === 0) {
 		throw new Error(
-			"codemod swap: no input patterns given.\nusage: pandwind-codemod swap [options] <globs...>",
+			"codemod migrate: no input patterns given.\nusage: pandwind-codemod migrate [options] <globs...>",
 		);
 	}
 	const options = cli.options as Readonly<Record<string, unknown>>;
-	const from = choice("from", optionString(options, "from"), SWAP_SOURCES);
-	const to = choice("to", optionString(options, "to"), SWAP_TARGETS);
+	const rawFrom = optionString(options, "from") ?? "auto";
+	const rawTo = optionString(options, "to") ?? SwapTargetId.CssClass;
+	const fromValue = canonicalIdentifier(rawFrom);
+	const toValue = canonicalIdentifier(rawTo);
+	const sourceList = rawFrom.includes(",") ? parseSourceList(rawFrom) : [];
+	const from = sourceList.length > 0 ? SwapSourceId.Auto : choice("from", fromValue, SWAP_SOURCES);
+	const to = MIGRATE_MODES.includes(toValue as MigrateMode)
+		? (toValue as MigrateMode)
+		: choice("to", toValue, SWAP_TARGETS);
 	const tokenRefs = choice("token-refs", optionString(options, "tokenRefs"), [
 		"off",
 		"bare",
@@ -133,16 +164,17 @@ export function parseSwapArgs(argv: string[]): SwapCliArgs {
 	] as const);
 	const safe = optionBoolean(options, "safe");
 	const partial = optionBoolean(options, "partial");
-	if (safe && partial) throw new Error("codemod swap: --safe and --partial are mutually exclusive");
+	if (safe && partial) throw new Error("codemod migrate: --safe and --partial are mutually exclusive");
 	return {
 		from,
 		to,
-		write: optionBoolean(options, "write"),
+		dryRun: optionBoolean(options, "dryRun"),
 		diff: optionBoolean(options, "diff"),
 		report: optionBoolean(options, "report"),
 		patterns: [...cli.args],
 		metaDir: optionString(options, "meta") ?? "",
 		skipMarker: optionString(options, "skipMarker") ?? "pandwind:migrate-skip",
+		sources: sourceList,
 		tokenRefs,
 		engine: optionBoolean(options, "engine"),
 		tokenize: optionBoolean(options, "tokenize"),
