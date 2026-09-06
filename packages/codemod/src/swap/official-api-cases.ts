@@ -302,7 +302,7 @@ export function officialApiFamilyCases(): readonly OfficialApiFamilyCase[] {
 		{
 			adapter: CodemodAdapterId.Panda,
 			name: "cva recipe",
-			expectation: "residual",
+			expectation: "converted",
 			file: "styles.ts",
 			source:
 				'import { cva } from "styled-system/css";\nexport const button = cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });',
@@ -537,7 +537,7 @@ export function officialApiFamilyCases(): readonly OfficialApiFamilyCase[] {
 		{
 			adapter: CodemodAdapterId.VanillaExtract,
 			name: "recipe",
-			expectation: "residual",
+			expectation: "converted",
 			file: "styles.css.ts",
 			source:
 				'import { recipe } from "@vanilla-extract/recipes";\nexport const button = recipe({ base: { color: "red" }, variants: { size: { sm: { padding: 4 } } } });',
@@ -643,7 +643,7 @@ export function officialApiFamilyCases(): readonly OfficialApiFamilyCase[] {
 		{
 			adapter: CodemodAdapterId.Fela,
 			name: "createComponent",
-			expectation: "residual",
+			expectation: "converted",
 			source:
 				'import { createComponent } from "react-fela";\nexport const Card = createComponent(() => ({ color: "red" }), "button");',
 		},
@@ -998,7 +998,7 @@ export function officialApiFamilyCases(): readonly OfficialApiFamilyCase[] {
 		{
 			adapter: CodemodAdapterId.CssModules,
 			name: "composes",
-			expectation: "residual",
+			expectation: "converted",
 			file: "Card.module.css",
 			source: ".card { color: red; }\n.primary { composes: card; font-weight: 600; }",
 		},

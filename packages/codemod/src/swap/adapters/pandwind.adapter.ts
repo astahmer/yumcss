@@ -1622,7 +1622,7 @@ function runtimeGlobalVars(program: StyleProgram): string {
 	return `(css.sheet.registerSemanticRules([{ kind: "global", selector: ":root", declarations: [${declarations}] }]), { ${references} })`;
 }
 
-function stitchesRecipeObject(
+function recipeDefinitionObject(
 	program: StyleProgram,
 	declarationsObject: AdapterRenderers["declarationsObject"],
 ): string {
@@ -1948,11 +1948,10 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 					) || rule.children.some(containsFunction)
 				);
 			});
-			const stitchesVariants =
+			const recipeVariants =
 				program.compositions?.some(
 					(composition) => composition.kind === StyleProgramCompositionKind.Recipe,
-				) === true &&
-				program.declarations.some((declaration) => declaration.conditions.length >= 2);
+				) === true;
 			const needsRuntimeCss =
 				!stylexDynamicGroup &&
 				(program.emissionHints?.includes(StyleProgramEmissionHint.RuntimeFunction) === true ||
@@ -1977,8 +1976,8 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 					],
 				});
 			return finalize({
-				text: stitchesVariants
-					? `createRecipe(css, ${stitchesRecipeObject(outputProgram, declarationsObject)})`
+				text: recipeVariants
+					? `createRecipe(css, ${recipeDefinitionObject(outputProgram, declarationsObject)})`
 					: named
 						? `css.group(${renderProgramObject(outputProgram)})`
 						: functionDynamic
@@ -1988,7 +1987,7 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 								: dynamic
 									? dynamicEmission
 									: `css.class(${renderProgramObject(outputProgram)})`,
-				imports: stitchesVariants
+				imports: recipeVariants
 					? [
 							'import { createCss } from "pandwind/css";',
 							'import { createRecipe } from "pandwind/recipe";',

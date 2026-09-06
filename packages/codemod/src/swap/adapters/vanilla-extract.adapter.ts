@@ -11,6 +11,10 @@ import {
 	StyleNamedRuleStrategy,
 	StyleProgramEmissionHint,
 } from "../identifiers.ts";
+import {
+	preserveUnsupportedRecipeFields,
+	recipeSourceObjectOptions,
+} from "./recipe-source.ts";
 
 const runtimeFallbackVar =
 	"const fallbackVar = (variable: string, fallback: string) => `var(${variable}, ${fallback})`;";
@@ -50,11 +54,8 @@ export default defineCodemodAdapter({
 		{
 			name: "recipe",
 			regex: /\b(?:recipe|createRecipe)\s*\(/g,
-			form: CodemodCallPatternFormTag.Residual,
-			residual: {
-				kind: StyleProgramResidualKindTag.Composition,
-				hint: "Vanilla Extract recipes require variant-aware target lowering",
-			},
+			sourceObjectOptions: recipeSourceObjectOptions,
+			transform: preserveUnsupportedRecipeFields,
 		},
 		{
 			name: "theme-contract",

@@ -691,6 +691,79 @@ export function parseStylesheetPrograms(
 				sourceText: source.slice(node.start, node.end),
 			});
 	}
+	if (context.config.adapter === CodemodAdapterId.CssModules) {
+		const localCompositions = new Map<string, readonly string[]>();
+		for (const node of document.nodes) {
+			const name = /^\.([A-Za-z_$][\w$-]*)$/u.exec(node.prelude)?.[1];
+			if (node.kind !== StylesheetSourceNodeKindTag.Rule || name === undefined) continue;
+			const references: string[] = [];
+			for (const child of node.body ?? []) {
+				if (child.kind !== StylesheetSourceNodeKindTag.Statement) continue;
+				const match = /^composes\s*:\s*([A-Za-z_$][\w$-]*(?:\s+[A-Za-z_$][\w$-]*)*)\s*$/u.exec(
+					child.prelude,
+				);
+				if (match?.[1] !== undefined) references.push(...match[1].split(/\s+/u));
+			}
+			if (references.length > 0) localCompositions.set(name, references);
+		}
+		const byName = new Map(
+			matches.flatMap((match) => {
+				const name = match.program.rules[0]?.name;
+				return name === undefined ? [] : [[name, match] as const];
+			}),
+		);
+		const expanded = new Map<string, StyleProgram | undefined>();
+		const expand = (name: string, stack: ReadonlySet<string>): StyleProgram | undefined => {
+			if (expanded.has(name)) return expanded.get(name);
+			if (stack.has(name)) {
+				expanded.set(name, undefined);
+				return undefined;
+			}
+			const match = byName.get(name);
+			const program = match?.program;
+			const root = program?.rules[0];
+			if (
+				program === undefined ||
+				root === undefined ||
+				program.rules.length !== 1 ||
+				root.kind !== StyleRuleKindTag.Style ||
+				root.children.length > 0
+			)
+				return undefined;
+			const nextStack = new Set(stack).add(name);
+			const inherited = (localCompositions.get(name) ?? []).map((reference) =>
+				expand(reference, nextStack),
+			);
+			if (inherited.some((value) => value === undefined)) return undefined;
+			const residuals = program.residuals.filter(
+				(residual) =>
+					residual.kind !== StyleProgramResidualKindTag.Composition ||
+					!/^composes\s*:/u.test(residual.text),
+			);
+			const result: StyleProgram = {
+				...program,
+				rules: [
+					{
+						...root,
+						declarations: [
+							...inherited.flatMap((value) => value!.rules[0]!.declarations),
+							...root.declarations,
+						],
+					},
+				],
+				residuals,
+			};
+			expanded.set(name, result);
+			return result;
+		};
+		for (const [index, match] of matches.entries()) {
+			const name = match.program.rules[0]?.name;
+			if (name === undefined || !localCompositions.has(name)) continue;
+			const result = expand(name, new Set());
+			if (result !== undefined)
+				matches[index] = { ...match, program: result };
+		}
+	}
 	return { matches, residuals };
 }
 

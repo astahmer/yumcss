@@ -87,6 +87,7 @@ export const enum StyleProgramResidualKindTag {
 	Nesting = "nesting",
 	Configuration = "configuration",
 	Composition = "composition",
+	Component = "component",
 	PluginTransform = "plugin-transform",
 	UnmatchedSource = "unmatched-source",
 }

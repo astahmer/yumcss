@@ -16,6 +16,10 @@ import { TokenCatalog } from "../tokens.ts";
 import type { ProjectModuleLoader } from "../project-module-loader.ts";
 import { joinDocumentPath } from "../../path-utils.ts";
 import type { PandaTheme } from "./panda/theme.ts";
+import {
+	preserveUnsupportedRecipeFields,
+	recipeSourceObjectOptions,
+} from "./recipe-source.ts";
 
 const pandaJsxStyleProps = (context: import("../adapter-contract.ts").AdapterParseContext) =>
 	(context.config.values.pandaTheme as PandaTheme | undefined)?.jsxStyleProps.matches ??
@@ -194,11 +198,8 @@ export function createPandaAdapter(options: PandaAdapterOptions = {}) {
 			{
 				name: "cva",
 				regex: /\bcva\s*\(\s*\{/g,
-				form: CodemodCallPatternFormTag.Residual,
-				residual: {
-					kind: StyleProgramResidualKindTag.Composition,
-					hint: "Panda cva recipes require variant-aware target lowering",
-				},
+				sourceObjectOptions: recipeSourceObjectOptions,
+				transform: preserveUnsupportedRecipeFields,
 			},
 			{
 				name: "sva",

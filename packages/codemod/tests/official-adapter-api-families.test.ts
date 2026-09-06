@@ -118,6 +118,24 @@ describe("official adapter API families", () => {
 					expect(result.code).toContain("css.class");
 					expect(result.code).not.toContain("pandwind:migrate-skip");
 				}
+				if (
+					(api.name === "cva recipe" && api.adapter === CodemodAdapterId.Panda) ||
+					(api.name === "recipe" && api.adapter === CodemodAdapterId.VanillaExtract)
+				) {
+					expect(result.code).toContain("createRecipe(css");
+					expect(result.code).toContain('"size": { "sm"');
+					expect(result.code).not.toContain("migrate-skip");
+				}
+				if (api.name === "createComponent" && api.adapter === CodemodAdapterId.Fela) {
+					expect(result.code).toContain("__pandwindSlot");
+					expect(result.code).toContain('defaultComponent: "button"');
+					expect(result.code).not.toContain("createComponent");
+				}
+				if (api.name === "composes" && api.adapter === CodemodAdapterId.CssModules) {
+					expect(result.code).toContain('"primary": css.class');
+					expect(result.code).toContain('color: "red"');
+					expect(result.code).not.toContain("migrate-skip");
+				}
 			} else if (api.expectation === "runtime") {
 				expect(result.converted, `${api.adapter}/${api.name}`).toBeGreaterThan(0);
 				expect(result.skipped, `${api.adapter}/${api.name}`).toBe(0);
@@ -686,11 +704,12 @@ describe("official adapter API families", () => {
 			    ],
 			  },
 			  "css-modules/composes": {
-			    "changed": false,
-			    "code": "// pandwind:migrate-skip (lowering-residual: composition)
-			.card { color: red; }
-			.primary { composes: card; font-weight: 600; }",
-			    "converted": 0,
+			    "changed": true,
+			    "code": "import { createCss } from "pandwind/css";
+			const css = createCss();
+			export const styles = { "card": css.class({ color: "red" }), "primary": css.class({ color: "red", fontWeight: "600" }) };
+			export default styles;",
+			    "converted": 2,
 			    "generatedFiles": [],
 			    "loweringPlans": [
 			      {
@@ -706,32 +725,38 @@ describe("official adapter API families", () => {
 			      {
 			        "applied": [],
 			        "availableRepresentations": [
+			          "static",
 			          "named-map",
 			          "residual",
 			        ],
-			        "representation": "residual",
+			        "representation": "static",
 			        "residuals": [],
 			      },
 			    ],
 			    "outcomes": [
 			      {
-			        "outcome": "residual",
-			        "representation": "residual",
+			        "outcome": "static",
+			        "representation": "static",
 			      },
 			      {
-			        "outcome": "residual",
-			        "representation": "residual",
+			        "outcome": "static",
+			        "representation": "static",
 			      },
 			    ],
-			    "residuals": [
+			    "residuals": [],
+			    "skipped": 0,
+			    "validations": [
 			      {
-			        "hint": "preprocessor or CSS Modules composition needs its source context",
-			        "kind": "composition",
-			        "preserved": undefined,
+			        "differences": [],
+			        "lossiness": "lossless",
+			        "valid": true,
+			      },
+			      {
+			        "differences": [],
+			        "lossiness": "lossless",
+			        "valid": true,
 			      },
 			    ],
-			    "skipped": 1,
-			    "validations": [],
 			  },
 			  "css-modules/global pseudo and descendant selectors": {
 			    "changed": false,
@@ -1066,37 +1091,42 @@ describe("official adapter API families", () => {
 			  },
 			  "fela/createComponent": {
 			    "changed": true,
-			    "code": "import { createComponent } from "react-fela";
-			export const Card = // pandwind:migrate-skip (route: fela -> pandwind | parse-residual: component | available: named-map, residual)
-			createComponent(() => ({ color: "red" }), "button");",
-			    "converted": 0,
+			    "code": "import { createCss } from "pandwind/css";
+			import { createCx } from "pandwind/cx";
+			const cx = createCx();
+			const css = createCss();
+			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Component {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
+
+			export const Card = __pandwindSlot({ defaultComponent: "button", style: css.class({ color: "red" }), stableClass: "pw-1sqdko1", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
+			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
 			      {
 			        "applied": [],
 			        "availableRepresentations": [
+			          "static",
 			          "named-map",
 			          "residual",
 			        ],
-			        "representation": "residual",
+			        "representation": "static",
 			        "residuals": [],
 			      },
 			    ],
 			    "outcomes": [
 			      {
-			        "outcome": "residual",
-			        "representation": "residual",
+			        "outcome": "static",
+			        "representation": "static",
 			      },
 			    ],
-			    "residuals": [
+			    "residuals": [],
+			    "skipped": 0,
+			    "validations": [
 			      {
-			        "hint": "Fela createComponent requires a host/component lowering",
-			        "kind": "component",
-			        "preserved": undefined,
+			        "differences": [],
+			        "lossiness": "lossless",
+			        "valid": true,
 			      },
 			    ],
-			    "skipped": 1,
-			    "validations": [],
 			  },
 			  "fela/renderer plugins context": {
 			    "changed": true,
@@ -1896,37 +1926,40 @@ describe("official adapter API families", () => {
 			  },
 			  "panda/cva recipe": {
 			    "changed": true,
-			    "code": "import { cva } from "styled-system/css";
-			export const button = // pandwind:migrate-skip (route: panda -> pandwind | parse-residual: composition | available: named-map, residual)
-			cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });",
-			    "converted": 0,
+			    "code": "import { createCss } from "pandwind/css";
+			import { createRecipe } from "pandwind/recipe";
+			const css = createCss();
+
+			export const button = createRecipe(css, { base: { color: "red" }, variants: { "size": { "sm": { padding: "2" } } } });",
+			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
 			      {
 			        "applied": [],
 			        "availableRepresentations": [
+			          "static",
 			          "named-map",
 			          "residual",
 			        ],
-			        "representation": "residual",
+			        "representation": "static",
 			        "residuals": [],
 			      },
 			    ],
 			    "outcomes": [
 			      {
-			        "outcome": "residual",
-			        "representation": "residual",
+			        "outcome": "static",
+			        "representation": "static",
 			      },
 			    ],
-			    "residuals": [
+			    "residuals": [],
+			    "skipped": 0,
+			    "validations": [
 			      {
-			        "hint": "Panda cva recipes require variant-aware target lowering",
-			        "kind": "composition",
-			        "preserved": undefined,
+			        "differences": [],
+			        "lossiness": "lossless",
+			        "valid": true,
 			      },
 			    ],
-			    "skipped": 1,
-			    "validations": [],
 			  },
 			  "panda/defineRecipe config": {
 			    "changed": false,
@@ -3689,37 +3722,40 @@ describe("official adapter API families", () => {
 			  },
 			  "vanilla-extract/recipe": {
 			    "changed": true,
-			    "code": "import { recipe } from "@vanilla-extract/recipes";
-			export const button = // pandwind:migrate-skip (route: vanilla-extract -> pandwind | parse-residual: composition | available: named-map, residual)
-			recipe({ base: { color: "red" }, variants: { size: { sm: { padding: 4 } } } });",
-			    "converted": 0,
+			    "code": "import { createCss } from "pandwind/css";
+			import { createRecipe } from "pandwind/recipe";
+			const css = createCss();
+
+			export const button = createRecipe(css, { base: { color: "red" }, variants: { "size": { "sm": { padding: 4 } } } });",
+			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
 			      {
 			        "applied": [],
 			        "availableRepresentations": [
+			          "static",
 			          "named-map",
 			          "residual",
 			        ],
-			        "representation": "residual",
+			        "representation": "static",
 			        "residuals": [],
 			      },
 			    ],
 			    "outcomes": [
 			      {
-			        "outcome": "residual",
-			        "representation": "residual",
+			        "outcome": "static",
+			        "representation": "static",
 			      },
 			    ],
-			    "residuals": [
+			    "residuals": [],
+			    "skipped": 0,
+			    "validations": [
 			      {
-			        "hint": "Vanilla Extract recipes require variant-aware target lowering",
-			        "kind": "composition",
-			        "preserved": undefined,
+			        "differences": [],
+			        "lossiness": "lossless",
+			        "valid": true,
 			      },
 			    ],
-			    "skipped": 1,
-			    "validations": [],
 			  },
 			  "vanilla-extract/styleVariants": {
 			    "changed": true,
