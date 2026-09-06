@@ -13,6 +13,7 @@ import {
 	createSourceProjectBindingIndex,
 	type SourceBindingIndex,
 	type SourceScanResult,
+	type SourceScannerService,
 } from "pandwind/source";
 import type { PandwindMeta } from "../meta.ts";
 import { dirnameDocumentPath, joinDocumentPath } from "../path-utils.ts";
@@ -87,6 +88,7 @@ function frameworkForHost(
 	document: SourceScanResult,
 	semantic: AdapterParseContext["semantic"],
 	program: StyleProgram,
+	scanner: SourceScannerService,
 ): string | undefined {
 	return (
 		semantic?.source?.framework ??
@@ -101,7 +103,7 @@ function frameworkForHost(
 				svelte: BuiltinHostFramework.Svelte,
 				astro: BuiltinHostFramework.Astro,
 			} as Partial<Record<string, BuiltinHostFramework>>
-		)[document.language ?? SOURCE_SCANNER_SERVICE.languageForFile(file)]
+		)[document.language ?? scanner.languageForFile(file)]
 	);
 }
 
@@ -185,8 +187,13 @@ function generatedBindings(imports: ReadonlySet<string>): readonly string[] {
 }
 
 /** Keep generated module statements inside the executable block of an SFC. */
-function ensureGeneratedStatement(code: string, statement: string, file: string): string {
-	if (SOURCE_SCANNER_SERVICE.languageForFile(file) !== "vue" || code.includes(statement))
+function ensureGeneratedStatement(
+	code: string,
+	statement: string,
+	file: string,
+	scanner: SourceScannerService,
+): string {
+	if (scanner.languageForFile(file) !== "vue" || code.includes(statement))
 		return ensureImport(code, statement);
 	const script = /<script(?:\s+setup)?(?:\s[^>]*)?>/i.exec(code);
 	if (script === null) return `<script setup>\n${statement}\n</script>\n${code}`;
@@ -251,6 +258,21 @@ export interface AdapterMigrationOptions {
 	readonly loweringRegistry?: StyleLoweringRegistry;
 	/** Framework/project metadata that cannot be recovered from syntax alone. */
 	readonly semantic?: AdapterParseContext["semantic"];
+}
+
+/** Infrastructure ports used by the adapter migration application service. */
+export interface AdapterMigrationPorts {
+	readonly adapterRegistry: StyleAdapterRegistry;
+	readonly sourceScanner: SourceScannerService;
+	readonly loweringRegistry: StyleLoweringRegistry;
+	readonly resolveAdapterRegistry?: (
+		moduleLoader?: ProjectModuleLoader,
+	) => Promise<StyleAdapterRegistry>;
+}
+
+export interface AdapterMigrationExecutor {
+	run(source: string, options: AdapterMigrationOptions): AdapterMigrationResult;
+	runAsync(source: string, options: AdapterMigrationOptions): Promise<AdapterMigrationResult>;
 }
 
 export interface AdapterMigrationResult {
@@ -335,8 +357,6 @@ interface LoadedAdapterConfigs {
 	readonly target: ReturnType<StyleAdapter["loadConfig"]>;
 }
 
-const defaultAdapterRegistry = createBrowserCodemodCatalog().registry;
-
 async function resolveNodeAdapterRegistry(
 	moduleLoader?: ProjectModuleLoader,
 ): Promise<StyleAdapterRegistry> {
@@ -346,6 +366,13 @@ async function resolveNodeAdapterRegistry(
 	const { createBuiltinCodemodCatalog } = await import(/* @vite-ignore */ "./adapter-catalog.js");
 	return createBuiltinCodemodCatalog(moduleLoader).registry;
 }
+
+const DEFAULT_ADAPTER_MIGRATION_PORTS: AdapterMigrationPorts = {
+	adapterRegistry: createBrowserCodemodCatalog().registry,
+	sourceScanner: SOURCE_SCANNER_SERVICE,
+	loweringRegistry: STYLE_LOWERING_REGISTRY,
+	resolveAdapterRegistry: resolveNodeAdapterRegistry,
+};
 
 /**
  * Migration callers may inject a loader scoped to a harness root (sandbox,
@@ -467,30 +494,19 @@ function loweringRegistryForRoute(
 	return byId.size === 0 ? base : base.extend([...byId.values()]);
 }
 
-/** Run one v2 adapter-to-adapter migration over a source file. */
-export function runAdapterMigration(
+async function runAdapterMigrationAsyncInternal(
 	source: string,
 	options: AdapterMigrationOptions,
-): AdapterMigrationResult {
-	return runAdapterMigrationInternal(source, options);
-}
-
-/**
- * Project-aware migration entry point. Official ecosystem packages are
- * optional: adapters use them when installed in the host project and retain
- * their deterministic source fallback otherwise.
- */
-export async function runAdapterMigrationAsync(
-	source: string,
-	options: AdapterMigrationOptions,
+	ports: AdapterMigrationPorts,
 ): Promise<AdapterMigrationResult> {
 	const adapterRegistry =
 		options.adapterRegistry ??
-		(await resolveNodeAdapterRegistry(
+		(await ports.resolveAdapterRegistry?.(
 			options.moduleLoader === undefined
 				? undefined
 				: withProjectLoaderFallback(options.moduleLoader),
-		));
+		)) ??
+		ports.adapterRegistry;
 	const route = (options.registry ?? adapterRegistry.toStyleSystemRegistry()).resolveRoute(
 		options.from,
 		options.to,
@@ -498,7 +514,7 @@ export async function runAdapterMigrationAsync(
 	const context = migrationContext(source, options);
 	const detection = route.source.detect(context);
 	if (!detection.matched)
-		return runAdapterMigrationInternal(source, { ...options, adapterRegistry });
+		return runAdapterMigrationInternal(source, { ...options, adapterRegistry }, undefined, ports);
 	let sourceConfig: LoadedAdapterConfigs["source"];
 	let targetConfig: LoadedAdapterConfigs["target"];
 	try {
@@ -542,15 +558,57 @@ export async function runAdapterMigrationAsync(
 			source: sourceConfig,
 			target: targetConfig,
 		},
+		ports,
 	);
+}
+
+export function createAdapterMigrationExecutor(
+	ports: AdapterMigrationPorts = DEFAULT_ADAPTER_MIGRATION_PORTS,
+): AdapterMigrationExecutor {
+	return {
+		run: (source, options) =>
+			runAdapterMigrationInternal(
+				source,
+				{
+					...options,
+					adapterRegistry: options.adapterRegistry ?? ports.adapterRegistry,
+				},
+				undefined,
+				ports,
+			),
+		runAsync: (source, options) => runAdapterMigrationAsyncInternal(source, options, ports),
+	};
+}
+
+const DEFAULT_ADAPTER_MIGRATION_EXECUTOR = createAdapterMigrationExecutor();
+
+/** Run one v2 adapter-to-adapter migration over a source file. */
+export function runAdapterMigration(
+	source: string,
+	options: AdapterMigrationOptions,
+): AdapterMigrationResult {
+	return DEFAULT_ADAPTER_MIGRATION_EXECUTOR.run(source, options);
+}
+
+/**
+ * Project-aware migration entry point. Official ecosystem packages are
+ * optional: adapters use them when installed in the host project and retain
+ * their deterministic source fallback otherwise.
+ */
+export function runAdapterMigrationAsync(
+	source: string,
+	options: AdapterMigrationOptions,
+): Promise<AdapterMigrationResult> {
+	return DEFAULT_ADAPTER_MIGRATION_EXECUTOR.runAsync(source, options);
 }
 
 function runAdapterMigrationInternal(
 	source: string,
 	options: AdapterMigrationOptions,
 	loadedConfigs?: LoadedAdapterConfigs,
+	ports: AdapterMigrationPorts = DEFAULT_ADAPTER_MIGRATION_PORTS,
 ): AdapterMigrationResult {
-	const adapterRegistry = options.adapterRegistry ?? defaultAdapterRegistry;
+	const adapterRegistry = options.adapterRegistry ?? ports.adapterRegistry;
 	const route = (options.registry ?? adapterRegistry.toStyleSystemRegistry()).resolveRoute(
 		options.from,
 		options.to,
@@ -622,7 +680,7 @@ function runAdapterMigrationInternal(
 			outcomes: result.outcomes ?? derivedFileOutcomes(source, result.loweringPlans),
 		};
 	}
-	const document = SOURCE_SCANNER_SERVICE.scan({
+	const document = ports.sourceScanner.scan({
 		file: options.file,
 		source,
 		root: options.root,
@@ -684,7 +742,7 @@ function runAdapterMigrationInternal(
 	};
 	const mode = options.mode ?? "safe";
 	const loweringRegistry = loweringRegistryForRoute(
-		options.loweringRegistry ?? STYLE_LOWERING_REGISTRY,
+		options.loweringRegistry ?? ports.loweringRegistry,
 		sourceAdapter,
 		targetAdapter,
 	);
@@ -825,7 +883,13 @@ function runAdapterMigrationInternal(
 		let sourceSubjectDiscarded = false;
 		const targetPolicy = targetAdapter.migration?.targetPolicy;
 		let hostRepresentation = targetPolicy?.hostRepresentation;
-		const sourceHostFramework = frameworkForHost(options.file, document, options.semantic, program);
+		const sourceHostFramework = frameworkForHost(
+			options.file,
+			document,
+			options.semantic,
+			program,
+			ports.sourceScanner,
+		);
 		const hostConversionContext = { file: options.file, source, program };
 		if (
 			program.source?.framework !== undefined &&
@@ -1744,8 +1808,14 @@ function runAdapterMigrationInternal(
 			runtimeEdited,
 			'import { createCx } from "pandwind/cx";',
 			options.file,
+			ports.sourceScanner,
 		);
-		runtimeEdited = ensureGeneratedStatement(runtimeEdited, "const cx = createCx();", options.file);
+		runtimeEdited = ensureGeneratedStatement(
+			runtimeEdited,
+			"const cx = createCx();",
+			options.file,
+			ports.sourceScanner,
+		);
 	}
 	const rewrite = sourceAdapter.migration?.rewrite?.({
 		source,
@@ -1785,7 +1855,13 @@ function runAdapterMigrationInternal(
 	const documentSourceFramework =
 		documentProgram === undefined
 			? undefined
-			: frameworkForHost(options.file, document, options.semantic, documentProgram);
+			: frameworkForHost(
+					options.file,
+					document,
+					options.semantic,
+					documentProgram,
+					ports.sourceScanner,
+				);
 	const documentConversion = hostFrameworkConversion(
 		targetAdapter.migration?.targetPolicy,
 		documentSourceFramework,
@@ -1909,9 +1985,9 @@ function runAdapterMigrationInternal(
 		code = MigrationOutput.removeGeneratedStatements(code, ["const css = createCss();"]);
 	const outputFile = fileWithExtension(options.file, outputExtension);
 	for (const statement of generatedStatements)
-		code = ensureGeneratedStatement(code, statement, outputFile);
+		code = ensureGeneratedStatement(code, statement, outputFile, ports.sourceScanner);
 	for (const statement of MigrationOutput.consolidateImports(imports))
-		code = ensureGeneratedStatement(code, statement, outputFile);
+		code = ensureGeneratedStatement(code, statement, outputFile, ports.sourceScanner);
 	return {
 		code,
 		...(outputExtension === undefined ? {} : { outputExtension }),

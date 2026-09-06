@@ -1,26 +1,16 @@
 import {
-	runAdapterMigration,
-	runAdapterMigrationAsync,
+	createAdapterMigrationExecutor,
 	type AdapterMigrationOptions,
 	type AdapterMigrationResult,
+	type AdapterMigrationExecutor,
 } from "./adapter-migration.ts";
 
 /** Versioned application boundary for one source-file style migration. */
 export const STYLE_MIGRATION_USE_CASE_SCHEMA = "pandwind.style-migration-use-case/1" as const;
 
-export interface StyleMigrationExecutor {
-	run(source: string, options: AdapterMigrationOptions): AdapterMigrationResult;
-	runAsync(source: string, options: AdapterMigrationOptions): Promise<AdapterMigrationResult>;
-}
-
-export interface StyleMigrationUseCase extends StyleMigrationExecutor {
+export interface StyleMigrationUseCase extends AdapterMigrationExecutor {
 	readonly schema: typeof STYLE_MIGRATION_USE_CASE_SCHEMA;
 }
-
-const DEFAULT_EXECUTOR: StyleMigrationExecutor = {
-	run: runAdapterMigration,
-	runAsync: runAdapterMigrationAsync,
-};
 
 /**
  * Compose the migration application service from an executor port.
@@ -30,7 +20,7 @@ const DEFAULT_EXECUTOR: StyleMigrationExecutor = {
  * callers that orchestrate a migration.
  */
 export function createStyleMigrationUseCase(
-	executor: StyleMigrationExecutor = DEFAULT_EXECUTOR,
+	executor: AdapterMigrationExecutor = createAdapterMigrationExecutor(),
 ): StyleMigrationUseCase {
 	return {
 		schema: STYLE_MIGRATION_USE_CASE_SCHEMA,

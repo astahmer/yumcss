@@ -359,7 +359,13 @@ export type {
 	StyleLoweringResult,
 	StyleLoweringPlan,
 } from "./lowering.ts";
-export type { AdapterMigrationOptions, AdapterMigrationResult } from "./adapter-migration.ts";
+export { createAdapterMigrationExecutor } from "./adapter-migration.ts";
+export type {
+	AdapterMigrationExecutor,
+	AdapterMigrationOptions,
+	AdapterMigrationPorts,
+	AdapterMigrationResult,
+} from "./adapter-migration.ts";
 export { createAdapterContractSuite } from "./adapter-contract-suite.ts";
 export type {
 	AdapterContractFailure,
@@ -401,7 +407,7 @@ export type {
 	AdapterMigrationPipeline,
 	MigrationStage,
 } from "./migration-pipeline.ts";
-export type { StyleMigrationExecutor, StyleMigrationUseCase } from "./migration-use-case.ts";
+export type { StyleMigrationUseCase } from "./migration-use-case.ts";
 export {
 	ADAPTER_PLUGIN_SCHEMA,
 	createStyleAdapterPlugin,

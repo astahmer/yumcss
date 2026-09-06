@@ -1,10 +1,14 @@
 import { describe, expect, test } from "vitest";
 import {
 	STYLE_MIGRATION_USE_CASE_SCHEMA,
+	STYLE_LOWERING_REGISTRY,
+	createAdapterMigrationExecutor,
 	createAdapterMigrationPipeline,
+	createBuiltinCodemodCatalog,
 	createStyleMigrationUseCase,
 	type AdapterMigrationResult,
 } from "../src/swap/index.ts";
+import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
 
 const result: AdapterMigrationResult = {
 	code: "const card = 1;",
@@ -54,5 +58,28 @@ describe("style migration use case", () => {
 		expect(
 			await pipeline.runAsync("source", { from: "source", to: "target", file: "file.ts" }),
 		).toBe(result);
+	});
+
+	test("injects the catalog, scanner, and lowering ports into execution", () => {
+		let scans = 0;
+		const executor = createAdapterMigrationExecutor({
+			adapterRegistry: createBuiltinCodemodCatalog().registry,
+			sourceScanner: {
+				...SOURCE_SCANNER_SERVICE,
+				scan(input) {
+					scans++;
+					return SOURCE_SCANNER_SERVICE.scan(input);
+				},
+			},
+			loweringRegistry: STYLE_LOWERING_REGISTRY,
+		});
+
+		const migrated = executor.run(
+			'import { css } from "@emotion/react";\nconst card = css({ color: "red" });',
+			{ from: "emotion", to: "styled-components", file: "Card.tsx" },
+		);
+
+		expect(migrated.converted).toBe(1);
+		expect(scans).toBe(1);
 	});
 });
