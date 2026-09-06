@@ -10,6 +10,7 @@ import {
 	asStyleDialect,
 	createStyleSystem,
 	createStyleSystemRegistry,
+	StyleDialectRoleTag,
 	type StyleSystemAdapter,
 	type StyleSystemRegistry,
 } from "./style-systems.ts";
@@ -170,132 +171,157 @@ export function createStyleAdapterPlugin(
 	};
 }
 
+class DefaultStyleAdapterRegistry implements StyleAdapterRegistry {
+	private readonly values = new Map<string, StyleAdapter>();
+
+	constructor(initial: readonly StyleAdapter[]) {
+		for (const adapter of initial) this.register(adapter);
+	}
+
+	get adapters(): readonly StyleAdapter[] {
+		return [...this.values.values()];
+	}
+
+	register(adapter: StyleAdapter): StyleAdapterRegistry {
+		if (!isStyleAdapter(adapter)) throw new Error("invalid style adapter");
+		const normalized = normalizeAdapter(adapter);
+		if (this.values.has(normalized.id))
+			throw new Error(`style adapter already registered: ${normalized.id}`);
+		this.values.set(normalized.id, normalized);
+		return this;
+	}
+
+	registerPlugin(plugin: StyleAdapterPlugin): StyleAdapterRegistry {
+		if (plugin.schema !== ADAPTER_PLUGIN_SCHEMA)
+			throw new Error(`unsupported adapter plugin schema: ${plugin.schema}`);
+		validateStyleAdapterManifest(plugin.manifest, plugin.adapters);
+		for (const adapter of plugin.adapters) this.register(adapter);
+		return this;
+	}
+
+	get(id: string): StyleAdapter | undefined {
+		return this.values.get(id);
+	}
+
+	capabilityMatrix(): AdapterCapabilityMatrix {
+		return createAdapterCapabilityMatrix(
+			this.adapters.map((adapter): AdapterCapabilityMatrixEntry => ({
+				...adapter.capabilities,
+				sourceModules: adapter.sourceModules,
+				dependencies: adapter.dependencies,
+			})),
+		);
+	}
+
+	toStyleSystemRegistry(): StyleSystemRegistry {
+		const adapters = this.adapters;
+		const panda = adapters.find((adapter) => adapter.id === CodemodAdapterId.Panda);
+		const pandwind = adapters.find((adapter) => adapter.id === CodemodAdapterId.Pandwind);
+		const systems: StyleSystemAdapter[] = [
+			createStyleSystem(CodemodAdapterId.Panda, [
+				...(panda === undefined
+					? []
+					: [asStyleDialect(panda, { system: CodemodAdapterId.Panda, dialect: panda.id })]),
+				...PANDA_STYLE_SYSTEM.dialects,
+			]),
+			createStyleSystem(CodemodAdapterId.Pandwind, [
+				...(pandwind === undefined
+					? []
+					: [
+							asStyleDialect(pandwind, {
+								system: CodemodAdapterId.Pandwind,
+								dialect: pandwind.id,
+							}),
+						]),
+				...PANDWIND_STYLE_SYSTEM.dialects,
+			]),
+			...adapters
+				.filter(
+					(adapter) =>
+						adapter.id !== CodemodAdapterId.Panda && adapter.id !== CodemodAdapterId.Pandwind,
+				)
+				.map((adapter) =>
+					createStyleSystem(adapter.id, [
+						asStyleDialect(adapter, {
+							system: adapter.id,
+							dialect: adapter.id,
+							role: StyleDialectRoleTag.Both,
+						}),
+					]),
+				),
+		];
+		return createStyleSystemRegistry(systems);
+	}
+
+	async discover(
+		specifiers: readonly string[],
+		options: AdapterDiscoveryOptions = {},
+	): Promise<readonly AdapterDiscoveryResult[]> {
+		const load = options.load ?? ((specifier: string) => import(/* @vite-ignore */ specifier));
+		return Promise.all(
+			specifiers.map(async (specifier): Promise<AdapterDiscoveryResult> => {
+				try {
+					const plugin = asPlugin(await load(specifier), specifier);
+					this.registerPlugin(plugin);
+					return {
+						specifier,
+						registered: plugin.adapters.map((adapter) => adapter.id),
+						errors: [],
+					};
+				} catch (error) {
+					return {
+						specifier,
+						registered: [],
+						errors: [error instanceof Error ? error.message : String(error)],
+					};
+				}
+			}),
+		);
+	}
+
+	async discoverPackages(
+		packageJson: Readonly<Record<string, unknown>>,
+		options: AdapterDiscoveryOptions = {},
+	): Promise<readonly AdapterDiscoveryResult[]> {
+		const dependencies = [
+			packageJson.dependencies,
+			packageJson.devDependencies,
+			packageJson.peerDependencies,
+		]
+			.flatMap((value) =>
+				value !== null && typeof value === "object"
+					? Object.keys(value as Record<string, unknown>)
+					: [],
+			)
+			.toSorted();
+		const loadPackageJson =
+			options.loadPackageJson ??
+			(async (specifier: string) => {
+				try {
+					const loaded = await import(/* @vite-ignore */ `${specifier}/package.json`, {
+						with: { type: "json" },
+					});
+					return (loaded.default ?? loaded) as Readonly<Record<string, unknown>>;
+				} catch {
+					return undefined;
+				}
+			});
+		const candidates = (
+			await Promise.all(
+				dependencies.map(async (specifier) => ({
+					specifier,
+					metadata: await loadPackageJson(specifier),
+				})),
+			)
+		)
+			.filter(({ metadata }) => readAdapterPackageDeclaration(metadata ?? {}) !== undefined)
+			.map(({ specifier }) => specifier);
+		return this.discover(candidates, options);
+	}
+}
+
 export function createStyleAdapterRegistry(
 	initial: readonly StyleAdapter[] = [],
 ): StyleAdapterRegistry {
-	const values = new Map<string, StyleAdapter>();
-	const registry: StyleAdapterRegistry = {
-		get adapters() {
-			return [...values.values()];
-		},
-		register(adapter) {
-			if (!isStyleAdapter(adapter)) throw new Error("invalid style adapter");
-			const normalized = normalizeAdapter(adapter);
-			if (values.has(normalized.id))
-				throw new Error(`style adapter already registered: ${normalized.id}`);
-			values.set(normalized.id, normalized);
-			return registry;
-		},
-		registerPlugin(plugin) {
-			if (plugin.schema !== ADAPTER_PLUGIN_SCHEMA)
-				throw new Error(`unsupported adapter plugin schema: ${plugin.schema}`);
-			validateStyleAdapterManifest(plugin.manifest, plugin.adapters);
-			for (const adapter of plugin.adapters) registry.register(adapter);
-			return registry;
-		},
-		get: (id) => values.get(id),
-		capabilityMatrix: () =>
-			createAdapterCapabilityMatrix(
-				registry.adapters.map((adapter): AdapterCapabilityMatrixEntry => ({
-					...adapter.capabilities,
-					sourceModules: adapter.sourceModules,
-					dependencies: adapter.dependencies,
-				})),
-			),
-		toStyleSystemRegistry() {
-			const adapters = registry.adapters;
-			const panda = adapters.find((adapter) => adapter.id === CodemodAdapterId.Panda);
-			const pandwind = adapters.find((adapter) => adapter.id === CodemodAdapterId.Pandwind);
-			const systems: StyleSystemAdapter[] = [
-				createStyleSystem(CodemodAdapterId.Panda, [
-					...(panda === undefined
-						? []
-						: [asStyleDialect(panda, { system: CodemodAdapterId.Panda, dialect: panda.id })]),
-					...PANDA_STYLE_SYSTEM.dialects,
-				]),
-				createStyleSystem(CodemodAdapterId.Pandwind, [
-					...(pandwind === undefined
-						? []
-						: [
-								asStyleDialect(pandwind, {
-									system: CodemodAdapterId.Pandwind,
-									dialect: pandwind.id,
-								}),
-							]),
-					...PANDWIND_STYLE_SYSTEM.dialects,
-				]),
-				...adapters
-					.filter(
-						(adapter) =>
-							adapter.id !== CodemodAdapterId.Panda && adapter.id !== CodemodAdapterId.Pandwind,
-					)
-					.map((adapter) =>
-						createStyleSystem(adapter.id, [
-							asStyleDialect(adapter, { system: adapter.id, dialect: adapter.id, role: "both" }),
-						]),
-					),
-			];
-			return createStyleSystemRegistry(systems);
-		},
-		async discover(specifiers, options = {}) {
-			const load = options.load ?? ((specifier: string) => import(/* @vite-ignore */ specifier));
-			return Promise.all(
-				specifiers.map(async (specifier): Promise<AdapterDiscoveryResult> => {
-					try {
-						const plugin = asPlugin(await load(specifier), specifier);
-						registry.registerPlugin(plugin);
-						return {
-							specifier,
-							registered: plugin.adapters.map((adapter) => adapter.id),
-							errors: [],
-						};
-					} catch (error) {
-						return {
-							specifier,
-							registered: [],
-							errors: [error instanceof Error ? error.message : String(error)],
-						};
-					}
-				}),
-			);
-		},
-		async discoverPackages(packageJson, options = {}) {
-			const dependencies = [
-				packageJson.dependencies,
-				packageJson.devDependencies,
-				packageJson.peerDependencies,
-			]
-				.flatMap((value) =>
-					value !== null && typeof value === "object"
-						? Object.keys(value as Record<string, unknown>)
-						: [],
-				)
-				.toSorted();
-			const loadPackageJson =
-				options.loadPackageJson ??
-				(async (specifier: string) => {
-					try {
-						const loaded = await import(/* @vite-ignore */ `${specifier}/package.json`, {
-							with: { type: "json" },
-						});
-						return (loaded.default ?? loaded) as Readonly<Record<string, unknown>>;
-					} catch {
-						return undefined;
-					}
-				});
-			const candidates = (
-				await Promise.all(
-					dependencies.map(async (specifier) => ({
-						specifier,
-						metadata: await loadPackageJson(specifier),
-					})),
-				)
-			)
-				.filter(({ metadata }) => readAdapterPackageDeclaration(metadata ?? {}) !== undefined)
-				.map(({ specifier }) => specifier);
-			return registry.discover(candidates, options);
-		},
-	};
-	for (const adapter of initial) registry.register(adapter);
-	return registry;
+	return new DefaultStyleAdapterRegistry(initial);
 }
