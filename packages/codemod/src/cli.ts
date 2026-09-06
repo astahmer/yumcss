@@ -17,6 +17,7 @@
  */
 import { existsSync, mkdirSync, readFileSync, statSync, unlinkSync, writeFileSync } from "node:fs";
 import { basename, dirname, extname, resolve } from "node:path";
+import cac, { type CAC, type Command } from "cac";
 import { createSourceWorkspace } from "pandwind/source/workspace";
 import { loadMetaFromSourcesAsync, type PandwindMeta } from "./meta.ts";
 import { transformSource, type MigrateMode, type TransformResult } from "./migrate.ts";
@@ -25,7 +26,9 @@ import * as swapImport from "./swap/index.ts";
 import { CodemodAdapterId, SwapSourceId, SwapTargetId } from "./swap/identifiers.ts";
 import { tokenSetCodec } from "./swap/token-set.ts";
 import type { TokenFormatId } from "./swap/token-format-contracts.ts";
+import { TokenFormatId as TokenFormat } from "./swap/token-format-contracts.ts";
 import { unifiedDiff } from "./diff.ts";
+import { configureSwapCommand } from "./swap/cli-args.ts";
 export { unifiedDiff } from "./diff.ts";
 
 function writeGeneratedFiles(
@@ -110,49 +113,69 @@ interface CliArgs {
 	skipMarker: string;
 	sources: ReturnType<typeof parseSourceList>;
 }
+
+type CliOptions = Readonly<Record<string, unknown>>;
+
+const optionString = (options: CliOptions, name: string): string | undefined => {
+	const value = options[name];
+	return typeof value === "string" ? value : undefined;
+};
+
+const optionBoolean = (options: CliOptions, name: string): boolean => options[name] === true;
+
+const validateCommand = (command: Command): void => {
+	command.checkUnknownOptions();
+	command.checkOptionValue();
+	command.checkRequiredArgs();
+	command.checkUnusedArgs();
+};
+
+const configureDefaultCommand = (command: Command): void => {
+	command
+		.option("--to <mode>", "Migration mode: tw, cx, css, or keep", { default: "keep" })
+		.option("--from <sources>", "Source detectors, comma-separated")
+		.option("--diff", "Print unified diffs")
+		.option("--write", "Apply the migration to files")
+		.option("--report", "Print the migration report")
+		.option("--meta <dir>", "Generated Pandwind metadata directory", { default: "" })
+		.option("--skip-marker <text>", "Marker used to preserve opted-out sites", {
+			default: "pandwind:migrate-skip",
+		});
+};
+
+const MIGRATE_MODES = ["tw", "cx", "css", "keep"] as const;
+
 function parseArgs(argv: string[]): CliArgs {
-	const args: CliArgs = {
-		patterns: [],
-		mode: "keep",
-		diff: false,
-		write: false,
-		metaDir: "",
-		skipMarker: "pandwind:migrate-skip",
-		report: false,
-		sources: [],
-	};
-	for (const arg of argv) {
-		if (arg.startsWith("--to=")) {
-			const mode = arg.slice("--to=".length) as MigrateMode;
-			if (!["tw", "cx", "css", "keep"].includes(mode)) {
-				throw new Error(`codemod: unknown --to mode '${mode}' (expected tw|cx|css|keep)`);
-			}
-			args.mode = mode;
-		} else if (arg === "--diff") {
-			args.diff = true;
-		} else if (arg === "--report") {
-			args.report = true;
-		} else if (arg === "--write") {
-			args.write = true;
-		} else if (arg.startsWith("--meta=")) {
-			args.metaDir = arg.slice("--meta=".length);
-		} else if (arg.startsWith("--skip-marker=")) {
-			args.skipMarker = arg.slice("--skip-marker=".length);
-		} else if (arg.startsWith("--from=")) {
-			args.sources = parseSourceList(arg.slice("--from=".length));
-		} else if (arg.startsWith("--")) {
-			throw new Error(`codemod: unknown flag '${arg}'`);
-		} else {
-			args.patterns.push(arg);
-		}
-	}
-	if (args.patterns.length === 0) {
+	const cli = cac("pandwind-codemod");
+	const command = cli.command(
+		"[...patterns]",
+		"Migrate Tailwind class strings and registered source adapters",
+	);
+	configureDefaultCommand(command);
+	cli.parse(["node", "pandwind-codemod", ...argv], { run: false });
+	if (cli.matchedCommand === undefined) throw new Error("codemod: no input patterns given");
+	validateCommand(cli.matchedCommand);
+	if (cli.args.length === 0) {
 		throw new Error(
-			"codemod: no input patterns given.\n" +
-				"usage: pandwind-codemod <globs...> --to=tw|cx|css|keep [--diff] [--write] [--meta=<dir>]\n      [--from=styled-components,stylex]",
+			"codemod: no input patterns given.\nusage: pandwind-codemod [options] <globs...>",
 		);
 	}
-	return args;
+	const options = cli.options as CliOptions;
+	const mode = optionString(options, "to") ?? "keep";
+	if (!MIGRATE_MODES.includes(mode as (typeof MIGRATE_MODES)[number])) {
+		throw new Error(`codemod: unknown --to mode '${mode}' (expected ${MIGRATE_MODES.join("|")})`);
+	}
+	const from = optionString(options, "from");
+	return {
+		patterns: [...cli.args],
+		mode: mode as MigrateMode,
+		diff: optionBoolean(options, "diff"),
+		write: optionBoolean(options, "write"),
+		metaDir: optionString(options, "meta") ?? "",
+		skipMarker: optionString(options, "skipMarker") ?? "pandwind:migrate-skip",
+		report: optionBoolean(options, "report"),
+		sources: from === undefined ? [] : parseSourceList(from),
+	};
 }
 
 const sourceWorkspace = createSourceWorkspace();
@@ -161,9 +184,7 @@ const expandPatterns = (
 	patterns: readonly string[],
 	baseDir: string,
 	includeUnsupported = false,
-): string[] => [
-	...sourceWorkspace.files(patterns, baseDir, { includeUnsupported }),
-];
+): string[] => [...sourceWorkspace.files(patterns, baseDir, { includeUnsupported })];
 
 /** Ascend from cwd to the workspace root (the dir containing pnpm-workspace.yaml). */
 function findRepoRoot(): string {
@@ -544,8 +565,7 @@ async function runExternalAdapterSwap(
 	}
 }
 
-async function main(): Promise<void> {
-	const args = parseArgs(process.argv.slice(2));
+async function runDefault(args: CliArgs): Promise<void> {
 	const root = findRepoRoot();
 	const metaDirRelative = args.metaDir !== "" ? args.metaDir : "apps/example/src";
 	const metaDir = resolve(root, metaDirRelative);
@@ -665,32 +685,78 @@ export function buildReport(fileResults: Array<ReportEntry>): string {
  * Token-config conversions (plans/022): DTCG JSON <-> @theme css <->
  * definePreset <-> panda.config tokens. One TokenSet IR in between.
  */
-async function mainTokens(argv: string[]): Promise<void> {
-	let from: string | undefined;
-	let to: string | undefined;
-	let input: string | undefined;
-	let out: string | undefined;
-	for (const arg of argv) {
-		if (arg.startsWith("--from=")) from = arg.slice("--from=".length);
-		else if (arg.startsWith("--to=")) to = arg.slice("--to=".length);
-		else if (arg.startsWith("--out=")) out = arg.slice("--out=".length);
-		else if (!arg.startsWith("--")) input = arg;
-		else throw new Error(`codemod tokens: unknown flag '${arg}' (--from= --to= --out=)`);
-	}
-	const formats = ["dtcg", "theme", "panda", "preset", "sd", "figma", "rootcss", "stylex"] as const;
-	if (from === undefined || !formats.includes(from as TokenFormatId) || input === undefined) {
-		throw new Error(
-			"usage: pandwind-codemod tokens --from=<dtcg|theme|panda|preset> --to=<dtcg|theme|panda|preset> <file> [--out=<file>]",
-		);
-	}
-	to = to ?? from;
+const TOKEN_FORMATS: readonly TokenFormatId[] = [
+	TokenFormat.Dtcg,
+	TokenFormat.Theme,
+	TokenFormat.Panda,
+	TokenFormat.Preset,
+	TokenFormat.StyleDictionary,
+	TokenFormat.Figma,
+	TokenFormat.RootCss,
+	TokenFormat.StyleX,
+];
 
-	const set = await tokenSetCodec.fromFile(from as TokenFormatId, resolve(input));
+const configureTokensCommand = (command: Command): void => {
+	command
+		.option("--from <format>", "Input token format")
+		.option("--to <format>", "Output token format")
+		.option("--out <file>", "Write the converted token set to a file");
+};
+
+const tokenFormat = (value: string | undefined, flag: string): TokenFormatId => {
+	if (value !== undefined && TOKEN_FORMATS.includes(value as TokenFormatId))
+		return value as TokenFormatId;
+	throw new Error(
+		`codemod tokens: unknown --${flag} '${value ?? ""}' (expected ${TOKEN_FORMATS.join("|")})`,
+	);
+};
+
+interface TokenCliArgs {
+	from: TokenFormatId;
+	to: TokenFormatId;
+	input: string;
+	out?: string;
+}
+
+const parseTokenArgs = (argv: readonly string[]): TokenCliArgs => {
+	const cli = cac("pandwind-codemod tokens");
+	const command = cli.command("<input>", "Convert a token file between supported formats");
+	configureTokensCommand(command);
+	cli.parse(["node", "pandwind-codemod tokens", ...argv], { run: false });
+	if (cli.matchedCommand === undefined) throw new Error("codemod tokens: input file is required");
+	validateCommand(cli.matchedCommand);
+	const options = cli.options as CliOptions;
+	const from = tokenFormat(optionString(options, "from"), "from");
+	return {
+		from,
+		to: tokenFormat(optionString(options, "to") ?? from, "to"),
+		input: cli.args[0]!,
+		...(optionString(options, "out") === undefined ? {} : { out: optionString(options, "out") }),
+	};
+};
+
+const createCodemodCli = (): CAC => {
+	const cli = cac("pandwind-codemod");
+	const root = cli.command(
+		"[...patterns]",
+		"Migrate Tailwind class strings and registered source adapters",
+	);
+	configureDefaultCommand(root);
+	const swap = cli.command("swap [...patterns]", "Migrate between registered styling adapters");
+	configureSwapCommand(swap);
+	const tokens = cli.command("tokens <input>", "Convert token files between supported formats");
+	configureTokensCommand(tokens);
+	return cli;
+};
+
+async function mainTokens(argv: string[]): Promise<void> {
+	const { from, to, input, out } = parseTokenArgs(argv);
+	const set = await tokenSetCodec.fromFile(from, resolve(input));
 
 	const groupCount = Object.keys(set.groups).length;
 	const tokenCount = Object.values(set.groups).reduce((a, g) => a + Object.keys(g).length, 0);
 
-	const result = tokenSetCodec.to(to as TokenFormatId, set);
+	const result = tokenSetCodec.to(to, set);
 
 	if (out !== undefined) {
 		writeFileSync(resolve(out), result);
@@ -705,11 +771,29 @@ async function mainTokens(argv: string[]): Promise<void> {
 	}
 }
 
+async function main(argv = process.argv.slice(2)): Promise<void> {
+	const cli = createCodemodCli();
+	cli.help();
+	try {
+		cli.parse(["node", "pandwind-codemod", ...argv], { run: false });
+		if (cli.matchedCommand === undefined) return;
+		if (cli.matchedCommand.name === "swap") {
+			await mainSwap(argv.slice(1));
+			return;
+		}
+		if (cli.matchedCommand.name === "tokens") {
+			await mainTokens(argv.slice(1));
+			return;
+		}
+		await runDefault(parseArgs(argv));
+	} catch (error) {
+		console.error(`pandwind-codemod: ${error instanceof Error ? error.message : String(error)}`);
+		cli.outputHelp();
+		process.exitCode = 1;
+	}
+}
+
 // Run only when invoked as the CLI entry — importing the module from
 // tests must not execute the program.
 const invokedDirectly = /cli\.[mc]?[tj]sx?$/.test(process.argv[1] ?? "");
-if (invokedDirectly) {
-	if (process.argv[2] === "swap") void mainSwap(process.argv.slice(3));
-	else if (process.argv[2] === "tokens") void mainTokens(process.argv.slice(3));
-	else void main();
-}
+if (invokedDirectly) void main();

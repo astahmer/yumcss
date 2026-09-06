@@ -20,7 +20,6 @@ import { SourcePass } from "../source-pass-utils.ts";
 import { hasCssBinding, relativeModuleImport, ensureImport } from "../shared.ts";
 import { SWAP_REGISTRY } from "./swap-registry.ts";
 import { createBuiltinCodemodCatalog } from "./adapter-catalog.ts";
-import type { ExternalAdapterId } from "./external-adapters.ts";
 import type { TokenRefMode } from "./tokens.ts";
 import {
 	inspectAdapterCapabilities,
@@ -29,23 +28,13 @@ import {
 	type AdapterCapabilityReport,
 } from "./capabilities.ts";
 import { CodemodAdapterId, MigrationSkipReason, SwapTargetId } from "./identifiers.ts";
+import type { SwapCliArgs, SwapSource, SwapTarget } from "./cli-args.ts";
+export { SWAP_SOURCES, SWAP_TARGETS, parseSwapArgs } from "./cli-args.ts";
+export type { SwapCliArgs, SwapSource, SwapTarget } from "./cli-args.ts";
 
 const builtinAdapterCatalog = createBuiltinCodemodCatalog();
 const builtinAdapterIds = builtinAdapterCatalog.adapters.map((adapter) => adapter.id);
-
-export const SWAP_TARGETS = [
-	...SWAP_REGISTRY.targets.map((adapter) => adapter.id),
-	...builtinAdapterIds,
-];
-export type SwapTarget = SwapTargetId | CodemodAdapterId | ExternalAdapterId;
 import type { SwapIR } from "./ir.ts";
-
-export const SWAP_SOURCES = [
-	...SWAP_REGISTRY.sources.map((adapter) => adapter.id),
-	CodemodAdapterId.Panda,
-	...builtinAdapterIds,
-] as const;
-export type SwapSource = (typeof SWAP_SOURCES)[number];
 
 export type SwapMissResolver = (
 	utilityClass: string,
@@ -909,101 +898,4 @@ export function dedupLiteralCallSites(code: string): string {
 		working = ensureImport(working, `const ${name} = ${literal};`);
 	});
 	return working;
-}
-
-export interface SwapCliArgs {
-	from: SwapSource;
-	to: SwapTarget;
-	write: boolean;
-	diff: boolean;
-	report: boolean;
-	patterns: string[];
-	metaDir: string;
-	skipMarker: string;
-	tokenRefs: TokenRefMode;
-	engine: boolean;
-	tokenize: boolean;
-	sort: boolean;
-	dedup: boolean;
-	/** Output folder for --from=panda project migration (default "pandwind"). */
-	outDir: string;
-	/** Regenerate existing panda migration modules. */
-	force: boolean;
-	/** Capability policy for adapter routes; external routes default to safe. */
-	capabilityMode?: AdapterCapabilityMode;
-	reportFormat: "text" | "json";
-}
-
-export function parseSwapArgs(argv: string[]): SwapCliArgs {
-	const args: SwapCliArgs = {
-		from: "auto",
-		to: "css.class",
-		write: false,
-		diff: false,
-		report: false,
-		patterns: [],
-		metaDir: "",
-		skipMarker: "pandwind:migrate-skip",
-		tokenRefs: "bare",
-		engine: false,
-		tokenize: false,
-		sort: false,
-		dedup: false,
-		outDir: "",
-		force: false,
-		capabilityMode: undefined,
-		reportFormat: "text",
-	};
-	for (const arg of argv) {
-		if (arg.startsWith("--from=")) {
-			const value = arg.slice("--from=".length) as SwapSource;
-			if (!SWAP_SOURCES.includes(value)) {
-				throw new Error(
-					`codemod swap: unknown --from '${value}' (expected ${SWAP_SOURCES.join("|")})`,
-				);
-			}
-			args.from = value;
-		} else if (arg.startsWith("--to=")) {
-			const value = arg.slice("--to=".length) as SwapTarget;
-			if (!SWAP_TARGETS.includes(value)) {
-				throw new Error(
-					`codemod swap: unknown --to '${value}' (expected ${SWAP_TARGETS.join("|")})`,
-				);
-			}
-			args.to = value;
-		} else if (arg === "--write") args.write = true;
-		else if (arg === "--diff") args.diff = true;
-		else if (arg === "--report") args.report = true;
-		else if (arg === "--report=json") {
-			args.report = true;
-			args.reportFormat = "json";
-		} else if (arg === "--safe") args.capabilityMode = "safe";
-		else if (arg === "--partial") args.capabilityMode = "partial";
-		else if (arg.startsWith("--out=")) args.outDir = arg.slice("--out=".length);
-		else if (arg === "--force") args.force = true;
-		else if (arg === "--engine") args.engine = true;
-		else if (arg === "--tokenize") args.tokenize = true;
-		else if (arg === "--sort") args.sort = true;
-		else if (arg === "--dedup") args.dedup = true;
-		else if (arg.startsWith("--token-refs=")) {
-			const value = arg.slice("--token-refs=".length) as TokenRefMode;
-			if (!["off", "bare", "group"].includes(value)) {
-				throw new Error(`codemod swap: unknown --token-refs '${value}' (expected off|bare|group)`);
-			}
-			args.tokenRefs = value;
-		} else if (arg.startsWith("--meta=")) args.metaDir = arg.slice("--meta=".length);
-		else if (arg.startsWith("--skip-marker=")) args.skipMarker = arg.slice("--skip-marker=".length);
-		else if (arg.startsWith("--")) {
-			throw new Error(
-				`codemod swap: unknown flag '${arg}' (--write --diff --report[=json] --safe --partial --force --from= --to= --meta= --out= --skip-marker= --token-refs= --engine --tokenize --sort --dedup)`,
-			);
-		} else args.patterns.push(arg);
-	}
-	if (args.patterns.length === 0) {
-		throw new Error(
-			"codemod swap: no input patterns given.\n" +
-				"usage: pandwind-codemod swap --from=<auto|tw|css|design|panda> --to=<css.class|design|tw> [--safe|--partial] [--write] [--diff] [--report[=json]] [--meta=<dir>] [--out=<dir>] <globs...>",
-		);
-	}
-	return args;
 }
