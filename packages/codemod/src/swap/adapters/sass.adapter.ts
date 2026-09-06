@@ -15,17 +15,20 @@ interface SassModule {
 	) => { css: string; loadedUrls?: readonly URL[]; sourceMap?: unknown };
 }
 
-function sassModule(value: SassModule & { readonly default?: SassModule }): SassModule {
-	return value.compileString === undefined && value.default !== undefined ? value.default : value;
+function sassModule(
+	value: SassModule & { readonly default?: SassModule; readonly "module.exports"?: SassModule },
+): SassModule {
+	return value.compileString === undefined
+		? (value.default ?? value["module.exports"] ?? value)
+		: value;
 }
 
 function createSassCompiler(loader: ProjectModuleLoader): StylesheetCompilerPort {
 	return {
 		async compile(source, context) {
-			const loaded = await loader.importPackage<SassModule & { readonly default?: SassModule }>(
-				"sass",
-				context.root ?? ".",
-			);
+			const loaded = await loader.importPackage<
+				SassModule & { readonly default?: SassModule; readonly "module.exports"?: SassModule }
+			>("sass", context.root ?? ".");
 			const module = loaded === undefined ? undefined : sassModule(loaded);
 			if (module?.compileString === undefined) throw new Error("sass.compileString is unavailable");
 			const result = module.compileString(source, {

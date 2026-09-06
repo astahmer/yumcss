@@ -11,17 +11,18 @@ interface LessModule {
 	) => Promise<{ css: string; imports?: readonly string[]; map?: string }>;
 }
 
-function lessModule(value: LessModule & { readonly default?: LessModule }): LessModule {
-	return value.render === undefined && value.default !== undefined ? value.default : value;
+function lessModule(
+	value: LessModule & { readonly default?: LessModule; readonly "module.exports"?: LessModule },
+): LessModule {
+	return value.render === undefined ? (value.default ?? value["module.exports"] ?? value) : value;
 }
 
 function createLessCompiler(loader: ProjectModuleLoader): StylesheetCompilerPort {
 	return {
 		async compile(source, context) {
-			const loaded = await loader.importPackage<LessModule & { readonly default?: LessModule }>(
-				"less",
-				context.root ?? ".",
-			);
+			const loaded = await loader.importPackage<
+				LessModule & { readonly default?: LessModule; readonly "module.exports"?: LessModule }
+			>("less", context.root ?? ".");
 			const module = loaded === undefined ? undefined : lessModule(loaded);
 			if (module?.render === undefined) throw new Error("less.render is unavailable");
 			const result = await module.render(source, {
