@@ -1,5 +1,9 @@
 # Token usage and governance plan
 
+**Status: COMPLETE.** The versioned governance ledger, exact-match policy
+resolution, reachability report, read-only prune proposal, CLI/Inspector/lint/
+codemod integrations, and repository-scale benchmark are shipped.
+
 ## Context
 
 Pandwind already has several useful pieces of token analysis:

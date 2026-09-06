@@ -1,5 +1,9 @@
 # 057 - Dynamic value lowering (static-first, runtime fallback)
 
+**Status: COMPLETE.** Finite discovery, exact token preservation, CSS carriers,
+codemod residuals, runtime-sheet deduplication, SSR/hydration coverage, and
+documentation are shipped.
+
 Goal: make dynamic styling values (\`tw({ bg: color })\`, \`css({ color: "blue." + shade })\`)
 static-first instead of "runtime-only, hope the class exists". Every dynamic
 shape gets one of three honest outcomes:

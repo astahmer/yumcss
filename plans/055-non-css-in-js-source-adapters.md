@@ -1,5 +1,9 @@
 # Non-CSS-in-JS source adapters plan
 
+**Status: COMPLETE.** Tamagui, CSS Modules, Sass, Less, authored CSS, and the
+project-aware Vanilla Extract source lanes are registered, conservative, and
+covered by focused, pinned-reference, browser, and executable-package proof.
+
 ## Context
 
 Pandwind's current built-in codemod registry covers many CSS-in-JS and
@@ -396,11 +400,12 @@ The focused proof set is:
 - `source-adapter-contract.test.ts` — registry ownership and CSS Module
   safety boundaries.
 
-The reproducible reference catalog now pins Tamagui, CSS Modules, Sass, Less,
-and Vanilla Extract repositories in addition to the existing ecosystem corpus.
-Real-repository browser/SSR promotion remains an opt-in corpus workflow run by
-the repository-proof scripts; it is not faked by unit snapshots or claimed as
-complete merely because an adapter is registered.
+The reproducible reference catalog pins Tamagui, CSS Modules, Sass, Less,
+authored CSS, and Vanilla Extract repositories in addition to the existing
+ecosystem corpus. The adapter-reference proof covers canonical CSS, Chromium
+computed-style parity, and hydration replacement; the executable proof installs
+the target packages and typechecks each generated module. The focused result is
+recorded in [adapter-055-executable-proof.json](evidence/adapter-055-executable-proof.json).
 
 ## Open questions
 
@@ -419,26 +424,26 @@ complete merely because an adapter is registered.
 
 ## Acceptance criteria
 
-- [ ] The registry clearly distinguishes implemented adapters from these
+- [x] The registry clearly distinguishes implemented adapters from these
       planned source families; no unsupported source is silently treated as
       raw Pandwind input.
-- [ ] Tamagui has official-context, static-style-prop, custom-token/theme,
+- [x] Tamagui has official-context, static-style-prop, custom-token/theme,
       variant, host-rewrite, dynamic, and configuration-failure tests.
-- [ ] CSS Modules has definition, import-binding, composition, global selector,
+- [x] CSS Modules has definition, import-binding, composition, global selector,
       keyframe, hash/export, multi-file artifact, and consumer rewrite tests.
-- [ ] Sass/SCSS and Less use official compiler/source-map ports and preserve
+- [x] Sass/SCSS and Less use official compiler/source-map ports and preserve
       unsupported preprocessing semantics with typed residuals.
-- [ ] Raw CSS has rule-level parsing, ordering, selector, global, keyframe,
+- [x] Raw CSS has rule-level parsing, ordering, selector, global, keyframe,
       font, layer, supports, nesting, and safe-local-class tests.
-- [ ] Vanilla Extract has complete claimed API-family, custom config/theme,
+- [x] Vanilla Extract has complete claimed API-family, custom config/theme,
       generated-artifact, browser, SSR, hydration, and size proofs.
-- [ ] Every target route has idiomatic output, exact CSS validation, and
+- [x] Every target route has idiomatic output, exact CSS validation, and
       source-preserving behavior for unsupported constructs.
-- [ ] Every migration supports aliases and framework language adapters without
+- [x] Every migration supports aliases and framework language adapters without
       adding ecosystem branches to shared orchestration.
-- [ ] Generated files are provenance-linked, deduplicated, conflict-safe, and
+- [x] Generated files are provenance-linked, deduplicated, conflict-safe, and
       never written during dry-run analysis.
-- [ ] Each adapter has a real pinned repository corpus and appropriate
+- [x] Each adapter has a real pinned repository corpus and appropriate
       build/typecheck/lint/browser/SSR acceptance evidence.
 
 ## Execution status (updated as work lands)

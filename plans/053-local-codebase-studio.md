@@ -355,24 +355,24 @@ sent to the browser.
 
 ## Acceptance criteria
 
-- `pandwind studio` starts locally from a real repository and shuts down cleanly.
-- No browser bundle contains Node filesystem/path/module-loader code.
-- The session uses the shared workspace/scanner and does not duplicate parser,
+- [x] `pandwind studio` starts locally from a real repository and shuts down cleanly.
+- [x] No browser bundle contains Node filesystem/path/module-loader code.
+- [x] The session uses the shared workspace/scanner and does not duplicate parser,
   glob, or extension logic.
-- Source adapter detection and official config loading are visible, typed, and
+- [x] Source adapter detection and official config loading are visible, typed, and
   fail with structured diagnostics when unavailable.
-- Editing a supported style updates semantic output, generated CSS, residuals,
+- [x] Editing a supported style updates semantic output, generated CSS, residuals,
   token usage, and the static component/style tree without writing files.
-- Switching among `css.class`, `dss`, `tw`, and registered external targets
+- [x] Switching among `css.class`, `dss`, `tw`, and registered external targets
   uses the existing adapter registry and preserves the flat `SwapIR` fast path.
-- Imported CSS themes, custom tokens, multiple scopes, `@source inline`, and
+- [x] Imported CSS themes, custom tokens, multiple scopes, `@source inline`, and
   container-query conditions remain visible and are not flattened incorrectly.
-- Every generated artifact has provenance and canonical CSS/size metrics.
-- A supported host preview proves at least one real visual/computed-style
+- [x] Every generated artifact has provenance and canonical CSS/size metrics.
+- [x] A supported host preview proves at least one real visual/computed-style
   update; unsupported hosts show an explicit unavailable state.
-- Unit, integration, Playwright-BDD, typecheck, lint, format, Knip, and focused
+- [x] Unit, integration, Playwright-BDD, typecheck, lint, format, Knip, and focused
   performance gates pass.
-- The studio never silently drops an unsupported semantic: it preserves the
+- [x] The studio never silently drops an unsupported semantic: it preserves the
   source representation or reports a typed residual.
 
 The real-host proof is reproducible with `pnpm studio:proof:host`; it starts an

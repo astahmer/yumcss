@@ -7,7 +7,7 @@ const app = resolve(import.meta.dirname, "../../../apps/example");
 describe("tw scanner", () => {
 	test("collects exactly the classes a tw() call emits", async () => {
 		const classes = await collectTwClasses(
-			[resolve(app, "src/css-in-js-app.tsx")],
+			[resolve(app, "src/examples/typed-tw-app.tsx")],
 			resolve(app, "src/tw.ts"),
 		);
 

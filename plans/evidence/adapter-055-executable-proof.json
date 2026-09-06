@@ -1,0 +1,28 @@
+{
+	"schema": "pandwind.plan-055-executable-proof/1",
+	"generatedAt": "2026-09-06",
+	"adapterReferenceProof": {
+		"source": "plans/evidence/adapter-reference-proof.json",
+		"browserComputedStyle": true,
+		"hydrationEquivalent": true,
+		"references": [
+			"tamagui-remix-starter",
+			"astryx-not-found-module",
+			"bootstrap-badge-scss",
+			"less-post-processor",
+			"posthog-global-authored-css",
+			"vanilla-extract-example"
+		]
+	},
+	"executablePackageProof": {
+		"command": "nub --conditions pandwind scripts/verify-adapter-reference-output.ts",
+		"results": [
+			{ "adapter": "tamagui", "passed": 1, "failed": 0 },
+			{ "adapter": "css-modules", "passed": 1, "failed": 0 },
+			{ "adapter": "sass", "passed": 1, "failed": 0 },
+			{ "adapter": "less", "passed": 1, "failed": 0 },
+			{ "adapter": "authored-css", "passed": 1, "failed": 0 },
+			{ "adapter": "vanilla-extract", "passed": 1, "failed": 0 }
+		]
+	}
+}

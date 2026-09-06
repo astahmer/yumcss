@@ -1,6 +1,6 @@
 # 058 — Dynamic value lowering for every Pandwind API
 
-Status: open
+Status: complete
 
 ## Context
 
@@ -97,6 +97,10 @@ possible outputs, static subsets fold, only genuinely unbounded values hit
 the runtime, and every unregistered/unresolvable value produces an explicit
 diagnostic or residual. Inline snapshots cover happy, non-happy, and edge
 cases per lane; focused test files run green and typecheck passes.
+
+The final verification includes the scanner fixture aligned with the current
+typed `tw()` example, all plan-057 runtime-sheet/SSR tests, the plan-058
+verification-gate tests, and the shared analyze/codemod typechecks.
 
 ## Sequencing
 
