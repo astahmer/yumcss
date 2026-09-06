@@ -35,6 +35,7 @@
 		"pivot:migrate:reference": "nub scripts/migrate-reference-repository.ts",
 		"bench:tooling": "nub scripts/benchmark-tooling.mts",
 		"bench:studio": "nub scripts/benchmark-studio.mts",
+		"studio:proof:host": "nub scripts/run-studio-host-proof.mts",
 		"check": "nub run --filter @pandwind/lint-plugin build && oxlint --fix --deny-warnings --report-unused-disable-directives && oxfmt",
 		"changeset": "changeset",
 		"changeset:version": "changeset version && nub install --no-frozen-lockfile",

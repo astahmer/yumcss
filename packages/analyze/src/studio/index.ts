@@ -44,3 +44,10 @@ export type { StudioWorkspaceOptions, StudioWorkspaceWatcher } from "./workspace
 export { createStudioCodemodEvaluator } from "./evaluator.ts";
 export { runStudioCli } from "./cli.ts";
 export { createStaticStudioPreviewHost } from "./static-preview.ts";
+export {
+	StudioPreviewHostId,
+	createBrowserStudioPreviewHost,
+	type BrowserStudioPreviewOptions,
+	type StudioPreviewBrowser,
+	type StudioPreviewBrowserPage,
+} from "./browser-preview.ts";

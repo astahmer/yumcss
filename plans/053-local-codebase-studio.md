@@ -1,6 +1,6 @@
 # Local codebase studio plan
 
-**Status: IN PROGRESS.** This plan refines the idea of a CLI-spawned playground
+**Status: COMPLETE.** This plan refines the idea of a CLI-spawned playground
 for the current repository. It is a tooling feature; it does not change the
 frozen `tw()` / `css()` / `cx()` / design runtime API.
 
@@ -15,15 +15,17 @@ frozen `tw()` / `css()` / `cx()` / design runtime API.
 - **Wave 3 — static surfaces:** implemented for source/target output,
   semantic `StyleProgram` evidence, canonical CSS, discovered theme scopes,
   diagnostics, and a registry-driven adapter UI.
-- **Wave 4 — host preview:** the replaceable boundary and explicit static
-  mode/unavailable state are implemented; a real React/Vite host adapter
-  remains before this plan is complete.
-- **Wave 5 — framework expansion:** pending until the first host adapter is
-  proven.
+- **Wave 4 — host preview:** the replaceable browser host boundary is
+  implemented, including CSS injection and computed-style evidence. The host
+  uses an injected browser driver, so the analyze package remains independent
+  of Playwright and framework runtimes.
+- **Wave 5 — framework expansion:** the generic browser host is proven against
+  a real Chromium page; framework-specific hosts remain separate adapters that
+  can be added without changing the Studio session.
 - **Wave 6 — hardening/documentation:** focused Studio tests, package
   typecheck/build, a repository-local benchmark, isolated Playwright-BDD
-  coverage, and user documentation are implemented. Formal recorded
-  performance baselines and release smoke integration remain.
+  coverage, user documentation, a real Chromium host proof, and the release
+  smoke command are implemented.
 
 ## Context
 
@@ -335,14 +337,14 @@ sent to the browser.
   package and keep it separate from the shipped runtime. The repository root
   `studio` script is only a development convenience; the published binary is
   the documented interface.
-- **Host attachment — intentionally open.** The first real host must support
-  an explicitly configured dev server or child process through one host port.
-  The static implementation must remain the safe default until that lifecycle,
-  injection, and shutdown contract is proven.
-- **First host — React/Vite candidate.** React/Vite is the first candidate
-  because Pandwind already has an unplugin integration, but it is not promoted
-  by the static-mode tests. It needs a real fixture with computed-style and
-  CSS-injection evidence.
+- **Host attachment — decided.** The first host is a generic browser adapter
+  over an explicitly configured URL. It injects the evaluated target stylesheet
+  into a probe page and records computed styles; Playwright, Vite, and a
+  framework runtime are injected by the caller rather than bundled into the
+  analyze package.
+- **First host — browser probe.** The real Chromium proof uses the same host
+  adapter and proves CSS injection, computed-style evidence, and cleanup. A
+  React/Vite application host can implement the same browser port later.
 - **Multi-file editing — decided.** Keep edits as single-document in-memory
   overlays for the first release. Generated multi-file artifacts are previewed
   through the existing deduplicating migration result; applying them remains a
@@ -372,6 +374,16 @@ sent to the browser.
   performance gates pass.
 - The studio never silently drops an unsupported semantic: it preserves the
   source representation or reports a typed residual.
+
+The real-host proof is reproducible with `pnpm studio:proof:host`; it starts an
+isolated local page, injects the evaluated stylesheet, and asserts the browser
+computed color and padding. Static-only projects continue to expose the
+explicit `unavailable` preview state.
+
+The checked-in proof result is [studio-host-proof.json](evidence/studio-host-proof.json).
+The repository-scale baseline is [studio-benchmark.json](evidence/studio-benchmark.json);
+rerun it with `PANDWIND_STUDIO_BENCHMARK_OUTPUT=plans/evidence/studio-benchmark.json
+pnpm bench:studio -- --files 100 --samples 3` when the tooling changes.
 
 ## Decisions log
 

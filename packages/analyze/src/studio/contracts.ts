@@ -129,6 +129,8 @@ export interface StudioPreviewSnapshot {
 	readonly status: StudioPreviewStatus;
 	readonly message?: string;
 	readonly url?: string;
+	readonly computedStyles?: Readonly<Record<string, string>>;
+	readonly stylesheetBytes?: number;
 }
 
 export interface StudioDiagnostic {

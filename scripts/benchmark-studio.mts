@@ -73,25 +73,21 @@ try {
 
 	const sorted = warmSamples.toSorted((left, right) => left - right);
 	const p95 = sorted[Math.min(sorted.length - 1, Math.ceil(sorted.length * 0.95) - 1)] ?? 0;
-	console.log(
-		JSON.stringify(
-			{
-				files,
-				samples,
-				coldOpenMs,
-				warmEvaluateMs:
-					Math.round((warmSamples.reduce((sum, value) => sum + value, 0) / samples) * 100) / 100,
-				warmP95Ms: p95,
-				editMs,
-				filesPerSecond: Math.round((files / (Math.max(...warmSamples, 0.001) / 1000)) * 100) / 100,
-				outputBytes,
-				rssDeltaMiB:
-					Math.round(((process.memoryUsage().rss - rssBefore) / 1024 / 1024) * 100) / 100,
-			},
-			null,
-			2,
-		),
-	);
+	const report = {
+		files,
+		samples,
+		coldOpenMs,
+		warmEvaluateMs:
+			Math.round((warmSamples.reduce((sum, value) => sum + value, 0) / samples) * 100) / 100,
+		warmP95Ms: p95,
+		editMs,
+		filesPerSecond: Math.round((files / (Math.max(...warmSamples, 0.001) / 1000)) * 100) / 100,
+		outputBytes,
+		rssDeltaMiB: Math.round(((process.memoryUsage().rss - rssBefore) / 1024 / 1024) * 100) / 100,
+	};
+	const output = process.env.PANDWIND_STUDIO_BENCHMARK_OUTPUT;
+	if (output !== undefined) writeFileSync(output, `${JSON.stringify(report, null, 2)}\n`);
+	console.log(JSON.stringify(report, null, 2));
 } finally {
 	rmSync(root, { force: true, recursive: true });
 }
