@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { codeToHtml } from "shiki";
 import type { StyleProgram } from "pandwind-codemod/swap/semantic-ir";
 import { GhostButton, Pane, ResizableSplitter, type ResizableSplitterPanel } from "./ui.tsx";
@@ -365,12 +365,236 @@ function SheetSection(props: { sheets: PlaygroundSheetResult[] }) {
 	);
 }
 
-function StyleProgramSection(props: { programs: StyleProgram[] }) {
-	const code = JSON.stringify(
-		props.programs.length === 1 ? props.programs[0] : props.programs,
-		null,
-		2,
+type InspectorValue =
+	| null
+	| boolean
+	| number
+	| string
+	| InspectorValue[]
+	| { [key: string]: InspectorValue };
+
+function toInspectorValue(value: unknown): InspectorValue {
+	if (
+		value === null ||
+		typeof value === "boolean" ||
+		typeof value === "number" ||
+		typeof value === "string"
+	) {
+		return value;
+	}
+	if (Array.isArray(value)) return value.map(toInspectorValue);
+	if (typeof value === "object") {
+		return Object.fromEntries(
+			Object.entries(value)
+				.filter(([, child]) => child !== undefined)
+				.map(([key, child]) => [key, toInspectorValue(child)]),
+		);
+	}
+	return String(value);
+}
+
+function inspectorEntries(value: InspectorValue): Array<[string, InspectorValue]> {
+	if (Array.isArray(value)) return value.map((child, index) => [String(index), child]);
+	if (typeof value === "object" && value !== null) return Object.entries(value);
+	return [];
+}
+
+function inspectorSummary(value: InspectorValue): string {
+	if (Array.isArray(value)) return `${value.length} ${value.length === 1 ? "item" : "items"}`;
+	if (typeof value === "object" && value !== null) {
+		const count = Object.keys(value).length;
+		return `${count} ${count === 1 ? "property" : "properties"}`;
+	}
+	if (typeof value === "string") return JSON.stringify(value);
+	return String(value);
+}
+
+const IR_EXPLORER = uiCss.class({
+	display: "grid",
+	height: "100%",
+	minHeight: "0px",
+	gridTemplateColumns: "minmax(12rem, 0.9fr) minmax(14rem, 1.1fr)",
+	"@media (max-width: 760px)": {
+		gridTemplateColumns: "1fr",
+		gridTemplateRows: "minmax(9rem, 0.8fr) minmax(9rem, 1.2fr)",
+	},
+});
+const IR_TREE = uiCss.class({
+	minWidth: "0px",
+	minHeight: "0px",
+	overflow: "auto",
+	padding: "6px 0",
+});
+const IR_DETAIL = uiCss.class({
+	minWidth: "0px",
+	minHeight: "0px",
+	overflow: "auto",
+	borderLeft: "1px solid rgba(255,255,255,0.06)",
+	"@media (max-width: 760px)": { borderTop: "1px solid rgba(255,255,255,0.06)", borderLeft: "0" },
+});
+const IR_ROW = uiCss.class({
+	display: "flex",
+	minWidth: "0px",
+	alignItems: "center",
+	minHeight: "25px",
+	paddingRight: "8px",
+});
+const IR_DISCLOSURE = uiCss.class({
+	display: "grid",
+	width: "22px",
+	height: "24px",
+	flexShrink: "0",
+	placeItems: "center",
+	border: "0",
+	backgroundColor: "transparent",
+	padding: "0",
+	fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+	fontSize: "11px",
+	color: "#71717a",
+	"&:hover": { color: "#f4f4f5" },
+});
+const IR_NODE = uiCss.class({
+	display: "flex",
+	minWidth: "0px",
+	flex: "1 1 0%",
+	alignItems: "baseline",
+	justifyContent: "space-between",
+	gap: "8px",
+	border: "0",
+	borderRadius: "4px",
+	backgroundColor: "transparent",
+	padding: "4px 6px",
+	textAlign: "left",
+	fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+	fontSize: "11px",
+	color: "#a1a1aa",
+	"&:hover": { backgroundColor: "rgba(255,255,255,0.05)", color: "#e4e4e7" },
+});
+const IR_NODE_SELECTED = uiCss.class({
+	backgroundColor: "rgba(251,146,60,0.12)",
+	color: "#fed7aa",
+});
+const IR_NODE_LABEL = uiCss.class({
+	minWidth: "0px",
+	overflow: "hidden",
+	textOverflow: "ellipsis",
+	whiteSpace: "nowrap",
+});
+const IR_NODE_SUMMARY = uiCss.class({
+	flexShrink: "0",
+	overflow: "hidden",
+	textOverflow: "ellipsis",
+	whiteSpace: "nowrap",
+	color: "#52525b",
+});
+const IR_DETAIL_HEADER = uiCss.class({
+	display: "flex",
+	minWidth: "0px",
+	flexDirection: "column",
+	gap: "4px",
+	borderBottom: "1px solid rgba(255,255,255,0.06)",
+	padding: "10px 12px",
+});
+const IR_DETAIL_KICKER = uiCss.class({
+	fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+	fontSize: "9px",
+	textTransform: "uppercase",
+	letterSpacing: "0.1em",
+	color: "#52525b",
+});
+const IR_DETAIL_PATH = uiCss.class({
+	overflow: "hidden",
+	textOverflow: "ellipsis",
+	whiteSpace: "nowrap",
+	fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+	fontSize: "11px",
+	color: "#fed7aa",
+});
+const IR_RAW = uiCss.class({ flexShrink: "0", borderTop: "1px solid rgba(255,255,255,0.06)" });
+const IR_RAW_SUMMARY = uiCss.class({
+	cursor: "pointer",
+	padding: "9px 12px",
+	fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+	fontSize: "10.5px",
+	color: "#71717a",
+	"&:hover": { color: "#e4e4e7" },
+});
+
+function StyleProgramTreeNode(props: {
+	label: string;
+	path: string;
+	value: InspectorValue;
+	depth: number;
+	selectedPath: string;
+	expandedPaths: ReadonlySet<string>;
+	onToggle: (path: string) => void;
+	onSelect: (path: string, value: InspectorValue) => void;
+}) {
+	const entries = inspectorEntries(props.value);
+	const expandable = entries.length > 0;
+	const expanded = props.expandedPaths.has(props.path);
+	return (
+		<div>
+			<div className={IR_ROW} style={{ paddingLeft: `${props.depth * 14}px` }}>
+				<button
+					type="button"
+					className={IR_DISCLOSURE}
+					disabled={!expandable}
+					aria-label={expandable ? `${expanded ? "Collapse" : "Expand"} ${props.path}` : undefined}
+					onClick={() => props.onToggle(props.path)}
+				>
+					{expandable ? (expanded ? "▾" : "▸") : "·"}
+				</button>
+				<button
+					type="button"
+					className={`${IR_NODE} ${props.selectedPath === props.path ? IR_NODE_SELECTED : ""}`}
+					onClick={() => props.onSelect(props.path, props.value)}
+				>
+					<span className={IR_NODE_LABEL}>{props.label}</span>
+					<span className={IR_NODE_SUMMARY}>{inspectorSummary(props.value)}</span>
+				</button>
+			</div>
+			{expanded &&
+				entries.map(([label, value]) => (
+					<StyleProgramTreeNode
+						key={`${props.path}.${label}`}
+						label={label}
+						path={Array.isArray(props.value) ? `${props.path}[${label}]` : `${props.path}.${label}`}
+						value={value}
+						depth={props.depth + 1}
+						selectedPath={props.selectedPath}
+						expandedPaths={props.expandedPaths}
+						onToggle={props.onToggle}
+						onSelect={props.onSelect}
+					/>
+				))}
+		</div>
 	);
+}
+
+function StyleProgramSection(props: { programs: StyleProgram[] }) {
+	const rootValue = useMemo(
+		() => toInspectorValue(props.programs.length === 1 ? props.programs[0] : props.programs),
+		[props.programs],
+	);
+	const rawCode = JSON.stringify(rootValue, null, 2);
+	const [selectedNode, setSelectedNode] = useState<{ path: string; value: InspectorValue }>(() => ({
+		path: "root",
+		value: rootValue,
+	}));
+	const [expandedPaths, setExpandedPaths] = useState<ReadonlySet<string>>(() => new Set(["root"]));
+	useEffect(() => {
+		setSelectedNode({ path: "root", value: rootValue });
+		setExpandedPaths(new Set(["root"]));
+	}, [rootValue]);
+	const togglePath = (path: string) => {
+		setExpandedPaths((current) => {
+			const next = new Set(current);
+			if (next.has(path)) next.delete(path);
+			else next.add(path);
+			return next;
+		});
+	};
 	return (
 		<Pane
 			label="StyleProgram IR"
@@ -387,21 +611,33 @@ function StyleProgramSection(props: { programs: StyleProgram[] }) {
 				</span>
 			}
 		>
-			<details>
-				<summary
-					className={uiCss.class({
-						cursor: "pointer",
-						padding: "10px 12px",
-						fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
-						fontSize: "11px",
-						color: "#a1a1aa",
-						"&:hover": { color: "#e4e4e7" },
-					})}
-				>
-					show raw JSON
-				</summary>
-				<Snippet code={code} lang="json" />
-			</details>
+			<div className={IR_EXPLORER}>
+				<div className={IR_TREE}>
+					<StyleProgramTreeNode
+						label={Array.isArray(rootValue) ? "programs" : "program"}
+						path="root"
+						value={rootValue}
+						depth={0}
+						selectedPath={selectedNode.path}
+						expandedPaths={expandedPaths}
+						onToggle={togglePath}
+						onSelect={(path, value) => setSelectedNode({ path, value })}
+					/>
+				</div>
+				<div className={IR_DETAIL}>
+					<div className={IR_DETAIL_HEADER}>
+						<span className={IR_DETAIL_KICKER}>selected node</span>
+						<code className={IR_DETAIL_PATH}>{selectedNode.path}</code>
+					</div>
+					<Snippet code={JSON.stringify(selectedNode.value, null, 2)} lang="json" />
+				</div>
+			</div>
+			<div className={IR_RAW}>
+				<details>
+					<summary className={IR_RAW_SUMMARY}>show raw JSON</summary>
+					<Snippet code={rawCode} lang="json" />
+				</details>
+			</div>
 		</Pane>
 	);
 }
