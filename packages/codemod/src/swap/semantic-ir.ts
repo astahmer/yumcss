@@ -1282,6 +1282,10 @@ export function styleProgramFromSourceObject(
 				addConditionalValues(name, valueNode, conditions);
 				continue;
 			}
+			if (sourceObject(valueNode) && options.unwrapNestedObjectKeys?.includes(name)) {
+				walk(valueNode, conditions);
+				continue;
+			}
 			if (sourceObject(valueNode) && looksLikeNamedRuleKey(name, options)) {
 				const declarationStart = declarations.length;
 				const specialRuleStart = specialRules.length;
@@ -1299,12 +1303,8 @@ export function styleProgramFromSourceObject(
 				});
 				continue;
 			}
-			if (
-				sourceObject(valueNode) &&
-				(looksLikeCondition(name, options) || options.unwrapNestedObjectKeys?.includes(name))
-			) {
-				if (options.unwrapNestedObjectKeys?.includes(name)) walk(valueNode, conditions);
-				else if (name !== "base" || options.preserveDefaultGroup === true)
+			if (sourceObject(valueNode) && looksLikeCondition(name, options)) {
+				if (name !== "base" || options.preserveDefaultGroup === true)
 					walk(valueNode, [...conditions, sourceConditionFor(name, options)]);
 				else walk(valueNode, conditions);
 				continue;

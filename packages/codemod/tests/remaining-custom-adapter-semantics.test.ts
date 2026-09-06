@@ -305,4 +305,65 @@ describe("remaining adapter-owned custom semantics", () => {
 			setup(React.createElement); export const card = css.vars({ color: theme.colors.brand });"
 		`);
 	});
+
+	test("emits Panda cva for a Pandwind recipe carrier", () => {
+		const result = runAdapterMigration(
+			'import { createCss } from "pandwind/css";\n' +
+				'import { createRecipe } from "pandwind/recipe";\n' +
+				"const css = createCss();\n" +
+				'export const button = createRecipe(css, { base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });',
+			{
+				from: CodemodAdapterId.Pandwind,
+				to: CodemodAdapterId.Panda,
+				file: "src/button.ts",
+				mode: "safe",
+				readFile: () => undefined,
+				adapterRegistry: catalog.registry,
+			},
+		);
+
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain('import { cva } from "styled-system/recipes";');
+		expect(result.code).toContain('cva({ base: { color: "red" }');
+		expect(result.code).not.toContain("createRecipe");
+		expect(result.code).not.toContain("createCss");
+		expect(result.code).toMatchInlineSnapshot(`
+			"import { cva } from "styled-system/recipes";
+
+
+			export const button = cva({ base: { color: "red" }, variants: { "size": { "sm": { padding: "2" } } } });"
+		`);
+	});
+
+	test("emits Panda sva for a Pandwind slot-recipe carrier", () => {
+		const result = runAdapterMigration(
+			'import { createCss } from "pandwind/css";\n' +
+				'import { createSlotRecipe } from "pandwind/recipe";\n' +
+				"const css = createCss();\n" +
+				'export const card = createSlotRecipe(css, { slots: { root: { color: "red" }, label: {} }, slotVariants: { size: { sm: { root: { padding: "2" } } } } });',
+			{
+				from: CodemodAdapterId.Pandwind,
+				to: CodemodAdapterId.Panda,
+				file: "src/card.ts",
+				mode: "safe",
+				readFile: () => undefined,
+				adapterRegistry: catalog.registry,
+			},
+		);
+
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain('import { sva } from "styled-system/recipes";');
+		expect(result.code).toContain('sva({ slots: ["root", "label"]');
+		expect(result.code).not.toContain("createSlotRecipe");
+		expect(result.code).toMatchInlineSnapshot(`
+			"import { sva } from "styled-system/recipes";
+
+
+			export const card = sva({ slots: ["root", "label"], base: { "root": { color: "red" }, "label": {  } }, variants: { "size": { "sm": { "root": { padding: "2" } } } } });"
+		`);
+	});
 });

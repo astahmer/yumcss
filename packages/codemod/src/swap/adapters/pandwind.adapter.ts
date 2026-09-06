@@ -22,6 +22,7 @@ import type {
 	AdapterTokenPolicy,
 } from "../adapter-contract.ts";
 import {
+	styleProgramFromSourceObject,
 	styleProgramFromRules,
 	type StyleProgram,
 	type StyleRule,
@@ -37,6 +38,7 @@ import {
 	StyleHostRepresentationKind,
 	StyleNamedRuleStrategy,
 } from "../identifiers.ts";
+import { SourceBindingKind } from "pandwind/source";
 import { JsxStyleHost } from "../jsx-style-host.ts";
 import { BuiltinHostFramework } from "../host-adapters.ts";
 import {
@@ -52,6 +54,14 @@ import {
 	joinDocumentPath,
 	relativeDocumentPath,
 } from "../../path-utils.ts";
+import {
+	captureSlotRecipeSlots,
+	preserveUnsupportedRecipeFields,
+	preserveUnsupportedSlotRecipeFields,
+	pandwindSlotRecipeSourceObjectOptions,
+	recipeDefinitionObject,
+	recipeSourceObjectOptions,
+} from "./recipe-source.ts";
 
 const PANDWIND_TARGET_POLICY: AdapterTargetMigrationPolicy = {
 	handlesHostRewrites: true,
@@ -1622,36 +1632,6 @@ function runtimeGlobalVars(program: StyleProgram): string {
 	return `(css.sheet.registerSemanticRules([{ kind: "global", selector: ":root", declarations: [${declarations}] }]), { ${references} })`;
 }
 
-function recipeDefinitionObject(
-	program: StyleProgram,
-	declarationsObject: AdapterRenderers["declarationsObject"],
-): string {
-	const declarations = program.declarations;
-	const base = declarationsObject(
-		declarations.filter((declaration) => declaration.conditions.length === 0),
-	);
-	const variants = new Map<string, Map<string, typeof declarations>>();
-	for (const declaration of declarations) {
-		const [variant, value] = declaration.conditions;
-		if (
-			variant?.kind !== SemanticConditionKindTag.Named ||
-			value?.kind !== SemanticConditionKindTag.Named
-		)
-			continue;
-		const values = variants.get(variant.name) ?? new Map<string, typeof declarations>();
-		const list = values.get(value.name) ?? [];
-		values.set(value.name, [...list, { ...declaration, conditions: [] }]);
-		variants.set(variant.name, values);
-	}
-	const variantText = [...variants].map(
-		([name, values]) =>
-			`${JSON.stringify(name)}: { ${[...values]
-				.map(([value, list]) => `${JSON.stringify(value)}: ${declarationsObject(list)}`)
-				.join(", ")} }`,
-	);
-	return `{ base: ${base}, variants: { ${variantText.join(", ")} } }`;
-}
-
 function slotRecipeDefinitionObject(
 	program: StyleProgram,
 	declarationsObject: AdapterRenderers["declarationsObject"],
@@ -1661,7 +1641,9 @@ function slotRecipeDefinitionObject(
 	for (const rule of program.rules) {
 		if (rule.kind !== StyleRuleKindTag.Style || rule.name === undefined) continue;
 		const base = slots.get(rule.name) ?? [];
-		const unconditional = rule.declarations.filter((declaration) => declaration.conditions.length === 0);
+		const unconditional = rule.declarations.filter(
+			(declaration) => declaration.conditions.length === 0,
+		);
 		if (unconditional.length > 0) slots.set(rule.name, [...base, ...unconditional]);
 		for (const declaration of rule.declarations) {
 			const [variant, value] = declaration.conditions;
@@ -1678,9 +1660,9 @@ function slotRecipeDefinitionObject(
 			variants.set(variant.name, values);
 		}
 	}
-	const slotNames =
-		program.compositions?.find((composition) => composition.kind === StyleProgramCompositionKind.Slot)
-			?.slots ?? [...slots.keys()];
+	const slotNames = program.compositions?.find(
+		(composition) => composition.kind === StyleProgramCompositionKind.Slot,
+	)?.slots ?? [...slots.keys()];
 	const slotsText = slotNames
 		.map((name) => `${JSON.stringify(name)}: ${declarationsObject(slots.get(name) ?? [])}`)
 		.join(", ");
@@ -1701,6 +1683,114 @@ function slotRecipeDefinitionObject(
 		)
 		.join(", ");
 	return `{ slots: { ${slotsText} }, slotVariants: { ${variantsText} } }`;
+}
+
+function pandwindRecipeReferences(
+	context: AdapterParseContext,
+	imported: "createRecipe" | "createSlotRecipe",
+): readonly string[] {
+	const bindings = context.bindings?.fromModule("pandwind/recipe");
+	if (bindings !== undefined) {
+		return bindings
+			.filter((binding) => binding.importedName === imported)
+			.map((binding) =>
+				binding.kind === SourceBindingKind.Namespace
+					? `${binding.localName}.${imported}`
+					: binding.localName,
+			)
+			.filter((reference, index, all) => all.indexOf(reference) === index);
+	}
+	const references = new Set<string>();
+	const moduleSource = "pandwind/recipe".replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+	const namedImport = new RegExp(`import\\s*\\{([^}]*)\\}\\s*from\\s*["']${moduleSource}["']`, "g");
+	for (const match of context.source.matchAll(namedImport)) {
+		for (const specifier of (match[1] ?? "").split(",")) {
+			const parts = specifier.trim().split(/\s+as\s+/u);
+			if (parts[0] === imported) references.add(parts[1] ?? parts[0]);
+		}
+	}
+	const namespaceImport = new RegExp(
+		`import\\s*\\*\\s*as\\s+([A-Za-z_$][\\w$]*)\\s*from\\s*["']${moduleSource}["']`,
+		"g",
+	);
+	for (const match of context.source.matchAll(namespaceImport)) {
+		if (match[1] !== undefined) references.add(`${match[1]}.${imported}`);
+	}
+	return [...references];
+}
+
+function pandwindRecipeMatches(
+	source: string,
+	context: AdapterParseContext,
+	imported: "createRecipe" | "createSlotRecipe",
+	pattern: CodemodPatternId,
+): AdapterParseResult {
+	const references = pandwindRecipeReferences(context, imported);
+	if (references.length === 0) return { matches: [], residuals: [] };
+	const escaped = references.map((reference) => reference.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+	const callPattern = new RegExp(
+		`\\b(?:${escaped.join("|")})\\s*\\(\\s*[A-Za-z_$][\\w$]*\\s*,\\s*\\{`,
+		"gu",
+	);
+	const matches: Array<AdapterParseResult["matches"][number]> = [];
+	const residuals: Array<AdapterParseResult["residuals"][number]> = [];
+	const isExcluded = context.document?.isExcluded ?? (() => false);
+	for (const match of source.matchAll(callPattern)) {
+		const start = match.index ?? 0;
+		if (isExcluded(start)) continue;
+		const reference = match[0].match(
+			/(?:^|\s)([A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)?)\s*\(/u,
+		)?.[1];
+		const localName = reference?.split(".")[0];
+		if (localName !== undefined && context.bindings?.isShadowedAt(localName, start) === true)
+			continue;
+		const objectOpen = start + match[0].lastIndexOf("{");
+		const object = SourcePass.matchBlock(source, objectOpen);
+		if (object === null) {
+			residuals.push({
+				kind: StyleProgramResidualKindTag.Parse,
+				text: source.slice(start),
+				hint: `${imported} recipe object is unbalanced`,
+			});
+			continue;
+		}
+		const closing = /^\s*\)/u.exec(source.slice(object.end));
+		if (closing === null) {
+			residuals.push({
+				kind: StyleProgramResidualKindTag.Parse,
+				text: source.slice(start, object.end),
+				hint: `${imported} recipe call is unbalanced`,
+			});
+			continue;
+		}
+		const end = object.end + closing[0].length;
+		const sourceOptions = {
+			source: {
+				file: context.file,
+				start,
+				end,
+				adapter: CodemodAdapterId.Pandwind,
+				pattern,
+				...(context.document?.framework ? { framework: context.document.framework } : {}),
+				...context.semantic?.source,
+			},
+			sourceOffset: objectOpen + 1,
+			...(context.semantic?.themes ? { themes: context.semantic.themes } : {}),
+			...(context.semantic?.compositions ? { compositions: context.semantic.compositions } : {}),
+			...(context.semantic?.runtime ? { runtime: context.semantic.runtime } : {}),
+			...(context.semantic?.plugins ? { plugins: context.semantic.plugins } : {}),
+			...(imported === "createRecipe"
+				? recipeSourceObjectOptions()
+				: pandwindSlotRecipeSourceObjectOptions()),
+		};
+		let program = styleProgramFromSourceObject(object.body, sourceOptions);
+		program =
+			imported === "createRecipe"
+				? preserveUnsupportedRecipeFields(program)
+				: captureSlotRecipeSlots(preserveUnsupportedSlotRecipeFields(program), source);
+		matches.push({ start, end, program, sourceText: source.slice(start, end) });
+	}
+	return { matches, residuals };
 }
 
 export interface PandwindAdapterOptions {
@@ -1740,9 +1830,10 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 			/\bcss\.class\s*\(/,
 			/\bcreateCss\s*\(/,
 			/\bcreateRuntimeCss\s*\(/,
+			/\b(?:createRecipe|createSlotRecipe)\s*\(/,
 			/\bcss\.sheet\.registerSemanticRules\s*\(/,
 		],
-		sourceModules: ["pandwind/css", "pandwind/css/runtime"],
+		sourceModules: ["pandwind/css", "pandwind/css/runtime", "pandwind/recipe"],
 		configFiles: ["pandwind.config.ts", "pandwind.interop.json", "bridge.ts", "package.json"],
 		loadConfig: pandwindConfig,
 		...(moduleLoader === undefined
@@ -2037,15 +2128,15 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 					? `createSlotRecipe(css, ${slotRecipeDefinitionObject(outputProgram, declarationsObject)})`
 					: recipeVariants
 						? `createRecipe(css, ${recipeDefinitionObject(outputProgram, declarationsObject)})`
-					: named
-						? `css.group(${renderProgramObject(outputProgram)})`
-						: functionDynamic
+						: named
 							? `css.group(${renderProgramObject(outputProgram)})`
-							: runtimeStandalone
-								? `css.class(${renderProgramObject(outputProgram)})`
-								: dynamic
-									? dynamicEmission
-									: `css.class(${renderProgramObject(outputProgram)})`,
+							: functionDynamic
+								? `css.group(${renderProgramObject(outputProgram)})`
+								: runtimeStandalone
+									? `css.class(${renderProgramObject(outputProgram)})`
+									: dynamic
+										? dynamicEmission
+										: `css.class(${renderProgramObject(outputProgram)})`,
 				imports: slotRecipe
 					? [
 							'import { createCss } from "pandwind/css";',
@@ -2053,18 +2144,18 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 							"const css = createCss();",
 						]
 					: recipeVariants
-					? [
-							'import { createCss } from "pandwind/css";',
-							'import { createRecipe } from "pandwind/recipe";',
-							"const css = createCss();",
-						]
-					: needsRuntimeCss
 						? [
-								'import { createRuntimeCss } from "pandwind/css/runtime";',
-								'import { pandwindPreset } from "pandwind/preset";',
-								"const css = createRuntimeCss(pandwindPreset);",
+								'import { createCss } from "pandwind/css";',
+								'import { createRecipe } from "pandwind/recipe";',
+								"const css = createCss();",
 							]
-						: ['import { createCss } from "pandwind/css";', "const css = createCss();"],
+						: needsRuntimeCss
+							? [
+									'import { createRuntimeCss } from "pandwind/css/runtime";',
+									'import { pandwindPreset } from "pandwind/preset";',
+									"const css = createRuntimeCss(pandwindPreset);",
+								]
+							: ['import { createCss } from "pandwind/css";', "const css = createCss();"],
 			});
 		},
 	});
@@ -2072,10 +2163,32 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 		...adapter,
 		parse(source: string, context: AdapterParseContext) {
 			const parsed = adapter.parse(source, context);
+			const recipe = pandwindRecipeMatches(
+				source,
+				context,
+				"createRecipe",
+				CodemodPatternId.PandwindRecipe,
+			);
+			const slotRecipe = pandwindRecipeMatches(
+				source,
+				context,
+				"createSlotRecipe",
+				CodemodPatternId.PandwindSlotRecipe,
+			);
 			const runtime = runtimeSemanticRuleMatches(source, context);
 			return {
-				matches: [...parsed.matches, ...runtime.matches].toSorted((a, b) => a.start - b.start),
-				residuals: [...parsed.residuals, ...runtime.residuals],
+				matches: [
+					...parsed.matches,
+					...recipe.matches,
+					...slotRecipe.matches,
+					...runtime.matches,
+				].toSorted((a, b) => a.start - b.start),
+				residuals: [
+					...parsed.residuals,
+					...recipe.residuals,
+					...slotRecipe.residuals,
+					...runtime.residuals,
+				],
 			};
 		},
 	};

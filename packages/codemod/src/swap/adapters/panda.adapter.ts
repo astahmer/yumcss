@@ -10,6 +10,7 @@ import type { StyleProgram, StyleValue } from "../semantic-ir.ts";
 import {
 	CodemodAdapterId,
 	CodemodCallPatternKindTag,
+	CodemodPatternId,
 	StyleHostRepresentationKind,
 	StyleNamedRuleStrategy,
 } from "../identifiers.ts";
@@ -19,6 +20,8 @@ import { joinDocumentPath } from "../../path-utils.ts";
 import type { PandaTheme } from "./panda/theme.ts";
 import {
 	preserveUnsupportedRecipeFields,
+	pandaSlotRecipeDefinitionObject,
+	recipeDefinitionObject,
 	recipeSourceObjectOptions,
 	captureSlotRecipeSlots,
 	preserveUnsupportedSlotRecipeFields,
@@ -240,8 +243,9 @@ export function createPandaAdapter(options: PandaAdapterOptions = {}) {
 			ordering: "unsupported",
 			"theme-context": "partial",
 			"runtime-context": "unsupported",
-			composition: "partial",
-			recipes: "partial",
+			"named-conditions": "exact",
+			composition: "exact",
+			recipes: "exact",
 			"plugin-transforms": "partial",
 			"framework-semantics": "exact",
 			components: "partial",
@@ -276,6 +280,7 @@ export function createPandaAdapter(options: PandaAdapterOptions = {}) {
 			},
 		},
 		namedRuleStrategy: StyleNamedRuleStrategy.ClassMap,
+		preserveNamedRules: (context) => context.sourceModules?.includes("pandwind/recipe") === true,
 		tokenPolicy: PANDA_TOKEN_POLICY,
 		sourceObjectOptions: (_source, context) => ({
 			propertyAliases: Object.fromEntries(
@@ -289,6 +294,20 @@ export function createPandaAdapter(options: PandaAdapterOptions = {}) {
 			},
 		}),
 		emit(program, renderers) {
+			if (program.source?.pattern === CodemodPatternId.PandwindRecipe) {
+				return {
+					text: `cva(${recipeDefinitionObject(program, renderers.declarationsObject)})`,
+					imports: ['import { cva } from "styled-system/recipes";'],
+					semantic: program,
+				};
+			}
+			if (program.source?.pattern === CodemodPatternId.PandwindSlotRecipe) {
+				return {
+					text: `sva(${pandaSlotRecipeDefinitionObject(program, renderers.declarationsObject)})`,
+					imports: ['import { sva } from "styled-system/recipes";'],
+					semantic: program,
+				};
+			}
 			return {
 				text: `css(${renderers.programObject(program)})`,
 				imports: ['import { css } from "styled-system/css";'],

@@ -81,6 +81,8 @@ export const enum CodemodPatternId {
 	StyleXDefineVars = "stylex-define-vars",
 	RuntimeSemanticRules = "runtime-semantic-rules",
 	VanillaExtractGlobalStyle = "globalStyle",
+	PandwindRecipe = "pandwind-recipe",
+	PandwindSlotRecipe = "pandwind-slot-recipe",
 }
 
 export const enum CodemodCallPatternKindTag {
