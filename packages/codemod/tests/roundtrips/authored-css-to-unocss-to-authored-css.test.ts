@@ -169,7 +169,7 @@ test("authored-css -> unocss -> authored-css: preserves concrete theme and proje
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "UnoCSS arbitrary utility projection requires a literal declaration",
+		          "hint": "UnoCSS output requires a resolved literal or token value",
 		          "kind": "dynamic",
 		          "preserved": undefined,
 		        },
@@ -213,7 +213,7 @@ test("authored-css -> unocss -> authored-css: preserves concrete theme and proje
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "UnoCSS arbitrary utility projection requires a literal declaration",
+		          "hint": "UnoCSS output requires a resolved literal or token value",
 		          "kind": "dynamic",
 		          "preserved": undefined,
 		        },

@@ -137,7 +137,7 @@ test("css-modules -> unocss: lowers concrete theme and project context variants"
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "UnoCSS arbitrary utility projection requires a literal declaration",
+		        "hint": "UnoCSS output requires a resolved literal or token value",
 		        "kind": "dynamic",
 		        "preserved": undefined,
 		      },
@@ -163,7 +163,7 @@ test("css-modules -> unocss: lowers concrete theme and project context variants"
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "UnoCSS arbitrary utility projection requires a literal declaration",
+		        "hint": "UnoCSS output requires a resolved literal or token value",
 		        "kind": "dynamic",
 		        "preserved": undefined,
 		      },

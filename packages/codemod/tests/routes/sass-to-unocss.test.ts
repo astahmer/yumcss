@@ -122,7 +122,7 @@ test("sass -> unocss: lowers concrete theme and project context variants", () =>
 		        "preserved": undefined,
 		      },
 		      {
-		        "hint": "UnoCSS arbitrary utility projection requires a literal declaration",
+		        "hint": "UnoCSS output requires a resolved literal or token value",
 		        "kind": "dynamic",
 		        "preserved": undefined,
 		      },
@@ -149,7 +149,7 @@ test("sass -> unocss: lowers concrete theme and project context variants", () =>
 		        "preserved": undefined,
 		      },
 		      {
-		        "hint": "UnoCSS arbitrary utility projection requires a literal declaration",
+		        "hint": "UnoCSS output requires a resolved literal or token value",
 		        "kind": "dynamic",
 		        "preserved": undefined,
 		      },

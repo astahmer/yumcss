@@ -219,7 +219,7 @@ test("css-modules -> unocss -> css-modules: preserves concrete theme and project
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "UnoCSS arbitrary utility projection requires a literal declaration",
+		          "hint": "UnoCSS output requires a resolved literal or token value",
 		          "kind": "dynamic",
 		          "preserved": undefined,
 		        },
@@ -258,7 +258,7 @@ test("css-modules -> unocss -> css-modules: preserves concrete theme and project
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "UnoCSS arbitrary utility projection requires a literal declaration",
+		          "hint": "UnoCSS output requires a resolved literal or token value",
 		          "kind": "dynamic",
 		          "preserved": undefined,
 		        },
