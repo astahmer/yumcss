@@ -1,27 +1,23 @@
-/// <reference types="@vitejs/devtools-kit" />
-import { existsSync, globSync, readFileSync } from "node:fs";
+import { globSync, readFileSync } from "node:fs";
 import { basename, extname, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { defineRpcFunction } from "@vitejs/devtools-kit";
 import type { Plugin, ResolvedConfig } from "vite";
 import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
 import {
-runAdapterMigrationAsync,
-type AdapterCapabilityMode,
-type AdapterMigrationResult,
+	runAdapterMigrationAsync,
+	type AdapterCapabilityMode,
+	type AdapterMigrationResult,
 } from "pandwind-codemod/swap";
 import { unifiedDiff } from "pandwind-codemod/diff";
+import { createBuiltinCodemodCatalog } from "pandwind-codemod/swap";
 import { createSourceWorkspace } from "pandwind/source/workspace";
 import {
 	createDevtoolsEvidenceStore,
 	type DevtoolsEvidenceStore,
 	type DevtoolsElementInput,
 } from "./evidence/store.ts";
-import {
-	DEVTOOLS_RPC,
-	type DevtoolsMigrationInput,
-	type DevtoolsMigrationPreview,
-} from "./rpc.ts";
+import { DEVTOOLS_RPC, type DevtoolsMigrationInput, type DevtoolsMigrationPreview } from "./rpc.ts";
 
 export interface PandwindDevtoolsOptions {
 	/** Disable the integration while keeping the Vite config branch stable. */
@@ -33,7 +29,9 @@ export interface PandwindDevtoolsOptions {
 const fileForId = (id: string): string => id.split("?", 1)[0]!;
 
 const isInspectableFile = (file: string): boolean =>
-	!file.includes("/node_modules/") && !file.startsWith("\0") && SOURCE_SCANNER_SERVICE.isScriptFile(file);
+	!file.includes("/node_modules/") &&
+	!file.startsWith("\0") &&
+	SOURCE_SCANNER_SERVICE.isScriptFile(file);
 
 function loadInteropTokens(root: string, store: DevtoolsEvidenceStore): void {
 	const files = globSync("**/pandwind.interop.json", {
@@ -86,17 +84,15 @@ const projectPath = (root: string, candidate: string): string => {
 const packageJsonFor = (root: string): Readonly<Record<string, unknown>> | undefined => {
 	try {
 		const value: unknown = JSON.parse(readFileSync(resolve(root, "package.json"), "utf8"));
-		return typeof value === "object" && value !== null ? (value as Record<string, unknown>) : undefined;
+		return typeof value === "object" && value !== null
+			? (value as Record<string, unknown>)
+			: undefined;
 	} catch {
 		return undefined;
 	}
 };
 
-const serializeMigration = (
-	file: string,
-	result: AdapterMigrationResult,
-	before: string,
-) => ({
+const serializeMigration = (file: string, result: AdapterMigrationResult, before: string) => ({
 	file,
 	changed: result.changed,
 	code: result.code,
@@ -118,7 +114,8 @@ async function previewMigration(
 	const expanded = new Set<string>();
 	for (const pattern of input.files) {
 		projectPath(root, pattern);
-		for (const file of workspace.files([pattern], root, { includeUnsupported: true })) expanded.add(file);
+		for (const file of workspace.files([pattern], root, { includeUnsupported: true }))
+			expanded.add(file);
 	}
 	if (expanded.size === 0) throw new Error("migration files did not match any project files");
 	const allFiles = workspace.files(["**/*"], root, { includeUnsupported: true });
@@ -156,10 +153,7 @@ async function previewMigration(
 	};
 }
 
-function recordMigration(
-	store: DevtoolsEvidenceStore,
-	preview: DevtoolsMigrationPreview,
-): void {
+function recordMigration(store: DevtoolsEvidenceStore, preview: DevtoolsMigrationPreview): void {
 	for (const file of preview.files) {
 		store.recordMigration({
 			id: `${preview.from}->${preview.to}:${file.file}`,
@@ -192,7 +186,9 @@ function elementSelection(input: DevtoolsElementInput, store: DevtoolsEvidenceSt
 	store.select({
 		...(input.tagName === undefined ? {} : { tagName: input.tagName }),
 		...(className === undefined ? {} : { className }),
+		classNames: input.classNames ?? [],
 		attributes: input.attributes ?? {},
+		computedStyles: input.computedStyles ?? {},
 		matchedFiles,
 		matchedPrograms,
 	});
@@ -246,7 +242,10 @@ export function pandwindDevtools(options: PandwindDevtoolsOptions = {}): Plugin 
 		},
 		handleHotUpdate({ file }) {
 			if (isInspectableFile(file))
-				currentStore().recordRuntime({ event: "hmr-update", file: relative(config?.root ?? process.cwd(), file) });
+				currentStore().recordRuntime({
+					event: "hmr-update",
+					file: relative(config?.root ?? process.cwd(), file),
+				});
 		},
 		devtools: {
 			setup(ctx) {
@@ -278,6 +277,19 @@ export function pandwindDevtools(options: PandwindDevtoolsOptions = {}): Plugin 
 						name: DEVTOOLS_RPC.GetSnapshot,
 						type: "query",
 						setup: () => ({ handler: async () => currentStore().snapshot() }),
+					}),
+				);
+				ctx.rpc.register(
+					defineRpcFunction({
+						name: DEVTOOLS_RPC.GetCatalog,
+						type: "query",
+						setup: () => ({
+							handler: async () =>
+								createBuiltinCodemodCatalog().adapters.map((adapter) => ({
+									id: adapter.id,
+									officialApi: adapter.officialApi,
+								})),
+						}),
 					}),
 				);
 				ctx.rpc.register(

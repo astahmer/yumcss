@@ -15,4 +15,6 @@ export type {
 	DevtoolsStyleProgramRecord,
 	DevtoolsTokenRecord,
 	DevtoolsTransformRecord,
+	RuntimeStyleEventPort,
+	StyleArtifactEventPort,
 } from "./store.ts";

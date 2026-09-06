@@ -11,8 +11,7 @@ export const DevtoolsEvidenceKind = {
 	Migration: "migration",
 	Runtime: "runtime",
 } as const;
-export type DevtoolsEvidenceKind =
-	(typeof DevtoolsEvidenceKind)[keyof typeof DevtoolsEvidenceKind];
+export type DevtoolsEvidenceKind = (typeof DevtoolsEvidenceKind)[keyof typeof DevtoolsEvidenceKind];
 
 export interface DevtoolsTransformRecord {
 	readonly file: string;
@@ -91,19 +90,27 @@ export interface DevtoolsEvidenceSnapshot {
 export interface DevtoolsSelection {
 	readonly tagName?: string;
 	readonly className?: string;
+	readonly classNames: readonly string[];
 	readonly attributes: Readonly<Record<string, string>>;
+	readonly computedStyles: Readonly<Record<string, string>>;
 	readonly matchedFiles: readonly string[];
 	readonly matchedPrograms: readonly string[];
 }
 
-export interface DevtoolsEvidenceStore {
+export interface StyleArtifactEventPort {
+	recordStyleProgram(record: Omit<DevtoolsStyleProgramRecord, "updatedAt">): void;
+	recordToken(record: DevtoolsTokenRecord): void;
+	recordDiagnostic(record: Omit<DevtoolsDiagnosticRecord, "updatedAt">): void;
+}
+
+export interface RuntimeStyleEventPort {
+	recordRuntime(record: Omit<DevtoolsRuntimeRecord, "updatedAt">): void;
+}
+
+export interface DevtoolsEvidenceStore extends StyleArtifactEventPort, RuntimeStyleEventPort {
 	recordTransform(file: string, bytes: number, durationMs: number): void;
 	recordScan(record: Omit<DevtoolsScanRecord, "updatedAt">): void;
-	recordStyleProgram(record: Omit<DevtoolsStyleProgramRecord, "updatedAt">): void;
-	recordDiagnostic(record: Omit<DevtoolsDiagnosticRecord, "updatedAt">): void;
-	recordToken(record: DevtoolsTokenRecord): void;
 	recordMigration(record: Omit<DevtoolsMigrationRecord, "updatedAt">): void;
-	recordRuntime(record: Omit<DevtoolsRuntimeRecord, "updatedAt">): void;
 	select(selection: DevtoolsSelection): void;
 	snapshot(): DevtoolsEvidenceSnapshot;
 }

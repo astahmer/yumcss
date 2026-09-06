@@ -3,6 +3,21 @@ import { DEVTOOLS_RPC, type DevtoolsElementInput } from "../rpc.ts";
 
 const OVERLAY_ID = "__pandwind_devtools_inspector__";
 
+const COMPUTED_STYLE_PROPERTIES = [
+	"display",
+	"position",
+	"color",
+	"background-color",
+	"font-size",
+	"font-weight",
+	"line-height",
+	"padding",
+	"margin",
+	"border-radius",
+	"width",
+	"height",
+] as const;
+
 const attributesFor = (element: Element): Readonly<Record<string, string>> =>
 	Object.fromEntries([...element.attributes].map((attribute) => [attribute.name, attribute.value]));
 
@@ -29,10 +44,22 @@ export default function setup(ctx: DevToolsClientScriptContext): void {
 			event.stopPropagation();
 			const target = event.target;
 			if (!(target instanceof Element) || target.id === OVERLAY_ID) return;
+			const computedStyle = getComputedStyle(target);
+			const className =
+				target.className instanceof SVGAnimatedString
+					? target.className.baseVal
+					: String(target.className);
 			const input: DevtoolsElementInput = {
 				tagName: target.tagName.toLowerCase(),
-				className: target.className instanceof SVGAnimatedString ? target.className.baseVal : String(target.className),
+				className,
+				classNames: className.split(/\s+/u).filter(Boolean),
 				attributes: attributesFor(target),
+				computedStyles: Object.fromEntries(
+					COMPUTED_STYLE_PROPERTIES.map((property) => [
+						property,
+						computedStyle.getPropertyValue(property),
+					]),
+				),
 			};
 			await ctx.current.rpc.call(DEVTOOLS_RPC.InspectElement, input);
 		};

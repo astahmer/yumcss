@@ -3,6 +3,7 @@ import type { DevtoolsEvidenceSnapshot } from "./evidence/store.ts";
 
 export const DEVTOOLS_RPC = {
 	GetSnapshot: "pandwind-devtools:get-snapshot",
+	GetCatalog: "pandwind-devtools:get-catalog",
 	PreviewMigration: "pandwind-devtools:preview-migration",
 	InspectElement: "pandwind-devtools:inspect-element",
 } as const;
@@ -17,7 +18,14 @@ export interface DevtoolsMigrationInput {
 export interface DevtoolsElementInput {
 	readonly tagName?: string;
 	readonly className?: string;
+	readonly classNames?: readonly string[];
 	readonly attributes?: Readonly<Record<string, string>>;
+	readonly computedStyles?: Readonly<Record<string, string>>;
+}
+
+export interface DevtoolsCatalogEntry {
+	readonly id: string;
+	readonly officialApi?: string;
 }
 
 export interface DevtoolsMigrationPreview {
@@ -45,6 +53,7 @@ export interface DevtoolsMigrationPreview {
 declare module "@vitejs/devtools-kit" {
 	interface DevToolsRpcServerFunctions {
 		[DEVTOOLS_RPC.GetSnapshot]: () => Promise<DevtoolsEvidenceSnapshot>;
+		[DEVTOOLS_RPC.GetCatalog]: () => Promise<readonly DevtoolsCatalogEntry[]>;
 		[DEVTOOLS_RPC.PreviewMigration]: (
 			input: DevtoolsMigrationInput,
 		) => Promise<DevtoolsMigrationPreview>;

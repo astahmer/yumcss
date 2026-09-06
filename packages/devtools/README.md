@@ -20,7 +20,7 @@ The dock contains six surfaces:
 - **Inspector**: use the `Inspect styles` host action and click an element in the running app.
 - **Style graph**: see source-to-program edges and expand the raw IR when needed.
 - **Tokens**: inspect resolved variables from `pandwind.interop.json`.
-- **Migration**: preview registered routes through `pandwind-analyze`; previews never write files.
+- **Migration**: preview registered routes through the existing `pandwind-codemod` service; previews never write files.
 - **Diagnostics**: review scanner warnings and migration residual counts.
 - **Performance**: inspect source size, transform timings, and HMR events.
 

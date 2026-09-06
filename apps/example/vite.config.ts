@@ -7,11 +7,5 @@ import { pandwindCssVite } from "pandwind/vite";
 import { defineConfig } from "vite";
 
 export default defineConfig({
-	plugins: [
-		pandwindCssVite(examplePreset),
-		tailwindcss(),
-		react(),
-		DevTools(),
-		pandwindDevtools(),
-	],
+	plugins: [pandwindCssVite(examplePreset), tailwindcss(), react(), DevTools(), pandwindDevtools()],
 });

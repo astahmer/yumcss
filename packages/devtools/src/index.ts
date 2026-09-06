@@ -2,6 +2,7 @@ export { pandwindDevtools } from "./plugin.ts";
 export type { PandwindDevtoolsOptions } from "./plugin.ts";
 export { DEVTOOLS_RPC } from "./rpc.ts";
 export type {
+	DevtoolsCatalogEntry,
 	DevtoolsElementInput,
 	DevtoolsMigrationInput,
 	DevtoolsMigrationPreview,

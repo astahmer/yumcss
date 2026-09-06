@@ -33,14 +33,18 @@ describe("devtools evidence store", () => {
 		store.select({
 			tagName: "button",
 			className: "pw-card",
+			classNames: ["pw-card"],
 			attributes: { type: "button" },
+			computedStyles: { color: "red" },
 			matchedFiles: ["src/Card.tsx"],
 			matchedPrograms: ["card"],
 		});
 		expect(store.snapshot().selected).toEqual({
 			tagName: "button",
 			className: "pw-card",
+			classNames: ["pw-card"],
 			attributes: { type: "button" },
+			computedStyles: { color: "red" },
 			matchedFiles: ["src/Card.tsx"],
 			matchedPrograms: ["card"],
 		});
