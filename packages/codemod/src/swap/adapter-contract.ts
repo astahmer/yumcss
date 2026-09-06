@@ -20,6 +20,8 @@ import type {
 	StyleHostRepresentationKind,
 	StyleMigrationOutcome,
 	StyleRepresentationKind,
+	StyleUtilityDecisionReason,
+	StyleUtilityRepresentationKind,
 } from "./identifiers.ts";
 import type { HostFramework } from "./host-adapters.ts";
 import type {
@@ -194,6 +196,17 @@ export interface AdapterTokenPolicy {
 	preserve(program: StyleProgram, context: AdapterEmitContext): StyleProgram;
 }
 
+/** Typed evidence for the target utility spelling selected by an emitter. */
+export interface AdapterEmissionDecision {
+	readonly representation: StyleUtilityRepresentationKind;
+	readonly candidate: string;
+	readonly property: string;
+	readonly value: string | number;
+	readonly verified: boolean;
+	readonly reason: StyleUtilityDecisionReason;
+	readonly contextFingerprint?: string;
+}
+
 export interface AdapterEmitResult {
 	readonly text: string;
 	/** Semantic observation for opaque runtime registration or an intentional portable artifact. */
@@ -203,6 +216,7 @@ export interface AdapterEmitResult {
 	readonly generatedStatements?: readonly string[];
 	readonly dependencies?: AdapterDependencies;
 	readonly generatedFiles?: readonly AdapterGeneratedFile[];
+	readonly emissionDecisions?: readonly AdapterEmissionDecision[];
 	readonly residuals: readonly StyleProgramResidual[];
 }
 

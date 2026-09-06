@@ -190,6 +190,24 @@ export const enum StyleProgramEmissionHint {
 	RawTemplate = "raw-template",
 }
 
+/** Target utility forms selected after semantic lowering and verification. */
+export const enum StyleUtilityRepresentationKind {
+	Token = "token",
+	PropertyAware = "property-aware",
+	ArbitraryProperty = "arbitrary-property",
+}
+
+/** Why a target utility representation was selected or conservatively rejected. */
+export const enum StyleUtilityDecisionReason {
+	ExactToken = "exact-token",
+	VerifiedPropertyAware = "verified-property-aware",
+	AmbiguousNamespace = "ambiguous-namespace",
+	CustomProperty = "custom-property",
+	OfficialVerificationUnavailable = "official-verification-unavailable",
+	CanonicalCssMismatch = "canonical-css-mismatch",
+	UnsupportedValue = "unsupported-value",
+}
+
 /** Stable generated identities for declarations that need a reusable class name. */
 export class CodemodStyleIdentity {
 	static className(file: string, binding: string): string {

@@ -15,6 +15,7 @@ import {
 	ADAPTER_CONTRACT_SCHEMA,
 	AdapterDependencyKindTag,
 	type AdapterConfigContext,
+	type AdapterEmissionDecision,
 	type AdapterParseContext,
 	type AdapterParseResult,
 	type AdapterProjectConfig,
@@ -27,6 +28,8 @@ import {
 	CodemodAdapterId,
 	StyleHostRepresentationKind,
 	StyleRepresentationKind,
+	StyleUtilityDecisionReason,
+	StyleUtilityRepresentationKind,
 } from "../identifiers.ts";
 import { AdapterEvidence } from "../adapter-evidence.ts";
 import type { ProjectModuleLoader } from "../project-module-loader.ts";
@@ -640,9 +643,11 @@ function emitTailwind(
 	resolver?: TailwindUtilityResolver,
 ): {
 	text: string;
+	emissionDecisions: readonly AdapterEmissionDecision[];
 	residuals: readonly StyleProgramResidual[];
 } {
 	const residuals: StyleProgramResidual[] = [];
+	const emissionDecisions: AdapterEmissionDecision[] = [];
 	for (const rule of StyleProgramAnalysis.rules(program)) {
 		if (rule.kind !== StyleRuleKindTag.Style) {
 			residuals.push({
@@ -677,16 +682,47 @@ function emitTailwind(
 				equivalentTailwindDeclaration(resolver.resolve(fullCandidate), declaration, catalog)
 			) {
 				tokens.push(fullCandidate);
+				emissionDecisions.push({
+					representation:
+						candidate === named
+							? StyleUtilityRepresentationKind.Token
+							: StyleUtilityRepresentationKind.PropertyAware,
+					candidate: fullCandidate,
+					property: declaration.property,
+					value: resolved,
+					verified: candidate === named || resolver !== undefined,
+					reason:
+						candidate === named
+							? StyleUtilityDecisionReason.ExactToken
+							: StyleUtilityDecisionReason.VerifiedPropertyAware,
+				});
 				selected = true;
 				break;
 			}
 		}
 		if (selected) continue;
-		tokens.push(
-			`${prefix}[${declaration.property.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`)}:${utilityValue(resolved)}]`,
-		);
+		const fallback = `${prefix}[${declaration.property.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`)}:${utilityValue(resolved)}]`;
+		tokens.push(fallback);
+		emissionDecisions.push({
+			representation: StyleUtilityRepresentationKind.ArbitraryProperty,
+			candidate: fallback,
+			property: declaration.property,
+			value: resolved,
+			verified: false,
+			reason: declaration.property.startsWith("--")
+				? StyleUtilityDecisionReason.CustomProperty
+				: resolver === undefined
+					? StyleUtilityDecisionReason.OfficialVerificationUnavailable
+					: propertyAware === undefined
+						? StyleUtilityDecisionReason.UnsupportedValue
+						: StyleUtilityDecisionReason.CanonicalCssMismatch,
+		});
 	}
-	return { text: JSON.stringify([...new Set(tokens)].join(" ")), residuals };
+	return {
+		text: JSON.stringify([...new Set(tokens)].join(" ")),
+		emissionDecisions,
+		residuals,
+	};
 }
 
 function config(context: AdapterConfigContext): AdapterProjectConfig {
@@ -1030,6 +1066,7 @@ export function createTailwindAdapter(options: TailwindAdapterOptions = {}): Sty
 			);
 			if (namedRules.length > 0) {
 				const residuals: StyleProgramResidual[] = [];
+				const emissionDecisions: AdapterEmissionDecision[] = [];
 				const entries = namedRules.map((rule) => {
 					const emitted = emitTailwind(
 						{
@@ -1041,11 +1078,13 @@ export function createTailwindAdapter(options: TailwindAdapterOptions = {}): Sty
 						resolver,
 					);
 					residuals.push(...emitted.residuals);
+					emissionDecisions.push(...emitted.emissionDecisions);
 					return `${JSON.stringify(rule.name)}: ${emitted.text}`;
 				});
 				return {
 					text: `{ ${entries.join(", ")} }`,
 					semantic: program,
+					emissionDecisions,
 					residuals,
 				};
 			}

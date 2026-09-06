@@ -1624,6 +1624,9 @@ function runAdapterMigrationInternal(
 			});
 		converted++;
 		const successfulRepresentation = targetRepresentationKind;
+		const emissionDetail = emitted.emissionDecisions
+			?.map((decision) => `${decision.property}: ${decision.representation} (${decision.reason})`)
+			.join("; ");
 		outcomes.push({
 			sourceStart: match.start,
 			sourceText: match.sourceText,
@@ -1638,6 +1641,7 @@ function runAdapterMigrationInternal(
 							? StyleMigrationOutcome.Static
 							: StyleMigrationOutcome.TargetNative,
 			representation: successfulRepresentation,
+			...(emissionDetail === undefined || emissionDetail === "" ? {} : { detail: emissionDetail }),
 		});
 	}
 	const edited = SourcePass.applyEdits(source, edits);

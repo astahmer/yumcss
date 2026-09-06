@@ -294,6 +294,7 @@ describe("custom design-system context resolution", () => {
 		expect(toUno.code).toContain('"p-card text-brand"');
 		expect(toTailwind.residuals).toEqual([]);
 		expect(toTailwind.code).toContain('"p-card text-brand"');
+		expect(toTailwind.outcomes[0]?.detail).toContain("exact-token");
 	});
 
 	test("resolves custom Tailwind utilities and tokens through the official engine", async () => {

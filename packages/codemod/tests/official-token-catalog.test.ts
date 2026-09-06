@@ -558,10 +558,26 @@ describe("official custom-token loaders", () => {
 					mode: "safe",
 					index: 0,
 				},
-			).text;
+			);
 
-		expect(emit("padding", "1rem")).toBe('"p-[1rem]"');
-		expect(emit("color", "red")).toBe('"[color:red]"');
+		const padding = emit("padding", "1rem");
+		const color = emit("color", "red");
+		expect(padding.text).toBe('"p-[1rem]"');
+		expect(padding.emissionDecisions).toMatchObject([
+			{
+				representation: "property-aware",
+				reason: "verified-property-aware",
+				verified: true,
+			},
+		]);
+		expect(color.text).toBe('"[color:red]"');
+		expect(color.emissionDecisions).toMatchObject([
+			{
+				representation: "arbitrary-property",
+				reason: "canonical-css-mismatch",
+				verified: false,
+			},
+		]);
 	});
 
 	test("derives Chakra shorthand and property vocabulary from the official system", async () => {

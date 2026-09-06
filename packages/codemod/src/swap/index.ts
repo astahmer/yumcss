@@ -120,6 +120,8 @@ export {
 	StyleDynamicExpressionKind,
 	StyleProgramConditionOrder,
 	StyleProgramEmissionHint,
+	StyleUtilityDecisionReason,
+	StyleUtilityRepresentationKind,
 	StyleValidatorId,
 	StyleLoweringId,
 	StyleRepresentationKind,
