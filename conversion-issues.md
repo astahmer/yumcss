@@ -180,19 +180,48 @@ The API review covered these concrete forms and secondary families:
   at the generator boundary. Adapters without literal source-token assertions
   no longer leave a tab-only line in generated route files; `git diff --check`
   is clean.
+- **AUDIT-014 — Pandwind recipe carriers had no native reverse route.** Fixed.
+  The Pandwind adapter now recognizes `createRecipe(css, definition)` and
+  `createSlotRecipe(css, definition)` from `pandwind/recipe`, and Panda emits
+  those carriers as documented `cva(...)` and `sva(...)` definitions. Shared
+  recipe rendering keeps the base, variants, slots, and compound variants
+  intact. Direct and Panda round-trip fixtures assert the imports and target
+  API shape.
+- **AUDIT-015 — installed Sass and Less compilers were rejected at the module
+  boundary.** Fixed. Node exposes these CommonJS packages through
+  `default`/`module.exports`; the adapters now unwrap those namespaces before
+  calling the official `sass.compileString` or `less.render` API. Real-package
+  tests cover variables, nesting, Sass module functions, and Less/Sass mixins.
+  The no-compiler path remains fail-closed and preserves the source with a
+  configuration residual.
+- **AUDIT-016 — UnoCSS converted resolved strings that were not class carriers.**
+  Fixed. Static assignments still feed the official generator for project
+  discovery, but lowering creates a match only for a `class`/`className`
+  binding, an arbitrary utility expression, or an exported standalone utility
+  carrier. A string used only as `data-*` stays untouched; exported utility
+  strings still migrate and are covered by a direct regression and the
+  Bamboo/Fela round trips.
 
 ## Accepted residual and context cases
 
 The matrix intentionally does not claim that every API family can be lowered
 from a single source file. These cases remain successful when they preserve the
-source and expose a typed explanation:
+source and expose the available context or residual evidence:
 
 - runtime callbacks and theme callbacks retain host-runtime semantics;
 - providers, global config, token helpers, recipes, and theme declarations are
-  context boundaries unless a verified project artifact supplies enough data;
-- unknown Tailwind/UnoCSS utilities, CSS Modules composition, Sass/Less
-  variables or mixins, unsupported selectors, and framework-specific component
-  semantics remain typed residuals;
+  context boundaries unless a verified project artifact supplies enough data.
+  Configuration-only files with no style carrier are intentionally unchanged;
+  rewriting them into a target config would silently discard project semantics.
+- unknown Tailwind/UnoCSS utilities, CSS Modules global selectors, and
+  framework-specific component semantics remain typed residuals;
+- Sass/Less variables, nesting, module imports, and mixins are lowered through
+  the official compiler when the project supplies it. Without that compiler,
+  they remain typed configuration/capability residuals rather than being
+  expanded by a partial parser;
+- authored global selectors and descendant selectors stay in the authored CSS
+  boundary because Pandwind's general `css()`/`css.class()` API does not own
+  browser-global side effects;
 - portable Pandwind artifacts are accepted only under the explicit artifact
   round-trip policy.
 
@@ -211,10 +240,13 @@ contract.
   passed, 0 failed, 0 skipped, 0 snapshot failures**.
 - Official primary/family, adapter evidence, and external-adapter suites:
   **4 files, 121 tests passed**.
+- The new official compiler and UnoCSS carrier regressions: **3 files, 19
+  tests passed**.
 - Codemod TypeScript check: `tsc --noEmit` passed.
 - `git diff --check` passed.
 
-The focused fixes are represented in the JJ history as the adapter validation
-revision followed by this ledger closure revision. The route matrix remains
-fully generated so future adapter changes can be checked with the same commands
-without losing the individual source-specific fixtures.
+The focused fixes are represented by separate JJ revisions for reverse recipe
+carriers, route evidence, compiler namespace loading, and UnoCSS carrier
+classification. The route matrix remains fully generated so future adapter
+changes can be checked with the same commands without losing the individual
+source-specific fixtures.
