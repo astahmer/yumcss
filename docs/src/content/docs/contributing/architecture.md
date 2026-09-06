@@ -755,11 +755,14 @@ Source transformation primitives have one owner: `SourcePass` in
 excluded-range calculation, offset-safe edits, and residual-marker insertion
 behind one small class. The legacy copies in the source migration façade and
 the general migration runner were removed; adapter and pipeline code consumes
-this owner instead. The large adapter-migration, semantic-IR, and Panda files
-remain cohesive because they still own a complete lifecycle or policy surface;
-they are not split merely to reduce line count. A future split must introduce
-an independently replaceable port, default implementation, and substitution
-test, otherwise it would add indirection without improving the architecture.
+this owner instead. The migration composition root is kept in
+`adapter-migration.ts`, while the port-driven algorithm lives in
+`adapter-migration-engine.ts`. The engine does not construct the adapter
+registry, scanner, or lowering registry; the composition root supplies them.
+The semantic-IR and Panda files remain cohesive because they still own
+complete lifecycle or policy surfaces. A future split must introduce an
+independently replaceable port, default implementation, and substitution test,
+otherwise it would add indirection without improving the architecture.
 
 ### Non-CSS-in-JS source adapters
 
