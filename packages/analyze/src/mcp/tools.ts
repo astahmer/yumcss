@@ -25,6 +25,7 @@ const MCP_MIGRATION_MODE = {
 } as const satisfies Record<string, AdapterCapabilityMode>;
 
 const MCP_PROJECT_SCHEMA = "pandwind.mcp.project/1" as const;
+const MCP_FILE_LIST_LIMIT = 500;
 
 export interface McpProjectContext {
 	readonly root: string;
@@ -167,6 +168,17 @@ function projectFiles(context: McpProjectContext): string[] {
 	return [...context.workspace.files(["**/*"], context.root, { includeUnsupported: true })];
 }
 
+function projectPattern(candidate: string): string {
+	const normalized = candidate.replaceAll("\\", "/");
+	if (
+		normalized.startsWith("/") ||
+		/^[A-Za-z]:\//u.test(normalized) ||
+		normalized.split("/").includes("..")
+	)
+		throw new McpToolError(`path must be project-relative: ${candidate}`);
+	return candidate;
+}
+
 function inspectProject(context: McpProjectContext, arguments_: unknown): McpToolResult {
 	const input = asRecord(arguments_, MCP_TOOL.InspectProject);
 	const includeFiles = input.includeFiles === true;
@@ -218,7 +230,13 @@ function inspectProject(context: McpProjectContext, arguments_: unknown): McpToo
 				[...sourceExtensions.entries()].toSorted(([a], [b]) => a.localeCompare(b)),
 			),
 			...(includeFiles
-				? { paths: files.map((file) => relativeProjectPath(context.root, file)).toSorted() }
+				? {
+						paths: files
+							.map((file) => relativeProjectPath(context.root, file))
+							.toSorted()
+							.slice(0, MCP_FILE_LIST_LIMIT),
+						truncated: files.length > MCP_FILE_LIST_LIMIT,
+					}
 				: {}),
 		},
 		adapters: [...detections.entries()]
@@ -296,12 +314,7 @@ async function migrationPreview(
 	const mode = migrationMode(input.mode);
 	const expanded = new Set<string>();
 	for (const pattern of files) {
-		if (
-			pattern.startsWith("/") ||
-			/^[A-Za-z]:\//u.test(pattern) ||
-			pattern.split(/[\\/]/u).includes("..")
-		)
-			throw new McpToolError(`path must be project-relative: ${pattern}`);
+		projectPattern(pattern);
 		for (const file of context.workspace.files([pattern], context.root, {
 			includeUnsupported: true,
 		}))
@@ -377,6 +390,7 @@ async function analyzeProject(
 	const input = asRecord(arguments_, MCP_TOOL.AnalyzeProject);
 	const patterns =
 		input.patterns === undefined ? ["src/**/*.{ts,tsx}"] : stringArray(input.patterns, "patterns");
+	for (const pattern of patterns) projectPattern(pattern);
 	const twPath = input.twPath === undefined ? "src/tw.ts" : stringValue(input.twPath, "twPath");
 	const argv = [
 		...patterns,

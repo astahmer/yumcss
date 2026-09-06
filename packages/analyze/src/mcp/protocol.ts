@@ -10,7 +10,13 @@ export const MCP_METHOD = {
 
 export type McpMethod = (typeof MCP_METHOD)[keyof typeof MCP_METHOD];
 
-export const MCP_PROTOCOL_VERSION = "2024-11-05" as const;
+export const MCP_PROTOCOL_VERSION = "2025-11-25" as const;
+export const MCP_SUPPORTED_PROTOCOL_VERSIONS = [
+	MCP_PROTOCOL_VERSION,
+	"2025-06-18",
+	"2025-03-26",
+	"2024-11-05",
+] as const;
 export const MCP_SERVER_INFO = {
 	name: "pandwind-analyze",
 	version: "0.1.0",
@@ -122,8 +128,19 @@ export async function dispatchMcpMessage(
 	}
 
 	if (message.method === MCP_METHOD.Initialize) {
+		const requestedVersion =
+			typeof message.params === "object" && message.params !== null
+				? (message.params as { protocolVersion?: unknown }).protocolVersion
+				: undefined;
+		const protocolVersion =
+			typeof requestedVersion === "string" &&
+			MCP_SUPPORTED_PROTOCOL_VERSIONS.includes(
+				requestedVersion as (typeof MCP_SUPPORTED_PROTOCOL_VERSIONS)[number],
+			)
+				? requestedVersion
+				: MCP_PROTOCOL_VERSION;
 		return response(message.id, {
-			protocolVersion: MCP_PROTOCOL_VERSION,
+			protocolVersion,
 			capabilities: { tools: {} },
 			serverInfo: MCP_SERVER_INFO,
 		});

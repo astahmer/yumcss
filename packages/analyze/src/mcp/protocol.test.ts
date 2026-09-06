@@ -27,7 +27,12 @@ const handler: McpServerHandler = {
 describe("MCP protocol boundary", () => {
 	it("advertises the server and tools through initialize/list", async () => {
 		const initialized = await dispatchMcpMessage(
-			{ jsonrpc: "2.0", id: 1, method: MCP_METHOD.Initialize },
+			{
+				jsonrpc: "2.0",
+				id: 1,
+				method: MCP_METHOD.Initialize,
+				params: { protocolVersion: "2025-11-25" },
+			},
 			handler,
 		);
 		const listed = await dispatchMcpMessage(
@@ -35,6 +40,7 @@ describe("MCP protocol boundary", () => {
 			handler,
 		);
 		expect(initialized).toMatchObject({ result: { capabilities: { tools: {} } } });
+		expect(initialized).toMatchObject({ result: { protocolVersion: "2025-11-25" } });
 		expect(listed).toMatchObject({ result: { tools: [{ name: "echo" }] } });
 	});
 
