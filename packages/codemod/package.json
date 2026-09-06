@@ -31,6 +31,12 @@
 			"import": "./dist/cli.js",
 			"default": "./dist/cli.js"
 		},
+		"./diff": {
+			"pandwind": "./src/diff.ts",
+			"types": "./dist/diff.d.ts",
+			"import": "./dist/diff.js",
+			"default": "./dist/diff.js"
+		},
 		"./swap": {
 			"pandwind": "./src/swap/index.ts",
 			"types": "./dist/swap/index.d.ts",

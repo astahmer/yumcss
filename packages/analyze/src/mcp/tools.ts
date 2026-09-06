@@ -7,7 +7,7 @@ import {
 	type AdapterCapabilityMode,
 	type AdapterMigrationResult,
 } from "pandwind-codemod/swap";
-import { unifiedDiff } from "pandwind-codemod";
+import { unifiedDiff } from "pandwind-codemod/diff";
 import { runCli } from "../cli.ts";
 import { McpToolError, textToolResult } from "./tool-contract.ts";
 import type { McpToolDefinition, McpToolResult } from "./protocol.ts";

@@ -10,6 +10,7 @@
  */
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
 import { collectFiles, type FoldSummary } from "./analyze.ts";
 import {
@@ -279,7 +280,7 @@ async function main(): Promise<void> {
 }
 
 const invokedDirectly =
-	process.argv[1]?.endsWith("cli.ts") || process.argv[1]?.endsWith("analyze/src/cli.ts");
+	process.argv[1] !== undefined && resolve(process.argv[1]) === fileURLToPath(import.meta.url);
 if (invokedDirectly) main();
 
 export { main, parseArgs, collectFiles };
