@@ -40,20 +40,24 @@
 	"scripts": {
 		"build": "nub exec tsdown && nub exec vite build",
 		"typecheck": "tsc --noEmit",
-		"test": "vitest run"
+		"test": "vitest run --config vitest.config.ts"
 	},
 	"dependencies": {
 		"@vitejs/devtools-kit": "0.7.2",
 		"pandwind": "workspace:*",
-		"pandwind-analyze": "workspace:*",
 		"pandwind-codemod": "workspace:*"
 	},
 	"devDependencies": {
+		"@vitejs/devtools": "0.7.2",
 		"@types/node": "26.4.1",
 		"tsdown": "0.23.0",
 		"typescript": "7.0.2",
 		"vite": "8.2.2",
 		"vitest": "5.0.0"
+	},
+	"peerDependencies": {
+		"@vitejs/devtools": "0.7.2",
+		"vite": ">=8.0.0"
 	},
 	"engines": {
 		"node": ">=20"

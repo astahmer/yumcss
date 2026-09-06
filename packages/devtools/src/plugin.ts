@@ -1,16 +1,17 @@
 /// <reference types="@vitejs/devtools-kit" />
-import { globSync, readFileSync } from "node:fs";
-import { basename, extname, relative, resolve } from "node:path";
+import { existsSync, globSync, readFileSync } from "node:fs";
+import { basename, extname, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { defineRpcFunction } from "@vitejs/devtools-kit";
 import type { Plugin, ResolvedConfig } from "vite";
 import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
 import {
-	createMcpProjectContext,
-	createMcpToolService,
-	MCP_TOOL,
-	type McpToolResult,
-} from "pandwind-analyze/mcp";
+runAdapterMigrationAsync,
+type AdapterCapabilityMode,
+type AdapterMigrationResult,
+} from "pandwind-codemod/swap";
+import { unifiedDiff } from "pandwind-codemod/diff";
+import { createSourceWorkspace } from "pandwind/source/workspace";
 import {
 	createDevtoolsEvidenceStore,
 	type DevtoolsEvidenceStore,
@@ -64,12 +65,95 @@ function loadInteropTokens(root: string, store: DevtoolsEvidenceStore): void {
 	}
 }
 
-function structured<T>(result: McpToolResult): T {
-	if (result.isError) throw new Error(result.content[0]?.text ?? "Pandwind DevTools request failed");
-	if (result.structuredContent !== undefined) return result.structuredContent as T;
-	const text = result.content[0]?.text;
-	if (text === undefined) throw new Error("Pandwind DevTools returned an empty response");
-	return JSON.parse(text) as T;
+const migrationMode = (value: DevtoolsMigrationInput["mode"]): AdapterCapabilityMode =>
+	value === "partial" ? "partial" : "safe";
+
+const projectPath = (root: string, candidate: string): string => {
+	const normalized = candidate.replaceAll("\\", "/");
+	if (
+		normalized.startsWith("/") ||
+		/^[A-Za-z]:\//u.test(normalized) ||
+		normalized.split("/").includes("..")
+	)
+		throw new Error(`migration path must be project-relative: ${candidate}`);
+	const absolute = resolve(root, normalized);
+	const outside = relative(root, absolute);
+	if (outside === ".." || outside.startsWith(`..${sep}`))
+		throw new Error(`migration path escapes project root: ${candidate}`);
+	return absolute;
+};
+
+const packageJsonFor = (root: string): Readonly<Record<string, unknown>> | undefined => {
+	try {
+		const value: unknown = JSON.parse(readFileSync(resolve(root, "package.json"), "utf8"));
+		return typeof value === "object" && value !== null ? (value as Record<string, unknown>) : undefined;
+	} catch {
+		return undefined;
+	}
+};
+
+const serializeMigration = (
+	file: string,
+	result: AdapterMigrationResult,
+	before: string,
+) => ({
+	file,
+	changed: result.changed,
+	code: result.code,
+	diff: unifiedDiff(before, result.code, file),
+	converted: result.converted,
+	skipped: result.skipped,
+	residuals: result.residuals,
+	loweringPlans: result.loweringPlans,
+	generatedFiles: result.generatedFiles,
+});
+
+async function previewMigration(
+	root: string,
+	input: DevtoolsMigrationInput,
+): Promise<DevtoolsMigrationPreview> {
+	if (input.files.length === 0 || input.from.length === 0 || input.to.length === 0)
+		throw new Error("migration requires files, from, and to");
+	const workspace = createSourceWorkspace();
+	const expanded = new Set<string>();
+	for (const pattern of input.files) {
+		projectPath(root, pattern);
+		for (const file of workspace.files([pattern], root, { includeUnsupported: true })) expanded.add(file);
+	}
+	if (expanded.size === 0) throw new Error("migration files did not match any project files");
+	const allFiles = workspace.files(["**/*"], root, { includeUnsupported: true });
+	const packageJson = packageJsonFor(root);
+	const files = [];
+	for (const absolute of [...expanded].toSorted()) {
+		const file = relative(root, absolute).split(sep).join("/");
+		const before = readFileSync(absolute, "utf8");
+		const result = await runAdapterMigrationAsync(before, {
+			from: input.from,
+			to: input.to,
+			file,
+			root,
+			packageJson,
+			readFile: (candidate) => {
+				try {
+					const absoluteCandidate = projectPath(root, candidate);
+					return readFileSync(absoluteCandidate, "utf8");
+				} catch {
+					return undefined;
+				}
+			},
+			listFiles: () => allFiles,
+			mode: migrationMode(input.mode),
+		});
+		files.push(serializeMigration(file, result, before));
+	}
+	return {
+		schema: "pandwind.devtools.migration-preview/1",
+		root,
+		from: input.from,
+		to: input.to,
+		mode: migrationMode(input.mode),
+		files,
+	};
 }
 
 function recordMigration(
@@ -117,7 +201,6 @@ function elementSelection(input: DevtoolsElementInput, store: DevtoolsEvidenceSt
 export function pandwindDevtools(options: PandwindDevtoolsOptions = {}): Plugin {
 	let config: ResolvedConfig | undefined;
 	let store: DevtoolsEvidenceStore | undefined;
-	let migrationService: ReturnType<typeof createMcpToolService> | undefined;
 
 	const currentStore = (): DevtoolsEvidenceStore => {
 		if (store === undefined) throw new Error("Pandwind DevTools evidence is not initialized");
@@ -131,7 +214,6 @@ export function pandwindDevtools(options: PandwindDevtoolsOptions = {}): Plugin 
 			config = resolved;
 			store = createDevtoolsEvidenceStore(resolved.root);
 			loadInteropTokens(resolved.root, store);
-			migrationService = createMcpToolService(createMcpProjectContext(resolved.root));
 		},
 		transform(code, id) {
 			const file = fileForId(id);
@@ -170,7 +252,9 @@ export function pandwindDevtools(options: PandwindDevtoolsOptions = {}): Plugin 
 			setup(ctx) {
 				if (options.enabled === false) return;
 				const clientPath = fileURLToPath(new URL("../dist/client", import.meta.url));
+				const modulePath = fileURLToPath(new URL("../dist", import.meta.url));
 				ctx.views.hostStatic("/__pandwind_devtools__", clientPath);
+				ctx.views.hostStatic("/__pandwind_devtools_modules__", modulePath);
 				ctx.docks.register({
 					id: "pandwind-devtools",
 					title: "Pandwind",
@@ -184,7 +268,10 @@ export function pandwindDevtools(options: PandwindDevtoolsOptions = {}): Plugin 
 						title: "Inspect styles",
 						icon: "ph:cursor-duotone",
 						type: "action",
-						action: { importFrom: "pandwind-devtools/inspect-action", importName: "default" },
+						action: {
+							importFrom: "/__pandwind_devtools_modules__/client/inspect-action.js",
+							importName: "default",
+						},
 					});
 				ctx.rpc.register(
 					defineRpcFunction({
@@ -211,10 +298,9 @@ export function pandwindDevtools(options: PandwindDevtoolsOptions = {}): Plugin 
 						type: "query",
 						setup: () => ({
 							handler: async (input: DevtoolsMigrationInput) => {
-								if (migrationService === undefined) throw new Error("migration service is not initialized");
-								const result = structured<DevtoolsMigrationPreview>(
-									await migrationService.call(MCP_TOOL.PreviewMigration, input),
-								);
+								const root = config?.root;
+								if (root === undefined) throw new Error("Vite root is not initialized");
+								const result = await previewMigration(root, input);
 								recordMigration(currentStore(), result);
 								return result;
 							},

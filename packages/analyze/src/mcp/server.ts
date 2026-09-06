@@ -38,8 +38,3 @@ export async function runMcpCommand(argv: readonly string[]): Promise<void> {
 }
 
 export { MCP_TOOL };
-export {
-	createMcpProjectContext,
-	createMcpToolService,
-} from "./tools.ts";
-export type { McpProjectContext, McpToolService } from "./tools.ts";
