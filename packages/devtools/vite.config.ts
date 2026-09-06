@@ -1,13 +1,9 @@
 import { defineConfig } from "vite";
 
 export default defineConfig({
+	root: "client",
 	build: {
-		lib: {
-			entry: "client/main.ts",
-			formats: ["es"],
-			fileName: () => "client/main.js",
-		},
-		outDir: "dist",
+		outDir: "../dist/client",
 		emptyOutDir: false,
 	},
 });
