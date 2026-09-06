@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import cac, { type Command } from "cac";
 import { spawn } from "node:child_process";
 import { resolve } from "node:path";
 import { createStudioCodemodEvaluator } from "./evaluator.ts";
@@ -17,9 +18,14 @@ const openInBrowser = (url: string): void => {
 	}).unref();
 };
 
-const main = async (argv: readonly string[]): Promise<void> => {
-	const root = resolve(argv.find((argument) => !argument.startsWith("-")) ?? process.cwd());
-	const shouldOpen = !argv.includes("--no-open");
+const validateCommand = (command: Command): void => {
+	command.checkUnknownOptions();
+	command.checkOptionValue();
+	command.checkRequiredArgs();
+	command.checkUnusedArgs();
+};
+
+const runStudio = async (root: string, shouldOpen: boolean): Promise<void> => {
 	const workspace = createNodeStudioWorkspace();
 	const evaluator = createStudioCodemodEvaluator();
 	const session = createStudioSession({
@@ -40,7 +46,25 @@ const main = async (argv: readonly string[]): Promise<void> => {
 	process.once("SIGTERM", () => void close());
 };
 
+const main = async (argv: readonly string[] = process.argv.slice(2)): Promise<void> => {
+	const cli = cac("pandwind-studio");
+	const command = cli.command("[root]", "Open the read-only Pandwind Studio for a project");
+	command.option("--no-open", "Start the server without opening a browser");
+	cli.help();
+	try {
+		cli.parse(["node", "pandwind-studio", ...argv], { run: false });
+		if (cli.matchedCommand === undefined) return;
+		validateCommand(cli.matchedCommand);
+		const root = resolve(cli.args[0] ?? process.cwd());
+		await runStudio(root, cli.options.open !== false);
+	} catch (error) {
+		console.error(`pandwind-studio: ${error instanceof Error ? error.message : String(error)}`);
+		cli.outputHelp();
+		process.exitCode = 1;
+	}
+};
+
 if (process.argv[1]?.endsWith("studio/cli.ts") || process.argv[1]?.endsWith("studio/cli.js"))
-	void main(process.argv.slice(2));
+	void main();
 
 export { main as runStudioCli };
