@@ -121,22 +121,24 @@ describe("Pandwind MCP tools", () => {
 		const calls: string[] = [];
 		const ports: McpToolPorts = {
 			createCatalog: createBuiltinCodemodCatalog,
-			migrate: async (source) => {
-				calls.push(source);
-				return {
-					code: source,
-					changed: false,
-					converted: 0,
-					skipped: 0,
-					reports: [],
-					validations: [],
-					dependencies: [],
-					generatedFiles: [],
-					fileChanges: [],
-					residuals: [],
-					loweringPlans: [],
-					outcomes: [],
-				};
+			migration: {
+				runAsync: async (source) => {
+					calls.push(source);
+					return {
+						code: source,
+						changed: false,
+						converted: 0,
+						skipped: 0,
+						reports: [],
+						validations: [],
+						dependencies: [],
+						generatedFiles: [],
+						fileChanges: [],
+						residuals: [],
+						loweringPlans: [],
+						outcomes: [],
+					};
+				},
 			},
 			analyze: async () => {
 				calls.push("analyze");

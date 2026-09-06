@@ -4,9 +4,9 @@ import { createSourceWorkspace } from "pandwind/source/workspace";
 import {
 	createBuiltinCodemodCatalog,
 	type AdapterCapabilityMode,
-	type AdapterMigrationOptions,
 	type AdapterMigrationResult,
 	type CodemodAdapterCatalog,
+	type StyleMigrationUseCase,
 } from "pandwind-codemod/swap";
 import { STYLE_MIGRATION_USE_CASE } from "pandwind-codemod/swap";
 import { unifiedDiff } from "pandwind-codemod/diff";
@@ -42,16 +42,13 @@ export interface McpToolService {
 /** Application ports used by the MCP tool façade. */
 export interface McpToolPorts {
 	readonly createCatalog: () => CodemodAdapterCatalog;
-	readonly migrate: (
-		source: string,
-		options: AdapterMigrationOptions,
-	) => Promise<AdapterMigrationResult>;
+	readonly migration: Pick<StyleMigrationUseCase, "runAsync">;
 	readonly analyze: (argv: readonly string[]) => Promise<string>;
 }
 
 const DEFAULT_TOOL_PORTS: McpToolPorts = {
 	createCatalog: createBuiltinCodemodCatalog,
-	migrate: (source, options) => STYLE_MIGRATION_USE_CASE.runAsync(source, options),
+	migration: STYLE_MIGRATION_USE_CASE,
 	analyze: (argv) => runCli([...argv]),
 };
 
@@ -350,7 +347,7 @@ async function migrationPreview(
 	for (const absolute of [...expanded].toSorted()) {
 		const file = relativeProjectPath(context.root, absolute);
 		const before = readFileSync(absolute, "utf8");
-		const result = await ports.migrate(before, {
+		const result = await ports.migration.runAsync(before, {
 			from,
 			to,
 			file,
