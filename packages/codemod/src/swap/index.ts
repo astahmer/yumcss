@@ -391,11 +391,17 @@ export {
 	MIGRATION_PIPELINE_SCHEMA,
 	createAdapterMigrationPipeline,
 } from "./migration-pipeline.ts";
+export {
+	STYLE_MIGRATION_USE_CASE,
+	STYLE_MIGRATION_USE_CASE_SCHEMA,
+	createStyleMigrationUseCase,
+} from "./migration-use-case.ts";
 export type {
 	AdapterMigrationInput,
 	AdapterMigrationPipeline,
 	MigrationStage,
 } from "./migration-pipeline.ts";
+export type { StyleMigrationExecutor, StyleMigrationUseCase } from "./migration-use-case.ts";
 export {
 	ADAPTER_PLUGIN_SCHEMA,
 	createStyleAdapterPlugin,

@@ -1,6 +1,6 @@
 import type { AdapterMigrationOptions, AdapterMigrationResult } from "./adapter-migration.ts";
-import { runAdapterMigration } from "./adapter-migration.ts";
 import { MigrationStageId } from "./identifiers.ts";
+import { STYLE_MIGRATION_USE_CASE, type StyleMigrationUseCase } from "./migration-use-case.ts";
 
 /** Versioned orchestration boundary for source/target adapter migrations. */
 export const MIGRATION_PIPELINE_SCHEMA = "pandwind.migration-pipeline/1" as const;
@@ -19,6 +19,7 @@ export interface AdapterMigrationPipeline {
 	readonly schema: typeof MIGRATION_PIPELINE_SCHEMA;
 	readonly stages: readonly MigrationStage<AdapterMigrationInput, AdapterMigrationResult>[];
 	run(source: string, options: AdapterMigrationOptions): AdapterMigrationResult;
+	runAsync(source: string, options: AdapterMigrationOptions): Promise<AdapterMigrationResult>;
 }
 
 /**
@@ -30,9 +31,10 @@ export function createAdapterMigrationPipeline(
 	stages: readonly MigrationStage<AdapterMigrationInput, AdapterMigrationResult>[] = [
 		{
 			id: MigrationStageId.AdapterMigration,
-			run: ({ source, options }) => runAdapterMigration(source, options),
+			run: ({ source, options }) => STYLE_MIGRATION_USE_CASE.run(source, options),
 		},
 	],
+	useCase: StyleMigrationUseCase = STYLE_MIGRATION_USE_CASE,
 ): AdapterMigrationPipeline {
 	return {
 		schema: MIGRATION_PIPELINE_SCHEMA,
@@ -41,6 +43,9 @@ export function createAdapterMigrationPipeline(
 			const stage = stages[0];
 			if (stage === undefined) throw new Error("adapter migration pipeline has no stages");
 			return stage.run({ source, options });
+		},
+		runAsync(source, options) {
+			return useCase.runAsync(source, options);
 		},
 	};
 }
