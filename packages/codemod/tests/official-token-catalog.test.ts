@@ -464,6 +464,84 @@ describe("official custom-token loaders", () => {
 		expect(JSON.parse(uno)).toMatchInlineSnapshot(`"text-brand-500"`);
 	});
 
+	test("remaps source token IR values through class target catalogs", () => {
+		const tokenCatalog = TokenCatalog.fromGroups({
+			colors: { "brand.500": "#123456" },
+		})?.contract;
+		const sourceTokenProgram = styleProgramFromRules([
+			{
+				kind: "style",
+				conditions: [],
+				declarations: [
+					{
+						conditions: [],
+						property: "color",
+						value: {
+							kind: "token",
+							ref: "source.brand",
+							authored: "source.brand",
+							resolved: "#123456",
+						},
+					},
+				],
+				children: [],
+				order: 0,
+			},
+		]);
+		const emit = (adapter: StyleAdapter) =>
+			adapter.emit(sourceTokenProgram, {
+				...context,
+				config: { adapter: adapter.id, files: [], values: {}, tokenCatalog },
+				mode: "safe",
+				index: 0,
+			});
+
+		expect(emit(createTailwindAdapter({ moduleLoader: null })).text).toBe('"text-brand-500"');
+		expect(emit(createUnoCssAdapter({ moduleLoader: null })).text).toBe('"text-brand-500"');
+	});
+
+	test("selects only officially verified Tailwind property-aware candidates", () => {
+		const adapter = createTailwindAdapter({ moduleLoader: null });
+		const resolver = {
+			resolve: (token: string) => {
+				if (token === "p-[1rem]")
+					return [
+						{ conditions: [], property: "padding", value: { kind: "literal", value: "1rem" } },
+					];
+				if (token === "text-[red]")
+					return [
+						{ conditions: [], property: "fontSize", value: { kind: "literal", value: "red" } },
+					];
+				return undefined;
+			},
+		};
+		const emit = (property: string, value: string) =>
+			adapter.emit(
+				styleProgramFromRules([
+					{
+						kind: "style",
+						conditions: [],
+						declarations: [{ conditions: [], property, value: { kind: "literal", value } }],
+						children: [],
+						order: 0,
+					},
+				]),
+				{
+					...context,
+					config: {
+						adapter: adapter.id,
+						files: [],
+						values: { tailwindResolver: resolver },
+					},
+					mode: "safe",
+					index: 0,
+				},
+			).text;
+
+		expect(emit("padding", "1rem")).toBe('"p-[1rem]"');
+		expect(emit("color", "red")).toBe('"[color:red]"');
+	});
+
 	test("derives Chakra shorthand and property vocabulary from the official system", async () => {
 		const system = {
 			$$chakra: true as const,

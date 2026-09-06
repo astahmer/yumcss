@@ -38,7 +38,7 @@ import {
 import { DynamicClassHost } from "./class-target-dynamic.ts";
 import { BuiltinHostFramework } from "../host-adapters.ts";
 import { SourcePass } from "../../source-pass-utils.ts";
-import { TokenCatalog } from "../tokens.ts";
+import { TokenCatalog, resolvedStyleValue } from "../tokens.ts";
 import { StyleProgramAnalysis } from "../style-program-analysis.ts";
 import {
 	parseGeneratedCss,
@@ -215,6 +215,7 @@ function parseClassValue(
 		if (resolved === undefined) unknown.push(token);
 		else declarations.push(...resolved);
 	}
+	const tokenCatalog = TokenCatalog.fromContract(context.config.tokenCatalog);
 	return {
 		start,
 		end,
@@ -234,10 +235,81 @@ function parseClassValue(
 				})),
 			],
 		})
-			.style(declarations)
+			.style(materializeTailwindTokens(declarations, tokenCatalog))
 			.build(),
 		sourceText: value,
 	};
+}
+
+const tailwindTokenGroups: Readonly<Record<string, string>> = {
+	color: "colors",
+	backgroundColor: "colors",
+	borderColor: "colors",
+	borderRadius: "radii",
+	fontSize: "fontSizes",
+	fontWeight: "fontWeights",
+	lineHeight: "lineHeights",
+	letterSpacing: "letterSpacings",
+	fontFamily: "fonts",
+	boxShadow: "shadows",
+	padding: "spacing",
+	paddingInline: "spacing",
+	paddingBlock: "spacing",
+	margin: "spacing",
+	marginInline: "spacing",
+	marginBlock: "spacing",
+	gap: "spacing",
+	width: "spacing",
+	height: "spacing",
+	minWidth: "spacing",
+	maxWidth: "spacing",
+	minHeight: "spacing",
+	maxHeight: "spacing",
+};
+
+const tailwindTokenNamespaces: Readonly<Record<string, string>> = {
+	colors: "color",
+	spacing: "spacing",
+	radii: "radius",
+	fontSizes: "font-size",
+	fontWeights: "font-weight",
+	lineHeights: "leading",
+	letterSpacings: "tracking",
+	fonts: "font",
+	shadows: "shadow",
+};
+
+function materializeTailwindToken(
+	declaration: StyleDeclaration,
+	catalog: TokenCatalog | undefined,
+): StyleDeclaration {
+	if (catalog === undefined || declaration.value.kind !== StyleValueKindTag.Literal)
+		return declaration;
+	if (typeof declaration.value.value !== "string") return declaration;
+	const group = tailwindTokenGroups[declaration.property];
+	const namespace = group === undefined ? undefined : tailwindTokenNamespaces[group];
+	if (namespace === undefined) return declaration;
+	const variable = /^var\(--([a-z-]+)-([^),\s]+)\)$/u.exec(declaration.value.value);
+	if (variable?.[1] !== namespace || variable[2] === undefined) return declaration;
+	const match = catalog.findByReference([group], variable[2].replaceAll("-", "."));
+	return match === undefined
+		? declaration
+		: {
+				...declaration,
+				value: {
+					kind: StyleValueKindTag.Token,
+					ref: match.ref,
+					authored: match.authored,
+					resolved: match.resolved,
+				},
+			};
+}
+
+function materializeTailwindTokens(
+	declarations: readonly StyleDeclaration[],
+	catalog: TokenCatalog | undefined,
+): readonly StyleDeclaration[] {
+	return declarations.map((declaration) => materializeTailwindToken(declaration, catalog));
 }
 
 function standaloneClassMap(
@@ -281,6 +353,7 @@ function parseTailwind(
 ): AdapterParseResult {
 	const matches: Array<AdapterParseResult["matches"][number]> = [];
 	const residuals: StyleProgramResidual[] = [...(context.config.residuals ?? [])];
+	const tokenCatalog = TokenCatalog.fromContract(context.config.tokenCatalog);
 	const excluded = context.document?.isExcluded ?? (() => false);
 	const classMap = standaloneClassMap(source) ?? assignedClassMap(source);
 	if (classMap !== undefined) {
@@ -342,7 +415,7 @@ function parseTailwind(
 				{
 					kind: StyleRuleKindTag.Style,
 					conditions: [],
-					declarations,
+					declarations: materializeTailwindTokens(declarations, tokenCatalog),
 					children: [],
 					order: 0,
 				},
@@ -466,40 +539,11 @@ function tailwindTokenUtility(
 	declaration: StyleDeclaration,
 	catalog: TokenCatalog | undefined,
 ): string | undefined {
-	if (catalog === undefined || declaration.value.kind !== StyleValueKindTag.Literal)
-		return undefined;
+	const resolved = resolvedStyleValue(declaration.value);
+	if (catalog === undefined || resolved === undefined) return undefined;
 	const property = declaration.property;
-	const groups: Readonly<Record<string, string>> = {
-		color: "colors",
-		backgroundColor: "colors",
-		borderColor: "colors",
-		borderRadius: "radii",
-		fontSize: "fontSizes",
-		fontWeight: "fontWeights",
-		lineHeight: "lineHeights",
-		letterSpacing: "letterSpacings",
-		fontFamily: "fonts",
-		boxShadow: "shadows",
-		padding: "spacing",
-		paddingInline: "spacing",
-		paddingBlock: "spacing",
-		margin: "spacing",
-		marginInline: "spacing",
-		marginBlock: "spacing",
-		gap: "spacing",
-		// Tailwind v4 uses the `--spacing-*` namespace for width/height as well
-		// as padding, margin, and gap utilities. `sizes` is not a valid inferred
-		// namespace for a custom `w-*` token in the official engine.
-		width: "spacing",
-		height: "spacing",
-		minWidth: "spacing",
-		maxWidth: "spacing",
-		minHeight: "spacing",
-		maxHeight: "spacing",
-	};
-	const group = groups[property];
-	const match =
-		group === undefined ? undefined : catalog.findUnique([group], String(declaration.value.value));
+	const group = tailwindTokenGroups[property];
+	const match = group === undefined ? undefined : catalog.findUnique([group], String(resolved));
 	if (match === undefined) return undefined;
 	const key = match.ref.replaceAll(".", "-");
 	const prefixes: Readonly<Record<string, string>> = {
@@ -530,9 +574,68 @@ function tailwindTokenUtility(
 	return `${prefixes[property]}-${key}`;
 }
 
+function equivalentTailwindDeclaration(
+	candidate: readonly StyleDeclaration[] | undefined,
+	declaration: StyleDeclaration,
+	catalog: TokenCatalog | undefined,
+): boolean {
+	const materialized =
+		candidate === undefined ? undefined : materializeTailwindTokens(candidate, catalog);
+	if (materialized?.length !== 1) return false;
+	const resolved = resolvedStyleValue(materialized[0]!.value);
+	const expected = resolvedStyleValue(declaration.value);
+	if (resolved === undefined || expected === undefined || String(resolved) !== String(expected))
+		return false;
+	const actual = materialized[0]!;
+	return (
+		actual.property === declaration.property &&
+		JSON.stringify(actual.conditions) === JSON.stringify(declaration.conditions)
+	);
+}
+
+function tailwindPropertyAwareUtility(declaration: StyleDeclaration): string | undefined {
+	const resolved = resolvedStyleValue(declaration.value);
+	if (resolved === undefined) return undefined;
+	const value = utilityValue(resolved);
+	const candidates: Readonly<Record<string, string>> = {
+		padding: `p-[${value}]`,
+		paddingInline: `px-[${value}]`,
+		paddingBlock: `py-[${value}]`,
+		paddingTop: `pt-[${value}]`,
+		paddingRight: `pr-[${value}]`,
+		paddingBottom: `pb-[${value}]`,
+		paddingLeft: `pl-[${value}]`,
+		margin: `m-[${value}]`,
+		marginInline: `mx-[${value}]`,
+		marginBlock: `my-[${value}]`,
+		marginTop: `mt-[${value}]`,
+		marginRight: `mr-[${value}]`,
+		marginBottom: `mb-[${value}]`,
+		marginLeft: `ml-[${value}]`,
+		gap: `gap-[${value}]`,
+		rowGap: `gap-y-[${value}]`,
+		columnGap: `gap-x-[${value}]`,
+		backgroundColor: `bg-[${value}]`,
+		color: `text-[${value}]`,
+		borderRadius: `rounded-[${value}]`,
+		borderTopLeftRadius: `rounded-tl-[${value}]`,
+		borderTopRightRadius: `rounded-tr-[${value}]`,
+		borderBottomRightRadius: `rounded-br-[${value}]`,
+		borderBottomLeftRadius: `rounded-bl-[${value}]`,
+		width: `w-[${value}]`,
+		height: `h-[${value}]`,
+		minWidth: `min-w-[${value}]`,
+		maxWidth: `max-w-[${value}]`,
+		minHeight: `min-h-[${value}]`,
+		maxHeight: `max-h-[${value}]`,
+	};
+	return candidates[declaration.property];
+}
+
 function emitTailwind(
 	program: StyleProgram,
 	catalog?: TokenCatalog,
+	resolver?: TailwindUtilityResolver,
 ): {
 	text: string;
 	residuals: readonly StyleProgramResidual[];
@@ -550,7 +653,8 @@ function emitTailwind(
 	const declarations = StyleProgramAnalysis.declarations(program);
 	const tokens: string[] = [];
 	for (const declaration of declarations) {
-		if (declaration.value.kind !== StyleValueKindTag.Literal) {
+		const resolved = resolvedStyleValue(declaration.value);
+		if (resolved === undefined) {
 			residuals.push({
 				kind: StyleProgramResidualKindTag.Dynamic,
 				text: declaration.property,
@@ -560,12 +664,24 @@ function emitTailwind(
 		}
 		const prefix = declaration.conditions.map(utilityCondition).join("");
 		const named = tailwindTokenUtility(declaration, catalog);
-		if (named !== undefined) {
-			tokens.push(`${prefix}${named}`);
-			continue;
+		const propertyAware = tailwindPropertyAwareUtility(declaration);
+		let selected = false;
+		for (const candidate of [named, propertyAware]) {
+			if (candidate === undefined) continue;
+			if (resolver === undefined && candidate !== named) continue;
+			const fullCandidate = `${prefix}${candidate}`;
+			if (
+				resolver === undefined ||
+				equivalentTailwindDeclaration(resolver.resolve(fullCandidate), declaration, catalog)
+			) {
+				tokens.push(fullCandidate);
+				selected = true;
+				break;
+			}
 		}
+		if (selected) continue;
 		tokens.push(
-			`${prefix}[${declaration.property.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`)}:${utilityValue(declaration.value.value)}]`,
+			`${prefix}[${declaration.property.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`)}:${utilityValue(resolved)}]`,
 		);
 	}
 	return { text: JSON.stringify([...new Set(tokens)].join(" ")), residuals };
@@ -904,6 +1020,9 @@ export function createTailwindAdapter(options: TailwindAdapterOptions = {}): Sty
 			),
 		emit: (program, context) => {
 			const tokenCatalog = TokenCatalog.fromContract(context.config.tokenCatalog);
+			const resolver = context.config.values.tailwindResolver as
+				| TailwindUtilityResolver
+				| undefined;
 			const namedRules = program.rules.filter(
 				(rule) => rule.kind === StyleRuleKindTag.Style && rule.name !== undefined,
 			);
@@ -917,6 +1036,7 @@ export function createTailwindAdapter(options: TailwindAdapterOptions = {}): Sty
 							declarations: rule.declarations,
 						},
 						tokenCatalog,
+						resolver,
 					);
 					residuals.push(...emitted.residuals);
 					return `${JSON.stringify(rule.name)}: ${emitted.text}`;
@@ -928,7 +1048,7 @@ export function createTailwindAdapter(options: TailwindAdapterOptions = {}): Sty
 				};
 			}
 			return {
-				...emitTailwind(program, tokenCatalog),
+				...emitTailwind(program, tokenCatalog, resolver),
 				semantic: program,
 			};
 		},

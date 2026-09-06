@@ -99,15 +99,15 @@ describe("custom design-system context resolution", () => {
 		`);
 	});
 
-		test("resolves custom Panda tokens through the official config loader", async () => {
-			const loader: ProjectModuleLoader = {
-				async importPackage(packageName) {
-					if (packageName === "@chakra-ui/react")
-						return {
-							defaultConfig: {},
-							isValidSystem: () => false,
-						} as never;
-					return packageName === "@pandacss/config"
+	test("resolves custom Panda tokens through the official config loader", async () => {
+		const loader: ProjectModuleLoader = {
+			async importPackage(packageName) {
+				if (packageName === "@chakra-ui/react")
+					return {
+						defaultConfig: {},
+						isValidSystem: () => false,
+					} as never;
+				return packageName === "@pandacss/config"
 					? ({
 							loadConfig: async () => ({
 								config: {
@@ -190,6 +190,115 @@ describe("custom design-system context resolution", () => {
 		`);
 	});
 
+	test("reuses target token names across Tailwind, Panda, and UnoCSS routes", async () => {
+		const loader: ProjectModuleLoader = {
+			async importPackage(packageName) {
+				if (packageName === "@tailwindcss/node")
+					return {
+						__unstable__loadDesignSystem: async () => ({
+							theme: {
+								entries: () =>
+									new Map([
+										["--color-brand", { value: "#123456" }],
+										["--spacing-card", { value: "17px" }],
+									]),
+							},
+							candidatesToCss: (candidates: readonly string[]) =>
+								candidates.map((candidate) => {
+									if (candidate === "text-brand") return ".text-brand{color:var(--color-brand)}";
+									if (candidate === "p-card") return ".p-card{padding:var(--spacing-card)}";
+									return null;
+								}),
+						}),
+					} as never;
+				if (packageName === "@pandacss/config")
+					return {
+						loadConfig: async () => ({
+							config: {
+								theme: {
+									tokens: {
+										colors: { brand: { value: "#123456" } },
+										spacing: { card: { value: "17px" } },
+									},
+								},
+							},
+						}),
+					} as never;
+				if (packageName === "@unocss/config")
+					return {
+						loadConfig: async () => ({
+							config: { theme: { colors: { brand: "#123456" }, spacing: { card: "17px" } } },
+							sources: [],
+						}),
+					} as never;
+				if (packageName === "@unocss/core")
+					return {
+						createGenerator: async () => ({
+							generate: async () => ({
+								css: ".text-brand{color:#123456}.p-card{padding:17px}",
+							}),
+						}),
+					} as never;
+				return undefined;
+			},
+			async importFile() {
+				return undefined;
+			},
+		};
+		const files = {
+			[`${root}/tailwind.css`]: '@import "tailwindcss";',
+			[`${root}/panda.config.ts`]: "export default {}",
+			[`${root}/uno.config.ts`]: "export default {}",
+		};
+		const base = {
+			file,
+			root,
+			readFile: projectFiles(files),
+			listFiles: () => Object.keys(files),
+		};
+		const builtin = createBuiltinCodemodCatalog();
+		const tailwind = createTailwindAdapter({ moduleLoader: loader });
+		const panda = createPandaAdapter({ moduleLoader: loader });
+		const uno = createUnoCssAdapter({ moduleLoader: loader });
+		const registry = createStyleAdapterRegistry([
+			builtin.registry.get(CodemodAdapterId.Emotion)!,
+			tailwind,
+			panda,
+			uno,
+		]);
+		const source = 'export const App = () => <div className="text-brand p-card" />;';
+
+		const toPanda = await runAdapterMigrationAsync(source, {
+			...base,
+			source,
+			from: CodemodAdapterId.Tailwind,
+			to: CodemodAdapterId.Panda,
+			adapterRegistry: registry,
+		});
+		const toUno = await runAdapterMigrationAsync(source, {
+			...base,
+			source,
+			from: CodemodAdapterId.Tailwind,
+			to: CodemodAdapterId.UnoCSS,
+			adapterRegistry: registry,
+		});
+		const toTailwind = await runAdapterMigrationAsync(source, {
+			...base,
+			source,
+			from: CodemodAdapterId.UnoCSS,
+			to: CodemodAdapterId.Tailwind,
+			adapterRegistry: registry,
+		});
+
+		expect(toPanda.residuals).toEqual([]);
+		expect(toPanda.code).toContain('padding: "card"');
+		expect(toPanda.code).toContain('color: "brand"');
+		expect(toUno.residuals).toEqual([]);
+		expect(toUno.code).toContain('"p-card text-brand"');
+		expect(toTailwind.residuals).toEqual([]);
+		expect(toTailwind.code).toContain('"p-card text-brand"');
+	});
+
 	test("resolves custom Tailwind utilities and tokens through the official engine", async () => {
 		const loader: ProjectModuleLoader = {
 			async importPackage() {
@@ -204,11 +313,13 @@ describe("custom design-system context resolution", () => {
 						},
 						candidatesToCss: (candidates: readonly string[]) =>
 							candidates.map((candidate) =>
-								candidate === "btn-brand"
-									? ".btn-brand{background-color:#123456}"
-									: candidate === "text-brand"
-										? ".text-brand{color:#123456}"
-										: null,
+								candidate === "p-card"
+									? ".p-card{padding:17px}"
+									: candidate === "btn-brand"
+										? ".btn-brand{background-color:#123456}"
+										: candidate === "text-brand"
+											? ".text-brand{color:#123456}"
+											: null,
 							),
 					}),
 				} as never;

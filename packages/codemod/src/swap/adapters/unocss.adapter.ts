@@ -35,7 +35,7 @@ import {
 } from "../class-target-detection.ts";
 import { DynamicClassHost } from "./class-target-dynamic.ts";
 import { BuiltinHostFramework } from "../host-adapters.ts";
-import { TokenCatalog } from "../tokens.ts";
+import { TokenCatalog, resolvedStyleValue } from "../tokens.ts";
 import {
 	parseGeneratedCss,
 	type GeneratedCssAtRule,
@@ -271,8 +271,9 @@ function unoCondition(condition: StyleCondition): string {
 }
 
 function unoToken(declaration: StyleDeclaration): string | undefined {
-	if (declaration.value.kind !== StyleValueKindTag.Literal) return undefined;
-	const property = `[${unoProperty(declaration.property)}:${unoValue(declaration.value.value)}]`;
+	const value = resolvedStyleValue(declaration.value);
+	if (value === undefined) return undefined;
+	const property = `[${unoProperty(declaration.property)}:${unoValue(value)}]`;
 	return `${declaration.conditions.map(unoCondition).join("")}${property}`;
 }
 
@@ -280,8 +281,8 @@ function unoNamedToken(
 	declaration: StyleDeclaration,
 	catalog: TokenCatalog | undefined,
 ): string | undefined {
-	if (catalog === undefined || declaration.value.kind !== StyleValueKindTag.Literal)
-		return undefined;
+	const value = resolvedStyleValue(declaration.value);
+	if (catalog === undefined || value === undefined) return undefined;
 	const groups: Readonly<Record<string, string>> = {
 		color: "colors",
 		backgroundColor: "colors",
@@ -308,8 +309,7 @@ function unoNamedToken(
 		maxHeight: "height",
 	};
 	const group = groups[declaration.property];
-	const match =
-		group === undefined ? undefined : catalog.findUnique([group], String(declaration.value.value));
+	const match = group === undefined ? undefined : catalog.findUnique([group], String(value));
 	if (match === undefined) return undefined;
 	const prefixes: Readonly<Record<string, string>> = {
 		color: "text",
@@ -352,6 +352,14 @@ function emitUnoClassTokens(
 		rules.length > 0 ? rules.flatMap((rule) => rule.declarations) : program.declarations;
 	const tokens: string[] = [];
 	for (const declaration of declarations) {
+		if (resolvedStyleValue(declaration.value) === undefined) {
+			residuals.push({
+				kind: StyleProgramResidualKindTag.Dynamic,
+				text: declaration.property,
+				hint: "UnoCSS output requires a resolved literal or token value",
+			});
+			continue;
+		}
 		const named = unoNamedToken(declaration, catalog);
 		if (named !== undefined) {
 			tokens.push(`${declaration.conditions.map(unoCondition).join("")}${named}`);

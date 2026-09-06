@@ -29,6 +29,17 @@ export interface TokenCatalogMatch {
 	readonly resolved: string;
 }
 
+/** Return the statically resolved scalar carried by a StyleProgram value. */
+export function resolvedStyleValue(
+	value: StyleProgram["declarations"][number]["value"],
+): string | number | undefined {
+	if (value.kind === StyleValueKindTag.Literal)
+		return typeof value.value === "string" || typeof value.value === "number"
+			? value.value
+			: undefined;
+	return value.kind === StyleValueKindTag.Token ? value.resolved : undefined;
+}
+
 export type TokenGroupForProperty = (property: string) => string | undefined;
 export type TokenReferenceFormatter = (match: TokenCatalogMatch) => string;
 
