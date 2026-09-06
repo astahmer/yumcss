@@ -17,6 +17,7 @@ import { TokenCatalog } from "../src/swap/tokens.ts";
 import type { ProjectModuleLoader } from "../src/swap/project-module-loader.ts";
 import type { StyleAdapter } from "../src/swap/adapter-contract.ts";
 import { styleProgramFromRules } from "../src/swap/semantic-ir.ts";
+import type { StyleDeclaration } from "../src/swap/semantic-ir.ts";
 
 const context = {
 	file: "src/App.tsx",
@@ -578,6 +579,76 @@ describe("official custom-token loaders", () => {
 				verified: false,
 			},
 		]);
+	});
+
+	test("covers verified Tailwind utility families, logical sides, and fallback values", () => {
+		const adapter = createTailwindAdapter({ moduleLoader: null });
+		const hover = { kind: "pseudo" as const, name: "hover" };
+		const verified: Readonly<Record<string, StyleDeclaration>> = {
+			"m-[-1rem]": {
+				conditions: [],
+				property: "margin",
+				value: { kind: "literal", value: "-1rem" },
+			},
+			"gap-x-[2rem]": {
+				conditions: [],
+				property: "columnGap",
+				value: { kind: "literal", value: "2rem" },
+			},
+			"bg-[rebeccapurple]": {
+				conditions: [],
+				property: "backgroundColor",
+				value: { kind: "literal", value: "rebeccapurple" },
+			},
+			"rounded-ss-[8px]": {
+				conditions: [],
+				property: "borderStartStartRadius",
+				value: { kind: "literal", value: "8px" },
+			},
+			"w-[37px]": { conditions: [], property: "width", value: { kind: "literal", value: "37px" } },
+			"hover:ps-[1rem]": {
+				conditions: [hover],
+				property: "paddingInlineStart",
+				value: { kind: "literal", value: "1rem" },
+			},
+		};
+		const result = adapter.emit(
+			styleProgramFromRules([
+				{
+					kind: "style",
+					conditions: [],
+					declarations: [
+						...Object.values(verified),
+						{ conditions: [], property: "--brand", value: { kind: "literal", value: "red" } },
+					],
+					children: [],
+					order: 0,
+				},
+			]),
+			{
+				...context,
+				config: {
+					adapter: adapter.id,
+					files: [],
+					values: {
+						tailwindResolver: { resolve: (token: string) => verified[token] && [verified[token]] },
+					},
+				},
+				mode: "safe",
+				index: 0,
+			},
+		);
+
+		expect(result.text).toBe(
+			'"[--brand:red] m-[-1rem] bg-[rebeccapurple] rounded-ss-[8px] gap-x-[2rem] hover:ps-[1rem] w-[37px]"',
+		);
+		expect(result.emissionDecisions).toHaveLength(7);
+		expect(result.emissionDecisions?.filter((decision) => decision.verified)).toHaveLength(6);
+		expect(
+			result.emissionDecisions?.some(
+				(decision) => decision.reason === "custom-property" && !decision.verified,
+			),
+		).toBe(true);
 	});
 
 	test("derives Chakra shorthand and property vocabulary from the official system", async () => {
