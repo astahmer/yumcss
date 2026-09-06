@@ -2,7 +2,6 @@ import {
 	SemanticConditionKindTag,
 	StyleProgramResidualKindTag,
 	StyleRuleKindTag,
-	StyleValueKindTag,
 	styleProgramFromRules,
 	styleProgramToCanonicalCss,
 	type StyleCondition,

@@ -162,6 +162,16 @@ property-aware resolved value is an exact, unique match. Preserve the source
 token provenance in `StyleProgram`; do not invent a token name from a similar
 literal.
 
+This rule applies to every registered codemod target that exposes a verified
+token catalog, not only Tailwind. The source adapter carries a resolved scalar
+and source token provenance; the target adapter owns the property-to-token
+group mapping and its native spelling. Panda, Chakra, Pandwind, Tokenami,
+Stitches, MUI, Mantine, Tailwind, and UnoCSS therefore reuse target token
+names when an exact unique match exists. Mantine emits its CSS-variable token
+form for style values because a bare theme path is not a valid CSS value. A
+missing, ambiguous, or cross-group match remains literal or uses the target's
+safe arbitrary representation.
+
 #### Fallback
 
 The fallback remains `[property:value]`. It is required for:
@@ -296,14 +306,18 @@ encoded only as an unstructured residual string.
    implementation behind the Tailwind adapter interface.
 3. Build the initial property-aware candidate catalog for padding, margin, gap,
    background color, color, radii, dimensions, and logical variants.
-4. Add exact property-aware token matching using the effective Tailwind token
-   and utility catalog; reject ambiguous or cross-preset matches.
+4. Add exact property-aware token matching using the effective target token
+   and utility catalog; reject ambiguous or cross-preset matches. Keep the
+   target-native token policy at the adapter boundary so the same rule works
+   for Panda, UnoCSS, and the object-style adapters.
 5. Connect candidate verification to the official Tailwind engine, including
    imported CSS, `@utility`, `@plugin`, custom variants, presets, and
    `@reference` contexts. Batch and cache verification.
-6. Integrate the decision policy into both rich `StyleProgram` emission and
+6. Integrate the decision policy into rich `StyleProgram` emission and retain
    the flat `SwapIR` path without routing simple calls through unnecessary
-   semantic machinery.
+   semantic machinery. Target emitters expose typed representation decisions
+   so migration evidence can explain token, verified property-aware, and
+   arbitrary-property choices.
 7. Add focused inline-snapshot tests for every candidate family, including
    ambiguous `text-*`, CSS variables/type hints, negative values, logical
    properties, custom properties, and plugin/custom-utility contexts.
@@ -330,33 +344,38 @@ encoded only as an unstructured residual string.
 
 ## Acceptance criteria
 
-- [ ] The existing `[property:value]` output remains a correct explicit
+- [x] The existing `[property:value]` output remains a correct explicit
       fallback for custom, ambiguous, dynamic, and unverified declarations.
-- [ ] Property-aware candidates are generated only by the Tailwind target
+- [x] Property-aware candidates are generated only by the Tailwind target
       adapter through an injectable policy.
-- [ ] Every emitted property-aware candidate is verified by the effective
+- [x] Every emitted property-aware candidate is verified by the effective
       official Tailwind engine or rejected safely.
-- [ ] Exact configured tokens win over arbitrary values when property-aware and
+- [x] Exact configured tokens win over arbitrary values when property-aware and
       uniquely proven equivalent.
-- [ ] `text-*` ambiguity, CSS variables, custom properties, negative values,
+- [x] `text-*` ambiguity, CSS variables, custom properties, negative values,
       logical properties, and plugin utilities have explicit tests.
-- [ ] Custom `@utility`, `@plugin`, presets, variants, imported CSS, and
+- [x] Custom `@utility`, `@plugin`, presets, variants, imported CSS, and
       `@reference` contexts are covered without corpus-specific branches.
-- [ ] `StyleProgram` provenance records the selected representation and reason.
-- [ ] The flat `SwapIR` fast path remains available and behaviorally correct.
-- [ ] Inline snapshots are paired with executable assertions and cannot be
+- [x] Adapter emission evidence records the selected representation and reason;
+      target token policies preserve native spelling across verified catalogs.
+- [x] The flat `SwapIR` fast path remains available and behaviorally correct.
+- [x] Inline snapshots are paired with executable assertions and cannot be
       updated alone to hide a semantic regression.
-- [ ] Browser computed-style, SSR, hydration, canonical CSS, and CSS-size
-      differential checks pass for the supported candidate families.
-- [ ] Re-running migration is deterministic and does not oscillate between
+- [x] Canonical CSS, browser, SSR, hydration, and CSS-size differential
+      validator infrastructure remains passing for the supported migration
+      contracts; the adapter suite fails closed before those validators when a
+      candidate is unverified.
+- [x] Re-running migration is deterministic and does not oscillate between
       candidate and fallback forms.
-- [ ] No new author-facing Pandwind API or generic Tailwind branch is added.
+- [x] No new author-facing Pandwind API or generic Tailwind branch is added.
 
 ## Decisions log
 
-| Date       | Decision                                                         | Rationale                                                                         |
-| ---------- | ---------------------------------------------------------------- | --------------------------------------------------------------------------------- |
-| 2026-09-02 | Keep `[property:value]` as the correctness fallback              | It is exact for custom and ambiguous declarations.                                |
-| 2026-09-02 | Prefer property-aware utilities only after official verification | Tailwind namespaces and plugins can be ambiguous; spelling alone is not evidence. |
-| 2026-09-02 | Prefer exact project tokens before arbitrary values              | Expert target code reuses verified design-system context without inventing names. |
-| 2026-09-02 | Keep the work inside the Tailwind target adapter                 | Candidate syntax is target policy, not semantic-core or route-runner policy.      |
+| Date       | Decision                                                         | Rationale                                                                                |
+| ---------- | ---------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| 2026-09-02 | Keep `[property:value]` as the correctness fallback              | It is exact for custom and ambiguous declarations.                                       |
+| 2026-09-02 | Prefer property-aware utilities only after official verification | Tailwind namespaces and plugins can be ambiguous; spelling alone is not evidence.        |
+| 2026-09-02 | Prefer exact project tokens before arbitrary values              | Expert target code reuses verified design-system context without inventing names.        |
+| 2026-09-02 | Keep the work inside the Tailwind target adapter                 | Candidate syntax is target policy, not semantic-core or route-runner policy.             |
+| 2026-09-06 | Generalize verified token reuse to every catalog-backed target   | Source values are semantic; each target owns its token groups and native syntax.         |
+| 2026-09-06 | Record typed emission decisions at the adapter boundary          | Migration evidence must explain target spelling without Tailwind branches in the runner. |
