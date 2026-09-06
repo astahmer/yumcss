@@ -213,6 +213,7 @@ import {
 	createAdapterRouteSpec,
 	createAdapterRouteProject,
 	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
 	expectExplicitResidualEvidence,
 	expectRouteScenarioEvidence,
 	routeEvidence,
@@ -256,6 +257,7 @@ test("${source} -> ${target}: loads concrete theme and project context variants"
 	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
 	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, ${identifier(source)}, ${identifier(target)});
+	expectConfiguredTargetTokenEvidence(blue, ${identifier(target)}, "${source} -> ${target} blue config");
 	expectRouteScenarioEvidence(blue, "${source} -> ${target} blue config");
 	expectRouteScenarioEvidence(amber, "${source} -> ${target} amber config");
 	expectExplicitResidualEvidence(blue);
@@ -267,6 +269,7 @@ test("${source} -> ${target}: resolves concrete token values with project contex
 	const result = await route.runAsync({ source: tokenSource, file: ${JSON.stringify(example.file)}, semantic: blueSemantic, project: blueProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, ${identifier(source)}, ${identifier(target)});
+	expectConfiguredTargetTokenEvidence(result, ${identifier(target)}, "${source} -> ${target} token config");
 	expectRouteScenarioEvidence(result, "${source} -> ${target} token config");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot();
@@ -346,6 +349,7 @@ test("${source} -> ${target} -> ${source}: preserves concrete theme and project 
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, ${identifier(source)}, ${identifier(target)});
+	expectConfiguredTargetTokenEvidence(firstBlue, ${identifier(target)}, "${source} -> ${target} round-trip token config");
 	expectRouteScenarioEvidence(firstBlue, "${source} -> ${target} round-trip blue forward");
 	expectRouteScenarioEvidence(firstAmber, "${source} -> ${target} round-trip amber forward");
 	expectActionableRoundTrip(firstBlue, secondBlue);

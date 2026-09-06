@@ -389,6 +389,42 @@ export function expectConfiguredProjectEvidence(
 	}
 }
 
+function configuredTargetTokenMarkers(target: CodemodAdapterId): readonly string[] {
+	switch (target) {
+		case CodemodAdapterId.Pandwind:
+			return ["$brand", "$card"];
+		case CodemodAdapterId.Panda:
+		case CodemodAdapterId.ChakraUi:
+			return ["brand.500", "card"];
+		case CodemodAdapterId.Mui:
+			return ["primary.main", "card"];
+		case CodemodAdapterId.Mantine:
+			return ["--mantine-color-brand", "--mantine-spacing-card"];
+		case CodemodAdapterId.Tailwind:
+		case CodemodAdapterId.UnoCSS:
+			return ["text-brand", "bg-brand", "p-card"];
+		case CodemodAdapterId.Tokenami:
+			return ["$colors.brand", "$spacing.card"];
+		default:
+			return [];
+	}
+}
+
+/** A token fixture must prove that the configured target chose its own spelling. */
+export function expectConfiguredTargetTokenEvidence(
+	result: AdapterMigrationResult,
+	target: CodemodAdapterId,
+	label = "configured token route",
+): void {
+	if (result.converted === 0 || result.skipped > 0) return;
+	const markers = configuredTargetTokenMarkers(target);
+	if (markers.length === 0) return;
+	expect(
+		markers.some((marker) => result.code.includes(marker)),
+		`${label} did not use a verified ${target} token or utility spelling`,
+	).toBe(true);
+}
+
 /** A direct route fixture must either lower, skip with evidence, or preserve a residual. */
 export function expectRouteScenarioEvidence(result: AdapterMigrationResult, label = "route"): void {
 	expect(
