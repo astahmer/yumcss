@@ -4,15 +4,25 @@ import type { ProjectModuleLoader } from "../project-module-loader.ts";
 import type { StylesheetCompilerPort } from "../stylesheet-source.ts";
 import { createStylesheetAdapter } from "./stylesheet-adapter.ts";
 
+interface LessModule {
+	readonly render?: (
+		source: string,
+		options?: { filename?: string; paths?: readonly string[] },
+	) => Promise<{ css: string; imports?: readonly string[]; map?: string }>;
+}
+
+function lessModule(value: LessModule & { readonly default?: LessModule }): LessModule {
+	return value.render === undefined && value.default !== undefined ? value.default : value;
+}
+
 function createLessCompiler(loader: ProjectModuleLoader): StylesheetCompilerPort {
 	return {
 		async compile(source, context) {
-			const module = await loader.importPackage<{
-				render?: (
-					source: string,
-					options?: { filename?: string; paths?: readonly string[] },
-				) => Promise<{ css: string; imports?: readonly string[]; map?: string }>;
-			}>("less", context.root ?? ".");
+			const loaded = await loader.importPackage<LessModule & { readonly default?: LessModule }>(
+				"less",
+				context.root ?? ".",
+			);
+			const module = loaded === undefined ? undefined : lessModule(loaded);
 			if (module?.render === undefined) throw new Error("less.render is unavailable");
 			const result = await module.render(source, {
 				filename: context.file,

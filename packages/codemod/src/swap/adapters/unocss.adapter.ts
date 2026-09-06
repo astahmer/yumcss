@@ -485,10 +485,7 @@ function staticUnoClassMap(
 		if (block === null) continue;
 		const entries = [
 			...block.body.matchAll(/(["'])([A-Za-z_$][\w$-]*)\1\s*:\s*(["'])([^"']+)\3/g),
-		].filter(
-			(entry) =>
-				entry[4] !== undefined && hasResolvedUnoToken(entry[4], resolver, context),
-		);
+		].filter((entry) => entry[4] !== undefined && hasResolvedUnoToken(entry[4], resolver, context));
 		if (entries.length > 0) return { start: open, end: block.end, entries };
 	}
 	return undefined;
@@ -754,8 +751,7 @@ function parseUnoCss(
 		const isUsedAsClass = new RegExp(
 			`\\b(?:className|class)\\s*=\\s*\\{\\s*${escapedBinding}\\s*\\}`,
 		).test(source.slice((assignment.index ?? 0) + assignment[0].length));
-		if (!value.includes("[") && !isUsedAsClass && !hasResolvedUnoToken(value, resolver, context))
-			continue;
+		if (!value.includes("[") && !isUsedAsClass) continue;
 		const start = (assignment.index ?? 0) + assignment[0].lastIndexOf(`${quote ?? '"'}${value}`);
 		const declarations: StyleDeclaration[] = [];
 		const unknown: string[] = [];

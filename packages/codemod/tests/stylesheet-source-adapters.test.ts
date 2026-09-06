@@ -309,9 +309,9 @@ describe("stylesheet source adapters", () => {
 			              },
 			            ],
 			            "kind": "style",
-			            "name": "card",
+			            "name": undefined,
 			            "order": 24,
-			            "selector": ".card",
+			            "selector": undefined,
 			            "source": {
 			              "adapter": "css-modules",
 			              "end": 45,
@@ -338,7 +338,7 @@ describe("stylesheet source adapters", () => {
 			        ],
 			        "themes": [],
 			      },
-			      "representation": "named-map",
+			      "representation": "static",
 			      "residuals": [],
 			    },
 			    {
@@ -370,9 +370,9 @@ describe("stylesheet source adapters", () => {
 			              },
 			            ],
 			            "kind": "style",
-			            "name": "token",
+			            "name": undefined,
 			            "order": 0,
-			            "selector": ".token",
+			            "selector": undefined,
 			            "source": {
 			              "adapter": "css-modules",
 			              "end": 23,
@@ -399,20 +399,20 @@ describe("stylesheet source adapters", () => {
 			        ],
 			        "themes": [],
 			      },
-			      "representation": "named-map",
+			      "representation": "static",
 			      "residuals": [],
 			    },
 			  ],
 			  "outcomes": [
 			    {
-			      "outcome": "target-native",
-			      "representation": "named-map",
+			      "outcome": "static",
+			      "representation": "static",
 			      "sourceStart": 24,
 			      "sourceText": ".card { color: red; }",
 			    },
 			    {
-			      "outcome": "target-native",
-			      "representation": "named-map",
+			      "outcome": "static",
+			      "representation": "static",
 			      "sourceStart": 0,
 			      "sourceText": ".token { color: blue; }",
 			    },
@@ -528,9 +528,9 @@ describe("stylesheet source adapters", () => {
 			              },
 			            ],
 			            "kind": "style",
-			            "name": "card",
+			            "name": undefined,
 			            "order": 0,
-			            "selector": ".card",
+			            "selector": undefined,
 			            "source": {
 			              "adapter": "css-modules",
 			              "end": 21,
@@ -557,14 +557,14 @@ describe("stylesheet source adapters", () => {
 			        ],
 			        "themes": [],
 			      },
-			      "representation": "named-map",
+			      "representation": "static",
 			      "residuals": [],
 			    },
 			  ],
 			  "outcomes": [
 			    {
-			      "outcome": "target-native",
-			      "representation": "named-map",
+			      "outcome": "static",
+			      "representation": "static",
 			      "sourceStart": 0,
 			      "sourceText": ".card { color: red; }",
 			    },
@@ -642,9 +642,9 @@ describe("stylesheet source adapters", () => {
 			              },
 			            ],
 			            "kind": "style",
-			            "name": "card",
+			            "name": undefined,
 			            "order": 0,
-			            "selector": ".card",
+			            "selector": undefined,
 			            "source": {
 			              "adapter": "css-modules",
 			              "end": 37,
@@ -787,9 +787,9 @@ describe("stylesheet source adapters", () => {
 			              },
 			            ],
 			            "kind": "style",
-			            "name": "card",
+			            "name": undefined,
 			            "order": 0,
-			            "selector": ".card",
+			            "selector": undefined,
 			            "source": {
 			              "adapter": "sass",
 			              "end": 21,
@@ -816,14 +816,14 @@ describe("stylesheet source adapters", () => {
 			        ],
 			        "themes": [],
 			      },
-			      "representation": "named-map",
+			      "representation": "static",
 			      "residuals": [],
 			    },
 			  ],
 			  "outcomes": [
 			    {
-			      "outcome": "target-native",
-			      "representation": "named-map",
+			      "outcome": "static",
+			      "representation": "static",
 			      "sourceStart": 0,
 			      "sourceText": ".card { color: red; }",
 			    },
@@ -906,12 +906,82 @@ describe("stylesheet source adapters", () => {
 			{
 			  "changed": true,
 			  "code": ".card { color: red; }",
-			  "converted": 0,
+			  "converted": 1,
 			  "dependencies": [],
 			  "fileChanges": [],
 			  "generatedFiles": [],
-			  "loweringPlans": [],
-			  "outcomes": [],
+			  "loweringPlans": [
+			    {
+			      "applied": [
+			        "dynamic-and-theme",
+			      ],
+			      "availableRepresentations": [
+			        "static",
+			        "residual",
+			      ],
+			      "program": {
+			        "canonicalization": undefined,
+			        "compositions": [],
+			        "declarations": [],
+			        "emissionHints": [],
+			        "plugins": [],
+			        "residuals": [],
+			        "rules": [
+			          {
+			            "children": [],
+			            "conditions": [],
+			            "declarations": [
+			              {
+			                "conditions": [],
+			                "property": "color",
+			                "value": {
+			                  "kind": "literal",
+			                  "value": "red",
+			                },
+			              },
+			            ],
+			            "kind": "style",
+			            "name": "card",
+			            "order": 0,
+			            "selector": ".card",
+			            "source": {
+			              "adapter": "authored-css",
+			              "end": 21,
+			              "file": "styles.scss",
+			              "start": 0,
+			            },
+			          },
+			        ],
+			        "runtime": undefined,
+			        "schema": "pandwind.style-program/4",
+			        "source": {
+			          "adapter": "authored-css",
+			          "end": 21,
+			          "file": "styles.scss",
+			          "start": 0,
+			        },
+			        "sourceMap": [
+			          {
+			            "adapter": "authored-css",
+			            "end": 21,
+			            "file": "styles.scss",
+			            "start": 0,
+			          },
+			        ],
+			        "themes": undefined,
+			      },
+			      "representation": "static",
+			      "residuals": [],
+			    },
+			  ],
+			  "outcomes": [
+			    {
+			      "outcome": "static",
+			      "representation": "static",
+			      "sourceStart": 0,
+			      "sourceText": ".card { color: red; }",
+			    },
+			  ],
 			  "outputExtension": ".css",
 			  "reports": [],
 			  "residuals": [],
@@ -919,7 +989,16 @@ describe("stylesheet source adapters", () => {
 			  "sourceMaps": [
 			    "{"version":3,"sources":["styles.scss"]}",
 			  ],
-			  "validations": [],
+			  "validations": [
+			    {
+			      "canonicalSource": ".card{color:red}",
+			      "canonicalTarget": ".card{color:red}",
+			      "differences": [],
+			      "lossiness": "lossless",
+			      "residuals": [],
+			      "valid": true,
+			    },
+			  ],
 			}
 		`);
 	});
@@ -953,17 +1032,96 @@ describe("stylesheet source adapters", () => {
 			{
 			  "changed": true,
 			  "code": ".card { color: red; }",
-			  "converted": 0,
+			  "converted": 1,
 			  "dependencies": [],
 			  "fileChanges": [],
 			  "generatedFiles": [],
-			  "loweringPlans": [],
-			  "outcomes": [],
+			  "loweringPlans": [
+			    {
+			      "applied": [
+			        "dynamic-and-theme",
+			      ],
+			      "availableRepresentations": [
+			        "static",
+			        "residual",
+			      ],
+			      "program": {
+			        "canonicalization": undefined,
+			        "compositions": [],
+			        "declarations": [],
+			        "emissionHints": [],
+			        "plugins": [],
+			        "residuals": [],
+			        "rules": [
+			          {
+			            "children": [],
+			            "conditions": [],
+			            "declarations": [
+			              {
+			                "conditions": [],
+			                "property": "color",
+			                "value": {
+			                  "kind": "literal",
+			                  "value": "red",
+			                },
+			              },
+			            ],
+			            "kind": "style",
+			            "name": "card",
+			            "order": 0,
+			            "selector": ".card",
+			            "source": {
+			              "adapter": "authored-css",
+			              "end": 21,
+			              "file": "styles.less",
+			              "start": 0,
+			            },
+			          },
+			        ],
+			        "runtime": undefined,
+			        "schema": "pandwind.style-program/4",
+			        "source": {
+			          "adapter": "authored-css",
+			          "end": 21,
+			          "file": "styles.less",
+			          "start": 0,
+			        },
+			        "sourceMap": [
+			          {
+			            "adapter": "authored-css",
+			            "end": 21,
+			            "file": "styles.less",
+			            "start": 0,
+			          },
+			        ],
+			        "themes": undefined,
+			      },
+			      "representation": "static",
+			      "residuals": [],
+			    },
+			  ],
+			  "outcomes": [
+			    {
+			      "outcome": "static",
+			      "representation": "static",
+			      "sourceStart": 0,
+			      "sourceText": ".card { color: red; }",
+			    },
+			  ],
 			  "outputExtension": ".css",
 			  "reports": [],
 			  "residuals": [],
 			  "skipped": 0,
-			  "validations": [],
+			  "validations": [
+			    {
+			      "canonicalSource": ".card{color:red}",
+			      "canonicalTarget": ".card{color:red}",
+			      "differences": [],
+			      "lossiness": "lossless",
+			      "residuals": [],
+			      "valid": true,
+			    },
+			  ],
 			}
 		`);
 	});
