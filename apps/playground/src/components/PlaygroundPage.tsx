@@ -24,6 +24,24 @@ import { ResultsPane } from "./ResultsPane.tsx";
 import { GhostButton, ResizableSplitter } from "./ui.tsx";
 import { css as uiCss } from "../ui-css.ts";
 
+const COMPACT_PLAYGROUND_QUERY = "(max-width: 900px)";
+const PLAYGROUND_SPLITTER = uiCss.class({ flex: "1 1 0%", minHeight: "18rem" });
+const COMPACT_PLAYGROUND_SPLITTER = uiCss.class({ flex: "1 1 0%", minHeight: "24rem" });
+
+function useCompactPlayground(): boolean {
+	const [compact, setCompact] = useState(
+		() => typeof window !== "undefined" && window.matchMedia(COMPACT_PLAYGROUND_QUERY).matches,
+	);
+	useEffect(() => {
+		const media = window.matchMedia(COMPACT_PLAYGROUND_QUERY);
+		const sync = () => setCompact(media.matches);
+		sync();
+		media.addEventListener("change", sync);
+		return () => media.removeEventListener("change", sync);
+	}, []);
+	return compact;
+}
+
 /** Component-like dynamics available inside evaluated code as `props`. */
 const SANDBOX_PROPS = { active: true, tone: "red-600" };
 
@@ -91,6 +109,7 @@ function variantUrl(
 }
 
 export function PlaygroundPage(props: { def: ExampleDef }) {
+	const compact = useCompactPlayground();
 	const initialVariant = variantFromUrl(props.def);
 	const initialAdapter = adapterFromUrl();
 	const [api, setApi] = useState<ExampleVariant["api"]>(initialVariant.api);
@@ -444,8 +463,8 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 				</div>
 			)}
 			<ResizableSplitter
-				orientation="horizontal"
-				className={uiCss.class({ flex: "1 1 0%", minHeight: "18rem" })}
+				orientation={compact ? "vertical" : "horizontal"}
+				className={compact ? COMPACT_PLAYGROUND_SPLITTER : PLAYGROUND_SPLITTER}
 				panels={[
 					{
 						id: "editor",

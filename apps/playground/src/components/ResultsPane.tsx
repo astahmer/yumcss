@@ -387,7 +387,21 @@ function StyleProgramSection(props: { programs: StyleProgram[] }) {
 				</span>
 			}
 		>
-			<Snippet code={code} lang="json" />
+			<details>
+				<summary
+					className={uiCss.class({
+						cursor: "pointer",
+						padding: "10px 12px",
+						fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+						fontSize: "11px",
+						color: "#a1a1aa",
+						"&:hover": { color: "#e4e4e7" },
+					})}
+				>
+					show raw JSON
+				</summary>
+				<Snippet code={code} lang="json" />
+			</details>
 		</Pane>
 	);
 }
@@ -492,7 +506,7 @@ export function ResultsPane(props: { result: PlaygroundResult }) {
 	for (const [index, sheet] of r.sheets.entries()) {
 		panels.push({
 			id: `generated-css-${index + 1}`,
-			initialSize: 20,
+			initialSize: 10,
 			minSize: 8,
 			content: <SheetSection sheets={[sheet]} />,
 		});
