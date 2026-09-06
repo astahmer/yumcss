@@ -394,6 +394,9 @@ importers:
       '@tailwindcss/node':
         specifier: 4.3.3
         version: 4.3.3
+      cac:
+        specifier: 7.0.0
+        version: 7.0.0
       hono:
         specifier: 4.13.5
         version: 4.13.5
@@ -437,6 +440,9 @@ importers:
       '@tailwindcss/node':
         specifier: 4.3.3
         version: 4.3.3
+      cac:
+        specifier: 7.0.0
+        version: 7.0.0
       pandwind:
         specifier: workspace:*
         version: link:../pandwind
@@ -520,6 +526,9 @@ importers:
       '@tailwindcss/node':
         specifier: 4.3.3
         version: 4.3.3
+      cac:
+        specifier: 7.0.0
+        version: 7.0.0
       csstype:
         specifier: 3.2.3
         version: 3.2.3

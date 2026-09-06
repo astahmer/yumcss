@@ -8,6 +8,7 @@
  */
 import { mkdirSync, readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
+import cac, { type CAC, type Command } from "cac";
 import { CodegenArtifactWriter } from "./codegen-writer.ts";
 import { generateTwBridge } from "./generate-bridge.ts";
 import { loadThemeBlock } from "./codegen-theme-input.ts";
@@ -57,95 +58,6 @@ export type TwCommandInvocation = TwGenerateCommand | TwScanCommand | TwPruneCom
 const DEFAULT_PRESET_IMPORT = "pandwind/preset";
 const DEFAULT_PRESET_EXPORT = "examplePreset";
 
-const optionValue = (args: readonly string[], index: number, flag: string): string => {
-	const value = args[index + 1];
-	if (value === undefined || value.startsWith("--")) {
-		throw new Error(`pandwind-tw: ${flag} requires a value`);
-	}
-	return value;
-};
-
-const assertPositionals = (positionals: readonly string[], max: number, command: string): void => {
-	if (positionals.length > max) {
-		throw new Error(`pandwind-tw: too many positional arguments for ${command}`);
-	}
-};
-
-export function parseTwCommand(argv: readonly string[], cwd = process.cwd()): TwCommandInvocation {
-	const [requestedCommand, ...rest] = argv;
-	const command = requestedCommand ?? TwCommand.Generate;
-	if (command !== TwCommand.Generate && command !== TwCommand.Scan && command !== TwCommand.Prune) {
-		throw new Error(`pandwind-tw: unknown command '${command}'. Expected generate, scan, or prune`);
-	}
-
-	if (command === TwCommand.Generate) {
-		const positionals: string[] = [];
-		let tokensModule: string | undefined;
-		let agents = false;
-		let bridge = false;
-		let bridgeFile: string | undefined;
-		let presetImport = DEFAULT_PRESET_IMPORT;
-		let presetExport = DEFAULT_PRESET_EXPORT;
-		for (let index = 0; index < rest.length; index++) {
-			const arg = rest[index];
-			if (arg === undefined) continue;
-			if (arg === "--tokens") tokensModule = optionValue(rest, index++, arg);
-			else if (arg === "--agents") agents = true;
-			else if (arg === "--bridge") bridge = true;
-			else if (arg === "--bridge-file") {
-				bridge = true;
-				bridgeFile = optionValue(rest, index++, arg);
-			} else if (arg === "--preset-import") {
-				bridge = true;
-				presetImport = optionValue(rest, index++, arg);
-			} else if (arg === "--preset-export") {
-				bridge = true;
-				presetExport = optionValue(rest, index++, arg);
-			} else if (arg === "--help") {
-				throw new Error(TW_USAGE);
-			} else {
-				positionals.push(arg);
-			}
-		}
-		assertPositionals(positionals, 2, command);
-		const cssEntry = resolve(cwd, positionals[0] ?? "src/tailwind.css");
-		const outDir = resolve(cwd, positionals[1] ?? "src");
-		return {
-			command,
-			cssEntry,
-			outDir,
-			cwd,
-			...(tokensModule === undefined ? {} : { tokensModule }),
-			agents,
-			bridge,
-			bridgeFile: resolve(cwd, bridgeFile ?? `${positionals[1] ?? "src"}/bridge.ts`),
-			presetImport,
-			presetExport,
-		};
-	}
-
-	if (rest.includes("--help")) throw new Error(TW_USAGE);
-	if (rest.some((arg) => arg.startsWith("--"))) {
-		throw new Error(`pandwind-tw: ${command} does not accept options`);
-	}
-	assertPositionals(rest, 3, command);
-	if (command === TwCommand.Scan) {
-		return {
-			command,
-			twEntry: resolve(cwd, rest[0] ?? "src/tw.ts"),
-			srcDir: resolve(cwd, rest[1] ?? "src"),
-			outFile: resolve(cwd, rest[2] ?? "src/pandwind.safelist.css"),
-		};
-	}
-	return {
-		command,
-		themeCss: resolve(cwd, rest[0] ?? "src/pandwind-theme.css"),
-		twEntry: resolve(cwd, rest[1] ?? "src/tw.ts"),
-		srcDir: resolve(cwd, rest[2] ?? "src"),
-		base: cwd,
-	};
-}
-
 export interface TwCliHandlers {
 	generate(command: TwGenerateCommand): Promise<void>;
 	scan(command: TwScanCommand): Promise<void>;
@@ -156,12 +68,124 @@ export interface TwCli {
 	run(argv: readonly string[]): Promise<void>;
 }
 
-const TW_USAGE = `Usage:
-  pandwind-tw generate [css-entry] [out-dir] [--tokens <module>] [--agents]
-                       [--bridge] [--bridge-file <path>]
-                       [--preset-import <module>] [--preset-export <name>]
-  pandwind-tw scan [tw-entry] [src-dir] [out-file]
-  pandwind-tw prune [theme-css] [tw-entry] [src-dir]`;
+type CliOptions = Readonly<Record<string, unknown>>;
+
+const optionString = (options: CliOptions, name: string): string | undefined => {
+	const value = options[name];
+	return typeof value === "string" ? value : undefined;
+};
+
+const optionBoolean = (options: CliOptions, name: string): boolean => options[name] === true;
+
+const actionPositionals = (args: readonly unknown[]): string[] =>
+	args.filter((value): value is string => typeof value === "string");
+
+const generateCommand = (
+	cwd: string,
+	positionals: readonly string[],
+	options: CliOptions,
+): TwGenerateCommand => {
+	const cssEntry = positionals[0] ?? "src/tailwind.css";
+	const outDir = positionals[1] ?? "src";
+	const bridgeFile = optionString(options, "bridgeFile");
+	return {
+		command: TwCommand.Generate,
+		cssEntry: resolve(cwd, cssEntry),
+		outDir: resolve(cwd, outDir),
+		cwd,
+		...(optionString(options, "tokens") === undefined
+			? {}
+			: { tokensModule: optionString(options, "tokens") }),
+		agents: optionBoolean(options, "agents"),
+		bridge: optionBoolean(options, "bridge") || bridgeFile !== undefined,
+		bridgeFile: resolve(cwd, bridgeFile ?? `${outDir}/bridge.ts`),
+		presetImport: optionString(options, "presetImport") ?? DEFAULT_PRESET_IMPORT,
+		presetExport: optionString(options, "presetExport") ?? DEFAULT_PRESET_EXPORT,
+	};
+};
+
+const scanCommand = (cwd: string, positionals: readonly string[]): TwScanCommand => ({
+	command: TwCommand.Scan,
+	twEntry: resolve(cwd, positionals[0] ?? "src/tw.ts"),
+	srcDir: resolve(cwd, positionals[1] ?? "src"),
+	outFile: resolve(cwd, positionals[2] ?? "src/pandwind.safelist.css"),
+});
+
+const pruneCommand = (cwd: string, positionals: readonly string[]): TwPruneCommand => ({
+	command: TwCommand.Prune,
+	themeCss: resolve(cwd, positionals[0] ?? "src/pandwind-theme.css"),
+	twEntry: resolve(cwd, positionals[1] ?? "src/tw.ts"),
+	srcDir: resolve(cwd, positionals[2] ?? "src"),
+	base: cwd,
+});
+
+const configureGenerate = (command: Command): void => {
+	command
+		.option("--tokens <module>", "Token module to bridge into the generated theme")
+		.option("--agents", "Write the machine-readable pandwind.agents.json artifact")
+		.option("--bridge", "Generate the css() bridge and refresh interop metadata")
+		.option("--bridge-file <path>", "Output path for the generated bridge module")
+		.option("--preset-import <module>", "Module specifier for the bridge preset")
+		.option("--preset-export <name>", "Export name for the bridge preset");
+};
+
+const createTwCliApp = (handlers: TwCliHandlers, cwd: string): CAC => {
+	const cli = cac("pandwind-tw");
+	const generate = cli.command(
+		"generate [css-entry] [out-dir]",
+		"Generate typed Tailwind artifacts from a CSS entrypoint",
+	);
+	configureGenerate(generate);
+	generate.action((...actionArgs: Array<unknown>) => {
+		const options = (actionArgs.at(-1) ?? {}) as CliOptions;
+		return handlers.generate(
+			generateCommand(cwd, actionPositionals(actionArgs.slice(0, -1)), options),
+		);
+	});
+
+	const scan = cli.command(
+		"scan [tw-entry] [src-dir] [out-file]",
+		"Collect dynamic classes into a safelist",
+	);
+	scan.action((...actionArgs: Array<unknown>) =>
+		handlers.scan(scanCommand(cwd, actionPositionals(actionArgs.slice(0, -1)))),
+	);
+
+	const prune = cli.command(
+		"prune [theme-css] [tw-entry] [src-dir]",
+		"Prune unused theme variables from the generated stylesheet",
+	);
+	prune.action((...actionArgs: Array<unknown>) =>
+		handlers.prune(pruneCommand(cwd, actionPositionals(actionArgs.slice(0, -1)))),
+	);
+	return cli;
+};
+
+const commandName = (argv: readonly string[]): string | undefined =>
+	argv.find((argument) => !argument.startsWith("-"));
+
+export function parseTwCommand(argv: readonly string[], cwd = process.cwd()): TwCommandInvocation {
+	const effectiveArgv = argv.length === 0 ? [TwCommand.Generate] : [...argv];
+	const cli = createTwCliApp(
+		{ generate: async () => {}, scan: async () => {}, prune: async () => {} },
+		cwd,
+	);
+	cli.parse(["node", "pandwind-tw", ...effectiveArgv], { run: false });
+	const matched = cli.matchedCommand;
+	if (matched === undefined) {
+		const requested = commandName(effectiveArgv);
+		throw new Error(
+			`pandwind-tw: unknown command '${requested ?? ""}'. Expected generate, scan, or prune`,
+		);
+	}
+	matched.checkUnknownOptions();
+	matched.checkOptionValue();
+	matched.checkRequiredArgs();
+	matched.checkUnusedArgs();
+	if (matched.name === TwCommand.Generate) return generateCommand(cwd, cli.args, cli.options);
+	if (matched.name === TwCommand.Scan) return scanCommand(cwd, cli.args);
+	return pruneCommand(cwd, cli.args);
+}
 
 const defaultHandlers: TwCliHandlers = {
 	async generate(command) {
@@ -232,14 +256,12 @@ class DefaultTwCli implements TwCli {
 	}
 
 	async run(argv: readonly string[]): Promise<void> {
-		if (argv.includes("--help") || argv.includes("-h")) {
-			console.log(TW_USAGE);
-			return;
-		}
-		const invocation = parseTwCommand(argv, this.cwd);
-		if (invocation.command === TwCommand.Generate) return this.handlers.generate(invocation);
-		if (invocation.command === TwCommand.Scan) return this.handlers.scan(invocation);
-		return this.handlers.prune(invocation);
+		const cli = createTwCliApp(this.handlers, this.cwd);
+		cli.help();
+		const effectiveArgv = argv.length === 0 ? [TwCommand.Generate] : [...argv];
+		cli.parse(["node", "pandwind-tw", ...effectiveArgv], { run: false });
+		if (cli.matchedCommand === undefined) return;
+		await cli.runMatchedCommand();
 	}
 }
 

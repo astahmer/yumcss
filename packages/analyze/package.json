@@ -75,6 +75,7 @@
 	"dependencies": {
 		"@hono/node-server": "2.1.1",
 		"@tailwindcss/node": "4.3.3",
+		"cac": "7.0.0",
 		"hono": "4.13.5",
 		"pandwind": "workspace:*",
 		"pandwind-codemod": "workspace:*",

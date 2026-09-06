@@ -143,6 +143,7 @@
 	},
 	"dependencies": {
 		"@tailwindcss/node": "4.3.3",
+		"cac": "7.0.0",
 		"pandwind": "workspace:*",
 		"unplugin": "3.3.0"
 	},

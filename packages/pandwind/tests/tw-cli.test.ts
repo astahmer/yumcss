@@ -104,10 +104,13 @@ describe("pandwind-tw command router", () => {
 			"pandwind-tw: unknown command 'unknown'",
 		);
 		expect(() => parseTwCommand([TwCommand.Generate, "--tokens"], cwd)).toThrow(
-			"--tokens requires a value",
+			"option `--tokens <module>` value is missing",
 		);
 		expect(() => parseTwCommand([TwCommand.Scan, "--agents"], cwd)).toThrow(
-			"scan does not accept options",
+			"Unknown option `--agents`",
+		);
+		expect(() => parseTwCommand([TwCommand.Generate, "--unknown"], cwd)).toThrow(
+			"Unknown option `--unknown`",
 		);
 	});
 });
