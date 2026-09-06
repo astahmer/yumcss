@@ -49,6 +49,10 @@ export function createAdapterRouteSpec(
 							root: project.root,
 							packageJson: project.packageJson,
 							readFile: (file: string) => project.files[file],
+							listFiles: (root: string) =>
+								Object.keys(project.files).filter(
+									(file) => file === root || file.startsWith(`${root}/`),
+								),
 						}),
 				mode: "safe",
 				adapterRegistry: catalog.registry,
