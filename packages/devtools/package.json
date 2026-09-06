@@ -1,0 +1,61 @@
+{
+	"name": "pandwind-devtools",
+	"version": "0.1.0",
+	"description": "Vite DevTools for inspecting Pandwind style programs and migrations",
+	"keywords": ["devtools", "pandwind", "vite", "css", "migration"],
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/astahmer/pandwind.git",
+		"directory": "packages/devtools"
+	},
+	"files": ["dist", "README.md", "LICENSE"],
+	"type": "module",
+	"exports": {
+		".": {
+			"pandwind": "./src/index.ts",
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js",
+			"default": "./dist/index.js"
+		},
+		"./inspect-action": {
+			"pandwind": "./src/client/inspect-action.ts",
+			"types": "./dist/client/inspect-action.d.ts",
+			"import": "./dist/client/inspect-action.js",
+			"default": "./dist/client/inspect-action.js"
+		},
+		"./evidence": {
+			"pandwind": "./src/evidence/index.ts",
+			"types": "./dist/evidence/index.d.ts",
+			"import": "./dist/evidence/index.js",
+			"default": "./dist/evidence/index.js"
+		},
+		"./package.json": "./package.json"
+	},
+	"publishConfig": {
+		"access": "public",
+		"provenance": true,
+		"registry": "https://registry.npmjs.org/"
+	},
+	"scripts": {
+		"build": "nub exec tsdown && nub exec vite build",
+		"typecheck": "tsc --noEmit",
+		"test": "vitest run"
+	},
+	"dependencies": {
+		"@vitejs/devtools-kit": "0.7.2",
+		"pandwind": "workspace:*",
+		"pandwind-analyze": "workspace:*",
+		"pandwind-codemod": "workspace:*"
+	},
+	"devDependencies": {
+		"@types/node": "26.4.1",
+		"tsdown": "0.23.0",
+		"typescript": "7.0.2",
+		"vite": "8.2.2",
+		"vitest": "5.0.0"
+	},
+	"engines": {
+		"node": ">=20"
+	}
+}
