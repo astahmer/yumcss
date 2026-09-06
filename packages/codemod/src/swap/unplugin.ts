@@ -5,7 +5,7 @@ import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
 import { createSourceWorkspace } from "pandwind/source/workspace";
 import type { AdapterMigrationOptions, AdapterMigrationResult } from "./adapter-migration.ts";
 import type { AdapterGeneratedFile } from "./adapter-contract.ts";
-import { runAdapterMigrationAsync } from "./adapter-migration.ts";
+import { STYLE_MIGRATION_USE_CASE } from "./migration-use-case.ts";
 import type { AdapterCapabilityMode } from "./capabilities.ts";
 import type { StyleLoweringRegistry } from "./lowering.ts";
 import type { StyleAdapterRegistry } from "./adapter-registry.ts";
@@ -130,7 +130,7 @@ function createVirtualMigrationPlugin(options: PandwindMigrateOptions) {
 		const key = `${id}\0${code}`;
 		const cached = cache.get(key);
 		if (cached !== undefined) return cached.result;
-		const result = await runAdapterMigrationAsync(code, {
+		const result = await STYLE_MIGRATION_USE_CASE.runAsync(code, {
 			from: options.from,
 			to: options.to,
 			file: id,

@@ -444,7 +444,7 @@ async function runExternalAdapterSwap(
 			if (args.reportFormat !== "json") console.log(`${relative}: no external adapter detected`);
 			continue;
 		}
-		const result = await swapImport.runAdapterMigrationAsync(source, {
+		const result = await swapImport.STYLE_MIGRATION_USE_CASE.runAsync(source, {
 			from,
 			to: target,
 			file: relative,
