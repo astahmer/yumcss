@@ -11,6 +11,7 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import cac, { type CAC, type Command } from "cac";
 import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
 import { collectFiles, type FoldSummary } from "./analyze.ts";
 import {
@@ -25,6 +26,7 @@ import {
 	formatCssDiagnostics,
 } from "./css-diagnostics.ts";
 import { runGovernanceLane } from "./governance-lane.ts";
+import { MCP_COMMAND, runMcpServer } from "./mcp/server.ts";
 
 export interface CliArgs {
 	patterns: Array<string>;
@@ -91,61 +93,90 @@ export const GOVERNANCE_JSON_SCHEMA = "pandwind.analyze.governance/1";
 /** Default official preset for the governance lane. */
 export const DEFAULT_GOVERNANCE_PRESET = "pandwind/preset/example-preset";
 
+type CliOptions = Readonly<Record<string, unknown>>;
+
+const optionString = (options: CliOptions, name: string): string | undefined => {
+	const value = options[name];
+	return typeof value === "string" ? value : undefined;
+};
+
+const optionBoolean = (options: CliOptions, name: string): boolean => options[name] === true;
+
+const optionNumber = (options: CliOptions, name: string): number | undefined => {
+	const value = options[name];
+	if (typeof value === "number") return value;
+	if (typeof value === "string" && value !== "") return Number(value);
+	return undefined;
+};
+
+const configureAnalyzeCommand = (command: Command): void => {
+	command
+		.option("--tw <path>", "Generated tw.ts module", { default: "src/tw.ts" })
+		.option("--root <dir>", "Project root", { default: "." })
+		.option("--json", "Emit the versioned machine-readable report")
+		.option("--css", "Measure the generated CSS budget")
+		.option("--constants <path>", "JSON file containing imported constants")
+		.option("--github-annotations", "Emit GitHub Actions annotations")
+		.option("--governance", "Emit the token-governance report")
+		.option("--preset <module>", "Official preset used by governance", {
+			default: DEFAULT_GOVERNANCE_PRESET,
+		})
+		.option("--fail-over <bytes>", "Fail when minified CSS exceeds this byte ceiling")
+		.option("--budgets <path>", "JSON file containing CSS budget caps");
+};
+
+const createAnalyzeCli = (): CAC => {
+	const cli = cac("pandwind-analyze");
+	const analyze = cli.command(
+		"[...patterns]",
+		"Analyze source files for fold coverage, CSS provenance, and budgets",
+	);
+	configureAnalyzeCommand(analyze);
+	cli
+		.command("mcp", "Run the read-only Model Context Protocol server")
+		.option("--root <dir>", "Project root", {
+			default: ".",
+		});
+	return cli;
+};
+
+const validateCommand = (command: Command): void => {
+	command.checkUnknownOptions();
+	command.checkOptionValue();
+	command.checkRequiredArgs();
+	command.checkUnusedArgs();
+};
+
 function parseArgs(argv: Array<string>): CliArgs {
-	const patterns: Array<string> = [];
-	let twPath = "src/tw.ts";
-	let json = false;
-	let css = false;
-	let githubAnnotations = false;
-	let root = process.cwd();
-	let constantsPath: string | undefined;
-	let failOverBytes: number | undefined;
-	let budgetsPath: string | undefined;
-	let governance = false;
-	let preset = DEFAULT_GOVERNANCE_PRESET;
-	for (let i = 0; i < argv.length; i++) {
-		const arg = argv[i];
-		if (arg === "--tw") {
-			twPath = argv[++i] ?? twPath;
-		} else if (arg === "--css") {
-			css = true;
-		} else if (arg === "--github-annotations") {
-			githubAnnotations = true;
-		} else if (arg === "--json") {
-			json = true;
-		} else if (arg === "--root") {
-			root = resolve(process.cwd(), argv[++i] ?? ".");
-		} else if (arg === "--constants") {
-			constantsPath = resolve(process.cwd(), argv[++i] ?? "");
-		} else if (arg === "--governance") {
-			governance = true;
-		} else if (arg === "--preset") {
-			preset = argv[++i] ?? preset;
-		} else if (arg !== undefined && arg.startsWith("--fail-over=")) {
-			failOverBytes = Number(arg.slice("--fail-over=".length));
-			if (!Number.isFinite(failOverBytes) || failOverBytes < 0) {
-				throw new Error(`analyze: invalid --fail-over '${arg}'`);
-			}
-		} else if (arg !== undefined && arg.startsWith("--budgets=")) {
-			budgetsPath = resolve(process.cwd(), arg.slice("--budgets=".length));
-		} else if (arg !== undefined && arg.startsWith("--preset=")) {
-			preset = arg.slice("--preset=".length);
-		} else if (arg !== undefined) {
-			patterns.push(arg);
-		}
+	const cli = createAnalyzeCli();
+	cli.parse(["node", "pandwind-analyze", ...argv], { run: false });
+	const command = cli.matchedCommand;
+	if (command === undefined || command.name === MCP_COMMAND) {
+		throw new Error(
+			"analyze: expected analysis arguments; use `pandwind-analyze mcp --help` for MCP",
+		);
 	}
+	validateCommand(command);
+	const options = cli.options as CliOptions;
+	const root = resolve(process.cwd(), optionString(options, "root") ?? ".");
+	const failOverBytes = optionNumber(options, "failOver");
+	if (failOverBytes !== undefined && (!Number.isFinite(failOverBytes) || failOverBytes < 0)) {
+		throw new Error(`analyze: invalid --fail-over '${String(options.failOver)}'`);
+	}
+	const budgets = optionString(options, "budgets");
+	const constants = optionString(options, "constants");
 	return {
-		patterns,
-		twPath: resolve(root, twPath),
-		json,
-		css,
-		githubAnnotations,
+		patterns: [...cli.args],
+		twPath: resolve(root, optionString(options, "tw") ?? "src/tw.ts"),
+		json: optionBoolean(options, "json"),
+		css: optionBoolean(options, "css"),
+		githubAnnotations: optionBoolean(options, "githubAnnotations"),
 		root,
-		constantsPath,
-		failOverBytes,
-		budgetsPath,
-		governance,
-		preset,
+		...(constants === undefined ? {} : { constantsPath: resolve(process.cwd(), constants) }),
+		...(failOverBytes === undefined ? {} : { failOverBytes }),
+		...(budgets === undefined ? {} : { budgetsPath: resolve(process.cwd(), budgets) }),
+		governance: optionBoolean(options, "governance"),
+		preset: optionString(options, "preset") ?? DEFAULT_GOVERNANCE_PRESET,
 	};
 }
 
@@ -172,8 +203,7 @@ async function computeCssBudget(args: CliArgs, files: Array<string>) {
  * document). Pure apart from filesystem reads — tests assert on the return
  * value instead of spying on console.log.
  */
-export async function runCli(argv: Array<string>): Promise<string> {
-	const args = parseArgs(argv);
+async function runAnalysis(args: CliArgs): Promise<string> {
 	if (args.governance) return runGovernanceLane(args);
 	const patterns = args.patterns.length > 0 ? args.patterns : ["src/**/*.{ts,tsx}"];
 	const workspace = createAnalysisWorkspace();
@@ -250,15 +280,12 @@ export async function runCli(argv: Array<string>): Promise<string> {
 	return [report, authoredCssReport, formattedCssReport].filter(Boolean).join("\n\n");
 }
 
-async function main(): Promise<void> {
-	const argv = process.argv.slice(2);
-	if (argv[0] === "mcp") {
-		const { runMcpCommand } = await import("./mcp/server.ts");
-		await runMcpCommand(argv.slice(1));
-		return;
-	}
-	const args = parseArgs(argv);
-	console.log(await runCli(argv));
+export async function runCli(argv: Array<string>): Promise<string> {
+	return runAnalysis(parseArgs(argv));
+}
+
+async function runAnalyzeCommand(args: CliArgs): Promise<void> {
+	console.log(await runAnalysis(args));
 
 	// CI gate (plans/023): nonzero exit when the measured budget violates
 	// --fail-over ceiling or any --budgets cap. PR-relative deltas compose by
@@ -276,6 +303,27 @@ async function main(): Promise<void> {
 			for (const v of violations) console.error(`analyze: BUDGET VIOLATION — ${v}`);
 			process.exitCode = 1;
 		}
+	}
+}
+
+async function main(argv = process.argv.slice(2)): Promise<void> {
+	const cli = createAnalyzeCli();
+	cli.help();
+	try {
+		cli.parse(["node", "pandwind-analyze", ...argv], { run: false });
+		const command = cli.matchedCommand;
+		if (command === undefined) return;
+		validateCommand(command);
+		if (command.name === MCP_COMMAND) {
+			const root = resolve(process.cwd(), optionString(cli.options as CliOptions, "root") ?? ".");
+			await runMcpServer(root);
+			return;
+		}
+		await runAnalyzeCommand(parseArgs(argv));
+	} catch (error) {
+		console.error(`pandwind-analyze: ${error instanceof Error ? error.message : String(error)}`);
+		cli.outputHelp();
+		process.exitCode = 1;
 	}
 }
 

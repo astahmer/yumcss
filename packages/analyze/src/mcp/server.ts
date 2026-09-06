@@ -1,22 +1,11 @@
+import cac from "cac";
 import { resolve } from "node:path";
 import { MCP_TOOL } from "./tools.ts";
 import { createMcpProjectContext, createMcpToolService } from "./tools.ts";
 import { runMcpStdioServer, type McpServerHandler } from "./protocol.ts";
-import { McpToolError, textToolResult } from "./tool-contract.ts";
+import { textToolResult } from "./tool-contract.ts";
 
 export const MCP_COMMAND = "mcp" as const;
-
-function parseRoot(argv: readonly string[]): string {
-	let root = process.cwd();
-	for (let index = 0; index < argv.length; index += 1) {
-		const argument = argv[index];
-		if (argument === "--root") root = argv[++index] ?? root;
-		else if (argument?.startsWith("--root=")) root = argument.slice("--root=".length);
-		else if (argument === "--help") return root;
-		else throw new McpToolError(`mcp: unknown argument '${argument ?? ""}'`);
-	}
-	return resolve(process.cwd(), root);
-}
 
 export function createMcpServerHandler(root: string): McpServerHandler {
 	const service = createMcpToolService(createMcpProjectContext(root));
@@ -32,9 +21,21 @@ export function createMcpServerHandler(root: string): McpServerHandler {
 	};
 }
 
-export async function runMcpCommand(argv: readonly string[]): Promise<void> {
-	const root = parseRoot(argv);
+export async function runMcpServer(root: string): Promise<void> {
 	await runMcpStdioServer(createMcpServerHandler(root));
+}
+
+export async function runMcpCommand(argv: readonly string[]): Promise<void> {
+	const cli = cac("pandwind-analyze mcp");
+	cli.option("--root <dir>", "Project root", { default: "." });
+	cli.help();
+	cli.parse(["node", "pandwind-analyze mcp", ...argv], { run: false });
+	if (cli.matchedCommand !== undefined) return;
+	cli.globalCommand.checkUnknownOptions();
+	cli.globalCommand.checkOptionValue();
+	cli.globalCommand.checkUnusedArgs();
+	const root = cli.options.root;
+	await runMcpServer(resolve(process.cwd(), typeof root === "string" ? root : "."));
 }
 
 export { MCP_TOOL };
