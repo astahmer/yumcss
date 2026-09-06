@@ -2,7 +2,11 @@ import { execFileSync } from "node:child_process";
 import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { describe, expect, test } from "vitest";
-import { CodemodAdapterId, createBuiltinCodemodCatalog } from "../src/swap/index.ts";
+import {
+	CodemodAdapterId,
+	STYLE_MIGRATION_USE_CASE,
+	createBuiltinCodemodCatalog,
+} from "../src/swap/index.ts";
 import { adapterContractFixtures } from "../proof/adapter-contract-fixtures.ts";
 import { completeAdapterMatrixFixtures } from "../proof/adapter-matrix-fixtures.ts";
 
@@ -16,7 +20,14 @@ const pandwindSource =
 const pandwindFixture = adapterContractFixtures.find(
 	(fixture) => fixture.adapter === CodemodAdapterId.Pandwind,
 );
-const cliE2e = describe;
+interface MigrationRunResult {
+	readonly report: {
+		readonly files: readonly [
+			{ readonly converted: number; readonly skipped: number; readonly residuals: number },
+		];
+	};
+	readonly source: string;
+}
 
 function runCli(
 	directory: string,
@@ -24,14 +35,7 @@ function runCli(
 	to: string,
 	sourceOverride?: string,
 	fileOverride?: string,
-): {
-	readonly report: {
-		readonly files: readonly [
-			{ readonly converted: number; readonly skipped: number; readonly residuals: number },
-		];
-	};
-	readonly source: string;
-} {
+): MigrationRunResult {
 	const fixture = adapterContractFixtures.find((candidate) => candidate.adapter === from);
 	const file = join(
 		directory,
@@ -60,7 +64,42 @@ function runCli(
 	};
 }
 
-cliE2e("CLI adapter migration e2e matrix", () => {
+async function runInMemory(
+	from: string,
+	to: string,
+	sourceOverride?: string,
+	fileOverride?: string,
+): Promise<MigrationRunResult> {
+	// Keep the large route matrix in-process. The first test below remains the
+	// real CLI boundary proof for argument parsing, file discovery, and writes.
+	const fixture = adapterContractFixtures.find((candidate) => candidate.adapter === from);
+	const file = fileOverride ?? fixture?.file ?? "source.tsx";
+	const source = sourceOverride ?? fixture?.source ?? pandwindSource;
+	const files = new Map([[file, source]]);
+	const result = await STYLE_MIGRATION_USE_CASE.runAsync(source, {
+		from,
+		to,
+		file,
+		root: repoRoot,
+		mode: "safe",
+		readFile: (candidate) => files.get(candidate),
+		listFiles: () => [...files.keys()],
+	});
+	return {
+		report: {
+			files: [
+				{
+					converted: result.converted,
+					skipped: result.skipped,
+					residuals: result.residuals.length,
+				},
+			],
+		},
+		source: result.code,
+	};
+}
+
+describe("adapter migration e2e matrix", () => {
 	test("writes a host-dialect conversion to the target extension", () => {
 		const directory = mkdtempSync(join(repoRoot, ".tmp-codemod-e2e-"));
 		const file = join(directory, "App.vue");
@@ -100,127 +139,101 @@ cliE2e("CLI adapter migration e2e matrix", () => {
 	}, 120_000);
 
 	test.each(catalog.adapters.map((adapter) => adapter.id))(
-		"executes the %s -> Pandwind command with safe source preservation",
-		(sourceAdapter) => {
-			const directory = mkdtempSync(join(repoRoot, ".tmp-codemod-e2e-"));
-			try {
-				const { report, source } = runCli(directory, sourceAdapter, CodemodAdapterId.Pandwind);
-				const result = report.files[0]!;
-				if (sourceAdapter === CodemodAdapterId.Pandwind) {
-					expect(result.converted).toBe(0);
-					expect(result.skipped).toBe(0);
-					expect(source).toBe(pandwindFixture?.source ?? pandwindSource);
-					return;
-				}
-				expect(result.converted + result.skipped).toBeGreaterThan(0);
-				if (result.skipped > 0) {
-					expect(result.residuals).toBeGreaterThan(0);
-					expect(source).toContain("pandwind:migrate-skip");
-				} else {
-					expect(source).not.toContain("adapter capability mismatch");
-				}
-			} finally {
-				rmSync(directory, { recursive: true, force: true });
+		"executes the %s -> Pandwind use case with safe source preservation",
+		async (sourceAdapter) => {
+			const { report, source } = await runInMemory(sourceAdapter, CodemodAdapterId.Pandwind);
+			const result = report.files[0]!;
+			if (sourceAdapter === CodemodAdapterId.Pandwind) {
+				expect(result.converted).toBe(0);
+				expect(result.skipped).toBe(0);
+				expect(source).toBe(pandwindFixture?.source ?? pandwindSource);
+				return;
 			}
+			expect(result.converted + result.skipped).toBeGreaterThan(0);
+			if (result.skipped > 0) {
+				expect(result.residuals).toBeGreaterThan(0);
+				expect(source).toContain("pandwind:migrate-skip");
+			} else expect(source).not.toContain("adapter capability mismatch");
 		},
-		120_000,
+		30_000,
 	);
 
 	test.each(catalog.adapters.map((adapter) => adapter.id))(
-		"executes the Pandwind -> %s command with explicit outcome evidence",
-		(targetAdapter) => {
-			const directory = mkdtempSync(join(repoRoot, ".tmp-codemod-e2e-"));
-			try {
-				const { report, source } = runCli(directory, CodemodAdapterId.Pandwind, targetAdapter);
-				const result = report.files[0]!;
-				if (targetAdapter === CodemodAdapterId.Pandwind) {
-					expect(result.converted).toBe(0);
-					expect(result.skipped).toBe(0);
-					expect(source).toBe(pandwindFixture?.source ?? pandwindSource);
-					return;
-				}
-				expect(result.converted + result.skipped).toBeGreaterThan(0);
-				if (result.skipped > 0) {
-					expect(result.residuals).toBeGreaterThan(0);
-					expect(source).toContain("pandwind:migrate-skip");
-				} else {
-					expect(source).not.toContain("adapter capability mismatch");
-				}
-			} finally {
-				rmSync(directory, { recursive: true, force: true });
+		"executes the Pandwind -> %s use case with explicit outcome evidence",
+		async (targetAdapter) => {
+			const { report, source } = await runInMemory(CodemodAdapterId.Pandwind, targetAdapter);
+			const result = report.files[0]!;
+			if (targetAdapter === CodemodAdapterId.Pandwind) {
+				expect(result.converted).toBe(0);
+				expect(result.skipped).toBe(0);
+				expect(source).toBe(pandwindFixture?.source ?? pandwindSource);
+				return;
 			}
+			expect(result.converted + result.skipped).toBeGreaterThan(0);
+			if (result.skipped > 0) {
+				expect(result.residuals).toBeGreaterThan(0);
+				expect(source).toContain("pandwind:migrate-skip");
+			} else expect(source).not.toContain("adapter capability mismatch");
 		},
-		120_000,
+		30_000,
 	);
 
 	test.each(catalog.adapters.map((adapter) => adapter.id))(
-		"keeps the %s edge case explicit through the real CLI",
-		(sourceAdapter) => {
+		"keeps the %s edge case explicit through the migration use case",
+		async (sourceAdapter) => {
 			const fixture = completeAdapterMatrixFixtures.find(
 				(candidate) => candidate.sourceAdapter === sourceAdapter && candidate.scenario === "edge",
 			);
 			if (fixture === undefined) throw new Error(`missing edge fixture for ${sourceAdapter}`);
-			const directory = mkdtempSync(join(repoRoot, ".tmp-codemod-e2e-"));
-			try {
-				const { report, source } = runCli(
-					directory,
-					sourceAdapter,
-					CodemodAdapterId.Pandwind,
-					fixture.source,
-					fixture.file,
-				);
-				const result = report.files[0]!;
-				if (sourceAdapter === CodemodAdapterId.Pandwind) {
-					expect(result.converted).toBe(0);
-					expect(result.skipped).toBe(0);
-					expect(source).toBe(fixture.source);
-					return;
-				}
-				expect(result.converted + result.skipped).toBeGreaterThan(0);
-				if (result.skipped > 0) {
-					expect(result.residuals).toBeGreaterThan(0);
-					expect(source).toContain("pandwind:migrate-skip");
-				}
-			} finally {
-				rmSync(directory, { recursive: true, force: true });
+			const { report, source } = await runInMemory(
+				sourceAdapter,
+				CodemodAdapterId.Pandwind,
+				fixture.source,
+				fixture.file,
+			);
+			const result = report.files[0]!;
+			if (sourceAdapter === CodemodAdapterId.Pandwind) {
+				expect(result.converted).toBe(0);
+				expect(result.skipped).toBe(0);
+				expect(source).toBe(fixture.source);
+				return;
+			}
+			expect(result.converted + result.skipped).toBeGreaterThan(0);
+			if (result.skipped > 0) {
+				expect(result.residuals).toBeGreaterThan(0);
+				expect(source).toContain("pandwind:migrate-skip");
 			}
 		},
-		120_000,
+		30_000,
 	);
 
 	test.each(catalog.adapters.map((adapter) => adapter.id))(
 		"keeps the Pandwind edge case explicit when targeting %s",
-		(targetAdapter) => {
+		async (targetAdapter) => {
 			const fixture = completeAdapterMatrixFixtures.find(
 				(candidate) =>
 					candidate.sourceAdapter === CodemodAdapterId.Pandwind && candidate.scenario === "edge",
 			);
 			if (fixture === undefined) throw new Error("missing Pandwind edge fixture");
-			const directory = mkdtempSync(join(repoRoot, ".tmp-codemod-e2e-"));
-			try {
-				const { report, source } = runCli(
-					directory,
-					CodemodAdapterId.Pandwind,
-					targetAdapter,
-					fixture.source,
-					fixture.file,
-				);
-				const result = report.files[0]!;
-				if (targetAdapter === CodemodAdapterId.Pandwind) {
-					expect(result.converted).toBe(0);
-					expect(result.skipped).toBe(0);
-					expect(source).toBe(fixture.source);
-					return;
-				}
-				expect(result.converted + result.skipped).toBeGreaterThan(0);
-				if (result.skipped > 0) {
-					expect(result.residuals).toBeGreaterThan(0);
-					expect(source).toContain("pandwind:migrate-skip");
-				}
-			} finally {
-				rmSync(directory, { recursive: true, force: true });
+			const { report, source } = await runInMemory(
+				CodemodAdapterId.Pandwind,
+				targetAdapter,
+				fixture.source,
+				fixture.file,
+			);
+			const result = report.files[0]!;
+			if (targetAdapter === CodemodAdapterId.Pandwind) {
+				expect(result.converted).toBe(0);
+				expect(result.skipped).toBe(0);
+				expect(source).toBe(fixture.source);
+				return;
+			}
+			expect(result.converted + result.skipped).toBeGreaterThan(0);
+			if (result.skipped > 0) {
+				expect(result.residuals).toBeGreaterThan(0);
+				expect(source).toContain("pandwind:migrate-skip");
 			}
 		},
-		120_000,
+		30_000,
 	);
 });
