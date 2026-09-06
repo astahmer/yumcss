@@ -2,7 +2,13 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { resolve } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
-import { MCP_TOOL, createMcpProjectContext, createMcpToolService } from "./tools.ts";
+import {
+	MCP_TOOL,
+	createMcpProjectContext,
+	createMcpToolService,
+	type McpToolPorts,
+} from "./tools.ts";
+import { createBuiltinCodemodCatalog } from "pandwind-codemod/swap";
 
 const roots: string[] = [];
 
@@ -106,5 +112,40 @@ describe("Pandwind MCP tools", () => {
 				to: "pandwind",
 			}),
 		).rejects.toThrow("project-relative");
+	});
+
+	it("accepts substituted migration and analyzer ports", async () => {
+		const root = mkdtempSync(resolve(tmpdir(), "pandwind-mcp-ports-"));
+		roots.push(root);
+		const context = createMcpProjectContext(root);
+		const calls: string[] = [];
+		const ports: McpToolPorts = {
+			createCatalog: createBuiltinCodemodCatalog,
+			migrate: async (source) => {
+				calls.push(source);
+				return {
+					code: source,
+					changed: false,
+					converted: 0,
+					skipped: 0,
+					reports: [],
+					validations: [],
+					dependencies: [],
+					generatedFiles: [],
+					fileChanges: [],
+					residuals: [],
+					loweringPlans: [],
+					outcomes: [],
+				};
+			},
+			analyze: async () => {
+				calls.push("analyze");
+				return JSON.stringify({ schema: "test" });
+			},
+		};
+		const service = createMcpToolService(context, ports);
+
+		await service.call(MCP_TOOL.AnalyzeProject, {});
+		expect(calls).toEqual(["analyze"]);
 	});
 });

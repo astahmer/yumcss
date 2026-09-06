@@ -3,10 +3,12 @@ import { extname, isAbsolute, relative, resolve, sep } from "node:path";
 import { createSourceWorkspace } from "pandwind/source/workspace";
 import {
 	createBuiltinCodemodCatalog,
-	runAdapterMigrationAsync,
 	type AdapterCapabilityMode,
+	type AdapterMigrationOptions,
 	type AdapterMigrationResult,
+	type CodemodAdapterCatalog,
 } from "pandwind-codemod/swap";
+import { STYLE_MIGRATION_USE_CASE } from "pandwind-codemod/swap";
 import { unifiedDiff } from "pandwind-codemod/diff";
 import { runCli } from "../cli.ts";
 import { McpToolError, textToolResult } from "./tool-contract.ts";
@@ -36,6 +38,22 @@ export interface McpToolService {
 	readonly tools: readonly McpToolDefinition[];
 	call(name: string, arguments_: unknown): Promise<McpToolResult>;
 }
+
+/** Application ports used by the MCP tool façade. */
+export interface McpToolPorts {
+	readonly createCatalog: () => CodemodAdapterCatalog;
+	readonly migrate: (
+		source: string,
+		options: AdapterMigrationOptions,
+	) => Promise<AdapterMigrationResult>;
+	readonly analyze: (argv: readonly string[]) => Promise<string>;
+}
+
+const DEFAULT_TOOL_PORTS: McpToolPorts = {
+	createCatalog: createBuiltinCodemodCatalog,
+	migrate: (source, options) => STYLE_MIGRATION_USE_CASE.runAsync(source, options),
+	analyze: (argv) => runCli([...argv]),
+};
 
 const inputSchema = (
 	properties: Readonly<Record<string, unknown>>,
@@ -179,12 +197,16 @@ function projectPattern(candidate: string): string {
 	return candidate;
 }
 
-function inspectProject(context: McpProjectContext, arguments_: unknown): McpToolResult {
+function inspectProject(
+	context: McpProjectContext,
+	arguments_: unknown,
+	ports: McpToolPorts,
+): McpToolResult {
 	const input = asRecord(arguments_, MCP_TOOL.InspectProject);
 	const includeFiles = input.includeFiles === true;
 	const files = projectFiles(context);
 	const packageJson = readPackageJson(context.root);
-	const catalog = createBuiltinCodemodCatalog();
+	const catalog = ports.createCatalog();
 	const detections = new Map<
 		string,
 		{ confidence: number; files: number; evidence: Set<string> }
@@ -300,6 +322,7 @@ function serializeMigration(
 async function migrationPreview(
 	context: McpProjectContext,
 	arguments_: unknown,
+	ports: McpToolPorts,
 ): Promise<{
 	readonly root: string;
 	readonly from: string;
@@ -327,7 +350,7 @@ async function migrationPreview(
 	for (const absolute of [...expanded].toSorted()) {
 		const file = relativeProjectPath(context.root, absolute);
 		const before = readFileSync(absolute, "utf8");
-		const result = await runAdapterMigrationAsync(before, {
+		const result = await ports.migrate(before, {
 			from,
 			to,
 			file,
@@ -345,16 +368,18 @@ async function migrationPreview(
 async function previewMigration(
 	context: McpProjectContext,
 	arguments_: unknown,
+	ports: McpToolPorts,
 ): Promise<McpToolResult> {
-	const preview = await migrationPreview(context, arguments_);
+	const preview = await migrationPreview(context, arguments_, ports);
 	return textToolResult({ schema: "pandwind.mcp.preview-migration/1", ...preview });
 }
 
 async function validateMigration(
 	context: McpProjectContext,
 	arguments_: unknown,
+	ports: McpToolPorts,
 ): Promise<McpToolResult> {
-	const preview = await migrationPreview(context, arguments_);
+	const preview = await migrationPreview(context, arguments_, ports);
 	const files = preview.files.map((file) => {
 		const generatedConflicts = file.generatedFiles.filter((generated) => {
 			const path = projectPath(context.root, generated.path);
@@ -386,6 +411,7 @@ async function validateMigration(
 async function analyzeProject(
 	context: McpProjectContext,
 	arguments_: unknown,
+	ports: McpToolPorts,
 ): Promise<McpToolResult> {
 	const input = asRecord(arguments_, MCP_TOOL.AnalyzeProject);
 	const patterns =
@@ -406,16 +432,19 @@ async function analyzeProject(
 			projectPath(context.root, stringValue(input.constantsPath, "constantsPath")),
 		);
 	if (input.css === true) argv.push("--css");
-	const report = await runCli(argv);
+	const report = await ports.analyze(argv);
 	return textToolResult(JSON.parse(report));
 }
 
-export function createMcpToolService(context: McpProjectContext): McpToolService {
+export function createMcpToolService(
+	context: McpProjectContext,
+	ports: McpToolPorts = DEFAULT_TOOL_PORTS,
+): McpToolService {
 	const calls = new Map<string, (arguments_: unknown) => Promise<McpToolResult> | McpToolResult>([
-		[MCP_TOOL.InspectProject, (arguments_) => inspectProject(context, arguments_)],
-		[MCP_TOOL.PreviewMigration, (arguments_) => previewMigration(context, arguments_)],
-		[MCP_TOOL.ValidateMigration, (arguments_) => validateMigration(context, arguments_)],
-		[MCP_TOOL.AnalyzeProject, (arguments_) => analyzeProject(context, arguments_)],
+		[MCP_TOOL.InspectProject, (arguments_) => inspectProject(context, arguments_, ports)],
+		[MCP_TOOL.PreviewMigration, (arguments_) => previewMigration(context, arguments_, ports)],
+		[MCP_TOOL.ValidateMigration, (arguments_) => validateMigration(context, arguments_, ports)],
+		[MCP_TOOL.AnalyzeProject, (arguments_) => analyzeProject(context, arguments_, ports)],
 	]);
 	return {
 		tools: MCP_TOOLS,
