@@ -58,6 +58,7 @@ describe("Pandwind MCP tools", () => {
 			MCP_RESOURCE.ResidualExplanations,
 			MCP_RESOURCE.InteropArtifact,
 			MCP_RESOURCE.LatestStylePrograms,
+			MCP_RESOURCE.LatestComparison,
 		]);
 		expect(JSON.parse(await service.readResource(MCP_RESOURCE.AdapterCatalog))).toMatchObject({
 			schema: "pandwind.mcp.catalog/1",
@@ -69,7 +70,7 @@ describe("Pandwind MCP tools", () => {
 		const result = await service.call(MCP_TOOL.InspectProject, {});
 		const value = structured(result);
 		const adapters = value.adapters as Array<{ id: string }>;
-		expect(value.schema).toBe("pandwind.mcp.project/1");
+		expect(value.schema).toBe("pandwind.mcp.project/2");
 		expect(adapters.some((adapter) => adapter.id === "pandwind")).toBe(true);
 		expect(
 			(value.registeredAdapters as Array<{ id: string }>).some(
@@ -199,7 +200,11 @@ describe("Pandwind MCP tools", () => {
 			patterns: ["src/button.ts"],
 			twPath: "src/tw.ts",
 		});
-		expect(structured(result).schema).toBe("pandwind.analyze/2");
+		expect(structured(result)).toMatchObject({
+			schema: "pandwind.mcp.analyze-project/1",
+			analysis: { schema: "pandwind.analyze/2" },
+			governance: { schema: "pandwind.analyze.governance/1" },
+		});
 	});
 
 	it("validates a preview without executing project commands", async () => {
@@ -210,9 +215,13 @@ describe("Pandwind MCP tools", () => {
 			to: "pandwind",
 		});
 		expect(structured(result)).toMatchObject({
-			schema: "pandwind.mcp.validate-migration/1",
+			schema: "pandwind.mcp.validate-migration/2",
 			valid: true,
 			files: [{ valid: true }],
+			checks: [
+				{ check: "contract", status: "passed" },
+				{ check: "canonical-css", status: "passed" },
+			],
 		});
 	});
 
@@ -261,6 +270,60 @@ describe("Pandwind MCP tools", () => {
 		const service = createMcpToolService(context, ports);
 
 		await service.call(MCP_TOOL.AnalyzeProject, {});
-		expect(calls).toEqual(["analyze"]);
+		expect(calls).toEqual(["analyze", "analyze"]);
+	});
+
+	it("runs only the explicitly supplied host validation checks", async () => {
+		const root = mkdtempSync(resolve(tmpdir(), "pandwind-mcp-validation-"));
+		roots.push(root);
+		mkdirSync(resolve(root, "src"), { recursive: true });
+		writeFileSync(resolve(root, "src/source.ts"), "before");
+		const requested: string[] = [];
+		const service = createMcpToolService(createMcpProjectContext(root), {
+			createCatalog: createBuiltinCodemodCatalog,
+			migration: {
+				runAsync: async (source) => ({
+					code: source,
+					changed: false,
+					converted: 0,
+					skipped: 0,
+					reports: [],
+					validations: [],
+					dependencies: [],
+					generatedFiles: [],
+					fileChanges: [],
+					residuals: [],
+					loweringPlans: [],
+					outcomes: [],
+				}),
+			},
+			analyze: async () => JSON.stringify({ schema: "test" }),
+			validation: {
+				run: async ({ checks }) => {
+					requested.push(...checks);
+					return checks.map((check) => ({
+						check,
+						status: "passed" as const,
+						commandsExecuted: [`host:${check}`],
+					}));
+				},
+			},
+		});
+		const result = await service.call(MCP_TOOL.ValidateMigration, {
+			files: ["src/source.ts"],
+			from: "fake",
+			to: "fake",
+			checks: ["typecheck", "build"],
+		});
+		const value = structured(result);
+		expect(value.valid).toBe(true);
+		expect(value.checks).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({ check: "typecheck", status: "passed" }),
+				expect.objectContaining({ check: "build", status: "passed" }),
+			]),
+		);
+		expect(value.commandsExecuted).toEqual(["host:typecheck", "host:build"]);
+		expect(requested).toEqual(["typecheck", "build"]);
 	});
 });

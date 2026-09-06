@@ -48,11 +48,15 @@ minimal executor or any individual infrastructure port. This keeps the flat
 `runAdapterMigration` function as a compatibility fast path while making the
 application boundary explicit for richer hosts.
 
-The MCP service follows the same rule. Its small port set supplies the adapter
-catalog, the migration use case, and the analyzer command. The official MCP
-SDK owns protocol and stdio transport details; project path safety, explicit
-apply confirmation, resource projection, and tool orchestration stay in the
-service, and neither layer reimplements adapter migration semantics.
+The MCP service follows the same rule. Its port set supplies the adapter
+catalog, the migration use case, the analyzer command, and optional host-owned
+project validation. The official MCP SDK owns protocol, stdio, and Streamable
+HTTP transport details; Hono is only the local HTTP composition root. Project
+path safety, explicit apply confirmation, resource projection, and tool
+orchestration stay in the service, and neither layer reimplements adapter
+migration semantics. Typecheck, build, browser, SSR, hydration, and bundle
+checks enter through the typed validation port, never through arbitrary shell
+arguments from an MCP caller.
 
 Migration skips are typed at this boundary. `capability-blocked` means the
 selected target has no safe representation for a required semantic;

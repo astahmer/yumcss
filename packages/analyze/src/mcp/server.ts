@@ -4,10 +4,16 @@ import cac from "cac";
 import { resolve } from "node:path";
 import { z } from "zod";
 import {
+	MCP_MIGRATION_MODE,
 	MCP_TOOL,
+	MCP_VALIDATION_CHECK,
+	type McpValidationCheck,
+} from "./contract.ts";
+import {
 	createMcpProjectContext,
 	createMcpToolService,
 	type McpToolPorts,
+	type McpToolService,
 } from "./tools.ts";
 
 export const MCP_COMMAND = "mcp" as const;
@@ -25,7 +31,7 @@ const migrationSchema = {
 	files: z.array(z.string().min(1)),
 	from: z.string().min(1),
 	to: z.string().min(1),
-	mode: z.enum(["safe", "partial"]).optional(),
+	mode: z.enum(Object.values(MCP_MIGRATION_MODE) as [string, ...string[]]).optional(),
 };
 
 const analyzeProjectSchema = {
@@ -33,11 +39,21 @@ const analyzeProjectSchema = {
 	twPath: z.string().min(1).optional(),
 	constantsPath: z.string().min(1).optional(),
 	css: z.boolean().optional(),
+	preset: z.string().min(1).optional(),
 };
 
 const applyMigrationSchema = {
 	...migrationSchema,
 	confirm: z.literal(true),
+};
+
+const validationSchema = {
+	...migrationSchema,
+	checks: z
+		.array(
+			z.enum(Object.values(MCP_VALIDATION_CHECK) as [McpValidationCheck, ...McpValidationCheck[]]),
+		)
+		.optional(),
 };
 
 const compareMigrationsSchema = {
@@ -48,23 +64,25 @@ const compareMigrationsSchema = {
 			to: z.string().min(1),
 		}),
 	),
-	mode: z.enum(["safe", "partial"]).optional(),
+	mode: z.enum(Object.values(MCP_MIGRATION_MODE) as [string, ...string[]]).optional(),
 };
 
 const benchmarkProjectSchema = {
 	files: z.array(z.string().min(1)),
 	from: z.string().min(1),
 	to: z.string().min(1),
-	mode: z.enum(["safe", "partial"]).optional(),
+	mode: z.enum(Object.values(MCP_MIGRATION_MODE) as [string, ...string[]]).optional(),
 	iterations: z.number().int().min(1).max(10).optional(),
 };
 
 export interface McpServerOptions {
 	readonly ports?: McpToolPorts;
+	readonly service?: McpToolService;
 }
 
 export function createMcpServer(root: string, options: McpServerOptions = {}): McpServer {
-	const service = createMcpToolService(createMcpProjectContext(root), options.ports);
+	const service =
+		options.service ?? createMcpToolService(createMcpProjectContext(root), options.ports);
 	const server = new McpServer(MCP_SERVER_INFO, {
 		capabilities: { tools: {}, resources: {} },
 	});
@@ -104,8 +122,11 @@ export function createMcpServer(root: string, options: McpServerOptions = {}): M
 		{
 			title: "Validate migration",
 			description:
-				"Run a read-only migration contract check covering target validations, residuals, and generated-file conflicts.",
-			inputSchema: migrationSchema,
+				"Run read-only adapter and canonical-CSS checks, plus explicitly configured project checks.",
+			inputSchema: {
+				...migrationSchema,
+				checks: validationSchema.checks,
+			},
 		},
 		async (input) => service.call(MCP_TOOL.ValidateMigration, input),
 	);

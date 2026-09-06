@@ -13,36 +13,24 @@ import { STYLE_MIGRATION_USE_CASE } from "pandwind-codemod/swap";
 import { unifiedDiff } from "pandwind-codemod/diff";
 import { runCli } from "../cli.ts";
 import { McpToolError, textToolResult } from "./tool-contract.ts";
+import {
+	MCP_MIGRATION_MODE,
+	MCP_RESOURCE,
+	MCP_TOOL,
+	MCP_VALIDATION_CHECK,
+	type McpValidationCheck,
+} from "./contract.ts";
 import type { McpToolDefinition, McpToolResult } from "./contract.ts";
 
-export const MCP_TOOL = {
-	InspectProject: "inspect_project",
-	PreviewMigration: "preview_migration",
-	ApplyMigration: "apply_migration",
-	ValidateMigration: "validate_migration",
-	CompareMigrations: "compare_migrations",
-	InspectStyleProgram: "inspect_style_program",
-	AnalyzeProject: "analyze_project",
-	BenchmarkProject: "benchmark_project",
-} as const;
+export {
+	MCP_MIGRATION_MODE,
+	MCP_RESOURCE,
+	MCP_TOOL,
+	MCP_VALIDATION_CHECK,
+	type McpValidationCheck,
+} from "./contract.ts";
 
-export const MCP_RESOURCE = {
-	AdapterCatalog: "pandwind://catalog",
-	OfficialApiMatrix: "pandwind://api-matrix",
-	ProjectEvidence: "pandwind://project/evidence",
-	ProjectConfiguration: "pandwind://project/configuration",
-	LatestMigration: "pandwind://migration/latest",
-	ResidualExplanations: "pandwind://migration/residuals",
-	InteropArtifact: "pandwind://project/pandwind.interop.json",
-	LatestStylePrograms: "pandwind://migration/style-programs/latest",
-} as const;
-
-const MCP_MIGRATION_MODE = {
-	Safe: "safe",
-	Partial: "partial",
-} as const satisfies Record<string, AdapterCapabilityMode>;
-
-const MCP_PROJECT_SCHEMA = "pandwind.mcp.project/1" as const;
+const MCP_PROJECT_SCHEMA = "pandwind.mcp.project/2" as const;
 const MCP_FILE_LIST_LIMIT = 500;
 
 export interface McpProjectContext {
@@ -64,11 +52,41 @@ export interface McpResourceDefinition {
 	readonly mimeType: "application/json" | "text/plain";
 }
 
+export interface McpValidationRequest {
+	readonly root: string;
+	readonly from: string;
+	readonly to: string;
+	readonly mode: AdapterCapabilityMode;
+	readonly files: readonly {
+		readonly file: string;
+		readonly code: string;
+		readonly outputFile: string;
+	}[];
+	readonly checks: readonly McpValidationCheck[];
+}
+
+export interface McpValidationResult {
+	readonly check: McpValidationCheck;
+	readonly status: "passed" | "failed" | "unavailable";
+	readonly detail?: string;
+	readonly commandsExecuted?: readonly string[];
+}
+
+/**
+ * Host-owned project checks. The MCP service never accepts arbitrary commands
+ * from a tool caller; a CLI, IDE, or repository integration supplies this
+ * port when it has an auditable typecheck/build/browser/SSR runner.
+ */
+export interface McpValidationPort {
+	run(request: McpValidationRequest): Promise<readonly McpValidationResult[]>;
+}
+
 /** Application ports used by the MCP tool façade. */
 export interface McpToolPorts {
 	readonly createCatalog: () => CodemodAdapterCatalog;
 	readonly migration: Pick<StyleMigrationUseCase, "runAsync">;
 	readonly analyze: (argv: readonly string[]) => Promise<string>;
+	readonly validation?: McpValidationPort;
 }
 
 const DEFAULT_TOOL_PORTS: McpToolPorts = {
@@ -76,6 +94,22 @@ const DEFAULT_TOOL_PORTS: McpToolPorts = {
 	migration: STYLE_MIGRATION_USE_CASE,
 	analyze: (argv) => runCli([...argv]),
 };
+
+const DEFAULT_ANALYZE_PRESET = "pandwind/preset/example-preset";
+
+const DEFAULT_VALIDATION_CHECKS: readonly McpValidationCheck[] = [
+	MCP_VALIDATION_CHECK.Contract,
+	MCP_VALIDATION_CHECK.CanonicalCss,
+];
+
+const EXTERNAL_VALIDATION_CHECKS: readonly McpValidationCheck[] = [
+	MCP_VALIDATION_CHECK.Typecheck,
+	MCP_VALIDATION_CHECK.Build,
+	MCP_VALIDATION_CHECK.Ssr,
+	MCP_VALIDATION_CHECK.Hydration,
+	MCP_VALIDATION_CHECK.Browser,
+	MCP_VALIDATION_CHECK.BundleSize,
+];
 
 const inputSchema = (
 	properties: Readonly<Record<string, unknown>>,
@@ -137,8 +171,22 @@ export const MCP_TOOLS: readonly McpToolDefinition[] = [
 	{
 		name: MCP_TOOL.ValidateMigration,
 		description:
-			"Run a read-only migration contract check: target validations, residuals, and generated-file conflicts.",
-		inputSchema: MCP_MIGRATION_INPUT_SCHEMA,
+			"Run read-only migration validation, including adapter contracts and any explicitly configured project checks.",
+		inputSchema: inputSchema(
+			{
+				files: MCP_MIGRATION_INPUT_SCHEMA.properties?.files ?? {},
+				from: MCP_MIGRATION_INPUT_SCHEMA.properties?.from ?? {},
+				to: MCP_MIGRATION_INPUT_SCHEMA.properties?.to ?? {},
+				mode: MCP_MIGRATION_INPUT_SCHEMA.properties?.mode ?? {},
+				checks: {
+					type: "array",
+					items: { type: "string", enum: Object.values(MCP_VALIDATION_CHECK) },
+					description:
+						"Checks to run. Contract and canonical-css are built in; project checks require a host validation port.",
+				},
+			},
+			["files", "from", "to"],
+		),
 	},
 	{
 		name: MCP_TOOL.CompareMigrations,
@@ -186,6 +234,10 @@ export const MCP_TOOLS: readonly McpToolDefinition[] = [
 				description: "Project-relative imported constants JSON path.",
 			},
 			css: { type: "boolean", description: "Include CSS budget data." },
+			preset: {
+				type: "string",
+				description: "Official preset module used by token governance.",
+			},
 		}),
 	},
 	{
@@ -254,6 +306,12 @@ export const MCP_RESOURCES: readonly McpResourceDefinition[] = [
 		description: "StyleProgram and lowering-plan snapshots from the latest inspected migration.",
 		mimeType: "application/json",
 	},
+	{
+		uri: MCP_RESOURCE.LatestComparison,
+		name: "Latest migration comparison",
+		description: "The latest multi-route migration comparison produced in this MCP session.",
+		mimeType: "application/json",
+	},
 ];
 
 function asRecord(value: unknown, tool: string): Record<string, unknown> {
@@ -272,6 +330,19 @@ function stringArray(value: unknown, name: string): string[] {
 	if (!Array.isArray(value) || value.some((item) => typeof item !== "string" || item.length === 0))
 		throw new McpToolError(`${name} must be an array of non-empty strings`);
 	return value;
+}
+
+function validationChecks(value: unknown): readonly McpValidationCheck[] {
+	if (value === undefined) return DEFAULT_VALIDATION_CHECKS;
+	if (!Array.isArray(value) || value.length === 0)
+		throw new McpToolError("checks must be a non-empty array");
+	const allowed = new Set(Object.values(MCP_VALIDATION_CHECK));
+	const checks = value.map((check) => {
+		if (typeof check !== "string" || !allowed.has(check as McpValidationCheck))
+			throw new McpToolError(`unknown validation check: ${String(check)}`);
+		return check as McpValidationCheck;
+	});
+	return [...new Set(checks)];
 }
 
 function projectPath(root: string, candidate: string): string {
@@ -330,11 +401,11 @@ function projectPattern(candidate: string): string {
 	return candidate;
 }
 
-function inspectProject(
+async function inspectProject(
 	context: McpProjectContext,
 	arguments_: unknown,
 	ports: McpToolPorts,
-): McpToolResult {
+): Promise<McpToolResult> {
 	const input = asRecord(arguments_, MCP_TOOL.InspectProject);
 	const includeFiles = input.includeFiles === true;
 	const files = projectFiles(context);
@@ -367,10 +438,67 @@ function inspectProject(
 			detections.set(adapter.id, current);
 		}
 	}
+	const detectedIds = new Set(detections.keys());
+	const configuration = await Promise.all(
+		catalog.adapters
+			.filter((adapter) => detectedIds.has(adapter.id))
+			.map(async (adapter) => {
+				const configContext = {
+					file: "package.json",
+					source: "",
+					root: context.root,
+					packageJson,
+					readFile: (candidate: string) => readProjectFile(context.root, candidate),
+					listFiles: (_root: string) => files,
+				};
+				try {
+					const config =
+						adapter.loadConfigAsync === undefined
+							? adapter.loadConfig(configContext)
+							: await adapter.loadConfigAsync(configContext);
+					return {
+						adapter: adapter.id,
+						status: "resolved" as const,
+						files: config.files,
+						configuration: config.configuration ?? [],
+						plugins: config.plugins,
+						artifacts: config.artifacts ?? [],
+						residuals: config.residuals ?? [],
+						tokenGroups: Object.keys(config.tokenCatalog?.groups ?? {}).toSorted(),
+					};
+				} catch (error) {
+					return {
+						adapter: adapter.id,
+						status: "failed" as const,
+						error: error instanceof Error ? error.message : String(error),
+					};
+				}
+			}),
+	);
 	const configFiles = files
 		.map((file) => relativeProjectPath(context.root, file))
 		.filter((file) => /(?:config|tailwind|uno|panda|theme|interop|package\.json)/iu.test(file))
 		.toSorted();
+	const generatedArtifacts = files
+		.map((file) => relativeProjectPath(context.root, file))
+		.filter((file) =>
+			/(?:pandwind\.interop\.json|generated|styled-system|\.next\/static|dist\/|build\/)/iu.test(
+				file,
+			),
+		)
+		.toSorted();
+	const packageEvidence = [
+		"dependencies",
+		"devDependencies",
+		"peerDependencies",
+		"optionalDependencies",
+	].flatMap((section) => {
+		const values = packageJson?.[section];
+		if (typeof values !== "object" || values === null || Array.isArray(values)) return [];
+		return Object.keys(values as Record<string, unknown>)
+			.toSorted()
+			.map((name) => ({ section, name }));
+	});
 	const sourceExtensions = new Map<string, number>();
 	for (const file of files) {
 		const extension = extname(file) || "<no extension>";
@@ -405,6 +533,9 @@ function inspectProject(
 		configurationEvidence: {
 			packageJson: packageJson === undefined ? "missing" : "present",
 			files: configFiles,
+			packages: packageEvidence,
+			adapters: configuration,
+			generatedArtifacts,
 		},
 		registeredAdapters: catalog.adapters
 			.map((adapter) => ({
@@ -775,6 +906,7 @@ async function validateMigration(
 	arguments_: unknown,
 	ports: McpToolPorts,
 ): Promise<McpToolResult> {
+	const input = asRecord(arguments_, MCP_TOOL.ValidateMigration);
 	const preview = await migrationPreview(context, arguments_, ports);
 	const files = preview.files.map((file) => {
 		const generatedConflicts = file.generatedFiles.filter((generated) => {
@@ -796,10 +928,84 @@ async function validateMigration(
 			generatedConflicts: generatedConflicts.map((generated) => generated.path),
 		};
 	});
+	const requestedChecks = validationChecks(input.checks);
+	const staticChecks = [
+		{
+			check: MCP_VALIDATION_CHECK.Contract,
+			status: files.every(
+				(file) =>
+					file.checks.adapterValidations &&
+					file.checks.residualFree &&
+					file.checks.generatedFilesConflictFree,
+			)
+				? ("passed" as const)
+				: ("failed" as const),
+			detail: "adapter validations, residuals, and target semantics",
+		},
+		{
+			check: MCP_VALIDATION_CHECK.CanonicalCss,
+			status: preview.files.every((file) =>
+				file.validations.every(
+					(validation) => validation.canonicalSource === validation.canonicalTarget,
+				),
+			)
+				? ("passed" as const)
+				: ("failed" as const),
+			detail: "adapter-provided canonical CSS pairs",
+		},
+	];
+	const externalChecks = requestedChecks.filter((check) =>
+		(EXTERNAL_VALIDATION_CHECKS as readonly string[]).includes(check),
+	);
+	let projectChecks: readonly McpValidationResult[] = [];
+	if (externalChecks.length > 0) {
+		if (ports.validation === undefined) {
+			projectChecks = externalChecks.map((check) => ({
+				check,
+				status: "unavailable" as const,
+				detail:
+					"no host validation port is configured; supply an auditable project validator to run this check",
+			}));
+		} else {
+			try {
+				const suppliedChecks = await ports.validation.run({
+					root: context.root,
+					from: preview.from,
+					to: preview.to,
+					mode: preview.mode,
+					files: preview.files.map((file) => ({
+						file: file.file,
+						code: file.code,
+						outputFile: file.outputFile,
+					})),
+					checks: externalChecks,
+				});
+				const byCheck = new Map(suppliedChecks.map((check) => [check.check, check]));
+				projectChecks = externalChecks.map(
+					(check) =>
+						byCheck.get(check) ?? {
+							check,
+							status: "unavailable" as const,
+							detail: "host validation port did not return a result for this check",
+						},
+				);
+			} catch (error) {
+				projectChecks = externalChecks.map((check) => ({
+					check,
+					status: "failed" as const,
+					detail: error instanceof Error ? error.message : String(error),
+				}));
+			}
+		}
+	}
+	const checks = [...staticChecks, ...projectChecks];
 	return textToolResult({
-		schema: "pandwind.mcp.validate-migration/1",
+		schema: "pandwind.mcp.validate-migration/2",
 		...preview,
-		valid: files.every((file) => file.valid),
+		valid: files.every((file) => file.valid) && checks.every((check) => check.status === "passed"),
+		requestedChecks,
+		checks,
+		commandsExecuted: projectChecks.flatMap((check) => check.commandsExecuted ?? []),
 		files,
 	});
 }
@@ -828,8 +1034,37 @@ async function analyzeProject(
 			projectPath(context.root, stringValue(input.constantsPath, "constantsPath")),
 		);
 	if (input.css === true) argv.push("--css");
-	const report = await ports.analyze(argv);
-	return textToolResult(JSON.parse(report));
+	const foldReport = JSON.parse(await ports.analyze(argv)) as Record<string, unknown>;
+	const preset =
+		input.preset === undefined ? DEFAULT_ANALYZE_PRESET : stringValue(input.preset, "preset");
+	const governanceReport = JSON.parse(
+		await ports.analyze([
+			...patterns,
+			"--root",
+			context.root,
+			"--governance",
+			"--preset",
+			preset,
+			"--json",
+		]),
+	) as Record<string, unknown>;
+	const evidence = structuredContent(await inspectProject(context, { includeFiles: false }, ports));
+	return textToolResult({
+		schema: "pandwind.mcp.analyze-project/1",
+		root: context.root,
+		analysis: foldReport,
+		governance: governanceReport,
+		adapterCoverage: {
+			detected: evidence.adapters ?? [],
+			registered: evidence.registeredAdapters ?? [],
+		},
+		configurationEvidence: evidence.configurationEvidence ?? {},
+	});
+}
+
+function structuredContent(result: McpToolResult): Record<string, unknown> {
+	if (typeof result.structuredContent !== "object" || result.structuredContent === null) return {};
+	return result.structuredContent as Record<string, unknown>;
 }
 
 export function createMcpToolService(
@@ -897,7 +1132,7 @@ export function createMcpToolService(
 				});
 			}
 			case MCP_RESOURCE.ProjectEvidence: {
-				const result = inspectProject(context, { includeFiles: false }, ports);
+				const result = await inspectProject(context, { includeFiles: false }, ports);
 				return resourceJson(result.structuredContent);
 			}
 			case MCP_RESOURCE.ProjectConfiguration: {
@@ -917,6 +1152,13 @@ export function createMcpToolService(
 			case MCP_RESOURCE.LatestMigration:
 				return resourceJson(
 					latest.migration ?? { schema: "pandwind.mcp.migration/1", status: "no migration run" },
+				);
+			case MCP_RESOURCE.LatestComparison:
+				return resourceJson(
+					latest.comparison ?? {
+						schema: "pandwind.mcp.compare-migrations/1",
+						status: "no migration comparison run",
+					},
 				);
 			case MCP_RESOURCE.ResidualExplanations: {
 				const migration = latest.migration as

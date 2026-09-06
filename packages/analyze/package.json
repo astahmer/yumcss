@@ -55,6 +55,12 @@
 			"import": "./dist/mcp/server.js",
 			"default": "./dist/mcp/server.js"
 		},
+		"./mcp/http": {
+			"pandwind": "./src/mcp/http.ts",
+			"types": "./dist/mcp/http.d.ts",
+			"import": "./dist/mcp/http.js",
+			"default": "./dist/mcp/http.js"
+		},
 		"./package.json": "./package.json"
 	},
 	"publishConfig": {

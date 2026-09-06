@@ -18,19 +18,21 @@ pnpm exec pandwind-analyze mcp --root .
 
 The tools are:
 
-- `inspect_project` — detect ecosystems, configuration evidence, and registered adapters;
-- `analyze_project` — run the existing analyzer contract;
+- `inspect_project` — detect ecosystems, official-loader evidence, generated artifacts, and registered adapters;
+- `analyze_project` — return fold coverage, dynamic sites, missing CSS, CSS diagnostics and budgets, token governance, and adapter coverage;
 - `preview_migration` — emit diffs, lowering plans, residuals, validations, and generated files;
 - `apply_migration` — write only after `confirm: true`, with stale and conflict checks;
-- `validate_migration` — validate adapter results and generated-file conflicts;
+- `validate_migration` — run adapter and canonical-CSS checks, plus named typecheck/build/SSR/hydration/browser/bundle checks through an injected host validation port;
 - `compare_migrations` — compare several registered routes;
 - `inspect_style_program` — inspect StyleProgram and lowering-plan snapshots;
 - `benchmark_project` — measure bounded scan/migration throughput and existing artifact sizes.
 
 The server also exposes resources for the adapter/API matrix, project evidence
-and configuration, the latest migration and residual report, the generated
-`pandwind.interop.json`, and the latest StyleProgram snapshots. Preview,
-validation, comparison, inspection, analysis, and benchmarking never write
-files or execute project commands. Typecheck, build, browser, and SSR commands
-remain explicit host actions until a command runner with an auditable allowlist
-is added.
+and configuration, the latest migration, comparison, and residual reports, the
+generated `pandwind.interop.json`, and the latest StyleProgram snapshots.
+Preview, comparison, inspection, analysis, and benchmarking never write files
+or execute project commands. Validation is read-only; project commands remain
+explicit host actions supplied through the typed validation port, so the MCP
+boundary never accepts arbitrary shell commands. The same server registration
+can also be mounted in a Hono app through the `pandwind-analyze/mcp/http`
+subpath and the official Streamable HTTP handler.
