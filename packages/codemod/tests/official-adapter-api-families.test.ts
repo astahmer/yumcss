@@ -399,7 +399,8 @@ describe("official adapter API families", () => {
 			  },
 			  "bamboo/patterns and cva": {
 			    "changed": false,
-			    "code": "import { circle, cva } from "styled-system/patterns";
+			    "code": "import { circle } from "styled-system/patterns";
+			import { cva } from "styled-system/recipes";
 			export const avatar = circle({ size: "8" });
 			export const button = cva({ base: { padding: "2" } });",
 			    "converted": 0,
@@ -1070,7 +1071,7 @@ describe("official adapter API families", () => {
 			    "changed": true,
 			    "code": "import { createComponent } from "react-fela";
 			export const Card = // pandwind:migrate-skip (route: fela -> pandwind | parse-residual: component | available: named-map, residual)
-			createComponent(() => ({ color: "red" }));",
+			createComponent(() => ({ color: "red" }), "button");",
 			    "converted": 0,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -1878,7 +1879,7 @@ describe("official adapter API families", () => {
 			  },
 			  "panda/cva recipe": {
 			    "changed": true,
-			    "code": "import { cva } from "styled-system/recipes";
+			    "code": "import { cva } from "styled-system/css";
 			export const button = // pandwind:migrate-skip (route: panda -> pandwind | parse-residual: composition | available: named-map, residual)
 			cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });",
 			    "converted": 0,
@@ -2019,7 +2020,7 @@ describe("official adapter API families", () => {
 			  },
 			  "panda/sva slot recipe": {
 			    "changed": true,
-			    "code": "import { sva } from "styled-system/recipes";
+			    "code": "import { sva } from "styled-system/css";
 			export const card = // pandwind:migrate-skip (route: panda -> pandwind | parse-residual: composition | available: named-map, residual)
 			sva({ slots: ["root", "label"], base: { root: { color: "red" } } });",
 			    "converted": 0,

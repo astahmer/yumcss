@@ -305,7 +305,7 @@ export function officialApiFamilyCases(): readonly OfficialApiFamilyCase[] {
 			expectation: "residual",
 			file: "styles.ts",
 			source:
-				'import { cva } from "styled-system/recipes";\nexport const button = cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });',
+				'import { cva } from "styled-system/css";\nexport const button = cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });',
 		},
 		{
 			adapter: CodemodAdapterId.Panda,
@@ -313,7 +313,7 @@ export function officialApiFamilyCases(): readonly OfficialApiFamilyCase[] {
 			expectation: "residual",
 			file: "styles.ts",
 			source:
-				'import { sva } from "styled-system/recipes";\nexport const card = sva({ slots: ["root", "label"], base: { root: { color: "red" } } });',
+				'import { sva } from "styled-system/css";\nexport const card = sva({ slots: ["root", "label"], base: { root: { color: "red" } } });',
 		},
 		{
 			adapter: CodemodAdapterId.Panda,
@@ -645,7 +645,7 @@ export function officialApiFamilyCases(): readonly OfficialApiFamilyCase[] {
 			name: "createComponent",
 			expectation: "residual",
 			source:
-				'import { createComponent } from "react-fela";\nexport const Card = createComponent(() => ({ color: "red" }));',
+				'import { createComponent } from "react-fela";\nexport const Card = createComponent(() => ({ color: "red" }), "button");',
 		},
 		{
 			adapter: CodemodAdapterId.Fela,
@@ -1031,7 +1031,7 @@ export function officialApiFamilyCases(): readonly OfficialApiFamilyCase[] {
 			name: "patterns and cva",
 			expectation: "identity",
 			source:
-				'import { circle, cva } from "styled-system/patterns";\nexport const avatar = circle({ size: "8" });\nexport const button = cva({ base: { padding: "2" } });',
+				'import { circle } from "styled-system/patterns";\nimport { cva } from "styled-system/recipes";\nexport const avatar = circle({ size: "8" });\nexport const button = cva({ base: { padding: "2" } });',
 		},
 		{
 			adapter: CodemodAdapterId.CssModules,
