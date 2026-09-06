@@ -1,5 +1,5 @@
 import { execFileSync } from "node:child_process";
-import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { describe, expect, test } from "vitest";
 import {
@@ -27,41 +27,6 @@ interface MigrationRunResult {
 		];
 	};
 	readonly source: string;
-}
-
-function runCli(
-	directory: string,
-	from: string,
-	to: string,
-	sourceOverride?: string,
-	fileOverride?: string,
-): MigrationRunResult {
-	const fixture = adapterContractFixtures.find((candidate) => candidate.adapter === from);
-	const file = join(
-		directory,
-		`${from.replaceAll("/", "-")}-${to.replaceAll("/", "-")}-${fileOverride ?? fixture?.file ?? "source.tsx"}`,
-	);
-	writeFileSync(file, sourceOverride ?? fixture?.source ?? pandwindSource);
-	const output = execFileSync(
-		"nub",
-		[
-			"src/cli.ts",
-			"migrate",
-			`--from=${from}`,
-			`--to=${to}`,
-			"--safe",
-			"--no-install",
-			"--report=json",
-			file,
-		],
-		{ cwd: codemodRoot, encoding: "utf8" },
-	);
-	return {
-		report: JSON.parse(output) as {
-			files: readonly [{ converted: number; skipped: number; residuals: number }];
-		},
-		source: readFileSync(file, "utf8"),
-	};
 }
 
 async function runInMemory(

@@ -156,26 +156,24 @@ registry). The flat `SwapIR` path remains separately covered as the cheap
 compatibility projection. Every case requires conversion or structured
 residual evidence; a skipped route may never be silent.
 
-The binary-level matrix in
-`packages/codemod/tests/adapter-cli-e2e.test.ts` spawns the real CLI for every
-registered adapter in both `adapter → Pandwind` and `Pandwind → adapter`
-directions, writes temporary source files, parses JSON reports, and checks that
+The adapter use-case matrix in
+`packages/codemod/tests/adapter-cli-e2e.test.ts` runs every registered adapter
+in both `adapter → Pandwind` and `Pandwind → adapter` directions with virtual
+files, parses the same migration results in-process, and checks that
 source-preserving skips carry typed residual markers. Run it alone with:
 
 ```sh
 nub run --filter pandwind-codemod test:e2e
 ```
 
-This CLI/temp-directory matrix is CI-only. The command is intentionally skipped
-on local runs unless both `CI=true` and `PANDWIND_CLI_MATRIX_E2E=1` are set, so
-routine local adapter work does not create `.tmp-codemod-e2e-*` or
-`.tmp-codemod-full-matrix-*` directories. CI invokes the package script with
-the opt-in flag and therefore retains the real CLI proof.
+The same file keeps one real CLI boundary test for argument parsing, file
+discovery, writes, and extension changes. The large route matrix does not need
+temporary directories, so it runs locally and in CI without an opt-in flag.
 
 `packages/codemod/tests/adapter-cli-full-matrix.test.ts` adds the production
-CLI smoke gate for every ordered happy route in the registered catalog. It runs
-as part of `test:e2e` (and is kept out of V8 coverage because it launches the
-CLI once per route). The direct conformance suite also invokes
+matrix for every ordered source/target pair and the happy, edge, and malformed
+scenarios using the same in-memory use case. It runs as part of `test:e2e` and
+the normal suite. The direct conformance suite also invokes
 each adapter-owned dynamic and host-policy hook, so coverage cannot be
 provided only by the shared adapter runtime. `test:coverage` enforces at least
 50% lines and 30% branches for every registered adapter file in addition to

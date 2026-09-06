@@ -1,80 +1,50 @@
-import { execFile } from "node:child_process";
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
-import { join, resolve } from "node:path";
-import { promisify } from "node:util";
 import { describe, expect, test } from "vitest";
-import { createBuiltinCodemodCatalog } from "../src/swap/index.ts";
+import { createBuiltinCodemodCatalog, STYLE_MIGRATION_USE_CASE } from "../src/swap/index.ts";
 import { completeAdapterMatrixFixtures } from "../proof/adapter-matrix-fixtures.ts";
 
-const repoRoot = resolve(import.meta.dirname, "../../..");
-const codemodRoot = resolve(import.meta.dirname, "..");
 const catalog = createBuiltinCodemodCatalog();
-const execFileAsync = promisify(execFile);
 
-interface CliFileResult {
+interface MatrixFileResult {
 	readonly file: string;
-	readonly outputFile?: string;
 	readonly converted: number;
 	readonly skipped: number;
 	readonly residuals: number;
 	readonly source: string;
 }
 
-async function runCliMatrix(
+async function runInMemoryMatrix(
 	sourceAdapter: string,
 	targetAdapter: string,
-): Promise<readonly CliFileResult[]> {
+): Promise<readonly MatrixFileResult[]> {
 	const fixtures = completeAdapterMatrixFixtures.filter(
 		(item) => item.sourceAdapter === sourceAdapter,
 	);
 	if (fixtures.length === 0) throw new Error(`missing matrix fixtures for ${sourceAdapter}`);
-	const directory = mkdtempSync(join(repoRoot, ".tmp-codemod-full-matrix-"));
-	try {
-		const files = fixtures.map((fixture) => {
-			const file = join(
-				directory,
-				`${sourceAdapter}-${targetAdapter}-${fixture.scenario}-${fixture.file.replaceAll("/", "-")}`,
-			);
-			writeFileSync(file, fixture.source);
-			return file;
-		});
-		const { stdout } = await execFileAsync(
-			"nub",
-			[
-				"src/cli.ts",
-				"migrate",
-				"--root",
-				directory,
-				`--from=${sourceAdapter}`,
-				`--to=${targetAdapter}`,
-				"--safe",
-				"--no-install",
-				"--report=json",
-				...files,
-			],
-			{ cwd: codemodRoot, encoding: "utf8" },
-		);
-		const report = JSON.parse(stdout) as {
-			readonly files: readonly {
-				readonly file: string;
-				readonly outputFile?: string;
-				readonly converted: number;
-				readonly skipped: number;
-				readonly residuals: number;
-			}[];
-		};
-		return report.files.map((result) => ({
-			...result,
-			source: readFileSync(resolve(directory, result.outputFile ?? result.file), "utf8"),
-		}));
-	} finally {
-		rmSync(directory, { recursive: true, force: true });
-	}
+	return Promise.all(
+		fixtures.map(async (fixture) => {
+			const file = `${sourceAdapter}-${targetAdapter}-${fixture.scenario}-${fixture.file.replaceAll("/", "-")}`;
+			const files = new Map([[file, fixture.source]]);
+			const result = await STYLE_MIGRATION_USE_CASE.runAsync(fixture.source, {
+				from: sourceAdapter,
+				to: targetAdapter,
+				file,
+				root: process.cwd(),
+				mode: "safe",
+				readFile: (candidate) => files.get(candidate),
+				listFiles: () => [...files.keys()],
+			});
+			return {
+				file,
+				converted: result.converted,
+				skipped: result.skipped,
+				residuals: result.residuals.length,
+				source: result.code,
+			};
+		}),
+	);
 }
 
-const cliMatrixE2e = describe;
-
-cliMatrixE2e("real CLI ordered adapter matrix", () => {
+describe("in-memory ordered adapter matrix", () => {
 	test("executes every registered route in both directions and all scenarios", async () => {
 		const routes = catalog.adapters.flatMap((source) =>
 			catalog.adapters.map((target) => ({ source, target })),
@@ -83,7 +53,7 @@ cliMatrixE2e("real CLI ordered adapter matrix", () => {
 		for (let start = 0; start < routes.length; start += concurrency) {
 			const settled = await Promise.allSettled(
 				routes.slice(start, start + concurrency).map(async ({ source, target }) => {
-					const results = await runCliMatrix(source.id, target.id);
+					const results = await runInMemoryMatrix(source.id, target.id);
 					expect(results).toHaveLength(3);
 					const scenarios = results.map((result) =>
 						(["happy", "edge", "malformed"] as const).find((scenario) =>
@@ -123,7 +93,7 @@ cliMatrixE2e("real CLI ordered adapter matrix", () => {
 			const failures = settled.flatMap((result) =>
 				result.status === "rejected" ? [result.reason] : [],
 			);
-			expect(failures, `CLI matrix failures in batch ${start}`).toEqual([]);
+			expect(failures, `adapter matrix failures in batch ${start}`).toEqual([]);
 		}
-	}, 600_000);
+	}, 120_000);
 });

@@ -869,12 +869,11 @@ evidence without importing upstream source into the workspace.
 Codemod route verification is owned by `packages/codemod/proof`. Its contract
 and scenario fixtures are shared by the Vitest suites and the offline proof
 composition root, so the two gates cannot silently use different corpora. The
-complete matrix covers every ordered adapter pair in safe and partial modes
-for happy, edge, and malformed inputs; the CLI e2e suite additionally spawns
-the real binary for every ordered pair in the registered catalog, passing the
-three scenarios through each pair in both directions. A route is accepted only
-when it converts or preserves the source with a typed residual. Run the
-expensive public-boundary proof with
+complete in-memory matrix covers every ordered adapter pair in safe and partial
+modes for happy, edge, and malformed inputs; the CLI e2e suite additionally
+proves the real binary's argument, discovery, write, and extension boundary.
+A route is accepted only when it converts or preserves the source with a typed
+residual. Run the public-boundary proof with
 `nub run --filter pandwind-codemod test:e2e`; the normal coverage gate runs the
 same route corpus in-process.
 
