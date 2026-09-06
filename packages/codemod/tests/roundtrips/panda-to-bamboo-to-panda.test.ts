@@ -135,7 +135,7 @@ test("panda -> bamboo -> panda: retains the documented secondary API without sil
 		  "forward": {
 		    "changed": true,
 		    "code": "import { cva } from "styled-system/recipes";
-		export const button = // pandwind:migrate-skip (route: panda -> bamboo | parse-residual: composition | available: named-map, residual)
+		export const button = // pandwind:migrate-skip (route: panda -> bamboo | capability-blocked: named-conditions: named: size; composition: 1 composition edge(s) | available: static, named-map, residual)
 		cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -143,23 +143,24 @@ test("panda -> bamboo -> panda: retains the documented secondary API without sil
 		      {
 		        "applied": [],
 		        "availableRepresentations": [
+		          "static",
 		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "residual",
+		        "representation": "static",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "residual",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "Panda cva recipes require variant-aware target lowering",
-		        "kind": "composition",
+		        "hint": "named-conditions: named: size; composition: 1 composition edge(s)",
+		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -169,7 +170,7 @@ test("panda -> bamboo -> panda: retains the documented secondary API without sil
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { cva } from "styled-system/recipes";
-		export const button = // pandwind:migrate-skip (route: panda -> bamboo | parse-residual: composition | available: named-map, residual)
+		export const button = // pandwind:migrate-skip (route: panda -> bamboo | capability-blocked: named-conditions: named: size; composition: 1 composition edge(s) | available: static, named-map, residual)
 		cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });",
 		    "converted": 0,
 		    "generatedFiles": [],

@@ -90,9 +90,9 @@ test("unocss -> panda: carries a documented secondary unocss API explicitly", ()
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const App = () => // pandwind:migrate-skip (route: unocss -> panda | capability-blocked: named-conditions: named: hover | available: static, named-map, residual)
-		<div className="hover:[background-color:black] md:[display:flex]" />;",
-		  "converted": 0,
+		  "code": "import { css } from "styled-system/css";
+		export const App = () => <div className={css({ hover: { backgroundColor: "black" }, md: { display: "flex" } })}/>;",
+		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -108,19 +108,19 @@ test("unocss -> panda: carries a documented secondary unocss API explicitly", ()
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
+		      "outcome": "static",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
 		    {
-		      "hint": "named-conditions: named: hover",
-		      "kind": "capability",
-		      "preserved": undefined,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
-		  "skipped": 1,
-		  "validations": [],
 		}
 	`)
 });

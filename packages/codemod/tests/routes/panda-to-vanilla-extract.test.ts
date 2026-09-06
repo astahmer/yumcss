@@ -94,7 +94,7 @@ test("panda -> vanilla-extract: carries a documented secondary panda API explici
 		{
 		  "changed": true,
 		  "code": "import { cva } from "styled-system/recipes";
-		export const button = // pandwind:migrate-skip (route: panda -> vanilla-extract | parse-residual: composition | available: named-map, residual)
+		export const button = // pandwind:migrate-skip (route: panda -> vanilla-extract | lowering-residual: composition | capability-blocked: named-conditions: named: size | available: named-map, residual)
 		cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -102,13 +102,19 @@ test("panda -> vanilla-extract: carries a documented secondary panda API explici
 		    {
 		      "applied": [
 		        "dynamic-and-theme",
+		        "composition-flatten",
 		      ],
 		      "availableRepresentations": [
 		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "residual",
-		      "residuals": [],
+		      "residuals": [
+		        {
+		          "hint": "target lacks composition support and edge has no embedded program",
+		          "kind": "composition",
+		        },
+		      ],
 		    },
 		  ],
 		  "outcomes": [
@@ -119,7 +125,12 @@ test("panda -> vanilla-extract: carries a documented secondary panda API explici
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "Panda cva recipes require variant-aware target lowering",
+		      "hint": "named-conditions: named: size",
+		      "kind": "capability",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "target lacks composition support and edge has no embedded program",
 		      "kind": "composition",
 		      "preserved": undefined,
 		    },

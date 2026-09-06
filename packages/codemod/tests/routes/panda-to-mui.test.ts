@@ -94,30 +94,43 @@ test("panda -> mui: carries a documented secondary panda API explicitly", () => 
 		{
 		  "changed": true,
 		  "code": "import { cva } from "styled-system/recipes";
-		export const button = // pandwind:migrate-skip (route: panda -> mui | parse-residual: composition | available: named-map, residual)
+		export const button = // pandwind:migrate-skip (route: panda -> mui | lowering-residual: composition | capability-blocked: named-conditions: named: size | available: named-map, residual, portable-artifact)
 		cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
-		      "applied": [],
+		      "applied": [
+		        "composition-flatten",
+		      ],
 		      "availableRepresentations": [
 		        "named-map",
 		        "residual",
+		        "portable-artifact",
 		      ],
 		      "representation": "residual",
-		      "residuals": [],
+		      "residuals": [
+		        {
+		          "hint": "target lacks composition support and edge has no embedded program",
+		          "kind": "composition",
+		        },
+		      ],
 		    },
 		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "residual",
+		      "representation": "portable-artifact",
 		    },
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "Panda cva recipes require variant-aware target lowering",
+		      "hint": "named-conditions: named: size",
+		      "kind": "capability",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "target lacks composition support and edge has no embedded program",
 		      "kind": "composition",
 		      "preserved": undefined,
 		    },

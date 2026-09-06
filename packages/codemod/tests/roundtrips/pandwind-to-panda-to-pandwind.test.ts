@@ -135,10 +135,10 @@ test("pandwind -> panda -> pandwind: retains the documented secondary API withou
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		export const styles = // pandwind:migrate-skip (route: pandwind -> panda | capability-blocked: named-conditions: named: card | available: static, named-map, residual)
-		css.group({ card: { color: "red" }, muted: { opacity: 0.5 } });",
-		    "converted": 0,
+		    "code": "import { css } from "styled-system/css";
+
+		export const styles = css({ card: { color: "red" }, muted: { opacity: 0.5 } });",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -154,32 +154,56 @@ test("pandwind -> panda -> pandwind: retains the documented secondary API withou
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "named-conditions: named: card",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
-		    "validations": [],
-		  },
-		  "reverse": {
-		    "changed": false,
-		    "code": "import { createCss } from "pandwind/css";
-		export const styles = // pandwind:migrate-skip (route: pandwind -> panda | capability-blocked: named-conditions: named: card | available: static, named-map, residual)
-		css.group({ card: { color: "red" }, muted: { opacity: 0.5 } });",
-		    "converted": 0,
-		    "generatedFiles": [],
-		    "loweringPlans": [],
-		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [],
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
+
+
+		export const styles = css.vars({ card: { color: "red" }, muted: { opacity: 0.5 } });",
+		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "named-map",
+		          "target-native",
+		          "residual",
+		        ],
+		        "representation": "target-native",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "host-runtime",
+		        "representation": "target-native",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		}
 	`)

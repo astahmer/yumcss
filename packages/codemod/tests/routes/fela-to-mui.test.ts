@@ -118,7 +118,7 @@ test("fela -> mui: carries a documented secondary fela API explicitly", () => {
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "Fela createComponent requires a host/component lowering",
+		      "hint": "Fela createComponent requires a style function and a host component",
 		      "kind": "component",
 		      "preserved": undefined,
 		    },

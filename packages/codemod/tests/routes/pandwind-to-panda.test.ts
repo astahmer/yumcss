@@ -91,10 +91,10 @@ test("pandwind -> panda: carries a documented secondary pandwind API explicitly"
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
-		export const styles = // pandwind:migrate-skip (route: pandwind -> panda | capability-blocked: named-conditions: named: card | available: static, named-map, residual)
-		css.group({ card: { color: "red" }, muted: { opacity: 0.5 } });",
-		  "converted": 0,
+		  "code": "import { css } from "styled-system/css";
+
+		export const styles = css({ card: { color: "red" }, muted: { opacity: 0.5 } });",
+		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -110,19 +110,19 @@ test("pandwind -> panda: carries a documented secondary pandwind API explicitly"
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
+		      "outcome": "static",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
 		    {
-		      "hint": "named-conditions: named: card",
-		      "kind": "capability",
-		      "preserved": undefined,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
-		  "skipped": 1,
-		  "validations": [],
 		}
 	`)
 });

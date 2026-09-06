@@ -130,11 +130,11 @@ test("css-modules -> less -> css-modules: retains the documented secondary API w
 	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
 		{
 		  "forward": {
-		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: composition)
-		.card { color: red; }
-		.primary { composes: card; font-weight: 600; }",
-		    "converted": 0,
+		    "changed": true,
+		    "code": ".card{color:red}
+
+		.primary{color:red;font-weight:600}",
+		    "converted": 2,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -153,39 +153,44 @@ test("css-modules -> less -> css-modules: retains the documented secondary API w
 		          "dynamic-and-theme",
 		        ],
 		        "availableRepresentations": [
+		          "static",
 		          "residual",
 		        ],
-		        "representation": "residual",
+		        "representation": "static",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
-		        "representation": "residual",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		      {
-		        "outcome": "residual",
-		        "representation": "residual",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "preprocessor or CSS Modules composition needs its source context",
-		        "kind": "composition",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: capability, composition)
-		// pandwind:migrate-skip (lowering-residual: composition)
-		.card { color: red; }
-		.primary { composes: card; font-weight: 600; }",
-		    "converted": 0,
+		    "code": ".card{color:red}
+
+		.primary{color:red;font-weight:600}",
+		    "converted": 2,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -204,36 +209,37 @@ test("css-modules -> less -> css-modules: retains the documented secondary API w
 		          "dynamic-and-theme",
 		        ],
 		        "availableRepresentations": [
+		          "static",
 		          "residual",
 		        ],
-		        "representation": "residual",
+		        "representation": "static",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
-		        "representation": "residual",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		      {
-		        "outcome": "residual",
-		        "representation": "residual",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "stylesheet migration requires a single local class selector",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		      {
-		        "hint": "preprocessor or CSS Modules composition needs its source context",
-		        "kind": "composition",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 2,
-		    "validations": [],
 		  },
 		}
 	`)

@@ -91,11 +91,10 @@ test("css-modules -> fela: carries a documented secondary css-modules API explic
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
-		  "changed": false,
-		  "code": "// pandwind:migrate-skip (lowering-residual: composition)
-		.card { color: red; }
-		.primary { composes: card; font-weight: 600; }",
-		  "converted": 0,
+		  "changed": true,
+		  "code": "export const styles = { "card": renderer.renderRule({ "color": "red" }), "primary": renderer.renderRule({ "color": "red", "fontWeight": "600" }) };
+		export default styles;",
+		  "converted": 2,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -115,32 +114,38 @@ test("css-modules -> fela: carries a documented secondary css-modules API explic
 		        "dynamic-and-theme",
 		      ],
 		      "availableRepresentations": [
+		        "static",
 		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "residual",
+		      "representation": "static",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
-		      "representation": "residual",
+		      "outcome": "static",
+		      "representation": "static",
 		    },
 		    {
-		      "outcome": "residual",
-		      "representation": "residual",
+		      "outcome": "static",
+		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
 		    {
-		      "hint": "preprocessor or CSS Modules composition needs its source context",
-		      "kind": "composition",
-		      "preserved": undefined,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
+		    },
+		    {
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
-		  "skipped": 1,
-		  "validations": [],
 		}
 	`)
 });

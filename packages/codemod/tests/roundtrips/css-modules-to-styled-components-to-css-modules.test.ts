@@ -145,11 +145,11 @@ test("css-modules -> styled-components -> css-modules: retains the documented se
 	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
 		{
 		  "forward": {
-		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: composition)
-		.card { color: red; }
-		.primary { composes: card; font-weight: 600; }",
-		    "converted": 0,
+		    "changed": true,
+		    "code": "import styled from "styled-components";
+		export const styles = { "card": styled.div({ color: "red" }), "primary": styled.div({ color: "red", fontWeight: "600" }) };
+		export default styles;",
+		    "converted": 2,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -165,44 +165,117 @@ test("css-modules -> styled-components -> css-modules: retains the documented se
 		      {
 		        "applied": [],
 		        "availableRepresentations": [
+		          "static",
 		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "residual",
+		        "representation": "static",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "import styled from "styled-components";
+		export const styles = { "card": // pandwind:migrate-skip (route: styled-components -> css-modules | lowering-residual: framework-semantics | capability-blocked: components: component subject: styled.div | available: residual, portable-artifact)
+		styled.div({ color: "red" }), "primary": // pandwind:migrate-skip (route: styled-components -> css-modules | lowering-residual: framework-semantics | capability-blocked: components: component subject: styled.div | available: residual, portable-artifact)
+		styled.div({ color: "red", fontWeight: "600" }) };
+		export default styles;",
+		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		          "runtime-and-plugin",
+		        ],
+		        "availableRepresentations": [
+		          "residual",
+		          "portable-artifact",
+		        ],
 		        "representation": "residual",
+		        "residuals": [
+		          {
+		            "hint": "target lacks framework semantics",
+		            "kind": "framework-semantics",
+		          },
+		        ],
+		      },
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		          "runtime-and-plugin",
+		        ],
+		        "availableRepresentations": [
+		          "residual",
+		          "portable-artifact",
+		        ],
+		        "representation": "residual",
+		        "residuals": [
+		          {
+		            "hint": "target lacks framework semantics",
+		            "kind": "framework-semantics",
+		          },
+		        ],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "portable-artifact",
 		      },
 		      {
 		        "outcome": "residual",
-		        "representation": "residual",
+		        "representation": "portable-artifact",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "preprocessor or CSS Modules composition needs its source context",
-		        "kind": "composition",
+		        "hint": "components: component subject: styled.div",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "target lacks framework semantics",
+		        "kind": "framework-semantics",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "components: component subject: styled.div",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "target lacks framework semantics",
+		        "kind": "framework-semantics",
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
-		  },
-		  "reverse": {
-		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: composition)
-		.card { color: red; }
-		.primary { composes: card; font-weight: 600; }",
-		    "converted": 0,
-		    "generatedFiles": [],
-		    "loweringPlans": [],
-		    "outcomes": [],
-		    "residuals": [],
-		    "skipped": 0,
+		    "skipped": 2,
 		    "validations": [],
 		  },
 		}

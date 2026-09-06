@@ -137,11 +137,11 @@ test("css-modules -> stylex -> css-modules: retains the documented secondary API
 	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
 		{
 		  "forward": {
-		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: composition)
-		.card { color: red; }
-		.primary { composes: card; font-weight: 600; }",
-		    "converted": 0,
+		    "changed": true,
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		export const styles = { "card": stylex.create({ style: { color: "red" } }).style, "primary": stylex.create({ style: { color: "red", fontWeight: "600" } }).style };
+		export default styles;",
+		    "converted": 2,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -161,44 +161,97 @@ test("css-modules -> stylex -> css-modules: retains the documented secondary API
 		          "dynamic-and-theme",
 		        ],
 		        "availableRepresentations": [
+		          "static",
 		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "residual",
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		export const styles = { "card": // pandwind:migrate-skip (route: stylex -> css-modules | capability-blocked: named-rules: named style rule: style | available: static, residual, portable-artifact)
+		stylex.create({ style: { color: "red" } }).style, "primary": // pandwind:migrate-skip (route: stylex -> css-modules | capability-blocked: named-rules: named style rule: style | available: static, residual, portable-artifact)
+		stylex.create({ style: { color: "red", fontWeight: "600" } }).style };
+		export default styles;",
+		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		          "portable-artifact",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		          "portable-artifact",
+		        ],
+		        "representation": "static",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "residual",
+		        "representation": "portable-artifact",
 		      },
 		      {
 		        "outcome": "residual",
-		        "representation": "residual",
+		        "representation": "portable-artifact",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "preprocessor or CSS Modules composition needs its source context",
-		        "kind": "composition",
+		        "hint": "named-rules: named style rule: style",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "named-rules: named style rule: style",
+		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
-		  },
-		  "reverse": {
-		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: composition)
-		.card { color: red; }
-		.primary { composes: card; font-weight: 600; }",
-		    "converted": 0,
-		    "generatedFiles": [],
-		    "loweringPlans": [],
-		    "outcomes": [],
-		    "residuals": [],
-		    "skipped": 0,
+		    "skipped": 2,
 		    "validations": [],
 		  },
 		}

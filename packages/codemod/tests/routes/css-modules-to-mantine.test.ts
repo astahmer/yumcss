@@ -90,7 +90,7 @@ test("css-modules -> mantine: carries a documented secondary css-modules API exp
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": false,
-		  "code": "// pandwind:migrate-skip (lowering-residual: host-framework, composition)
+		  "code": "// pandwind:migrate-skip (lowering-residual: host-framework)
 		.card { color: red; }
 		.primary { composes: card; font-weight: 600; }",
 		  "converted": 0,
@@ -109,10 +109,11 @@ test("css-modules -> mantine: carries a documented secondary css-modules API exp
 		    {
 		      "applied": [],
 		      "availableRepresentations": [
+		        "static",
 		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "residual",
+		      "representation": "static",
 		      "residuals": [],
 		    },
 		  ],
@@ -133,8 +134,8 @@ test("css-modules -> mantine: carries a documented secondary css-modules API exp
 		      "preserved": undefined,
 		    },
 		    {
-		      "hint": "preprocessor or CSS Modules composition needs its source context",
-		      "kind": "composition",
+		      "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },
 		  ],

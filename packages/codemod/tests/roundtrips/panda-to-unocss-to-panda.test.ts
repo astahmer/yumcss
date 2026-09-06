@@ -85,10 +85,10 @@ test("panda -> unocss -> panda: preserves an actionable concrete round trip", ()
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		export const card = // pandwind:migrate-skip (route: unocss -> panda | capability-blocked: named-conditions: named: hover | available: static, named-map, residual)
-		"[color:red.300] hover:[color:blue.300]";",
-		    "converted": 0,
+		    "code": "import { css } from "styled-system/css";
+
+		export const card = css({ color: "red.300", hover: { color: "blue.300" } });",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -104,19 +104,19 @@ test("panda -> unocss -> panda: preserves an actionable concrete round trip", ()
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "named-conditions: named: hover",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
 	`)
@@ -135,7 +135,7 @@ test("panda -> unocss -> panda: retains the documented secondary API without sil
 		  "forward": {
 		    "changed": true,
 		    "code": "import { cva } from "styled-system/recipes";
-		export const button = // pandwind:migrate-skip (route: panda -> unocss | parse-residual: composition | available: named-map, residual)
+		export const button = // pandwind:migrate-skip (route: panda -> unocss | lowering-residual: composition | capability-blocked: named-conditions: named: size | available: named-map, residual)
 		cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -143,13 +143,19 @@ test("panda -> unocss -> panda: retains the documented secondary API without sil
 		      {
 		        "applied": [
 		          "dynamic-and-theme",
+		          "composition-flatten",
 		        ],
 		        "availableRepresentations": [
 		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "residual",
-		        "residuals": [],
+		        "residuals": [
+		          {
+		            "hint": "target lacks composition support and edge has no embedded program",
+		            "kind": "composition",
+		          },
+		        ],
 		      },
 		    ],
 		    "outcomes": [
@@ -160,7 +166,12 @@ test("panda -> unocss -> panda: retains the documented secondary API without sil
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "Panda cva recipes require variant-aware target lowering",
+		        "hint": "named-conditions: named: size",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "target lacks composition support and edge has no embedded program",
 		        "kind": "composition",
 		        "preserved": undefined,
 		      },
@@ -171,7 +182,7 @@ test("panda -> unocss -> panda: retains the documented secondary API without sil
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { cva } from "styled-system/recipes";
-		export const button = // pandwind:migrate-skip (route: panda -> unocss | parse-residual: composition | available: named-map, residual)
+		export const button = // pandwind:migrate-skip (route: panda -> unocss | lowering-residual: composition | capability-blocked: named-conditions: named: size | available: named-map, residual)
 		cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -383,10 +394,10 @@ test("panda -> unocss -> panda: resolves token values across both concrete legs"
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		export const card = // pandwind:migrate-skip (route: unocss -> panda | capability-blocked: named-conditions: named: hover | available: static, named-map, residual)
-		"text-brand hover:[color:blue.300]";",
-		    "converted": 0,
+		    "code": "import { css } from "styled-system/css";
+
+		export const card = css({ color: "brand.500", hover: { color: "blue.300" } });",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -402,19 +413,19 @@ test("panda -> unocss -> panda: resolves token values across both concrete legs"
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "named-conditions: named: hover",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
 	`)

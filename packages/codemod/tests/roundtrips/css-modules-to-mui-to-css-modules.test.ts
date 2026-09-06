@@ -109,7 +109,7 @@ test("css-modules -> mui -> css-modules: retains the documented secondary API wi
 		{
 		  "forward": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: host-framework, composition)
+		    "code": "// pandwind:migrate-skip (lowering-residual: host-framework)
 		.card { color: red; }
 		.primary { composes: card; font-weight: 600; }",
 		    "converted": 0,
@@ -128,10 +128,11 @@ test("css-modules -> mui -> css-modules: retains the documented secondary API wi
 		      {
 		        "applied": [],
 		        "availableRepresentations": [
+		          "static",
 		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "residual",
+		        "representation": "static",
 		        "residuals": [],
 		      },
 		    ],
@@ -152,8 +153,8 @@ test("css-modules -> mui -> css-modules: retains the documented secondary API wi
 		        "preserved": undefined,
 		      },
 		      {
-		        "hint": "preprocessor or CSS Modules composition needs its source context",
-		        "kind": "composition",
+		        "hint": "MUI sx styles require a host component prop; no standalone sx() API exists",
+		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -162,7 +163,7 @@ test("css-modules -> mui -> css-modules: retains the documented secondary API wi
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: host-framework, composition)
+		    "code": "// pandwind:migrate-skip (lowering-residual: host-framework)
 		.card { color: red; }
 		.primary { composes: card; font-weight: 600; }",
 		    "converted": 0,

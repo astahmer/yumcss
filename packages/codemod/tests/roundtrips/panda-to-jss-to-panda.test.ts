@@ -137,7 +137,7 @@ test("panda -> jss -> panda: retains the documented secondary API without silent
 		  "forward": {
 		    "changed": true,
 		    "code": "import { cva } from "styled-system/recipes";
-		export const button = // pandwind:migrate-skip (route: panda -> jss | parse-residual: composition | available: named-map, residual)
+		export const button = // pandwind:migrate-skip (route: panda -> jss | lowering-residual: composition | available: named-map, residual)
 		cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -145,13 +145,19 @@ test("panda -> jss -> panda: retains the documented secondary API without silent
 		      {
 		        "applied": [
 		          "dynamic-and-theme",
+		          "composition-flatten",
 		        ],
 		        "availableRepresentations": [
 		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "residual",
-		        "residuals": [],
+		        "residuals": [
+		          {
+		            "hint": "target lacks composition support and edge has no embedded program",
+		            "kind": "composition",
+		          },
+		        ],
 		      },
 		    ],
 		    "outcomes": [
@@ -162,7 +168,7 @@ test("panda -> jss -> panda: retains the documented secondary API without silent
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "Panda cva recipes require variant-aware target lowering",
+		        "hint": "target lacks composition support and edge has no embedded program",
 		        "kind": "composition",
 		        "preserved": undefined,
 		      },
@@ -173,7 +179,7 @@ test("panda -> jss -> panda: retains the documented secondary API without silent
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { cva } from "styled-system/recipes";
-		export const button = // pandwind:migrate-skip (route: panda -> jss | parse-residual: composition | available: named-map, residual)
+		export const button = // pandwind:migrate-skip (route: panda -> jss | lowering-residual: composition | available: named-map, residual)
 		cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });",
 		    "converted": 0,
 		    "generatedFiles": [],

@@ -91,11 +91,12 @@ test("css-modules -> pandwind: carries a documented secondary css-modules API ex
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
-		  "changed": false,
-		  "code": "// pandwind:migrate-skip (lowering-residual: composition)
-		.card { color: red; }
-		.primary { composes: card; font-weight: 600; }",
-		  "converted": 0,
+		  "changed": true,
+		  "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
+		export const styles = { "card": css.class({ color: "red" }), "primary": css.class({ color: "red", fontWeight: "600" }) };
+		export default styles;",
+		  "converted": 2,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -111,32 +112,38 @@ test("css-modules -> pandwind: carries a documented secondary css-modules API ex
 		    {
 		      "applied": [],
 		      "availableRepresentations": [
+		        "static",
 		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "residual",
+		      "representation": "static",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
-		      "representation": "residual",
+		      "outcome": "static",
+		      "representation": "static",
 		    },
 		    {
-		      "outcome": "residual",
-		      "representation": "residual",
+		      "outcome": "static",
+		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
 		    {
-		      "hint": "preprocessor or CSS Modules composition needs its source context",
-		      "kind": "composition",
-		      "preserved": undefined,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
+		    },
+		    {
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
-		  "skipped": 1,
-		  "validations": [],
 		}
 	`)
 });

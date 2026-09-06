@@ -90,9 +90,9 @@ test("tailwind -> panda: carries a documented secondary tailwind API explicitly"
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const App = () => // pandwind:migrate-skip (route: tailwind -> panda | capability-blocked: named-conditions: named: md | available: static, named-map, residual)
-		<div className="[color:rebeccapurple] md:[display:flex]" />;",
-		  "converted": 0,
+		  "code": "import { css } from "styled-system/css";
+		export const App = () => <div className={css({ color: "rebeccapurple", md: { display: "flex" } })}/>;",
+		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -108,19 +108,19 @@ test("tailwind -> panda: carries a documented secondary tailwind API explicitly"
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
+		      "outcome": "static",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
 		    {
-		      "hint": "named-conditions: named: md",
-		      "kind": "capability",
-		      "preserved": undefined,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
-		  "skipped": 1,
-		  "validations": [],
 		}
 	`)
 });

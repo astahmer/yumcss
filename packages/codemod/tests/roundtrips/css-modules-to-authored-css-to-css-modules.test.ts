@@ -156,9 +156,10 @@ test("css-modules -> authored-css -> css-modules: retains the documented seconda
 		          "dynamic-and-theme",
 		        ],
 		        "availableRepresentations": [
+		          "static",
 		          "residual",
 		        ],
-		        "representation": "residual",
+		        "representation": "static",
 		        "residuals": [],
 		      },
 		    ],

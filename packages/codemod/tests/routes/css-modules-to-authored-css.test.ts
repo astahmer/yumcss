@@ -113,9 +113,10 @@ test("css-modules -> authored-css: carries a documented secondary css-modules AP
 		        "dynamic-and-theme",
 		      ],
 		      "availableRepresentations": [
+		        "static",
 		        "residual",
 		      ],
-		      "representation": "residual",
+		      "representation": "static",
 		      "residuals": [],
 		    },
 		  ],

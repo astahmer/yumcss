@@ -137,7 +137,7 @@ test("panda -> linaria -> panda: retains the documented secondary API without si
 		  "forward": {
 		    "changed": true,
 		    "code": "import { cva } from "styled-system/recipes";
-		export const button = // pandwind:migrate-skip (route: panda -> linaria | parse-residual: composition | available: named-map, residual)
+		export const button = // pandwind:migrate-skip (route: panda -> linaria | lowering-residual: composition | capability-blocked: named-conditions: named: size | available: named-map, residual)
 		cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -145,13 +145,19 @@ test("panda -> linaria -> panda: retains the documented secondary API without si
 		      {
 		        "applied": [
 		          "dynamic-and-theme",
+		          "composition-flatten",
 		        ],
 		        "availableRepresentations": [
 		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "residual",
-		        "residuals": [],
+		        "residuals": [
+		          {
+		            "hint": "target lacks composition support and edge has no embedded program",
+		            "kind": "composition",
+		          },
+		        ],
 		      },
 		    ],
 		    "outcomes": [
@@ -162,7 +168,12 @@ test("panda -> linaria -> panda: retains the documented secondary API without si
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "Panda cva recipes require variant-aware target lowering",
+		        "hint": "named-conditions: named: size",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "target lacks composition support and edge has no embedded program",
 		        "kind": "composition",
 		        "preserved": undefined,
 		      },
@@ -173,7 +184,7 @@ test("panda -> linaria -> panda: retains the documented secondary API without si
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { cva } from "styled-system/recipes";
-		export const button = // pandwind:migrate-skip (route: panda -> linaria | parse-residual: composition | available: named-map, residual)
+		export const button = // pandwind:migrate-skip (route: panda -> linaria | lowering-residual: composition | capability-blocked: named-conditions: named: size | available: named-map, residual)
 		cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });",
 		    "converted": 0,
 		    "generatedFiles": [],

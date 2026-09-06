@@ -163,7 +163,7 @@ test("fela -> styled-components -> fela: retains the documented secondary API wi
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "Fela createComponent requires a host/component lowering",
+		        "hint": "Fela createComponent requires a style function and a host component",
 		        "kind": "component",
 		        "preserved": undefined,
 		      },

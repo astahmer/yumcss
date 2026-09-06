@@ -161,7 +161,7 @@ test("fela -> tokenami -> fela: retains the documented secondary API without sil
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "Fela createComponent requires a host/component lowering",
+		        "hint": "Fela createComponent requires a style function and a host component",
 		        "kind": "component",
 		        "preserved": undefined,
 		      },
