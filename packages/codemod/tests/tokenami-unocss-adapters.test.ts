@@ -110,6 +110,40 @@ describe("Tokenami and UnoCSS semantic adapters", () => {
 		expect(result.code).toContain("rebeccapurple");
 	});
 
+	test("lowers exported standalone UnoCSS utility carriers", () => {
+		const uno = createUnoCssAdapter({
+			resolver: {
+				resolve(token) {
+					return token === "text-brand"
+						? [
+								{
+									conditions: [],
+									property: "color",
+									value: { kind: "literal", value: "rebeccapurple" },
+								},
+							]
+						: undefined;
+				},
+			},
+		});
+		const catalog = createBuiltinCodemodCatalog();
+		const registry = createStyleAdapterRegistry([
+			catalog.registry.get(CodemodAdapterId.Pandwind)!,
+			uno,
+		]);
+		const result = runAdapterMigration('export const card = "text-brand";', {
+			from: CodemodAdapterId.UnoCSS,
+			to: CodemodAdapterId.Pandwind,
+			file: "styles.ts",
+			adapterRegistry: registry,
+		});
+
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain('css.class({ color: "rebeccapurple" })');
+	});
+
 	test("project-aware migration consumes the official UnoCSS loader", async () => {
 		const catalog = createBuiltinCodemodCatalog();
 		const uno = createUnoCssAdapter({

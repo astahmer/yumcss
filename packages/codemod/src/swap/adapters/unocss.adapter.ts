@@ -751,7 +751,9 @@ function parseUnoCss(
 		const isUsedAsClass = new RegExp(
 			`\\b(?:className|class)\\s*=\\s*\\{\\s*${escapedBinding}\\s*\\}`,
 		).test(source.slice((assignment.index ?? 0) + assignment[0].length));
-		if (!value.includes("[") && !isUsedAsClass) continue;
+		const lineStart = source.lastIndexOf("\n", assignment.index ?? 0) + 1;
+		const isExported = /\bexport\s*$/u.test(source.slice(lineStart, assignment.index ?? 0));
+		if (!value.includes("[") && !isUsedAsClass && !isExported) continue;
 		const start = (assignment.index ?? 0) + assignment[0].lastIndexOf(`${quote ?? '"'}${value}`);
 		const declarations: StyleDeclaration[] = [];
 		const unknown: string[] = [];
