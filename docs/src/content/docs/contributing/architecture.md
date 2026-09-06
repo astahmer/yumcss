@@ -21,6 +21,16 @@ The façade is not the architecture by itself. A domain is only decomposed when
 the policy implementation is behind the port and a test can substitute a
 minimal implementation without changing orchestration.
 
+### CLI composition roots
+
+Published command entry points use the lightweight `cac` command parser for
+syntax, generated help, option/value validation, subcommands, and positional
+arity. They only normalize validated arguments and call the existing use-case
+ports; parsing, filesystem access, reporting, and process exit handling stay at
+the composition root. This keeps command behavior consistent across Pandwind,
+analyze, and codemod while preventing a second migration or analysis engine from
+growing inside a CLI parser.
+
 ### Migration application service
 
 One source-file migration is orchestrated by the `StyleMigrationUseCase`. Its
