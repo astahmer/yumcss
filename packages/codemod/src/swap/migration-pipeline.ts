@@ -28,19 +28,22 @@ export interface AdapterMigrationPipeline {
  * fresh pipeline without editing every concrete adapter.
  */
 export function createAdapterMigrationPipeline(
-	stages: readonly MigrationStage<AdapterMigrationInput, AdapterMigrationResult>[] = [
-		{
-			id: MigrationStageId.AdapterMigration,
-			run: ({ source, options }) => STYLE_MIGRATION_USE_CASE.run(source, options),
-		},
-	],
+	stages:
+		| readonly MigrationStage<AdapterMigrationInput, AdapterMigrationResult>[]
+		| undefined = undefined,
 	useCase: StyleMigrationUseCase = STYLE_MIGRATION_USE_CASE,
 ): AdapterMigrationPipeline {
+	const pipelineStages = stages ?? [
+		{
+			id: MigrationStageId.AdapterMigration,
+			run: ({ source, options }) => useCase.run(source, options),
+		},
+	];
 	return {
 		schema: MIGRATION_PIPELINE_SCHEMA,
-		stages,
+		stages: pipelineStages,
 		run(source, options) {
-			const stage = stages[0];
+			const stage = pipelineStages[0];
 			if (stage === undefined) throw new Error("adapter migration pipeline has no stages");
 			return stage.run({ source, options });
 		},

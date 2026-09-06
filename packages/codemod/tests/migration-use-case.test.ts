@@ -1,6 +1,7 @@
 import { describe, expect, test } from "vitest";
 import {
 	STYLE_MIGRATION_USE_CASE_SCHEMA,
+	createAdapterMigrationPipeline,
 	createStyleMigrationUseCase,
 	type AdapterMigrationResult,
 } from "../src/swap/index.ts";
@@ -40,5 +41,18 @@ describe("style migration use case", () => {
 			await useCase.runAsync("source", { from: "source", to: "target", file: "file.ts" }),
 		).toBe(result);
 		expect(calls).toEqual(["sync", "async"]);
+	});
+
+	test("lets the migration pipeline use the same substituted port", async () => {
+		const useCase = createStyleMigrationUseCase({
+			run: () => result,
+			runAsync: async () => result,
+		});
+		const pipeline = createAdapterMigrationPipeline(undefined, useCase);
+
+		expect(pipeline.run("source", { from: "source", to: "target", file: "file.ts" })).toBe(result);
+		expect(
+			await pipeline.runAsync("source", { from: "source", to: "target", file: "file.ts" }),
+		).toBe(result);
 	});
 });
