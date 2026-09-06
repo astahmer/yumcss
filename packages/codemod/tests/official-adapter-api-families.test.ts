@@ -100,7 +100,11 @@ describe("official adapter API families", () => {
 					expect(result.code).toContain("className={css.class");
 					expect(result.code).not.toContain(" css={");
 				}
-				if (api.name === "ClassNames composition" && api.adapter === CodemodAdapterId.Compiled) {
+				if (
+					api.name.includes("ClassNames") &&
+					api.adapter === CodemodAdapterId.Compiled &&
+					api.expectation === "converted"
+				) {
 					expect(result.code).toContain("<button className={css.class");
 					expect(result.code).not.toContain("ClassNames");
 					expect(result.code).not.toContain("migrate-skip");
@@ -572,6 +576,42 @@ describe("official adapter API families", () => {
 			      },
 			    ],
 			  },
+			  "compiled/ClassNames aliased composition": {
+			    "changed": true,
+			    "code": "import { createCss } from "pandwind/css";
+			const css = createCss();
+
+			export const Card = () => <button className={css.class({ color: "red" })}/>;",
+			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "static",
+			        "residuals": [],
+			      },
+			    ],
+			    "outcomes": [
+			      {
+			        "outcome": "static",
+			        "representation": "static",
+			      },
+			    ],
+			    "residuals": [],
+			    "skipped": 0,
+			    "validations": [
+			      {
+			        "differences": [],
+			        "lossiness": "lossless",
+			        "valid": true,
+			      },
+			    ],
+			  },
 			  "compiled/ClassNames composition": {
 			    "changed": true,
 			    "code": "import { createCss } from "pandwind/css";
@@ -607,6 +647,41 @@ describe("official adapter API families", () => {
 			        "valid": true,
 			      },
 			    ],
+			  },
+			  "compiled/ClassNames dynamic render prop": {
+			    "changed": true,
+			    "code": "import { ClassNames } from "@compiled/react";
+			const color = "red";
+			export const Card = () => // pandwind:migrate-skip (route: compiled -> pandwind | parse-residual: component | available: named-map, residual)
+			<ClassNames>{({ css }) => <button className={css({ color })} />}</ClassNames>;",
+			    "converted": 0,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "residual",
+			        "residuals": [],
+			      },
+			    ],
+			    "outcomes": [
+			      {
+			        "outcome": "residual",
+			        "representation": "residual",
+			      },
+			    ],
+			    "residuals": [
+			      {
+			        "hint": "Compiled ClassNames requires a host-aware render-prop lowering",
+			        "kind": "component",
+			        "preserved": undefined,
+			      },
+			    ],
+			    "skipped": 1,
+			    "validations": [],
 			  },
 			  "compiled/cssMap": {
 			    "changed": true,

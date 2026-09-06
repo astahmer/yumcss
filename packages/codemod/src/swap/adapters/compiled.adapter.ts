@@ -10,6 +10,8 @@ import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts
 import type { AdapterParseContext, AdapterParseResult } from "../adapter-contract.ts";
 import { JsxStyleHost } from "../jsx-style-host.ts";
 import { BuiltinHostFramework } from "../host-adapters.ts";
+import { SourceBindingKind, type SourceBinding } from "pandwind/source";
+import { StyleProgramAnalysis } from "../style-program-analysis.ts";
 import {
 	AdapterOfficialApiStatusTag,
 	CodemodCallPatternKindTag,
@@ -135,6 +137,14 @@ const defaultAdapter = defineCodemodAdapter({
 			name: "ClassNames",
 			regex: /<\s*ClassNames\b/g,
 			form: CodemodCallPatternFormTag.Residual,
+			semanticBindings: [{ source: "@compiled/react", imported: "ClassNames" }],
+			regexForBinding: (binding: SourceBinding) => {
+				const reference =
+					binding.kind === SourceBindingKind.Namespace
+						? `${binding.localName}.ClassNames`
+						: binding.localName;
+				return new RegExp(`<\\s*${reference.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\$&")}\\b`, "g");
+			},
 			residual: {
 				kind: StyleProgramResidualKindTag.Component,
 				hint: "Compiled ClassNames requires a host-aware render-prop lowering",
@@ -179,26 +189,28 @@ function parseStaticClassNames(
 	context: AdapterParseContext,
 ): AdapterParseResult["matches"] {
 	const matches: Array<AdapterParseResult["matches"][number]> = [];
-	const wrapper =
-		/<ClassNames\s*>\s*\{\s*\(\s*\{\s*css\s*\}\s*\)\s*=>\s*(<[^>]+\/>)\s*\}\s*<\/ClassNames\s*>/gu;
+	const references = compiledClassNamesReferences(context);
+	const tag = references.length === 0 ? "ClassNames" : references.join("|");
+	const wrapper = new RegExp(
+		`<\\s*(?:${tag})\\s*>\\s*\\{\\s*\\(\\s*\\{\\s*css\\s*\\}\\s*\\)\\s*=>\\s*(<[^>]+\\/>)\\s*\\}\\s*<\\/\\s*(?:${tag})\\s*>`,
+		"gu",
+	);
 	for (const match of source.matchAll(wrapper)) {
 		const start = match.index ?? 0;
+		const openingReference = match[0].match(/^<\s*([^\s>]+)/u)?.[1];
+		const localName = openingReference?.split(".")[0];
+		if (localName !== undefined && context.bindings?.isShadowedAt(localName, start) === true)
+			continue;
 		const openingTag = match[1];
 		if (openingTag === undefined) continue;
 		const hostStart = start + match[0].indexOf(openingTag);
-		const host = JsxStyleHost.parse(
-			source,
-			hostStart,
-			context,
-			["className"],
-			{
-				file: context.file,
-				start,
-				end: start + match[0].length,
-				adapter: context.config.adapter,
-				framework: BuiltinHostFramework.React,
-			},
-		);
+		const host = JsxStyleHost.parse(source, hostStart, context, ["className"], {
+			file: context.file,
+			start,
+			end: start + match[0].length,
+			adapter: context.config.adapter,
+			framework: BuiltinHostFramework.React,
+		});
 		if (host === undefined || host.body.trim() === "") continue;
 		const program = styleProgramFromSourceObject(host.body, {
 			source: {
@@ -209,7 +221,12 @@ function parseStaticClassNames(
 			},
 			sourceOffset: hostStart,
 		});
-		if (program.residuals.length > 0 || program.rules.length === 0) continue;
+		if (
+			program.residuals.length > 0 ||
+			StyleProgramAnalysis.hasDynamic(program) ||
+			program.rules.length === 0
+		)
+			continue;
 		matches.push({
 			start,
 			end: start + match[0].length,
@@ -220,19 +237,76 @@ function parseStaticClassNames(
 	return matches;
 }
 
+function compiledClassNamesReferences(context: AdapterParseContext): readonly string[] {
+	return (
+		context.bindings
+			?.fromModule("@compiled/react")
+			.filter((binding) => binding.importedName === "ClassNames")
+			.map((binding) =>
+				binding.kind === SourceBindingKind.Namespace
+					? `${binding.localName}\\.ClassNames`
+					: binding.localName.replaceAll("$", "\\$"),
+			)
+			.filter((reference, index, all) => all.indexOf(reference) === index) ?? []
+	);
+}
+
+function widenClassNamesResidual(
+	match: AdapterParseResult["matches"][number],
+	source: string,
+	context: AdapterParseContext,
+): AdapterParseResult["matches"][number] {
+	if (!match.program.residuals.some(({ kind }) => kind === StyleProgramResidualKindTag.Component))
+		return match;
+	const references = compiledClassNamesReferences(context);
+	const tag = references.length === 0 ? "ClassNames" : references.join("|");
+	const wrapper = new RegExp(`<\\s*(?:${tag})\\b[\\s\\S]*?<\\/\\s*(?:${tag})\\s*>`, "gu");
+	const wholeWrapper = [...source.matchAll(wrapper)].find(
+		(candidate) => candidate.index === match.start,
+	);
+	if (wholeWrapper === undefined) return match;
+	return {
+		...match,
+		end: match.start + wholeWrapper[0].length,
+		sourceText: wholeWrapper[0],
+		program: {
+			...match.program,
+			source: {
+				...match.program.source,
+				end: match.start + wholeWrapper[0].length,
+			},
+		},
+	};
+}
+
 export default {
 	...defaultAdapter,
 	parse(source: string, context: AdapterParseContext): AdapterParseResult {
 		const parsed = defaultAdapter.parse(source, context);
 		const staticClassNames = parseStaticClassNames(source, context);
-		if (staticClassNames.length === 0) return parsed;
-		const ranges = staticClassNames.map((match) => ({ start: match.start, end: match.end }));
+		const residualClassNames = parsed.matches.map((match) =>
+			widenClassNamesResidual(match, source, context),
+		);
+		const protectedMatches = [
+			...staticClassNames,
+			...residualClassNames.filter((match) =>
+				match.program.residuals.some(({ kind }) => kind === StyleProgramResidualKindTag.Component),
+			),
+		];
+		if (protectedMatches.length === 0) return parsed;
+		const ranges = protectedMatches.map((match) => ({ start: match.start, end: match.end }));
 		const overlaps = (match: { readonly start: number; readonly end: number }): boolean =>
 			ranges.some((range) => match.start < range.end && match.end > range.start);
 		return {
-			matches: [...parsed.matches.filter((match) => !overlaps(match)), ...staticClassNames].toSorted(
-				(left, right) => left.start - right.start,
-			),
+			matches: [
+				...residualClassNames.filter((match) => !overlaps(match)),
+				...staticClassNames,
+				...protectedMatches.filter((match) =>
+					match.program.residuals.some(
+						({ kind }) => kind === StyleProgramResidualKindTag.Component,
+					),
+				),
+			].toSorted((left, right) => left.start - right.start),
 			residuals: parsed.residuals,
 		};
 	},

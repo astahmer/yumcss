@@ -740,6 +740,22 @@ export function officialApiFamilyCases(): readonly OfficialApiFamilyCase[] {
 		},
 		{
 			adapter: CodemodAdapterId.Compiled,
+			name: "ClassNames dynamic render prop",
+			expectation: "residual",
+			file: "Card.tsx",
+			source:
+				'import { ClassNames } from "@compiled/react";\nconst color = "red";\nexport const Card = () => <ClassNames>{({ css }) => <button className={css({ color })} />}</ClassNames>;',
+		},
+		{
+			adapter: CodemodAdapterId.Compiled,
+			name: "ClassNames aliased composition",
+			expectation: "converted",
+			file: "Card.tsx",
+			source:
+				'import { ClassNames as Names } from "@compiled/react";\nexport const Card = () => <Names>{({ css }) => <button className={css({ color: "red" })} />}</Names>;',
+		},
+		{
+			adapter: CodemodAdapterId.Compiled,
 			name: "CSS prop",
 			expectation: "converted",
 			file: "Card.tsx",
