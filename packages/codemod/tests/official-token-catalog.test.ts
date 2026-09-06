@@ -362,7 +362,7 @@ describe("official custom-token loaders", () => {
 		);
 		expect(
 			preserve(createMantineAdapter({ moduleLoader: null })).declarations[0]?.value,
-		).toMatchObject({ authored: "brand.500", kind: "token" });
+		).toMatchObject({ authored: "var(--mantine-color-brand-500)", kind: "token" });
 		const stitches = adapters.get(CodemodAdapterId.Stitches);
 		expect(stitches?.tokenPolicy).toBeDefined();
 		expect(preserve(stitches! as StyleAdapter).declarations[0]?.value).toMatchObject({

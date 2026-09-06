@@ -36,7 +36,21 @@ const MANTINE_TOKEN_POLICY: AdapterTokenPolicy = {
 		TokenCatalog.fromContract(context.config.tokenCatalog)?.preserveProgram(
 			program,
 			mantineTokenGroup,
-			(match) => match.ref,
+			(match, property) => {
+				const namespace =
+					property === "color" || property.endsWith("Color")
+						? "color"
+						: property === "fontSize"
+							? "font-size"
+							: property === "lineHeight"
+								? "line-height"
+								: property === "borderRadius"
+									? "radius"
+									: property === "boxShadow"
+										? "shadow"
+										: "spacing";
+				return `var(--mantine-${namespace}-${match.ref.replaceAll(".", "-")})`;
+			},
 		) ?? program,
 };
 

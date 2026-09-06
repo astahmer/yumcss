@@ -41,7 +41,7 @@ export function resolvedStyleValue(
 }
 
 export type TokenGroupForProperty = (property: string) => string | undefined;
-export type TokenReferenceFormatter = (match: TokenCatalogMatch) => string;
+export type TokenReferenceFormatter = (match: TokenCatalogMatch, property: string) => string;
 
 /** Normalize a preset token key (`$blue-500`, `4`, `lg`) to a ref (`blue.500`, `4`, `lg`). */
 function normalizeTokenKey(key: string): string {
@@ -190,12 +190,18 @@ export class TokenCatalog {
 						  (typeof value.value === "string" || typeof value.value === "number")
 						? this.findUnique([group], String(value.value))
 						: undefined;
-			if (match === undefined || !/^[A-Za-z0-9_$][A-Za-z0-9_$.-]*$/u.test(formatReference(match)))
+			const authored = match === undefined ? undefined : formatReference(match, property);
+			if (
+				match === undefined ||
+				authored === undefined ||
+				(!/^[A-Za-z0-9_$][A-Za-z0-9_$.-]*$/u.test(authored) &&
+					!/^var\(--[A-Za-z0-9_-]+\)$/u.test(authored))
+			)
 				return value;
 			return {
 				kind: "token",
 				ref: match.ref,
-				authored: formatReference(match),
+				authored,
 				resolved: match.resolved,
 			};
 		};
