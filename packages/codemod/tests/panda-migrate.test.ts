@@ -233,6 +233,13 @@ describe("supporting migration primitives", () => {
 		expect(args.reportFormat).toBe("json");
 	});
 
+	it("rejects unknown and conflicting command-line options", () => {
+		expect(() => parseSwapArgs(["--unknown", "Card.tsx"])).toThrow("Unknown option `--unknown`");
+		expect(() => parseSwapArgs(["--safe", "--partial", "Card.tsx"])).toThrow(
+			"--safe and --partial are mutually exclusive",
+		);
+	});
+
 	it("detects tsconfig aliases and emits valid JSX wrapper types", () => {
 		const dir = makeProject();
 		expect(detectAlias(dir)).toMatchObject({

@@ -137,7 +137,7 @@ const configureDefaultCommand = (command: Command): void => {
 		.option("--diff", "Print unified diffs")
 		.option("--write", "Apply the migration to files")
 		.option("--report", "Print the migration report")
-		.option("--meta <dir>", "Generated Pandwind metadata directory", { default: "" })
+		.option("--meta <dir>", "Generated Pandwind metadata directory")
 		.option("--skip-marker <text>", "Marker used to preserve opted-out sites", {
 			default: "pandwind:migrate-skip",
 		});

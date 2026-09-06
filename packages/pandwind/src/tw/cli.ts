@@ -260,7 +260,12 @@ class DefaultTwCli implements TwCli {
 		cli.help();
 		const effectiveArgv = argv.length === 0 ? [TwCommand.Generate] : [...argv];
 		cli.parse(["node", "pandwind-tw", ...effectiveArgv], { run: false });
-		if (cli.matchedCommand === undefined) return;
+		if (cli.matchedCommand === undefined) {
+			if (argv.includes("--help") || argv.includes("-h")) return;
+			throw new Error(
+				`pandwind-tw: unknown command '${argv[0] ?? ""}'. Expected generate, scan, or prune`,
+			);
+		}
 		await cli.runMatchedCommand();
 	}
 }

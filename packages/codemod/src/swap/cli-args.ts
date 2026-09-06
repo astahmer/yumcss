@@ -54,9 +54,9 @@ export function configureSwapCommand(command: Command): void {
 		.option("--report-format <format>", "Report format: text or json", { default: "text" })
 		.option("--safe", "Require the target capability contract")
 		.option("--partial", "Allow partial target lowering")
-		.option("--out <dir>", "Output folder for project migrations", { default: "" })
+		.option("--out <dir>", "Output folder for project migrations")
 		.option("--force", "Regenerate existing project migration modules")
-		.option("--meta <dir>", "Generated Pandwind metadata directory", { default: "" })
+		.option("--meta <dir>", "Generated Pandwind metadata directory")
 		.option("--skip-marker <text>", "Marker used to preserve opted-out sites", {
 			default: "pandwind:migrate-skip",
 		})
