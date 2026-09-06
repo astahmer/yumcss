@@ -6,7 +6,7 @@ import {
 } from "../semantic-ir.ts";
 import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
 import type { StyleProgram, StyleValue } from "../semantic-ir.ts";
-import type { AdapterConfigContext } from "../adapter-contract.ts";
+import type { AdapterConfigContext, AdapterTokenPolicy } from "../adapter-contract.ts";
 import { AdapterEvidence } from "../adapter-evidence.ts";
 import type { ProjectModuleLoader } from "../project-module-loader.ts";
 import { joinDocumentPath } from "../../path-utils.ts";
@@ -19,6 +19,26 @@ import {
 	StyleNamedRuleStrategy,
 	StyleRepresentationKind,
 } from "../identifiers.ts";
+
+const mantineTokenGroup = (property: string): string | undefined => {
+	if (property === "color" || property.endsWith("Color")) return "colors";
+	if (property === "borderRadius") return "radii";
+	if (/^(?:padding|margin|gap|inset)/u.test(property)) return "spacing";
+	if (property === "fontSize") return "fontSizes";
+	if (property === "lineHeight") return "lineHeights";
+	if (property === "boxShadow") return "shadows";
+	return undefined;
+};
+
+const MANTINE_TOKEN_POLICY: AdapterTokenPolicy = {
+	schema: "pandwind.adapter-token-policy/1",
+	preserve: (program, context) =>
+		TokenCatalog.fromContract(context.config.tokenCatalog)?.preserveProgram(
+			program,
+			mantineTokenGroup,
+			(match) => match.ref,
+		) ?? program,
+};
 
 function hasScalarDynamicProgram(program: StyleProgram): boolean {
 	return StyleProgramAnalysis.hasScalarDynamic(program);
@@ -567,6 +587,7 @@ export function createMantineAdapter(
 					loadConfigAsync: (context: AdapterConfigContext) =>
 						officialMantineConfig(context, moduleLoader),
 				}),
+		tokenPolicy: MANTINE_TOKEN_POLICY,
 		sourceObjectOptions: (source, context) => ({
 			propertyAliases,
 			valueTransforms: Object.fromEntries(

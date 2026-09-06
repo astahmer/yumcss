@@ -287,11 +287,13 @@ function materializeTailwindToken(
 		return declaration;
 	if (typeof declaration.value.value !== "string") return declaration;
 	const group = tailwindTokenGroups[declaration.property];
-	const namespace = group === undefined ? undefined : tailwindTokenNamespaces[group];
+	if (group === undefined) return declaration;
+	const namespace = tailwindTokenNamespaces[group];
 	if (namespace === undefined) return declaration;
 	const variable = /^var\(--([a-z-]+)-([^),\s]+)\)$/u.exec(declaration.value.value);
-	if (variable?.[1] !== namespace || variable[2] === undefined) return declaration;
-	const match = catalog.findByReference([group], variable[2].replaceAll("-", "."));
+	const tokenKey = variable?.[2];
+	if (variable?.[1] !== namespace || tokenKey === undefined) return declaration;
+	const match = catalog.findByReference([group], tokenKey.replaceAll("-", "."));
 	return match === undefined
 		? declaration
 		: {

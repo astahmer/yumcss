@@ -270,21 +270,18 @@ describe("custom design-system context resolution", () => {
 
 		const toPanda = await runAdapterMigrationAsync(source, {
 			...base,
-			source,
 			from: CodemodAdapterId.Tailwind,
 			to: CodemodAdapterId.Panda,
 			adapterRegistry: registry,
 		});
 		const toUno = await runAdapterMigrationAsync(source, {
 			...base,
-			source,
 			from: CodemodAdapterId.Tailwind,
 			to: CodemodAdapterId.UnoCSS,
 			adapterRegistry: registry,
 		});
 		const toTailwind = await runAdapterMigrationAsync(source, {
 			...base,
-			source,
 			from: CodemodAdapterId.UnoCSS,
 			to: CodemodAdapterId.Tailwind,
 			adapterRegistry: registry,

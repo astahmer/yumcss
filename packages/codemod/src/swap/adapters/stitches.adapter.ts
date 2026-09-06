@@ -4,7 +4,11 @@ import {
 	StyleValueKindTag,
 } from "../semantic-ir.ts";
 import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
-import type { AdapterConfigContext, AdapterProjectConfig } from "../adapter-contract.ts";
+import type {
+	AdapterConfigContext,
+	AdapterProjectConfig,
+	AdapterTokenPolicy,
+} from "../adapter-contract.ts";
 import {
 	BuiltinHostFramework,
 	canConvertStaticVueSfc,
@@ -79,6 +83,29 @@ function stitchesTransform(program: StyleProgram): StyleProgram {
 				],
 			};
 }
+
+const stitchesTokenGroup = (property: string): string | undefined => {
+	if (property === "color" || property.endsWith("Color")) return "colors";
+	if (property === "borderRadius") return "radii";
+	if (/^(?:padding|margin|gap|inset)/u.test(property)) return "space";
+	if (property === "fontSize") return "fontSizes";
+	if (property === "fontWeight") return "fontWeights";
+	if (property === "lineHeight") return "lineHeights";
+	if (property === "letterSpacing") return "letterSpacings";
+	if (property === "fontFamily") return "fonts";
+	if (property === "boxShadow") return "shadows";
+	return undefined;
+};
+
+const STITCHES_TOKEN_POLICY: AdapterTokenPolicy = {
+	schema: "pandwind.adapter-token-policy/1",
+	preserve: (program, context) =>
+		TokenCatalog.fromContract(context.config.tokenCatalog)?.preserveProgram(
+			program,
+			stitchesTokenGroup,
+			(match) => `$${match.group}$${match.ref.replaceAll(".", "$")}`,
+		) ?? program,
+};
 
 function stitchesConfig(context: AdapterConfigContext): AdapterProjectConfig {
 	const tokenCatalog = stitchesTheme(context.source)?.contract;
@@ -211,6 +238,7 @@ export default defineCodemodAdapter({
 	sourceModules: ["@stitches/react", "@stitches/core"],
 	configFiles: ["stitches.config.ts", "package.json"],
 	loadConfig: stitchesConfig,
+	tokenPolicy: STITCHES_TOKEN_POLICY,
 	sourceObjectOptions: (_source, context) => {
 		const catalog = TokenCatalog.fromContract(context.config.tokenCatalog);
 		return {

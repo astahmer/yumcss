@@ -346,6 +346,28 @@ describe("official custom-token loaders", () => {
 		expect(emit(CodemodAdapterId.Pandwind)).toMatchInlineSnapshot(`
 			"css.class({ color: "$brand-500" })"
 		`);
+		const preserve = (adapter: StyleAdapter) =>
+			adapter.tokenPolicy!.preserve(literalProgram, {
+				...context,
+				config: { adapter: adapter.id, files: [], values: {}, tokenCatalog: catalog },
+				mode: "safe",
+				index: 0,
+			});
+		expect(preserve(createMuiAdapter({ moduleLoader: null })).declarations[0]?.value).toMatchObject(
+			{
+				authored: "brand.500",
+				kind: "token",
+			},
+		);
+		expect(
+			preserve(createMantineAdapter({ moduleLoader: null })).declarations[0]?.value,
+		).toMatchObject({ authored: "brand.500", kind: "token" });
+		const stitches = adapters.get(CodemodAdapterId.Stitches);
+		expect(stitches?.tokenPolicy).toBeDefined();
+		expect(preserve(stitches! as StyleAdapter).declarations[0]?.value).toMatchObject({
+			authored: "$colors$brand$500",
+			kind: "token",
+		});
 	});
 
 	test("reuses generated Pandwind preset tokens during an async migration", async () => {

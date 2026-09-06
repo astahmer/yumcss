@@ -1,7 +1,11 @@
 import { CodemodCallPatternFormTag } from "../identifiers.ts";
 import { StyleProgramResidualKindTag, StyleValueKindTag } from "../semantic-ir.ts";
 import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
-import type { AdapterConfigContext, AdapterHostRewriteResult } from "../adapter-contract.ts";
+import type {
+	AdapterConfigContext,
+	AdapterHostRewriteResult,
+	AdapterTokenPolicy,
+} from "../adapter-contract.ts";
 import type { StyleProgram, StyleValue } from "../semantic-ir.ts";
 import {
 	BuiltinHostFramework,
@@ -24,6 +28,30 @@ import { AdapterEvidence } from "../adapter-evidence.ts";
 import type { ProjectModuleLoader } from "../project-module-loader.ts";
 import { joinDocumentPath } from "../../path-utils.ts";
 import { TokenCatalog } from "../tokens.ts";
+
+const muiTokenGroup = (property: string): string | undefined => {
+	if (property === "color" || property.endsWith("Color")) return "colors";
+	if (property === "borderRadius") return "radii";
+	if (/^(?:padding|margin|gap|inset)/u.test(property)) return "spacing";
+	if (property === "fontSize") return "fontSizes";
+	if (property === "fontWeight") return "fontWeights";
+	if (property === "lineHeight") return "lineHeights";
+	if (property === "letterSpacing") return "letterSpacings";
+	if (property === "fontFamily") return "fonts";
+	if (property === "boxShadow") return "shadows";
+	if (property === "zIndex") return "zIndices";
+	return undefined;
+};
+
+const MUI_TOKEN_POLICY: AdapterTokenPolicy = {
+	schema: "pandwind.adapter-token-policy/1",
+	preserve: (program, context) =>
+		TokenCatalog.fromContract(context.config.tokenCatalog)?.preserveProgram(
+			program,
+			muiTokenGroup,
+			(match) => match.ref,
+		) ?? program,
+};
 
 // These are documented MUI source spellings, not a project vocabulary. The
 // official theme loader below supplies project-specific values and overrides
@@ -510,6 +538,7 @@ export function createMuiAdapter(
 					loadConfigAsync: (context: AdapterConfigContext) =>
 						officialMuiConfig(context, moduleLoader),
 				}),
+		tokenPolicy: MUI_TOKEN_POLICY,
 		sourceObjectOptions: (source, context) => ({
 			propertyAliases,
 			valueTransforms: muiTransforms(
