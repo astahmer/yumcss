@@ -114,6 +114,28 @@ export const BRIDGE_PROPS = [
 interface Entry {
 	cls: string;
 	multi: boolean;
+	preferred: boolean;
+}
+
+/**
+ * Keep a source project's authored token spelling when two utilities resolve
+ * to the same CSS value. Tailwind's merged design system also contains its
+ * defaults, so the official theme object cannot tell us whether `card` was
+ * declared by this project. The source CSS can: names declared in a local
+ * `@theme` block are the evidence used for this tie breaker.
+ */
+function authoredThemeTokenNames(css: string): ReadonlySet<string> {
+	const names = new Set<string>();
+	for (const match of css.matchAll(/--[A-Za-z0-9_-]+-([A-Za-z0-9_-]+)\s*:/gu)) {
+		if (match[1] !== undefined) names.add(match[1]);
+	}
+	return names;
+}
+
+function isAuthoredThemeCandidate(candidate: string, names: ReadonlySet<string>): boolean {
+	if (names.size === 0 || candidate.includes("[")) return false;
+	const utility = candidate.split(":").at(-1) ?? candidate;
+	return [...names].some((name) => utility === name || utility.endsWith(`-${name}`));
 }
 
 /**
@@ -136,6 +158,7 @@ async function generateUtilityBridge(
 	const ds = await __unstable__loadDesignSystem(entry, { base });
 	const allowlist = new Set(options.props ?? BRIDGE_PROPS);
 	const valueFilter = options.values;
+	const authoredTokenNames = authoredThemeTokenNames(entry);
 	const resolveTheme = (name: string): string | undefined =>
 		(ds as unknown as { resolveThemeValue: (n: string) => string | undefined }).resolveThemeValue(
 			name,
@@ -182,21 +205,28 @@ async function generateUtilityBridge(
 
 			if (!direct) return;
 
-			const canon = canonicalProps([...props]).filter((prop) => allowlist.has(prop));
-			if (canon.length === 0) return;
+			const canon = canonicalProps([...props]);
+			const bridgeProps = new Set([...props, ...canon].filter((prop) => allowlist.has(prop)));
+			if (bridgeProps.size === 0) return;
 
-			for (const prop of canon) {
-				const value = values.get(prop);
+			for (const prop of bridgeProps) {
+				const sourceProperty = values.has(prop)
+					? prop
+					: [...props].find((candidate) => canonicalProps([candidate]).includes(prop));
+				const value = sourceProperty === undefined ? undefined : values.get(sourceProperty);
 				if (value === undefined || value === "") continue;
 				const byValue = best.get(prop) ?? new Map<string, Entry>();
 				const existing = byValue.get(value);
 				const multi = canon.length > 1;
+				const preferred = isAuthoredThemeCandidate(candidate, authoredTokenNames);
 				if (
 					existing === undefined ||
 					(!multi && existing.multi) ||
-					(multi === existing.multi && candidate.length < existing.cls.length)
+					(multi === existing.multi &&
+						((preferred && !existing.preferred) ||
+							(preferred === existing.preferred && candidate.length < existing.cls.length)))
 				) {
-					byValue.set(value, { cls: candidate, multi });
+					byValue.set(value, { cls: candidate, multi, preferred });
 				}
 				best.set(prop, byValue);
 			}

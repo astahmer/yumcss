@@ -27,7 +27,11 @@ export type SwapSource = (typeof SWAP_SOURCES)[number];
 export interface MigrateCliArgs {
 	from: SwapSource;
 	to: SwapTarget | MigrateMode;
+	/** Project root; defaults to the current working directory or an absolute-pattern root. */
+	root?: string;
 	dryRun: boolean;
+	/** Install target dependencies after a successful write; enabled by default. */
+	install: boolean;
 	diff: boolean;
 	report: boolean;
 	patterns: string[];
@@ -55,6 +59,10 @@ export function configureMigrateCommand(command: Command): void {
 			default: SwapTargetId.CssClass,
 		})
 		.option("--dry-run", "Preview the migration without writing files")
+		.option("--root <dir>", "Project root (defaults to cwd or the absolute-pattern root)")
+		.option("--install, --no-install", "Install target dependencies after a successful write", {
+			default: true,
+		})
 		.option("--diff", "Print unified diffs")
 		.option("--report", "Print migration reports")
 		.option("--report-format <format>", "Report format: text or json", { default: "text" })
@@ -164,11 +172,14 @@ export function parseMigrateArgs(argv: string[]): MigrateCliArgs {
 	] as const);
 	const safe = optionBoolean(options, "safe");
 	const partial = optionBoolean(options, "partial");
-	if (safe && partial) throw new Error("codemod migrate: --safe and --partial are mutually exclusive");
+	if (safe && partial)
+		throw new Error("codemod migrate: --safe and --partial are mutually exclusive");
 	return {
 		from,
 		to,
+		...(optionString(options, "root") === undefined ? {} : { root: optionString(options, "root") }),
 		dryRun: optionBoolean(options, "dryRun"),
+		install: options.install !== false && options.noInstall !== true,
 		diff: optionBoolean(options, "diff"),
 		report: optionBoolean(options, "report"),
 		patterns: [...cli.args],

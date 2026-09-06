@@ -12,7 +12,7 @@
  * asserted values are pinned against its bridge (e.g. #3182ce -> bg-blue-500).
  */
 import { execFileSync } from "node:child_process";
-import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
@@ -227,7 +227,7 @@ describe("safety rails", () => {
 });
 
 describe("swap CLI end-to-end", () => {
-	test("the real binary converts a fixture file on disk (--write)", () => {
+	test("the real binary converts a fixture file on disk", () => {
 		const dir = mkdtempSync(resolve(tmpdir(), "pw-codemod-swap-"));
 		const file = resolve(dir, "card.tsx");
 		writeFileSync(
@@ -242,7 +242,9 @@ describe("swap CLI end-to-end", () => {
 				"migrate",
 				"--from=auto",
 				"--to=tw",
+				`--root=${dir}`,
 				`--meta=${resolve(repoRoot, "apps/example/src")}`,
+				"--no-install",
 				file,
 			],
 			{ cwd: resolve(import.meta.dirname, ".."), stdio: "pipe" },
@@ -251,6 +253,39 @@ describe("swap CLI end-to-end", () => {
 		expect(after).toContain("tw({");
 		expect(after).toContain('bgColor: "blue-500"');
 		expect(after).not.toContain("css.class(");
+	}, 30_000);
+
+	test("auto-detects an external source for the unified default target", () => {
+		const dir = mkdtempSync(resolve(tmpdir(), "pw-codemod-auto-"));
+		const file = resolve(dir, "card.tsx");
+		writeFileSync(
+			file,
+			'import styled from "styled-components";\nexport const Card = styled.div`color: red;`;\n',
+		);
+		try {
+			const output = execFileSync(
+				"nub",
+				[
+					"src/cli.ts",
+					"migrate",
+					"--root",
+					dir,
+					"--dry-run",
+					"--no-install",
+					"--report=json",
+					file,
+				],
+				{ cwd: resolve(import.meta.dirname, ".."), encoding: "utf8" },
+			);
+			const report = JSON.parse(output) as {
+				readonly files: readonly [{ readonly from: string }];
+			};
+			expect(report.files[0]?.from).toBe("styled-components");
+			const after = readFileSync(file, "utf8");
+			expect(after).toContain('from "styled-components"');
+		} finally {
+			rmSync(dir, { recursive: true, force: true });
+		}
 	}, 30_000);
 });
 
@@ -658,7 +693,9 @@ test("CLI spawn e2e: --to=panda emits token refs + styled-system import", () => 
 			"migrate",
 			"--from=auto",
 			"--to=panda",
+			`--root=${dir}`,
 			`--meta=${resolve(repoRoot, "apps/example/src")}`,
+			"--no-install",
 			file,
 		],
 		{ cwd: resolve(import.meta.dirname, ".."), stdio: "pipe" },

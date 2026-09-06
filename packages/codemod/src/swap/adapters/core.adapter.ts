@@ -34,6 +34,7 @@ import {
 	SwapTargetId,
 } from "../identifiers.ts";
 import { AdapterEvidence } from "../adapter-evidence.ts";
+import { relativeModuleImport } from "../../shared.ts";
 
 const CORE_DEPENDENCIES: AdapterDependencies = {
 	packages: [{ name: "pandwind", kind: AdapterDependencyKindTag.Runtime }],
@@ -203,9 +204,18 @@ function makeCoreAdapter(
 					],
 				};
 			const result = emitter(swapIRFromStyleProgram(program), meta, { index: context.index, meta });
+			const imports = [...(result.imports ?? [])];
+			if (dialect === SwapSourceId.Tw && result.text !== "") {
+				const modulePath = context.project?.twModule;
+				imports.push(
+					modulePath === undefined
+						? 'import { tw } from "pandwind";'
+						: `import { tw } from "${relativeModuleImport(context.file, modulePath, "")}";`,
+				);
+			}
 			return {
 				text: result.text,
-				imports: result.imports,
+				imports,
 				residuals: [...result.residuals],
 				// Core targets are emitted by the same versioned semantic projection
 				// that owns their parser. Keep that program as validation evidence;

@@ -96,11 +96,7 @@ export const cx = createCx({ css });
 `;
 }
 
-function bridgeSource(
-	bridge: UtilityBridge,
-	twSource: string,
-	presetImport: string,
-): string {
+function bridgeSource(bridge: UtilityBridge, twSource: string, presetImport: string): string {
 	const config = extractTwConfig(twSource);
 	if (config === undefined) throw new Error("codemod: generated tw config is not readable");
 	return `import { createTwAdapter } from "pandwind/tw";
@@ -143,7 +139,10 @@ async function loadSourceConfig(request: ProjectBootstrapRequest): Promise<Adapt
 		: await adapter.loadConfigAsync(context);
 }
 
-function loadGeneratedMeta(files: readonly AdapterGeneratedFile[], directory: string): PandwindMeta {
+function loadGeneratedMeta(
+	files: readonly AdapterGeneratedFile[],
+	directory: string,
+): PandwindMeta {
 	const temp = mkdtempSync(join(tmpdir(), "pandwind-codemod-meta-"));
 	try {
 		for (const file of files) {
@@ -179,15 +178,18 @@ export async function createPandwindProjectSupport(
 	const css = projectFile(directory, "css.ts");
 	const runtimeCss = projectFile(directory, "runtime.ts");
 	const cx = projectFile(directory, "cx.ts");
-	const files: AdapterGeneratedFile[] = [
-		generatedFile(preset, presetSource(sourceConfig, {}), "Pandwind target preset"),
-		generatedFile(css, cssSource(), "shared extracted css() binding"),
-		generatedFile(runtimeCss, runtimeCssSource(), "shared runtime css() binding"),
-		generatedFile(cx, cxSource(), "shared cx() binding"),
-	];
+	const configurationFailed = (sourceConfig.residuals?.length ?? 0) > 0;
+	const files: AdapterGeneratedFile[] = configurationFailed
+		? []
+		: [
+				generatedFile(preset, presetSource(sourceConfig, {}), "Pandwind target preset"),
+				generatedFile(css, cssSource(), "shared extracted css() binding"),
+				generatedFile(runtimeCss, runtimeCssSource(), "shared runtime css() binding"),
+				generatedFile(cx, cxSource(), "shared cx() binding"),
+			];
 
-	const cssEntry = sourceConfig.files[0];
-	if (cssEntry !== undefined) {
+	const cssEntry = sourceConfig.files.find((file) => /\.css$/u.test(file));
+	if (!configurationFailed && cssEntry !== undefined) {
 		const stylesheet = request.readFile(cssEntry);
 		if (stylesheet !== undefined) {
 			const conditions = customVariantConditions(stylesheet);
@@ -230,19 +232,27 @@ export async function createPandwindProjectSupport(
 				),
 			);
 			if (theme !== "")
-				files.push(generatedFile(projectFile(directory, "pandwind-theme.css"), theme, "derived theme block"));
+				files.push(
+					generatedFile(projectFile(directory, "pandwind-theme.css"), theme, "derived theme block"),
+				);
 		}
 	}
 
-	const metaFiles = files.some((file) => file.path === projectFile(directory, "pandwind.interop.json"))
+	const metaFiles = files.some(
+		(file) => file.path === projectFile(directory, "pandwind.interop.json"),
+	)
 		? files
 		: undefined;
+	const hasGeneratedTw = files.some((file) => file.path === projectFile(directory, "tw.ts"));
 	return {
 		metaDirectory: directory,
 		bindings: {
-			cssModule: css,
-			runtimeCssModule: runtimeCss,
-			cxModule: cx,
+			...(configurationFailed
+				? {}
+				: { cssModule: css, runtimeCssModule: runtimeCss, cxModule: cx }),
+			...(configurationFailed || !hasGeneratedTw
+				? {}
+				: { twModule: projectFile(directory, "tw.ts") }),
 		},
 		files,
 		...(metaFiles === undefined ? {} : { meta: loadGeneratedMeta(metaFiles, directory) }),

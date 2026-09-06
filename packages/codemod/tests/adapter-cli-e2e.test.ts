@@ -50,6 +50,7 @@ function runCli(
 			`--from=${from}`,
 			`--to=${to}`,
 			"--safe",
+			"--no-install",
 			"--report=json",
 			file,
 		],
@@ -114,9 +115,12 @@ describe("adapter migration e2e matrix", () => {
 				[
 					"src/cli.ts",
 					"migrate",
+					"--root",
+					directory,
 					`--from=${CodemodAdapterId.VueStyled}`,
 					`--to=${CodemodAdapterId.Stitches}`,
 					"--safe",
+					"--no-install",
 					"--report=json",
 					file,
 				],
@@ -128,7 +132,7 @@ describe("adapter migration e2e matrix", () => {
 			const outputFile = report.files[0]?.outputFile;
 			expect(outputFile).toMatch(/App\.tsx$/u);
 			expect(existsSync(file)).toBe(false);
-			expect(outputFile === undefined ? false : existsSync(resolve(repoRoot, outputFile))).toBe(
+			expect(outputFile === undefined ? false : existsSync(resolve(directory, outputFile))).toBe(
 				true,
 			);
 		} finally {

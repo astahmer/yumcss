@@ -232,6 +232,11 @@ describe("supporting migration primitives", () => {
 		expect(args.dryRun).toBe(true);
 	});
 
+	it("keeps dependency installation opt-out explicit", () => {
+		expect(parseMigrateArgs(["--no-install", "migrate.tsx"]).install).toBe(false);
+		expect(parseMigrateArgs(["migrate.tsx"]).install).toBe(true);
+	});
+
 	it("accepts explicit capability policy and machine-readable reports", () => {
 		const args = parseMigrateArgs([
 			"--from=emotion",

@@ -6,7 +6,7 @@ const pandaMigrationCommand: ProjectMigrationCommand = {
 	id: CodemodAdapterId.Panda,
 	async run(context) {
 		if (context.filePaths.length === 0) {
-			console.error("codemod swap: no matching files for project migration");
+			console.error("codemod migrate: no matching files for project migration");
 			process.exitCode = 1;
 			return;
 		}

@@ -43,9 +43,12 @@ async function runCliMatrix(
 			[
 				"src/cli.ts",
 				"migrate",
+				"--root",
+				directory,
 				`--from=${sourceAdapter}`,
 				`--to=${targetAdapter}`,
 				"--safe",
+				"--no-install",
 				"--report=json",
 				...files,
 			],
@@ -62,7 +65,7 @@ async function runCliMatrix(
 		};
 		return report.files.map((result) => ({
 			...result,
-			source: readFileSync(resolve(repoRoot, result.outputFile ?? result.file), "utf8"),
+			source: readFileSync(resolve(directory, result.outputFile ?? result.file), "utf8"),
 		}));
 	} finally {
 		rmSync(directory, { recursive: true, force: true });

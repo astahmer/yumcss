@@ -39,6 +39,7 @@ const THEME_ENTRY = `
   --color-blue-600: #2b6cb0;
   --color-blue-700: #2c5282;
   --color-red-500: #E53E3E;
+  --spacing-card: 1.25rem;
   --radius-md: 0.375rem;
   --radius-xl: 0.75rem;
   --text-sm: 0.875rem;
@@ -70,6 +71,8 @@ describe("the tailwind adapter", () => {
 		expect(s.bridge["background-color"]?.["#E53E3E"]).toBe("bg-red-500");
 		expect(s.bridge["border-radius"]?.["0.375rem"]).toBe("rounded-md");
 		expect(s.bridge["border-radius"]?.["0.75rem"]).toBe("rounded-xl");
+		expect(s.bridge.padding?.["1rem"]).toBe("p-4");
+		expect(s.bridge.padding?.["1.25rem"]).toBe("p-card");
 		expect(s.bridge.display?.flex).toBe("flex");
 		expect(s.bridge["font-size"]?.["0.875rem"]).toBe("text-sm");
 	});

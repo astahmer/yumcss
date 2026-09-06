@@ -103,6 +103,8 @@ export interface AdapterProjectBindings {
 	readonly cssModule?: string;
 	/** Module exporting the runtime `css` binding for dynamic/global rules. */
 	readonly runtimeCssModule?: string;
+	/** Module exporting the project-configured `tw` binding. */
+	readonly twModule?: string;
 	/** Module exporting the shared `cx` binding. */
 	readonly cxModule?: string;
 }

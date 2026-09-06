@@ -8,7 +8,7 @@
  * data-format conversion command.
  */
 import { existsSync, mkdirSync, readFileSync, statSync, unlinkSync, writeFileSync } from "node:fs";
-import { basename, dirname, extname, resolve } from "node:path";
+import { basename, dirname, extname, isAbsolute, relative, resolve } from "node:path";
 import cac, { type CAC, type Command } from "cac";
 import { createSourceWorkspace } from "pandwind/source/workspace";
 import { loadMetaFromSourcesAsync, type PandwindMeta } from "./meta.ts";
@@ -20,7 +20,16 @@ import type { TokenFormatId } from "./swap/token-format-contracts.ts";
 import { TokenFormatId as TokenFormat } from "./swap/token-format-contracts.ts";
 import { unifiedDiff } from "./diff.ts";
 import { configureMigrateCommand } from "./swap/cli-args.ts";
-import { createPandwindProjectSupport, type PandwindProjectSupport } from "./swap/project-bootstrap.ts";
+import {
+	createPandwindProjectSupport,
+	type PandwindProjectSupport,
+} from "./swap/project-bootstrap.ts";
+import { PACKAGE_INSTALLER, type PackageInstallResult } from "./package-installer.ts";
+import {
+	AdapterDependencyKindTag,
+	type AdapterDependencies,
+	type AdapterProjectBindings,
+} from "./swap/adapter-contract.ts";
 export { unifiedDiff } from "./diff.ts";
 
 function writeGeneratedFiles(
@@ -119,57 +128,169 @@ const expandPatterns = (
 	includeUnsupported = false,
 ): string[] => [...sourceWorkspace.files(patterns, baseDir, { includeUnsupported })];
 
-const readProjectFile = (root: string) => (file: string): string | undefined => {
-	const absolute = file.startsWith(root) ? file : resolve(root, file);
-	try {
-		return readFileSync(absolute, "utf8");
-	} catch {
-		return undefined;
-	}
-};
+const readProjectFile =
+	(root: string) =>
+	(file: string): string | undefined => {
+		const absolute = isAbsolute(file) ? file : resolve(root, file);
+		try {
+			return readFileSync(absolute, "utf8");
+		} catch {
+			return undefined;
+		}
+	};
 
 const projectFiles = (root: string): readonly string[] =>
 	sourceWorkspace.files(["**/*"], root, { includeUnsupported: true });
 
 function shouldBootstrapPandwindProject(args: swapImport.MigrateCliArgs): boolean {
-	if (args.to === SwapTargetId.Tw)
-		return args.from === CodemodAdapterId.Tailwind || args.from === SwapSourceId.Auto;
+	if (args.to === SwapTargetId.Tw) return args.from !== SwapSourceId.Tw;
 	return (
-		args.to === CodemodAdapterId.Pandwind ||
+		(args.to === CodemodAdapterId.Pandwind && args.from !== CodemodAdapterId.Pandwind) ||
 		(args.to === SwapTargetId.CssClass && isExternalAdapterId(args.from))
 	);
 }
 
-/** Ascend from cwd to the workspace root (the dir containing pnpm-workspace.yaml). */
-function findRepoRoot(): string {
-	let dir = process.cwd();
-	for (;;) {
-		try {
-			statSync(resolve(dir, "pnpm-workspace.yaml"));
-			return dir;
-		} catch {
-			const parent = resolve(dir, "..");
-			if (parent === dir) return process.cwd();
-			dir = parent;
-		}
+const PROJECT_ROOT_MARKERS = [
+	"package.json",
+	"pnpm-lock.yaml",
+	"yarn.lock",
+	"package-lock.json",
+	"bun.lock",
+	"bun.lockb",
+	"pnpm-workspace.yaml",
+] as const;
+
+const nearestProjectRoot = (start: string): string => {
+	let directory = resolve(start);
+	try {
+		if (!statSync(directory).isDirectory()) directory = dirname(directory);
+	} catch {
+		directory = dirname(directory);
 	}
-}
+	for (;;) {
+		if (PROJECT_ROOT_MARKERS.some((marker) => existsSync(resolve(directory, marker))))
+			return directory;
+		const parent = dirname(directory);
+		if (parent === directory) return resolve(start);
+		directory = parent;
+	}
+};
+
+const absolutePatternRoot = (patterns: readonly string[]): string | undefined => {
+	const absolute = patterns.find((pattern) => isAbsolute(pattern));
+	if (absolute === undefined) return undefined;
+	const wildcard = absolute.search(/[!*?[{]/u);
+	const prefix = wildcard < 0 ? absolute : absolute.slice(0, wildcard);
+	return nearestProjectRoot(prefix.endsWith("/") ? prefix.slice(0, -1) : dirname(prefix));
+};
+
+const migrationRoot = (args: swapImport.MigrateCliArgs): string => {
+	if (args.root !== undefined) return resolve(process.cwd(), args.root);
+	return nearestProjectRoot(absolutePatternRoot(args.patterns) ?? process.cwd());
+};
+
+const readPackageJson = (root: string): Readonly<Record<string, unknown>> | undefined => {
+	try {
+		const parsed: unknown = JSON.parse(readFileSync(resolve(root, "package.json"), "utf8"));
+		return parsed !== null && typeof parsed === "object"
+			? (parsed as Readonly<Record<string, unknown>>)
+			: undefined;
+	} catch {
+		return undefined;
+	}
+};
+
+const projectOutputDirectory = (root: string, output: string): string => {
+	const absolute = isAbsolute(output) ? output : resolve(root, output);
+	const relativePath = relative(root, absolute).replaceAll("\\", "/");
+	if (relativePath === "" || relativePath.startsWith("../") || relativePath === "..")
+		throw new Error(`codemod: --out must stay inside the project root: ${output}`);
+	return relativePath;
+};
+
+const existingProjectSupport = (
+	root: string,
+	directory: string,
+	meta: PandwindMeta,
+): PandwindProjectSupport => {
+	const relativeDirectory = projectOutputDirectory(root, directory);
+	const modulePath = (name: string): string | undefined =>
+		existsSync(resolve(root, relativeDirectory, name)) ? `${relativeDirectory}/${name}` : undefined;
+	const bindings: AdapterProjectBindings = {
+		...(modulePath("css.ts") === undefined ? {} : { cssModule: modulePath("css.ts") }),
+		...(modulePath("runtime.ts") === undefined
+			? {}
+			: { runtimeCssModule: modulePath("runtime.ts") }),
+		...(modulePath("tw.ts") === undefined ? {} : { twModule: modulePath("tw.ts") }),
+		...(modulePath("cx.ts") === undefined ? {} : { cxModule: modulePath("cx.ts") }),
+	};
+	return {
+		metaDirectory: relativeDirectory,
+		bindings,
+		files: [],
+		meta,
+		sourceConfig: { adapter: CodemodAdapterId.Pandwind, root, files: [], values: {} },
+	};
+};
+
+const projectAdapterFor = (
+	args: swapImport.MigrateCliArgs,
+	filePaths: readonly string[],
+	root: string,
+): string | undefined => {
+	if (isExternalAdapterId(args.from)) return args.from;
+	for (const file of filePaths) {
+		const source = readProjectFile(root)(file);
+		if (source === undefined) continue;
+		const detected = detectExternalSource(source, file.slice(root.length + 1), root);
+		if (detected !== undefined) return detected;
+	}
+	return undefined;
+};
+
+const printPackageInstall = (result: PackageInstallResult): void => {
+	if (result.installed.length === 0) {
+		if (result.alreadyPresent.length > 0)
+			console.log(`dependencies: already present (${result.alreadyPresent.toSorted().join(", ")})`);
+		return;
+	}
+	console.log(`dependencies: installed with ${result.manager} (${result.installed.join(", ")})`);
+};
 
 const LEGACY_MODES: readonly MigrateMode[] = ["tw", "cx", "css", "keep"];
 
 const isLegacyMode = (args: swapImport.MigrateCliArgs): boolean =>
-	(args.to === "cx" || args.to === "css" || args.to === "keep") || args.sources.length > 0;
+	args.to === "cx" || args.to === "css" || args.to === "keep" || args.sources.length > 0;
 
 async function mainMigrate(argv: string[]): Promise<void> {
 	const args = swapImport.parseMigrateArgs(argv);
-	const root = findRepoRoot();
+	const root = migrationRoot(args);
 	if (isLegacyMode(args)) {
-		await runDefault(args);
+		await runLegacyMigration(args, root);
 		return;
 	}
-	const filePaths = expandPatterns(args.patterns, root, isExternalSwap(args));
-	if (isExternalSwap(args)) {
+	const explicitlyExternal = isExternalRoute(args);
+	const candidateFilePaths = expandPatterns(
+		args.patterns,
+		root,
+		explicitlyExternal || args.from === SwapSourceId.Auto,
+	);
+	const autoExternal =
+		!explicitlyExternal &&
+		args.from === SwapSourceId.Auto &&
+		args.to === SwapTargetId.CssClass &&
+		candidateFilePaths.some((file) => {
+			const source = readProjectFile(root)(file);
+			if (source === undefined) return false;
+			const detected = detectExternalSource(source, file.slice(root.length + 1), root);
+			return detected !== undefined && detected !== CodemodAdapterId.Pandwind;
+		});
+	const external = explicitlyExternal || autoExternal;
+	const filePaths = external ? candidateFilePaths : expandPatterns(args.patterns, root);
+	if (external) {
 		let meta: PandwindMeta | undefined;
+		let project: PandwindProjectSupport | undefined;
+		const packageJson = readPackageJson(root);
 		if (args.metaDir !== "") {
 			const metaDir = resolve(root, args.metaDir);
 			try {
@@ -181,15 +302,38 @@ async function mainMigrate(argv: string[]): Promise<void> {
 				});
 			} catch (error) {
 				console.error(
-					`codemod swap: failed to load generated metadata from ${metaDir}\n` +
+					`codemod migrate: failed to load generated metadata from ${metaDir}\n` +
 						"  remove --meta for literal-safe output, or regenerate the target metadata\n" +
 						`  (${(error as Error).message})`,
 				);
 				process.exitCode = 1;
 				return;
 			}
+			try {
+				project = existingProjectSupport(root, args.metaDir, meta);
+			} catch {
+				// An explicitly supplied metadata directory may belong to a separate
+				// build workspace. It can still drive token lowering, but generated
+				// source must fall back to package imports rather than crossing the
+				// project-root boundary with an unsafe absolute module path.
+				project = undefined;
+			}
 		}
-		await runExternalAdapterSwap(args, filePaths, root, meta);
+		if (meta === undefined && shouldBootstrapPandwindProject(args)) {
+			const sourceAdapter = projectAdapterFor(args, filePaths, root);
+			if (sourceAdapter !== undefined) {
+				project = await createPandwindProjectSupport({
+					root,
+					sourceAdapter,
+					outputDirectory: projectOutputDirectory(root, args.outDir || "pandwind"),
+					readFile: readProjectFile(root),
+					listFiles: projectFiles,
+					...(packageJson === undefined ? {} : { packageJson }),
+				});
+				meta = project.meta;
+			}
+		}
+		await runAdapterRoute(args, filePaths, root, meta, project, packageJson);
 		return;
 	}
 	const metaDirRelative = args.metaDir !== "" ? args.metaDir : "apps/example/src";
@@ -291,7 +435,7 @@ async function mainMigrate(argv: string[]): Promise<void> {
 		totalChanged++;
 		if (args.diff && args.reportFormat !== "json")
 			console.log(unifiedDiff(source, result.code, relative));
-			if (!args.dryRun) writeFileSync(file, result.code);
+		if (!args.dryRun) writeFileSync(file, result.code);
 		if (args.reportFormat !== "json")
 			console.log(
 				`${relative}: ${args.dryRun ? "would change" : "written"} — ${result.converted} call site(s) swapped to ${args.to}, ` +
@@ -305,7 +449,6 @@ async function mainMigrate(argv: string[]): Promise<void> {
 				`${totalConverted} swapped · ${totalResiduals} residual(s) · swap ${args.from}->${args.to} · ` +
 				(args.dryRun ? "dry-run (no files written)" : "WRITTEN"),
 		);
-
 	if (args.report && args.reportFormat === "text") {
 		const lines = [
 			"migration report:",
@@ -350,8 +493,9 @@ function isFlatRoute(args: swapImport.MigrateCliArgs): boolean {
 	return flatSources.includes(args.from) && flatTargets.includes(args.to as string);
 }
 
-function isExternalSwap(args: swapImport.MigrateCliArgs): boolean {
+function isExternalRoute(args: swapImport.MigrateCliArgs): boolean {
 	if (isFlatRoute(args)) return false;
+	if (args.to === SwapTargetId.Tw && args.from !== SwapSourceId.Tw) return true;
 	return isExternalAdapterId(args.from) || isExternalAdapterId(args.to);
 }
 
@@ -371,11 +515,13 @@ function detectExternalSource(
 		.toSorted((a, b) => b.result.confidence - a.result.confidence)[0]?.id;
 }
 
-async function runExternalAdapterSwap(
+async function runAdapterRoute(
 	args: swapImport.MigrateCliArgs,
 	filePaths: Array<string>,
 	root: string,
 	meta?: PandwindMeta,
+	project?: PandwindProjectSupport,
+	packageJson?: Readonly<Record<string, unknown>>,
 ): Promise<void> {
 	if (filePaths.length === 0) {
 		console.error("codemod migrate: no matching files");
@@ -384,13 +530,13 @@ async function runExternalAdapterSwap(
 	}
 	const target = isExternalAdapterId(args.to)
 		? args.to
-		: args.to === SwapTargetId.CssClass
-			? CodemodAdapterId.Pandwind
-			: undefined;
+		: args.to === SwapTargetId.Tw
+			? `${CodemodAdapterId.Pandwind}:${SwapSourceId.Tw}`
+			: args.to === SwapTargetId.CssClass
+				? CodemodAdapterId.Pandwind
+				: undefined;
 	if (target === undefined) {
-		console.error(
-			`codemod migrate: external adapters currently emit to css.class (or an external adapter), not '${args.to}'`,
-		);
+		console.error(`codemod migrate: no registered target adapter for '${args.to}'`);
 		process.exitCode = 1;
 		return;
 	}
@@ -407,10 +553,25 @@ async function runExternalAdapterSwap(
 		converted: number;
 		skipped: number;
 		residuals: number;
+		residualDetails: readonly {
+			kind: string;
+			text: string;
+			hint?: string;
+		}[];
 	}> = [];
 	const plannedGeneratedFiles = new Map<string, string>();
 	const plannedFileChanges = new Map<string, string>();
 	const projectFiles = sourceWorkspace.files(["**/*"], root, { includeUnsupported: true });
+	const projectGeneratedFiles = project?.files ?? [];
+	const targetDependencies: AdapterDependencies[] =
+		project === undefined
+			? []
+			: [
+					{
+						packages: [{ name: "pandwind", kind: AdapterDependencyKindTag.Runtime }],
+					},
+				];
+	const dependencies: AdapterDependencies[] = [...targetDependencies];
 	const pendingWrites: Array<{
 		file: string;
 		outputFile: string;
@@ -437,17 +598,13 @@ async function runExternalAdapterSwap(
 			to: target,
 			file: relative,
 			root,
-			readFile: (candidate) => {
-				try {
-					return readFileSync(candidate, "utf8");
-				} catch {
-					return undefined;
-				}
-			},
+			readFile: readProjectFile(root),
 			listFiles: () => projectFiles,
 			mode: args.capabilityMode ?? "safe",
 			skipMarker: args.skipMarker,
 			meta,
+			packageJson,
+			project: project?.bindings,
 		});
 		const codeChanged = result.code !== source;
 		const outputFile =
@@ -462,10 +619,16 @@ async function runExternalAdapterSwap(
 			converted: result.converted,
 			skipped: result.skipped,
 			residuals: result.residuals.length,
+			residualDetails: result.residuals.map((residual) => ({
+				kind: residual.kind,
+				text: residual.text,
+				...(residual.hint === undefined ? {} : { hint: residual.hint }),
+			})),
 		});
 		totalConverted += result.converted;
 		totalSkipped += result.skipped;
 		totalResiduals += result.residuals.length;
+		dependencies.push(...result.dependencies);
 		if (!result.changed && !codeChanged && result.generatedFiles.length === 0) {
 			if (args.reportFormat !== "json") console.log(`${relative}: no changes (${from}->${target})`);
 			continue;
@@ -473,15 +636,13 @@ async function runExternalAdapterSwap(
 		totalChanged++;
 		if (args.diff && args.reportFormat !== "json")
 			console.log(unifiedDiff(source, result.code, relative));
-		if (!args.dryRun) {
-			if (outputFile !== file && existsSync(outputFile))
-				throw new Error(
-					`codemod: refusing to overwrite existing host-conversion output ${outputFile}`,
-				);
-			validatePlannedGeneratedFiles(root, result.generatedFiles, plannedGeneratedFiles);
-			validatePlannedFileChanges(root, result.fileChanges, plannedFileChanges);
-			pendingWrites.push({ file, outputFile, relative, result });
-		}
+		if (outputFile !== file && existsSync(outputFile))
+			throw new Error(
+				`codemod: refusing to overwrite existing host-conversion output ${outputFile}`,
+			);
+		validatePlannedGeneratedFiles(root, result.generatedFiles, plannedGeneratedFiles);
+		validatePlannedFileChanges(root, result.fileChanges, plannedFileChanges);
+		pendingWrites.push({ file, outputFile, relative, result });
 		if (args.dryRun && args.reportFormat !== "json")
 			console.log(
 				`${relative}: would change — ${result.converted} converted, ` +
@@ -494,7 +655,11 @@ async function runExternalAdapterSwap(
 			}
 		}
 	}
+	if (pendingWrites.length > 0 && projectGeneratedFiles.length > 0) {
+		validatePlannedGeneratedFiles(root, projectGeneratedFiles, plannedGeneratedFiles);
+	}
 	if (!args.dryRun) {
+		if (pendingWrites.length > 0) writeGeneratedFiles(root, projectGeneratedFiles);
 		for (const pending of pendingWrites) {
 			writeGeneratedFiles(root, pending.result.generatedFiles);
 			if (pending.outputFile === pending.file) writeFileSync(pending.file, pending.result.code);
@@ -509,27 +674,61 @@ async function runExternalAdapterSwap(
 				);
 		}
 		for (const pending of pendingWrites) applyFileChanges(root, pending.result.fileChanges);
+		if (
+			args.install &&
+			pendingWrites.length > 0 &&
+			dependencies.length > 0 &&
+			packageJson !== undefined
+		) {
+			const installed = await PACKAGE_INSTALLER.install({ root, packageJson, dependencies });
+			if (args.reportFormat !== "json") printPackageInstall(installed);
+		}
 	}
 	if (args.reportFormat !== "json")
 		console.log(
 			`\nsummary: ${filePaths.length} file(s) scanned · ${totalChanged} changed · ` +
 				`${totalConverted} converted · ${totalSkipped} skipped · ${totalResiduals} residual(s) · ` +
-			(args.dryRun ? "dry-run (no files written)" : "WRITTEN"),
+				(args.dryRun ? "dry-run (no files written)" : "WRITTEN"),
 		);
+	if (projectGeneratedFiles.length > 0 && args.reportFormat !== "json")
+		console.log(
+			`${args.dryRun ? "support files would be generated" : "support files generated"}: ` +
+				projectGeneratedFiles.map((file) => file.path).join(", "),
+		);
+	if (args.report && args.reportFormat === "text") {
+		const residualDetails = reportEntries.flatMap((entry) =>
+			entry.residualDetails.map((residual) => ({ file: entry.file, ...residual })),
+		);
+		const lines = [
+			"migration report:",
+			`  call sites through the target API: ${totalConverted}`,
+			`  residuals needing attention: ${totalResiduals}`,
+		];
+		if (residualDetails.length > 0) {
+			lines.push("  residual details:");
+			for (const residual of residualDetails.slice(0, 20))
+				lines.push(
+					`    - ${residual.file}: ${residual.kind} ${residual.text}` +
+						(residual.hint === undefined ? "" : ` — ${residual.hint}`),
+				);
+			if (residualDetails.length > 20) lines.push(`    … and ${residualDetails.length - 20} more`);
+		}
+		console.log(lines.join("\n"));
+	}
 	if (args.report && args.reportFormat === "json") {
 		console.log(
 			JSON.stringify({
 				from: args.from,
 				to: target,
 				mode: args.capabilityMode ?? "safe",
+				projectGeneratedFiles: projectGeneratedFiles.map((file) => file.path),
 				files: reportEntries,
 			}),
 		);
 	}
 }
 
-async function runDefault(args: swapImport.MigrateCliArgs): Promise<void> {
-	const root = findRepoRoot();
+async function runLegacyMigration(args: swapImport.MigrateCliArgs, root: string): Promise<void> {
 	const metaDirRelative = args.metaDir !== "" ? args.metaDir : "apps/example/src";
 	const metaDir = resolve(root, metaDirRelative);
 
@@ -707,7 +906,10 @@ const parseTokenArgs = (argv: readonly string[]): TokenCliArgs => {
 
 const createCodemodCli = (): CAC => {
 	const cli = cac("pandwind-codemod");
-	const migrate = cli.command("migrate [...patterns]", "Migrate a project between styling adapters");
+	const migrate = cli.command(
+		"migrate [...patterns]",
+		"Migrate a project between styling adapters",
+	);
 	configureMigrateCommand(migrate);
 	const tokens = cli.command("tokens <input>", "Convert token files between supported formats");
 	configureTokensCommand(tokens);
@@ -717,6 +919,7 @@ const createCodemodCli = (): CAC => {
 /** Normalize the old root/swap spellings into the one migration command. */
 const normalizeCommand = (argv: readonly string[]): string[] => {
 	const [first, ...rest] = argv;
+	if (first === "-h" || first === "--help") return [...argv];
 	if (first === "migrate" || first === "tokens") return [...argv];
 	if (first === "swap") return ["migrate", ...rest];
 	return ["migrate", ...argv];

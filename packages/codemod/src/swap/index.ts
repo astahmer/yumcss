@@ -683,7 +683,7 @@ export function runSwap(
 	const marker = options.skipMarker ?? "pandwind:migrate-skip";
 	const file = options.file;
 	const emitter = SWAP_REGISTRY.getTarget(options.to);
-	if (emitter === undefined) throw new Error(`codemod swap: unknown target '${options.to}'`);
+	if (emitter === undefined) throw new Error(`codemod migrate: unknown target '${options.to}'`);
 	const matches = collectMatches(
 		source,
 		options.from,
