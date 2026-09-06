@@ -2,11 +2,14 @@ import {
 	createRootRoute,
 	createRoute,
 	createRouter,
+	Link,
 	Outlet,
 	redirect,
 	useNavigate,
 	useRouterState,
 } from "@tanstack/react-router";
+import { Combobox, createListCollection } from "@ark-ui/react";
+import { useEffect, useMemo, useState } from "react";
 import { EXAMPLES } from "./lib/examples.ts";
 import { PlaygroundPage } from "./components/PlaygroundPage.tsx";
 import { MigrationLabPage } from "./components/MigrationLabPage.tsx";
@@ -26,15 +29,129 @@ const NAV_GROUPS = (Object.keys(GROUP_LABEL) as Array<keyof typeof GROUP_LABEL>)
 
 type PlaygroundRoute = "/migrate" | (typeof EXAMPLES)[number]["path"];
 
+interface ScenarioItem {
+	readonly value: (typeof EXAMPLES)[number]["path"];
+	readonly label: string;
+	readonly group: string;
+}
+
+const SCENARIO_ITEMS: readonly ScenarioItem[] = NAV_GROUPS.flatMap((group) =>
+	group.items.map((item) => ({ value: item.path, label: item.label, group: group.label })),
+);
+
+const SCENARIO_COLLECTION = createListCollection<ScenarioItem>({
+	items: SCENARIO_ITEMS,
+	itemToValue: (item) => item.value,
+	itemToString: (item) => item.label,
+	groupBy: (item) => item.group,
+});
+
+const HEADER_LINK = uiCss.class({
+	flexShrink: "0",
+	borderRadius: "5px",
+	padding: "6px 8px",
+	fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+	fontSize: "11px",
+	textDecoration: "none",
+	transition: "color 120ms, background-color 120ms",
+});
+const HEADER_LINK_ACTIVE = uiCss.class({
+	backgroundColor: "rgba(255,255,255,0.08)",
+	color: "#f4f4f5",
+});
+const HEADER_LINK_IDLE = uiCss.class({ color: "#71717a", "&:hover": { color: "#e4e4e7" } });
+const SCENARIO_CONTROL = uiCss.class({
+	display: "flex",
+	minWidth: "0px",
+	maxWidth: "22rem",
+	height: "30px",
+	alignItems: "center",
+	border: "1px solid rgba(255,255,255,0.1)",
+	borderRadius: "6px",
+	backgroundColor: "#16161b",
+	transition: "border-color 120ms, box-shadow 120ms",
+	"&:focus-within": {
+		borderColor: "rgba(251,146,60,0.6)",
+		boxShadow: "0 0 0 1px rgba(251,146,60,0.3)",
+	},
+});
+const SCENARIO_INPUT = uiCss.class({
+	minWidth: "0px",
+	flex: "1 1 0%",
+	border: "0",
+	outline: "none",
+	backgroundColor: "transparent",
+	padding: "0 0 0 9px",
+	fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+	fontSize: "11px",
+	color: "#d4d4d8",
+});
+const SCENARIO_TRIGGER = uiCss.class({
+	flexShrink: "0",
+	border: "0",
+	backgroundColor: "transparent",
+	padding: "0 8px",
+	fontSize: "15px",
+	lineHeight: "1",
+	color: "#a1a1aa",
+	"&:hover": { color: "#f4f4f5" },
+});
+const SCENARIO_CONTENT = uiCss.class({
+	minWidth: "14rem",
+	maxHeight: "24rem",
+	overflow: "auto",
+	border: "1px solid rgba(255,255,255,0.1)",
+	borderRadius: "7px",
+	backgroundColor: "#16161b",
+	boxShadow: "0 16px 40px rgba(0,0,0,0.4)",
+	padding: "5px",
+	zIndex: "20",
+});
+const SCENARIO_GROUP_LABEL = uiCss.class({
+	padding: "7px 8px 4px",
+	fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+	fontSize: "9px",
+	textTransform: "uppercase",
+	letterSpacing: "0.1em",
+	color: "#52525b",
+});
+const SCENARIO_ITEM = uiCss.class({
+	display: "flex",
+	alignItems: "center",
+	justifyContent: "space-between",
+	borderRadius: "4px",
+	padding: "7px 8px",
+	fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+	fontSize: "11px",
+	color: "#a1a1aa",
+	outline: "none",
+	"&[data-highlighted]": { backgroundColor: "rgba(251,146,60,0.12)", color: "#fed7aa" },
+	"&[data-state=checked]": { color: "#f4f4f5" },
+});
+const SCENARIO_EMPTY = uiCss.class({ padding: "10px 8px", fontSize: "11px", color: "#71717a" });
+
 function ScenarioPicker() {
 	const navigate = useNavigate();
 	const pathname = useRouterState({ select: (state) => state.location.pathname });
-	const knownPath =
-		pathname === "/migrate" || EXAMPLES.some((example) => example.path === pathname);
-	const selectedPath: PlaygroundRoute = knownPath ? (pathname as PlaygroundRoute) : DEFAULT_ROUTE;
+	const selectedPath = EXAMPLES.some((example) => example.path === pathname)
+		? (pathname as ScenarioItem["value"])
+		: DEFAULT_ROUTE;
+	const selectedItem =
+		SCENARIO_ITEMS.find((item) => item.value === selectedPath) ?? SCENARIO_ITEMS[0]!;
+	const [inputValue, setInputValue] = useState(selectedItem.label);
+	useEffect(() => setInputValue(selectedItem.label), [selectedItem.label]);
+	const collection = useMemo(
+		() =>
+			inputValue === selectedItem.label
+				? SCENARIO_COLLECTION
+				: SCENARIO_COLLECTION.filter((itemString) =>
+						itemString.toLowerCase().includes(inputValue.toLowerCase()),
+					),
+		[inputValue, selectedItem.label],
+	);
 
 	return (
-		<label
+		<div
 			className={uiCss.class({
 				display: "flex",
 				minWidth: "0px",
@@ -55,45 +172,57 @@ function ScenarioPicker() {
 			>
 				scenario
 			</span>
-			<select
-				aria-label="Open playground scenario"
-				value={selectedPath}
-				onChange={(event) => {
-					void navigate({ to: event.target.value as PlaygroundRoute });
+			<Combobox.Root
+				collection={collection}
+				value={[selectedPath]}
+				inputValue={inputValue}
+				openOnClick
+				positioning={{ sameWidth: true }}
+				onInputValueChange={({ inputValue: next }) => setInputValue(next)}
+				onValueChange={({ value }) => {
+					const nextPath = value[0] as PlaygroundRoute | undefined;
+					if (nextPath !== undefined) void navigate({ to: nextPath });
 				}}
-				className={uiCss.class({
-					height: "30px",
-					minWidth: "0px",
-					maxWidth: "min(22rem, 42vw)",
-					border: "1px solid rgba(255,255,255,0.1)",
-					borderRadius: "6px",
-					backgroundColor: "#16161b",
-					padding: "0 28px 0 9px",
-					fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
-					fontSize: "11px",
-					color: "#d4d4d8",
-					outline: "none",
-					textOverflow: "ellipsis",
-					transition: "border-color 120ms, color 120ms",
-					"&:hover": { borderColor: "rgba(255,255,255,0.2)", color: "#f4f4f5" },
-					"&:focus": {
-						borderColor: "rgba(251,146,60,0.6)",
-						boxShadow: "0 0 0 1px rgba(251,146,60,0.3)",
-					},
-				})}
 			>
-				<option value="/migrate">Migration lab</option>
-				{NAV_GROUPS.map((group) => (
-					<optgroup key={group.group} label={group.label}>
-						{group.items.map((item) => (
-							<option key={item.path} value={item.path}>
-								{item.label}
-							</option>
+				<Combobox.Control className={SCENARIO_CONTROL}>
+					<Combobox.Input aria-label="Search playground scenarios" className={SCENARIO_INPUT} />
+					<Combobox.Trigger aria-label="Open playground scenarios" className={SCENARIO_TRIGGER}>
+						⌄
+					</Combobox.Trigger>
+				</Combobox.Control>
+				<Combobox.Positioner>
+					<Combobox.Content className={SCENARIO_CONTENT}>
+						<Combobox.Empty className={SCENARIO_EMPTY}>No matching scenarios</Combobox.Empty>
+						{collection.group().map(([group, items]) => (
+							<Combobox.ItemGroup key={group}>
+								<Combobox.ItemGroupLabel className={SCENARIO_GROUP_LABEL}>
+									{group}
+								</Combobox.ItemGroupLabel>
+								{items.map((item) => (
+									<Combobox.Item key={item.value} item={item} className={SCENARIO_ITEM}>
+										<Combobox.ItemText>{item.label}</Combobox.ItemText>
+										<Combobox.ItemIndicator>↵</Combobox.ItemIndicator>
+									</Combobox.Item>
+								))}
+							</Combobox.ItemGroup>
 						))}
-					</optgroup>
-				))}
-			</select>
-		</label>
+					</Combobox.Content>
+				</Combobox.Positioner>
+			</Combobox.Root>
+		</div>
+	);
+}
+
+function MigrationLabLink() {
+	const pathname = useRouterState({ select: (state) => state.location.pathname });
+	return (
+		<Link
+			to="/migrate"
+			aria-current={pathname === "/migrate" ? "page" : undefined}
+			className={`${HEADER_LINK} ${pathname === "/migrate" ? HEADER_LINK_ACTIVE : HEADER_LINK_IDLE}`}
+		>
+			migration lab
+		</Link>
 	);
 }
 
@@ -145,6 +274,7 @@ function Shell() {
 						playground
 					</span>
 				</div>
+				<MigrationLabLink />
 				<ScenarioPicker />
 				<div
 					className={uiCss.class({
