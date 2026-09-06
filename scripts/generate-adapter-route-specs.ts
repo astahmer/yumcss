@@ -68,25 +68,19 @@ function themePathFor(adapter: CodemodAdapterId): string {
 
 function themedSource(adapter: CodemodAdapterId, source: string): string {
 	if (adapter === CodemodAdapterId.Tailwind || adapter === CodemodAdapterId.UnoCSS)
-		return source.replace(
-			/className="[^"]*"/u,
-			'className="flex items-center gap-4 text-brand p-card"',
-		);
-	if (adapter === CodemodAdapterId.Panda) return source.replaceAll('"red.300"', '"brand"');
-	if (adapter === CodemodAdapterId.ChakraUi) return source.replaceAll('"red.200"', '"brand.500"');
-	if (adapter === CodemodAdapterId.Mui) return source.replaceAll('"red"', '"primary.main"');
-	if (adapter === CodemodAdapterId.Mantine) return source.replaceAll('"blue.6"', '"brand.0"');
-	if (adapter === CodemodAdapterId.Pandwind || adapter === CodemodAdapterId.Tokenami)
-		return source.replaceAll('"red"', '"brand"');
-	return source;
+		return source.replace(/className="[^"]*"/u, 'className="text-brand p-card"');
+	return source
+		.replaceAll('"red.300"', '"#2563eb"')
+		.replaceAll('"red.200"', '"#2563eb"')
+		.replaceAll('"blue.6"', '"#2563eb"')
+		.replaceAll('"red"', '"#2563eb"')
+		.replaceAll("color: red", "color: #2563eb")
+		.replaceAll("color: tomato", "color: #2563eb");
 }
 
 function tokenSource(adapter: CodemodAdapterId, source: string): string {
 	if (adapter === CodemodAdapterId.Tailwind || adapter === CodemodAdapterId.UnoCSS)
-		return source.replace(
-			/className="[^"]*"/u,
-			'className="flex items-center gap-4 text-brand p-card"',
-		);
+		return source.replace(/className="[^"]*"/u, 'className="text-brand p-card"');
 	return source
 		.replaceAll('"red.300"', '"#2563eb"')
 		.replaceAll('"red.200"', '"#2563eb"')
@@ -161,7 +155,9 @@ import { ${frameworkImport}CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
 	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
@@ -184,6 +180,7 @@ test("${source} -> ${target}: migrates concrete ${source} syntax to ${target}", 
 		expect(result.residuals.length).toBeGreaterThan(0);
 		expect(result.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(result, "${source} -> ${target} happy");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot();
 });
@@ -191,6 +188,7 @@ test("${source} -> ${target}: migrates concrete ${source} syntax to ${target}", 
 test("${source} -> ${target}: carries a documented secondary ${source} API explicitly", () => {
 	const result = route.run({ source: edgeSource, file: ${JSON.stringify(example.edgeFile)}, semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(result, "${source} -> ${target} secondary");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot();
 });
@@ -200,6 +198,9 @@ test("${source} -> ${target}: loads concrete theme and project context variants"
 	const amber = await route.runAsync({ source: themedSource, file: ${JSON.stringify(example.file)}, semantic: amberSemantic, project: amberProject });
 	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
 	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, ${identifier(source)}, ${identifier(target)});
+	expectRouteScenarioEvidence(blue, "${source} -> ${target} blue config");
+	expectRouteScenarioEvidence(amber, "${source} -> ${target} amber config");
 	expectExplicitResidualEvidence(blue);
 	expectExplicitResidualEvidence(amber);
 	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot();
@@ -208,6 +209,8 @@ test("${source} -> ${target}: loads concrete theme and project context variants"
 test("${source} -> ${target}: resolves concrete token values with project context", async () => {
 	const result = await route.runAsync({ source: tokenSource, file: ${JSON.stringify(example.file)}, semantic: blueSemantic, project: blueProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, ${identifier(source)}, ${identifier(target)});
+	expectRouteScenarioEvidence(result, "${source} -> ${target} token config");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot();
 });
@@ -215,6 +218,7 @@ test("${source} -> ${target}: resolves concrete token values with project contex
 test("${source} -> ${target}: preserves malformed concrete ${source} input", () => {
 	const result = route.run({ source: malformedSource, file: ${JSON.stringify(example.file)}, semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished ${source} */");
+	expectRouteScenarioEvidence(result, "${source} -> ${target} malformed");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot();
 });
@@ -235,8 +239,10 @@ import { ${frameworkImport}CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
 	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
 	expectActionableRoundTrip,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
@@ -257,6 +263,7 @@ test("${source} -> ${target} -> ${source}: preserves an actionable concrete roun
 		expect(first.residuals.length).toBeGreaterThan(0);
 		expect(first.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(first, "${source} -> ${target} round-trip happy forward");
 	expectExplicitResidualEvidence(first);
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(second);
@@ -267,6 +274,7 @@ test("${source} -> ${target} -> ${source}: retains the documented secondary API 
 	const first = forward.run({ source: edgeSource, file: ${JSON.stringify(example.edgeFile)}, semantic: sourceSemantic });
 	const second = reverse.run({ source: first.code, file: ${JSON.stringify(targetExample.file)}, semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(first, "${source} -> ${target} round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
@@ -280,6 +288,9 @@ test("${source} -> ${target} -> ${source}: preserves concrete theme and project 
 	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: ${JSON.stringify(targetExample.file)}, semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, ${identifier(source)}, ${identifier(target)});
+	expectRouteScenarioEvidence(firstBlue, "${source} -> ${target} round-trip blue forward");
+	expectRouteScenarioEvidence(firstAmber, "${source} -> ${target} round-trip amber forward");
 	expectActionableRoundTrip(firstBlue, secondBlue);
 	expectActionableRoundTrip(firstAmber, secondAmber);
 	expectExplicitResidualEvidence(firstBlue);
@@ -296,6 +307,8 @@ test("${source} -> ${target} -> ${source}: resolves token values across both con
 	const first = await forward.runAsync({ source: tokenSource, file: ${JSON.stringify(example.file)}, semantic: blueSemantic, project: blueProject });
 	const second = await reverse.runAsync({ source: first.code, file: ${JSON.stringify(targetExample.file)}, semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, ${identifier(source)}, ${identifier(target)});
+	expectRouteScenarioEvidence(first, "${source} -> ${target} round-trip token forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);

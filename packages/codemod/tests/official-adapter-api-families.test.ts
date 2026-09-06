@@ -1950,7 +1950,7 @@ describe("official adapter API families", () => {
 			  },
 			  "stylex/createTheme context": {
 			    "changed": true,
-			    "code": "import stylex from "@stylexjs/stylex";
+			  "code": "import * as stylex from "@stylexjs/stylex";
 			import { vars } from "./vars";
 			export const theme = // pandwind:migrate-skip (route: stylex -> pandwind | parse-residual: configuration | available: named-map, residual)
 			stylex.createTheme(vars, { accent: "blue" });",

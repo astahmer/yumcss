@@ -4,6 +4,8 @@ import {
 	createBuiltinCodemodCatalog,
 	runAdapterMigration,
 	runAdapterMigrationAsync,
+	StyleMigrationOutcome,
+	StyleRepresentationKind,
 	type AdapterMigrationOptions,
 	type AdapterMigrationResult,
 } from "../src/swap/index.ts";
@@ -24,6 +26,10 @@ interface AdapterRouteProject {
 	readonly packageJson?: Readonly<Record<string, unknown>>;
 	readonly files: Readonly<Record<string, string>>;
 	readonly moduleLoader?: ProjectModuleLoader;
+	readonly loaderCalls: {
+		readonly packages: string[];
+		readonly files: string[];
+	};
 }
 
 const routeProjectRoot = "/virtual/pandwind-route-project";
@@ -36,7 +42,7 @@ function routeProjectFiles(
 	switch (adapter) {
 		case CodemodAdapterId.Panda:
 			return {
-				[`${routeProjectRoot}/panda.config.ts`]: `export default { theme: { extend: { tokens: { colors: { brand: { value: ${quotedColor} } }, spacing: { card: { value: "1.125rem" } } } } } };`,
+				[`${routeProjectRoot}/panda.config.ts`]: `export default { theme: { extend: { tokens: { colors: { brand: { 500: { value: ${quotedColor} } } }, spacing: { card: { value: "1.125rem" } } } } } };`,
 			};
 		case CodemodAdapterId.Pandwind:
 			return {
@@ -81,6 +87,7 @@ function hasAdapter(adapters: ReadonlySet<CodemodAdapterId>, adapter: CodemodAda
 function routeProjectLoader(
 	adapters: ReadonlySet<CodemodAdapterId>,
 	color: string,
+	loaderCalls: AdapterRouteProject["loaderCalls"],
 ): ProjectModuleLoader {
 	const theme = {
 		colors: { brand: { 500: { value: color } } },
@@ -88,6 +95,7 @@ function routeProjectLoader(
 	};
 	return {
 		async importPackage<T>(packageName: string): Promise<T | undefined> {
+			loaderCalls.packages.push(packageName);
 			if (hasAdapter(adapters, CodemodAdapterId.Panda)) {
 				if (packageName === "@pandacss/config")
 					return {
@@ -176,6 +184,14 @@ function routeProjectLoader(
 										if (token === "text-brand") return `.text-brand{color:${color}}`;
 										if (token === "bg-brand") return `.bg-brand{background-color:${color}}`;
 										if (token === "p-card") return ".p-card{padding:1.125rem}";
+										const arbitrary = /^\[([^:]+):(.+)\]$/u.exec(token);
+										if (arbitrary?.[1] !== undefined && arbitrary[2] !== undefined) {
+											const escaped = token.replace(
+												/[^A-Za-z0-9_-]/gu,
+												(character) => `\\${character}`,
+											);
+											return `.${escaped}{${arbitrary[1]}:${arbitrary[2]}}`;
+										}
 										return "";
 									})
 									.join(""),
@@ -186,6 +202,7 @@ function routeProjectLoader(
 			return undefined;
 		},
 		async importFile<T>(file: string): Promise<T | undefined> {
+			loaderCalls.files.push(file);
 			if (hasAdapter(adapters, CodemodAdapterId.ChakraUi) && file.endsWith("/theme.ts"))
 				return {
 					default: { theme: { tokens: theme } },
@@ -216,6 +233,7 @@ export function createAdapterRouteProject(
 	color: string,
 ): AdapterRouteProject {
 	const adapters = new Set([source, target]);
+	const loaderCalls: AdapterRouteProject["loaderCalls"] = { packages: [], files: [] };
 	const files: Record<string, string> = {};
 	for (const adapter of adapters)
 		for (const [file, contents] of Object.entries(routeProjectFiles(adapter, color)))
@@ -223,7 +241,8 @@ export function createAdapterRouteProject(
 	return {
 		root: routeProjectRoot,
 		files,
-		moduleLoader: routeProjectLoader(adapters, color),
+		loaderCalls,
+		moduleLoader: routeProjectLoader(adapters, color, loaderCalls),
 	};
 }
 
@@ -314,8 +333,107 @@ export function routeEvidence(result: AdapterMigrationResult) {
 			lossiness: validation.lossiness,
 			differences: validation.differences,
 		})),
+		generatedFiles: result.generatedFiles.map((file) => ({
+			path: file.path,
+			purpose: file.purpose,
+		})),
+		loweringPlans: result.loweringPlans.map((plan) => ({
+			representation: plan.representation,
+			availableRepresentations: plan.availableRepresentations,
+			applied: plan.applied,
+			residuals: plan.residuals.map((residual) => ({
+				kind: residual.kind,
+				hint: residual.hint,
+			})),
+		})),
 		code: result.code,
 	};
+}
+
+function officialConfigPackages(adapter: CodemodAdapterId): readonly string[] {
+	switch (adapter) {
+		case CodemodAdapterId.Panda:
+			return ["@pandacss/config"];
+		case CodemodAdapterId.Pandwind:
+			return ["pandwind/preset"];
+		case CodemodAdapterId.ChakraUi:
+			return ["@chakra-ui/react"];
+		case CodemodAdapterId.Mui:
+			return ["@mui/system", "@mui/material"];
+		case CodemodAdapterId.Mantine:
+			return ["@mantine/core"];
+		case CodemodAdapterId.Tailwind:
+			return ["@tailwindcss/node"];
+		case CodemodAdapterId.Tokenami:
+			return ["@tokenami/config"];
+		case CodemodAdapterId.UnoCSS:
+			return ["@unocss/config", "@unocss/core"];
+		default:
+			return [];
+	}
+}
+
+/** Proves the configured route actually crossed each supported official loader. */
+export function expectConfiguredProjectEvidence(
+	project: AdapterRouteProject,
+	source: CodemodAdapterId,
+	target: CodemodAdapterId,
+): void {
+	for (const adapter of new Set([source, target])) {
+		const packages = officialConfigPackages(adapter);
+		if (packages.length === 0) continue;
+		expect(
+			project.loaderCalls.packages.some((packageName) => packages.includes(packageName)),
+			`${adapter} official config loader was not called`,
+		).toBe(true);
+	}
+}
+
+/** A direct route fixture must either lower, skip with evidence, or preserve a residual. */
+export function expectRouteScenarioEvidence(result: AdapterMigrationResult, label = "route"): void {
+	expect(
+		result.changed || result.converted > 0 || result.skipped > 0 || result.residuals.length > 0,
+		`${label} produced no conversion, residual, or source-preserving change`,
+	).toBe(true);
+
+	const generatedPaths = result.generatedFiles.map((file) => file.path);
+	expect(new Set(generatedPaths).size, `${label} generated duplicate file paths`).toBe(
+		generatedPaths.length,
+	);
+	for (const file of result.generatedFiles) {
+		expect(file.path, `${label} generated an empty path`).toBeTruthy();
+		expect(file.content, `${label} generated empty ${file.path}`).toBeTruthy();
+	}
+
+	if (result.converted > 0) {
+		expect(result.loweringPlans.length, `${label} has no lowering plan`).toBeGreaterThan(0);
+		expect(result.outcomes.length, `${label} has no migration outcome`).toBeGreaterThan(0);
+		expect(
+			result.outcomes.some((outcome) => outcome.outcome !== StyleMigrationOutcome.Residual),
+			`${label} converted without a target outcome`,
+		).toBe(true);
+		expect(
+			result.loweringPlans.every((plan) =>
+				plan.availableRepresentations.includes(plan.representation),
+			),
+			`${label} selected a representation outside the target contract`,
+		).toBe(true);
+		if (result.skipped === 0)
+			expect(
+				result.validations.every((validation) => validation.valid),
+				`${label} converted with invalid canonical validation`,
+			).toBe(true);
+	}
+	if (result.skipped > 0)
+		expect(
+			result.outcomes.some((outcome) => outcome.outcome === StyleMigrationOutcome.Residual),
+			`${label} skipped without a residual outcome`,
+		).toBe(true);
+	if (result.code.includes("__pandwind/slot"))
+		expect(
+			result.generatedFiles.some((file) => file.path.includes("__pandwind/slot")),
+			`${label} references a generated slot without emitting it`,
+		).toBe(true);
 }
 
 export function expectExplicitResidualEvidence(result: AdapterMigrationResult): void {
@@ -343,9 +461,23 @@ export function expectActionableRoundTrip(
 ): void {
 	const reverseActionable =
 		reverse.converted > 0 || reverse.skipped > 0 || reverse.residuals.length > 0;
-	const visibleFallback =
-		forward.code.includes("pandwind:migrate-skip") ||
-		forward.code.includes('"pandwind/') ||
-		forward.code.includes('"pandwind\\n');
-	expect(reverseActionable || visibleFallback).toBe(true);
+	const forwardHasResidual =
+		forward.skipped > 0 ||
+		forward.residuals.length > 0 ||
+		forward.outcomes.some((outcome) => outcome.outcome === StyleMigrationOutcome.Residual);
+	const forwardHasPortableArtifact =
+		forward.outcomes.some(
+			(outcome) => outcome.representation === StyleRepresentationKind.PortableArtifact,
+		) && forward.code.includes("pandwind/");
+	if (forward.converted > 0 && !forwardHasResidual) {
+		expect(reverseActionable || (forwardHasPortableArtifact && reverse.code === forward.code)).toBe(
+			true,
+		);
+		return;
+	}
+	if (forwardHasResidual) {
+		expect(reverseActionable || reverse.code === forward.code).toBe(true);
+		return;
+	}
+	expect(reverseActionable).toBe(true);
 }

@@ -552,6 +552,7 @@ async function officialConfig(
 			minify: true,
 		});
 		const themeCss = projectThemeCss(context);
+		const officialResolver = createUnoCssResolverFromCss(`${themeCss}\n${generated.css}`);
 		return {
 			...fallback,
 			files: [
@@ -563,7 +564,14 @@ async function officialConfig(
 			values: {
 				...fallback.values,
 				unoConfig: loaded.config,
-				unoResolver: createUnoCssResolverFromCss(`${themeCss}\n${generated.css}`),
+				// The official generator owns project presets, shortcuts, and variants.
+				// Keep the adapter's fixed arbitrary-property syntax as a narrow
+				// fallback because target emission can introduce a literal utility
+				// after the source project has been compiled.
+				unoResolver: {
+					resolve: (token: string, parseContext: AdapterParseContext) =>
+						officialResolver.resolve(token, parseContext) ?? defaultResolve(token),
+				},
 				unoGeneratedCss: generated.css,
 				officialConfigPackages: ["@unocss/config", "@unocss/core"],
 			},
