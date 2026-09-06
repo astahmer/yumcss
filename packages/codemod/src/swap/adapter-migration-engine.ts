@@ -251,6 +251,7 @@ async function runAdapterMigrationAsyncInternal(
 		options.from,
 		options.to,
 	);
+	if (route.source.id === route.target.id) return noOpMigration(source);
 	const context = migrationContext(source, options);
 	const detection = route.source.detect(context);
 	if (!detection.matched)

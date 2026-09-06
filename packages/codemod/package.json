@@ -139,7 +139,7 @@
 		"generate:route-tests": "nub ../../scripts/generate-adapter-route-specs.ts",
 		"generate:roundtrip-tests": "nub ../../scripts/generate-adapter-route-specs.ts",
 		"test:coverage": "vitest run --coverage && nub scripts/check-adapter-coverage.ts",
-		"test:e2e": "PANDWIND_CLI_MATRIX_E2E=1 vitest run tests/adapter-cli-e2e.test.ts tests/adapter-cli-full-matrix.test.ts"
+		"test:e2e": "vitest run tests/adapter-cli-e2e.test.ts tests/adapter-cli-full-matrix.test.ts"
 	},
 	"dependencies": {
 		"@tailwindcss/node": "4.3.3",

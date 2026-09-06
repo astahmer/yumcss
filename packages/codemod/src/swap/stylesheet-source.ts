@@ -716,16 +716,17 @@ export function createStylesheetFileMigration(
 									},
 								]
 							: [];
+				const code =
+					capabilityResiduals.length === 0
+						? context.source
+						: MigrationDiagnostics.skipMarker({
+								marker: "pandwind:migrate-skip",
+								loweringResiduals: capabilityResiduals,
+							}) +
+							"\n" +
+							context.source;
 				return {
-					code:
-						capabilityResiduals.length === 0
-							? context.source
-							: MigrationDiagnostics.skipMarker({
-									marker: "pandwind:migrate-skip",
-									loweringResiduals: capabilityResiduals,
-								}) +
-								"\n" +
-								context.source,
+					code,
 					outputExtension:
 						context.sourceConfig.adapter === CodemodAdapterId.Sass ||
 						context.sourceConfig.adapter === CodemodAdapterId.Less
@@ -887,14 +888,15 @@ export function createStylesheetFileMigration(
 					representation: StyleRepresentationKind.Residual,
 					detail: "stylesheet migration preserved the source with residuals",
 				}));
+				const code =
+					MigrationDiagnostics.skipMarker({
+						marker: "pandwind:migrate-skip",
+						loweringResiduals: skipResiduals,
+					}) +
+					"\n" +
+					context.source;
 				return {
-					code:
-						MigrationDiagnostics.skipMarker({
-							marker: "pandwind:migrate-skip",
-							loweringResiduals: skipResiduals,
-						}) +
-						"\n" +
-						context.source,
+					code,
 					changed: false,
 					converted: 0,
 					skipped: Math.max(1, skipResiduals.length),
@@ -1101,20 +1103,21 @@ export function createPreprocessorFileMigration(
 		run: base.run,
 		runAsync: async (context) => {
 			if (compiler === undefined) {
+				const code =
+					MigrationDiagnostics.skipMarker({
+						marker: "pandwind:migrate-skip",
+						configurationResiduals: [
+							{
+								kind: StyleProgramResidualKindTag.Configuration,
+								text: context.file,
+								hint: "the official preprocessor package is not installed in the project",
+							},
+						],
+					}) +
+					"\n" +
+					context.source;
 				return {
-					code:
-						MigrationDiagnostics.skipMarker({
-							marker: "pandwind:migrate-skip",
-							configurationResiduals: [
-								{
-									kind: StyleProgramResidualKindTag.Configuration,
-									text: context.file,
-									hint: "the official preprocessor package is not installed in the project",
-								},
-							],
-						}) +
-						"\n" +
-						context.source,
+					code,
 					changed: false,
 					converted: 0,
 					skipped: 1,
@@ -1138,20 +1141,21 @@ export function createPreprocessorFileMigration(
 					root: context.root,
 				});
 			} catch (error) {
+				const code =
+					MigrationDiagnostics.skipMarker({
+						marker: "pandwind:migrate-skip",
+						configurationResiduals: [
+							{
+								kind: StyleProgramResidualKindTag.Configuration,
+								text: context.file,
+								hint: `official preprocessor compilation failed: ${error instanceof Error ? error.message : String(error)}`,
+							},
+						],
+					}) +
+					"\n" +
+					context.source;
 				return {
-					code:
-						MigrationDiagnostics.skipMarker({
-							marker: "pandwind:migrate-skip",
-							configurationResiduals: [
-								{
-									kind: StyleProgramResidualKindTag.Configuration,
-									text: context.file,
-									hint: `official preprocessor compilation failed: ${error instanceof Error ? error.message : String(error)}`,
-								},
-							],
-						}) +
-						"\n" +
-						context.source,
+					code,
 					changed: false,
 					converted: 0,
 					skipped: 1,

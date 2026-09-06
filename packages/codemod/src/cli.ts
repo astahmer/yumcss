@@ -157,8 +157,12 @@ function parseArgs(argv: string[]): CliArgs {
 
 const sourceWorkspace = createSourceWorkspace();
 
-const expandPatterns = (patterns: readonly string[], baseDir: string): string[] => [
-	...sourceWorkspace.files(patterns, baseDir),
+const expandPatterns = (
+	patterns: readonly string[],
+	baseDir: string,
+	includeUnsupported = false,
+): string[] => [
+	...sourceWorkspace.files(patterns, baseDir, { includeUnsupported }),
 ];
 
 /** Ascend from cwd to the workspace root (the dir containing pnpm-workspace.yaml). */
@@ -179,7 +183,7 @@ function findRepoRoot(): string {
 async function mainSwap(argv: string[]): Promise<void> {
 	const args = swapImport.parseSwapArgs(argv);
 	const root = findRepoRoot();
-	const filePaths = expandPatterns(args.patterns, root);
+	const filePaths = expandPatterns(args.patterns, root, isExternalSwap(args));
 	if (isExternalSwap(args)) {
 		let meta: PandwindMeta | undefined;
 		if (args.metaDir !== "") {
@@ -461,6 +465,7 @@ async function runExternalAdapterSwap(
 			skipMarker: args.skipMarker,
 			meta,
 		});
+		const codeChanged = result.code !== source;
 		const outputFile =
 			result.outputExtension === undefined
 				? file
@@ -477,7 +482,7 @@ async function runExternalAdapterSwap(
 		totalConverted += result.converted;
 		totalSkipped += result.skipped;
 		totalResiduals += result.residuals.length;
-		if (!result.changed && result.generatedFiles.length === 0) {
+		if (!result.changed && !codeChanged && result.generatedFiles.length === 0) {
 			if (args.reportFormat !== "json") console.log(`${relative}: no changes (${from}->${target})`);
 			continue;
 		}

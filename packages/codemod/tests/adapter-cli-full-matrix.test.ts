@@ -70,10 +70,7 @@ async function runCliMatrix(
 	}
 }
 
-const cliMatrixE2e =
-	process.env.CI === "true" && process.env.PANDWIND_CLI_MATRIX_E2E === "1"
-		? describe
-		: describe.skip;
+const cliMatrixE2e = describe;
 
 cliMatrixE2e("real CLI ordered adapter matrix", () => {
 	test("executes every registered route in both directions and all scenarios", async () => {

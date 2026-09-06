@@ -16,10 +16,7 @@ const pandwindSource =
 const pandwindFixture = adapterContractFixtures.find(
 	(fixture) => fixture.adapter === CodemodAdapterId.Pandwind,
 );
-const cliE2e =
-	process.env.CI === "true" && process.env.PANDWIND_CLI_MATRIX_E2E === "1"
-		? describe
-		: describe.skip;
+const cliE2e = describe;
 
 function runCli(
 	directory: string,

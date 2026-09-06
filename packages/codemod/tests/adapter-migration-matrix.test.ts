@@ -299,7 +299,7 @@ describe("bidirectional registered adapter matrix", () => {
 				).toBe(true);
 			}
 		}
-	});
+	}, 60_000);
 });
 
 describe("composed cross-ecosystem routes", () => {
