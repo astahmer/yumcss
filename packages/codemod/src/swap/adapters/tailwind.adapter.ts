@@ -244,36 +244,6 @@ function parseClassValue(
 	};
 }
 
-const tailwindTokenGroups: Readonly<Record<string, string>> = {
-	color: "colors",
-	backgroundColor: "colors",
-	borderColor: "colors",
-	borderRadius: "radii",
-	fontSize: "fontSizes",
-	fontWeight: "fontWeights",
-	lineHeight: "lineHeights",
-	letterSpacing: "letterSpacings",
-	fontFamily: "fonts",
-	boxShadow: "shadows",
-	padding: "spacing",
-	paddingInline: "spacing",
-	paddingBlock: "spacing",
-	paddingInlineStart: "spacing",
-	paddingInlineEnd: "spacing",
-	margin: "spacing",
-	marginInline: "spacing",
-	marginBlock: "spacing",
-	marginInlineStart: "spacing",
-	marginInlineEnd: "spacing",
-	gap: "spacing",
-	width: "spacing",
-	height: "spacing",
-	minWidth: "spacing",
-	maxWidth: "spacing",
-	minHeight: "spacing",
-	maxHeight: "spacing",
-};
-
 const tailwindTokenNamespaces: Readonly<Record<string, string>> = {
 	colors: "color",
 	spacing: "spacing",
@@ -293,13 +263,13 @@ function materializeTailwindToken(
 	if (catalog === undefined || declaration.value.kind !== StyleValueKindTag.Literal)
 		return declaration;
 	if (typeof declaration.value.value !== "string") return declaration;
-	const group = tailwindTokenGroups[declaration.property];
-	if (group === undefined) return declaration;
-	const namespace = tailwindTokenNamespaces[group];
-	if (namespace === undefined) return declaration;
 	const variable = /^var\(--([a-z-]+)-([^),\s]+)\)$/u.exec(declaration.value.value);
+	const namespace = variable?.[1];
+	const group = Object.entries(tailwindTokenNamespaces).find(
+		([, value]) => value === namespace,
+	)?.[0];
 	const tokenKey = variable?.[2];
-	if (variable?.[1] !== namespace || tokenKey === undefined) return declaration;
+	if (group === undefined || tokenKey === undefined) return declaration;
 	const match = catalog.findByReference([group], tokenKey.replaceAll("-", "."));
 	return match === undefined
 		? declaration
@@ -544,6 +514,39 @@ function utilityCondition(conditionValue: StyleCondition): string {
 	return `${conditionValue.name}:`;
 }
 
+// Tailwind's official design-system path does not need this vocabulary. It is
+// kept only for the resolve-only/browser fallback, where no project engine can
+// enumerate the configured candidates.
+const fallbackTailwindTokenGroups: Readonly<Record<string, string>> = {
+	color: "colors",
+	backgroundColor: "colors",
+	borderColor: "colors",
+	borderRadius: "radii",
+	fontSize: "fontSizes",
+	fontWeight: "fontWeights",
+	lineHeight: "lineHeights",
+	letterSpacing: "letterSpacings",
+	fontFamily: "fonts",
+	boxShadow: "shadows",
+	padding: "spacing",
+	paddingInline: "spacing",
+	paddingBlock: "spacing",
+	paddingInlineStart: "spacing",
+	paddingInlineEnd: "spacing",
+	margin: "spacing",
+	marginInline: "spacing",
+	marginBlock: "spacing",
+	marginInlineStart: "spacing",
+	marginInlineEnd: "spacing",
+	gap: "spacing",
+	width: "spacing",
+	height: "spacing",
+	minWidth: "spacing",
+	maxWidth: "spacing",
+	minHeight: "spacing",
+	maxHeight: "spacing",
+};
+
 function tailwindTokenUtility(
 	declaration: StyleDeclaration,
 	catalog: TokenCatalog | undefined,
@@ -551,7 +554,7 @@ function tailwindTokenUtility(
 	const resolved = resolvedStyleValue(declaration.value);
 	if (catalog === undefined || resolved === undefined) return undefined;
 	const property = declaration.property;
-	const group = tailwindTokenGroups[property];
+	const group = fallbackTailwindTokenGroups[property];
 	const match = group === undefined ? undefined : catalog.findUnique([group], String(resolved));
 	if (match === undefined) return undefined;
 	const key = match.ref.replaceAll(".", "-");
@@ -585,6 +588,44 @@ function tailwindTokenUtility(
 		maxHeight: "max-h",
 	};
 	return `${prefixes[property]}-${key}`;
+}
+
+type TailwindOfficialUtilityResolver = TailwindUtilityResolver & {
+	readonly candidates: () => readonly string[];
+};
+
+/**
+ * Tailwind owns the utility vocabulary. When its design system is loaded,
+ * enumerate the candidates it actually registered and let its compiler verify
+ * the declaration. The syntax fallback below remains only for injected
+ * resolvers that expose the older `resolve`-only contract.
+ */
+function officialTailwindUtility(
+	declaration: StyleDeclaration,
+	prefix: string,
+	resolver: TailwindUtilityResolver | undefined,
+	catalog: TokenCatalog | undefined,
+): string | undefined {
+	const official = resolver as TailwindOfficialUtilityResolver | undefined;
+	const candidates = official?.candidates?.();
+	if (candidates === undefined) return undefined;
+	const matches = candidates
+		.filter((candidate) => !candidate.includes(":"))
+		.filter((candidate) =>
+			equivalentTailwindDeclaration(
+				resolver?.resolve(`${prefix}${candidate}`),
+				declaration,
+				catalog,
+			),
+		);
+	return matches
+		.toSorted(
+			(left, right) =>
+				Number(left.includes("[")) - Number(right.includes("[")) ||
+				left.length - right.length ||
+				left.localeCompare(right),
+		)
+		.at(0);
 }
 
 function equivalentTailwindDeclaration(
@@ -686,10 +727,14 @@ function emitTailwind(
 			continue;
 		}
 		const prefix = declaration.conditions.map(utilityCondition).join("");
-		const named = tailwindTokenUtility(declaration, catalog);
+		const official = officialTailwindUtility(declaration, prefix, resolver, catalog);
+		const named =
+			official === undefined
+				? tailwindTokenUtility(declaration, catalog)
+				: official.slice(prefix.length);
 		const propertyAware = tailwindPropertyAwareUtility(declaration);
 		let selected = false;
-		for (const candidate of [named, propertyAware]) {
+		for (const candidate of [official, named === official ? undefined : named, propertyAware]) {
 			if (candidate === undefined) continue;
 			if (resolver === undefined && candidate !== named) continue;
 			const fullCandidate = `${prefix}${candidate}`;
@@ -700,7 +745,7 @@ function emitTailwind(
 				tokens.push(fullCandidate);
 				emissionDecisions.push({
 					representation:
-						candidate === named
+						candidate === named || candidate === official
 							? StyleUtilityRepresentationKind.Token
 							: StyleUtilityRepresentationKind.PropertyAware,
 					candidate: fullCandidate,
@@ -708,7 +753,7 @@ function emitTailwind(
 					value: resolved,
 					verified: candidate === named || resolver !== undefined,
 					reason:
-						candidate === named
+						candidate === named || candidate === official
 							? StyleUtilityDecisionReason.ExactToken
 							: StyleUtilityDecisionReason.VerifiedPropertyAware,
 				});
@@ -756,6 +801,7 @@ type TailwindEnginePackage = {
 		options: { readonly base: string },
 	) => Promise<{
 		candidatesToCss(candidates: readonly string[]): readonly (string | null)[];
+		getClassList?: () => readonly (readonly [string, unknown])[];
 		theme?: {
 			entries(): Iterable<readonly [string, { readonly value?: string }]>;
 		};
@@ -957,9 +1003,12 @@ async function officialConfig(
 		const system = await module.__unstable__loadDesignSystem(cssFile.text, {
 			base: dirnameDocumentPath(cssFile.file),
 		});
-		const resolver: TailwindUtilityResolver = {
+		const resolver: TailwindOfficialUtilityResolver = {
 			resolve(token) {
 				return parseEngineCss(system.candidatesToCss([token])[0] ?? "", token);
+			},
+			candidates() {
+				return (system.getClassList?.() ?? []).map(([candidate]) => candidate);
 			},
 		};
 		return {

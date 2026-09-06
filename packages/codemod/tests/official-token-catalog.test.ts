@@ -581,6 +581,56 @@ describe("official custom-token loaders", () => {
 		]);
 	});
 
+	test("uses the official Tailwind candidate catalog for custom utilities", () => {
+		const adapter = createTailwindAdapter({ moduleLoader: null });
+		const resolver = {
+			candidates: () => ["btn-brand", "text-brand"],
+			resolve: (token: string) =>
+				token === "btn-brand"
+					? [
+							{
+								conditions: [],
+								property: "backgroundColor",
+								value: { kind: "literal" as const, value: "#123456" },
+							},
+						]
+					: undefined,
+		};
+		const result = adapter.emit(
+			styleProgramFromRules([
+				{
+					kind: "style",
+					conditions: [],
+					declarations: [
+						{
+							conditions: [],
+							property: "backgroundColor",
+							value: { kind: "literal", value: "#123456" },
+						},
+					],
+					children: [],
+					order: 0,
+				},
+			]),
+			{
+				...context,
+				config: { adapter: adapter.id, files: [], values: { tailwindResolver: resolver } },
+				mode: "safe",
+				index: 0,
+			},
+		);
+
+		expect(result.text).toBe('"btn-brand"');
+		expect(result.emissionDecisions).toMatchObject([
+			{
+				candidate: "btn-brand",
+				representation: "token",
+				verified: true,
+				reason: "exact-token",
+			},
+		]);
+	});
+
 	test("covers verified Tailwind utility families, logical sides, and fallback values", () => {
 		const adapter = createTailwindAdapter({ moduleLoader: null });
 		const hover = { kind: "pseudo" as const, name: "hover" };
