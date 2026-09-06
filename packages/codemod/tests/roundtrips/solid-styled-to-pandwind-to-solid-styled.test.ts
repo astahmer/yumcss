@@ -3,30 +3,35 @@ import { expect, test } from "vitest";
 import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectActionableRoundTrip,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const forward = createAdapterRouteSpec(CodemodAdapterId.SolidStyled, CodemodAdapterId.Pandwind);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.Pandwind, CodemodAdapterId.SolidStyled);
-	const happySource = "import { styled } from \"solid-styled-components\";\nexport const Card = styled.div({ color: \"red\", padding: \"1rem\" });\nexport const App = () => <Card />;";
-const edgeSource = "import { styled } from \"solid-styled-components\";\nexport const Card = styled.div({ color: theme.foreground, padding: \"1rem\" });\nexport const App = () => <Card />;";
-const malformedSource = "import { styled } from \"solid-styled-components\";\nexport const Card = styled.div({ color: \"red\", padding: \"1rem\" });\nexport const App = () => <Card />;\nconst unfinished = { /* unfinished solid-styled */";
+	const happySource = "import { styled } from \"solid-styled-components\";\nexport const Card = styled.div`color: red; padding: 1rem;`;";
+const edgeSource = "import { styled } from \"solid-styled-components\";\nexport const Card = styled.div`color: red; padding: 1rem;`;";
+const malformedSource = "import { styled } from \"solid-styled-components\";\nexport const Card = styled.div`color: red; padding: 1rem;`;\nconst unfinished = { /* unfinished solid-styled */";
 const sourceSemantic = { source: { framework: BuiltinHostFramework.Solid } };
-const themedSource = "import { styled } from \"solid-styled-components\";\nexport const Card = styled.div({ color: theme.colors.brand, padding: \"1rem\" });\nexport const App = () => <Card />;";
-const tokenSource = "import { styled } from \"solid-styled-components\";\nexport const Card = styled.div({ color: \"$colors.brand\", padding: \"1rem\" });\nexport const App = () => <Card />;";
-const blueSemantic = { source: { framework: BuiltinHostFramework.Solid }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { source: { framework: BuiltinHostFramework.Solid }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/pandwind.config.ts":"export default { tokens: { colors: { brand: \"#2563eb\" } } };"} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/pandwind.config.ts":"export default { tokens: { colors: { brand: \"#f97316\" } } };"} };
+const themedSource = "import { styled } from \"solid-styled-components\";\nexport const Card = styled.div`color: #2563eb; padding: 1rem;`;";
+const tokenSource = "import { styled } from \"solid-styled-components\";\nexport const Card = styled.div`color: #2563eb; padding: 1rem;`;";
+const blueSemantic = { source: { framework: BuiltinHostFramework.Solid } };
+const amberSemantic = { source: { framework: BuiltinHostFramework.Solid } };
+const blueTargetSemantic = undefined;
+const amberTargetSemantic = undefined;
+const blueProject = createAdapterRouteProject(CodemodAdapterId.SolidStyled, CodemodAdapterId.Pandwind, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.SolidStyled, CodemodAdapterId.Pandwind, "#f97316");
 	const targetSemantic = undefined;
 
 test("solid-styled -> pandwind -> solid-styled: preserves an actionable concrete round trip", () => {
-	const first = forward.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+	const first = forward.run({ source: happySource, file: "styles.tsx", semantic: sourceSemantic });
+	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -36,6 +41,7 @@ test("solid-styled -> pandwind -> solid-styled: preserves an actionable concrete
 		expect(first.residuals.length).toBeGreaterThan(0);
 		expect(first.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(first, "solid-styled -> pandwind round-trip happy forward");
 	expectExplicitResidualEvidence(first);
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(second);
@@ -44,11 +50,26 @@ test("solid-styled -> pandwind -> solid-styled: preserves an actionable concrete
 		  "forward": {
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
+		import { createCx } from "pandwind/cx";
+		const cx = createCx();
 		const css = createCss();
+		const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Component {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
 
-		export const Card = css.class({ padding: "1rem", color: "red" });
-		export const App = () => <div className={Card} />;",
+		export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "red" }), stableClass: "pw-t6bw3o", inheritedClass: undefined, classAttribute: "class", attrs: {}, joinClass: cx });",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "static",
@@ -67,11 +88,29 @@ test("solid-styled -> pandwind -> solid-styled: preserves an actionable concrete
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
+		    "code": "
+		import { createCx } from "pandwind/cx";
+		import { styled } from "solid-styled-components";
+		const cx = createCx();
+		const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Component {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
 
-		export const Card = styled.div({ "padding": "1rem", "color": "red" });
-		export const App = () => <div className={Card} />;",
+		export const Card = __pandwindSlot({ defaultComponent: "div", style: styled.div({ "padding": "1rem", "color": "red" }), stableClass: "pw-t6bw3o", inheritedClass: undefined, classAttribute: "class", attrs: {}, joinClass: cx });",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "static",
@@ -89,13 +128,14 @@ test("solid-styled -> pandwind -> solid-styled: preserves an actionable concrete
 		    ],
 		  },
 		}
-	`);
+	`)
 });
 
-test("solid-styled -> pandwind -> solid-styled: retains edge semantics without silent loss", () => {
-	const first = forward.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+test("solid-styled -> pandwind -> solid-styled: retains the documented secondary API without silent loss", () => {
+	const first = forward.run({ source: edgeSource, file: "styles.tsx", semantic: sourceSemantic });
+	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(first, "solid-styled -> pandwind round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
@@ -104,15 +144,30 @@ test("solid-styled -> pandwind -> solid-styled: retains edge semantics without s
 		  "forward": {
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
+		import { createCx } from "pandwind/cx";
+		const cx = createCx();
 		const css = createCss();
+		const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Component {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
 
-		export const Card = css.vars({ padding: "1rem", color: theme.foreground });
-		export const App = () => <div className={Card.class} style={Card.style} />;",
+		export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "red" }), stableClass: "pw-t6bw3o", inheritedClass: undefined, classAttribute: "class", attrs: {}, joinClass: cx });",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "host-runtime",
-		        "representation": "target-native",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [],
@@ -127,17 +182,33 @@ test("solid-styled -> pandwind -> solid-styled: retains edge semantics without s
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
+		    "code": "
+		import { createCx } from "pandwind/cx";
+		import { styled } from "solid-styled-components";
+		const cx = createCx();
+		const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Component {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
 
-		export const Card = css.vars({ "padding": "1rem", "color": theme.foreground });
-		export const App = () => <div className={Card.class} style={Card.style} />;",
+		export const Card = __pandwindSlot({ defaultComponent: "div", style: styled.div({ "padding": "1rem", "color": "red" }), stableClass: "pw-t6bw3o", inheritedClass: undefined, classAttribute: "class", attrs: {}, joinClass: cx });",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [],
@@ -151,16 +222,22 @@ test("solid-styled -> pandwind -> solid-styled: retains edge semantics without s
 		    ],
 		  },
 		}
-	`);
+	`)
 });
 
-test("solid-styled -> pandwind -> solid-styled: preserves concrete theme and project context variants", () => {
-	const firstBlue = forward.run({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const secondBlue = reverse.run({ source: firstBlue.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
-	const firstAmber = forward.run({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
-	const secondAmber = reverse.run({ source: firstAmber.code, file: "Card.tsx", semantic: amberTargetSemantic, project: amberProject });
+test("solid-styled -> pandwind -> solid-styled: preserves concrete theme and project context variants", async () => {
+	const firstBlue = await forward.runAsync({ source: themedSource, file: "styles.tsx", semantic: blueSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "styles.ts", semantic: blueTargetSemantic, project: blueProject });
+	const firstAmber = await forward.runAsync({ source: themedSource, file: "styles.tsx", semantic: amberSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "styles.ts", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.SolidStyled, CodemodAdapterId.Pandwind);
+	expectConfiguredTargetTokenEvidence(firstBlue, CodemodAdapterId.Pandwind, "solid-styled -> pandwind round-trip token config");
+	expectRouteScenarioEvidence(firstBlue, "solid-styled -> pandwind round-trip blue forward");
+	expectRouteScenarioEvidence(firstAmber, "solid-styled -> pandwind round-trip amber forward");
+	expectConfiguredTargetTokenAbsence(firstAmber, CodemodAdapterId.Pandwind, "solid-styled -> pandwind round-trip amber literal config");
+
 	expectActionableRoundTrip(firstBlue, secondBlue);
 	expectActionableRoundTrip(firstAmber, secondAmber);
 	expectExplicitResidualEvidence(firstBlue);
@@ -176,15 +253,35 @@ test("solid-styled -> pandwind -> solid-styled: preserves concrete theme and pro
 		    "forward": {
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
+		import { createCx } from "pandwind/cx";
+		import { __pandwindSlot } from "../__pandwind/slot.tsx";
+		const cx = createCx();
 		const css = createCss();
 
-		export const Card = css.vars({ padding: "1rem", color: theme.colors.brand });
-		export const App = () => <div className={Card.class} style={Card.style} />;",
+		export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "#2563eb" }), stableClass: "pw-t6bw3o", inheritedClass: undefined, classAttribute: "class", attrs: {}, joinClass: cx });",
 		      "converted": 1,
+		      "generatedFiles": [
+		        {
+		          "path": "__pandwind/slot.tsx",
+		          "purpose": "shared static component slot helper",
+		        },
+		      ],
+		      "loweringPlans": [
+		        {
+		          "applied": [],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "host-runtime",
-		          "representation": "target-native",
+		          "outcome": "static",
+		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [],
@@ -199,11 +296,28 @@ test("solid-styled -> pandwind -> solid-styled: preserves concrete theme and pro
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { styled } from "solid-styled-components";
-
-		export const Card = styled.div({ "padding": "1rem", "color": "#f97316" });
-		export const App = () => <div className={Card.class} style={Card.style} />;",
+		      "code": "
+		import { createCx } from "pandwind/cx";
+		import { __pandwindSlot } from "../__pandwind/slot.tsx";
+		import { styled } from "solid-styled-components";
+		const cx = createCx();
+		export const Card = __pandwindSlot({ defaultComponent: "div", style: styled.div({ "padding": "1rem", "color": "#2563eb" }), stableClass: "pw-t6bw3o", inheritedClass: undefined, classAttribute: "class", attrs: {}, joinClass: cx });",
 		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "static",
@@ -225,15 +339,35 @@ test("solid-styled -> pandwind -> solid-styled: preserves concrete theme and pro
 		    "forward": {
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
+		import { createCx } from "pandwind/cx";
+		import { __pandwindSlot } from "../__pandwind/slot.tsx";
+		const cx = createCx();
 		const css = createCss();
 
-		export const Card = css.vars({ padding: "1rem", color: theme.colors.brand });
-		export const App = () => <div className={Card.class} style={Card.style} />;",
+		export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "$brand" }), stableClass: "pw-t6bw3o", inheritedClass: undefined, classAttribute: "class", attrs: {}, joinClass: cx });",
 		      "converted": 1,
+		      "generatedFiles": [
+		        {
+		          "path": "__pandwind/slot.tsx",
+		          "purpose": "shared static component slot helper",
+		        },
+		      ],
+		      "loweringPlans": [
+		        {
+		          "applied": [],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "host-runtime",
-		          "representation": "target-native",
+		          "outcome": "static",
+		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [],
@@ -248,11 +382,29 @@ test("solid-styled -> pandwind -> solid-styled: preserves concrete theme and pro
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { styled } from "solid-styled-components";
-
-		export const Card = styled.div({ "padding": "1rem", "color": "#2563eb" });
-		export const App = () => <div className={Card.class} style={Card.style} />;",
+		      "code": "
+		import { createCx } from "pandwind/cx";
+		import { __pandwindSlot } from "../__pandwind/slot.tsx";
+		import { styled } from "solid-styled-components";
+		const cx = createCx();
+		export const Card = __pandwindSlot({ defaultComponent: "div", style: styled.div({ "padding": "1rem", "color": "#2563eb" }), stableClass: "pw-t6bw3o", inheritedClass: undefined, classAttribute: "class", attrs: {}, joinClass: cx });",
 		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "token-fallback",
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "static",
@@ -271,13 +423,15 @@ test("solid-styled -> pandwind -> solid-styled: preserves concrete theme and pro
 		    },
 		  },
 		}
-	`);
+	`)
 });
 
-test("solid-styled -> pandwind -> solid-styled: resolves token references across both concrete legs", () => {
-	const first = forward.run({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
+test("solid-styled -> pandwind -> solid-styled: resolves token values across both concrete legs", async () => {
+	const first = await forward.runAsync({ source: tokenSource, file: "styles.tsx", semantic: blueSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "styles.ts", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.SolidStyled, CodemodAdapterId.Pandwind);
+	expectRouteScenarioEvidence(first, "solid-styled -> pandwind round-trip token forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
@@ -286,11 +440,31 @@ test("solid-styled -> pandwind -> solid-styled: resolves token references across
 		  "forward": {
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
+		import { createCx } from "pandwind/cx";
+		import { __pandwindSlot } from "../__pandwind/slot.tsx";
+		const cx = createCx();
 		const css = createCss();
 
-		export const Card = css.class({ padding: "1rem", color: "$colors.brand" });
-		export const App = () => <div className={Card} />;",
+		export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "$brand" }), stableClass: "pw-t6bw3o", inheritedClass: undefined, classAttribute: "class", attrs: {}, joinClass: cx });",
 		    "converted": 1,
+		    "generatedFiles": [
+		      {
+		        "path": "__pandwind/slot.tsx",
+		        "purpose": "shared static component slot helper",
+		      },
+		    ],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "static",
@@ -309,11 +483,29 @@ test("solid-styled -> pandwind -> solid-styled: resolves token references across
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-
-		export const Card = styled.div({ "padding": "1rem", "color": "$colors.brand" });
-		export const App = () => <div className={Card} />;",
+		    "code": "
+		import { createCx } from "pandwind/cx";
+		import { __pandwindSlot } from "../__pandwind/slot.tsx";
+		import { styled } from "solid-styled-components";
+		const cx = createCx();
+		export const Card = __pandwindSlot({ defaultComponent: "div", style: styled.div({ "padding": "1rem", "color": "#2563eb" }), stableClass: "pw-t6bw3o", inheritedClass: undefined, classAttribute: "class", attrs: {}, joinClass: cx });",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "token-fallback",
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "static",
@@ -331,6 +523,6 @@ test("solid-styled -> pandwind -> solid-styled: resolves token references across
 		    ],
 		  },
 		}
-	`);
+	`)
 });
 

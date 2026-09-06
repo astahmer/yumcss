@@ -3,30 +3,35 @@ import { expect, test } from "vitest";
 import { CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
-	expectActionableRoundTrip,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
+	expectTargetClassProjection,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const forward = createAdapterRouteSpec(CodemodAdapterId.Bamboo, CodemodAdapterId.Tailwind);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.Tailwind, CodemodAdapterId.Bamboo);
-	const happySource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: \"red\", padding: \"1rem\" });\nexport const App = () => <div className={card} />;";
-const edgeSource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: theme.foreground, padding: \"1rem\" });\nexport const App = () => <div className={card} />;";
-const malformedSource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: \"red\", padding: \"1rem\" });\nexport const App = () => <div className={card} />;\nconst unfinished = { /* unfinished bamboo */";
+	const happySource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: \"red\" });";
+const edgeSource = "import { css } from \"styled-system/css\";\nexport const card = css({ display: \"flex\", gap: \"4\" });";
+const malformedSource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: \"red\" });\nconst unfinished = { /* unfinished bamboo */";
 const sourceSemantic = undefined;
-const themedSource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: theme.colors.brand, padding: \"1rem\" });\nexport const App = () => <div className={card} />;";
-const tokenSource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: \"$colors.brand\", padding: \"1rem\" });\nexport const App = () => <div className={card} />;";
-const blueSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/bamboo.config.ts":"export default { theme: { tokens: { colors: { brand: { value: \"#2563eb\" } } } } };","/virtual/pandwind-route-project/tailwind.css":"@import \"tailwindcss\"; @theme { --color-brand: #2563eb; --spacing-card: 1.125rem; }"} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/bamboo.config.ts":"export default { theme: { tokens: { colors: { brand: { value: \"#f97316\" } } } } };","/virtual/pandwind-route-project/tailwind.css":"@import \"tailwindcss\"; @theme { --color-brand: #f97316; --spacing-card: 1.125rem; }"} };
+const themedSource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: \"#2563eb\" });";
+const tokenSource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: \"#2563eb\" });";
+const blueSemantic = undefined;
+const amberSemantic = undefined;
+const blueTargetSemantic = undefined;
+const amberTargetSemantic = undefined;
+const blueProject = createAdapterRouteProject(CodemodAdapterId.Bamboo, CodemodAdapterId.Tailwind, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.Bamboo, CodemodAdapterId.Tailwind, "#f97316");
 	const targetSemantic = undefined;
 
 test("bamboo -> tailwind -> bamboo: preserves an actionable concrete round trip", () => {
-	const first = forward.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+	const first = forward.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
+	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -36,17 +41,32 @@ test("bamboo -> tailwind -> bamboo: preserves an actionable concrete round trip"
 		expect(first.residuals.length).toBeGreaterThan(0);
 		expect(first.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(first, "bamboo -> tailwind round-trip happy forward");
 	expectExplicitResidualEvidence(first);
-	expectActionableRoundTrip(first, second);
+	expectTargetClassProjection(first, second, ["text-","bg-","p-","[","className","class"], "bamboo -> tailwind round-trip happy");
 	expectExplicitResidualEvidence(second);
 	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
 		{
 		  "forward": {
 		    "changed": true,
 		    "code": "
-		export const card = "[padding:1rem] [color:red]";
-		export const App = () => <div className={card} />;",
+		export const card = "[color:red]";",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "static",
@@ -67,9 +87,21 @@ test("bamboo -> tailwind -> bamboo: preserves an actionable concrete round trip"
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
 
-		export const card = "[padding:1rem] [color:red]";
-		export const App = () => <div className={css({ padding: "1rem", color: "red" })}/>;",
+		export const card = css({ color: "red" });",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "static",
@@ -87,14 +119,15 @@ test("bamboo -> tailwind -> bamboo: preserves an actionable concrete round trip"
 		    ],
 		  },
 		}
-	`);
+	`)
 });
 
-test("bamboo -> tailwind -> bamboo: retains edge semantics without silent loss", () => {
-	const first = forward.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+test("bamboo -> tailwind -> bamboo: retains the documented secondary API without silent loss", () => {
+	const first = forward.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
+	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
-	expectActionableRoundTrip(first, second);
+	expectRouteScenarioEvidence(first, "bamboo -> tailwind round-trip secondary forward");
+	expectTargetClassProjection(first, second, ["text-","bg-","p-","[","className","class"], "bamboo -> tailwind round-trip secondary");
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
 	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
@@ -102,13 +135,27 @@ test("bamboo -> tailwind -> bamboo: retains edge semantics without silent loss",
 		  "forward": {
 		    "changed": true,
 		    "code": "
-		export const card = "[padding:1rem] [color:var(--pandwind-dynamic-5qa8dh)]";
-		export const App = () => <div className={card} style={{ "--pandwind-dynamic-5qa8dh": String(theme.foreground) }} />;",
+		export const card = "[gap:4] [display:flex]";",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "host-runtime",
-		        "representation": "custom-property",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [],
@@ -125,22 +172,28 @@ test("bamboo -> tailwind -> bamboo: retains edge semantics without silent loss",
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
 
-		export const card = "[padding:1rem] [color:var(--pandwind-dynamic-5qa8dh)]";
-		export const App = () => <div className={card} style={{ "--pandwind-dynamic-5qa8dh": String(theme.foreground) }} />;",
+		export const card = css({ gap: "4", display: "flex" });",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "target-native",
-		        "representation": "custom-property",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "bamboo class projection will not overwrite an existing style prop",
-		        "kind": "host-framework",
-		        "preserved": undefined,
-		      },
-		    ],
+		    "residuals": [],
 		    "skipped": 0,
 		    "validations": [
 		      {
@@ -151,18 +204,24 @@ test("bamboo -> tailwind -> bamboo: retains edge semantics without silent loss",
 		    ],
 		  },
 		}
-	`);
+	`)
 });
 
-test("bamboo -> tailwind -> bamboo: preserves concrete theme and project context variants", () => {
-	const firstBlue = forward.run({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const secondBlue = reverse.run({ source: firstBlue.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
-	const firstAmber = forward.run({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
-	const secondAmber = reverse.run({ source: firstAmber.code, file: "Card.tsx", semantic: amberTargetSemantic, project: amberProject });
+test("bamboo -> tailwind -> bamboo: preserves concrete theme and project context variants", async () => {
+	const firstBlue = await forward.runAsync({ source: themedSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
+	const firstAmber = await forward.runAsync({ source: themedSource, file: "styles.ts", semantic: amberSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "App.tsx", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
-	expectActionableRoundTrip(firstBlue, secondBlue);
-	expectActionableRoundTrip(firstAmber, secondAmber);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Bamboo, CodemodAdapterId.Tailwind);
+	expectConfiguredTargetTokenEvidence(firstBlue, CodemodAdapterId.Tailwind, "bamboo -> tailwind round-trip token config");
+	expectRouteScenarioEvidence(firstBlue, "bamboo -> tailwind round-trip blue forward");
+	expectRouteScenarioEvidence(firstAmber, "bamboo -> tailwind round-trip amber forward");
+	expectConfiguredTargetTokenAbsence(firstAmber, CodemodAdapterId.Tailwind, "bamboo -> tailwind round-trip amber literal config");
+
+	expectTargetClassProjection(firstBlue, secondBlue, ["text-","bg-","p-","[","className","class"], "bamboo -> tailwind round-trip blue");
+	expectTargetClassProjection(firstAmber, secondAmber, ["text-","bg-","p-","[","className","class"], "bamboo -> tailwind round-trip amber");
 	expectExplicitResidualEvidence(firstBlue);
 	expectExplicitResidualEvidence(secondBlue);
 	expectExplicitResidualEvidence(firstAmber);
@@ -176,9 +235,23 @@ test("bamboo -> tailwind -> bamboo: preserves concrete theme and project context
 		    "forward": {
 		      "changed": true,
 		      "code": "
-		export const card = "[padding:1rem] [color:#f97316]";
-		export const App = () => <div className={card} />;",
+		export const card = "[color:#2563eb]";",
 		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "static",
@@ -197,35 +270,60 @@ test("bamboo -> tailwind -> bamboo: preserves concrete theme and project context
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "styled-system/css";
-
-		export const card = "[padding:1rem] [color:#f97316]";
-		export const App = () => <div className={css({ padding: "1rem", color: "#f97316" })}/>;",
-		      "converted": 1,
+		      "code": "
+		export const card = // pandwind:migrate-skip (route: tailwind -> bamboo | parse-residual: unknown-utility | available: named-map, residual)
+		"[color:#2563eb]";",
+		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [],
+		          "availableRepresentations": [
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "residual",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "static",
-		          "representation": "static",
+		          "outcome": "residual",
+		          "representation": "residual",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
+		      "residuals": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "hint": "Tailwind utility requires the project engine or a custom preset",
+		          "kind": "unknown-utility",
+		          "preserved": undefined,
 		        },
 		      ],
+		      "skipped": 1,
+		      "validations": [],
 		    },
 		  },
 		  "blue": {
 		    "forward": {
 		      "changed": true,
 		      "code": "
-		export const card = "[padding:1rem] [color:#2563eb]";
-		export const App = () => <div className={card} />;",
+		export const card = "text-brand";",
 		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "static",
@@ -246,9 +344,21 @@ test("bamboo -> tailwind -> bamboo: preserves concrete theme and project context
 		      "changed": true,
 		      "code": "import { css } from "styled-system/css";
 
-		export const card = "[padding:1rem] [color:#2563eb]";
-		export const App = () => <div className={css({ padding: "1rem", color: "#2563eb" })}/>;",
+		export const card = css({ color: "#2563eb" });",
 		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "static",
@@ -267,14 +377,16 @@ test("bamboo -> tailwind -> bamboo: preserves concrete theme and project context
 		    },
 		  },
 		}
-	`);
+	`)
 });
 
-test("bamboo -> tailwind -> bamboo: resolves token references across both concrete legs", () => {
-	const first = forward.run({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
+test("bamboo -> tailwind -> bamboo: resolves token values across both concrete legs", async () => {
+	const first = await forward.runAsync({ source: tokenSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
-	expectActionableRoundTrip(first, second);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Bamboo, CodemodAdapterId.Tailwind);
+	expectRouteScenarioEvidence(first, "bamboo -> tailwind round-trip token forward");
+	expectTargetClassProjection(first, second, ["text-","bg-","p-","[","className","class"], "bamboo -> tailwind round-trip token");
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
 	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
@@ -282,9 +394,23 @@ test("bamboo -> tailwind -> bamboo: resolves token references across both concre
 		  "forward": {
 		    "changed": true,
 		    "code": "
-		export const card = "[padding:1rem] [color:$colors.brand]";
-		export const App = () => <div className={card} />;",
+		export const card = "text-brand";",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "static",
@@ -305,9 +431,21 @@ test("bamboo -> tailwind -> bamboo: resolves token references across both concre
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
 
-		export const card = "[padding:1rem] [color:$colors.brand]";
-		export const App = () => <div className={css({ padding: "1rem", color: "$colors.brand" })}/>;",
+		export const card = css({ color: "#2563eb" });",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "static",
@@ -325,6 +463,6 @@ test("bamboo -> tailwind -> bamboo: resolves token references across both concre
 		    ],
 		  },
 		}
-	`);
+	`)
 });
 

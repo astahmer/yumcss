@@ -1066,7 +1066,7 @@ export function officialApiFamilyCases(): readonly OfficialApiFamilyCase[] {
 			name: "less mixin call",
 			expectation: "residual",
 			file: "card.less",
-			source: ".card { .shadow(); color: red; }",
+			source: ".shadow() { box-shadow: 0 1px 2px black; }\n.card { .shadow(); color: red; }",
 		},
 		{
 			adapter: CodemodAdapterId.Less,

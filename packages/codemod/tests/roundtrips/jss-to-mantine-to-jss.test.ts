@@ -3,30 +3,35 @@ import { expect, test } from "vitest";
 import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectActionableRoundTrip,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const forward = createAdapterRouteSpec(CodemodAdapterId.Jss, CodemodAdapterId.Mantine);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.Mantine, CodemodAdapterId.Jss);
-	const happySource = "import { createUseStyles } from \"react-jss\";\nexport const useStyles = createUseStyles({ card: { color: \"red\", padding: \"1rem\" } });\nexport const App = () => <div className={useStyles().card} />;";
-const edgeSource = "import { createUseStyles } from \"react-jss\";\nexport const useStyles = createUseStyles({ card: { color: theme.foreground, padding: \"1rem\" } });\nexport const App = () => <div className={useStyles().card} />;";
-const malformedSource = "import { createUseStyles } from \"react-jss\";\nexport const useStyles = createUseStyles({ card: { color: \"red\", padding: \"1rem\" } });\nexport const App = () => <div className={useStyles().card} />;\nconst unfinished = { /* unfinished jss */";
+	const happySource = "import { createUseStyles } from \"react-jss\";\nexport const useStyles = createUseStyles({ card: { color: \"red\" } });";
+const edgeSource = "import jss from \"jss\";\nexport const sheet = jss.createStyleSheet({ card: { color: \"red\" } });";
+const malformedSource = "import { createUseStyles } from \"react-jss\";\nexport const useStyles = createUseStyles({ card: { color: \"red\" } });\nconst unfinished = { /* unfinished jss */";
 const sourceSemantic = undefined;
-const themedSource = "import { createUseStyles } from \"react-jss\";\nexport const useStyles = createUseStyles({ card: { color: theme.colors.brand, padding: \"1rem\" } });\nexport const App = () => <div className={useStyles().card} />;";
-const tokenSource = "import { createUseStyles } from \"react-jss\";\nexport const useStyles = createUseStyles({ card: { color: \"$colors.brand\", padding: \"1rem\" } });\nexport const App = () => <div className={useStyles().card} />;";
-const blueSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/src/theme.ts":"export const mantineTheme = { colors: { brand: [\"#2563eb\"] } };"} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/src/theme.ts":"export const mantineTheme = { colors: { brand: [\"#f97316\"] } };"} };
+const themedSource = "import { createUseStyles } from \"react-jss\";\nexport const useStyles = createUseStyles({ card: { color: \"#2563eb\" } });";
+const tokenSource = "import { createUseStyles } from \"react-jss\";\nexport const useStyles = createUseStyles({ card: { color: \"#2563eb\" } });";
+const blueSemantic = undefined;
+const amberSemantic = undefined;
+const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
+const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
+const blueProject = createAdapterRouteProject(CodemodAdapterId.Jss, CodemodAdapterId.Mantine, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.Jss, CodemodAdapterId.Mantine, "#f97316");
 	const targetSemantic = { source: { framework: BuiltinHostFramework.React } };
 
 test("jss -> mantine -> jss: preserves an actionable concrete round trip", () => {
-	const first = forward.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+	const first = forward.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
+	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -36,6 +41,7 @@ test("jss -> mantine -> jss: preserves an actionable concrete round trip", () =>
 		expect(first.residuals.length).toBeGreaterThan(0);
 		expect(first.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(first, "jss -> mantine round-trip happy forward");
 	expectExplicitResidualEvidence(first);
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(second);
@@ -45,9 +51,21 @@ test("jss -> mantine -> jss: preserves an actionable concrete round trip", () =>
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
 		export const useStyles = // pandwind:migrate-skip (route: jss -> mantine | lowering-residual: host-framework, validation)
-		createUseStyles({ card: { color: "red", padding: "1rem" } });
-		export const App = () => <div className={useStyles().card} />;",
+		createUseStyles({ card: { color: "red" } });",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "named-map",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
@@ -81,22 +99,24 @@ test("jss -> mantine -> jss: preserves an actionable concrete round trip", () =>
 		    "changed": false,
 		    "code": "import { createUseStyles } from "react-jss";
 		export const useStyles = // pandwind:migrate-skip (route: jss -> mantine | lowering-residual: host-framework, validation)
-		createUseStyles({ card: { color: "red", padding: "1rem" } });
-		export const App = () => <div className={useStyles().card} />;",
+		createUseStyles({ card: { color: "red" } });",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [],
 		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
 		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 
-test("jss -> mantine -> jss: retains edge semantics without silent loss", () => {
-	const first = forward.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+test("jss -> mantine -> jss: retains the documented secondary API without silent loss", () => {
+	const first = forward.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
+	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(first, "jss -> mantine round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
@@ -104,11 +124,23 @@ test("jss -> mantine -> jss: retains edge semantics without silent loss", () => 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createUseStyles } from "react-jss";
-		export const useStyles = // pandwind:migrate-skip (route: jss -> mantine | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, target-native, runtime-carrier, residual)
-		createUseStyles({ card: { color: theme.foreground, padding: "1rem" } });
-		export const App = () => <div className={useStyles().card} />;",
+		    "code": "import jss from "jss";
+		export const sheet = // pandwind:migrate-skip (route: jss -> mantine | lowering-residual: host-framework, validation)
+		jss.createStyleSheet({ card: { color: "red" } });",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "named-map",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
@@ -117,37 +149,57 @@ test("jss -> mantine -> jss: retains edge semantics without silent loss", () => 
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "theme-context: 1 theme binding(s)",
-		        "kind": "capability",
+		        "hint": "Mantine style maps require a host component style prop or an explicit CSS module",
+		        "kind": "host-framework",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "1 residual conversion(s)",
+		        "kind": "validation",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 1,
-		    "validations": [],
+		    "validations": [
+		      {
+		        "differences": [
+		          "1 residual conversion(s)",
+		        ],
+		        "lossiness": "lossy",
+		        "valid": false,
+		      },
+		    ],
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "import { createUseStyles } from "react-jss";
-		export const useStyles = // pandwind:migrate-skip (route: jss -> mantine | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, target-native, runtime-carrier, residual)
-		createUseStyles({ card: { color: theme.foreground, padding: "1rem" } });
-		export const App = () => <div className={useStyles().card} />;",
+		    "code": "import jss from "jss";
+		export const sheet = // pandwind:migrate-skip (route: jss -> mantine | lowering-residual: host-framework, validation)
+		jss.createStyleSheet({ card: { color: "red" } });",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [],
 		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
 		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 
-test("jss -> mantine -> jss: preserves concrete theme and project context variants", () => {
-	const firstBlue = forward.run({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const secondBlue = reverse.run({ source: firstBlue.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
-	const firstAmber = forward.run({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
-	const secondAmber = reverse.run({ source: firstAmber.code, file: "Card.tsx", semantic: amberTargetSemantic, project: amberProject });
+test("jss -> mantine -> jss: preserves concrete theme and project context variants", async () => {
+	const firstBlue = await forward.runAsync({ source: themedSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
+	const firstAmber = await forward.runAsync({ source: themedSource, file: "styles.ts", semantic: amberSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "App.tsx", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Jss, CodemodAdapterId.Mantine);
+	expectConfiguredTargetTokenEvidence(firstBlue, CodemodAdapterId.Mantine, "jss -> mantine round-trip token config");
+	expectRouteScenarioEvidence(firstBlue, "jss -> mantine round-trip blue forward");
+	expectRouteScenarioEvidence(firstAmber, "jss -> mantine round-trip amber forward");
+	expectConfiguredTargetTokenAbsence(firstAmber, CodemodAdapterId.Mantine, "jss -> mantine round-trip amber literal config");
+
 	expectActionableRoundTrip(firstBlue, secondBlue);
 	expectActionableRoundTrip(firstAmber, secondAmber);
 	expectExplicitResidualEvidence(firstBlue);
@@ -163,10 +215,22 @@ test("jss -> mantine -> jss: preserves concrete theme and project context varian
 		    "forward": {
 		      "changed": true,
 		      "code": "import { createUseStyles } from "react-jss";
-		export const useStyles = // pandwind:migrate-skip (route: jss -> mantine | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, target-native, runtime-carrier, residual)
-		createUseStyles({ card: { color: theme.colors.brand, padding: "1rem" } });
-		export const App = () => <div className={useStyles().card} />;",
+		export const useStyles = // pandwind:migrate-skip (route: jss -> mantine | lowering-residual: host-framework, validation)
+		createUseStyles({ card: { color: "#2563eb" } });",
 		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "named-map",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
@@ -175,21 +239,35 @@ test("jss -> mantine -> jss: preserves concrete theme and project context varian
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "theme-context: 1 theme binding(s)",
-		          "kind": "capability",
+		          "hint": "Mantine style maps require a host component style prop or an explicit CSS module",
+		          "kind": "host-framework",
+		          "preserved": undefined,
+		        },
+		        {
+		          "hint": "1 residual conversion(s)",
+		          "kind": "validation",
 		          "preserved": undefined,
 		        },
 		      ],
 		      "skipped": 1,
-		      "validations": [],
+		      "validations": [
+		        {
+		          "differences": [
+		            "1 residual conversion(s)",
+		          ],
+		          "lossiness": "lossy",
+		          "valid": false,
+		        },
+		      ],
 		    },
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { createUseStyles } from "react-jss";
-		export const useStyles = // pandwind:migrate-skip (route: jss -> mantine | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, target-native, runtime-carrier, residual)
-		createUseStyles({ card: { color: theme.colors.brand, padding: "1rem" } });
-		export const App = () => <div className={useStyles().card} />;",
+		export const useStyles = // pandwind:migrate-skip (route: jss -> mantine | lowering-residual: host-framework, validation)
+		createUseStyles({ card: { color: "#2563eb" } });",
 		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [],
 		      "outcomes": [],
 		      "residuals": [],
 		      "skipped": 0,
@@ -200,10 +278,22 @@ test("jss -> mantine -> jss: preserves concrete theme and project context varian
 		    "forward": {
 		      "changed": true,
 		      "code": "import { createUseStyles } from "react-jss";
-		export const useStyles = // pandwind:migrate-skip (route: jss -> mantine | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, target-native, runtime-carrier, residual)
-		createUseStyles({ card: { color: theme.colors.brand, padding: "1rem" } });
-		export const App = () => <div className={useStyles().card} />;",
+		export const useStyles = // pandwind:migrate-skip (route: jss -> mantine | lowering-residual: host-framework, validation)
+		createUseStyles({ card: { color: "#2563eb" } });",
 		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "named-map",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
@@ -212,21 +302,35 @@ test("jss -> mantine -> jss: preserves concrete theme and project context varian
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "theme-context: 1 theme binding(s)",
-		          "kind": "capability",
+		          "hint": "Mantine style maps require a host component style prop or an explicit CSS module",
+		          "kind": "host-framework",
+		          "preserved": undefined,
+		        },
+		        {
+		          "hint": "1 residual conversion(s)",
+		          "kind": "validation",
 		          "preserved": undefined,
 		        },
 		      ],
 		      "skipped": 1,
-		      "validations": [],
+		      "validations": [
+		        {
+		          "differences": [
+		            "1 residual conversion(s)",
+		          ],
+		          "lossiness": "lossy",
+		          "valid": false,
+		        },
+		      ],
 		    },
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { createUseStyles } from "react-jss";
-		export const useStyles = // pandwind:migrate-skip (route: jss -> mantine | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, target-native, runtime-carrier, residual)
-		createUseStyles({ card: { color: theme.colors.brand, padding: "1rem" } });
-		export const App = () => <div className={useStyles().card} />;",
+		export const useStyles = // pandwind:migrate-skip (route: jss -> mantine | lowering-residual: host-framework, validation)
+		createUseStyles({ card: { color: "#2563eb" } });",
 		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [],
 		      "outcomes": [],
 		      "residuals": [],
 		      "skipped": 0,
@@ -234,13 +338,15 @@ test("jss -> mantine -> jss: preserves concrete theme and project context varian
 		    },
 		  },
 		}
-	`);
+	`)
 });
 
-test("jss -> mantine -> jss: resolves token references across both concrete legs", () => {
-	const first = forward.run({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
+test("jss -> mantine -> jss: resolves token values across both concrete legs", async () => {
+	const first = await forward.runAsync({ source: tokenSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Jss, CodemodAdapterId.Mantine);
+	expectRouteScenarioEvidence(first, "jss -> mantine round-trip token forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
@@ -250,9 +356,21 @@ test("jss -> mantine -> jss: resolves token references across both concrete legs
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
 		export const useStyles = // pandwind:migrate-skip (route: jss -> mantine | lowering-residual: host-framework, validation)
-		createUseStyles({ card: { color: "$colors.brand", padding: "1rem" } });
-		export const App = () => <div className={useStyles().card} />;",
+		createUseStyles({ card: { color: "#2563eb" } });",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "named-map",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
@@ -286,15 +404,16 @@ test("jss -> mantine -> jss: resolves token references across both concrete legs
 		    "changed": false,
 		    "code": "import { createUseStyles } from "react-jss";
 		export const useStyles = // pandwind:migrate-skip (route: jss -> mantine | lowering-residual: host-framework, validation)
-		createUseStyles({ card: { color: "$colors.brand", padding: "1rem" } });
-		export const App = () => <div className={useStyles().card} />;",
+		createUseStyles({ card: { color: "#2563eb" } });",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [],
 		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
 		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 

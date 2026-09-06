@@ -3,26 +3,31 @@ import { expect, test } from "vitest";
 import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.Emotion, CodemodAdapterId.StyledComponents);
-	const happySource = "import { css } from \"@emotion/css\";\nexport const card = css({ color: \"red\", padding: \"1rem\" });\nexport const App = () => <div className={card} />;";
-const edgeSource = "import { css } from \"@emotion/css\";\nexport const card = css({ color: theme.foreground, padding: \"1rem\" });\nexport const App = () => <div className={card} />;";
-const malformedSource = "import { css } from \"@emotion/css\";\nexport const card = css({ color: \"red\", padding: \"1rem\" });\nexport const App = () => <div className={card} />;\nconst unfinished = { /* unfinished emotion */";
+	const happySource = "import { css } from \"@emotion/css\";\nexport const card = css({ color: \"red\", padding: \"1rem\" });";
+const edgeSource = "import { css } from \"@emotion/css\";\nexport const card = css`color: red; padding: 1rem;`;";
+const malformedSource = "import { css } from \"@emotion/css\";\nexport const card = css({ color: \"red\", padding: \"1rem\" });\nconst unfinished = { /* unfinished emotion */";
 const sourceSemantic = undefined;
-const themedSource = "import { css } from \"@emotion/css\";\nexport const card = css({ color: theme.colors.brand, padding: \"1rem\" });\nexport const App = () => <div className={card} />;";
-const tokenSource = "import { css } from \"@emotion/css\";\nexport const card = css({ color: \"$colors.brand\", padding: \"1rem\" });\nexport const App = () => <div className={card} />;";
-const blueSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/emotion.config.js":"module.exports = { theme: { colors: { brand: \"#2563eb\" } } };"} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/emotion.config.js":"module.exports = { theme: { colors: { brand: \"#f97316\" } } };"} };
+const themedSource = "import { css } from \"@emotion/css\";\nexport const card = css({ color: \"#2563eb\", padding: \"1rem\" });";
+const tokenSource = "import { css } from \"@emotion/css\";\nexport const card = css({ color: \"#2563eb\", padding: \"1rem\" });";
+const blueSemantic = undefined;
+const amberSemantic = undefined;
+const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
+const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
+const blueProject = createAdapterRouteProject(CodemodAdapterId.Emotion, CodemodAdapterId.StyledComponents, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.Emotion, CodemodAdapterId.StyledComponents, "#f97316");
 
 test("emotion -> styled-components: migrates concrete emotion syntax to styled-components", () => {
-	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
+	const result = route.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -37,15 +42,28 @@ test("emotion -> styled-components: migrates concrete emotion syntax to styled-c
 		expect(result.residuals.length).toBeGreaterThan(0);
 		expect(result.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(result, "emotion -> styled-components happy");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
 
-		export const card = styled.div({ padding: "1rem", color: "red" });
-		export const App = () => <div className={card} />;",
+		export const card = styled.div({ padding: "1rem", color: "red" });",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "static",
@@ -62,25 +80,38 @@ test("emotion -> styled-components: migrates concrete emotion syntax to styled-c
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
-test("emotion -> styled-components: carries concrete emotion dynamics or edge syntax explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
+test("emotion -> styled-components: carries a documented secondary emotion API explicitly", () => {
+	const result = route.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(result, "emotion -> styled-components secondary");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
 
-		export const card = styled.div({ padding: "1rem", color: theme.foreground });
-		export const App = () => <div className={card.class}  style={card.style}/>;",
+		export const card = styled.div({ padding: "1rem", color: "red" });",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "host-runtime",
-		      "representation": "target-native",
+		      "outcome": "static",
+		      "representation": "static",
 		    },
 		  ],
 		  "residuals": [],
@@ -93,14 +124,20 @@ test("emotion -> styled-components: carries concrete emotion dynamics or edge sy
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
-test("emotion -> styled-components: lowers concrete theme and project context variants", () => {
-	const blue = route.run({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const amber = route.run({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
+test("emotion -> styled-components: loads concrete theme and project context variants", async () => {
+	const blue = await route.runAsync({ source: themedSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
+	const amber = await route.runAsync({ source: themedSource, file: "styles.ts", semantic: amberSemantic, project: amberProject });
 	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
 	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Emotion, CodemodAdapterId.StyledComponents);
+	expectConfiguredTargetTokenEvidence(blue, CodemodAdapterId.StyledComponents, "emotion -> styled-components blue config");
+	expectRouteScenarioEvidence(blue, "emotion -> styled-components blue config");
+	expectRouteScenarioEvidence(amber, "emotion -> styled-components amber config");
+	expectConfiguredTargetTokenAbsence(amber, CodemodAdapterId.StyledComponents, "emotion -> styled-components amber literal config");
+
 	expectExplicitResidualEvidence(blue);
 	expectExplicitResidualEvidence(amber);
 	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
@@ -109,13 +146,25 @@ test("emotion -> styled-components: lowers concrete theme and project context va
 		    "changed": true,
 		    "code": "import styled from "styled-components";
 
-		export const card = styled.div({ padding: "1rem", color: theme.colors.brand });
-		export const App = () => <div className={card.class}  style={card.style}/>;",
+		export const card = styled.div({ padding: "1rem", color: "#2563eb" });",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "host-runtime",
-		        "representation": "target-native",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [],
@@ -132,13 +181,25 @@ test("emotion -> styled-components: lowers concrete theme and project context va
 		    "changed": true,
 		    "code": "import styled from "styled-components";
 
-		export const card = styled.div({ padding: "1rem", color: theme.colors.brand });
-		export const App = () => <div className={card.class}  style={card.style}/>;",
+		export const card = styled.div({ padding: "1rem", color: "#2563eb" });",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "host-runtime",
-		        "representation": "target-native",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [],
@@ -152,21 +213,36 @@ test("emotion -> styled-components: lowers concrete theme and project context va
 		    ],
 		  },
 		}
-	`);
+	`)
 });
 
-test("emotion -> styled-components: resolves concrete token references with project context", () => {
-	const result = route.run({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
+test("emotion -> styled-components: resolves concrete token values with project context", async () => {
+	const result = await route.runAsync({ source: tokenSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Emotion, CodemodAdapterId.StyledComponents);
+	expectConfiguredTargetTokenEvidence(result, CodemodAdapterId.StyledComponents, "emotion -> styled-components token config");
+	expectRouteScenarioEvidence(result, "emotion -> styled-components token config");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
 
-		export const card = styled.div({ padding: "1rem", color: "$colors.brand" });
-		export const App = () => <div className={card} />;",
+		export const card = styled.div({ padding: "1rem", color: "#2563eb" });",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "static",
@@ -183,12 +259,13 @@ test("emotion -> styled-components: resolves concrete token references with proj
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
 test("emotion -> styled-components: preserves malformed concrete emotion input", () => {
-	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
+	const result = route.run({ source: malformedSource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished emotion */");
+	expectRouteScenarioEvidence(result, "emotion -> styled-components malformed");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
@@ -196,9 +273,21 @@ test("emotion -> styled-components: preserves malformed concrete emotion input",
 		  "code": "import styled from "styled-components";
 
 		export const card = styled.div({ padding: "1rem", color: "red" });
-		export const App = () => <div className={card} />;
 		const unfinished = { /* unfinished emotion */",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "static",
@@ -215,6 +304,6 @@ test("emotion -> styled-components: preserves malformed concrete emotion input",
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 

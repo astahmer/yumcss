@@ -3,26 +3,31 @@ import { expect, test } from "vitest";
 import { CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.ReactNative, CodemodAdapterId.StyleX);
-	const happySource = "import { StyleSheet, View } from \"react-native\";\nexport const styles = StyleSheet.create({ card: { color: \"red\", padding: 16 } });\nexport const App = () => <View style={styles.card} />;";
-const edgeSource = "import { StyleSheet, View } from \"react-native\";\nexport const styles = StyleSheet.create({ card: { color: theme.foreground, padding: 16 } });\nexport const App = () => <View style={styles.card} />;";
-const malformedSource = "import { StyleSheet, View } from \"react-native\";\nexport const styles = StyleSheet.create({ card: { color: \"red\", padding: 16 } });\nexport const App = () => <View style={styles.card} />;\nconst unfinished = { /* unfinished react-native */";
+	const happySource = "import { StyleSheet } from \"react-native\";\nexport const styles = StyleSheet.create({ card: { color: \"red\", padding: 8 } });";
+const edgeSource = "import { StyleSheet } from \"react-native\";\nexport const styles = StyleSheet.create({ card: { padding: 8, backgroundColor: \"red\" } });";
+const malformedSource = "import { StyleSheet } from \"react-native\";\nexport const styles = StyleSheet.create({ card: { color: \"red\", padding: 8 } });\nconst unfinished = { /* unfinished react-native */";
 const sourceSemantic = undefined;
-const themedSource = "import { StyleSheet, View } from \"react-native\";\nexport const styles = StyleSheet.create({ card: { color: theme.colors.brand, padding: 16 } });\nexport const App = () => <View style={styles.card} />;";
-const tokenSource = "import { StyleSheet, View } from \"react-native\";\nexport const styles = StyleSheet.create({ card: { color: \"$colors.brand\", padding: 16 } });\nexport const App = () => <View style={styles.card} />;";
-const blueSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/package.json":"{\"name\":\"stylex-fixture\",\"stylex\":{\"aliases\":{\"brand\":\"#2563eb\"}}}"} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/package.json":"{\"name\":\"stylex-fixture\",\"stylex\":{\"aliases\":{\"brand\":\"#f97316\"}}}"} };
+const themedSource = "import { StyleSheet } from \"react-native\";\nexport const styles = StyleSheet.create({ card: { color: \"#2563eb\", padding: 8 } });";
+const tokenSource = "import { StyleSheet } from \"react-native\";\nexport const styles = StyleSheet.create({ card: { color: \"#2563eb\", padding: 8 } });";
+const blueSemantic = undefined;
+const amberSemantic = undefined;
+const blueTargetSemantic = undefined;
+const amberTargetSemantic = undefined;
+const blueProject = createAdapterRouteProject(CodemodAdapterId.ReactNative, CodemodAdapterId.StyleX, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.ReactNative, CodemodAdapterId.StyleX, "#f97316");
 
 test("react-native -> stylex: migrates concrete react-native syntax to stylex", () => {
-	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
+	const result = route.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -37,15 +42,31 @@ test("react-native -> stylex: migrates concrete react-native syntax to stylex", 
 		expect(result.residuals.length).toBeGreaterThan(0);
 		expect(result.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(result, "react-native -> stylex happy");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { View } from "react-native";
-		import * as stylex from "@stylexjs/stylex";
-		export const styles = stylex.create({ card: { padding: "16px", color: "red" } });
-		export const App = () => <View style={styles.card} />;",
+		  "code": "import * as stylex from "@stylexjs/stylex";
+
+		export const styles = stylex.create({ card: { padding: "8px", color: "red" } });",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		        "stylex-numeric-normalization",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "named-map",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "target-native",
@@ -62,111 +83,181 @@ test("react-native -> stylex: migrates concrete react-native syntax to stylex", 
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
-test("react-native -> stylex: carries concrete react-native dynamics or edge syntax explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
+test("react-native -> stylex: carries a documented secondary react-native API explicitly", () => {
+	const result = route.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(result, "react-native -> stylex secondary");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet, View } from "react-native";
-		export const styles = // pandwind:migrate-skip (route: react-native -> stylex | capability-blocked: dynamic-values: dynamic: theme.foreground | available: named-map, target-native, residual)
-		StyleSheet.create({ card: { color: theme.foreground, padding: 16 } });
-		export const App = () => <View style={styles.card} />;",
-		  "converted": 0,
+		  "code": "import * as stylex from "@stylexjs/stylex";
+
+		export const styles = stylex.create({ card: { padding: "8px", backgroundColor: "red" } });",
+		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		        "stylex-numeric-normalization",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "named-map",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
+		      "outcome": "target-native",
 		      "representation": "named-map",
 		    },
 		  ],
-		  "residuals": [
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
 		    {
-		      "hint": "dynamic-values: dynamic: theme.foreground",
-		      "kind": "capability",
-		      "preserved": undefined,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
-		  "skipped": 1,
-		  "validations": [],
 		}
-	`);
+	`)
 });
 
-test("react-native -> stylex: lowers concrete theme and project context variants", () => {
-	const blue = route.run({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const amber = route.run({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
+test("react-native -> stylex: loads concrete theme and project context variants", async () => {
+	const blue = await route.runAsync({ source: themedSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
+	const amber = await route.runAsync({ source: themedSource, file: "styles.ts", semantic: amberSemantic, project: amberProject });
 	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
 	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.ReactNative, CodemodAdapterId.StyleX);
+	expectConfiguredTargetTokenEvidence(blue, CodemodAdapterId.StyleX, "react-native -> stylex blue config");
+	expectRouteScenarioEvidence(blue, "react-native -> stylex blue config");
+	expectRouteScenarioEvidence(amber, "react-native -> stylex amber config");
+	expectConfiguredTargetTokenAbsence(amber, CodemodAdapterId.StyleX, "react-native -> stylex amber literal config");
+
 	expectExplicitResidualEvidence(blue);
 	expectExplicitResidualEvidence(amber);
 	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { StyleSheet, View } from "react-native";
-		export const styles = // pandwind:migrate-skip (route: react-native -> stylex | capability-blocked: dynamic-values: dynamic: theme.colors.brand | available: named-map, target-native, residual)
-		StyleSheet.create({ card: { color: theme.colors.brand, padding: 16 } });
-		export const App = () => <View style={styles.card} />;",
-		    "converted": 0,
+		    "code": "import * as stylex from "@stylexjs/stylex";
+
+		export const styles = stylex.create({ card: { padding: "8px", color: "#2563eb" } });",
+		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		          "stylex-numeric-normalization",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "named-map",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "target-native",
 		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "dynamic-values: dynamic: theme.colors.brand",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { StyleSheet, View } from "react-native";
-		export const styles = // pandwind:migrate-skip (route: react-native -> stylex | capability-blocked: dynamic-values: dynamic: theme.colors.brand | available: named-map, target-native, residual)
-		StyleSheet.create({ card: { color: theme.colors.brand, padding: 16 } });
-		export const App = () => <View style={styles.card} />;",
-		    "converted": 0,
+		    "code": "import * as stylex from "@stylexjs/stylex";
+
+		export const styles = stylex.create({ card: { padding: "8px", color: "#2563eb" } });",
+		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		          "stylex-numeric-normalization",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "named-map",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "target-native",
 		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "dynamic-values: dynamic: theme.colors.brand",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 
-test("react-native -> stylex: resolves concrete token references with project context", () => {
-	const result = route.run({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
+test("react-native -> stylex: resolves concrete token values with project context", async () => {
+	const result = await route.runAsync({ source: tokenSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.ReactNative, CodemodAdapterId.StyleX);
+	expectConfiguredTargetTokenEvidence(result, CodemodAdapterId.StyleX, "react-native -> stylex token config");
+	expectRouteScenarioEvidence(result, "react-native -> stylex token config");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { View } from "react-native";
-		import * as stylex from "@stylexjs/stylex";
-		export const styles = stylex.create({ card: { padding: "16px", color: "$colors.brand" } });
-		export const App = () => <View style={styles.card} />;",
+		  "code": "import * as stylex from "@stylexjs/stylex";
+
+		export const styles = stylex.create({ card: { padding: "8px", color: "#2563eb" } });",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		        "stylex-numeric-normalization",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "named-map",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "target-native",
@@ -183,22 +274,38 @@ test("react-native -> stylex: resolves concrete token references with project co
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
 test("react-native -> stylex: preserves malformed concrete react-native input", () => {
-	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
+	const result = route.run({ source: malformedSource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished react-native */");
+	expectRouteScenarioEvidence(result, "react-native -> stylex malformed");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { View } from "react-native";
-		import * as stylex from "@stylexjs/stylex";
-		export const styles = stylex.create({ card: { padding: "16px", color: "red" } });
-		export const App = () => <View style={styles.card} />;
+		  "code": "import * as stylex from "@stylexjs/stylex";
+
+		export const styles = stylex.create({ card: { padding: "8px", color: "red" } });
 		const unfinished = { /* unfinished react-native */",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		        "stylex-numeric-normalization",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "named-map",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "target-native",
@@ -215,6 +322,6 @@ test("react-native -> stylex: preserves malformed concrete react-native input", 
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 

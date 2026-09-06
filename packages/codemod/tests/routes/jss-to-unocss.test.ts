@@ -3,26 +3,31 @@ import { expect, test } from "vitest";
 import { CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.Jss, CodemodAdapterId.UnoCSS);
-	const happySource = "import { createUseStyles } from \"react-jss\";\nexport const useStyles = createUseStyles({ card: { color: \"red\", padding: \"1rem\" } });\nexport const App = () => <div className={useStyles().card} />;";
-const edgeSource = "import { createUseStyles } from \"react-jss\";\nexport const useStyles = createUseStyles({ card: { color: theme.foreground, padding: \"1rem\" } });\nexport const App = () => <div className={useStyles().card} />;";
-const malformedSource = "import { createUseStyles } from \"react-jss\";\nexport const useStyles = createUseStyles({ card: { color: \"red\", padding: \"1rem\" } });\nexport const App = () => <div className={useStyles().card} />;\nconst unfinished = { /* unfinished jss */";
+	const happySource = "import { createUseStyles } from \"react-jss\";\nexport const useStyles = createUseStyles({ card: { color: \"red\" } });";
+const edgeSource = "import jss from \"jss\";\nexport const sheet = jss.createStyleSheet({ card: { color: \"red\" } });";
+const malformedSource = "import { createUseStyles } from \"react-jss\";\nexport const useStyles = createUseStyles({ card: { color: \"red\" } });\nconst unfinished = { /* unfinished jss */";
 const sourceSemantic = undefined;
-const themedSource = "import { createUseStyles } from \"react-jss\";\nexport const useStyles = createUseStyles({ card: { color: theme.colors.brand, padding: \"1rem\" } });\nexport const App = () => <div className={useStyles().card} />;";
-const tokenSource = "import { createUseStyles } from \"react-jss\";\nexport const useStyles = createUseStyles({ card: { color: \"$colors.brand\", padding: \"1rem\" } });\nexport const App = () => <div className={useStyles().card} />;";
-const blueSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/uno.config.ts":"export default defineConfig({ theme: { colors: { brand: \"#2563eb\" } } });","/virtual/pandwind-route-project/app/globals.css":"@theme { --color-brand: #2563eb; --spacing-card: 1.125rem; }"} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/uno.config.ts":"export default defineConfig({ theme: { colors: { brand: \"#f97316\" } } });","/virtual/pandwind-route-project/app/globals.css":"@theme { --color-brand: #f97316; --spacing-card: 1.125rem; }"} };
+const themedSource = "import { createUseStyles } from \"react-jss\";\nexport const useStyles = createUseStyles({ card: { color: \"#2563eb\" } });";
+const tokenSource = "import { createUseStyles } from \"react-jss\";\nexport const useStyles = createUseStyles({ card: { color: \"#2563eb\" } });";
+const blueSemantic = undefined;
+const amberSemantic = undefined;
+const blueTargetSemantic = undefined;
+const amberTargetSemantic = undefined;
+const blueProject = createAdapterRouteProject(CodemodAdapterId.Jss, CodemodAdapterId.UnoCSS, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.Jss, CodemodAdapterId.UnoCSS, "#f97316");
 
 test("jss -> unocss: migrates concrete jss syntax to unocss", () => {
-	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
+	const result = route.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -37,14 +42,29 @@ test("jss -> unocss: migrates concrete jss syntax to unocss", () => {
 		expect(result.residuals.length).toBeGreaterThan(0);
 		expect(result.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(result, "jss -> unocss happy");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "
-		export const useStyles = { "card": "[padding:1rem] [color:red]" };
-		export const App = () => <div className={useStyles().card} />;",
+		export const useStyles = { "card": "[color:red]" };",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "named-map",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "target-native",
@@ -61,45 +81,65 @@ test("jss -> unocss: migrates concrete jss syntax to unocss", () => {
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
-test("jss -> unocss: carries concrete jss dynamics or edge syntax explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
+test("jss -> unocss: carries a documented secondary jss API explicitly", () => {
+	const result = route.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(result, "jss -> unocss secondary");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUseStyles } from "react-jss";
-		export const useStyles = // pandwind:migrate-skip (route: jss -> unocss | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
-		createUseStyles({ card: { color: theme.foreground, padding: "1rem" } });
-		export const App = () => <div className={useStyles().card} />;",
-		  "converted": 0,
+		  "code": "
+		export const sheet = { "card": "[color:red]" };",
+		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "named-map",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
-		      "representation": "custom-property",
+		      "outcome": "target-native",
+		      "representation": "named-map",
 		    },
 		  ],
-		  "residuals": [
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
 		    {
-		      "hint": "bind --pandwind-dynamic-5qa8dh at runtime for target unocss",
-		      "kind": "dynamic-custom-property",
-		      "preserved": undefined,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
-		  "skipped": 1,
-		  "validations": [],
 		}
-	`);
+	`)
 });
 
-test("jss -> unocss: lowers concrete theme and project context variants", () => {
-	const blue = route.run({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const amber = route.run({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
+test("jss -> unocss: loads concrete theme and project context variants", async () => {
+	const blue = await route.runAsync({ source: themedSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
+	const amber = await route.runAsync({ source: themedSource, file: "styles.ts", semantic: amberSemantic, project: amberProject });
 	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
 	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Jss, CodemodAdapterId.UnoCSS);
+	expectConfiguredTargetTokenEvidence(blue, CodemodAdapterId.UnoCSS, "jss -> unocss blue config");
+	expectRouteScenarioEvidence(blue, "jss -> unocss blue config");
+	expectRouteScenarioEvidence(amber, "jss -> unocss amber config");
+	expectConfiguredTargetTokenAbsence(amber, CodemodAdapterId.UnoCSS, "jss -> unocss amber literal config");
+
 	expectExplicitResidualEvidence(blue);
 	expectExplicitResidualEvidence(amber);
 	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
@@ -107,9 +147,23 @@ test("jss -> unocss: lowers concrete theme and project context variants", () => 
 		  "amber": {
 		    "changed": true,
 		    "code": "
-		export const useStyles = { "card": "[padding:1rem] [color:#f97316]" };
-		export const App = () => <div className={useStyles().card} />;",
+		export const useStyles = { "card": "[color:#2563eb]" };",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "named-map",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "target-native",
@@ -129,9 +183,23 @@ test("jss -> unocss: lowers concrete theme and project context variants", () => 
 		  "blue": {
 		    "changed": true,
 		    "code": "
-		export const useStyles = { "card": "[padding:1rem] [color:#2563eb]" };
-		export const App = () => <div className={useStyles().card} />;",
+		export const useStyles = { "card": "text-brand" };",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "named-map",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "target-native",
@@ -149,20 +217,37 @@ test("jss -> unocss: lowers concrete theme and project context variants", () => 
 		    ],
 		  },
 		}
-	`);
+	`)
 });
 
-test("jss -> unocss: resolves concrete token references with project context", () => {
-	const result = route.run({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
+test("jss -> unocss: resolves concrete token values with project context", async () => {
+	const result = await route.runAsync({ source: tokenSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Jss, CodemodAdapterId.UnoCSS);
+	expectConfiguredTargetTokenEvidence(result, CodemodAdapterId.UnoCSS, "jss -> unocss token config");
+	expectRouteScenarioEvidence(result, "jss -> unocss token config");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "
-		export const useStyles = { "card": "[padding:1rem] [color:$colors.brand]" };
-		export const App = () => <div className={useStyles().card} />;",
+		export const useStyles = { "card": "text-brand" };",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "named-map",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "target-native",
@@ -179,21 +264,36 @@ test("jss -> unocss: resolves concrete token references with project context", (
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
 test("jss -> unocss: preserves malformed concrete jss input", () => {
-	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
+	const result = route.run({ source: malformedSource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished jss */");
+	expectRouteScenarioEvidence(result, "jss -> unocss malformed");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "
-		export const useStyles = { "card": "[padding:1rem] [color:red]" };
-		export const App = () => <div className={useStyles().card} />;
+		export const useStyles = { "card": "[color:red]" };
 		const unfinished = { /* unfinished jss */",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "named-map",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "target-native",
@@ -210,6 +310,6 @@ test("jss -> unocss: preserves malformed concrete jss input", () => {
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 

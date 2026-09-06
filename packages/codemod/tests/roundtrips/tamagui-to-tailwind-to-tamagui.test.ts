@@ -3,30 +3,35 @@ import { expect, test } from "vitest";
 import { CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
-	expectActionableRoundTrip,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
+	expectTargetClassProjection,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const forward = createAdapterRouteSpec(CodemodAdapterId.Tamagui, CodemodAdapterId.Tailwind);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.Tailwind, CodemodAdapterId.Tamagui);
 	const happySource = "import { styled, View } from \"tamagui\";\nexport const Card = styled(View, { color: \"red\", padding: \"$4\" });\nexport const App = () => <Card />;";
-const edgeSource = "import { styled, View } from \"tamagui\";\nexport const Card = styled(View, { color: theme.foreground, padding: \"$4\" });\nexport const App = () => <Card />;";
+const edgeSource = "import { styled, View } from \"tamagui\";\nexport const Card = styled(View, ({ theme }) => ({ color: theme.color }));";
 const malformedSource = "import { styled, View } from \"tamagui\";\nexport const Card = styled(View, { color: \"red\", padding: \"$4\" });\nexport const App = () => <Card />;\nconst unfinished = { /* unfinished tamagui */";
 const sourceSemantic = undefined;
-const themedSource = "import { styled, View } from \"tamagui\";\nexport const Card = styled(View, { color: theme.colors.brand, padding: \"$4\" });\nexport const App = () => <Card />;";
-const tokenSource = "import { styled, View } from \"tamagui\";\nexport const Card = styled(View, { color: \"$colors.brand\", padding: \"$4\" });\nexport const App = () => <Card />;";
-const blueSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/tailwind.css":"@import \"tailwindcss\"; @theme { --color-brand: #2563eb; --spacing-card: 1.125rem; }"} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/tailwind.css":"@import \"tailwindcss\"; @theme { --color-brand: #f97316; --spacing-card: 1.125rem; }"} };
+const themedSource = "import { styled, View } from \"tamagui\";\nexport const Card = styled(View, { color: \"#2563eb\", padding: \"$4\" });\nexport const App = () => <Card />;";
+const tokenSource = "import { styled, View } from \"tamagui\";\nexport const Card = styled(View, { color: \"#2563eb\", padding: \"$4\" });\nexport const App = () => <Card />;";
+const blueSemantic = undefined;
+const amberSemantic = undefined;
+const blueTargetSemantic = undefined;
+const amberTargetSemantic = undefined;
+const blueProject = createAdapterRouteProject(CodemodAdapterId.Tamagui, CodemodAdapterId.Tailwind, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.Tamagui, CodemodAdapterId.Tailwind, "#f97316");
 	const targetSemantic = undefined;
 
 test("tamagui -> tailwind -> tamagui: preserves an actionable concrete round trip", () => {
 	const first = forward.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -36,8 +41,9 @@ test("tamagui -> tailwind -> tamagui: preserves an actionable concrete round tri
 		expect(first.residuals.length).toBeGreaterThan(0);
 		expect(first.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(first, "tamagui -> tailwind round-trip happy forward");
 	expectExplicitResidualEvidence(first);
-	expectActionableRoundTrip(first, second);
+	expectTargetClassProjection(first, second, ["text-","bg-","p-","[","className","class"], "tamagui -> tailwind round-trip happy");
 	expectExplicitResidualEvidence(second);
 	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
 		{
@@ -47,6 +53,21 @@ test("tamagui -> tailwind -> tamagui: preserves an actionable concrete round tri
 		export const Card = "[padding:$4] [color:red]";
 		export const App = () => <View className={Card} />;",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "static",
@@ -70,6 +91,18 @@ test("tamagui -> tailwind -> tamagui: preserves an actionable concrete round tri
 		export const Card = "[padding:$4] [color:red]";
 		export const App = () => styled(View, { padding: "$4", color: "red" });",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "static",
@@ -87,51 +120,39 @@ test("tamagui -> tailwind -> tamagui: preserves an actionable concrete round tri
 		    ],
 		  },
 		}
-	`);
+	`)
 });
 
-test("tamagui -> tailwind -> tamagui: retains edge semantics without silent loss", () => {
+test("tamagui -> tailwind -> tamagui: retains the documented secondary API without silent loss", () => {
 	const first = forward.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
-	expectActionableRoundTrip(first, second);
+	expectRouteScenarioEvidence(first, "tamagui -> tailwind round-trip secondary forward");
+	expectTargetClassProjection(first, second, ["text-","bg-","p-","[","className","class"], "tamagui -> tailwind round-trip secondary");
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
 	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { View } from "tamagui";
-		import { createCx } from "pandwind/cx";
-		const cx = createCx();
-		export const Card = (props) => <View {...props} className={cx("[padding:$4] [color:var(--pandwind-dynamic-5qa8dh)]", props.className)} style={{ ...{ "--pandwind-dynamic-5qa8dh": String(theme.foreground) }, ...props.style }} />;
-		export const App = () => <Card />;",
-		    "converted": 1,
-		    "outcomes": [
-		      {
-		        "outcome": "host-runtime",
-		        "representation": "custom-property",
-		      },
-		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
-		  },
-		  "reverse": {
-		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: tailwind -> tamagui | parse-residual: dynamic)
-		import { View } from "tamagui";
-		import { createCx } from "pandwind/cx";
-		const cx = createCx();
-		export const Card = (props) => <View {...props} className={cx("[padding:$4] [color:var(--pandwind-dynamic-5qa8dh)]", props.className)} style={{ ...{ "--pandwind-dynamic-5qa8dh": String(theme.foreground) }, ...props.style }} />;
-		export const App = () => <Card />;",
+		    "code": "import { styled, View } from "tamagui";
+		export const Card = // pandwind:migrate-skip (route: tamagui -> tailwind | parse-residual: function-dynamic | capability-blocked: components: component subject: View | available: named-map, residual)
+		styled(View, ({ theme }) => ({ color: theme.color }));",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "residual",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
@@ -140,27 +161,51 @@ test("tamagui -> tailwind -> tamagui: retains edge semantics without silent loss
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "Tailwind dynamic class expressions require runtime-aware target lowering",
-		        "kind": "dynamic",
+		        "hint": "Tamagui function-valued styles require a theme/props wrapper",
+		        "kind": "function-dynamic",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "components: component subject: View",
+		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 1,
 		    "validations": [],
 		  },
+		  "reverse": {
+		    "changed": false,
+		    "code": "import { styled, View } from "tamagui";
+		export const Card = // pandwind:migrate-skip (route: tamagui -> tailwind | parse-residual: function-dynamic | capability-blocked: components: component subject: View | available: named-map, residual)
+		styled(View, ({ theme }) => ({ color: theme.color }));",
+		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [],
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [],
+		  },
 		}
-	`);
+	`)
 });
 
-test("tamagui -> tailwind -> tamagui: preserves concrete theme and project context variants", () => {
-	const firstBlue = forward.run({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const secondBlue = reverse.run({ source: firstBlue.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
-	const firstAmber = forward.run({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
-	const secondAmber = reverse.run({ source: firstAmber.code, file: "Card.tsx", semantic: amberTargetSemantic, project: amberProject });
+test("tamagui -> tailwind -> tamagui: preserves concrete theme and project context variants", async () => {
+	const firstBlue = await forward.runAsync({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
+	const firstAmber = await forward.runAsync({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "App.tsx", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
-	expectActionableRoundTrip(firstBlue, secondBlue);
-	expectActionableRoundTrip(firstAmber, secondAmber);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Tamagui, CodemodAdapterId.Tailwind);
+	expectConfiguredTargetTokenEvidence(firstBlue, CodemodAdapterId.Tailwind, "tamagui -> tailwind round-trip token config");
+	expectRouteScenarioEvidence(firstBlue, "tamagui -> tailwind round-trip blue forward");
+	expectRouteScenarioEvidence(firstAmber, "tamagui -> tailwind round-trip amber forward");
+	expectConfiguredTargetTokenAbsence(firstAmber, CodemodAdapterId.Tailwind, "tamagui -> tailwind round-trip amber literal config");
+
+	expectTargetClassProjection(firstBlue, secondBlue, ["text-","bg-","p-","[","className","class"], "tamagui -> tailwind round-trip blue");
+	expectTargetClassProjection(firstAmber, secondAmber, ["text-","bg-","p-","[","className","class"], "tamagui -> tailwind round-trip amber");
 	expectExplicitResidualEvidence(firstBlue);
 	expectExplicitResidualEvidence(secondBlue);
 	expectExplicitResidualEvidence(firstAmber);
@@ -174,15 +219,28 @@ test("tamagui -> tailwind -> tamagui: preserves concrete theme and project conte
 		    "forward": {
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
-		import { createCx } from "pandwind/cx";
-		const cx = createCx();
-		export const Card = (props) => <View {...props} className={cx("[padding:$4] [color:var(--pandwind-dynamic-bbwvz3)]", props.className)} style={{ ...{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }, ...props.style }} />;
-		export const App = () => <Card />;",
+		export const Card = "[padding:$4] [color:#2563eb]";
+		export const App = () => <View className={Card} />;",
 		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "host-runtime",
-		          "representation": "custom-property",
+		          "outcome": "static",
+		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [],
@@ -197,13 +255,22 @@ test("tamagui -> tailwind -> tamagui: preserves concrete theme and project conte
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "// pandwind:migrate-skip (route: tailwind -> tamagui | parse-residual: dynamic)
-		import { View } from "tamagui";
-		import { createCx } from "pandwind/cx";
-		const cx = createCx();
-		export const Card = (props) => <View {...props} className={cx("[padding:$4] [color:var(--pandwind-dynamic-bbwvz3)]", props.className)} style={{ ...{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }, ...props.style }} />;
-		export const App = () => <Card />;",
+		      "code": "import { View } from "tamagui";
+		export const Card = "[padding:$4] [color:#2563eb]";
+		export const App = () => // pandwind:migrate-skip (route: tailwind -> tamagui | parse-residual: unknown-utility | available: residual)
+		<View className={Card} />;",
 		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [],
+		          "availableRepresentations": [
+		            "residual",
+		          ],
+		          "representation": "residual",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
@@ -212,8 +279,13 @@ test("tamagui -> tailwind -> tamagui: preserves concrete theme and project conte
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "Tailwind dynamic class expressions require runtime-aware target lowering",
-		          "kind": "dynamic",
+		          "hint": "Tailwind utility requires the project engine or a custom preset",
+		          "kind": "unknown-utility",
+		          "preserved": undefined,
+		        },
+		        {
+		          "hint": "Tailwind utility requires the project engine or a custom preset",
+		          "kind": "unknown-utility",
 		          "preserved": undefined,
 		        },
 		      ],
@@ -225,15 +297,28 @@ test("tamagui -> tailwind -> tamagui: preserves concrete theme and project conte
 		    "forward": {
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
-		import { createCx } from "pandwind/cx";
-		const cx = createCx();
-		export const Card = (props) => <View {...props} className={cx("[padding:$4] [color:var(--pandwind-dynamic-bbwvz3)]", props.className)} style={{ ...{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }, ...props.style }} />;
-		export const App = () => <Card />;",
+		export const Card = "[padding:$4] text-brand";
+		export const App = () => <View className={Card} />;",
 		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "host-runtime",
-		          "representation": "custom-property",
+		          "outcome": "static",
+		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [],
@@ -248,13 +333,22 @@ test("tamagui -> tailwind -> tamagui: preserves concrete theme and project conte
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "// pandwind:migrate-skip (route: tailwind -> tamagui | parse-residual: dynamic)
-		import { View } from "tamagui";
-		import { createCx } from "pandwind/cx";
-		const cx = createCx();
-		export const Card = (props) => <View {...props} className={cx("[padding:$4] [color:var(--pandwind-dynamic-bbwvz3)]", props.className)} style={{ ...{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }, ...props.style }} />;
-		export const App = () => <Card />;",
+		      "code": "import { View } from "tamagui";
+		export const Card = "[padding:$4] text-brand";
+		export const App = () => // pandwind:migrate-skip (route: tailwind -> tamagui | parse-residual: unknown-utility | available: residual)
+		<View className={Card} />;",
 		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [],
+		          "availableRepresentations": [
+		            "residual",
+		          ],
+		          "representation": "residual",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
@@ -263,8 +357,8 @@ test("tamagui -> tailwind -> tamagui: preserves concrete theme and project conte
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "Tailwind dynamic class expressions require runtime-aware target lowering",
-		          "kind": "dynamic",
+		          "hint": "Tailwind utility requires the project engine or a custom preset",
+		          "kind": "unknown-utility",
 		          "preserved": undefined,
 		        },
 		      ],
@@ -273,14 +367,16 @@ test("tamagui -> tailwind -> tamagui: preserves concrete theme and project conte
 		    },
 		  },
 		}
-	`);
+	`)
 });
 
-test("tamagui -> tailwind -> tamagui: resolves token references across both concrete legs", () => {
-	const first = forward.run({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
+test("tamagui -> tailwind -> tamagui: resolves token values across both concrete legs", async () => {
+	const first = await forward.runAsync({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
-	expectActionableRoundTrip(first, second);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Tamagui, CodemodAdapterId.Tailwind);
+	expectRouteScenarioEvidence(first, "tamagui -> tailwind round-trip token forward");
+	expectTargetClassProjection(first, second, ["text-","bg-","p-","[","className","class"], "tamagui -> tailwind round-trip token");
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
 	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
@@ -288,9 +384,24 @@ test("tamagui -> tailwind -> tamagui: resolves token references across both conc
 		  "forward": {
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
-		export const Card = "[padding:$4] [color:$colors.brand]";
+		export const Card = "[padding:$4] text-brand";
 		export const App = () => <View className={Card} />;",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "static",
@@ -310,27 +421,38 @@ test("tamagui -> tailwind -> tamagui: resolves token references across both conc
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
-		import { View, styled } from "@tamagui/core";
-		export const Card = "[padding:$4] [color:$colors.brand]";
-		export const App = () => styled(View, { padding: "$4", color: "$colors.brand" });",
-		    "converted": 1,
+		export const Card = "[padding:$4] text-brand";
+		export const App = () => // pandwind:migrate-skip (route: tailwind -> tamagui | parse-residual: unknown-utility | available: residual)
+		<View className={Card} />;",
+		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "residual",
+		        ],
+		        "representation": "residual",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
-		        "representation": "static",
+		        "outcome": "residual",
+		        "representation": "residual",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "Tailwind utility requires the project engine or a custom preset",
+		        "kind": "unknown-utility",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 

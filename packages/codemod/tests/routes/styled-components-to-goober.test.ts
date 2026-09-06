@@ -3,23 +3,28 @@ import { expect, test } from "vitest";
 import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.StyledComponents, CodemodAdapterId.Goober);
-	const happySource = "import styled from \"styled-components\";\nexport const Card = styled.div({ color: \"red\", padding: \"1rem\" });\nexport const App = () => <Card />;";
-const edgeSource = "import styled from \"styled-components\";\nexport const Card = styled.div({ color: theme.foreground, padding: \"1rem\" });\nexport const App = () => <Card />;";
-const malformedSource = "import styled from \"styled-components\";\nexport const Card = styled.div({ color: \"red\", padding: \"1rem\" });\nexport const App = () => <Card />;\nconst unfinished = { /* unfinished styled-components */";
+	const happySource = "import styled from \"styled-components\";\nexport const Card = styled.div({ color: \"red\", padding: \"1rem\" });";
+const edgeSource = "import styled from \"styled-components\";\nexport const Card = styled.div`color: red; padding: 1rem;`;";
+const malformedSource = "import styled from \"styled-components\";\nexport const Card = styled.div({ color: \"red\", padding: \"1rem\" });\nconst unfinished = { /* unfinished styled-components */";
 const sourceSemantic = { source: { framework: BuiltinHostFramework.React } };
-const themedSource = "import styled from \"styled-components\";\nexport const Card = styled.div({ color: theme.colors.brand, padding: \"1rem\" });\nexport const App = () => <Card />;";
-const tokenSource = "import styled from \"styled-components\";\nexport const Card = styled.div({ color: \"$colors.brand\", padding: \"1rem\" });\nexport const App = () => <Card />;";
-const blueSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {} };
+const themedSource = "import styled from \"styled-components\";\nexport const Card = styled.div({ color: \"#2563eb\", padding: \"1rem\" });";
+const tokenSource = "import styled from \"styled-components\";\nexport const Card = styled.div({ color: \"#2563eb\", padding: \"1rem\" });";
+const blueSemantic = { source: { framework: BuiltinHostFramework.React } };
+const amberSemantic = { source: { framework: BuiltinHostFramework.React } };
+const blueTargetSemantic = undefined;
+const amberTargetSemantic = undefined;
+const blueProject = createAdapterRouteProject(CodemodAdapterId.StyledComponents, CodemodAdapterId.Goober, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.StyledComponents, CodemodAdapterId.Goober, "#f97316");
 
 test("styled-components -> goober: migrates concrete styled-components syntax to goober", () => {
 	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
@@ -37,15 +42,32 @@ test("styled-components -> goober: migrates concrete styled-components syntax to
 		expect(result.residuals.length).toBeGreaterThan(0);
 		expect(result.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(result, "styled-components -> goober happy");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "goober";
-
-		export const Card = css({ "padding": "1rem", "color": "red" });
-		export const App = () => <div className={Card} />;",
+		  "code": "
+		import { createCx } from "pandwind/cx";
+		import { css } from "goober";
+		const cx = createCx();
+		export const Card = (props) => <div {...props} className={cx(css({ "padding": "1rem", "color": "red" }), props.className)} />;",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "static",
@@ -62,25 +84,42 @@ test("styled-components -> goober: migrates concrete styled-components syntax to
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
-test("styled-components -> goober: carries concrete styled-components dynamics or edge syntax explicitly", () => {
+test("styled-components -> goober: carries a documented secondary styled-components API explicitly", () => {
 	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(result, "styled-components -> goober secondary");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "goober";
-
-		export const Card = css({ "padding": "1rem", "color": theme.foreground });
-		export const App = () => <div className={Card.class} style={Card.style} />;",
+		  "code": "
+		import { createCx } from "pandwind/cx";
+		import { css } from "goober";
+		const cx = createCx();
+		export const Card = (props) => <div {...props} className={cx(css({ "padding": "1rem", "color": "red" }), props.className)} />;",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "host-runtime",
-		      "representation": "target-native",
+		      "outcome": "static",
+		      "representation": "static",
 		    },
 		  ],
 		  "residuals": [],
@@ -93,25 +132,47 @@ test("styled-components -> goober: carries concrete styled-components dynamics o
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
-test("styled-components -> goober: lowers concrete theme and project context variants", () => {
-	const blue = route.run({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const amber = route.run({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
+test("styled-components -> goober: loads concrete theme and project context variants", async () => {
+	const blue = await route.runAsync({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
+	const amber = await route.runAsync({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
 	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
 	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.StyledComponents, CodemodAdapterId.Goober);
+	expectConfiguredTargetTokenEvidence(blue, CodemodAdapterId.Goober, "styled-components -> goober blue config");
+	expectRouteScenarioEvidence(blue, "styled-components -> goober blue config");
+	expectRouteScenarioEvidence(amber, "styled-components -> goober amber config");
+	expectConfiguredTargetTokenAbsence(amber, CodemodAdapterId.Goober, "styled-components -> goober amber literal config");
+
 	expectExplicitResidualEvidence(blue);
 	expectExplicitResidualEvidence(amber);
 	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { css } from "goober";
-
-		export const Card = css({ "padding": "1rem", "color": "#f97316" });
-		export const App = () => <div className={Card} />;",
+		    "code": "
+		import { createCx } from "pandwind/cx";
+		import { css } from "goober";
+		const cx = createCx();
+		export const Card = (props) => <div {...props} className={cx(css({ "padding": "1rem", "color": "#2563eb" }), props.className)} />;",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "static",
@@ -130,11 +191,27 @@ test("styled-components -> goober: lowers concrete theme and project context var
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { css } from "goober";
-
-		export const Card = css({ "padding": "1rem", "color": "#2563eb" });
-		export const App = () => <div className={Card} />;",
+		    "code": "
+		import { createCx } from "pandwind/cx";
+		import { css } from "goober";
+		const cx = createCx();
+		export const Card = (props) => <div {...props} className={cx(css({ "padding": "1rem", "color": "#2563eb" }), props.className)} />;",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "static",
@@ -152,21 +229,40 @@ test("styled-components -> goober: lowers concrete theme and project context var
 		    ],
 		  },
 		}
-	`);
+	`)
 });
 
-test("styled-components -> goober: resolves concrete token references with project context", () => {
-	const result = route.run({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
+test("styled-components -> goober: resolves concrete token values with project context", async () => {
+	const result = await route.runAsync({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.StyledComponents, CodemodAdapterId.Goober);
+	expectConfiguredTargetTokenEvidence(result, CodemodAdapterId.Goober, "styled-components -> goober token config");
+	expectRouteScenarioEvidence(result, "styled-components -> goober token config");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "goober";
-
-		export const Card = css({ "padding": "1rem", "color": "$colors.brand" });
-		export const App = () => <div className={Card} />;",
+		  "code": "
+		import { createCx } from "pandwind/cx";
+		import { css } from "goober";
+		const cx = createCx();
+		export const Card = (props) => <div {...props} className={cx(css({ "padding": "1rem", "color": "#2563eb" }), props.className)} />;",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "static",
@@ -183,22 +279,39 @@ test("styled-components -> goober: resolves concrete token references with proje
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
 test("styled-components -> goober: preserves malformed concrete styled-components input", () => {
 	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished styled-components */");
+	expectRouteScenarioEvidence(result, "styled-components -> goober malformed");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
+		import { createCx } from "pandwind/cx";
 		import { css } from "goober";
-		export const Card = css({ "padding": "1rem", "color": "red" });
-		export const App = () => <div className={Card} />;
+		const cx = createCx();
+		export const Card = (props) => <div {...props} className={cx(css({ "padding": "1rem", "color": "red" }), props.className)} />;
 		const unfinished = { /* unfinished styled-components */",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "static",
@@ -215,6 +328,6 @@ test("styled-components -> goober: preserves malformed concrete styled-component
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 

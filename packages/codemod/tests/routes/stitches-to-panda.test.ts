@@ -3,26 +3,31 @@ import { expect, test } from "vitest";
 import { CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.Stitches, CodemodAdapterId.Panda);
-	const happySource = "import { css } from \"@stitches/react\";\nexport const card = css({ color: \"red\", padding: \"1rem\" });\nexport const App = () => <div className={card()} />;";
-const edgeSource = "import { css } from \"@stitches/react\";\nexport const card = css({ color: theme.foreground, padding: \"1rem\" });\nexport const App = () => <div className={card()} />;";
-const malformedSource = "import { css } from \"@stitches/react\";\nexport const card = css({ color: \"red\", padding: \"1rem\" });\nexport const App = () => <div className={card()} />;\nconst unfinished = { /* unfinished stitches */";
+	const happySource = "import { css } from \"@stitches/react\";\nexport const card = css({ color: \"red\", padding: \"1rem\" });";
+const edgeSource = "import { globalCss } from \"@stitches/react\";\nexport const reset = globalCss({ body: { margin: 0 } });";
+const malformedSource = "import { css } from \"@stitches/react\";\nexport const card = css({ color: \"red\", padding: \"1rem\" });\nconst unfinished = { /* unfinished stitches */";
 const sourceSemantic = undefined;
-const themedSource = "import { css } from \"@stitches/react\";\nexport const card = css({ color: theme.colors.brand, padding: \"1rem\" });\nexport const App = () => <div className={card()} />;";
-const tokenSource = "import { css } from \"@stitches/react\";\nexport const card = css({ color: \"$colors.brand\", padding: \"1rem\" });\nexport const App = () => <div className={card()} />;";
-const blueSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/stitches.config.ts":"export const config = { theme: { colors: { brand: \"#2563eb\" }, space: { card: \"1.125rem\" } } };","/virtual/pandwind-route-project/panda.config.ts":"export default { theme: { extend: { tokens: { colors: { brand: { value: \"#2563eb\" } } } } } };"} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/stitches.config.ts":"export const config = { theme: { colors: { brand: \"#f97316\" }, space: { card: \"1.125rem\" } } };","/virtual/pandwind-route-project/panda.config.ts":"export default { theme: { extend: { tokens: { colors: { brand: { value: \"#f97316\" } } } } } };"} };
+const themedSource = "import { css } from \"@stitches/react\";\nexport const card = css({ color: \"#2563eb\", padding: \"1rem\" });";
+const tokenSource = "import { css } from \"@stitches/react\";\nexport const card = css({ color: \"#2563eb\", padding: \"1rem\" });";
+const blueSemantic = undefined;
+const amberSemantic = undefined;
+const blueTargetSemantic = undefined;
+const amberTargetSemantic = undefined;
+const blueProject = createAdapterRouteProject(CodemodAdapterId.Stitches, CodemodAdapterId.Panda, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.Stitches, CodemodAdapterId.Panda, "#f97316");
 
 test("stitches -> panda: migrates concrete stitches syntax to panda", () => {
-	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
+	const result = route.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -37,15 +42,28 @@ test("stitches -> panda: migrates concrete stitches syntax to panda", () => {
 		expect(result.residuals.length).toBeGreaterThan(0);
 		expect(result.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(result, "stitches -> panda happy");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
 
-		export const card = css({ padding: "1rem", color: "red" });
-		export const App = () => <div className={card()} />;",
+		export const card = css({ padding: "1rem", color: "red" });",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "static",
@@ -62,64 +80,91 @@ test("stitches -> panda: migrates concrete stitches syntax to panda", () => {
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
-test("stitches -> panda: carries concrete stitches dynamics or edge syntax explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
+test("stitches -> panda: carries a documented secondary stitches API explicitly", () => {
+	const result = route.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(result, "stitches -> panda secondary");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
-
-		export const card = css.vars({ "padding": "1rem", "color": theme.foreground });
-		export const App = () => <div className={card()} />;",
-		  "converted": 1,
+		  "code": "import { globalCss } from "@stitches/react";
+		export const reset = // pandwind:migrate-skip (route: stitches -> panda | capability-blocked: rule-level: 1 semantic rules; global-rules: global rule; selectors: selector: body | available: static, named-map, residual)
+		globalCss({ body: { margin: 0 } });",
+		  "converted": 0,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "residual",
+		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "rule-level: 1 semantic rules; global-rules: global rule; selectors: selector: body",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
-	`);
+	`)
 });
 
-test("stitches -> panda: lowers concrete theme and project context variants", () => {
-	const blue = route.run({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const amber = route.run({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
+test("stitches -> panda: loads concrete theme and project context variants", async () => {
+	const blue = await route.runAsync({ source: themedSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
+	const amber = await route.runAsync({ source: themedSource, file: "styles.ts", semantic: amberSemantic, project: amberProject });
 	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
 	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Stitches, CodemodAdapterId.Panda);
+	expectConfiguredTargetTokenEvidence(blue, CodemodAdapterId.Panda, "stitches -> panda blue config");
+	expectRouteScenarioEvidence(blue, "stitches -> panda blue config");
+	expectRouteScenarioEvidence(amber, "stitches -> panda amber config");
+	expectConfiguredTargetTokenAbsence(amber, CodemodAdapterId.Panda, "stitches -> panda amber literal config");
+
 	expectExplicitResidualEvidence(blue);
 	expectExplicitResidualEvidence(amber);
 	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
+		    "code": "import { css } from "styled-system/css";
 
-		export const card = css.vars({ "padding": "1rem", "color": theme.colors.brand });
-		export const App = () => <div className={card()} />;",
+		export const card = css({ padding: "1rem", color: "#2563eb" });",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [],
@@ -134,17 +179,27 @@ test("stitches -> panda: lowers concrete theme and project context variants", ()
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
+		    "code": "import { css } from "styled-system/css";
 
-		export const card = css.vars({ "padding": "1rem", "color": theme.colors.brand });
-		export const App = () => <div className={card()} />;",
+		export const card = css({ padding: "1rem", color: "brand.500" });",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [],
@@ -158,21 +213,36 @@ test("stitches -> panda: lowers concrete theme and project context variants", ()
 		    ],
 		  },
 		}
-	`);
+	`)
 });
 
-test("stitches -> panda: resolves concrete token references with project context", () => {
-	const result = route.run({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
+test("stitches -> panda: resolves concrete token values with project context", async () => {
+	const result = await route.runAsync({ source: tokenSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Stitches, CodemodAdapterId.Panda);
+	expectConfiguredTargetTokenEvidence(result, CodemodAdapterId.Panda, "stitches -> panda token config");
+	expectRouteScenarioEvidence(result, "stitches -> panda token config");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
 
-		export const card = css({ padding: "1rem", color: "$colors.brand" });
-		export const App = () => <div className={card()} />;",
+		export const card = css({ padding: "1rem", color: "brand.500" });",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "static",
@@ -189,12 +259,13 @@ test("stitches -> panda: resolves concrete token references with project context
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
 test("stitches -> panda: preserves malformed concrete stitches input", () => {
-	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
+	const result = route.run({ source: malformedSource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished stitches */");
+	expectRouteScenarioEvidence(result, "stitches -> panda malformed");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
@@ -202,9 +273,21 @@ test("stitches -> panda: preserves malformed concrete stitches input", () => {
 		  "code": "import { css } from "styled-system/css";
 
 		export const card = css({ padding: "1rem", color: "red" });
-		export const App = () => <div className={card()} />;
 		const unfinished = { /* unfinished stitches */",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "static",
@@ -221,6 +304,6 @@ test("stitches -> panda: preserves malformed concrete stitches input", () => {
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 

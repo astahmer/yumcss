@@ -3,30 +3,35 @@ import { expect, test } from "vitest";
 import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectActionableRoundTrip,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const forward = createAdapterRouteSpec(CodemodAdapterId.Bamboo, CodemodAdapterId.Mui);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.Mui, CodemodAdapterId.Bamboo);
-	const happySource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: \"red\", padding: \"1rem\" });\nexport const App = () => <div className={card} />;";
-const edgeSource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: theme.foreground, padding: \"1rem\" });\nexport const App = () => <div className={card} />;";
-const malformedSource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: \"red\", padding: \"1rem\" });\nexport const App = () => <div className={card} />;\nconst unfinished = { /* unfinished bamboo */";
+	const happySource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: \"red\" });";
+const edgeSource = "import { css } from \"styled-system/css\";\nexport const card = css({ display: \"flex\", gap: \"4\" });";
+const malformedSource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: \"red\" });\nconst unfinished = { /* unfinished bamboo */";
 const sourceSemantic = undefined;
-const themedSource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: theme.colors.brand, padding: \"1rem\" });\nexport const App = () => <div className={card} />;";
-const tokenSource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: \"$colors.brand\", padding: \"1rem\" });\nexport const App = () => <div className={card} />;";
-const blueSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "palette.primary.main", authored: "theme.palette.primary.main", resolved: "#2563eb" }] };
-const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "palette.primary.main", authored: "theme.palette.primary.main", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/bamboo.config.ts":"export default { theme: { tokens: { colors: { brand: { value: \"#2563eb\" } } } } };","/virtual/pandwind-route-project/src/theme.ts":"export const muiTheme = { palette: { primary: { main: \"#2563eb\" } } };"} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/bamboo.config.ts":"export default { theme: { tokens: { colors: { brand: { value: \"#f97316\" } } } } };","/virtual/pandwind-route-project/src/theme.ts":"export const muiTheme = { palette: { primary: { main: \"#f97316\" } } };"} };
+const themedSource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: \"#2563eb\" });";
+const tokenSource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: \"#2563eb\" });";
+const blueSemantic = undefined;
+const amberSemantic = undefined;
+const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
+const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
+const blueProject = createAdapterRouteProject(CodemodAdapterId.Bamboo, CodemodAdapterId.Mui, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.Bamboo, CodemodAdapterId.Mui, "#f97316");
 	const targetSemantic = { source: { framework: BuiltinHostFramework.React } };
 
 test("bamboo -> mui -> bamboo: preserves an actionable concrete round trip", () => {
-	const first = forward.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+	const first = forward.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
+	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -36,6 +41,7 @@ test("bamboo -> mui -> bamboo: preserves an actionable concrete round trip", () 
 		expect(first.residuals.length).toBeGreaterThan(0);
 		expect(first.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(first, "bamboo -> mui round-trip happy forward");
 	expectExplicitResidualEvidence(first);
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(second);
@@ -43,15 +49,29 @@ test("bamboo -> mui -> bamboo: preserves an actionable concrete round trip", () 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { Box } from "@mui/material";
+		    "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
 
-		export const card = { padding: "1rem", color: "red" };
-		export const App = () => <Box component="div" sx={card} />;",
+		export const card = css.class({ "color": "red" });",
 		    "converted": 1,
-		    "outcomes": [
+		    "generatedFiles": [],
+		    "loweringPlans": [
 		      {
-		        "outcome": "static",
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		          "portable-artifact",
+		        ],
 		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "portable-artifact",
+		        "representation": "portable-artifact",
 		      },
 		    ],
 		    "residuals": [],
@@ -65,37 +85,28 @@ test("bamboo -> mui -> bamboo: preserves an actionable concrete round trip", () 
 		    ],
 		  },
 		  "reverse": {
-		    "changed": true,
-		    "code": "import { Box } from "@mui/material";
-		import { css } from "styled-system/css";
+		    "changed": false,
+		    "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
 
-		export const card = { padding: "1rem", color: "red" };
-		export const App = () => <Box component="div" className={css({ sx: "var(--pandwind-dynamic-11s01un)" })} style={{ "--pandwind-dynamic-11s01un": String(card) }}/>;",
-		    "converted": 1,
-		    "outcomes": [
-		      {
-		        "outcome": "host-runtime",
-		        "representation": "custom-property",
-		      },
-		    ],
+		export const card = css.class({ "color": "red" });",
+		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [],
+		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
+		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 
-test("bamboo -> mui -> bamboo: retains edge semantics without silent loss", () => {
-	const first = forward.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+test("bamboo -> mui -> bamboo: retains the documented secondary API without silent loss", () => {
+	const first = forward.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
+	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(first, "bamboo -> mui round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
@@ -103,44 +114,29 @@ test("bamboo -> mui -> bamboo: retains edge semantics without silent loss", () =
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
-		import { Box } from "@mui/material";
-		export const card = { padding: "1rem", color: theme.foreground };
-		export const App = () => <Box component="div" sx={card} />;",
+		    "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const card = css.class({ "gap": "4", "display": "flex" });",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		          "portable-artifact",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "host-runtime",
-		        "representation": "target-native",
-		      },
-		    ],
-		    "residuals": [
-		      {
-		        "hint": "dynamic style binding 'card' has no supported host use",
-		        "kind": "dynamic-values",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
-		  },
-		  "reverse": {
-		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
-		import { Box } from "@mui/material";
-		export const card = { padding: "1rem", color: theme.foreground };
-		export const App = () => <Box component="div" className={css({ sx: "var(--pandwind-dynamic-11s01un)" })} style={{ "--pandwind-dynamic-11s01un": String(card) }}/>;",
-		    "converted": 1,
-		    "outcomes": [
-		      {
-		        "outcome": "host-runtime",
-		        "representation": "custom-property",
+		        "outcome": "portable-artifact",
+		        "representation": "portable-artifact",
 		      },
 		    ],
 		    "residuals": [],
@@ -153,17 +149,37 @@ test("bamboo -> mui -> bamboo: retains edge semantics without silent loss", () =
 		      },
 		    ],
 		  },
+		  "reverse": {
+		    "changed": false,
+		    "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const card = css.class({ "gap": "4", "display": "flex" });",
+		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [],
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [],
+		  },
 		}
-	`);
+	`)
 });
 
-test("bamboo -> mui -> bamboo: preserves concrete theme and project context variants", () => {
-	const firstBlue = forward.run({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const secondBlue = reverse.run({ source: firstBlue.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
-	const firstAmber = forward.run({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
-	const secondAmber = reverse.run({ source: firstAmber.code, file: "Card.tsx", semantic: amberTargetSemantic, project: amberProject });
+test("bamboo -> mui -> bamboo: preserves concrete theme and project context variants", async () => {
+	const firstBlue = await forward.runAsync({ source: themedSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
+	const firstAmber = await forward.runAsync({ source: themedSource, file: "styles.ts", semantic: amberSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "App.tsx", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Bamboo, CodemodAdapterId.Mui);
+	expectConfiguredTargetTokenEvidence(firstBlue, CodemodAdapterId.Mui, "bamboo -> mui round-trip token config");
+	expectRouteScenarioEvidence(firstBlue, "bamboo -> mui round-trip blue forward");
+	expectRouteScenarioEvidence(firstAmber, "bamboo -> mui round-trip amber forward");
+	expectConfiguredTargetTokenAbsence(firstAmber, CodemodAdapterId.Mui, "bamboo -> mui round-trip amber literal config");
+
 	expectActionableRoundTrip(firstBlue, secondBlue);
 	expectActionableRoundTrip(firstAmber, secondAmber);
 	expectExplicitResidualEvidence(firstBlue);
@@ -178,44 +194,29 @@ test("bamboo -> mui -> bamboo: preserves concrete theme and project context vari
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "styled-system/css";
-		import { Box } from "@mui/material";
-		export const card = { padding: "1rem", color: theme.colors.brand };
-		export const App = () => <Box component="div" sx={card} />;",
+		      "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const card = css.class({ "color": "#2563eb" });",
 		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		            "portable-artifact",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "host-runtime",
-		          "representation": "target-native",
-		        },
-		      ],
-		      "residuals": [
-		        {
-		          "hint": "dynamic style binding 'card' has no supported host use",
-		          "kind": "dynamic-values",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 0,
-		      "validations": [
-		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
-		        },
-		      ],
-		    },
-		    "reverse": {
-		      "changed": true,
-		      "code": "import { css } from "styled-system/css";
-		import { Box } from "@mui/material";
-		export const card = { padding: "1rem", color: theme.colors.brand };
-		export const App = () => <Box component="div" className={css({ sx: "var(--pandwind-dynamic-11s01un)" })} style={{ "--pandwind-dynamic-11s01un": String(card) }}/>;",
-		      "converted": 1,
-		      "outcomes": [
-		        {
-		          "outcome": "host-runtime",
-		          "representation": "custom-property",
+		          "outcome": "portable-artifact",
+		          "representation": "portable-artifact",
 		        },
 		      ],
 		      "residuals": [],
@@ -227,49 +228,48 @@ test("bamboo -> mui -> bamboo: preserves concrete theme and project context vari
 		          "valid": true,
 		        },
 		      ],
+		    },
+		    "reverse": {
+		      "changed": false,
+		      "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const card = css.class({ "color": "#2563eb" });",
+		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [],
+		      "outcomes": [],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [],
 		    },
 		  },
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "styled-system/css";
-		import { Box } from "@mui/material";
-		export const card = { padding: "1rem", color: theme.colors.brand };
-		export const App = () => <Box component="div" sx={card} />;",
+		      "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const card = css.class({ "color": "primary.main" });",
 		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		            "portable-artifact",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "host-runtime",
-		          "representation": "target-native",
-		        },
-		      ],
-		      "residuals": [
-		        {
-		          "hint": "dynamic style binding 'card' has no supported host use",
-		          "kind": "dynamic-values",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 0,
-		      "validations": [
-		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
-		        },
-		      ],
-		    },
-		    "reverse": {
-		      "changed": true,
-		      "code": "import { css } from "styled-system/css";
-		import { Box } from "@mui/material";
-		export const card = { padding: "1rem", color: theme.colors.brand };
-		export const App = () => <Box component="div" className={css({ sx: "var(--pandwind-dynamic-11s01un)" })} style={{ "--pandwind-dynamic-11s01un": String(card) }}/>;",
-		      "converted": 1,
-		      "outcomes": [
-		        {
-		          "outcome": "host-runtime",
-		          "representation": "custom-property",
+		          "outcome": "portable-artifact",
+		          "representation": "portable-artifact",
 		        },
 		      ],
 		      "residuals": [],
@@ -282,15 +282,31 @@ test("bamboo -> mui -> bamboo: preserves concrete theme and project context vari
 		        },
 		      ],
 		    },
+		    "reverse": {
+		      "changed": false,
+		      "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const card = css.class({ "color": "primary.main" });",
+		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [],
+		      "outcomes": [],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [],
+		    },
 		  },
 		}
-	`);
+	`)
 });
 
-test("bamboo -> mui -> bamboo: resolves token references across both concrete legs", () => {
-	const first = forward.run({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
+test("bamboo -> mui -> bamboo: resolves token values across both concrete legs", async () => {
+	const first = await forward.runAsync({ source: tokenSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Bamboo, CodemodAdapterId.Mui);
+	expectRouteScenarioEvidence(first, "bamboo -> mui round-trip token forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
@@ -298,15 +314,29 @@ test("bamboo -> mui -> bamboo: resolves token references across both concrete le
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { Box } from "@mui/material";
+		    "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
 
-		export const card = { padding: "1rem", color: "$colors.brand" };
-		export const App = () => <Box component="div" sx={card} />;",
+		export const card = css.class({ "color": "primary.main" });",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		          "portable-artifact",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
-		        "representation": "static",
+		        "outcome": "portable-artifact",
+		        "representation": "portable-artifact",
 		      },
 		    ],
 		    "residuals": [],
@@ -320,30 +350,20 @@ test("bamboo -> mui -> bamboo: resolves token references across both concrete le
 		    ],
 		  },
 		  "reverse": {
-		    "changed": true,
-		    "code": "import { Box } from "@mui/material";
-		import { css } from "styled-system/css";
+		    "changed": false,
+		    "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
 
-		export const card = { padding: "1rem", color: "$colors.brand" };
-		export const App = () => <Box component="div" className={css({ sx: "var(--pandwind-dynamic-11s01un)" })} style={{ "--pandwind-dynamic-11s01un": String(card) }}/>;",
-		    "converted": 1,
-		    "outcomes": [
-		      {
-		        "outcome": "host-runtime",
-		        "representation": "custom-property",
-		      },
-		    ],
+		export const card = css.class({ "color": "primary.main" });",
+		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [],
+		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
+		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 

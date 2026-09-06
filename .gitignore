@@ -18,3 +18,4 @@ apps/playground/e2e/.features-gen/
 apps/playground/e2e/.studio-features-gen/
 playwright-report/
 test-results/
+.tmp-codemod*

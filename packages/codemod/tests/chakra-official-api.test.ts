@@ -44,6 +44,19 @@ describe("Chakra UI official API forms", () => {
 			const css = createCss();
 			export const App = () => <Box className={css.class({ padding: "var(--chakra-spacing-4)", backgroundColor: "var(--chakra-colors-red-200)" })}/>;",
 			  "converted": 1,
+			  "generatedFiles": [],
+			  "loweringPlans": [
+			    {
+			      "applied": [],
+			      "availableRepresentations": [
+			        "static",
+			        "named-map",
+			        "residual",
+			      ],
+			      "representation": "static",
+			      "residuals": [],
+			    },
+			  ],
 			  "outcomes": [
 			    {
 			      "outcome": "static",
@@ -78,6 +91,19 @@ describe("Chakra UI official API forms", () => {
 			const css = createCss();
 			export const App = () => <Box className={css.class({ color: "var(--chakra-colors-red-200)", "& svg": { color: "var(--chakra-colors-blue-200)" } })}/>;",
 			  "converted": 1,
+			  "generatedFiles": [],
+			  "loweringPlans": [
+			    {
+			      "applied": [],
+			      "availableRepresentations": [
+			        "static",
+			        "named-map",
+			        "residual",
+			      ],
+			      "representation": "static",
+			      "residuals": [],
+			    },
+			  ],
 			  "outcomes": [
 			    {
 			      "outcome": "static",
@@ -112,6 +138,19 @@ describe("Chakra UI official API forms", () => {
 			const css = createCss();
 			export const App = () => <chakra.button className={css.class({ backgroundColor: "var(--chakra-colors-blue-500)", color: "white" })}/>;",
 			  "converted": 1,
+			  "generatedFiles": [],
+			  "loweringPlans": [
+			    {
+			      "applied": [],
+			      "availableRepresentations": [
+			        "static",
+			        "named-map",
+			        "residual",
+			      ],
+			      "representation": "static",
+			      "residuals": [],
+			    },
+			  ],
 			  "outcomes": [
 			    {
 			      "outcome": "static",
@@ -146,6 +185,19 @@ describe("Chakra UI official API forms", () => {
 			const css = createCss();
 			export const card = css.class({ padding: "var(--chakra-spacing-4)", color: "var(--chakra-colors-red-200)" });",
 			  "converted": 1,
+			  "generatedFiles": [],
+			  "loweringPlans": [
+			    {
+			      "applied": [],
+			      "availableRepresentations": [
+			        "static",
+			        "named-map",
+			        "residual",
+			      ],
+			      "representation": "static",
+			      "residuals": [],
+			    },
+			  ],
 			  "outcomes": [
 			    {
 			      "outcome": "static",
@@ -181,6 +233,19 @@ describe("Chakra UI official API forms", () => {
 			const system = createSystem(defaultConfig);
 			export const card = css.class({ padding: "var(--chakra-spacing-4)", color: "var(--chakra-colors-red-200)" });",
 			  "converted": 1,
+			  "generatedFiles": [],
+			  "loweringPlans": [
+			    {
+			      "applied": [],
+			      "availableRepresentations": [
+			        "static",
+			        "named-map",
+			        "residual",
+			      ],
+			      "representation": "static",
+			      "residuals": [],
+			    },
+			  ],
 			  "outcomes": [
 			    {
 			      "outcome": "static",
@@ -225,6 +290,19 @@ describe("Chakra UI official API forms", () => {
 			const css = createCss();
 			export const card = css.vars({ backgroundColor: defaultSystem.token.var("colors.blue.200"), color: defaultSystem.token("colors.red.200") });",
 			  "converted": 1,
+			  "generatedFiles": [],
+			  "loweringPlans": [
+			    {
+			      "applied": [],
+			      "availableRepresentations": [
+			        "named-map",
+			        "target-native",
+			        "residual",
+			      ],
+			      "representation": "target-native",
+			      "residuals": [],
+			    },
+			  ],
 			  "outcomes": [
 			    {
 			      "outcome": "host-runtime",
@@ -287,6 +365,18 @@ describe("Chakra UI official API forms", () => {
 			export const button = // pandwind:migrate-skip (route: chakra-ui -> pandwind | parse-residual: composition | available: named-map, residual)
 			defaultSystem.cva({ base: { color: "white" } });",
 			    "converted": 0,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "residual",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "residual",
@@ -309,6 +399,18 @@ describe("Chakra UI official API forms", () => {
 			export const button = // pandwind:migrate-skip (route: chakra-ui -> pandwind | parse-residual: composition | available: named-map, residual)
 			defineRecipe({ base: { color: "white" }, variants: { size: { sm: { p: "2" } } } });",
 			    "converted": 0,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "residual",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "residual",
@@ -331,6 +433,18 @@ describe("Chakra UI official API forms", () => {
 			export const alert = // pandwind:migrate-skip (route: chakra-ui -> pandwind | parse-residual: composition | available: named-map, residual)
 			defineSlotRecipe({ slots: ["title"], base: { title: { color: "red" } } });",
 			    "converted": 0,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "residual",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "residual",
@@ -353,6 +467,18 @@ describe("Chakra UI official API forms", () => {
 			export const Link = // pandwind:migrate-skip (route: chakra-ui -> pandwind | parse-residual: composition | available: named-map, residual)
 			chakra("a", { base: { color: "red.500" } });",
 			    "converted": 0,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "residual",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "residual",
@@ -375,6 +501,18 @@ describe("Chakra UI official API forms", () => {
 			export const alert = // pandwind:migrate-skip (route: chakra-ui -> pandwind | parse-residual: composition | available: named-map, residual)
 			defaultSystem.sva({ slots: ["title"], base: { title: { color: "red" } } });",
 			    "converted": 0,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "residual",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "residual",
@@ -397,6 +535,18 @@ describe("Chakra UI official API forms", () => {
 			export const styles = // pandwind:migrate-skip (route: chakra-ui -> pandwind | parse-residual: composition | available: named-map, residual)
 			useRecipe(button);",
 			    "converted": 0,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "residual",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "residual",
@@ -419,6 +569,18 @@ describe("Chakra UI official API forms", () => {
 			export const styles = // pandwind:migrate-skip (route: chakra-ui -> pandwind | parse-residual: composition | available: named-map, residual)
 			useSlotRecipe(alert);",
 			    "converted": 0,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "residual",
+			        "residuals": [],
+			      },
+			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "residual",
@@ -464,53 +626,79 @@ describe("Chakra UI official API forms", () => {
 		expect(styledSubject.code).toContain('css={{ color: "red" }}');
 		expect({ classHost: routeEvidence(classHost), styledSubject: routeEvidence(styledSubject) })
 			.toMatchInlineSnapshot(`
-			{
-			  "classHost": {
-			    "changed": true,
-			    "code": "import { chakra } from "@chakra-ui/react";
+				{
+				  "classHost": {
+				    "changed": true,
+				    "code": "import { chakra } from "@chakra-ui/react";
 
-			export const App = () => <chakra.div css={{ color: "red" }} />;",
-			    "converted": 1,
-			    "outcomes": [
-			      {
-			        "outcome": "static",
-			        "representation": "static",
-			      },
-			    ],
-			    "residuals": [],
-			    "skipped": 0,
-			    "validations": [
-			      {
-			        "differences": [],
-			        "lossiness": "lossless",
-			        "valid": true,
-			      },
-			    ],
-			  },
-			  "styledSubject": {
-			    "changed": true,
-			    "code": "import { chakra } from "@chakra-ui/react";
+				export const App = () => <chakra.div css={{ color: "red" }} />;",
+				    "converted": 1,
+				    "generatedFiles": [],
+				    "loweringPlans": [
+				      {
+				        "applied": [],
+				        "availableRepresentations": [
+				          "static",
+				          "named-map",
+				          "residual",
+				        ],
+				        "representation": "static",
+				        "residuals": [],
+				      },
+				    ],
+				    "outcomes": [
+				      {
+				        "outcome": "static",
+				        "representation": "static",
+				      },
+				    ],
+				    "residuals": [],
+				    "skipped": 0,
+				    "validations": [
+				      {
+				        "differences": [],
+				        "lossiness": "lossless",
+				        "valid": true,
+				      },
+				    ],
+				  },
+				  "styledSubject": {
+				    "changed": true,
+				    "code": "import { chakra } from "@chakra-ui/react";
 
-			const Card = (props) => <chakra.div {...props} css={{ color: "red" }} />;
-			export const App = () => <Card />;",
-			    "converted": 1,
-			    "outcomes": [
-			      {
-			        "outcome": "static",
-			        "representation": "static",
-			      },
-			    ],
-			    "residuals": [],
-			    "skipped": 0,
-			    "validations": [
-			      {
-			        "differences": [],
-			        "lossiness": "lossless",
-			        "valid": true,
-			      },
-			    ],
-			  },
-			}
-		`);
+				const Card = (props) => <chakra.div {...props} css={{ color: "red" }} />;
+				export const App = () => <Card />;",
+				    "converted": 1,
+				    "generatedFiles": [],
+				    "loweringPlans": [
+				      {
+				        "applied": [],
+				        "availableRepresentations": [
+				          "static",
+				          "named-map",
+				          "residual",
+				        ],
+				        "representation": "static",
+				        "residuals": [],
+				      },
+				    ],
+				    "outcomes": [
+				      {
+				        "outcome": "static",
+				        "representation": "static",
+				      },
+				    ],
+				    "residuals": [],
+				    "skipped": 0,
+				    "validations": [
+				      {
+				        "differences": [],
+				        "lossiness": "lossless",
+				        "valid": true,
+				      },
+				    ],
+				  },
+				}
+			`);
 	});
 });

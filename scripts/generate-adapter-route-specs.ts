@@ -119,13 +119,74 @@ function usesBuiltinHostFramework(adapter: CodemodAdapterId): boolean {
 	);
 }
 
-function themePathFor(adapter: CodemodAdapterId): string {
-	return adapter === CodemodAdapterId.Mui ? "palette.primary.main" : "colors.brand";
+function hasOfficialSourceConfig(adapter: CodemodAdapterId): boolean {
+	return (
+		adapter === CodemodAdapterId.Pandwind ||
+		adapter === CodemodAdapterId.Panda ||
+		adapter === CodemodAdapterId.ChakraUi ||
+		adapter === CodemodAdapterId.Mui ||
+		adapter === CodemodAdapterId.Mantine ||
+		adapter === CodemodAdapterId.Tailwind ||
+		adapter === CodemodAdapterId.Tokenami ||
+		adapter === CodemodAdapterId.UnoCSS
+	);
+}
+
+function usesLiteralThemedSource(adapter: CodemodAdapterId): boolean {
+	return !hasOfficialSourceConfig(adapter);
+}
+
+function isClassProjectionTarget(adapter: CodemodAdapterId): boolean {
+	return adapter === CodemodAdapterId.Tailwind || adapter === CodemodAdapterId.UnoCSS;
+}
+
+function classProjectionMarkers(adapter: CodemodAdapterId): readonly string[] {
+	return adapter === CodemodAdapterId.Tailwind
+		? ["text-", "bg-", "p-", "[", "className", "class"]
+		: ["text-", "bg-", "p-", "[", "className", "class"];
+}
+
+function roundTripCheck(
+	target: CodemodAdapterId,
+	forward: string,
+	reverse: string,
+	label: string,
+): string {
+	return isClassProjectionTarget(target)
+		? `expectTargetClassProjection(${forward}, ${reverse}, ${JSON.stringify(classProjectionMarkers(target))}, ${JSON.stringify(label)});`
+		: `expectActionableRoundTrip(${forward}, ${reverse});`;
+}
+
+/**
+ * Use a source library's documented token spelling when its official loader is
+ * available. This is intentionally a small fixture selection table, not a
+ * duplicate utility vocabulary: the values are only the names authored in the
+ * corresponding source examples and their project fixtures.
+ */
+function configuredSource(adapter: CodemodAdapterId, source: string): string {
+	switch (adapter) {
+		case CodemodAdapterId.Pandwind:
+			return source.replaceAll('"red"', '"$brand"');
+		case CodemodAdapterId.Panda:
+			return source.replaceAll('"red.300"', '"brand.500"').replaceAll('"blue.300"', '"brand.500"');
+		case CodemodAdapterId.ChakraUi:
+			return source.replaceAll('bg="red.200"', 'bg="brand.500"');
+		case CodemodAdapterId.Mui:
+			return source.replaceAll('"red"', '"primary.main"');
+		case CodemodAdapterId.Mantine:
+			return source.replaceAll('"blue.6"', '"brand.0"');
+		case CodemodAdapterId.Tailwind:
+		case CodemodAdapterId.UnoCSS:
+			return source.replace(/className="[^"]*"/u, 'className="text-brand p-card"');
+		case CodemodAdapterId.Tokenami:
+			return source.replaceAll('"red"', '"$colors.brand"');
+		default:
+			return source;
+	}
 }
 
 function themedSource(adapter: CodemodAdapterId, source: string): string {
-	if (adapter === CodemodAdapterId.Tailwind || adapter === CodemodAdapterId.UnoCSS)
-		return source.replace(/className="[^"]*"/u, 'className="text-brand p-card"');
+	if (hasOfficialSourceConfig(adapter)) return configuredSource(adapter, source);
 	return source
 		.replaceAll('"red.300"', '"#2563eb"')
 		.replaceAll('"red.200"', '"#2563eb"')
@@ -141,6 +202,7 @@ function tokenSource(adapter: CodemodAdapterId, source: string): string {
 	return source
 		.replaceAll('"red.300"', '"#2563eb"')
 		.replaceAll('"red.200"', '"#2563eb"')
+		.replaceAll('"blue.6"', '"#2563eb"')
 		.replaceAll('"red"', '"#2563eb"')
 		.replaceAll("color: red", "color: #2563eb");
 }
@@ -182,8 +244,6 @@ function sourceConstants(
 	source: CodemodAdapterId,
 	target: CodemodAdapterId,
 ): string {
-	const sourceThemePath = themePathFor(source);
-	const targetThemePath = themePathFor(target);
 	return [
 		`const happySource = ${JSON.stringify(example.happy)};`,
 		`const edgeSource = ${JSON.stringify(example.edge)};`,
@@ -191,10 +251,13 @@ function sourceConstants(
 		`const sourceSemantic = ${example.semantic};`,
 		`const themedSource = ${JSON.stringify(themedSource(source, example.happy))};`,
 		`const tokenSource = ${JSON.stringify(tokenSource(source, example.happy))};`,
-		`const blueSemantic = ${semanticFor(source, { path: sourceThemePath, resolved: "#2563eb" })};`,
-		`const amberSemantic = ${semanticFor(source, { path: sourceThemePath, resolved: "#f97316" })};`,
-		`const blueTargetSemantic = ${semanticFor(target, { path: targetThemePath, resolved: "#2563eb" })};`,
-		`const amberTargetSemantic = ${semanticFor(target, { path: targetThemePath, resolved: "#f97316" })};`,
+		// Project loaders resolve the authored token references above. Do not add
+		// synthetic theme metadata to literal source code: that changes a static
+		// expression into a runtime expression and makes round-trip evidence lie.
+		`const blueSemantic = ${semanticFor(source)};`,
+		`const amberSemantic = ${semanticFor(source)};`,
+		`const blueTargetSemantic = ${semanticFor(target)};`,
+		`const amberTargetSemantic = ${semanticFor(target)};`,
 		`const blueProject = createAdapterRouteProject(${identifier(source)}, ${identifier(target)}, "#2563eb");`,
 		`const amberProject = createAdapterRouteProject(${identifier(source)}, ${identifier(target)}, "#f97316");`,
 	].join("\n");
@@ -214,6 +277,7 @@ import {
 	createAdapterRouteProject,
 	expectConfiguredProjectEvidence,
 	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectExplicitResidualEvidence,
 	expectRouteScenarioEvidence,
 	routeEvidence,
@@ -260,6 +324,7 @@ test("${source} -> ${target}: loads concrete theme and project context variants"
 	expectConfiguredTargetTokenEvidence(blue, ${identifier(target)}, "${source} -> ${target} blue config");
 	expectRouteScenarioEvidence(blue, "${source} -> ${target} blue config");
 	expectRouteScenarioEvidence(amber, "${source} -> ${target} amber config");
+${usesLiteralThemedSource(source) ? `\texpectConfiguredTargetTokenAbsence(amber, ${identifier(target)}, "${source} -> ${target} amber literal config");\n` : ""}
 	expectExplicitResidualEvidence(blue);
 	expectExplicitResidualEvidence(amber);
 	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot();
@@ -301,7 +366,8 @@ import {
 	createAdapterRouteProject,
 	expectConfiguredProjectEvidence,
 	expectConfiguredTargetTokenEvidence,
-	expectActionableRoundTrip,
+	expectConfiguredTargetTokenAbsence,
+	${isClassProjectionTarget(target) ? "expectTargetClassProjection" : "expectActionableRoundTrip"},
 	expectExplicitResidualEvidence,
 	expectRouteScenarioEvidence,
 	routeEvidence,
@@ -326,7 +392,7 @@ test("${source} -> ${target} -> ${source}: preserves an actionable concrete roun
 	}
 	expectRouteScenarioEvidence(first, "${source} -> ${target} round-trip happy forward");
 	expectExplicitResidualEvidence(first);
-	expectActionableRoundTrip(first, second);
+	${roundTripCheck(target, "first", "second", `${source} -> ${target} round-trip happy`)}
 	expectExplicitResidualEvidence(second);
 	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot();
 });
@@ -336,7 +402,7 @@ test("${source} -> ${target} -> ${source}: retains the documented secondary API 
 	const second = reverse.run({ source: first.code, file: ${JSON.stringify(targetExample.file)}, semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(first, "${source} -> ${target} round-trip secondary forward");
-	expectActionableRoundTrip(first, second);
+	${roundTripCheck(target, "first", "second", `${source} -> ${target} round-trip secondary`)}
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
 	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot();
@@ -353,8 +419,9 @@ test("${source} -> ${target} -> ${source}: preserves concrete theme and project 
 	expectConfiguredTargetTokenEvidence(firstBlue, ${identifier(target)}, "${source} -> ${target} round-trip token config");
 	expectRouteScenarioEvidence(firstBlue, "${source} -> ${target} round-trip blue forward");
 	expectRouteScenarioEvidence(firstAmber, "${source} -> ${target} round-trip amber forward");
-	expectActionableRoundTrip(firstBlue, secondBlue);
-	expectActionableRoundTrip(firstAmber, secondAmber);
+${usesLiteralThemedSource(source) ? `\texpectConfiguredTargetTokenAbsence(firstAmber, ${identifier(target)}, "${source} -> ${target} round-trip amber literal config");\n` : ""}
+	${roundTripCheck(target, "firstBlue", "secondBlue", `${source} -> ${target} round-trip blue`)}
+	${roundTripCheck(target, "firstAmber", "secondAmber", `${source} -> ${target} round-trip amber`)}
 	expectExplicitResidualEvidence(firstBlue);
 	expectExplicitResidualEvidence(secondBlue);
 	expectExplicitResidualEvidence(firstAmber);
@@ -371,7 +438,7 @@ test("${source} -> ${target} -> ${source}: resolves token values across both con
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, ${identifier(source)}, ${identifier(target)});
 	expectRouteScenarioEvidence(first, "${source} -> ${target} round-trip token forward");
-	expectActionableRoundTrip(first, second);
+	${roundTripCheck(target, "first", "second", `${source} -> ${target} round-trip token`)}
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
 	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot();
@@ -430,6 +497,11 @@ function preserveInlineSnapshots(generated: string, previous: string | undefined
 	if (previous === undefined || !previous.startsWith(generatedHeader)) return generated;
 	const snapshots = inlineSnapshotArguments(previous);
 	if (snapshots.length === 0) return generated;
+	const placeholders = generated.match(/toMatchInlineSnapshot\(\);/g)?.length ?? 0;
+	if (snapshots.length !== placeholders)
+		throw new Error(
+			`refusing to preserve inline snapshots: generated spec has ${placeholders} placeholders but previous spec has ${snapshots.length} snapshots`,
+		);
 	let index = 0;
 	return generated.replaceAll("toMatchInlineSnapshot();", () => {
 		const snapshot = snapshots[index++];

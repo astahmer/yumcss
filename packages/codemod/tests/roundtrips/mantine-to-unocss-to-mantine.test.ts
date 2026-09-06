@@ -3,30 +3,35 @@ import { expect, test } from "vitest";
 import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
-	expectActionableRoundTrip,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
+	expectTargetClassProjection,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const forward = createAdapterRouteSpec(CodemodAdapterId.Mantine, CodemodAdapterId.UnoCSS);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.UnoCSS, CodemodAdapterId.Mantine);
-	const happySource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"red\" p=\"md\" />;";
-const edgeSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=theme.foreground p=\"md\" />;";
-const malformedSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"red\" p=\"md\" />;\nconst unfinished = { /* unfinished mantine */";
+	const happySource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"blue.6\" mx=\"auto\" maw={400} />;";
+const edgeSource = "import { Button } from \"@mantine/core\";\nexport const App = () => <Button styles={{ root: { color: \"red\" } }} />;";
+const malformedSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"blue.6\" mx=\"auto\" maw={400} />;\nconst unfinished = { /* unfinished mantine */";
 const sourceSemantic = { source: { framework: BuiltinHostFramework.React } };
-const themedSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=theme.colors.brand p=\"md\" />;";
-const tokenSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"brand.0\" p=\"md\" />;";
-const blueSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/src/theme.ts":"export const mantineTheme = { colors: { brand: [\"#2563eb\"] } };","/virtual/pandwind-route-project/uno.config.ts":"export default defineConfig({ theme: { colors: { brand: \"#2563eb\" } } });","/virtual/pandwind-route-project/app/globals.css":"@theme { --color-brand: #2563eb; --spacing-card: 1.125rem; }"} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/src/theme.ts":"export const mantineTheme = { colors: { brand: [\"#f97316\"] } };","/virtual/pandwind-route-project/uno.config.ts":"export default defineConfig({ theme: { colors: { brand: \"#f97316\" } } });","/virtual/pandwind-route-project/app/globals.css":"@theme { --color-brand: #f97316; --spacing-card: 1.125rem; }"} };
+const themedSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"brand.0\" mx=\"auto\" maw={400} />;";
+const tokenSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"#2563eb\" mx=\"auto\" maw={400} />;";
+const blueSemantic = { source: { framework: BuiltinHostFramework.React } };
+const amberSemantic = { source: { framework: BuiltinHostFramework.React } };
+const blueTargetSemantic = undefined;
+const amberTargetSemantic = undefined;
+const blueProject = createAdapterRouteProject(CodemodAdapterId.Mantine, CodemodAdapterId.UnoCSS, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.Mantine, CodemodAdapterId.UnoCSS, "#f97316");
 	const targetSemantic = undefined;
 
 test("mantine -> unocss -> mantine: preserves an actionable concrete round trip", () => {
-	const first = forward.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+	const first = forward.run({ source: happySource, file: "App.tsx", semantic: sourceSemantic });
+	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -36,16 +41,32 @@ test("mantine -> unocss -> mantine: preserves an actionable concrete round trip"
 		expect(first.residuals.length).toBeGreaterThan(0);
 		expect(first.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(first, "mantine -> unocss round-trip happy forward");
 	expectExplicitResidualEvidence(first);
-	expectActionableRoundTrip(first, second);
+	expectTargetClassProjection(first, second, ["text-","bg-","p-","[","className","class"], "mantine -> unocss round-trip happy");
 	expectExplicitResidualEvidence(second);
 	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
 		{
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		export const App = () => <Box className={"[padding:var(--mantine-spacing-md)] [color:red]"}/>;",
+		export const App = () => <Box className={"[color:blue.6] [margin-left:var(--mantine-spacing-auto)] [margin-right:var(--mantine-spacing-auto)] [max-width:400]"}/>;",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "static",
@@ -65,8 +86,21 @@ test("mantine -> unocss -> mantine: preserves an actionable concrete round trip"
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		export const App = () => <Box style={{ padding: "var(--mantine-spacing-md)", color: "red" }}/>;",
+		export const App = () => <Box style={{ color: "blue.6", marginLeft: "var(--mantine-spacing-auto)", marginRight: "var(--mantine-spacing-auto)", maxWidth: "400" }}/>;",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "static",
@@ -84,73 +118,86 @@ test("mantine -> unocss -> mantine: preserves an actionable concrete round trip"
 		    ],
 		  },
 		}
-	`);
+	`)
 });
 
-test("mantine -> unocss -> mantine: retains edge semantics without silent loss", () => {
-	const first = forward.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+test("mantine -> unocss -> mantine: retains the documented secondary API without silent loss", () => {
+	const first = forward.run({ source: edgeSource, file: "App.tsx", semantic: sourceSemantic });
+	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
-	expectActionableRoundTrip(first, second);
+	expectRouteScenarioEvidence(first, "mantine -> unocss round-trip secondary forward");
+	expectTargetClassProjection(first, second, ["text-","bg-","p-","[","className","class"], "mantine -> unocss round-trip secondary");
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
 	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { Box } from "@mantine/core";
-		export const App = () => <Box className={"[padding:var(--mantine-spacing-md)] [color:theme.foreground]"}/>;",
-		    "converted": 1,
+		    "code": "import { Button } from "@mantine/core";
+		export const App = () => <Button // pandwind:migrate-skip (route: mantine -> unocss | parse-residual: host-framework | available: named-map, residual)
+		styles={{ root: { color: "red" } }} />;",
+		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "residual",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
-		        "representation": "static",
+		        "outcome": "residual",
+		        "representation": "residual",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "Mantine styles, classNames, and vars require component-aware host lowering",
+		        "kind": "host-framework",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		  "reverse": {
-		    "changed": true,
-		    "code": "import { Box } from "@mantine/core";
-		export const App = () => <Box style={{ padding: "var(--mantine-spacing-md)", color: "theme.foreground" }}/>;",
-		    "converted": 1,
-		    "outcomes": [
-		      {
-		        "outcome": "static",
-		        "representation": "static",
-		      },
-		    ],
+		    "changed": false,
+		    "code": "import { Button } from "@mantine/core";
+		export const App = () => <Button // pandwind:migrate-skip (route: mantine -> unocss | parse-residual: host-framework | available: named-map, residual)
+		styles={{ root: { color: "red" } }} />;",
+		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [],
+		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
+		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 
-test("mantine -> unocss -> mantine: preserves concrete theme and project context variants", () => {
-	const firstBlue = forward.run({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const secondBlue = reverse.run({ source: firstBlue.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
-	const firstAmber = forward.run({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
-	const secondAmber = reverse.run({ source: firstAmber.code, file: "Card.tsx", semantic: amberTargetSemantic, project: amberProject });
+test("mantine -> unocss -> mantine: preserves concrete theme and project context variants", async () => {
+	const firstBlue = await forward.runAsync({ source: themedSource, file: "App.tsx", semantic: blueSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
+	const firstAmber = await forward.runAsync({ source: themedSource, file: "App.tsx", semantic: amberSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "App.tsx", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
-	expectActionableRoundTrip(firstBlue, secondBlue);
-	expectActionableRoundTrip(firstAmber, secondAmber);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Mantine, CodemodAdapterId.UnoCSS);
+	expectConfiguredTargetTokenEvidence(firstBlue, CodemodAdapterId.UnoCSS, "mantine -> unocss round-trip token config");
+	expectRouteScenarioEvidence(firstBlue, "mantine -> unocss round-trip blue forward");
+	expectRouteScenarioEvidence(firstAmber, "mantine -> unocss round-trip amber forward");
+
+	expectTargetClassProjection(firstBlue, secondBlue, ["text-","bg-","p-","[","className","class"], "mantine -> unocss round-trip blue");
+	expectTargetClassProjection(firstAmber, secondAmber, ["text-","bg-","p-","[","className","class"], "mantine -> unocss round-trip amber");
 	expectExplicitResidualEvidence(firstBlue);
 	expectExplicitResidualEvidence(secondBlue);
 	expectExplicitResidualEvidence(firstAmber);
@@ -164,8 +211,23 @@ test("mantine -> unocss -> mantine: preserves concrete theme and project context
 		    "forward": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		export const App = () => <Box className={"[padding:var(--mantine-spacing-md)] [color:theme.colors.brand]"}/>;",
+		export const App = () => <Box className={"text-brand [margin-left:var(--mantine-spacing-auto)] [margin-right:var(--mantine-spacing-auto)] [max-width:400]"}/>;",
 		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "static",
@@ -185,8 +247,21 @@ test("mantine -> unocss -> mantine: preserves concrete theme and project context
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		export const App = () => <Box style={{ padding: "var(--mantine-spacing-md)", color: "theme.colors.brand" }}/>;",
+		export const App = () => <Box style={{ color: "var(--mantine-color-brand-0)", ".\\\\[margin-left\\\\:var\\\\(--mantine-spacing-auto\\\\)\\\\]": { marginLeft: "var(--mantine-spacing-auto)" }, ".\\\\[margin-right\\\\:var\\\\(--mantine-spacing-auto\\\\)\\\\]": { marginRight: "var(--mantine-spacing-auto)" }, ".\\\\[max-width\\\\:400\\\\]": { maxWidth: "400" } }}/>;",
 		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "static",
@@ -208,8 +283,23 @@ test("mantine -> unocss -> mantine: preserves concrete theme and project context
 		    "forward": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		export const App = () => <Box className={"[padding:var(--mantine-spacing-md)] [color:theme.colors.brand]"}/>;",
+		export const App = () => <Box className={"text-brand [margin-left:var(--mantine-spacing-auto)] [margin-right:var(--mantine-spacing-auto)] [max-width:400]"}/>;",
 		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "static",
@@ -229,8 +319,21 @@ test("mantine -> unocss -> mantine: preserves concrete theme and project context
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		export const App = () => <Box style={{ padding: "var(--mantine-spacing-md)", color: "theme.colors.brand" }}/>;",
+		export const App = () => <Box style={{ color: "var(--mantine-color-brand-0)", ".\\\\[margin-left\\\\:var\\\\(--mantine-spacing-auto\\\\)\\\\]": { marginLeft: "var(--mantine-spacing-auto)" }, ".\\\\[margin-right\\\\:var\\\\(--mantine-spacing-auto\\\\)\\\\]": { marginRight: "var(--mantine-spacing-auto)" }, ".\\\\[max-width\\\\:400\\\\]": { maxWidth: "400" } }}/>;",
 		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "static",
@@ -249,14 +352,16 @@ test("mantine -> unocss -> mantine: preserves concrete theme and project context
 		    },
 		  },
 		}
-	`);
+	`)
 });
 
-test("mantine -> unocss -> mantine: resolves token references across both concrete legs", () => {
-	const first = forward.run({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
+test("mantine -> unocss -> mantine: resolves token values across both concrete legs", async () => {
+	const first = await forward.runAsync({ source: tokenSource, file: "App.tsx", semantic: blueSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
-	expectActionableRoundTrip(first, second);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Mantine, CodemodAdapterId.UnoCSS);
+	expectRouteScenarioEvidence(first, "mantine -> unocss round-trip token forward");
+	expectTargetClassProjection(first, second, ["text-","bg-","p-","[","className","class"], "mantine -> unocss round-trip token");
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
 	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
@@ -264,8 +369,23 @@ test("mantine -> unocss -> mantine: resolves token references across both concre
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		export const App = () => <Box className={"[padding:var(--mantine-spacing-md)] [color:brand.0]"}/>;",
+		export const App = () => <Box className={"text-brand [margin-left:var(--mantine-spacing-auto)] [margin-right:var(--mantine-spacing-auto)] [max-width:400]"}/>;",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "static",
@@ -285,8 +405,21 @@ test("mantine -> unocss -> mantine: resolves token references across both concre
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		export const App = () => <Box style={{ padding: "var(--mantine-spacing-md)", color: "brand.0" }}/>;",
+		export const App = () => <Box style={{ color: "var(--mantine-color-brand-0)", ".\\\\[margin-left\\\\:var\\\\(--mantine-spacing-auto\\\\)\\\\]": { marginLeft: "var(--mantine-spacing-auto)" }, ".\\\\[margin-right\\\\:var\\\\(--mantine-spacing-auto\\\\)\\\\]": { marginRight: "var(--mantine-spacing-auto)" }, ".\\\\[max-width\\\\:400\\\\]": { maxWidth: "400" } }}/>;",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "static",
@@ -304,6 +437,6 @@ test("mantine -> unocss -> mantine: resolves token references across both concre
 		    ],
 		  },
 		}
-	`);
+	`)
 });
 

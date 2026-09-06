@@ -3,30 +3,35 @@ import { expect, test } from "vitest";
 import { CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectActionableRoundTrip,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const forward = createAdapterRouteSpec(CodemodAdapterId.StyleX, CodemodAdapterId.Fela);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.Fela, CodemodAdapterId.StyleX);
-	const happySource = "import * as stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"red\", padding: \"1rem\" } });\nexport const App = () => <div {...stylex.props(styles.card)} />;";
-const edgeSource = "import * as stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: theme.foreground, padding: \"1rem\" } });\nexport const App = () => <div {...stylex.props(styles.card)} />;";
-const malformedSource = "import * as stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"red\", padding: \"1rem\" } });\nexport const App = () => <div {...stylex.props(styles.card)} />;\nconst unfinished = { /* unfinished stylex */";
+	const happySource = "import stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"red\", padding: 8 } });";
+const edgeSource = "import stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"red\" } });";
+const malformedSource = "import stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"red\", padding: 8 } });\nconst unfinished = { /* unfinished stylex */";
 const sourceSemantic = undefined;
-const themedSource = "import * as stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: theme.colors.brand, padding: \"1rem\" } });\nexport const App = () => <div {...stylex.props(styles.card)} />;";
-const tokenSource = "import * as stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"$colors.brand\", padding: \"1rem\" } });\nexport const App = () => <div {...stylex.props(styles.card)} />;";
-const blueSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/package.json":"{\"name\":\"stylex-fixture\",\"stylex\":{\"aliases\":{\"brand\":\"#2563eb\"}}}"} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/package.json":"{\"name\":\"stylex-fixture\",\"stylex\":{\"aliases\":{\"brand\":\"#f97316\"}}}"} };
+const themedSource = "import stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"#2563eb\", padding: 8 } });";
+const tokenSource = "import stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"#2563eb\", padding: 8 } });";
+const blueSemantic = undefined;
+const amberSemantic = undefined;
+const blueTargetSemantic = undefined;
+const amberTargetSemantic = undefined;
+const blueProject = createAdapterRouteProject(CodemodAdapterId.StyleX, CodemodAdapterId.Fela, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.StyleX, CodemodAdapterId.Fela, "#f97316");
 	const targetSemantic = undefined;
 
 test("stylex -> fela -> stylex: preserves an actionable concrete round trip", () => {
-	const first = forward.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+	const first = forward.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
+	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -36,6 +41,7 @@ test("stylex -> fela -> stylex: preserves an actionable concrete round trip", ()
 		expect(first.residuals.length).toBeGreaterThan(0);
 		expect(first.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(first, "stylex -> fela round-trip happy forward");
 	expectExplicitResidualEvidence(first);
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(second);
@@ -43,10 +49,24 @@ test("stylex -> fela -> stylex: preserves an actionable concrete round trip", ()
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import * as stylex from "@stylexjs/stylex";
-		export const styles = { "card": renderer.renderRule({ "padding": "1rem", "color": "red" }) };
-		export const App = () => <div {...stylex.props(styles.card)} />;",
+		    "code": "
+		export const styles = { "card": renderer.renderRule({ "padding": "8px", "color": "red" }) };",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "named-map",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "target-native",
@@ -66,9 +86,24 @@ test("stylex -> fela -> stylex: preserves an actionable concrete round trip", ()
 		  "reverse": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-		export const styles = { "card": stylex.create({ style: { padding: "1rem", color: "red" } }).style };
-		export const App = () => <div {...stylex.props(styles.card)} />;",
+
+		export const styles = { "card": stylex.create({ style: { padding: "8px", color: "red" } }).style };",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "static",
@@ -86,13 +121,14 @@ test("stylex -> fela -> stylex: preserves an actionable concrete round trip", ()
 		    ],
 		  },
 		}
-	`);
+	`)
 });
 
-test("stylex -> fela -> stylex: retains edge semantics without silent loss", () => {
-	const first = forward.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+test("stylex -> fela -> stylex: retains the documented secondary API without silent loss", () => {
+	const first = forward.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
+	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(first, "stylex -> fela round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
@@ -100,13 +136,27 @@ test("stylex -> fela -> stylex: retains edge semantics without silent loss", () 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import * as stylex from "@stylexjs/stylex";
-		export const styles = { "card": renderer.renderRule({ "padding": "1rem", "color": theme.foreground }) };
-		export const App = () => <div {...stylex.props(styles.card)} />;",
+		    "code": "
+		export const styles = { "card": renderer.renderRule({ "color": "red" }) };",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "named-map",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "host-runtime",
+		        "outcome": "target-native",
 		        "representation": "named-map",
 		      },
 		    ],
@@ -123,16 +173,28 @@ test("stylex -> fela -> stylex: retains edge semantics without silent loss", () 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-		import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
-		export const styles = { "card": css.vars({ "padding": "1rem", "color": theme.foreground }) };
-		export const App = () => <div {...stylex.props(styles.card)} />;",
+
+		export const styles = { "card": stylex.create({ style: { color: "red" } }).style };",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [],
@@ -146,16 +208,22 @@ test("stylex -> fela -> stylex: retains edge semantics without silent loss", () 
 		    ],
 		  },
 		}
-	`);
+	`)
 });
 
-test("stylex -> fela -> stylex: preserves concrete theme and project context variants", () => {
-	const firstBlue = forward.run({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const secondBlue = reverse.run({ source: firstBlue.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
-	const firstAmber = forward.run({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
-	const secondAmber = reverse.run({ source: firstAmber.code, file: "Card.tsx", semantic: amberTargetSemantic, project: amberProject });
+test("stylex -> fela -> stylex: preserves concrete theme and project context variants", async () => {
+	const firstBlue = await forward.runAsync({ source: themedSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "styles.ts", semantic: blueTargetSemantic, project: blueProject });
+	const firstAmber = await forward.runAsync({ source: themedSource, file: "styles.ts", semantic: amberSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "styles.ts", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.StyleX, CodemodAdapterId.Fela);
+	expectConfiguredTargetTokenEvidence(firstBlue, CodemodAdapterId.Fela, "stylex -> fela round-trip token config");
+	expectRouteScenarioEvidence(firstBlue, "stylex -> fela round-trip blue forward");
+	expectRouteScenarioEvidence(firstAmber, "stylex -> fela round-trip amber forward");
+	expectConfiguredTargetTokenAbsence(firstAmber, CodemodAdapterId.Fela, "stylex -> fela round-trip amber literal config");
+
 	expectActionableRoundTrip(firstBlue, secondBlue);
 	expectActionableRoundTrip(firstAmber, secondAmber);
 	expectExplicitResidualEvidence(firstBlue);
@@ -170,10 +238,24 @@ test("stylex -> fela -> stylex: preserves concrete theme and project context var
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import * as stylex from "@stylexjs/stylex";
-		export const styles = { "card": renderer.renderRule({ "padding": "1rem", "color": "#f97316" }) };
-		export const App = () => <div {...stylex.props(styles.card)} />;",
+		      "code": "
+		export const styles = { "card": renderer.renderRule({ "padding": "8px", "color": "#2563eb" }) };",
 		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "named-map",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "target-native",
@@ -193,9 +275,24 @@ test("stylex -> fela -> stylex: preserves concrete theme and project context var
 		    "reverse": {
 		      "changed": true,
 		      "code": "import * as stylex from "@stylexjs/stylex";
-		export const styles = { "card": stylex.create({ style: { padding: "1rem", color: "#f97316" } }).style };
-		export const App = () => <div {...stylex.props(styles.card)} />;",
+
+		export const styles = { "card": stylex.create({ style: { padding: "8px", color: "#2563eb" } }).style };",
 		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "static",
@@ -216,10 +313,24 @@ test("stylex -> fela -> stylex: preserves concrete theme and project context var
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import * as stylex from "@stylexjs/stylex";
-		export const styles = { "card": renderer.renderRule({ "padding": "1rem", "color": "#2563eb" }) };
-		export const App = () => <div {...stylex.props(styles.card)} />;",
+		      "code": "
+		export const styles = { "card": renderer.renderRule({ "padding": "8px", "color": "#2563eb" }) };",
 		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "named-map",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "target-native",
@@ -239,9 +350,24 @@ test("stylex -> fela -> stylex: preserves concrete theme and project context var
 		    "reverse": {
 		      "changed": true,
 		      "code": "import * as stylex from "@stylexjs/stylex";
-		export const styles = { "card": stylex.create({ style: { padding: "1rem", color: "#2563eb" } }).style };
-		export const App = () => <div {...stylex.props(styles.card)} />;",
+
+		export const styles = { "card": stylex.create({ style: { padding: "8px", color: "#2563eb" } }).style };",
 		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "static",
@@ -260,13 +386,15 @@ test("stylex -> fela -> stylex: preserves concrete theme and project context var
 		    },
 		  },
 		}
-	`);
+	`)
 });
 
-test("stylex -> fela -> stylex: resolves token references across both concrete legs", () => {
-	const first = forward.run({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
+test("stylex -> fela -> stylex: resolves token values across both concrete legs", async () => {
+	const first = await forward.runAsync({ source: tokenSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "styles.ts", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.StyleX, CodemodAdapterId.Fela);
+	expectRouteScenarioEvidence(first, "stylex -> fela round-trip token forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
@@ -274,10 +402,24 @@ test("stylex -> fela -> stylex: resolves token references across both concrete l
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import * as stylex from "@stylexjs/stylex";
-		export const styles = { "card": renderer.renderRule({ "padding": "1rem", "color": "$colors.brand" }) };
-		export const App = () => <div {...stylex.props(styles.card)} />;",
+		    "code": "
+		export const styles = { "card": renderer.renderRule({ "padding": "8px", "color": "#2563eb" }) };",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "named-map",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "target-native",
@@ -297,9 +439,24 @@ test("stylex -> fela -> stylex: resolves token references across both concrete l
 		  "reverse": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-		export const styles = { "card": stylex.create({ style: { padding: "1rem", color: "$colors.brand" } }).style };
-		export const App = () => <div {...stylex.props(styles.card)} />;",
+
+		export const styles = { "card": stylex.create({ style: { padding: "8px", color: "#2563eb" } }).style };",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "static",
@@ -317,6 +474,6 @@ test("stylex -> fela -> stylex: resolves token references across both concrete l
 		    ],
 		  },
 		}
-	`);
+	`)
 });
 

@@ -3,23 +3,28 @@ import { expect, test } from "vitest";
 import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.StyledComponents, CodemodAdapterId.Pandwind);
-	const happySource = "import styled from \"styled-components\";\nexport const Card = styled.div({ color: \"red\", padding: \"1rem\" });\nexport const App = () => <Card />;";
-const edgeSource = "import styled from \"styled-components\";\nexport const Card = styled.div({ color: theme.foreground, padding: \"1rem\" });\nexport const App = () => <Card />;";
-const malformedSource = "import styled from \"styled-components\";\nexport const Card = styled.div({ color: \"red\", padding: \"1rem\" });\nexport const App = () => <Card />;\nconst unfinished = { /* unfinished styled-components */";
+	const happySource = "import styled from \"styled-components\";\nexport const Card = styled.div({ color: \"red\", padding: \"1rem\" });";
+const edgeSource = "import styled from \"styled-components\";\nexport const Card = styled.div`color: red; padding: 1rem;`;";
+const malformedSource = "import styled from \"styled-components\";\nexport const Card = styled.div({ color: \"red\", padding: \"1rem\" });\nconst unfinished = { /* unfinished styled-components */";
 const sourceSemantic = { source: { framework: BuiltinHostFramework.React } };
-const themedSource = "import styled from \"styled-components\";\nexport const Card = styled.div({ color: theme.colors.brand, padding: \"1rem\" });\nexport const App = () => <Card />;";
-const tokenSource = "import styled from \"styled-components\";\nexport const Card = styled.div({ color: \"$colors.brand\", padding: \"1rem\" });\nexport const App = () => <Card />;";
-const blueSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/pandwind.config.ts":"export default { tokens: { colors: { brand: \"#2563eb\" } } };"} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/pandwind.config.ts":"export default { tokens: { colors: { brand: \"#f97316\" } } };"} };
+const themedSource = "import styled from \"styled-components\";\nexport const Card = styled.div({ color: \"#2563eb\", padding: \"1rem\" });";
+const tokenSource = "import styled from \"styled-components\";\nexport const Card = styled.div({ color: \"#2563eb\", padding: \"1rem\" });";
+const blueSemantic = { source: { framework: BuiltinHostFramework.React } };
+const amberSemantic = { source: { framework: BuiltinHostFramework.React } };
+const blueTargetSemantic = undefined;
+const amberTargetSemantic = undefined;
+const blueProject = createAdapterRouteProject(CodemodAdapterId.StyledComponents, CodemodAdapterId.Pandwind, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.StyledComponents, CodemodAdapterId.Pandwind, "#f97316");
 
 test("styled-components -> pandwind: migrates concrete styled-components syntax to pandwind", () => {
 	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
@@ -37,16 +42,32 @@ test("styled-components -> pandwind: migrates concrete styled-components syntax 
 		expect(result.residuals.length).toBeGreaterThan(0);
 		expect(result.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(result, "styled-components -> pandwind happy");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
+		import { createCx } from "pandwind/cx";
+		const cx = createCx();
 		const css = createCss();
+		const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Component {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
 
-		export const Card = css.class({ padding: "1rem", color: "red" });
-		export const App = () => <div className={Card} />;",
+		export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "red" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "static",
@@ -63,26 +84,42 @@ test("styled-components -> pandwind: migrates concrete styled-components syntax 
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
-test("styled-components -> pandwind: carries concrete styled-components dynamics or edge syntax explicitly", () => {
+test("styled-components -> pandwind: carries a documented secondary styled-components API explicitly", () => {
 	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(result, "styled-components -> pandwind secondary");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
+		import { createCx } from "pandwind/cx";
+		const cx = createCx();
 		const css = createCss();
+		const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Component {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
 
-		export const Card = css.vars({ padding: "1rem", color: theme.foreground });
-		export const App = () => <div className={Card.class} style={Card.style} />;",
+		export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "red" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "host-runtime",
-		      "representation": "target-native",
+		      "outcome": "static",
+		      "representation": "static",
 		    },
 		  ],
 		  "residuals": [],
@@ -95,14 +132,20 @@ test("styled-components -> pandwind: carries concrete styled-components dynamics
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
-test("styled-components -> pandwind: lowers concrete theme and project context variants", () => {
-	const blue = route.run({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const amber = route.run({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
+test("styled-components -> pandwind: loads concrete theme and project context variants", async () => {
+	const blue = await route.runAsync({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
+	const amber = await route.runAsync({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
 	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
 	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.StyledComponents, CodemodAdapterId.Pandwind);
+	expectConfiguredTargetTokenEvidence(blue, CodemodAdapterId.Pandwind, "styled-components -> pandwind blue config");
+	expectRouteScenarioEvidence(blue, "styled-components -> pandwind blue config");
+	expectRouteScenarioEvidence(amber, "styled-components -> pandwind amber config");
+	expectConfiguredTargetTokenAbsence(amber, CodemodAdapterId.Pandwind, "styled-components -> pandwind amber literal config");
+
 	expectExplicitResidualEvidence(blue);
 	expectExplicitResidualEvidence(amber);
 	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
@@ -110,15 +153,35 @@ test("styled-components -> pandwind: lowers concrete theme and project context v
 		  "amber": {
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
+		import { createCx } from "pandwind/cx";
+		import { __pandwindSlot } from "../__pandwind/slot.tsx";
+		const cx = createCx();
 		const css = createCss();
 
-		export const Card = css.vars({ padding: "1rem", color: theme.colors.brand });
-		export const App = () => <div className={Card.class} style={Card.style} />;",
+		export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "#2563eb" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
 		    "converted": 1,
+		    "generatedFiles": [
+		      {
+		        "path": "__pandwind/slot.tsx",
+		        "purpose": "shared static component slot helper",
+		      },
+		    ],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "host-runtime",
-		        "representation": "target-native",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [],
@@ -134,15 +197,35 @@ test("styled-components -> pandwind: lowers concrete theme and project context v
 		  "blue": {
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
+		import { createCx } from "pandwind/cx";
+		import { __pandwindSlot } from "../__pandwind/slot.tsx";
+		const cx = createCx();
 		const css = createCss();
 
-		export const Card = css.vars({ padding: "1rem", color: theme.colors.brand });
-		export const App = () => <div className={Card.class} style={Card.style} />;",
+		export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "$brand" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
 		    "converted": 1,
+		    "generatedFiles": [
+		      {
+		        "path": "__pandwind/slot.tsx",
+		        "purpose": "shared static component slot helper",
+		      },
+		    ],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "host-runtime",
-		        "representation": "target-native",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [],
@@ -156,22 +239,45 @@ test("styled-components -> pandwind: lowers concrete theme and project context v
 		    ],
 		  },
 		}
-	`);
+	`)
 });
 
-test("styled-components -> pandwind: resolves concrete token references with project context", () => {
-	const result = route.run({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
+test("styled-components -> pandwind: resolves concrete token values with project context", async () => {
+	const result = await route.runAsync({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.StyledComponents, CodemodAdapterId.Pandwind);
+	expectConfiguredTargetTokenEvidence(result, CodemodAdapterId.Pandwind, "styled-components -> pandwind token config");
+	expectRouteScenarioEvidence(result, "styled-components -> pandwind token config");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
+		import { createCx } from "pandwind/cx";
+		import { __pandwindSlot } from "../__pandwind/slot.tsx";
+		const cx = createCx();
 		const css = createCss();
 
-		export const Card = css.class({ padding: "1rem", color: "$colors.brand" });
-		export const App = () => <div className={Card} />;",
+		export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "$brand" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
 		  "converted": 1,
+		  "generatedFiles": [
+		    {
+		      "path": "__pandwind/slot.tsx",
+		      "purpose": "shared static component slot helper",
+		    },
+		  ],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "static",
@@ -188,23 +294,39 @@ test("styled-components -> pandwind: resolves concrete token references with pro
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
 test("styled-components -> pandwind: preserves malformed concrete styled-components input", () => {
 	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished styled-components */");
+	expectRouteScenarioEvidence(result, "styled-components -> pandwind malformed");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "styled-components";
-		import { createCss } from "pandwind/css";
+		  "code": "import { createCss } from "pandwind/css";
+		import { createCx } from "pandwind/cx";
+		const cx = createCx();
 		const css = createCss();
-		export const Card = css.class({ padding: "1rem", color: "red" });
-		export const App = () => <div className={Card} />;
+		const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Component {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
+
+		export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "red" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });
 		const unfinished = { /* unfinished styled-components */",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "static",
@@ -221,6 +343,6 @@ test("styled-components -> pandwind: preserves malformed concrete styled-compone
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 

@@ -3,26 +3,31 @@ import { expect, test } from "vitest";
 import { CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.Tailwind, CodemodAdapterId.Sass);
-	const happySource = "import \"tailwindcss\";\nexport const App = () => <div className=\"flex gap-4 p-4 text-black\" />;";
-const edgeSource = "import \"tailwindcss\";\nexport const App = () => <div className={`[display:flex] [gap:1rem] ${runtimeClass}`} />;";
-const malformedSource = "import \"tailwindcss\";\nexport const App = () => <div className=\"flex gap-4 p-4 text-black\" />;\nconst unfinished = { /* unfinished tailwind */";
+	const happySource = "export const App = () => <div className=\"[display:flex] [align-items:center] [gap:1rem]\" />;";
+const edgeSource = "export const App = () => <div className=\"[color:rebeccapurple] md:[display:flex]\" />;";
+const malformedSource = "export const App = () => <div className=\"[display:flex] [align-items:center] [gap:1rem]\" />;\nconst unfinished = { /* unfinished tailwind */";
 const sourceSemantic = undefined;
-const themedSource = "import \"tailwindcss\";\nexport const App = () => <div className=\"flex gap-4 p-4 text-brand\" />;";
-const tokenSource = "import \"tailwindcss\";\nexport const App = () => <div className=\"flex gap-4 p-4 text-brand\" />;";
-const blueSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/tailwind.css":"@import \"tailwindcss\"; @theme { --color-brand: #2563eb; --spacing-card: 1.125rem; }"} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/tailwind.css":"@import \"tailwindcss\"; @theme { --color-brand: #f97316; --spacing-card: 1.125rem; }"} };
+const themedSource = "export const App = () => <div className=\"text-brand p-card\" />;";
+const tokenSource = "export const App = () => <div className=\"text-brand p-card\" />;";
+const blueSemantic = undefined;
+const amberSemantic = undefined;
+const blueTargetSemantic = undefined;
+const amberTargetSemantic = undefined;
+const blueProject = createAdapterRouteProject(CodemodAdapterId.Tailwind, CodemodAdapterId.Sass, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.Tailwind, CodemodAdapterId.Sass, "#f97316");
 
 test("tailwind -> sass: migrates concrete tailwind syntax to sass", () => {
-	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
+	const result = route.run({ source: happySource, file: "App.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -37,253 +42,307 @@ test("tailwind -> sass: migrates concrete tailwind syntax to sass", () => {
 		expect(result.residuals.length).toBeGreaterThan(0);
 		expect(result.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(result, "tailwind -> sass happy");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import "tailwindcss";
-		export const App = () => // pandwind:migrate-skip (route: tailwind -> sass | parse-residual: unknown-utility | available: residual)
-		<div className="flex gap-4 p-4 text-black" />;",
+		  "code": "export const App = () => // pandwind:migrate-skip (route: tailwind -> sass | lowering-residual: validation)
+		<div className="[display:flex] [align-items:center] [gap:1rem]" />;",
 		  "converted": 0,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "residual",
+		      "representation": "static",
 		    },
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "Tailwind utility requires the project engine or a custom preset",
-		      "kind": "unknown-utility",
-		      "preserved": undefined,
-		    },
-		    {
-		      "hint": "Tailwind utility requires the project engine or a custom preset",
-		      "kind": "unknown-utility",
-		      "preserved": undefined,
-		    },
-		    {
-		      "hint": "Tailwind utility requires the project engine or a custom preset",
-		      "kind": "unknown-utility",
-		      "preserved": undefined,
-		    },
-		    {
-		      "hint": "Tailwind utility requires the project engine or a custom preset",
-		      "kind": "unknown-utility",
+		      "hint": "3 residual conversion(s)",
+		      "kind": "validation",
 		      "preserved": undefined,
 		    },
 		  ],
 		  "skipped": 1,
-		  "validations": [],
+		  "validations": [
+		    {
+		      "differences": [
+		        "3 residual conversion(s)",
+		      ],
+		      "lossiness": "lossy",
+		      "valid": false,
+		    },
+		  ],
 		}
-	`);
+	`)
 });
 
-test("tailwind -> sass: carries concrete tailwind dynamics or edge syntax explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
+test("tailwind -> sass: carries a documented secondary tailwind API explicitly", () => {
+	const result = route.run({ source: edgeSource, file: "App.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(result, "tailwind -> sass secondary");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "// pandwind:migrate-skip (route: tailwind -> sass | parse-residual: dynamic)
-		import "tailwindcss";
-		export const App = () => <div className={\`[display:flex] [gap:1rem] \${runtimeClass}\`} />;",
+		  "code": "export const App = () => // pandwind:migrate-skip (route: tailwind -> sass | capability-blocked: named-conditions: named: md | available: static, residual)
+		<div className="[color:rebeccapurple] md:[display:flex]" />;",
 		  "converted": 0,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "residual",
+		      "representation": "static",
 		    },
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "Tailwind dynamic class expressions require runtime-aware target lowering",
-		      "kind": "dynamic",
+		      "hint": "named-conditions: named: md",
+		      "kind": "capability",
 		      "preserved": undefined,
 		    },
 		  ],
 		  "skipped": 1,
 		  "validations": [],
 		}
-	`);
+	`)
 });
 
-test("tailwind -> sass: lowers concrete theme and project context variants", () => {
-	const blue = route.run({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const amber = route.run({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
+test("tailwind -> sass: loads concrete theme and project context variants", async () => {
+	const blue = await route.runAsync({ source: themedSource, file: "App.tsx", semantic: blueSemantic, project: blueProject });
+	const amber = await route.runAsync({ source: themedSource, file: "App.tsx", semantic: amberSemantic, project: amberProject });
 	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
 	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Tailwind, CodemodAdapterId.Sass);
+	expectConfiguredTargetTokenEvidence(blue, CodemodAdapterId.Sass, "tailwind -> sass blue config");
+	expectRouteScenarioEvidence(blue, "tailwind -> sass blue config");
+	expectRouteScenarioEvidence(amber, "tailwind -> sass amber config");
+
 	expectExplicitResidualEvidence(blue);
 	expectExplicitResidualEvidence(amber);
 	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import "tailwindcss";
-		export const App = () => // pandwind:migrate-skip (route: tailwind -> sass | parse-residual: unknown-utility | available: residual)
-		<div className="flex gap-4 p-4 text-brand" />;",
+		    "code": "export const App = () => // pandwind:migrate-skip (route: tailwind -> sass | lowering-residual: validation)
+		<div className="text-brand p-card" />;",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "residual",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "Tailwind utility requires the project engine or a custom preset",
-		        "kind": "unknown-utility",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "Tailwind utility requires the project engine or a custom preset",
-		        "kind": "unknown-utility",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "Tailwind utility requires the project engine or a custom preset",
-		        "kind": "unknown-utility",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "Tailwind utility requires the project engine or a custom preset",
-		        "kind": "unknown-utility",
+		        "hint": "2 residual conversion(s)",
+		        "kind": "validation",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 1,
-		    "validations": [],
+		    "validations": [
+		      {
+		        "differences": [
+		          "2 residual conversion(s)",
+		        ],
+		        "lossiness": "lossy",
+		        "valid": false,
+		      },
+		    ],
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import "tailwindcss";
-		export const App = () => // pandwind:migrate-skip (route: tailwind -> sass | parse-residual: unknown-utility | available: residual)
-		<div className="flex gap-4 p-4 text-brand" />;",
+		    "code": "export const App = () => // pandwind:migrate-skip (route: tailwind -> sass | lowering-residual: validation)
+		<div className="text-brand p-card" />;",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "residual",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "Tailwind utility requires the project engine or a custom preset",
-		        "kind": "unknown-utility",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "Tailwind utility requires the project engine or a custom preset",
-		        "kind": "unknown-utility",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "Tailwind utility requires the project engine or a custom preset",
-		        "kind": "unknown-utility",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "Tailwind utility requires the project engine or a custom preset",
-		        "kind": "unknown-utility",
+		        "hint": "2 residual conversion(s)",
+		        "kind": "validation",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 1,
-		    "validations": [],
+		    "validations": [
+		      {
+		        "differences": [
+		          "2 residual conversion(s)",
+		        ],
+		        "lossiness": "lossy",
+		        "valid": false,
+		      },
+		    ],
 		  },
 		}
-	`);
+	`)
 });
 
-test("tailwind -> sass: resolves concrete token references with project context", () => {
-	const result = route.run({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
+test("tailwind -> sass: resolves concrete token values with project context", async () => {
+	const result = await route.runAsync({ source: tokenSource, file: "App.tsx", semantic: blueSemantic, project: blueProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Tailwind, CodemodAdapterId.Sass);
+	expectConfiguredTargetTokenEvidence(result, CodemodAdapterId.Sass, "tailwind -> sass token config");
+	expectRouteScenarioEvidence(result, "tailwind -> sass token config");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import "tailwindcss";
-		export const App = () => // pandwind:migrate-skip (route: tailwind -> sass | parse-residual: unknown-utility | available: residual)
-		<div className="flex gap-4 p-4 text-brand" />;",
+		  "code": "export const App = () => // pandwind:migrate-skip (route: tailwind -> sass | lowering-residual: validation)
+		<div className="text-brand p-card" />;",
 		  "converted": 0,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "residual",
+		      "representation": "static",
 		    },
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "Tailwind utility requires the project engine or a custom preset",
-		      "kind": "unknown-utility",
-		      "preserved": undefined,
-		    },
-		    {
-		      "hint": "Tailwind utility requires the project engine or a custom preset",
-		      "kind": "unknown-utility",
-		      "preserved": undefined,
-		    },
-		    {
-		      "hint": "Tailwind utility requires the project engine or a custom preset",
-		      "kind": "unknown-utility",
-		      "preserved": undefined,
-		    },
-		    {
-		      "hint": "Tailwind utility requires the project engine or a custom preset",
-		      "kind": "unknown-utility",
+		      "hint": "2 residual conversion(s)",
+		      "kind": "validation",
 		      "preserved": undefined,
 		    },
 		  ],
 		  "skipped": 1,
-		  "validations": [],
+		  "validations": [
+		    {
+		      "differences": [
+		        "2 residual conversion(s)",
+		      ],
+		      "lossiness": "lossy",
+		      "valid": false,
+		    },
+		  ],
 		}
-	`);
+	`)
 });
 
 test("tailwind -> sass: preserves malformed concrete tailwind input", () => {
-	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
+	const result = route.run({ source: malformedSource, file: "App.tsx", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished tailwind */");
+	expectRouteScenarioEvidence(result, "tailwind -> sass malformed");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import "tailwindcss";
-		export const App = () => // pandwind:migrate-skip (route: tailwind -> sass | parse-residual: unknown-utility | available: residual)
-		<div className="flex gap-4 p-4 text-black" />;
+		  "code": "export const App = () => // pandwind:migrate-skip (route: tailwind -> sass | lowering-residual: validation)
+		<div className="[display:flex] [align-items:center] [gap:1rem]" />;
 		const unfinished = { /* unfinished tailwind */",
 		  "converted": 0,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "residual",
+		      "representation": "static",
 		    },
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "Tailwind utility requires the project engine or a custom preset",
-		      "kind": "unknown-utility",
-		      "preserved": undefined,
-		    },
-		    {
-		      "hint": "Tailwind utility requires the project engine or a custom preset",
-		      "kind": "unknown-utility",
-		      "preserved": undefined,
-		    },
-		    {
-		      "hint": "Tailwind utility requires the project engine or a custom preset",
-		      "kind": "unknown-utility",
-		      "preserved": undefined,
-		    },
-		    {
-		      "hint": "Tailwind utility requires the project engine or a custom preset",
-		      "kind": "unknown-utility",
+		      "hint": "3 residual conversion(s)",
+		      "kind": "validation",
 		      "preserved": undefined,
 		    },
 		  ],
 		  "skipped": 1,
-		  "validations": [],
+		  "validations": [
+		    {
+		      "differences": [
+		        "3 residual conversion(s)",
+		      ],
+		      "lossiness": "lossy",
+		      "valid": false,
+		    },
+		  ],
 		}
-	`);
+	`)
 });
 

@@ -3,30 +3,35 @@ import { expect, test } from "vitest";
 import { CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectActionableRoundTrip,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const forward = createAdapterRouteSpec(CodemodAdapterId.Tailwind, CodemodAdapterId.ReactNative);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.ReactNative, CodemodAdapterId.Tailwind);
-	const happySource = "import \"tailwindcss\";\nexport const App = () => <div className=\"flex gap-4 p-4 text-black\" />;";
-const edgeSource = "import \"tailwindcss\";\nexport const App = () => <div className={`[display:flex] [gap:1rem] ${runtimeClass}`} />;";
-const malformedSource = "import \"tailwindcss\";\nexport const App = () => <div className=\"flex gap-4 p-4 text-black\" />;\nconst unfinished = { /* unfinished tailwind */";
+	const happySource = "export const App = () => <div className=\"[display:flex] [align-items:center] [gap:1rem]\" />;";
+const edgeSource = "export const App = () => <div className=\"[color:rebeccapurple] md:[display:flex]\" />;";
+const malformedSource = "export const App = () => <div className=\"[display:flex] [align-items:center] [gap:1rem]\" />;\nconst unfinished = { /* unfinished tailwind */";
 const sourceSemantic = undefined;
-const themedSource = "import \"tailwindcss\";\nexport const App = () => <div className=\"flex gap-4 p-4 text-brand\" />;";
-const tokenSource = "import \"tailwindcss\";\nexport const App = () => <div className=\"flex gap-4 p-4 text-brand\" />;";
-const blueSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/tailwind.css":"@import \"tailwindcss\"; @theme { --color-brand: #2563eb; --spacing-card: 1.125rem; }"} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/tailwind.css":"@import \"tailwindcss\"; @theme { --color-brand: #f97316; --spacing-card: 1.125rem; }"} };
+const themedSource = "export const App = () => <div className=\"text-brand p-card\" />;";
+const tokenSource = "export const App = () => <div className=\"text-brand p-card\" />;";
+const blueSemantic = undefined;
+const amberSemantic = undefined;
+const blueTargetSemantic = undefined;
+const amberTargetSemantic = undefined;
+const blueProject = createAdapterRouteProject(CodemodAdapterId.Tailwind, CodemodAdapterId.ReactNative, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.Tailwind, CodemodAdapterId.ReactNative, "#f97316");
 	const targetSemantic = undefined;
 
 test("tailwind -> react-native -> tailwind: preserves an actionable concrete round trip", () => {
-	const first = forward.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+	const first = forward.run({ source: happySource, file: "App.tsx", semantic: sourceSemantic });
+	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -36,6 +41,7 @@ test("tailwind -> react-native -> tailwind: preserves an actionable concrete rou
 		expect(first.residuals.length).toBeGreaterThan(0);
 		expect(first.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(first, "tailwind -> react-native round-trip happy forward");
 	expectExplicitResidualEvidence(first);
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(second);
@@ -43,60 +49,86 @@ test("tailwind -> react-native -> tailwind: preserves an actionable concrete rou
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import "tailwindcss";
-		export const App = () => // pandwind:migrate-skip (route: tailwind -> react-native | parse-residual: unknown-utility | available: named-map, residual)
-		<div className="flex gap-4 p-4 text-black" />;",
-		    "converted": 0,
+		    "code": "import { StyleSheet, View } from "react-native";
+		export const App = () => <View   style={StyleSheet.create({ style: { "gap": 16, "alignItems": "center", "display": "flex" } }).style}/>;",
+		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		          "react-native-numeric-normalization",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
-		        "representation": "residual",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "Tailwind utility requires the project engine or a custom preset",
-		        "kind": "unknown-utility",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "Tailwind utility requires the project engine or a custom preset",
-		        "kind": "unknown-utility",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "Tailwind utility requires the project engine or a custom preset",
-		        "kind": "unknown-utility",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "Tailwind utility requires the project engine or a custom preset",
-		        "kind": "unknown-utility",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
-		    "validations": [],
-		  },
-		  "reverse": {
-		    "changed": false,
-		    "code": "import "tailwindcss";
-		export const App = () => // pandwind:migrate-skip (route: tailwind -> react-native | parse-residual: unknown-utility | available: named-map, residual)
-		<div className="flex gap-4 p-4 text-black" />;",
-		    "converted": 0,
-		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [],
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "import { View } from "react-native";
+		export const App = () => <View   style={{ "style": "[gap:16] [align-items:center] [display:flex]" }.style}/>;",
+		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "named-map",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "target-native",
+		        "representation": "named-map",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		}
-	`);
+	`)
 });
 
-test("tailwind -> react-native -> tailwind: retains edge semantics without silent loss", () => {
-	const first = forward.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+test("tailwind -> react-native -> tailwind: retains the documented secondary API without silent loss", () => {
+	const first = forward.run({ source: edgeSource, file: "App.tsx", semantic: sourceSemantic });
+	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(first, "tailwind -> react-native round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
@@ -104,48 +136,103 @@ test("tailwind -> react-native -> tailwind: retains edge semantics without silen
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: tailwind -> react-native | parse-residual: dynamic)
-		import "tailwindcss";
-		export const App = () => <div className={\`[display:flex] [gap:1rem] \${runtimeClass}\`} />;",
+		    "code": "import { View } from "react-native";
+		export const App = () => // pandwind:migrate-skip (route: tailwind -> react-native | lowering-residual: validation)
+		<View   style={StyleSheet.create({ style: { "color": "rebeccapurple", "md": { "display": "flex" } } }).style}/>;",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		          "react-native-numeric-normalization",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "residual",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "Tailwind dynamic class expressions require runtime-aware target lowering",
-		        "kind": "dynamic",
+		        "hint": "canonical CSS differs",
+		        "kind": "validation",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
+		    "validations": [
+		      {
+		        "differences": [
+		          "canonical CSS differs",
+		        ],
+		        "lossiness": "unsupported",
+		        "valid": false,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": false,
+		    "code": "import { View } from "react-native";
+		export const App = () => // pandwind:migrate-skip (route: tailwind -> react-native | lowering-residual: validation)
+		<View   style={StyleSheet.create({ style: { "color": "rebeccapurple", "md": { "display": "flex" } } }).style}/>;",
+		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "named-map",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "named-map",
+		      },
+		    ],
+		    "residuals": [
+		      {
+		        "hint": "rule-level: 2 semantic rules; ordering: ordered semantic rules",
+		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 1,
 		    "validations": [],
 		  },
-		  "reverse": {
-		    "changed": false,
-		    "code": "// pandwind:migrate-skip (route: tailwind -> react-native | parse-residual: dynamic)
-		import "tailwindcss";
-		export const App = () => <div className={\`[display:flex] [gap:1rem] \${runtimeClass}\`} />;",
-		    "converted": 0,
-		    "outcomes": [],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [],
-		  },
 		}
-	`);
+	`)
 });
 
-test("tailwind -> react-native -> tailwind: preserves concrete theme and project context variants", () => {
-	const firstBlue = forward.run({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const secondBlue = reverse.run({ source: firstBlue.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
-	const firstAmber = forward.run({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
-	const secondAmber = reverse.run({ source: firstAmber.code, file: "Card.tsx", semantic: amberTargetSemantic, project: amberProject });
+test("tailwind -> react-native -> tailwind: preserves concrete theme and project context variants", async () => {
+	const firstBlue = await forward.runAsync({ source: themedSource, file: "App.tsx", semantic: blueSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "styles.ts", semantic: blueTargetSemantic, project: blueProject });
+	const firstAmber = await forward.runAsync({ source: themedSource, file: "App.tsx", semantic: amberSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "styles.ts", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Tailwind, CodemodAdapterId.ReactNative);
+	expectConfiguredTargetTokenEvidence(firstBlue, CodemodAdapterId.ReactNative, "tailwind -> react-native round-trip token config");
+	expectRouteScenarioEvidence(firstBlue, "tailwind -> react-native round-trip blue forward");
+	expectRouteScenarioEvidence(firstAmber, "tailwind -> react-native round-trip amber forward");
+
 	expectActionableRoundTrip(firstBlue, secondBlue);
 	expectActionableRoundTrip(firstAmber, secondAmber);
 	expectExplicitResidualEvidence(firstBlue);
@@ -160,111 +247,181 @@ test("tailwind -> react-native -> tailwind: preserves concrete theme and project
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import "tailwindcss";
-		export const App = () => // pandwind:migrate-skip (route: tailwind -> react-native | parse-residual: unknown-utility | available: named-map, residual)
-		<div className="flex gap-4 p-4 text-brand" />;",
+		      "code": "import { StyleSheet, View } from "react-native";
+		export const App = () => <View   style={StyleSheet.create({ style: { "padding": 18, "color": "#f97316" } }).style}/>;",
+		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		            "react-native-numeric-normalization",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
+		      "outcomes": [
+		        {
+		          "outcome": "static",
+		          "representation": "static",
+		        },
+		      ],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
+		    },
+		    "reverse": {
+		      "changed": true,
+		      "code": "import { StyleSheet, View } from "react-native";
+		export const App = () => <View   style={// pandwind:migrate-skip (route: react-native -> tailwind | lowering-residual: validation)
+		StyleSheet.create({ style: { "padding": 18, "color": "#f97316" } }).style}/>;",
 		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "named-map",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
-		          "representation": "residual",
+		          "representation": "named-map",
 		        },
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "Tailwind utility requires the project engine or a custom preset",
-		          "kind": "unknown-utility",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "Tailwind utility requires the project engine or a custom preset",
-		          "kind": "unknown-utility",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "Tailwind utility requires the project engine or a custom preset",
-		          "kind": "unknown-utility",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "Tailwind utility requires the project engine or a custom preset",
-		          "kind": "unknown-utility",
+		          "hint": "canonical CSS differs or has residuals",
+		          "kind": "validation",
 		          "preserved": undefined,
 		        },
 		      ],
 		      "skipped": 1,
-		      "validations": [],
-		    },
-		    "reverse": {
-		      "changed": false,
-		      "code": "import "tailwindcss";
-		export const App = () => // pandwind:migrate-skip (route: tailwind -> react-native | parse-residual: unknown-utility | available: named-map, residual)
-		<div className="flex gap-4 p-4 text-brand" />;",
-		      "converted": 0,
-		      "outcomes": [],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [],
+		      "validations": [
+		        {
+		          "differences": [
+		            "canonical CSS differs or has residuals",
+		          ],
+		          "lossiness": "lossy",
+		          "valid": false,
+		        },
+		      ],
 		    },
 		  },
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import "tailwindcss";
-		export const App = () => // pandwind:migrate-skip (route: tailwind -> react-native | parse-residual: unknown-utility | available: named-map, residual)
-		<div className="flex gap-4 p-4 text-brand" />;",
+		      "code": "import { StyleSheet, View } from "react-native";
+		export const App = () => <View   style={StyleSheet.create({ style: { "padding": 18, "color": "#2563eb" } }).style}/>;",
+		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		            "react-native-numeric-normalization",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
+		      "outcomes": [
+		        {
+		          "outcome": "static",
+		          "representation": "static",
+		        },
+		      ],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
+		    },
+		    "reverse": {
+		      "changed": true,
+		      "code": "import { StyleSheet, View } from "react-native";
+		export const App = () => <View   style={// pandwind:migrate-skip (route: react-native -> tailwind | lowering-residual: validation)
+		StyleSheet.create({ style: { "padding": 18, "color": "#2563eb" } }).style}/>;",
 		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "named-map",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
-		          "representation": "residual",
+		          "representation": "named-map",
 		        },
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "Tailwind utility requires the project engine or a custom preset",
-		          "kind": "unknown-utility",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "Tailwind utility requires the project engine or a custom preset",
-		          "kind": "unknown-utility",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "Tailwind utility requires the project engine or a custom preset",
-		          "kind": "unknown-utility",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "Tailwind utility requires the project engine or a custom preset",
-		          "kind": "unknown-utility",
+		          "hint": "canonical CSS differs or has residuals",
+		          "kind": "validation",
 		          "preserved": undefined,
 		        },
 		      ],
 		      "skipped": 1,
-		      "validations": [],
-		    },
-		    "reverse": {
-		      "changed": false,
-		      "code": "import "tailwindcss";
-		export const App = () => // pandwind:migrate-skip (route: tailwind -> react-native | parse-residual: unknown-utility | available: named-map, residual)
-		<div className="flex gap-4 p-4 text-brand" />;",
-		      "converted": 0,
-		      "outcomes": [],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [],
+		      "validations": [
+		        {
+		          "differences": [
+		            "canonical CSS differs or has residuals",
+		          ],
+		          "lossiness": "lossy",
+		          "valid": false,
+		        },
+		      ],
 		    },
 		  },
 		}
-	`);
+	`)
 });
 
-test("tailwind -> react-native -> tailwind: resolves token references across both concrete legs", () => {
-	const first = forward.run({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
+test("tailwind -> react-native -> tailwind: resolves token values across both concrete legs", async () => {
+	const first = await forward.runAsync({ source: tokenSource, file: "App.tsx", semantic: blueSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "styles.ts", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Tailwind, CodemodAdapterId.ReactNative);
+	expectRouteScenarioEvidence(first, "tailwind -> react-native round-trip token forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
@@ -272,53 +429,87 @@ test("tailwind -> react-native -> tailwind: resolves token references across bot
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import "tailwindcss";
-		export const App = () => // pandwind:migrate-skip (route: tailwind -> react-native | parse-residual: unknown-utility | available: named-map, residual)
-		<div className="flex gap-4 p-4 text-brand" />;",
+		    "code": "import { StyleSheet, View } from "react-native";
+		export const App = () => <View   style={StyleSheet.create({ style: { "padding": 18, "color": "#2563eb" } }).style}/>;",
+		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		          "react-native-numeric-normalization",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "import { StyleSheet, View } from "react-native";
+		export const App = () => <View   style={// pandwind:migrate-skip (route: react-native -> tailwind | lowering-residual: validation)
+		StyleSheet.create({ style: { "padding": 18, "color": "#2563eb" } }).style}/>;",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "named-map",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "residual",
+		        "representation": "named-map",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "Tailwind utility requires the project engine or a custom preset",
-		        "kind": "unknown-utility",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "Tailwind utility requires the project engine or a custom preset",
-		        "kind": "unknown-utility",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "Tailwind utility requires the project engine or a custom preset",
-		        "kind": "unknown-utility",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "Tailwind utility requires the project engine or a custom preset",
-		        "kind": "unknown-utility",
+		        "hint": "canonical CSS differs or has residuals",
+		        "kind": "validation",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 1,
-		    "validations": [],
-		  },
-		  "reverse": {
-		    "changed": false,
-		    "code": "import "tailwindcss";
-		export const App = () => // pandwind:migrate-skip (route: tailwind -> react-native | parse-residual: unknown-utility | available: named-map, residual)
-		<div className="flex gap-4 p-4 text-brand" />;",
-		    "converted": 0,
-		    "outcomes": [],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [],
+		    "validations": [
+		      {
+		        "differences": [
+		          "canonical CSS differs or has residuals",
+		        ],
+		        "lossiness": "lossy",
+		        "valid": false,
+		      },
+		    ],
 		  },
 		}
-	`);
+	`)
 });
 

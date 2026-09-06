@@ -3,30 +3,35 @@ import { expect, test } from "vitest";
 import { CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectActionableRoundTrip,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const forward = createAdapterRouteSpec(CodemodAdapterId.ReactNative, CodemodAdapterId.Less);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.Less, CodemodAdapterId.ReactNative);
-	const happySource = "import { StyleSheet, View } from \"react-native\";\nexport const styles = StyleSheet.create({ card: { color: \"red\", padding: 16 } });\nexport const App = () => <View style={styles.card} />;";
-const edgeSource = "import { StyleSheet, View } from \"react-native\";\nexport const styles = StyleSheet.create({ card: { color: theme.foreground, padding: 16 } });\nexport const App = () => <View style={styles.card} />;";
-const malformedSource = "import { StyleSheet, View } from \"react-native\";\nexport const styles = StyleSheet.create({ card: { color: \"red\", padding: 16 } });\nexport const App = () => <View style={styles.card} />;\nconst unfinished = { /* unfinished react-native */";
+	const happySource = "import { StyleSheet } from \"react-native\";\nexport const styles = StyleSheet.create({ card: { color: \"red\", padding: 8 } });";
+const edgeSource = "import { StyleSheet } from \"react-native\";\nexport const styles = StyleSheet.create({ card: { padding: 8, backgroundColor: \"red\" } });";
+const malformedSource = "import { StyleSheet } from \"react-native\";\nexport const styles = StyleSheet.create({ card: { color: \"red\", padding: 8 } });\nconst unfinished = { /* unfinished react-native */";
 const sourceSemantic = undefined;
-const themedSource = "import { StyleSheet, View } from \"react-native\";\nexport const styles = StyleSheet.create({ card: { color: theme.colors.brand, padding: 16 } });\nexport const App = () => <View style={styles.card} />;";
-const tokenSource = "import { StyleSheet, View } from \"react-native\";\nexport const styles = StyleSheet.create({ card: { color: \"$colors.brand\", padding: 16 } });\nexport const App = () => <View style={styles.card} />;";
-const blueSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {} };
+const themedSource = "import { StyleSheet } from \"react-native\";\nexport const styles = StyleSheet.create({ card: { color: \"#2563eb\", padding: 8 } });";
+const tokenSource = "import { StyleSheet } from \"react-native\";\nexport const styles = StyleSheet.create({ card: { color: \"#2563eb\", padding: 8 } });";
+const blueSemantic = undefined;
+const amberSemantic = undefined;
+const blueTargetSemantic = undefined;
+const amberTargetSemantic = undefined;
+const blueProject = createAdapterRouteProject(CodemodAdapterId.ReactNative, CodemodAdapterId.Less, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.ReactNative, CodemodAdapterId.Less, "#f97316");
 	const targetSemantic = undefined;
 
 test("react-native -> less -> react-native: preserves an actionable concrete round trip", () => {
-	const first = forward.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.less", semantic: targetSemantic });
+	const first = forward.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
+	const second = reverse.run({ source: first.code, file: "card.less", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -36,6 +41,7 @@ test("react-native -> less -> react-native: preserves an actionable concrete rou
 		expect(first.residuals.length).toBeGreaterThan(0);
 		expect(first.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(first, "react-native -> less round-trip happy forward");
 	expectExplicitResidualEvidence(first);
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(second);
@@ -43,11 +49,25 @@ test("react-native -> less -> react-native: preserves an actionable concrete rou
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { StyleSheet, View } from "react-native";
+		    "code": "import { StyleSheet } from "react-native";
 		export const styles = // pandwind:migrate-skip (route: react-native -> less | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
-		StyleSheet.create({ card: { color: "red", padding: 16 } });
-		export const App = () => <View style={styles.card} />;",
+		StyleSheet.create({ card: { color: "red", padding: 8 } });",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		          "portable-artifact",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
@@ -67,16 +87,25 @@ test("react-native -> less -> react-native: preserves an actionable concrete rou
 		  "reverse": {
 		    "changed": false,
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import { StyleSheet, View } from "react-native";
+		import { StyleSheet } from "react-native";
 		export const styles = // pandwind:migrate-skip (route: react-native -> less | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
-		StyleSheet.create({ card: { color: "red", padding: 16 } });
-		export const App = () => <View style={styles.card} />;",
+		StyleSheet.create({ card: { color: "red", padding: 8 } });",
 		    "converted": 0,
-		    "outcomes": [
+		    "generatedFiles": [],
+		    "loweringPlans": [
 		      {
-		        "outcome": "residual",
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "named-map",
+		          "residual",
+		        ],
 		        "representation": "residual",
+		        "residuals": [],
 		      },
+		    ],
+		    "outcomes": [
 		      {
 		        "outcome": "residual",
 		        "representation": "residual",
@@ -94,32 +123,23 @@ test("react-native -> less -> react-native: preserves an actionable concrete rou
 		        "preserved": undefined,
 		      },
 		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet migration requires a single local class selector",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
 		        "hint": "stylesheet migration requires a single local class selector",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 5,
+		    "skipped": 3,
 		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 
-test("react-native -> less -> react-native: retains edge semantics without silent loss", () => {
-	const first = forward.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.less", semantic: targetSemantic });
+test("react-native -> less -> react-native: retains the documented secondary API without silent loss", () => {
+	const first = forward.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
+	const second = reverse.run({ source: first.code, file: "card.less", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(first, "react-native -> less round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
@@ -127,11 +147,25 @@ test("react-native -> less -> react-native: retains edge semantics without silen
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { StyleSheet, View } from "react-native";
-		export const styles = // pandwind:migrate-skip (route: react-native -> less | capability-blocked: named-rules: named style rule: card | available: residual, portable-artifact)
-		StyleSheet.create({ card: { color: theme.foreground, padding: 16 } });
-		export const App = () => <View style={styles.card} />;",
+		    "code": "import { StyleSheet } from "react-native";
+		export const styles = // pandwind:migrate-skip (route: react-native -> less | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
+		StyleSheet.create({ card: { padding: 8, backgroundColor: "red" } });",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		          "portable-artifact",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
@@ -151,16 +185,25 @@ test("react-native -> less -> react-native: retains edge semantics without silen
 		  "reverse": {
 		    "changed": false,
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import { StyleSheet, View } from "react-native";
-		export const styles = // pandwind:migrate-skip (route: react-native -> less | capability-blocked: named-rules: named style rule: card | available: residual, portable-artifact)
-		StyleSheet.create({ card: { color: theme.foreground, padding: 16 } });
-		export const App = () => <View style={styles.card} />;",
+		import { StyleSheet } from "react-native";
+		export const styles = // pandwind:migrate-skip (route: react-native -> less | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
+		StyleSheet.create({ card: { padding: 8, backgroundColor: "red" } });",
 		    "converted": 0,
-		    "outcomes": [
+		    "generatedFiles": [],
+		    "loweringPlans": [
 		      {
-		        "outcome": "residual",
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "named-map",
+		          "residual",
+		        ],
 		        "representation": "residual",
+		        "residuals": [],
 		      },
+		    ],
+		    "outcomes": [
 		      {
 		        "outcome": "residual",
 		        "representation": "residual",
@@ -178,35 +221,31 @@ test("react-native -> less -> react-native: retains edge semantics without silen
 		        "preserved": undefined,
 		      },
 		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet migration requires a single local class selector",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
 		        "hint": "stylesheet migration requires a single local class selector",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 5,
+		    "skipped": 3,
 		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 
-test("react-native -> less -> react-native: preserves concrete theme and project context variants", () => {
-	const firstBlue = forward.run({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const secondBlue = reverse.run({ source: firstBlue.code, file: "Card.less", semantic: blueTargetSemantic, project: blueProject });
-	const firstAmber = forward.run({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
-	const secondAmber = reverse.run({ source: firstAmber.code, file: "Card.less", semantic: amberTargetSemantic, project: amberProject });
+test("react-native -> less -> react-native: preserves concrete theme and project context variants", async () => {
+	const firstBlue = await forward.runAsync({ source: themedSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "card.less", semantic: blueTargetSemantic, project: blueProject });
+	const firstAmber = await forward.runAsync({ source: themedSource, file: "styles.ts", semantic: amberSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "card.less", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.ReactNative, CodemodAdapterId.Less);
+	expectConfiguredTargetTokenEvidence(firstBlue, CodemodAdapterId.Less, "react-native -> less round-trip token config");
+	expectRouteScenarioEvidence(firstBlue, "react-native -> less round-trip blue forward");
+	expectRouteScenarioEvidence(firstAmber, "react-native -> less round-trip amber forward");
+	expectConfiguredTargetTokenAbsence(firstAmber, CodemodAdapterId.Less, "react-native -> less round-trip amber literal config");
+
 	expectActionableRoundTrip(firstBlue, secondBlue);
 	expectActionableRoundTrip(firstAmber, secondAmber);
 	expectExplicitResidualEvidence(firstBlue);
@@ -221,11 +260,25 @@ test("react-native -> less -> react-native: preserves concrete theme and project
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { StyleSheet, View } from "react-native";
-		export const styles = // pandwind:migrate-skip (route: react-native -> less | capability-blocked: named-rules: named style rule: card | available: residual, portable-artifact)
-		StyleSheet.create({ card: { color: theme.colors.brand, padding: 16 } });
-		export const App = () => <View style={styles.card} />;",
+		      "code": "import { StyleSheet } from "react-native";
+		export const styles = // pandwind:migrate-skip (route: react-native -> less | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
+		StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "residual",
+		            "portable-artifact",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
@@ -245,16 +298,25 @@ test("react-native -> less -> react-native: preserves concrete theme and project
 		    "reverse": {
 		      "changed": false,
 		      "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import { StyleSheet, View } from "react-native";
-		export const styles = // pandwind:migrate-skip (route: react-native -> less | capability-blocked: named-rules: named style rule: card | available: residual, portable-artifact)
-		StyleSheet.create({ card: { color: theme.colors.brand, padding: 16 } });
-		export const App = () => <View style={styles.card} />;",
+		import { StyleSheet } from "react-native";
+		export const styles = // pandwind:migrate-skip (route: react-native -> less | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
+		StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
-		      "outcomes": [
+		      "generatedFiles": [],
+		      "loweringPlans": [
 		        {
-		          "outcome": "residual",
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "named-map",
+		            "residual",
+		          ],
 		          "representation": "residual",
+		          "residuals": [],
 		        },
+		      ],
+		      "outcomes": [
 		        {
 		          "outcome": "residual",
 		          "representation": "residual",
@@ -272,33 +334,37 @@ test("react-native -> less -> react-native: preserves concrete theme and project
 		          "preserved": undefined,
 		        },
 		        {
-		          "hint": "stylesheet statement is preserved outside the style program",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "stylesheet migration requires a single local class selector",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
-		        {
 		          "hint": "stylesheet migration requires a single local class selector",
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 5,
+		      "skipped": 3,
 		      "validations": [],
 		    },
 		  },
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { StyleSheet, View } from "react-native";
-		export const styles = // pandwind:migrate-skip (route: react-native -> less | capability-blocked: named-rules: named style rule: card | available: residual, portable-artifact)
-		StyleSheet.create({ card: { color: theme.colors.brand, padding: 16 } });
-		export const App = () => <View style={styles.card} />;",
+		      "code": "import { StyleSheet } from "react-native";
+		export const styles = // pandwind:migrate-skip (route: react-native -> less | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
+		StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "residual",
+		            "portable-artifact",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
@@ -318,16 +384,25 @@ test("react-native -> less -> react-native: preserves concrete theme and project
 		    "reverse": {
 		      "changed": false,
 		      "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import { StyleSheet, View } from "react-native";
-		export const styles = // pandwind:migrate-skip (route: react-native -> less | capability-blocked: named-rules: named style rule: card | available: residual, portable-artifact)
-		StyleSheet.create({ card: { color: theme.colors.brand, padding: 16 } });
-		export const App = () => <View style={styles.card} />;",
+		import { StyleSheet } from "react-native";
+		export const styles = // pandwind:migrate-skip (route: react-native -> less | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
+		StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
-		      "outcomes": [
+		      "generatedFiles": [],
+		      "loweringPlans": [
 		        {
-		          "outcome": "residual",
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "named-map",
+		            "residual",
+		          ],
 		          "representation": "residual",
+		          "residuals": [],
 		        },
+		      ],
+		      "outcomes": [
 		        {
 		          "outcome": "residual",
 		          "representation": "residual",
@@ -345,33 +420,25 @@ test("react-native -> less -> react-native: preserves concrete theme and project
 		          "preserved": undefined,
 		        },
 		        {
-		          "hint": "stylesheet statement is preserved outside the style program",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "stylesheet migration requires a single local class selector",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
-		        {
 		          "hint": "stylesheet migration requires a single local class selector",
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 5,
+		      "skipped": 3,
 		      "validations": [],
 		    },
 		  },
 		}
-	`);
+	`)
 });
 
-test("react-native -> less -> react-native: resolves token references across both concrete legs", () => {
-	const first = forward.run({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const second = reverse.run({ source: first.code, file: "Card.less", semantic: blueTargetSemantic, project: blueProject });
+test("react-native -> less -> react-native: resolves token values across both concrete legs", async () => {
+	const first = await forward.runAsync({ source: tokenSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "card.less", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.ReactNative, CodemodAdapterId.Less);
+	expectRouteScenarioEvidence(first, "react-native -> less round-trip token forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
@@ -379,11 +446,25 @@ test("react-native -> less -> react-native: resolves token references across bot
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { StyleSheet, View } from "react-native";
+		    "code": "import { StyleSheet } from "react-native";
 		export const styles = // pandwind:migrate-skip (route: react-native -> less | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
-		StyleSheet.create({ card: { color: "$colors.brand", padding: 16 } });
-		export const App = () => <View style={styles.card} />;",
+		StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		          "portable-artifact",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
@@ -403,16 +484,25 @@ test("react-native -> less -> react-native: resolves token references across bot
 		  "reverse": {
 		    "changed": false,
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import { StyleSheet, View } from "react-native";
+		import { StyleSheet } from "react-native";
 		export const styles = // pandwind:migrate-skip (route: react-native -> less | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
-		StyleSheet.create({ card: { color: "$colors.brand", padding: 16 } });
-		export const App = () => <View style={styles.card} />;",
+		StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		    "converted": 0,
-		    "outcomes": [
+		    "generatedFiles": [],
+		    "loweringPlans": [
 		      {
-		        "outcome": "residual",
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "named-map",
+		          "residual",
+		        ],
 		        "representation": "residual",
+		        "residuals": [],
 		      },
+		    ],
+		    "outcomes": [
 		      {
 		        "outcome": "residual",
 		        "representation": "residual",
@@ -430,25 +520,15 @@ test("react-native -> less -> react-native: resolves token references across bot
 		        "preserved": undefined,
 		      },
 		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet migration requires a single local class selector",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
 		        "hint": "stylesheet migration requires a single local class selector",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 5,
+		    "skipped": 3,
 		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 

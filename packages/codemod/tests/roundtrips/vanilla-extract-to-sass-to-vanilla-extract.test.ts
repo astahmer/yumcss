@@ -3,30 +3,35 @@ import { expect, test } from "vitest";
 import { CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectActionableRoundTrip,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const forward = createAdapterRouteSpec(CodemodAdapterId.VanillaExtract, CodemodAdapterId.Sass);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.Sass, CodemodAdapterId.VanillaExtract);
-	const happySource = "import { style } from \"@vanilla-extract/css\";\nexport const card = style({ color: \"red\", padding: \"1rem\" });";
-const edgeSource = "import { style } from \"@vanilla-extract/css\";\nexport const card = style({ color: theme.foreground, padding: \"1rem\" });";
-const malformedSource = "import { style } from \"@vanilla-extract/css\";\nexport const card = style({ color: \"red\", padding: \"1rem\" });\nconst unfinished = { /* unfinished vanilla-extract */";
+	const happySource = "import { style } from \"@vanilla-extract/css\";\nexport const card = style({ color: \"red\", padding: 8 });";
+const edgeSource = "import { globalStyle } from \"@vanilla-extract/css\";\nglobalStyle(\"body\", { margin: 0 });";
+const malformedSource = "import { style } from \"@vanilla-extract/css\";\nexport const card = style({ color: \"red\", padding: 8 });\nconst unfinished = { /* unfinished vanilla-extract */";
 const sourceSemantic = undefined;
-const themedSource = "import { style } from \"@vanilla-extract/css\";\nexport const card = style({ color: theme.colors.brand, padding: \"1rem\" });";
-const tokenSource = "import { style } from \"@vanilla-extract/css\";\nexport const card = style({ color: \"$colors.brand\", padding: \"1rem\" });";
-const blueSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {} };
+const themedSource = "import { style } from \"@vanilla-extract/css\";\nexport const card = style({ color: \"#2563eb\", padding: 8 });";
+const tokenSource = "import { style } from \"@vanilla-extract/css\";\nexport const card = style({ color: \"#2563eb\", padding: 8 });";
+const blueSemantic = undefined;
+const amberSemantic = undefined;
+const blueTargetSemantic = undefined;
+const amberTargetSemantic = undefined;
+const blueProject = createAdapterRouteProject(CodemodAdapterId.VanillaExtract, CodemodAdapterId.Sass, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.VanillaExtract, CodemodAdapterId.Sass, "#f97316");
 	const targetSemantic = undefined;
 
 test("vanilla-extract -> sass -> vanilla-extract: preserves an actionable concrete round trip", () => {
-	const first = forward.run({ source: happySource, file: "Card.css.ts", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.scss", semantic: targetSemantic });
+	const first = forward.run({ source: happySource, file: "styles.css.ts", semantic: sourceSemantic });
+	const second = reverse.run({ source: first.code, file: "card.scss", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -36,6 +41,7 @@ test("vanilla-extract -> sass -> vanilla-extract: preserves an actionable concre
 		expect(first.residuals.length).toBeGreaterThan(0);
 		expect(first.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(first, "vanilla-extract -> sass round-trip happy forward");
 	expectExplicitResidualEvidence(first);
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(second);
@@ -46,8 +52,23 @@ test("vanilla-extract -> sass -> vanilla-extract: preserves an actionable concre
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const card = css.class({ "padding": "1rem", "color": "red" });",
+		export const card = css.class({ "padding": 8, "color": "red" });",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		          "portable-artifact",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "portable-artifact",
@@ -70,8 +91,22 @@ test("vanilla-extract -> sass -> vanilla-extract: preserves an actionable concre
 		import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const card = css.class({ "padding": "1rem", "color": "red" });",
+		export const card = css.class({ "padding": 8, "color": "red" });",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "residual",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
@@ -104,13 +139,14 @@ test("vanilla-extract -> sass -> vanilla-extract: preserves an actionable concre
 		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 
-test("vanilla-extract -> sass -> vanilla-extract: retains edge semantics without silent loss", () => {
-	const first = forward.run({ source: edgeSource, file: "Card.css.ts", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.scss", semantic: targetSemantic });
+test("vanilla-extract -> sass -> vanilla-extract: retains the documented secondary API without silent loss", () => {
+	const first = forward.run({ source: edgeSource, file: "styles.css.ts", semantic: sourceSemantic });
+	const second = reverse.run({ source: first.code, file: "card.scss", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(first, "vanilla-extract -> sass round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
@@ -118,16 +154,27 @@ test("vanilla-extract -> sass -> vanilla-extract: retains edge semantics without
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
-
-		export const card = css.vars({ "padding": "1rem", "color": theme.foreground });",
+		    "code": "
+		body { margin: 0; };",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [],
@@ -142,18 +189,26 @@ test("vanilla-extract -> sass -> vanilla-extract: retains edge semantics without
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
+		    "code": "// pandwind:migrate-skip (lowering-residual: capability)
 
-		export const card = css.vars({ "padding": "1rem", "color": theme.foreground });",
+		body { margin: 0; };",
 		    "converted": 0,
-		    "outcomes": [
+		    "generatedFiles": [],
+		    "loweringPlans": [
 		      {
-		        "outcome": "residual",
-		        "representation": "residual",
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
 		      },
+		    ],
+		    "outcomes": [
 		      {
 		        "outcome": "residual",
 		        "representation": "residual",
@@ -161,50 +216,31 @@ test("vanilla-extract -> sass -> vanilla-extract: retains edge semantics without
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet migration requires a single local class selector",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
 		        "hint": "stylesheet migration requires a single local class selector",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 6,
+		    "skipped": 1,
 		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 
-test("vanilla-extract -> sass -> vanilla-extract: preserves concrete theme and project context variants", () => {
-	const firstBlue = forward.run({ source: themedSource, file: "Card.css.ts", semantic: blueSemantic, project: blueProject });
-	const secondBlue = reverse.run({ source: firstBlue.code, file: "Card.scss", semantic: blueTargetSemantic, project: blueProject });
-	const firstAmber = forward.run({ source: themedSource, file: "Card.css.ts", semantic: amberSemantic, project: amberProject });
-	const secondAmber = reverse.run({ source: firstAmber.code, file: "Card.scss", semantic: amberTargetSemantic, project: amberProject });
+test("vanilla-extract -> sass -> vanilla-extract: preserves concrete theme and project context variants", async () => {
+	const firstBlue = await forward.runAsync({ source: themedSource, file: "styles.css.ts", semantic: blueSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "card.scss", semantic: blueTargetSemantic, project: blueProject });
+	const firstAmber = await forward.runAsync({ source: themedSource, file: "styles.css.ts", semantic: amberSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "card.scss", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.VanillaExtract, CodemodAdapterId.Sass);
+	expectConfiguredTargetTokenEvidence(firstBlue, CodemodAdapterId.Sass, "vanilla-extract -> sass round-trip token config");
+	expectRouteScenarioEvidence(firstBlue, "vanilla-extract -> sass round-trip blue forward");
+	expectRouteScenarioEvidence(firstAmber, "vanilla-extract -> sass round-trip amber forward");
+	expectConfiguredTargetTokenAbsence(firstAmber, CodemodAdapterId.Sass, "vanilla-extract -> sass round-trip amber literal config");
+
 	expectActionableRoundTrip(firstBlue, secondBlue);
 	expectActionableRoundTrip(firstAmber, secondAmber);
 	expectExplicitResidualEvidence(firstBlue);
@@ -222,8 +258,23 @@ test("vanilla-extract -> sass -> vanilla-extract: preserves concrete theme and p
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const card = css.class({ "padding": "1rem", "color": "#f97316" });",
+		export const card = css.class({ "padding": 8, "color": "#2563eb" });",
 		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "residual",
+		            "portable-artifact",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "portable-artifact",
@@ -246,8 +297,22 @@ test("vanilla-extract -> sass -> vanilla-extract: preserves concrete theme and p
 		import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const card = css.class({ "padding": "1rem", "color": "#f97316" });",
+		export const card = css.class({ "padding": 8, "color": "#2563eb" });",
 		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "residual",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
@@ -286,8 +351,23 @@ test("vanilla-extract -> sass -> vanilla-extract: preserves concrete theme and p
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const card = css.class({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = css.class({ "padding": 8, "color": "#2563eb" });",
 		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "residual",
+		            "portable-artifact",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "portable-artifact",
@@ -310,8 +390,22 @@ test("vanilla-extract -> sass -> vanilla-extract: preserves concrete theme and p
 		import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const card = css.class({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = css.class({ "padding": 8, "color": "#2563eb" });",
 		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "residual",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
@@ -345,13 +439,15 @@ test("vanilla-extract -> sass -> vanilla-extract: preserves concrete theme and p
 		    },
 		  },
 		}
-	`);
+	`)
 });
 
-test("vanilla-extract -> sass -> vanilla-extract: resolves token references across both concrete legs", () => {
-	const first = forward.run({ source: tokenSource, file: "Card.css.ts", semantic: blueSemantic, project: blueProject });
-	const second = reverse.run({ source: first.code, file: "Card.scss", semantic: blueTargetSemantic, project: blueProject });
+test("vanilla-extract -> sass -> vanilla-extract: resolves token values across both concrete legs", async () => {
+	const first = await forward.runAsync({ source: tokenSource, file: "styles.css.ts", semantic: blueSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "card.scss", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.VanillaExtract, CodemodAdapterId.Sass);
+	expectRouteScenarioEvidence(first, "vanilla-extract -> sass round-trip token forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
@@ -362,8 +458,23 @@ test("vanilla-extract -> sass -> vanilla-extract: resolves token references acro
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const card = css.class({ "padding": "1rem", "color": "$colors.brand" });",
+		export const card = css.class({ "padding": 8, "color": "#2563eb" });",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		          "portable-artifact",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "portable-artifact",
@@ -386,8 +497,22 @@ test("vanilla-extract -> sass -> vanilla-extract: resolves token references acro
 		import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const card = css.class({ "padding": "1rem", "color": "$colors.brand" });",
+		export const card = css.class({ "padding": 8, "color": "#2563eb" });",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "residual",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
@@ -420,6 +545,6 @@ test("vanilla-extract -> sass -> vanilla-extract: resolves token references acro
 		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 

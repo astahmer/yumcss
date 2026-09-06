@@ -262,7 +262,9 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 function mantineThemeCandidate(value: unknown): Record<string, unknown> | undefined {
 	if (!isRecord(value)) return undefined;
-	return ["spacing", "fontSizes", "lineHeights", "colors", "radius", "shadows", "headings"].some(
+	// `spacing` is also a common MUI theme field. Require a Mantine-owned
+	// collection so a shared theme module cannot be claimed by the wrong loader.
+	return ["fontSizes", "lineHeights", "colors", "radius", "shadows", "headings"].some(
 		(key) => value[key] !== undefined,
 	)
 		? value

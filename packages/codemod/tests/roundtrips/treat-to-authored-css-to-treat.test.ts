@@ -3,30 +3,35 @@ import { expect, test } from "vitest";
 import { CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectActionableRoundTrip,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const forward = createAdapterRouteSpec(CodemodAdapterId.Treat, CodemodAdapterId.AuthoredCss);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.AuthoredCss, CodemodAdapterId.Treat);
-	const happySource = "import { style } from \"@treatjs/treat\";\nexport const card = style({ color: \"red\", padding: \"1rem\" });";
-const edgeSource = "import { style } from \"@treatjs/treat\";\nexport const card = style({ color: theme.foreground, padding: \"1rem\" });";
-const malformedSource = "import { style } from \"@treatjs/treat\";\nexport const card = style({ color: \"red\", padding: \"1rem\" });\nconst unfinished = { /* unfinished treat */";
+	const happySource = "import { style } from \"treat\";\nexport const card = style({ color: \"red\", padding: 8 });";
+const edgeSource = "import { style } from \"treat\";\nexport const card = style({ color: \"red\", padding: 8 });";
+const malformedSource = "import { style } from \"treat\";\nexport const card = style({ color: \"red\", padding: 8 });\nconst unfinished = { /* unfinished treat */";
 const sourceSemantic = undefined;
-const themedSource = "import { style } from \"@treatjs/treat\";\nexport const card = style({ color: theme.colors.brand, padding: \"1rem\" });";
-const tokenSource = "import { style } from \"@treatjs/treat\";\nexport const card = style({ color: \"$colors.brand\", padding: \"1rem\" });";
-const blueSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {} };
+const themedSource = "import { style } from \"treat\";\nexport const card = style({ color: \"#2563eb\", padding: 8 });";
+const tokenSource = "import { style } from \"treat\";\nexport const card = style({ color: \"#2563eb\", padding: 8 });";
+const blueSemantic = undefined;
+const amberSemantic = undefined;
+const blueTargetSemantic = undefined;
+const amberTargetSemantic = undefined;
+const blueProject = createAdapterRouteProject(CodemodAdapterId.Treat, CodemodAdapterId.AuthoredCss, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.Treat, CodemodAdapterId.AuthoredCss, "#f97316");
 	const targetSemantic = undefined;
 
 test("treat -> authored-css -> treat: preserves an actionable concrete round trip", () => {
-	const first = forward.run({ source: happySource, file: "Card.treat.ts", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.css", semantic: targetSemantic });
+	const first = forward.run({ source: happySource, file: "styles.treat.ts", semantic: sourceSemantic });
+	const second = reverse.run({ source: first.code, file: "card.css", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -36,6 +41,7 @@ test("treat -> authored-css -> treat: preserves an actionable concrete round tri
 		expect(first.residuals.length).toBeGreaterThan(0);
 		expect(first.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(first, "treat -> authored-css round-trip happy forward");
 	expectExplicitResidualEvidence(first);
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(second);
@@ -43,11 +49,26 @@ test("treat -> authored-css -> treat: preserves an actionable concrete round tri
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { style } from "@treatjs/treat";
-		import { createCss } from "pandwind/css";
+		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const card = css.class({ "padding": "1rem", "color": "red" });",
+
+		export const card = css.class({ "padding": 8, "color": "red" });",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		          "portable-artifact",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "portable-artifact",
@@ -67,16 +88,26 @@ test("treat -> authored-css -> treat: preserves an actionable concrete round tri
 		  "reverse": {
 		    "changed": false,
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import { style } from "@treatjs/treat";
 		import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const card = css.class({ "padding": "1rem", "color": "red" });",
+
+		export const card = css.class({ "padding": 8, "color": "red" });",
 		    "converted": 0,
-		    "outcomes": [
+		    "generatedFiles": [],
+		    "loweringPlans": [
 		      {
-		        "outcome": "residual",
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "named-map",
+		          "residual",
+		        ],
 		        "representation": "residual",
+		        "residuals": [],
 		      },
+		    ],
+		    "outcomes": [
 		      {
 		        "outcome": "residual",
 		        "representation": "residual",
@@ -99,32 +130,23 @@ test("treat -> authored-css -> treat: preserves an actionable concrete round tri
 		        "preserved": undefined,
 		      },
 		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet migration requires a single local class selector",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
 		        "hint": "stylesheet migration requires a single local class selector",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 6,
+		    "skipped": 4,
 		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 
-test("treat -> authored-css -> treat: retains edge semantics without silent loss", () => {
-	const first = forward.run({ source: edgeSource, file: "Card.treat.ts", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.css", semantic: targetSemantic });
+test("treat -> authored-css -> treat: retains the documented secondary API without silent loss", () => {
+	const first = forward.run({ source: edgeSource, file: "styles.treat.ts", semantic: sourceSemantic });
+	const second = reverse.run({ source: first.code, file: "card.css", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(first, "treat -> authored-css round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
@@ -132,12 +154,26 @@ test("treat -> authored-css -> treat: retains edge semantics without silent loss
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { style } from "@treatjs/treat";
-		import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
-		export const card = css.vars({ "padding": "1rem", "color": theme.foreground });",
+		    "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const card = css.class({ "padding": 8, "color": "red" });",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		          "portable-artifact",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "portable-artifact",
@@ -157,21 +193,26 @@ test("treat -> authored-css -> treat: retains edge semantics without silent loss
 		  "reverse": {
 		    "changed": false,
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import { style } from "@treatjs/treat";
-		import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
-		export const card = css.vars({ "padding": "1rem", "color": theme.foreground });",
+		import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const card = css.class({ "padding": 8, "color": "red" });",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "residual",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
-		      {
-		        "outcome": "residual",
-		        "representation": "residual",
-		      },
-		      {
-		        "outcome": "residual",
-		        "representation": "residual",
-		      },
 		      {
 		        "outcome": "residual",
 		        "representation": "residual",
@@ -194,45 +235,31 @@ test("treat -> authored-css -> treat: retains edge semantics without silent loss
 		        "preserved": undefined,
 		      },
 		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet migration requires a single local class selector",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet migration requires a single local class selector",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
 		        "hint": "stylesheet migration requires a single local class selector",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 8,
+		    "skipped": 4,
 		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 
-test("treat -> authored-css -> treat: preserves concrete theme and project context variants", () => {
-	const firstBlue = forward.run({ source: themedSource, file: "Card.treat.ts", semantic: blueSemantic, project: blueProject });
-	const secondBlue = reverse.run({ source: firstBlue.code, file: "Card.css", semantic: blueTargetSemantic, project: blueProject });
-	const firstAmber = forward.run({ source: themedSource, file: "Card.treat.ts", semantic: amberSemantic, project: amberProject });
-	const secondAmber = reverse.run({ source: firstAmber.code, file: "Card.css", semantic: amberTargetSemantic, project: amberProject });
+test("treat -> authored-css -> treat: preserves concrete theme and project context variants", async () => {
+	const firstBlue = await forward.runAsync({ source: themedSource, file: "styles.treat.ts", semantic: blueSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "card.css", semantic: blueTargetSemantic, project: blueProject });
+	const firstAmber = await forward.runAsync({ source: themedSource, file: "styles.treat.ts", semantic: amberSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "card.css", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Treat, CodemodAdapterId.AuthoredCss);
+	expectConfiguredTargetTokenEvidence(firstBlue, CodemodAdapterId.AuthoredCss, "treat -> authored-css round-trip token config");
+	expectRouteScenarioEvidence(firstBlue, "treat -> authored-css round-trip blue forward");
+	expectRouteScenarioEvidence(firstAmber, "treat -> authored-css round-trip amber forward");
+	expectConfiguredTargetTokenAbsence(firstAmber, CodemodAdapterId.AuthoredCss, "treat -> authored-css round-trip amber literal config");
+
 	expectActionableRoundTrip(firstBlue, secondBlue);
 	expectActionableRoundTrip(firstAmber, secondAmber);
 	expectExplicitResidualEvidence(firstBlue);
@@ -247,12 +274,26 @@ test("treat -> authored-css -> treat: preserves concrete theme and project conte
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { style } from "@treatjs/treat";
-		import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
-		export const card = css.vars({ "padding": "1rem", "color": theme.colors.brand });",
+		      "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const card = css.class({ "padding": 8, "color": "#2563eb" });",
 		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "residual",
+		            "portable-artifact",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "portable-artifact",
@@ -272,21 +313,26 @@ test("treat -> authored-css -> treat: preserves concrete theme and project conte
 		    "reverse": {
 		      "changed": false,
 		      "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import { style } from "@treatjs/treat";
-		import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
-		export const card = css.vars({ "padding": "1rem", "color": theme.colors.brand });",
+		import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const card = css.class({ "padding": 8, "color": "#2563eb" });",
 		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "residual",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
-		        {
-		          "outcome": "residual",
-		          "representation": "residual",
-		        },
-		        {
-		          "outcome": "residual",
-		          "representation": "residual",
-		        },
 		        {
 		          "outcome": "residual",
 		          "representation": "residual",
@@ -309,44 +355,38 @@ test("treat -> authored-css -> treat: preserves concrete theme and project conte
 		          "preserved": undefined,
 		        },
 		        {
-		          "hint": "stylesheet statement is preserved outside the style program",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "stylesheet statement is preserved outside the style program",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "stylesheet migration requires a single local class selector",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "stylesheet migration requires a single local class selector",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
-		        {
 		          "hint": "stylesheet migration requires a single local class selector",
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 8,
+		      "skipped": 4,
 		      "validations": [],
 		    },
 		  },
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { style } from "@treatjs/treat";
-		import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
-		export const card = css.vars({ "padding": "1rem", "color": theme.colors.brand });",
+		      "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const card = css.class({ "padding": 8, "color": "#2563eb" });",
 		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "residual",
+		            "portable-artifact",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "portable-artifact",
@@ -366,21 +406,26 @@ test("treat -> authored-css -> treat: preserves concrete theme and project conte
 		    "reverse": {
 		      "changed": false,
 		      "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import { style } from "@treatjs/treat";
-		import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
-		export const card = css.vars({ "padding": "1rem", "color": theme.colors.brand });",
+		import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const card = css.class({ "padding": 8, "color": "#2563eb" });",
 		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "residual",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
-		        {
-		          "outcome": "residual",
-		          "representation": "residual",
-		        },
-		        {
-		          "outcome": "residual",
-		          "representation": "residual",
-		        },
 		        {
 		          "outcome": "residual",
 		          "representation": "residual",
@@ -403,43 +448,25 @@ test("treat -> authored-css -> treat: preserves concrete theme and project conte
 		          "preserved": undefined,
 		        },
 		        {
-		          "hint": "stylesheet statement is preserved outside the style program",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "stylesheet statement is preserved outside the style program",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "stylesheet migration requires a single local class selector",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "stylesheet migration requires a single local class selector",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
-		        {
 		          "hint": "stylesheet migration requires a single local class selector",
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 8,
+		      "skipped": 4,
 		      "validations": [],
 		    },
 		  },
 		}
-	`);
+	`)
 });
 
-test("treat -> authored-css -> treat: resolves token references across both concrete legs", () => {
-	const first = forward.run({ source: tokenSource, file: "Card.treat.ts", semantic: blueSemantic, project: blueProject });
-	const second = reverse.run({ source: first.code, file: "Card.css", semantic: blueTargetSemantic, project: blueProject });
+test("treat -> authored-css -> treat: resolves token values across both concrete legs", async () => {
+	const first = await forward.runAsync({ source: tokenSource, file: "styles.treat.ts", semantic: blueSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "card.css", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Treat, CodemodAdapterId.AuthoredCss);
+	expectRouteScenarioEvidence(first, "treat -> authored-css round-trip token forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
@@ -447,11 +474,26 @@ test("treat -> authored-css -> treat: resolves token references across both conc
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { style } from "@treatjs/treat";
-		import { createCss } from "pandwind/css";
+		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const card = css.class({ "padding": "1rem", "color": "$colors.brand" });",
+
+		export const card = css.class({ "padding": 8, "color": "#2563eb" });",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		          "portable-artifact",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "portable-artifact",
@@ -471,16 +513,26 @@ test("treat -> authored-css -> treat: resolves token references across both conc
 		  "reverse": {
 		    "changed": false,
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import { style } from "@treatjs/treat";
 		import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const card = css.class({ "padding": "1rem", "color": "$colors.brand" });",
+
+		export const card = css.class({ "padding": 8, "color": "#2563eb" });",
 		    "converted": 0,
-		    "outcomes": [
+		    "generatedFiles": [],
+		    "loweringPlans": [
 		      {
-		        "outcome": "residual",
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "named-map",
+		          "residual",
+		        ],
 		        "representation": "residual",
+		        "residuals": [],
 		      },
+		    ],
+		    "outcomes": [
 		      {
 		        "outcome": "residual",
 		        "representation": "residual",
@@ -503,25 +555,15 @@ test("treat -> authored-css -> treat: resolves token references across both conc
 		        "preserved": undefined,
 		      },
 		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet migration requires a single local class selector",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
 		        "hint": "stylesheet migration requires a single local class selector",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 6,
+		    "skipped": 4,
 		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 

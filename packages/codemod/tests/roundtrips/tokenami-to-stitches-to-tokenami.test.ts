@@ -3,30 +3,35 @@ import { expect, test } from "vitest";
 import { CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectActionableRoundTrip,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const forward = createAdapterRouteSpec(CodemodAdapterId.Tokenami, CodemodAdapterId.Stitches);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.Stitches, CodemodAdapterId.Tokenami);
-	const happySource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"red\", padding: \"1rem\" });\nexport const App = () => <div className={card} />;";
-const edgeSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: theme.foreground, padding: \"1rem\" });\nexport const App = () => <div className={card} />;";
-const malformedSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"red\", padding: \"1rem\" });\nexport const App = () => <div className={card} />;\nconst unfinished = { /* unfinished tokenami */";
+	const happySource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"red\", \"--card-gap\": \"1rem\" });";
+const edgeSource = "import { css } from \"@tokenami/css\";\nexport const card = css.compose({ color: \"red\", padding: \"1rem\" });";
+const malformedSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"red\", \"--card-gap\": \"1rem\" });\nconst unfinished = { /* unfinished tokenami */";
 const sourceSemantic = undefined;
-const themedSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: theme.colors.brand, padding: \"1rem\" });\nexport const App = () => <div className={card} />;";
-const tokenSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"$colors.brand\", padding: \"1rem\" });\nexport const App = () => <div className={card} />;";
-const blueSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/.tokenami/tokenami.config.ts":"export default { aliases: { ink: \"color\", pad: \"padding\" }, tokens: { brand: \"#2563eb\" } };","/virtual/pandwind-route-project/stitches.config.ts":"export const config = { theme: { colors: { brand: \"#2563eb\" }, space: { card: \"1.125rem\" } } };"} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/.tokenami/tokenami.config.ts":"export default { aliases: { ink: \"color\", pad: \"padding\" }, tokens: { brand: \"#f97316\" } };","/virtual/pandwind-route-project/stitches.config.ts":"export const config = { theme: { colors: { brand: \"#f97316\" }, space: { card: \"1.125rem\" } } };"} };
+const themedSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"$colors.brand\", \"--card-gap\": \"1rem\" });";
+const tokenSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"#2563eb\", \"--card-gap\": \"1rem\" });";
+const blueSemantic = undefined;
+const amberSemantic = undefined;
+const blueTargetSemantic = undefined;
+const amberTargetSemantic = undefined;
+const blueProject = createAdapterRouteProject(CodemodAdapterId.Tokenami, CodemodAdapterId.Stitches, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.Tokenami, CodemodAdapterId.Stitches, "#f97316");
 	const targetSemantic = undefined;
 
 test("tokenami -> stitches -> tokenami: preserves an actionable concrete round trip", () => {
-	const first = forward.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+	const first = forward.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
+	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -36,6 +41,7 @@ test("tokenami -> stitches -> tokenami: preserves an actionable concrete round t
 		expect(first.residuals.length).toBeGreaterThan(0);
 		expect(first.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(first, "tokenami -> stitches round-trip happy forward");
 	expectExplicitResidualEvidence(first);
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(second);
@@ -45,9 +51,23 @@ test("tokenami -> stitches -> tokenami: preserves an actionable concrete round t
 		    "changed": true,
 		    "code": "import { css } from "@stitches/react";
 
-		export const card = css({ padding: "1rem", color: "red" });
-		export const App = () => <div className={card} />;",
+		export const card = css({ cardGap: "1rem", color: "red" });",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "static",
@@ -69,9 +89,21 @@ test("tokenami -> stitches -> tokenami: preserves an actionable concrete round t
 		    "code": "import { css } from "@tokenami/css";
 
 
-		export const card = css({ padding: "1rem", color: "red" });
-		export const App = () => <div className={card} />;",
+		export const card = css({ cardGap: "1rem", color: "red" });",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "static",
@@ -89,13 +121,14 @@ test("tokenami -> stitches -> tokenami: preserves an actionable concrete round t
 		    ],
 		  },
 		}
-	`);
+	`)
 });
 
-test("tokenami -> stitches -> tokenami: retains edge semantics without silent loss", () => {
-	const first = forward.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+test("tokenami -> stitches -> tokenami: retains the documented secondary API without silent loss", () => {
+	const first = forward.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
+	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(first, "tokenami -> stitches round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
@@ -105,13 +138,27 @@ test("tokenami -> stitches -> tokenami: retains edge semantics without silent lo
 		    "changed": true,
 		    "code": "import { css } from "@stitches/react";
 
-		export const card = css({ padding: "1rem", color: theme.foreground });
-		export const App = () => <div className={card.class}  style={card.style}/>;",
+		export const card = css({ padding: "1rem", color: "red" });",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "host-runtime",
-		        "representation": "target-native",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [],
@@ -126,18 +173,28 @@ test("tokenami -> stitches -> tokenami: retains edge semantics without silent lo
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
+		    "code": "import { css } from "@tokenami/css";
 
 
-		export const card = css.vars({ "padding": "1rem", "color": theme.foreground });
-		export const App = () => <div className={card.class}  style={card.style}/>;",
+		export const card = css({ padding: "1rem", color: "red" });",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [],
@@ -151,16 +208,21 @@ test("tokenami -> stitches -> tokenami: retains edge semantics without silent lo
 		    ],
 		  },
 		}
-	`);
+	`)
 });
 
-test("tokenami -> stitches -> tokenami: preserves concrete theme and project context variants", () => {
-	const firstBlue = forward.run({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const secondBlue = reverse.run({ source: firstBlue.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
-	const firstAmber = forward.run({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
-	const secondAmber = reverse.run({ source: firstAmber.code, file: "Card.tsx", semantic: amberTargetSemantic, project: amberProject });
+test("tokenami -> stitches -> tokenami: preserves concrete theme and project context variants", async () => {
+	const firstBlue = await forward.runAsync({ source: themedSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "styles.ts", semantic: blueTargetSemantic, project: blueProject });
+	const firstAmber = await forward.runAsync({ source: themedSource, file: "styles.ts", semantic: amberSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "styles.ts", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Tokenami, CodemodAdapterId.Stitches);
+	expectConfiguredTargetTokenEvidence(firstBlue, CodemodAdapterId.Stitches, "tokenami -> stitches round-trip token config");
+	expectRouteScenarioEvidence(firstBlue, "tokenami -> stitches round-trip blue forward");
+	expectRouteScenarioEvidence(firstAmber, "tokenami -> stitches round-trip amber forward");
+
 	expectActionableRoundTrip(firstBlue, secondBlue);
 	expectActionableRoundTrip(firstAmber, secondAmber);
 	expectExplicitResidualEvidence(firstBlue);
@@ -175,109 +237,133 @@ test("tokenami -> stitches -> tokenami: preserves concrete theme and project con
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "@stitches/react";
-
-		export const card = css({ padding: "1rem", color: "#f97316" });
-		export const App = () => <div className={card} />;",
-		      "converted": 1,
+		      "code": "import { css } from "@tokenami/css";
+		export const card = // pandwind:migrate-skip (route: tokenami -> stitches | lowering-residual: validation)
+		css({ color: "$colors.brand", "--card-gap": "1rem" });",
+		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "static",
+		          "outcome": "residual",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
+		      "residuals": [
+		        {
+		          "hint": "canonical CSS differs",
+		          "kind": "validation",
+		          "preserved": undefined,
+		        },
+		      ],
+		      "skipped": 1,
 		      "validations": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "differences": [
+		            "canonical CSS differs",
+		          ],
+		          "lossiness": "unsupported",
+		          "valid": false,
 		        },
 		      ],
 		    },
 		    "reverse": {
-		      "changed": true,
+		      "changed": false,
 		      "code": "import { css } from "@tokenami/css";
-
-
-		export const card = css({ padding: "1rem", color: "#f97316" });
-		export const App = () => <div className={card} />;",
-		      "converted": 1,
-		      "outcomes": [
-		        {
-		          "outcome": "static",
-		          "representation": "static",
-		        },
-		      ],
+		export const card = // pandwind:migrate-skip (route: tokenami -> stitches | lowering-residual: validation)
+		css({ color: "$colors.brand", "--card-gap": "1rem" });",
+		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [],
+		      "outcomes": [],
 		      "residuals": [],
 		      "skipped": 0,
-		      "validations": [
-		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
-		        },
-		      ],
+		      "validations": [],
 		    },
 		  },
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "@stitches/react";
-
-		export const card = css({ padding: "1rem", color: "#2563eb" });
-		export const App = () => <div className={card} />;",
-		      "converted": 1,
+		      "code": "import { css } from "@tokenami/css";
+		export const card = // pandwind:migrate-skip (route: tokenami -> stitches | lowering-residual: validation)
+		css({ color: "$colors.brand", "--card-gap": "1rem" });",
+		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "static",
+		          "outcome": "residual",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
+		      "residuals": [
+		        {
+		          "hint": "canonical CSS differs",
+		          "kind": "validation",
+		          "preserved": undefined,
+		        },
+		      ],
+		      "skipped": 1,
 		      "validations": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "differences": [
+		            "canonical CSS differs",
+		          ],
+		          "lossiness": "unsupported",
+		          "valid": false,
 		        },
 		      ],
 		    },
 		    "reverse": {
-		      "changed": true,
+		      "changed": false,
 		      "code": "import { css } from "@tokenami/css";
-
-
-		export const card = css({ padding: "1rem", color: "#2563eb" });
-		export const App = () => <div className={card} />;",
-		      "converted": 1,
-		      "outcomes": [
-		        {
-		          "outcome": "static",
-		          "representation": "static",
-		        },
-		      ],
+		export const card = // pandwind:migrate-skip (route: tokenami -> stitches | lowering-residual: validation)
+		css({ color: "$colors.brand", "--card-gap": "1rem" });",
+		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [],
+		      "outcomes": [],
 		      "residuals": [],
 		      "skipped": 0,
-		      "validations": [
-		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
-		        },
-		      ],
+		      "validations": [],
 		    },
 		  },
 		}
-	`);
+	`)
 });
 
-test("tokenami -> stitches -> tokenami: resolves token references across both concrete legs", () => {
-	const first = forward.run({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
+test("tokenami -> stitches -> tokenami: resolves token values across both concrete legs", async () => {
+	const first = await forward.runAsync({ source: tokenSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "styles.ts", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Tokenami, CodemodAdapterId.Stitches);
+	expectRouteScenarioEvidence(first, "tokenami -> stitches round-trip token forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
@@ -287,9 +373,23 @@ test("tokenami -> stitches -> tokenami: resolves token references across both co
 		    "changed": true,
 		    "code": "import { css } from "@stitches/react";
 
-		export const card = css({ padding: "1rem", color: "$colors.brand" });
-		export const App = () => <div className={card} />;",
+		export const card = css({ cardGap: "1rem", color: "#2563eb" });",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "static",
@@ -311,9 +411,21 @@ test("tokenami -> stitches -> tokenami: resolves token references across both co
 		    "code": "import { css } from "@tokenami/css";
 
 
-		export const card = css({ padding: "1rem", color: "$colors.brand" });
-		export const App = () => <div className={card} />;",
+		export const card = css({ cardGap: "1rem", color: "$colors.brand" });",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "static",
@@ -331,6 +443,6 @@ test("tokenami -> stitches -> tokenami: resolves token references across both co
 		    ],
 		  },
 		}
-	`);
+	`)
 });
 

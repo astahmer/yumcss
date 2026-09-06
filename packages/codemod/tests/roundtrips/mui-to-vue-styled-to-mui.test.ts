@@ -3,30 +3,35 @@ import { expect, test } from "vitest";
 import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectActionableRoundTrip,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const forward = createAdapterRouteSpec(CodemodAdapterId.Mui, CodemodAdapterId.VueStyled);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.VueStyled, CodemodAdapterId.Mui);
 	const happySource = "import { Box } from \"@mui/material\";\nexport const App = () => <Box sx={{ color: \"red\", p: 2 }} />;";
-const edgeSource = "import { Box } from \"@mui/material\";\nexport const App = () => <Box sx={{ color: theme.foreground, p: 2 }} />;";
+const edgeSource = "import { styled } from \"@mui/system\";\nexport const Card = styled(\"div\")({ color: \"red\", padding: 8 });";
 const malformedSource = "import { Box } from \"@mui/material\";\nexport const App = () => <Box sx={{ color: \"red\", p: 2 }} />;\nconst unfinished = { /* unfinished mui */";
 const sourceSemantic = { source: { framework: BuiltinHostFramework.React } };
-const themedSource = "import { Box } from \"@mui/material\";\nexport const App = () => <Box sx={{ color: theme.palette.primary.main, p: 2 }} />;";
-const tokenSource = "import { Box } from \"@mui/material\";\nexport const App = () => <Box sx={{ color: \"primary.main\", p: 2 }} />;";
-const blueSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "palette.primary.main", authored: "theme.palette.primary.main", resolved: "#2563eb" }] };
-const amberSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "palette.primary.main", authored: "theme.palette.primary.main", resolved: "#f97316" }] };
-const blueTargetSemantic = { source: { framework: BuiltinHostFramework.Vue }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { source: { framework: BuiltinHostFramework.Vue }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/src/theme.ts":"export const muiTheme = { palette: { primary: { main: \"#2563eb\" } } };"} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/src/theme.ts":"export const muiTheme = { palette: { primary: { main: \"#f97316\" } } };"} };
+const themedSource = "import { Box } from \"@mui/material\";\nexport const App = () => <Box sx={{ color: \"primary.main\", p: 2 }} />;";
+const tokenSource = "import { Box } from \"@mui/material\";\nexport const App = () => <Box sx={{ color: \"#2563eb\", p: 2 }} />;";
+const blueSemantic = { source: { framework: BuiltinHostFramework.React } };
+const amberSemantic = { source: { framework: BuiltinHostFramework.React } };
+const blueTargetSemantic = { source: { framework: BuiltinHostFramework.Vue } };
+const amberTargetSemantic = { source: { framework: BuiltinHostFramework.Vue } };
+const blueProject = createAdapterRouteProject(CodemodAdapterId.Mui, CodemodAdapterId.VueStyled, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.Mui, CodemodAdapterId.VueStyled, "#f97316");
 	const targetSemantic = { source: { framework: BuiltinHostFramework.Vue } };
 
 test("mui -> vue-styled -> mui: preserves an actionable concrete round trip", () => {
-	const first = forward.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.vue", semantic: targetSemantic });
+	const first = forward.run({ source: happySource, file: "App.tsx", semantic: sourceSemantic });
+	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -36,6 +41,7 @@ test("mui -> vue-styled -> mui: preserves an actionable concrete round trip", ()
 		expect(first.residuals.length).toBeGreaterThan(0);
 		expect(first.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(first, "mui -> vue-styled round-trip happy forward");
 	expectExplicitResidualEvidence(first);
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(second);
@@ -47,6 +53,21 @@ test("mui -> vue-styled -> mui: preserves an actionable concrete round trip", ()
 		import styled from "vue-styled-components";
 		export const App = () => styled.div({ "padding": "16px", "color": "red" });",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "static",
@@ -70,6 +91,19 @@ test("mui -> vue-styled -> mui: preserves an actionable concrete round trip", ()
 		export const App = () => // pandwind:migrate-skip (route: vue-styled -> mui | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
 		styled.div({ "padding": "16px", "color": "red" });",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
@@ -87,13 +121,14 @@ test("mui -> vue-styled -> mui: preserves an actionable concrete round trip", ()
 		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 
-test("mui -> vue-styled -> mui: retains edge semantics without silent loss", () => {
-	const first = forward.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.vue", semantic: targetSemantic });
+test("mui -> vue-styled -> mui: retains the documented secondary API without silent loss", () => {
+	const first = forward.run({ source: edgeSource, file: "App.tsx", semantic: sourceSemantic });
+	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(first, "mui -> vue-styled round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
@@ -101,53 +136,93 @@ test("mui -> vue-styled -> mui: retains edge semantics without silent loss", () 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { Box } from "@mui/material";
-		export const App = () => // pandwind:migrate-skip (route: mui -> vue-styled | lowering-residual: host-framework | capability-blocked: dynamic-values: dynamic: theme.foreground | available: named-map, target-native, residual)
-		<Box sx={{ color: theme.foreground, p: 2 }} />;",
+		    "code": "import { styled } from "@mui/system";
+		import styled from "vue-styled-components";
+		export const Card = styled.div({ "padding": 8, "color": "red" });",
+		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "import { styled } from "@mui/system";
+		import styled from "vue-styled-components";
+		export const Card = // pandwind:migrate-skip (route: vue-styled -> mui | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
+		styled.div({ "padding": 8, "color": "red" });",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "target-native",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "dynamic-values: dynamic: theme.foreground",
+		        "hint": "framework-semantics: vue",
 		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "vue-styled has no host representation for vue",
-		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 1,
 		    "validations": [],
 		  },
-		  "reverse": {
-		    "changed": false,
-		    "code": "import { Box } from "@mui/material";
-		export const App = () => // pandwind:migrate-skip (route: mui -> vue-styled | lowering-residual: host-framework | capability-blocked: dynamic-values: dynamic: theme.foreground | available: named-map, target-native, residual)
-		<Box sx={{ color: theme.foreground, p: 2 }} />;",
-		    "converted": 0,
-		    "outcomes": [],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [],
-		  },
 		}
-	`);
+	`)
 });
 
-test("mui -> vue-styled -> mui: preserves concrete theme and project context variants", () => {
-	const firstBlue = forward.run({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const secondBlue = reverse.run({ source: firstBlue.code, file: "Card.vue", semantic: blueTargetSemantic, project: blueProject });
-	const firstAmber = forward.run({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
-	const secondAmber = reverse.run({ source: firstAmber.code, file: "Card.vue", semantic: amberTargetSemantic, project: amberProject });
+test("mui -> vue-styled -> mui: preserves concrete theme and project context variants", async () => {
+	const firstBlue = await forward.runAsync({ source: themedSource, file: "App.tsx", semantic: blueSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "styles.ts", semantic: blueTargetSemantic, project: blueProject });
+	const firstAmber = await forward.runAsync({ source: themedSource, file: "App.tsx", semantic: amberSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "styles.ts", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Mui, CodemodAdapterId.VueStyled);
+	expectConfiguredTargetTokenEvidence(firstBlue, CodemodAdapterId.VueStyled, "mui -> vue-styled round-trip token config");
+	expectRouteScenarioEvidence(firstBlue, "mui -> vue-styled round-trip blue forward");
+	expectRouteScenarioEvidence(firstAmber, "mui -> vue-styled round-trip amber forward");
+
 	expectActionableRoundTrip(firstBlue, secondBlue);
 	expectActionableRoundTrip(firstAmber, secondAmber);
 	expectExplicitResidualEvidence(firstBlue);
@@ -163,39 +238,74 @@ test("mui -> vue-styled -> mui: preserves concrete theme and project context var
 		    "forward": {
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
-		export const App = () => // pandwind:migrate-skip (route: mui -> vue-styled | lowering-residual: host-framework | capability-blocked: dynamic-values: dynamic: theme.palette.primary.main | available: named-map, target-native, residual)
-		<Box sx={{ color: theme.palette.primary.main, p: 2 }} />;",
+		import styled from "vue-styled-components";
+		export const App = () => styled.div({ "padding": "16px", "color": "#f97316" });",
+		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
+		      "outcomes": [
+		        {
+		          "outcome": "static",
+		          "representation": "static",
+		        },
+		      ],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
+		    },
+		    "reverse": {
+		      "changed": true,
+		      "code": "import { Box } from "@mui/material";
+		import styled from "vue-styled-components";
+		export const App = () => // pandwind:migrate-skip (route: vue-styled -> mui | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
+		styled.div({ "padding": "16px", "color": "#f97316" });",
 		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
-		          "representation": "target-native",
+		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "dynamic-values: dynamic: theme.palette.primary.main",
+		          "hint": "framework-semantics: vue",
 		          "kind": "capability",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "vue-styled has no host representation for vue",
-		          "kind": "host-framework",
 		          "preserved": undefined,
 		        },
 		      ],
 		      "skipped": 1,
-		      "validations": [],
-		    },
-		    "reverse": {
-		      "changed": false,
-		      "code": "import { Box } from "@mui/material";
-		export const App = () => // pandwind:migrate-skip (route: mui -> vue-styled | lowering-residual: host-framework | capability-blocked: dynamic-values: dynamic: theme.palette.primary.main | available: named-map, target-native, residual)
-		<Box sx={{ color: theme.palette.primary.main, p: 2 }} />;",
-		      "converted": 0,
-		      "outcomes": [],
-		      "residuals": [],
-		      "skipped": 0,
 		      "validations": [],
 		    },
 		  },
@@ -203,50 +313,87 @@ test("mui -> vue-styled -> mui: preserves concrete theme and project context var
 		    "forward": {
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
-		export const App = () => // pandwind:migrate-skip (route: mui -> vue-styled | lowering-residual: host-framework | capability-blocked: dynamic-values: dynamic: theme.palette.primary.main | available: named-map, target-native, residual)
-		<Box sx={{ color: theme.palette.primary.main, p: 2 }} />;",
+		import styled from "vue-styled-components";
+		export const App = () => styled.div({ "padding": "16px", "color": "#2563eb" });",
+		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
+		      "outcomes": [
+		        {
+		          "outcome": "static",
+		          "representation": "static",
+		        },
+		      ],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
+		    },
+		    "reverse": {
+		      "changed": true,
+		      "code": "import { Box } from "@mui/material";
+		import styled from "vue-styled-components";
+		export const App = () => // pandwind:migrate-skip (route: vue-styled -> mui | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
+		styled.div({ "padding": "16px", "color": "#2563eb" });",
 		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
-		          "representation": "target-native",
+		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "dynamic-values: dynamic: theme.palette.primary.main",
+		          "hint": "framework-semantics: vue",
 		          "kind": "capability",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "vue-styled has no host representation for vue",
-		          "kind": "host-framework",
 		          "preserved": undefined,
 		        },
 		      ],
 		      "skipped": 1,
 		      "validations": [],
 		    },
-		    "reverse": {
-		      "changed": false,
-		      "code": "import { Box } from "@mui/material";
-		export const App = () => // pandwind:migrate-skip (route: mui -> vue-styled | lowering-residual: host-framework | capability-blocked: dynamic-values: dynamic: theme.palette.primary.main | available: named-map, target-native, residual)
-		<Box sx={{ color: theme.palette.primary.main, p: 2 }} />;",
-		      "converted": 0,
-		      "outcomes": [],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [],
-		    },
 		  },
 		}
-	`);
+	`)
 });
 
-test("mui -> vue-styled -> mui: resolves token references across both concrete legs", () => {
-	const first = forward.run({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const second = reverse.run({ source: first.code, file: "Card.vue", semantic: blueTargetSemantic, project: blueProject });
+test("mui -> vue-styled -> mui: resolves token values across both concrete legs", async () => {
+	const first = await forward.runAsync({ source: tokenSource, file: "App.tsx", semantic: blueSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "styles.ts", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Mui, CodemodAdapterId.VueStyled);
+	expectRouteScenarioEvidence(first, "mui -> vue-styled round-trip token forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
@@ -256,8 +403,23 @@ test("mui -> vue-styled -> mui: resolves token references across both concrete l
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
 		import styled from "vue-styled-components";
-		export const App = () => styled.div({ "padding": "16px", "color": "var(--mui-primary-main)" });",
+		export const App = () => styled.div({ "padding": "16px", "color": "#2563eb" });",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "static",
@@ -279,8 +441,21 @@ test("mui -> vue-styled -> mui: resolves token references across both concrete l
 		    "code": "import { Box } from "@mui/material";
 		import styled from "vue-styled-components";
 		export const App = () => // pandwind:migrate-skip (route: vue-styled -> mui | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
-		styled.div({ "padding": "16px", "color": "var(--mui-primary-main)" });",
+		styled.div({ "padding": "16px", "color": "#2563eb" });",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
@@ -298,6 +473,6 @@ test("mui -> vue-styled -> mui: resolves token references across both concrete l
 		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 

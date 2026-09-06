@@ -3,30 +3,35 @@ import { expect, test } from "vitest";
 import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectActionableRoundTrip,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const forward = createAdapterRouteSpec(CodemodAdapterId.ReactNative, CodemodAdapterId.Mantine);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.Mantine, CodemodAdapterId.ReactNative);
-	const happySource = "import { StyleSheet, View } from \"react-native\";\nexport const styles = StyleSheet.create({ card: { color: \"red\", padding: 16 } });\nexport const App = () => <View style={styles.card} />;";
-const edgeSource = "import { StyleSheet, View } from \"react-native\";\nexport const styles = StyleSheet.create({ card: { color: theme.foreground, padding: 16 } });\nexport const App = () => <View style={styles.card} />;";
-const malformedSource = "import { StyleSheet, View } from \"react-native\";\nexport const styles = StyleSheet.create({ card: { color: \"red\", padding: 16 } });\nexport const App = () => <View style={styles.card} />;\nconst unfinished = { /* unfinished react-native */";
+	const happySource = "import { StyleSheet } from \"react-native\";\nexport const styles = StyleSheet.create({ card: { color: \"red\", padding: 8 } });";
+const edgeSource = "import { StyleSheet } from \"react-native\";\nexport const styles = StyleSheet.create({ card: { padding: 8, backgroundColor: \"red\" } });";
+const malformedSource = "import { StyleSheet } from \"react-native\";\nexport const styles = StyleSheet.create({ card: { color: \"red\", padding: 8 } });\nconst unfinished = { /* unfinished react-native */";
 const sourceSemantic = undefined;
-const themedSource = "import { StyleSheet, View } from \"react-native\";\nexport const styles = StyleSheet.create({ card: { color: theme.colors.brand, padding: 16 } });\nexport const App = () => <View style={styles.card} />;";
-const tokenSource = "import { StyleSheet, View } from \"react-native\";\nexport const styles = StyleSheet.create({ card: { color: \"$colors.brand\", padding: 16 } });\nexport const App = () => <View style={styles.card} />;";
-const blueSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/src/theme.ts":"export const mantineTheme = { colors: { brand: [\"#2563eb\"] } };"} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/src/theme.ts":"export const mantineTheme = { colors: { brand: [\"#f97316\"] } };"} };
+const themedSource = "import { StyleSheet } from \"react-native\";\nexport const styles = StyleSheet.create({ card: { color: \"#2563eb\", padding: 8 } });";
+const tokenSource = "import { StyleSheet } from \"react-native\";\nexport const styles = StyleSheet.create({ card: { color: \"#2563eb\", padding: 8 } });";
+const blueSemantic = undefined;
+const amberSemantic = undefined;
+const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
+const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
+const blueProject = createAdapterRouteProject(CodemodAdapterId.ReactNative, CodemodAdapterId.Mantine, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.ReactNative, CodemodAdapterId.Mantine, "#f97316");
 	const targetSemantic = { source: { framework: BuiltinHostFramework.React } };
 
 test("react-native -> mantine -> react-native: preserves an actionable concrete round trip", () => {
-	const first = forward.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+	const first = forward.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
+	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -36,6 +41,7 @@ test("react-native -> mantine -> react-native: preserves an actionable concrete 
 		expect(first.residuals.length).toBeGreaterThan(0);
 		expect(first.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(first, "react-native -> mantine round-trip happy forward");
 	expectExplicitResidualEvidence(first);
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(second);
@@ -43,11 +49,23 @@ test("react-native -> mantine -> react-native: preserves an actionable concrete 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { StyleSheet, View } from "react-native";
+		    "code": "import { StyleSheet } from "react-native";
 		export const styles = // pandwind:migrate-skip (route: react-native -> mantine | lowering-residual: host-framework, validation)
-		StyleSheet.create({ card: { color: "red", padding: 16 } });
-		export const App = () => <View style={styles.card} />;",
+		StyleSheet.create({ card: { color: "red", padding: 8 } });",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "named-map",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
@@ -78,37 +96,27 @@ test("react-native -> mantine -> react-native: preserves an actionable concrete 
 		    ],
 		  },
 		  "reverse": {
-		    "changed": true,
-		    "code": "import { StyleSheet, View } from "react-native";
+		    "changed": false,
+		    "code": "import { StyleSheet } from "react-native";
 		export const styles = // pandwind:migrate-skip (route: react-native -> mantine | lowering-residual: host-framework, validation)
-		StyleSheet.create({ card: { color: "red", padding: 16 } });
-		export const App = () => // pandwind:migrate-skip (route: mantine -> react-native | lowering-residual: host-framework | available: named-map, target-native, residual)
-		<View style={styles.card} />;",
+		StyleSheet.create({ card: { color: "red", padding: 8 } });",
 		    "converted": 0,
-		    "outcomes": [
-		      {
-		        "outcome": "residual",
-		        "representation": "target-native",
-		      },
-		    ],
-		    "residuals": [
-		      {
-		        "hint": "react-native has no host representation for react-native",
-		        "kind": "host-framework",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [],
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 
-test("react-native -> mantine -> react-native: retains edge semantics without silent loss", () => {
-	const first = forward.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+test("react-native -> mantine -> react-native: retains the documented secondary API without silent loss", () => {
+	const first = forward.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
+	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(first, "react-native -> mantine round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
@@ -116,11 +124,23 @@ test("react-native -> mantine -> react-native: retains edge semantics without si
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { StyleSheet, View } from "react-native";
-		export const styles = // pandwind:migrate-skip (route: react-native -> mantine | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, target-native, runtime-carrier, residual)
-		StyleSheet.create({ card: { color: theme.foreground, padding: 16 } });
-		export const App = () => <View style={styles.card} />;",
+		    "code": "import { StyleSheet } from "react-native";
+		export const styles = // pandwind:migrate-skip (route: react-native -> mantine | lowering-residual: host-framework, validation)
+		StyleSheet.create({ card: { padding: 8, backgroundColor: "red" } });",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "named-map",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
@@ -129,49 +149,57 @@ test("react-native -> mantine -> react-native: retains edge semantics without si
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "theme-context: 1 theme binding(s)",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
-		    "validations": [],
-		  },
-		  "reverse": {
-		    "changed": true,
-		    "code": "import { StyleSheet, View } from "react-native";
-		export const styles = // pandwind:migrate-skip (route: react-native -> mantine | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, target-native, runtime-carrier, residual)
-		StyleSheet.create({ card: { color: theme.foreground, padding: 16 } });
-		export const App = () => // pandwind:migrate-skip (route: mantine -> react-native | lowering-residual: host-framework | available: named-map, target-native, residual)
-		<View style={styles.card} />;",
-		    "converted": 0,
-		    "outcomes": [
-		      {
-		        "outcome": "residual",
-		        "representation": "target-native",
-		      },
-		    ],
-		    "residuals": [
-		      {
-		        "hint": "react-native has no host representation for react-native",
+		        "hint": "Mantine style maps require a host component style prop or an explicit CSS module",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
+		      {
+		        "hint": "1 residual conversion(s)",
+		        "kind": "validation",
+		        "preserved": undefined,
+		      },
 		    ],
 		    "skipped": 1,
+		    "validations": [
+		      {
+		        "differences": [
+		          "1 residual conversion(s)",
+		        ],
+		        "lossiness": "lossy",
+		        "valid": false,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": false,
+		    "code": "import { StyleSheet } from "react-native";
+		export const styles = // pandwind:migrate-skip (route: react-native -> mantine | lowering-residual: host-framework, validation)
+		StyleSheet.create({ card: { padding: 8, backgroundColor: "red" } });",
+		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [],
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 
-test("react-native -> mantine -> react-native: preserves concrete theme and project context variants", () => {
-	const firstBlue = forward.run({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const secondBlue = reverse.run({ source: firstBlue.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
-	const firstAmber = forward.run({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
-	const secondAmber = reverse.run({ source: firstAmber.code, file: "Card.tsx", semantic: amberTargetSemantic, project: amberProject });
+test("react-native -> mantine -> react-native: preserves concrete theme and project context variants", async () => {
+	const firstBlue = await forward.runAsync({ source: themedSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
+	const firstAmber = await forward.runAsync({ source: themedSource, file: "styles.ts", semantic: amberSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "App.tsx", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.ReactNative, CodemodAdapterId.Mantine);
+	expectConfiguredTargetTokenEvidence(firstBlue, CodemodAdapterId.Mantine, "react-native -> mantine round-trip token config");
+	expectRouteScenarioEvidence(firstBlue, "react-native -> mantine round-trip blue forward");
+	expectRouteScenarioEvidence(firstAmber, "react-native -> mantine round-trip amber forward");
+	expectConfiguredTargetTokenAbsence(firstAmber, CodemodAdapterId.Mantine, "react-native -> mantine round-trip amber literal config");
+
 	expectActionableRoundTrip(firstBlue, secondBlue);
 	expectActionableRoundTrip(firstAmber, secondAmber);
 	expectExplicitResidualEvidence(firstBlue);
@@ -186,11 +214,23 @@ test("react-native -> mantine -> react-native: preserves concrete theme and proj
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { StyleSheet, View } from "react-native";
-		export const styles = // pandwind:migrate-skip (route: react-native -> mantine | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, target-native, runtime-carrier, residual)
-		StyleSheet.create({ card: { color: theme.colors.brand, padding: 16 } });
-		export const App = () => <View style={styles.card} />;",
+		      "code": "import { StyleSheet } from "react-native";
+		export const styles = // pandwind:migrate-skip (route: react-native -> mantine | lowering-residual: host-framework, validation)
+		StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "named-map",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
@@ -199,47 +239,61 @@ test("react-native -> mantine -> react-native: preserves concrete theme and proj
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "theme-context: 1 theme binding(s)",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
-		      "validations": [],
-		    },
-		    "reverse": {
-		      "changed": true,
-		      "code": "import { StyleSheet, View } from "react-native";
-		export const styles = // pandwind:migrate-skip (route: react-native -> mantine | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, target-native, runtime-carrier, residual)
-		StyleSheet.create({ card: { color: theme.colors.brand, padding: 16 } });
-		export const App = () => // pandwind:migrate-skip (route: mantine -> react-native | lowering-residual: host-framework | available: named-map, target-native, residual)
-		<View style={styles.card} />;",
-		      "converted": 0,
-		      "outcomes": [
-		        {
-		          "outcome": "residual",
-		          "representation": "target-native",
-		        },
-		      ],
-		      "residuals": [
-		        {
-		          "hint": "react-native has no host representation for react-native",
+		          "hint": "Mantine style maps require a host component style prop or an explicit CSS module",
 		          "kind": "host-framework",
 		          "preserved": undefined,
 		        },
+		        {
+		          "hint": "1 residual conversion(s)",
+		          "kind": "validation",
+		          "preserved": undefined,
+		        },
 		      ],
 		      "skipped": 1,
+		      "validations": [
+		        {
+		          "differences": [
+		            "1 residual conversion(s)",
+		          ],
+		          "lossiness": "lossy",
+		          "valid": false,
+		        },
+		      ],
+		    },
+		    "reverse": {
+		      "changed": false,
+		      "code": "import { StyleSheet } from "react-native";
+		export const styles = // pandwind:migrate-skip (route: react-native -> mantine | lowering-residual: host-framework, validation)
+		StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
+		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [],
+		      "outcomes": [],
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [],
 		    },
 		  },
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { StyleSheet, View } from "react-native";
-		export const styles = // pandwind:migrate-skip (route: react-native -> mantine | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, target-native, runtime-carrier, residual)
-		StyleSheet.create({ card: { color: theme.colors.brand, padding: 16 } });
-		export const App = () => <View style={styles.card} />;",
+		      "code": "import { StyleSheet } from "react-native";
+		export const styles = // pandwind:migrate-skip (route: react-native -> mantine | lowering-residual: host-framework, validation)
+		StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "named-map",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
@@ -248,47 +302,51 @@ test("react-native -> mantine -> react-native: preserves concrete theme and proj
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "theme-context: 1 theme binding(s)",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
-		      "validations": [],
-		    },
-		    "reverse": {
-		      "changed": true,
-		      "code": "import { StyleSheet, View } from "react-native";
-		export const styles = // pandwind:migrate-skip (route: react-native -> mantine | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, target-native, runtime-carrier, residual)
-		StyleSheet.create({ card: { color: theme.colors.brand, padding: 16 } });
-		export const App = () => // pandwind:migrate-skip (route: mantine -> react-native | lowering-residual: host-framework | available: named-map, target-native, residual)
-		<View style={styles.card} />;",
-		      "converted": 0,
-		      "outcomes": [
-		        {
-		          "outcome": "residual",
-		          "representation": "target-native",
-		        },
-		      ],
-		      "residuals": [
-		        {
-		          "hint": "react-native has no host representation for react-native",
+		          "hint": "Mantine style maps require a host component style prop or an explicit CSS module",
 		          "kind": "host-framework",
 		          "preserved": undefined,
 		        },
+		        {
+		          "hint": "1 residual conversion(s)",
+		          "kind": "validation",
+		          "preserved": undefined,
+		        },
 		      ],
 		      "skipped": 1,
+		      "validations": [
+		        {
+		          "differences": [
+		            "1 residual conversion(s)",
+		          ],
+		          "lossiness": "lossy",
+		          "valid": false,
+		        },
+		      ],
+		    },
+		    "reverse": {
+		      "changed": false,
+		      "code": "import { StyleSheet } from "react-native";
+		export const styles = // pandwind:migrate-skip (route: react-native -> mantine | lowering-residual: host-framework, validation)
+		StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
+		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [],
+		      "outcomes": [],
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [],
 		    },
 		  },
 		}
-	`);
+	`)
 });
 
-test("react-native -> mantine -> react-native: resolves token references across both concrete legs", () => {
-	const first = forward.run({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
+test("react-native -> mantine -> react-native: resolves token values across both concrete legs", async () => {
+	const first = await forward.runAsync({ source: tokenSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.ReactNative, CodemodAdapterId.Mantine);
+	expectRouteScenarioEvidence(first, "react-native -> mantine round-trip token forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
@@ -296,11 +354,23 @@ test("react-native -> mantine -> react-native: resolves token references across 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { StyleSheet, View } from "react-native";
+		    "code": "import { StyleSheet } from "react-native";
 		export const styles = // pandwind:migrate-skip (route: react-native -> mantine | lowering-residual: host-framework, validation)
-		StyleSheet.create({ card: { color: "$colors.brand", padding: 16 } });
-		export const App = () => <View style={styles.card} />;",
+		StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "named-map",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
@@ -331,30 +401,19 @@ test("react-native -> mantine -> react-native: resolves token references across 
 		    ],
 		  },
 		  "reverse": {
-		    "changed": true,
-		    "code": "import { StyleSheet, View } from "react-native";
+		    "changed": false,
+		    "code": "import { StyleSheet } from "react-native";
 		export const styles = // pandwind:migrate-skip (route: react-native -> mantine | lowering-residual: host-framework, validation)
-		StyleSheet.create({ card: { color: "$colors.brand", padding: 16 } });
-		export const App = () => // pandwind:migrate-skip (route: mantine -> react-native | lowering-residual: host-framework | available: named-map, target-native, residual)
-		<View style={styles.card} />;",
+		StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		    "converted": 0,
-		    "outcomes": [
-		      {
-		        "outcome": "residual",
-		        "representation": "target-native",
-		      },
-		    ],
-		    "residuals": [
-		      {
-		        "hint": "react-native has no host representation for react-native",
-		        "kind": "host-framework",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [],
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 

@@ -175,9 +175,11 @@ function staticClassAssignments(source: string): readonly RegExpExecArray[] {
 
 function standaloneClassLiteral(
 	source: string,
+	resolver: TailwindUtilityResolver,
 ): { value: string; start: number; end: number } | undefined {
-	const match = /^\s*(["'])([^"']*\[[^"']*)\1\s*;?\s*$/u.exec(source);
+	const match = /^\s*(["'])([^"']+)\1\s*;?\s*$/u.exec(source);
 	if (match?.[2] === undefined) return undefined;
+	if (!match[2].split(/\s+/u).some((token) => resolver.resolve(token) !== undefined)) return undefined;
 	const start = source.indexOf(match[1]!, match[0].indexOf(match[1]!));
 	return start < 0 ? undefined : { value: match[2], start, end: start + match[2].length + 2 };
 }
@@ -293,14 +295,17 @@ function materializeTailwindTokens(
 
 function standaloneClassMap(
 	source: string,
+	resolver: TailwindUtilityResolver,
 ):
 	| { readonly start: number; readonly end: number; readonly entries: readonly RegExpExecArray[] }
 	| undefined {
 	const outer = /^\s*\{([\s\S]*)\}\s*;?\s*$/u.exec(source);
 	if (outer?.[1] === undefined) return undefined;
-	const entries = [
-		...outer[1].matchAll(/(["'])([A-Za-z_$][\w$-]*)\1\s*:\s*(["'])([^"']*\[[^"']*)\3/g),
-	];
+	const entries = [...outer[1].matchAll(/(["'])([A-Za-z_$][\w$-]*)\1\s*:\s*(["'])([^"']+)\3/g)].filter(
+		(entry) =>
+			entry[4] !== undefined &&
+			entry[4].split(/\s+/u).some((token) => resolver.resolve(token) !== undefined),
+	);
 	if (entries.length === 0 || entries.some((entry) => entry[4] === undefined)) return undefined;
 	const start = source.indexOf("{");
 	return start < 0 ? undefined : { start, end: start + outer[0].trim().length, entries };
@@ -308,6 +313,7 @@ function standaloneClassMap(
 
 function assignedClassMap(
 	source: string,
+	resolver: TailwindUtilityResolver,
 ):
 	| { readonly start: number; readonly end: number; readonly entries: readonly RegExpExecArray[] }
 	| undefined {
@@ -316,9 +322,11 @@ function assignedClassMap(
 		if (open < 0) continue;
 		const block = SourcePass.matchBlock(source, open);
 		if (block === null) continue;
-		const entries = [
-			...block.body.matchAll(/(["'])([A-Za-z_$][\w$-]*)\1\s*:\s*(["'])([^"']*\[[^"']*)\3/g),
-		];
+		const entries = [...block.body.matchAll(/(["'])([A-Za-z_$][\w$-]*)\1\s*:\s*(["'])([^"']+)\3/g)].filter(
+			(entry) =>
+				entry[4] !== undefined &&
+				entry[4].split(/\s+/u).some((token) => resolver.resolve(token) !== undefined),
+		);
 		if (entries.length === 0 || entries.some((entry) => entry[4] === undefined)) continue;
 		return { start: open, end: block.end, entries };
 	}
@@ -334,7 +342,7 @@ function parseTailwind(
 	const residuals: StyleProgramResidual[] = [...(context.config.residuals ?? [])];
 	const tokenCatalog = TokenCatalog.fromContract(context.config.tokenCatalog);
 	const excluded = context.document?.isExcluded ?? (() => false);
-	const classMap = standaloneClassMap(source) ?? assignedClassMap(source);
+	const classMap = standaloneClassMap(source, resolver) ?? assignedClassMap(source, resolver);
 	if (classMap !== undefined) {
 		const parsedEntries = classMap.entries.map(
 			(entry) =>
@@ -459,7 +467,8 @@ function parseTailwind(
 			binding === undefined ||
 			value === undefined ||
 			boundNames.has(binding) ||
-			!value.includes("[")
+			!value.includes("[") &&
+			!value.split(/\s+/u).some((token) => resolver.resolve(token) !== undefined)
 		)
 			continue;
 		const valueStart =
@@ -468,7 +477,7 @@ function parseTailwind(
 			parseClassValue(value, context, resolver, valueStart, valueStart + value.length + 2),
 		);
 	}
-	const standalone = standaloneClassLiteral(source);
+	const standalone = standaloneClassLiteral(source, resolver);
 	if (standalone !== undefined)
 		matches.push(
 			parseClassValue(standalone.value, context, resolver, standalone.start, standalone.end),

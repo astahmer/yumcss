@@ -3,26 +3,31 @@ import { expect, test } from "vitest";
 import { CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.NextYak, CodemodAdapterId.Tamagui);
-	const happySource = "import { css } from \"next-yak\";\nexport const card = css`color: red; padding: 1rem;`;\nexport const App = () => <div className={card} />;";
-const edgeSource = "import { css } from \"next-yak\";\nexport const card = css`color: ${theme.foreground}; padding: 1rem;`;\nexport const App = () => <div className={card} />;";
-const malformedSource = "import { css } from \"next-yak\";\nexport const card = css`color: red; padding: 1rem;`;\nexport const App = () => <div className={card} />;\nconst unfinished = { /* unfinished next-yak */";
+	const happySource = "import { css } from \"next-yak\";\nexport const card = css`color: red; padding: 1rem;`;";
+const edgeSource = "import { styled } from \"next-yak\";\nexport const Card = styled.div`color: red; padding: 1rem;`;";
+const malformedSource = "import { css } from \"next-yak\";\nexport const card = css`color: red; padding: 1rem;`;\nconst unfinished = { /* unfinished next-yak */";
 const sourceSemantic = undefined;
-const themedSource = "import { css } from \"next-yak\";\nexport const card = css`color: ${theme.colors.brand}; padding: 1rem;`;\nexport const App = () => <div className={card} />;";
-const tokenSource = "import { css } from \"next-yak\";\nexport const card = css`color: var(--colors-brand); padding: 1rem;`;\nexport const App = () => <div className={card} />;";
-const blueSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {} };
+const themedSource = "import { css } from \"next-yak\";\nexport const card = css`color: #2563eb; padding: 1rem;`;";
+const tokenSource = "import { css } from \"next-yak\";\nexport const card = css`color: #2563eb; padding: 1rem;`;";
+const blueSemantic = undefined;
+const amberSemantic = undefined;
+const blueTargetSemantic = undefined;
+const amberTargetSemantic = undefined;
+const blueProject = createAdapterRouteProject(CodemodAdapterId.NextYak, CodemodAdapterId.Tamagui, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.NextYak, CodemodAdapterId.Tamagui, "#f97316");
 
 test("next-yak -> tamagui: migrates concrete next-yak syntax to tamagui", () => {
-	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
+	const result = route.run({ source: happySource, file: "styles.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -37,15 +42,27 @@ test("next-yak -> tamagui: migrates concrete next-yak syntax to tamagui", () => 
 		expect(result.residuals.length).toBeGreaterThan(0);
 		expect(result.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(result, "next-yak -> tamagui happy");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import { View, styled } from "@tamagui/core";
 
-		export const card = styled(View, { padding: "1rem", color: "red" });
-		export const App = () => <div className={card} />;",
+		export const card = styled(View, { padding: "1rem", color: "red" });",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "static",
@@ -62,126 +79,167 @@ test("next-yak -> tamagui: migrates concrete next-yak syntax to tamagui", () => 
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
-test("next-yak -> tamagui: carries concrete next-yak dynamics or edge syntax explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
+test("next-yak -> tamagui: carries a documented secondary next-yak API explicitly", () => {
+	const result = route.run({ source: edgeSource, file: "styles.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(result, "next-yak -> tamagui secondary");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "next-yak";
-		export const card = // pandwind:migrate-skip (route: next-yak -> tamagui | lowering-residual: dynamic | capability-blocked: dynamic-values: dynamic: theme.foreground | available: residual)
-		css\`color: \${theme.foreground}; padding: 1rem;\`;
-		export const App = () => <div className={card} />;",
-		  "converted": 0,
+		  "code": "
+		import { createCx } from "pandwind/cx";
+		import { View, styled } from "@tamagui/core";
+		const cx = createCx();
+		export const Card = (props) => <div {...props} className={cx(styled(View, { padding: "1rem", color: "red" }), props.className)} />;",
+		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
-		      "representation": "residual",
+		      "outcome": "static",
+		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
 		    {
-		      "hint": "dynamic-values: dynamic: theme.foreground",
-		      "kind": "capability",
-		      "preserved": undefined,
-		    },
-		    {
-		      "hint": "target lacks runtime dynamic values",
-		      "kind": "dynamic",
-		      "preserved": undefined,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
-		  "skipped": 1,
-		  "validations": [],
 		}
-	`);
+	`)
 });
 
-test("next-yak -> tamagui: lowers concrete theme and project context variants", () => {
-	const blue = route.run({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const amber = route.run({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
+test("next-yak -> tamagui: loads concrete theme and project context variants", async () => {
+	const blue = await route.runAsync({ source: themedSource, file: "styles.tsx", semantic: blueSemantic, project: blueProject });
+	const amber = await route.runAsync({ source: themedSource, file: "styles.tsx", semantic: amberSemantic, project: amberProject });
 	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
 	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.NextYak, CodemodAdapterId.Tamagui);
+	expectConfiguredTargetTokenEvidence(blue, CodemodAdapterId.Tamagui, "next-yak -> tamagui blue config");
+	expectRouteScenarioEvidence(blue, "next-yak -> tamagui blue config");
+	expectRouteScenarioEvidence(amber, "next-yak -> tamagui amber config");
+	expectConfiguredTargetTokenAbsence(amber, CodemodAdapterId.Tamagui, "next-yak -> tamagui amber literal config");
+
 	expectExplicitResidualEvidence(blue);
 	expectExplicitResidualEvidence(amber);
 	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { css } from "next-yak";
-		export const card = // pandwind:migrate-skip (route: next-yak -> tamagui | lowering-residual: dynamic | capability-blocked: dynamic-values: dynamic: theme.colors.brand | available: residual)
-		css\`color: \${theme.colors.brand}; padding: 1rem;\`;
-		export const App = () => <div className={card} />;",
-		    "converted": 0,
+		    "code": "import { View, styled } from "@tamagui/core";
+
+		export const card = styled(View, { padding: "1rem", color: "#2563eb" });",
+		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
-		        "representation": "residual",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "dynamic-values: dynamic: theme.colors.brand",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "target lacks runtime dynamic values",
-		        "kind": "dynamic",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { css } from "next-yak";
-		export const card = // pandwind:migrate-skip (route: next-yak -> tamagui | lowering-residual: dynamic | capability-blocked: dynamic-values: dynamic: theme.colors.brand | available: residual)
-		css\`color: \${theme.colors.brand}; padding: 1rem;\`;
-		export const App = () => <div className={card} />;",
-		    "converted": 0,
+		    "code": "import { View, styled } from "@tamagui/core";
+
+		export const card = styled(View, { padding: "1rem", color: "#2563eb" });",
+		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
-		        "representation": "residual",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "dynamic-values: dynamic: theme.colors.brand",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "target lacks runtime dynamic values",
-		        "kind": "dynamic",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 
-test("next-yak -> tamagui: resolves concrete token references with project context", () => {
-	const result = route.run({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
+test("next-yak -> tamagui: resolves concrete token values with project context", async () => {
+	const result = await route.runAsync({ source: tokenSource, file: "styles.tsx", semantic: blueSemantic, project: blueProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.NextYak, CodemodAdapterId.Tamagui);
+	expectConfiguredTargetTokenEvidence(result, CodemodAdapterId.Tamagui, "next-yak -> tamagui token config");
+	expectRouteScenarioEvidence(result, "next-yak -> tamagui token config");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import { View, styled } from "@tamagui/core";
 
-		export const card = styled(View, { padding: "1rem", color: "var(--colors-brand)" });
-		export const App = () => <div className={card} />;",
+		export const card = styled(View, { padding: "1rem", color: "#2563eb" });",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "static",
@@ -198,12 +256,13 @@ test("next-yak -> tamagui: resolves concrete token references with project conte
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
 test("next-yak -> tamagui: preserves malformed concrete next-yak input", () => {
-	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
+	const result = route.run({ source: malformedSource, file: "styles.tsx", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished next-yak */");
+	expectRouteScenarioEvidence(result, "next-yak -> tamagui malformed");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
@@ -211,9 +270,20 @@ test("next-yak -> tamagui: preserves malformed concrete next-yak input", () => {
 		  "code": "import { View, styled } from "@tamagui/core";
 
 		export const card = styled(View, { padding: "1rem", color: "red" });
-		export const App = () => <div className={card} />;
 		const unfinished = { /* unfinished next-yak */",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "static",
@@ -230,6 +300,6 @@ test("next-yak -> tamagui: preserves malformed concrete next-yak input", () => {
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 

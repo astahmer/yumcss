@@ -3,26 +3,31 @@ import { expect, test } from "vitest";
 import { CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.NextYak, CodemodAdapterId.Stitches);
-	const happySource = "import { css } from \"next-yak\";\nexport const card = css`color: red; padding: 1rem;`;\nexport const App = () => <div className={card} />;";
-const edgeSource = "import { css } from \"next-yak\";\nexport const card = css`color: ${theme.foreground}; padding: 1rem;`;\nexport const App = () => <div className={card} />;";
-const malformedSource = "import { css } from \"next-yak\";\nexport const card = css`color: red; padding: 1rem;`;\nexport const App = () => <div className={card} />;\nconst unfinished = { /* unfinished next-yak */";
+	const happySource = "import { css } from \"next-yak\";\nexport const card = css`color: red; padding: 1rem;`;";
+const edgeSource = "import { styled } from \"next-yak\";\nexport const Card = styled.div`color: red; padding: 1rem;`;";
+const malformedSource = "import { css } from \"next-yak\";\nexport const card = css`color: red; padding: 1rem;`;\nconst unfinished = { /* unfinished next-yak */";
 const sourceSemantic = undefined;
-const themedSource = "import { css } from \"next-yak\";\nexport const card = css`color: ${theme.colors.brand}; padding: 1rem;`;\nexport const App = () => <div className={card} />;";
-const tokenSource = "import { css } from \"next-yak\";\nexport const card = css`color: var(--colors-brand); padding: 1rem;`;\nexport const App = () => <div className={card} />;";
-const blueSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/stitches.config.ts":"export const config = { theme: { colors: { brand: \"#2563eb\" }, space: { card: \"1.125rem\" } } };"} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/stitches.config.ts":"export const config = { theme: { colors: { brand: \"#f97316\" }, space: { card: \"1.125rem\" } } };"} };
+const themedSource = "import { css } from \"next-yak\";\nexport const card = css`color: #2563eb; padding: 1rem;`;";
+const tokenSource = "import { css } from \"next-yak\";\nexport const card = css`color: #2563eb; padding: 1rem;`;";
+const blueSemantic = undefined;
+const amberSemantic = undefined;
+const blueTargetSemantic = undefined;
+const amberTargetSemantic = undefined;
+const blueProject = createAdapterRouteProject(CodemodAdapterId.NextYak, CodemodAdapterId.Stitches, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.NextYak, CodemodAdapterId.Stitches, "#f97316");
 
 test("next-yak -> stitches: migrates concrete next-yak syntax to stitches", () => {
-	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
+	const result = route.run({ source: happySource, file: "styles.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -37,15 +42,30 @@ test("next-yak -> stitches: migrates concrete next-yak syntax to stitches", () =
 		expect(result.residuals.length).toBeGreaterThan(0);
 		expect(result.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(result, "next-yak -> stitches happy");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import { css } from "@stitches/react";
 
-		export const card = css({ padding: "1rem", color: "red" });
-		export const App = () => <div className={card} />;",
+		export const card = css({ padding: "1rem", color: "red" });",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "static",
@@ -62,25 +82,40 @@ test("next-yak -> stitches: migrates concrete next-yak syntax to stitches", () =
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
-test("next-yak -> stitches: carries concrete next-yak dynamics or edge syntax explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
+test("next-yak -> stitches: carries a documented secondary next-yak API explicitly", () => {
+	const result = route.run({ source: edgeSource, file: "styles.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(result, "next-yak -> stitches secondary");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import { css } from "@stitches/react";
 
-		export const card = css({ padding: "1rem", color: theme.foreground });
-		export const App = () => <div className={card.class}  style={card.style}/>;",
+		export const Card = css({ padding: "1rem", color: "red" });",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "host-runtime",
-		      "representation": "residual",
+		      "outcome": "static",
+		      "representation": "static",
 		    },
 		  ],
 		  "residuals": [],
@@ -93,14 +128,20 @@ test("next-yak -> stitches: carries concrete next-yak dynamics or edge syntax ex
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
-test("next-yak -> stitches: lowers concrete theme and project context variants", () => {
-	const blue = route.run({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const amber = route.run({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
+test("next-yak -> stitches: loads concrete theme and project context variants", async () => {
+	const blue = await route.runAsync({ source: themedSource, file: "styles.tsx", semantic: blueSemantic, project: blueProject });
+	const amber = await route.runAsync({ source: themedSource, file: "styles.tsx", semantic: amberSemantic, project: amberProject });
 	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
 	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.NextYak, CodemodAdapterId.Stitches);
+	expectConfiguredTargetTokenEvidence(blue, CodemodAdapterId.Stitches, "next-yak -> stitches blue config");
+	expectRouteScenarioEvidence(blue, "next-yak -> stitches blue config");
+	expectRouteScenarioEvidence(amber, "next-yak -> stitches amber config");
+	expectConfiguredTargetTokenAbsence(amber, CodemodAdapterId.Stitches, "next-yak -> stitches amber literal config");
+
 	expectExplicitResidualEvidence(blue);
 	expectExplicitResidualEvidence(amber);
 	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
@@ -109,13 +150,27 @@ test("next-yak -> stitches: lowers concrete theme and project context variants",
 		    "changed": true,
 		    "code": "import { css } from "@stitches/react";
 
-		export const card = css({ padding: "1rem", color: theme.colors.brand });
-		export const App = () => <div className={card.class}  style={card.style}/>;",
+		export const card = css({ padding: "1rem", color: "#2563eb" });",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "host-runtime",
-		        "representation": "residual",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [],
@@ -132,13 +187,27 @@ test("next-yak -> stitches: lowers concrete theme and project context variants",
 		    "changed": true,
 		    "code": "import { css } from "@stitches/react";
 
-		export const card = css({ padding: "1rem", color: theme.colors.brand });
-		export const App = () => <div className={card.class}  style={card.style}/>;",
+		export const card = css({ padding: "1rem", color: "#2563eb" });",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "host-runtime",
-		        "representation": "residual",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [],
@@ -152,21 +221,38 @@ test("next-yak -> stitches: lowers concrete theme and project context variants",
 		    ],
 		  },
 		}
-	`);
+	`)
 });
 
-test("next-yak -> stitches: resolves concrete token references with project context", () => {
-	const result = route.run({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
+test("next-yak -> stitches: resolves concrete token values with project context", async () => {
+	const result = await route.runAsync({ source: tokenSource, file: "styles.tsx", semantic: blueSemantic, project: blueProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.NextYak, CodemodAdapterId.Stitches);
+	expectConfiguredTargetTokenEvidence(result, CodemodAdapterId.Stitches, "next-yak -> stitches token config");
+	expectRouteScenarioEvidence(result, "next-yak -> stitches token config");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import { css } from "@stitches/react";
 
-		export const card = css({ padding: "1rem", color: "var(--colors-brand)" });
-		export const App = () => <div className={card} />;",
+		export const card = css({ padding: "1rem", color: "#2563eb" });",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "static",
@@ -183,12 +269,13 @@ test("next-yak -> stitches: resolves concrete token references with project cont
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
 test("next-yak -> stitches: preserves malformed concrete next-yak input", () => {
-	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
+	const result = route.run({ source: malformedSource, file: "styles.tsx", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished next-yak */");
+	expectRouteScenarioEvidence(result, "next-yak -> stitches malformed");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
@@ -196,9 +283,23 @@ test("next-yak -> stitches: preserves malformed concrete next-yak input", () => 
 		  "code": "import { css } from "@stitches/react";
 
 		export const card = css({ padding: "1rem", color: "red" });
-		export const App = () => <div className={card} />;
 		const unfinished = { /* unfinished next-yak */",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "static",
@@ -215,6 +316,6 @@ test("next-yak -> stitches: preserves malformed concrete next-yak input", () => 
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 

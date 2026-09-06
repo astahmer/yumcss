@@ -3,26 +3,31 @@ import { expect, test } from "vitest";
 import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.Panda, CodemodAdapterId.Mui);
-	const happySource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: \"red\", padding: \"1rem\" });\nexport const App = () => <div className={card} />;";
-const edgeSource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: theme.foreground, padding: \"1rem\" });\nexport const App = () => <div className={card} />;";
-const malformedSource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: \"red\", padding: \"1rem\" });\nexport const App = () => <div className={card} />;\nconst unfinished = { /* unfinished panda */";
+	const happySource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: \"red.300\", _hover: { color: \"blue.300\" } });";
+const edgeSource = "import { cva } from \"styled-system/recipes\";\nexport const button = cva({ base: { color: \"red\" }, variants: { size: { sm: { padding: \"2\" } } } });";
+const malformedSource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: \"red.300\", _hover: { color: \"blue.300\" } });\nconst unfinished = { /* unfinished panda */";
 const sourceSemantic = undefined;
-const themedSource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: theme.colors.brand, padding: \"1rem\" });\nexport const App = () => <div className={card} />;";
-const tokenSource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: \"$colors.brand\", padding: \"1rem\" });\nexport const App = () => <div className={card} />;";
-const blueSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "palette.primary.main", authored: "theme.palette.primary.main", resolved: "#2563eb" }] };
-const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "palette.primary.main", authored: "theme.palette.primary.main", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/panda.config.ts":"export default { theme: { extend: { tokens: { colors: { brand: { value: \"#2563eb\" } } } } } };","/virtual/pandwind-route-project/src/theme.ts":"export const muiTheme = { palette: { primary: { main: \"#2563eb\" } } };"} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/panda.config.ts":"export default { theme: { extend: { tokens: { colors: { brand: { value: \"#f97316\" } } } } } };","/virtual/pandwind-route-project/src/theme.ts":"export const muiTheme = { palette: { primary: { main: \"#f97316\" } } };"} };
+const themedSource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: \"brand.500\", _hover: { color: \"brand.500\" } });";
+const tokenSource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: \"#2563eb\", _hover: { color: \"blue.300\" } });";
+const blueSemantic = undefined;
+const amberSemantic = undefined;
+const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
+const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
+const blueProject = createAdapterRouteProject(CodemodAdapterId.Panda, CodemodAdapterId.Mui, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.Panda, CodemodAdapterId.Mui, "#f97316");
 
 test("panda -> mui: migrates concrete panda syntax to mui", () => {
-	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
+	const result = route.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -37,19 +42,34 @@ test("panda -> mui: migrates concrete panda syntax to mui", () => {
 		expect(result.residuals.length).toBeGreaterThan(0);
 		expect(result.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(result, "panda -> mui happy");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { Box } from "@mui/material";
+		  "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
 
-		export const card = { padding: "1rem", color: "red" };
-		export const App = () => <Box component="div" sx={card} />;",
+		export const card = css.class({ "color": "red.300", "_hover": { "color": "blue.300" } });",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		        "portable-artifact",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
-		      "representation": "static",
+		      "outcome": "portable-artifact",
+		      "representation": "portable-artifact",
 		    },
 		  ],
 		  "residuals": [],
@@ -62,75 +82,94 @@ test("panda -> mui: migrates concrete panda syntax to mui", () => {
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
-test("panda -> mui: carries concrete panda dynamics or edge syntax explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
+test("panda -> mui: carries a documented secondary panda API explicitly", () => {
+	const result = route.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(result, "panda -> mui secondary");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "styled-system/css";
-		import { Box } from "@mui/material";
-		export const card = { padding: "1rem", color: theme.foreground };
-		export const App = () => <Box component="div" sx={card} />;",
-		  "converted": 1,
+		  "code": "import { cva } from "styled-system/recipes";
+		export const button = // pandwind:migrate-skip (route: panda -> mui | parse-residual: composition | available: named-map, residual)
+		cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });",
+		  "converted": 0,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "residual",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "host-runtime",
-		      "representation": "target-native",
+		      "outcome": "residual",
+		      "representation": "residual",
 		    },
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "dynamic style binding 'card' has no supported host use",
-		      "kind": "dynamic-values",
+		      "hint": "Panda cva recipes require variant-aware target lowering",
+		      "kind": "composition",
 		      "preserved": undefined,
 		    },
 		  ],
-		  "skipped": 0,
-		  "validations": [
-		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
-		    },
-		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
-	`);
+	`)
 });
 
-test("panda -> mui: lowers concrete theme and project context variants", () => {
-	const blue = route.run({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const amber = route.run({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
+test("panda -> mui: loads concrete theme and project context variants", async () => {
+	const blue = await route.runAsync({ source: themedSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
+	const amber = await route.runAsync({ source: themedSource, file: "styles.ts", semantic: amberSemantic, project: amberProject });
 	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
 	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Panda, CodemodAdapterId.Mui);
+	expectConfiguredTargetTokenEvidence(blue, CodemodAdapterId.Mui, "panda -> mui blue config");
+	expectRouteScenarioEvidence(blue, "panda -> mui blue config");
+	expectRouteScenarioEvidence(amber, "panda -> mui amber config");
+
 	expectExplicitResidualEvidence(blue);
 	expectExplicitResidualEvidence(amber);
 	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
-		import { Box } from "@mui/material";
-		export const card = { padding: "1rem", color: theme.colors.brand };
-		export const App = () => <Box component="div" sx={card} />;",
+		    "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const card = css.class({ "color": "primary.main", "_hover": { "color": "primary.main" } });",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		          "portable-artifact",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "host-runtime",
-		        "representation": "target-native",
+		        "outcome": "portable-artifact",
+		        "representation": "portable-artifact",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "dynamic style binding 'card' has no supported host use",
-		        "kind": "dynamic-values",
-		        "preserved": undefined,
-		      },
-		    ],
+		    "residuals": [],
 		    "skipped": 0,
 		    "validations": [
 		      {
@@ -142,24 +181,32 @@ test("panda -> mui: lowers concrete theme and project context variants", () => {
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
-		import { Box } from "@mui/material";
-		export const card = { padding: "1rem", color: theme.colors.brand };
-		export const App = () => <Box component="div" sx={card} />;",
+		    "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const card = css.class({ "color": "primary.main", "_hover": { "color": "primary.main" } });",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		          "portable-artifact",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "host-runtime",
-		        "representation": "target-native",
+		        "outcome": "portable-artifact",
+		        "representation": "portable-artifact",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "dynamic style binding 'card' has no supported host use",
-		        "kind": "dynamic-values",
-		        "preserved": undefined,
-		      },
-		    ],
+		    "residuals": [],
 		    "skipped": 0,
 		    "validations": [
 		      {
@@ -170,25 +217,42 @@ test("panda -> mui: lowers concrete theme and project context variants", () => {
 		    ],
 		  },
 		}
-	`);
+	`)
 });
 
-test("panda -> mui: resolves concrete token references with project context", () => {
-	const result = route.run({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
+test("panda -> mui: resolves concrete token values with project context", async () => {
+	const result = await route.runAsync({ source: tokenSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Panda, CodemodAdapterId.Mui);
+	expectConfiguredTargetTokenEvidence(result, CodemodAdapterId.Mui, "panda -> mui token config");
+	expectRouteScenarioEvidence(result, "panda -> mui token config");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { Box } from "@mui/material";
+		  "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
 
-		export const card = { padding: "1rem", color: "$colors.brand" };
-		export const App = () => <Box component="div" sx={card} />;",
+		export const card = css.class({ "color": "primary.main", "_hover": { "color": "blue.300" } });",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		        "portable-artifact",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
-		      "representation": "static",
+		      "outcome": "portable-artifact",
+		      "representation": "portable-artifact",
 		    },
 		  ],
 		  "residuals": [],
@@ -201,26 +265,41 @@ test("panda -> mui: resolves concrete token references with project context", ()
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
 test("panda -> mui: preserves malformed concrete panda input", () => {
-	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
+	const result = route.run({ source: malformedSource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished panda */");
+	expectRouteScenarioEvidence(result, "panda -> mui malformed");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { Box } from "@mui/material";
+		  "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
 
-		export const card = { padding: "1rem", color: "red" };
-		export const App = () => <Box component="div" sx={card} />;
+		export const card = css.class({ "color": "red.300", "_hover": { "color": "blue.300" } });
 		const unfinished = { /* unfinished panda */",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		        "portable-artifact",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
-		      "representation": "static",
+		      "outcome": "portable-artifact",
+		      "representation": "portable-artifact",
 		    },
 		  ],
 		  "residuals": [],
@@ -233,6 +312,6 @@ test("panda -> mui: preserves malformed concrete panda input", () => {
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 

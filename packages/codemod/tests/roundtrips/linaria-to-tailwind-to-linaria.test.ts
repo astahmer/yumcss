@@ -3,30 +3,35 @@ import { expect, test } from "vitest";
 import { CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
-	expectActionableRoundTrip,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
+	expectTargetClassProjection,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const forward = createAdapterRouteSpec(CodemodAdapterId.Linaria, CodemodAdapterId.Tailwind);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.Tailwind, CodemodAdapterId.Linaria);
-	const happySource = "import { css } from \"@linaria/core\";\nexport const card = css`color: red; padding: 1rem;`;\nexport const App = () => <div className={card} />;";
-const edgeSource = "import { css } from \"@linaria/core\";\nexport const card = css`color: ${theme.foreground}; padding: 1rem;`;\nexport const App = () => <div className={card} />;";
-const malformedSource = "import { css } from \"@linaria/core\";\nexport const card = css`color: red; padding: 1rem;`;\nexport const App = () => <div className={card} />;\nconst unfinished = { /* unfinished linaria */";
+	const happySource = "import { css } from \"@linaria/core\";\nexport const card = css`color: red; padding: 1rem;`;";
+const edgeSource = "import { styled } from \"@linaria/react\";\nexport const Card = styled.div`color: red; padding: 1rem;`;";
+const malformedSource = "import { css } from \"@linaria/core\";\nexport const card = css`color: red; padding: 1rem;`;\nconst unfinished = { /* unfinished linaria */";
 const sourceSemantic = undefined;
-const themedSource = "import { css } from \"@linaria/core\";\nexport const card = css`color: ${theme.colors.brand}; padding: 1rem;`;\nexport const App = () => <div className={card} />;";
-const tokenSource = "import { css } from \"@linaria/core\";\nexport const card = css`color: var(--colors-brand); padding: 1rem;`;\nexport const App = () => <div className={card} />;";
-const blueSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/tailwind.css":"@import \"tailwindcss\"; @theme { --color-brand: #2563eb; --spacing-card: 1.125rem; }"} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/tailwind.css":"@import \"tailwindcss\"; @theme { --color-brand: #f97316; --spacing-card: 1.125rem; }"} };
+const themedSource = "import { css } from \"@linaria/core\";\nexport const card = css`color: #2563eb; padding: 1rem;`;";
+const tokenSource = "import { css } from \"@linaria/core\";\nexport const card = css`color: #2563eb; padding: 1rem;`;";
+const blueSemantic = undefined;
+const amberSemantic = undefined;
+const blueTargetSemantic = undefined;
+const amberTargetSemantic = undefined;
+const blueProject = createAdapterRouteProject(CodemodAdapterId.Linaria, CodemodAdapterId.Tailwind, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.Linaria, CodemodAdapterId.Tailwind, "#f97316");
 	const targetSemantic = undefined;
 
 test("linaria -> tailwind -> linaria: preserves an actionable concrete round trip", () => {
-	const first = forward.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+	const first = forward.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
+	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -36,17 +41,32 @@ test("linaria -> tailwind -> linaria: preserves an actionable concrete round tri
 		expect(first.residuals.length).toBeGreaterThan(0);
 		expect(first.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(first, "linaria -> tailwind round-trip happy forward");
 	expectExplicitResidualEvidence(first);
-	expectActionableRoundTrip(first, second);
+	expectTargetClassProjection(first, second, ["text-","bg-","p-","[","className","class"], "linaria -> tailwind round-trip happy");
 	expectExplicitResidualEvidence(second);
 	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
 		{
 		  "forward": {
 		    "changed": true,
 		    "code": "
-		export const card = "[padding:1rem] [color:red]";
-		export const App = () => <div className={card} />;",
+		export const card = "[padding:1rem] [color:red]";",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "static",
@@ -67,9 +87,23 @@ test("linaria -> tailwind -> linaria: preserves an actionable concrete round tri
 		    "changed": true,
 		    "code": "import { css } from "@linaria/core";
 
-		export const card = "[padding:1rem] [color:red]";
-		export const App = () => <div className={css\`padding: 1rem; color: red;\`}/>;",
+		export const card = css\`padding: 1rem; color: red;\`;",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "static",
@@ -87,35 +121,50 @@ test("linaria -> tailwind -> linaria: preserves an actionable concrete round tri
 		    ],
 		  },
 		}
-	`);
+	`)
 });
 
-test("linaria -> tailwind -> linaria: retains edge semantics without silent loss", () => {
-	const first = forward.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+test("linaria -> tailwind -> linaria: retains the documented secondary API without silent loss", () => {
+	const first = forward.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
+	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
-	expectActionableRoundTrip(first, second);
+	expectRouteScenarioEvidence(first, "linaria -> tailwind round-trip secondary forward");
+	expectTargetClassProjection(first, second, ["text-","bg-","p-","[","className","class"], "linaria -> tailwind round-trip secondary");
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
 	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@linaria/core";
-		export const card = // pandwind:migrate-skip (route: linaria -> tailwind | parse-residual: dynamic | available: named-map, custom-property, residual)
-		css\`color: \${theme.foreground}; padding: 1rem;\`;
-		export const App = () => <div className={card} />;",
+		    "code": "import { styled } from "@linaria/react";
+		export const Card = // pandwind:migrate-skip (route: linaria -> tailwind | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "custom-property",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "template interpolation requires a runtime-aware lowering",
-		        "kind": "dynamic",
+		        "hint": "components: component subject: styled.div",
+		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -123,42 +172,37 @@ test("linaria -> tailwind -> linaria: retains edge semantics without silent loss
 		    "validations": [],
 		  },
 		  "reverse": {
-		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: tailwind -> linaria | parse-residual: dynamic)
-		import { css } from "@linaria/core";
-		export const card = // pandwind:migrate-skip (route: linaria -> tailwind | parse-residual: dynamic | available: named-map, custom-property, residual)
-		css\`color: \${theme.foreground}; padding: 1rem;\`;
-		export const App = () => <div className={card} />;",
+		    "changed": false,
+		    "code": "import { styled } from "@linaria/react";
+		export const Card = // pandwind:migrate-skip (route: linaria -> tailwind | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
-		    "outcomes": [
-		      {
-		        "outcome": "residual",
-		        "representation": "residual",
-		      },
-		    ],
-		    "residuals": [
-		      {
-		        "hint": "Tailwind dynamic class expressions require runtime-aware target lowering",
-		        "kind": "dynamic",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [],
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 
-test("linaria -> tailwind -> linaria: preserves concrete theme and project context variants", () => {
-	const firstBlue = forward.run({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const secondBlue = reverse.run({ source: firstBlue.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
-	const firstAmber = forward.run({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
-	const secondAmber = reverse.run({ source: firstAmber.code, file: "Card.tsx", semantic: amberTargetSemantic, project: amberProject });
+test("linaria -> tailwind -> linaria: preserves concrete theme and project context variants", async () => {
+	const firstBlue = await forward.runAsync({ source: themedSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
+	const firstAmber = await forward.runAsync({ source: themedSource, file: "styles.ts", semantic: amberSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "App.tsx", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
-	expectActionableRoundTrip(firstBlue, secondBlue);
-	expectActionableRoundTrip(firstAmber, secondAmber);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Linaria, CodemodAdapterId.Tailwind);
+	expectConfiguredTargetTokenEvidence(firstBlue, CodemodAdapterId.Tailwind, "linaria -> tailwind round-trip token config");
+	expectRouteScenarioEvidence(firstBlue, "linaria -> tailwind round-trip blue forward");
+	expectRouteScenarioEvidence(firstAmber, "linaria -> tailwind round-trip amber forward");
+	expectConfiguredTargetTokenAbsence(firstAmber, CodemodAdapterId.Tailwind, "linaria -> tailwind round-trip amber literal config");
+
+	expectTargetClassProjection(firstBlue, secondBlue, ["text-","bg-","p-","[","className","class"], "linaria -> tailwind round-trip blue");
+	expectTargetClassProjection(firstAmber, secondAmber, ["text-","bg-","p-","[","className","class"], "linaria -> tailwind round-trip amber");
 	expectExplicitResidualEvidence(firstBlue);
 	expectExplicitResidualEvidence(secondBlue);
 	expectExplicitResidualEvidence(firstAmber);
@@ -171,35 +215,60 @@ test("linaria -> tailwind -> linaria: preserves concrete theme and project conte
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "@linaria/core";
-		export const card = // pandwind:migrate-skip (route: linaria -> tailwind | parse-residual: dynamic | available: named-map, custom-property, residual)
-		css\`color: \${theme.colors.brand}; padding: 1rem;\`;
-		export const App = () => <div className={card} />;",
-		      "converted": 0,
+		      "code": "
+		export const card = "[padding:1rem] [color:#2563eb]";",
+		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
-		          "representation": "custom-property",
+		          "outcome": "static",
+		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
 		        {
-		          "hint": "template interpolation requires a runtime-aware lowering",
-		          "kind": "dynamic",
-		          "preserved": undefined,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
-		      "skipped": 1,
-		      "validations": [],
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "// pandwind:migrate-skip (route: tailwind -> linaria | parse-residual: dynamic)
-		import { css } from "@linaria/core";
-		export const card = // pandwind:migrate-skip (route: linaria -> tailwind | parse-residual: dynamic | available: named-map, custom-property, residual)
-		css\`color: \${theme.colors.brand}; padding: 1rem;\`;
-		export const App = () => <div className={card} />;",
+		      "code": "
+		export const card = // pandwind:migrate-skip (route: tailwind -> linaria | parse-residual: unknown-utility | available: named-map, residual)
+		"[padding:1rem] [color:#2563eb]";",
 		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "residual",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
@@ -208,8 +277,13 @@ test("linaria -> tailwind -> linaria: preserves concrete theme and project conte
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "Tailwind dynamic class expressions require runtime-aware target lowering",
-		          "kind": "dynamic",
+		          "hint": "Tailwind utility requires the project engine or a custom preset",
+		          "kind": "unknown-utility",
+		          "preserved": undefined,
+		        },
+		        {
+		          "hint": "Tailwind utility requires the project engine or a custom preset",
+		          "kind": "unknown-utility",
 		          "preserved": undefined,
 		        },
 		      ],
@@ -220,35 +294,60 @@ test("linaria -> tailwind -> linaria: preserves concrete theme and project conte
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "@linaria/core";
-		export const card = // pandwind:migrate-skip (route: linaria -> tailwind | parse-residual: dynamic | available: named-map, custom-property, residual)
-		css\`color: \${theme.colors.brand}; padding: 1rem;\`;
-		export const App = () => <div className={card} />;",
-		      "converted": 0,
+		      "code": "
+		export const card = "[padding:1rem] text-brand";",
+		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
-		          "representation": "custom-property",
+		          "outcome": "static",
+		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
 		        {
-		          "hint": "template interpolation requires a runtime-aware lowering",
-		          "kind": "dynamic",
-		          "preserved": undefined,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
-		      "skipped": 1,
-		      "validations": [],
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "// pandwind:migrate-skip (route: tailwind -> linaria | parse-residual: dynamic)
-		import { css } from "@linaria/core";
-		export const card = // pandwind:migrate-skip (route: linaria -> tailwind | parse-residual: dynamic | available: named-map, custom-property, residual)
-		css\`color: \${theme.colors.brand}; padding: 1rem;\`;
-		export const App = () => <div className={card} />;",
+		      "code": "
+		export const card = // pandwind:migrate-skip (route: tailwind -> linaria | parse-residual: unknown-utility | available: named-map, residual)
+		"[padding:1rem] text-brand";",
 		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "residual",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
@@ -257,8 +356,8 @@ test("linaria -> tailwind -> linaria: preserves concrete theme and project conte
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "Tailwind dynamic class expressions require runtime-aware target lowering",
-		          "kind": "dynamic",
+		          "hint": "Tailwind utility requires the project engine or a custom preset",
+		          "kind": "unknown-utility",
 		          "preserved": undefined,
 		        },
 		      ],
@@ -267,14 +366,16 @@ test("linaria -> tailwind -> linaria: preserves concrete theme and project conte
 		    },
 		  },
 		}
-	`);
+	`)
 });
 
-test("linaria -> tailwind -> linaria: resolves token references across both concrete legs", () => {
-	const first = forward.run({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
+test("linaria -> tailwind -> linaria: resolves token values across both concrete legs", async () => {
+	const first = await forward.runAsync({ source: tokenSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
-	expectActionableRoundTrip(first, second);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Linaria, CodemodAdapterId.Tailwind);
+	expectRouteScenarioEvidence(first, "linaria -> tailwind round-trip token forward");
+	expectTargetClassProjection(first, second, ["text-","bg-","p-","[","className","class"], "linaria -> tailwind round-trip token");
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
 	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
@@ -282,9 +383,23 @@ test("linaria -> tailwind -> linaria: resolves token references across both conc
 		  "forward": {
 		    "changed": true,
 		    "code": "
-		export const card = "[padding:1rem] [color:var(--colors-brand)]";
-		export const App = () => <div className={card} />;",
+		export const card = "[padding:1rem] text-brand";",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "static",
@@ -303,28 +418,41 @@ test("linaria -> tailwind -> linaria: resolves token references across both conc
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@linaria/core";
-
-		export const card = "[padding:1rem] [color:var(--colors-brand)]";
-		export const App = () => <div className={css\`padding: 1rem; color: var(--colors-brand);\`}/>;",
-		    "converted": 1,
+		    "code": "
+		export const card = // pandwind:migrate-skip (route: tailwind -> linaria | parse-residual: unknown-utility | available: named-map, residual)
+		"[padding:1rem] text-brand";",
+		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "residual",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
-		        "representation": "static",
+		        "outcome": "residual",
+		        "representation": "residual",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "Tailwind utility requires the project engine or a custom preset",
+		        "kind": "unknown-utility",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 

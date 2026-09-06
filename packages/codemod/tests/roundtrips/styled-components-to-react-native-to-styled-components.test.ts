@@ -3,30 +3,35 @@ import { expect, test } from "vitest";
 import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectActionableRoundTrip,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const forward = createAdapterRouteSpec(CodemodAdapterId.StyledComponents, CodemodAdapterId.ReactNative);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.ReactNative, CodemodAdapterId.StyledComponents);
-	const happySource = "import styled from \"styled-components\";\nexport const Card = styled.div({ color: \"red\", padding: \"1rem\" });\nexport const App = () => <Card />;";
-const edgeSource = "import styled from \"styled-components\";\nexport const Card = styled.div({ color: theme.foreground, padding: \"1rem\" });\nexport const App = () => <Card />;";
-const malformedSource = "import styled from \"styled-components\";\nexport const Card = styled.div({ color: \"red\", padding: \"1rem\" });\nexport const App = () => <Card />;\nconst unfinished = { /* unfinished styled-components */";
+	const happySource = "import styled from \"styled-components\";\nexport const Card = styled.div({ color: \"red\", padding: \"1rem\" });";
+const edgeSource = "import styled from \"styled-components\";\nexport const Card = styled.div`color: red; padding: 1rem;`;";
+const malformedSource = "import styled from \"styled-components\";\nexport const Card = styled.div({ color: \"red\", padding: \"1rem\" });\nconst unfinished = { /* unfinished styled-components */";
 const sourceSemantic = { source: { framework: BuiltinHostFramework.React } };
-const themedSource = "import styled from \"styled-components\";\nexport const Card = styled.div({ color: theme.colors.brand, padding: \"1rem\" });\nexport const App = () => <Card />;";
-const tokenSource = "import styled from \"styled-components\";\nexport const Card = styled.div({ color: \"$colors.brand\", padding: \"1rem\" });\nexport const App = () => <Card />;";
-const blueSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {} };
+const themedSource = "import styled from \"styled-components\";\nexport const Card = styled.div({ color: \"#2563eb\", padding: \"1rem\" });";
+const tokenSource = "import styled from \"styled-components\";\nexport const Card = styled.div({ color: \"#2563eb\", padding: \"1rem\" });";
+const blueSemantic = { source: { framework: BuiltinHostFramework.React } };
+const amberSemantic = { source: { framework: BuiltinHostFramework.React } };
+const blueTargetSemantic = undefined;
+const amberTargetSemantic = undefined;
+const blueProject = createAdapterRouteProject(CodemodAdapterId.StyledComponents, CodemodAdapterId.ReactNative, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.StyledComponents, CodemodAdapterId.ReactNative, "#f97316");
 	const targetSemantic = undefined;
 
 test("styled-components -> react-native -> styled-components: preserves an actionable concrete round trip", () => {
 	const first = forward.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -36,6 +41,7 @@ test("styled-components -> react-native -> styled-components: preserves an actio
 		expect(first.residuals.length).toBeGreaterThan(0);
 		expect(first.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(first, "styled-components -> react-native round-trip happy forward");
 	expectExplicitResidualEvidence(first);
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(second);
@@ -45,9 +51,24 @@ test("styled-components -> react-native -> styled-components: preserves an actio
 		    "changed": true,
 		    "code": "import { StyleSheet, View } from "react-native";
 
-		export const Card = StyleSheet.create({ style: { "padding": 16, "color": "red" } }).style;
-		export const App = () => <View style={Card} />;",
+		export const Card = (props) => <View {...props} style={StyleSheet.create({ style: { "padding": 16, "color": "red" } }).style} />;",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		          "react-native-numeric-normalization",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "static",
@@ -69,9 +90,21 @@ test("styled-components -> react-native -> styled-components: preserves an actio
 		    "code": "import { View } from "react-native";
 		import styled from "styled-components";
 
-		export const Card = { "style": styled.div({ padding: 16, color: "red" }) }.style;
-		export const App = () => <View style={Card} />;",
+		export const Card = (props) => <View {...props} style={{ "style": styled.div({ padding: 16, color: "red" }) }.style} />;",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "named-map",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "target-native",
@@ -89,13 +122,14 @@ test("styled-components -> react-native -> styled-components: preserves an actio
 		    ],
 		  },
 		}
-	`);
+	`)
 });
 
-test("styled-components -> react-native -> styled-components: retains edge semantics without silent loss", () => {
+test("styled-components -> react-native -> styled-components: retains the documented secondary API without silent loss", () => {
 	const first = forward.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(first, "styled-components -> react-native round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
@@ -103,55 +137,95 @@ test("styled-components -> react-native -> styled-components: retains edge seman
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
-		export const Card = // pandwind:migrate-skip (route: styled-components -> react-native | lowering-residual: host-framework | capability-blocked: dynamic-values: dynamic: theme.foreground | available: named-map, target-native, residual)
-		styled.div({ color: theme.foreground, padding: "1rem" });
-		export const App = () => <div className={Card.class} style={Card.style} />;",
-		    "converted": 0,
+		    "code": "import { StyleSheet, View } from "react-native";
+
+		export const Card = (props) => <View {...props} style={StyleSheet.create({ style: { "padding": 16, "color": "red" } }).style} />;",
+		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		          "react-native-numeric-normalization",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
-		        "representation": "target-native",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "dynamic-values: dynamic: theme.foreground",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "react-native has no host representation for react-native",
-		        "kind": "host-framework",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
-		    "validations": [],
-		  },
-		  "reverse": {
-		    "changed": false,
-		    "code": "import styled from "styled-components";
-		export const Card = // pandwind:migrate-skip (route: styled-components -> react-native | lowering-residual: host-framework | capability-blocked: dynamic-values: dynamic: theme.foreground | available: named-map, target-native, residual)
-		styled.div({ color: theme.foreground, padding: "1rem" });
-		export const App = () => <div className={Card.class} style={Card.style} />;",
-		    "converted": 0,
-		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [],
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "import { View } from "react-native";
+		import styled from "styled-components";
+
+		export const Card = (props) => <View {...props} style={{ "style": styled.div({ padding: 16, color: "red" }) }.style} />;",
+		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "named-map",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "target-native",
+		        "representation": "named-map",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		}
-	`);
+	`)
 });
 
-test("styled-components -> react-native -> styled-components: preserves concrete theme and project context variants", () => {
-	const firstBlue = forward.run({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const secondBlue = reverse.run({ source: firstBlue.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
-	const firstAmber = forward.run({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
-	const secondAmber = reverse.run({ source: firstAmber.code, file: "Card.tsx", semantic: amberTargetSemantic, project: amberProject });
+test("styled-components -> react-native -> styled-components: preserves concrete theme and project context variants", async () => {
+	const firstBlue = await forward.runAsync({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "styles.ts", semantic: blueTargetSemantic, project: blueProject });
+	const firstAmber = await forward.runAsync({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "styles.ts", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.StyledComponents, CodemodAdapterId.ReactNative);
+	expectConfiguredTargetTokenEvidence(firstBlue, CodemodAdapterId.ReactNative, "styled-components -> react-native round-trip token config");
+	expectRouteScenarioEvidence(firstBlue, "styled-components -> react-native round-trip blue forward");
+	expectRouteScenarioEvidence(firstAmber, "styled-components -> react-native round-trip amber forward");
+	expectConfiguredTargetTokenAbsence(firstAmber, CodemodAdapterId.ReactNative, "styled-components -> react-native round-trip amber literal config");
+
 	expectActionableRoundTrip(firstBlue, secondBlue);
 	expectActionableRoundTrip(firstAmber, secondAmber);
 	expectExplicitResidualEvidence(firstBlue);
@@ -168,9 +242,24 @@ test("styled-components -> react-native -> styled-components: preserves concrete
 		      "changed": true,
 		      "code": "import { StyleSheet, View } from "react-native";
 
-		export const Card = StyleSheet.create({ style: { "padding": 16, "color": "#f97316" } }).style;
-		export const App = () => <View style={Card} />;",
+		export const Card = (props) => <View {...props} style={StyleSheet.create({ style: { "padding": 16, "color": "#2563eb" } }).style} />;",
 		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		            "react-native-numeric-normalization",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "static",
@@ -192,9 +281,21 @@ test("styled-components -> react-native -> styled-components: preserves concrete
 		      "code": "import { View } from "react-native";
 		import styled from "styled-components";
 
-		export const Card = { "style": styled.div({ padding: 16, color: "#f97316" }) }.style;
-		export const App = () => <View style={Card} />;",
+		export const Card = (props) => <View {...props} style={{ "style": styled.div({ padding: 16, color: "#2563eb" }) }.style} />;",
 		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "named-map",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "target-native",
@@ -217,9 +318,24 @@ test("styled-components -> react-native -> styled-components: preserves concrete
 		      "changed": true,
 		      "code": "import { StyleSheet, View } from "react-native";
 
-		export const Card = StyleSheet.create({ style: { "padding": 16, "color": "#2563eb" } }).style;
-		export const App = () => <View style={Card} />;",
+		export const Card = (props) => <View {...props} style={StyleSheet.create({ style: { "padding": 16, "color": "#2563eb" } }).style} />;",
 		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		            "react-native-numeric-normalization",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "static",
@@ -241,9 +357,21 @@ test("styled-components -> react-native -> styled-components: preserves concrete
 		      "code": "import { View } from "react-native";
 		import styled from "styled-components";
 
-		export const Card = { "style": styled.div({ padding: 16, color: "#2563eb" }) }.style;
-		export const App = () => <View style={Card} />;",
+		export const Card = (props) => <View {...props} style={{ "style": styled.div({ padding: 16, color: "#2563eb" }) }.style} />;",
 		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "named-map",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "target-native",
@@ -262,13 +390,15 @@ test("styled-components -> react-native -> styled-components: preserves concrete
 		    },
 		  },
 		}
-	`);
+	`)
 });
 
-test("styled-components -> react-native -> styled-components: resolves token references across both concrete legs", () => {
-	const first = forward.run({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
+test("styled-components -> react-native -> styled-components: resolves token values across both concrete legs", async () => {
+	const first = await forward.runAsync({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "styles.ts", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.StyledComponents, CodemodAdapterId.ReactNative);
+	expectRouteScenarioEvidence(first, "styled-components -> react-native round-trip token forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
@@ -278,9 +408,24 @@ test("styled-components -> react-native -> styled-components: resolves token ref
 		    "changed": true,
 		    "code": "import { StyleSheet, View } from "react-native";
 
-		export const Card = StyleSheet.create({ style: { "padding": 16, "color": "$colors.brand" } }).style;
-		export const App = () => <View style={Card} />;",
+		export const Card = (props) => <View {...props} style={StyleSheet.create({ style: { "padding": 16, "color": "#2563eb" } }).style} />;",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		          "react-native-numeric-normalization",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "static",
@@ -302,9 +447,21 @@ test("styled-components -> react-native -> styled-components: resolves token ref
 		    "code": "import { View } from "react-native";
 		import styled from "styled-components";
 
-		export const Card = { "style": styled.div({ padding: 16, color: "$colors.brand" }) }.style;
-		export const App = () => <View style={Card} />;",
+		export const Card = (props) => <View {...props} style={{ "style": styled.div({ padding: 16, color: "#2563eb" }) }.style} />;",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "named-map",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "target-native",
@@ -322,6 +479,6 @@ test("styled-components -> react-native -> styled-components: resolves token ref
 		    ],
 		  },
 		}
-	`);
+	`)
 });
 

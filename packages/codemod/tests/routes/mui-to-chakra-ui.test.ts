@@ -3,26 +3,31 @@ import { expect, test } from "vitest";
 import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.Mui, CodemodAdapterId.ChakraUi);
 	const happySource = "import { Box } from \"@mui/material\";\nexport const App = () => <Box sx={{ color: \"red\", p: 2 }} />;";
-const edgeSource = "import { Box } from \"@mui/material\";\nexport const App = () => <Box sx={{ color: theme.foreground, p: 2 }} />;";
+const edgeSource = "import { styled } from \"@mui/system\";\nexport const Card = styled(\"div\")({ color: \"red\", padding: 8 });";
 const malformedSource = "import { Box } from \"@mui/material\";\nexport const App = () => <Box sx={{ color: \"red\", p: 2 }} />;\nconst unfinished = { /* unfinished mui */";
 const sourceSemantic = { source: { framework: BuiltinHostFramework.React } };
-const themedSource = "import { Box } from \"@mui/material\";\nexport const App = () => <Box sx={{ color: theme.palette.primary.main, p: 2 }} />;";
-const tokenSource = "import { Box } from \"@mui/material\";\nexport const App = () => <Box sx={{ color: \"primary.main\", p: 2 }} />;";
-const blueSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "palette.primary.main", authored: "theme.palette.primary.main", resolved: "#2563eb" }] };
-const amberSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "palette.primary.main", authored: "theme.palette.primary.main", resolved: "#f97316" }] };
-const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/src/theme.ts":"export const muiTheme = { palette: { primary: { main: \"#2563eb\" } } };","/virtual/pandwind-route-project/theme.ts":"export const chakraTheme = { theme: { tokens: { colors: { brand: { 500: { value: \"#2563eb\" } } } } } };"} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/src/theme.ts":"export const muiTheme = { palette: { primary: { main: \"#f97316\" } } };","/virtual/pandwind-route-project/theme.ts":"export const chakraTheme = { theme: { tokens: { colors: { brand: { 500: { value: \"#f97316\" } } } } } };"} };
+const themedSource = "import { Box } from \"@mui/material\";\nexport const App = () => <Box sx={{ color: \"primary.main\", p: 2 }} />;";
+const tokenSource = "import { Box } from \"@mui/material\";\nexport const App = () => <Box sx={{ color: \"#2563eb\", p: 2 }} />;";
+const blueSemantic = { source: { framework: BuiltinHostFramework.React } };
+const amberSemantic = { source: { framework: BuiltinHostFramework.React } };
+const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
+const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
+const blueProject = createAdapterRouteProject(CodemodAdapterId.Mui, CodemodAdapterId.ChakraUi, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.Mui, CodemodAdapterId.ChakraUi, "#f97316");
 
 test("mui -> chakra-ui: migrates concrete mui syntax to chakra-ui", () => {
-	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
+	const result = route.run({ source: happySource, file: "App.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -37,6 +42,7 @@ test("mui -> chakra-ui: migrates concrete mui syntax to chakra-ui", () => {
 		expect(result.residuals.length).toBeGreaterThan(0);
 		expect(result.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(result, "mui -> chakra-ui happy");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
@@ -44,6 +50,19 @@ test("mui -> chakra-ui: migrates concrete mui syntax to chakra-ui", () => {
 		  "code": "import { Box } from "@mui/material";
 		export const App = () => <Box  css={{ padding: "16px", color: "red" }}/>;",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "static",
@@ -60,44 +79,63 @@ test("mui -> chakra-ui: migrates concrete mui syntax to chakra-ui", () => {
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
-test("mui -> chakra-ui: carries concrete mui dynamics or edge syntax explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
+test("mui -> chakra-ui: carries a documented secondary mui API explicitly", () => {
+	const result = route.run({ source: edgeSource, file: "App.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(result, "mui -> chakra-ui secondary");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { Box } from "@mui/material";
-		export const App = () => // pandwind:migrate-skip (route: mui -> chakra-ui | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
-		<Box sx={{ color: theme.foreground, p: 2 }} />;",
-		  "converted": 0,
+		  "code": "import { styled } from "@mui/system";
+		import { defaultSystem } from "@chakra-ui/react";
+		export const Card = defaultSystem.css({ padding: "8px", color: "red" });",
+		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
-		      "representation": "custom-property",
+		      "outcome": "static",
+		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
 		    {
-		      "hint": "bind --pandwind-dynamic-5qa8dh at runtime for target chakra-ui",
-		      "kind": "dynamic-custom-property",
-		      "preserved": undefined,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
-		  "skipped": 1,
-		  "validations": [],
 		}
-	`);
+	`)
 });
 
-test("mui -> chakra-ui: lowers concrete theme and project context variants", () => {
-	const blue = route.run({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const amber = route.run({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
+test("mui -> chakra-ui: loads concrete theme and project context variants", async () => {
+	const blue = await route.runAsync({ source: themedSource, file: "App.tsx", semantic: blueSemantic, project: blueProject });
+	const amber = await route.runAsync({ source: themedSource, file: "App.tsx", semantic: amberSemantic, project: amberProject });
 	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
 	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Mui, CodemodAdapterId.ChakraUi);
+	expectConfiguredTargetTokenEvidence(blue, CodemodAdapterId.ChakraUi, "mui -> chakra-ui blue config");
+	expectRouteScenarioEvidence(blue, "mui -> chakra-ui blue config");
+	expectRouteScenarioEvidence(amber, "mui -> chakra-ui amber config");
+
 	expectExplicitResidualEvidence(blue);
 	expectExplicitResidualEvidence(amber);
 	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
@@ -105,61 +143,101 @@ test("mui -> chakra-ui: lowers concrete theme and project context variants", () 
 		  "amber": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
-		export const App = () => // pandwind:migrate-skip (route: mui -> chakra-ui | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
-		<Box sx={{ color: theme.palette.primary.main, p: 2 }} />;",
-		    "converted": 0,
+		export const App = () => <Box  css={{ padding: "16px", color: "brand.500" }}/>;",
+		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
-		        "representation": "custom-property",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "bind --pandwind-dynamic-d9jp16 at runtime for target chakra-ui",
-		        "kind": "dynamic-custom-property",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		  "blue": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
-		export const App = () => // pandwind:migrate-skip (route: mui -> chakra-ui | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
-		<Box sx={{ color: theme.palette.primary.main, p: 2 }} />;",
-		    "converted": 0,
+		export const App = () => <Box  css={{ padding: "16px", color: "brand.500" }}/>;",
+		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
-		        "representation": "custom-property",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "bind --pandwind-dynamic-d9jp16 at runtime for target chakra-ui",
-		        "kind": "dynamic-custom-property",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 
-test("mui -> chakra-ui: resolves concrete token references with project context", () => {
-	const result = route.run({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
+test("mui -> chakra-ui: resolves concrete token values with project context", async () => {
+	const result = await route.runAsync({ source: tokenSource, file: "App.tsx", semantic: blueSemantic, project: blueProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Mui, CodemodAdapterId.ChakraUi);
+	expectConfiguredTargetTokenEvidence(result, CodemodAdapterId.ChakraUi, "mui -> chakra-ui token config");
+	expectRouteScenarioEvidence(result, "mui -> chakra-ui token config");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mui/material";
-		export const App = () => <Box  css={{ padding: "16px", color: "var(--mui-primary-main)" }}/>;",
+		export const App = () => <Box  css={{ padding: "16px", color: "brand.500" }}/>;",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "static",
@@ -176,12 +254,13 @@ test("mui -> chakra-ui: resolves concrete token references with project context"
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
 test("mui -> chakra-ui: preserves malformed concrete mui input", () => {
-	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
+	const result = route.run({ source: malformedSource, file: "App.tsx", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished mui */");
+	expectRouteScenarioEvidence(result, "mui -> chakra-ui malformed");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
@@ -190,6 +269,19 @@ test("mui -> chakra-ui: preserves malformed concrete mui input", () => {
 		export const App = () => <Box  css={{ padding: "16px", color: "red" }}/>;
 		const unfinished = { /* unfinished mui */",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "static",
@@ -206,6 +298,6 @@ test("mui -> chakra-ui: preserves malformed concrete mui input", () => {
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 

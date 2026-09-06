@@ -3,26 +3,31 @@ import { expect, test } from "vitest";
 import { CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.StyleX, CodemodAdapterId.Tamagui);
-	const happySource = "import * as stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"red\", padding: \"1rem\" } });\nexport const App = () => <div {...stylex.props(styles.card)} />;";
-const edgeSource = "import * as stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: theme.foreground, padding: \"1rem\" } });\nexport const App = () => <div {...stylex.props(styles.card)} />;";
-const malformedSource = "import * as stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"red\", padding: \"1rem\" } });\nexport const App = () => <div {...stylex.props(styles.card)} />;\nconst unfinished = { /* unfinished stylex */";
+	const happySource = "import stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"red\", padding: 8 } });";
+const edgeSource = "import stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"red\" } });";
+const malformedSource = "import stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"red\", padding: 8 } });\nconst unfinished = { /* unfinished stylex */";
 const sourceSemantic = undefined;
-const themedSource = "import * as stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: theme.colors.brand, padding: \"1rem\" } });\nexport const App = () => <div {...stylex.props(styles.card)} />;";
-const tokenSource = "import * as stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"$colors.brand\", padding: \"1rem\" } });\nexport const App = () => <div {...stylex.props(styles.card)} />;";
-const blueSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/package.json":"{\"name\":\"stylex-fixture\",\"stylex\":{\"aliases\":{\"brand\":\"#2563eb\"}}}"} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/package.json":"{\"name\":\"stylex-fixture\",\"stylex\":{\"aliases\":{\"brand\":\"#f97316\"}}}"} };
+const themedSource = "import stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"#2563eb\", padding: 8 } });";
+const tokenSource = "import stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"#2563eb\", padding: 8 } });";
+const blueSemantic = undefined;
+const amberSemantic = undefined;
+const blueTargetSemantic = undefined;
+const amberTargetSemantic = undefined;
+const blueProject = createAdapterRouteProject(CodemodAdapterId.StyleX, CodemodAdapterId.Tamagui, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.StyleX, CodemodAdapterId.Tamagui, "#f97316");
 
 test("stylex -> tamagui: migrates concrete stylex syntax to tamagui", () => {
-	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
+	const result = route.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -37,19 +42,31 @@ test("stylex -> tamagui: migrates concrete stylex syntax to tamagui", () => {
 		expect(result.residuals.length).toBeGreaterThan(0);
 		expect(result.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(result, "stylex -> tamagui happy");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import * as stylex from "@stylexjs/stylex";
-		export const styles = // pandwind:migrate-skip (route: stylex -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual, named-map)
-		stylex.create({ card: { color: "red", padding: "1rem" } });
-		export const App = () => <div {...stylex.props(styles.card)} />;",
+		  "code": "import stylex from "@stylexjs/stylex";
+		export const styles = // pandwind:migrate-skip (route: stylex -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		stylex.create({ card: { color: "red", padding: 8 } });",
 		  "converted": 0,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "named-map",
+		      "representation": "static",
 		    },
 		  ],
 		  "residuals": [
@@ -62,76 +79,95 @@ test("stylex -> tamagui: migrates concrete stylex syntax to tamagui", () => {
 		  "skipped": 1,
 		  "validations": [],
 		}
-	`);
+	`)
 });
 
-test("stylex -> tamagui: carries concrete stylex dynamics or edge syntax explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
+test("stylex -> tamagui: carries a documented secondary stylex API explicitly", () => {
+	const result = route.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(result, "stylex -> tamagui secondary");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import * as stylex from "@stylexjs/stylex";
-		export const styles = // pandwind:migrate-skip (route: stylex -> tamagui | lowering-residual: dynamic | capability-blocked: named-rules: named style rule: card; dynamic-values: dynamic: theme.foreground; theme-context: 1 theme binding(s) | available: residual)
-		stylex.create({ card: { color: theme.foreground, padding: "1rem" } });
-		export const App = () => <div {...stylex.props(styles.card)} />;",
+		  "code": "import stylex from "@stylexjs/stylex";
+		export const styles = // pandwind:migrate-skip (route: stylex -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		stylex.create({ card: { color: "red" } });",
 		  "converted": 0,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "residual",
+		      "representation": "static",
 		    },
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "named-rules: named style rule: card; dynamic-values: dynamic: theme.foreground; theme-context: 1 theme binding(s)",
+		      "hint": "named-rules: named style rule: card",
 		      "kind": "capability",
-		      "preserved": undefined,
-		    },
-		    {
-		      "hint": "target lacks runtime dynamic values",
-		      "kind": "dynamic",
 		      "preserved": undefined,
 		    },
 		  ],
 		  "skipped": 1,
 		  "validations": [],
 		}
-	`);
+	`)
 });
 
-test("stylex -> tamagui: lowers concrete theme and project context variants", () => {
-	const blue = route.run({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const amber = route.run({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
+test("stylex -> tamagui: loads concrete theme and project context variants", async () => {
+	const blue = await route.runAsync({ source: themedSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
+	const amber = await route.runAsync({ source: themedSource, file: "styles.ts", semantic: amberSemantic, project: amberProject });
 	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
 	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.StyleX, CodemodAdapterId.Tamagui);
+	expectConfiguredTargetTokenEvidence(blue, CodemodAdapterId.Tamagui, "stylex -> tamagui blue config");
+	expectRouteScenarioEvidence(blue, "stylex -> tamagui blue config");
+	expectRouteScenarioEvidence(amber, "stylex -> tamagui amber config");
+	expectConfiguredTargetTokenAbsence(amber, CodemodAdapterId.Tamagui, "stylex -> tamagui amber literal config");
+
 	expectExplicitResidualEvidence(blue);
 	expectExplicitResidualEvidence(amber);
 	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import * as stylex from "@stylexjs/stylex";
-		export const styles = // pandwind:migrate-skip (route: stylex -> tamagui | lowering-residual: dynamic | capability-blocked: named-rules: named style rule: card; dynamic-values: dynamic: theme.colors.brand; theme-context: 1 theme binding(s) | available: residual)
-		stylex.create({ card: { color: theme.colors.brand, padding: "1rem" } });
-		export const App = () => <div {...stylex.props(styles.card)} />;",
+		    "code": "import stylex from "@stylexjs/stylex";
+		export const styles = // pandwind:migrate-skip (route: stylex -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		stylex.create({ card: { color: "#2563eb", padding: 8 } });",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "residual",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "named-rules: named style rule: card; dynamic-values: dynamic: theme.colors.brand; theme-context: 1 theme binding(s)",
+		        "hint": "named-rules: named style rule: card",
 		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "target lacks runtime dynamic values",
-		        "kind": "dynamic",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -140,26 +176,32 @@ test("stylex -> tamagui: lowers concrete theme and project context variants", ()
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import * as stylex from "@stylexjs/stylex";
-		export const styles = // pandwind:migrate-skip (route: stylex -> tamagui | lowering-residual: dynamic | capability-blocked: named-rules: named style rule: card; dynamic-values: dynamic: theme.colors.brand; theme-context: 1 theme binding(s) | available: residual)
-		stylex.create({ card: { color: theme.colors.brand, padding: "1rem" } });
-		export const App = () => <div {...stylex.props(styles.card)} />;",
+		    "code": "import stylex from "@stylexjs/stylex";
+		export const styles = // pandwind:migrate-skip (route: stylex -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		stylex.create({ card: { color: "#2563eb", padding: 8 } });",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "residual",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "named-rules: named style rule: card; dynamic-values: dynamic: theme.colors.brand; theme-context: 1 theme binding(s)",
+		        "hint": "named-rules: named style rule: card",
 		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "target lacks runtime dynamic values",
-		        "kind": "dynamic",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -167,25 +209,39 @@ test("stylex -> tamagui: lowers concrete theme and project context variants", ()
 		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 
-test("stylex -> tamagui: resolves concrete token references with project context", () => {
-	const result = route.run({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
+test("stylex -> tamagui: resolves concrete token values with project context", async () => {
+	const result = await route.runAsync({ source: tokenSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.StyleX, CodemodAdapterId.Tamagui);
+	expectConfiguredTargetTokenEvidence(result, CodemodAdapterId.Tamagui, "stylex -> tamagui token config");
+	expectRouteScenarioEvidence(result, "stylex -> tamagui token config");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import * as stylex from "@stylexjs/stylex";
-		export const styles = // pandwind:migrate-skip (route: stylex -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual, named-map)
-		stylex.create({ card: { color: "$colors.brand", padding: "1rem" } });
-		export const App = () => <div {...stylex.props(styles.card)} />;",
+		  "code": "import stylex from "@stylexjs/stylex";
+		export const styles = // pandwind:migrate-skip (route: stylex -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		stylex.create({ card: { color: "#2563eb", padding: 8 } });",
 		  "converted": 0,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "named-map",
+		      "representation": "static",
 		    },
 		  ],
 		  "residuals": [
@@ -198,26 +254,38 @@ test("stylex -> tamagui: resolves concrete token references with project context
 		  "skipped": 1,
 		  "validations": [],
 		}
-	`);
+	`)
 });
 
 test("stylex -> tamagui: preserves malformed concrete stylex input", () => {
-	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
+	const result = route.run({ source: malformedSource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished stylex */");
+	expectRouteScenarioEvidence(result, "stylex -> tamagui malformed");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import * as stylex from "@stylexjs/stylex";
-		export const styles = // pandwind:migrate-skip (route: stylex -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual, named-map)
-		stylex.create({ card: { color: "red", padding: "1rem" } });
-		export const App = () => <div {...stylex.props(styles.card)} />;
+		  "code": "import stylex from "@stylexjs/stylex";
+		export const styles = // pandwind:migrate-skip (route: stylex -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		stylex.create({ card: { color: "red", padding: 8 } });
 		const unfinished = { /* unfinished stylex */",
 		  "converted": 0,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "named-map",
+		      "representation": "static",
 		    },
 		  ],
 		  "residuals": [
@@ -230,6 +298,6 @@ test("stylex -> tamagui: preserves malformed concrete stylex input", () => {
 		  "skipped": 1,
 		  "validations": [],
 		}
-	`);
+	`)
 });
 

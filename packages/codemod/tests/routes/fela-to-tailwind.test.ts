@@ -3,26 +3,31 @@ import { expect, test } from "vitest";
 import { CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.Fela, CodemodAdapterId.Tailwind);
-	const happySource = "import { createRenderer } from \"fela\";\nconst renderer = createRenderer();\nexport const card = renderer.renderRule(() => ({ color: \"red\", padding: \"1rem\" }));";
-const edgeSource = "import { createRenderer } from \"fela\";\nconst renderer = createRenderer();\nexport const card = renderer.renderRule(() => ({ color: theme.foreground, padding: \"1rem\" }));";
-const malformedSource = "import { createRenderer } from \"fela\";\nconst renderer = createRenderer();\nexport const card = renderer.renderRule(() => ({ color: \"red\", padding: \"1rem\" }));\nconst unfinished = { /* unfinished fela */";
+	const happySource = "import { createRenderer } from \"fela\";\nconst renderer = createRenderer();\nexport const card = renderer.renderRule(() => ({ color: \"red\" }));";
+const edgeSource = "import { createComponent } from \"react-fela\";\nexport const Card = createComponent(() => ({ color: \"red\" }));";
+const malformedSource = "import { createRenderer } from \"fela\";\nconst renderer = createRenderer();\nexport const card = renderer.renderRule(() => ({ color: \"red\" }));\nconst unfinished = { /* unfinished fela */";
 const sourceSemantic = undefined;
-const themedSource = "import { createRenderer } from \"fela\";\nconst renderer = createRenderer();\nexport const card = renderer.renderRule(() => ({ color: theme.colors.brand, padding: \"1rem\" }));";
-const tokenSource = "import { createRenderer } from \"fela\";\nconst renderer = createRenderer();\nexport const card = renderer.renderRule(() => ({ color: \"$colors.brand\", padding: \"1rem\" }));";
-const blueSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/tailwind.css":"@import \"tailwindcss\"; @theme { --color-brand: #2563eb; --spacing-card: 1.125rem; }"} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/tailwind.css":"@import \"tailwindcss\"; @theme { --color-brand: #f97316; --spacing-card: 1.125rem; }"} };
+const themedSource = "import { createRenderer } from \"fela\";\nconst renderer = createRenderer();\nexport const card = renderer.renderRule(() => ({ color: \"#2563eb\" }));";
+const tokenSource = "import { createRenderer } from \"fela\";\nconst renderer = createRenderer();\nexport const card = renderer.renderRule(() => ({ color: \"#2563eb\" }));";
+const blueSemantic = undefined;
+const amberSemantic = undefined;
+const blueTargetSemantic = undefined;
+const amberTargetSemantic = undefined;
+const blueProject = createAdapterRouteProject(CodemodAdapterId.Fela, CodemodAdapterId.Tailwind, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.Fela, CodemodAdapterId.Tailwind, "#f97316");
 
 test("fela -> tailwind: migrates concrete fela syntax to tailwind", () => {
-	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
+	const result = route.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -37,14 +42,30 @@ test("fela -> tailwind: migrates concrete fela syntax to tailwind", () => {
 		expect(result.residuals.length).toBeGreaterThan(0);
 		expect(result.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(result, "fela -> tailwind happy");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import { createRenderer } from "fela";
 		const renderer = createRenderer();
-		export const card = "[padding:1rem] [color:red]";",
+		export const card = "[color:red]";",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "static",
@@ -61,47 +82,65 @@ test("fela -> tailwind: migrates concrete fela syntax to tailwind", () => {
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
-test("fela -> tailwind: carries concrete fela dynamics or edge syntax explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
+test("fela -> tailwind: carries a documented secondary fela API explicitly", () => {
+	const result = route.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(result, "fela -> tailwind secondary");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createRenderer } from "fela";
-		import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
-		const renderer = createRenderer();
-		export const card = css.vars({ "padding": "1rem", "color": theme.foreground });",
-		  "converted": 1,
+		  "code": "import { createComponent } from "react-fela";
+		export const Card = // pandwind:migrate-skip (route: fela -> tailwind | parse-residual: component | available: named-map, residual)
+		createComponent(() => ({ color: "red" }));",
+		  "converted": 0,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "residual",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "residual",
+		      "representation": "residual",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "Fela createComponent requires a host/component lowering",
+		      "kind": "component",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
-	`);
+	`)
 });
 
-test("fela -> tailwind: lowers concrete theme and project context variants", () => {
-	const blue = route.run({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const amber = route.run({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
+test("fela -> tailwind: loads concrete theme and project context variants", async () => {
+	const blue = await route.runAsync({ source: themedSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
+	const amber = await route.runAsync({ source: themedSource, file: "styles.ts", semantic: amberSemantic, project: amberProject });
 	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
 	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Fela, CodemodAdapterId.Tailwind);
+	expectConfiguredTargetTokenEvidence(blue, CodemodAdapterId.Tailwind, "fela -> tailwind blue config");
+	expectRouteScenarioEvidence(blue, "fela -> tailwind blue config");
+	expectRouteScenarioEvidence(amber, "fela -> tailwind amber config");
+	expectConfiguredTargetTokenAbsence(amber, CodemodAdapterId.Tailwind, "fela -> tailwind amber literal config");
+
 	expectExplicitResidualEvidence(blue);
 	expectExplicitResidualEvidence(amber);
 	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
@@ -109,16 +148,28 @@ test("fela -> tailwind: lowers concrete theme and project context variants", () 
 		  "amber": {
 		    "changed": true,
 		    "code": "import { createRenderer } from "fela";
-		import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
 		const renderer = createRenderer();
-		export const card = css.vars({ "padding": "1rem", "color": theme.colors.brand });",
+		export const card = "[color:#2563eb]";",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [],
@@ -134,16 +185,28 @@ test("fela -> tailwind: lowers concrete theme and project context variants", () 
 		  "blue": {
 		    "changed": true,
 		    "code": "import { createRenderer } from "fela";
-		import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
 		const renderer = createRenderer();
-		export const card = css.vars({ "padding": "1rem", "color": theme.colors.brand });",
+		export const card = "text-brand";",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [],
@@ -157,20 +220,38 @@ test("fela -> tailwind: lowers concrete theme and project context variants", () 
 		    ],
 		  },
 		}
-	`);
+	`)
 });
 
-test("fela -> tailwind: resolves concrete token references with project context", () => {
-	const result = route.run({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
+test("fela -> tailwind: resolves concrete token values with project context", async () => {
+	const result = await route.runAsync({ source: tokenSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Fela, CodemodAdapterId.Tailwind);
+	expectConfiguredTargetTokenEvidence(result, CodemodAdapterId.Tailwind, "fela -> tailwind token config");
+	expectRouteScenarioEvidence(result, "fela -> tailwind token config");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import { createRenderer } from "fela";
 		const renderer = createRenderer();
-		export const card = "[padding:1rem] [color:$colors.brand]";",
+		export const card = "text-brand";",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "static",
@@ -187,21 +268,37 @@ test("fela -> tailwind: resolves concrete token references with project context"
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
 test("fela -> tailwind: preserves malformed concrete fela input", () => {
-	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
+	const result = route.run({ source: malformedSource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished fela */");
+	expectRouteScenarioEvidence(result, "fela -> tailwind malformed");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import { createRenderer } from "fela";
 		const renderer = createRenderer();
-		export const card = "[padding:1rem] [color:red]";
+		export const card = "[color:red]";
 		const unfinished = { /* unfinished fela */",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "static",
@@ -218,6 +315,6 @@ test("fela -> tailwind: preserves malformed concrete fela input", () => {
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 

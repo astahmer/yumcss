@@ -3,29 +3,34 @@ import { expect, test } from "vitest";
 import { CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectActionableRoundTrip,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const forward = createAdapterRouteSpec(CodemodAdapterId.Stitches, CodemodAdapterId.Tamagui);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.Tamagui, CodemodAdapterId.Stitches);
-	const happySource = "import { css } from \"@stitches/react\";\nexport const card = css({ color: \"red\", padding: \"1rem\" });\nexport const App = () => <div className={card()} />;";
-const edgeSource = "import { css } from \"@stitches/react\";\nexport const card = css({ color: theme.foreground, padding: \"1rem\" });\nexport const App = () => <div className={card()} />;";
-const malformedSource = "import { css } from \"@stitches/react\";\nexport const card = css({ color: \"red\", padding: \"1rem\" });\nexport const App = () => <div className={card()} />;\nconst unfinished = { /* unfinished stitches */";
+	const happySource = "import { css } from \"@stitches/react\";\nexport const card = css({ color: \"red\", padding: \"1rem\" });";
+const edgeSource = "import { globalCss } from \"@stitches/react\";\nexport const reset = globalCss({ body: { margin: 0 } });";
+const malformedSource = "import { css } from \"@stitches/react\";\nexport const card = css({ color: \"red\", padding: \"1rem\" });\nconst unfinished = { /* unfinished stitches */";
 const sourceSemantic = undefined;
-const themedSource = "import { css } from \"@stitches/react\";\nexport const card = css({ color: theme.colors.brand, padding: \"1rem\" });\nexport const App = () => <div className={card()} />;";
-const tokenSource = "import { css } from \"@stitches/react\";\nexport const card = css({ color: \"$colors.brand\", padding: \"1rem\" });\nexport const App = () => <div className={card()} />;";
-const blueSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/stitches.config.ts":"export const config = { theme: { colors: { brand: \"#2563eb\" }, space: { card: \"1.125rem\" } } };"} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/stitches.config.ts":"export const config = { theme: { colors: { brand: \"#f97316\" }, space: { card: \"1.125rem\" } } };"} };
+const themedSource = "import { css } from \"@stitches/react\";\nexport const card = css({ color: \"#2563eb\", padding: \"1rem\" });";
+const tokenSource = "import { css } from \"@stitches/react\";\nexport const card = css({ color: \"#2563eb\", padding: \"1rem\" });";
+const blueSemantic = undefined;
+const amberSemantic = undefined;
+const blueTargetSemantic = undefined;
+const amberTargetSemantic = undefined;
+const blueProject = createAdapterRouteProject(CodemodAdapterId.Stitches, CodemodAdapterId.Tamagui, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.Stitches, CodemodAdapterId.Tamagui, "#f97316");
 	const targetSemantic = undefined;
 
 test("stitches -> tamagui -> stitches: preserves an actionable concrete round trip", () => {
-	const first = forward.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
+	const first = forward.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
 	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
@@ -36,6 +41,7 @@ test("stitches -> tamagui -> stitches: preserves an actionable concrete round tr
 		expect(first.residuals.length).toBeGreaterThan(0);
 		expect(first.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(first, "stitches -> tamagui round-trip happy forward");
 	expectExplicitResidualEvidence(first);
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(second);
@@ -45,9 +51,20 @@ test("stitches -> tamagui -> stitches: preserves an actionable concrete round tr
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
 
-		export const card = styled(View, { padding: "1rem", color: "red" });
-		export const App = () => <div className={card()} />;",
+		export const card = styled(View, { padding: "1rem", color: "red" });",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "static",
@@ -69,9 +86,23 @@ test("stitches -> tamagui -> stitches: preserves an actionable concrete round tr
 		    "code": "import { View } from "@tamagui/core";
 		import { css } from "@stitches/react";
 
-		export const card = css({ padding: "1rem", color: "red" });
-		export const App = () => <div className={card()} />;",
+		export const card = css({ padding: "1rem", color: "red" });",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "static",
@@ -89,13 +120,14 @@ test("stitches -> tamagui -> stitches: preserves an actionable concrete round tr
 		    ],
 		  },
 		}
-	`);
+	`)
 });
 
-test("stitches -> tamagui -> stitches: retains edge semantics without silent loss", () => {
-	const first = forward.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
+test("stitches -> tamagui -> stitches: retains the documented secondary API without silent loss", () => {
+	const first = forward.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
 	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(first, "stitches -> tamagui round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
@@ -103,17 +135,26 @@ test("stitches -> tamagui -> stitches: retains edge semantics without silent los
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
+		    "code": "import { View, styled } from "@tamagui/core";
 
-		export const card = css.vars({ "padding": "1rem", "color": theme.foreground });
-		export const App = () => <div className={card()} />;",
+		export const reset = styled(View, { "body": { margin: 0 } });",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [],
@@ -127,30 +168,60 @@ test("stitches -> tamagui -> stitches: retains edge semantics without silent los
 		    ],
 		  },
 		  "reverse": {
-		    "changed": false,
-		    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
+		    "changed": true,
+		    "code": "import { View } from "@tamagui/core";
+		import { css } from "@stitches/react";
 
-		export const card = css.vars({ "padding": "1rem", "color": theme.foreground });
-		export const App = () => <div className={card()} />;",
-		    "converted": 0,
-		    "outcomes": [],
+		export const reset = css({ body: { margin: 0 } });",
+		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "named-map",
+		          "target-native",
+		          "residual",
+		        ],
+		        "representation": "target-native",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "host-runtime",
+		        "representation": "target-native",
+		      },
+		    ],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [],
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		}
-	`);
+	`)
 });
 
-test("stitches -> tamagui -> stitches: preserves concrete theme and project context variants", () => {
-	const firstBlue = forward.run({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const secondBlue = reverse.run({ source: firstBlue.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
-	const firstAmber = forward.run({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
-	const secondAmber = reverse.run({ source: firstAmber.code, file: "Card.tsx", semantic: amberTargetSemantic, project: amberProject });
+test("stitches -> tamagui -> stitches: preserves concrete theme and project context variants", async () => {
+	const firstBlue = await forward.runAsync({ source: themedSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
+	const firstAmber = await forward.runAsync({ source: themedSource, file: "styles.ts", semantic: amberSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "Card.tsx", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Stitches, CodemodAdapterId.Tamagui);
+	expectConfiguredTargetTokenEvidence(firstBlue, CodemodAdapterId.Tamagui, "stitches -> tamagui round-trip token config");
+	expectRouteScenarioEvidence(firstBlue, "stitches -> tamagui round-trip blue forward");
+	expectRouteScenarioEvidence(firstAmber, "stitches -> tamagui round-trip amber forward");
+	expectConfiguredTargetTokenAbsence(firstAmber, CodemodAdapterId.Tamagui, "stitches -> tamagui round-trip amber literal config");
+
 	expectActionableRoundTrip(firstBlue, secondBlue);
 	expectActionableRoundTrip(firstAmber, secondAmber);
 	expectExplicitResidualEvidence(firstBlue);
@@ -165,17 +236,26 @@ test("stitches -> tamagui -> stitches: preserves concrete theme and project cont
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
+		      "code": "import { View, styled } from "@tamagui/core";
 
-		export const card = css.vars({ "padding": "1rem", "color": theme.colors.brand });
-		export const App = () => <div className={card()} />;",
+		export const card = styled(View, { padding: "1rem", color: "#2563eb" });",
 		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [],
+		          "availableRepresentations": [
+		            "static",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "portable-artifact",
-		          "representation": "portable-artifact",
+		          "outcome": "static",
+		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [],
@@ -189,34 +269,67 @@ test("stitches -> tamagui -> stitches: preserves concrete theme and project cont
 		      ],
 		    },
 		    "reverse": {
-		      "changed": false,
-		      "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
+		      "changed": true,
+		      "code": "import { View } from "@tamagui/core";
+		import { css } from "@stitches/react";
 
-		export const card = css.vars({ "padding": "1rem", "color": theme.colors.brand });
-		export const App = () => <div className={card()} />;",
-		      "converted": 0,
-		      "outcomes": [],
+		export const card = css({ padding: "1rem", color: "#2563eb" });",
+		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
+		      "outcomes": [
+		        {
+		          "outcome": "static",
+		          "representation": "static",
+		        },
+		      ],
 		      "residuals": [],
 		      "skipped": 0,
-		      "validations": [],
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
 		    },
 		  },
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
+		      "code": "import { View, styled } from "@tamagui/core";
 
-		export const card = css.vars({ "padding": "1rem", "color": theme.colors.brand });
-		export const App = () => <div className={card()} />;",
+		export const card = styled(View, { padding: "1rem", color: "#2563eb" });",
 		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [],
+		          "availableRepresentations": [
+		            "static",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "portable-artifact",
-		          "representation": "portable-artifact",
+		          "outcome": "static",
+		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [],
@@ -230,28 +343,54 @@ test("stitches -> tamagui -> stitches: preserves concrete theme and project cont
 		      ],
 		    },
 		    "reverse": {
-		      "changed": false,
-		      "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
+		      "changed": true,
+		      "code": "import { View } from "@tamagui/core";
+		import { css } from "@stitches/react";
 
-		export const card = css.vars({ "padding": "1rem", "color": theme.colors.brand });
-		export const App = () => <div className={card()} />;",
-		      "converted": 0,
-		      "outcomes": [],
+		export const card = css({ padding: "1rem", color: "#2563eb" });",
+		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
+		      "outcomes": [
+		        {
+		          "outcome": "static",
+		          "representation": "static",
+		        },
+		      ],
 		      "residuals": [],
 		      "skipped": 0,
-		      "validations": [],
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
 		    },
 		  },
 		}
-	`);
+	`)
 });
 
-test("stitches -> tamagui -> stitches: resolves token references across both concrete legs", () => {
-	const first = forward.run({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
+test("stitches -> tamagui -> stitches: resolves token values across both concrete legs", async () => {
+	const first = await forward.runAsync({ source: tokenSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Stitches, CodemodAdapterId.Tamagui);
+	expectRouteScenarioEvidence(first, "stitches -> tamagui round-trip token forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
@@ -261,9 +400,20 @@ test("stitches -> tamagui -> stitches: resolves token references across both con
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
 
-		export const card = styled(View, { padding: "1rem", color: "$colors.brand" });
-		export const App = () => <div className={card()} />;",
+		export const card = styled(View, { padding: "1rem", color: "#2563eb" });",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "static",
@@ -285,9 +435,23 @@ test("stitches -> tamagui -> stitches: resolves token references across both con
 		    "code": "import { View } from "@tamagui/core";
 		import { css } from "@stitches/react";
 
-		export const card = css({ padding: "1rem", color: "$colors.brand" });
-		export const App = () => <div className={card()} />;",
+		export const card = css({ padding: "1rem", color: "#2563eb" });",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "static",
@@ -305,6 +469,6 @@ test("stitches -> tamagui -> stitches: resolves token references across both con
 		    ],
 		  },
 		}
-	`);
+	`)
 });
 

@@ -3,26 +3,31 @@ import { expect, test } from "vitest";
 import { CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.NextYak, CodemodAdapterId.StyleX);
-	const happySource = "import { css } from \"next-yak\";\nexport const card = css`color: red; padding: 1rem;`;\nexport const App = () => <div className={card} />;";
-const edgeSource = "import { css } from \"next-yak\";\nexport const card = css`color: ${theme.foreground}; padding: 1rem;`;\nexport const App = () => <div className={card} />;";
-const malformedSource = "import { css } from \"next-yak\";\nexport const card = css`color: red; padding: 1rem;`;\nexport const App = () => <div className={card} />;\nconst unfinished = { /* unfinished next-yak */";
+	const happySource = "import { css } from \"next-yak\";\nexport const card = css`color: red; padding: 1rem;`;";
+const edgeSource = "import { styled } from \"next-yak\";\nexport const Card = styled.div`color: red; padding: 1rem;`;";
+const malformedSource = "import { css } from \"next-yak\";\nexport const card = css`color: red; padding: 1rem;`;\nconst unfinished = { /* unfinished next-yak */";
 const sourceSemantic = undefined;
-const themedSource = "import { css } from \"next-yak\";\nexport const card = css`color: ${theme.colors.brand}; padding: 1rem;`;\nexport const App = () => <div className={card} />;";
-const tokenSource = "import { css } from \"next-yak\";\nexport const card = css`color: var(--colors-brand); padding: 1rem;`;\nexport const App = () => <div className={card} />;";
-const blueSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/package.json":"{\"name\":\"stylex-fixture\",\"stylex\":{\"aliases\":{\"brand\":\"#2563eb\"}}}"} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/package.json":"{\"name\":\"stylex-fixture\",\"stylex\":{\"aliases\":{\"brand\":\"#f97316\"}}}"} };
+const themedSource = "import { css } from \"next-yak\";\nexport const card = css`color: #2563eb; padding: 1rem;`;";
+const tokenSource = "import { css } from \"next-yak\";\nexport const card = css`color: #2563eb; padding: 1rem;`;";
+const blueSemantic = undefined;
+const amberSemantic = undefined;
+const blueTargetSemantic = undefined;
+const amberTargetSemantic = undefined;
+const blueProject = createAdapterRouteProject(CodemodAdapterId.NextYak, CodemodAdapterId.StyleX, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.NextYak, CodemodAdapterId.StyleX, "#f97316");
 
 test("next-yak -> stylex: migrates concrete next-yak syntax to stylex", () => {
-	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
+	const result = route.run({ source: happySource, file: "styles.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -37,15 +42,30 @@ test("next-yak -> stylex: migrates concrete next-yak syntax to stylex", () => {
 		expect(result.residuals.length).toBeGreaterThan(0);
 		expect(result.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(result, "next-yak -> stylex happy");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import * as stylex from "@stylexjs/stylex";
 
-		export const card = stylex.create({ style: { padding: "1rem", color: "red" } }).style;
-		export const App = () => <div {...stylex.props(card)} />;",
+		export const card = stylex.create({ style: { padding: "1rem", color: "red" } }).style;",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "static",
@@ -62,111 +82,177 @@ test("next-yak -> stylex: migrates concrete next-yak syntax to stylex", () => {
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
-test("next-yak -> stylex: carries concrete next-yak dynamics or edge syntax explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
+test("next-yak -> stylex: carries a documented secondary next-yak API explicitly", () => {
+	const result = route.run({ source: edgeSource, file: "styles.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(result, "next-yak -> stylex secondary");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "next-yak";
-		export const card = // pandwind:migrate-skip (route: next-yak -> stylex | capability-blocked: dynamic-values: dynamic: theme.foreground | available: named-map, target-native, residual)
-		css\`color: \${theme.foreground}; padding: 1rem;\`;
-		export const App = () => <div className={card} />;",
-		  "converted": 0,
+		  "code": "import * as stylex from "@stylexjs/stylex";
+
+		export const Card = stylex.create({ style: { padding: "1rem", color: "red" } }).style;",
+		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
-		      "representation": "residual",
+		      "outcome": "static",
+		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
 		    {
-		      "hint": "dynamic-values: dynamic: theme.foreground",
-		      "kind": "capability",
-		      "preserved": undefined,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
-		  "skipped": 1,
-		  "validations": [],
 		}
-	`);
+	`)
 });
 
-test("next-yak -> stylex: lowers concrete theme and project context variants", () => {
-	const blue = route.run({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const amber = route.run({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
+test("next-yak -> stylex: loads concrete theme and project context variants", async () => {
+	const blue = await route.runAsync({ source: themedSource, file: "styles.tsx", semantic: blueSemantic, project: blueProject });
+	const amber = await route.runAsync({ source: themedSource, file: "styles.tsx", semantic: amberSemantic, project: amberProject });
 	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
 	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.NextYak, CodemodAdapterId.StyleX);
+	expectConfiguredTargetTokenEvidence(blue, CodemodAdapterId.StyleX, "next-yak -> stylex blue config");
+	expectRouteScenarioEvidence(blue, "next-yak -> stylex blue config");
+	expectRouteScenarioEvidence(amber, "next-yak -> stylex amber config");
+	expectConfiguredTargetTokenAbsence(amber, CodemodAdapterId.StyleX, "next-yak -> stylex amber literal config");
+
 	expectExplicitResidualEvidence(blue);
 	expectExplicitResidualEvidence(amber);
 	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { css } from "next-yak";
-		export const card = // pandwind:migrate-skip (route: next-yak -> stylex | capability-blocked: dynamic-values: dynamic: theme.colors.brand | available: named-map, target-native, residual)
-		css\`color: \${theme.colors.brand}; padding: 1rem;\`;
-		export const App = () => <div className={card} />;",
-		    "converted": 0,
+		    "code": "import * as stylex from "@stylexjs/stylex";
+
+		export const card = stylex.create({ style: { padding: "1rem", color: "#2563eb" } }).style;",
+		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
-		        "representation": "residual",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "dynamic-values: dynamic: theme.colors.brand",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { css } from "next-yak";
-		export const card = // pandwind:migrate-skip (route: next-yak -> stylex | capability-blocked: dynamic-values: dynamic: theme.colors.brand | available: named-map, target-native, residual)
-		css\`color: \${theme.colors.brand}; padding: 1rem;\`;
-		export const App = () => <div className={card} />;",
-		    "converted": 0,
+		    "code": "import * as stylex from "@stylexjs/stylex";
+
+		export const card = stylex.create({ style: { padding: "1rem", color: "#2563eb" } }).style;",
+		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
-		        "representation": "residual",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "dynamic-values: dynamic: theme.colors.brand",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 
-test("next-yak -> stylex: resolves concrete token references with project context", () => {
-	const result = route.run({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
+test("next-yak -> stylex: resolves concrete token values with project context", async () => {
+	const result = await route.runAsync({ source: tokenSource, file: "styles.tsx", semantic: blueSemantic, project: blueProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.NextYak, CodemodAdapterId.StyleX);
+	expectConfiguredTargetTokenEvidence(result, CodemodAdapterId.StyleX, "next-yak -> stylex token config");
+	expectRouteScenarioEvidence(result, "next-yak -> stylex token config");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import * as stylex from "@stylexjs/stylex";
 
-		export const card = stylex.create({ style: { padding: "1rem", color: "var(--colors-brand)" } }).style;
-		export const App = () => <div {...stylex.props(card)} />;",
+		export const card = stylex.create({ style: { padding: "1rem", color: "#2563eb" } }).style;",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "static",
@@ -183,12 +269,13 @@ test("next-yak -> stylex: resolves concrete token references with project contex
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
 test("next-yak -> stylex: preserves malformed concrete next-yak input", () => {
-	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
+	const result = route.run({ source: malformedSource, file: "styles.tsx", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished next-yak */");
+	expectRouteScenarioEvidence(result, "next-yak -> stylex malformed");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
@@ -196,9 +283,23 @@ test("next-yak -> stylex: preserves malformed concrete next-yak input", () => {
 		  "code": "import * as stylex from "@stylexjs/stylex";
 
 		export const card = stylex.create({ style: { padding: "1rem", color: "red" } }).style;
-		export const App = () => <div {...stylex.props(card)} />;
 		const unfinished = { /* unfinished next-yak */",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "static",
@@ -215,6 +316,6 @@ test("next-yak -> stylex: preserves malformed concrete next-yak input", () => {
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 

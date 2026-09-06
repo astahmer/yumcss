@@ -3,30 +3,35 @@ import { expect, test } from "vitest";
 import { CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
-	expectActionableRoundTrip,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
+	expectTargetClassProjection,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const forward = createAdapterRouteSpec(CodemodAdapterId.Treat, CodemodAdapterId.UnoCSS);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.UnoCSS, CodemodAdapterId.Treat);
-	const happySource = "import { style } from \"@treatjs/treat\";\nexport const card = style({ color: \"red\", padding: \"1rem\" });";
-const edgeSource = "import { style } from \"@treatjs/treat\";\nexport const card = style({ color: theme.foreground, padding: \"1rem\" });";
-const malformedSource = "import { style } from \"@treatjs/treat\";\nexport const card = style({ color: \"red\", padding: \"1rem\" });\nconst unfinished = { /* unfinished treat */";
+	const happySource = "import { style } from \"treat\";\nexport const card = style({ color: \"red\", padding: 8 });";
+const edgeSource = "import { style } from \"treat\";\nexport const card = style({ color: \"red\", padding: 8 });";
+const malformedSource = "import { style } from \"treat\";\nexport const card = style({ color: \"red\", padding: 8 });\nconst unfinished = { /* unfinished treat */";
 const sourceSemantic = undefined;
-const themedSource = "import { style } from \"@treatjs/treat\";\nexport const card = style({ color: theme.colors.brand, padding: \"1rem\" });";
-const tokenSource = "import { style } from \"@treatjs/treat\";\nexport const card = style({ color: \"$colors.brand\", padding: \"1rem\" });";
-const blueSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/uno.config.ts":"export default defineConfig({ theme: { colors: { brand: \"#2563eb\" } } });","/virtual/pandwind-route-project/app/globals.css":"@theme { --color-brand: #2563eb; --spacing-card: 1.125rem; }"} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/uno.config.ts":"export default defineConfig({ theme: { colors: { brand: \"#f97316\" } } });","/virtual/pandwind-route-project/app/globals.css":"@theme { --color-brand: #f97316; --spacing-card: 1.125rem; }"} };
+const themedSource = "import { style } from \"treat\";\nexport const card = style({ color: \"#2563eb\", padding: 8 });";
+const tokenSource = "import { style } from \"treat\";\nexport const card = style({ color: \"#2563eb\", padding: 8 });";
+const blueSemantic = undefined;
+const amberSemantic = undefined;
+const blueTargetSemantic = undefined;
+const amberTargetSemantic = undefined;
+const blueProject = createAdapterRouteProject(CodemodAdapterId.Treat, CodemodAdapterId.UnoCSS, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.Treat, CodemodAdapterId.UnoCSS, "#f97316");
 	const targetSemantic = undefined;
 
 test("treat -> unocss -> treat: preserves an actionable concrete round trip", () => {
-	const first = forward.run({ source: happySource, file: "Card.treat.ts", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+	const first = forward.run({ source: happySource, file: "styles.treat.ts", semantic: sourceSemantic });
+	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -36,16 +41,32 @@ test("treat -> unocss -> treat: preserves an actionable concrete round trip", ()
 		expect(first.residuals.length).toBeGreaterThan(0);
 		expect(first.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(first, "treat -> unocss round-trip happy forward");
 	expectExplicitResidualEvidence(first);
-	expectActionableRoundTrip(first, second);
+	expectTargetClassProjection(first, second, ["text-","bg-","p-","[","className","class"], "treat -> unocss round-trip happy");
 	expectExplicitResidualEvidence(second);
 	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { style } from "@treatjs/treat";
-		export const card = "[padding:1rem] [color:red]";",
+		    "code": "
+		export const card = "[padding:8] [color:red]";",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "static",
@@ -64,10 +85,25 @@ test("treat -> unocss -> treat: preserves an actionable concrete round trip", ()
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { style } from "@treatjs/treat";
-		import { style } from "@/styles.treat";
-		export const card = style({ "padding": "1rem", "color": "red" });",
+		    "code": "import { style } from "@/styles.treat";
+
+		export const card = style({ "padding": "8", "color": "red" });",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "static",
@@ -85,30 +121,43 @@ test("treat -> unocss -> treat: preserves an actionable concrete round trip", ()
 		    ],
 		  },
 		}
-	`);
+	`)
 });
 
-test("treat -> unocss -> treat: retains edge semantics without silent loss", () => {
-	const first = forward.run({ source: edgeSource, file: "Card.treat.ts", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+test("treat -> unocss -> treat: retains the documented secondary API without silent loss", () => {
+	const first = forward.run({ source: edgeSource, file: "styles.treat.ts", semantic: sourceSemantic });
+	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
-	expectActionableRoundTrip(first, second);
+	expectRouteScenarioEvidence(first, "treat -> unocss round-trip secondary forward");
+	expectTargetClassProjection(first, second, ["text-","bg-","p-","[","className","class"], "treat -> unocss round-trip secondary");
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
 	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { style } from "@treatjs/treat";
-		import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
-		export const card = css.vars({ "padding": "1rem", "color": theme.foreground });",
+		    "code": "
+		export const card = "[padding:8] [color:red]";",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [],
@@ -122,31 +171,61 @@ test("treat -> unocss -> treat: retains edge semantics without silent loss", () 
 		    ],
 		  },
 		  "reverse": {
-		    "changed": false,
-		    "code": "import { style } from "@treatjs/treat";
-		import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
-		export const card = css.vars({ "padding": "1rem", "color": theme.foreground });",
-		    "converted": 0,
-		    "outcomes": [],
+		    "changed": true,
+		    "code": "import { style } from "@/styles.treat";
+
+		export const card = style({ "padding": "8", "color": "red" });",
+		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [],
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		}
-	`);
+	`)
 });
 
-test("treat -> unocss -> treat: preserves concrete theme and project context variants", () => {
-	const firstBlue = forward.run({ source: themedSource, file: "Card.treat.ts", semantic: blueSemantic, project: blueProject });
-	const secondBlue = reverse.run({ source: firstBlue.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
-	const firstAmber = forward.run({ source: themedSource, file: "Card.treat.ts", semantic: amberSemantic, project: amberProject });
-	const secondAmber = reverse.run({ source: firstAmber.code, file: "Card.tsx", semantic: amberTargetSemantic, project: amberProject });
+test("treat -> unocss -> treat: preserves concrete theme and project context variants", async () => {
+	const firstBlue = await forward.runAsync({ source: themedSource, file: "styles.treat.ts", semantic: blueSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
+	const firstAmber = await forward.runAsync({ source: themedSource, file: "styles.treat.ts", semantic: amberSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "App.tsx", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
-	expectActionableRoundTrip(firstBlue, secondBlue);
-	expectActionableRoundTrip(firstAmber, secondAmber);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Treat, CodemodAdapterId.UnoCSS);
+	expectConfiguredTargetTokenEvidence(firstBlue, CodemodAdapterId.UnoCSS, "treat -> unocss round-trip token config");
+	expectRouteScenarioEvidence(firstBlue, "treat -> unocss round-trip blue forward");
+	expectRouteScenarioEvidence(firstAmber, "treat -> unocss round-trip amber forward");
+	expectConfiguredTargetTokenAbsence(firstAmber, CodemodAdapterId.UnoCSS, "treat -> unocss round-trip amber literal config");
+
+	expectTargetClassProjection(firstBlue, secondBlue, ["text-","bg-","p-","[","className","class"], "treat -> unocss round-trip blue");
+	expectTargetClassProjection(firstAmber, secondAmber, ["text-","bg-","p-","[","className","class"], "treat -> unocss round-trip amber");
 	expectExplicitResidualEvidence(firstBlue);
 	expectExplicitResidualEvidence(secondBlue);
 	expectExplicitResidualEvidence(firstAmber);
@@ -159,16 +238,28 @@ test("treat -> unocss -> treat: preserves concrete theme and project context var
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { style } from "@treatjs/treat";
-		import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
-		export const card = css.vars({ "padding": "1rem", "color": theme.colors.brand });",
+		      "code": "
+		export const card = "[padding:8] [color:#2563eb]";",
 		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "portable-artifact",
-		          "representation": "portable-artifact",
+		          "outcome": "static",
+		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [],
@@ -182,32 +273,76 @@ test("treat -> unocss -> treat: preserves concrete theme and project context var
 		      ],
 		    },
 		    "reverse": {
-		      "changed": false,
-		      "code": "import { style } from "@treatjs/treat";
-		import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
-		export const card = css.vars({ "padding": "1rem", "color": theme.colors.brand });",
+		      "changed": true,
+		      "code": "
+		export const card = // pandwind:migrate-skip (route: unocss -> treat | lowering-residual: validation)
+		"[padding:8] [color:#2563eb]";",
 		      "converted": 0,
-		      "outcomes": [],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [],
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "static",
+		        },
+		      ],
+		      "residuals": [
+		        {
+		          "hint": "canonical CSS differs",
+		          "kind": "validation",
+		          "preserved": undefined,
+		        },
+		      ],
+		      "skipped": 1,
+		      "validations": [
+		        {
+		          "differences": [
+		            "canonical CSS differs",
+		          ],
+		          "lossiness": "unsupported",
+		          "valid": false,
+		        },
+		      ],
 		    },
 		  },
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { style } from "@treatjs/treat";
-		import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
-		export const card = css.vars({ "padding": "1rem", "color": theme.colors.brand });",
+		      "code": "
+		export const card = "[padding:8] text-brand";",
 		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "portable-artifact",
-		          "representation": "portable-artifact",
+		          "outcome": "static",
+		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [],
@@ -221,37 +356,86 @@ test("treat -> unocss -> treat: preserves concrete theme and project context var
 		      ],
 		    },
 		    "reverse": {
-		      "changed": false,
-		      "code": "import { style } from "@treatjs/treat";
-		import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
-		export const card = css.vars({ "padding": "1rem", "color": theme.colors.brand });",
+		      "changed": true,
+		      "code": "
+		export const card = // pandwind:migrate-skip (route: unocss -> treat | lowering-residual: validation)
+		"[padding:8] text-brand";",
 		      "converted": 0,
-		      "outcomes": [],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [],
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "static",
+		        },
+		      ],
+		      "residuals": [
+		        {
+		          "hint": "canonical CSS differs",
+		          "kind": "validation",
+		          "preserved": undefined,
+		        },
+		      ],
+		      "skipped": 1,
+		      "validations": [
+		        {
+		          "differences": [
+		            "canonical CSS differs",
+		          ],
+		          "lossiness": "unsupported",
+		          "valid": false,
+		        },
+		      ],
 		    },
 		  },
 		}
-	`);
+	`)
 });
 
-test("treat -> unocss -> treat: resolves token references across both concrete legs", () => {
-	const first = forward.run({ source: tokenSource, file: "Card.treat.ts", semantic: blueSemantic, project: blueProject });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
+test("treat -> unocss -> treat: resolves token values across both concrete legs", async () => {
+	const first = await forward.runAsync({ source: tokenSource, file: "styles.treat.ts", semantic: blueSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
-	expectActionableRoundTrip(first, second);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Treat, CodemodAdapterId.UnoCSS);
+	expectRouteScenarioEvidence(first, "treat -> unocss round-trip token forward");
+	expectTargetClassProjection(first, second, ["text-","bg-","p-","[","className","class"], "treat -> unocss round-trip token");
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
 	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { style } from "@treatjs/treat";
-		export const card = "[padding:1rem] [color:$colors.brand]";",
+		    "code": "
+		export const card = "[padding:8] text-brand";",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "static",
@@ -270,27 +454,50 @@ test("treat -> unocss -> treat: resolves token references across both concrete l
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { style } from "@treatjs/treat";
-		import { style } from "@/styles.treat";
-		export const card = style({ "padding": "1rem", "color": "$colors.brand" });",
-		    "converted": 1,
+		    "code": "
+		export const card = // pandwind:migrate-skip (route: unocss -> treat | lowering-residual: validation)
+		"[padding:8] text-brand";",
+		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
+		    "residuals": [
+		      {
+		        "hint": "canonical CSS differs",
+		        "kind": "validation",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
 		    "validations": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "differences": [
+		          "canonical CSS differs",
+		        ],
+		        "lossiness": "unsupported",
+		        "valid": false,
 		      },
 		    ],
 		  },
 		}
-	`);
+	`)
 });
 

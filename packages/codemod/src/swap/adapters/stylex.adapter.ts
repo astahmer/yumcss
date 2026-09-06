@@ -984,7 +984,10 @@ export function createStyleXAdapter(options: StyleXAdapterOptions = {}) {
 		},
 		lowerings: [stylexNumericLowering],
 		emit(program, { programObject }) {
-			if (program.source?.pattern === CodemodPatternId.StyleXKeyframes) {
+			if (
+				program.source?.pattern === CodemodPatternId.StyleXKeyframes ||
+				program.rules[0]?.kind === StyleRuleKindTag.Keyframes
+			) {
 				return {
 					text: `stylex.keyframes(${programObject(program)})`,
 					imports: ['import * as stylex from "@stylexjs/stylex";'],

@@ -6,6 +6,7 @@ import { AdapterDependencyKindTag } from "../adapter-contract.ts";
 import {
 	CodemodCallPatternKindTag,
 	CodemodAdapterId,
+	CodemodPatternId,
 	StyleHostRepresentationKind,
 	StyleNamedRuleStrategy,
 	StyleProgramEmissionHint,
@@ -23,7 +24,7 @@ export default defineCodemodAdapter({
 	patterns: [
 		{ name: "style", regex: /\bstyle\s*\(\s*\{/g },
 		{
-			name: "globalStyle",
+			name: CodemodPatternId.VanillaExtractGlobalStyle,
 			kind: CodemodCallPatternKindTag.Global,
 			regex: /\bglobalStyle\s*\([^,{]+,\s*\{/g,
 		},

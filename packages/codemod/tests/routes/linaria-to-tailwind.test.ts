@@ -3,26 +3,31 @@ import { expect, test } from "vitest";
 import { CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.Linaria, CodemodAdapterId.Tailwind);
-	const happySource = "import { css } from \"@linaria/core\";\nexport const card = css`color: red; padding: 1rem;`;\nexport const App = () => <div className={card} />;";
-const edgeSource = "import { css } from \"@linaria/core\";\nexport const card = css`color: ${theme.foreground}; padding: 1rem;`;\nexport const App = () => <div className={card} />;";
-const malformedSource = "import { css } from \"@linaria/core\";\nexport const card = css`color: red; padding: 1rem;`;\nexport const App = () => <div className={card} />;\nconst unfinished = { /* unfinished linaria */";
+	const happySource = "import { css } from \"@linaria/core\";\nexport const card = css`color: red; padding: 1rem;`;";
+const edgeSource = "import { styled } from \"@linaria/react\";\nexport const Card = styled.div`color: red; padding: 1rem;`;";
+const malformedSource = "import { css } from \"@linaria/core\";\nexport const card = css`color: red; padding: 1rem;`;\nconst unfinished = { /* unfinished linaria */";
 const sourceSemantic = undefined;
-const themedSource = "import { css } from \"@linaria/core\";\nexport const card = css`color: ${theme.colors.brand}; padding: 1rem;`;\nexport const App = () => <div className={card} />;";
-const tokenSource = "import { css } from \"@linaria/core\";\nexport const card = css`color: var(--colors-brand); padding: 1rem;`;\nexport const App = () => <div className={card} />;";
-const blueSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/tailwind.css":"@import \"tailwindcss\"; @theme { --color-brand: #2563eb; --spacing-card: 1.125rem; }"} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/tailwind.css":"@import \"tailwindcss\"; @theme { --color-brand: #f97316; --spacing-card: 1.125rem; }"} };
+const themedSource = "import { css } from \"@linaria/core\";\nexport const card = css`color: #2563eb; padding: 1rem;`;";
+const tokenSource = "import { css } from \"@linaria/core\";\nexport const card = css`color: #2563eb; padding: 1rem;`;";
+const blueSemantic = undefined;
+const amberSemantic = undefined;
+const blueTargetSemantic = undefined;
+const amberTargetSemantic = undefined;
+const blueProject = createAdapterRouteProject(CodemodAdapterId.Linaria, CodemodAdapterId.Tailwind, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.Linaria, CodemodAdapterId.Tailwind, "#f97316");
 
 test("linaria -> tailwind: migrates concrete linaria syntax to tailwind", () => {
-	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
+	const result = route.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -37,14 +42,29 @@ test("linaria -> tailwind: migrates concrete linaria syntax to tailwind", () => 
 		expect(result.residuals.length).toBeGreaterThan(0);
 		expect(result.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(result, "linaria -> tailwind happy");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "
-		export const card = "[padding:1rem] [color:red]";
-		export const App = () => <div className={card} />;",
+		export const card = "[padding:1rem] [color:red]";",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "static",
@@ -61,110 +81,174 @@ test("linaria -> tailwind: migrates concrete linaria syntax to tailwind", () => 
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
-test("linaria -> tailwind: carries concrete linaria dynamics or edge syntax explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
+test("linaria -> tailwind: carries a documented secondary linaria API explicitly", () => {
+	const result = route.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(result, "linaria -> tailwind secondary");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@linaria/core";
-		export const card = // pandwind:migrate-skip (route: linaria -> tailwind | parse-residual: dynamic | available: named-map, custom-property, residual)
-		css\`color: \${theme.foreground}; padding: 1rem;\`;
-		export const App = () => <div className={card} />;",
+		  "code": "import { styled } from "@linaria/react";
+		export const Card = // pandwind:migrate-skip (route: linaria -> tailwind | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		styled.div\`color: red; padding: 1rem;\`;",
 		  "converted": 0,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "custom-property",
+		      "representation": "static",
 		    },
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "template interpolation requires a runtime-aware lowering",
-		      "kind": "dynamic",
+		      "hint": "components: component subject: styled.div",
+		      "kind": "capability",
 		      "preserved": undefined,
 		    },
 		  ],
 		  "skipped": 1,
 		  "validations": [],
 		}
-	`);
+	`)
 });
 
-test("linaria -> tailwind: lowers concrete theme and project context variants", () => {
-	const blue = route.run({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const amber = route.run({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
+test("linaria -> tailwind: loads concrete theme and project context variants", async () => {
+	const blue = await route.runAsync({ source: themedSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
+	const amber = await route.runAsync({ source: themedSource, file: "styles.ts", semantic: amberSemantic, project: amberProject });
 	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
 	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Linaria, CodemodAdapterId.Tailwind);
+	expectConfiguredTargetTokenEvidence(blue, CodemodAdapterId.Tailwind, "linaria -> tailwind blue config");
+	expectRouteScenarioEvidence(blue, "linaria -> tailwind blue config");
+	expectRouteScenarioEvidence(amber, "linaria -> tailwind amber config");
+	expectConfiguredTargetTokenAbsence(amber, CodemodAdapterId.Tailwind, "linaria -> tailwind amber literal config");
+
 	expectExplicitResidualEvidence(blue);
 	expectExplicitResidualEvidence(amber);
 	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { css } from "@linaria/core";
-		export const card = // pandwind:migrate-skip (route: linaria -> tailwind | parse-residual: dynamic | available: named-map, custom-property, residual)
-		css\`color: \${theme.colors.brand}; padding: 1rem;\`;
-		export const App = () => <div className={card} />;",
-		    "converted": 0,
+		    "code": "
+		export const card = "[padding:1rem] [color:#2563eb]";",
+		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
-		        "representation": "custom-property",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "template interpolation requires a runtime-aware lowering",
-		        "kind": "dynamic",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { css } from "@linaria/core";
-		export const card = // pandwind:migrate-skip (route: linaria -> tailwind | parse-residual: dynamic | available: named-map, custom-property, residual)
-		css\`color: \${theme.colors.brand}; padding: 1rem;\`;
-		export const App = () => <div className={card} />;",
-		    "converted": 0,
+		    "code": "
+		export const card = "[padding:1rem] text-brand";",
+		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
-		        "representation": "custom-property",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "template interpolation requires a runtime-aware lowering",
-		        "kind": "dynamic",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 
-test("linaria -> tailwind: resolves concrete token references with project context", () => {
-	const result = route.run({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
+test("linaria -> tailwind: resolves concrete token values with project context", async () => {
+	const result = await route.runAsync({ source: tokenSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Linaria, CodemodAdapterId.Tailwind);
+	expectConfiguredTargetTokenEvidence(result, CodemodAdapterId.Tailwind, "linaria -> tailwind token config");
+	expectRouteScenarioEvidence(result, "linaria -> tailwind token config");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "
-		export const card = "[padding:1rem] [color:var(--colors-brand)]";
-		export const App = () => <div className={card} />;",
+		export const card = "[padding:1rem] text-brand";",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "static",
@@ -181,21 +265,36 @@ test("linaria -> tailwind: resolves concrete token references with project conte
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
 test("linaria -> tailwind: preserves malformed concrete linaria input", () => {
-	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
+	const result = route.run({ source: malformedSource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished linaria */");
+	expectRouteScenarioEvidence(result, "linaria -> tailwind malformed");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "
 		export const card = "[padding:1rem] [color:red]";
-		export const App = () => <div className={card} />;
 		const unfinished = { /* unfinished linaria */",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "static",
@@ -212,6 +311,6 @@ test("linaria -> tailwind: preserves malformed concrete linaria input", () => {
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 

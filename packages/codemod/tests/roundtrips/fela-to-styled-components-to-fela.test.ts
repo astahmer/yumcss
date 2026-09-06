@@ -3,29 +3,34 @@ import { expect, test } from "vitest";
 import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectActionableRoundTrip,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const forward = createAdapterRouteSpec(CodemodAdapterId.Fela, CodemodAdapterId.StyledComponents);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.StyledComponents, CodemodAdapterId.Fela);
-	const happySource = "import { createRenderer } from \"fela\";\nconst renderer = createRenderer();\nexport const card = renderer.renderRule(() => ({ color: \"red\", padding: \"1rem\" }));";
-const edgeSource = "import { createRenderer } from \"fela\";\nconst renderer = createRenderer();\nexport const card = renderer.renderRule(() => ({ color: theme.foreground, padding: \"1rem\" }));";
-const malformedSource = "import { createRenderer } from \"fela\";\nconst renderer = createRenderer();\nexport const card = renderer.renderRule(() => ({ color: \"red\", padding: \"1rem\" }));\nconst unfinished = { /* unfinished fela */";
+	const happySource = "import { createRenderer } from \"fela\";\nconst renderer = createRenderer();\nexport const card = renderer.renderRule(() => ({ color: \"red\" }));";
+const edgeSource = "import { createComponent } from \"react-fela\";\nexport const Card = createComponent(() => ({ color: \"red\" }));";
+const malformedSource = "import { createRenderer } from \"fela\";\nconst renderer = createRenderer();\nexport const card = renderer.renderRule(() => ({ color: \"red\" }));\nconst unfinished = { /* unfinished fela */";
 const sourceSemantic = undefined;
-const themedSource = "import { createRenderer } from \"fela\";\nconst renderer = createRenderer();\nexport const card = renderer.renderRule(() => ({ color: theme.colors.brand, padding: \"1rem\" }));";
-const tokenSource = "import { createRenderer } from \"fela\";\nconst renderer = createRenderer();\nexport const card = renderer.renderRule(() => ({ color: \"$colors.brand\", padding: \"1rem\" }));";
-const blueSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {} };
+const themedSource = "import { createRenderer } from \"fela\";\nconst renderer = createRenderer();\nexport const card = renderer.renderRule(() => ({ color: \"#2563eb\" }));";
+const tokenSource = "import { createRenderer } from \"fela\";\nconst renderer = createRenderer();\nexport const card = renderer.renderRule(() => ({ color: \"#2563eb\" }));";
+const blueSemantic = undefined;
+const amberSemantic = undefined;
+const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
+const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
+const blueProject = createAdapterRouteProject(CodemodAdapterId.Fela, CodemodAdapterId.StyledComponents, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.Fela, CodemodAdapterId.StyledComponents, "#f97316");
 	const targetSemantic = { source: { framework: BuiltinHostFramework.React } };
 
 test("fela -> styled-components -> fela: preserves an actionable concrete round trip", () => {
-	const first = forward.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
+	const first = forward.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
 	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
@@ -36,6 +41,7 @@ test("fela -> styled-components -> fela: preserves an actionable concrete round 
 		expect(first.residuals.length).toBeGreaterThan(0);
 		expect(first.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(first, "fela -> styled-components round-trip happy forward");
 	expectExplicitResidualEvidence(first);
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(second);
@@ -46,8 +52,21 @@ test("fela -> styled-components -> fela: preserves an actionable concrete round 
 		    "code": "import { createRenderer } from "fela";
 		import styled from "styled-components";
 		const renderer = createRenderer();
-		export const card = styled.div({ padding: "1rem", color: "red" });",
+		export const card = styled.div({ color: "red" });",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "static",
@@ -71,8 +90,23 @@ test("fela -> styled-components -> fela: preserves an actionable concrete round 
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		const renderer = createRenderer();
-		export const card = (props) => <div {...props} className={cx(renderer.renderRule({ "padding": "1rem", "color": "red" }), props.className)} />;",
+		export const card = (props) => <div {...props} className={cx(renderer.renderRule({ "color": "red" }), props.className)} />;",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "static",
@@ -90,13 +124,14 @@ test("fela -> styled-components -> fela: preserves an actionable concrete round 
 		    ],
 		  },
 		}
-	`);
+	`)
 });
 
-test("fela -> styled-components -> fela: retains edge semantics without silent loss", () => {
-	const first = forward.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
+test("fela -> styled-components -> fela: retains the documented secondary API without silent loss", () => {
+	const first = forward.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
 	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(first, "fela -> styled-components round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
@@ -104,63 +139,68 @@ test("fela -> styled-components -> fela: retains edge semantics without silent l
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createRenderer } from "fela";
-		import styled from "styled-components";
-		const renderer = createRenderer();
-		export const card = styled.div({ padding: "1rem", color: theme.foreground });",
-		    "converted": 1,
+		    "code": "import { createComponent } from "react-fela";
+		export const Card = // pandwind:migrate-skip (route: fela -> styled-components | parse-residual: component | available: named-map, residual)
+		createComponent(() => ({ color: "red" }));",
+		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "residual",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "host-runtime",
-		        "representation": "target-native",
+		        "outcome": "residual",
+		        "representation": "residual",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "Fela createComponent requires a host/component lowering",
+		        "kind": "component",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		  "reverse": {
-		    "changed": true,
-		    "code": "import { createRenderer } from "fela";
-
-		import { createCx } from "pandwind/cx";
-		const cx = createCx();
-		const renderer = createRenderer();
-		export const card = (props) => <div {...props} className={cx(renderer.renderRule({ "padding": "1rem", "color": theme.foreground }), props.className)} />;",
-		    "converted": 1,
-		    "outcomes": [
-		      {
-		        "outcome": "host-runtime",
-		        "representation": "target-native",
-		      },
-		    ],
+		    "changed": false,
+		    "code": "import { createComponent } from "react-fela";
+		export const Card = // pandwind:migrate-skip (route: fela -> styled-components | parse-residual: component | available: named-map, residual)
+		createComponent(() => ({ color: "red" }));",
+		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [],
+		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
+		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 
-test("fela -> styled-components -> fela: preserves concrete theme and project context variants", () => {
-	const firstBlue = forward.run({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const secondBlue = reverse.run({ source: firstBlue.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
-	const firstAmber = forward.run({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
-	const secondAmber = reverse.run({ source: firstAmber.code, file: "Card.tsx", semantic: amberTargetSemantic, project: amberProject });
+test("fela -> styled-components -> fela: preserves concrete theme and project context variants", async () => {
+	const firstBlue = await forward.runAsync({ source: themedSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
+	const firstAmber = await forward.runAsync({ source: themedSource, file: "styles.ts", semantic: amberSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "Card.tsx", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Fela, CodemodAdapterId.StyledComponents);
+	expectConfiguredTargetTokenEvidence(firstBlue, CodemodAdapterId.StyledComponents, "fela -> styled-components round-trip token config");
+	expectRouteScenarioEvidence(firstBlue, "fela -> styled-components round-trip blue forward");
+	expectRouteScenarioEvidence(firstAmber, "fela -> styled-components round-trip amber forward");
+	expectConfiguredTargetTokenAbsence(firstAmber, CodemodAdapterId.StyledComponents, "fela -> styled-components round-trip amber literal config");
+
 	expectActionableRoundTrip(firstBlue, secondBlue);
 	expectActionableRoundTrip(firstAmber, secondAmber);
 	expectExplicitResidualEvidence(firstBlue);
@@ -178,12 +218,25 @@ test("fela -> styled-components -> fela: preserves concrete theme and project co
 		      "code": "import { createRenderer } from "fela";
 		import styled from "styled-components";
 		const renderer = createRenderer();
-		export const card = styled.div({ padding: "1rem", color: theme.colors.brand });",
+		export const card = styled.div({ color: "#2563eb" });",
 		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "host-runtime",
-		          "representation": "target-native",
+		          "outcome": "static",
+		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [],
@@ -203,8 +256,23 @@ test("fela -> styled-components -> fela: preserves concrete theme and project co
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		const renderer = createRenderer();
-		export const card = (props) => <div {...props} className={cx(renderer.renderRule({ "padding": "1rem", "color": "#f97316" }), props.className)} />;",
+		export const card = (props) => <div {...props} className={cx(renderer.renderRule({ "color": "#2563eb" }), props.className)} />;",
 		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "static",
@@ -228,12 +296,25 @@ test("fela -> styled-components -> fela: preserves concrete theme and project co
 		      "code": "import { createRenderer } from "fela";
 		import styled from "styled-components";
 		const renderer = createRenderer();
-		export const card = styled.div({ padding: "1rem", color: theme.colors.brand });",
+		export const card = styled.div({ color: "#2563eb" });",
 		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "host-runtime",
-		          "representation": "target-native",
+		          "outcome": "static",
+		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [],
@@ -253,8 +334,23 @@ test("fela -> styled-components -> fela: preserves concrete theme and project co
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		const renderer = createRenderer();
-		export const card = (props) => <div {...props} className={cx(renderer.renderRule({ "padding": "1rem", "color": "#2563eb" }), props.className)} />;",
+		export const card = (props) => <div {...props} className={cx(renderer.renderRule({ "color": "#2563eb" }), props.className)} />;",
 		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "static",
@@ -273,13 +369,15 @@ test("fela -> styled-components -> fela: preserves concrete theme and project co
 		    },
 		  },
 		}
-	`);
+	`)
 });
 
-test("fela -> styled-components -> fela: resolves token references across both concrete legs", () => {
-	const first = forward.run({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
+test("fela -> styled-components -> fela: resolves token values across both concrete legs", async () => {
+	const first = await forward.runAsync({ source: tokenSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Fela, CodemodAdapterId.StyledComponents);
+	expectRouteScenarioEvidence(first, "fela -> styled-components round-trip token forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
@@ -290,8 +388,21 @@ test("fela -> styled-components -> fela: resolves token references across both c
 		    "code": "import { createRenderer } from "fela";
 		import styled from "styled-components";
 		const renderer = createRenderer();
-		export const card = styled.div({ padding: "1rem", color: "$colors.brand" });",
+		export const card = styled.div({ color: "#2563eb" });",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "static",
@@ -315,8 +426,23 @@ test("fela -> styled-components -> fela: resolves token references across both c
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		const renderer = createRenderer();
-		export const card = (props) => <div {...props} className={cx(renderer.renderRule({ "padding": "1rem", "color": "$colors.brand" }), props.className)} />;",
+		export const card = (props) => <div {...props} className={cx(renderer.renderRule({ "color": "#2563eb" }), props.className)} />;",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "static",
@@ -334,6 +460,6 @@ test("fela -> styled-components -> fela: resolves token references across both c
 		    ],
 		  },
 		}
-	`);
+	`)
 });
 

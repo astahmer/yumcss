@@ -5,7 +5,11 @@ const classAttribute =
 const classAssignment = /\b(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*(["'])([^"']*)\2/g;
 const classLiteral = /(["'])([^"']*\[[^"']*)\1/g;
 const classMapAssignment =
-	/\b(?:const|let|var)\s+[A-Za-z_$][\w$]*\s*=\s*\{[\s\S]*?["'][A-Za-z_$][\w$-]*["']\s*:\s*["'][^"']*\[[^"']*/u;
+	/\b(?:const|let|var)\s+[A-Za-z_$][\w$]*\s*=\s*\{[\s\S]*?["'][A-Za-z_$][\w$-]*["']\s*:\s*["'][^"']*(?:-[^"']+|\[[^"']*)/u;
+
+function looksLikeClassValue(value: string): boolean {
+	return /(?:^|\s)(?:[A-Za-z_$][\w$-]*-[A-Za-z0-9_$.[\]-]+|\[[^\]]+\])/u.test(value);
+}
 
 /** Shared syntax evidence for class/compiler adapters. Policy stays in the adapter. */
 export function detectStaticClassTarget(source: string): {
@@ -15,7 +19,7 @@ export function detectStaticClassTarget(source: string): {
 } {
 	const matched =
 		classAttribute.test(source) ||
-		[...source.matchAll(classAssignment)].some((item) => (item[3] ?? "").includes("[")) ||
+		[...source.matchAll(classAssignment)].some((item) => looksLikeClassValue(item[3] ?? "")) ||
 		classLiteral.test(source) ||
 		classMapAssignment.test(source);
 	classAttribute.lastIndex = 0;

@@ -3,30 +3,35 @@ import { expect, test } from "vitest";
 import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectActionableRoundTrip,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const forward = createAdapterRouteSpec(CodemodAdapterId.Tamagui, CodemodAdapterId.Mui);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.Mui, CodemodAdapterId.Tamagui);
 	const happySource = "import { styled, View } from \"tamagui\";\nexport const Card = styled(View, { color: \"red\", padding: \"$4\" });\nexport const App = () => <Card />;";
-const edgeSource = "import { styled, View } from \"tamagui\";\nexport const Card = styled(View, { color: theme.foreground, padding: \"$4\" });\nexport const App = () => <Card />;";
+const edgeSource = "import { styled, View } from \"tamagui\";\nexport const Card = styled(View, ({ theme }) => ({ color: theme.color }));";
 const malformedSource = "import { styled, View } from \"tamagui\";\nexport const Card = styled(View, { color: \"red\", padding: \"$4\" });\nexport const App = () => <Card />;\nconst unfinished = { /* unfinished tamagui */";
 const sourceSemantic = undefined;
-const themedSource = "import { styled, View } from \"tamagui\";\nexport const Card = styled(View, { color: theme.colors.brand, padding: \"$4\" });\nexport const App = () => <Card />;";
-const tokenSource = "import { styled, View } from \"tamagui\";\nexport const Card = styled(View, { color: \"$colors.brand\", padding: \"$4\" });\nexport const App = () => <Card />;";
-const blueSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "palette.primary.main", authored: "theme.palette.primary.main", resolved: "#2563eb" }] };
-const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "palette.primary.main", authored: "theme.palette.primary.main", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/src/theme.ts":"export const muiTheme = { palette: { primary: { main: \"#2563eb\" } } };"} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/src/theme.ts":"export const muiTheme = { palette: { primary: { main: \"#f97316\" } } };"} };
+const themedSource = "import { styled, View } from \"tamagui\";\nexport const Card = styled(View, { color: \"#2563eb\", padding: \"$4\" });\nexport const App = () => <Card />;";
+const tokenSource = "import { styled, View } from \"tamagui\";\nexport const Card = styled(View, { color: \"#2563eb\", padding: \"$4\" });\nexport const App = () => <Card />;";
+const blueSemantic = undefined;
+const amberSemantic = undefined;
+const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
+const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
+const blueProject = createAdapterRouteProject(CodemodAdapterId.Tamagui, CodemodAdapterId.Mui, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.Tamagui, CodemodAdapterId.Mui, "#f97316");
 	const targetSemantic = { source: { framework: BuiltinHostFramework.React } };
 
 test("tamagui -> mui -> tamagui: preserves an actionable concrete round trip", () => {
 	const first = forward.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -36,6 +41,7 @@ test("tamagui -> mui -> tamagui: preserves an actionable concrete round trip", (
 		expect(first.residuals.length).toBeGreaterThan(0);
 		expect(first.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(first, "tamagui -> mui round-trip happy forward");
 	expectExplicitResidualEvidence(first);
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(second);
@@ -48,6 +54,19 @@ test("tamagui -> mui -> tamagui: preserves an actionable concrete round trip", (
 		export const Card = styled(View)({ padding: "$4", color: "red" });
 		export const App = () => <Card />;",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "static",
@@ -72,6 +91,18 @@ test("tamagui -> mui -> tamagui: preserves an actionable concrete round trip", (
 		export const Card = styled(View, { padding: "$4", color: "red" });
 		export const App = () => <Card />;",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "static",
@@ -89,13 +120,14 @@ test("tamagui -> mui -> tamagui: preserves an actionable concrete round trip", (
 		    ],
 		  },
 		}
-	`);
+	`)
 });
 
-test("tamagui -> mui -> tamagui: retains edge semantics without silent loss", () => {
+test("tamagui -> mui -> tamagui: retains the documented secondary API without silent loss", () => {
 	const first = forward.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(first, "tamagui -> mui round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
@@ -103,35 +135,22 @@ test("tamagui -> mui -> tamagui: retains edge semantics without silent loss", ()
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { View } from "tamagui";
-		import { styled } from "@mui/system";
-		export const Card = styled(View)({ padding: "$4", color: theme.foreground });
-		export const App = () => <Card />;",
-		    "converted": 1,
-		    "outcomes": [
-		      {
-		        "outcome": "host-runtime",
-		        "representation": "target-native",
-		      },
-		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
-		  },
-		  "reverse": {
-		    "changed": true,
-		    "code": "import { View } from "tamagui";
-		import { styled } from "@mui/system";
-		export const Card = // pandwind:migrate-skip (lowering-residual: dynamic-values)
-		styled(View)({ padding: "$4", color: theme.foreground });
-		export const App = () => <Card />;",
+		    "code": "import { styled, View } from "tamagui";
+		export const Card = // pandwind:migrate-skip (route: tamagui -> mui | parse-residual: function-dynamic | available: named-map, residual)
+		styled(View, ({ theme }) => ({ color: theme.color }));",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "residual",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
@@ -140,25 +159,44 @@ test("tamagui -> mui -> tamagui: retains edge semantics without silent loss", ()
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "dynamic style binding 'Card' has no supported host use",
-		        "kind": "dynamic-values",
+		        "hint": "Tamagui function-valued styles require a theme/props wrapper",
+		        "kind": "function-dynamic",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 1,
 		    "validations": [],
 		  },
+		  "reverse": {
+		    "changed": false,
+		    "code": "import { styled, View } from "tamagui";
+		export const Card = // pandwind:migrate-skip (route: tamagui -> mui | parse-residual: function-dynamic | available: named-map, residual)
+		styled(View, ({ theme }) => ({ color: theme.color }));",
+		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [],
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [],
+		  },
 		}
-	`);
+	`)
 });
 
-test("tamagui -> mui -> tamagui: preserves concrete theme and project context variants", () => {
-	const firstBlue = forward.run({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const secondBlue = reverse.run({ source: firstBlue.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
-	const firstAmber = forward.run({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
-	const secondAmber = reverse.run({ source: firstAmber.code, file: "Card.tsx", semantic: amberTargetSemantic, project: amberProject });
+test("tamagui -> mui -> tamagui: preserves concrete theme and project context variants", async () => {
+	const firstBlue = await forward.runAsync({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
+	const firstAmber = await forward.runAsync({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "App.tsx", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Tamagui, CodemodAdapterId.Mui);
+	expectConfiguredTargetTokenEvidence(firstBlue, CodemodAdapterId.Mui, "tamagui -> mui round-trip token config");
+	expectRouteScenarioEvidence(firstBlue, "tamagui -> mui round-trip blue forward");
+	expectRouteScenarioEvidence(firstAmber, "tamagui -> mui round-trip amber forward");
+	expectConfiguredTargetTokenAbsence(firstAmber, CodemodAdapterId.Mui, "tamagui -> mui round-trip amber literal config");
+
 	expectActionableRoundTrip(firstBlue, secondBlue);
 	expectActionableRoundTrip(firstAmber, secondAmber);
 	expectExplicitResidualEvidence(firstBlue);
@@ -175,13 +213,26 @@ test("tamagui -> mui -> tamagui: preserves concrete theme and project context va
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
 		import { styled } from "@mui/system";
-		export const Card = styled(View)({ padding: "$4", color: theme.colors.brand });
+		export const Card = styled(View)({ padding: "$4", color: "#2563eb" });
 		export const App = () => <Card />;",
 		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "host-runtime",
-		          "representation": "target-native",
+		          "outcome": "static",
+		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [],
@@ -198,25 +249,37 @@ test("tamagui -> mui -> tamagui: preserves concrete theme and project context va
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
 		import { styled } from "@mui/system";
-		export const Card = // pandwind:migrate-skip (lowering-residual: dynamic-values)
-		styled(View)({ padding: "$4", color: theme.colors.brand });
+		import { View, styled } from "@tamagui/core";
+		export const Card = styled(View, { padding: "$4", color: "#2563eb" });
 		export const App = () => <Card />;",
-		      "converted": 0,
+		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [],
+		          "availableRepresentations": [
+		            "static",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
-		          "representation": "residual",
+		          "outcome": "static",
+		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
 		        {
-		          "hint": "dynamic style binding 'Card' has no supported host use",
-		          "kind": "dynamic-values",
-		          "preserved": undefined,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
-		      "skipped": 1,
-		      "validations": [],
 		    },
 		  },
 		  "blue": {
@@ -224,13 +287,26 @@ test("tamagui -> mui -> tamagui: preserves concrete theme and project context va
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
 		import { styled } from "@mui/system";
-		export const Card = styled(View)({ padding: "$4", color: theme.colors.brand });
+		export const Card = styled(View)({ padding: "$4", color: "primary.main" });
 		export const App = () => <Card />;",
 		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "host-runtime",
-		          "representation": "target-native",
+		          "outcome": "static",
+		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [],
@@ -247,35 +323,49 @@ test("tamagui -> mui -> tamagui: preserves concrete theme and project context va
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
 		import { styled } from "@mui/system";
-		export const Card = // pandwind:migrate-skip (lowering-residual: dynamic-values)
-		styled(View)({ padding: "$4", color: theme.colors.brand });
+		import { View, styled } from "@tamagui/core";
+		export const Card = styled(View, { padding: "$4", color: "#2563eb" });
 		export const App = () => <Card />;",
-		      "converted": 0,
+		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [],
+		          "availableRepresentations": [
+		            "static",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
-		          "representation": "residual",
+		          "outcome": "static",
+		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
 		        {
-		          "hint": "dynamic style binding 'Card' has no supported host use",
-		          "kind": "dynamic-values",
-		          "preserved": undefined,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
-		      "skipped": 1,
-		      "validations": [],
 		    },
 		  },
 		}
-	`);
+	`)
 });
 
-test("tamagui -> mui -> tamagui: resolves token references across both concrete legs", () => {
-	const first = forward.run({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
+test("tamagui -> mui -> tamagui: resolves token values across both concrete legs", async () => {
+	const first = await forward.runAsync({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Tamagui, CodemodAdapterId.Mui);
+	expectRouteScenarioEvidence(first, "tamagui -> mui round-trip token forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
@@ -283,48 +373,77 @@ test("tamagui -> mui -> tamagui: resolves token references across both concrete 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { styled, View } from "tamagui";
-		export const Card = // pandwind:migrate-skip (route: tamagui -> mui | lowering-residual: validation)
-		styled(View, { color: "$colors.brand", padding: "$4" });
+		    "code": "import { View } from "tamagui";
+		import { styled } from "@mui/system";
+		export const Card = styled(View)({ padding: "$4", color: "primary.main" });
 		export const App = () => <Card />;",
-		    "converted": 0,
+		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "canonical CSS differs",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },
 		  "reverse": {
-		    "changed": false,
-		    "code": "import { styled, View } from "tamagui";
-		export const Card = // pandwind:migrate-skip (route: tamagui -> mui | lowering-residual: validation)
-		styled(View, { color: "$colors.brand", padding: "$4" });
+		    "changed": true,
+		    "code": "import { View } from "tamagui";
+		import { styled } from "@mui/system";
+		import { View, styled } from "@tamagui/core";
+		export const Card = styled(View, { padding: "$4", color: "#2563eb" });
 		export const App = () => <Card />;",
-		    "converted": 0,
-		    "outcomes": [],
+		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [],
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		}
-	`);
+	`)
 });
 

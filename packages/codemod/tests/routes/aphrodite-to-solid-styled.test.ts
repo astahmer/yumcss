@@ -3,26 +3,31 @@ import { expect, test } from "vitest";
 import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.Aphrodite, CodemodAdapterId.SolidStyled);
-	const happySource = "import { StyleSheet } from \"aphrodite\";\nexport const styles = StyleSheet.create({ card: { color: \"red\", padding: \"1rem\" } });\nexport const App = () => <div className={styles.card} />;";
-const edgeSource = "import { StyleSheet } from \"aphrodite\";\nexport const styles = StyleSheet.create({ card: { color: theme.foreground, padding: \"1rem\" } });\nexport const App = () => <div className={styles.card} />;";
-const malformedSource = "import { StyleSheet } from \"aphrodite\";\nexport const styles = StyleSheet.create({ card: { color: \"red\", padding: \"1rem\" } });\nexport const App = () => <div className={styles.card} />;\nconst unfinished = { /* unfinished aphrodite */";
+	const happySource = "import { StyleSheet } from \"aphrodite\";\nexport const styles = StyleSheet.create({ card: { color: \"red\", padding: 8 } });";
+const edgeSource = "import { StyleSheet } from \"aphrodite\";\nexport const styles = StyleSheet.create({ fonts: { fontFamily: [{ fontFamily: \"Inter\", src: \"url(inter.woff2)\" }] } });";
+const malformedSource = "import { StyleSheet } from \"aphrodite\";\nexport const styles = StyleSheet.create({ card: { color: \"red\", padding: 8 } });\nconst unfinished = { /* unfinished aphrodite */";
 const sourceSemantic = undefined;
-const themedSource = "import { StyleSheet } from \"aphrodite\";\nexport const styles = StyleSheet.create({ card: { color: theme.colors.brand, padding: \"1rem\" } });\nexport const App = () => <div className={styles.card} />;";
-const tokenSource = "import { StyleSheet } from \"aphrodite\";\nexport const styles = StyleSheet.create({ card: { color: \"$colors.brand\", padding: \"1rem\" } });\nexport const App = () => <div className={styles.card} />;";
-const blueSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { source: { framework: BuiltinHostFramework.Solid }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { source: { framework: BuiltinHostFramework.Solid }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {} };
+const themedSource = "import { StyleSheet } from \"aphrodite\";\nexport const styles = StyleSheet.create({ card: { color: \"#2563eb\", padding: 8 } });";
+const tokenSource = "import { StyleSheet } from \"aphrodite\";\nexport const styles = StyleSheet.create({ card: { color: \"#2563eb\", padding: 8 } });";
+const blueSemantic = undefined;
+const amberSemantic = undefined;
+const blueTargetSemantic = { source: { framework: BuiltinHostFramework.Solid } };
+const amberTargetSemantic = { source: { framework: BuiltinHostFramework.Solid } };
+const blueProject = createAdapterRouteProject(CodemodAdapterId.Aphrodite, CodemodAdapterId.SolidStyled, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.Aphrodite, CodemodAdapterId.SolidStyled, "#f97316");
 
 test("aphrodite -> solid-styled: migrates concrete aphrodite syntax to solid-styled", () => {
-	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
+	const result = route.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -37,15 +42,30 @@ test("aphrodite -> solid-styled: migrates concrete aphrodite syntax to solid-sty
 		expect(result.residuals.length).toBeGreaterThan(0);
 		expect(result.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(result, "aphrodite -> solid-styled happy");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
 
-		export const styles = { "card": styled.div({ "padding": "1rem", "color": "red" }) };
-		export const App = () => <div className={styles.card} />;",
+		export const styles = { "card": styled.div({ "padding": 8, "color": "red" }) };",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "named-map",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "target-native",
@@ -62,21 +82,36 @@ test("aphrodite -> solid-styled: migrates concrete aphrodite syntax to solid-sty
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
-test("aphrodite -> solid-styled: carries concrete aphrodite dynamics or edge syntax explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
+test("aphrodite -> solid-styled: carries a documented secondary aphrodite API explicitly", () => {
+	const result = route.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(result, "aphrodite -> solid-styled secondary");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "aphrodite";
-		export const styles = // pandwind:migrate-skip (route: aphrodite -> solid-styled | capability-blocked: dynamic-values: dynamic: theme.foreground | available: named-map, target-native, residual)
-		StyleSheet.create({ card: { color: theme.foreground, padding: "1rem" } });
-		export const App = () => <div className={styles.card} />;",
+		export const styles = // pandwind:migrate-skip (route: aphrodite -> solid-styled | capability-blocked: rule-level: 2 semantic rules; ordering: ordered semantic rules; nesting: style nested rules | available: static, named-map, residual)
+		StyleSheet.create({ fonts: { fontFamily: [{ fontFamily: "Inter", src: "url(inter.woff2)" }] } });",
 		  "converted": 0,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "named-map",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
@@ -85,7 +120,7 @@ test("aphrodite -> solid-styled: carries concrete aphrodite dynamics or edge syn
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "dynamic-values: dynamic: theme.foreground",
+		      "hint": "rule-level: 2 semantic rules; ordering: ordered semantic rules; nesting: style nested rules",
 		      "kind": "capability",
 		      "preserved": undefined,
 		    },
@@ -93,80 +128,131 @@ test("aphrodite -> solid-styled: carries concrete aphrodite dynamics or edge syn
 		  "skipped": 1,
 		  "validations": [],
 		}
-	`);
+	`)
 });
 
-test("aphrodite -> solid-styled: lowers concrete theme and project context variants", () => {
-	const blue = route.run({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const amber = route.run({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
+test("aphrodite -> solid-styled: loads concrete theme and project context variants", async () => {
+	const blue = await route.runAsync({ source: themedSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
+	const amber = await route.runAsync({ source: themedSource, file: "styles.ts", semantic: amberSemantic, project: amberProject });
 	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
 	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Aphrodite, CodemodAdapterId.SolidStyled);
+	expectConfiguredTargetTokenEvidence(blue, CodemodAdapterId.SolidStyled, "aphrodite -> solid-styled blue config");
+	expectRouteScenarioEvidence(blue, "aphrodite -> solid-styled blue config");
+	expectRouteScenarioEvidence(amber, "aphrodite -> solid-styled amber config");
+	expectConfiguredTargetTokenAbsence(amber, CodemodAdapterId.SolidStyled, "aphrodite -> solid-styled amber literal config");
+
 	expectExplicitResidualEvidence(blue);
 	expectExplicitResidualEvidence(amber);
 	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "aphrodite";
-		export const styles = // pandwind:migrate-skip (route: aphrodite -> solid-styled | capability-blocked: dynamic-values: dynamic: theme.colors.brand | available: named-map, target-native, residual)
-		StyleSheet.create({ card: { color: theme.colors.brand, padding: "1rem" } });
-		export const App = () => <div className={styles.card} />;",
-		    "converted": 0,
+		    "code": "import { styled } from "solid-styled-components";
+
+		export const styles = { "card": styled.div({ "padding": 8, "color": "#2563eb" }) };",
+		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "named-map",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "target-native",
 		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "dynamic-values: dynamic: theme.colors.brand",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "aphrodite";
-		export const styles = // pandwind:migrate-skip (route: aphrodite -> solid-styled | capability-blocked: dynamic-values: dynamic: theme.colors.brand | available: named-map, target-native, residual)
-		StyleSheet.create({ card: { color: theme.colors.brand, padding: "1rem" } });
-		export const App = () => <div className={styles.card} />;",
-		    "converted": 0,
+		    "code": "import { styled } from "solid-styled-components";
+
+		export const styles = { "card": styled.div({ "padding": 8, "color": "#2563eb" }) };",
+		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "named-map",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "target-native",
 		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "dynamic-values: dynamic: theme.colors.brand",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 
-test("aphrodite -> solid-styled: resolves concrete token references with project context", () => {
-	const result = route.run({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
+test("aphrodite -> solid-styled: resolves concrete token values with project context", async () => {
+	const result = await route.runAsync({ source: tokenSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Aphrodite, CodemodAdapterId.SolidStyled);
+	expectConfiguredTargetTokenEvidence(result, CodemodAdapterId.SolidStyled, "aphrodite -> solid-styled token config");
+	expectRouteScenarioEvidence(result, "aphrodite -> solid-styled token config");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
 
-		export const styles = { "card": styled.div({ "padding": "1rem", "color": "$colors.brand" }) };
-		export const App = () => <div className={styles.card} />;",
+		export const styles = { "card": styled.div({ "padding": 8, "color": "#2563eb" }) };",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "named-map",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "target-native",
@@ -183,22 +269,37 @@ test("aphrodite -> solid-styled: resolves concrete token references with project
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
 test("aphrodite -> solid-styled: preserves malformed concrete aphrodite input", () => {
-	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
+	const result = route.run({ source: malformedSource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished aphrodite */");
+	expectRouteScenarioEvidence(result, "aphrodite -> solid-styled malformed");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
 
-		export const styles = { "card": styled.div({ "padding": "1rem", "color": "red" }) };
-		export const App = () => <div className={styles.card} />;
+		export const styles = { "card": styled.div({ "padding": 8, "color": "red" }) };
 		const unfinished = { /* unfinished aphrodite */",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "named-map",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "target-native",
@@ -215,6 +316,6 @@ test("aphrodite -> solid-styled: preserves malformed concrete aphrodite input", 
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 

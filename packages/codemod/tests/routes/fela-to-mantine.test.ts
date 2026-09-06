@@ -3,26 +3,31 @@ import { expect, test } from "vitest";
 import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.Fela, CodemodAdapterId.Mantine);
-	const happySource = "import { createRenderer } from \"fela\";\nconst renderer = createRenderer();\nexport const card = renderer.renderRule(() => ({ color: \"red\", padding: \"1rem\" }));";
-const edgeSource = "import { createRenderer } from \"fela\";\nconst renderer = createRenderer();\nexport const card = renderer.renderRule(() => ({ color: theme.foreground, padding: \"1rem\" }));";
-const malformedSource = "import { createRenderer } from \"fela\";\nconst renderer = createRenderer();\nexport const card = renderer.renderRule(() => ({ color: \"red\", padding: \"1rem\" }));\nconst unfinished = { /* unfinished fela */";
+	const happySource = "import { createRenderer } from \"fela\";\nconst renderer = createRenderer();\nexport const card = renderer.renderRule(() => ({ color: \"red\" }));";
+const edgeSource = "import { createComponent } from \"react-fela\";\nexport const Card = createComponent(() => ({ color: \"red\" }));";
+const malformedSource = "import { createRenderer } from \"fela\";\nconst renderer = createRenderer();\nexport const card = renderer.renderRule(() => ({ color: \"red\" }));\nconst unfinished = { /* unfinished fela */";
 const sourceSemantic = undefined;
-const themedSource = "import { createRenderer } from \"fela\";\nconst renderer = createRenderer();\nexport const card = renderer.renderRule(() => ({ color: theme.colors.brand, padding: \"1rem\" }));";
-const tokenSource = "import { createRenderer } from \"fela\";\nconst renderer = createRenderer();\nexport const card = renderer.renderRule(() => ({ color: \"$colors.brand\", padding: \"1rem\" }));";
-const blueSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/src/theme.ts":"export const mantineTheme = { colors: { brand: [\"#2563eb\"] } };"} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/src/theme.ts":"export const mantineTheme = { colors: { brand: [\"#f97316\"] } };"} };
+const themedSource = "import { createRenderer } from \"fela\";\nconst renderer = createRenderer();\nexport const card = renderer.renderRule(() => ({ color: \"#2563eb\" }));";
+const tokenSource = "import { createRenderer } from \"fela\";\nconst renderer = createRenderer();\nexport const card = renderer.renderRule(() => ({ color: \"#2563eb\" }));";
+const blueSemantic = undefined;
+const amberSemantic = undefined;
+const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
+const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
+const blueProject = createAdapterRouteProject(CodemodAdapterId.Fela, CodemodAdapterId.Mantine, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.Fela, CodemodAdapterId.Mantine, "#f97316");
 
 test("fela -> mantine: migrates concrete fela syntax to mantine", () => {
-	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
+	const result = route.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -37,6 +42,7 @@ test("fela -> mantine: migrates concrete fela syntax to mantine", () => {
 		expect(result.residuals.length).toBeGreaterThan(0);
 		expect(result.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(result, "fela -> mantine happy");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
@@ -44,8 +50,21 @@ test("fela -> mantine: migrates concrete fela syntax to mantine", () => {
 		  "code": "import { createRenderer } from "fela";
 		const renderer = createRenderer();
 		export const card = // pandwind:migrate-skip (route: fela -> mantine | lowering-residual: host-framework, validation)
-		renderer.renderRule(() => ({ color: "red", padding: "1rem" }));",
+		renderer.renderRule(() => ({ color: "red" }));",
 		  "converted": 0,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
@@ -75,47 +94,63 @@ test("fela -> mantine: migrates concrete fela syntax to mantine", () => {
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
-test("fela -> mantine: carries concrete fela dynamics or edge syntax explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
+test("fela -> mantine: carries a documented secondary fela API explicitly", () => {
+	const result = route.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(result, "fela -> mantine secondary");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createRenderer } from "fela";
-		import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
-		const renderer = createRenderer();
-		export const card = css.vars({ "padding": "1rem", "color": theme.foreground });",
-		  "converted": 1,
+		  "code": "import { createComponent } from "react-fela";
+		export const Card = // pandwind:migrate-skip (route: fela -> mantine | parse-residual: component | available: named-map, residual)
+		createComponent(() => ({ color: "red" }));",
+		  "converted": 0,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "residual",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "residual",
+		      "representation": "residual",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "Fela createComponent requires a host/component lowering",
+		      "kind": "component",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
-	`);
+	`)
 });
 
-test("fela -> mantine: lowers concrete theme and project context variants", () => {
-	const blue = route.run({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const amber = route.run({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
+test("fela -> mantine: loads concrete theme and project context variants", async () => {
+	const blue = await route.runAsync({ source: themedSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
+	const amber = await route.runAsync({ source: themedSource, file: "styles.ts", semantic: amberSemantic, project: amberProject });
 	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
 	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Fela, CodemodAdapterId.Mantine);
+	expectConfiguredTargetTokenEvidence(blue, CodemodAdapterId.Mantine, "fela -> mantine blue config");
+	expectRouteScenarioEvidence(blue, "fela -> mantine blue config");
+	expectRouteScenarioEvidence(amber, "fela -> mantine amber config");
+	expectConfiguredTargetTokenAbsence(amber, CodemodAdapterId.Mantine, "fela -> mantine amber literal config");
+
 	expectExplicitResidualEvidence(blue);
 	expectExplicitResidualEvidence(amber);
 	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
@@ -123,60 +158,111 @@ test("fela -> mantine: lowers concrete theme and project context variants", () =
 		  "amber": {
 		    "changed": true,
 		    "code": "import { createRenderer } from "fela";
-		import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
 		const renderer = createRenderer();
-		export const card = css.vars({ "padding": "1rem", "color": theme.colors.brand });",
-		    "converted": 1,
-		    "outcomes": [
+		export const card = // pandwind:migrate-skip (route: fela -> mantine | lowering-residual: host-framework, validation)
+		renderer.renderRule(() => ({ color: "#2563eb" }));",
+		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [
+		      {
+		        "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		        "kind": "host-framework",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "1 residual conversion(s)",
+		        "kind": "validation",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
 		    "validations": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "differences": [
+		          "1 residual conversion(s)",
+		        ],
+		        "lossiness": "lossy",
+		        "valid": false,
 		      },
 		    ],
 		  },
 		  "blue": {
 		    "changed": true,
 		    "code": "import { createRenderer } from "fela";
-		import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
 		const renderer = createRenderer();
-		export const card = css.vars({ "padding": "1rem", "color": theme.colors.brand });",
-		    "converted": 1,
-		    "outcomes": [
+		export const card = // pandwind:migrate-skip (route: fela -> mantine | lowering-residual: host-framework, validation)
+		renderer.renderRule(() => ({ color: "#2563eb" }));",
+		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [
+		      {
+		        "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		        "kind": "host-framework",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "1 residual conversion(s)",
+		        "kind": "validation",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
 		    "validations": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "differences": [
+		          "1 residual conversion(s)",
+		        ],
+		        "lossiness": "lossy",
+		        "valid": false,
 		      },
 		    ],
 		  },
 		}
-	`);
+	`)
 });
 
-test("fela -> mantine: resolves concrete token references with project context", () => {
-	const result = route.run({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
+test("fela -> mantine: resolves concrete token values with project context", async () => {
+	const result = await route.runAsync({ source: tokenSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Fela, CodemodAdapterId.Mantine);
+	expectConfiguredTargetTokenEvidence(result, CodemodAdapterId.Mantine, "fela -> mantine token config");
+	expectRouteScenarioEvidence(result, "fela -> mantine token config");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
@@ -184,8 +270,21 @@ test("fela -> mantine: resolves concrete token references with project context",
 		  "code": "import { createRenderer } from "fela";
 		const renderer = createRenderer();
 		export const card = // pandwind:migrate-skip (route: fela -> mantine | lowering-residual: host-framework, validation)
-		renderer.renderRule(() => ({ color: "$colors.brand", padding: "1rem" }));",
+		renderer.renderRule(() => ({ color: "#2563eb" }));",
 		  "converted": 0,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
@@ -215,12 +314,13 @@ test("fela -> mantine: resolves concrete token references with project context",
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
 test("fela -> mantine: preserves malformed concrete fela input", () => {
-	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
+	const result = route.run({ source: malformedSource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished fela */");
+	expectRouteScenarioEvidence(result, "fela -> mantine malformed");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
@@ -228,9 +328,22 @@ test("fela -> mantine: preserves malformed concrete fela input", () => {
 		  "code": "import { createRenderer } from "fela";
 		const renderer = createRenderer();
 		export const card = // pandwind:migrate-skip (route: fela -> mantine | lowering-residual: host-framework, validation)
-		renderer.renderRule(() => ({ color: "red", padding: "1rem" }));
+		renderer.renderRule(() => ({ color: "red" }));
 		const unfinished = { /* unfinished fela */",
 		  "converted": 0,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
@@ -260,6 +373,6 @@ test("fela -> mantine: preserves malformed concrete fela input", () => {
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 

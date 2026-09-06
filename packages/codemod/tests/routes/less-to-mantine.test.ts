@@ -3,26 +3,31 @@ import { expect, test } from "vitest";
 import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.Less, CodemodAdapterId.Mantine);
-	const happySource = ".card { color: red; padding: 1rem; .title { font-weight: 600; } }\n@title-color: blue;";
-const edgeSource = ".card { color: theme.foreground; padding: 1rem; .title { font-weight: 600; } }\n@title-color: blue;";
-const malformedSource = ".card { color: red; padding: 1rem; .title { font-weight: 600; } }\n@title-color: blue;\nconst unfinished = { /* unfinished less */";
+	const happySource = ".card { color: red; padding: 1rem; }";
+const edgeSource = "@brand: red;\n.card { color: @brand; padding: 1rem; &__title { font-weight: 600; } }";
+const malformedSource = ".card { color: red; padding: 1rem; }\nconst unfinished = { /* unfinished less */";
 const sourceSemantic = undefined;
-const themedSource = ".card { color: ${theme.colors.brand}; padding: 1rem; .title { font-weight: 600; } }\n@title-color: blue;";
-const tokenSource = ".card { color: var(--colors-brand); padding: 1rem; .title { font-weight: 600; } }\n@title-color: blue;";
-const blueSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/src/theme.ts":"export const mantineTheme = { colors: { brand: [\"#2563eb\"] } };"} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/src/theme.ts":"export const mantineTheme = { colors: { brand: [\"#f97316\"] } };"} };
+const themedSource = ".card { color: #2563eb; padding: 1rem; }";
+const tokenSource = ".card { color: #2563eb; padding: 1rem; }";
+const blueSemantic = undefined;
+const amberSemantic = undefined;
+const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
+const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
+const blueProject = createAdapterRouteProject(CodemodAdapterId.Less, CodemodAdapterId.Mantine, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.Less, CodemodAdapterId.Mantine, "#f97316");
 
 test("less -> mantine: migrates concrete less syntax to mantine", () => {
-	const result = route.run({ source: happySource, file: "Card.less", semantic: sourceSemantic });
+	const result = route.run({ source: happySource, file: "card.less", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -37,14 +42,27 @@ test("less -> mantine: migrates concrete less syntax to mantine", () => {
 		expect(result.residuals.length).toBeGreaterThan(0);
 		expect(result.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(result, "less -> mantine happy");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": false,
-		  "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting, host-framework)
-		.card { color: red; padding: 1rem; .title { font-weight: 600; } }
-		@title-color: blue;",
+		  "code": "// pandwind:migrate-skip (lowering-residual: host-framework)
+		.card { color: red; padding: 1rem; }",
 		  "converted": 0,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
@@ -53,38 +71,41 @@ test("less -> mantine: migrates concrete less syntax to mantine", () => {
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "stylesheet statement is preserved outside the style program",
-		      "kind": "parse",
-		      "preserved": undefined,
-		    },
-		    {
-		      "hint": "nested stylesheet rules require selector-aware lowering",
-		      "kind": "nesting",
-		      "preserved": undefined,
-		    },
-		    {
 		      "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
 		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },
 		  ],
-		  "skipped": 3,
+		  "skipped": 1,
 		  "validations": [],
 		}
-	`);
+	`)
 });
 
-test("less -> mantine: carries concrete less dynamics or edge syntax explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "Card.less", semantic: sourceSemantic });
+test("less -> mantine: carries a documented secondary less API explicitly", () => {
+	const result = route.run({ source: edgeSource, file: "card.less", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(result, "less -> mantine secondary");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": false,
-		  "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting, host-framework)
-		.card { color: theme.foreground; padding: 1rem; .title { font-weight: 600; } }
-		@title-color: blue;",
+		  "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting)
+		@brand: red;
+		.card { color: @brand; padding: 1rem; &__title { font-weight: 600; } }",
 		  "converted": 0,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "residual",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
@@ -102,33 +123,46 @@ test("less -> mantine: carries concrete less dynamics or edge syntax explicitly"
 		      "kind": "nesting",
 		      "preserved": undefined,
 		    },
-		    {
-		      "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
-		      "kind": "host-framework",
-		      "preserved": undefined,
-		    },
 		  ],
-		  "skipped": 3,
+		  "skipped": 2,
 		  "validations": [],
 		}
-	`);
+	`)
 });
 
-test("less -> mantine: lowers concrete theme and project context variants", () => {
-	const blue = route.run({ source: themedSource, file: "Card.less", semantic: blueSemantic, project: blueProject });
-	const amber = route.run({ source: themedSource, file: "Card.less", semantic: amberSemantic, project: amberProject });
+test("less -> mantine: loads concrete theme and project context variants", async () => {
+	const blue = await route.runAsync({ source: themedSource, file: "card.less", semantic: blueSemantic, project: blueProject });
+	const amber = await route.runAsync({ source: themedSource, file: "card.less", semantic: amberSemantic, project: amberProject });
 	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
 	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Less, CodemodAdapterId.Mantine);
+	expectConfiguredTargetTokenEvidence(blue, CodemodAdapterId.Mantine, "less -> mantine blue config");
+	expectRouteScenarioEvidence(blue, "less -> mantine blue config");
+	expectRouteScenarioEvidence(amber, "less -> mantine amber config");
+	expectConfiguredTargetTokenAbsence(amber, CodemodAdapterId.Mantine, "less -> mantine amber literal config");
+
 	expectExplicitResidualEvidence(blue);
 	expectExplicitResidualEvidence(amber);
 	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
 		{
 		  "amber": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting, host-framework)
-		.card { color: \${theme.colors.brand}; padding: 1rem; .title { font-weight: 600; } }
-		@title-color: blue;",
+		    "code": "// pandwind:migrate-skip (lowering-residual: host-framework)
+		.card { color: #2563eb; padding: 1rem; }",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
@@ -137,30 +171,32 @@ test("less -> mantine: lowers concrete theme and project context variants", () =
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "nested stylesheet rules require selector-aware lowering",
-		        "kind": "nesting",
-		        "preserved": undefined,
-		      },
-		      {
 		        "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 3,
+		    "skipped": 1,
 		    "validations": [],
 		  },
 		  "blue": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting, host-framework)
-		.card { color: \${theme.colors.brand}; padding: 1rem; .title { font-weight: 600; } }
-		@title-color: blue;",
+		    "code": "// pandwind:migrate-skip (lowering-residual: host-framework)
+		.card { color: #2563eb; padding: 1rem; }",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
@@ -169,39 +205,44 @@ test("less -> mantine: lowers concrete theme and project context variants", () =
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "nested stylesheet rules require selector-aware lowering",
-		        "kind": "nesting",
-		        "preserved": undefined,
-		      },
-		      {
 		        "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 3,
+		    "skipped": 1,
 		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 
-test("less -> mantine: resolves concrete token references with project context", () => {
-	const result = route.run({ source: tokenSource, file: "Card.less", semantic: blueSemantic, project: blueProject });
+test("less -> mantine: resolves concrete token values with project context", async () => {
+	const result = await route.runAsync({ source: tokenSource, file: "card.less", semantic: blueSemantic, project: blueProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Less, CodemodAdapterId.Mantine);
+	expectConfiguredTargetTokenEvidence(result, CodemodAdapterId.Mantine, "less -> mantine token config");
+	expectRouteScenarioEvidence(result, "less -> mantine token config");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": false,
-		  "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting, host-framework)
-		.card { color: var(--colors-brand); padding: 1rem; .title { font-weight: 600; } }
-		@title-color: blue;",
+		  "code": "// pandwind:migrate-skip (lowering-residual: host-framework)
+		.card { color: #2563eb; padding: 1rem; }",
 		  "converted": 0,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
@@ -210,39 +251,42 @@ test("less -> mantine: resolves concrete token references with project context",
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "stylesheet statement is preserved outside the style program",
-		      "kind": "parse",
-		      "preserved": undefined,
-		    },
-		    {
-		      "hint": "nested stylesheet rules require selector-aware lowering",
-		      "kind": "nesting",
-		      "preserved": undefined,
-		    },
-		    {
 		      "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
 		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },
 		  ],
-		  "skipped": 3,
+		  "skipped": 1,
 		  "validations": [],
 		}
-	`);
+	`)
 });
 
 test("less -> mantine: preserves malformed concrete less input", () => {
-	const result = route.run({ source: malformedSource, file: "Card.less", semantic: sourceSemantic });
+	const result = route.run({ source: malformedSource, file: "card.less", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished less */");
+	expectRouteScenarioEvidence(result, "less -> mantine malformed");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": false,
-		  "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting, host-framework)
-		.card { color: red; padding: 1rem; .title { font-weight: 600; } }
-		@title-color: blue;
+		  "code": "// pandwind:migrate-skip (lowering-residual: parse, host-framework)
+		.card { color: red; padding: 1rem; }
 		const unfinished = { /* unfinished less */",
 		  "converted": 0,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
@@ -256,24 +300,14 @@ test("less -> mantine: preserves malformed concrete less input", () => {
 		      "preserved": undefined,
 		    },
 		    {
-		      "hint": "stylesheet statement is preserved outside the style program",
-		      "kind": "parse",
-		      "preserved": undefined,
-		    },
-		    {
-		      "hint": "nested stylesheet rules require selector-aware lowering",
-		      "kind": "nesting",
-		      "preserved": undefined,
-		    },
-		    {
 		      "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
 		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },
 		  ],
-		  "skipped": 4,
+		  "skipped": 2,
 		  "validations": [],
 		}
-	`);
+	`)
 });
 

@@ -214,7 +214,17 @@ const objectText = (program: StyleProgram): string => {
 		const work: Array<{ node: ObjectNode; rule: StyleProgram["rules"][number] }> = [{ node, rule }];
 		while (work.length > 0) {
 			const current = work.pop()!;
-			for (const declaration of current.rule.declarations) add(current.node, declaration, 0);
+			for (const declaration of current.rule.declarations)
+				add(
+					current.node,
+					current.rule.conditions.length === 0
+						? declaration
+						: {
+								...declaration,
+								conditions: [...current.rule.conditions, ...declaration.conditions],
+							},
+					0,
+				);
 			for (const child of current.rule.children.toReversed()) {
 				const key = child.name ?? child.selector ?? child.kind;
 				const nested = current.node.children.get(key) ?? { values: [], children: new Map() };

@@ -230,12 +230,10 @@ describe("official adapter API families", () => {
 			  },
 			  "authored-css/at-rules": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
-			import { createRuntimeCss } from "pandwind/css/runtime";
+			    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
 			import { pandwindPreset } from "pandwind/preset";
 			const css = createRuntimeCss(pandwindPreset);
-			export const styles = { "card": css.class({ color: "white" }), "pulse": (() => { const name = "pw-kf-animation"; css.sheet.registerSemanticRules([{ kind: "keyframes", name, children: [{ kind: "style", selector: "from", declarations: [{ property: "opacity", value: "0" }] }, { kind: "style", selector: "to", declarations: [{ property: "opacity", value: "1" }] }] }]); return name; })() };
+			export const styles = { "card": css.class({ "@media (prefers-color-scheme: dark)": { color: "white" } }), "pulse": (() => { const name = "pw-kf-pulse"; css.sheet.registerSemanticRules([{ kind: "keyframes", name, children: [{ kind: "style", selector: "from", declarations: [{ property: "opacity", value: "0" }] }, { kind: "style", selector: "to", declarations: [{ property: "opacity", value: "1" }] }] }]); return name; })() };
 			export default styles;",
 			    "converted": 2,
 			    "generatedFiles": [],
@@ -247,7 +245,7 @@ describe("official adapter API families", () => {
 			          "named-map",
 			          "residual",
 			        ],
-			        "representation": "named-map",
+			        "representation": "static",
 			        "residuals": [],
 			      },
 			      {
@@ -263,8 +261,8 @@ describe("official adapter API families", () => {
 			    ],
 			    "outcomes": [
 			      {
-			        "outcome": "target-native",
-			        "representation": "named-map",
+			        "outcome": "static",
+			        "representation": "static",
 			      },
 			      {
 			        "outcome": "target-native",
@@ -275,11 +273,9 @@ describe("official adapter API families", () => {
 			    "skipped": 0,
 			    "validations": [
 			      {
-			        "differences": [
-			          "canonical CSS differs",
-			        ],
-			        "lossiness": "unsupported",
-			        "valid": false,
+			        "differences": [],
+			        "lossiness": "lossless",
+			        "valid": true,
 			      },
 			      {
 			        "differences": [],
@@ -304,7 +300,7 @@ describe("official adapter API families", () => {
 			          "named-map",
 			          "residual",
 			        ],
-			        "representation": "named-map",
+			        "representation": "static",
 			        "residuals": [],
 			      },
 			      {
@@ -314,18 +310,18 @@ describe("official adapter API families", () => {
 			          "named-map",
 			          "residual",
 			        ],
-			        "representation": "named-map",
+			        "representation": "static",
 			        "residuals": [],
 			      },
 			    ],
 			    "outcomes": [
 			      {
-			        "outcome": "target-native",
-			        "representation": "named-map",
+			        "outcome": "static",
+			        "representation": "static",
 			      },
 			      {
-			        "outcome": "target-native",
-			        "representation": "named-map",
+			        "outcome": "static",
+			        "representation": "static",
 			      },
 			    ],
 			    "residuals": [],
@@ -704,7 +700,7 @@ describe("official adapter API families", () => {
 			          "named-map",
 			          "residual",
 			        ],
-			        "representation": "named-map",
+			        "representation": "static",
 			        "residuals": [],
 			      },
 			      {
@@ -807,7 +803,7 @@ describe("official adapter API families", () => {
 			          "named-map",
 			          "residual",
 			        ],
-			        "representation": "named-map",
+			        "representation": "static",
 			        "residuals": [],
 			      },
 			      {
@@ -817,18 +813,18 @@ describe("official adapter API families", () => {
 			          "named-map",
 			          "residual",
 			        ],
-			        "representation": "named-map",
+			        "representation": "static",
 			        "residuals": [],
 			      },
 			    ],
 			    "outcomes": [
 			      {
-			        "outcome": "target-native",
-			        "representation": "named-map",
+			        "outcome": "static",
+			        "representation": "static",
 			      },
 			      {
-			        "outcome": "target-native",
-			        "representation": "named-map",
+			        "outcome": "static",
+			        "representation": "static",
 			      },
 			    ],
 			    "residuals": [],
@@ -852,7 +848,7 @@ describe("official adapter API families", () => {
 			import { pandwindPreset } from "pandwind/preset";
 			const css = createRuntimeCss(pandwindPreset);
 
-			export const App = () => (css.sheet.registerSemanticRules([{ kind: "global", selector: "body", declarations: [{ property: "margin", value: 0 }], children: [] }]), null);",
+			export const App = () => (css.sheet.registerSemanticRules([{ kind: "global", selector: "body", conditions: [], declarations: [{ property: "margin", value: 0 }], children: [] }]), null);",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -921,10 +917,11 @@ describe("official adapter API families", () => {
 			  },
 			  "emotion/injectGlobal tagged template": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
+			    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+			import { pandwindPreset } from "pandwind/preset";
+			const css = createRuntimeCss(pandwindPreset);
 
-			css.class({ "& body": { margin: "0" } });",
+			() => (css.sheet.registerSemanticRules([{ kind: "global", selector: "body", conditions: [], declarations: [{ property: "margin", value: "0" }], children: [] }]), null);",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -1358,11 +1355,22 @@ describe("official adapter API families", () => {
 			  },
 			  "less/less mixin call": {
 			    "changed": false,
-			    "code": "// pandwind:migrate-skip (lowering-residual: parse)
+			    "code": "// pandwind:migrate-skip (lowering-residual: capability, parse)
+			.shadow() { box-shadow: 0 1px 2px black; }
 			.card { .shadow(); color: red; }",
 			    "converted": 0,
 			    "generatedFiles": [],
 			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "static",
+			        "residuals": [],
+			      },
 			      {
 			        "applied": [],
 			        "availableRepresentations": [
@@ -1378,15 +1386,24 @@ describe("official adapter API families", () => {
 			        "outcome": "residual",
 			        "representation": "residual",
 			      },
+			      {
+			        "outcome": "residual",
+			        "representation": "residual",
+			      },
 			    ],
 			    "residuals": [
+			      {
+			        "hint": "stylesheet migration requires a single local class selector",
+			        "kind": "capability",
+			        "preserved": undefined,
+			      },
 			      {
 			        "hint": "stylesheet declaration requires a property and value",
 			        "kind": "parse",
 			        "preserved": undefined,
 			      },
 			    ],
-			    "skipped": 1,
+			    "skipped": 2,
 			    "validations": [],
 			  },
 			  "less/less plain rules": {
@@ -1405,7 +1422,7 @@ describe("official adapter API families", () => {
 			          "named-map",
 			          "residual",
 			        ],
-			        "representation": "named-map",
+			        "representation": "static",
 			        "residuals": [],
 			      },
 			      {
@@ -1415,18 +1432,18 @@ describe("official adapter API families", () => {
 			          "named-map",
 			          "residual",
 			        ],
-			        "representation": "named-map",
+			        "representation": "static",
 			        "residuals": [],
 			      },
 			    ],
 			    "outcomes": [
 			      {
-			        "outcome": "target-native",
-			        "representation": "named-map",
+			        "outcome": "static",
+			        "representation": "static",
 			      },
 			      {
-			        "outcome": "target-native",
-			        "representation": "named-map",
+			        "outcome": "static",
+			        "representation": "static",
 			      },
 			    ],
 			    "residuals": [],
@@ -2238,7 +2255,7 @@ describe("official adapter API families", () => {
 			          "named-map",
 			          "residual",
 			        ],
-			        "representation": "named-map",
+			        "representation": "static",
 			        "residuals": [],
 			      },
 			    ],
@@ -2391,7 +2408,7 @@ describe("official adapter API families", () => {
 			import { pandwindPreset } from "pandwind/preset";
 			const css = createRuntimeCss(pandwindPreset);
 
-			export const reset = () => (css.sheet.registerSemanticRules([{ kind: "global", selector: "body", declarations: [{ property: "margin", value: 0 }], children: [] }]), null);",
+			export const reset = () => (css.sheet.registerSemanticRules([{ kind: "global", selector: "body", conditions: [], declarations: [{ property: "margin", value: 0 }], children: [] }]), null);",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -2667,10 +2684,11 @@ describe("official adapter API families", () => {
 			  },
 			  "styled-components/createGlobalStyle tagged template": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
+			    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+			import { pandwindPreset } from "pandwind/preset";
+			const css = createRuntimeCss(pandwindPreset);
 
-			export const Global = css.class({ "& body": { margin: "0" } });",
+			export const Global = () => (css.sheet.registerSemanticRules([{ kind: "global", selector: "body", conditions: [], declarations: [{ property: "margin", value: "0" }], children: [] }]), null);",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -3601,7 +3619,7 @@ describe("official adapter API families", () => {
 			import { pandwindPreset } from "pandwind/preset";
 			const css = createRuntimeCss(pandwindPreset);
 
-			() => (css.sheet.registerSemanticRules([{ kind: "global", selector: "body", declarations: [{ property: "margin", value: 0 }], children: [] }]), null);",
+			(css.sheet.registerSemanticRules([{ kind: "global", selector: "body", conditions: [], declarations: [{ property: "margin", value: 0 }], children: [] }]), null);",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [

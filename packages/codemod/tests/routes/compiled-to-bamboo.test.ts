@@ -3,26 +3,31 @@ import { expect, test } from "vitest";
 import { CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.Compiled, CodemodAdapterId.Bamboo);
-	const happySource = "import { css } from \"@compiled/react\";\nexport const card = css({ color: \"red\", padding: \"1rem\" });\nexport const App = () => <div className={card} />;";
-const edgeSource = "import { css } from \"@compiled/react\";\nexport const card = css({ color: theme.foreground, padding: \"1rem\" });\nexport const App = () => <div className={card} />;";
-const malformedSource = "import { css } from \"@compiled/react\";\nexport const card = css({ color: \"red\", padding: \"1rem\" });\nexport const App = () => <div className={card} />;\nconst unfinished = { /* unfinished compiled */";
+	const happySource = "import { css } from \"@compiled/react\";\nexport const card = css({ color: \"red\", padding: 8 });";
+const edgeSource = "import { cssMap } from \"@compiled/react\";\nexport const colors = cssMap({ red: { color: \"red\" } });";
+const malformedSource = "import { css } from \"@compiled/react\";\nexport const card = css({ color: \"red\", padding: 8 });\nconst unfinished = { /* unfinished compiled */";
 const sourceSemantic = undefined;
-const themedSource = "import { css } from \"@compiled/react\";\nexport const card = css({ color: theme.colors.brand, padding: \"1rem\" });\nexport const App = () => <div className={card} />;";
-const tokenSource = "import { css } from \"@compiled/react\";\nexport const card = css({ color: \"$colors.brand\", padding: \"1rem\" });\nexport const App = () => <div className={card} />;";
-const blueSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/bamboo.config.ts":"export default { theme: { tokens: { colors: { brand: { value: \"#2563eb\" } } } } };"} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/bamboo.config.ts":"export default { theme: { tokens: { colors: { brand: { value: \"#f97316\" } } } } };"} };
+const themedSource = "import { css } from \"@compiled/react\";\nexport const card = css({ color: \"#2563eb\", padding: 8 });";
+const tokenSource = "import { css } from \"@compiled/react\";\nexport const card = css({ color: \"#2563eb\", padding: 8 });";
+const blueSemantic = undefined;
+const amberSemantic = undefined;
+const blueTargetSemantic = undefined;
+const amberTargetSemantic = undefined;
+const blueProject = createAdapterRouteProject(CodemodAdapterId.Compiled, CodemodAdapterId.Bamboo, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.Compiled, CodemodAdapterId.Bamboo, "#f97316");
 
 test("compiled -> bamboo: migrates concrete compiled syntax to bamboo", () => {
-	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
+	const result = route.run({ source: happySource, file: "styles.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -37,15 +42,28 @@ test("compiled -> bamboo: migrates concrete compiled syntax to bamboo", () => {
 		expect(result.residuals.length).toBeGreaterThan(0);
 		expect(result.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(result, "compiled -> bamboo happy");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
 
-		export const card = css({ padding: "1rem", color: "red" });
-		export const App = () => <div className={card} />;",
+		export const card = css({ padding: 8, color: "red" });",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "static",
@@ -62,25 +80,38 @@ test("compiled -> bamboo: migrates concrete compiled syntax to bamboo", () => {
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
-test("compiled -> bamboo: carries concrete compiled dynamics or edge syntax explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
+test("compiled -> bamboo: carries a documented secondary compiled API explicitly", () => {
+	const result = route.run({ source: edgeSource, file: "styles.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(result, "compiled -> bamboo secondary");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
 
-		export const card = css({ padding: "1rem", color: "var(--pandwind-dynamic-5qa8dh)" });
-		export const App = () => <div className={card} style={{ "--pandwind-dynamic-5qa8dh": String(theme.foreground) }} />;",
+		export const colors = { "red": css({ color: "red" }) };",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "named-map",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "host-runtime",
-		      "representation": "custom-property",
+		      "outcome": "target-native",
+		      "representation": "named-map",
 		    },
 		  ],
 		  "residuals": [],
@@ -93,14 +124,20 @@ test("compiled -> bamboo: carries concrete compiled dynamics or edge syntax expl
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
-test("compiled -> bamboo: lowers concrete theme and project context variants", () => {
-	const blue = route.run({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const amber = route.run({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
+test("compiled -> bamboo: loads concrete theme and project context variants", async () => {
+	const blue = await route.runAsync({ source: themedSource, file: "styles.tsx", semantic: blueSemantic, project: blueProject });
+	const amber = await route.runAsync({ source: themedSource, file: "styles.tsx", semantic: amberSemantic, project: amberProject });
 	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
 	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Compiled, CodemodAdapterId.Bamboo);
+	expectConfiguredTargetTokenEvidence(blue, CodemodAdapterId.Bamboo, "compiled -> bamboo blue config");
+	expectRouteScenarioEvidence(blue, "compiled -> bamboo blue config");
+	expectRouteScenarioEvidence(amber, "compiled -> bamboo amber config");
+	expectConfiguredTargetTokenAbsence(amber, CodemodAdapterId.Bamboo, "compiled -> bamboo amber literal config");
+
 	expectExplicitResidualEvidence(blue);
 	expectExplicitResidualEvidence(amber);
 	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
@@ -109,13 +146,25 @@ test("compiled -> bamboo: lowers concrete theme and project context variants", (
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
 
-		export const card = css({ padding: "1rem", color: "var(--pandwind-dynamic-bbwvz3)" });
-		export const App = () => <div className={card} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }} />;",
+		export const card = css({ padding: 8, color: "#2563eb" });",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "host-runtime",
-		        "representation": "custom-property",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [],
@@ -132,13 +181,25 @@ test("compiled -> bamboo: lowers concrete theme and project context variants", (
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
 
-		export const card = css({ padding: "1rem", color: "var(--pandwind-dynamic-bbwvz3)" });
-		export const App = () => <div className={card} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }} />;",
+		export const card = css({ padding: 8, color: "#2563eb" });",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "host-runtime",
-		        "representation": "custom-property",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [],
@@ -152,21 +213,36 @@ test("compiled -> bamboo: lowers concrete theme and project context variants", (
 		    ],
 		  },
 		}
-	`);
+	`)
 });
 
-test("compiled -> bamboo: resolves concrete token references with project context", () => {
-	const result = route.run({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
+test("compiled -> bamboo: resolves concrete token values with project context", async () => {
+	const result = await route.runAsync({ source: tokenSource, file: "styles.tsx", semantic: blueSemantic, project: blueProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Compiled, CodemodAdapterId.Bamboo);
+	expectConfiguredTargetTokenEvidence(result, CodemodAdapterId.Bamboo, "compiled -> bamboo token config");
+	expectRouteScenarioEvidence(result, "compiled -> bamboo token config");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
 
-		export const card = css({ padding: "1rem", color: "$colors.brand" });
-		export const App = () => <div className={card} />;",
+		export const card = css({ padding: 8, color: "#2563eb" });",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "static",
@@ -183,22 +259,35 @@ test("compiled -> bamboo: resolves concrete token references with project contex
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
 test("compiled -> bamboo: preserves malformed concrete compiled input", () => {
-	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
+	const result = route.run({ source: malformedSource, file: "styles.tsx", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished compiled */");
+	expectRouteScenarioEvidence(result, "compiled -> bamboo malformed");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
 
-		export const card = css({ padding: "1rem", color: "red" });
-		export const App = () => <div className={card} />;
+		export const card = css({ padding: 8, color: "red" });
 		const unfinished = { /* unfinished compiled */",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "static",
@@ -215,6 +304,6 @@ test("compiled -> bamboo: preserves malformed concrete compiled input", () => {
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 

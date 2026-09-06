@@ -109,6 +109,27 @@ function noOpMigration(source: string): AdapterMigrationResult {
 	};
 }
 
+function hasAdjacentSkipMarker(source: string, position: number, marker: string): boolean {
+	const prefix = source.slice(0, position);
+	const lineStart = prefix.lastIndexOf("\n") + 1;
+	if (prefix.slice(lineStart).includes(marker)) return true;
+	const previousLineEnd = Math.max(0, lineStart - 1);
+	const previousLineStart = prefix.lastIndexOf("\n", previousLineEnd - 1) + 1;
+	return prefix.slice(previousLineStart, previousLineEnd).includes(marker);
+}
+
+function withoutDuplicateSkipMarkers(
+	source: string,
+	edits: readonly { readonly start: number; readonly end: number; readonly text: string }[],
+	marker: string,
+): readonly { readonly start: number; readonly end: number; readonly text: string }[] {
+	return edits.filter(
+		(edit) =>
+			!(edit.start === edit.end && edit.text.includes(marker)) ||
+			!hasAdjacentSkipMarker(source, edit.start, marker),
+	);
+}
+
 interface LoadedAdapterConfigs {
 	readonly source: ReturnType<StyleAdapter["loadConfig"]>;
 	readonly target: ReturnType<StyleAdapter["loadConfig"]>;
@@ -1406,7 +1427,10 @@ function runAdapterMigrationInternal(
 			...(emissionDetail === undefined || emissionDetail === "" ? {} : { detail: emissionDetail }),
 		});
 	}
-	const edited = SourcePass.applyEdits(source, edits);
+	const edited = SourcePass.applyEdits(
+		source,
+		withoutDuplicateSkipMarkers(source, edits, marker),
+	);
 	let runtimeEdited = edited;
 	let needsCx = false;
 	for (const request of targetHostRewrites) {
@@ -1651,13 +1675,13 @@ function runAdapterMigrationInternal(
 				/\b(?:pandwindCss|pwCss)\s*=\s*createCss\(\)/u.test(statement),
 			);
 		const runtimeUsesSameBinding = [...imports].some((statement) =>
-			/\b(?:pandwindCss|pwCss)\s*=\s*createRuntimeCss\(/u.test(statement),
+			/\b(?:css|pandwindCss|pwCss)\s*=\s*createRuntimeCss\(/u.test(statement),
 		);
 		if (!hasRenamedStaticCss || runtimeUsesSameBinding) {
 			imports.delete('import { createCss } from "pandwind/css";');
 			if (runtimeUsesSameBinding) {
 				for (const statement of imports)
-					if (/\b(?:pandwindCss|pwCss)\s*=\s*createCss\(\)/u.test(statement))
+					if (/\b(?:css|pandwindCss|pwCss)\s*=\s*createCss\(\)/u.test(statement))
 						imports.delete(statement);
 			} else imports.delete("const css = createCss();");
 		}

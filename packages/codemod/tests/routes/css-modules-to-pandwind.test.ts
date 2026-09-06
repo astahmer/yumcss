@@ -3,23 +3,28 @@ import { expect, test } from "vitest";
 import { CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.CssModules, CodemodAdapterId.Pandwind);
-	const happySource = ".card { color: red; padding: 1rem; }\n.cardTitle { font-weight: 600; }";
-const edgeSource = ".card { color: theme.foreground; padding: 1rem; }\n.cardTitle { font-weight: 600; }";
-const malformedSource = ".card { color: red; padding: 1rem; }\n.cardTitle { font-weight: 600; }\nconst unfinished = { /* unfinished css-modules */";
+	const happySource = ".card { color: red; padding: 1rem; }";
+const edgeSource = ".card { color: red; }\n.primary { composes: card; font-weight: 600; }";
+const malformedSource = ".card { color: red; padding: 1rem; }\nconst unfinished = { /* unfinished css-modules */";
 const sourceSemantic = undefined;
-const themedSource = ".card { color: ${theme.colors.brand}; padding: 1rem; }\n.cardTitle { font-weight: 600; }";
-const tokenSource = ".card { color: var(--colors-brand); padding: 1rem; }\n.cardTitle { font-weight: 600; }";
-const blueSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/pandwind.config.ts":"export default { tokens: { colors: { brand: \"#2563eb\" } } };"} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/pandwind.config.ts":"export default { tokens: { colors: { brand: \"#f97316\" } } };"} };
+const themedSource = ".card { color: #2563eb; padding: 1rem; }";
+const tokenSource = ".card { color: #2563eb; padding: 1rem; }";
+const blueSemantic = undefined;
+const amberSemantic = undefined;
+const blueTargetSemantic = undefined;
+const amberTargetSemantic = undefined;
+const blueProject = createAdapterRouteProject(CodemodAdapterId.CssModules, CodemodAdapterId.Pandwind, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.CssModules, CodemodAdapterId.Pandwind, "#f97316");
 
 test("css-modules -> pandwind: migrates concrete css-modules syntax to pandwind", () => {
 	const result = route.run({ source: happySource, file: "Card.module.css", semantic: sourceSemantic });
@@ -37,23 +42,33 @@ test("css-modules -> pandwind: migrates concrete css-modules syntax to pandwind"
 		expect(result.residuals.length).toBeGreaterThan(0);
 		expect(result.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(result, "css-modules -> pandwind happy");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const styles = { "card": css.class({ padding: "1rem", color: "red" }), "cardTitle": css.class({ fontWeight: "600" }) };
+		export const styles = { "card": css.class({ padding: "1rem", color: "red" }) };
 		export default styles;",
-		  "converted": 2,
+		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "target-native",
-		      "representation": "named-map",
-		    },
-		    {
-		      "outcome": "target-native",
-		      "representation": "named-map",
+		      "outcome": "static",
+		      "representation": "static",
 		    },
 		  ],
 		  "residuals": [],
@@ -64,61 +79,79 @@ test("css-modules -> pandwind: migrates concrete css-modules syntax to pandwind"
 		      "lossiness": "lossless",
 		      "valid": true,
 		    },
-		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
-		    },
 		  ],
 		}
-	`);
+	`)
 });
 
-test("css-modules -> pandwind: carries concrete css-modules dynamics or edge syntax explicitly", () => {
+test("css-modules -> pandwind: carries a documented secondary css-modules API explicitly", () => {
 	const result = route.run({ source: edgeSource, file: "Card.module.css", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(result, "css-modules -> pandwind secondary");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
-		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
-		export const styles = { "card": css.class({ padding: "1rem", color: "theme.foreground" }), "cardTitle": css.class({ fontWeight: "600" }) };
-		export default styles;",
-		  "converted": 2,
+		  "changed": false,
+		  "code": "// pandwind:migrate-skip (lowering-residual: composition)
+		.card { color: red; }
+		.primary { composes: card; font-weight: 600; }",
+		  "converted": 0,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "residual",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "target-native",
-		      "representation": "named-map",
+		      "outcome": "residual",
+		      "representation": "residual",
 		    },
 		    {
-		      "outcome": "target-native",
-		      "representation": "named-map",
+		      "outcome": "residual",
+		      "representation": "residual",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
-		    },
-		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "preprocessor or CSS Modules composition needs its source context",
+		      "kind": "composition",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
-	`);
+	`)
 });
 
-test("css-modules -> pandwind: lowers concrete theme and project context variants", () => {
-	const blue = route.run({ source: themedSource, file: "Card.module.css", semantic: blueSemantic, project: blueProject });
-	const amber = route.run({ source: themedSource, file: "Card.module.css", semantic: amberSemantic, project: amberProject });
+test("css-modules -> pandwind: loads concrete theme and project context variants", async () => {
+	const blue = await route.runAsync({ source: themedSource, file: "Card.module.css", semantic: blueSemantic, project: blueProject });
+	const amber = await route.runAsync({ source: themedSource, file: "Card.module.css", semantic: amberSemantic, project: amberProject });
 	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
 	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.CssModules, CodemodAdapterId.Pandwind);
+	expectConfiguredTargetTokenEvidence(blue, CodemodAdapterId.Pandwind, "css-modules -> pandwind blue config");
+	expectRouteScenarioEvidence(blue, "css-modules -> pandwind blue config");
+	expectRouteScenarioEvidence(amber, "css-modules -> pandwind amber config");
+	expectConfiguredTargetTokenAbsence(amber, CodemodAdapterId.Pandwind, "css-modules -> pandwind amber literal config");
+
 	expectExplicitResidualEvidence(blue);
 	expectExplicitResidualEvidence(amber);
 	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
@@ -127,27 +160,31 @@ test("css-modules -> pandwind: lowers concrete theme and project context variant
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const styles = { "card": css.vars({ padding: "1rem", color: theme.colors.brand }), "cardTitle": css.class({ fontWeight: "600" }) };
+		export const styles = { "card": css.class({ padding: "1rem", color: "#2563eb" }) };
 		export default styles;",
-		    "converted": 2,
+		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "host-runtime",
-		        "representation": "named-map",
-		      },
-		      {
-		        "outcome": "target-native",
-		        "representation": "named-map",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [],
 		    "skipped": 0,
 		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
 		      {
 		        "differences": [],
 		        "lossiness": "lossless",
@@ -159,17 +196,26 @@ test("css-modules -> pandwind: lowers concrete theme and project context variant
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const styles = { "card": css.vars({ padding: "1rem", color: theme.colors.brand }), "cardTitle": css.class({ fontWeight: "600" }) };
+		export const styles = { "card": css.class({ padding: "1rem", color: "$brand" }) };
 		export default styles;",
-		    "converted": 2,
+		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "host-runtime",
-		        "representation": "named-map",
-		      },
-		      {
-		        "outcome": "target-native",
-		        "representation": "named-map",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [],
@@ -180,37 +226,44 @@ test("css-modules -> pandwind: lowers concrete theme and project context variant
 		        "lossiness": "lossless",
 		        "valid": true,
 		      },
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
 		    ],
 		  },
 		}
-	`);
+	`)
 });
 
-test("css-modules -> pandwind: resolves concrete token references with project context", () => {
-	const result = route.run({ source: tokenSource, file: "Card.module.css", semantic: blueSemantic, project: blueProject });
+test("css-modules -> pandwind: resolves concrete token values with project context", async () => {
+	const result = await route.runAsync({ source: tokenSource, file: "Card.module.css", semantic: blueSemantic, project: blueProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.CssModules, CodemodAdapterId.Pandwind);
+	expectConfiguredTargetTokenEvidence(result, CodemodAdapterId.Pandwind, "css-modules -> pandwind token config");
+	expectRouteScenarioEvidence(result, "css-modules -> pandwind token config");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const styles = { "card": css.class({ padding: "1rem", color: "var(--colors-brand)" }), "cardTitle": css.class({ fontWeight: "600" }) };
+		export const styles = { "card": css.class({ padding: "1rem", color: "$brand" }) };
 		export default styles;",
-		  "converted": 2,
+		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "target-native",
-		      "representation": "named-map",
-		    },
-		    {
-		      "outcome": "target-native",
-		      "representation": "named-map",
+		      "outcome": "static",
+		      "representation": "static",
 		    },
 		  ],
 		  "residuals": [],
@@ -221,33 +274,37 @@ test("css-modules -> pandwind: resolves concrete token references with project c
 		      "lossiness": "lossless",
 		      "valid": true,
 		    },
-		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
-		    },
 		  ],
 		}
-	`);
+	`)
 });
 
 test("css-modules -> pandwind: preserves malformed concrete css-modules input", () => {
 	const result = route.run({ source: malformedSource, file: "Card.module.css", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished css-modules */");
+	expectRouteScenarioEvidence(result, "css-modules -> pandwind malformed");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": false,
 		  "code": "// pandwind:migrate-skip (lowering-residual: parse)
 		.card { color: red; padding: 1rem; }
-		.cardTitle { font-weight: 600; }
 		const unfinished = { /* unfinished css-modules */",
 		  "converted": 0,
-		  "outcomes": [
+		  "generatedFiles": [],
+		  "loweringPlans": [
 		    {
-		      "outcome": "residual",
-		      "representation": "residual",
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
 		    },
+		  ],
+		  "outcomes": [
 		    {
 		      "outcome": "residual",
 		      "representation": "residual",
@@ -263,6 +320,6 @@ test("css-modules -> pandwind: preserves malformed concrete css-modules input", 
 		  "skipped": 1,
 		  "validations": [],
 		}
-	`);
+	`)
 });
 

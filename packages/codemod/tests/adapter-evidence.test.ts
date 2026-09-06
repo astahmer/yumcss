@@ -40,7 +40,7 @@ describe("adapter evidence contracts", () => {
 			    "id": "chakra-ui",
 			  },
 			  {
-			    "apiCount": 10,
+			    "apiCount": 11,
 			    "configCount": 3,
 			    "id": "emotion",
 			  },

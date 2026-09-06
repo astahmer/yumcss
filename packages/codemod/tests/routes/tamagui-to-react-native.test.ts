@@ -3,23 +3,28 @@ import { expect, test } from "vitest";
 import { CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.Tamagui, CodemodAdapterId.ReactNative);
 	const happySource = "import { styled, View } from \"tamagui\";\nexport const Card = styled(View, { color: \"red\", padding: \"$4\" });\nexport const App = () => <Card />;";
-const edgeSource = "import { styled, View } from \"tamagui\";\nexport const Card = styled(View, { color: theme.foreground, padding: \"$4\" });\nexport const App = () => <Card />;";
+const edgeSource = "import { styled, View } from \"tamagui\";\nexport const Card = styled(View, ({ theme }) => ({ color: theme.color }));";
 const malformedSource = "import { styled, View } from \"tamagui\";\nexport const Card = styled(View, { color: \"red\", padding: \"$4\" });\nexport const App = () => <Card />;\nconst unfinished = { /* unfinished tamagui */";
 const sourceSemantic = undefined;
-const themedSource = "import { styled, View } from \"tamagui\";\nexport const Card = styled(View, { color: theme.colors.brand, padding: \"$4\" });\nexport const App = () => <Card />;";
-const tokenSource = "import { styled, View } from \"tamagui\";\nexport const Card = styled(View, { color: \"$colors.brand\", padding: \"$4\" });\nexport const App = () => <Card />;";
-const blueSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {} };
+const themedSource = "import { styled, View } from \"tamagui\";\nexport const Card = styled(View, { color: \"#2563eb\", padding: \"$4\" });\nexport const App = () => <Card />;";
+const tokenSource = "import { styled, View } from \"tamagui\";\nexport const Card = styled(View, { color: \"#2563eb\", padding: \"$4\" });\nexport const App = () => <Card />;";
+const blueSemantic = undefined;
+const amberSemantic = undefined;
+const blueTargetSemantic = undefined;
+const amberTargetSemantic = undefined;
+const blueProject = createAdapterRouteProject(CodemodAdapterId.Tamagui, CodemodAdapterId.ReactNative, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.Tamagui, CodemodAdapterId.ReactNative, "#f97316");
 
 test("tamagui -> react-native: migrates concrete tamagui syntax to react-native", () => {
 	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
@@ -37,6 +42,7 @@ test("tamagui -> react-native: migrates concrete tamagui syntax to react-native"
 		expect(result.residuals.length).toBeGreaterThan(0);
 		expect(result.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(result, "tamagui -> react-native happy");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
@@ -46,6 +52,22 @@ test("tamagui -> react-native: migrates concrete tamagui syntax to react-native"
 		styled(View, { color: "red", padding: "$4" });
 		export const App = () => <Card />;",
 		  "converted": 0,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		        "react-native-numeric-normalization",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
@@ -62,30 +84,50 @@ test("tamagui -> react-native: migrates concrete tamagui syntax to react-native"
 		  "skipped": 1,
 		  "validations": [],
 		}
-	`);
+	`)
 });
 
-test("tamagui -> react-native: carries concrete tamagui dynamics or edge syntax explicitly", () => {
+test("tamagui -> react-native: carries a documented secondary tamagui API explicitly", () => {
 	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(result, "tamagui -> react-native secondary");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import { styled, View } from "tamagui";
-		export const Card = // pandwind:migrate-skip (route: tamagui -> react-native | lowering-residual: host-framework | capability-blocked: dynamic-values: dynamic: theme.foreground | available: named-map, target-native, residual)
-		styled(View, { color: theme.foreground, padding: "$4" });
-		export const App = () => <View className={Card.class} style={Card.style} />;",
+		export const Card = // pandwind:migrate-skip (route: tamagui -> react-native | parse-residual: function-dynamic | lowering-residual: host-framework | capability-blocked: components: component subject: View | available: named-map, residual)
+		styled(View, ({ theme }) => ({ color: theme.color }));",
 		  "converted": 0,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		        "react-native-numeric-normalization",
+		      ],
+		      "availableRepresentations": [
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "residual",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "target-native",
+		      "representation": "residual",
 		    },
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "dynamic-values: dynamic: theme.foreground",
+		      "hint": "Tamagui function-valued styles require a theme/props wrapper",
+		      "kind": "function-dynamic",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "components: component subject: View",
 		      "kind": "capability",
 		      "preserved": undefined,
 		    },
@@ -98,14 +140,20 @@ test("tamagui -> react-native: carries concrete tamagui dynamics or edge syntax 
 		  "skipped": 1,
 		  "validations": [],
 		}
-	`);
+	`)
 });
 
-test("tamagui -> react-native: lowers concrete theme and project context variants", () => {
-	const blue = route.run({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const amber = route.run({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
+test("tamagui -> react-native: loads concrete theme and project context variants", async () => {
+	const blue = await route.runAsync({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
+	const amber = await route.runAsync({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
 	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
 	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Tamagui, CodemodAdapterId.ReactNative);
+	expectConfiguredTargetTokenEvidence(blue, CodemodAdapterId.ReactNative, "tamagui -> react-native blue config");
+	expectRouteScenarioEvidence(blue, "tamagui -> react-native blue config");
+	expectRouteScenarioEvidence(amber, "tamagui -> react-native amber config");
+	expectConfiguredTargetTokenAbsence(amber, CodemodAdapterId.ReactNative, "tamagui -> react-native amber literal config");
+
 	expectExplicitResidualEvidence(blue);
 	expectExplicitResidualEvidence(amber);
 	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
@@ -113,22 +161,33 @@ test("tamagui -> react-native: lowers concrete theme and project context variant
 		  "amber": {
 		    "changed": true,
 		    "code": "import { styled, View } from "tamagui";
-		export const Card = // pandwind:migrate-skip (route: tamagui -> react-native | lowering-residual: host-framework | capability-blocked: dynamic-values: dynamic: theme.colors.brand | available: named-map, target-native, residual)
-		styled(View, { color: theme.colors.brand, padding: "$4" });
-		export const App = () => <View className={Card.class} style={Card.style} />;",
+		export const Card = // pandwind:migrate-skip (route: tamagui -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
+		styled(View, { color: "#2563eb", padding: "$4" });
+		export const App = () => <Card />;",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		          "react-native-numeric-normalization",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "target-native",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
-		      {
-		        "hint": "dynamic-values: dynamic: theme.colors.brand",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
 		      {
 		        "hint": "react-native has no host representation for react-native",
 		        "kind": "host-framework",
@@ -141,22 +200,33 @@ test("tamagui -> react-native: lowers concrete theme and project context variant
 		  "blue": {
 		    "changed": true,
 		    "code": "import { styled, View } from "tamagui";
-		export const Card = // pandwind:migrate-skip (route: tamagui -> react-native | lowering-residual: host-framework | capability-blocked: dynamic-values: dynamic: theme.colors.brand | available: named-map, target-native, residual)
-		styled(View, { color: theme.colors.brand, padding: "$4" });
-		export const App = () => <View className={Card.class} style={Card.style} />;",
+		export const Card = // pandwind:migrate-skip (route: tamagui -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
+		styled(View, { color: "#2563eb", padding: "$4" });
+		export const App = () => <Card />;",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		          "react-native-numeric-normalization",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "target-native",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
-		      {
-		        "hint": "dynamic-values: dynamic: theme.colors.brand",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
 		      {
 		        "hint": "react-native has no host representation for react-native",
 		        "kind": "host-framework",
@@ -167,21 +237,40 @@ test("tamagui -> react-native: lowers concrete theme and project context variant
 		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 
-test("tamagui -> react-native: resolves concrete token references with project context", () => {
-	const result = route.run({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
+test("tamagui -> react-native: resolves concrete token values with project context", async () => {
+	const result = await route.runAsync({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Tamagui, CodemodAdapterId.ReactNative);
+	expectConfiguredTargetTokenEvidence(result, CodemodAdapterId.ReactNative, "tamagui -> react-native token config");
+	expectRouteScenarioEvidence(result, "tamagui -> react-native token config");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import { styled, View } from "tamagui";
 		export const Card = // pandwind:migrate-skip (route: tamagui -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
-		styled(View, { color: "$colors.brand", padding: "$4" });
+		styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <Card />;",
 		  "converted": 0,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		        "react-native-numeric-normalization",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
@@ -198,12 +287,13 @@ test("tamagui -> react-native: resolves concrete token references with project c
 		  "skipped": 1,
 		  "validations": [],
 		}
-	`);
+	`)
 });
 
 test("tamagui -> react-native: preserves malformed concrete tamagui input", () => {
 	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished tamagui */");
+	expectRouteScenarioEvidence(result, "tamagui -> react-native malformed");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
@@ -214,6 +304,22 @@ test("tamagui -> react-native: preserves malformed concrete tamagui input", () =
 		export const App = () => <Card />;
 		const unfinished = { /* unfinished tamagui */",
 		  "converted": 0,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		        "react-native-numeric-normalization",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
@@ -230,6 +336,6 @@ test("tamagui -> react-native: preserves malformed concrete tamagui input", () =
 		  "skipped": 1,
 		  "validations": [],
 		}
-	`);
+	`)
 });
 

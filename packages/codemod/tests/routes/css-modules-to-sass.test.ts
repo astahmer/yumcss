@@ -3,23 +3,28 @@ import { expect, test } from "vitest";
 import { CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.CssModules, CodemodAdapterId.Sass);
-	const happySource = ".card { color: red; padding: 1rem; }\n.cardTitle { font-weight: 600; }";
-const edgeSource = ".card { color: theme.foreground; padding: 1rem; }\n.cardTitle { font-weight: 600; }";
-const malformedSource = ".card { color: red; padding: 1rem; }\n.cardTitle { font-weight: 600; }\nconst unfinished = { /* unfinished css-modules */";
+	const happySource = ".card { color: red; padding: 1rem; }";
+const edgeSource = ".card { color: red; }\n.primary { composes: card; font-weight: 600; }";
+const malformedSource = ".card { color: red; padding: 1rem; }\nconst unfinished = { /* unfinished css-modules */";
 const sourceSemantic = undefined;
-const themedSource = ".card { color: ${theme.colors.brand}; padding: 1rem; }\n.cardTitle { font-weight: 600; }";
-const tokenSource = ".card { color: var(--colors-brand); padding: 1rem; }\n.cardTitle { font-weight: 600; }";
-const blueSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {} };
+const themedSource = ".card { color: #2563eb; padding: 1rem; }";
+const tokenSource = ".card { color: #2563eb; padding: 1rem; }";
+const blueSemantic = undefined;
+const amberSemantic = undefined;
+const blueTargetSemantic = undefined;
+const amberTargetSemantic = undefined;
+const blueProject = createAdapterRouteProject(CodemodAdapterId.CssModules, CodemodAdapterId.Sass, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.CssModules, CodemodAdapterId.Sass, "#f97316");
 
 test("css-modules -> sass: migrates concrete css-modules syntax to sass", () => {
 	const result = route.run({ source: happySource, file: "Card.module.css", semantic: sourceSemantic });
@@ -37,22 +42,31 @@ test("css-modules -> sass: migrates concrete css-modules syntax to sass", () => 
 		expect(result.residuals.length).toBeGreaterThan(0);
 		expect(result.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(result, "css-modules -> sass happy");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": ".card{padding:1rem;color:red}
-
-		.cardTitle{font-weight:600}",
-		  "converted": 2,
+		  "code": ".card{padding:1rem;color:red}",
+		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "target-native",
-		      "representation": "named-map",
-		    },
-		    {
-		      "outcome": "target-native",
-		      "representation": "named-map",
+		      "outcome": "static",
+		      "representation": "static",
 		    },
 		  ],
 		  "residuals": [],
@@ -63,139 +77,187 @@ test("css-modules -> sass: migrates concrete css-modules syntax to sass", () => 
 		      "lossiness": "lossless",
 		      "valid": true,
 		    },
-		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
-		    },
 		  ],
 		}
-	`);
+	`)
 });
 
-test("css-modules -> sass: carries concrete css-modules dynamics or edge syntax explicitly", () => {
+test("css-modules -> sass: carries a documented secondary css-modules API explicitly", () => {
 	const result = route.run({ source: edgeSource, file: "Card.module.css", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(result, "css-modules -> sass secondary");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
-		  "changed": true,
-		  "code": ".card{padding:1rem;color:theme.foreground}
-
-		.cardTitle{font-weight:600}",
-		  "converted": 2,
+		  "changed": false,
+		  "code": "// pandwind:migrate-skip (lowering-residual: composition)
+		.card { color: red; }
+		.primary { composes: card; font-weight: 600; }",
+		  "converted": 0,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "residual",
+		      ],
+		      "representation": "residual",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "target-native",
-		      "representation": "named-map",
+		      "outcome": "residual",
+		      "representation": "residual",
 		    },
 		    {
-		      "outcome": "target-native",
-		      "representation": "named-map",
+		      "outcome": "residual",
+		      "representation": "residual",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
-		    },
-		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "preprocessor or CSS Modules composition needs its source context",
+		      "kind": "composition",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
-	`);
+	`)
 });
 
-test("css-modules -> sass: lowers concrete theme and project context variants", () => {
-	const blue = route.run({ source: themedSource, file: "Card.module.css", semantic: blueSemantic, project: blueProject });
-	const amber = route.run({ source: themedSource, file: "Card.module.css", semantic: amberSemantic, project: amberProject });
+test("css-modules -> sass: loads concrete theme and project context variants", async () => {
+	const blue = await route.runAsync({ source: themedSource, file: "Card.module.css", semantic: blueSemantic, project: blueProject });
+	const amber = await route.runAsync({ source: themedSource, file: "Card.module.css", semantic: amberSemantic, project: amberProject });
 	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
 	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.CssModules, CodemodAdapterId.Sass);
+	expectConfiguredTargetTokenEvidence(blue, CodemodAdapterId.Sass, "css-modules -> sass blue config");
+	expectRouteScenarioEvidence(blue, "css-modules -> sass blue config");
+	expectRouteScenarioEvidence(amber, "css-modules -> sass amber config");
+	expectConfiguredTargetTokenAbsence(amber, CodemodAdapterId.Sass, "css-modules -> sass amber literal config");
+
 	expectExplicitResidualEvidence(blue);
 	expectExplicitResidualEvidence(amber);
 	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
 		{
 		  "amber": {
-		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: dynamic)
-		.card { color: \${theme.colors.brand}; padding: 1rem; }
-		.cardTitle { font-weight: 600; }",
-		    "converted": 0,
+		    "changed": true,
+		    "code": ".card{padding:1rem;color:#2563eb}",
+		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
-		        "representation": "residual",
-		      },
-		      {
-		        "outcome": "residual",
-		        "representation": "residual",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "authored stylesheet values must be statically resolved",
-		        "kind": "dynamic",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		  "blue": {
-		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: dynamic)
-		.card { color: \${theme.colors.brand}; padding: 1rem; }
-		.cardTitle { font-weight: 600; }",
-		    "converted": 0,
+		    "changed": true,
+		    "code": ".card{padding:1rem;color:#2563eb}",
+		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
-		        "representation": "residual",
-		      },
-		      {
-		        "outcome": "residual",
-		        "representation": "residual",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "authored stylesheet values must be statically resolved",
-		        "kind": "dynamic",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 
-test("css-modules -> sass: resolves concrete token references with project context", () => {
-	const result = route.run({ source: tokenSource, file: "Card.module.css", semantic: blueSemantic, project: blueProject });
+test("css-modules -> sass: resolves concrete token values with project context", async () => {
+	const result = await route.runAsync({ source: tokenSource, file: "Card.module.css", semantic: blueSemantic, project: blueProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.CssModules, CodemodAdapterId.Sass);
+	expectConfiguredTargetTokenEvidence(result, CodemodAdapterId.Sass, "css-modules -> sass token config");
+	expectRouteScenarioEvidence(result, "css-modules -> sass token config");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": ".card{padding:1rem;color:var(--colors-brand)}
-
-		.cardTitle{font-weight:600}",
-		  "converted": 2,
+		  "code": ".card{padding:1rem;color:#2563eb}",
+		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "target-native",
-		      "representation": "named-map",
-		    },
-		    {
-		      "outcome": "target-native",
-		      "representation": "named-map",
+		      "outcome": "static",
+		      "representation": "static",
 		    },
 		  ],
 		  "residuals": [],
@@ -206,33 +268,38 @@ test("css-modules -> sass: resolves concrete token references with project conte
 		      "lossiness": "lossless",
 		      "valid": true,
 		    },
-		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
-		    },
 		  ],
 		}
-	`);
+	`)
 });
 
 test("css-modules -> sass: preserves malformed concrete css-modules input", () => {
 	const result = route.run({ source: malformedSource, file: "Card.module.css", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished css-modules */");
+	expectRouteScenarioEvidence(result, "css-modules -> sass malformed");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": false,
 		  "code": "// pandwind:migrate-skip (lowering-residual: parse)
 		.card { color: red; padding: 1rem; }
-		.cardTitle { font-weight: 600; }
 		const unfinished = { /* unfinished css-modules */",
 		  "converted": 0,
-		  "outcomes": [
+		  "generatedFiles": [],
+		  "loweringPlans": [
 		    {
-		      "outcome": "residual",
-		      "representation": "residual",
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
 		    },
+		  ],
+		  "outcomes": [
 		    {
 		      "outcome": "residual",
 		      "representation": "residual",
@@ -248,6 +315,6 @@ test("css-modules -> sass: preserves malformed concrete css-modules input", () =
 		  "skipped": 1,
 		  "validations": [],
 		}
-	`);
+	`)
 });
 

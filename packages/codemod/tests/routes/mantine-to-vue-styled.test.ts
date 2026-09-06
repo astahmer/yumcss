@@ -3,26 +3,31 @@ import { expect, test } from "vitest";
 import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.Mantine, CodemodAdapterId.VueStyled);
-	const happySource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"red\" p=\"md\" />;";
-const edgeSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=theme.foreground p=\"md\" />;";
-const malformedSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"red\" p=\"md\" />;\nconst unfinished = { /* unfinished mantine */";
+	const happySource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"blue.6\" mx=\"auto\" maw={400} />;";
+const edgeSource = "import { Button } from \"@mantine/core\";\nexport const App = () => <Button styles={{ root: { color: \"red\" } }} />;";
+const malformedSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"blue.6\" mx=\"auto\" maw={400} />;\nconst unfinished = { /* unfinished mantine */";
 const sourceSemantic = { source: { framework: BuiltinHostFramework.React } };
-const themedSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=theme.colors.brand p=\"md\" />;";
-const tokenSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"brand.0\" p=\"md\" />;";
-const blueSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { source: { framework: BuiltinHostFramework.Vue }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { source: { framework: BuiltinHostFramework.Vue }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/src/theme.ts":"export const mantineTheme = { colors: { brand: [\"#2563eb\"] } };"} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/src/theme.ts":"export const mantineTheme = { colors: { brand: [\"#f97316\"] } };"} };
+const themedSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"brand.0\" mx=\"auto\" maw={400} />;";
+const tokenSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"#2563eb\" mx=\"auto\" maw={400} />;";
+const blueSemantic = { source: { framework: BuiltinHostFramework.React } };
+const amberSemantic = { source: { framework: BuiltinHostFramework.React } };
+const blueTargetSemantic = { source: { framework: BuiltinHostFramework.Vue } };
+const amberTargetSemantic = { source: { framework: BuiltinHostFramework.Vue } };
+const blueProject = createAdapterRouteProject(CodemodAdapterId.Mantine, CodemodAdapterId.VueStyled, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.Mantine, CodemodAdapterId.VueStyled, "#f97316");
 
 test("mantine -> vue-styled: migrates concrete mantine syntax to vue-styled", () => {
-	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
+	const result = route.run({ source: happySource, file: "App.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -37,14 +42,30 @@ test("mantine -> vue-styled: migrates concrete mantine syntax to vue-styled", ()
 		expect(result.residuals.length).toBeGreaterThan(0);
 		expect(result.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(result, "mantine -> vue-styled happy");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
 		import styled from "vue-styled-components";
-		export const App = () => styled.div({ "padding": "var(--mantine-spacing-md)", "color": "red" });",
+		export const App = () => styled.div({ "color": "blue.6", "marginLeft": "var(--mantine-spacing-auto)", "marginRight": "var(--mantine-spacing-auto)", "maxWidth": 400 });",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "static",
@@ -61,44 +82,64 @@ test("mantine -> vue-styled: migrates concrete mantine syntax to vue-styled", ()
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
-test("mantine -> vue-styled: carries concrete mantine dynamics or edge syntax explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
+test("mantine -> vue-styled: carries a documented secondary mantine API explicitly", () => {
+	const result = route.run({ source: edgeSource, file: "App.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(result, "mantine -> vue-styled secondary");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { Box } from "@mantine/core";
-		import styled from "vue-styled-components";
-		export const App = () => styled.div({ "padding": "var(--mantine-spacing-md)", "color": "theme.foreground" });",
-		  "converted": 1,
+		  "code": "import { Button } from "@mantine/core";
+		export const App = () => <Button // pandwind:migrate-skip (route: mantine -> vue-styled | parse-residual: host-framework | available: named-map, residual)
+		styles={{ root: { color: "red" } }} />;",
+		  "converted": 0,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "residual",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
-		      "representation": "static",
+		      "outcome": "residual",
+		      "representation": "residual",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "Mantine styles, classNames, and vars require component-aware host lowering",
+		      "kind": "host-framework",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
-	`);
+	`)
 });
 
-test("mantine -> vue-styled: lowers concrete theme and project context variants", () => {
-	const blue = route.run({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const amber = route.run({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
+test("mantine -> vue-styled: loads concrete theme and project context variants", async () => {
+	const blue = await route.runAsync({ source: themedSource, file: "App.tsx", semantic: blueSemantic, project: blueProject });
+	const amber = await route.runAsync({ source: themedSource, file: "App.tsx", semantic: amberSemantic, project: amberProject });
 	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
 	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Mantine, CodemodAdapterId.VueStyled);
+	expectConfiguredTargetTokenEvidence(blue, CodemodAdapterId.VueStyled, "mantine -> vue-styled blue config");
+	expectRouteScenarioEvidence(blue, "mantine -> vue-styled blue config");
+	expectRouteScenarioEvidence(amber, "mantine -> vue-styled amber config");
+
 	expectExplicitResidualEvidence(blue);
 	expectExplicitResidualEvidence(amber);
 	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
@@ -107,8 +148,23 @@ test("mantine -> vue-styled: lowers concrete theme and project context variants"
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import styled from "vue-styled-components";
-		export const App = () => styled.div({ "padding": "var(--mantine-spacing-md)", "color": "theme.colors.brand" });",
+		export const App = () => styled.div({ "color": "#f97316", "marginLeft": "var(--mantine-spacing-auto)", "marginRight": "var(--mantine-spacing-auto)", "maxWidth": 400 });",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "static",
@@ -129,8 +185,23 @@ test("mantine -> vue-styled: lowers concrete theme and project context variants"
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import styled from "vue-styled-components";
-		export const App = () => styled.div({ "padding": "var(--mantine-spacing-md)", "color": "theme.colors.brand" });",
+		export const App = () => styled.div({ "color": "#2563eb", "marginLeft": "var(--mantine-spacing-auto)", "marginRight": "var(--mantine-spacing-auto)", "maxWidth": 400 });",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "static",
@@ -148,20 +219,38 @@ test("mantine -> vue-styled: lowers concrete theme and project context variants"
 		    ],
 		  },
 		}
-	`);
+	`)
 });
 
-test("mantine -> vue-styled: resolves concrete token references with project context", () => {
-	const result = route.run({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
+test("mantine -> vue-styled: resolves concrete token values with project context", async () => {
+	const result = await route.runAsync({ source: tokenSource, file: "App.tsx", semantic: blueSemantic, project: blueProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Mantine, CodemodAdapterId.VueStyled);
+	expectConfiguredTargetTokenEvidence(result, CodemodAdapterId.VueStyled, "mantine -> vue-styled token config");
+	expectRouteScenarioEvidence(result, "mantine -> vue-styled token config");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
 		import styled from "vue-styled-components";
-		export const App = () => styled.div({ "padding": "var(--mantine-spacing-md)", "color": "brand.0" });",
+		export const App = () => styled.div({ "color": "#2563eb", "marginLeft": "var(--mantine-spacing-auto)", "marginRight": "var(--mantine-spacing-auto)", "maxWidth": 400 });",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "static",
@@ -178,21 +267,37 @@ test("mantine -> vue-styled: resolves concrete token references with project con
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
 test("mantine -> vue-styled: preserves malformed concrete mantine input", () => {
-	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
+	const result = route.run({ source: malformedSource, file: "App.tsx", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished mantine */");
+	expectRouteScenarioEvidence(result, "mantine -> vue-styled malformed");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
 		import styled from "vue-styled-components";
-		export const App = () => styled.div({ "padding": "var(--mantine-spacing-md)", "color": "red" });
+		export const App = () => styled.div({ "color": "blue.6", "marginLeft": "var(--mantine-spacing-auto)", "marginRight": "var(--mantine-spacing-auto)", "maxWidth": 400 });
 		const unfinished = { /* unfinished mantine */",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "static",
@@ -209,6 +314,6 @@ test("mantine -> vue-styled: preserves malformed concrete mantine input", () => 
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 

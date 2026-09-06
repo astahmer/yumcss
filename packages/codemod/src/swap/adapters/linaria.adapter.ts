@@ -37,6 +37,7 @@ export default defineCodemodAdapter({
 		],
 	},
 	capabilities: CodemodAdapterKit.allRuleCapabilities(CodemodAdapterId.Linaria, "unsupported", {
+		keyframes: "unsupported",
 		"dynamic-values": "partial",
 		components: "exact",
 		"font-face": "unsupported",

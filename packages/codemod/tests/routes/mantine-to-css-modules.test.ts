@@ -3,26 +3,31 @@ import { expect, test } from "vitest";
 import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.Mantine, CodemodAdapterId.CssModules);
-	const happySource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"red\" p=\"md\" />;";
-const edgeSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=theme.foreground p=\"md\" />;";
-const malformedSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"red\" p=\"md\" />;\nconst unfinished = { /* unfinished mantine */";
+	const happySource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"blue.6\" mx=\"auto\" maw={400} />;";
+const edgeSource = "import { Button } from \"@mantine/core\";\nexport const App = () => <Button styles={{ root: { color: \"red\" } }} />;";
+const malformedSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"blue.6\" mx=\"auto\" maw={400} />;\nconst unfinished = { /* unfinished mantine */";
 const sourceSemantic = { source: { framework: BuiltinHostFramework.React } };
-const themedSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=theme.colors.brand p=\"md\" />;";
-const tokenSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"brand.0\" p=\"md\" />;";
-const blueSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/src/theme.ts":"export const mantineTheme = { colors: { brand: [\"#2563eb\"] } };"} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/src/theme.ts":"export const mantineTheme = { colors: { brand: [\"#f97316\"] } };"} };
+const themedSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"brand.0\" mx=\"auto\" maw={400} />;";
+const tokenSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"#2563eb\" mx=\"auto\" maw={400} />;";
+const blueSemantic = { source: { framework: BuiltinHostFramework.React } };
+const amberSemantic = { source: { framework: BuiltinHostFramework.React } };
+const blueTargetSemantic = undefined;
+const amberTargetSemantic = undefined;
+const blueProject = createAdapterRouteProject(CodemodAdapterId.Mantine, CodemodAdapterId.CssModules, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.Mantine, CodemodAdapterId.CssModules, "#f97316");
 
 test("mantine -> css-modules: migrates concrete mantine syntax to css-modules", () => {
-	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
+	const result = route.run({ source: happySource, file: "App.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -37,14 +42,29 @@ test("mantine -> css-modules: migrates concrete mantine syntax to css-modules", 
 		expect(result.residuals.length).toBeGreaterThan(0);
 		expect(result.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(result, "mantine -> css-modules happy");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
 		export const App = () => // pandwind:migrate-skip (route: mantine -> css-modules | lowering-residual: validation)
-		<Box c="red" p="md" />;",
+		<Box c="blue.6" mx="auto" maw={400} />;",
 		  "converted": 0,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
@@ -53,7 +73,7 @@ test("mantine -> css-modules: migrates concrete mantine syntax to css-modules", 
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "2 residual conversion(s)",
+		      "hint": "4 residual conversion(s)",
 		      "kind": "validation",
 		      "preserved": undefined,
 		    },
@@ -62,59 +82,81 @@ test("mantine -> css-modules: migrates concrete mantine syntax to css-modules", 
 		  "validations": [
 		    {
 		      "differences": [
-		        "2 residual conversion(s)",
+		        "4 residual conversion(s)",
 		      ],
 		      "lossiness": "lossy",
 		      "valid": false,
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
-test("mantine -> css-modules: carries concrete mantine dynamics or edge syntax explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
+test("mantine -> css-modules: carries a documented secondary mantine API explicitly", () => {
+	const result = route.run({ source: edgeSource, file: "App.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(result, "mantine -> css-modules secondary");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { Box } from "@mantine/core";
-		export const App = () => // pandwind:migrate-skip (route: mantine -> css-modules | lowering-residual: validation)
-		<Box c=theme.foreground p="md" />;",
+		  "code": "import { Button } from "@mantine/core";
+		export const App = () => <Button // pandwind:migrate-skip (route: mantine -> css-modules | parse-residual: host-framework | lowering-residual: framework-semantics | available: residual)
+		styles={{ root: { color: "red" } }} />;",
 		  "converted": 0,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		        "runtime-and-plugin",
+		      ],
+		      "availableRepresentations": [
+		        "residual",
+		      ],
+		      "representation": "residual",
+		      "residuals": [
+		        {
+		          "hint": "target lacks framework semantics",
+		          "kind": "framework-semantics",
+		        },
+		      ],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "static",
+		      "representation": "residual",
 		    },
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "2 residual conversion(s)",
-		      "kind": "validation",
+		      "hint": "Mantine styles, classNames, and vars require component-aware host lowering",
+		      "kind": "host-framework",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "target lacks framework semantics",
+		      "kind": "framework-semantics",
 		      "preserved": undefined,
 		    },
 		  ],
 		  "skipped": 1,
-		  "validations": [
-		    {
-		      "differences": [
-		        "2 residual conversion(s)",
-		      ],
-		      "lossiness": "lossy",
-		      "valid": false,
-		    },
-		  ],
+		  "validations": [],
 		}
-	`);
+	`)
 });
 
-test("mantine -> css-modules: lowers concrete theme and project context variants", () => {
-	const blue = route.run({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const amber = route.run({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
+test("mantine -> css-modules: loads concrete theme and project context variants", async () => {
+	const blue = await route.runAsync({ source: themedSource, file: "App.tsx", semantic: blueSemantic, project: blueProject });
+	const amber = await route.runAsync({ source: themedSource, file: "App.tsx", semantic: amberSemantic, project: amberProject });
 	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
 	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Mantine, CodemodAdapterId.CssModules);
+	expectConfiguredTargetTokenEvidence(blue, CodemodAdapterId.CssModules, "mantine -> css-modules blue config");
+	expectRouteScenarioEvidence(blue, "mantine -> css-modules blue config");
+	expectRouteScenarioEvidence(amber, "mantine -> css-modules amber config");
+
 	expectExplicitResidualEvidence(blue);
 	expectExplicitResidualEvidence(amber);
 	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
@@ -123,8 +165,22 @@ test("mantine -> css-modules: lowers concrete theme and project context variants
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		export const App = () => // pandwind:migrate-skip (route: mantine -> css-modules | lowering-residual: validation)
-		<Box c=theme.colors.brand p="md" />;",
+		<Box c="brand.0" mx="auto" maw={400} />;",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
@@ -133,7 +189,7 @@ test("mantine -> css-modules: lowers concrete theme and project context variants
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "2 residual conversion(s)",
+		        "hint": "4 residual conversion(s)",
 		        "kind": "validation",
 		        "preserved": undefined,
 		      },
@@ -142,7 +198,7 @@ test("mantine -> css-modules: lowers concrete theme and project context variants
 		    "validations": [
 		      {
 		        "differences": [
-		          "2 residual conversion(s)",
+		          "4 residual conversion(s)",
 		        ],
 		        "lossiness": "lossy",
 		        "valid": false,
@@ -153,8 +209,22 @@ test("mantine -> css-modules: lowers concrete theme and project context variants
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		export const App = () => // pandwind:migrate-skip (route: mantine -> css-modules | lowering-residual: validation)
-		<Box c=theme.colors.brand p="md" />;",
+		<Box c="brand.0" mx="auto" maw={400} />;",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
@@ -163,7 +233,7 @@ test("mantine -> css-modules: lowers concrete theme and project context variants
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "2 residual conversion(s)",
+		        "hint": "4 residual conversion(s)",
 		        "kind": "validation",
 		        "preserved": undefined,
 		      },
@@ -172,7 +242,7 @@ test("mantine -> css-modules: lowers concrete theme and project context variants
 		    "validations": [
 		      {
 		        "differences": [
-		          "2 residual conversion(s)",
+		          "4 residual conversion(s)",
 		        ],
 		        "lossiness": "lossy",
 		        "valid": false,
@@ -180,20 +250,37 @@ test("mantine -> css-modules: lowers concrete theme and project context variants
 		    ],
 		  },
 		}
-	`);
+	`)
 });
 
-test("mantine -> css-modules: resolves concrete token references with project context", () => {
-	const result = route.run({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
+test("mantine -> css-modules: resolves concrete token values with project context", async () => {
+	const result = await route.runAsync({ source: tokenSource, file: "App.tsx", semantic: blueSemantic, project: blueProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Mantine, CodemodAdapterId.CssModules);
+	expectConfiguredTargetTokenEvidence(result, CodemodAdapterId.CssModules, "mantine -> css-modules token config");
+	expectRouteScenarioEvidence(result, "mantine -> css-modules token config");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
 		export const App = () => // pandwind:migrate-skip (route: mantine -> css-modules | lowering-residual: validation)
-		<Box c="brand.0" p="md" />;",
+		<Box c="#2563eb" mx="auto" maw={400} />;",
 		  "converted": 0,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
@@ -202,7 +289,7 @@ test("mantine -> css-modules: resolves concrete token references with project co
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "2 residual conversion(s)",
+		      "hint": "4 residual conversion(s)",
 		      "kind": "validation",
 		      "preserved": undefined,
 		    },
@@ -211,28 +298,43 @@ test("mantine -> css-modules: resolves concrete token references with project co
 		  "validations": [
 		    {
 		      "differences": [
-		        "2 residual conversion(s)",
+		        "4 residual conversion(s)",
 		      ],
 		      "lossiness": "lossy",
 		      "valid": false,
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
 test("mantine -> css-modules: preserves malformed concrete mantine input", () => {
-	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
+	const result = route.run({ source: malformedSource, file: "App.tsx", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished mantine */");
+	expectRouteScenarioEvidence(result, "mantine -> css-modules malformed");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
 		export const App = () => // pandwind:migrate-skip (route: mantine -> css-modules | lowering-residual: validation)
-		<Box c="red" p="md" />;
+		<Box c="blue.6" mx="auto" maw={400} />;
 		const unfinished = { /* unfinished mantine */",
 		  "converted": 0,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
@@ -241,7 +343,7 @@ test("mantine -> css-modules: preserves malformed concrete mantine input", () =>
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "2 residual conversion(s)",
+		      "hint": "4 residual conversion(s)",
 		      "kind": "validation",
 		      "preserved": undefined,
 		    },
@@ -250,13 +352,13 @@ test("mantine -> css-modules: preserves malformed concrete mantine input", () =>
 		  "validations": [
 		    {
 		      "differences": [
-		        "2 residual conversion(s)",
+		        "4 residual conversion(s)",
 		      ],
 		      "lossiness": "lossy",
 		      "valid": false,
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 

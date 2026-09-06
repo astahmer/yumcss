@@ -3,26 +3,31 @@ import { expect, test } from "vitest";
 import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.Aphrodite, CodemodAdapterId.Mui);
-	const happySource = "import { StyleSheet } from \"aphrodite\";\nexport const styles = StyleSheet.create({ card: { color: \"red\", padding: \"1rem\" } });\nexport const App = () => <div className={styles.card} />;";
-const edgeSource = "import { StyleSheet } from \"aphrodite\";\nexport const styles = StyleSheet.create({ card: { color: theme.foreground, padding: \"1rem\" } });\nexport const App = () => <div className={styles.card} />;";
-const malformedSource = "import { StyleSheet } from \"aphrodite\";\nexport const styles = StyleSheet.create({ card: { color: \"red\", padding: \"1rem\" } });\nexport const App = () => <div className={styles.card} />;\nconst unfinished = { /* unfinished aphrodite */";
+	const happySource = "import { StyleSheet } from \"aphrodite\";\nexport const styles = StyleSheet.create({ card: { color: \"red\", padding: 8 } });";
+const edgeSource = "import { StyleSheet } from \"aphrodite\";\nexport const styles = StyleSheet.create({ fonts: { fontFamily: [{ fontFamily: \"Inter\", src: \"url(inter.woff2)\" }] } });";
+const malformedSource = "import { StyleSheet } from \"aphrodite\";\nexport const styles = StyleSheet.create({ card: { color: \"red\", padding: 8 } });\nconst unfinished = { /* unfinished aphrodite */";
 const sourceSemantic = undefined;
-const themedSource = "import { StyleSheet } from \"aphrodite\";\nexport const styles = StyleSheet.create({ card: { color: theme.colors.brand, padding: \"1rem\" } });\nexport const App = () => <div className={styles.card} />;";
-const tokenSource = "import { StyleSheet } from \"aphrodite\";\nexport const styles = StyleSheet.create({ card: { color: \"$colors.brand\", padding: \"1rem\" } });\nexport const App = () => <div className={styles.card} />;";
-const blueSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "palette.primary.main", authored: "theme.palette.primary.main", resolved: "#2563eb" }] };
-const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "palette.primary.main", authored: "theme.palette.primary.main", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/src/theme.ts":"export const muiTheme = { palette: { primary: { main: \"#2563eb\" } } };"} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/src/theme.ts":"export const muiTheme = { palette: { primary: { main: \"#f97316\" } } };"} };
+const themedSource = "import { StyleSheet } from \"aphrodite\";\nexport const styles = StyleSheet.create({ card: { color: \"#2563eb\", padding: 8 } });";
+const tokenSource = "import { StyleSheet } from \"aphrodite\";\nexport const styles = StyleSheet.create({ card: { color: \"#2563eb\", padding: 8 } });";
+const blueSemantic = undefined;
+const amberSemantic = undefined;
+const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
+const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
+const blueProject = createAdapterRouteProject(CodemodAdapterId.Aphrodite, CodemodAdapterId.Mui, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.Aphrodite, CodemodAdapterId.Mui, "#f97316");
 
 test("aphrodite -> mui: migrates concrete aphrodite syntax to mui", () => {
-	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
+	const result = route.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -37,6 +42,7 @@ test("aphrodite -> mui: migrates concrete aphrodite syntax to mui", () => {
 		expect(result.residuals.length).toBeGreaterThan(0);
 		expect(result.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(result, "aphrodite -> mui happy");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
@@ -44,9 +50,22 @@ test("aphrodite -> mui: migrates concrete aphrodite syntax to mui", () => {
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const styles = { "card": css.class({ padding: "1rem", color: "red" }) };
-		export const App = () => <div className={styles.card} />;",
+		export const styles = { "card": css.class({ padding: 8, color: "red" }) };",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		        "portable-artifact",
+		      ],
+		      "representation": "named-map",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "portable-artifact",
@@ -63,12 +82,13 @@ test("aphrodite -> mui: migrates concrete aphrodite syntax to mui", () => {
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
-test("aphrodite -> mui: carries concrete aphrodite dynamics or edge syntax explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
+test("aphrodite -> mui: carries a documented secondary aphrodite API explicitly", () => {
+	const result = route.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(result, "aphrodite -> mui secondary");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
@@ -76,9 +96,22 @@ test("aphrodite -> mui: carries concrete aphrodite dynamics or edge syntax expli
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const styles = { "card": css.class({ padding: "1rem", color: theme.foreground }) };
-		export const App = () => <div className={styles.card} />;",
+		export const styles = { "fonts": css.class({ "font-face": { fontFamily: "Inter", src: "url(inter.woff2)" } }) };",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		        "portable-artifact",
+		      ],
+		      "representation": "named-map",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "portable-artifact",
@@ -95,14 +128,20 @@ test("aphrodite -> mui: carries concrete aphrodite dynamics or edge syntax expli
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
-test("aphrodite -> mui: lowers concrete theme and project context variants", () => {
-	const blue = route.run({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const amber = route.run({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
+test("aphrodite -> mui: loads concrete theme and project context variants", async () => {
+	const blue = await route.runAsync({ source: themedSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
+	const amber = await route.runAsync({ source: themedSource, file: "styles.ts", semantic: amberSemantic, project: amberProject });
 	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
 	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Aphrodite, CodemodAdapterId.Mui);
+	expectConfiguredTargetTokenEvidence(blue, CodemodAdapterId.Mui, "aphrodite -> mui blue config");
+	expectRouteScenarioEvidence(blue, "aphrodite -> mui blue config");
+	expectRouteScenarioEvidence(amber, "aphrodite -> mui amber config");
+	expectConfiguredTargetTokenAbsence(amber, CodemodAdapterId.Mui, "aphrodite -> mui amber literal config");
+
 	expectExplicitResidualEvidence(blue);
 	expectExplicitResidualEvidence(amber);
 	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
@@ -112,9 +151,22 @@ test("aphrodite -> mui: lowers concrete theme and project context variants", () 
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const styles = { "card": css.class({ padding: "1rem", color: theme.colors.brand }) };
-		export const App = () => <div className={styles.card} />;",
+		export const styles = { "card": css.class({ padding: 8, color: "#2563eb" }) };",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		          "portable-artifact",
+		        ],
+		        "representation": "named-map",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "portable-artifact",
@@ -136,9 +188,22 @@ test("aphrodite -> mui: lowers concrete theme and project context variants", () 
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const styles = { "card": css.class({ padding: "1rem", color: theme.colors.brand }) };
-		export const App = () => <div className={styles.card} />;",
+		export const styles = { "card": css.class({ padding: 8, color: "primary.main" }) };",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		          "portable-artifact",
+		        ],
+		        "representation": "named-map",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "portable-artifact",
@@ -156,12 +221,15 @@ test("aphrodite -> mui: lowers concrete theme and project context variants", () 
 		    ],
 		  },
 		}
-	`);
+	`)
 });
 
-test("aphrodite -> mui: resolves concrete token references with project context", () => {
-	const result = route.run({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
+test("aphrodite -> mui: resolves concrete token values with project context", async () => {
+	const result = await route.runAsync({ source: tokenSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Aphrodite, CodemodAdapterId.Mui);
+	expectConfiguredTargetTokenEvidence(result, CodemodAdapterId.Mui, "aphrodite -> mui token config");
+	expectRouteScenarioEvidence(result, "aphrodite -> mui token config");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
@@ -169,9 +237,22 @@ test("aphrodite -> mui: resolves concrete token references with project context"
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const styles = { "card": css.class({ padding: "1rem", color: "$colors.brand" }) };
-		export const App = () => <div className={styles.card} />;",
+		export const styles = { "card": css.class({ padding: 8, color: "primary.main" }) };",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		        "portable-artifact",
+		      ],
+		      "representation": "named-map",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "portable-artifact",
@@ -188,12 +269,13 @@ test("aphrodite -> mui: resolves concrete token references with project context"
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
 test("aphrodite -> mui: preserves malformed concrete aphrodite input", () => {
-	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
+	const result = route.run({ source: malformedSource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished aphrodite */");
+	expectRouteScenarioEvidence(result, "aphrodite -> mui malformed");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
@@ -201,10 +283,23 @@ test("aphrodite -> mui: preserves malformed concrete aphrodite input", () => {
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const styles = { "card": css.class({ padding: "1rem", color: "red" }) };
-		export const App = () => <div className={styles.card} />;
+		export const styles = { "card": css.class({ padding: 8, color: "red" }) };
 		const unfinished = { /* unfinished aphrodite */",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		        "portable-artifact",
+		      ],
+		      "representation": "named-map",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "portable-artifact",
@@ -221,6 +316,6 @@ test("aphrodite -> mui: preserves malformed concrete aphrodite input", () => {
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 

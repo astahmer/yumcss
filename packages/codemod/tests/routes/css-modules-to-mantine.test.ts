@@ -3,23 +3,28 @@ import { expect, test } from "vitest";
 import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.CssModules, CodemodAdapterId.Mantine);
-	const happySource = ".card { color: red; padding: 1rem; }\n.cardTitle { font-weight: 600; }";
-const edgeSource = ".card { color: theme.foreground; padding: 1rem; }\n.cardTitle { font-weight: 600; }";
-const malformedSource = ".card { color: red; padding: 1rem; }\n.cardTitle { font-weight: 600; }\nconst unfinished = { /* unfinished css-modules */";
+	const happySource = ".card { color: red; padding: 1rem; }";
+const edgeSource = ".card { color: red; }\n.primary { composes: card; font-weight: 600; }";
+const malformedSource = ".card { color: red; padding: 1rem; }\nconst unfinished = { /* unfinished css-modules */";
 const sourceSemantic = undefined;
-const themedSource = ".card { color: ${theme.colors.brand}; padding: 1rem; }\n.cardTitle { font-weight: 600; }";
-const tokenSource = ".card { color: var(--colors-brand); padding: 1rem; }\n.cardTitle { font-weight: 600; }";
-const blueSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/src/theme.ts":"export const mantineTheme = { colors: { brand: [\"#2563eb\"] } };"} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/src/theme.ts":"export const mantineTheme = { colors: { brand: [\"#f97316\"] } };"} };
+const themedSource = ".card { color: #2563eb; padding: 1rem; }";
+const tokenSource = ".card { color: #2563eb; padding: 1rem; }";
+const blueSemantic = undefined;
+const amberSemantic = undefined;
+const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
+const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
+const blueProject = createAdapterRouteProject(CodemodAdapterId.CssModules, CodemodAdapterId.Mantine, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.CssModules, CodemodAdapterId.Mantine, "#f97316");
 
 test("css-modules -> mantine: migrates concrete css-modules syntax to mantine", () => {
 	const result = route.run({ source: happySource, file: "Card.module.css", semantic: sourceSemantic });
@@ -37,19 +42,28 @@ test("css-modules -> mantine: migrates concrete css-modules syntax to mantine", 
 		expect(result.residuals.length).toBeGreaterThan(0);
 		expect(result.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(result, "css-modules -> mantine happy");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": false,
 		  "code": "// pandwind:migrate-skip (lowering-residual: host-framework)
-		.card { color: red; padding: 1rem; }
-		.cardTitle { font-weight: 600; }",
+		.card { color: red; padding: 1rem; }",
 		  "converted": 0,
-		  "outcomes": [
+		  "generatedFiles": [],
+		  "loweringPlans": [
 		    {
-		      "outcome": "residual",
-		      "representation": "residual",
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
 		    },
+		  ],
+		  "outcomes": [
 		    {
 		      "outcome": "residual",
 		      "representation": "residual",
@@ -61,29 +75,47 @@ test("css-modules -> mantine: migrates concrete css-modules syntax to mantine", 
 		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },
-		    {
-		      "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
-		      "kind": "host-framework",
-		      "preserved": undefined,
-		    },
 		  ],
-		  "skipped": 2,
+		  "skipped": 1,
 		  "validations": [],
 		}
-	`);
+	`)
 });
 
-test("css-modules -> mantine: carries concrete css-modules dynamics or edge syntax explicitly", () => {
+test("css-modules -> mantine: carries a documented secondary css-modules API explicitly", () => {
 	const result = route.run({ source: edgeSource, file: "Card.module.css", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(result, "css-modules -> mantine secondary");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": false,
-		  "code": "// pandwind:migrate-skip (lowering-residual: host-framework)
-		.card { color: theme.foreground; padding: 1rem; }
-		.cardTitle { font-weight: 600; }",
+		  "code": "// pandwind:migrate-skip (lowering-residual: host-framework, composition)
+		.card { color: red; }
+		.primary { composes: card; font-weight: 600; }",
 		  "converted": 0,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "residual",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
@@ -101,22 +133,28 @@ test("css-modules -> mantine: carries concrete css-modules dynamics or edge synt
 		      "preserved": undefined,
 		    },
 		    {
-		      "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
-		      "kind": "host-framework",
+		      "hint": "preprocessor or CSS Modules composition needs its source context",
+		      "kind": "composition",
 		      "preserved": undefined,
 		    },
 		  ],
 		  "skipped": 2,
 		  "validations": [],
 		}
-	`);
+	`)
 });
 
-test("css-modules -> mantine: lowers concrete theme and project context variants", () => {
-	const blue = route.run({ source: themedSource, file: "Card.module.css", semantic: blueSemantic, project: blueProject });
-	const amber = route.run({ source: themedSource, file: "Card.module.css", semantic: amberSemantic, project: amberProject });
+test("css-modules -> mantine: loads concrete theme and project context variants", async () => {
+	const blue = await route.runAsync({ source: themedSource, file: "Card.module.css", semantic: blueSemantic, project: blueProject });
+	const amber = await route.runAsync({ source: themedSource, file: "Card.module.css", semantic: amberSemantic, project: amberProject });
 	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
 	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.CssModules, CodemodAdapterId.Mantine);
+	expectConfiguredTargetTokenEvidence(blue, CodemodAdapterId.Mantine, "css-modules -> mantine blue config");
+	expectRouteScenarioEvidence(blue, "css-modules -> mantine blue config");
+	expectRouteScenarioEvidence(amber, "css-modules -> mantine amber config");
+	expectConfiguredTargetTokenAbsence(amber, CodemodAdapterId.Mantine, "css-modules -> mantine amber literal config");
+
 	expectExplicitResidualEvidence(blue);
 	expectExplicitResidualEvidence(amber);
 	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
@@ -124,14 +162,22 @@ test("css-modules -> mantine: lowers concrete theme and project context variants
 		  "amber": {
 		    "changed": false,
 		    "code": "// pandwind:migrate-skip (lowering-residual: host-framework)
-		.card { color: \${theme.colors.brand}; padding: 1rem; }
-		.cardTitle { font-weight: 600; }",
+		.card { color: #2563eb; padding: 1rem; }",
 		    "converted": 0,
-		    "outcomes": [
+		    "generatedFiles": [],
+		    "loweringPlans": [
 		      {
-		        "outcome": "residual",
-		        "representation": "residual",
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
 		      },
+		    ],
+		    "outcomes": [
 		      {
 		        "outcome": "residual",
 		        "representation": "residual",
@@ -143,26 +189,29 @@ test("css-modules -> mantine: lowers concrete theme and project context variants
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
-		      {
-		        "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
-		        "kind": "host-framework",
-		        "preserved": undefined,
-		      },
 		    ],
-		    "skipped": 2,
+		    "skipped": 1,
 		    "validations": [],
 		  },
 		  "blue": {
 		    "changed": false,
 		    "code": "// pandwind:migrate-skip (lowering-residual: host-framework)
-		.card { color: \${theme.colors.brand}; padding: 1rem; }
-		.cardTitle { font-weight: 600; }",
+		.card { color: #2563eb; padding: 1rem; }",
 		    "converted": 0,
-		    "outcomes": [
+		    "generatedFiles": [],
+		    "loweringPlans": [
 		      {
-		        "outcome": "residual",
-		        "representation": "residual",
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
 		      },
+		    ],
+		    "outcomes": [
 		      {
 		        "outcome": "residual",
 		        "representation": "residual",
@@ -174,35 +223,41 @@ test("css-modules -> mantine: lowers concrete theme and project context variants
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
-		      {
-		        "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
-		        "kind": "host-framework",
-		        "preserved": undefined,
-		      },
 		    ],
-		    "skipped": 2,
+		    "skipped": 1,
 		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 
-test("css-modules -> mantine: resolves concrete token references with project context", () => {
-	const result = route.run({ source: tokenSource, file: "Card.module.css", semantic: blueSemantic, project: blueProject });
+test("css-modules -> mantine: resolves concrete token values with project context", async () => {
+	const result = await route.runAsync({ source: tokenSource, file: "Card.module.css", semantic: blueSemantic, project: blueProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.CssModules, CodemodAdapterId.Mantine);
+	expectConfiguredTargetTokenEvidence(result, CodemodAdapterId.Mantine, "css-modules -> mantine token config");
+	expectRouteScenarioEvidence(result, "css-modules -> mantine token config");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": false,
 		  "code": "// pandwind:migrate-skip (lowering-residual: host-framework)
-		.card { color: var(--colors-brand); padding: 1rem; }
-		.cardTitle { font-weight: 600; }",
+		.card { color: #2563eb; padding: 1rem; }",
 		  "converted": 0,
-		  "outcomes": [
+		  "generatedFiles": [],
+		  "loweringPlans": [
 		    {
-		      "outcome": "residual",
-		      "representation": "residual",
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
 		    },
+		  ],
+		  "outcomes": [
 		    {
 		      "outcome": "residual",
 		      "representation": "residual",
@@ -214,35 +269,39 @@ test("css-modules -> mantine: resolves concrete token references with project co
 		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },
-		    {
-		      "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
-		      "kind": "host-framework",
-		      "preserved": undefined,
-		    },
 		  ],
-		  "skipped": 2,
+		  "skipped": 1,
 		  "validations": [],
 		}
-	`);
+	`)
 });
 
 test("css-modules -> mantine: preserves malformed concrete css-modules input", () => {
 	const result = route.run({ source: malformedSource, file: "Card.module.css", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished css-modules */");
+	expectRouteScenarioEvidence(result, "css-modules -> mantine malformed");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": false,
 		  "code": "// pandwind:migrate-skip (lowering-residual: parse, host-framework)
 		.card { color: red; padding: 1rem; }
-		.cardTitle { font-weight: 600; }
 		const unfinished = { /* unfinished css-modules */",
 		  "converted": 0,
-		  "outcomes": [
+		  "generatedFiles": [],
+		  "loweringPlans": [
 		    {
-		      "outcome": "residual",
-		      "representation": "residual",
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
 		    },
+		  ],
+		  "outcomes": [
 		    {
 		      "outcome": "residual",
 		      "representation": "residual",
@@ -259,15 +318,10 @@ test("css-modules -> mantine: preserves malformed concrete css-modules input", (
 		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },
-		    {
-		      "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
-		      "kind": "host-framework",
-		      "preserved": undefined,
-		    },
 		  ],
-		  "skipped": 3,
+		  "skipped": 2,
 		  "validations": [],
 		}
-	`);
+	`)
 });
 

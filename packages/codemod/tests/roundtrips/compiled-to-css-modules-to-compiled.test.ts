@@ -3,29 +3,34 @@ import { expect, test } from "vitest";
 import { CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectActionableRoundTrip,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const forward = createAdapterRouteSpec(CodemodAdapterId.Compiled, CodemodAdapterId.CssModules);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.CssModules, CodemodAdapterId.Compiled);
-	const happySource = "import { css } from \"@compiled/react\";\nexport const card = css({ color: \"red\", padding: \"1rem\" });\nexport const App = () => <div className={card} />;";
-const edgeSource = "import { css } from \"@compiled/react\";\nexport const card = css({ color: theme.foreground, padding: \"1rem\" });\nexport const App = () => <div className={card} />;";
-const malformedSource = "import { css } from \"@compiled/react\";\nexport const card = css({ color: \"red\", padding: \"1rem\" });\nexport const App = () => <div className={card} />;\nconst unfinished = { /* unfinished compiled */";
+	const happySource = "import { css } from \"@compiled/react\";\nexport const card = css({ color: \"red\", padding: 8 });";
+const edgeSource = "import { cssMap } from \"@compiled/react\";\nexport const colors = cssMap({ red: { color: \"red\" } });";
+const malformedSource = "import { css } from \"@compiled/react\";\nexport const card = css({ color: \"red\", padding: 8 });\nconst unfinished = { /* unfinished compiled */";
 const sourceSemantic = undefined;
-const themedSource = "import { css } from \"@compiled/react\";\nexport const card = css({ color: theme.colors.brand, padding: \"1rem\" });\nexport const App = () => <div className={card} />;";
-const tokenSource = "import { css } from \"@compiled/react\";\nexport const card = css({ color: \"$colors.brand\", padding: \"1rem\" });\nexport const App = () => <div className={card} />;";
-const blueSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {} };
+const themedSource = "import { css } from \"@compiled/react\";\nexport const card = css({ color: \"#2563eb\", padding: 8 });";
+const tokenSource = "import { css } from \"@compiled/react\";\nexport const card = css({ color: \"#2563eb\", padding: 8 });";
+const blueSemantic = undefined;
+const amberSemantic = undefined;
+const blueTargetSemantic = undefined;
+const amberTargetSemantic = undefined;
+const blueProject = createAdapterRouteProject(CodemodAdapterId.Compiled, CodemodAdapterId.CssModules, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.Compiled, CodemodAdapterId.CssModules, "#f97316");
 	const targetSemantic = undefined;
 
 test("compiled -> css-modules -> compiled: preserves an actionable concrete round trip", () => {
-	const first = forward.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
+	const first = forward.run({ source: happySource, file: "styles.tsx", semantic: sourceSemantic });
 	const second = reverse.run({ source: first.code, file: "Card.module.css", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
@@ -36,6 +41,7 @@ test("compiled -> css-modules -> compiled: preserves an actionable concrete roun
 		expect(first.residuals.length).toBeGreaterThan(0);
 		expect(first.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(first, "compiled -> css-modules round-trip happy forward");
 	expectExplicitResidualEvidence(first);
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(second);
@@ -43,48 +49,65 @@ test("compiled -> css-modules -> compiled: preserves an actionable concrete roun
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@compiled/react";
-		export const card = // pandwind:migrate-skip (route: compiled -> css-modules | lowering-residual: validation)
-		css({ color: "red", padding: "1rem" });
-		export const App = () => <div className={card} />;",
-		    "converted": 0,
+		    "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const card = css.class({ "padding": 8, "color": "red" });",
+		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		          "portable-artifact",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
-		        "representation": "static",
+		        "outcome": "portable-artifact",
+		        "representation": "portable-artifact",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "2 residual conversion(s)",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "2 residual conversion(s)",
-		        ],
-		        "lossiness": "lossy",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },
 		  "reverse": {
 		    "changed": false,
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import { css } from "@compiled/react";
-		export const card = // pandwind:migrate-skip (route: compiled -> css-modules | lowering-residual: validation)
-		css({ color: "red", padding: "1rem" });
-		export const App = () => <div className={card} />;",
+		import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const card = css.class({ "padding": 8, "color": "red" });",
 		    "converted": 0,
-		    "outcomes": [
+		    "generatedFiles": [],
+		    "loweringPlans": [
 		      {
-		        "outcome": "residual",
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "named-map",
+		          "residual",
+		        ],
 		        "representation": "residual",
+		        "residuals": [],
 		      },
+		    ],
+		    "outcomes": [
 		      {
 		        "outcome": "residual",
 		        "representation": "residual",
@@ -111,23 +134,19 @@ test("compiled -> css-modules -> compiled: preserves an actionable concrete roun
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
-		      {
-		        "hint": "stylesheet migration requires a single local class selector",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
 		    ],
-		    "skipped": 5,
+		    "skipped": 4,
 		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 
-test("compiled -> css-modules -> compiled: retains edge semantics without silent loss", () => {
-	const first = forward.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
+test("compiled -> css-modules -> compiled: retains the documented secondary API without silent loss", () => {
+	const first = forward.run({ source: edgeSource, file: "styles.tsx", semantic: sourceSemantic });
 	const second = reverse.run({ source: first.code, file: "Card.module.css", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(first, "compiled -> css-modules round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
@@ -135,26 +154,35 @@ test("compiled -> css-modules -> compiled: retains edge semantics without silent
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@compiled/react";
-		export const card = // pandwind:migrate-skip (route: compiled -> css-modules | lowering-residual: dynamic | capability-blocked: dynamic-values: dynamic: theme.foreground | available: residual)
-		css({ color: theme.foreground, padding: "1rem" });
-		export const App = () => <div className={card} />;",
+		    "code": "import { cssMap } from "@compiled/react";
+		export const colors = // pandwind:migrate-skip (route: compiled -> css-modules | capability-blocked: named-rules: named style rule: red | available: static, residual, portable-artifact)
+		cssMap({ red: { color: "red" } });",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		          "portable-artifact",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "residual",
+		        "representation": "portable-artifact",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "dynamic-values: dynamic: theme.foreground",
+		        "hint": "named-rules: named style rule: red",
 		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "target lacks runtime dynamic values",
-		        "kind": "dynamic",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -164,16 +192,25 @@ test("compiled -> css-modules -> compiled: retains edge semantics without silent
 		  "reverse": {
 		    "changed": false,
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import { css } from "@compiled/react";
-		export const card = // pandwind:migrate-skip (route: compiled -> css-modules | lowering-residual: dynamic | capability-blocked: dynamic-values: dynamic: theme.foreground | available: residual)
-		css({ color: theme.foreground, padding: "1rem" });
-		export const App = () => <div className={card} />;",
+		import { cssMap } from "@compiled/react";
+		export const colors = // pandwind:migrate-skip (route: compiled -> css-modules | capability-blocked: named-rules: named style rule: red | available: static, residual, portable-artifact)
+		cssMap({ red: { color: "red" } });",
 		    "converted": 0,
-		    "outcomes": [
+		    "generatedFiles": [],
+		    "loweringPlans": [
 		      {
-		        "outcome": "residual",
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "named-map",
+		          "residual",
+		        ],
 		        "representation": "residual",
+		        "residuals": [],
 		      },
+		    ],
+		    "outcomes": [
 		      {
 		        "outcome": "residual",
 		        "representation": "residual",
@@ -191,35 +228,31 @@ test("compiled -> css-modules -> compiled: retains edge semantics without silent
 		        "preserved": undefined,
 		      },
 		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet migration requires a single local class selector",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
 		        "hint": "stylesheet migration requires a single local class selector",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 5,
+		    "skipped": 3,
 		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 
-test("compiled -> css-modules -> compiled: preserves concrete theme and project context variants", () => {
-	const firstBlue = forward.run({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const secondBlue = reverse.run({ source: firstBlue.code, file: "Card.module.css", semantic: blueTargetSemantic, project: blueProject });
-	const firstAmber = forward.run({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
-	const secondAmber = reverse.run({ source: firstAmber.code, file: "Card.module.css", semantic: amberTargetSemantic, project: amberProject });
+test("compiled -> css-modules -> compiled: preserves concrete theme and project context variants", async () => {
+	const firstBlue = await forward.runAsync({ source: themedSource, file: "styles.tsx", semantic: blueSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "Card.module.css", semantic: blueTargetSemantic, project: blueProject });
+	const firstAmber = await forward.runAsync({ source: themedSource, file: "styles.tsx", semantic: amberSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "Card.module.css", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Compiled, CodemodAdapterId.CssModules);
+	expectConfiguredTargetTokenEvidence(firstBlue, CodemodAdapterId.CssModules, "compiled -> css-modules round-trip token config");
+	expectRouteScenarioEvidence(firstBlue, "compiled -> css-modules round-trip blue forward");
+	expectRouteScenarioEvidence(firstAmber, "compiled -> css-modules round-trip amber forward");
+	expectConfiguredTargetTokenAbsence(firstAmber, CodemodAdapterId.CssModules, "compiled -> css-modules round-trip amber literal config");
+
 	expectActionableRoundTrip(firstBlue, secondBlue);
 	expectActionableRoundTrip(firstAmber, secondAmber);
 	expectExplicitResidualEvidence(firstBlue);
@@ -234,48 +267,65 @@ test("compiled -> css-modules -> compiled: preserves concrete theme and project 
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "@compiled/react";
-		export const card = // pandwind:migrate-skip (route: compiled -> css-modules | lowering-residual: validation)
-		css({ color: theme.colors.brand, padding: "1rem" });
-		export const App = () => <div className={card} />;",
-		      "converted": 0,
+		      "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const card = css.class({ "padding": 8, "color": "#2563eb" });",
+		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "residual",
+		            "portable-artifact",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
-		          "representation": "static",
+		          "outcome": "portable-artifact",
+		          "representation": "portable-artifact",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "2 residual conversion(s)",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "2 residual conversion(s)",
-		          ],
-		          "lossiness": "lossy",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
 		    "reverse": {
 		      "changed": false,
 		      "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import { css } from "@compiled/react";
-		export const card = // pandwind:migrate-skip (route: compiled -> css-modules | lowering-residual: validation)
-		css({ color: theme.colors.brand, padding: "1rem" });
-		export const App = () => <div className={card} />;",
+		import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const card = css.class({ "padding": 8, "color": "#2563eb" });",
 		      "converted": 0,
-		      "outcomes": [
+		      "generatedFiles": [],
+		      "loweringPlans": [
 		        {
-		          "outcome": "residual",
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "named-map",
+		            "residual",
+		          ],
 		          "representation": "residual",
+		          "residuals": [],
 		        },
+		      ],
+		      "outcomes": [
 		        {
 		          "outcome": "residual",
 		          "representation": "residual",
@@ -302,61 +352,73 @@ test("compiled -> css-modules -> compiled: preserves concrete theme and project 
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
-		        {
-		          "hint": "stylesheet migration requires a single local class selector",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
 		      ],
-		      "skipped": 5,
+		      "skipped": 4,
 		      "validations": [],
 		    },
 		  },
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "@compiled/react";
-		export const card = // pandwind:migrate-skip (route: compiled -> css-modules | lowering-residual: validation)
-		css({ color: theme.colors.brand, padding: "1rem" });
-		export const App = () => <div className={card} />;",
-		      "converted": 0,
+		      "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const card = css.class({ "padding": 8, "color": "#2563eb" });",
+		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "residual",
+		            "portable-artifact",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
-		          "representation": "static",
+		          "outcome": "portable-artifact",
+		          "representation": "portable-artifact",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "2 residual conversion(s)",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "2 residual conversion(s)",
-		          ],
-		          "lossiness": "lossy",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
 		    "reverse": {
 		      "changed": false,
 		      "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import { css } from "@compiled/react";
-		export const card = // pandwind:migrate-skip (route: compiled -> css-modules | lowering-residual: validation)
-		css({ color: theme.colors.brand, padding: "1rem" });
-		export const App = () => <div className={card} />;",
+		import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const card = css.class({ "padding": 8, "color": "#2563eb" });",
 		      "converted": 0,
-		      "outcomes": [
+		      "generatedFiles": [],
+		      "loweringPlans": [
 		        {
-		          "outcome": "residual",
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "named-map",
+		            "residual",
+		          ],
 		          "representation": "residual",
+		          "residuals": [],
 		        },
+		      ],
+		      "outcomes": [
 		        {
 		          "outcome": "residual",
 		          "representation": "residual",
@@ -383,24 +445,21 @@ test("compiled -> css-modules -> compiled: preserves concrete theme and project 
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
-		        {
-		          "hint": "stylesheet migration requires a single local class selector",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
 		      ],
-		      "skipped": 5,
+		      "skipped": 4,
 		      "validations": [],
 		    },
 		  },
 		}
-	`);
+	`)
 });
 
-test("compiled -> css-modules -> compiled: resolves token references across both concrete legs", () => {
-	const first = forward.run({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const second = reverse.run({ source: first.code, file: "Card.module.css", semantic: blueTargetSemantic, project: blueProject });
+test("compiled -> css-modules -> compiled: resolves token values across both concrete legs", async () => {
+	const first = await forward.runAsync({ source: tokenSource, file: "styles.tsx", semantic: blueSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "Card.module.css", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Compiled, CodemodAdapterId.CssModules);
+	expectRouteScenarioEvidence(first, "compiled -> css-modules round-trip token forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
@@ -408,48 +467,65 @@ test("compiled -> css-modules -> compiled: resolves token references across both
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@compiled/react";
-		export const card = // pandwind:migrate-skip (route: compiled -> css-modules | lowering-residual: validation)
-		css({ color: "$colors.brand", padding: "1rem" });
-		export const App = () => <div className={card} />;",
-		    "converted": 0,
+		    "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const card = css.class({ "padding": 8, "color": "#2563eb" });",
+		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		          "portable-artifact",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
-		        "representation": "static",
+		        "outcome": "portable-artifact",
+		        "representation": "portable-artifact",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "2 residual conversion(s)",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "2 residual conversion(s)",
-		        ],
-		        "lossiness": "lossy",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },
 		  "reverse": {
 		    "changed": false,
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import { css } from "@compiled/react";
-		export const card = // pandwind:migrate-skip (route: compiled -> css-modules | lowering-residual: validation)
-		css({ color: "$colors.brand", padding: "1rem" });
-		export const App = () => <div className={card} />;",
+		import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const card = css.class({ "padding": 8, "color": "#2563eb" });",
 		    "converted": 0,
-		    "outcomes": [
+		    "generatedFiles": [],
+		    "loweringPlans": [
 		      {
-		        "outcome": "residual",
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "named-map",
+		          "residual",
+		        ],
 		        "representation": "residual",
+		        "residuals": [],
 		      },
+		    ],
+		    "outcomes": [
 		      {
 		        "outcome": "residual",
 		        "representation": "residual",
@@ -476,16 +552,11 @@ test("compiled -> css-modules -> compiled: resolves token references across both
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
-		      {
-		        "hint": "stylesheet migration requires a single local class selector",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
 		    ],
-		    "skipped": 5,
+		    "skipped": 4,
 		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 

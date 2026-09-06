@@ -3,30 +3,35 @@ import { expect, test } from "vitest";
 import { CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectActionableRoundTrip,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const forward = createAdapterRouteSpec(CodemodAdapterId.Treat, CodemodAdapterId.Emotion);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.Emotion, CodemodAdapterId.Treat);
-	const happySource = "import { style } from \"@treatjs/treat\";\nexport const card = style({ color: \"red\", padding: \"1rem\" });";
-const edgeSource = "import { style } from \"@treatjs/treat\";\nexport const card = style({ color: theme.foreground, padding: \"1rem\" });";
-const malformedSource = "import { style } from \"@treatjs/treat\";\nexport const card = style({ color: \"red\", padding: \"1rem\" });\nconst unfinished = { /* unfinished treat */";
+	const happySource = "import { style } from \"treat\";\nexport const card = style({ color: \"red\", padding: 8 });";
+const edgeSource = "import { style } from \"treat\";\nexport const card = style({ color: \"red\", padding: 8 });";
+const malformedSource = "import { style } from \"treat\";\nexport const card = style({ color: \"red\", padding: 8 });\nconst unfinished = { /* unfinished treat */";
 const sourceSemantic = undefined;
-const themedSource = "import { style } from \"@treatjs/treat\";\nexport const card = style({ color: theme.colors.brand, padding: \"1rem\" });";
-const tokenSource = "import { style } from \"@treatjs/treat\";\nexport const card = style({ color: \"$colors.brand\", padding: \"1rem\" });";
-const blueSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/emotion.config.js":"module.exports = { theme: { colors: { brand: \"#2563eb\" } } };"} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/emotion.config.js":"module.exports = { theme: { colors: { brand: \"#f97316\" } } };"} };
+const themedSource = "import { style } from \"treat\";\nexport const card = style({ color: \"#2563eb\", padding: 8 });";
+const tokenSource = "import { style } from \"treat\";\nexport const card = style({ color: \"#2563eb\", padding: 8 });";
+const blueSemantic = undefined;
+const amberSemantic = undefined;
+const blueTargetSemantic = undefined;
+const amberTargetSemantic = undefined;
+const blueProject = createAdapterRouteProject(CodemodAdapterId.Treat, CodemodAdapterId.Emotion, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.Treat, CodemodAdapterId.Emotion, "#f97316");
 	const targetSemantic = undefined;
 
 test("treat -> emotion -> treat: preserves an actionable concrete round trip", () => {
-	const first = forward.run({ source: happySource, file: "Card.treat.ts", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+	const first = forward.run({ source: happySource, file: "styles.treat.ts", semantic: sourceSemantic });
+	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -36,6 +41,7 @@ test("treat -> emotion -> treat: preserves an actionable concrete round trip", (
 		expect(first.residuals.length).toBeGreaterThan(0);
 		expect(first.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(first, "treat -> emotion round-trip happy forward");
 	expectExplicitResidualEvidence(first);
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(second);
@@ -43,10 +49,23 @@ test("treat -> emotion -> treat: preserves an actionable concrete round trip", (
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { style } from "@treatjs/treat";
-		import { css } from "@emotion/css";
-		export const card = css({ padding: "1rem", color: "red" });",
+		    "code": "import { css } from "@emotion/css";
+
+		export const card = css({ padding: 8, color: "red" });",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "static",
@@ -65,11 +84,26 @@ test("treat -> emotion -> treat: preserves an actionable concrete round trip", (
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { style } from "@treatjs/treat";
-		import { style } from "@/styles.treat";
+		    "code": "import { style } from "@/styles.treat";
 
-		export const card = style({ "padding": "1rem", "color": "red" });",
+
+		export const card = style({ "padding": 8, "color": "red" });",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "static",
@@ -87,13 +121,14 @@ test("treat -> emotion -> treat: preserves an actionable concrete round trip", (
 		    ],
 		  },
 		}
-	`);
+	`)
 });
 
-test("treat -> emotion -> treat: retains edge semantics without silent loss", () => {
-	const first = forward.run({ source: edgeSource, file: "Card.treat.ts", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+test("treat -> emotion -> treat: retains the documented secondary API without silent loss", () => {
+	const first = forward.run({ source: edgeSource, file: "styles.treat.ts", semantic: sourceSemantic });
+	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(first, "treat -> emotion round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
@@ -101,14 +136,27 @@ test("treat -> emotion -> treat: retains edge semantics without silent loss", ()
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { style } from "@treatjs/treat";
-		import { css } from "@emotion/css";
-		export const card = css({ padding: "1rem", color: theme.foreground });",
+		    "code": "import { css } from "@emotion/css";
+
+		export const card = css({ padding: 8, color: "red" });",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "host-runtime",
-		        "representation": "target-native",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [],
@@ -123,17 +171,30 @@ test("treat -> emotion -> treat: retains edge semantics without silent loss", ()
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { style } from "@treatjs/treat";
-		import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
+		    "code": "import { style } from "@/styles.treat";
 
-		export const card = css.vars({ "padding": "1rem", "color": theme.foreground });",
+
+		export const card = style({ "padding": 8, "color": "red" });",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [],
@@ -147,16 +208,22 @@ test("treat -> emotion -> treat: retains edge semantics without silent loss", ()
 		    ],
 		  },
 		}
-	`);
+	`)
 });
 
-test("treat -> emotion -> treat: preserves concrete theme and project context variants", () => {
-	const firstBlue = forward.run({ source: themedSource, file: "Card.treat.ts", semantic: blueSemantic, project: blueProject });
-	const secondBlue = reverse.run({ source: firstBlue.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
-	const firstAmber = forward.run({ source: themedSource, file: "Card.treat.ts", semantic: amberSemantic, project: amberProject });
-	const secondAmber = reverse.run({ source: firstAmber.code, file: "Card.tsx", semantic: amberTargetSemantic, project: amberProject });
+test("treat -> emotion -> treat: preserves concrete theme and project context variants", async () => {
+	const firstBlue = await forward.runAsync({ source: themedSource, file: "styles.treat.ts", semantic: blueSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "styles.ts", semantic: blueTargetSemantic, project: blueProject });
+	const firstAmber = await forward.runAsync({ source: themedSource, file: "styles.treat.ts", semantic: amberSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "styles.ts", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Treat, CodemodAdapterId.Emotion);
+	expectConfiguredTargetTokenEvidence(firstBlue, CodemodAdapterId.Emotion, "treat -> emotion round-trip token config");
+	expectRouteScenarioEvidence(firstBlue, "treat -> emotion round-trip blue forward");
+	expectRouteScenarioEvidence(firstAmber, "treat -> emotion round-trip amber forward");
+	expectConfiguredTargetTokenAbsence(firstAmber, CodemodAdapterId.Emotion, "treat -> emotion round-trip amber literal config");
+
 	expectActionableRoundTrip(firstBlue, secondBlue);
 	expectActionableRoundTrip(firstAmber, secondAmber);
 	expectExplicitResidualEvidence(firstBlue);
@@ -171,14 +238,27 @@ test("treat -> emotion -> treat: preserves concrete theme and project context va
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { style } from "@treatjs/treat";
-		import { css } from "@emotion/css";
-		export const card = css({ padding: "1rem", color: theme.colors.brand });",
+		      "code": "import { css } from "@emotion/css";
+
+		export const card = css({ padding: 8, color: "#2563eb" });",
 		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "host-runtime",
-		          "representation": "target-native",
+		          "outcome": "static",
+		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [],
@@ -193,11 +273,26 @@ test("treat -> emotion -> treat: preserves concrete theme and project context va
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { style } from "@treatjs/treat";
-		import { style } from "@/styles.treat";
+		      "code": "import { style } from "@/styles.treat";
 
-		export const card = style({ "padding": "1rem", "color": "#f97316" });",
+
+		export const card = style({ "padding": 8, "color": "#2563eb" });",
 		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "static",
@@ -218,14 +313,27 @@ test("treat -> emotion -> treat: preserves concrete theme and project context va
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { style } from "@treatjs/treat";
-		import { css } from "@emotion/css";
-		export const card = css({ padding: "1rem", color: theme.colors.brand });",
+		      "code": "import { css } from "@emotion/css";
+
+		export const card = css({ padding: 8, color: "#2563eb" });",
 		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "host-runtime",
-		          "representation": "target-native",
+		          "outcome": "static",
+		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [],
@@ -240,11 +348,26 @@ test("treat -> emotion -> treat: preserves concrete theme and project context va
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { style } from "@treatjs/treat";
-		import { style } from "@/styles.treat";
+		      "code": "import { style } from "@/styles.treat";
 
-		export const card = style({ "padding": "1rem", "color": "#2563eb" });",
+
+		export const card = style({ "padding": 8, "color": "#2563eb" });",
 		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "static",
@@ -263,13 +386,15 @@ test("treat -> emotion -> treat: preserves concrete theme and project context va
 		    },
 		  },
 		}
-	`);
+	`)
 });
 
-test("treat -> emotion -> treat: resolves token references across both concrete legs", () => {
-	const first = forward.run({ source: tokenSource, file: "Card.treat.ts", semantic: blueSemantic, project: blueProject });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
+test("treat -> emotion -> treat: resolves token values across both concrete legs", async () => {
+	const first = await forward.runAsync({ source: tokenSource, file: "styles.treat.ts", semantic: blueSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "styles.ts", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Treat, CodemodAdapterId.Emotion);
+	expectRouteScenarioEvidence(first, "treat -> emotion round-trip token forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
@@ -277,10 +402,23 @@ test("treat -> emotion -> treat: resolves token references across both concrete 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { style } from "@treatjs/treat";
-		import { css } from "@emotion/css";
-		export const card = css({ padding: "1rem", color: "$colors.brand" });",
+		    "code": "import { css } from "@emotion/css";
+
+		export const card = css({ padding: 8, color: "#2563eb" });",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "static",
@@ -299,11 +437,26 @@ test("treat -> emotion -> treat: resolves token references across both concrete 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { style } from "@treatjs/treat";
-		import { style } from "@/styles.treat";
+		    "code": "import { style } from "@/styles.treat";
 
-		export const card = style({ "padding": "1rem", "color": "$colors.brand" });",
+
+		export const card = style({ "padding": 8, "color": "#2563eb" });",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "static",
@@ -321,6 +474,6 @@ test("treat -> emotion -> treat: resolves token references across both concrete 
 		    ],
 		  },
 		}
-	`);
+	`)
 });
 

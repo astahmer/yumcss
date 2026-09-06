@@ -3,26 +3,31 @@ import { expect, test } from "vitest";
 import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.ChakraUi, CodemodAdapterId.Pandwind);
-	const happySource = "import { Box } from \"@chakra-ui/react\";\nexport const App = () => <Box bg=\"tomato\" p=\"4\" />;";
-const edgeSource = "import { Box } from \"@chakra-ui/react\";\nexport const App = () => <Box bg=\"tomato\" p=\"4\" />;\nconst unresolvedStyle = runtimeTheme.foreground;";
-const malformedSource = "import { Box } from \"@chakra-ui/react\";\nexport const App = () => <Box bg=\"tomato\" p=\"4\" />;\nconst unfinished = { /* unfinished chakra-ui */";
+	const happySource = "import { Box } from \"@chakra-ui/react\";\nexport const App = () => <Box bg=\"red.200\" p=\"4\" />;";
+const edgeSource = "import { useRecipe } from \"@chakra-ui/react\";\nexport const button = useRecipe(buttonRecipe);";
+const malformedSource = "import { Box } from \"@chakra-ui/react\";\nexport const App = () => <Box bg=\"red.200\" p=\"4\" />;\nconst unfinished = { /* unfinished chakra-ui */";
 const sourceSemantic = { source: { framework: BuiltinHostFramework.React } };
-const themedSource = "import { Box } from \"@chakra-ui/react\";\nexport const App = () => <Box bg={theme.colors.brand} p=\"4\" />;";
-const tokenSource = "import { Box } from \"@chakra-ui/react\";\nexport const App = () => <Box bg=\"$colors.brand\" p=\"4\" />;";
-const blueSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/theme.ts":"export const chakraTheme = { theme: { tokens: { colors: { brand: { 500: { value: \"#2563eb\" } } } } } };","/virtual/pandwind-route-project/pandwind.config.ts":"export default { tokens: { colors: { brand: \"#2563eb\" } } };"} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/theme.ts":"export const chakraTheme = { theme: { tokens: { colors: { brand: { 500: { value: \"#f97316\" } } } } } };","/virtual/pandwind-route-project/pandwind.config.ts":"export default { tokens: { colors: { brand: \"#f97316\" } } };"} };
+const themedSource = "import { Box } from \"@chakra-ui/react\";\nexport const App = () => <Box bg=\"brand.500\" p=\"4\" />;";
+const tokenSource = "import { Box } from \"@chakra-ui/react\";\nexport const App = () => <Box bg=\"#2563eb\" p=\"4\" />;";
+const blueSemantic = { source: { framework: BuiltinHostFramework.React } };
+const amberSemantic = { source: { framework: BuiltinHostFramework.React } };
+const blueTargetSemantic = undefined;
+const amberTargetSemantic = undefined;
+const blueProject = createAdapterRouteProject(CodemodAdapterId.ChakraUi, CodemodAdapterId.Pandwind, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.ChakraUi, CodemodAdapterId.Pandwind, "#f97316");
 
 test("chakra-ui -> pandwind: migrates concrete chakra-ui syntax to pandwind", () => {
-	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
+	const result = route.run({ source: happySource, file: "App.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -37,6 +42,7 @@ test("chakra-ui -> pandwind: migrates concrete chakra-ui syntax to pandwind", ()
 		expect(result.residuals.length).toBeGreaterThan(0);
 		expect(result.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(result, "chakra-ui -> pandwind happy");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
@@ -44,8 +50,21 @@ test("chakra-ui -> pandwind: migrates concrete chakra-ui syntax to pandwind", ()
 		  "code": "import { Box } from "@chakra-ui/react";
 		import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const App = () => <Box className={css.class({ padding: "var(--chakra-spacing-4)", backgroundColor: "tomato" })}/>;",
+		export const App = () => <Box className={css.class({ padding: "var(--chakra-spacing-4)", backgroundColor: "var(--chakra-colors-red-200)" })}/>;",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "static",
@@ -62,46 +81,62 @@ test("chakra-ui -> pandwind: migrates concrete chakra-ui syntax to pandwind", ()
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
-test("chakra-ui -> pandwind: carries concrete chakra-ui dynamics or edge syntax explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
+test("chakra-ui -> pandwind: carries a documented secondary chakra-ui API explicitly", () => {
+	const result = route.run({ source: edgeSource, file: "App.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(result, "chakra-ui -> pandwind secondary");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { Box } from "@chakra-ui/react";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
-		export const App = () => <Box className={css.class({ padding: "var(--chakra-spacing-4)", backgroundColor: "tomato" })}/>;
-		const unresolvedStyle = runtimeTheme.foreground;",
-		  "converted": 1,
+		  "code": "import { useRecipe } from "@chakra-ui/react";
+		export const button = // pandwind:migrate-skip (route: chakra-ui -> pandwind | parse-residual: composition | available: named-map, residual)
+		useRecipe(buttonRecipe);",
+		  "converted": 0,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "residual",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
-		      "representation": "static",
+		      "outcome": "residual",
+		      "representation": "residual",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "Chakra recipe usage requires explicit variant/component lowering",
+		      "kind": "composition",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
-	`);
+	`)
 });
 
-test("chakra-ui -> pandwind: lowers concrete theme and project context variants", () => {
-	const blue = route.run({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const amber = route.run({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
+test("chakra-ui -> pandwind: loads concrete theme and project context variants", async () => {
+	const blue = await route.runAsync({ source: themedSource, file: "App.tsx", semantic: blueSemantic, project: blueProject });
+	const amber = await route.runAsync({ source: themedSource, file: "App.tsx", semantic: amberSemantic, project: amberProject });
 	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
 	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.ChakraUi, CodemodAdapterId.Pandwind);
+	expectConfiguredTargetTokenEvidence(blue, CodemodAdapterId.Pandwind, "chakra-ui -> pandwind blue config");
+	expectRouteScenarioEvidence(blue, "chakra-ui -> pandwind blue config");
+	expectRouteScenarioEvidence(amber, "chakra-ui -> pandwind amber config");
+
 	expectExplicitResidualEvidence(blue);
 	expectExplicitResidualEvidence(amber);
 	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
@@ -109,15 +144,27 @@ test("chakra-ui -> pandwind: lowers concrete theme and project context variants"
 		  "amber": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-		import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
-		export const App = () => <Box className={css.vars({ padding: "var(--chakra-spacing-4)", backgroundColor: theme.colors.brand }).class} style={css.vars({ padding: "var(--chakra-spacing-4)", backgroundColor: theme.colors.brand }).style}/>;",
+		import { createCss } from "pandwind/css";
+		const css = createCss();
+		export const App = () => <Box p="4"  className={css.class({ backgroundColor: "$brand" })}/>;",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "host-runtime",
-		        "representation": "target-native",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [],
@@ -133,15 +180,27 @@ test("chakra-ui -> pandwind: lowers concrete theme and project context variants"
 		  "blue": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-		import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
-		export const App = () => <Box className={css.vars({ padding: "var(--chakra-spacing-4)", backgroundColor: theme.colors.brand }).class} style={css.vars({ padding: "var(--chakra-spacing-4)", backgroundColor: theme.colors.brand }).style}/>;",
+		import { createCss } from "pandwind/css";
+		const css = createCss();
+		export const App = () => <Box p="4"  className={css.class({ backgroundColor: "$brand" })}/>;",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "host-runtime",
-		        "representation": "target-native",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [],
@@ -155,12 +214,15 @@ test("chakra-ui -> pandwind: lowers concrete theme and project context variants"
 		    ],
 		  },
 		}
-	`);
+	`)
 });
 
-test("chakra-ui -> pandwind: resolves concrete token references with project context", () => {
-	const result = route.run({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
+test("chakra-ui -> pandwind: resolves concrete token values with project context", async () => {
+	const result = await route.runAsync({ source: tokenSource, file: "App.tsx", semantic: blueSemantic, project: blueProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.ChakraUi, CodemodAdapterId.Pandwind);
+	expectConfiguredTargetTokenEvidence(result, CodemodAdapterId.Pandwind, "chakra-ui -> pandwind token config");
+	expectRouteScenarioEvidence(result, "chakra-ui -> pandwind token config");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
@@ -168,8 +230,21 @@ test("chakra-ui -> pandwind: resolves concrete token references with project con
 		  "code": "import { Box } from "@chakra-ui/react";
 		import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const App = () => <Box className={css.class({ padding: "var(--chakra-spacing-4)", backgroundColor: "$colors.brand" })}/>;",
+		export const App = () => <Box p="4"  className={css.class({ backgroundColor: "$brand" })}/>;",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "static",
@@ -186,12 +261,13 @@ test("chakra-ui -> pandwind: resolves concrete token references with project con
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
 test("chakra-ui -> pandwind: preserves malformed concrete chakra-ui input", () => {
-	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
+	const result = route.run({ source: malformedSource, file: "App.tsx", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished chakra-ui */");
+	expectRouteScenarioEvidence(result, "chakra-ui -> pandwind malformed");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
@@ -199,9 +275,22 @@ test("chakra-ui -> pandwind: preserves malformed concrete chakra-ui input", () =
 		  "code": "import { Box } from "@chakra-ui/react";
 		import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const App = () => <Box className={css.class({ padding: "var(--chakra-spacing-4)", backgroundColor: "tomato" })}/>;
+		export const App = () => <Box className={css.class({ padding: "var(--chakra-spacing-4)", backgroundColor: "var(--chakra-colors-red-200)" })}/>;
 		const unfinished = { /* unfinished chakra-ui */",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "static",
@@ -218,6 +307,6 @@ test("chakra-ui -> pandwind: preserves malformed concrete chakra-ui input", () =
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 

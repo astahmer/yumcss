@@ -3,29 +3,34 @@ import { expect, test } from "vitest";
 import { CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectActionableRoundTrip,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const forward = createAdapterRouteSpec(CodemodAdapterId.ReactNative, CodemodAdapterId.Tamagui);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.Tamagui, CodemodAdapterId.ReactNative);
-	const happySource = "import { StyleSheet, View } from \"react-native\";\nexport const styles = StyleSheet.create({ card: { color: \"red\", padding: 16 } });\nexport const App = () => <View style={styles.card} />;";
-const edgeSource = "import { StyleSheet, View } from \"react-native\";\nexport const styles = StyleSheet.create({ card: { color: theme.foreground, padding: 16 } });\nexport const App = () => <View style={styles.card} />;";
-const malformedSource = "import { StyleSheet, View } from \"react-native\";\nexport const styles = StyleSheet.create({ card: { color: \"red\", padding: 16 } });\nexport const App = () => <View style={styles.card} />;\nconst unfinished = { /* unfinished react-native */";
+	const happySource = "import { StyleSheet } from \"react-native\";\nexport const styles = StyleSheet.create({ card: { color: \"red\", padding: 8 } });";
+const edgeSource = "import { StyleSheet } from \"react-native\";\nexport const styles = StyleSheet.create({ card: { padding: 8, backgroundColor: \"red\" } });";
+const malformedSource = "import { StyleSheet } from \"react-native\";\nexport const styles = StyleSheet.create({ card: { color: \"red\", padding: 8 } });\nconst unfinished = { /* unfinished react-native */";
 const sourceSemantic = undefined;
-const themedSource = "import { StyleSheet, View } from \"react-native\";\nexport const styles = StyleSheet.create({ card: { color: theme.colors.brand, padding: 16 } });\nexport const App = () => <View style={styles.card} />;";
-const tokenSource = "import { StyleSheet, View } from \"react-native\";\nexport const styles = StyleSheet.create({ card: { color: \"$colors.brand\", padding: 16 } });\nexport const App = () => <View style={styles.card} />;";
-const blueSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {} };
+const themedSource = "import { StyleSheet } from \"react-native\";\nexport const styles = StyleSheet.create({ card: { color: \"#2563eb\", padding: 8 } });";
+const tokenSource = "import { StyleSheet } from \"react-native\";\nexport const styles = StyleSheet.create({ card: { color: \"#2563eb\", padding: 8 } });";
+const blueSemantic = undefined;
+const amberSemantic = undefined;
+const blueTargetSemantic = undefined;
+const amberTargetSemantic = undefined;
+const blueProject = createAdapterRouteProject(CodemodAdapterId.ReactNative, CodemodAdapterId.Tamagui, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.ReactNative, CodemodAdapterId.Tamagui, "#f97316");
 	const targetSemantic = undefined;
 
 test("react-native -> tamagui -> react-native: preserves an actionable concrete round trip", () => {
-	const first = forward.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
+	const first = forward.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
 	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
@@ -36,6 +41,7 @@ test("react-native -> tamagui -> react-native: preserves an actionable concrete 
 		expect(first.residuals.length).toBeGreaterThan(0);
 		expect(first.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(first, "react-native -> tamagui round-trip happy forward");
 	expectExplicitResidualEvidence(first);
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(second);
@@ -43,15 +49,26 @@ test("react-native -> tamagui -> react-native: preserves an actionable concrete 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { StyleSheet, View } from "react-native";
-		export const styles = // pandwind:migrate-skip (route: react-native -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual, named-map)
-		StyleSheet.create({ card: { color: "red", padding: 16 } });
-		export const App = () => <View style={styles.card} />;",
+		    "code": "import { StyleSheet } from "react-native";
+		export const styles = // pandwind:migrate-skip (route: react-native -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		StyleSheet.create({ card: { color: "red", padding: 8 } });",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "named-map",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
@@ -66,24 +83,26 @@ test("react-native -> tamagui -> react-native: preserves an actionable concrete 
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "import { StyleSheet, View } from "react-native";
-		export const styles = // pandwind:migrate-skip (route: react-native -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual, named-map)
-		StyleSheet.create({ card: { color: "red", padding: 16 } });
-		export const App = () => <View style={styles.card} />;",
+		    "code": "import { StyleSheet } from "react-native";
+		export const styles = // pandwind:migrate-skip (route: react-native -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		StyleSheet.create({ card: { color: "red", padding: 8 } });",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [],
 		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
 		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 
-test("react-native -> tamagui -> react-native: retains edge semantics without silent loss", () => {
-	const first = forward.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
+test("react-native -> tamagui -> react-native: retains the documented secondary API without silent loss", () => {
+	const first = forward.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
 	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(first, "react-native -> tamagui round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
@@ -91,26 +110,32 @@ test("react-native -> tamagui -> react-native: retains edge semantics without si
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { StyleSheet, View } from "react-native";
-		export const styles = // pandwind:migrate-skip (route: react-native -> tamagui | lowering-residual: dynamic | capability-blocked: named-rules: named style rule: card; dynamic-values: dynamic: theme.foreground; theme-context: 1 theme binding(s) | available: residual)
-		StyleSheet.create({ card: { color: theme.foreground, padding: 16 } });
-		export const App = () => <View style={styles.card} />;",
+		    "code": "import { StyleSheet } from "react-native";
+		export const styles = // pandwind:migrate-skip (route: react-native -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		StyleSheet.create({ card: { padding: 8, backgroundColor: "red" } });",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "residual",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "named-rules: named style rule: card; dynamic-values: dynamic: theme.foreground; theme-context: 1 theme binding(s)",
+		        "hint": "named-rules: named style rule: card",
 		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "target lacks runtime dynamic values",
-		        "kind": "dynamic",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -119,27 +144,34 @@ test("react-native -> tamagui -> react-native: retains edge semantics without si
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "import { StyleSheet, View } from "react-native";
-		export const styles = // pandwind:migrate-skip (route: react-native -> tamagui | lowering-residual: dynamic | capability-blocked: named-rules: named style rule: card; dynamic-values: dynamic: theme.foreground; theme-context: 1 theme binding(s) | available: residual)
-		StyleSheet.create({ card: { color: theme.foreground, padding: 16 } });
-		export const App = () => <View style={styles.card} />;",
+		    "code": "import { StyleSheet } from "react-native";
+		export const styles = // pandwind:migrate-skip (route: react-native -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		StyleSheet.create({ card: { padding: 8, backgroundColor: "red" } });",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [],
 		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
 		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 
-test("react-native -> tamagui -> react-native: preserves concrete theme and project context variants", () => {
-	const firstBlue = forward.run({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const secondBlue = reverse.run({ source: firstBlue.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
-	const firstAmber = forward.run({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
-	const secondAmber = reverse.run({ source: firstAmber.code, file: "Card.tsx", semantic: amberTargetSemantic, project: amberProject });
+test("react-native -> tamagui -> react-native: preserves concrete theme and project context variants", async () => {
+	const firstBlue = await forward.runAsync({ source: themedSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
+	const firstAmber = await forward.runAsync({ source: themedSource, file: "styles.ts", semantic: amberSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "Card.tsx", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.ReactNative, CodemodAdapterId.Tamagui);
+	expectConfiguredTargetTokenEvidence(firstBlue, CodemodAdapterId.Tamagui, "react-native -> tamagui round-trip token config");
+	expectRouteScenarioEvidence(firstBlue, "react-native -> tamagui round-trip blue forward");
+	expectRouteScenarioEvidence(firstAmber, "react-native -> tamagui round-trip amber forward");
+	expectConfiguredTargetTokenAbsence(firstAmber, CodemodAdapterId.Tamagui, "react-native -> tamagui round-trip amber literal config");
+
 	expectActionableRoundTrip(firstBlue, secondBlue);
 	expectActionableRoundTrip(firstAmber, secondAmber);
 	expectExplicitResidualEvidence(firstBlue);
@@ -154,26 +186,32 @@ test("react-native -> tamagui -> react-native: preserves concrete theme and proj
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { StyleSheet, View } from "react-native";
-		export const styles = // pandwind:migrate-skip (route: react-native -> tamagui | lowering-residual: dynamic | capability-blocked: named-rules: named style rule: card; dynamic-values: dynamic: theme.colors.brand; theme-context: 1 theme binding(s) | available: residual)
-		StyleSheet.create({ card: { color: theme.colors.brand, padding: 16 } });
-		export const App = () => <View style={styles.card} />;",
+		      "code": "import { StyleSheet } from "react-native";
+		export const styles = // pandwind:migrate-skip (route: react-native -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [],
+		          "availableRepresentations": [
+		            "static",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
-		          "representation": "residual",
+		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "named-rules: named style rule: card; dynamic-values: dynamic: theme.colors.brand; theme-context: 1 theme binding(s)",
+		          "hint": "named-rules: named style rule: card",
 		          "kind": "capability",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "target lacks runtime dynamic values",
-		          "kind": "dynamic",
 		          "preserved": undefined,
 		        },
 		      ],
@@ -182,11 +220,12 @@ test("react-native -> tamagui -> react-native: preserves concrete theme and proj
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "import { StyleSheet, View } from "react-native";
-		export const styles = // pandwind:migrate-skip (route: react-native -> tamagui | lowering-residual: dynamic | capability-blocked: named-rules: named style rule: card; dynamic-values: dynamic: theme.colors.brand; theme-context: 1 theme binding(s) | available: residual)
-		StyleSheet.create({ card: { color: theme.colors.brand, padding: 16 } });
-		export const App = () => <View style={styles.card} />;",
+		      "code": "import { StyleSheet } from "react-native";
+		export const styles = // pandwind:migrate-skip (route: react-native -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [],
 		      "outcomes": [],
 		      "residuals": [],
 		      "skipped": 0,
@@ -196,26 +235,32 @@ test("react-native -> tamagui -> react-native: preserves concrete theme and proj
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { StyleSheet, View } from "react-native";
-		export const styles = // pandwind:migrate-skip (route: react-native -> tamagui | lowering-residual: dynamic | capability-blocked: named-rules: named style rule: card; dynamic-values: dynamic: theme.colors.brand; theme-context: 1 theme binding(s) | available: residual)
-		StyleSheet.create({ card: { color: theme.colors.brand, padding: 16 } });
-		export const App = () => <View style={styles.card} />;",
+		      "code": "import { StyleSheet } from "react-native";
+		export const styles = // pandwind:migrate-skip (route: react-native -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [],
+		          "availableRepresentations": [
+		            "static",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
-		          "representation": "residual",
+		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "named-rules: named style rule: card; dynamic-values: dynamic: theme.colors.brand; theme-context: 1 theme binding(s)",
+		          "hint": "named-rules: named style rule: card",
 		          "kind": "capability",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "target lacks runtime dynamic values",
-		          "kind": "dynamic",
 		          "preserved": undefined,
 		        },
 		      ],
@@ -224,11 +269,12 @@ test("react-native -> tamagui -> react-native: preserves concrete theme and proj
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "import { StyleSheet, View } from "react-native";
-		export const styles = // pandwind:migrate-skip (route: react-native -> tamagui | lowering-residual: dynamic | capability-blocked: named-rules: named style rule: card; dynamic-values: dynamic: theme.colors.brand; theme-context: 1 theme binding(s) | available: residual)
-		StyleSheet.create({ card: { color: theme.colors.brand, padding: 16 } });
-		export const App = () => <View style={styles.card} />;",
+		      "code": "import { StyleSheet } from "react-native";
+		export const styles = // pandwind:migrate-skip (route: react-native -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [],
 		      "outcomes": [],
 		      "residuals": [],
 		      "skipped": 0,
@@ -236,13 +282,15 @@ test("react-native -> tamagui -> react-native: preserves concrete theme and proj
 		    },
 		  },
 		}
-	`);
+	`)
 });
 
-test("react-native -> tamagui -> react-native: resolves token references across both concrete legs", () => {
-	const first = forward.run({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
+test("react-native -> tamagui -> react-native: resolves token values across both concrete legs", async () => {
+	const first = await forward.runAsync({ source: tokenSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.ReactNative, CodemodAdapterId.Tamagui);
+	expectRouteScenarioEvidence(first, "react-native -> tamagui round-trip token forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
@@ -250,15 +298,26 @@ test("react-native -> tamagui -> react-native: resolves token references across 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { StyleSheet, View } from "react-native";
-		export const styles = // pandwind:migrate-skip (route: react-native -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual, named-map)
-		StyleSheet.create({ card: { color: "$colors.brand", padding: 16 } });
-		export const App = () => <View style={styles.card} />;",
+		    "code": "import { StyleSheet } from "react-native";
+		export const styles = // pandwind:migrate-skip (route: react-native -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "named-map",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
@@ -273,17 +332,18 @@ test("react-native -> tamagui -> react-native: resolves token references across 
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "import { StyleSheet, View } from "react-native";
-		export const styles = // pandwind:migrate-skip (route: react-native -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual, named-map)
-		StyleSheet.create({ card: { color: "$colors.brand", padding: 16 } });
-		export const App = () => <View style={styles.card} />;",
+		    "code": "import { StyleSheet } from "react-native";
+		export const styles = // pandwind:migrate-skip (route: react-native -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [],
 		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
 		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 

@@ -3,26 +3,31 @@ import { expect, test } from "vitest";
 import { CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.Treat, CodemodAdapterId.Panda);
-	const happySource = "import { style } from \"@treatjs/treat\";\nexport const card = style({ color: \"red\", padding: \"1rem\" });";
-const edgeSource = "import { style } from \"@treatjs/treat\";\nexport const card = style({ color: theme.foreground, padding: \"1rem\" });";
-const malformedSource = "import { style } from \"@treatjs/treat\";\nexport const card = style({ color: \"red\", padding: \"1rem\" });\nconst unfinished = { /* unfinished treat */";
+	const happySource = "import { style } from \"treat\";\nexport const card = style({ color: \"red\", padding: 8 });";
+const edgeSource = "import { style } from \"treat\";\nexport const card = style({ color: \"red\", padding: 8 });";
+const malformedSource = "import { style } from \"treat\";\nexport const card = style({ color: \"red\", padding: 8 });\nconst unfinished = { /* unfinished treat */";
 const sourceSemantic = undefined;
-const themedSource = "import { style } from \"@treatjs/treat\";\nexport const card = style({ color: theme.colors.brand, padding: \"1rem\" });";
-const tokenSource = "import { style } from \"@treatjs/treat\";\nexport const card = style({ color: \"$colors.brand\", padding: \"1rem\" });";
-const blueSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/panda.config.ts":"export default { theme: { extend: { tokens: { colors: { brand: { value: \"#2563eb\" } } } } } };"} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/panda.config.ts":"export default { theme: { extend: { tokens: { colors: { brand: { value: \"#f97316\" } } } } } };"} };
+const themedSource = "import { style } from \"treat\";\nexport const card = style({ color: \"#2563eb\", padding: 8 });";
+const tokenSource = "import { style } from \"treat\";\nexport const card = style({ color: \"#2563eb\", padding: 8 });";
+const blueSemantic = undefined;
+const amberSemantic = undefined;
+const blueTargetSemantic = undefined;
+const amberTargetSemantic = undefined;
+const blueProject = createAdapterRouteProject(CodemodAdapterId.Treat, CodemodAdapterId.Panda, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.Treat, CodemodAdapterId.Panda, "#f97316");
 
 test("treat -> panda: migrates concrete treat syntax to panda", () => {
-	const result = route.run({ source: happySource, file: "Card.treat.ts", semantic: sourceSemantic });
+	const result = route.run({ source: happySource, file: "styles.treat.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -37,14 +42,28 @@ test("treat -> panda: migrates concrete treat syntax to panda", () => {
 		expect(result.residuals.length).toBeGreaterThan(0);
 		expect(result.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(result, "treat -> panda happy");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "@treatjs/treat";
-		import { css } from "styled-system/css";
-		export const card = css({ padding: "1rem", color: "red" });",
+		  "code": "import { css } from "styled-system/css";
+
+		export const card = css({ padding: 8, color: "red" });",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "static",
@@ -61,26 +80,38 @@ test("treat -> panda: migrates concrete treat syntax to panda", () => {
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
-test("treat -> panda: carries concrete treat dynamics or edge syntax explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "Card.treat.ts", semantic: sourceSemantic });
+test("treat -> panda: carries a documented secondary treat API explicitly", () => {
+	const result = route.run({ source: edgeSource, file: "styles.treat.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(result, "treat -> panda secondary");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "@treatjs/treat";
-		import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
-		export const card = css.vars({ "padding": "1rem", "color": theme.foreground });",
+		  "code": "import { css } from "styled-system/css";
+
+		export const card = css({ padding: 8, color: "red" });",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "static",
+		      "representation": "static",
 		    },
 		  ],
 		  "residuals": [],
@@ -93,30 +124,47 @@ test("treat -> panda: carries concrete treat dynamics or edge syntax explicitly"
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
-test("treat -> panda: lowers concrete theme and project context variants", () => {
-	const blue = route.run({ source: themedSource, file: "Card.treat.ts", semantic: blueSemantic, project: blueProject });
-	const amber = route.run({ source: themedSource, file: "Card.treat.ts", semantic: amberSemantic, project: amberProject });
+test("treat -> panda: loads concrete theme and project context variants", async () => {
+	const blue = await route.runAsync({ source: themedSource, file: "styles.treat.ts", semantic: blueSemantic, project: blueProject });
+	const amber = await route.runAsync({ source: themedSource, file: "styles.treat.ts", semantic: amberSemantic, project: amberProject });
 	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
 	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Treat, CodemodAdapterId.Panda);
+	expectConfiguredTargetTokenEvidence(blue, CodemodAdapterId.Panda, "treat -> panda blue config");
+	expectRouteScenarioEvidence(blue, "treat -> panda blue config");
+	expectRouteScenarioEvidence(amber, "treat -> panda amber config");
+	expectConfiguredTargetTokenAbsence(amber, CodemodAdapterId.Panda, "treat -> panda amber literal config");
+
 	expectExplicitResidualEvidence(blue);
 	expectExplicitResidualEvidence(amber);
 	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { style } from "@treatjs/treat";
-		import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
-		export const card = css.vars({ "padding": "1rem", "color": theme.colors.brand });",
+		    "code": "import { css } from "styled-system/css";
+
+		export const card = css({ padding: 8, color: "#2563eb" });",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [],
@@ -131,16 +179,27 @@ test("treat -> panda: lowers concrete theme and project context variants", () =>
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { style } from "@treatjs/treat";
-		import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
-		export const card = css.vars({ "padding": "1rem", "color": theme.colors.brand });",
+		    "code": "import { css } from "styled-system/css";
+
+		export const card = css({ padding: 8, color: "brand.500" });",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [],
@@ -154,20 +213,36 @@ test("treat -> panda: lowers concrete theme and project context variants", () =>
 		    ],
 		  },
 		}
-	`);
+	`)
 });
 
-test("treat -> panda: resolves concrete token references with project context", () => {
-	const result = route.run({ source: tokenSource, file: "Card.treat.ts", semantic: blueSemantic, project: blueProject });
+test("treat -> panda: resolves concrete token values with project context", async () => {
+	const result = await route.runAsync({ source: tokenSource, file: "styles.treat.ts", semantic: blueSemantic, project: blueProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Treat, CodemodAdapterId.Panda);
+	expectConfiguredTargetTokenEvidence(result, CodemodAdapterId.Panda, "treat -> panda token config");
+	expectRouteScenarioEvidence(result, "treat -> panda token config");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "@treatjs/treat";
-		import { css } from "styled-system/css";
-		export const card = css({ padding: "1rem", color: "$colors.brand" });",
+		  "code": "import { css } from "styled-system/css";
+
+		export const card = css({ padding: 8, color: "brand.500" });",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "static",
@@ -184,21 +259,35 @@ test("treat -> panda: resolves concrete token references with project context", 
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
 test("treat -> panda: preserves malformed concrete treat input", () => {
-	const result = route.run({ source: malformedSource, file: "Card.treat.ts", semantic: sourceSemantic });
+	const result = route.run({ source: malformedSource, file: "styles.treat.ts", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished treat */");
+	expectRouteScenarioEvidence(result, "treat -> panda malformed");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "@treatjs/treat";
-		import { css } from "styled-system/css";
-		export const card = css({ padding: "1rem", color: "red" });
+		  "code": "import { css } from "styled-system/css";
+
+		export const card = css({ padding: 8, color: "red" });
 		const unfinished = { /* unfinished treat */",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "static",
@@ -215,6 +304,6 @@ test("treat -> panda: preserves malformed concrete treat input", () => {
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 

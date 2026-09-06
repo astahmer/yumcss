@@ -3,23 +3,28 @@ import { expect, test } from "vitest";
 import { CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.Tamagui, CodemodAdapterId.Sass);
 	const happySource = "import { styled, View } from \"tamagui\";\nexport const Card = styled(View, { color: \"red\", padding: \"$4\" });\nexport const App = () => <Card />;";
-const edgeSource = "import { styled, View } from \"tamagui\";\nexport const Card = styled(View, { color: theme.foreground, padding: \"$4\" });\nexport const App = () => <Card />;";
+const edgeSource = "import { styled, View } from \"tamagui\";\nexport const Card = styled(View, ({ theme }) => ({ color: theme.color }));";
 const malformedSource = "import { styled, View } from \"tamagui\";\nexport const Card = styled(View, { color: \"red\", padding: \"$4\" });\nexport const App = () => <Card />;\nconst unfinished = { /* unfinished tamagui */";
 const sourceSemantic = undefined;
-const themedSource = "import { styled, View } from \"tamagui\";\nexport const Card = styled(View, { color: theme.colors.brand, padding: \"$4\" });\nexport const App = () => <Card />;";
-const tokenSource = "import { styled, View } from \"tamagui\";\nexport const Card = styled(View, { color: \"$colors.brand\", padding: \"$4\" });\nexport const App = () => <Card />;";
-const blueSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {} };
+const themedSource = "import { styled, View } from \"tamagui\";\nexport const Card = styled(View, { color: \"#2563eb\", padding: \"$4\" });\nexport const App = () => <Card />;";
+const tokenSource = "import { styled, View } from \"tamagui\";\nexport const Card = styled(View, { color: \"#2563eb\", padding: \"$4\" });\nexport const App = () => <Card />;";
+const blueSemantic = undefined;
+const amberSemantic = undefined;
+const blueTargetSemantic = undefined;
+const amberTargetSemantic = undefined;
+const blueProject = createAdapterRouteProject(CodemodAdapterId.Tamagui, CodemodAdapterId.Sass, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.Tamagui, CodemodAdapterId.Sass, "#f97316");
 
 test("tamagui -> sass: migrates concrete tamagui syntax to sass", () => {
 	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
@@ -37,6 +42,7 @@ test("tamagui -> sass: migrates concrete tamagui syntax to sass", () => {
 		expect(result.residuals.length).toBeGreaterThan(0);
 		expect(result.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(result, "tamagui -> sass happy");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
@@ -46,6 +52,20 @@ test("tamagui -> sass: migrates concrete tamagui syntax to sass", () => {
 		styled(View, { color: "red", padding: "$4" });
 		export const App = () => <Card />;",
 		  "converted": 0,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
@@ -62,21 +82,34 @@ test("tamagui -> sass: migrates concrete tamagui syntax to sass", () => {
 		  "skipped": 1,
 		  "validations": [],
 		}
-	`);
+	`)
 });
 
-test("tamagui -> sass: carries concrete tamagui dynamics or edge syntax explicitly", () => {
+test("tamagui -> sass: carries a documented secondary tamagui API explicitly", () => {
 	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(result, "tamagui -> sass secondary");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import { styled, View } from "tamagui";
-		export const Card = // pandwind:migrate-skip (route: tamagui -> sass | lowering-residual: dynamic | capability-blocked: components: component subject: styled(View); dynamic-values: dynamic: theme.foreground | available: residual)
-		styled(View, { color: theme.foreground, padding: "$4" });
-		export const App = () => <Card />;",
+		export const Card = // pandwind:migrate-skip (route: tamagui -> sass | parse-residual: function-dynamic | capability-blocked: components: component subject: View | available: residual)
+		styled(View, ({ theme }) => ({ color: theme.color }));",
 		  "converted": 0,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "residual",
+		      ],
+		      "representation": "residual",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
@@ -85,27 +118,33 @@ test("tamagui -> sass: carries concrete tamagui dynamics or edge syntax explicit
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "components: component subject: styled(View); dynamic-values: dynamic: theme.foreground",
-		      "kind": "capability",
+		      "hint": "Tamagui function-valued styles require a theme/props wrapper",
+		      "kind": "function-dynamic",
 		      "preserved": undefined,
 		    },
 		    {
-		      "hint": "target lacks runtime dynamic values",
-		      "kind": "dynamic",
+		      "hint": "components: component subject: View",
+		      "kind": "capability",
 		      "preserved": undefined,
 		    },
 		  ],
 		  "skipped": 1,
 		  "validations": [],
 		}
-	`);
+	`)
 });
 
-test("tamagui -> sass: lowers concrete theme and project context variants", () => {
-	const blue = route.run({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const amber = route.run({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
+test("tamagui -> sass: loads concrete theme and project context variants", async () => {
+	const blue = await route.runAsync({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
+	const amber = await route.runAsync({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
 	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
 	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Tamagui, CodemodAdapterId.Sass);
+	expectConfiguredTargetTokenEvidence(blue, CodemodAdapterId.Sass, "tamagui -> sass blue config");
+	expectRouteScenarioEvidence(blue, "tamagui -> sass blue config");
+	expectRouteScenarioEvidence(amber, "tamagui -> sass amber config");
+	expectConfiguredTargetTokenAbsence(amber, CodemodAdapterId.Sass, "tamagui -> sass amber literal config");
+
 	expectExplicitResidualEvidence(blue);
 	expectExplicitResidualEvidence(amber);
 	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
@@ -113,25 +152,34 @@ test("tamagui -> sass: lowers concrete theme and project context variants", () =
 		  "amber": {
 		    "changed": true,
 		    "code": "import { styled, View } from "tamagui";
-		export const Card = // pandwind:migrate-skip (route: tamagui -> sass | lowering-residual: dynamic | capability-blocked: components: component subject: styled(View); dynamic-values: dynamic: theme.colors.brand | available: residual)
-		styled(View, { color: theme.colors.brand, padding: "$4" });
+		export const Card = // pandwind:migrate-skip (route: tamagui -> sass | capability-blocked: components: component subject: styled(View) | available: static, residual)
+		styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <Card />;",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "residual",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "components: component subject: styled(View); dynamic-values: dynamic: theme.colors.brand",
+		        "hint": "components: component subject: styled(View)",
 		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "target lacks runtime dynamic values",
-		        "kind": "dynamic",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -141,25 +189,34 @@ test("tamagui -> sass: lowers concrete theme and project context variants", () =
 		  "blue": {
 		    "changed": true,
 		    "code": "import { styled, View } from "tamagui";
-		export const Card = // pandwind:migrate-skip (route: tamagui -> sass | lowering-residual: dynamic | capability-blocked: components: component subject: styled(View); dynamic-values: dynamic: theme.colors.brand | available: residual)
-		styled(View, { color: theme.colors.brand, padding: "$4" });
+		export const Card = // pandwind:migrate-skip (route: tamagui -> sass | capability-blocked: components: component subject: styled(View) | available: static, residual)
+		styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <Card />;",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "residual",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "components: component subject: styled(View); dynamic-values: dynamic: theme.colors.brand",
+		        "hint": "components: component subject: styled(View)",
 		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "target lacks runtime dynamic values",
-		        "kind": "dynamic",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -167,21 +224,38 @@ test("tamagui -> sass: lowers concrete theme and project context variants", () =
 		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 
-test("tamagui -> sass: resolves concrete token references with project context", () => {
-	const result = route.run({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
+test("tamagui -> sass: resolves concrete token values with project context", async () => {
+	const result = await route.runAsync({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Tamagui, CodemodAdapterId.Sass);
+	expectConfiguredTargetTokenEvidence(result, CodemodAdapterId.Sass, "tamagui -> sass token config");
+	expectRouteScenarioEvidence(result, "tamagui -> sass token config");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import { styled, View } from "tamagui";
 		export const Card = // pandwind:migrate-skip (route: tamagui -> sass | capability-blocked: components: component subject: styled(View) | available: static, residual)
-		styled(View, { color: "$colors.brand", padding: "$4" });
+		styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <Card />;",
 		  "converted": 0,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
@@ -198,12 +272,13 @@ test("tamagui -> sass: resolves concrete token references with project context",
 		  "skipped": 1,
 		  "validations": [],
 		}
-	`);
+	`)
 });
 
 test("tamagui -> sass: preserves malformed concrete tamagui input", () => {
 	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished tamagui */");
+	expectRouteScenarioEvidence(result, "tamagui -> sass malformed");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
@@ -214,6 +289,20 @@ test("tamagui -> sass: preserves malformed concrete tamagui input", () => {
 		export const App = () => <Card />;
 		const unfinished = { /* unfinished tamagui */",
 		  "converted": 0,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
@@ -230,6 +319,6 @@ test("tamagui -> sass: preserves malformed concrete tamagui input", () => {
 		  "skipped": 1,
 		  "validations": [],
 		}
-	`);
+	`)
 });
 

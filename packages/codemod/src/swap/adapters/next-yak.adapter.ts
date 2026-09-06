@@ -37,6 +37,7 @@ export default defineCodemodAdapter({
 	],
 	packages: CodemodAdapterKit.dependency("next-yak", "peer"),
 	capabilities: CodemodAdapterKit.allRuleCapabilities(CodemodAdapterId.NextYak, "partial", {
+		keyframes: "unsupported",
 		"theme-context": "partial",
 		"runtime-context": "partial",
 		composition: "partial",

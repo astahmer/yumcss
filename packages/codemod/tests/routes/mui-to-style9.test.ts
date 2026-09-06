@@ -3,26 +3,31 @@ import { expect, test } from "vitest";
 import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.Mui, CodemodAdapterId.Style9);
 	const happySource = "import { Box } from \"@mui/material\";\nexport const App = () => <Box sx={{ color: \"red\", p: 2 }} />;";
-const edgeSource = "import { Box } from \"@mui/material\";\nexport const App = () => <Box sx={{ color: theme.foreground, p: 2 }} />;";
+const edgeSource = "import { styled } from \"@mui/system\";\nexport const Card = styled(\"div\")({ color: \"red\", padding: 8 });";
 const malformedSource = "import { Box } from \"@mui/material\";\nexport const App = () => <Box sx={{ color: \"red\", p: 2 }} />;\nconst unfinished = { /* unfinished mui */";
 const sourceSemantic = { source: { framework: BuiltinHostFramework.React } };
-const themedSource = "import { Box } from \"@mui/material\";\nexport const App = () => <Box sx={{ color: theme.palette.primary.main, p: 2 }} />;";
-const tokenSource = "import { Box } from \"@mui/material\";\nexport const App = () => <Box sx={{ color: \"primary.main\", p: 2 }} />;";
-const blueSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "palette.primary.main", authored: "theme.palette.primary.main", resolved: "#2563eb" }] };
-const amberSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "palette.primary.main", authored: "theme.palette.primary.main", resolved: "#f97316" }] };
-const blueTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/src/theme.ts":"export const muiTheme = { palette: { primary: { main: \"#2563eb\" } } };"} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/src/theme.ts":"export const muiTheme = { palette: { primary: { main: \"#f97316\" } } };"} };
+const themedSource = "import { Box } from \"@mui/material\";\nexport const App = () => <Box sx={{ color: \"primary.main\", p: 2 }} />;";
+const tokenSource = "import { Box } from \"@mui/material\";\nexport const App = () => <Box sx={{ color: \"#2563eb\", p: 2 }} />;";
+const blueSemantic = { source: { framework: BuiltinHostFramework.React } };
+const amberSemantic = { source: { framework: BuiltinHostFramework.React } };
+const blueTargetSemantic = undefined;
+const amberTargetSemantic = undefined;
+const blueProject = createAdapterRouteProject(CodemodAdapterId.Mui, CodemodAdapterId.Style9, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.Mui, CodemodAdapterId.Style9, "#f97316");
 
 test("mui -> style9: migrates concrete mui syntax to style9", () => {
-	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
+	const result = route.run({ source: happySource, file: "App.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -37,6 +42,7 @@ test("mui -> style9: migrates concrete mui syntax to style9", () => {
 		expect(result.residuals.length).toBeGreaterThan(0);
 		expect(result.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(result, "mui -> style9 happy");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
@@ -45,6 +51,21 @@ test("mui -> style9: migrates concrete mui syntax to style9", () => {
 		import style9 from "style9";
 		export const App = () => <Box className={style9(style9.create({ style: { "padding": "16px", "color": "red" } }).style)}/>;",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "static",
@@ -61,24 +82,40 @@ test("mui -> style9: migrates concrete mui syntax to style9", () => {
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
-test("mui -> style9: carries concrete mui dynamics or edge syntax explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
+test("mui -> style9: carries a documented secondary mui API explicitly", () => {
+	const result = route.run({ source: edgeSource, file: "App.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(result, "mui -> style9 secondary");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { Box } from "@mui/material";
+		  "code": "import { styled } from "@mui/system";
 		import style9 from "style9";
-		export const App = () => <Box className={style9(style9.create({ style: { "padding": "16px", "color": "var(--pandwind-dynamic-5qa8dh)" } }).style)} style={{ "--pandwind-dynamic-5qa8dh": String(theme.foreground) }}/>;",
+		export const Card = style9.create({ "padding": 8, "color": "red" });",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "host-runtime",
-		      "representation": "custom-property",
+		      "outcome": "static",
+		      "representation": "static",
 		    },
 		  ],
 		  "residuals": [],
@@ -91,14 +128,19 @@ test("mui -> style9: carries concrete mui dynamics or edge syntax explicitly", (
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
-test("mui -> style9: lowers concrete theme and project context variants", () => {
-	const blue = route.run({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const amber = route.run({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
+test("mui -> style9: loads concrete theme and project context variants", async () => {
+	const blue = await route.runAsync({ source: themedSource, file: "App.tsx", semantic: blueSemantic, project: blueProject });
+	const amber = await route.runAsync({ source: themedSource, file: "App.tsx", semantic: amberSemantic, project: amberProject });
 	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
 	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Mui, CodemodAdapterId.Style9);
+	expectConfiguredTargetTokenEvidence(blue, CodemodAdapterId.Style9, "mui -> style9 blue config");
+	expectRouteScenarioEvidence(blue, "mui -> style9 blue config");
+	expectRouteScenarioEvidence(amber, "mui -> style9 amber config");
+
 	expectExplicitResidualEvidence(blue);
 	expectExplicitResidualEvidence(amber);
 	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
@@ -107,12 +149,27 @@ test("mui -> style9: lowers concrete theme and project context variants", () => 
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
 		import style9 from "style9";
-		export const App = () => <Box className={style9(style9.create({ style: { "padding": "16px", "color": "var(--pandwind-dynamic-d9jp16)" } }).style)} style={{ "--pandwind-dynamic-d9jp16": String(theme.palette.primary.main) }}/>;",
+		export const App = () => <Box className={style9(style9.create({ style: { "padding": "16px", "color": "#f97316" } }).style)}/>;",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "host-runtime",
-		        "representation": "custom-property",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [],
@@ -129,12 +186,27 @@ test("mui -> style9: lowers concrete theme and project context variants", () => 
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
 		import style9 from "style9";
-		export const App = () => <Box className={style9(style9.create({ style: { "padding": "16px", "color": "var(--pandwind-dynamic-d9jp16)" } }).style)} style={{ "--pandwind-dynamic-d9jp16": String(theme.palette.primary.main) }}/>;",
+		export const App = () => <Box className={style9(style9.create({ style: { "padding": "16px", "color": "#2563eb" } }).style)}/>;",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "host-runtime",
-		        "representation": "custom-property",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [],
@@ -148,20 +220,38 @@ test("mui -> style9: lowers concrete theme and project context variants", () => 
 		    ],
 		  },
 		}
-	`);
+	`)
 });
 
-test("mui -> style9: resolves concrete token references with project context", () => {
-	const result = route.run({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
+test("mui -> style9: resolves concrete token values with project context", async () => {
+	const result = await route.runAsync({ source: tokenSource, file: "App.tsx", semantic: blueSemantic, project: blueProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Mui, CodemodAdapterId.Style9);
+	expectConfiguredTargetTokenEvidence(result, CodemodAdapterId.Style9, "mui -> style9 token config");
+	expectRouteScenarioEvidence(result, "mui -> style9 token config");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mui/material";
 		import style9 from "style9";
-		export const App = () => <Box className={style9(style9.create({ style: { "padding": "16px", "color": "var(--mui-primary-main)" } }).style)}/>;",
+		export const App = () => <Box className={style9(style9.create({ style: { "padding": "16px", "color": "#2563eb" } }).style)}/>;",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "static",
@@ -178,12 +268,13 @@ test("mui -> style9: resolves concrete token references with project context", (
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
 test("mui -> style9: preserves malformed concrete mui input", () => {
-	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
+	const result = route.run({ source: malformedSource, file: "App.tsx", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished mui */");
+	expectRouteScenarioEvidence(result, "mui -> style9 malformed");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
@@ -193,6 +284,21 @@ test("mui -> style9: preserves malformed concrete mui input", () => {
 		export const App = () => <Box className={style9(style9.create({ style: { "padding": "16px", "color": "red" } }).style)}/>;
 		const unfinished = { /* unfinished mui */",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "static",
@@ -209,6 +315,6 @@ test("mui -> style9: preserves malformed concrete mui input", () => {
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 

@@ -13,6 +13,7 @@ import {
 } from "./semantic-ir.ts";
 import { MigrationDiagnostics } from "./migration-diagnostics.ts";
 import { MigrationOutput } from "./migration-output.ts";
+import { inspectAdapterCapabilities } from "./capabilities.ts";
 import type {
 	AdapterFileMigrationContext,
 	AdapterFileMigration,
@@ -53,6 +54,36 @@ export interface StylesheetSourceNode {
 export interface StylesheetSourceDocument {
 	readonly nodes: readonly StylesheetSourceNode[];
 	readonly residuals: readonly StyleProgramResidual[];
+}
+
+/**
+ * A local stylesheet class becomes a named-map entry in a generated module.
+ * Move the class selector and enclosing at-rule conditions into the semantic
+ * style value before capability negotiation; the target then evaluates the
+ * same declaration shape it would receive from its documented object API.
+ */
+function stylesheetClassProgram(program: StyleProgram): StyleProgram {
+	return {
+		...program,
+		rules: program.rules.map((rule) => {
+			if (
+				rule.kind !== StyleRuleKindTag.Style ||
+				rule.name === undefined ||
+				rule.children.length > 0
+			)
+				return rule;
+			return {
+				...rule,
+				name: undefined,
+				selector: undefined,
+				conditions: [],
+				declarations: rule.declarations.map((declaration) => ({
+					...declaration,
+					conditions: [...rule.conditions, ...declaration.conditions],
+				})),
+			};
+		}),
+	};
 }
 
 /** Stylesheet parsing is a port so preprocessors can provide an official compiler. */
@@ -815,8 +846,24 @@ export function createStylesheetFileMigration(
 			const imports = new Set<string>();
 			const entries: string[] = [];
 			const emittedTexts: string[] = [];
+			const emittedSemantics: Array<StyleProgram | undefined> = [];
+			const emissionResiduals: Array<readonly StyleProgramResidual[]> = [];
+			const generatedStatements = new Set<string>();
+			const emittedPreambles: string[] = [];
 			const names = new Set<string>();
+			const loweringPlans: StyleLoweringPlan[] = [];
+			const sourcePrograms: StyleProgram[] = [];
 			for (const [index, match] of matches.entries()) {
+				const sourceProgram = stylesheetClassProgram(match.program);
+				sourcePrograms.push(sourceProgram);
+				const lowering = STYLE_LOWERING_REGISTRY.plan({
+					program: sourceProgram,
+					target: context.target.capabilities,
+					mode: "safe",
+					hostFramework:
+						context.target.migration?.targetPolicy?.handlesFrameworkSemantics === true,
+				});
+				loweringPlans.push(lowering);
 				const rule = match.program.rules[0];
 				const name = rule?.name;
 				if (rule === undefined || name === undefined || !/^[A-Za-z_$][\w$-]*$/u.test(name)) {
@@ -836,17 +883,67 @@ export function createStylesheetFileMigration(
 					continue;
 				}
 				names.add(name);
-				const program = {
-					...match.program,
-					rules: match.program.rules.map((item) => ({ ...item, name: undefined })),
-				};
-				const emission = context.target.emit(program, {
+				const capabilityReport = inspectAdapterCapabilities(
+					context.target.capabilities,
+					lowering.program,
+					"safe",
+				);
+				const resolvedCapabilities = new Set(lowering.resolvedCapabilities ?? []);
+				const effectiveCapabilityReport =
+					resolvedCapabilities.size === 0
+						? capabilityReport
+						: {
+								...capabilityReport,
+								blockers: capabilityReport.blockers.filter(
+									(issue) => !resolvedCapabilities.has(issue.capability),
+								),
+								convertible: capabilityReport.blockers.every(
+									(issue) => resolvedCapabilities.has(issue.capability),
+								),
+							};
+				const semanticResiduals = [
+					...lowering.program.residuals,
+					...lowering.residuals,
+				].filter((residual) => residual.preserved !== true);
+				if (!effectiveCapabilityReport.convertible || semanticResiduals.length > 0) {
+					residuals.push(
+						...lowering.program.residuals,
+						...lowering.residuals,
+						...(effectiveCapabilityReport.blockers.length === 0
+							? []
+							: [
+									{
+										kind: StyleProgramResidualKindTag.Capability,
+										text: match.sourceText,
+										hint: effectiveCapabilityReport.blockers
+											.map((issue) => `${issue.capability}: ${issue.detail}`)
+											.join("; "),
+									},
+								]),
+					);
+					continue;
+				}
+				const program = lowering.program;
+				const emitContext: AdapterEmitContext = {
 					file: context.file,
 					config: context.targetConfig,
 					mode: "safe",
+					capability: effectiveCapabilityReport,
 					index,
-				} as AdapterEmitContext);
+				};
+				const emission = context.target.emit(
+					context.target.tokenPolicy?.preserve(program, emitContext) ?? program,
+					emitContext,
+				);
+				emittedSemantics[index] = emission.semantic;
+				emissionResiduals[index] = emission.residuals;
 				for (const statement of emission.imports ?? []) imports.add(statement);
+				for (const statement of emission.generatedStatements ?? []) generatedStatements.add(statement);
+				emittedPreambles[index] = [
+					...MigrationOutput.consolidateImports(emission.imports ?? []),
+					...(emission.generatedStatements ?? []),
+				]
+					.join("\n");
 				residuals.push(...emission.residuals);
 				if (emission.generatedFiles !== undefined)
 					residuals.push({
@@ -872,9 +969,9 @@ export function createStylesheetFileMigration(
 				// per-match runner emits; a conservative skip without a plan would
 				// hide the decision the route actually made. Each skipped match
 				// stays visible as an explicit residual outcome.
-				const skipLoweringPlans: StyleLoweringPlan[] = matches.map((match) => ({
+				const skipLoweringPlans: StyleLoweringPlan[] = matches.map((match, index) => ({
 					...STYLE_LOWERING_REGISTRY.plan({
-						program: match.program,
+						program: sourcePrograms[index] ?? stylesheetClassProgram(match.program),
 						target: context.target.capabilities,
 						mode: "safe",
 						hostFramework:
@@ -908,17 +1005,6 @@ export function createStylesheetFileMigration(
 					dependencies: [],
 				};
 			}
-			// The matrix/contract gates consume the same lowering evidence the
-			// per-match runner emits; a converted rule without a plan would be an
-			// uninspectable decision.
-			const loweringPlans: StyleLoweringPlan[] = matches.map((match) => ({
-				...STYLE_LOWERING_REGISTRY.plan({
-					program: match.program,
-					target: context.target.capabilities,
-					mode: "safe",
-					hostFramework: context.target.migration?.targetPolicy?.handlesFrameworkSemantics === true,
-				}),
-			}));
 			const outcomes = matches.map((match, index) => {
 				const plan = loweringPlans[index];
 				const representation = plan?.representation ?? StyleRepresentationKind.Static;
@@ -955,7 +1041,8 @@ export function createStylesheetFileMigration(
 			if (isStylesheetFamilyConfig(context.targetConfig))
 				return stylesheetFamilyArtifact(context, matches, loweringPlans, outcomes);
 			const code = [
-				[...imports].join("\n"),
+				MigrationOutput.consolidateImports(imports).join("\n"),
+				[...generatedStatements].join("\n"),
 				`export const styles = { ${entries.join(", ")} };`,
 				"export default styles;",
 			]
@@ -968,18 +1055,14 @@ export function createStylesheetFileMigration(
 				// The stylesheet class identity moves into the exported class-map
 				// binding, so the source rule compares at the same selector-less
 				// shape the emitted css.class expression reparses to.
-				const sourceProgram = {
-					...match.program,
-					rules: match.program.rules.map((item) => ({
-						...item,
-						name: undefined,
-						selector: undefined,
-					})),
-				};
-				const validationSource = MigrationOutput.validationSource(
+				const sourceProgram = sourcePrograms[index] ?? stylesheetClassProgram(match.program);
+				const validationExpression = MigrationOutput.validationSource(
 					emittedTexts[index] ?? "",
 					sourceProgram,
 				);
+				const validationSource = [emittedPreambles[index] ?? "", validationExpression]
+					.filter((line) => line.length > 0)
+					.join("\n");
 				const reparsed = context.target.parse(validationSource, {
 					file: context.file,
 					source: validationSource,
@@ -987,19 +1070,66 @@ export function createStylesheetFileMigration(
 					config: context.targetConfig,
 					...(context.readFile === undefined ? {} : { readFile: context.readFile }),
 				});
-				const targetProgram =
+				const parseResiduals =
 					reparsed.matches.length === 0
-						? sourceProgram
-						: styleProgramFromRules(
-								reparsed.matches.flatMap((candidate) => candidate.program.rules),
+						? [
+								...reparsed.residuals,
 								{
-									source: sourceProgram.source,
-									residuals: reparsed.residuals,
-									canonicalization: sourceProgram.canonicalization,
+									kind: StyleProgramResidualKindTag.Parse,
+									text: emittedTexts[index] ?? "",
+									hint: "target emission could not be parsed by its adapter",
 								},
-							);
-				return context.target.validate(sourceProgram, targetProgram, reparsed.residuals);
+							]
+						: reparsed.residuals;
+				const targetProgram =
+					emittedSemantics[index] ??
+					styleProgramFromRules(
+						reparsed.matches.flatMap((candidate) => candidate.program.rules),
+						{
+							source: sourceProgram.source,
+							residuals: parseResiduals,
+							canonicalization: sourceProgram.canonicalization,
+						},
+					);
+				return context.target.validate(sourceProgram, targetProgram, [
+					...parseResiduals,
+					...(emissionResiduals[index] ?? []),
+				]);
 			});
+			const invalidValidations = validations.filter((validation) => !validation.valid);
+			if (invalidValidations.length > 0) {
+				const validationResiduals: StyleProgramResidual[] = invalidValidations.map((validation) => ({
+					kind: StyleProgramResidualKindTag.Capability,
+					text: validation.canonicalTarget,
+					hint: `target emission failed canonical validation: ${validation.differences.join(", ")}`,
+				}));
+				const code =
+					MigrationDiagnostics.skipMarker({
+						marker: "pandwind:migrate-skip",
+						loweringResiduals: validationResiduals,
+					}) +
+					"\n" +
+					context.source;
+				return {
+					code,
+					changed: false,
+					converted: 0,
+					skipped: Math.max(1, validationResiduals.length),
+					generatedFiles: [],
+					fileChanges: [],
+					residuals: validationResiduals,
+					dependencies: [],
+					validations,
+					loweringPlans,
+					outcomes: matches.map((match, index) => ({
+						sourceStart: match.start,
+						sourceText: match.sourceText,
+						outcome: StyleMigrationOutcome.Residual,
+						representation:
+							loweringPlans[index]?.representation ?? StyleRepresentationKind.Residual,
+					})),
+				};
+			}
 			return {
 				code,
 				outputExtension: ".ts",
@@ -1175,18 +1305,74 @@ export function createPreprocessorFileMigration(
 			const result = base.run({ ...context, source: compiled.css });
 			if (context.target.id === CodemodAdapterId.AuthoredCss) {
 				// Compilation inlined the preprocessor features, so the authored
-				// target receives plain CSS: pass it through with provenance
-				// instead of re-reporting the pre-compiler capability residual.
+				// target receives plain CSS. Reparse the compiled document through
+				// the target contract so the result records real converted rules and
+				// canonical validation rather than looking like a silent no-op.
+				const parsed = parseStylesheetPrograms(compiled.css, {
+					file: context.file,
+					source: compiled.css,
+					root: context.root,
+					config: context.targetConfig,
+					...(context.readFile === undefined ? {} : { readFile: context.readFile }),
+				});
+				const plans = parsed.matches.map((match) =>
+					STYLE_LOWERING_REGISTRY.plan({
+						program: match.program,
+						target: context.target.capabilities,
+						mode: "safe",
+					}),
+				);
+				const validations = parsed.matches.map((match) => {
+					const reparsed = context.target.parse(match.sourceText, {
+						file: context.file,
+						source: match.sourceText,
+						root: context.root,
+						config: context.targetConfig,
+						...(context.readFile === undefined ? {} : { readFile: context.readFile }),
+					});
+					const targetProgram = styleProgramFromRules(
+						reparsed.matches.flatMap((candidate) => candidate.program.rules),
+						{
+							source: match.program.source,
+							residuals: reparsed.residuals,
+							canonicalization: match.program.canonicalization,
+						},
+					);
+					return context.target.validate(match.program, targetProgram, reparsed.residuals);
+				});
+				const residuals = [...parsed.residuals];
+				const converted = residuals.length === 0 ? parsed.matches.length : 0;
+				const skipped = residuals.length === 0 ? 0 : 1;
+				const code =
+					residuals.length === 0
+						? compiled.css
+						: MigrationDiagnostics.skipMarker({
+								marker: "pandwind:migrate-skip",
+								loweringResiduals: residuals,
+							}) +
+							"\n" +
+							compiled.css;
 				return {
-					code: compiled.css,
+					code,
 					outputExtension: ".css",
 					changed: compiled.css !== context.source,
-					converted: 0,
-					skipped: 0,
+					converted,
+					skipped,
 					generatedFiles: [],
-					loweringPlans: [],
+					loweringPlans: plans,
 					fileChanges: [],
-					residuals: [],
+					residuals,
+					validations,
+					outcomes: parsed.matches.map((match, index) => ({
+						sourceStart: match.start,
+						sourceText: match.sourceText,
+						outcome:
+							residuals.length === 0
+								? StyleMigrationOutcome.Static
+								: StyleMigrationOutcome.Residual,
+						representation:
+								plans[index]?.representation ?? StyleRepresentationKind.Residual,
+					})),
 					dependencies:
 						compiled.dependencies === undefined
 							? []

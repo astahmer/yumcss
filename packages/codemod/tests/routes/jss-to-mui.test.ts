@@ -3,26 +3,31 @@ import { expect, test } from "vitest";
 import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.Jss, CodemodAdapterId.Mui);
-	const happySource = "import { createUseStyles } from \"react-jss\";\nexport const useStyles = createUseStyles({ card: { color: \"red\", padding: \"1rem\" } });\nexport const App = () => <div className={useStyles().card} />;";
-const edgeSource = "import { createUseStyles } from \"react-jss\";\nexport const useStyles = createUseStyles({ card: { color: theme.foreground, padding: \"1rem\" } });\nexport const App = () => <div className={useStyles().card} />;";
-const malformedSource = "import { createUseStyles } from \"react-jss\";\nexport const useStyles = createUseStyles({ card: { color: \"red\", padding: \"1rem\" } });\nexport const App = () => <div className={useStyles().card} />;\nconst unfinished = { /* unfinished jss */";
+	const happySource = "import { createUseStyles } from \"react-jss\";\nexport const useStyles = createUseStyles({ card: { color: \"red\" } });";
+const edgeSource = "import jss from \"jss\";\nexport const sheet = jss.createStyleSheet({ card: { color: \"red\" } });";
+const malformedSource = "import { createUseStyles } from \"react-jss\";\nexport const useStyles = createUseStyles({ card: { color: \"red\" } });\nconst unfinished = { /* unfinished jss */";
 const sourceSemantic = undefined;
-const themedSource = "import { createUseStyles } from \"react-jss\";\nexport const useStyles = createUseStyles({ card: { color: theme.colors.brand, padding: \"1rem\" } });\nexport const App = () => <div className={useStyles().card} />;";
-const tokenSource = "import { createUseStyles } from \"react-jss\";\nexport const useStyles = createUseStyles({ card: { color: \"$colors.brand\", padding: \"1rem\" } });\nexport const App = () => <div className={useStyles().card} />;";
-const blueSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "palette.primary.main", authored: "theme.palette.primary.main", resolved: "#2563eb" }] };
-const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "palette.primary.main", authored: "theme.palette.primary.main", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/src/theme.ts":"export const muiTheme = { palette: { primary: { main: \"#2563eb\" } } };"} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/src/theme.ts":"export const muiTheme = { palette: { primary: { main: \"#f97316\" } } };"} };
+const themedSource = "import { createUseStyles } from \"react-jss\";\nexport const useStyles = createUseStyles({ card: { color: \"#2563eb\" } });";
+const tokenSource = "import { createUseStyles } from \"react-jss\";\nexport const useStyles = createUseStyles({ card: { color: \"#2563eb\" } });";
+const blueSemantic = undefined;
+const amberSemantic = undefined;
+const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
+const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
+const blueProject = createAdapterRouteProject(CodemodAdapterId.Jss, CodemodAdapterId.Mui, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.Jss, CodemodAdapterId.Mui, "#f97316");
 
 test("jss -> mui: migrates concrete jss syntax to mui", () => {
-	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
+	const result = route.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -37,6 +42,7 @@ test("jss -> mui: migrates concrete jss syntax to mui", () => {
 		expect(result.residuals.length).toBeGreaterThan(0);
 		expect(result.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(result, "jss -> mui happy");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
@@ -44,9 +50,22 @@ test("jss -> mui: migrates concrete jss syntax to mui", () => {
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const useStyles = { "card": css.class({ padding: "1rem", color: "red" }) };
-		export const App = () => <div className={useStyles().card} />;",
+		export const useStyles = { "card": css.class({ color: "red" }) };",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		        "portable-artifact",
+		      ],
+		      "representation": "named-map",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "portable-artifact",
@@ -63,12 +82,13 @@ test("jss -> mui: migrates concrete jss syntax to mui", () => {
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
-test("jss -> mui: carries concrete jss dynamics or edge syntax explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
+test("jss -> mui: carries a documented secondary jss API explicitly", () => {
+	const result = route.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(result, "jss -> mui secondary");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
@@ -76,9 +96,22 @@ test("jss -> mui: carries concrete jss dynamics or edge syntax explicitly", () =
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const useStyles = { "card": css.class({ padding: "1rem", color: theme.foreground }) };
-		export const App = () => <div className={useStyles().card} />;",
+		export const sheet = { "card": css.class({ color: "red" }) };",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		        "portable-artifact",
+		      ],
+		      "representation": "named-map",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "portable-artifact",
@@ -95,14 +128,20 @@ test("jss -> mui: carries concrete jss dynamics or edge syntax explicitly", () =
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
-test("jss -> mui: lowers concrete theme and project context variants", () => {
-	const blue = route.run({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const amber = route.run({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
+test("jss -> mui: loads concrete theme and project context variants", async () => {
+	const blue = await route.runAsync({ source: themedSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
+	const amber = await route.runAsync({ source: themedSource, file: "styles.ts", semantic: amberSemantic, project: amberProject });
 	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
 	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Jss, CodemodAdapterId.Mui);
+	expectConfiguredTargetTokenEvidence(blue, CodemodAdapterId.Mui, "jss -> mui blue config");
+	expectRouteScenarioEvidence(blue, "jss -> mui blue config");
+	expectRouteScenarioEvidence(amber, "jss -> mui amber config");
+	expectConfiguredTargetTokenAbsence(amber, CodemodAdapterId.Mui, "jss -> mui amber literal config");
+
 	expectExplicitResidualEvidence(blue);
 	expectExplicitResidualEvidence(amber);
 	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
@@ -112,9 +151,22 @@ test("jss -> mui: lowers concrete theme and project context variants", () => {
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const useStyles = { "card": css.class({ padding: "1rem", color: theme.colors.brand }) };
-		export const App = () => <div className={useStyles().card} />;",
+		export const useStyles = { "card": css.class({ color: "#2563eb" }) };",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		          "portable-artifact",
+		        ],
+		        "representation": "named-map",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "portable-artifact",
@@ -136,9 +188,22 @@ test("jss -> mui: lowers concrete theme and project context variants", () => {
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const useStyles = { "card": css.class({ padding: "1rem", color: theme.colors.brand }) };
-		export const App = () => <div className={useStyles().card} />;",
+		export const useStyles = { "card": css.class({ color: "primary.main" }) };",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		          "portable-artifact",
+		        ],
+		        "representation": "named-map",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "portable-artifact",
@@ -156,12 +221,15 @@ test("jss -> mui: lowers concrete theme and project context variants", () => {
 		    ],
 		  },
 		}
-	`);
+	`)
 });
 
-test("jss -> mui: resolves concrete token references with project context", () => {
-	const result = route.run({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
+test("jss -> mui: resolves concrete token values with project context", async () => {
+	const result = await route.runAsync({ source: tokenSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Jss, CodemodAdapterId.Mui);
+	expectConfiguredTargetTokenEvidence(result, CodemodAdapterId.Mui, "jss -> mui token config");
+	expectRouteScenarioEvidence(result, "jss -> mui token config");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
@@ -169,9 +237,22 @@ test("jss -> mui: resolves concrete token references with project context", () =
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const useStyles = { "card": css.class({ padding: "1rem", color: "$colors.brand" }) };
-		export const App = () => <div className={useStyles().card} />;",
+		export const useStyles = { "card": css.class({ color: "primary.main" }) };",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		        "portable-artifact",
+		      ],
+		      "representation": "named-map",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "portable-artifact",
@@ -188,12 +269,13 @@ test("jss -> mui: resolves concrete token references with project context", () =
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
 test("jss -> mui: preserves malformed concrete jss input", () => {
-	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
+	const result = route.run({ source: malformedSource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished jss */");
+	expectRouteScenarioEvidence(result, "jss -> mui malformed");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
@@ -201,10 +283,23 @@ test("jss -> mui: preserves malformed concrete jss input", () => {
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const useStyles = { "card": css.class({ padding: "1rem", color: "red" }) };
-		export const App = () => <div className={useStyles().card} />;
+		export const useStyles = { "card": css.class({ color: "red" }) };
 		const unfinished = { /* unfinished jss */",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		        "portable-artifact",
+		      ],
+		      "representation": "named-map",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "portable-artifact",
@@ -221,6 +316,6 @@ test("jss -> mui: preserves malformed concrete jss input", () => {
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 

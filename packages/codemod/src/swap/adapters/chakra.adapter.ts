@@ -476,7 +476,7 @@ function chakraSourceVocabulary(context: AdapterParseContext): {
 		styleProps:
 			system?.properties === undefined
 				? styleProps
-				: (property) => system.properties?.has(property) === true,
+				: (property) => property === "css" || system.properties?.has(property) === true,
 		propertyAliases: resolvedAliases,
 		valueTransformProperties: [
 			...new Set([...resolvedProperties, ...Object.keys(resolvedAliases)]),

@@ -3,26 +3,31 @@ import { expect, test } from "vitest";
 import { CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.Jss, CodemodAdapterId.ReactNative);
-	const happySource = "import { createUseStyles } from \"react-jss\";\nexport const useStyles = createUseStyles({ card: { color: \"red\", padding: \"1rem\" } });\nexport const App = () => <div className={useStyles().card} />;";
-const edgeSource = "import { createUseStyles } from \"react-jss\";\nexport const useStyles = createUseStyles({ card: { color: theme.foreground, padding: \"1rem\" } });\nexport const App = () => <div className={useStyles().card} />;";
-const malformedSource = "import { createUseStyles } from \"react-jss\";\nexport const useStyles = createUseStyles({ card: { color: \"red\", padding: \"1rem\" } });\nexport const App = () => <div className={useStyles().card} />;\nconst unfinished = { /* unfinished jss */";
+	const happySource = "import { createUseStyles } from \"react-jss\";\nexport const useStyles = createUseStyles({ card: { color: \"red\" } });";
+const edgeSource = "import jss from \"jss\";\nexport const sheet = jss.createStyleSheet({ card: { color: \"red\" } });";
+const malformedSource = "import { createUseStyles } from \"react-jss\";\nexport const useStyles = createUseStyles({ card: { color: \"red\" } });\nconst unfinished = { /* unfinished jss */";
 const sourceSemantic = undefined;
-const themedSource = "import { createUseStyles } from \"react-jss\";\nexport const useStyles = createUseStyles({ card: { color: theme.colors.brand, padding: \"1rem\" } });\nexport const App = () => <div className={useStyles().card} />;";
-const tokenSource = "import { createUseStyles } from \"react-jss\";\nexport const useStyles = createUseStyles({ card: { color: \"$colors.brand\", padding: \"1rem\" } });\nexport const App = () => <div className={useStyles().card} />;";
-const blueSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {} };
+const themedSource = "import { createUseStyles } from \"react-jss\";\nexport const useStyles = createUseStyles({ card: { color: \"#2563eb\" } });";
+const tokenSource = "import { createUseStyles } from \"react-jss\";\nexport const useStyles = createUseStyles({ card: { color: \"#2563eb\" } });";
+const blueSemantic = undefined;
+const amberSemantic = undefined;
+const blueTargetSemantic = undefined;
+const amberTargetSemantic = undefined;
+const blueProject = createAdapterRouteProject(CodemodAdapterId.Jss, CodemodAdapterId.ReactNative, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.Jss, CodemodAdapterId.ReactNative, "#f97316");
 
 test("jss -> react-native: migrates concrete jss syntax to react-native", () => {
-	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
+	const result = route.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -37,15 +42,31 @@ test("jss -> react-native: migrates concrete jss syntax to react-native", () => 
 		expect(result.residuals.length).toBeGreaterThan(0);
 		expect(result.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(result, "jss -> react-native happy");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "react-native";
 
-		export const useStyles = StyleSheet.create({ "card": { "padding": 16, "color": "red" } });
-		export const App = () => <div className={useStyles().card} />;",
+		export const useStyles = StyleSheet.create({ "card": { "color": "red" } });",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		        "react-native-numeric-normalization",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "named-map",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "target-native",
@@ -62,45 +83,67 @@ test("jss -> react-native: migrates concrete jss syntax to react-native", () => 
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
-test("jss -> react-native: carries concrete jss dynamics or edge syntax explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
+test("jss -> react-native: carries a documented secondary jss API explicitly", () => {
+	const result = route.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(result, "jss -> react-native secondary");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUseStyles } from "react-jss";
-		export const useStyles = // pandwind:migrate-skip (route: jss -> react-native | capability-blocked: dynamic-values: dynamic: theme.foreground | available: named-map, target-native, residual)
-		createUseStyles({ card: { color: theme.foreground, padding: "1rem" } });
-		export const App = () => <div className={useStyles().card} />;",
-		  "converted": 0,
+		  "code": "import { StyleSheet } from "react-native";
+
+		export const sheet = StyleSheet.create({ "card": { "color": "red" } });",
+		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		        "react-native-numeric-normalization",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "named-map",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
+		      "outcome": "target-native",
 		      "representation": "named-map",
 		    },
 		  ],
-		  "residuals": [
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
 		    {
-		      "hint": "dynamic-values: dynamic: theme.foreground",
-		      "kind": "capability",
-		      "preserved": undefined,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
-		  "skipped": 1,
-		  "validations": [],
 		}
-	`);
+	`)
 });
 
-test("jss -> react-native: lowers concrete theme and project context variants", () => {
-	const blue = route.run({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const amber = route.run({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
+test("jss -> react-native: loads concrete theme and project context variants", async () => {
+	const blue = await route.runAsync({ source: themedSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
+	const amber = await route.runAsync({ source: themedSource, file: "styles.ts", semantic: amberSemantic, project: amberProject });
 	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
 	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Jss, CodemodAdapterId.ReactNative);
+	expectConfiguredTargetTokenEvidence(blue, CodemodAdapterId.ReactNative, "jss -> react-native blue config");
+	expectRouteScenarioEvidence(blue, "jss -> react-native blue config");
+	expectRouteScenarioEvidence(amber, "jss -> react-native amber config");
+	expectConfiguredTargetTokenAbsence(amber, CodemodAdapterId.ReactNative, "jss -> react-native amber literal config");
+
 	expectExplicitResidualEvidence(blue);
 	expectExplicitResidualEvidence(amber);
 	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
@@ -109,9 +152,24 @@ test("jss -> react-native: lowers concrete theme and project context variants", 
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
 
-		export const useStyles = StyleSheet.create({ "card": { "padding": 16, "color": "#f97316" } });
-		export const App = () => <div className={useStyles().card} />;",
+		export const useStyles = StyleSheet.create({ "card": { "color": "#2563eb" } });",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		          "react-native-numeric-normalization",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "named-map",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "target-native",
@@ -132,9 +190,24 @@ test("jss -> react-native: lowers concrete theme and project context variants", 
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
 
-		export const useStyles = StyleSheet.create({ "card": { "padding": 16, "color": "#2563eb" } });
-		export const App = () => <div className={useStyles().card} />;",
+		export const useStyles = StyleSheet.create({ "card": { "color": "#2563eb" } });",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		          "react-native-numeric-normalization",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "named-map",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "target-native",
@@ -152,21 +225,39 @@ test("jss -> react-native: lowers concrete theme and project context variants", 
 		    ],
 		  },
 		}
-	`);
+	`)
 });
 
-test("jss -> react-native: resolves concrete token references with project context", () => {
-	const result = route.run({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
+test("jss -> react-native: resolves concrete token values with project context", async () => {
+	const result = await route.runAsync({ source: tokenSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Jss, CodemodAdapterId.ReactNative);
+	expectConfiguredTargetTokenEvidence(result, CodemodAdapterId.ReactNative, "jss -> react-native token config");
+	expectRouteScenarioEvidence(result, "jss -> react-native token config");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "react-native";
 
-		export const useStyles = StyleSheet.create({ "card": { "padding": 16, "color": "$colors.brand" } });
-		export const App = () => <div className={useStyles().card} />;",
+		export const useStyles = StyleSheet.create({ "card": { "color": "#2563eb" } });",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		        "react-native-numeric-normalization",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "named-map",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "target-native",
@@ -183,22 +274,38 @@ test("jss -> react-native: resolves concrete token references with project conte
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
 test("jss -> react-native: preserves malformed concrete jss input", () => {
-	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
+	const result = route.run({ source: malformedSource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished jss */");
+	expectRouteScenarioEvidence(result, "jss -> react-native malformed");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "react-native";
 
-		export const useStyles = StyleSheet.create({ "card": { "padding": 16, "color": "red" } });
-		export const App = () => <div className={useStyles().card} />;
+		export const useStyles = StyleSheet.create({ "card": { "color": "red" } });
 		const unfinished = { /* unfinished jss */",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		        "react-native-numeric-normalization",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "named-map",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "target-native",
@@ -215,6 +322,6 @@ test("jss -> react-native: preserves malformed concrete jss input", () => {
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 

@@ -3,30 +3,35 @@ import { expect, test } from "vitest";
 import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectActionableRoundTrip,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const forward = createAdapterRouteSpec(CodemodAdapterId.StyledComponents, CodemodAdapterId.ChakraUi);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.ChakraUi, CodemodAdapterId.StyledComponents);
-	const happySource = "import styled from \"styled-components\";\nexport const Card = styled.div({ color: \"red\", padding: \"1rem\" });\nexport const App = () => <Card />;";
-const edgeSource = "import styled from \"styled-components\";\nexport const Card = styled.div({ color: theme.foreground, padding: \"1rem\" });\nexport const App = () => <Card />;";
-const malformedSource = "import styled from \"styled-components\";\nexport const Card = styled.div({ color: \"red\", padding: \"1rem\" });\nexport const App = () => <Card />;\nconst unfinished = { /* unfinished styled-components */";
+	const happySource = "import styled from \"styled-components\";\nexport const Card = styled.div({ color: \"red\", padding: \"1rem\" });";
+const edgeSource = "import styled from \"styled-components\";\nexport const Card = styled.div`color: red; padding: 1rem;`;";
+const malformedSource = "import styled from \"styled-components\";\nexport const Card = styled.div({ color: \"red\", padding: \"1rem\" });\nconst unfinished = { /* unfinished styled-components */";
 const sourceSemantic = { source: { framework: BuiltinHostFramework.React } };
-const themedSource = "import styled from \"styled-components\";\nexport const Card = styled.div({ color: theme.colors.brand, padding: \"1rem\" });\nexport const App = () => <Card />;";
-const tokenSource = "import styled from \"styled-components\";\nexport const Card = styled.div({ color: \"$colors.brand\", padding: \"1rem\" });\nexport const App = () => <Card />;";
-const blueSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/theme.ts":"export const chakraTheme = { theme: { tokens: { colors: { brand: { 500: { value: \"#2563eb\" } } } } } };"} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/theme.ts":"export const chakraTheme = { theme: { tokens: { colors: { brand: { 500: { value: \"#f97316\" } } } } } };"} };
+const themedSource = "import styled from \"styled-components\";\nexport const Card = styled.div({ color: \"#2563eb\", padding: \"1rem\" });";
+const tokenSource = "import styled from \"styled-components\";\nexport const Card = styled.div({ color: \"#2563eb\", padding: \"1rem\" });";
+const blueSemantic = { source: { framework: BuiltinHostFramework.React } };
+const amberSemantic = { source: { framework: BuiltinHostFramework.React } };
+const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
+const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
+const blueProject = createAdapterRouteProject(CodemodAdapterId.StyledComponents, CodemodAdapterId.ChakraUi, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.StyledComponents, CodemodAdapterId.ChakraUi, "#f97316");
 	const targetSemantic = { source: { framework: BuiltinHostFramework.React } };
 
 test("styled-components -> chakra-ui -> styled-components: preserves an actionable concrete round trip", () => {
 	const first = forward.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -36,6 +41,7 @@ test("styled-components -> chakra-ui -> styled-components: preserves an actionab
 		expect(first.residuals.length).toBeGreaterThan(0);
 		expect(first.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(first, "styled-components -> chakra-ui round-trip happy forward");
 	expectExplicitResidualEvidence(first);
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(second);
@@ -45,9 +51,21 @@ test("styled-components -> chakra-ui -> styled-components: preserves an actionab
 		    "changed": true,
 		    "code": "import { chakra } from "@chakra-ui/react";
 
-		export const Card = (props) => <chakra.div {...props} css={{ padding: "1rem", color: "red" }} />;
-		export const App = () => <Card />;",
+		export const Card = (props) => <chakra.div {...props} css={{ padding: "1rem", color: "red" }} />;",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "static",
@@ -69,9 +87,21 @@ test("styled-components -> chakra-ui -> styled-components: preserves an actionab
 		    "code": "import { chakra } from "@chakra-ui/react";
 		import styled from "styled-components";
 
-		export const Card = (props) => styled.div({ padding: "1rem", color: "red" });
-		export const App = () => <Card />;",
+		export const Card = (props) => styled.div({ padding: "1rem", color: "red" });",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "static",
@@ -89,13 +119,14 @@ test("styled-components -> chakra-ui -> styled-components: preserves an actionab
 		    ],
 		  },
 		}
-	`);
+	`)
 });
 
-test("styled-components -> chakra-ui -> styled-components: retains edge semantics without silent loss", () => {
+test("styled-components -> chakra-ui -> styled-components: retains the documented secondary API without silent loss", () => {
 	const first = forward.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(first, "styled-components -> chakra-ui round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
@@ -103,50 +134,92 @@ test("styled-components -> chakra-ui -> styled-components: retains edge semantic
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
-		export const Card = // pandwind:migrate-skip (route: styled-components -> chakra-ui | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
-		styled.div({ color: theme.foreground, padding: "1rem" });
-		export const App = () => <div className={Card} />;",
-		    "converted": 0,
+		    "code": "import { chakra } from "@chakra-ui/react";
+
+		export const Card = (props) => <chakra.div {...props} css={{ padding: "1rem", color: "red" }} />;",
+		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
-		        "representation": "custom-property",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "bind --pandwind-dynamic-5qa8dh at runtime for target chakra-ui",
-		        "kind": "dynamic-custom-property",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
-		    "validations": [],
-		  },
-		  "reverse": {
-		    "changed": false,
-		    "code": "import styled from "styled-components";
-		export const Card = // pandwind:migrate-skip (route: styled-components -> chakra-ui | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
-		styled.div({ color: theme.foreground, padding: "1rem" });
-		export const App = () => <div className={Card} />;",
-		    "converted": 0,
-		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [],
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "import { chakra } from "@chakra-ui/react";
+		import styled from "styled-components";
+
+		export const Card = (props) => styled.div({ padding: "1rem", color: "red" });",
+		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		}
-	`);
+	`)
 });
 
-test("styled-components -> chakra-ui -> styled-components: preserves concrete theme and project context variants", () => {
-	const firstBlue = forward.run({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const secondBlue = reverse.run({ source: firstBlue.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
-	const firstAmber = forward.run({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
-	const secondAmber = reverse.run({ source: firstAmber.code, file: "Card.tsx", semantic: amberTargetSemantic, project: amberProject });
+test("styled-components -> chakra-ui -> styled-components: preserves concrete theme and project context variants", async () => {
+	const firstBlue = await forward.runAsync({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
+	const firstAmber = await forward.runAsync({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "App.tsx", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.StyledComponents, CodemodAdapterId.ChakraUi);
+	expectConfiguredTargetTokenEvidence(firstBlue, CodemodAdapterId.ChakraUi, "styled-components -> chakra-ui round-trip token config");
+	expectRouteScenarioEvidence(firstBlue, "styled-components -> chakra-ui round-trip blue forward");
+	expectRouteScenarioEvidence(firstAmber, "styled-components -> chakra-ui round-trip amber forward");
+	expectConfiguredTargetTokenAbsence(firstAmber, CodemodAdapterId.ChakraUi, "styled-components -> chakra-ui round-trip amber literal config");
+
 	expectActionableRoundTrip(firstBlue, secondBlue);
 	expectActionableRoundTrip(firstAmber, secondAmber);
 	expectExplicitResidualEvidence(firstBlue);
@@ -161,85 +234,167 @@ test("styled-components -> chakra-ui -> styled-components: preserves concrete th
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import styled from "styled-components";
-		export const Card = // pandwind:migrate-skip (route: styled-components -> chakra-ui | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
-		styled.div({ color: theme.colors.brand, padding: "1rem" });
-		export const App = () => <div className={Card} />;",
-		      "converted": 0,
+		      "code": "import { chakra } from "@chakra-ui/react";
+
+		export const Card = (props) => <chakra.div {...props} css={{ padding: "1rem", color: "#2563eb" }} />;",
+		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
-		          "representation": "custom-property",
+		          "outcome": "static",
+		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "bind --pandwind-dynamic-bbwvz3 at runtime for target chakra-ui",
-		          "kind": "dynamic-custom-property",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
-		      "validations": [],
-		    },
-		    "reverse": {
-		      "changed": false,
-		      "code": "import styled from "styled-components";
-		export const Card = // pandwind:migrate-skip (route: styled-components -> chakra-ui | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
-		styled.div({ color: theme.colors.brand, padding: "1rem" });
-		export const App = () => <div className={Card} />;",
-		      "converted": 0,
-		      "outcomes": [],
 		      "residuals": [],
 		      "skipped": 0,
-		      "validations": [],
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
+		    },
+		    "reverse": {
+		      "changed": true,
+		      "code": "import { chakra } from "@chakra-ui/react";
+		import styled from "styled-components";
+
+		export const Card = (props) => styled.div({ padding: "1rem", color: "#2563eb" });",
+		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
+		      "outcomes": [
+		        {
+		          "outcome": "static",
+		          "representation": "static",
+		        },
+		      ],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
 		    },
 		  },
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import styled from "styled-components";
-		export const Card = // pandwind:migrate-skip (route: styled-components -> chakra-ui | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
-		styled.div({ color: theme.colors.brand, padding: "1rem" });
-		export const App = () => <div className={Card} />;",
+		      "code": "import { chakra } from "@chakra-ui/react";
+
+		export const Card = (props) => <chakra.div {...props} css={{ padding: "1rem", color: "brand.500" }} />;",
+		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
+		      "outcomes": [
+		        {
+		          "outcome": "static",
+		          "representation": "static",
+		        },
+		      ],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
+		    },
+		    "reverse": {
+		      "changed": true,
+		      "code": "import { chakra } from "@chakra-ui/react";
+
+		export const Card = (props) => // pandwind:migrate-skip (route: chakra-ui -> styled-components | lowering-residual: validation)
+		<chakra.div {...props} css={{ padding: "1rem", color: "brand.500" }} />;",
 		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
-		          "representation": "custom-property",
+		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "bind --pandwind-dynamic-bbwvz3 at runtime for target chakra-ui",
-		          "kind": "dynamic-custom-property",
+		          "hint": "canonical CSS differs",
+		          "kind": "validation",
 		          "preserved": undefined,
 		        },
 		      ],
 		      "skipped": 1,
-		      "validations": [],
-		    },
-		    "reverse": {
-		      "changed": false,
-		      "code": "import styled from "styled-components";
-		export const Card = // pandwind:migrate-skip (route: styled-components -> chakra-ui | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
-		styled.div({ color: theme.colors.brand, padding: "1rem" });
-		export const App = () => <div className={Card} />;",
-		      "converted": 0,
-		      "outcomes": [],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [],
+		      "validations": [
+		        {
+		          "differences": [
+		            "canonical CSS differs",
+		          ],
+		          "lossiness": "unsupported",
+		          "valid": false,
+		        },
+		      ],
 		    },
 		  },
 		}
-	`);
+	`)
 });
 
-test("styled-components -> chakra-ui -> styled-components: resolves token references across both concrete legs", () => {
-	const first = forward.run({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
+test("styled-components -> chakra-ui -> styled-components: resolves token values across both concrete legs", async () => {
+	const first = await forward.runAsync({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.StyledComponents, CodemodAdapterId.ChakraUi);
+	expectRouteScenarioEvidence(first, "styled-components -> chakra-ui round-trip token forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
@@ -249,9 +404,21 @@ test("styled-components -> chakra-ui -> styled-components: resolves token refere
 		    "changed": true,
 		    "code": "import { chakra } from "@chakra-ui/react";
 
-		export const Card = (props) => <chakra.div {...props} css={{ padding: "1rem", color: "$colors.brand" }} />;
-		export const App = () => <Card />;",
+		export const Card = (props) => <chakra.div {...props} css={{ padding: "1rem", color: "brand.500" }} />;",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "static",
@@ -271,28 +438,48 @@ test("styled-components -> chakra-ui -> styled-components: resolves token refere
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { chakra } from "@chakra-ui/react";
-		import styled from "styled-components";
 
-		export const Card = (props) => styled.div({ padding: "1rem", color: "$colors.brand" });
-		export const App = () => <Card />;",
-		    "converted": 1,
+		export const Card = (props) => // pandwind:migrate-skip (route: chakra-ui -> styled-components | lowering-residual: validation)
+		<chakra.div {...props} css={{ padding: "1rem", color: "brand.500" }} />;",
+		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
+		    "residuals": [
+		      {
+		        "hint": "canonical CSS differs",
+		        "kind": "validation",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
 		    "validations": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "differences": [
+		          "canonical CSS differs",
+		        ],
+		        "lossiness": "unsupported",
+		        "valid": false,
 		      },
 		    ],
 		  },
 		}
-	`);
+	`)
 });
 

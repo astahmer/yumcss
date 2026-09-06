@@ -3,26 +3,31 @@ import { expect, test } from "vitest";
 import { CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.Sass, CodemodAdapterId.Goober);
-	const happySource = ".card { color: red; padding: 1rem; &__title { font-weight: 600; } }\n$title-color: blue;";
-const edgeSource = ".card { color: theme.foreground; padding: 1rem; &__title { font-weight: 600; } }\n$title-color: blue;";
-const malformedSource = ".card { color: red; padding: 1rem; &__title { font-weight: 600; } }\n$title-color: blue;\nconst unfinished = { /* unfinished sass */";
+	const happySource = ".card { color: red; padding: 1rem; }";
+const edgeSource = "$brand: red;\n.card { color: $brand; padding: 1rem; &__title { font-weight: 600; } }";
+const malformedSource = ".card { color: red; padding: 1rem; }\nconst unfinished = { /* unfinished sass */";
 const sourceSemantic = undefined;
-const themedSource = ".card { color: ${theme.colors.brand}; padding: 1rem; &__title { font-weight: 600; } }\n$title-color: blue;";
-const tokenSource = ".card { color: var(--colors-brand); padding: 1rem; &__title { font-weight: 600; } }\n$title-color: blue;";
-const blueSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {} };
+const themedSource = ".card { color: #2563eb; padding: 1rem; }";
+const tokenSource = ".card { color: #2563eb; padding: 1rem; }";
+const blueSemantic = undefined;
+const amberSemantic = undefined;
+const blueTargetSemantic = undefined;
+const amberTargetSemantic = undefined;
+const blueProject = createAdapterRouteProject(CodemodAdapterId.Sass, CodemodAdapterId.Goober, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.Sass, CodemodAdapterId.Goober, "#f97316");
 
 test("sass -> goober: migrates concrete sass syntax to goober", () => {
-	const result = route.run({ source: happySource, file: "Card.scss", semantic: sourceSemantic });
+	const result = route.run({ source: happySource, file: "card.scss", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -37,49 +42,75 @@ test("sass -> goober: migrates concrete sass syntax to goober", () => {
 		expect(result.residuals.length).toBeGreaterThan(0);
 		expect(result.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(result, "sass -> goober happy");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
-		  "changed": false,
-		  "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting)
-		.card { color: red; padding: 1rem; &__title { font-weight: 600; } }
-		$title-color: blue;",
-		  "converted": 0,
+		  "changed": true,
+		  "code": "import { css } from "goober";
+		export const styles = { "card": css({ "padding": "1rem", "color": "red" }) };
+		export default styles;",
+		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
-		      "representation": "residual",
+		      "outcome": "static",
+		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
 		    {
-		      "hint": "stylesheet statement is preserved outside the style program",
-		      "kind": "parse",
-		      "preserved": undefined,
-		    },
-		    {
-		      "hint": "nested stylesheet rules require selector-aware lowering",
-		      "kind": "nesting",
-		      "preserved": undefined,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
-		  "skipped": 2,
-		  "validations": [],
 		}
-	`);
+	`)
 });
 
-test("sass -> goober: carries concrete sass dynamics or edge syntax explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "Card.scss", semantic: sourceSemantic });
+test("sass -> goober: carries a documented secondary sass API explicitly", () => {
+	const result = route.run({ source: edgeSource, file: "card.scss", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(result, "sass -> goober secondary");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": false,
-		  "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting)
-		.card { color: theme.foreground; padding: 1rem; &__title { font-weight: 600; } }
-		$title-color: blue;",
+		  "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting, capability)
+		$brand: red;
+		.card { color: $brand; padding: 1rem; &__title { font-weight: 600; } }",
 		  "converted": 0,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "residual",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
@@ -97,127 +128,186 @@ test("sass -> goober: carries concrete sass dynamics or edge syntax explicitly",
 		      "kind": "nesting",
 		      "preserved": undefined,
 		    },
+		    {
+		      "hint": "rule-level: 1 semantic rules; selectors: selector: .card; nesting: style nested rules",
+		      "kind": "capability",
+		      "preserved": undefined,
+		    },
 		  ],
-		  "skipped": 2,
+		  "skipped": 3,
 		  "validations": [],
 		}
-	`);
+	`)
 });
 
-test("sass -> goober: lowers concrete theme and project context variants", () => {
-	const blue = route.run({ source: themedSource, file: "Card.scss", semantic: blueSemantic, project: blueProject });
-	const amber = route.run({ source: themedSource, file: "Card.scss", semantic: amberSemantic, project: amberProject });
+test("sass -> goober: loads concrete theme and project context variants", async () => {
+	const blue = await route.runAsync({ source: themedSource, file: "card.scss", semantic: blueSemantic, project: blueProject });
+	const amber = await route.runAsync({ source: themedSource, file: "card.scss", semantic: amberSemantic, project: amberProject });
 	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
 	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Sass, CodemodAdapterId.Goober);
+	expectConfiguredTargetTokenEvidence(blue, CodemodAdapterId.Goober, "sass -> goober blue config");
+	expectRouteScenarioEvidence(blue, "sass -> goober blue config");
+	expectRouteScenarioEvidence(amber, "sass -> goober amber config");
+	expectConfiguredTargetTokenAbsence(amber, CodemodAdapterId.Goober, "sass -> goober amber literal config");
+
 	expectExplicitResidualEvidence(blue);
 	expectExplicitResidualEvidence(amber);
 	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
 		{
 		  "amber": {
-		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting)
-		.card { color: \${theme.colors.brand}; padding: 1rem; &__title { font-weight: 600; } }
-		$title-color: blue;",
-		    "converted": 0,
+		    "changed": true,
+		    "code": "import { css } from "goober";
+		export const styles = { "card": css({ "padding": "1rem", "color": "#2563eb" }) };
+		export default styles;",
+		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
-		        "representation": "residual",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "nested stylesheet rules require selector-aware lowering",
-		        "kind": "nesting",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 2,
-		    "validations": [],
 		  },
 		  "blue": {
-		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting)
-		.card { color: \${theme.colors.brand}; padding: 1rem; &__title { font-weight: 600; } }
-		$title-color: blue;",
-		    "converted": 0,
+		    "changed": true,
+		    "code": "import { css } from "goober";
+		export const styles = { "card": css({ "padding": "1rem", "color": "#2563eb" }) };
+		export default styles;",
+		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
-		        "representation": "residual",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "nested stylesheet rules require selector-aware lowering",
-		        "kind": "nesting",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 2,
-		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 
-test("sass -> goober: resolves concrete token references with project context", () => {
-	const result = route.run({ source: tokenSource, file: "Card.scss", semantic: blueSemantic, project: blueProject });
+test("sass -> goober: resolves concrete token values with project context", async () => {
+	const result = await route.runAsync({ source: tokenSource, file: "card.scss", semantic: blueSemantic, project: blueProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Sass, CodemodAdapterId.Goober);
+	expectConfiguredTargetTokenEvidence(result, CodemodAdapterId.Goober, "sass -> goober token config");
+	expectRouteScenarioEvidence(result, "sass -> goober token config");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
-		  "changed": false,
-		  "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting)
-		.card { color: var(--colors-brand); padding: 1rem; &__title { font-weight: 600; } }
-		$title-color: blue;",
-		  "converted": 0,
+		  "changed": true,
+		  "code": "import { css } from "goober";
+		export const styles = { "card": css({ "padding": "1rem", "color": "#2563eb" }) };
+		export default styles;",
+		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
-		      "representation": "residual",
+		      "outcome": "static",
+		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
 		    {
-		      "hint": "stylesheet statement is preserved outside the style program",
-		      "kind": "parse",
-		      "preserved": undefined,
-		    },
-		    {
-		      "hint": "nested stylesheet rules require selector-aware lowering",
-		      "kind": "nesting",
-		      "preserved": undefined,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
-		  "skipped": 2,
-		  "validations": [],
 		}
-	`);
+	`)
 });
 
 test("sass -> goober: preserves malformed concrete sass input", () => {
-	const result = route.run({ source: malformedSource, file: "Card.scss", semantic: sourceSemantic });
+	const result = route.run({ source: malformedSource, file: "card.scss", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished sass */");
+	expectRouteScenarioEvidence(result, "sass -> goober malformed");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": false,
-		  "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting)
-		.card { color: red; padding: 1rem; &__title { font-weight: 600; } }
-		$title-color: blue;
+		  "code": "// pandwind:migrate-skip (lowering-residual: parse)
+		.card { color: red; padding: 1rem; }
 		const unfinished = { /* unfinished sass */",
 		  "converted": 0,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
@@ -230,20 +320,10 @@ test("sass -> goober: preserves malformed concrete sass input", () => {
 		      "kind": "parse",
 		      "preserved": undefined,
 		    },
-		    {
-		      "hint": "stylesheet statement is preserved outside the style program",
-		      "kind": "parse",
-		      "preserved": undefined,
-		    },
-		    {
-		      "hint": "nested stylesheet rules require selector-aware lowering",
-		      "kind": "nesting",
-		      "preserved": undefined,
-		    },
 		  ],
-		  "skipped": 3,
+		  "skipped": 1,
 		  "validations": [],
 		}
-	`);
+	`)
 });
 

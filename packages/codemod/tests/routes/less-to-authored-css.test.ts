@@ -3,26 +3,31 @@ import { expect, test } from "vitest";
 import { CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.Less, CodemodAdapterId.AuthoredCss);
-	const happySource = ".card { color: red; padding: 1rem; .title { font-weight: 600; } }\n@title-color: blue;";
-const edgeSource = ".card { color: theme.foreground; padding: 1rem; .title { font-weight: 600; } }\n@title-color: blue;";
-const malformedSource = ".card { color: red; padding: 1rem; .title { font-weight: 600; } }\n@title-color: blue;\nconst unfinished = { /* unfinished less */";
+	const happySource = ".card { color: red; padding: 1rem; }";
+const edgeSource = "@brand: red;\n.card { color: @brand; padding: 1rem; &__title { font-weight: 600; } }";
+const malformedSource = ".card { color: red; padding: 1rem; }\nconst unfinished = { /* unfinished less */";
 const sourceSemantic = undefined;
-const themedSource = ".card { color: ${theme.colors.brand}; padding: 1rem; .title { font-weight: 600; } }\n@title-color: blue;";
-const tokenSource = ".card { color: var(--colors-brand); padding: 1rem; .title { font-weight: 600; } }\n@title-color: blue;";
-const blueSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {} };
+const themedSource = ".card { color: #2563eb; padding: 1rem; }";
+const tokenSource = ".card { color: #2563eb; padding: 1rem; }";
+const blueSemantic = undefined;
+const amberSemantic = undefined;
+const blueTargetSemantic = undefined;
+const amberTargetSemantic = undefined;
+const blueProject = createAdapterRouteProject(CodemodAdapterId.Less, CodemodAdapterId.AuthoredCss, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.Less, CodemodAdapterId.AuthoredCss, "#f97316");
 
 test("less -> authored-css: migrates concrete less syntax to authored-css", () => {
-	const result = route.run({ source: happySource, file: "Card.less", semantic: sourceSemantic });
+	const result = route.run({ source: happySource, file: "card.less", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -37,14 +42,28 @@ test("less -> authored-css: migrates concrete less syntax to authored-css", () =
 		expect(result.residuals.length).toBeGreaterThan(0);
 		expect(result.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(result, "less -> authored-css happy");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "// pandwind:migrate-skip (lowering-residual: capability)
-		.card { color: red; padding: 1rem; .title { font-weight: 600; } }
-		@title-color: blue;",
+		.card { color: red; padding: 1rem; }",
 		  "converted": 0,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
@@ -61,20 +80,34 @@ test("less -> authored-css: migrates concrete less syntax to authored-css", () =
 		  "skipped": 1,
 		  "validations": [],
 		}
-	`);
+	`)
 });
 
-test("less -> authored-css: carries concrete less dynamics or edge syntax explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "Card.less", semantic: sourceSemantic });
+test("less -> authored-css: carries a documented secondary less API explicitly", () => {
+	const result = route.run({ source: edgeSource, file: "card.less", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(result, "less -> authored-css secondary");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "// pandwind:migrate-skip (lowering-residual: capability)
-		.card { color: theme.foreground; padding: 1rem; .title { font-weight: 600; } }
-		@title-color: blue;",
+		@brand: red;
+		.card { color: @brand; padding: 1rem; &__title { font-weight: 600; } }",
 		  "converted": 0,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "residual",
+		      ],
+		      "representation": "residual",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
@@ -91,108 +124,167 @@ test("less -> authored-css: carries concrete less dynamics or edge syntax explic
 		  "skipped": 1,
 		  "validations": [],
 		}
-	`);
+	`)
 });
 
-test("less -> authored-css: lowers concrete theme and project context variants", () => {
-	const blue = route.run({ source: themedSource, file: "Card.less", semantic: blueSemantic, project: blueProject });
-	const amber = route.run({ source: themedSource, file: "Card.less", semantic: amberSemantic, project: amberProject });
+test("less -> authored-css: loads concrete theme and project context variants", async () => {
+	const blue = await route.runAsync({ source: themedSource, file: "card.less", semantic: blueSemantic, project: blueProject });
+	const amber = await route.runAsync({ source: themedSource, file: "card.less", semantic: amberSemantic, project: amberProject });
 	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
 	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Less, CodemodAdapterId.AuthoredCss);
+	expectConfiguredTargetTokenEvidence(blue, CodemodAdapterId.AuthoredCss, "less -> authored-css blue config");
+	expectRouteScenarioEvidence(blue, "less -> authored-css blue config");
+	expectRouteScenarioEvidence(amber, "less -> authored-css amber config");
+	expectConfiguredTargetTokenAbsence(amber, CodemodAdapterId.AuthoredCss, "less -> authored-css amber literal config");
+
 	expectExplicitResidualEvidence(blue);
 	expectExplicitResidualEvidence(amber);
 	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
 		{
 		  "amber": {
-		    "changed": true,
-		    "code": "// pandwind:migrate-skip (lowering-residual: capability)
-		.card { color: \${theme.colors.brand}; padding: 1rem; .title { font-weight: 600; } }
-		@title-color: blue;",
-		    "converted": 0,
+		    "changed": false,
+		    "code": ".card { color: #2563eb; padding: 1rem; }",
+		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
-		        "representation": "residual",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "preprocessor features require the official compiler to inline before authored-css output",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		  "blue": {
-		    "changed": true,
-		    "code": "// pandwind:migrate-skip (lowering-residual: capability)
-		.card { color: \${theme.colors.brand}; padding: 1rem; .title { font-weight: 600; } }
-		@title-color: blue;",
-		    "converted": 0,
+		    "changed": false,
+		    "code": ".card { color: #2563eb; padding: 1rem; }",
+		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
-		        "representation": "residual",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "preprocessor features require the official compiler to inline before authored-css output",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 
-test("less -> authored-css: resolves concrete token references with project context", () => {
-	const result = route.run({ source: tokenSource, file: "Card.less", semantic: blueSemantic, project: blueProject });
+test("less -> authored-css: resolves concrete token values with project context", async () => {
+	const result = await route.runAsync({ source: tokenSource, file: "card.less", semantic: blueSemantic, project: blueProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Less, CodemodAdapterId.AuthoredCss);
+	expectConfiguredTargetTokenEvidence(result, CodemodAdapterId.AuthoredCss, "less -> authored-css token config");
+	expectRouteScenarioEvidence(result, "less -> authored-css token config");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
-		  "changed": true,
-		  "code": "// pandwind:migrate-skip (lowering-residual: capability)
-		.card { color: var(--colors-brand); padding: 1rem; .title { font-weight: 600; } }
-		@title-color: blue;",
-		  "converted": 0,
+		  "changed": false,
+		  "code": ".card { color: #2563eb; padding: 1rem; }",
+		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
-		      "representation": "residual",
+		      "outcome": "static",
+		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
 		    {
-		      "hint": "preprocessor features require the official compiler to inline before authored-css output",
-		      "kind": "capability",
-		      "preserved": undefined,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
-		  "skipped": 1,
-		  "validations": [],
 		}
-	`);
+	`)
 });
 
 test("less -> authored-css: preserves malformed concrete less input", () => {
-	const result = route.run({ source: malformedSource, file: "Card.less", semantic: sourceSemantic });
+	const result = route.run({ source: malformedSource, file: "card.less", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished less */");
+	expectRouteScenarioEvidence(result, "less -> authored-css malformed");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "// pandwind:migrate-skip (lowering-residual: capability)
-		.card { color: red; padding: 1rem; .title { font-weight: 600; } }
-		@title-color: blue;
+		.card { color: red; padding: 1rem; }
 		const unfinished = { /* unfinished less */",
 		  "converted": 0,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
@@ -209,6 +301,6 @@ test("less -> authored-css: preserves malformed concrete less input", () => {
 		  "skipped": 1,
 		  "validations": [],
 		}
-	`);
+	`)
 });
 

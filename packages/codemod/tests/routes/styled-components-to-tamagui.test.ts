@@ -3,23 +3,28 @@ import { expect, test } from "vitest";
 import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.StyledComponents, CodemodAdapterId.Tamagui);
-	const happySource = "import styled from \"styled-components\";\nexport const Card = styled.div({ color: \"red\", padding: \"1rem\" });\nexport const App = () => <Card />;";
-const edgeSource = "import styled from \"styled-components\";\nexport const Card = styled.div({ color: theme.foreground, padding: \"1rem\" });\nexport const App = () => <Card />;";
-const malformedSource = "import styled from \"styled-components\";\nexport const Card = styled.div({ color: \"red\", padding: \"1rem\" });\nexport const App = () => <Card />;\nconst unfinished = { /* unfinished styled-components */";
+	const happySource = "import styled from \"styled-components\";\nexport const Card = styled.div({ color: \"red\", padding: \"1rem\" });";
+const edgeSource = "import styled from \"styled-components\";\nexport const Card = styled.div`color: red; padding: 1rem;`;";
+const malformedSource = "import styled from \"styled-components\";\nexport const Card = styled.div({ color: \"red\", padding: \"1rem\" });\nconst unfinished = { /* unfinished styled-components */";
 const sourceSemantic = { source: { framework: BuiltinHostFramework.React } };
-const themedSource = "import styled from \"styled-components\";\nexport const Card = styled.div({ color: theme.colors.brand, padding: \"1rem\" });\nexport const App = () => <Card />;";
-const tokenSource = "import styled from \"styled-components\";\nexport const Card = styled.div({ color: \"$colors.brand\", padding: \"1rem\" });\nexport const App = () => <Card />;";
-const blueSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {} };
+const themedSource = "import styled from \"styled-components\";\nexport const Card = styled.div({ color: \"#2563eb\", padding: \"1rem\" });";
+const tokenSource = "import styled from \"styled-components\";\nexport const Card = styled.div({ color: \"#2563eb\", padding: \"1rem\" });";
+const blueSemantic = { source: { framework: BuiltinHostFramework.React } };
+const amberSemantic = { source: { framework: BuiltinHostFramework.React } };
+const blueTargetSemantic = undefined;
+const amberTargetSemantic = undefined;
+const blueProject = createAdapterRouteProject(CodemodAdapterId.StyledComponents, CodemodAdapterId.Tamagui, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.StyledComponents, CodemodAdapterId.Tamagui, "#f97316");
 
 test("styled-components -> tamagui: migrates concrete styled-components syntax to tamagui", () => {
 	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
@@ -37,15 +42,29 @@ test("styled-components -> tamagui: migrates concrete styled-components syntax t
 		expect(result.residuals.length).toBeGreaterThan(0);
 		expect(result.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(result, "styled-components -> tamagui happy");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { View, styled } from "@tamagui/core";
-
-		export const Card = styled(View, { padding: "1rem", color: "red" });
-		export const App = () => <div className={Card} />;",
+		  "code": "
+		import { createCx } from "pandwind/cx";
+		import { View, styled } from "@tamagui/core";
+		const cx = createCx();
+		export const Card = (props) => <div {...props} className={cx(styled(View, { padding: "1rem", color: "red" }), props.className)} />;",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "static",
@@ -62,126 +81,173 @@ test("styled-components -> tamagui: migrates concrete styled-components syntax t
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
-test("styled-components -> tamagui: carries concrete styled-components dynamics or edge syntax explicitly", () => {
+test("styled-components -> tamagui: carries a documented secondary styled-components API explicitly", () => {
 	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(result, "styled-components -> tamagui secondary");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "styled-components";
-		export const Card = // pandwind:migrate-skip (route: styled-components -> tamagui | lowering-residual: dynamic | capability-blocked: dynamic-values: dynamic: theme.foreground; theme-context: 1 theme binding(s) | available: residual)
-		styled.div({ color: theme.foreground, padding: "1rem" });
-		export const App = () => <div className={Card.class} style={Card.style} />;",
-		  "converted": 0,
+		  "code": "
+		import { createCx } from "pandwind/cx";
+		import { View, styled } from "@tamagui/core";
+		const cx = createCx();
+		export const Card = (props) => <div {...props} className={cx(styled(View, { padding: "1rem", color: "red" }), props.className)} />;",
+		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
-		      "representation": "residual",
+		      "outcome": "static",
+		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
 		    {
-		      "hint": "dynamic-values: dynamic: theme.foreground; theme-context: 1 theme binding(s)",
-		      "kind": "capability",
-		      "preserved": undefined,
-		    },
-		    {
-		      "hint": "target lacks runtime dynamic values",
-		      "kind": "dynamic",
-		      "preserved": undefined,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
-		  "skipped": 1,
-		  "validations": [],
 		}
-	`);
+	`)
 });
 
-test("styled-components -> tamagui: lowers concrete theme and project context variants", () => {
-	const blue = route.run({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const amber = route.run({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
+test("styled-components -> tamagui: loads concrete theme and project context variants", async () => {
+	const blue = await route.runAsync({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
+	const amber = await route.runAsync({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
 	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
 	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.StyledComponents, CodemodAdapterId.Tamagui);
+	expectConfiguredTargetTokenEvidence(blue, CodemodAdapterId.Tamagui, "styled-components -> tamagui blue config");
+	expectRouteScenarioEvidence(blue, "styled-components -> tamagui blue config");
+	expectRouteScenarioEvidence(amber, "styled-components -> tamagui amber config");
+	expectConfiguredTargetTokenAbsence(amber, CodemodAdapterId.Tamagui, "styled-components -> tamagui amber literal config");
+
 	expectExplicitResidualEvidence(blue);
 	expectExplicitResidualEvidence(amber);
 	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
-		export const Card = // pandwind:migrate-skip (route: styled-components -> tamagui | lowering-residual: dynamic | capability-blocked: dynamic-values: dynamic: theme.colors.brand; theme-context: 1 theme binding(s) | available: residual)
-		styled.div({ color: theme.colors.brand, padding: "1rem" });
-		export const App = () => <div className={Card.class} style={Card.style} />;",
-		    "converted": 0,
+		    "code": "
+		import { createCx } from "pandwind/cx";
+		import { View, styled } from "@tamagui/core";
+		const cx = createCx();
+		export const Card = (props) => <div {...props} className={cx(styled(View, { padding: "1rem", color: "#2563eb" }), props.className)} />;",
+		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
-		        "representation": "residual",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "dynamic-values: dynamic: theme.colors.brand; theme-context: 1 theme binding(s)",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "target lacks runtime dynamic values",
-		        "kind": "dynamic",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
-		export const Card = // pandwind:migrate-skip (route: styled-components -> tamagui | lowering-residual: dynamic | capability-blocked: dynamic-values: dynamic: theme.colors.brand; theme-context: 1 theme binding(s) | available: residual)
-		styled.div({ color: theme.colors.brand, padding: "1rem" });
-		export const App = () => <div className={Card.class} style={Card.style} />;",
-		    "converted": 0,
+		    "code": "
+		import { createCx } from "pandwind/cx";
+		import { View, styled } from "@tamagui/core";
+		const cx = createCx();
+		export const Card = (props) => <div {...props} className={cx(styled(View, { padding: "1rem", color: "#2563eb" }), props.className)} />;",
+		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
-		        "representation": "residual",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "dynamic-values: dynamic: theme.colors.brand; theme-context: 1 theme binding(s)",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "target lacks runtime dynamic values",
-		        "kind": "dynamic",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 
-test("styled-components -> tamagui: resolves concrete token references with project context", () => {
-	const result = route.run({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
+test("styled-components -> tamagui: resolves concrete token values with project context", async () => {
+	const result = await route.runAsync({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.StyledComponents, CodemodAdapterId.Tamagui);
+	expectConfiguredTargetTokenEvidence(result, CodemodAdapterId.Tamagui, "styled-components -> tamagui token config");
+	expectRouteScenarioEvidence(result, "styled-components -> tamagui token config");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { View, styled } from "@tamagui/core";
-
-		export const Card = styled(View, { padding: "1rem", color: "$colors.brand" });
-		export const App = () => <div className={Card} />;",
+		  "code": "
+		import { createCx } from "pandwind/cx";
+		import { View, styled } from "@tamagui/core";
+		const cx = createCx();
+		export const Card = (props) => <div {...props} className={cx(styled(View, { padding: "1rem", color: "#2563eb" }), props.className)} />;",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "static",
@@ -198,22 +264,36 @@ test("styled-components -> tamagui: resolves concrete token references with proj
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
 test("styled-components -> tamagui: preserves malformed concrete styled-components input", () => {
 	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished styled-components */");
+	expectRouteScenarioEvidence(result, "styled-components -> tamagui malformed");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { View, styled } from "@tamagui/core";
-
-		export const Card = styled(View, { padding: "1rem", color: "red" });
-		export const App = () => <div className={Card} />;
+		  "code": "
+		import { createCx } from "pandwind/cx";
+		import { View, styled } from "@tamagui/core";
+		const cx = createCx();
+		export const Card = (props) => <div {...props} className={cx(styled(View, { padding: "1rem", color: "red" }), props.className)} />;
 		const unfinished = { /* unfinished styled-components */",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "static",
@@ -230,6 +310,6 @@ test("styled-components -> tamagui: preserves malformed concrete styled-componen
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 

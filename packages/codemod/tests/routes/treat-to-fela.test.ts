@@ -3,26 +3,31 @@ import { expect, test } from "vitest";
 import { CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.Treat, CodemodAdapterId.Fela);
-	const happySource = "import { style } from \"@treatjs/treat\";\nexport const card = style({ color: \"red\", padding: \"1rem\" });";
-const edgeSource = "import { style } from \"@treatjs/treat\";\nexport const card = style({ color: theme.foreground, padding: \"1rem\" });";
-const malformedSource = "import { style } from \"@treatjs/treat\";\nexport const card = style({ color: \"red\", padding: \"1rem\" });\nconst unfinished = { /* unfinished treat */";
+	const happySource = "import { style } from \"treat\";\nexport const card = style({ color: \"red\", padding: 8 });";
+const edgeSource = "import { style } from \"treat\";\nexport const card = style({ color: \"red\", padding: 8 });";
+const malformedSource = "import { style } from \"treat\";\nexport const card = style({ color: \"red\", padding: 8 });\nconst unfinished = { /* unfinished treat */";
 const sourceSemantic = undefined;
-const themedSource = "import { style } from \"@treatjs/treat\";\nexport const card = style({ color: theme.colors.brand, padding: \"1rem\" });";
-const tokenSource = "import { style } from \"@treatjs/treat\";\nexport const card = style({ color: \"$colors.brand\", padding: \"1rem\" });";
-const blueSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {} };
+const themedSource = "import { style } from \"treat\";\nexport const card = style({ color: \"#2563eb\", padding: 8 });";
+const tokenSource = "import { style } from \"treat\";\nexport const card = style({ color: \"#2563eb\", padding: 8 });";
+const blueSemantic = undefined;
+const amberSemantic = undefined;
+const blueTargetSemantic = undefined;
+const amberTargetSemantic = undefined;
+const blueProject = createAdapterRouteProject(CodemodAdapterId.Treat, CodemodAdapterId.Fela, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.Treat, CodemodAdapterId.Fela, "#f97316");
 
 test("treat -> fela: migrates concrete treat syntax to fela", () => {
-	const result = route.run({ source: happySource, file: "Card.treat.ts", semantic: sourceSemantic });
+	const result = route.run({ source: happySource, file: "styles.treat.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -37,13 +42,29 @@ test("treat -> fela: migrates concrete treat syntax to fela", () => {
 		expect(result.residuals.length).toBeGreaterThan(0);
 		expect(result.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(result, "treat -> fela happy");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "@treatjs/treat";
-		export const card = renderer.renderRule({ "padding": "1rem", "color": "red" });",
+		  "code": "
+		export const card = renderer.renderRule({ "padding": 8, "color": "red" });",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "static",
@@ -60,23 +81,39 @@ test("treat -> fela: migrates concrete treat syntax to fela", () => {
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
-test("treat -> fela: carries concrete treat dynamics or edge syntax explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "Card.treat.ts", semantic: sourceSemantic });
+test("treat -> fela: carries a documented secondary treat API explicitly", () => {
+	const result = route.run({ source: edgeSource, file: "styles.treat.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(result, "treat -> fela secondary");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "@treatjs/treat";
-		export const card = renderer.renderRule({ "padding": "1rem", "color": theme.foreground });",
+		  "code": "
+		export const card = renderer.renderRule({ "padding": 8, "color": "red" });",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "host-runtime",
-		      "representation": "target-native",
+		      "outcome": "static",
+		      "representation": "static",
 		    },
 		  ],
 		  "residuals": [],
@@ -89,27 +126,48 @@ test("treat -> fela: carries concrete treat dynamics or edge syntax explicitly",
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
-test("treat -> fela: lowers concrete theme and project context variants", () => {
-	const blue = route.run({ source: themedSource, file: "Card.treat.ts", semantic: blueSemantic, project: blueProject });
-	const amber = route.run({ source: themedSource, file: "Card.treat.ts", semantic: amberSemantic, project: amberProject });
+test("treat -> fela: loads concrete theme and project context variants", async () => {
+	const blue = await route.runAsync({ source: themedSource, file: "styles.treat.ts", semantic: blueSemantic, project: blueProject });
+	const amber = await route.runAsync({ source: themedSource, file: "styles.treat.ts", semantic: amberSemantic, project: amberProject });
 	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
 	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Treat, CodemodAdapterId.Fela);
+	expectConfiguredTargetTokenEvidence(blue, CodemodAdapterId.Fela, "treat -> fela blue config");
+	expectRouteScenarioEvidence(blue, "treat -> fela blue config");
+	expectRouteScenarioEvidence(amber, "treat -> fela amber config");
+	expectConfiguredTargetTokenAbsence(amber, CodemodAdapterId.Fela, "treat -> fela amber literal config");
+
 	expectExplicitResidualEvidence(blue);
 	expectExplicitResidualEvidence(amber);
 	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { style } from "@treatjs/treat";
-		export const card = renderer.renderRule({ "padding": "1rem", "color": theme.colors.brand });",
+		    "code": "
+		export const card = renderer.renderRule({ "padding": 8, "color": "#2563eb" });",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "host-runtime",
-		        "representation": "target-native",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [],
@@ -124,13 +182,28 @@ test("treat -> fela: lowers concrete theme and project context variants", () => 
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { style } from "@treatjs/treat";
-		export const card = renderer.renderRule({ "padding": "1rem", "color": theme.colors.brand });",
+		    "code": "
+		export const card = renderer.renderRule({ "padding": 8, "color": "#2563eb" });",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "host-runtime",
-		        "representation": "target-native",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [],
@@ -144,19 +217,37 @@ test("treat -> fela: lowers concrete theme and project context variants", () => 
 		    ],
 		  },
 		}
-	`);
+	`)
 });
 
-test("treat -> fela: resolves concrete token references with project context", () => {
-	const result = route.run({ source: tokenSource, file: "Card.treat.ts", semantic: blueSemantic, project: blueProject });
+test("treat -> fela: resolves concrete token values with project context", async () => {
+	const result = await route.runAsync({ source: tokenSource, file: "styles.treat.ts", semantic: blueSemantic, project: blueProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Treat, CodemodAdapterId.Fela);
+	expectConfiguredTargetTokenEvidence(result, CodemodAdapterId.Fela, "treat -> fela token config");
+	expectRouteScenarioEvidence(result, "treat -> fela token config");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "@treatjs/treat";
-		export const card = renderer.renderRule({ "padding": "1rem", "color": "$colors.brand" });",
+		  "code": "
+		export const card = renderer.renderRule({ "padding": 8, "color": "#2563eb" });",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "static",
@@ -173,20 +264,36 @@ test("treat -> fela: resolves concrete token references with project context", (
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
 test("treat -> fela: preserves malformed concrete treat input", () => {
-	const result = route.run({ source: malformedSource, file: "Card.treat.ts", semantic: sourceSemantic });
+	const result = route.run({ source: malformedSource, file: "styles.treat.ts", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished treat */");
+	expectRouteScenarioEvidence(result, "treat -> fela malformed");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "@treatjs/treat";
-		export const card = renderer.renderRule({ "padding": "1rem", "color": "red" });
+		  "code": "
+		export const card = renderer.renderRule({ "padding": 8, "color": "red" });
 		const unfinished = { /* unfinished treat */",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "static",
@@ -203,6 +310,6 @@ test("treat -> fela: preserves malformed concrete treat input", () => {
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 

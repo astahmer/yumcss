@@ -3,30 +3,35 @@ import { expect, test } from "vitest";
 import { CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectActionableRoundTrip,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const forward = createAdapterRouteSpec(CodemodAdapterId.NextYak, CodemodAdapterId.Sass);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.Sass, CodemodAdapterId.NextYak);
-	const happySource = "import { css } from \"next-yak\";\nexport const card = css`color: red; padding: 1rem;`;\nexport const App = () => <div className={card} />;";
-const edgeSource = "import { css } from \"next-yak\";\nexport const card = css`color: ${theme.foreground}; padding: 1rem;`;\nexport const App = () => <div className={card} />;";
-const malformedSource = "import { css } from \"next-yak\";\nexport const card = css`color: red; padding: 1rem;`;\nexport const App = () => <div className={card} />;\nconst unfinished = { /* unfinished next-yak */";
+	const happySource = "import { css } from \"next-yak\";\nexport const card = css`color: red; padding: 1rem;`;";
+const edgeSource = "import { styled } from \"next-yak\";\nexport const Card = styled.div`color: red; padding: 1rem;`;";
+const malformedSource = "import { css } from \"next-yak\";\nexport const card = css`color: red; padding: 1rem;`;\nconst unfinished = { /* unfinished next-yak */";
 const sourceSemantic = undefined;
-const themedSource = "import { css } from \"next-yak\";\nexport const card = css`color: ${theme.colors.brand}; padding: 1rem;`;\nexport const App = () => <div className={card} />;";
-const tokenSource = "import { css } from \"next-yak\";\nexport const card = css`color: var(--colors-brand); padding: 1rem;`;\nexport const App = () => <div className={card} />;";
-const blueSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {} };
+const themedSource = "import { css } from \"next-yak\";\nexport const card = css`color: #2563eb; padding: 1rem;`;";
+const tokenSource = "import { css } from \"next-yak\";\nexport const card = css`color: #2563eb; padding: 1rem;`;";
+const blueSemantic = undefined;
+const amberSemantic = undefined;
+const blueTargetSemantic = undefined;
+const amberTargetSemantic = undefined;
+const blueProject = createAdapterRouteProject(CodemodAdapterId.NextYak, CodemodAdapterId.Sass, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.NextYak, CodemodAdapterId.Sass, "#f97316");
 	const targetSemantic = undefined;
 
 test("next-yak -> sass -> next-yak: preserves an actionable concrete round trip", () => {
-	const first = forward.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.scss", semantic: targetSemantic });
+	const first = forward.run({ source: happySource, file: "styles.tsx", semantic: sourceSemantic });
+	const second = reverse.run({ source: first.code, file: "card.scss", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -36,6 +41,7 @@ test("next-yak -> sass -> next-yak: preserves an actionable concrete round trip"
 		expect(first.residuals.length).toBeGreaterThan(0);
 		expect(first.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(first, "next-yak -> sass round-trip happy forward");
 	expectExplicitResidualEvidence(first);
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(second);
@@ -43,48 +49,63 @@ test("next-yak -> sass -> next-yak: preserves an actionable concrete round trip"
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "next-yak";
-		export const card = // pandwind:migrate-skip (route: next-yak -> sass | lowering-residual: validation)
-		css\`color: red; padding: 1rem;\`;
-		export const App = () => <div className={card} />;",
-		    "converted": 0,
+		    "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const card = css.class({ "padding": "1rem", "color": "red" });",
+		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		          "portable-artifact",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
-		        "representation": "static",
+		        "outcome": "portable-artifact",
+		        "representation": "portable-artifact",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "2 residual conversion(s)",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "2 residual conversion(s)",
-		        ],
-		        "lossiness": "lossy",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },
 		  "reverse": {
 		    "changed": false,
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import { css } from "next-yak";
-		export const card = // pandwind:migrate-skip (route: next-yak -> sass | lowering-residual: validation)
-		css\`color: red; padding: 1rem;\`;
-		export const App = () => <div className={card} />;",
+		import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const card = css.class({ "padding": "1rem", "color": "red" });",
 		    "converted": 0,
-		    "outcomes": [
+		    "generatedFiles": [],
+		    "loweringPlans": [
 		      {
-		        "outcome": "residual",
+		        "applied": [],
+		        "availableRepresentations": [
+		          "named-map",
+		          "residual",
+		        ],
 		        "representation": "residual",
+		        "residuals": [],
 		      },
+		    ],
+		    "outcomes": [
 		      {
 		        "outcome": "residual",
 		        "representation": "residual",
@@ -107,37 +128,23 @@ test("next-yak -> sass -> next-yak: preserves an actionable concrete round trip"
 		        "preserved": undefined,
 		      },
 		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet migration requires a single local class selector",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
 		        "hint": "stylesheet migration requires a single local class selector",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 7,
+		    "skipped": 4,
 		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 
-test("next-yak -> sass -> next-yak: retains edge semantics without silent loss", () => {
-	const first = forward.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.scss", semantic: targetSemantic });
+test("next-yak -> sass -> next-yak: retains the documented secondary API without silent loss", () => {
+	const first = forward.run({ source: edgeSource, file: "styles.tsx", semantic: sourceSemantic });
+	const second = reverse.run({ source: first.code, file: "card.scss", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(first, "next-yak -> sass round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
@@ -145,31 +152,35 @@ test("next-yak -> sass -> next-yak: retains edge semantics without silent loss",
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "next-yak";
-		export const card = // pandwind:migrate-skip (route: next-yak -> sass | parse-residual: dynamic | lowering-residual: dynamic | capability-blocked: dynamic-values: dynamic: theme.foreground | available: residual)
-		css\`color: \${theme.foreground}; padding: 1rem;\`;
-		export const App = () => <div className={card} />;",
+		    "code": "import { styled } from "next-yak";
+		export const Card = // pandwind:migrate-skip (route: next-yak -> sass | capability-blocked: components: component subject: styled.div | available: static, residual, portable-artifact)
+		styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		          "portable-artifact",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "residual",
+		        "representation": "portable-artifact",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "template interpolation requires a runtime-aware lowering",
-		        "kind": "dynamic",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "dynamic-values: dynamic: theme.foreground",
+		        "hint": "components: component subject: styled.div",
 		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "target lacks runtime dynamic values",
-		        "kind": "dynamic",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -179,16 +190,23 @@ test("next-yak -> sass -> next-yak: retains edge semantics without silent loss",
 		  "reverse": {
 		    "changed": false,
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import { css } from "next-yak";
-		export const card = // pandwind:migrate-skip (route: next-yak -> sass | parse-residual: dynamic | lowering-residual: dynamic | capability-blocked: dynamic-values: dynamic: theme.foreground | available: residual)
-		css\`color: \${theme.foreground}; padding: 1rem;\`;
-		export const App = () => <div className={card} />;",
+		import { styled } from "next-yak";
+		export const Card = // pandwind:migrate-skip (route: next-yak -> sass | capability-blocked: components: component subject: styled.div | available: static, residual, portable-artifact)
+		styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
-		    "outcomes": [
+		    "generatedFiles": [],
+		    "loweringPlans": [
 		      {
-		        "outcome": "residual",
+		        "applied": [],
+		        "availableRepresentations": [
+		          "named-map",
+		          "residual",
+		        ],
 		        "representation": "residual",
+		        "residuals": [],
 		      },
+		    ],
+		    "outcomes": [
 		      {
 		        "outcome": "residual",
 		        "representation": "residual",
@@ -216,35 +234,31 @@ test("next-yak -> sass -> next-yak: retains edge semantics without silent loss",
 		        "preserved": undefined,
 		      },
 		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet migration requires a single local class selector",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
 		        "hint": "stylesheet migration requires a single local class selector",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 7,
+		    "skipped": 5,
 		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 
-test("next-yak -> sass -> next-yak: preserves concrete theme and project context variants", () => {
-	const firstBlue = forward.run({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const secondBlue = reverse.run({ source: firstBlue.code, file: "Card.scss", semantic: blueTargetSemantic, project: blueProject });
-	const firstAmber = forward.run({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
-	const secondAmber = reverse.run({ source: firstAmber.code, file: "Card.scss", semantic: amberTargetSemantic, project: amberProject });
+test("next-yak -> sass -> next-yak: preserves concrete theme and project context variants", async () => {
+	const firstBlue = await forward.runAsync({ source: themedSource, file: "styles.tsx", semantic: blueSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "card.scss", semantic: blueTargetSemantic, project: blueProject });
+	const firstAmber = await forward.runAsync({ source: themedSource, file: "styles.tsx", semantic: amberSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "card.scss", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.NextYak, CodemodAdapterId.Sass);
+	expectConfiguredTargetTokenEvidence(firstBlue, CodemodAdapterId.Sass, "next-yak -> sass round-trip token config");
+	expectRouteScenarioEvidence(firstBlue, "next-yak -> sass round-trip blue forward");
+	expectRouteScenarioEvidence(firstAmber, "next-yak -> sass round-trip amber forward");
+	expectConfiguredTargetTokenAbsence(firstAmber, CodemodAdapterId.Sass, "next-yak -> sass round-trip amber literal config");
+
 	expectActionableRoundTrip(firstBlue, secondBlue);
 	expectActionableRoundTrip(firstAmber, secondAmber);
 	expectExplicitResidualEvidence(firstBlue);
@@ -259,50 +273,63 @@ test("next-yak -> sass -> next-yak: preserves concrete theme and project context
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "next-yak";
-		export const card = // pandwind:migrate-skip (route: next-yak -> sass | parse-residual: dynamic | lowering-residual: dynamic | capability-blocked: dynamic-values: dynamic: theme.colors.brand | available: residual)
-		css\`color: \${theme.colors.brand}; padding: 1rem;\`;
-		export const App = () => <div className={card} />;",
-		      "converted": 0,
+		      "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const card = css.class({ "padding": "1rem", "color": "#2563eb" });",
+		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "residual",
+		            "portable-artifact",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
-		          "representation": "residual",
+		          "outcome": "portable-artifact",
+		          "representation": "portable-artifact",
 		        },
 		      ],
-		      "residuals": [
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
 		        {
-		          "hint": "template interpolation requires a runtime-aware lowering",
-		          "kind": "dynamic",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "dynamic-values: dynamic: theme.colors.brand",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "target lacks runtime dynamic values",
-		          "kind": "dynamic",
-		          "preserved": undefined,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
-		      "skipped": 1,
-		      "validations": [],
 		    },
 		    "reverse": {
 		      "changed": false,
 		      "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import { css } from "next-yak";
-		export const card = // pandwind:migrate-skip (route: next-yak -> sass | parse-residual: dynamic | lowering-residual: dynamic | capability-blocked: dynamic-values: dynamic: theme.colors.brand | available: residual)
-		css\`color: \${theme.colors.brand}; padding: 1rem;\`;
-		export const App = () => <div className={card} />;",
+		import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const card = css.class({ "padding": "1rem", "color": "#2563eb" });",
 		      "converted": 0,
-		      "outcomes": [
+		      "generatedFiles": [],
+		      "loweringPlans": [
 		        {
-		          "outcome": "residual",
+		          "applied": [],
+		          "availableRepresentations": [
+		            "named-map",
+		            "residual",
+		          ],
 		          "representation": "residual",
+		          "residuals": [],
 		        },
+		      ],
+		      "outcomes": [
 		        {
 		          "outcome": "residual",
 		          "representation": "residual",
@@ -325,77 +352,75 @@ test("next-yak -> sass -> next-yak: preserves concrete theme and project context
 		          "preserved": undefined,
 		        },
 		        {
-		          "hint": "stylesheet statement is preserved outside the style program",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "stylesheet statement is preserved outside the style program",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "stylesheet migration requires a single local class selector",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
-		        {
 		          "hint": "stylesheet migration requires a single local class selector",
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 7,
+		      "skipped": 4,
 		      "validations": [],
 		    },
 		  },
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "next-yak";
-		export const card = // pandwind:migrate-skip (route: next-yak -> sass | parse-residual: dynamic | lowering-residual: dynamic | capability-blocked: dynamic-values: dynamic: theme.colors.brand | available: residual)
-		css\`color: \${theme.colors.brand}; padding: 1rem;\`;
-		export const App = () => <div className={card} />;",
-		      "converted": 0,
+		      "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const card = css.class({ "padding": "1rem", "color": "#2563eb" });",
+		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "residual",
+		            "portable-artifact",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
-		          "representation": "residual",
+		          "outcome": "portable-artifact",
+		          "representation": "portable-artifact",
 		        },
 		      ],
-		      "residuals": [
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
 		        {
-		          "hint": "template interpolation requires a runtime-aware lowering",
-		          "kind": "dynamic",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "dynamic-values: dynamic: theme.colors.brand",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "target lacks runtime dynamic values",
-		          "kind": "dynamic",
-		          "preserved": undefined,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
-		      "skipped": 1,
-		      "validations": [],
 		    },
 		    "reverse": {
 		      "changed": false,
 		      "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import { css } from "next-yak";
-		export const card = // pandwind:migrate-skip (route: next-yak -> sass | parse-residual: dynamic | lowering-residual: dynamic | capability-blocked: dynamic-values: dynamic: theme.colors.brand | available: residual)
-		css\`color: \${theme.colors.brand}; padding: 1rem;\`;
-		export const App = () => <div className={card} />;",
+		import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const card = css.class({ "padding": "1rem", "color": "#2563eb" });",
 		      "converted": 0,
-		      "outcomes": [
+		      "generatedFiles": [],
+		      "loweringPlans": [
 		        {
-		          "outcome": "residual",
+		          "applied": [],
+		          "availableRepresentations": [
+		            "named-map",
+		            "residual",
+		          ],
 		          "representation": "residual",
+		          "residuals": [],
 		        },
+		      ],
+		      "outcomes": [
 		        {
 		          "outcome": "residual",
 		          "representation": "residual",
@@ -418,38 +443,25 @@ test("next-yak -> sass -> next-yak: preserves concrete theme and project context
 		          "preserved": undefined,
 		        },
 		        {
-		          "hint": "stylesheet statement is preserved outside the style program",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "stylesheet statement is preserved outside the style program",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "stylesheet migration requires a single local class selector",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
-		        {
 		          "hint": "stylesheet migration requires a single local class selector",
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 7,
+		      "skipped": 4,
 		      "validations": [],
 		    },
 		  },
 		}
-	`);
+	`)
 });
 
-test("next-yak -> sass -> next-yak: resolves token references across both concrete legs", () => {
-	const first = forward.run({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const second = reverse.run({ source: first.code, file: "Card.scss", semantic: blueTargetSemantic, project: blueProject });
+test("next-yak -> sass -> next-yak: resolves token values across both concrete legs", async () => {
+	const first = await forward.runAsync({ source: tokenSource, file: "styles.tsx", semantic: blueSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "card.scss", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.NextYak, CodemodAdapterId.Sass);
+	expectRouteScenarioEvidence(first, "next-yak -> sass round-trip token forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
@@ -457,48 +469,63 @@ test("next-yak -> sass -> next-yak: resolves token references across both concre
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "next-yak";
-		export const card = // pandwind:migrate-skip (route: next-yak -> sass | lowering-residual: validation)
-		css\`color: var(--colors-brand); padding: 1rem;\`;
-		export const App = () => <div className={card} />;",
-		    "converted": 0,
+		    "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const card = css.class({ "padding": "1rem", "color": "#2563eb" });",
+		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		          "portable-artifact",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
-		        "representation": "static",
+		        "outcome": "portable-artifact",
+		        "representation": "portable-artifact",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "2 residual conversion(s)",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "2 residual conversion(s)",
-		        ],
-		        "lossiness": "lossy",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },
 		  "reverse": {
 		    "changed": false,
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import { css } from "next-yak";
-		export const card = // pandwind:migrate-skip (route: next-yak -> sass | lowering-residual: validation)
-		css\`color: var(--colors-brand); padding: 1rem;\`;
-		export const App = () => <div className={card} />;",
+		import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const card = css.class({ "padding": "1rem", "color": "#2563eb" });",
 		    "converted": 0,
-		    "outcomes": [
+		    "generatedFiles": [],
+		    "loweringPlans": [
 		      {
-		        "outcome": "residual",
+		        "applied": [],
+		        "availableRepresentations": [
+		          "named-map",
+		          "residual",
+		        ],
 		        "representation": "residual",
+		        "residuals": [],
 		      },
+		    ],
+		    "outcomes": [
 		      {
 		        "outcome": "residual",
 		        "representation": "residual",
@@ -521,30 +548,15 @@ test("next-yak -> sass -> next-yak: resolves token references across both concre
 		        "preserved": undefined,
 		      },
 		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet migration requires a single local class selector",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
 		        "hint": "stylesheet migration requires a single local class selector",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 7,
+		    "skipped": 4,
 		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 

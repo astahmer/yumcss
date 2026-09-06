@@ -3,30 +3,35 @@ import { expect, test } from "vitest";
 import { CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectActionableRoundTrip,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const forward = createAdapterRouteSpec(CodemodAdapterId.CssModules, CodemodAdapterId.AuthoredCss);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.AuthoredCss, CodemodAdapterId.CssModules);
-	const happySource = ".card { color: red; padding: 1rem; }\n.cardTitle { font-weight: 600; }";
-const edgeSource = ".card { color: theme.foreground; padding: 1rem; }\n.cardTitle { font-weight: 600; }";
-const malformedSource = ".card { color: red; padding: 1rem; }\n.cardTitle { font-weight: 600; }\nconst unfinished = { /* unfinished css-modules */";
+	const happySource = ".card { color: red; padding: 1rem; }";
+const edgeSource = ".card { color: red; }\n.primary { composes: card; font-weight: 600; }";
+const malformedSource = ".card { color: red; padding: 1rem; }\nconst unfinished = { /* unfinished css-modules */";
 const sourceSemantic = undefined;
-const themedSource = ".card { color: ${theme.colors.brand}; padding: 1rem; }\n.cardTitle { font-weight: 600; }";
-const tokenSource = ".card { color: var(--colors-brand); padding: 1rem; }\n.cardTitle { font-weight: 600; }";
-const blueSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {} };
+const themedSource = ".card { color: #2563eb; padding: 1rem; }";
+const tokenSource = ".card { color: #2563eb; padding: 1rem; }";
+const blueSemantic = undefined;
+const amberSemantic = undefined;
+const blueTargetSemantic = undefined;
+const amberTargetSemantic = undefined;
+const blueProject = createAdapterRouteProject(CodemodAdapterId.CssModules, CodemodAdapterId.AuthoredCss, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.CssModules, CodemodAdapterId.AuthoredCss, "#f97316");
 	const targetSemantic = undefined;
 
 test("css-modules -> authored-css -> css-modules: preserves an actionable concrete round trip", () => {
 	const first = forward.run({ source: happySource, file: "Card.module.css", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.css", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "card.css", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -36,6 +41,7 @@ test("css-modules -> authored-css -> css-modules: preserves an actionable concre
 		expect(first.residuals.length).toBeGreaterThan(0);
 		expect(first.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(first, "css-modules -> authored-css round-trip happy forward");
 	expectExplicitResidualEvidence(first);
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(second);
@@ -44,14 +50,23 @@ test("css-modules -> authored-css -> css-modules: preserves an actionable concre
 		  "forward": {
 		    "changed": false,
 		    "code": "// pandwind:migrate-skip (lowering-residual: capability)
-		.card { color: red; padding: 1rem; }
-		.cardTitle { font-weight: 600; }",
+		.card { color: red; padding: 1rem; }",
 		    "converted": 0,
-		    "outcomes": [
+		    "generatedFiles": [],
+		    "loweringPlans": [
 		      {
-		        "outcome": "residual",
-		        "representation": "residual",
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
 		      },
+		    ],
+		    "outcomes": [
 		      {
 		        "outcome": "residual",
 		        "representation": "residual",
@@ -71,14 +86,23 @@ test("css-modules -> authored-css -> css-modules: preserves an actionable concre
 		    "changed": false,
 		    "code": "// pandwind:migrate-skip (lowering-residual: capability)
 		// pandwind:migrate-skip (lowering-residual: capability)
-		.card { color: red; padding: 1rem; }
-		.cardTitle { font-weight: 600; }",
+		.card { color: red; padding: 1rem; }",
 		    "converted": 0,
-		    "outcomes": [
+		    "generatedFiles": [],
+		    "loweringPlans": [
 		      {
-		        "outcome": "residual",
-		        "representation": "residual",
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
 		      },
+		    ],
+		    "outcomes": [
 		      {
 		        "outcome": "residual",
 		        "representation": "residual",
@@ -95,13 +119,14 @@ test("css-modules -> authored-css -> css-modules: preserves an actionable concre
 		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 
-test("css-modules -> authored-css -> css-modules: retains edge semantics without silent loss", () => {
+test("css-modules -> authored-css -> css-modules: retains the documented secondary API without silent loss", () => {
 	const first = forward.run({ source: edgeSource, file: "Card.module.css", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.css", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "card.css", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(first, "css-modules -> authored-css round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
@@ -110,9 +135,33 @@ test("css-modules -> authored-css -> css-modules: retains edge semantics without
 		  "forward": {
 		    "changed": false,
 		    "code": "// pandwind:migrate-skip (lowering-residual: capability)
-		.card { color: theme.foreground; padding: 1rem; }
-		.cardTitle { font-weight: 600; }",
+		.card { color: red; }
+		.primary { composes: card; font-weight: 600; }",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "residual",
+		        ],
+		        "representation": "residual",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
@@ -135,11 +184,35 @@ test("css-modules -> authored-css -> css-modules: retains edge semantics without
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: capability)
+		    "code": "// pandwind:migrate-skip (lowering-residual: capability, composition)
 		// pandwind:migrate-skip (lowering-residual: capability)
-		.card { color: theme.foreground; padding: 1rem; }
-		.cardTitle { font-weight: 600; }",
+		.card { color: red; }
+		.primary { composes: card; font-weight: 600; }",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "residual",
+		        ],
+		        "representation": "residual",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
@@ -156,21 +229,32 @@ test("css-modules -> authored-css -> css-modules: retains edge semantics without
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
+		      {
+		        "hint": "preprocessor or CSS Modules composition needs its source context",
+		        "kind": "composition",
+		        "preserved": undefined,
+		      },
 		    ],
-		    "skipped": 1,
+		    "skipped": 2,
 		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 
-test("css-modules -> authored-css -> css-modules: preserves concrete theme and project context variants", () => {
-	const firstBlue = forward.run({ source: themedSource, file: "Card.module.css", semantic: blueSemantic, project: blueProject });
-	const secondBlue = reverse.run({ source: firstBlue.code, file: "Card.css", semantic: blueTargetSemantic, project: blueProject });
-	const firstAmber = forward.run({ source: themedSource, file: "Card.module.css", semantic: amberSemantic, project: amberProject });
-	const secondAmber = reverse.run({ source: firstAmber.code, file: "Card.css", semantic: amberTargetSemantic, project: amberProject });
+test("css-modules -> authored-css -> css-modules: preserves concrete theme and project context variants", async () => {
+	const firstBlue = await forward.runAsync({ source: themedSource, file: "Card.module.css", semantic: blueSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "card.css", semantic: blueTargetSemantic, project: blueProject });
+	const firstAmber = await forward.runAsync({ source: themedSource, file: "Card.module.css", semantic: amberSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "card.css", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.CssModules, CodemodAdapterId.AuthoredCss);
+	expectConfiguredTargetTokenEvidence(firstBlue, CodemodAdapterId.AuthoredCss, "css-modules -> authored-css round-trip token config");
+	expectRouteScenarioEvidence(firstBlue, "css-modules -> authored-css round-trip blue forward");
+	expectRouteScenarioEvidence(firstAmber, "css-modules -> authored-css round-trip amber forward");
+	expectConfiguredTargetTokenAbsence(firstAmber, CodemodAdapterId.AuthoredCss, "css-modules -> authored-css round-trip amber literal config");
+
 	expectActionableRoundTrip(firstBlue, secondBlue);
 	expectActionableRoundTrip(firstAmber, secondAmber);
 	expectExplicitResidualEvidence(firstBlue);
@@ -186,14 +270,23 @@ test("css-modules -> authored-css -> css-modules: preserves concrete theme and p
 		    "forward": {
 		      "changed": false,
 		      "code": "// pandwind:migrate-skip (lowering-residual: capability)
-		.card { color: \${theme.colors.brand}; padding: 1rem; }
-		.cardTitle { font-weight: 600; }",
+		.card { color: #2563eb; padding: 1rem; }",
 		      "converted": 0,
-		      "outcomes": [
+		      "generatedFiles": [],
+		      "loweringPlans": [
 		        {
-		          "outcome": "residual",
-		          "representation": "residual",
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
 		        },
+		      ],
+		      "outcomes": [
 		        {
 		          "outcome": "residual",
 		          "representation": "residual",
@@ -213,14 +306,23 @@ test("css-modules -> authored-css -> css-modules: preserves concrete theme and p
 		      "changed": false,
 		      "code": "// pandwind:migrate-skip (lowering-residual: capability)
 		// pandwind:migrate-skip (lowering-residual: capability)
-		.card { color: \${theme.colors.brand}; padding: 1rem; }
-		.cardTitle { font-weight: 600; }",
+		.card { color: #2563eb; padding: 1rem; }",
 		      "converted": 0,
-		      "outcomes": [
+		      "generatedFiles": [],
+		      "loweringPlans": [
 		        {
-		          "outcome": "residual",
-		          "representation": "residual",
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
 		        },
+		      ],
+		      "outcomes": [
 		        {
 		          "outcome": "residual",
 		          "representation": "residual",
@@ -241,14 +343,23 @@ test("css-modules -> authored-css -> css-modules: preserves concrete theme and p
 		    "forward": {
 		      "changed": false,
 		      "code": "// pandwind:migrate-skip (lowering-residual: capability)
-		.card { color: \${theme.colors.brand}; padding: 1rem; }
-		.cardTitle { font-weight: 600; }",
+		.card { color: #2563eb; padding: 1rem; }",
 		      "converted": 0,
-		      "outcomes": [
+		      "generatedFiles": [],
+		      "loweringPlans": [
 		        {
-		          "outcome": "residual",
-		          "representation": "residual",
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
 		        },
+		      ],
+		      "outcomes": [
 		        {
 		          "outcome": "residual",
 		          "representation": "residual",
@@ -268,14 +379,23 @@ test("css-modules -> authored-css -> css-modules: preserves concrete theme and p
 		      "changed": false,
 		      "code": "// pandwind:migrate-skip (lowering-residual: capability)
 		// pandwind:migrate-skip (lowering-residual: capability)
-		.card { color: \${theme.colors.brand}; padding: 1rem; }
-		.cardTitle { font-weight: 600; }",
+		.card { color: #2563eb; padding: 1rem; }",
 		      "converted": 0,
-		      "outcomes": [
+		      "generatedFiles": [],
+		      "loweringPlans": [
 		        {
-		          "outcome": "residual",
-		          "representation": "residual",
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
 		        },
+		      ],
+		      "outcomes": [
 		        {
 		          "outcome": "residual",
 		          "representation": "residual",
@@ -293,13 +413,15 @@ test("css-modules -> authored-css -> css-modules: preserves concrete theme and p
 		    },
 		  },
 		}
-	`);
+	`)
 });
 
-test("css-modules -> authored-css -> css-modules: resolves token references across both concrete legs", () => {
-	const first = forward.run({ source: tokenSource, file: "Card.module.css", semantic: blueSemantic, project: blueProject });
-	const second = reverse.run({ source: first.code, file: "Card.css", semantic: blueTargetSemantic, project: blueProject });
+test("css-modules -> authored-css -> css-modules: resolves token values across both concrete legs", async () => {
+	const first = await forward.runAsync({ source: tokenSource, file: "Card.module.css", semantic: blueSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "card.css", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.CssModules, CodemodAdapterId.AuthoredCss);
+	expectRouteScenarioEvidence(first, "css-modules -> authored-css round-trip token forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
@@ -308,14 +430,23 @@ test("css-modules -> authored-css -> css-modules: resolves token references acro
 		  "forward": {
 		    "changed": false,
 		    "code": "// pandwind:migrate-skip (lowering-residual: capability)
-		.card { color: var(--colors-brand); padding: 1rem; }
-		.cardTitle { font-weight: 600; }",
+		.card { color: #2563eb; padding: 1rem; }",
 		    "converted": 0,
-		    "outcomes": [
+		    "generatedFiles": [],
+		    "loweringPlans": [
 		      {
-		        "outcome": "residual",
-		        "representation": "residual",
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
 		      },
+		    ],
+		    "outcomes": [
 		      {
 		        "outcome": "residual",
 		        "representation": "residual",
@@ -335,14 +466,23 @@ test("css-modules -> authored-css -> css-modules: resolves token references acro
 		    "changed": false,
 		    "code": "// pandwind:migrate-skip (lowering-residual: capability)
 		// pandwind:migrate-skip (lowering-residual: capability)
-		.card { color: var(--colors-brand); padding: 1rem; }
-		.cardTitle { font-weight: 600; }",
+		.card { color: #2563eb; padding: 1rem; }",
 		    "converted": 0,
-		    "outcomes": [
+		    "generatedFiles": [],
+		    "loweringPlans": [
 		      {
-		        "outcome": "residual",
-		        "representation": "residual",
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
 		      },
+		    ],
+		    "outcomes": [
 		      {
 		        "outcome": "residual",
 		        "representation": "residual",
@@ -359,6 +499,6 @@ test("css-modules -> authored-css -> css-modules: resolves token references acro
 		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 

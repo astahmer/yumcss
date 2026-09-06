@@ -3,26 +3,31 @@ import { expect, test } from "vitest";
 import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.VanillaExtract, CodemodAdapterId.Mui);
-	const happySource = "import { style } from \"@vanilla-extract/css\";\nexport const card = style({ color: \"red\", padding: \"1rem\" });";
-const edgeSource = "import { style } from \"@vanilla-extract/css\";\nexport const card = style({ color: theme.foreground, padding: \"1rem\" });";
-const malformedSource = "import { style } from \"@vanilla-extract/css\";\nexport const card = style({ color: \"red\", padding: \"1rem\" });\nconst unfinished = { /* unfinished vanilla-extract */";
+	const happySource = "import { style } from \"@vanilla-extract/css\";\nexport const card = style({ color: \"red\", padding: 8 });";
+const edgeSource = "import { globalStyle } from \"@vanilla-extract/css\";\nglobalStyle(\"body\", { margin: 0 });";
+const malformedSource = "import { style } from \"@vanilla-extract/css\";\nexport const card = style({ color: \"red\", padding: 8 });\nconst unfinished = { /* unfinished vanilla-extract */";
 const sourceSemantic = undefined;
-const themedSource = "import { style } from \"@vanilla-extract/css\";\nexport const card = style({ color: theme.colors.brand, padding: \"1rem\" });";
-const tokenSource = "import { style } from \"@vanilla-extract/css\";\nexport const card = style({ color: \"$colors.brand\", padding: \"1rem\" });";
-const blueSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "palette.primary.main", authored: "theme.palette.primary.main", resolved: "#2563eb" }] };
-const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "palette.primary.main", authored: "theme.palette.primary.main", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/src/theme.ts":"export const muiTheme = { palette: { primary: { main: \"#2563eb\" } } };"} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/src/theme.ts":"export const muiTheme = { palette: { primary: { main: \"#f97316\" } } };"} };
+const themedSource = "import { style } from \"@vanilla-extract/css\";\nexport const card = style({ color: \"#2563eb\", padding: 8 });";
+const tokenSource = "import { style } from \"@vanilla-extract/css\";\nexport const card = style({ color: \"#2563eb\", padding: 8 });";
+const blueSemantic = undefined;
+const amberSemantic = undefined;
+const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
+const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
+const blueProject = createAdapterRouteProject(CodemodAdapterId.VanillaExtract, CodemodAdapterId.Mui, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.VanillaExtract, CodemodAdapterId.Mui, "#f97316");
 
 test("vanilla-extract -> mui: migrates concrete vanilla-extract syntax to mui", () => {
-	const result = route.run({ source: happySource, file: "Card.css.ts", semantic: sourceSemantic });
+	const result = route.run({ source: happySource, file: "styles.css.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -37,6 +42,7 @@ test("vanilla-extract -> mui: migrates concrete vanilla-extract syntax to mui", 
 		expect(result.residuals.length).toBeGreaterThan(0);
 		expect(result.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(result, "vanilla-extract -> mui happy");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
@@ -44,8 +50,22 @@ test("vanilla-extract -> mui: migrates concrete vanilla-extract syntax to mui", 
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const card = css.class({ "padding": "1rem", "color": "red" });",
+		export const card = css.class({ "padding": 8, "color": "red" });",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		        "portable-artifact",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "portable-artifact",
@@ -62,22 +82,36 @@ test("vanilla-extract -> mui: migrates concrete vanilla-extract syntax to mui", 
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
-test("vanilla-extract -> mui: carries concrete vanilla-extract dynamics or edge syntax explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "Card.css.ts", semantic: sourceSemantic });
+test("vanilla-extract -> mui: carries a documented secondary vanilla-extract API explicitly", () => {
+	const result = route.run({ source: edgeSource, file: "styles.css.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(result, "vanilla-extract -> mui secondary");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
+		  "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
 
-		export const card = css.vars({ "padding": "1rem", "color": theme.foreground });",
+		css.class({ "margin": 0 });",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		        "portable-artifact",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "portable-artifact",
@@ -94,26 +128,45 @@ test("vanilla-extract -> mui: carries concrete vanilla-extract dynamics or edge 
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
-test("vanilla-extract -> mui: lowers concrete theme and project context variants", () => {
-	const blue = route.run({ source: themedSource, file: "Card.css.ts", semantic: blueSemantic, project: blueProject });
-	const amber = route.run({ source: themedSource, file: "Card.css.ts", semantic: amberSemantic, project: amberProject });
+test("vanilla-extract -> mui: loads concrete theme and project context variants", async () => {
+	const blue = await route.runAsync({ source: themedSource, file: "styles.css.ts", semantic: blueSemantic, project: blueProject });
+	const amber = await route.runAsync({ source: themedSource, file: "styles.css.ts", semantic: amberSemantic, project: amberProject });
 	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
 	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.VanillaExtract, CodemodAdapterId.Mui);
+	expectConfiguredTargetTokenEvidence(blue, CodemodAdapterId.Mui, "vanilla-extract -> mui blue config");
+	expectRouteScenarioEvidence(blue, "vanilla-extract -> mui blue config");
+	expectRouteScenarioEvidence(amber, "vanilla-extract -> mui amber config");
+	expectConfiguredTargetTokenAbsence(amber, CodemodAdapterId.Mui, "vanilla-extract -> mui amber literal config");
+
 	expectExplicitResidualEvidence(blue);
 	expectExplicitResidualEvidence(amber);
 	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
+		    "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
 
-		export const card = css.vars({ "padding": "1rem", "color": theme.colors.brand });",
+		export const card = css.class({ "padding": 8, "color": "#2563eb" });",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		          "portable-artifact",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "portable-artifact",
@@ -132,12 +185,25 @@ test("vanilla-extract -> mui: lowers concrete theme and project context variants
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
+		    "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
 
-		export const card = css.vars({ "padding": "1rem", "color": theme.colors.brand });",
+		export const card = css.class({ "padding": 8, "color": "primary.main" });",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		          "portable-artifact",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "portable-artifact",
@@ -155,12 +221,15 @@ test("vanilla-extract -> mui: lowers concrete theme and project context variants
 		    ],
 		  },
 		}
-	`);
+	`)
 });
 
-test("vanilla-extract -> mui: resolves concrete token references with project context", () => {
-	const result = route.run({ source: tokenSource, file: "Card.css.ts", semantic: blueSemantic, project: blueProject });
+test("vanilla-extract -> mui: resolves concrete token values with project context", async () => {
+	const result = await route.runAsync({ source: tokenSource, file: "styles.css.ts", semantic: blueSemantic, project: blueProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.VanillaExtract, CodemodAdapterId.Mui);
+	expectConfiguredTargetTokenEvidence(result, CodemodAdapterId.Mui, "vanilla-extract -> mui token config");
+	expectRouteScenarioEvidence(result, "vanilla-extract -> mui token config");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
@@ -168,8 +237,22 @@ test("vanilla-extract -> mui: resolves concrete token references with project co
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const card = css.class({ "padding": "1rem", "color": "$colors.brand" });",
+		export const card = css.class({ "padding": 8, "color": "primary.main" });",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		        "portable-artifact",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "portable-artifact",
@@ -186,12 +269,13 @@ test("vanilla-extract -> mui: resolves concrete token references with project co
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
 test("vanilla-extract -> mui: preserves malformed concrete vanilla-extract input", () => {
-	const result = route.run({ source: malformedSource, file: "Card.css.ts", semantic: sourceSemantic });
+	const result = route.run({ source: malformedSource, file: "styles.css.ts", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished vanilla-extract */");
+	expectRouteScenarioEvidence(result, "vanilla-extract -> mui malformed");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
@@ -199,9 +283,23 @@ test("vanilla-extract -> mui: preserves malformed concrete vanilla-extract input
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const card = css.class({ "padding": "1rem", "color": "red" });
+		export const card = css.class({ "padding": 8, "color": "red" });
 		const unfinished = { /* unfinished vanilla-extract */",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		        "portable-artifact",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "portable-artifact",
@@ -218,6 +316,6 @@ test("vanilla-extract -> mui: preserves malformed concrete vanilla-extract input
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 

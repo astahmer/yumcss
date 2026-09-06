@@ -3,29 +3,34 @@ import { expect, test } from "vitest";
 import { CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectActionableRoundTrip,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const forward = createAdapterRouteSpec(CodemodAdapterId.Aphrodite, CodemodAdapterId.CssModules);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.CssModules, CodemodAdapterId.Aphrodite);
-	const happySource = "import { StyleSheet } from \"aphrodite\";\nexport const styles = StyleSheet.create({ card: { color: \"red\", padding: \"1rem\" } });\nexport const App = () => <div className={styles.card} />;";
-const edgeSource = "import { StyleSheet } from \"aphrodite\";\nexport const styles = StyleSheet.create({ card: { color: theme.foreground, padding: \"1rem\" } });\nexport const App = () => <div className={styles.card} />;";
-const malformedSource = "import { StyleSheet } from \"aphrodite\";\nexport const styles = StyleSheet.create({ card: { color: \"red\", padding: \"1rem\" } });\nexport const App = () => <div className={styles.card} />;\nconst unfinished = { /* unfinished aphrodite */";
+	const happySource = "import { StyleSheet } from \"aphrodite\";\nexport const styles = StyleSheet.create({ card: { color: \"red\", padding: 8 } });";
+const edgeSource = "import { StyleSheet } from \"aphrodite\";\nexport const styles = StyleSheet.create({ fonts: { fontFamily: [{ fontFamily: \"Inter\", src: \"url(inter.woff2)\" }] } });";
+const malformedSource = "import { StyleSheet } from \"aphrodite\";\nexport const styles = StyleSheet.create({ card: { color: \"red\", padding: 8 } });\nconst unfinished = { /* unfinished aphrodite */";
 const sourceSemantic = undefined;
-const themedSource = "import { StyleSheet } from \"aphrodite\";\nexport const styles = StyleSheet.create({ card: { color: theme.colors.brand, padding: \"1rem\" } });\nexport const App = () => <div className={styles.card} />;";
-const tokenSource = "import { StyleSheet } from \"aphrodite\";\nexport const styles = StyleSheet.create({ card: { color: \"$colors.brand\", padding: \"1rem\" } });\nexport const App = () => <div className={styles.card} />;";
-const blueSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {} };
+const themedSource = "import { StyleSheet } from \"aphrodite\";\nexport const styles = StyleSheet.create({ card: { color: \"#2563eb\", padding: 8 } });";
+const tokenSource = "import { StyleSheet } from \"aphrodite\";\nexport const styles = StyleSheet.create({ card: { color: \"#2563eb\", padding: 8 } });";
+const blueSemantic = undefined;
+const amberSemantic = undefined;
+const blueTargetSemantic = undefined;
+const amberTargetSemantic = undefined;
+const blueProject = createAdapterRouteProject(CodemodAdapterId.Aphrodite, CodemodAdapterId.CssModules, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.Aphrodite, CodemodAdapterId.CssModules, "#f97316");
 	const targetSemantic = undefined;
 
 test("aphrodite -> css-modules -> aphrodite: preserves an actionable concrete round trip", () => {
-	const first = forward.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
+	const first = forward.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
 	const second = reverse.run({ source: first.code, file: "Card.module.css", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
@@ -36,6 +41,7 @@ test("aphrodite -> css-modules -> aphrodite: preserves an actionable concrete ro
 		expect(first.residuals.length).toBeGreaterThan(0);
 		expect(first.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(first, "aphrodite -> css-modules round-trip happy forward");
 	expectExplicitResidualEvidence(first);
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(second);
@@ -45,9 +51,23 @@ test("aphrodite -> css-modules -> aphrodite: preserves an actionable concrete ro
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
 		export const styles = // pandwind:migrate-skip (route: aphrodite -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
-		StyleSheet.create({ card: { color: "red", padding: "1rem" } });
-		export const App = () => <div className={styles.card} />;",
+		StyleSheet.create({ card: { color: "red", padding: 8 } });",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		          "portable-artifact",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
@@ -69,14 +89,23 @@ test("aphrodite -> css-modules -> aphrodite: preserves an actionable concrete ro
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
 		import { StyleSheet } from "aphrodite";
 		export const styles = // pandwind:migrate-skip (route: aphrodite -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
-		StyleSheet.create({ card: { color: "red", padding: "1rem" } });
-		export const App = () => <div className={styles.card} />;",
+		StyleSheet.create({ card: { color: "red", padding: 8 } });",
 		    "converted": 0,
-		    "outcomes": [
+		    "generatedFiles": [],
+		    "loweringPlans": [
 		      {
-		        "outcome": "residual",
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "named-map",
+		          "residual",
+		        ],
 		        "representation": "residual",
+		        "residuals": [],
 		      },
+		    ],
+		    "outcomes": [
 		      {
 		        "outcome": "residual",
 		        "representation": "residual",
@@ -94,32 +123,23 @@ test("aphrodite -> css-modules -> aphrodite: preserves an actionable concrete ro
 		        "preserved": undefined,
 		      },
 		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet migration requires a single local class selector",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
 		        "hint": "stylesheet migration requires a single local class selector",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 5,
+		    "skipped": 3,
 		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 
-test("aphrodite -> css-modules -> aphrodite: retains edge semantics without silent loss", () => {
-	const first = forward.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
+test("aphrodite -> css-modules -> aphrodite: retains the documented secondary API without silent loss", () => {
+	const first = forward.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
 	const second = reverse.run({ source: first.code, file: "Card.module.css", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(first, "aphrodite -> css-modules round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
@@ -128,10 +148,24 @@ test("aphrodite -> css-modules -> aphrodite: retains edge semantics without sile
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-		export const styles = // pandwind:migrate-skip (route: aphrodite -> css-modules | capability-blocked: named-rules: named style rule: card | available: residual, portable-artifact)
-		StyleSheet.create({ card: { color: theme.foreground, padding: "1rem" } });
-		export const App = () => <div className={styles.card} />;",
+		export const styles = // pandwind:migrate-skip (route: aphrodite -> css-modules | capability-blocked: named-rules: named style rule: fonts; nesting: style nested rules | available: static, residual, portable-artifact)
+		StyleSheet.create({ fonts: { fontFamily: [{ fontFamily: "Inter", src: "url(inter.woff2)" }] } });",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		          "portable-artifact",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
@@ -140,7 +174,7 @@ test("aphrodite -> css-modules -> aphrodite: retains edge semantics without sile
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "named-rules: named style rule: card",
+		        "hint": "named-rules: named style rule: fonts; nesting: style nested rules",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
@@ -152,15 +186,24 @@ test("aphrodite -> css-modules -> aphrodite: retains edge semantics without sile
 		    "changed": false,
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
 		import { StyleSheet } from "aphrodite";
-		export const styles = // pandwind:migrate-skip (route: aphrodite -> css-modules | capability-blocked: named-rules: named style rule: card | available: residual, portable-artifact)
-		StyleSheet.create({ card: { color: theme.foreground, padding: "1rem" } });
-		export const App = () => <div className={styles.card} />;",
+		export const styles = // pandwind:migrate-skip (route: aphrodite -> css-modules | capability-blocked: named-rules: named style rule: fonts; nesting: style nested rules | available: static, residual, portable-artifact)
+		StyleSheet.create({ fonts: { fontFamily: [{ fontFamily: "Inter", src: "url(inter.woff2)" }] } });",
 		    "converted": 0,
-		    "outcomes": [
+		    "generatedFiles": [],
+		    "loweringPlans": [
 		      {
-		        "outcome": "residual",
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "named-map",
+		          "residual",
+		        ],
 		        "representation": "residual",
+		        "residuals": [],
 		      },
+		    ],
+		    "outcomes": [
 		      {
 		        "outcome": "residual",
 		        "representation": "residual",
@@ -178,35 +221,31 @@ test("aphrodite -> css-modules -> aphrodite: retains edge semantics without sile
 		        "preserved": undefined,
 		      },
 		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet migration requires a single local class selector",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
 		        "hint": "stylesheet migration requires a single local class selector",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 5,
+		    "skipped": 3,
 		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 
-test("aphrodite -> css-modules -> aphrodite: preserves concrete theme and project context variants", () => {
-	const firstBlue = forward.run({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const secondBlue = reverse.run({ source: firstBlue.code, file: "Card.module.css", semantic: blueTargetSemantic, project: blueProject });
-	const firstAmber = forward.run({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
-	const secondAmber = reverse.run({ source: firstAmber.code, file: "Card.module.css", semantic: amberTargetSemantic, project: amberProject });
+test("aphrodite -> css-modules -> aphrodite: preserves concrete theme and project context variants", async () => {
+	const firstBlue = await forward.runAsync({ source: themedSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "Card.module.css", semantic: blueTargetSemantic, project: blueProject });
+	const firstAmber = await forward.runAsync({ source: themedSource, file: "styles.ts", semantic: amberSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "Card.module.css", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Aphrodite, CodemodAdapterId.CssModules);
+	expectConfiguredTargetTokenEvidence(firstBlue, CodemodAdapterId.CssModules, "aphrodite -> css-modules round-trip token config");
+	expectRouteScenarioEvidence(firstBlue, "aphrodite -> css-modules round-trip blue forward");
+	expectRouteScenarioEvidence(firstAmber, "aphrodite -> css-modules round-trip amber forward");
+	expectConfiguredTargetTokenAbsence(firstAmber, CodemodAdapterId.CssModules, "aphrodite -> css-modules round-trip amber literal config");
+
 	expectActionableRoundTrip(firstBlue, secondBlue);
 	expectActionableRoundTrip(firstAmber, secondAmber);
 	expectExplicitResidualEvidence(firstBlue);
@@ -222,10 +261,24 @@ test("aphrodite -> css-modules -> aphrodite: preserves concrete theme and projec
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "aphrodite";
-		export const styles = // pandwind:migrate-skip (route: aphrodite -> css-modules | capability-blocked: named-rules: named style rule: card | available: residual, portable-artifact)
-		StyleSheet.create({ card: { color: theme.colors.brand, padding: "1rem" } });
-		export const App = () => <div className={styles.card} />;",
+		export const styles = // pandwind:migrate-skip (route: aphrodite -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
+		StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "residual",
+		            "portable-artifact",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
@@ -246,15 +299,24 @@ test("aphrodite -> css-modules -> aphrodite: preserves concrete theme and projec
 		      "changed": false,
 		      "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
 		import { StyleSheet } from "aphrodite";
-		export const styles = // pandwind:migrate-skip (route: aphrodite -> css-modules | capability-blocked: named-rules: named style rule: card | available: residual, portable-artifact)
-		StyleSheet.create({ card: { color: theme.colors.brand, padding: "1rem" } });
-		export const App = () => <div className={styles.card} />;",
+		export const styles = // pandwind:migrate-skip (route: aphrodite -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
+		StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
-		      "outcomes": [
+		      "generatedFiles": [],
+		      "loweringPlans": [
 		        {
-		          "outcome": "residual",
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "named-map",
+		            "residual",
+		          ],
 		          "representation": "residual",
+		          "residuals": [],
 		        },
+		      ],
+		      "outcomes": [
 		        {
 		          "outcome": "residual",
 		          "representation": "residual",
@@ -272,22 +334,12 @@ test("aphrodite -> css-modules -> aphrodite: preserves concrete theme and projec
 		          "preserved": undefined,
 		        },
 		        {
-		          "hint": "stylesheet statement is preserved outside the style program",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "stylesheet migration requires a single local class selector",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
-		        {
 		          "hint": "stylesheet migration requires a single local class selector",
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 5,
+		      "skipped": 3,
 		      "validations": [],
 		    },
 		  },
@@ -295,10 +347,24 @@ test("aphrodite -> css-modules -> aphrodite: preserves concrete theme and projec
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "aphrodite";
-		export const styles = // pandwind:migrate-skip (route: aphrodite -> css-modules | capability-blocked: named-rules: named style rule: card | available: residual, portable-artifact)
-		StyleSheet.create({ card: { color: theme.colors.brand, padding: "1rem" } });
-		export const App = () => <div className={styles.card} />;",
+		export const styles = // pandwind:migrate-skip (route: aphrodite -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
+		StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "residual",
+		            "portable-artifact",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
@@ -319,15 +385,24 @@ test("aphrodite -> css-modules -> aphrodite: preserves concrete theme and projec
 		      "changed": false,
 		      "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
 		import { StyleSheet } from "aphrodite";
-		export const styles = // pandwind:migrate-skip (route: aphrodite -> css-modules | capability-blocked: named-rules: named style rule: card | available: residual, portable-artifact)
-		StyleSheet.create({ card: { color: theme.colors.brand, padding: "1rem" } });
-		export const App = () => <div className={styles.card} />;",
+		export const styles = // pandwind:migrate-skip (route: aphrodite -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
+		StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
-		      "outcomes": [
+		      "generatedFiles": [],
+		      "loweringPlans": [
 		        {
-		          "outcome": "residual",
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "named-map",
+		            "residual",
+		          ],
 		          "representation": "residual",
+		          "residuals": [],
 		        },
+		      ],
+		      "outcomes": [
 		        {
 		          "outcome": "residual",
 		          "representation": "residual",
@@ -345,33 +420,25 @@ test("aphrodite -> css-modules -> aphrodite: preserves concrete theme and projec
 		          "preserved": undefined,
 		        },
 		        {
-		          "hint": "stylesheet statement is preserved outside the style program",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "stylesheet migration requires a single local class selector",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
-		        {
 		          "hint": "stylesheet migration requires a single local class selector",
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 5,
+		      "skipped": 3,
 		      "validations": [],
 		    },
 		  },
 		}
-	`);
+	`)
 });
 
-test("aphrodite -> css-modules -> aphrodite: resolves token references across both concrete legs", () => {
-	const first = forward.run({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const second = reverse.run({ source: first.code, file: "Card.module.css", semantic: blueTargetSemantic, project: blueProject });
+test("aphrodite -> css-modules -> aphrodite: resolves token values across both concrete legs", async () => {
+	const first = await forward.runAsync({ source: tokenSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "Card.module.css", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Aphrodite, CodemodAdapterId.CssModules);
+	expectRouteScenarioEvidence(first, "aphrodite -> css-modules round-trip token forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
@@ -381,9 +448,23 @@ test("aphrodite -> css-modules -> aphrodite: resolves token references across bo
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
 		export const styles = // pandwind:migrate-skip (route: aphrodite -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
-		StyleSheet.create({ card: { color: "$colors.brand", padding: "1rem" } });
-		export const App = () => <div className={styles.card} />;",
+		StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		          "portable-artifact",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
@@ -405,14 +486,23 @@ test("aphrodite -> css-modules -> aphrodite: resolves token references across bo
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
 		import { StyleSheet } from "aphrodite";
 		export const styles = // pandwind:migrate-skip (route: aphrodite -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
-		StyleSheet.create({ card: { color: "$colors.brand", padding: "1rem" } });
-		export const App = () => <div className={styles.card} />;",
+		StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		    "converted": 0,
-		    "outcomes": [
+		    "generatedFiles": [],
+		    "loweringPlans": [
 		      {
-		        "outcome": "residual",
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "named-map",
+		          "residual",
+		        ],
 		        "representation": "residual",
+		        "residuals": [],
 		      },
+		    ],
+		    "outcomes": [
 		      {
 		        "outcome": "residual",
 		        "representation": "residual",
@@ -430,25 +520,15 @@ test("aphrodite -> css-modules -> aphrodite: resolves token references across bo
 		        "preserved": undefined,
 		      },
 		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet migration requires a single local class selector",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
 		        "hint": "stylesheet migration requires a single local class selector",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 5,
+		    "skipped": 3,
 		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 

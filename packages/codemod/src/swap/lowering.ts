@@ -535,7 +535,11 @@ function representationFor(
 			return StyleRepresentationKind.CustomProperty;
 		return StyleRepresentationKind.Residual;
 	}
-	if (result.program.rules.some((rule) => rule.name !== undefined))
+	if (
+		result.program.rules.some((rule) => rule.name !== undefined) &&
+		level(context.target, AdapterCapabilityTag.NamedRules) !==
+			AdapterCapabilityLevelTag.Unsupported
+	)
 		return StyleRepresentationKind.NamedMap;
 	if (hasDynamic) {
 		const hasFunctionDynamic = declarations.some(

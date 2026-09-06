@@ -3,23 +3,28 @@ import { expect, test } from "vitest";
 import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.StyledComponents, CodemodAdapterId.AuthoredCss);
-	const happySource = "import styled from \"styled-components\";\nexport const Card = styled.div({ color: \"red\", padding: \"1rem\" });\nexport const App = () => <Card />;";
-const edgeSource = "import styled from \"styled-components\";\nexport const Card = styled.div({ color: theme.foreground, padding: \"1rem\" });\nexport const App = () => <Card />;";
-const malformedSource = "import styled from \"styled-components\";\nexport const Card = styled.div({ color: \"red\", padding: \"1rem\" });\nexport const App = () => <Card />;\nconst unfinished = { /* unfinished styled-components */";
+	const happySource = "import styled from \"styled-components\";\nexport const Card = styled.div({ color: \"red\", padding: \"1rem\" });";
+const edgeSource = "import styled from \"styled-components\";\nexport const Card = styled.div`color: red; padding: 1rem;`;";
+const malformedSource = "import styled from \"styled-components\";\nexport const Card = styled.div({ color: \"red\", padding: \"1rem\" });\nconst unfinished = { /* unfinished styled-components */";
 const sourceSemantic = { source: { framework: BuiltinHostFramework.React } };
-const themedSource = "import styled from \"styled-components\";\nexport const Card = styled.div({ color: theme.colors.brand, padding: \"1rem\" });\nexport const App = () => <Card />;";
-const tokenSource = "import styled from \"styled-components\";\nexport const Card = styled.div({ color: \"$colors.brand\", padding: \"1rem\" });\nexport const App = () => <Card />;";
-const blueSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {} };
+const themedSource = "import styled from \"styled-components\";\nexport const Card = styled.div({ color: \"#2563eb\", padding: \"1rem\" });";
+const tokenSource = "import styled from \"styled-components\";\nexport const Card = styled.div({ color: \"#2563eb\", padding: \"1rem\" });";
+const blueSemantic = { source: { framework: BuiltinHostFramework.React } };
+const amberSemantic = { source: { framework: BuiltinHostFramework.React } };
+const blueTargetSemantic = undefined;
+const amberTargetSemantic = undefined;
+const blueProject = createAdapterRouteProject(CodemodAdapterId.StyledComponents, CodemodAdapterId.AuthoredCss, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.StyledComponents, CodemodAdapterId.AuthoredCss, "#f97316");
 
 test("styled-components -> authored-css: migrates concrete styled-components syntax to authored-css", () => {
 	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
@@ -37,19 +42,39 @@ test("styled-components -> authored-css: migrates concrete styled-components syn
 		expect(result.residuals.length).toBeGreaterThan(0);
 		expect(result.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(result, "styled-components -> authored-css happy");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-		export const Card = // pandwind:migrate-skip (route: styled-components -> authored-css | lowering-residual: framework-semantics | capability-blocked: components: component subject: styled.div | available: residual)
-		styled.div({ color: "red", padding: "1rem" });
-		export const App = () => <Card />;",
+		export const Card = // pandwind:migrate-skip (route: styled-components -> authored-css | lowering-residual: framework-semantics | capability-blocked: components: component subject: styled.div | available: residual, portable-artifact)
+		styled.div({ color: "red", padding: "1rem" });",
 		  "converted": 0,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		        "runtime-and-plugin",
+		      ],
+		      "availableRepresentations": [
+		        "residual",
+		        "portable-artifact",
+		      ],
+		      "representation": "residual",
+		      "residuals": [
+		        {
+		          "hint": "target lacks framework semantics",
+		          "kind": "framework-semantics",
+		        },
+		      ],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "residual",
+		      "representation": "portable-artifact",
 		    },
 		  ],
 		  "residuals": [
@@ -67,36 +92,51 @@ test("styled-components -> authored-css: migrates concrete styled-components syn
 		  "skipped": 1,
 		  "validations": [],
 		}
-	`);
+	`)
 });
 
-test("styled-components -> authored-css: carries concrete styled-components dynamics or edge syntax explicitly", () => {
+test("styled-components -> authored-css: carries a documented secondary styled-components API explicitly", () => {
 	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(result, "styled-components -> authored-css secondary");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-		export const Card = // pandwind:migrate-skip (route: styled-components -> authored-css | lowering-residual: dynamic, framework-semantics | capability-blocked: components: component subject: styled.div; dynamic-values: dynamic: theme.foreground | available: residual)
-		styled.div({ color: theme.foreground, padding: "1rem" });
-		export const App = () => <Card />;",
+		export const Card = // pandwind:migrate-skip (route: styled-components -> authored-css | lowering-residual: framework-semantics | capability-blocked: components: component subject: styled.div | available: residual, portable-artifact)
+		styled.div\`color: red; padding: 1rem;\`;",
 		  "converted": 0,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		        "runtime-and-plugin",
+		      ],
+		      "availableRepresentations": [
+		        "residual",
+		        "portable-artifact",
+		      ],
+		      "representation": "residual",
+		      "residuals": [
+		        {
+		          "hint": "target lacks framework semantics",
+		          "kind": "framework-semantics",
+		        },
+		      ],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "residual",
+		      "representation": "portable-artifact",
 		    },
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "components: component subject: styled.div; dynamic-values: dynamic: theme.foreground",
+		      "hint": "components: component subject: styled.div",
 		      "kind": "capability",
-		      "preserved": undefined,
-		    },
-		    {
-		      "hint": "target lacks runtime dynamic values",
-		      "kind": "dynamic",
 		      "preserved": undefined,
 		    },
 		    {
@@ -108,14 +148,20 @@ test("styled-components -> authored-css: carries concrete styled-components dyna
 		  "skipped": 1,
 		  "validations": [],
 		}
-	`);
+	`)
 });
 
-test("styled-components -> authored-css: lowers concrete theme and project context variants", () => {
-	const blue = route.run({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const amber = route.run({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
+test("styled-components -> authored-css: loads concrete theme and project context variants", async () => {
+	const blue = await route.runAsync({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
+	const amber = await route.runAsync({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
 	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
 	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.StyledComponents, CodemodAdapterId.AuthoredCss);
+	expectConfiguredTargetTokenEvidence(blue, CodemodAdapterId.AuthoredCss, "styled-components -> authored-css blue config");
+	expectRouteScenarioEvidence(blue, "styled-components -> authored-css blue config");
+	expectRouteScenarioEvidence(amber, "styled-components -> authored-css amber config");
+	expectConfiguredTargetTokenAbsence(amber, CodemodAdapterId.AuthoredCss, "styled-components -> authored-css amber literal config");
+
 	expectExplicitResidualEvidence(blue);
 	expectExplicitResidualEvidence(amber);
 	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
@@ -123,14 +169,33 @@ test("styled-components -> authored-css: lowers concrete theme and project conte
 		  "amber": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		export const Card = // pandwind:migrate-skip (route: styled-components -> authored-css | lowering-residual: framework-semantics | capability-blocked: components: component subject: styled.div | available: residual)
-		styled.div({ color: theme.colors.brand, padding: "1rem" });
-		export const App = () => <Card />;",
+		export const Card = // pandwind:migrate-skip (route: styled-components -> authored-css | lowering-residual: framework-semantics | capability-blocked: components: component subject: styled.div | available: residual, portable-artifact)
+		styled.div({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		          "runtime-and-plugin",
+		        ],
+		        "availableRepresentations": [
+		          "residual",
+		          "portable-artifact",
+		        ],
+		        "representation": "residual",
+		        "residuals": [
+		          {
+		            "hint": "target lacks framework semantics",
+		            "kind": "framework-semantics",
+		          },
+		        ],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "residual",
+		        "representation": "portable-artifact",
 		      },
 		    ],
 		    "residuals": [
@@ -151,14 +216,33 @@ test("styled-components -> authored-css: lowers concrete theme and project conte
 		  "blue": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		export const Card = // pandwind:migrate-skip (route: styled-components -> authored-css | lowering-residual: framework-semantics | capability-blocked: components: component subject: styled.div | available: residual)
-		styled.div({ color: theme.colors.brand, padding: "1rem" });
-		export const App = () => <Card />;",
+		export const Card = // pandwind:migrate-skip (route: styled-components -> authored-css | lowering-residual: framework-semantics | capability-blocked: components: component subject: styled.div | available: residual, portable-artifact)
+		styled.div({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		          "runtime-and-plugin",
+		        ],
+		        "availableRepresentations": [
+		          "residual",
+		          "portable-artifact",
+		        ],
+		        "representation": "residual",
+		        "residuals": [
+		          {
+		            "hint": "target lacks framework semantics",
+		            "kind": "framework-semantics",
+		          },
+		        ],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "residual",
+		        "representation": "portable-artifact",
 		      },
 		    ],
 		    "residuals": [
@@ -177,25 +261,47 @@ test("styled-components -> authored-css: lowers concrete theme and project conte
 		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 
-test("styled-components -> authored-css: resolves concrete token references with project context", () => {
-	const result = route.run({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
+test("styled-components -> authored-css: resolves concrete token values with project context", async () => {
+	const result = await route.runAsync({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.StyledComponents, CodemodAdapterId.AuthoredCss);
+	expectConfiguredTargetTokenEvidence(result, CodemodAdapterId.AuthoredCss, "styled-components -> authored-css token config");
+	expectRouteScenarioEvidence(result, "styled-components -> authored-css token config");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-		export const Card = // pandwind:migrate-skip (route: styled-components -> authored-css | lowering-residual: framework-semantics | capability-blocked: components: component subject: styled.div | available: residual)
-		styled.div({ color: "$colors.brand", padding: "1rem" });
-		export const App = () => <Card />;",
+		export const Card = // pandwind:migrate-skip (route: styled-components -> authored-css | lowering-residual: framework-semantics | capability-blocked: components: component subject: styled.div | available: residual, portable-artifact)
+		styled.div({ color: "#2563eb", padding: "1rem" });",
 		  "converted": 0,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		        "runtime-and-plugin",
+		      ],
+		      "availableRepresentations": [
+		        "residual",
+		        "portable-artifact",
+		      ],
+		      "representation": "residual",
+		      "residuals": [
+		        {
+		          "hint": "target lacks framework semantics",
+		          "kind": "framework-semantics",
+		        },
+		      ],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "residual",
+		      "representation": "portable-artifact",
 		    },
 		  ],
 		  "residuals": [
@@ -213,26 +319,46 @@ test("styled-components -> authored-css: resolves concrete token references with
 		  "skipped": 1,
 		  "validations": [],
 		}
-	`);
+	`)
 });
 
 test("styled-components -> authored-css: preserves malformed concrete styled-components input", () => {
 	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished styled-components */");
+	expectRouteScenarioEvidence(result, "styled-components -> authored-css malformed");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-		export const Card = // pandwind:migrate-skip (route: styled-components -> authored-css | lowering-residual: framework-semantics | capability-blocked: components: component subject: styled.div | available: residual)
+		export const Card = // pandwind:migrate-skip (route: styled-components -> authored-css | lowering-residual: framework-semantics | capability-blocked: components: component subject: styled.div | available: residual, portable-artifact)
 		styled.div({ color: "red", padding: "1rem" });
-		export const App = () => <Card />;
 		const unfinished = { /* unfinished styled-components */",
 		  "converted": 0,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		        "runtime-and-plugin",
+		      ],
+		      "availableRepresentations": [
+		        "residual",
+		        "portable-artifact",
+		      ],
+		      "representation": "residual",
+		      "residuals": [
+		        {
+		          "hint": "target lacks framework semantics",
+		          "kind": "framework-semantics",
+		        },
+		      ],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "residual",
+		      "representation": "portable-artifact",
 		    },
 		  ],
 		  "residuals": [
@@ -250,6 +376,6 @@ test("styled-components -> authored-css: preserves malformed concrete styled-com
 		  "skipped": 1,
 		  "validations": [],
 		}
-	`);
+	`)
 });
 

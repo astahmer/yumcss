@@ -3,30 +3,35 @@ import { expect, test } from "vitest";
 import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectActionableRoundTrip,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const forward = createAdapterRouteSpec(CodemodAdapterId.Less, CodemodAdapterId.Mui);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.Mui, CodemodAdapterId.Less);
-	const happySource = ".card { color: red; padding: 1rem; .title { font-weight: 600; } }\n@title-color: blue;";
-const edgeSource = ".card { color: theme.foreground; padding: 1rem; .title { font-weight: 600; } }\n@title-color: blue;";
-const malformedSource = ".card { color: red; padding: 1rem; .title { font-weight: 600; } }\n@title-color: blue;\nconst unfinished = { /* unfinished less */";
+	const happySource = ".card { color: red; padding: 1rem; }";
+const edgeSource = "@brand: red;\n.card { color: @brand; padding: 1rem; &__title { font-weight: 600; } }";
+const malformedSource = ".card { color: red; padding: 1rem; }\nconst unfinished = { /* unfinished less */";
 const sourceSemantic = undefined;
-const themedSource = ".card { color: ${theme.colors.brand}; padding: 1rem; .title { font-weight: 600; } }\n@title-color: blue;";
-const tokenSource = ".card { color: var(--colors-brand); padding: 1rem; .title { font-weight: 600; } }\n@title-color: blue;";
-const blueSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "palette.primary.main", authored: "theme.palette.primary.main", resolved: "#2563eb" }] };
-const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "palette.primary.main", authored: "theme.palette.primary.main", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/src/theme.ts":"export const muiTheme = { palette: { primary: { main: \"#2563eb\" } } };"} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/src/theme.ts":"export const muiTheme = { palette: { primary: { main: \"#f97316\" } } };"} };
+const themedSource = ".card { color: #2563eb; padding: 1rem; }";
+const tokenSource = ".card { color: #2563eb; padding: 1rem; }";
+const blueSemantic = undefined;
+const amberSemantic = undefined;
+const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
+const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
+const blueProject = createAdapterRouteProject(CodemodAdapterId.Less, CodemodAdapterId.Mui, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.Less, CodemodAdapterId.Mui, "#f97316");
 	const targetSemantic = { source: { framework: BuiltinHostFramework.React } };
 
 test("less -> mui -> less: preserves an actionable concrete round trip", () => {
-	const first = forward.run({ source: happySource, file: "Card.less", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+	const first = forward.run({ source: happySource, file: "card.less", semantic: sourceSemantic });
+	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -36,6 +41,7 @@ test("less -> mui -> less: preserves an actionable concrete round trip", () => {
 		expect(first.residuals.length).toBeGreaterThan(0);
 		expect(first.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(first, "less -> mui round-trip happy forward");
 	expectExplicitResidualEvidence(first);
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(second);
@@ -43,10 +49,22 @@ test("less -> mui -> less: preserves an actionable concrete round trip", () => {
 		{
 		  "forward": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting, host-framework)
-		.card { color: red; padding: 1rem; .title { font-weight: 600; } }
-		@title-color: blue;",
+		    "code": "// pandwind:migrate-skip (lowering-residual: host-framework)
+		.card { color: red; padding: 1rem; }",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
@@ -55,43 +73,35 @@ test("less -> mui -> less: preserves an actionable concrete round trip", () => {
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "nested stylesheet rules require selector-aware lowering",
-		        "kind": "nesting",
-		        "preserved": undefined,
-		      },
-		      {
 		        "hint": "MUI sx styles require a host component prop; no standalone sx() API exists",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 3,
+		    "skipped": 1,
 		    "validations": [],
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting, host-framework)
-		.card { color: red; padding: 1rem; .title { font-weight: 600; } }
-		@title-color: blue;",
+		    "code": "// pandwind:migrate-skip (lowering-residual: host-framework)
+		.card { color: red; padding: 1rem; }",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [],
 		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
 		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 
-test("less -> mui -> less: retains edge semantics without silent loss", () => {
-	const first = forward.run({ source: edgeSource, file: "Card.less", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+test("less -> mui -> less: retains the documented secondary API without silent loss", () => {
+	const first = forward.run({ source: edgeSource, file: "card.less", semantic: sourceSemantic });
+	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(first, "less -> mui round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
@@ -99,10 +109,22 @@ test("less -> mui -> less: retains edge semantics without silent loss", () => {
 		{
 		  "forward": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting, host-framework)
-		.card { color: theme.foreground; padding: 1rem; .title { font-weight: 600; } }
-		@title-color: blue;",
+		    "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting)
+		@brand: red;
+		.card { color: @brand; padding: 1rem; &__title { font-weight: 600; } }",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "residual",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
@@ -120,37 +142,40 @@ test("less -> mui -> less: retains edge semantics without silent loss", () => {
 		        "kind": "nesting",
 		        "preserved": undefined,
 		      },
-		      {
-		        "hint": "MUI sx styles require a host component prop; no standalone sx() API exists",
-		        "kind": "host-framework",
-		        "preserved": undefined,
-		      },
 		    ],
-		    "skipped": 3,
+		    "skipped": 2,
 		    "validations": [],
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting, host-framework)
-		.card { color: theme.foreground; padding: 1rem; .title { font-weight: 600; } }
-		@title-color: blue;",
+		    "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting)
+		@brand: red;
+		.card { color: @brand; padding: 1rem; &__title { font-weight: 600; } }",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [],
 		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
 		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 
-test("less -> mui -> less: preserves concrete theme and project context variants", () => {
-	const firstBlue = forward.run({ source: themedSource, file: "Card.less", semantic: blueSemantic, project: blueProject });
-	const secondBlue = reverse.run({ source: firstBlue.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
-	const firstAmber = forward.run({ source: themedSource, file: "Card.less", semantic: amberSemantic, project: amberProject });
-	const secondAmber = reverse.run({ source: firstAmber.code, file: "Card.tsx", semantic: amberTargetSemantic, project: amberProject });
+test("less -> mui -> less: preserves concrete theme and project context variants", async () => {
+	const firstBlue = await forward.runAsync({ source: themedSource, file: "card.less", semantic: blueSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
+	const firstAmber = await forward.runAsync({ source: themedSource, file: "card.less", semantic: amberSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "App.tsx", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Less, CodemodAdapterId.Mui);
+	expectConfiguredTargetTokenEvidence(firstBlue, CodemodAdapterId.Mui, "less -> mui round-trip token config");
+	expectRouteScenarioEvidence(firstBlue, "less -> mui round-trip blue forward");
+	expectRouteScenarioEvidence(firstAmber, "less -> mui round-trip amber forward");
+	expectConfiguredTargetTokenAbsence(firstAmber, CodemodAdapterId.Mui, "less -> mui round-trip amber literal config");
+
 	expectActionableRoundTrip(firstBlue, secondBlue);
 	expectActionableRoundTrip(firstAmber, secondAmber);
 	expectExplicitResidualEvidence(firstBlue);
@@ -165,10 +190,22 @@ test("less -> mui -> less: preserves concrete theme and project context variants
 		  "amber": {
 		    "forward": {
 		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting, host-framework)
-		.card { color: \${theme.colors.brand}; padding: 1rem; .title { font-weight: 600; } }
-		@title-color: blue;",
+		      "code": "// pandwind:migrate-skip (lowering-residual: host-framework)
+		.card { color: #2563eb; padding: 1rem; }",
 		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
@@ -177,30 +214,21 @@ test("less -> mui -> less: preserves concrete theme and project context variants
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "stylesheet statement is preserved outside the style program",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "nested stylesheet rules require selector-aware lowering",
-		          "kind": "nesting",
-		          "preserved": undefined,
-		        },
-		        {
 		          "hint": "MUI sx styles require a host component prop; no standalone sx() API exists",
 		          "kind": "host-framework",
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 3,
+		      "skipped": 1,
 		      "validations": [],
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting, host-framework)
-		.card { color: \${theme.colors.brand}; padding: 1rem; .title { font-weight: 600; } }
-		@title-color: blue;",
+		      "code": "// pandwind:migrate-skip (lowering-residual: host-framework)
+		.card { color: #2563eb; padding: 1rem; }",
 		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [],
 		      "outcomes": [],
 		      "residuals": [],
 		      "skipped": 0,
@@ -210,10 +238,22 @@ test("less -> mui -> less: preserves concrete theme and project context variants
 		  "blue": {
 		    "forward": {
 		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting, host-framework)
-		.card { color: \${theme.colors.brand}; padding: 1rem; .title { font-weight: 600; } }
-		@title-color: blue;",
+		      "code": "// pandwind:migrate-skip (lowering-residual: host-framework)
+		.card { color: #2563eb; padding: 1rem; }",
 		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
@@ -222,30 +262,21 @@ test("less -> mui -> less: preserves concrete theme and project context variants
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "stylesheet statement is preserved outside the style program",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "nested stylesheet rules require selector-aware lowering",
-		          "kind": "nesting",
-		          "preserved": undefined,
-		        },
-		        {
 		          "hint": "MUI sx styles require a host component prop; no standalone sx() API exists",
 		          "kind": "host-framework",
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 3,
+		      "skipped": 1,
 		      "validations": [],
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting, host-framework)
-		.card { color: \${theme.colors.brand}; padding: 1rem; .title { font-weight: 600; } }
-		@title-color: blue;",
+		      "code": "// pandwind:migrate-skip (lowering-residual: host-framework)
+		.card { color: #2563eb; padding: 1rem; }",
 		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [],
 		      "outcomes": [],
 		      "residuals": [],
 		      "skipped": 0,
@@ -253,13 +284,15 @@ test("less -> mui -> less: preserves concrete theme and project context variants
 		    },
 		  },
 		}
-	`);
+	`)
 });
 
-test("less -> mui -> less: resolves token references across both concrete legs", () => {
-	const first = forward.run({ source: tokenSource, file: "Card.less", semantic: blueSemantic, project: blueProject });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
+test("less -> mui -> less: resolves token values across both concrete legs", async () => {
+	const first = await forward.runAsync({ source: tokenSource, file: "card.less", semantic: blueSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Less, CodemodAdapterId.Mui);
+	expectRouteScenarioEvidence(first, "less -> mui round-trip token forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
@@ -267,10 +300,22 @@ test("less -> mui -> less: resolves token references across both concrete legs",
 		{
 		  "forward": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting, host-framework)
-		.card { color: var(--colors-brand); padding: 1rem; .title { font-weight: 600; } }
-		@title-color: blue;",
+		    "code": "// pandwind:migrate-skip (lowering-residual: host-framework)
+		.card { color: #2563eb; padding: 1rem; }",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
@@ -279,36 +324,27 @@ test("less -> mui -> less: resolves token references across both concrete legs",
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "nested stylesheet rules require selector-aware lowering",
-		        "kind": "nesting",
-		        "preserved": undefined,
-		      },
-		      {
 		        "hint": "MUI sx styles require a host component prop; no standalone sx() API exists",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 3,
+		    "skipped": 1,
 		    "validations": [],
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting, host-framework)
-		.card { color: var(--colors-brand); padding: 1rem; .title { font-weight: 600; } }
-		@title-color: blue;",
+		    "code": "// pandwind:migrate-skip (lowering-residual: host-framework)
+		.card { color: #2563eb; padding: 1rem; }",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [],
 		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
 		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 

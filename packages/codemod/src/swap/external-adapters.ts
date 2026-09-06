@@ -451,7 +451,11 @@ function declarationsObject(declarations: readonly StyleDeclaration[]): string {
 function styleRuleNode(rule: StyleProgram["rules"][number]): ObjectNode {
 	const root = objectNode();
 	for (const declaration of rule.declarations)
-		addDeclaration(root, declaration, declaration.conditions.map(conditionKey));
+		addDeclaration(
+			root,
+			declaration,
+			[...rule.conditions, ...declaration.conditions].map(conditionKey),
+		);
 	for (const child of rule.children) {
 		const key = child.selector ?? child.name ?? child.kind;
 		root.children.push([key, styleRuleNode(child)]);
@@ -873,6 +877,47 @@ function parseTemplateProgram(
 		],
 		{ source: adapterSource(context, start), residuals: parsed.residuals },
 	);
+}
+
+function parseGlobalTemplateProgram(
+	body: string,
+	context: AdapterParseContext,
+	start: number,
+): StyleProgram {
+	const base = parseTemplateProgram(body, context, start);
+	const globalize = (rule: StyleProgram["rules"][number]): StyleProgram["rules"][number] => {
+		const globalRule =
+			rule.kind === StyleRuleKindTag.Style
+				? {
+						...rule,
+						kind: StyleRuleKindTag.Global,
+						...(rule.selector === undefined
+							? {}
+							: { selector: rule.selector.replace(/^&\s*/u, "") }),
+					}
+				: rule;
+		return { ...globalRule, children: rule.children.map(globalize) };
+	};
+	const root = base.rules[0];
+	const rules = [
+		...(root === undefined || root.declarations.length === 0
+			? []
+			: [
+					{
+						kind: StyleRuleKindTag.Global,
+						selector: "*",
+						conditions: [],
+						declarations: root.declarations,
+						children: [],
+						order: 0,
+					},
+				]),
+		...(root?.children.map(globalize) ?? []),
+	];
+	return styleProgramFromRules(rules, {
+		source: base.source,
+		residuals: base.residuals,
+	});
 }
 
 function parseKeyframeTemplateProgram(
@@ -1315,7 +1360,9 @@ function parseCalls(
 									start,
 									sourceName(source, start, `${pattern.name}${matches.length + 1}`),
 								)
-							: parseTemplateProgram(templateBody, context, start);
+							: pattern.kind === CodemodCallPatternKindTag.Global
+								? parseGlobalTemplateProgram(templateBody, context, start)
+								: parseTemplateProgram(templateBody, context, start);
 					program = {
 						...program,
 						source: {

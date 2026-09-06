@@ -3,30 +3,35 @@ import { expect, test } from "vitest";
 import { CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectActionableRoundTrip,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const forward = createAdapterRouteSpec(CodemodAdapterId.CssModules, CodemodAdapterId.Panda);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.Panda, CodemodAdapterId.CssModules);
-	const happySource = ".card { color: red; padding: 1rem; }\n.cardTitle { font-weight: 600; }";
-const edgeSource = ".card { color: theme.foreground; padding: 1rem; }\n.cardTitle { font-weight: 600; }";
-const malformedSource = ".card { color: red; padding: 1rem; }\n.cardTitle { font-weight: 600; }\nconst unfinished = { /* unfinished css-modules */";
+	const happySource = ".card { color: red; padding: 1rem; }";
+const edgeSource = ".card { color: red; }\n.primary { composes: card; font-weight: 600; }";
+const malformedSource = ".card { color: red; padding: 1rem; }\nconst unfinished = { /* unfinished css-modules */";
 const sourceSemantic = undefined;
-const themedSource = ".card { color: ${theme.colors.brand}; padding: 1rem; }\n.cardTitle { font-weight: 600; }";
-const tokenSource = ".card { color: var(--colors-brand); padding: 1rem; }\n.cardTitle { font-weight: 600; }";
-const blueSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/panda.config.ts":"export default { theme: { extend: { tokens: { colors: { brand: { value: \"#2563eb\" } } } } } };"} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/panda.config.ts":"export default { theme: { extend: { tokens: { colors: { brand: { value: \"#f97316\" } } } } } };"} };
+const themedSource = ".card { color: #2563eb; padding: 1rem; }";
+const tokenSource = ".card { color: #2563eb; padding: 1rem; }";
+const blueSemantic = undefined;
+const amberSemantic = undefined;
+const blueTargetSemantic = undefined;
+const amberTargetSemantic = undefined;
+const blueProject = createAdapterRouteProject(CodemodAdapterId.CssModules, CodemodAdapterId.Panda, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.CssModules, CodemodAdapterId.Panda, "#f97316");
 	const targetSemantic = undefined;
 
 test("css-modules -> panda -> css-modules: preserves an actionable concrete round trip", () => {
 	const first = forward.run({ source: happySource, file: "Card.module.css", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -36,6 +41,7 @@ test("css-modules -> panda -> css-modules: preserves an actionable concrete roun
 		expect(first.residuals.length).toBeGreaterThan(0);
 		expect(first.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(first, "css-modules -> panda round-trip happy forward");
 	expectExplicitResidualEvidence(first);
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(second);
@@ -44,27 +50,31 @@ test("css-modules -> panda -> css-modules: preserves an actionable concrete roun
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		export const styles = { "card": css({ padding: "1rem", color: "red" }), "cardTitle": css({ fontWeight: "600" }) };
+		export const styles = { "card": css({ padding: "1rem", color: "red" }) };
 		export default styles;",
-		    "converted": 2,
+		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "target-native",
-		        "representation": "named-map",
-		      },
-		      {
-		        "outcome": "target-native",
-		        "representation": "named-map",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [],
 		    "skipped": 0,
 		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
 		      {
 		        "differences": [],
 		        "lossiness": "lossless",
@@ -77,14 +87,25 @@ test("css-modules -> panda -> css-modules: preserves an actionable concrete roun
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const styles = { "card": css.class({ "padding": "1rem", "color": "red" }), "cardTitle": css.class({ "fontWeight": "600" }) };
+		export const styles = { "card": css.class({ "padding": "1rem", "color": "red" }) };
 		export default styles;",
-		    "converted": 2,
-		    "outcomes": [
+		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		          "portable-artifact",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
 		      },
+		    ],
+		    "outcomes": [
 		      {
 		        "outcome": "portable-artifact",
 		        "representation": "portable-artifact",
@@ -98,101 +119,100 @@ test("css-modules -> panda -> css-modules: preserves an actionable concrete roun
 		        "lossiness": "lossless",
 		        "valid": true,
 		      },
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
 		    ],
 		  },
 		}
-	`);
+	`)
 });
 
-test("css-modules -> panda -> css-modules: retains edge semantics without silent loss", () => {
+test("css-modules -> panda -> css-modules: retains the documented secondary API without silent loss", () => {
 	const first = forward.run({ source: edgeSource, file: "Card.module.css", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(first, "css-modules -> panda round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
 	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
 		{
 		  "forward": {
-		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
-		export const styles = { "card": css({ padding: "1rem", color: "theme.foreground" }), "cardTitle": css({ fontWeight: "600" }) };
-		export default styles;",
-		    "converted": 2,
+		    "changed": false,
+		    "code": "// pandwind:migrate-skip (lowering-residual: composition)
+		.card { color: red; }
+		.primary { composes: card; font-weight: 600; }",
+		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "residual",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "target-native",
-		        "representation": "named-map",
+		        "outcome": "residual",
+		        "representation": "residual",
 		      },
 		      {
-		        "outcome": "target-native",
-		        "representation": "named-map",
+		        "outcome": "residual",
+		        "representation": "residual",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "preprocessor or CSS Modules composition needs its source context",
+		        "kind": "composition",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		  "reverse": {
-		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
-
-		export const styles = { "card": css.class({ "padding": "1rem", "color": "theme.foreground" }), "cardTitle": css.class({ "fontWeight": "600" }) };
-		export default styles;",
-		    "converted": 2,
-		    "outcomes": [
-		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
-		      },
-		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
-		      },
-		    ],
+		    "changed": false,
+		    "code": "// pandwind:migrate-skip (lowering-residual: composition)
+		.card { color: red; }
+		.primary { composes: card; font-weight: 600; }",
+		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [],
+		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
+		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 
-test("css-modules -> panda -> css-modules: preserves concrete theme and project context variants", () => {
-	const firstBlue = forward.run({ source: themedSource, file: "Card.module.css", semantic: blueSemantic, project: blueProject });
-	const secondBlue = reverse.run({ source: firstBlue.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
-	const firstAmber = forward.run({ source: themedSource, file: "Card.module.css", semantic: amberSemantic, project: amberProject });
-	const secondAmber = reverse.run({ source: firstAmber.code, file: "Card.tsx", semantic: amberTargetSemantic, project: amberProject });
+test("css-modules -> panda -> css-modules: preserves concrete theme and project context variants", async () => {
+	const firstBlue = await forward.runAsync({ source: themedSource, file: "Card.module.css", semantic: blueSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "styles.ts", semantic: blueTargetSemantic, project: blueProject });
+	const firstAmber = await forward.runAsync({ source: themedSource, file: "Card.module.css", semantic: amberSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "styles.ts", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.CssModules, CodemodAdapterId.Panda);
+	expectConfiguredTargetTokenEvidence(firstBlue, CodemodAdapterId.Panda, "css-modules -> panda round-trip token config");
+	expectRouteScenarioEvidence(firstBlue, "css-modules -> panda round-trip blue forward");
+	expectRouteScenarioEvidence(firstAmber, "css-modules -> panda round-trip amber forward");
+	expectConfiguredTargetTokenAbsence(firstAmber, CodemodAdapterId.Panda, "css-modules -> panda round-trip amber literal config");
+
 	expectActionableRoundTrip(firstBlue, secondBlue);
 	expectActionableRoundTrip(firstAmber, secondAmber);
 	expectExplicitResidualEvidence(firstBlue);
@@ -208,27 +228,31 @@ test("css-modules -> panda -> css-modules: preserves concrete theme and project 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "styled-system/css";
-		export const styles = { "card": css({ padding: "1rem", color: theme.colors.brand }), "cardTitle": css({ fontWeight: "600" }) };
+		export const styles = { "card": css({ padding: "1rem", color: "#2563eb" }) };
 		export default styles;",
-		      "converted": 2,
+		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
-		          "representation": "custom-property",
-		        },
-		        {
-		          "outcome": "target-native",
-		          "representation": "named-map",
+		          "outcome": "static",
+		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [],
 		      "skipped": 0,
 		      "validations": [
-		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
-		        },
 		        {
 		          "differences": [],
 		          "lossiness": "lossless",
@@ -241,14 +265,25 @@ test("css-modules -> panda -> css-modules: preserves concrete theme and project 
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const styles = { "card": css.class({ "padding": "1rem", "color": "#f97316" }), "cardTitle": css.class({ "fontWeight": "600" }) };
+		export const styles = { "card": css.class({ "padding": "1rem", "color": "#2563eb" }) };
 		export default styles;",
-		      "converted": 2,
-		      "outcomes": [
+		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
 		        {
-		          "outcome": "portable-artifact",
-		          "representation": "portable-artifact",
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "residual",
+		            "portable-artifact",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
 		        },
+		      ],
+		      "outcomes": [
 		        {
 		          "outcome": "portable-artifact",
 		          "representation": "portable-artifact",
@@ -257,11 +292,6 @@ test("css-modules -> panda -> css-modules: preserves concrete theme and project 
 		      "residuals": [],
 		      "skipped": 0,
 		      "validations": [
-		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
-		        },
 		        {
 		          "differences": [],
 		          "lossiness": "lossless",
@@ -274,27 +304,31 @@ test("css-modules -> panda -> css-modules: preserves concrete theme and project 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "styled-system/css";
-		export const styles = { "card": css({ padding: "1rem", color: theme.colors.brand }), "cardTitle": css({ fontWeight: "600" }) };
+		export const styles = { "card": css({ padding: "1rem", color: "brand.500" }) };
 		export default styles;",
-		      "converted": 2,
+		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
-		          "representation": "custom-property",
-		        },
-		        {
-		          "outcome": "target-native",
-		          "representation": "named-map",
+		          "outcome": "static",
+		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [],
 		      "skipped": 0,
 		      "validations": [
-		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
-		        },
 		        {
 		          "differences": [],
 		          "lossiness": "lossless",
@@ -307,14 +341,25 @@ test("css-modules -> panda -> css-modules: preserves concrete theme and project 
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const styles = { "card": css.class({ "padding": "1rem", "color": "#2563eb" }), "cardTitle": css.class({ "fontWeight": "600" }) };
+		export const styles = { "card": css.class({ "padding": "1rem", "color": "brand.500" }) };
 		export default styles;",
-		      "converted": 2,
-		      "outcomes": [
+		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
 		        {
-		          "outcome": "portable-artifact",
-		          "representation": "portable-artifact",
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "residual",
+		            "portable-artifact",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
 		        },
+		      ],
+		      "outcomes": [
 		        {
 		          "outcome": "portable-artifact",
 		          "representation": "portable-artifact",
@@ -328,22 +373,19 @@ test("css-modules -> panda -> css-modules: preserves concrete theme and project 
 		          "lossiness": "lossless",
 		          "valid": true,
 		        },
-		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
-		        },
 		      ],
 		    },
 		  },
 		}
-	`);
+	`)
 });
 
-test("css-modules -> panda -> css-modules: resolves token references across both concrete legs", () => {
-	const first = forward.run({ source: tokenSource, file: "Card.module.css", semantic: blueSemantic, project: blueProject });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
+test("css-modules -> panda -> css-modules: resolves token values across both concrete legs", async () => {
+	const first = await forward.runAsync({ source: tokenSource, file: "Card.module.css", semantic: blueSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "styles.ts", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.CssModules, CodemodAdapterId.Panda);
+	expectRouteScenarioEvidence(first, "css-modules -> panda round-trip token forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
@@ -352,27 +394,31 @@ test("css-modules -> panda -> css-modules: resolves token references across both
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		export const styles = { "card": css({ padding: "1rem", color: "var(--colors-brand)" }), "cardTitle": css({ fontWeight: "600" }) };
+		export const styles = { "card": css({ padding: "1rem", color: "brand.500" }) };
 		export default styles;",
-		    "converted": 2,
+		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "target-native",
-		        "representation": "named-map",
-		      },
-		      {
-		        "outcome": "target-native",
-		        "representation": "named-map",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [],
 		    "skipped": 0,
 		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
 		      {
 		        "differences": [],
 		        "lossiness": "lossless",
@@ -385,14 +431,25 @@ test("css-modules -> panda -> css-modules: resolves token references across both
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const styles = { "card": css.class({ "padding": "1rem", "color": "var(--colors-brand)" }), "cardTitle": css.class({ "fontWeight": "600" }) };
+		export const styles = { "card": css.class({ "padding": "1rem", "color": "brand.500" }) };
 		export default styles;",
-		    "converted": 2,
-		    "outcomes": [
+		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		          "portable-artifact",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
 		      },
+		    ],
+		    "outcomes": [
 		      {
 		        "outcome": "portable-artifact",
 		        "representation": "portable-artifact",
@@ -406,14 +463,9 @@ test("css-modules -> panda -> css-modules: resolves token references across both
 		        "lossiness": "lossless",
 		        "valid": true,
 		      },
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
 		    ],
 		  },
 		}
-	`);
+	`)
 });
 

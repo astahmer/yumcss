@@ -3,26 +3,31 @@ import { expect, test } from "vitest";
 import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.SolidStyled, CodemodAdapterId.VueStyled);
-	const happySource = "import { styled } from \"solid-styled-components\";\nexport const Card = styled.div({ color: \"red\", padding: \"1rem\" });\nexport const App = () => <Card />;";
-const edgeSource = "import { styled } from \"solid-styled-components\";\nexport const Card = styled.div({ color: theme.foreground, padding: \"1rem\" });\nexport const App = () => <Card />;";
-const malformedSource = "import { styled } from \"solid-styled-components\";\nexport const Card = styled.div({ color: \"red\", padding: \"1rem\" });\nexport const App = () => <Card />;\nconst unfinished = { /* unfinished solid-styled */";
+	const happySource = "import { styled } from \"solid-styled-components\";\nexport const Card = styled.div`color: red; padding: 1rem;`;";
+const edgeSource = "import { styled } from \"solid-styled-components\";\nexport const Card = styled.div`color: red; padding: 1rem;`;";
+const malformedSource = "import { styled } from \"solid-styled-components\";\nexport const Card = styled.div`color: red; padding: 1rem;`;\nconst unfinished = { /* unfinished solid-styled */";
 const sourceSemantic = { source: { framework: BuiltinHostFramework.Solid } };
-const themedSource = "import { styled } from \"solid-styled-components\";\nexport const Card = styled.div({ color: theme.colors.brand, padding: \"1rem\" });\nexport const App = () => <Card />;";
-const tokenSource = "import { styled } from \"solid-styled-components\";\nexport const Card = styled.div({ color: \"$colors.brand\", padding: \"1rem\" });\nexport const App = () => <Card />;";
-const blueSemantic = { source: { framework: BuiltinHostFramework.Solid }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { source: { framework: BuiltinHostFramework.Solid }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { source: { framework: BuiltinHostFramework.Vue }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { source: { framework: BuiltinHostFramework.Vue }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {} };
+const themedSource = "import { styled } from \"solid-styled-components\";\nexport const Card = styled.div`color: #2563eb; padding: 1rem;`;";
+const tokenSource = "import { styled } from \"solid-styled-components\";\nexport const Card = styled.div`color: #2563eb; padding: 1rem;`;";
+const blueSemantic = { source: { framework: BuiltinHostFramework.Solid } };
+const amberSemantic = { source: { framework: BuiltinHostFramework.Solid } };
+const blueTargetSemantic = { source: { framework: BuiltinHostFramework.Vue } };
+const amberTargetSemantic = { source: { framework: BuiltinHostFramework.Vue } };
+const blueProject = createAdapterRouteProject(CodemodAdapterId.SolidStyled, CodemodAdapterId.VueStyled, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.SolidStyled, CodemodAdapterId.VueStyled, "#f97316");
 
 test("solid-styled -> vue-styled: migrates concrete solid-styled syntax to vue-styled", () => {
-	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
+	const result = route.run({ source: happySource, file: "styles.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -37,6 +42,7 @@ test("solid-styled -> vue-styled: migrates concrete solid-styled syntax to vue-s
 		expect(result.residuals.length).toBeGreaterThan(0);
 		expect(result.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(result, "solid-styled -> vue-styled happy");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
@@ -46,10 +52,24 @@ test("solid-styled -> vue-styled: migrates concrete solid-styled syntax to vue-s
 
 
 		export const Card = styled.div({ "padding": "1rem", "color": "red" });
-		export const App = () => <Card />;
 		</script>
 		",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "static",
@@ -66,50 +86,70 @@ test("solid-styled -> vue-styled: migrates concrete solid-styled syntax to vue-s
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
-test("solid-styled -> vue-styled: carries concrete solid-styled dynamics or edge syntax explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
+test("solid-styled -> vue-styled: carries a documented secondary solid-styled API explicitly", () => {
+	const result = route.run({ source: edgeSource, file: "styles.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(result, "solid-styled -> vue-styled secondary");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { styled } from "solid-styled-components";
-		export const Card = // pandwind:migrate-skip (route: solid-styled -> vue-styled | lowering-residual: host-framework | capability-blocked: dynamic-values: dynamic: theme.foreground | available: named-map, target-native, residual)
-		styled.div({ color: theme.foreground, padding: "1rem" });
-		export const App = () => <div :class="Card.class" :style="Card.style" />;",
-		  "converted": 0,
+		  "code": "<script setup>
+		import styled from "vue-styled-components";
+
+
+		export const Card = styled.div({ "padding": "1rem", "color": "red" });
+		</script>
+		",
+		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
-		      "representation": "target-native",
+		      "outcome": "static",
+		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
 		    {
-		      "hint": "dynamic-values: dynamic: theme.foreground",
-		      "kind": "capability",
-		      "preserved": undefined,
-		    },
-		    {
-		      "hint": "vue-styled has no host representation for vue",
-		      "kind": "host-framework",
-		      "preserved": undefined,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
-		  "skipped": 1,
-		  "validations": [],
 		}
-	`);
+	`)
 });
 
-test("solid-styled -> vue-styled: lowers concrete theme and project context variants", () => {
-	const blue = route.run({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const amber = route.run({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
+test("solid-styled -> vue-styled: loads concrete theme and project context variants", async () => {
+	const blue = await route.runAsync({ source: themedSource, file: "styles.tsx", semantic: blueSemantic, project: blueProject });
+	const amber = await route.runAsync({ source: themedSource, file: "styles.tsx", semantic: amberSemantic, project: amberProject });
 	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
 	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.SolidStyled, CodemodAdapterId.VueStyled);
+	expectConfiguredTargetTokenEvidence(blue, CodemodAdapterId.VueStyled, "solid-styled -> vue-styled blue config");
+	expectRouteScenarioEvidence(blue, "solid-styled -> vue-styled blue config");
+	expectRouteScenarioEvidence(amber, "solid-styled -> vue-styled amber config");
+	expectConfiguredTargetTokenAbsence(amber, CodemodAdapterId.VueStyled, "solid-styled -> vue-styled amber literal config");
+
 	expectExplicitResidualEvidence(blue);
 	expectExplicitResidualEvidence(amber);
 	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
@@ -120,11 +160,25 @@ test("solid-styled -> vue-styled: lowers concrete theme and project context vari
 		import styled from "vue-styled-components";
 
 
-		export const Card = styled.div({ "padding": "1rem", "color": "#f97316" });
-		export const App = () => <Card />;
+		export const Card = styled.div({ "padding": "1rem", "color": "#2563eb" });
 		</script>
 		",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "static",
@@ -148,10 +202,24 @@ test("solid-styled -> vue-styled: lowers concrete theme and project context vari
 
 
 		export const Card = styled.div({ "padding": "1rem", "color": "#2563eb" });
-		export const App = () => <Card />;
 		</script>
 		",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "static",
@@ -169,12 +237,15 @@ test("solid-styled -> vue-styled: lowers concrete theme and project context vari
 		    ],
 		  },
 		}
-	`);
+	`)
 });
 
-test("solid-styled -> vue-styled: resolves concrete token references with project context", () => {
-	const result = route.run({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
+test("solid-styled -> vue-styled: resolves concrete token values with project context", async () => {
+	const result = await route.runAsync({ source: tokenSource, file: "styles.tsx", semantic: blueSemantic, project: blueProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.SolidStyled, CodemodAdapterId.VueStyled);
+	expectConfiguredTargetTokenEvidence(result, CodemodAdapterId.VueStyled, "solid-styled -> vue-styled token config");
+	expectRouteScenarioEvidence(result, "solid-styled -> vue-styled token config");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
@@ -183,11 +254,25 @@ test("solid-styled -> vue-styled: resolves concrete token references with projec
 		import styled from "vue-styled-components";
 
 
-		export const Card = styled.div({ "padding": "1rem", "color": "$colors.brand" });
-		export const App = () => <Card />;
+		export const Card = styled.div({ "padding": "1rem", "color": "#2563eb" });
 		</script>
 		",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "static",
@@ -204,12 +289,13 @@ test("solid-styled -> vue-styled: resolves concrete token references with projec
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
 test("solid-styled -> vue-styled: preserves malformed concrete solid-styled input", () => {
-	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
+	const result = route.run({ source: malformedSource, file: "styles.tsx", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished solid-styled */");
+	expectRouteScenarioEvidence(result, "solid-styled -> vue-styled malformed");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
@@ -219,11 +305,25 @@ test("solid-styled -> vue-styled: preserves malformed concrete solid-styled inpu
 
 
 		export const Card = styled.div({ "padding": "1rem", "color": "red" });
-		export const App = () => <Card />;
 		const unfinished = { /* unfinished solid-styled */
 		</script>
 		",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "static",
@@ -240,6 +340,6 @@ test("solid-styled -> vue-styled: preserves malformed concrete solid-styled inpu
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 

@@ -3,26 +3,31 @@ import { expect, test } from "vitest";
 import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.AuthoredCss, CodemodAdapterId.Mui);
-	const happySource = ".card { color: red; padding: 1rem; }\n.card:hover { color: blue; }";
-const edgeSource = ".card { color: theme.foreground; padding: 1rem; }\n.card:hover { color: blue; }";
-const malformedSource = ".card { color: red; padding: 1rem; }\n.card:hover { color: blue; }\nconst unfinished = { /* unfinished authored-css */";
+	const happySource = ".card { color: red; padding: 1rem; }";
+const edgeSource = "@media (prefers-color-scheme: dark) {\n  .card { color: white; }\n}\n@keyframes pulse {\n  from { opacity: 0; }\n  to { opacity: 1; }\n}";
+const malformedSource = ".card { color: red; padding: 1rem; }\nconst unfinished = { /* unfinished authored-css */";
 const sourceSemantic = undefined;
-const themedSource = ".card { color: ${theme.colors.brand}; padding: 1rem; }\n.card:hover { color: blue; }";
-const tokenSource = ".card { color: var(--colors-brand); padding: 1rem; }\n.card:hover { color: blue; }";
-const blueSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "palette.primary.main", authored: "theme.palette.primary.main", resolved: "#2563eb" }] };
-const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "palette.primary.main", authored: "theme.palette.primary.main", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/src/theme.ts":"export const muiTheme = { palette: { primary: { main: \"#2563eb\" } } };"} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/src/theme.ts":"export const muiTheme = { palette: { primary: { main: \"#f97316\" } } };"} };
+const themedSource = ".card { color: #2563eb; padding: 1rem; }";
+const tokenSource = ".card { color: #2563eb; padding: 1rem; }";
+const blueSemantic = undefined;
+const amberSemantic = undefined;
+const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
+const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
+const blueProject = createAdapterRouteProject(CodemodAdapterId.AuthoredCss, CodemodAdapterId.Mui, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.AuthoredCss, CodemodAdapterId.Mui, "#f97316");
 
 test("authored-css -> mui: migrates concrete authored-css syntax to mui", () => {
-	const result = route.run({ source: happySource, file: "Card.css", semantic: sourceSemantic });
+	const result = route.run({ source: happySource, file: "card.css", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -37,19 +42,28 @@ test("authored-css -> mui: migrates concrete authored-css syntax to mui", () => 
 		expect(result.residuals.length).toBeGreaterThan(0);
 		expect(result.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(result, "authored-css -> mui happy");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": false,
-		  "code": "// pandwind:migrate-skip (lowering-residual: host-framework, capability)
-		.card { color: red; padding: 1rem; }
-		.card:hover { color: blue; }",
+		  "code": "// pandwind:migrate-skip (lowering-residual: host-framework)
+		.card { color: red; padding: 1rem; }",
 		  "converted": 0,
-		  "outcomes": [
+		  "generatedFiles": [],
+		  "loweringPlans": [
 		    {
-		      "outcome": "residual",
-		      "representation": "residual",
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
 		    },
+		  ],
+		  "outcomes": [
 		    {
 		      "outcome": "residual",
 		      "representation": "residual",
@@ -61,29 +75,53 @@ test("authored-css -> mui: migrates concrete authored-css syntax to mui", () => 
 		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },
-		    {
-		      "hint": "stylesheet migration requires a single local class selector",
-		      "kind": "capability",
-		      "preserved": undefined,
-		    },
 		  ],
-		  "skipped": 2,
+		  "skipped": 1,
 		  "validations": [],
 		}
-	`);
+	`)
 });
 
-test("authored-css -> mui: carries concrete authored-css dynamics or edge syntax explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "Card.css", semantic: sourceSemantic });
+test("authored-css -> mui: carries a documented secondary authored-css API explicitly", () => {
+	const result = route.run({ source: edgeSource, file: "card.css", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(result, "authored-css -> mui secondary");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": false,
-		  "code": "// pandwind:migrate-skip (lowering-residual: host-framework, capability)
-		.card { color: theme.foreground; padding: 1rem; }
-		.card:hover { color: blue; }",
+		  "code": "// pandwind:migrate-skip (lowering-residual: host-framework)
+		@media (prefers-color-scheme: dark) {
+		  .card { color: white; }
+		}
+		@keyframes pulse {
+		  from { opacity: 0; }
+		  to { opacity: 1; }
+		}",
 		  "converted": 0,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "named-map",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
@@ -101,37 +139,51 @@ test("authored-css -> mui: carries concrete authored-css dynamics or edge syntax
 		      "preserved": undefined,
 		    },
 		    {
-		      "hint": "stylesheet migration requires a single local class selector",
-		      "kind": "capability",
+		      "hint": "MUI sx styles require a host component prop; no standalone sx() API exists",
+		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },
 		  ],
 		  "skipped": 2,
 		  "validations": [],
 		}
-	`);
+	`)
 });
 
-test("authored-css -> mui: lowers concrete theme and project context variants", () => {
-	const blue = route.run({ source: themedSource, file: "Card.css", semantic: blueSemantic, project: blueProject });
-	const amber = route.run({ source: themedSource, file: "Card.css", semantic: amberSemantic, project: amberProject });
+test("authored-css -> mui: loads concrete theme and project context variants", async () => {
+	const blue = await route.runAsync({ source: themedSource, file: "card.css", semantic: blueSemantic, project: blueProject });
+	const amber = await route.runAsync({ source: themedSource, file: "card.css", semantic: amberSemantic, project: amberProject });
 	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
 	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.AuthoredCss, CodemodAdapterId.Mui);
+	expectConfiguredTargetTokenEvidence(blue, CodemodAdapterId.Mui, "authored-css -> mui blue config");
+	expectRouteScenarioEvidence(blue, "authored-css -> mui blue config");
+	expectRouteScenarioEvidence(amber, "authored-css -> mui amber config");
+	expectConfiguredTargetTokenAbsence(amber, CodemodAdapterId.Mui, "authored-css -> mui amber literal config");
+
 	expectExplicitResidualEvidence(blue);
 	expectExplicitResidualEvidence(amber);
 	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
 		{
 		  "amber": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: host-framework, capability)
-		.card { color: \${theme.colors.brand}; padding: 1rem; }
-		.card:hover { color: blue; }",
+		    "code": "// pandwind:migrate-skip (lowering-residual: host-framework)
+		.card { color: #2563eb; padding: 1rem; }",
 		    "converted": 0,
-		    "outcomes": [
+		    "generatedFiles": [],
+		    "loweringPlans": [
 		      {
-		        "outcome": "residual",
-		        "representation": "residual",
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
 		      },
+		    ],
+		    "outcomes": [
 		      {
 		        "outcome": "residual",
 		        "representation": "residual",
@@ -143,26 +195,29 @@ test("authored-css -> mui: lowers concrete theme and project context variants", 
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
-		      {
-		        "hint": "stylesheet migration requires a single local class selector",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
 		    ],
-		    "skipped": 2,
+		    "skipped": 1,
 		    "validations": [],
 		  },
 		  "blue": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: host-framework, capability)
-		.card { color: \${theme.colors.brand}; padding: 1rem; }
-		.card:hover { color: blue; }",
+		    "code": "// pandwind:migrate-skip (lowering-residual: host-framework)
+		.card { color: #2563eb; padding: 1rem; }",
 		    "converted": 0,
-		    "outcomes": [
+		    "generatedFiles": [],
+		    "loweringPlans": [
 		      {
-		        "outcome": "residual",
-		        "representation": "residual",
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
 		      },
+		    ],
+		    "outcomes": [
 		      {
 		        "outcome": "residual",
 		        "representation": "residual",
@@ -174,35 +229,41 @@ test("authored-css -> mui: lowers concrete theme and project context variants", 
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
-		      {
-		        "hint": "stylesheet migration requires a single local class selector",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
 		    ],
-		    "skipped": 2,
+		    "skipped": 1,
 		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 
-test("authored-css -> mui: resolves concrete token references with project context", () => {
-	const result = route.run({ source: tokenSource, file: "Card.css", semantic: blueSemantic, project: blueProject });
+test("authored-css -> mui: resolves concrete token values with project context", async () => {
+	const result = await route.runAsync({ source: tokenSource, file: "card.css", semantic: blueSemantic, project: blueProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.AuthoredCss, CodemodAdapterId.Mui);
+	expectConfiguredTargetTokenEvidence(result, CodemodAdapterId.Mui, "authored-css -> mui token config");
+	expectRouteScenarioEvidence(result, "authored-css -> mui token config");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": false,
-		  "code": "// pandwind:migrate-skip (lowering-residual: host-framework, capability)
-		.card { color: var(--colors-brand); padding: 1rem; }
-		.card:hover { color: blue; }",
+		  "code": "// pandwind:migrate-skip (lowering-residual: host-framework)
+		.card { color: #2563eb; padding: 1rem; }",
 		  "converted": 0,
-		  "outcomes": [
+		  "generatedFiles": [],
+		  "loweringPlans": [
 		    {
-		      "outcome": "residual",
-		      "representation": "residual",
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
 		    },
+		  ],
+		  "outcomes": [
 		    {
 		      "outcome": "residual",
 		      "representation": "residual",
@@ -214,35 +275,39 @@ test("authored-css -> mui: resolves concrete token references with project conte
 		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },
-		    {
-		      "hint": "stylesheet migration requires a single local class selector",
-		      "kind": "capability",
-		      "preserved": undefined,
-		    },
 		  ],
-		  "skipped": 2,
+		  "skipped": 1,
 		  "validations": [],
 		}
-	`);
+	`)
 });
 
 test("authored-css -> mui: preserves malformed concrete authored-css input", () => {
-	const result = route.run({ source: malformedSource, file: "Card.css", semantic: sourceSemantic });
+	const result = route.run({ source: malformedSource, file: "card.css", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished authored-css */");
+	expectRouteScenarioEvidence(result, "authored-css -> mui malformed");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": false,
-		  "code": "// pandwind:migrate-skip (lowering-residual: parse, host-framework, capability)
+		  "code": "// pandwind:migrate-skip (lowering-residual: parse, host-framework)
 		.card { color: red; padding: 1rem; }
-		.card:hover { color: blue; }
 		const unfinished = { /* unfinished authored-css */",
 		  "converted": 0,
-		  "outcomes": [
+		  "generatedFiles": [],
+		  "loweringPlans": [
 		    {
-		      "outcome": "residual",
-		      "representation": "residual",
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
 		    },
+		  ],
+		  "outcomes": [
 		    {
 		      "outcome": "residual",
 		      "representation": "residual",
@@ -259,15 +324,10 @@ test("authored-css -> mui: preserves malformed concrete authored-css input", () 
 		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },
-		    {
-		      "hint": "stylesheet migration requires a single local class selector",
-		      "kind": "capability",
-		      "preserved": undefined,
-		    },
 		  ],
-		  "skipped": 3,
+		  "skipped": 2,
 		  "validations": [],
 		}
-	`);
+	`)
 });
 

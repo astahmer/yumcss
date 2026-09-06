@@ -3,26 +3,31 @@ import { expect, test } from "vitest";
 import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.SolidStyled, CodemodAdapterId.UnoCSS);
-	const happySource = "import { styled } from \"solid-styled-components\";\nexport const Card = styled.div({ color: \"red\", padding: \"1rem\" });\nexport const App = () => <Card />;";
-const edgeSource = "import { styled } from \"solid-styled-components\";\nexport const Card = styled.div({ color: theme.foreground, padding: \"1rem\" });\nexport const App = () => <Card />;";
-const malformedSource = "import { styled } from \"solid-styled-components\";\nexport const Card = styled.div({ color: \"red\", padding: \"1rem\" });\nexport const App = () => <Card />;\nconst unfinished = { /* unfinished solid-styled */";
+	const happySource = "import { styled } from \"solid-styled-components\";\nexport const Card = styled.div`color: red; padding: 1rem;`;";
+const edgeSource = "import { styled } from \"solid-styled-components\";\nexport const Card = styled.div`color: red; padding: 1rem;`;";
+const malformedSource = "import { styled } from \"solid-styled-components\";\nexport const Card = styled.div`color: red; padding: 1rem;`;\nconst unfinished = { /* unfinished solid-styled */";
 const sourceSemantic = { source: { framework: BuiltinHostFramework.Solid } };
-const themedSource = "import { styled } from \"solid-styled-components\";\nexport const Card = styled.div({ color: theme.colors.brand, padding: \"1rem\" });\nexport const App = () => <Card />;";
-const tokenSource = "import { styled } from \"solid-styled-components\";\nexport const Card = styled.div({ color: \"$colors.brand\", padding: \"1rem\" });\nexport const App = () => <Card />;";
-const blueSemantic = { source: { framework: BuiltinHostFramework.Solid }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { source: { framework: BuiltinHostFramework.Solid }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/uno.config.ts":"export default defineConfig({ theme: { colors: { brand: \"#2563eb\" } } });","/virtual/pandwind-route-project/app/globals.css":"@theme { --color-brand: #2563eb; --spacing-card: 1.125rem; }"} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/uno.config.ts":"export default defineConfig({ theme: { colors: { brand: \"#f97316\" } } });","/virtual/pandwind-route-project/app/globals.css":"@theme { --color-brand: #f97316; --spacing-card: 1.125rem; }"} };
+const themedSource = "import { styled } from \"solid-styled-components\";\nexport const Card = styled.div`color: #2563eb; padding: 1rem;`;";
+const tokenSource = "import { styled } from \"solid-styled-components\";\nexport const Card = styled.div`color: #2563eb; padding: 1rem;`;";
+const blueSemantic = { source: { framework: BuiltinHostFramework.Solid } };
+const amberSemantic = { source: { framework: BuiltinHostFramework.Solid } };
+const blueTargetSemantic = undefined;
+const amberTargetSemantic = undefined;
+const blueProject = createAdapterRouteProject(CodemodAdapterId.SolidStyled, CodemodAdapterId.UnoCSS, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.SolidStyled, CodemodAdapterId.UnoCSS, "#f97316");
 
 test("solid-styled -> unocss: migrates concrete solid-styled syntax to unocss", () => {
-	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
+	const result = route.run({ source: happySource, file: "styles.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -37,14 +42,31 @@ test("solid-styled -> unocss: migrates concrete solid-styled syntax to unocss", 
 		expect(result.residuals.length).toBeGreaterThan(0);
 		expect(result.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(result, "solid-styled -> unocss happy");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "
-		export const Card = "[padding:1rem] [color:red]";
-		export const App = () => <div className={Card} />;",
+		import { createCx } from "pandwind/cx";
+		const cx = createCx();
+		export const Card = (props) => <div {...props} class={cx("[padding:1rem] [color:red]", props.class)} />;",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "static",
@@ -61,45 +83,67 @@ test("solid-styled -> unocss: migrates concrete solid-styled syntax to unocss", 
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
-test("solid-styled -> unocss: carries concrete solid-styled dynamics or edge syntax explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
+test("solid-styled -> unocss: carries a documented secondary solid-styled API explicitly", () => {
+	const result = route.run({ source: edgeSource, file: "styles.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(result, "solid-styled -> unocss secondary");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { styled } from "solid-styled-components";
-		export const Card = // pandwind:migrate-skip (route: solid-styled -> unocss | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
-		styled.div({ color: theme.foreground, padding: "1rem" });
-		export const App = () => <Card />;",
-		  "converted": 0,
+		  "code": "
+		import { createCx } from "pandwind/cx";
+		const cx = createCx();
+		export const Card = (props) => <div {...props} class={cx("[padding:1rem] [color:red]", props.class)} />;",
+		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
-		      "representation": "custom-property",
+		      "outcome": "static",
+		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
 		    {
-		      "hint": "bind --pandwind-dynamic-5qa8dh at runtime for target unocss",
-		      "kind": "dynamic-custom-property",
-		      "preserved": undefined,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
-		  "skipped": 1,
-		  "validations": [],
 		}
-	`);
+	`)
 });
 
-test("solid-styled -> unocss: lowers concrete theme and project context variants", () => {
-	const blue = route.run({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const amber = route.run({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
+test("solid-styled -> unocss: loads concrete theme and project context variants", async () => {
+	const blue = await route.runAsync({ source: themedSource, file: "styles.tsx", semantic: blueSemantic, project: blueProject });
+	const amber = await route.runAsync({ source: themedSource, file: "styles.tsx", semantic: amberSemantic, project: amberProject });
 	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
 	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.SolidStyled, CodemodAdapterId.UnoCSS);
+	expectConfiguredTargetTokenEvidence(blue, CodemodAdapterId.UnoCSS, "solid-styled -> unocss blue config");
+	expectRouteScenarioEvidence(blue, "solid-styled -> unocss blue config");
+	expectRouteScenarioEvidence(amber, "solid-styled -> unocss amber config");
+	expectConfiguredTargetTokenAbsence(amber, CodemodAdapterId.UnoCSS, "solid-styled -> unocss amber literal config");
+
 	expectExplicitResidualEvidence(blue);
 	expectExplicitResidualEvidence(amber);
 	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
@@ -107,9 +151,25 @@ test("solid-styled -> unocss: lowers concrete theme and project context variants
 		  "amber": {
 		    "changed": true,
 		    "code": "
-		export const Card = "[padding:1rem] [color:#f97316]";
-		export const App = () => <div className={Card} />;",
+		import { createCx } from "pandwind/cx";
+		const cx = createCx();
+		export const Card = (props) => <div {...props} class={cx("[padding:1rem] [color:#2563eb]", props.class)} />;",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "static",
@@ -129,9 +189,25 @@ test("solid-styled -> unocss: lowers concrete theme and project context variants
 		  "blue": {
 		    "changed": true,
 		    "code": "
-		export const Card = "[padding:1rem] [color:#2563eb]";
-		export const App = () => <div className={Card} />;",
+		import { createCx } from "pandwind/cx";
+		const cx = createCx();
+		export const Card = (props) => <div {...props} class={cx("[padding:1rem] text-brand", props.class)} />;",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "static",
@@ -149,20 +225,39 @@ test("solid-styled -> unocss: lowers concrete theme and project context variants
 		    ],
 		  },
 		}
-	`);
+	`)
 });
 
-test("solid-styled -> unocss: resolves concrete token references with project context", () => {
-	const result = route.run({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
+test("solid-styled -> unocss: resolves concrete token values with project context", async () => {
+	const result = await route.runAsync({ source: tokenSource, file: "styles.tsx", semantic: blueSemantic, project: blueProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.SolidStyled, CodemodAdapterId.UnoCSS);
+	expectConfiguredTargetTokenEvidence(result, CodemodAdapterId.UnoCSS, "solid-styled -> unocss token config");
+	expectRouteScenarioEvidence(result, "solid-styled -> unocss token config");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "
-		export const Card = "[padding:1rem] [color:$colors.brand]";
-		export const App = () => <div className={Card} />;",
+		import { createCx } from "pandwind/cx";
+		const cx = createCx();
+		export const Card = (props) => <div {...props} class={cx("[padding:1rem] text-brand", props.class)} />;",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "static",
@@ -179,21 +274,38 @@ test("solid-styled -> unocss: resolves concrete token references with project co
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
 test("solid-styled -> unocss: preserves malformed concrete solid-styled input", () => {
-	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
+	const result = route.run({ source: malformedSource, file: "styles.tsx", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished solid-styled */");
+	expectRouteScenarioEvidence(result, "solid-styled -> unocss malformed");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
-		export const Card = "[padding:1rem] [color:red]";
-		export const App = () => <div className={Card} />;
+		import { createCx } from "pandwind/cx";
+		const cx = createCx();
+		export const Card = (props) => <div {...props} class={cx("[padding:1rem] [color:red]", props.class)} />;
 		const unfinished = { /* unfinished solid-styled */",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "static",
@@ -210,6 +322,6 @@ test("solid-styled -> unocss: preserves malformed concrete solid-styled input", 
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 

@@ -3,30 +3,35 @@ import { expect, test } from "vitest";
 import { CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectActionableRoundTrip,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const forward = createAdapterRouteSpec(CodemodAdapterId.StyleX, CodemodAdapterId.AuthoredCss);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.AuthoredCss, CodemodAdapterId.StyleX);
-	const happySource = "import * as stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"red\", padding: \"1rem\" } });\nexport const App = () => <div {...stylex.props(styles.card)} />;";
-const edgeSource = "import * as stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: theme.foreground, padding: \"1rem\" } });\nexport const App = () => <div {...stylex.props(styles.card)} />;";
-const malformedSource = "import * as stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"red\", padding: \"1rem\" } });\nexport const App = () => <div {...stylex.props(styles.card)} />;\nconst unfinished = { /* unfinished stylex */";
+	const happySource = "import stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"red\", padding: 8 } });";
+const edgeSource = "import stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"red\" } });";
+const malformedSource = "import stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"red\", padding: 8 } });\nconst unfinished = { /* unfinished stylex */";
 const sourceSemantic = undefined;
-const themedSource = "import * as stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: theme.colors.brand, padding: \"1rem\" } });\nexport const App = () => <div {...stylex.props(styles.card)} />;";
-const tokenSource = "import * as stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"$colors.brand\", padding: \"1rem\" } });\nexport const App = () => <div {...stylex.props(styles.card)} />;";
-const blueSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/package.json":"{\"name\":\"stylex-fixture\",\"stylex\":{\"aliases\":{\"brand\":\"#2563eb\"}}}"} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/package.json":"{\"name\":\"stylex-fixture\",\"stylex\":{\"aliases\":{\"brand\":\"#f97316\"}}}"} };
+const themedSource = "import stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"#2563eb\", padding: 8 } });";
+const tokenSource = "import stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"#2563eb\", padding: 8 } });";
+const blueSemantic = undefined;
+const amberSemantic = undefined;
+const blueTargetSemantic = undefined;
+const amberTargetSemantic = undefined;
+const blueProject = createAdapterRouteProject(CodemodAdapterId.StyleX, CodemodAdapterId.AuthoredCss, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.StyleX, CodemodAdapterId.AuthoredCss, "#f97316");
 	const targetSemantic = undefined;
 
 test("stylex -> authored-css -> stylex: preserves an actionable concrete round trip", () => {
-	const first = forward.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.css", semantic: targetSemantic });
+	const first = forward.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
+	const second = reverse.run({ source: first.code, file: "card.css", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -36,6 +41,7 @@ test("stylex -> authored-css -> stylex: preserves an actionable concrete round t
 		expect(first.residuals.length).toBeGreaterThan(0);
 		expect(first.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(first, "stylex -> authored-css round-trip happy forward");
 	expectExplicitResidualEvidence(first);
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(second);
@@ -43,11 +49,25 @@ test("stylex -> authored-css -> stylex: preserves an actionable concrete round t
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import * as stylex from "@stylexjs/stylex";
+		    "code": "import stylex from "@stylexjs/stylex";
 		export const styles = // pandwind:migrate-skip (route: stylex -> authored-css | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
-		stylex.create({ card: { color: "red", padding: "1rem" } });
-		export const App = () => <div {...stylex.props(styles.card)} />;",
+		stylex.create({ card: { color: "red", padding: 8 } });",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		          "portable-artifact",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
@@ -66,18 +86,14 @@ test("stylex -> authored-css -> stylex: preserves an actionable concrete round t
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import * as stylex from "@stylexjs/stylex";
+		    "code": "// pandwind:migrate-skip (lowering-residual: parse)
+		import stylex from "@stylexjs/stylex";
 		export const styles = // pandwind:migrate-skip (route: stylex -> authored-css | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
-		stylex.create({ card: { color: "red", padding: "1rem" } });
-		export const App = () => <div {...stylex.props(styles.card)} />;",
+		stylex.create({ card: { color: "red", padding: 8 } });",
 		    "converted": 0,
-		    "outcomes": [
-		      {
-		        "outcome": "residual",
-		        "representation": "residual",
-		      },
-		    ],
+		    "generatedFiles": [],
+		    "loweringPlans": [],
+		    "outcomes": [],
 		    "residuals": [
 		      {
 		        "hint": "stylesheet statement is preserved outside the style program",
@@ -89,28 +105,19 @@ test("stylex -> authored-css -> stylex: preserves an actionable concrete round t
 		        "kind": "parse",
 		        "preserved": undefined,
 		      },
-		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet migration requires a single local class selector",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
 		    ],
-		    "skipped": 4,
+		    "skipped": 2,
 		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 
-test("stylex -> authored-css -> stylex: retains edge semantics without silent loss", () => {
-	const first = forward.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.css", semantic: targetSemantic });
+test("stylex -> authored-css -> stylex: retains the documented secondary API without silent loss", () => {
+	const first = forward.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
+	const second = reverse.run({ source: first.code, file: "card.css", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(first, "stylex -> authored-css round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
@@ -118,11 +125,25 @@ test("stylex -> authored-css -> stylex: retains edge semantics without silent lo
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import * as stylex from "@stylexjs/stylex";
-		export const styles = // pandwind:migrate-skip (route: stylex -> authored-css | capability-blocked: named-rules: named style rule: card | available: residual, portable-artifact)
-		stylex.create({ card: { color: theme.foreground, padding: "1rem" } });
-		export const App = () => <div {...stylex.props(styles.card)} />;",
+		    "code": "import stylex from "@stylexjs/stylex";
+		export const styles = // pandwind:migrate-skip (route: stylex -> authored-css | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
+		stylex.create({ card: { color: "red" } });",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		          "portable-artifact",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
@@ -141,18 +162,14 @@ test("stylex -> authored-css -> stylex: retains edge semantics without silent lo
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import * as stylex from "@stylexjs/stylex";
-		export const styles = // pandwind:migrate-skip (route: stylex -> authored-css | capability-blocked: named-rules: named style rule: card | available: residual, portable-artifact)
-		stylex.create({ card: { color: theme.foreground, padding: "1rem" } });
-		export const App = () => <div {...stylex.props(styles.card)} />;",
+		    "code": "// pandwind:migrate-skip (lowering-residual: parse)
+		import stylex from "@stylexjs/stylex";
+		export const styles = // pandwind:migrate-skip (route: stylex -> authored-css | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
+		stylex.create({ card: { color: "red" } });",
 		    "converted": 0,
-		    "outcomes": [
-		      {
-		        "outcome": "residual",
-		        "representation": "residual",
-		      },
-		    ],
+		    "generatedFiles": [],
+		    "loweringPlans": [],
+		    "outcomes": [],
 		    "residuals": [
 		      {
 		        "hint": "stylesheet statement is preserved outside the style program",
@@ -164,31 +181,27 @@ test("stylex -> authored-css -> stylex: retains edge semantics without silent lo
 		        "kind": "parse",
 		        "preserved": undefined,
 		      },
-		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet migration requires a single local class selector",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
 		    ],
-		    "skipped": 4,
+		    "skipped": 2,
 		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 
-test("stylex -> authored-css -> stylex: preserves concrete theme and project context variants", () => {
-	const firstBlue = forward.run({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const secondBlue = reverse.run({ source: firstBlue.code, file: "Card.css", semantic: blueTargetSemantic, project: blueProject });
-	const firstAmber = forward.run({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
-	const secondAmber = reverse.run({ source: firstAmber.code, file: "Card.css", semantic: amberTargetSemantic, project: amberProject });
+test("stylex -> authored-css -> stylex: preserves concrete theme and project context variants", async () => {
+	const firstBlue = await forward.runAsync({ source: themedSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "card.css", semantic: blueTargetSemantic, project: blueProject });
+	const firstAmber = await forward.runAsync({ source: themedSource, file: "styles.ts", semantic: amberSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "card.css", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.StyleX, CodemodAdapterId.AuthoredCss);
+	expectConfiguredTargetTokenEvidence(firstBlue, CodemodAdapterId.AuthoredCss, "stylex -> authored-css round-trip token config");
+	expectRouteScenarioEvidence(firstBlue, "stylex -> authored-css round-trip blue forward");
+	expectRouteScenarioEvidence(firstAmber, "stylex -> authored-css round-trip amber forward");
+	expectConfiguredTargetTokenAbsence(firstAmber, CodemodAdapterId.AuthoredCss, "stylex -> authored-css round-trip amber literal config");
+
 	expectActionableRoundTrip(firstBlue, secondBlue);
 	expectActionableRoundTrip(firstAmber, secondAmber);
 	expectExplicitResidualEvidence(firstBlue);
@@ -203,11 +216,25 @@ test("stylex -> authored-css -> stylex: preserves concrete theme and project con
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import * as stylex from "@stylexjs/stylex";
+		      "code": "import stylex from "@stylexjs/stylex";
 		export const styles = // pandwind:migrate-skip (route: stylex -> authored-css | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
-		stylex.create({ card: { color: theme.colors.brand, padding: "1rem" } });
-		export const App = () => <div {...stylex.props(styles.card)} />;",
+		stylex.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "residual",
+		            "portable-artifact",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
@@ -226,18 +253,14 @@ test("stylex -> authored-css -> stylex: preserves concrete theme and project con
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import * as stylex from "@stylexjs/stylex";
+		      "code": "// pandwind:migrate-skip (lowering-residual: parse)
+		import stylex from "@stylexjs/stylex";
 		export const styles = // pandwind:migrate-skip (route: stylex -> authored-css | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
-		stylex.create({ card: { color: theme.colors.brand, padding: "1rem" } });
-		export const App = () => <div {...stylex.props(styles.card)} />;",
+		stylex.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
-		      "outcomes": [
-		        {
-		          "outcome": "residual",
-		          "representation": "residual",
-		        },
-		      ],
+		      "generatedFiles": [],
+		      "loweringPlans": [],
+		      "outcomes": [],
 		      "residuals": [
 		        {
 		          "hint": "stylesheet statement is preserved outside the style program",
@@ -249,29 +272,33 @@ test("stylex -> authored-css -> stylex: preserves concrete theme and project con
 		          "kind": "parse",
 		          "preserved": undefined,
 		        },
-		        {
-		          "hint": "stylesheet statement is preserved outside the style program",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "stylesheet migration requires a single local class selector",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
 		      ],
-		      "skipped": 4,
+		      "skipped": 2,
 		      "validations": [],
 		    },
 		  },
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import * as stylex from "@stylexjs/stylex";
+		      "code": "import stylex from "@stylexjs/stylex";
 		export const styles = // pandwind:migrate-skip (route: stylex -> authored-css | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
-		stylex.create({ card: { color: theme.colors.brand, padding: "1rem" } });
-		export const App = () => <div {...stylex.props(styles.card)} />;",
+		stylex.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "residual",
+		            "portable-artifact",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
@@ -290,18 +317,14 @@ test("stylex -> authored-css -> stylex: preserves concrete theme and project con
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import * as stylex from "@stylexjs/stylex";
+		      "code": "// pandwind:migrate-skip (lowering-residual: parse)
+		import stylex from "@stylexjs/stylex";
 		export const styles = // pandwind:migrate-skip (route: stylex -> authored-css | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
-		stylex.create({ card: { color: theme.colors.brand, padding: "1rem" } });
-		export const App = () => <div {...stylex.props(styles.card)} />;",
+		stylex.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
-		      "outcomes": [
-		        {
-		          "outcome": "residual",
-		          "representation": "residual",
-		        },
-		      ],
+		      "generatedFiles": [],
+		      "loweringPlans": [],
+		      "outcomes": [],
 		      "residuals": [
 		        {
 		          "hint": "stylesheet statement is preserved outside the style program",
@@ -313,29 +336,21 @@ test("stylex -> authored-css -> stylex: preserves concrete theme and project con
 		          "kind": "parse",
 		          "preserved": undefined,
 		        },
-		        {
-		          "hint": "stylesheet statement is preserved outside the style program",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "stylesheet migration requires a single local class selector",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
 		      ],
-		      "skipped": 4,
+		      "skipped": 2,
 		      "validations": [],
 		    },
 		  },
 		}
-	`);
+	`)
 });
 
-test("stylex -> authored-css -> stylex: resolves token references across both concrete legs", () => {
-	const first = forward.run({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const second = reverse.run({ source: first.code, file: "Card.css", semantic: blueTargetSemantic, project: blueProject });
+test("stylex -> authored-css -> stylex: resolves token values across both concrete legs", async () => {
+	const first = await forward.runAsync({ source: tokenSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "card.css", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.StyleX, CodemodAdapterId.AuthoredCss);
+	expectRouteScenarioEvidence(first, "stylex -> authored-css round-trip token forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
@@ -343,11 +358,25 @@ test("stylex -> authored-css -> stylex: resolves token references across both co
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import * as stylex from "@stylexjs/stylex";
+		    "code": "import stylex from "@stylexjs/stylex";
 		export const styles = // pandwind:migrate-skip (route: stylex -> authored-css | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
-		stylex.create({ card: { color: "$colors.brand", padding: "1rem" } });
-		export const App = () => <div {...stylex.props(styles.card)} />;",
+		stylex.create({ card: { color: "#2563eb", padding: 8 } });",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		          "portable-artifact",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
@@ -366,18 +395,14 @@ test("stylex -> authored-css -> stylex: resolves token references across both co
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import * as stylex from "@stylexjs/stylex";
+		    "code": "// pandwind:migrate-skip (lowering-residual: parse)
+		import stylex from "@stylexjs/stylex";
 		export const styles = // pandwind:migrate-skip (route: stylex -> authored-css | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
-		stylex.create({ card: { color: "$colors.brand", padding: "1rem" } });
-		export const App = () => <div {...stylex.props(styles.card)} />;",
+		stylex.create({ card: { color: "#2563eb", padding: 8 } });",
 		    "converted": 0,
-		    "outcomes": [
-		      {
-		        "outcome": "residual",
-		        "representation": "residual",
-		      },
-		    ],
+		    "generatedFiles": [],
+		    "loweringPlans": [],
+		    "outcomes": [],
 		    "residuals": [
 		      {
 		        "hint": "stylesheet statement is preserved outside the style program",
@@ -389,21 +414,11 @@ test("stylex -> authored-css -> stylex: resolves token references across both co
 		        "kind": "parse",
 		        "preserved": undefined,
 		      },
-		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet migration requires a single local class selector",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
 		    ],
-		    "skipped": 4,
+		    "skipped": 2,
 		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 

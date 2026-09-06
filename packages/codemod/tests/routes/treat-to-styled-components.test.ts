@@ -3,26 +3,31 @@ import { expect, test } from "vitest";
 import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.Treat, CodemodAdapterId.StyledComponents);
-	const happySource = "import { style } from \"@treatjs/treat\";\nexport const card = style({ color: \"red\", padding: \"1rem\" });";
-const edgeSource = "import { style } from \"@treatjs/treat\";\nexport const card = style({ color: theme.foreground, padding: \"1rem\" });";
-const malformedSource = "import { style } from \"@treatjs/treat\";\nexport const card = style({ color: \"red\", padding: \"1rem\" });\nconst unfinished = { /* unfinished treat */";
+	const happySource = "import { style } from \"treat\";\nexport const card = style({ color: \"red\", padding: 8 });";
+const edgeSource = "import { style } from \"treat\";\nexport const card = style({ color: \"red\", padding: 8 });";
+const malformedSource = "import { style } from \"treat\";\nexport const card = style({ color: \"red\", padding: 8 });\nconst unfinished = { /* unfinished treat */";
 const sourceSemantic = undefined;
-const themedSource = "import { style } from \"@treatjs/treat\";\nexport const card = style({ color: theme.colors.brand, padding: \"1rem\" });";
-const tokenSource = "import { style } from \"@treatjs/treat\";\nexport const card = style({ color: \"$colors.brand\", padding: \"1rem\" });";
-const blueSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {} };
+const themedSource = "import { style } from \"treat\";\nexport const card = style({ color: \"#2563eb\", padding: 8 });";
+const tokenSource = "import { style } from \"treat\";\nexport const card = style({ color: \"#2563eb\", padding: 8 });";
+const blueSemantic = undefined;
+const amberSemantic = undefined;
+const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
+const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
+const blueProject = createAdapterRouteProject(CodemodAdapterId.Treat, CodemodAdapterId.StyledComponents, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.Treat, CodemodAdapterId.StyledComponents, "#f97316");
 
 test("treat -> styled-components: migrates concrete treat syntax to styled-components", () => {
-	const result = route.run({ source: happySource, file: "Card.treat.ts", semantic: sourceSemantic });
+	const result = route.run({ source: happySource, file: "styles.treat.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -37,14 +42,28 @@ test("treat -> styled-components: migrates concrete treat syntax to styled-compo
 		expect(result.residuals.length).toBeGreaterThan(0);
 		expect(result.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(result, "treat -> styled-components happy");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "@treatjs/treat";
-		import styled from "styled-components";
-		export const card = styled.div({ padding: "1rem", color: "red" });",
+		  "code": "import styled from "styled-components";
+
+		export const card = styled.div({ padding: 8, color: "red" });",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "static",
@@ -61,24 +80,38 @@ test("treat -> styled-components: migrates concrete treat syntax to styled-compo
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
-test("treat -> styled-components: carries concrete treat dynamics or edge syntax explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "Card.treat.ts", semantic: sourceSemantic });
+test("treat -> styled-components: carries a documented secondary treat API explicitly", () => {
+	const result = route.run({ source: edgeSource, file: "styles.treat.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(result, "treat -> styled-components secondary");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "@treatjs/treat";
-		import styled from "styled-components";
-		export const card = styled.div({ padding: "1rem", color: theme.foreground });",
+		  "code": "import styled from "styled-components";
+
+		export const card = styled.div({ padding: 8, color: "red" });",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "host-runtime",
-		      "representation": "target-native",
+		      "outcome": "static",
+		      "representation": "static",
 		    },
 		  ],
 		  "residuals": [],
@@ -91,28 +124,47 @@ test("treat -> styled-components: carries concrete treat dynamics or edge syntax
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
-test("treat -> styled-components: lowers concrete theme and project context variants", () => {
-	const blue = route.run({ source: themedSource, file: "Card.treat.ts", semantic: blueSemantic, project: blueProject });
-	const amber = route.run({ source: themedSource, file: "Card.treat.ts", semantic: amberSemantic, project: amberProject });
+test("treat -> styled-components: loads concrete theme and project context variants", async () => {
+	const blue = await route.runAsync({ source: themedSource, file: "styles.treat.ts", semantic: blueSemantic, project: blueProject });
+	const amber = await route.runAsync({ source: themedSource, file: "styles.treat.ts", semantic: amberSemantic, project: amberProject });
 	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
 	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Treat, CodemodAdapterId.StyledComponents);
+	expectConfiguredTargetTokenEvidence(blue, CodemodAdapterId.StyledComponents, "treat -> styled-components blue config");
+	expectRouteScenarioEvidence(blue, "treat -> styled-components blue config");
+	expectRouteScenarioEvidence(amber, "treat -> styled-components amber config");
+	expectConfiguredTargetTokenAbsence(amber, CodemodAdapterId.StyledComponents, "treat -> styled-components amber literal config");
+
 	expectExplicitResidualEvidence(blue);
 	expectExplicitResidualEvidence(amber);
 	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { style } from "@treatjs/treat";
-		import styled from "styled-components";
-		export const card = styled.div({ padding: "1rem", color: theme.colors.brand });",
+		    "code": "import styled from "styled-components";
+
+		export const card = styled.div({ padding: 8, color: "#2563eb" });",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "host-runtime",
-		        "representation": "target-native",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [],
@@ -127,14 +179,27 @@ test("treat -> styled-components: lowers concrete theme and project context vari
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { style } from "@treatjs/treat";
-		import styled from "styled-components";
-		export const card = styled.div({ padding: "1rem", color: theme.colors.brand });",
+		    "code": "import styled from "styled-components";
+
+		export const card = styled.div({ padding: 8, color: "#2563eb" });",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "host-runtime",
-		        "representation": "target-native",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [],
@@ -148,20 +213,36 @@ test("treat -> styled-components: lowers concrete theme and project context vari
 		    ],
 		  },
 		}
-	`);
+	`)
 });
 
-test("treat -> styled-components: resolves concrete token references with project context", () => {
-	const result = route.run({ source: tokenSource, file: "Card.treat.ts", semantic: blueSemantic, project: blueProject });
+test("treat -> styled-components: resolves concrete token values with project context", async () => {
+	const result = await route.runAsync({ source: tokenSource, file: "styles.treat.ts", semantic: blueSemantic, project: blueProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Treat, CodemodAdapterId.StyledComponents);
+	expectConfiguredTargetTokenEvidence(result, CodemodAdapterId.StyledComponents, "treat -> styled-components token config");
+	expectRouteScenarioEvidence(result, "treat -> styled-components token config");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "@treatjs/treat";
-		import styled from "styled-components";
-		export const card = styled.div({ padding: "1rem", color: "$colors.brand" });",
+		  "code": "import styled from "styled-components";
+
+		export const card = styled.div({ padding: 8, color: "#2563eb" });",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "static",
@@ -178,21 +259,35 @@ test("treat -> styled-components: resolves concrete token references with projec
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
 test("treat -> styled-components: preserves malformed concrete treat input", () => {
-	const result = route.run({ source: malformedSource, file: "Card.treat.ts", semantic: sourceSemantic });
+	const result = route.run({ source: malformedSource, file: "styles.treat.ts", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished treat */");
+	expectRouteScenarioEvidence(result, "treat -> styled-components malformed");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "@treatjs/treat";
-		import styled from "styled-components";
-		export const card = styled.div({ padding: "1rem", color: "red" });
+		  "code": "import styled from "styled-components";
+
+		export const card = styled.div({ padding: 8, color: "red" });
 		const unfinished = { /* unfinished treat */",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "static",
@@ -209,6 +304,6 @@ test("treat -> styled-components: preserves malformed concrete treat input", () 
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 

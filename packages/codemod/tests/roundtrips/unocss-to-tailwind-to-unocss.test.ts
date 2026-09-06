@@ -3,30 +3,35 @@ import { expect, test } from "vitest";
 import { CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
-	expectActionableRoundTrip,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
+	expectTargetClassProjection,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const forward = createAdapterRouteSpec(CodemodAdapterId.UnoCSS, CodemodAdapterId.Tailwind);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.Tailwind, CodemodAdapterId.UnoCSS);
-	const happySource = "export const App = () => <div className=\"flex items-center gap-4\" />;";
-const edgeSource = "export const App = () => <div className={`[display:flex] [gap:1rem] ${runtimeClass}`} />;";
-const malformedSource = "export const App = () => <div className=\"flex items-center gap-4\" />;\nconst unfinished = { /* unfinished unocss */";
+	const happySource = "export const App = () => <div className=\"[display:flex] [align-items:center] [gap:1rem]\" />;";
+const edgeSource = "export const App = () => <div className=\"hover:[background-color:black] md:[display:flex]\" />;";
+const malformedSource = "export const App = () => <div className=\"[display:flex] [align-items:center] [gap:1rem]\" />;\nconst unfinished = { /* unfinished unocss */";
 const sourceSemantic = undefined;
-const themedSource = "export const App = () => <div className=\"flex items-center gap-4 text-brand\" />;";
-const tokenSource = "export const App = () => <div className=\"flex items-center gap-4 text-brand\" />;";
-const blueSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/uno.config.ts":"export default defineConfig({ theme: { colors: { brand: \"#2563eb\" } } });","/virtual/pandwind-route-project/app/globals.css":"@theme { --color-brand: #2563eb; --spacing-card: 1.125rem; }","/virtual/pandwind-route-project/tailwind.css":"@import \"tailwindcss\"; @theme { --color-brand: #2563eb; --spacing-card: 1.125rem; }"} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/uno.config.ts":"export default defineConfig({ theme: { colors: { brand: \"#f97316\" } } });","/virtual/pandwind-route-project/app/globals.css":"@theme { --color-brand: #f97316; --spacing-card: 1.125rem; }","/virtual/pandwind-route-project/tailwind.css":"@import \"tailwindcss\"; @theme { --color-brand: #f97316; --spacing-card: 1.125rem; }"} };
+const themedSource = "export const App = () => <div className=\"text-brand p-card\" />;";
+const tokenSource = "export const App = () => <div className=\"text-brand p-card\" />;";
+const blueSemantic = undefined;
+const amberSemantic = undefined;
+const blueTargetSemantic = undefined;
+const amberTargetSemantic = undefined;
+const blueProject = createAdapterRouteProject(CodemodAdapterId.UnoCSS, CodemodAdapterId.Tailwind, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.UnoCSS, CodemodAdapterId.Tailwind, "#f97316");
 	const targetSemantic = undefined;
 
 test("unocss -> tailwind -> unocss: preserves an actionable concrete round trip", () => {
-	const first = forward.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+	const first = forward.run({ source: happySource, file: "App.tsx", semantic: sourceSemantic });
+	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -36,102 +41,126 @@ test("unocss -> tailwind -> unocss: preserves an actionable concrete round trip"
 		expect(first.residuals.length).toBeGreaterThan(0);
 		expect(first.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(first, "unocss -> tailwind round-trip happy forward");
 	expectExplicitResidualEvidence(first);
-	expectActionableRoundTrip(first, second);
+	expectTargetClassProjection(first, second, ["text-","bg-","p-","[","className","class"], "unocss -> tailwind round-trip happy");
 	expectExplicitResidualEvidence(second);
 	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const App = () => // pandwind:migrate-skip (route: unocss -> tailwind | parse-residual: unknown-utility | available: named-map, residual)
-		<div className="flex items-center gap-4" />;",
-		    "converted": 0,
+		    "code": "export const App = () => <div className={"[gap:1rem] [align-items:center] [display:flex]"}/>;",
+		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
-		        "representation": "residual",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "UnoCSS utility requires the project resolver/preset to be loaded",
-		        "kind": "unknown-utility",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "UnoCSS utility requires the project resolver/preset to be loaded",
-		        "kind": "unknown-utility",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "UnoCSS utility requires the project resolver/preset to be loaded",
-		        "kind": "unknown-utility",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		  "reverse": {
-		    "changed": true,
-		    "code": "export const App = () => // pandwind:migrate-skip (route: unocss -> tailwind | parse-residual: unknown-utility | available: named-map, residual)
-		// pandwind:migrate-skip (route: tailwind -> unocss | parse-residual: unknown-utility | available: named-map, residual)
-		<div className="flex items-center gap-4" />;",
-		    "converted": 0,
+		    "changed": false,
+		    "code": "export const App = () => <div className={"[gap:1rem] [align-items:center] [display:flex]"}/>;",
+		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
-		        "representation": "residual",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "Tailwind utility requires the project engine or a custom preset",
-		        "kind": "unknown-utility",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "Tailwind utility requires the project engine or a custom preset",
-		        "kind": "unknown-utility",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "Tailwind utility requires the project engine or a custom preset",
-		        "kind": "unknown-utility",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 
-test("unocss -> tailwind -> unocss: retains edge semantics without silent loss", () => {
-	const first = forward.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+test("unocss -> tailwind -> unocss: retains the documented secondary API without silent loss", () => {
+	const first = forward.run({ source: edgeSource, file: "App.tsx", semantic: sourceSemantic });
+	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
-	expectActionableRoundTrip(first, second);
+	expectRouteScenarioEvidence(first, "unocss -> tailwind round-trip secondary forward");
+	expectTargetClassProjection(first, second, ["text-","bg-","p-","[","className","class"], "unocss -> tailwind round-trip secondary");
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
 	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: unocss -> tailwind | parse-residual: dynamic)
-		export const App = () => <div className={\`[display:flex] [gap:1rem] \${runtimeClass}\`} />;",
+		    "code": "export const App = () => // pandwind:migrate-skip (route: unocss -> tailwind | capability-blocked: named-conditions: named: hover | available: static, named-map, residual)
+		<div className="hover:[background-color:black] md:[display:flex]" />;",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "residual",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "UnoCSS dynamic class expressions require runtime-aware target lowering",
-		        "kind": "dynamic",
+		        "hint": "named-conditions: named: hover",
+		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -139,21 +168,35 @@ test("unocss -> tailwind -> unocss: retains edge semantics without silent loss",
 		    "validations": [],
 		  },
 		  "reverse": {
-		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: tailwind -> unocss | parse-residual: dynamic)
-		// pandwind:migrate-skip (route: unocss -> tailwind | parse-residual: dynamic)
-		export const App = () => <div className={\`[display:flex] [gap:1rem] \${runtimeClass}\`} />;",
+		    "changed": false,
+		    "code": "export const App = () => // pandwind:migrate-skip (route: unocss -> tailwind | capability-blocked: named-conditions: named: hover | available: static, named-map, residual)
+		<div className="hover:[background-color:black] md:[display:flex]" />;",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "residual",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "Tailwind dynamic class expressions require runtime-aware target lowering",
-		        "kind": "dynamic",
+		        "hint": "named-conditions: named: hover",
+		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -161,18 +204,23 @@ test("unocss -> tailwind -> unocss: retains edge semantics without silent loss",
 		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 
-test("unocss -> tailwind -> unocss: preserves concrete theme and project context variants", () => {
-	const firstBlue = forward.run({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const secondBlue = reverse.run({ source: firstBlue.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
-	const firstAmber = forward.run({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
-	const secondAmber = reverse.run({ source: firstAmber.code, file: "Card.tsx", semantic: amberTargetSemantic, project: amberProject });
+test("unocss -> tailwind -> unocss: preserves concrete theme and project context variants", async () => {
+	const firstBlue = await forward.runAsync({ source: themedSource, file: "App.tsx", semantic: blueSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
+	const firstAmber = await forward.runAsync({ source: themedSource, file: "App.tsx", semantic: amberSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "App.tsx", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
-	expectActionableRoundTrip(firstBlue, secondBlue);
-	expectActionableRoundTrip(firstAmber, secondAmber);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.UnoCSS, CodemodAdapterId.Tailwind);
+	expectConfiguredTargetTokenEvidence(firstBlue, CodemodAdapterId.Tailwind, "unocss -> tailwind round-trip token config");
+	expectRouteScenarioEvidence(firstBlue, "unocss -> tailwind round-trip blue forward");
+	expectRouteScenarioEvidence(firstAmber, "unocss -> tailwind round-trip amber forward");
+
+	expectTargetClassProjection(firstBlue, secondBlue, ["text-","bg-","p-","[","className","class"], "unocss -> tailwind round-trip blue");
+	expectTargetClassProjection(firstAmber, secondAmber, ["text-","bg-","p-","[","className","class"], "unocss -> tailwind round-trip amber");
 	expectExplicitResidualEvidence(firstBlue);
 	expectExplicitResidualEvidence(secondBlue);
 	expectExplicitResidualEvidence(firstAmber);
@@ -185,240 +233,233 @@ test("unocss -> tailwind -> unocss: preserves concrete theme and project context
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const App = () => // pandwind:migrate-skip (route: unocss -> tailwind | parse-residual: unknown-utility | available: named-map, residual)
-		<div className="flex items-center gap-4 text-brand" />;",
-		      "converted": 0,
+		      "code": "export const App = () => <div className={"p-card text-brand"}/>;",
+		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
-		          "representation": "residual",
+		          "outcome": "static",
+		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
 		        {
-		          "hint": "UnoCSS utility requires the project resolver/preset to be loaded",
-		          "kind": "unknown-utility",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "UnoCSS utility requires the project resolver/preset to be loaded",
-		          "kind": "unknown-utility",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "UnoCSS utility requires the project resolver/preset to be loaded",
-		          "kind": "unknown-utility",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "UnoCSS utility requires the project resolver/preset to be loaded",
-		          "kind": "unknown-utility",
-		          "preserved": undefined,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
-		      "skipped": 1,
-		      "validations": [],
 		    },
 		    "reverse": {
-		      "changed": true,
-		      "code": "export const App = () => // pandwind:migrate-skip (route: unocss -> tailwind | parse-residual: unknown-utility | available: named-map, residual)
-		// pandwind:migrate-skip (route: tailwind -> unocss | parse-residual: unknown-utility | available: named-map, residual)
-		<div className="flex items-center gap-4 text-brand" />;",
-		      "converted": 0,
+		      "changed": false,
+		      "code": "export const App = () => <div className={"p-card text-brand"}/>;",
+		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
-		          "representation": "residual",
+		          "outcome": "static",
+		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
 		        {
-		          "hint": "Tailwind utility requires the project engine or a custom preset",
-		          "kind": "unknown-utility",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "Tailwind utility requires the project engine or a custom preset",
-		          "kind": "unknown-utility",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "Tailwind utility requires the project engine or a custom preset",
-		          "kind": "unknown-utility",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "Tailwind utility requires the project engine or a custom preset",
-		          "kind": "unknown-utility",
-		          "preserved": undefined,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
-		      "skipped": 1,
-		      "validations": [],
 		    },
 		  },
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const App = () => // pandwind:migrate-skip (route: unocss -> tailwind | parse-residual: unknown-utility | available: named-map, residual)
-		<div className="flex items-center gap-4 text-brand" />;",
-		      "converted": 0,
+		      "code": "export const App = () => <div className={"p-card text-brand"}/>;",
+		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
-		          "representation": "residual",
+		          "outcome": "static",
+		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
 		        {
-		          "hint": "UnoCSS utility requires the project resolver/preset to be loaded",
-		          "kind": "unknown-utility",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "UnoCSS utility requires the project resolver/preset to be loaded",
-		          "kind": "unknown-utility",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "UnoCSS utility requires the project resolver/preset to be loaded",
-		          "kind": "unknown-utility",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "UnoCSS utility requires the project resolver/preset to be loaded",
-		          "kind": "unknown-utility",
-		          "preserved": undefined,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
-		      "skipped": 1,
-		      "validations": [],
 		    },
 		    "reverse": {
-		      "changed": true,
-		      "code": "export const App = () => // pandwind:migrate-skip (route: unocss -> tailwind | parse-residual: unknown-utility | available: named-map, residual)
-		// pandwind:migrate-skip (route: tailwind -> unocss | parse-residual: unknown-utility | available: named-map, residual)
-		<div className="flex items-center gap-4 text-brand" />;",
-		      "converted": 0,
+		      "changed": false,
+		      "code": "export const App = () => <div className={"p-card text-brand"}/>;",
+		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
-		          "representation": "residual",
+		          "outcome": "static",
+		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
 		        {
-		          "hint": "Tailwind utility requires the project engine or a custom preset",
-		          "kind": "unknown-utility",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "Tailwind utility requires the project engine or a custom preset",
-		          "kind": "unknown-utility",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "Tailwind utility requires the project engine or a custom preset",
-		          "kind": "unknown-utility",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "Tailwind utility requires the project engine or a custom preset",
-		          "kind": "unknown-utility",
-		          "preserved": undefined,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
-		      "skipped": 1,
-		      "validations": [],
 		    },
 		  },
 		}
-	`);
+	`)
 });
 
-test("unocss -> tailwind -> unocss: resolves token references across both concrete legs", () => {
-	const first = forward.run({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
+test("unocss -> tailwind -> unocss: resolves token values across both concrete legs", async () => {
+	const first = await forward.runAsync({ source: tokenSource, file: "App.tsx", semantic: blueSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
-	expectActionableRoundTrip(first, second);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.UnoCSS, CodemodAdapterId.Tailwind);
+	expectRouteScenarioEvidence(first, "unocss -> tailwind round-trip token forward");
+	expectTargetClassProjection(first, second, ["text-","bg-","p-","[","className","class"], "unocss -> tailwind round-trip token");
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
 	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const App = () => // pandwind:migrate-skip (route: unocss -> tailwind | parse-residual: unknown-utility | available: named-map, residual)
-		<div className="flex items-center gap-4 text-brand" />;",
-		    "converted": 0,
+		    "code": "export const App = () => <div className={"p-card text-brand"}/>;",
+		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
-		        "representation": "residual",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "UnoCSS utility requires the project resolver/preset to be loaded",
-		        "kind": "unknown-utility",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "UnoCSS utility requires the project resolver/preset to be loaded",
-		        "kind": "unknown-utility",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "UnoCSS utility requires the project resolver/preset to be loaded",
-		        "kind": "unknown-utility",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "UnoCSS utility requires the project resolver/preset to be loaded",
-		        "kind": "unknown-utility",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		  "reverse": {
-		    "changed": true,
-		    "code": "export const App = () => // pandwind:migrate-skip (route: unocss -> tailwind | parse-residual: unknown-utility | available: named-map, residual)
-		// pandwind:migrate-skip (route: tailwind -> unocss | parse-residual: unknown-utility | available: named-map, residual)
-		<div className="flex items-center gap-4 text-brand" />;",
-		    "converted": 0,
+		    "changed": false,
+		    "code": "export const App = () => <div className={"p-card text-brand"}/>;",
+		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
-		        "representation": "residual",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "Tailwind utility requires the project engine or a custom preset",
-		        "kind": "unknown-utility",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "Tailwind utility requires the project engine or a custom preset",
-		        "kind": "unknown-utility",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "Tailwind utility requires the project engine or a custom preset",
-		        "kind": "unknown-utility",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "Tailwind utility requires the project engine or a custom preset",
-		        "kind": "unknown-utility",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 

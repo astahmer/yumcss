@@ -3,30 +3,35 @@ import { expect, test } from "vitest";
 import { CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectActionableRoundTrip,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const forward = createAdapterRouteSpec(CodemodAdapterId.Jss, CodemodAdapterId.Sass);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.Sass, CodemodAdapterId.Jss);
-	const happySource = "import { createUseStyles } from \"react-jss\";\nexport const useStyles = createUseStyles({ card: { color: \"red\", padding: \"1rem\" } });\nexport const App = () => <div className={useStyles().card} />;";
-const edgeSource = "import { createUseStyles } from \"react-jss\";\nexport const useStyles = createUseStyles({ card: { color: theme.foreground, padding: \"1rem\" } });\nexport const App = () => <div className={useStyles().card} />;";
-const malformedSource = "import { createUseStyles } from \"react-jss\";\nexport const useStyles = createUseStyles({ card: { color: \"red\", padding: \"1rem\" } });\nexport const App = () => <div className={useStyles().card} />;\nconst unfinished = { /* unfinished jss */";
+	const happySource = "import { createUseStyles } from \"react-jss\";\nexport const useStyles = createUseStyles({ card: { color: \"red\" } });";
+const edgeSource = "import jss from \"jss\";\nexport const sheet = jss.createStyleSheet({ card: { color: \"red\" } });";
+const malformedSource = "import { createUseStyles } from \"react-jss\";\nexport const useStyles = createUseStyles({ card: { color: \"red\" } });\nconst unfinished = { /* unfinished jss */";
 const sourceSemantic = undefined;
-const themedSource = "import { createUseStyles } from \"react-jss\";\nexport const useStyles = createUseStyles({ card: { color: theme.colors.brand, padding: \"1rem\" } });\nexport const App = () => <div className={useStyles().card} />;";
-const tokenSource = "import { createUseStyles } from \"react-jss\";\nexport const useStyles = createUseStyles({ card: { color: \"$colors.brand\", padding: \"1rem\" } });\nexport const App = () => <div className={useStyles().card} />;";
-const blueSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {} };
+const themedSource = "import { createUseStyles } from \"react-jss\";\nexport const useStyles = createUseStyles({ card: { color: \"#2563eb\" } });";
+const tokenSource = "import { createUseStyles } from \"react-jss\";\nexport const useStyles = createUseStyles({ card: { color: \"#2563eb\" } });";
+const blueSemantic = undefined;
+const amberSemantic = undefined;
+const blueTargetSemantic = undefined;
+const amberTargetSemantic = undefined;
+const blueProject = createAdapterRouteProject(CodemodAdapterId.Jss, CodemodAdapterId.Sass, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.Jss, CodemodAdapterId.Sass, "#f97316");
 	const targetSemantic = undefined;
 
 test("jss -> sass -> jss: preserves an actionable concrete round trip", () => {
-	const first = forward.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.scss", semantic: targetSemantic });
+	const first = forward.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
+	const second = reverse.run({ source: first.code, file: "card.scss", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -36,6 +41,7 @@ test("jss -> sass -> jss: preserves an actionable concrete round trip", () => {
 		expect(first.residuals.length).toBeGreaterThan(0);
 		expect(first.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(first, "jss -> sass round-trip happy forward");
 	expectExplicitResidualEvidence(first);
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(second);
@@ -45,9 +51,23 @@ test("jss -> sass -> jss: preserves an actionable concrete round trip", () => {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
 		export const useStyles = // pandwind:migrate-skip (route: jss -> sass | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
-		createUseStyles({ card: { color: "red", padding: "1rem" } });
-		export const App = () => <div className={useStyles().card} />;",
+		createUseStyles({ card: { color: "red" } });",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		          "portable-artifact",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
@@ -69,14 +89,23 @@ test("jss -> sass -> jss: preserves an actionable concrete round trip", () => {
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
 		import { createUseStyles } from "react-jss";
 		export const useStyles = // pandwind:migrate-skip (route: jss -> sass | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
-		createUseStyles({ card: { color: "red", padding: "1rem" } });
-		export const App = () => <div className={useStyles().card} />;",
+		createUseStyles({ card: { color: "red" } });",
 		    "converted": 0,
-		    "outcomes": [
+		    "generatedFiles": [],
+		    "loweringPlans": [
 		      {
-		        "outcome": "residual",
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "named-map",
+		          "residual",
+		        ],
 		        "representation": "residual",
+		        "residuals": [],
 		      },
+		    ],
+		    "outcomes": [
 		      {
 		        "outcome": "residual",
 		        "representation": "residual",
@@ -94,32 +123,23 @@ test("jss -> sass -> jss: preserves an actionable concrete round trip", () => {
 		        "preserved": undefined,
 		      },
 		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet migration requires a single local class selector",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
 		        "hint": "stylesheet migration requires a single local class selector",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 5,
+		    "skipped": 3,
 		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 
-test("jss -> sass -> jss: retains edge semantics without silent loss", () => {
-	const first = forward.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.scss", semantic: targetSemantic });
+test("jss -> sass -> jss: retains the documented secondary API without silent loss", () => {
+	const first = forward.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
+	const second = reverse.run({ source: first.code, file: "card.scss", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(first, "jss -> sass round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
@@ -127,11 +147,25 @@ test("jss -> sass -> jss: retains edge semantics without silent loss", () => {
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createUseStyles } from "react-jss";
-		export const useStyles = // pandwind:migrate-skip (route: jss -> sass | capability-blocked: named-rules: named style rule: card | available: residual, portable-artifact)
-		createUseStyles({ card: { color: theme.foreground, padding: "1rem" } });
-		export const App = () => <div className={useStyles().card} />;",
+		    "code": "import jss from "jss";
+		export const sheet = // pandwind:migrate-skip (route: jss -> sass | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
+		jss.createStyleSheet({ card: { color: "red" } });",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		          "portable-artifact",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
@@ -150,22 +184,14 @@ test("jss -> sass -> jss: retains edge semantics without silent loss", () => {
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import { createUseStyles } from "react-jss";
-		export const useStyles = // pandwind:migrate-skip (route: jss -> sass | capability-blocked: named-rules: named style rule: card | available: residual, portable-artifact)
-		createUseStyles({ card: { color: theme.foreground, padding: "1rem" } });
-		export const App = () => <div className={useStyles().card} />;",
+		    "code": "// pandwind:migrate-skip (lowering-residual: parse)
+		import jss from "jss";
+		export const sheet = // pandwind:migrate-skip (route: jss -> sass | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
+		jss.createStyleSheet({ card: { color: "red" } });",
 		    "converted": 0,
-		    "outcomes": [
-		      {
-		        "outcome": "residual",
-		        "representation": "residual",
-		      },
-		      {
-		        "outcome": "residual",
-		        "representation": "residual",
-		      },
-		    ],
+		    "generatedFiles": [],
+		    "loweringPlans": [],
+		    "outcomes": [],
 		    "residuals": [
 		      {
 		        "hint": "stylesheet statement is preserved outside the style program",
@@ -177,36 +203,27 @@ test("jss -> sass -> jss: retains edge semantics without silent loss", () => {
 		        "kind": "parse",
 		        "preserved": undefined,
 		      },
-		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet migration requires a single local class selector",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet migration requires a single local class selector",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
 		    ],
-		    "skipped": 5,
+		    "skipped": 2,
 		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 
-test("jss -> sass -> jss: preserves concrete theme and project context variants", () => {
-	const firstBlue = forward.run({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const secondBlue = reverse.run({ source: firstBlue.code, file: "Card.scss", semantic: blueTargetSemantic, project: blueProject });
-	const firstAmber = forward.run({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
-	const secondAmber = reverse.run({ source: firstAmber.code, file: "Card.scss", semantic: amberTargetSemantic, project: amberProject });
+test("jss -> sass -> jss: preserves concrete theme and project context variants", async () => {
+	const firstBlue = await forward.runAsync({ source: themedSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "card.scss", semantic: blueTargetSemantic, project: blueProject });
+	const firstAmber = await forward.runAsync({ source: themedSource, file: "styles.ts", semantic: amberSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "card.scss", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Jss, CodemodAdapterId.Sass);
+	expectConfiguredTargetTokenEvidence(firstBlue, CodemodAdapterId.Sass, "jss -> sass round-trip token config");
+	expectRouteScenarioEvidence(firstBlue, "jss -> sass round-trip blue forward");
+	expectRouteScenarioEvidence(firstAmber, "jss -> sass round-trip amber forward");
+	expectConfiguredTargetTokenAbsence(firstAmber, CodemodAdapterId.Sass, "jss -> sass round-trip amber literal config");
+
 	expectActionableRoundTrip(firstBlue, secondBlue);
 	expectActionableRoundTrip(firstAmber, secondAmber);
 	expectExplicitResidualEvidence(firstBlue);
@@ -223,9 +240,23 @@ test("jss -> sass -> jss: preserves concrete theme and project context variants"
 		      "changed": true,
 		      "code": "import { createUseStyles } from "react-jss";
 		export const useStyles = // pandwind:migrate-skip (route: jss -> sass | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
-		createUseStyles({ card: { color: theme.colors.brand, padding: "1rem" } });
-		export const App = () => <div className={useStyles().card} />;",
+		createUseStyles({ card: { color: "#2563eb" } });",
 		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "residual",
+		            "portable-artifact",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
@@ -247,14 +278,23 @@ test("jss -> sass -> jss: preserves concrete theme and project context variants"
 		      "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
 		import { createUseStyles } from "react-jss";
 		export const useStyles = // pandwind:migrate-skip (route: jss -> sass | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
-		createUseStyles({ card: { color: theme.colors.brand, padding: "1rem" } });
-		export const App = () => <div className={useStyles().card} />;",
+		createUseStyles({ card: { color: "#2563eb" } });",
 		      "converted": 0,
-		      "outcomes": [
+		      "generatedFiles": [],
+		      "loweringPlans": [
 		        {
-		          "outcome": "residual",
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "named-map",
+		            "residual",
+		          ],
 		          "representation": "residual",
+		          "residuals": [],
 		        },
+		      ],
+		      "outcomes": [
 		        {
 		          "outcome": "residual",
 		          "representation": "residual",
@@ -272,22 +312,12 @@ test("jss -> sass -> jss: preserves concrete theme and project context variants"
 		          "preserved": undefined,
 		        },
 		        {
-		          "hint": "stylesheet statement is preserved outside the style program",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "stylesheet migration requires a single local class selector",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
-		        {
 		          "hint": "stylesheet migration requires a single local class selector",
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 5,
+		      "skipped": 3,
 		      "validations": [],
 		    },
 		  },
@@ -296,9 +326,23 @@ test("jss -> sass -> jss: preserves concrete theme and project context variants"
 		      "changed": true,
 		      "code": "import { createUseStyles } from "react-jss";
 		export const useStyles = // pandwind:migrate-skip (route: jss -> sass | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
-		createUseStyles({ card: { color: theme.colors.brand, padding: "1rem" } });
-		export const App = () => <div className={useStyles().card} />;",
+		createUseStyles({ card: { color: "#2563eb" } });",
 		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "residual",
+		            "portable-artifact",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
@@ -320,14 +364,23 @@ test("jss -> sass -> jss: preserves concrete theme and project context variants"
 		      "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
 		import { createUseStyles } from "react-jss";
 		export const useStyles = // pandwind:migrate-skip (route: jss -> sass | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
-		createUseStyles({ card: { color: theme.colors.brand, padding: "1rem" } });
-		export const App = () => <div className={useStyles().card} />;",
+		createUseStyles({ card: { color: "#2563eb" } });",
 		      "converted": 0,
-		      "outcomes": [
+		      "generatedFiles": [],
+		      "loweringPlans": [
 		        {
-		          "outcome": "residual",
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "named-map",
+		            "residual",
+		          ],
 		          "representation": "residual",
+		          "residuals": [],
 		        },
+		      ],
+		      "outcomes": [
 		        {
 		          "outcome": "residual",
 		          "representation": "residual",
@@ -345,33 +398,25 @@ test("jss -> sass -> jss: preserves concrete theme and project context variants"
 		          "preserved": undefined,
 		        },
 		        {
-		          "hint": "stylesheet statement is preserved outside the style program",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "stylesheet migration requires a single local class selector",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
-		        {
 		          "hint": "stylesheet migration requires a single local class selector",
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 5,
+		      "skipped": 3,
 		      "validations": [],
 		    },
 		  },
 		}
-	`);
+	`)
 });
 
-test("jss -> sass -> jss: resolves token references across both concrete legs", () => {
-	const first = forward.run({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const second = reverse.run({ source: first.code, file: "Card.scss", semantic: blueTargetSemantic, project: blueProject });
+test("jss -> sass -> jss: resolves token values across both concrete legs", async () => {
+	const first = await forward.runAsync({ source: tokenSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "card.scss", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Jss, CodemodAdapterId.Sass);
+	expectRouteScenarioEvidence(first, "jss -> sass round-trip token forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
@@ -381,9 +426,23 @@ test("jss -> sass -> jss: resolves token references across both concrete legs", 
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
 		export const useStyles = // pandwind:migrate-skip (route: jss -> sass | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
-		createUseStyles({ card: { color: "$colors.brand", padding: "1rem" } });
-		export const App = () => <div className={useStyles().card} />;",
+		createUseStyles({ card: { color: "#2563eb" } });",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		          "portable-artifact",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
@@ -405,14 +464,23 @@ test("jss -> sass -> jss: resolves token references across both concrete legs", 
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
 		import { createUseStyles } from "react-jss";
 		export const useStyles = // pandwind:migrate-skip (route: jss -> sass | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
-		createUseStyles({ card: { color: "$colors.brand", padding: "1rem" } });
-		export const App = () => <div className={useStyles().card} />;",
+		createUseStyles({ card: { color: "#2563eb" } });",
 		    "converted": 0,
-		    "outcomes": [
+		    "generatedFiles": [],
+		    "loweringPlans": [
 		      {
-		        "outcome": "residual",
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "named-map",
+		          "residual",
+		        ],
 		        "representation": "residual",
+		        "residuals": [],
 		      },
+		    ],
+		    "outcomes": [
 		      {
 		        "outcome": "residual",
 		        "representation": "residual",
@@ -430,25 +498,15 @@ test("jss -> sass -> jss: resolves token references across both concrete legs", 
 		        "preserved": undefined,
 		      },
 		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet migration requires a single local class selector",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
 		        "hint": "stylesheet migration requires a single local class selector",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 5,
+		    "skipped": 3,
 		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 

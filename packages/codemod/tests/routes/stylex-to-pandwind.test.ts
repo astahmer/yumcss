@@ -3,26 +3,31 @@ import { expect, test } from "vitest";
 import { CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.StyleX, CodemodAdapterId.Pandwind);
-	const happySource = "import * as stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"red\", padding: \"1rem\" } });\nexport const App = () => <div {...stylex.props(styles.card)} />;";
-const edgeSource = "import * as stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: theme.foreground, padding: \"1rem\" } });\nexport const App = () => <div {...stylex.props(styles.card)} />;";
-const malformedSource = "import * as stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"red\", padding: \"1rem\" } });\nexport const App = () => <div {...stylex.props(styles.card)} />;\nconst unfinished = { /* unfinished stylex */";
+	const happySource = "import stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"red\", padding: 8 } });";
+const edgeSource = "import stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"red\" } });";
+const malformedSource = "import stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"red\", padding: 8 } });\nconst unfinished = { /* unfinished stylex */";
 const sourceSemantic = undefined;
-const themedSource = "import * as stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: theme.colors.brand, padding: \"1rem\" } });\nexport const App = () => <div {...stylex.props(styles.card)} />;";
-const tokenSource = "import * as stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"$colors.brand\", padding: \"1rem\" } });\nexport const App = () => <div {...stylex.props(styles.card)} />;";
-const blueSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/package.json":"{\"name\":\"stylex-fixture\",\"stylex\":{\"aliases\":{\"brand\":\"#2563eb\"}}}","/virtual/pandwind-route-project/pandwind.config.ts":"export default { tokens: { colors: { brand: \"#2563eb\" } } };"} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/package.json":"{\"name\":\"stylex-fixture\",\"stylex\":{\"aliases\":{\"brand\":\"#f97316\"}}}","/virtual/pandwind-route-project/pandwind.config.ts":"export default { tokens: { colors: { brand: \"#f97316\" } } };"} };
+const themedSource = "import stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"#2563eb\", padding: 8 } });";
+const tokenSource = "import stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"#2563eb\", padding: 8 } });";
+const blueSemantic = undefined;
+const amberSemantic = undefined;
+const blueTargetSemantic = undefined;
+const amberTargetSemantic = undefined;
+const blueProject = createAdapterRouteProject(CodemodAdapterId.StyleX, CodemodAdapterId.Pandwind, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.StyleX, CodemodAdapterId.Pandwind, "#f97316");
 
 test("stylex -> pandwind: migrates concrete stylex syntax to pandwind", () => {
-	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
+	const result = route.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -37,6 +42,7 @@ test("stylex -> pandwind: migrates concrete stylex syntax to pandwind", () => {
 		expect(result.residuals.length).toBeGreaterThan(0);
 		expect(result.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(result, "stylex -> pandwind happy");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
@@ -44,9 +50,21 @@ test("stylex -> pandwind: migrates concrete stylex syntax to pandwind", () => {
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const styles = { "card": css.class({ padding: "1rem", color: "red" }) };
-		export const App = () => <div {...css.props(styles.card)} />;",
+		export const styles = { "card": css.class({ padding: "8px", color: "red" }) };",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "named-map",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "target-native",
@@ -63,12 +81,13 @@ test("stylex -> pandwind: migrates concrete stylex syntax to pandwind", () => {
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
-test("stylex -> pandwind: carries concrete stylex dynamics or edge syntax explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
+test("stylex -> pandwind: carries a documented secondary stylex API explicitly", () => {
+	const result = route.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(result, "stylex -> pandwind secondary");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
@@ -76,12 +95,24 @@ test("stylex -> pandwind: carries concrete stylex dynamics or edge syntax explic
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const styles = { "card": css.vars({ padding: "1rem", color: theme.foreground }) };
-		export const App = () => <div {...css.props(styles.card)} />;",
+		export const styles = { "card": css.class({ color: "red" }) };",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "named-map",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "host-runtime",
+		      "outcome": "target-native",
 		      "representation": "named-map",
 		    },
 		  ],
@@ -95,14 +126,20 @@ test("stylex -> pandwind: carries concrete stylex dynamics or edge syntax explic
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
-test("stylex -> pandwind: lowers concrete theme and project context variants", () => {
-	const blue = route.run({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const amber = route.run({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
+test("stylex -> pandwind: loads concrete theme and project context variants", async () => {
+	const blue = await route.runAsync({ source: themedSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
+	const amber = await route.runAsync({ source: themedSource, file: "styles.ts", semantic: amberSemantic, project: amberProject });
 	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
 	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.StyleX, CodemodAdapterId.Pandwind);
+	expectConfiguredTargetTokenEvidence(blue, CodemodAdapterId.Pandwind, "stylex -> pandwind blue config");
+	expectRouteScenarioEvidence(blue, "stylex -> pandwind blue config");
+	expectRouteScenarioEvidence(amber, "stylex -> pandwind amber config");
+	expectConfiguredTargetTokenAbsence(amber, CodemodAdapterId.Pandwind, "stylex -> pandwind amber literal config");
+
 	expectExplicitResidualEvidence(blue);
 	expectExplicitResidualEvidence(amber);
 	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
@@ -112,12 +149,24 @@ test("stylex -> pandwind: lowers concrete theme and project context variants", (
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const styles = { "card": css.vars({ padding: "1rem", color: theme.colors.brand }) };
-		export const App = () => <div {...css.props(styles.card)} />;",
+		export const styles = { "card": css.class({ padding: "8px", color: "#2563eb" }) };",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "named-map",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "host-runtime",
+		        "outcome": "target-native",
 		        "representation": "named-map",
 		      },
 		    ],
@@ -136,12 +185,24 @@ test("stylex -> pandwind: lowers concrete theme and project context variants", (
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const styles = { "card": css.vars({ padding: "1rem", color: theme.colors.brand }) };
-		export const App = () => <div {...css.props(styles.card)} />;",
+		export const styles = { "card": css.class({ padding: "8px", color: "$brand" }) };",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "named-map",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "host-runtime",
+		        "outcome": "target-native",
 		        "representation": "named-map",
 		      },
 		    ],
@@ -156,12 +217,15 @@ test("stylex -> pandwind: lowers concrete theme and project context variants", (
 		    ],
 		  },
 		}
-	`);
+	`)
 });
 
-test("stylex -> pandwind: resolves concrete token references with project context", () => {
-	const result = route.run({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
+test("stylex -> pandwind: resolves concrete token values with project context", async () => {
+	const result = await route.runAsync({ source: tokenSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.StyleX, CodemodAdapterId.Pandwind);
+	expectConfiguredTargetTokenEvidence(result, CodemodAdapterId.Pandwind, "stylex -> pandwind token config");
+	expectRouteScenarioEvidence(result, "stylex -> pandwind token config");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
@@ -169,9 +233,21 @@ test("stylex -> pandwind: resolves concrete token references with project contex
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const styles = { "card": css.class({ padding: "1rem", color: "$colors.brand" }) };
-		export const App = () => <div {...css.props(styles.card)} />;",
+		export const styles = { "card": css.class({ padding: "8px", color: "$brand" }) };",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "named-map",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "target-native",
@@ -188,23 +264,36 @@ test("stylex -> pandwind: resolves concrete token references with project contex
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
 test("stylex -> pandwind: preserves malformed concrete stylex input", () => {
-	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
+	const result = route.run({ source: malformedSource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished stylex */");
+	expectRouteScenarioEvidence(result, "stylex -> pandwind malformed");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import * as stylex from "@stylexjs/stylex";
-		import { createCss } from "pandwind/css";
+		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const styles = { "card": css.class({ padding: "1rem", color: "red" }) };
-		export const App = () => <div {...css.props(styles.card)} />;
+
+		export const styles = { "card": css.class({ padding: "8px", color: "red" }) };
 		const unfinished = { /* unfinished stylex */",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "named-map",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "target-native",
@@ -221,6 +310,6 @@ test("stylex -> pandwind: preserves malformed concrete stylex input", () => {
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 

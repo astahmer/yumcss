@@ -113,7 +113,9 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 function muiThemeCandidate(value: unknown): Record<string, unknown> | undefined {
 	if (!isRecord(value)) return undefined;
-	return ["palette", "spacing", "shape", "typography", "breakpoints"].some(
+	// `spacing` alone is not enough to identify a MUI theme: Mantine exposes
+	// the same field. Require metadata owned by MUI's theme contract.
+	return ["palette", "shape", "typography", "breakpoints", "shadows", "zIndex"].some(
 		(key) => value[key] !== undefined,
 	)
 		? value

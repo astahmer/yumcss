@@ -3,26 +3,31 @@ import { expect, test } from "vitest";
 import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.Style9, CodemodAdapterId.Mantine);
-	const happySource = "import style9 from \"style9\";\nexport const styles = style9.create({ card: { color: \"red\", padding: \"1rem\" } });\nexport const App = () => <div className={styles.card} />;";
-const edgeSource = "import style9 from \"style9\";\nexport const styles = style9.create({ card: { color: theme.foreground, padding: \"1rem\" } });\nexport const App = () => <div className={styles.card} />;";
-const malformedSource = "import style9 from \"style9\";\nexport const styles = style9.create({ card: { color: \"red\", padding: \"1rem\" } });\nexport const App = () => <div className={styles.card} />;\nconst unfinished = { /* unfinished style9 */";
+	const happySource = "import style9 from \"style9\";\nexport const styles = style9.create({ card: { color: \"red\" } });";
+const edgeSource = "import style9 from \"style9\";\nexport const styles = style9.create({ card: { color: \"red\" }, muted: { opacity: 0.5 } });";
+const malformedSource = "import style9 from \"style9\";\nexport const styles = style9.create({ card: { color: \"red\" } });\nconst unfinished = { /* unfinished style9 */";
 const sourceSemantic = undefined;
-const themedSource = "import style9 from \"style9\";\nexport const styles = style9.create({ card: { color: theme.colors.brand, padding: \"1rem\" } });\nexport const App = () => <div className={styles.card} />;";
-const tokenSource = "import style9 from \"style9\";\nexport const styles = style9.create({ card: { color: \"$colors.brand\", padding: \"1rem\" } });\nexport const App = () => <div className={styles.card} />;";
-const blueSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/src/theme.ts":"export const mantineTheme = { colors: { brand: [\"#2563eb\"] } };"} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/src/theme.ts":"export const mantineTheme = { colors: { brand: [\"#f97316\"] } };"} };
+const themedSource = "import style9 from \"style9\";\nexport const styles = style9.create({ card: { color: \"#2563eb\" } });";
+const tokenSource = "import style9 from \"style9\";\nexport const styles = style9.create({ card: { color: \"#2563eb\" } });";
+const blueSemantic = undefined;
+const amberSemantic = undefined;
+const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
+const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
+const blueProject = createAdapterRouteProject(CodemodAdapterId.Style9, CodemodAdapterId.Mantine, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.Style9, CodemodAdapterId.Mantine, "#f97316");
 
 test("style9 -> mantine: migrates concrete style9 syntax to mantine", () => {
-	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
+	const result = route.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -37,15 +42,28 @@ test("style9 -> mantine: migrates concrete style9 syntax to mantine", () => {
 		expect(result.residuals.length).toBeGreaterThan(0);
 		expect(result.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(result, "style9 -> mantine happy");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import style9 from "style9";
 		export const styles = // pandwind:migrate-skip (route: style9 -> mantine | lowering-residual: host-framework, validation)
-		style9.create({ card: { color: "red", padding: "1rem" } });
-		export const App = () => <div className={styles.card} />;",
+		style9.create({ card: { color: "red" } });",
 		  "converted": 0,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "named-map",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
@@ -75,21 +93,34 @@ test("style9 -> mantine: migrates concrete style9 syntax to mantine", () => {
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
-test("style9 -> mantine: carries concrete style9 dynamics or edge syntax explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
+test("style9 -> mantine: carries a documented secondary style9 API explicitly", () => {
+	const result = route.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(result, "style9 -> mantine secondary");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import style9 from "style9";
-		export const styles = // pandwind:migrate-skip (route: style9 -> mantine | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, target-native, runtime-carrier, residual)
-		style9.create({ card: { color: theme.foreground, padding: "1rem" } });
-		export const App = () => <div className={styles.card} />;",
+		export const styles = // pandwind:migrate-skip (route: style9 -> mantine | lowering-residual: host-framework, validation)
+		style9.create({ card: { color: "red" }, muted: { opacity: 0.5 } });",
 		  "converted": 0,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "named-map",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
@@ -98,22 +129,41 @@ test("style9 -> mantine: carries concrete style9 dynamics or edge syntax explici
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "theme-context: 1 theme binding(s)",
-		      "kind": "capability",
+		      "hint": "Mantine style maps require a host component style prop or an explicit CSS module",
+		      "kind": "host-framework",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "1 residual conversion(s)",
+		      "kind": "validation",
 		      "preserved": undefined,
 		    },
 		  ],
 		  "skipped": 1,
-		  "validations": [],
+		  "validations": [
+		    {
+		      "differences": [
+		        "1 residual conversion(s)",
+		      ],
+		      "lossiness": "lossy",
+		      "valid": false,
+		    },
+		  ],
 		}
-	`);
+	`)
 });
 
-test("style9 -> mantine: lowers concrete theme and project context variants", () => {
-	const blue = route.run({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const amber = route.run({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
+test("style9 -> mantine: loads concrete theme and project context variants", async () => {
+	const blue = await route.runAsync({ source: themedSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
+	const amber = await route.runAsync({ source: themedSource, file: "styles.ts", semantic: amberSemantic, project: amberProject });
 	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
 	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Style9, CodemodAdapterId.Mantine);
+	expectConfiguredTargetTokenEvidence(blue, CodemodAdapterId.Mantine, "style9 -> mantine blue config");
+	expectRouteScenarioEvidence(blue, "style9 -> mantine blue config");
+	expectRouteScenarioEvidence(amber, "style9 -> mantine amber config");
+	expectConfiguredTargetTokenAbsence(amber, CodemodAdapterId.Mantine, "style9 -> mantine amber literal config");
+
 	expectExplicitResidualEvidence(blue);
 	expectExplicitResidualEvidence(amber);
 	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
@@ -121,10 +171,22 @@ test("style9 -> mantine: lowers concrete theme and project context variants", ()
 		  "amber": {
 		    "changed": true,
 		    "code": "import style9 from "style9";
-		export const styles = // pandwind:migrate-skip (route: style9 -> mantine | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, target-native, runtime-carrier, residual)
-		style9.create({ card: { color: theme.colors.brand, padding: "1rem" } });
-		export const App = () => <div className={styles.card} />;",
+		export const styles = // pandwind:migrate-skip (route: style9 -> mantine | lowering-residual: host-framework, validation)
+		style9.create({ card: { color: "#2563eb" } });",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "named-map",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
@@ -133,21 +195,46 @@ test("style9 -> mantine: lowers concrete theme and project context variants", ()
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "theme-context: 1 theme binding(s)",
-		        "kind": "capability",
+		        "hint": "Mantine style maps require a host component style prop or an explicit CSS module",
+		        "kind": "host-framework",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "1 residual conversion(s)",
+		        "kind": "validation",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 1,
-		    "validations": [],
+		    "validations": [
+		      {
+		        "differences": [
+		          "1 residual conversion(s)",
+		        ],
+		        "lossiness": "lossy",
+		        "valid": false,
+		      },
+		    ],
 		  },
 		  "blue": {
 		    "changed": true,
 		    "code": "import style9 from "style9";
-		export const styles = // pandwind:migrate-skip (route: style9 -> mantine | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, target-native, runtime-carrier, residual)
-		style9.create({ card: { color: theme.colors.brand, padding: "1rem" } });
-		export const App = () => <div className={styles.card} />;",
+		export const styles = // pandwind:migrate-skip (route: style9 -> mantine | lowering-residual: host-framework, validation)
+		style9.create({ card: { color: "#2563eb" } });",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "named-map",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
@@ -156,30 +243,58 @@ test("style9 -> mantine: lowers concrete theme and project context variants", ()
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "theme-context: 1 theme binding(s)",
-		        "kind": "capability",
+		        "hint": "Mantine style maps require a host component style prop or an explicit CSS module",
+		        "kind": "host-framework",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "1 residual conversion(s)",
+		        "kind": "validation",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 1,
-		    "validations": [],
+		    "validations": [
+		      {
+		        "differences": [
+		          "1 residual conversion(s)",
+		        ],
+		        "lossiness": "lossy",
+		        "valid": false,
+		      },
+		    ],
 		  },
 		}
-	`);
+	`)
 });
 
-test("style9 -> mantine: resolves concrete token references with project context", () => {
-	const result = route.run({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
+test("style9 -> mantine: resolves concrete token values with project context", async () => {
+	const result = await route.runAsync({ source: tokenSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Style9, CodemodAdapterId.Mantine);
+	expectConfiguredTargetTokenEvidence(result, CodemodAdapterId.Mantine, "style9 -> mantine token config");
+	expectRouteScenarioEvidence(result, "style9 -> mantine token config");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import style9 from "style9";
 		export const styles = // pandwind:migrate-skip (route: style9 -> mantine | lowering-residual: host-framework, validation)
-		style9.create({ card: { color: "$colors.brand", padding: "1rem" } });
-		export const App = () => <div className={styles.card} />;",
+		style9.create({ card: { color: "#2563eb" } });",
 		  "converted": 0,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "named-map",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
@@ -209,22 +324,35 @@ test("style9 -> mantine: resolves concrete token references with project context
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
 test("style9 -> mantine: preserves malformed concrete style9 input", () => {
-	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
+	const result = route.run({ source: malformedSource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished style9 */");
+	expectRouteScenarioEvidence(result, "style9 -> mantine malformed");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import style9 from "style9";
 		export const styles = // pandwind:migrate-skip (route: style9 -> mantine | lowering-residual: host-framework, validation)
-		style9.create({ card: { color: "red", padding: "1rem" } });
-		export const App = () => <div className={styles.card} />;
+		style9.create({ card: { color: "red" } });
 		const unfinished = { /* unfinished style9 */",
 		  "converted": 0,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "named-map",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
@@ -254,6 +382,6 @@ test("style9 -> mantine: preserves malformed concrete style9 input", () => {
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 

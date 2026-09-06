@@ -3,29 +3,34 @@ import { expect, test } from "vitest";
 import { CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectActionableRoundTrip,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const forward = createAdapterRouteSpec(CodemodAdapterId.AuthoredCss, CodemodAdapterId.Tamagui);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.Tamagui, CodemodAdapterId.AuthoredCss);
-	const happySource = ".card { color: red; padding: 1rem; }\n.card:hover { color: blue; }";
-const edgeSource = ".card { color: theme.foreground; padding: 1rem; }\n.card:hover { color: blue; }";
-const malformedSource = ".card { color: red; padding: 1rem; }\n.card:hover { color: blue; }\nconst unfinished = { /* unfinished authored-css */";
+	const happySource = ".card { color: red; padding: 1rem; }";
+const edgeSource = "@media (prefers-color-scheme: dark) {\n  .card { color: white; }\n}\n@keyframes pulse {\n  from { opacity: 0; }\n  to { opacity: 1; }\n}";
+const malformedSource = ".card { color: red; padding: 1rem; }\nconst unfinished = { /* unfinished authored-css */";
 const sourceSemantic = undefined;
-const themedSource = ".card { color: ${theme.colors.brand}; padding: 1rem; }\n.card:hover { color: blue; }";
-const tokenSource = ".card { color: var(--colors-brand); padding: 1rem; }\n.card:hover { color: blue; }";
-const blueSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {} };
+const themedSource = ".card { color: #2563eb; padding: 1rem; }";
+const tokenSource = ".card { color: #2563eb; padding: 1rem; }";
+const blueSemantic = undefined;
+const amberSemantic = undefined;
+const blueTargetSemantic = undefined;
+const amberTargetSemantic = undefined;
+const blueProject = createAdapterRouteProject(CodemodAdapterId.AuthoredCss, CodemodAdapterId.Tamagui, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.AuthoredCss, CodemodAdapterId.Tamagui, "#f97316");
 	const targetSemantic = undefined;
 
 test("authored-css -> tamagui -> authored-css: preserves an actionable concrete round trip", () => {
-	const first = forward.run({ source: happySource, file: "Card.css", semantic: sourceSemantic });
+	const first = forward.run({ source: happySource, file: "card.css", semantic: sourceSemantic });
 	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
@@ -36,30 +41,77 @@ test("authored-css -> tamagui -> authored-css: preserves an actionable concrete 
 		expect(first.residuals.length).toBeGreaterThan(0);
 		expect(first.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(first, "authored-css -> tamagui round-trip happy forward");
 	expectExplicitResidualEvidence(first);
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(second);
 	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
 		{
 		  "forward": {
-		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: capability)
-		.card { color: red; padding: 1rem; }
-		.card:hover { color: blue; }",
+		    "changed": true,
+		    "code": "import { View, styled } from "@tamagui/core";
+		export const styles = { "card": styled(View, { padding: "1rem", color: "red" }) };
+		export default styles;",
+		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "import { View, styled } from "@tamagui/core";
+		export const styles = { "card": // pandwind:migrate-skip (route: tamagui -> authored-css | capability-blocked: components: component subject: styled(View) | available: static, residual, portable-artifact)
+		styled(View, { padding: "1rem", color: "red" }) };
+		export default styles;",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		          "portable-artifact",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "residual",
-		      },
-		      {
-		        "outcome": "residual",
-		        "representation": "residual",
+		        "representation": "portable-artifact",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "stylesheet migration requires a single local class selector",
+		        "hint": "components: component subject: styled(View)",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
@@ -67,78 +119,157 @@ test("authored-css -> tamagui -> authored-css: preserves an actionable concrete 
 		    "skipped": 1,
 		    "validations": [],
 		  },
-		  "reverse": {
-		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: capability)
-		.card { color: red; padding: 1rem; }
-		.card:hover { color: blue; }",
-		    "converted": 0,
-		    "outcomes": [],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [],
-		  },
 		}
-	`);
+	`)
 });
 
-test("authored-css -> tamagui -> authored-css: retains edge semantics without silent loss", () => {
-	const first = forward.run({ source: edgeSource, file: "Card.css", semantic: sourceSemantic });
+test("authored-css -> tamagui -> authored-css: retains the documented secondary API without silent loss", () => {
+	const first = forward.run({ source: edgeSource, file: "card.css", semantic: sourceSemantic });
 	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(first, "authored-css -> tamagui round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
 	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
 		{
 		  "forward": {
-		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: capability)
-		.card { color: theme.foreground; padding: 1rem; }
-		.card:hover { color: blue; }",
+		    "changed": true,
+		    "code": "import { View, styled } from "@tamagui/core";
+		export const styles = { "card": styled(View, { "@media (prefers-color-scheme: dark)": { color: "white" } }), "pulse": styled(View, { "from": { opacity: "0" }, "to": { opacity: "1" } }) };
+		export default styles;",
+		    "converted": 2,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "import { View, styled } from "@tamagui/core";
+		export const styles = { "card": // pandwind:migrate-skip (route: tamagui -> authored-css | capability-blocked: components: component subject: styled(View) | available: static, residual, portable-artifact)
+		styled(View, { "@media (prefers-color-scheme: dark)": { color: "white" } }), "pulse": // pandwind:migrate-skip (route: tamagui -> authored-css | capability-blocked: components: component subject: styled(View) | available: residual, portable-artifact)
+		styled(View, { "from": { opacity: "0" }, "to": { opacity: "1" } }) };
+		export default styles;",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		          "portable-artifact",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "residual",
+		          "portable-artifact",
+		        ],
+		        "representation": "residual",
+		        "residuals": [
+		          {
+		            "hint": "target lacks runtime dynamic values",
+		            "kind": "dynamic",
+		          },
+		          {
+		            "hint": "target lacks runtime dynamic values",
+		            "kind": "dynamic",
+		          },
+		        ],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "residual",
+		        "representation": "portable-artifact",
 		      },
 		      {
 		        "outcome": "residual",
-		        "representation": "residual",
+		        "representation": "portable-artifact",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "stylesheet migration requires a single local class selector",
+		        "hint": "components: component subject: styled(View)",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "components: component subject: styled(View)",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
-		  },
-		  "reverse": {
-		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: capability)
-		.card { color: theme.foreground; padding: 1rem; }
-		.card:hover { color: blue; }",
-		    "converted": 0,
-		    "outcomes": [],
-		    "residuals": [],
-		    "skipped": 0,
+		    "skipped": 2,
 		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 
-test("authored-css -> tamagui -> authored-css: preserves concrete theme and project context variants", () => {
-	const firstBlue = forward.run({ source: themedSource, file: "Card.css", semantic: blueSemantic, project: blueProject });
-	const secondBlue = reverse.run({ source: firstBlue.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
-	const firstAmber = forward.run({ source: themedSource, file: "Card.css", semantic: amberSemantic, project: amberProject });
-	const secondAmber = reverse.run({ source: firstAmber.code, file: "Card.tsx", semantic: amberTargetSemantic, project: amberProject });
+test("authored-css -> tamagui -> authored-css: preserves concrete theme and project context variants", async () => {
+	const firstBlue = await forward.runAsync({ source: themedSource, file: "card.css", semantic: blueSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
+	const firstAmber = await forward.runAsync({ source: themedSource, file: "card.css", semantic: amberSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "Card.tsx", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.AuthoredCss, CodemodAdapterId.Tamagui);
+	expectConfiguredTargetTokenEvidence(firstBlue, CodemodAdapterId.Tamagui, "authored-css -> tamagui round-trip token config");
+	expectRouteScenarioEvidence(firstBlue, "authored-css -> tamagui round-trip blue forward");
+	expectRouteScenarioEvidence(firstAmber, "authored-css -> tamagui round-trip amber forward");
+	expectConfiguredTargetTokenAbsence(firstAmber, CodemodAdapterId.Tamagui, "authored-css -> tamagui round-trip amber literal config");
+
 	expectActionableRoundTrip(firstBlue, secondBlue);
 	expectActionableRoundTrip(firstAmber, secondAmber);
 	expectExplicitResidualEvidence(firstBlue);
@@ -152,63 +283,144 @@ test("authored-css -> tamagui -> authored-css: preserves concrete theme and proj
 		{
 		  "amber": {
 		    "forward": {
-		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: capability)
-		.card { color: \${theme.colors.brand}; padding: 1rem; }
-		.card:hover { color: blue; }",
+		      "changed": true,
+		      "code": "import { View, styled } from "@tamagui/core";
+		export const styles = { "card": styled(View, { padding: "1rem", color: "#2563eb" }) };
+		export default styles;",
+		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [],
+		          "availableRepresentations": [
+		            "static",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
+		      "outcomes": [
+		        {
+		          "outcome": "static",
+		          "representation": "static",
+		        },
+		      ],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
+		    },
+		    "reverse": {
+		      "changed": true,
+		      "code": "import { View, styled } from "@tamagui/core";
+		export const styles = { "card": // pandwind:migrate-skip (route: tamagui -> authored-css | capability-blocked: components: component subject: styled(View) | available: static, residual, portable-artifact)
+		styled(View, { padding: "1rem", color: "#2563eb" }) };
+		export default styles;",
 		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "residual",
+		            "portable-artifact",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
-		          "representation": "residual",
-		        },
-		        {
-		          "outcome": "residual",
-		          "representation": "residual",
+		          "representation": "portable-artifact",
 		        },
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "stylesheet migration requires a single local class selector",
+		          "hint": "components: component subject: styled(View)",
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
 		      ],
 		      "skipped": 1,
-		      "validations": [],
-		    },
-		    "reverse": {
-		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: capability)
-		.card { color: \${theme.colors.brand}; padding: 1rem; }
-		.card:hover { color: blue; }",
-		      "converted": 0,
-		      "outcomes": [],
-		      "residuals": [],
-		      "skipped": 0,
 		      "validations": [],
 		    },
 		  },
 		  "blue": {
 		    "forward": {
-		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: capability)
-		.card { color: \${theme.colors.brand}; padding: 1rem; }
-		.card:hover { color: blue; }",
+		      "changed": true,
+		      "code": "import { View, styled } from "@tamagui/core";
+		export const styles = { "card": styled(View, { padding: "1rem", color: "#2563eb" }) };
+		export default styles;",
+		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [],
+		          "availableRepresentations": [
+		            "static",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
+		      "outcomes": [
+		        {
+		          "outcome": "static",
+		          "representation": "static",
+		        },
+		      ],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
+		    },
+		    "reverse": {
+		      "changed": true,
+		      "code": "import { View, styled } from "@tamagui/core";
+		export const styles = { "card": // pandwind:migrate-skip (route: tamagui -> authored-css | capability-blocked: components: component subject: styled(View) | available: static, residual, portable-artifact)
+		styled(View, { padding: "1rem", color: "#2563eb" }) };
+		export default styles;",
 		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "residual",
+		            "portable-artifact",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
-		          "representation": "residual",
-		        },
-		        {
-		          "outcome": "residual",
-		          "representation": "residual",
+		          "representation": "portable-artifact",
 		        },
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "stylesheet migration requires a single local class selector",
+		          "hint": "components: component subject: styled(View)",
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
@@ -216,50 +428,87 @@ test("authored-css -> tamagui -> authored-css: preserves concrete theme and proj
 		      "skipped": 1,
 		      "validations": [],
 		    },
-		    "reverse": {
-		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: capability)
-		.card { color: \${theme.colors.brand}; padding: 1rem; }
-		.card:hover { color: blue; }",
-		      "converted": 0,
-		      "outcomes": [],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [],
-		    },
 		  },
 		}
-	`);
+	`)
 });
 
-test("authored-css -> tamagui -> authored-css: resolves token references across both concrete legs", () => {
-	const first = forward.run({ source: tokenSource, file: "Card.css", semantic: blueSemantic, project: blueProject });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
+test("authored-css -> tamagui -> authored-css: resolves token values across both concrete legs", async () => {
+	const first = await forward.runAsync({ source: tokenSource, file: "card.css", semantic: blueSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.AuthoredCss, CodemodAdapterId.Tamagui);
+	expectRouteScenarioEvidence(first, "authored-css -> tamagui round-trip token forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
 	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
 		{
 		  "forward": {
-		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: capability)
-		.card { color: var(--colors-brand); padding: 1rem; }
-		.card:hover { color: blue; }",
+		    "changed": true,
+		    "code": "import { View, styled } from "@tamagui/core";
+		export const styles = { "card": styled(View, { padding: "1rem", color: "#2563eb" }) };
+		export default styles;",
+		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "import { View, styled } from "@tamagui/core";
+		export const styles = { "card": // pandwind:migrate-skip (route: tamagui -> authored-css | capability-blocked: components: component subject: styled(View) | available: static, residual, portable-artifact)
+		styled(View, { padding: "1rem", color: "#2563eb" }) };
+		export default styles;",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		          "portable-artifact",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "residual",
-		      },
-		      {
-		        "outcome": "residual",
-		        "representation": "residual",
+		        "representation": "portable-artifact",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "stylesheet migration requires a single local class selector",
+		        "hint": "components: component subject: styled(View)",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
@@ -267,18 +516,7 @@ test("authored-css -> tamagui -> authored-css: resolves token references across 
 		    "skipped": 1,
 		    "validations": [],
 		  },
-		  "reverse": {
-		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: capability)
-		.card { color: var(--colors-brand); padding: 1rem; }
-		.card:hover { color: blue; }",
-		    "converted": 0,
-		    "outcomes": [],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [],
-		  },
 		}
-	`);
+	`)
 });
 

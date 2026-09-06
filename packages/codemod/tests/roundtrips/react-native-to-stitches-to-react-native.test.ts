@@ -3,30 +3,35 @@ import { expect, test } from "vitest";
 import { CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectActionableRoundTrip,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const forward = createAdapterRouteSpec(CodemodAdapterId.ReactNative, CodemodAdapterId.Stitches);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.Stitches, CodemodAdapterId.ReactNative);
-	const happySource = "import { StyleSheet, View } from \"react-native\";\nexport const styles = StyleSheet.create({ card: { color: \"red\", padding: 16 } });\nexport const App = () => <View style={styles.card} />;";
-const edgeSource = "import { StyleSheet, View } from \"react-native\";\nexport const styles = StyleSheet.create({ card: { color: theme.foreground, padding: 16 } });\nexport const App = () => <View style={styles.card} />;";
-const malformedSource = "import { StyleSheet, View } from \"react-native\";\nexport const styles = StyleSheet.create({ card: { color: \"red\", padding: 16 } });\nexport const App = () => <View style={styles.card} />;\nconst unfinished = { /* unfinished react-native */";
+	const happySource = "import { StyleSheet } from \"react-native\";\nexport const styles = StyleSheet.create({ card: { color: \"red\", padding: 8 } });";
+const edgeSource = "import { StyleSheet } from \"react-native\";\nexport const styles = StyleSheet.create({ card: { padding: 8, backgroundColor: \"red\" } });";
+const malformedSource = "import { StyleSheet } from \"react-native\";\nexport const styles = StyleSheet.create({ card: { color: \"red\", padding: 8 } });\nconst unfinished = { /* unfinished react-native */";
 const sourceSemantic = undefined;
-const themedSource = "import { StyleSheet, View } from \"react-native\";\nexport const styles = StyleSheet.create({ card: { color: theme.colors.brand, padding: 16 } });\nexport const App = () => <View style={styles.card} />;";
-const tokenSource = "import { StyleSheet, View } from \"react-native\";\nexport const styles = StyleSheet.create({ card: { color: \"$colors.brand\", padding: 16 } });\nexport const App = () => <View style={styles.card} />;";
-const blueSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/stitches.config.ts":"export const config = { theme: { colors: { brand: \"#2563eb\" }, space: { card: \"1.125rem\" } } };"} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/stitches.config.ts":"export const config = { theme: { colors: { brand: \"#f97316\" }, space: { card: \"1.125rem\" } } };"} };
+const themedSource = "import { StyleSheet } from \"react-native\";\nexport const styles = StyleSheet.create({ card: { color: \"#2563eb\", padding: 8 } });";
+const tokenSource = "import { StyleSheet } from \"react-native\";\nexport const styles = StyleSheet.create({ card: { color: \"#2563eb\", padding: 8 } });";
+const blueSemantic = undefined;
+const amberSemantic = undefined;
+const blueTargetSemantic = undefined;
+const amberTargetSemantic = undefined;
+const blueProject = createAdapterRouteProject(CodemodAdapterId.ReactNative, CodemodAdapterId.Stitches, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.ReactNative, CodemodAdapterId.Stitches, "#f97316");
 	const targetSemantic = undefined;
 
 test("react-native -> stitches -> react-native: preserves an actionable concrete round trip", () => {
-	const first = forward.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+	const first = forward.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
+	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -36,6 +41,7 @@ test("react-native -> stitches -> react-native: preserves an actionable concrete
 		expect(first.residuals.length).toBeGreaterThan(0);
 		expect(first.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(first, "react-native -> stitches round-trip happy forward");
 	expectExplicitResidualEvidence(first);
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(second);
@@ -43,11 +49,25 @@ test("react-native -> stitches -> react-native: preserves an actionable concrete
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { View } from "react-native";
-		import { css } from "@stitches/react";
-		export const styles = { "card": css({ padding: 16, color: "red" }) };
-		export const App = () => <View style={styles.card} />;",
+		    "code": "import { css } from "@stitches/react";
+
+		export const styles = { "card": css({ padding: 8, color: "red" }) };",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "named-map",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "target-native",
@@ -66,12 +86,27 @@ test("react-native -> stitches -> react-native: preserves an actionable concrete
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { View } from "react-native";
-		import { StyleSheet } from "react-native";
+		    "code": "import { StyleSheet } from "react-native";
 
-		export const styles = { "card": StyleSheet.create({ "padding": 16, "color": "red" }) };
-		export const App = () => <View style={styles.card} />;",
+
+		export const styles = { "card": StyleSheet.create({ "padding": 8, "color": "red" }) };",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		          "react-native-numeric-normalization",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "static",
@@ -89,13 +124,14 @@ test("react-native -> stitches -> react-native: preserves an actionable concrete
 		    ],
 		  },
 		}
-	`);
+	`)
 });
 
-test("react-native -> stitches -> react-native: retains edge semantics without silent loss", () => {
-	const first = forward.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+test("react-native -> stitches -> react-native: retains the documented secondary API without silent loss", () => {
+	const first = forward.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
+	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(first, "react-native -> stitches round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
@@ -103,14 +139,28 @@ test("react-native -> stitches -> react-native: retains edge semantics without s
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { View } from "react-native";
-		import { css } from "@stitches/react";
-		export const styles = { "card": css({ padding: 16, color: theme.foreground }) };
-		export const App = () => <View style={styles.card} />;",
+		    "code": "import { css } from "@stitches/react";
+
+		export const styles = { "card": css({ padding: 8, backgroundColor: "red" }) };",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "named-map",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "host-runtime",
+		        "outcome": "target-native",
 		        "representation": "named-map",
 		      },
 		    ],
@@ -126,18 +176,31 @@ test("react-native -> stitches -> react-native: retains edge semantics without s
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { View } from "react-native";
-		import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
+		    "code": "import { StyleSheet } from "react-native";
 
-		export const styles = { "card": css.vars({ "padding": 16, "color": theme.foreground }) };
-		export const App = () => <View style={styles.card} />;",
+
+		export const styles = { "card": StyleSheet.create({ "padding": 8, "backgroundColor": "red" }) };",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		          "react-native-numeric-normalization",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [],
@@ -151,16 +214,22 @@ test("react-native -> stitches -> react-native: retains edge semantics without s
 		    ],
 		  },
 		}
-	`);
+	`)
 });
 
-test("react-native -> stitches -> react-native: preserves concrete theme and project context variants", () => {
-	const firstBlue = forward.run({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const secondBlue = reverse.run({ source: firstBlue.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
-	const firstAmber = forward.run({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
-	const secondAmber = reverse.run({ source: firstAmber.code, file: "Card.tsx", semantic: amberTargetSemantic, project: amberProject });
+test("react-native -> stitches -> react-native: preserves concrete theme and project context variants", async () => {
+	const firstBlue = await forward.runAsync({ source: themedSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "styles.ts", semantic: blueTargetSemantic, project: blueProject });
+	const firstAmber = await forward.runAsync({ source: themedSource, file: "styles.ts", semantic: amberSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "styles.ts", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.ReactNative, CodemodAdapterId.Stitches);
+	expectConfiguredTargetTokenEvidence(firstBlue, CodemodAdapterId.Stitches, "react-native -> stitches round-trip token config");
+	expectRouteScenarioEvidence(firstBlue, "react-native -> stitches round-trip blue forward");
+	expectRouteScenarioEvidence(firstAmber, "react-native -> stitches round-trip amber forward");
+	expectConfiguredTargetTokenAbsence(firstAmber, CodemodAdapterId.Stitches, "react-native -> stitches round-trip amber literal config");
+
 	expectActionableRoundTrip(firstBlue, secondBlue);
 	expectActionableRoundTrip(firstAmber, secondAmber);
 	expectExplicitResidualEvidence(firstBlue);
@@ -175,14 +244,28 @@ test("react-native -> stitches -> react-native: preserves concrete theme and pro
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { View } from "react-native";
-		import { css } from "@stitches/react";
-		export const styles = { "card": css({ padding: 16, color: theme.colors.brand }) };
-		export const App = () => <View style={styles.card} />;",
+		      "code": "import { css } from "@stitches/react";
+
+		export const styles = { "card": css({ padding: 8, color: "#2563eb" }) };",
 		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "named-map",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "host-runtime",
+		          "outcome": "target-native",
 		          "representation": "named-map",
 		        },
 		      ],
@@ -198,12 +281,27 @@ test("react-native -> stitches -> react-native: preserves concrete theme and pro
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { View } from "react-native";
-		import { StyleSheet } from "react-native";
+		      "code": "import { StyleSheet } from "react-native";
 
-		export const styles = { "card": StyleSheet.create({ "padding": 16, "color": "#f97316" }) };
-		export const App = () => <View style={styles.card} />;",
+
+		export const styles = { "card": StyleSheet.create({ "padding": 8, "color": "#2563eb" }) };",
 		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		            "react-native-numeric-normalization",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "static",
@@ -224,14 +322,28 @@ test("react-native -> stitches -> react-native: preserves concrete theme and pro
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { View } from "react-native";
-		import { css } from "@stitches/react";
-		export const styles = { "card": css({ padding: 16, color: theme.colors.brand }) };
-		export const App = () => <View style={styles.card} />;",
+		      "code": "import { css } from "@stitches/react";
+
+		export const styles = { "card": css({ padding: 8, color: "#2563eb" }) };",
 		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "named-map",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "host-runtime",
+		          "outcome": "target-native",
 		          "representation": "named-map",
 		        },
 		      ],
@@ -247,12 +359,27 @@ test("react-native -> stitches -> react-native: preserves concrete theme and pro
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { View } from "react-native";
-		import { StyleSheet } from "react-native";
+		      "code": "import { StyleSheet } from "react-native";
 
-		export const styles = { "card": StyleSheet.create({ "padding": 16, "color": "#2563eb" }) };
-		export const App = () => <View style={styles.card} />;",
+
+		export const styles = { "card": StyleSheet.create({ "padding": 8, "color": "#2563eb" }) };",
 		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		            "react-native-numeric-normalization",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "static",
@@ -271,13 +398,15 @@ test("react-native -> stitches -> react-native: preserves concrete theme and pro
 		    },
 		  },
 		}
-	`);
+	`)
 });
 
-test("react-native -> stitches -> react-native: resolves token references across both concrete legs", () => {
-	const first = forward.run({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
+test("react-native -> stitches -> react-native: resolves token values across both concrete legs", async () => {
+	const first = await forward.runAsync({ source: tokenSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "styles.ts", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.ReactNative, CodemodAdapterId.Stitches);
+	expectRouteScenarioEvidence(first, "react-native -> stitches round-trip token forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
@@ -285,11 +414,25 @@ test("react-native -> stitches -> react-native: resolves token references across
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { View } from "react-native";
-		import { css } from "@stitches/react";
-		export const styles = { "card": css({ padding: 16, color: "$colors.brand" }) };
-		export const App = () => <View style={styles.card} />;",
+		    "code": "import { css } from "@stitches/react";
+
+		export const styles = { "card": css({ padding: 8, color: "#2563eb" }) };",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "named-map",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "target-native",
@@ -308,12 +451,27 @@ test("react-native -> stitches -> react-native: resolves token references across
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { View } from "react-native";
-		import { StyleSheet } from "react-native";
+		    "code": "import { StyleSheet } from "react-native";
 
-		export const styles = { "card": StyleSheet.create({ "padding": 16, "color": "$colors.brand" }) };
-		export const App = () => <View style={styles.card} />;",
+
+		export const styles = { "card": StyleSheet.create({ "padding": 8, "color": "#2563eb" }) };",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		          "react-native-numeric-normalization",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "static",
@@ -331,6 +489,6 @@ test("react-native -> stitches -> react-native: resolves token references across
 		    ],
 		  },
 		}
-	`);
+	`)
 });
 

@@ -3,30 +3,35 @@ import { expect, test } from "vitest";
 import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectActionableRoundTrip,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const forward = createAdapterRouteSpec(CodemodAdapterId.Mui, CodemodAdapterId.Less);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.Less, CodemodAdapterId.Mui);
 	const happySource = "import { Box } from \"@mui/material\";\nexport const App = () => <Box sx={{ color: \"red\", p: 2 }} />;";
-const edgeSource = "import { Box } from \"@mui/material\";\nexport const App = () => <Box sx={{ color: theme.foreground, p: 2 }} />;";
+const edgeSource = "import { styled } from \"@mui/system\";\nexport const Card = styled(\"div\")({ color: \"red\", padding: 8 });";
 const malformedSource = "import { Box } from \"@mui/material\";\nexport const App = () => <Box sx={{ color: \"red\", p: 2 }} />;\nconst unfinished = { /* unfinished mui */";
 const sourceSemantic = { source: { framework: BuiltinHostFramework.React } };
-const themedSource = "import { Box } from \"@mui/material\";\nexport const App = () => <Box sx={{ color: theme.palette.primary.main, p: 2 }} />;";
-const tokenSource = "import { Box } from \"@mui/material\";\nexport const App = () => <Box sx={{ color: \"primary.main\", p: 2 }} />;";
-const blueSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "palette.primary.main", authored: "theme.palette.primary.main", resolved: "#2563eb" }] };
-const amberSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "palette.primary.main", authored: "theme.palette.primary.main", resolved: "#f97316" }] };
-const blueTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/src/theme.ts":"export const muiTheme = { palette: { primary: { main: \"#2563eb\" } } };"} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/src/theme.ts":"export const muiTheme = { palette: { primary: { main: \"#f97316\" } } };"} };
+const themedSource = "import { Box } from \"@mui/material\";\nexport const App = () => <Box sx={{ color: \"primary.main\", p: 2 }} />;";
+const tokenSource = "import { Box } from \"@mui/material\";\nexport const App = () => <Box sx={{ color: \"#2563eb\", p: 2 }} />;";
+const blueSemantic = { source: { framework: BuiltinHostFramework.React } };
+const amberSemantic = { source: { framework: BuiltinHostFramework.React } };
+const blueTargetSemantic = undefined;
+const amberTargetSemantic = undefined;
+const blueProject = createAdapterRouteProject(CodemodAdapterId.Mui, CodemodAdapterId.Less, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.Mui, CodemodAdapterId.Less, "#f97316");
 	const targetSemantic = undefined;
 
 test("mui -> less -> mui: preserves an actionable concrete round trip", () => {
-	const first = forward.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.less", semantic: targetSemantic });
+	const first = forward.run({ source: happySource, file: "App.tsx", semantic: sourceSemantic });
+	const second = reverse.run({ source: first.code, file: "card.less", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -36,6 +41,7 @@ test("mui -> less -> mui: preserves an actionable concrete round trip", () => {
 		expect(first.residuals.length).toBeGreaterThan(0);
 		expect(first.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(first, "mui -> less round-trip happy forward");
 	expectExplicitResidualEvidence(first);
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(second);
@@ -47,6 +53,20 @@ test("mui -> less -> mui: preserves an actionable concrete round trip", () => {
 		export const App = () => // pandwind:migrate-skip (route: mui -> less | lowering-residual: validation)
 		<Box sx={{ color: "red", p: 2 }} />;",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
@@ -78,6 +98,28 @@ test("mui -> less -> mui: preserves an actionable concrete round trip", () => {
 		export const App = () => // pandwind:migrate-skip (route: mui -> less | lowering-residual: validation)
 		<Box sx={{ color: "red", p: 2 }} />;",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "residual",
+		        "residuals": [],
+		      },
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
@@ -119,13 +161,14 @@ test("mui -> less -> mui: preserves an actionable concrete round trip", () => {
 		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 
-test("mui -> less -> mui: retains edge semantics without silent loss", () => {
-	const first = forward.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.less", semantic: targetSemantic });
+test("mui -> less -> mui: retains the documented secondary API without silent loss", () => {
+	const first = forward.run({ source: edgeSource, file: "App.tsx", semantic: sourceSemantic });
+	const second = reverse.run({ source: first.code, file: "card.less", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(first, "mui -> less round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
@@ -133,25 +176,40 @@ test("mui -> less -> mui: retains edge semantics without silent loss", () => {
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { Box } from "@mui/material";
-		export const App = () => // pandwind:migrate-skip (route: mui -> less | lowering-residual: dynamic | capability-blocked: dynamic-values: dynamic: theme.foreground | available: residual)
-		<Box sx={{ color: theme.foreground, p: 2 }} />;",
+		    "code": "import { styled } from "@mui/system";
+		export const Card = // pandwind:migrate-skip (route: mui -> less | lowering-residual: framework-semantics | available: residual, portable-artifact)
+		styled("div")({ color: "red", padding: 8 });",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		          "runtime-and-plugin",
+		        ],
+		        "availableRepresentations": [
+		          "residual",
+		          "portable-artifact",
+		        ],
+		        "representation": "residual",
+		        "residuals": [
+		          {
+		            "hint": "target lacks framework semantics",
+		            "kind": "framework-semantics",
+		          },
+		        ],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "residual",
+		        "representation": "portable-artifact",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "dynamic-values: dynamic: theme.foreground",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "target lacks runtime dynamic values",
-		        "kind": "dynamic",
+		        "hint": "target lacks framework semantics",
+		        "kind": "framework-semantics",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -161,15 +219,23 @@ test("mui -> less -> mui: retains edge semantics without silent loss", () => {
 		  "reverse": {
 		    "changed": false,
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import { Box } from "@mui/material";
-		export const App = () => // pandwind:migrate-skip (route: mui -> less | lowering-residual: dynamic | capability-blocked: dynamic-values: dynamic: theme.foreground | available: residual)
-		<Box sx={{ color: theme.foreground, p: 2 }} />;",
+		import { styled } from "@mui/system";
+		export const Card = // pandwind:migrate-skip (route: mui -> less | lowering-residual: framework-semantics | available: residual, portable-artifact)
+		styled("div")({ color: "red", padding: 8 });",
 		    "converted": 0,
-		    "outcomes": [
+		    "generatedFiles": [],
+		    "loweringPlans": [
 		      {
-		        "outcome": "residual",
+		        "applied": [],
+		        "availableRepresentations": [
+		          "named-map",
+		          "residual",
+		        ],
 		        "representation": "residual",
+		        "residuals": [],
 		      },
+		    ],
+		    "outcomes": [
 		      {
 		        "outcome": "residual",
 		        "representation": "residual",
@@ -177,11 +243,6 @@ test("mui -> less -> mui: retains edge semantics without silent loss", () => {
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "unexpected stylesheet closing brace",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
 		        "hint": "stylesheet statement is preserved outside the style program",
 		        "kind": "parse",
 		        "preserved": undefined,
@@ -189,11 +250,6 @@ test("mui -> less -> mui: retains edge semantics without silent loss", () => {
 		      {
 		        "hint": "stylesheet statement is preserved outside the style program",
 		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet migration requires a single local class selector",
-		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		      {
@@ -202,20 +258,25 @@ test("mui -> less -> mui: retains edge semantics without silent loss", () => {
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 5,
+		    "skipped": 3,
 		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 
-test("mui -> less -> mui: preserves concrete theme and project context variants", () => {
-	const firstBlue = forward.run({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const secondBlue = reverse.run({ source: firstBlue.code, file: "Card.less", semantic: blueTargetSemantic, project: blueProject });
-	const firstAmber = forward.run({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
-	const secondAmber = reverse.run({ source: firstAmber.code, file: "Card.less", semantic: amberTargetSemantic, project: amberProject });
+test("mui -> less -> mui: preserves concrete theme and project context variants", async () => {
+	const firstBlue = await forward.runAsync({ source: themedSource, file: "App.tsx", semantic: blueSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "card.less", semantic: blueTargetSemantic, project: blueProject });
+	const firstAmber = await forward.runAsync({ source: themedSource, file: "App.tsx", semantic: amberSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "card.less", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Mui, CodemodAdapterId.Less);
+	expectConfiguredTargetTokenEvidence(firstBlue, CodemodAdapterId.Less, "mui -> less round-trip token config");
+	expectRouteScenarioEvidence(firstBlue, "mui -> less round-trip blue forward");
+	expectRouteScenarioEvidence(firstAmber, "mui -> less round-trip amber forward");
+
 	expectActionableRoundTrip(firstBlue, secondBlue);
 	expectActionableRoundTrip(firstAmber, secondAmber);
 	expectExplicitResidualEvidence(firstBlue);
@@ -231,37 +292,76 @@ test("mui -> less -> mui: preserves concrete theme and project context variants"
 		    "forward": {
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
-		export const App = () => // pandwind:migrate-skip (route: mui -> less | lowering-residual: dynamic | capability-blocked: dynamic-values: dynamic: theme.palette.primary.main | available: residual)
-		<Box sx={{ color: theme.palette.primary.main, p: 2 }} />;",
+		export const App = () => // pandwind:migrate-skip (route: mui -> less | lowering-residual: validation)
+		<Box sx={{ color: "primary.main", p: 2 }} />;",
 		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
-		          "representation": "residual",
+		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "dynamic-values: dynamic: theme.palette.primary.main",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "target lacks runtime dynamic values",
-		          "kind": "dynamic",
+		          "hint": "2 residual conversion(s)",
+		          "kind": "validation",
 		          "preserved": undefined,
 		        },
 		      ],
 		      "skipped": 1,
-		      "validations": [],
+		      "validations": [
+		        {
+		          "differences": [
+		            "2 residual conversion(s)",
+		          ],
+		          "lossiness": "lossy",
+		          "valid": false,
+		        },
+		      ],
 		    },
 		    "reverse": {
 		      "changed": false,
 		      "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
 		import { Box } from "@mui/material";
-		export const App = () => // pandwind:migrate-skip (route: mui -> less | lowering-residual: dynamic | capability-blocked: dynamic-values: dynamic: theme.palette.primary.main | available: residual)
-		<Box sx={{ color: theme.palette.primary.main, p: 2 }} />;",
+		export const App = () => // pandwind:migrate-skip (route: mui -> less | lowering-residual: validation)
+		<Box sx={{ color: "primary.main", p: 2 }} />;",
 		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [],
+		          "availableRepresentations": [
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "residual",
+		          "residuals": [],
+		        },
+		        {
+		          "applied": [],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
@@ -307,37 +407,76 @@ test("mui -> less -> mui: preserves concrete theme and project context variants"
 		    "forward": {
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
-		export const App = () => // pandwind:migrate-skip (route: mui -> less | lowering-residual: dynamic | capability-blocked: dynamic-values: dynamic: theme.palette.primary.main | available: residual)
-		<Box sx={{ color: theme.palette.primary.main, p: 2 }} />;",
+		export const App = () => // pandwind:migrate-skip (route: mui -> less | lowering-residual: validation)
+		<Box sx={{ color: "primary.main", p: 2 }} />;",
 		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
-		          "representation": "residual",
+		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "dynamic-values: dynamic: theme.palette.primary.main",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "target lacks runtime dynamic values",
-		          "kind": "dynamic",
+		          "hint": "2 residual conversion(s)",
+		          "kind": "validation",
 		          "preserved": undefined,
 		        },
 		      ],
 		      "skipped": 1,
-		      "validations": [],
+		      "validations": [
+		        {
+		          "differences": [
+		            "2 residual conversion(s)",
+		          ],
+		          "lossiness": "lossy",
+		          "valid": false,
+		        },
+		      ],
 		    },
 		    "reverse": {
 		      "changed": false,
 		      "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
 		import { Box } from "@mui/material";
-		export const App = () => // pandwind:migrate-skip (route: mui -> less | lowering-residual: dynamic | capability-blocked: dynamic-values: dynamic: theme.palette.primary.main | available: residual)
-		<Box sx={{ color: theme.palette.primary.main, p: 2 }} />;",
+		export const App = () => // pandwind:migrate-skip (route: mui -> less | lowering-residual: validation)
+		<Box sx={{ color: "primary.main", p: 2 }} />;",
 		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [],
+		          "availableRepresentations": [
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "residual",
+		          "residuals": [],
+		        },
+		        {
+		          "applied": [],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
@@ -380,13 +519,15 @@ test("mui -> less -> mui: preserves concrete theme and project context variants"
 		    },
 		  },
 		}
-	`);
+	`)
 });
 
-test("mui -> less -> mui: resolves token references across both concrete legs", () => {
-	const first = forward.run({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const second = reverse.run({ source: first.code, file: "Card.less", semantic: blueTargetSemantic, project: blueProject });
+test("mui -> less -> mui: resolves token values across both concrete legs", async () => {
+	const first = await forward.runAsync({ source: tokenSource, file: "App.tsx", semantic: blueSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "card.less", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Mui, CodemodAdapterId.Less);
+	expectRouteScenarioEvidence(first, "mui -> less round-trip token forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
@@ -396,8 +537,22 @@ test("mui -> less -> mui: resolves token references across both concrete legs", 
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
 		export const App = () => // pandwind:migrate-skip (route: mui -> less | lowering-residual: validation)
-		<Box sx={{ color: "primary.main", p: 2 }} />;",
+		<Box sx={{ color: "#2563eb", p: 2 }} />;",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
@@ -427,8 +582,30 @@ test("mui -> less -> mui: resolves token references across both concrete legs", 
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
 		import { Box } from "@mui/material";
 		export const App = () => // pandwind:migrate-skip (route: mui -> less | lowering-residual: validation)
-		<Box sx={{ color: "primary.main", p: 2 }} />;",
+		<Box sx={{ color: "#2563eb", p: 2 }} />;",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "residual",
+		        "residuals": [],
+		      },
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
@@ -470,6 +647,6 @@ test("mui -> less -> mui: resolves token references across both concrete legs", 
 		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 

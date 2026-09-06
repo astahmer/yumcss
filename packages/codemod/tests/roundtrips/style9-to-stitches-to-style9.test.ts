@@ -3,30 +3,35 @@ import { expect, test } from "vitest";
 import { CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectActionableRoundTrip,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const forward = createAdapterRouteSpec(CodemodAdapterId.Style9, CodemodAdapterId.Stitches);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.Stitches, CodemodAdapterId.Style9);
-	const happySource = "import style9 from \"style9\";\nexport const styles = style9.create({ card: { color: \"red\", padding: \"1rem\" } });\nexport const App = () => <div className={styles.card} />;";
-const edgeSource = "import style9 from \"style9\";\nexport const styles = style9.create({ card: { color: theme.foreground, padding: \"1rem\" } });\nexport const App = () => <div className={styles.card} />;";
-const malformedSource = "import style9 from \"style9\";\nexport const styles = style9.create({ card: { color: \"red\", padding: \"1rem\" } });\nexport const App = () => <div className={styles.card} />;\nconst unfinished = { /* unfinished style9 */";
+	const happySource = "import style9 from \"style9\";\nexport const styles = style9.create({ card: { color: \"red\" } });";
+const edgeSource = "import style9 from \"style9\";\nexport const styles = style9.create({ card: { color: \"red\" }, muted: { opacity: 0.5 } });";
+const malformedSource = "import style9 from \"style9\";\nexport const styles = style9.create({ card: { color: \"red\" } });\nconst unfinished = { /* unfinished style9 */";
 const sourceSemantic = undefined;
-const themedSource = "import style9 from \"style9\";\nexport const styles = style9.create({ card: { color: theme.colors.brand, padding: \"1rem\" } });\nexport const App = () => <div className={styles.card} />;";
-const tokenSource = "import style9 from \"style9\";\nexport const styles = style9.create({ card: { color: \"$colors.brand\", padding: \"1rem\" } });\nexport const App = () => <div className={styles.card} />;";
-const blueSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/stitches.config.ts":"export const config = { theme: { colors: { brand: \"#2563eb\" }, space: { card: \"1.125rem\" } } };"} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/stitches.config.ts":"export const config = { theme: { colors: { brand: \"#f97316\" }, space: { card: \"1.125rem\" } } };"} };
+const themedSource = "import style9 from \"style9\";\nexport const styles = style9.create({ card: { color: \"#2563eb\" } });";
+const tokenSource = "import style9 from \"style9\";\nexport const styles = style9.create({ card: { color: \"#2563eb\" } });";
+const blueSemantic = undefined;
+const amberSemantic = undefined;
+const blueTargetSemantic = undefined;
+const amberTargetSemantic = undefined;
+const blueProject = createAdapterRouteProject(CodemodAdapterId.Style9, CodemodAdapterId.Stitches, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.Style9, CodemodAdapterId.Stitches, "#f97316");
 	const targetSemantic = undefined;
 
 test("style9 -> stitches -> style9: preserves an actionable concrete round trip", () => {
-	const first = forward.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+	const first = forward.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
+	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -36,6 +41,7 @@ test("style9 -> stitches -> style9: preserves an actionable concrete round trip"
 		expect(first.residuals.length).toBeGreaterThan(0);
 		expect(first.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(first, "style9 -> stitches round-trip happy forward");
 	expectExplicitResidualEvidence(first);
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(second);
@@ -45,9 +51,23 @@ test("style9 -> stitches -> style9: preserves an actionable concrete round trip"
 		    "changed": true,
 		    "code": "import { css } from "@stitches/react";
 
-		export const styles = { "card": css({ padding: "1rem", color: "red" }) };
-		export const App = () => <div className={styles.card} />;",
+		export const styles = { "card": css({ color: "red" }) };",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "named-map",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "target-native",
@@ -69,9 +89,23 @@ test("style9 -> stitches -> style9: preserves an actionable concrete round trip"
 		    "code": "import style9 from "style9";
 
 
-		export const styles = { "card": style9.create({ "padding": "1rem", "color": "red" }) };
-		export const App = () => <div className={styles.card} />;",
+		export const styles = { "card": style9.create({ "color": "red" }) };",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "static",
@@ -89,13 +123,14 @@ test("style9 -> stitches -> style9: preserves an actionable concrete round trip"
 		    ],
 		  },
 		}
-	`);
+	`)
 });
 
-test("style9 -> stitches -> style9: retains edge semantics without silent loss", () => {
-	const first = forward.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+test("style9 -> stitches -> style9: retains the documented secondary API without silent loss", () => {
+	const first = forward.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
+	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(first, "style9 -> stitches round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
@@ -105,12 +140,26 @@ test("style9 -> stitches -> style9: retains edge semantics without silent loss",
 		    "changed": true,
 		    "code": "import { css } from "@stitches/react";
 
-		export const styles = { "card": css({ padding: "1rem", color: theme.foreground }) };
-		export const App = () => <div className={styles.card} />;",
+		export const styles = { "card": css({ color: "red" }), "muted": css({ opacity: 0.5 }) };",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "named-map",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "host-runtime",
+		        "outcome": "target-native",
 		        "representation": "named-map",
 		      },
 		    ],
@@ -126,18 +175,46 @@ test("style9 -> stitches -> style9: retains edge semantics without silent loss",
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
+		    "code": "import style9 from "style9";
 
 
-		export const styles = { "card": css.vars({ "padding": "1rem", "color": theme.foreground }) };
-		export const App = () => <div className={styles.card} />;",
-		    "converted": 1,
+		export const styles = { "card": style9.create({ "color": "red" }), "muted": style9.create({ "opacity": 0.5 }) };",
+		    "converted": 2,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		      {
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [],
@@ -148,19 +225,30 @@ test("style9 -> stitches -> style9: retains edge semantics without silent loss",
 		        "lossiness": "lossless",
 		        "valid": true,
 		      },
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
 		    ],
 		  },
 		}
-	`);
+	`)
 });
 
-test("style9 -> stitches -> style9: preserves concrete theme and project context variants", () => {
-	const firstBlue = forward.run({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const secondBlue = reverse.run({ source: firstBlue.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
-	const firstAmber = forward.run({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
-	const secondAmber = reverse.run({ source: firstAmber.code, file: "Card.tsx", semantic: amberTargetSemantic, project: amberProject });
+test("style9 -> stitches -> style9: preserves concrete theme and project context variants", async () => {
+	const firstBlue = await forward.runAsync({ source: themedSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "styles.ts", semantic: blueTargetSemantic, project: blueProject });
+	const firstAmber = await forward.runAsync({ source: themedSource, file: "styles.ts", semantic: amberSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "styles.ts", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Style9, CodemodAdapterId.Stitches);
+	expectConfiguredTargetTokenEvidence(firstBlue, CodemodAdapterId.Stitches, "style9 -> stitches round-trip token config");
+	expectRouteScenarioEvidence(firstBlue, "style9 -> stitches round-trip blue forward");
+	expectRouteScenarioEvidence(firstAmber, "style9 -> stitches round-trip amber forward");
+	expectConfiguredTargetTokenAbsence(firstAmber, CodemodAdapterId.Stitches, "style9 -> stitches round-trip amber literal config");
+
 	expectActionableRoundTrip(firstBlue, secondBlue);
 	expectActionableRoundTrip(firstAmber, secondAmber);
 	expectExplicitResidualEvidence(firstBlue);
@@ -177,12 +265,26 @@ test("style9 -> stitches -> style9: preserves concrete theme and project context
 		      "changed": true,
 		      "code": "import { css } from "@stitches/react";
 
-		export const styles = { "card": css({ padding: "1rem", color: theme.colors.brand }) };
-		export const App = () => <div className={styles.card} />;",
+		export const styles = { "card": css({ color: "#2563eb" }) };",
 		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "named-map",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "host-runtime",
+		          "outcome": "target-native",
 		          "representation": "named-map",
 		        },
 		      ],
@@ -201,9 +303,23 @@ test("style9 -> stitches -> style9: preserves concrete theme and project context
 		      "code": "import style9 from "style9";
 
 
-		export const styles = { "card": style9.create({ "padding": "1rem", "color": "#f97316" }) };
-		export const App = () => <div className={styles.card} />;",
+		export const styles = { "card": style9.create({ "color": "#2563eb" }) };",
 		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "static",
@@ -226,12 +342,26 @@ test("style9 -> stitches -> style9: preserves concrete theme and project context
 		      "changed": true,
 		      "code": "import { css } from "@stitches/react";
 
-		export const styles = { "card": css({ padding: "1rem", color: theme.colors.brand }) };
-		export const App = () => <div className={styles.card} />;",
+		export const styles = { "card": css({ color: "#2563eb" }) };",
 		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "named-map",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "host-runtime",
+		          "outcome": "target-native",
 		          "representation": "named-map",
 		        },
 		      ],
@@ -250,9 +380,23 @@ test("style9 -> stitches -> style9: preserves concrete theme and project context
 		      "code": "import style9 from "style9";
 
 
-		export const styles = { "card": style9.create({ "padding": "1rem", "color": "#2563eb" }) };
-		export const App = () => <div className={styles.card} />;",
+		export const styles = { "card": style9.create({ "color": "#2563eb" }) };",
 		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "static",
@@ -271,13 +415,15 @@ test("style9 -> stitches -> style9: preserves concrete theme and project context
 		    },
 		  },
 		}
-	`);
+	`)
 });
 
-test("style9 -> stitches -> style9: resolves token references across both concrete legs", () => {
-	const first = forward.run({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
+test("style9 -> stitches -> style9: resolves token values across both concrete legs", async () => {
+	const first = await forward.runAsync({ source: tokenSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "styles.ts", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Style9, CodemodAdapterId.Stitches);
+	expectRouteScenarioEvidence(first, "style9 -> stitches round-trip token forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
@@ -287,9 +433,23 @@ test("style9 -> stitches -> style9: resolves token references across both concre
 		    "changed": true,
 		    "code": "import { css } from "@stitches/react";
 
-		export const styles = { "card": css({ padding: "1rem", color: "$colors.brand" }) };
-		export const App = () => <div className={styles.card} />;",
+		export const styles = { "card": css({ color: "#2563eb" }) };",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "named-map",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "target-native",
@@ -311,9 +471,23 @@ test("style9 -> stitches -> style9: resolves token references across both concre
 		    "code": "import style9 from "style9";
 
 
-		export const styles = { "card": style9.create({ "padding": "1rem", "color": "$colors.brand" }) };
-		export const App = () => <div className={styles.card} />;",
+		export const styles = { "card": style9.create({ "color": "#2563eb" }) };",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "static",
@@ -331,6 +505,6 @@ test("style9 -> stitches -> style9: resolves token references across both concre
 		    ],
 		  },
 		}
-	`);
+	`)
 });
 

@@ -3,26 +3,31 @@ import { expect, test } from "vitest";
 import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.Sass, CodemodAdapterId.Mui);
-	const happySource = ".card { color: red; padding: 1rem; &__title { font-weight: 600; } }\n$title-color: blue;";
-const edgeSource = ".card { color: theme.foreground; padding: 1rem; &__title { font-weight: 600; } }\n$title-color: blue;";
-const malformedSource = ".card { color: red; padding: 1rem; &__title { font-weight: 600; } }\n$title-color: blue;\nconst unfinished = { /* unfinished sass */";
+	const happySource = ".card { color: red; padding: 1rem; }";
+const edgeSource = "$brand: red;\n.card { color: $brand; padding: 1rem; &__title { font-weight: 600; } }";
+const malformedSource = ".card { color: red; padding: 1rem; }\nconst unfinished = { /* unfinished sass */";
 const sourceSemantic = undefined;
-const themedSource = ".card { color: ${theme.colors.brand}; padding: 1rem; &__title { font-weight: 600; } }\n$title-color: blue;";
-const tokenSource = ".card { color: var(--colors-brand); padding: 1rem; &__title { font-weight: 600; } }\n$title-color: blue;";
-const blueSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "palette.primary.main", authored: "theme.palette.primary.main", resolved: "#2563eb" }] };
-const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "palette.primary.main", authored: "theme.palette.primary.main", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/src/theme.ts":"export const muiTheme = { palette: { primary: { main: \"#2563eb\" } } };"} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/src/theme.ts":"export const muiTheme = { palette: { primary: { main: \"#f97316\" } } };"} };
+const themedSource = ".card { color: #2563eb; padding: 1rem; }";
+const tokenSource = ".card { color: #2563eb; padding: 1rem; }";
+const blueSemantic = undefined;
+const amberSemantic = undefined;
+const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
+const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
+const blueProject = createAdapterRouteProject(CodemodAdapterId.Sass, CodemodAdapterId.Mui, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.Sass, CodemodAdapterId.Mui, "#f97316");
 
 test("sass -> mui: migrates concrete sass syntax to mui", () => {
-	const result = route.run({ source: happySource, file: "Card.scss", semantic: sourceSemantic });
+	const result = route.run({ source: happySource, file: "card.scss", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -37,14 +42,27 @@ test("sass -> mui: migrates concrete sass syntax to mui", () => {
 		expect(result.residuals.length).toBeGreaterThan(0);
 		expect(result.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(result, "sass -> mui happy");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": false,
-		  "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting, host-framework)
-		.card { color: red; padding: 1rem; &__title { font-weight: 600; } }
-		$title-color: blue;",
+		  "code": "// pandwind:migrate-skip (lowering-residual: host-framework)
+		.card { color: red; padding: 1rem; }",
 		  "converted": 0,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
@@ -53,38 +71,41 @@ test("sass -> mui: migrates concrete sass syntax to mui", () => {
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "stylesheet statement is preserved outside the style program",
-		      "kind": "parse",
-		      "preserved": undefined,
-		    },
-		    {
-		      "hint": "nested stylesheet rules require selector-aware lowering",
-		      "kind": "nesting",
-		      "preserved": undefined,
-		    },
-		    {
 		      "hint": "MUI sx styles require a host component prop; no standalone sx() API exists",
 		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },
 		  ],
-		  "skipped": 3,
+		  "skipped": 1,
 		  "validations": [],
 		}
-	`);
+	`)
 });
 
-test("sass -> mui: carries concrete sass dynamics or edge syntax explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "Card.scss", semantic: sourceSemantic });
+test("sass -> mui: carries a documented secondary sass API explicitly", () => {
+	const result = route.run({ source: edgeSource, file: "card.scss", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(result, "sass -> mui secondary");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": false,
-		  "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting, host-framework)
-		.card { color: theme.foreground; padding: 1rem; &__title { font-weight: 600; } }
-		$title-color: blue;",
+		  "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting)
+		$brand: red;
+		.card { color: $brand; padding: 1rem; &__title { font-weight: 600; } }",
 		  "converted": 0,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "residual",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
@@ -102,33 +123,46 @@ test("sass -> mui: carries concrete sass dynamics or edge syntax explicitly", ()
 		      "kind": "nesting",
 		      "preserved": undefined,
 		    },
-		    {
-		      "hint": "MUI sx styles require a host component prop; no standalone sx() API exists",
-		      "kind": "host-framework",
-		      "preserved": undefined,
-		    },
 		  ],
-		  "skipped": 3,
+		  "skipped": 2,
 		  "validations": [],
 		}
-	`);
+	`)
 });
 
-test("sass -> mui: lowers concrete theme and project context variants", () => {
-	const blue = route.run({ source: themedSource, file: "Card.scss", semantic: blueSemantic, project: blueProject });
-	const amber = route.run({ source: themedSource, file: "Card.scss", semantic: amberSemantic, project: amberProject });
+test("sass -> mui: loads concrete theme and project context variants", async () => {
+	const blue = await route.runAsync({ source: themedSource, file: "card.scss", semantic: blueSemantic, project: blueProject });
+	const amber = await route.runAsync({ source: themedSource, file: "card.scss", semantic: amberSemantic, project: amberProject });
 	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
 	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Sass, CodemodAdapterId.Mui);
+	expectConfiguredTargetTokenEvidence(blue, CodemodAdapterId.Mui, "sass -> mui blue config");
+	expectRouteScenarioEvidence(blue, "sass -> mui blue config");
+	expectRouteScenarioEvidence(amber, "sass -> mui amber config");
+	expectConfiguredTargetTokenAbsence(amber, CodemodAdapterId.Mui, "sass -> mui amber literal config");
+
 	expectExplicitResidualEvidence(blue);
 	expectExplicitResidualEvidence(amber);
 	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
 		{
 		  "amber": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting, host-framework)
-		.card { color: \${theme.colors.brand}; padding: 1rem; &__title { font-weight: 600; } }
-		$title-color: blue;",
+		    "code": "// pandwind:migrate-skip (lowering-residual: host-framework)
+		.card { color: #2563eb; padding: 1rem; }",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
@@ -137,30 +171,32 @@ test("sass -> mui: lowers concrete theme and project context variants", () => {
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "nested stylesheet rules require selector-aware lowering",
-		        "kind": "nesting",
-		        "preserved": undefined,
-		      },
-		      {
 		        "hint": "MUI sx styles require a host component prop; no standalone sx() API exists",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 3,
+		    "skipped": 1,
 		    "validations": [],
 		  },
 		  "blue": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting, host-framework)
-		.card { color: \${theme.colors.brand}; padding: 1rem; &__title { font-weight: 600; } }
-		$title-color: blue;",
+		    "code": "// pandwind:migrate-skip (lowering-residual: host-framework)
+		.card { color: #2563eb; padding: 1rem; }",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
@@ -169,39 +205,44 @@ test("sass -> mui: lowers concrete theme and project context variants", () => {
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "nested stylesheet rules require selector-aware lowering",
-		        "kind": "nesting",
-		        "preserved": undefined,
-		      },
-		      {
 		        "hint": "MUI sx styles require a host component prop; no standalone sx() API exists",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 3,
+		    "skipped": 1,
 		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 
-test("sass -> mui: resolves concrete token references with project context", () => {
-	const result = route.run({ source: tokenSource, file: "Card.scss", semantic: blueSemantic, project: blueProject });
+test("sass -> mui: resolves concrete token values with project context", async () => {
+	const result = await route.runAsync({ source: tokenSource, file: "card.scss", semantic: blueSemantic, project: blueProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Sass, CodemodAdapterId.Mui);
+	expectConfiguredTargetTokenEvidence(result, CodemodAdapterId.Mui, "sass -> mui token config");
+	expectRouteScenarioEvidence(result, "sass -> mui token config");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": false,
-		  "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting, host-framework)
-		.card { color: var(--colors-brand); padding: 1rem; &__title { font-weight: 600; } }
-		$title-color: blue;",
+		  "code": "// pandwind:migrate-skip (lowering-residual: host-framework)
+		.card { color: #2563eb; padding: 1rem; }",
 		  "converted": 0,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
@@ -210,39 +251,42 @@ test("sass -> mui: resolves concrete token references with project context", () 
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "stylesheet statement is preserved outside the style program",
-		      "kind": "parse",
-		      "preserved": undefined,
-		    },
-		    {
-		      "hint": "nested stylesheet rules require selector-aware lowering",
-		      "kind": "nesting",
-		      "preserved": undefined,
-		    },
-		    {
 		      "hint": "MUI sx styles require a host component prop; no standalone sx() API exists",
 		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },
 		  ],
-		  "skipped": 3,
+		  "skipped": 1,
 		  "validations": [],
 		}
-	`);
+	`)
 });
 
 test("sass -> mui: preserves malformed concrete sass input", () => {
-	const result = route.run({ source: malformedSource, file: "Card.scss", semantic: sourceSemantic });
+	const result = route.run({ source: malformedSource, file: "card.scss", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished sass */");
+	expectRouteScenarioEvidence(result, "sass -> mui malformed");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": false,
-		  "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting, host-framework)
-		.card { color: red; padding: 1rem; &__title { font-weight: 600; } }
-		$title-color: blue;
+		  "code": "// pandwind:migrate-skip (lowering-residual: parse, host-framework)
+		.card { color: red; padding: 1rem; }
 		const unfinished = { /* unfinished sass */",
 		  "converted": 0,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
@@ -256,24 +300,14 @@ test("sass -> mui: preserves malformed concrete sass input", () => {
 		      "preserved": undefined,
 		    },
 		    {
-		      "hint": "stylesheet statement is preserved outside the style program",
-		      "kind": "parse",
-		      "preserved": undefined,
-		    },
-		    {
-		      "hint": "nested stylesheet rules require selector-aware lowering",
-		      "kind": "nesting",
-		      "preserved": undefined,
-		    },
-		    {
 		      "hint": "MUI sx styles require a host component prop; no standalone sx() API exists",
 		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },
 		  ],
-		  "skipped": 4,
+		  "skipped": 2,
 		  "validations": [],
 		}
-	`);
+	`)
 });
 

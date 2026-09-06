@@ -164,9 +164,33 @@ export class MigrationOutput {
 	}
 
 	static consolidateImports(statements: Iterable<string>): string[] {
+		const input = [...statements];
+		const runtimeBindings = new Set(
+			input.flatMap((statement) => {
+				const binding = /\b(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*createRuntimeCss\(/u.exec(
+					statement,
+				)?.[1];
+				return binding === undefined ? [] : [binding];
+			}),
+		);
+		// A stylesheet migration can emit several rules in one generated module.
+		// If one rule requires the runtime carrier, the same binding can serve the
+		// static rules too. Keeping both initializers would declare the binding
+		// twice and make the generated module invalid.
+		const normalized = input.filter((statement) => {
+			if (
+				runtimeBindings.size > 0 &&
+				statement.trim() === 'import { createCss } from "pandwind/css";'
+			)
+				return false;
+			const staticBinding = /\b(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*createCss\(\)/u.exec(
+				statement,
+			)?.[1];
+			return staticBinding === undefined || !runtimeBindings.has(staticBinding);
+		});
 		const grouped = new Map<string, { defaultImport?: string; named: Set<string> }>();
 		const other: string[] = [];
-		for (const statement of statements) {
+		for (const statement of normalized) {
 			const match = /^import\s+(.+?)\s+from\s+["']([^"']+)["'];?$/.exec(statement.trim());
 			if (match?.[1] === undefined || match[2] === undefined) {
 				other.push(statement);

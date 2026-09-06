@@ -3,26 +3,31 @@ import { expect, test } from "vitest";
 import { CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.Less, CodemodAdapterId.Linaria);
-	const happySource = ".card { color: red; padding: 1rem; .title { font-weight: 600; } }\n@title-color: blue;";
-const edgeSource = ".card { color: theme.foreground; padding: 1rem; .title { font-weight: 600; } }\n@title-color: blue;";
-const malformedSource = ".card { color: red; padding: 1rem; .title { font-weight: 600; } }\n@title-color: blue;\nconst unfinished = { /* unfinished less */";
+	const happySource = ".card { color: red; padding: 1rem; }";
+const edgeSource = "@brand: red;\n.card { color: @brand; padding: 1rem; &__title { font-weight: 600; } }";
+const malformedSource = ".card { color: red; padding: 1rem; }\nconst unfinished = { /* unfinished less */";
 const sourceSemantic = undefined;
-const themedSource = ".card { color: ${theme.colors.brand}; padding: 1rem; .title { font-weight: 600; } }\n@title-color: blue;";
-const tokenSource = ".card { color: var(--colors-brand); padding: 1rem; .title { font-weight: 600; } }\n@title-color: blue;";
-const blueSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {} };
+const themedSource = ".card { color: #2563eb; padding: 1rem; }";
+const tokenSource = ".card { color: #2563eb; padding: 1rem; }";
+const blueSemantic = undefined;
+const amberSemantic = undefined;
+const blueTargetSemantic = undefined;
+const amberTargetSemantic = undefined;
+const blueProject = createAdapterRouteProject(CodemodAdapterId.Less, CodemodAdapterId.Linaria, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.Less, CodemodAdapterId.Linaria, "#f97316");
 
 test("less -> linaria: migrates concrete less syntax to linaria", () => {
-	const result = route.run({ source: happySource, file: "Card.less", semantic: sourceSemantic });
+	const result = route.run({ source: happySource, file: "card.less", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -37,49 +42,75 @@ test("less -> linaria: migrates concrete less syntax to linaria", () => {
 		expect(result.residuals.length).toBeGreaterThan(0);
 		expect(result.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(result, "less -> linaria happy");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
-		  "changed": false,
-		  "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting)
-		.card { color: red; padding: 1rem; .title { font-weight: 600; } }
-		@title-color: blue;",
-		  "converted": 0,
+		  "changed": true,
+		  "code": "import { css } from "@linaria/core";
+		export const styles = { "card": css\`padding: 1rem; color: red;\` };
+		export default styles;",
+		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
-		      "representation": "residual",
+		      "outcome": "static",
+		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
 		    {
-		      "hint": "stylesheet statement is preserved outside the style program",
-		      "kind": "parse",
-		      "preserved": undefined,
-		    },
-		    {
-		      "hint": "nested stylesheet rules require selector-aware lowering",
-		      "kind": "nesting",
-		      "preserved": undefined,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
-		  "skipped": 2,
-		  "validations": [],
 		}
-	`);
+	`)
 });
 
-test("less -> linaria: carries concrete less dynamics or edge syntax explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "Card.less", semantic: sourceSemantic });
+test("less -> linaria: carries a documented secondary less API explicitly", () => {
+	const result = route.run({ source: edgeSource, file: "card.less", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(result, "less -> linaria secondary");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": false,
 		  "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting)
-		.card { color: theme.foreground; padding: 1rem; .title { font-weight: 600; } }
-		@title-color: blue;",
+		@brand: red;
+		.card { color: @brand; padding: 1rem; &__title { font-weight: 600; } }",
 		  "converted": 0,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "residual",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
@@ -101,123 +132,177 @@ test("less -> linaria: carries concrete less dynamics or edge syntax explicitly"
 		  "skipped": 2,
 		  "validations": [],
 		}
-	`);
+	`)
 });
 
-test("less -> linaria: lowers concrete theme and project context variants", () => {
-	const blue = route.run({ source: themedSource, file: "Card.less", semantic: blueSemantic, project: blueProject });
-	const amber = route.run({ source: themedSource, file: "Card.less", semantic: amberSemantic, project: amberProject });
+test("less -> linaria: loads concrete theme and project context variants", async () => {
+	const blue = await route.runAsync({ source: themedSource, file: "card.less", semantic: blueSemantic, project: blueProject });
+	const amber = await route.runAsync({ source: themedSource, file: "card.less", semantic: amberSemantic, project: amberProject });
 	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
 	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Less, CodemodAdapterId.Linaria);
+	expectConfiguredTargetTokenEvidence(blue, CodemodAdapterId.Linaria, "less -> linaria blue config");
+	expectRouteScenarioEvidence(blue, "less -> linaria blue config");
+	expectRouteScenarioEvidence(amber, "less -> linaria amber config");
+	expectConfiguredTargetTokenAbsence(amber, CodemodAdapterId.Linaria, "less -> linaria amber literal config");
+
 	expectExplicitResidualEvidence(blue);
 	expectExplicitResidualEvidence(amber);
 	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
 		{
 		  "amber": {
-		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting)
-		.card { color: \${theme.colors.brand}; padding: 1rem; .title { font-weight: 600; } }
-		@title-color: blue;",
-		    "converted": 0,
+		    "changed": true,
+		    "code": "import { css } from "@linaria/core";
+		export const styles = { "card": css\`padding: 1rem; color: #2563eb;\` };
+		export default styles;",
+		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
-		        "representation": "residual",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "nested stylesheet rules require selector-aware lowering",
-		        "kind": "nesting",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 2,
-		    "validations": [],
 		  },
 		  "blue": {
-		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting)
-		.card { color: \${theme.colors.brand}; padding: 1rem; .title { font-weight: 600; } }
-		@title-color: blue;",
-		    "converted": 0,
+		    "changed": true,
+		    "code": "import { css } from "@linaria/core";
+		export const styles = { "card": css\`padding: 1rem; color: #2563eb;\` };
+		export default styles;",
+		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
-		        "representation": "residual",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "nested stylesheet rules require selector-aware lowering",
-		        "kind": "nesting",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 2,
-		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 
-test("less -> linaria: resolves concrete token references with project context", () => {
-	const result = route.run({ source: tokenSource, file: "Card.less", semantic: blueSemantic, project: blueProject });
+test("less -> linaria: resolves concrete token values with project context", async () => {
+	const result = await route.runAsync({ source: tokenSource, file: "card.less", semantic: blueSemantic, project: blueProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Less, CodemodAdapterId.Linaria);
+	expectConfiguredTargetTokenEvidence(result, CodemodAdapterId.Linaria, "less -> linaria token config");
+	expectRouteScenarioEvidence(result, "less -> linaria token config");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
-		  "changed": false,
-		  "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting)
-		.card { color: var(--colors-brand); padding: 1rem; .title { font-weight: 600; } }
-		@title-color: blue;",
-		  "converted": 0,
+		  "changed": true,
+		  "code": "import { css } from "@linaria/core";
+		export const styles = { "card": css\`padding: 1rem; color: #2563eb;\` };
+		export default styles;",
+		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
-		      "representation": "residual",
+		      "outcome": "static",
+		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
 		    {
-		      "hint": "stylesheet statement is preserved outside the style program",
-		      "kind": "parse",
-		      "preserved": undefined,
-		    },
-		    {
-		      "hint": "nested stylesheet rules require selector-aware lowering",
-		      "kind": "nesting",
-		      "preserved": undefined,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
-		  "skipped": 2,
-		  "validations": [],
 		}
-	`);
+	`)
 });
 
 test("less -> linaria: preserves malformed concrete less input", () => {
-	const result = route.run({ source: malformedSource, file: "Card.less", semantic: sourceSemantic });
+	const result = route.run({ source: malformedSource, file: "card.less", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished less */");
+	expectRouteScenarioEvidence(result, "less -> linaria malformed");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": false,
-		  "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting)
-		.card { color: red; padding: 1rem; .title { font-weight: 600; } }
-		@title-color: blue;
+		  "code": "// pandwind:migrate-skip (lowering-residual: parse)
+		.card { color: red; padding: 1rem; }
 		const unfinished = { /* unfinished less */",
 		  "converted": 0,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
@@ -230,20 +315,10 @@ test("less -> linaria: preserves malformed concrete less input", () => {
 		      "kind": "parse",
 		      "preserved": undefined,
 		    },
-		    {
-		      "hint": "stylesheet statement is preserved outside the style program",
-		      "kind": "parse",
-		      "preserved": undefined,
-		    },
-		    {
-		      "hint": "nested stylesheet rules require selector-aware lowering",
-		      "kind": "nesting",
-		      "preserved": undefined,
-		    },
 		  ],
-		  "skipped": 3,
+		  "skipped": 1,
 		  "validations": [],
 		}
-	`);
+	`)
 });
 

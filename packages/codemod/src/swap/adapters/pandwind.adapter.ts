@@ -1,5 +1,6 @@
 import {
 	SemanticConditionKindTag,
+	inferSemanticConditionKind,
 	StyleProgramResidualKindTag,
 	StyleRuleKindTag,
 	StyleValueKindTag,
@@ -14,11 +15,18 @@ import type {
 	AdapterConfigContext,
 	AdapterEmitContext,
 	AdapterGeneratedFile,
+	AdapterParseContext,
+	AdapterParseResult,
 	AdapterProjectConfig,
 	AdapterTargetMigrationPolicy,
 	AdapterTokenPolicy,
 } from "../adapter-contract.ts";
-import type { StyleProgram } from "../semantic-ir.ts";
+import {
+	styleProgramFromRules,
+	type StyleProgram,
+	type StyleRule,
+	type StyleValue,
+} from "../semantic-ir.ts";
 import { StyleProgramAnalysis } from "../style-program-analysis.ts";
 import {
 	CodemodAdapterId,
@@ -118,6 +126,282 @@ function runtimeValue(value: StyleProgram["declarations"][number]["value"]): str
 	return JSON.stringify(value.value);
 }
 
+function delimitedRuntimeExpression(
+	source: string,
+	start: number,
+	open: string,
+	close: string,
+): number | undefined {
+	let depth = 0;
+	let quote: string | undefined;
+	for (let index = start; index < source.length; index++) {
+		const character = source[index]!;
+		if (quote !== undefined) {
+			if (character === "\\") index++;
+			else if (character === quote) quote = undefined;
+			continue;
+		}
+		if (character === '"' || character === "'" || character === "`") {
+			quote = character;
+			continue;
+		}
+		if (character === open) depth++;
+		if (character === close && --depth === 0) return index + 1;
+	}
+	return undefined;
+}
+
+function splitRuntimeList(source: string): readonly string[] {
+	const parts: string[] = [];
+	let start = 0;
+	let braces = 0;
+	let brackets = 0;
+	let parens = 0;
+	let quote: string | undefined;
+	for (let index = 0; index < source.length; index++) {
+		const character = source[index]!;
+		if (quote !== undefined) {
+			if (character === "\\") index++;
+			else if (character === quote) quote = undefined;
+			continue;
+		}
+		if (character === '"' || character === "'" || character === "`") {
+			quote = character;
+			continue;
+		}
+		if (character === "{") braces++;
+		else if (character === "}") braces--;
+		else if (character === "[") brackets++;
+		else if (character === "]") brackets--;
+		else if (character === "(") parens++;
+		else if (character === ")") parens--;
+		else if (character === "," && braces === 0 && brackets === 0 && parens === 0) {
+			parts.push(source.slice(start, index).trim());
+			start = index + 1;
+		}
+	}
+	const last = source.slice(start).trim();
+	if (last !== "") parts.push(last);
+	return parts;
+}
+
+function runtimeObjectBody(value: string): string | undefined {
+	const trimmed = value.trim();
+	if (!trimmed.startsWith("{") || !trimmed.endsWith("}")) return undefined;
+	return trimmed.slice(1, -1);
+}
+
+function runtimeObjectField(body: string, name: string): string | undefined {
+	for (const part of splitRuntimeList(body)) {
+		const colon = part.indexOf(":");
+		if (colon < 0) continue;
+		const key = part
+			.slice(0, colon)
+			.trim()
+			.replace(/^['"]|['"]$/g, "");
+		if (key === name) return part.slice(colon + 1).trim();
+	}
+	return undefined;
+}
+
+function runtimeString(
+	value: string | undefined,
+	bindings: ReadonlyMap<string, string>,
+): string | undefined {
+	if (value === undefined) return undefined;
+	const trimmed = value.trim();
+	const bound = bindings.get(trimmed);
+	if (bound !== undefined) return bound;
+	if (!/^['"]/.test(trimmed)) return undefined;
+	try {
+		return JSON.parse(trimmed) as string;
+	} catch {
+		return trimmed.slice(1, -1);
+	}
+}
+
+function runtimeStyleValue(
+	value: string | undefined,
+	bindings: ReadonlyMap<string, string>,
+): StyleValue {
+	const trimmed = value?.trim() ?? "undefined";
+	const bound = bindings.get(trimmed);
+	if (bound !== undefined) return { kind: StyleValueKindTag.Literal, value: bound };
+	if (trimmed === "true" || trimmed === "false")
+		return { kind: StyleValueKindTag.Literal, value: trimmed === "true" };
+	if (/^-?(?:\d+\.?\d*|\.\d+)$/.test(trimmed))
+		return { kind: StyleValueKindTag.Literal, value: Number(trimmed) };
+	const stringValue = runtimeString(trimmed, bindings);
+	if (stringValue !== undefined) return { kind: StyleValueKindTag.Literal, value: stringValue };
+	return { kind: StyleValueKindTag.Dynamic, expression: trimmed };
+}
+
+function runtimeArrayItems(value: string | undefined): readonly string[] {
+	if (value === undefined) return [];
+	const trimmed = value.trim();
+	if (!trimmed.startsWith("[") || !trimmed.endsWith("]")) return [];
+	return splitRuntimeList(trimmed.slice(1, -1));
+}
+
+function runtimeRuleKind(
+	value: string | undefined,
+	bindings: ReadonlyMap<string, string>,
+): StyleRule["kind"] | undefined {
+	const kind = runtimeString(value, bindings);
+	switch (kind) {
+		case StyleRuleKindTag.Style:
+		case StyleRuleKindTag.Global:
+		case StyleRuleKindTag.Keyframes:
+		case StyleRuleKindTag.FontFace:
+		case StyleRuleKindTag.Layer:
+		case StyleRuleKindTag.Supports:
+		case StyleRuleKindTag.Property:
+			return kind;
+		default:
+			return undefined;
+	}
+}
+
+function runtimeRule(
+	value: string,
+	bindings: ReadonlyMap<string, string>,
+	order: number,
+): StyleRule | undefined {
+	const body = runtimeObjectBody(value);
+	if (body === undefined) return undefined;
+	const kind = runtimeRuleKind(runtimeObjectField(body, "kind"), bindings);
+	if (kind === undefined) return undefined;
+	const declarations = runtimeArrayItems(runtimeObjectField(body, "declarations")).flatMap(
+		(item) => {
+			const declaration = runtimeObjectBody(item);
+			if (declaration === undefined) return [];
+			const property = runtimeString(runtimeObjectField(declaration, "property"), bindings);
+			if (property === undefined) return [];
+			return [
+				{
+					conditions: [],
+					property,
+					value: runtimeStyleValue(runtimeObjectField(declaration, "value"), bindings),
+				},
+			];
+		},
+	);
+	const conditions = runtimeArrayItems(runtimeObjectField(body, "conditions")).flatMap((item) => {
+		const value = runtimeString(item, bindings);
+		if (value === undefined) return [];
+		return [
+			{
+				kind: inferSemanticConditionKind(value),
+				name: value,
+				value,
+				raw: value,
+			},
+		];
+	});
+	const children = runtimeArrayItems(runtimeObjectField(body, "children")).flatMap(
+		(item, index) => {
+			const child = runtimeRule(item, bindings, index);
+			return child === undefined ? [] : [child];
+		},
+	);
+	const selector = runtimeString(runtimeObjectField(body, "selector"), bindings);
+	const name = runtimeString(runtimeObjectField(body, "name"), bindings);
+	const layer = runtimeString(runtimeObjectField(body, "layer"), bindings);
+	return {
+		kind,
+		...(selector === undefined ? {} : { selector }),
+		...(name === undefined ? {} : { name }),
+		...(layer === undefined ? {} : { layer }),
+		conditions,
+		declarations,
+		children,
+		order,
+	};
+}
+
+function runtimeBindingValues(source: string): ReadonlyMap<string, string> {
+	const values = new Map<string, string>();
+	for (const match of source.matchAll(
+		/\b(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*(["'][^"']*["'])/gu,
+	)) {
+		const name = match[1];
+		const value = match[2];
+		if (name !== undefined && value !== undefined) {
+			const parsed = runtimeString(value, new Map());
+			if (parsed !== undefined) values.set(name, parsed);
+		}
+	}
+	return values;
+}
+
+function runtimeSemanticRuleMatches(
+	source: string,
+	context: AdapterParseContext,
+): AdapterParseResult {
+	const matches: Array<AdapterParseResult["matches"][number]> = [];
+	const residuals: Array<AdapterParseResult["residuals"][number]> = [];
+	const bindings = runtimeBindingValues(source);
+	for (const call of source.matchAll(/\bcss\.sheet\.registerSemanticRules\s*\(/gu)) {
+		const callStart = call.index ?? 0;
+		const openParen = source.indexOf("(", callStart);
+		const arrayStart = source.indexOf("[", openParen);
+		if (openParen < 0 || arrayStart < 0) continue;
+		const arrayEnd = delimitedRuntimeExpression(source, arrayStart, "[", "]");
+		const callEnd = delimitedRuntimeExpression(source, openParen, "(", ")");
+		if (arrayEnd === undefined || callEnd === undefined) continue;
+		const rules = splitRuntimeList(source.slice(arrayStart + 1, arrayEnd - 1)).flatMap(
+			(item, index) => {
+				const parsed = runtimeRule(item, bindings, index);
+				return parsed === undefined ? [] : [parsed];
+			},
+		);
+		if (rules.length === 0) {
+			residuals.push({
+				kind: StyleProgramResidualKindTag.Parse,
+				text: source.slice(callStart, callEnd),
+				hint: "Pandwind runtime semantic rules could not be read back",
+			});
+			continue;
+		}
+		let start = callStart;
+		let end = callEnd;
+		const prefix = "() => (";
+		if (
+			callStart >= prefix.length &&
+			source.slice(callStart - prefix.length, callStart) === prefix
+		) {
+			start = callStart - prefix.length;
+			const outerEnd = delimitedRuntimeExpression(source, callStart - 1, "(", ")");
+			if (outerEnd !== undefined) end = outerEnd;
+		} else if (callStart > 0 && source[callStart - 1] === "(") {
+			start = callStart - 1;
+			const outerEnd = delimitedRuntimeExpression(source, start, "(", ")");
+			if (outerEnd !== undefined) end = outerEnd;
+		} else {
+			const iifeStart = source.lastIndexOf("(() => {", callStart);
+			const iifeEnd = source.indexOf("})()", callEnd);
+			if (iifeStart >= 0 && iifeEnd >= callEnd) {
+				start = iifeStart;
+				end = iifeEnd + 4;
+			}
+		}
+		const sourceMap = {
+			file: context.file,
+			start,
+			end,
+			adapter: context.config.adapter,
+			pattern: CodemodPatternId.RuntimeSemanticRules,
+		};
+		matches.push({
+			start,
+			end,
+			sourceText: source.slice(start, end),
+			program: styleProgramFromRules(rules, { source: sourceMap }),
+		});
+	}
+	return { matches, residuals };
+}
+
 const PANDWIND_TOKEN_GROUPS: ReadonlyArray<readonly [RegExp, string]> = [
 	[/color$/i, "colors"],
 	[/^(?:background|border|outline|text)Color$/i, "colors"],
@@ -136,6 +420,31 @@ const PANDWIND_TOKEN_GROUPS: ReadonlyArray<readonly [RegExp, string]> = [
 
 function pandwindTokenGroup(property: string): string | undefined {
 	return PANDWIND_TOKEN_GROUPS.find(([pattern]) => pattern.test(property))?.[1];
+}
+
+function pandwindSourceValue(
+	value: StyleValue,
+	property: string,
+	context: AdapterParseContext,
+): StyleValue {
+	if (value.kind !== StyleValueKindTag.Literal || typeof value.value !== "string") return value;
+	if (!value.value.startsWith("$")) return value;
+	const group = pandwindTokenGroup(property);
+	const catalog = TokenCatalog.fromContract(context.config.tokenCatalog);
+	if (group === undefined || catalog === undefined) return value;
+	const reference = value.value
+		.slice(1)
+		.replace(new RegExp(`^${group}\\.`), "")
+		.replaceAll("-", ".");
+	const match = catalog.findByReference([group], reference);
+	return match === undefined
+		? value
+		: {
+				kind: StyleValueKindTag.Token,
+				ref: match.ref,
+				authored: value.value,
+				resolved: match.resolved,
+			};
 }
 
 /**
@@ -998,8 +1307,11 @@ function runtimeKeyframes(program: StyleProgram, context: AdapterEmitContext | u
 }
 
 function runtimeGlobalRule(rule: StyleProgram["rules"][number], root: boolean): string {
-	const kind = root && rule.kind === StyleRuleKindTag.Style ? "global" : rule.kind;
-	return `{ kind: ${JSON.stringify(kind)}, selector: ${JSON.stringify(rule.selector)}, declarations: [${rule.declarations
+	const kind = root && rule.kind === StyleRuleKindTag.Style ? StyleRuleKindTag.Global : rule.kind;
+	const conditions = rule.conditions.map(
+		(condition) => condition.raw ?? condition.value ?? condition.name,
+	);
+	return `{ kind: ${JSON.stringify(kind)}, selector: ${JSON.stringify(rule.selector)}, conditions: ${JSON.stringify(conditions)}, declarations: [${rule.declarations
 		.map(
 			(declaration) =>
 				`{ property: ${JSON.stringify(declaration.property)}, value: ${runtimeValue(declaration.value)} }`,
@@ -1346,7 +1658,7 @@ export interface PandwindAdapterOptions {
 
 export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 	const moduleLoader = options.moduleLoader === null ? undefined : options.moduleLoader;
-	return defineCodemodAdapter({
+	const adapter = defineCodemodAdapter({
 		id: CodemodAdapterId.Pandwind,
 		officialApi: {
 			pluginSystems: ["presets", "bridge", "splitByRoute"],
@@ -1371,7 +1683,12 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 		}),
 		namedRuleStrategy: StyleNamedRuleStrategy.ClassMap,
 		preserveNamedRules: (context) => context.sourceModules?.includes("style9") === true,
-		detectPatterns: [/\bcss\.class\s*\(/, /\bcreateCss\s*\(/],
+		detectPatterns: [
+			/\bcss\.class\s*\(/,
+			/\bcreateCss\s*\(/,
+			/\bcreateRuntimeCss\s*\(/,
+			/\bcss\.sheet\.registerSemanticRules\s*\(/,
+		],
 		sourceModules: ["pandwind/css", "pandwind/css/runtime"],
 		configFiles: ["pandwind.config.ts", "pandwind.interop.json", "bridge.ts", "package.json"],
 		loadConfig: pandwindConfig,
@@ -1382,7 +1699,28 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 						officialPandwindConfig(context, moduleLoader),
 				}),
 		tokenPolicy: PANDWIND_TOKEN_POLICY,
-		migration: { targetPolicy: PANDWIND_TARGET_POLICY },
+		sourceObjectOptions: (_source, context) => ({
+			valueTransforms: {
+				"*": (value, property) => pandwindSourceValue(value, property ?? "", context),
+			},
+		}),
+		migration: {
+			targetPolicy: PANDWIND_TARGET_POLICY,
+			rewrite: ({ code, targetId, complete }) => {
+				if (targetId === CodemodAdapterId.Pandwind || !complete) return { code, residuals: [] };
+				if (!/\bconst\s+css\s*=\s*createRuntimeCss\(\s*pandwindPreset\s*\)/u.test(code))
+					return { code, residuals: [] };
+				return {
+					code: code
+						.replace(
+							/import\s*\{\s*pandwindPreset\s*\}\s*from\s*["']pandwind\/preset["'];?\s*/gu,
+							"",
+						)
+						.replace(/\bconst\s+css\s*=\s*createRuntimeCss\(\s*pandwindPreset\s*\);?\s*/gu, ""),
+					residuals: [],
+				};
+			},
+		},
 		emit(program, { programObject, declarationsObject }, context) {
 			const cssBinding = generatedCssBinding(
 				context?.document?.document.source,
@@ -1459,6 +1797,10 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 				});
 			}
 			if (program.rules.some((rule) => rule.kind === StyleRuleKindTag.Global)) {
+				const register = `css.sheet.registerSemanticRules([${runtimeGlobalRules(outputProgram)}])`;
+				const immediate =
+					program.source?.adapter === CodemodAdapterId.VanillaExtract &&
+					program.source.pattern === CodemodPatternId.VanillaExtractGlobalStyle;
 				const template =
 					program.emissionHints?.includes(StyleProgramEmissionHint.RawTemplate) === true
 						? runtimeGlobalTemplate(program, context)
@@ -1466,7 +1808,9 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 				return finalize({
 					text:
 						template === undefined
-							? `() => (css.sheet.registerSemanticRules([${runtimeGlobalRules(outputProgram)}]), null)`
+							? immediate
+								? `(${register}, null)`
+								: `() => (${register}, null)`
 							: `() => ${template}`,
 					imports: [
 						'import { createRuntimeCss } from "pandwind/css/runtime";',
@@ -1660,4 +2004,15 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 			});
 		},
 	});
+	return {
+		...adapter,
+		parse(source: string, context: AdapterParseContext) {
+			const parsed = adapter.parse(source, context);
+			const runtime = runtimeSemanticRuleMatches(source, context);
+			return {
+				matches: [...parsed.matches, ...runtime.matches].toSorted((a, b) => a.start - b.start),
+				residuals: [...parsed.residuals, ...runtime.residuals],
+			};
+		},
+	};
 }

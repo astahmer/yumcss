@@ -3,29 +3,34 @@ import { expect, test } from "vitest";
 import { CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectActionableRoundTrip,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const forward = createAdapterRouteSpec(CodemodAdapterId.Style9, CodemodAdapterId.CssModules);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.CssModules, CodemodAdapterId.Style9);
-	const happySource = "import style9 from \"style9\";\nexport const styles = style9.create({ card: { color: \"red\", padding: \"1rem\" } });\nexport const App = () => <div className={styles.card} />;";
-const edgeSource = "import style9 from \"style9\";\nexport const styles = style9.create({ card: { color: theme.foreground, padding: \"1rem\" } });\nexport const App = () => <div className={styles.card} />;";
-const malformedSource = "import style9 from \"style9\";\nexport const styles = style9.create({ card: { color: \"red\", padding: \"1rem\" } });\nexport const App = () => <div className={styles.card} />;\nconst unfinished = { /* unfinished style9 */";
+	const happySource = "import style9 from \"style9\";\nexport const styles = style9.create({ card: { color: \"red\" } });";
+const edgeSource = "import style9 from \"style9\";\nexport const styles = style9.create({ card: { color: \"red\" }, muted: { opacity: 0.5 } });";
+const malformedSource = "import style9 from \"style9\";\nexport const styles = style9.create({ card: { color: \"red\" } });\nconst unfinished = { /* unfinished style9 */";
 const sourceSemantic = undefined;
-const themedSource = "import style9 from \"style9\";\nexport const styles = style9.create({ card: { color: theme.colors.brand, padding: \"1rem\" } });\nexport const App = () => <div className={styles.card} />;";
-const tokenSource = "import style9 from \"style9\";\nexport const styles = style9.create({ card: { color: \"$colors.brand\", padding: \"1rem\" } });\nexport const App = () => <div className={styles.card} />;";
-const blueSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {} };
+const themedSource = "import style9 from \"style9\";\nexport const styles = style9.create({ card: { color: \"#2563eb\" } });";
+const tokenSource = "import style9 from \"style9\";\nexport const styles = style9.create({ card: { color: \"#2563eb\" } });";
+const blueSemantic = undefined;
+const amberSemantic = undefined;
+const blueTargetSemantic = undefined;
+const amberTargetSemantic = undefined;
+const blueProject = createAdapterRouteProject(CodemodAdapterId.Style9, CodemodAdapterId.CssModules, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.Style9, CodemodAdapterId.CssModules, "#f97316");
 	const targetSemantic = undefined;
 
 test("style9 -> css-modules -> style9: preserves an actionable concrete round trip", () => {
-	const first = forward.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
+	const first = forward.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
 	const second = reverse.run({ source: first.code, file: "Card.module.css", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
@@ -36,6 +41,7 @@ test("style9 -> css-modules -> style9: preserves an actionable concrete round tr
 		expect(first.residuals.length).toBeGreaterThan(0);
 		expect(first.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(first, "style9 -> css-modules round-trip happy forward");
 	expectExplicitResidualEvidence(first);
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(second);
@@ -45,9 +51,23 @@ test("style9 -> css-modules -> style9: preserves an actionable concrete round tr
 		    "changed": true,
 		    "code": "import style9 from "style9";
 		export const styles = // pandwind:migrate-skip (route: style9 -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
-		style9.create({ card: { color: "red", padding: "1rem" } });
-		export const App = () => <div className={styles.card} />;",
+		style9.create({ card: { color: "red" } });",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		          "portable-artifact",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
@@ -66,18 +86,14 @@ test("style9 -> css-modules -> style9: preserves an actionable concrete round tr
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
+		    "code": "// pandwind:migrate-skip (lowering-residual: parse)
 		import style9 from "style9";
 		export const styles = // pandwind:migrate-skip (route: style9 -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
-		style9.create({ card: { color: "red", padding: "1rem" } });
-		export const App = () => <div className={styles.card} />;",
+		style9.create({ card: { color: "red" } });",
 		    "converted": 0,
-		    "outcomes": [
-		      {
-		        "outcome": "residual",
-		        "representation": "residual",
-		      },
-		    ],
+		    "generatedFiles": [],
+		    "loweringPlans": [],
+		    "outcomes": [],
 		    "residuals": [
 		      {
 		        "hint": "stylesheet statement is preserved outside the style program",
@@ -89,28 +105,19 @@ test("style9 -> css-modules -> style9: preserves an actionable concrete round tr
 		        "kind": "parse",
 		        "preserved": undefined,
 		      },
-		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet migration requires a single local class selector",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
 		    ],
-		    "skipped": 4,
+		    "skipped": 2,
 		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 
-test("style9 -> css-modules -> style9: retains edge semantics without silent loss", () => {
-	const first = forward.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
+test("style9 -> css-modules -> style9: retains the documented secondary API without silent loss", () => {
+	const first = forward.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
 	const second = reverse.run({ source: first.code, file: "Card.module.css", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(first, "style9 -> css-modules round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
@@ -119,10 +126,24 @@ test("style9 -> css-modules -> style9: retains edge semantics without silent los
 		  "forward": {
 		    "changed": true,
 		    "code": "import style9 from "style9";
-		export const styles = // pandwind:migrate-skip (route: style9 -> css-modules | capability-blocked: named-rules: named style rule: card | available: residual, portable-artifact)
-		style9.create({ card: { color: theme.foreground, padding: "1rem" } });
-		export const App = () => <div className={styles.card} />;",
+		export const styles = // pandwind:migrate-skip (route: style9 -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
+		style9.create({ card: { color: "red" }, muted: { opacity: 0.5 } });",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		          "portable-artifact",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
@@ -141,18 +162,14 @@ test("style9 -> css-modules -> style9: retains edge semantics without silent los
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
+		    "code": "// pandwind:migrate-skip (lowering-residual: parse)
 		import style9 from "style9";
-		export const styles = // pandwind:migrate-skip (route: style9 -> css-modules | capability-blocked: named-rules: named style rule: card | available: residual, portable-artifact)
-		style9.create({ card: { color: theme.foreground, padding: "1rem" } });
-		export const App = () => <div className={styles.card} />;",
+		export const styles = // pandwind:migrate-skip (route: style9 -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
+		style9.create({ card: { color: "red" }, muted: { opacity: 0.5 } });",
 		    "converted": 0,
-		    "outcomes": [
-		      {
-		        "outcome": "residual",
-		        "representation": "residual",
-		      },
-		    ],
+		    "generatedFiles": [],
+		    "loweringPlans": [],
+		    "outcomes": [],
 		    "residuals": [
 		      {
 		        "hint": "stylesheet statement is preserved outside the style program",
@@ -164,31 +181,27 @@ test("style9 -> css-modules -> style9: retains edge semantics without silent los
 		        "kind": "parse",
 		        "preserved": undefined,
 		      },
-		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet migration requires a single local class selector",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
 		    ],
-		    "skipped": 4,
+		    "skipped": 2,
 		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 
-test("style9 -> css-modules -> style9: preserves concrete theme and project context variants", () => {
-	const firstBlue = forward.run({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const secondBlue = reverse.run({ source: firstBlue.code, file: "Card.module.css", semantic: blueTargetSemantic, project: blueProject });
-	const firstAmber = forward.run({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
-	const secondAmber = reverse.run({ source: firstAmber.code, file: "Card.module.css", semantic: amberTargetSemantic, project: amberProject });
+test("style9 -> css-modules -> style9: preserves concrete theme and project context variants", async () => {
+	const firstBlue = await forward.runAsync({ source: themedSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "Card.module.css", semantic: blueTargetSemantic, project: blueProject });
+	const firstAmber = await forward.runAsync({ source: themedSource, file: "styles.ts", semantic: amberSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "Card.module.css", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Style9, CodemodAdapterId.CssModules);
+	expectConfiguredTargetTokenEvidence(firstBlue, CodemodAdapterId.CssModules, "style9 -> css-modules round-trip token config");
+	expectRouteScenarioEvidence(firstBlue, "style9 -> css-modules round-trip blue forward");
+	expectRouteScenarioEvidence(firstAmber, "style9 -> css-modules round-trip amber forward");
+	expectConfiguredTargetTokenAbsence(firstAmber, CodemodAdapterId.CssModules, "style9 -> css-modules round-trip amber literal config");
+
 	expectActionableRoundTrip(firstBlue, secondBlue);
 	expectActionableRoundTrip(firstAmber, secondAmber);
 	expectExplicitResidualEvidence(firstBlue);
@@ -204,10 +217,24 @@ test("style9 -> css-modules -> style9: preserves concrete theme and project cont
 		    "forward": {
 		      "changed": true,
 		      "code": "import style9 from "style9";
-		export const styles = // pandwind:migrate-skip (route: style9 -> css-modules | capability-blocked: named-rules: named style rule: card | available: residual, portable-artifact)
-		style9.create({ card: { color: theme.colors.brand, padding: "1rem" } });
-		export const App = () => <div className={styles.card} />;",
+		export const styles = // pandwind:migrate-skip (route: style9 -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
+		style9.create({ card: { color: "#2563eb" } });",
 		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "residual",
+		            "portable-artifact",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
@@ -226,18 +253,14 @@ test("style9 -> css-modules -> style9: preserves concrete theme and project cont
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
+		      "code": "// pandwind:migrate-skip (lowering-residual: parse)
 		import style9 from "style9";
-		export const styles = // pandwind:migrate-skip (route: style9 -> css-modules | capability-blocked: named-rules: named style rule: card | available: residual, portable-artifact)
-		style9.create({ card: { color: theme.colors.brand, padding: "1rem" } });
-		export const App = () => <div className={styles.card} />;",
+		export const styles = // pandwind:migrate-skip (route: style9 -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
+		style9.create({ card: { color: "#2563eb" } });",
 		      "converted": 0,
-		      "outcomes": [
-		        {
-		          "outcome": "residual",
-		          "representation": "residual",
-		        },
-		      ],
+		      "generatedFiles": [],
+		      "loweringPlans": [],
+		      "outcomes": [],
 		      "residuals": [
 		        {
 		          "hint": "stylesheet statement is preserved outside the style program",
@@ -249,18 +272,8 @@ test("style9 -> css-modules -> style9: preserves concrete theme and project cont
 		          "kind": "parse",
 		          "preserved": undefined,
 		        },
-		        {
-		          "hint": "stylesheet statement is preserved outside the style program",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "stylesheet migration requires a single local class selector",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
 		      ],
-		      "skipped": 4,
+		      "skipped": 2,
 		      "validations": [],
 		    },
 		  },
@@ -268,10 +281,24 @@ test("style9 -> css-modules -> style9: preserves concrete theme and project cont
 		    "forward": {
 		      "changed": true,
 		      "code": "import style9 from "style9";
-		export const styles = // pandwind:migrate-skip (route: style9 -> css-modules | capability-blocked: named-rules: named style rule: card | available: residual, portable-artifact)
-		style9.create({ card: { color: theme.colors.brand, padding: "1rem" } });
-		export const App = () => <div className={styles.card} />;",
+		export const styles = // pandwind:migrate-skip (route: style9 -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
+		style9.create({ card: { color: "#2563eb" } });",
 		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "residual",
+		            "portable-artifact",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
@@ -290,18 +317,14 @@ test("style9 -> css-modules -> style9: preserves concrete theme and project cont
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
+		      "code": "// pandwind:migrate-skip (lowering-residual: parse)
 		import style9 from "style9";
-		export const styles = // pandwind:migrate-skip (route: style9 -> css-modules | capability-blocked: named-rules: named style rule: card | available: residual, portable-artifact)
-		style9.create({ card: { color: theme.colors.brand, padding: "1rem" } });
-		export const App = () => <div className={styles.card} />;",
+		export const styles = // pandwind:migrate-skip (route: style9 -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
+		style9.create({ card: { color: "#2563eb" } });",
 		      "converted": 0,
-		      "outcomes": [
-		        {
-		          "outcome": "residual",
-		          "representation": "residual",
-		        },
-		      ],
+		      "generatedFiles": [],
+		      "loweringPlans": [],
+		      "outcomes": [],
 		      "residuals": [
 		        {
 		          "hint": "stylesheet statement is preserved outside the style program",
@@ -313,29 +336,21 @@ test("style9 -> css-modules -> style9: preserves concrete theme and project cont
 		          "kind": "parse",
 		          "preserved": undefined,
 		        },
-		        {
-		          "hint": "stylesheet statement is preserved outside the style program",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "stylesheet migration requires a single local class selector",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
 		      ],
-		      "skipped": 4,
+		      "skipped": 2,
 		      "validations": [],
 		    },
 		  },
 		}
-	`);
+	`)
 });
 
-test("style9 -> css-modules -> style9: resolves token references across both concrete legs", () => {
-	const first = forward.run({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const second = reverse.run({ source: first.code, file: "Card.module.css", semantic: blueTargetSemantic, project: blueProject });
+test("style9 -> css-modules -> style9: resolves token values across both concrete legs", async () => {
+	const first = await forward.runAsync({ source: tokenSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "Card.module.css", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Style9, CodemodAdapterId.CssModules);
+	expectRouteScenarioEvidence(first, "style9 -> css-modules round-trip token forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
@@ -345,9 +360,23 @@ test("style9 -> css-modules -> style9: resolves token references across both con
 		    "changed": true,
 		    "code": "import style9 from "style9";
 		export const styles = // pandwind:migrate-skip (route: style9 -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
-		style9.create({ card: { color: "$colors.brand", padding: "1rem" } });
-		export const App = () => <div className={styles.card} />;",
+		style9.create({ card: { color: "#2563eb" } });",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		          "portable-artifact",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
@@ -366,18 +395,14 @@ test("style9 -> css-modules -> style9: resolves token references across both con
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
+		    "code": "// pandwind:migrate-skip (lowering-residual: parse)
 		import style9 from "style9";
 		export const styles = // pandwind:migrate-skip (route: style9 -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
-		style9.create({ card: { color: "$colors.brand", padding: "1rem" } });
-		export const App = () => <div className={styles.card} />;",
+		style9.create({ card: { color: "#2563eb" } });",
 		    "converted": 0,
-		    "outcomes": [
-		      {
-		        "outcome": "residual",
-		        "representation": "residual",
-		      },
-		    ],
+		    "generatedFiles": [],
+		    "loweringPlans": [],
+		    "outcomes": [],
 		    "residuals": [
 		      {
 		        "hint": "stylesheet statement is preserved outside the style program",
@@ -389,21 +414,11 @@ test("style9 -> css-modules -> style9: resolves token references across both con
 		        "kind": "parse",
 		        "preserved": undefined,
 		      },
-		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet migration requires a single local class selector",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
 		    ],
-		    "skipped": 4,
+		    "skipped": 2,
 		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 

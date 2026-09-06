@@ -3,30 +3,35 @@ import { expect, test } from "vitest";
 import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectActionableRoundTrip,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const forward = createAdapterRouteSpec(CodemodAdapterId.Stitches, CodemodAdapterId.Mantine);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.Mantine, CodemodAdapterId.Stitches);
-	const happySource = "import { css } from \"@stitches/react\";\nexport const card = css({ color: \"red\", padding: \"1rem\" });\nexport const App = () => <div className={card()} />;";
-const edgeSource = "import { css } from \"@stitches/react\";\nexport const card = css({ color: theme.foreground, padding: \"1rem\" });\nexport const App = () => <div className={card()} />;";
-const malformedSource = "import { css } from \"@stitches/react\";\nexport const card = css({ color: \"red\", padding: \"1rem\" });\nexport const App = () => <div className={card()} />;\nconst unfinished = { /* unfinished stitches */";
+	const happySource = "import { css } from \"@stitches/react\";\nexport const card = css({ color: \"red\", padding: \"1rem\" });";
+const edgeSource = "import { globalCss } from \"@stitches/react\";\nexport const reset = globalCss({ body: { margin: 0 } });";
+const malformedSource = "import { css } from \"@stitches/react\";\nexport const card = css({ color: \"red\", padding: \"1rem\" });\nconst unfinished = { /* unfinished stitches */";
 const sourceSemantic = undefined;
-const themedSource = "import { css } from \"@stitches/react\";\nexport const card = css({ color: theme.colors.brand, padding: \"1rem\" });\nexport const App = () => <div className={card()} />;";
-const tokenSource = "import { css } from \"@stitches/react\";\nexport const card = css({ color: \"$colors.brand\", padding: \"1rem\" });\nexport const App = () => <div className={card()} />;";
-const blueSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/stitches.config.ts":"export const config = { theme: { colors: { brand: \"#2563eb\" }, space: { card: \"1.125rem\" } } };","/virtual/pandwind-route-project/src/theme.ts":"export const mantineTheme = { colors: { brand: [\"#2563eb\"] } };"} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/stitches.config.ts":"export const config = { theme: { colors: { brand: \"#f97316\" }, space: { card: \"1.125rem\" } } };","/virtual/pandwind-route-project/src/theme.ts":"export const mantineTheme = { colors: { brand: [\"#f97316\"] } };"} };
+const themedSource = "import { css } from \"@stitches/react\";\nexport const card = css({ color: \"#2563eb\", padding: \"1rem\" });";
+const tokenSource = "import { css } from \"@stitches/react\";\nexport const card = css({ color: \"#2563eb\", padding: \"1rem\" });";
+const blueSemantic = undefined;
+const amberSemantic = undefined;
+const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
+const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
+const blueProject = createAdapterRouteProject(CodemodAdapterId.Stitches, CodemodAdapterId.Mantine, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.Stitches, CodemodAdapterId.Mantine, "#f97316");
 	const targetSemantic = { source: { framework: BuiltinHostFramework.React } };
 
 test("stitches -> mantine -> stitches: preserves an actionable concrete round trip", () => {
-	const first = forward.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+	const first = forward.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
+	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -36,6 +41,7 @@ test("stitches -> mantine -> stitches: preserves an actionable concrete round tr
 		expect(first.residuals.length).toBeGreaterThan(0);
 		expect(first.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(first, "stitches -> mantine round-trip happy forward");
 	expectExplicitResidualEvidence(first);
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(second);
@@ -45,9 +51,21 @@ test("stitches -> mantine -> stitches: preserves an actionable concrete round tr
 		    "changed": true,
 		    "code": "import { css } from "@stitches/react";
 		export const card = // pandwind:migrate-skip (route: stitches -> mantine | lowering-residual: host-framework, validation)
-		css({ color: "red", padding: "1rem" });
-		export const App = () => <div className={card()} />;",
+		css({ color: "red", padding: "1rem" });",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
@@ -81,22 +99,24 @@ test("stitches -> mantine -> stitches: preserves an actionable concrete round tr
 		    "changed": false,
 		    "code": "import { css } from "@stitches/react";
 		export const card = // pandwind:migrate-skip (route: stitches -> mantine | lowering-residual: host-framework, validation)
-		css({ color: "red", padding: "1rem" });
-		export const App = () => <div className={card()} />;",
+		css({ color: "red", padding: "1rem" });",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [],
 		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
 		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 
-test("stitches -> mantine -> stitches: retains edge semantics without silent loss", () => {
-	const first = forward.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+test("stitches -> mantine -> stitches: retains the documented secondary API without silent loss", () => {
+	const first = forward.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
+	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(first, "stitches -> mantine round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
@@ -104,54 +124,82 @@ test("stitches -> mantine -> stitches: retains edge semantics without silent los
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
-
-		export const card = css.vars({ "padding": "1rem", "color": theme.foreground });
-		export const App = () => <div className={card()} />;",
-		    "converted": 1,
-		    "outcomes": [
+		    "code": "import { globalCss } from "@stitches/react";
+		export const reset = // pandwind:migrate-skip (route: stitches -> mantine | lowering-residual: rule-level, validation)
+		globalCss({ body: { margin: 0 } });",
+		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [
+		      {
+		        "hint": "Mantine standalone style projection supports style rules only",
+		        "kind": "rule-level",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "1 residual conversion(s)",
+		        "kind": "validation",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
 		    "validations": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "differences": [
+		          "1 residual conversion(s)",
+		        ],
+		        "lossiness": "lossy",
+		        "valid": false,
 		      },
 		    ],
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
-
-		export const card = css.vars({ "padding": "1rem", "color": theme.foreground });
-		export const App = () => <div className={card()} />;",
+		    "code": "import { globalCss } from "@stitches/react";
+		export const reset = // pandwind:migrate-skip (route: stitches -> mantine | lowering-residual: rule-level, validation)
+		globalCss({ body: { margin: 0 } });",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [],
 		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
 		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 
-test("stitches -> mantine -> stitches: preserves concrete theme and project context variants", () => {
-	const firstBlue = forward.run({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const secondBlue = reverse.run({ source: firstBlue.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
-	const firstAmber = forward.run({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
-	const secondAmber = reverse.run({ source: firstAmber.code, file: "Card.tsx", semantic: amberTargetSemantic, project: amberProject });
+test("stitches -> mantine -> stitches: preserves concrete theme and project context variants", async () => {
+	const firstBlue = await forward.runAsync({ source: themedSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
+	const firstAmber = await forward.runAsync({ source: themedSource, file: "styles.ts", semantic: amberSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "App.tsx", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Stitches, CodemodAdapterId.Mantine);
+	expectConfiguredTargetTokenEvidence(firstBlue, CodemodAdapterId.Mantine, "stitches -> mantine round-trip token config");
+	expectRouteScenarioEvidence(firstBlue, "stitches -> mantine round-trip blue forward");
+	expectRouteScenarioEvidence(firstAmber, "stitches -> mantine round-trip amber forward");
+	expectConfiguredTargetTokenAbsence(firstAmber, CodemodAdapterId.Mantine, "stitches -> mantine round-trip amber literal config");
+
 	expectActionableRoundTrip(firstBlue, secondBlue);
 	expectActionableRoundTrip(firstAmber, secondAmber);
 	expectExplicitResidualEvidence(firstBlue);
@@ -166,38 +214,60 @@ test("stitches -> mantine -> stitches: preserves concrete theme and project cont
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
-
-		export const card = css.vars({ "padding": "1rem", "color": theme.colors.brand });
-		export const App = () => <div className={card()} />;",
-		      "converted": 1,
-		      "outcomes": [
+		      "code": "import { css } from "@stitches/react";
+		export const card = // pandwind:migrate-skip (route: stitches -> mantine | lowering-residual: host-framework, validation)
+		css({ color: "#2563eb", padding: "1rem" });",
+		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [
 		        {
-		          "outcome": "portable-artifact",
-		          "representation": "portable-artifact",
+		          "applied": [],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "static",
+		        },
+		      ],
+		      "residuals": [
+		        {
+		          "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		          "kind": "host-framework",
+		          "preserved": undefined,
+		        },
+		        {
+		          "hint": "1 residual conversion(s)",
+		          "kind": "validation",
+		          "preserved": undefined,
+		        },
+		      ],
+		      "skipped": 1,
 		      "validations": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "differences": [
+		            "1 residual conversion(s)",
+		          ],
+		          "lossiness": "lossy",
+		          "valid": false,
 		        },
 		      ],
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
-
-		export const card = css.vars({ "padding": "1rem", "color": theme.colors.brand });
-		export const App = () => <div className={card()} />;",
+		      "code": "import { css } from "@stitches/react";
+		export const card = // pandwind:migrate-skip (route: stitches -> mantine | lowering-residual: host-framework, validation)
+		css({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [],
 		      "outcomes": [],
 		      "residuals": [],
 		      "skipped": 0,
@@ -207,38 +277,60 @@ test("stitches -> mantine -> stitches: preserves concrete theme and project cont
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
-
-		export const card = css.vars({ "padding": "1rem", "color": theme.colors.brand });
-		export const App = () => <div className={card()} />;",
-		      "converted": 1,
-		      "outcomes": [
+		      "code": "import { css } from "@stitches/react";
+		export const card = // pandwind:migrate-skip (route: stitches -> mantine | lowering-residual: host-framework, validation)
+		css({ color: "#2563eb", padding: "1rem" });",
+		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [
 		        {
-		          "outcome": "portable-artifact",
-		          "representation": "portable-artifact",
+		          "applied": [],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "static",
+		        },
+		      ],
+		      "residuals": [
+		        {
+		          "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		          "kind": "host-framework",
+		          "preserved": undefined,
+		        },
+		        {
+		          "hint": "1 residual conversion(s)",
+		          "kind": "validation",
+		          "preserved": undefined,
+		        },
+		      ],
+		      "skipped": 1,
 		      "validations": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "differences": [
+		            "1 residual conversion(s)",
+		          ],
+		          "lossiness": "lossy",
+		          "valid": false,
 		        },
 		      ],
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
-
-		export const card = css.vars({ "padding": "1rem", "color": theme.colors.brand });
-		export const App = () => <div className={card()} />;",
+		      "code": "import { css } from "@stitches/react";
+		export const card = // pandwind:migrate-skip (route: stitches -> mantine | lowering-residual: host-framework, validation)
+		css({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [],
 		      "outcomes": [],
 		      "residuals": [],
 		      "skipped": 0,
@@ -246,13 +338,15 @@ test("stitches -> mantine -> stitches: preserves concrete theme and project cont
 		    },
 		  },
 		}
-	`);
+	`)
 });
 
-test("stitches -> mantine -> stitches: resolves token references across both concrete legs", () => {
-	const first = forward.run({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
+test("stitches -> mantine -> stitches: resolves token values across both concrete legs", async () => {
+	const first = await forward.runAsync({ source: tokenSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Stitches, CodemodAdapterId.Mantine);
+	expectRouteScenarioEvidence(first, "stitches -> mantine round-trip token forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
@@ -262,9 +356,21 @@ test("stitches -> mantine -> stitches: resolves token references across both con
 		    "changed": true,
 		    "code": "import { css } from "@stitches/react";
 		export const card = // pandwind:migrate-skip (route: stitches -> mantine | lowering-residual: host-framework, validation)
-		css({ color: "$colors.brand", padding: "1rem" });
-		export const App = () => <div className={card()} />;",
+		css({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
@@ -298,15 +404,16 @@ test("stitches -> mantine -> stitches: resolves token references across both con
 		    "changed": false,
 		    "code": "import { css } from "@stitches/react";
 		export const card = // pandwind:migrate-skip (route: stitches -> mantine | lowering-residual: host-framework, validation)
-		css({ color: "$colors.brand", padding: "1rem" });
-		export const App = () => <div className={card()} />;",
+		css({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [],
 		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
 		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 

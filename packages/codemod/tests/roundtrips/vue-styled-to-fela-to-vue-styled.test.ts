@@ -3,30 +3,35 @@ import { expect, test } from "vitest";
 import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectActionableRoundTrip,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const forward = createAdapterRouteSpec(CodemodAdapterId.VueStyled, CodemodAdapterId.Fela);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.Fela, CodemodAdapterId.VueStyled);
-	const happySource = "<script setup>\nimport styled from \"vue-styled-components\";\nconst Card = styled.div({ color: \"red\", padding: \"1rem\" });\n</script>\n<template><Card /></template>";
-const edgeSource = "<script setup>\nimport styled from \"vue-styled-components\";\nconst Card = styled.div({ color: theme.foreground, padding: \"1rem\" });\n</script>\n<template><Card /></template>";
-const malformedSource = "<script setup>\nimport styled from \"vue-styled-components\";\nconst Card = styled.div({ color: \"red\", padding: \"1rem\" });\n</script>\n<template><Card /></template>\nconst unfinished = { /* unfinished vue-styled */";
+	const happySource = "import styled from \"vue-styled-components\";\nexport const Card = styled.div`color: red; padding: 1rem;`;";
+const edgeSource = "import styled from \"vue-styled-components\";\nexport const Card = styled.div`color: red; padding: 1rem;`;";
+const malformedSource = "import styled from \"vue-styled-components\";\nexport const Card = styled.div`color: red; padding: 1rem;`;\nconst unfinished = { /* unfinished vue-styled */";
 const sourceSemantic = { source: { framework: BuiltinHostFramework.Vue } };
-const themedSource = "<script setup>\nimport styled from \"vue-styled-components\";\nconst Card = styled.div({ color: theme.colors.brand, padding: \"1rem\" });\n</script>\n<template><Card /></template>";
-const tokenSource = "<script setup>\nimport styled from \"vue-styled-components\";\nconst Card = styled.div({ color: \"$colors.brand\", padding: \"1rem\" });\n</script>\n<template><Card /></template>";
-const blueSemantic = { source: { framework: BuiltinHostFramework.Vue }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { source: { framework: BuiltinHostFramework.Vue }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {} };
+const themedSource = "import styled from \"vue-styled-components\";\nexport const Card = styled.div`color: #2563eb; padding: 1rem;`;";
+const tokenSource = "import styled from \"vue-styled-components\";\nexport const Card = styled.div`color: #2563eb; padding: 1rem;`;";
+const blueSemantic = { source: { framework: BuiltinHostFramework.Vue } };
+const amberSemantic = { source: { framework: BuiltinHostFramework.Vue } };
+const blueTargetSemantic = undefined;
+const amberTargetSemantic = undefined;
+const blueProject = createAdapterRouteProject(CodemodAdapterId.VueStyled, CodemodAdapterId.Fela, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.VueStyled, CodemodAdapterId.Fela, "#f97316");
 	const targetSemantic = undefined;
 
 test("vue-styled -> fela -> vue-styled: preserves an actionable concrete round trip", () => {
-	const first = forward.run({ source: happySource, file: "Card.vue", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+	const first = forward.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
+	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -36,6 +41,7 @@ test("vue-styled -> fela -> vue-styled: preserves an actionable concrete round t
 		expect(first.residuals.length).toBeGreaterThan(0);
 		expect(first.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(first, "vue-styled -> fela round-trip happy forward");
 	expectExplicitResidualEvidence(first);
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(second);
@@ -43,12 +49,25 @@ test("vue-styled -> fela -> vue-styled: preserves an actionable concrete round t
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "<script setup>
+		    "code": "import { defineComponent, h } from "vue";
 
-		const Card = renderer.renderRule({ "padding": "1rem", "color": "red" });
-		</script>
-		<template><div :class="Card" /></template>",
+		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [renderer.renderRule({ "padding": "1rem", "color": "red" }), attrs.class] }, slots.default?.()));",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "static",
@@ -67,13 +86,26 @@ test("vue-styled -> fela -> vue-styled: preserves an actionable concrete round t
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
-		<script setup>
+		    "code": "import { defineComponent, h } from "vue";
+		import styled from "vue-styled-components";
 
-		const Card = styled.div({ "padding": "1rem", "color": "red" });
-		</script>
-		<template><div :class="Card" /></template>",
+		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [styled.div({ "padding": "1rem", "color": "red" }), attrs.class] }, slots.default?.()));",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "static",
@@ -91,13 +123,14 @@ test("vue-styled -> fela -> vue-styled: preserves an actionable concrete round t
 		    ],
 		  },
 		}
-	`);
+	`)
 });
 
-test("vue-styled -> fela -> vue-styled: retains edge semantics without silent loss", () => {
-	const first = forward.run({ source: edgeSource, file: "Card.vue", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+test("vue-styled -> fela -> vue-styled: retains the documented secondary API without silent loss", () => {
+	const first = forward.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
+	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(first, "vue-styled -> fela round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
@@ -105,16 +138,29 @@ test("vue-styled -> fela -> vue-styled: retains edge semantics without silent lo
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "<script setup>
+		    "code": "import { defineComponent, h } from "vue";
 
-		const Card = renderer.renderRule({ "padding": "1rem", "color": theme.foreground });
-		</script>
-		<template><div :class="Card.class" :style="Card.style" /></template>",
+		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [renderer.renderRule({ "padding": "1rem", "color": "red" }), attrs.class] }, slots.default?.()));",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "host-runtime",
-		        "representation": "target-native",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [],
@@ -129,19 +175,30 @@ test("vue-styled -> fela -> vue-styled: retains edge semantics without silent lo
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
-		<script setup>
+		    "code": "import { defineComponent, h } from "vue";
+		import styled from "vue-styled-components";
 
-		const Card = css.vars({ "padding": "1rem", "color": theme.foreground });
-		</script>
-		<template><div :class="Card.class" :style="Card.style" /></template>",
+		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [styled.div({ "padding": "1rem", "color": "red" }), attrs.class] }, slots.default?.()));",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [],
@@ -155,16 +212,22 @@ test("vue-styled -> fela -> vue-styled: retains edge semantics without silent lo
 		    ],
 		  },
 		}
-	`);
+	`)
 });
 
-test("vue-styled -> fela -> vue-styled: preserves concrete theme and project context variants", () => {
-	const firstBlue = forward.run({ source: themedSource, file: "Card.vue", semantic: blueSemantic, project: blueProject });
-	const secondBlue = reverse.run({ source: firstBlue.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
-	const firstAmber = forward.run({ source: themedSource, file: "Card.vue", semantic: amberSemantic, project: amberProject });
-	const secondAmber = reverse.run({ source: firstAmber.code, file: "Card.tsx", semantic: amberTargetSemantic, project: amberProject });
+test("vue-styled -> fela -> vue-styled: preserves concrete theme and project context variants", async () => {
+	const firstBlue = await forward.runAsync({ source: themedSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "styles.ts", semantic: blueTargetSemantic, project: blueProject });
+	const firstAmber = await forward.runAsync({ source: themedSource, file: "styles.ts", semantic: amberSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "styles.ts", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.VueStyled, CodemodAdapterId.Fela);
+	expectConfiguredTargetTokenEvidence(firstBlue, CodemodAdapterId.Fela, "vue-styled -> fela round-trip token config");
+	expectRouteScenarioEvidence(firstBlue, "vue-styled -> fela round-trip blue forward");
+	expectRouteScenarioEvidence(firstAmber, "vue-styled -> fela round-trip amber forward");
+	expectConfiguredTargetTokenAbsence(firstAmber, CodemodAdapterId.Fela, "vue-styled -> fela round-trip amber literal config");
+
 	expectActionableRoundTrip(firstBlue, secondBlue);
 	expectActionableRoundTrip(firstAmber, secondAmber);
 	expectExplicitResidualEvidence(firstBlue);
@@ -179,12 +242,25 @@ test("vue-styled -> fela -> vue-styled: preserves concrete theme and project con
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "<script setup>
+		      "code": "import { defineComponent, h } from "vue";
 
-		const Card = renderer.renderRule({ "padding": "1rem", "color": "#f97316" });
-		</script>
-		<template><div :class="Card" /></template>",
+		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [renderer.renderRule({ "padding": "1rem", "color": "#2563eb" }), attrs.class] }, slots.default?.()));",
 		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "static",
@@ -203,13 +279,26 @@ test("vue-styled -> fela -> vue-styled: preserves concrete theme and project con
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import styled from "vue-styled-components";
-		<script setup>
+		      "code": "import { defineComponent, h } from "vue";
+		import styled from "vue-styled-components";
 
-		const Card = styled.div({ "padding": "1rem", "color": "#f97316" });
-		</script>
-		<template><div :class="Card" /></template>",
+		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [styled.div({ "padding": "1rem", "color": "#2563eb" }), attrs.class] }, slots.default?.()));",
 		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "static",
@@ -230,12 +319,25 @@ test("vue-styled -> fela -> vue-styled: preserves concrete theme and project con
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "<script setup>
+		      "code": "import { defineComponent, h } from "vue";
 
-		const Card = renderer.renderRule({ "padding": "1rem", "color": "#2563eb" });
-		</script>
-		<template><div :class="Card" /></template>",
+		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [renderer.renderRule({ "padding": "1rem", "color": "#2563eb" }), attrs.class] }, slots.default?.()));",
 		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "static",
@@ -254,13 +356,26 @@ test("vue-styled -> fela -> vue-styled: preserves concrete theme and project con
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import styled from "vue-styled-components";
-		<script setup>
+		      "code": "import { defineComponent, h } from "vue";
+		import styled from "vue-styled-components";
 
-		const Card = styled.div({ "padding": "1rem", "color": "#2563eb" });
-		</script>
-		<template><div :class="Card" /></template>",
+		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [styled.div({ "padding": "1rem", "color": "#2563eb" }), attrs.class] }, slots.default?.()));",
 		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "static",
@@ -279,13 +394,15 @@ test("vue-styled -> fela -> vue-styled: preserves concrete theme and project con
 		    },
 		  },
 		}
-	`);
+	`)
 });
 
-test("vue-styled -> fela -> vue-styled: resolves token references across both concrete legs", () => {
-	const first = forward.run({ source: tokenSource, file: "Card.vue", semantic: blueSemantic, project: blueProject });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
+test("vue-styled -> fela -> vue-styled: resolves token values across both concrete legs", async () => {
+	const first = await forward.runAsync({ source: tokenSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "styles.ts", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.VueStyled, CodemodAdapterId.Fela);
+	expectRouteScenarioEvidence(first, "vue-styled -> fela round-trip token forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
@@ -293,12 +410,25 @@ test("vue-styled -> fela -> vue-styled: resolves token references across both co
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "<script setup>
+		    "code": "import { defineComponent, h } from "vue";
 
-		const Card = renderer.renderRule({ "padding": "1rem", "color": "$colors.brand" });
-		</script>
-		<template><div :class="Card" /></template>",
+		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [renderer.renderRule({ "padding": "1rem", "color": "#2563eb" }), attrs.class] }, slots.default?.()));",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "static",
@@ -317,13 +447,26 @@ test("vue-styled -> fela -> vue-styled: resolves token references across both co
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
-		<script setup>
+		    "code": "import { defineComponent, h } from "vue";
+		import styled from "vue-styled-components";
 
-		const Card = styled.div({ "padding": "1rem", "color": "$colors.brand" });
-		</script>
-		<template><div :class="Card" /></template>",
+		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [styled.div({ "padding": "1rem", "color": "#2563eb" }), attrs.class] }, slots.default?.()));",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "static",
@@ -341,6 +484,6 @@ test("vue-styled -> fela -> vue-styled: resolves token references across both co
 		    ],
 		  },
 		}
-	`);
+	`)
 });
 

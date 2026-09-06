@@ -3,30 +3,35 @@ import { expect, test } from "vitest";
 import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectActionableRoundTrip,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const forward = createAdapterRouteSpec(CodemodAdapterId.Mantine, CodemodAdapterId.NextYak);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.NextYak, CodemodAdapterId.Mantine);
-	const happySource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"red\" p=\"md\" />;";
-const edgeSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=theme.foreground p=\"md\" />;";
-const malformedSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"red\" p=\"md\" />;\nconst unfinished = { /* unfinished mantine */";
+	const happySource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"blue.6\" mx=\"auto\" maw={400} />;";
+const edgeSource = "import { Button } from \"@mantine/core\";\nexport const App = () => <Button styles={{ root: { color: \"red\" } }} />;";
+const malformedSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"blue.6\" mx=\"auto\" maw={400} />;\nconst unfinished = { /* unfinished mantine */";
 const sourceSemantic = { source: { framework: BuiltinHostFramework.React } };
-const themedSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=theme.colors.brand p=\"md\" />;";
-const tokenSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"brand.0\" p=\"md\" />;";
-const blueSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/src/theme.ts":"export const mantineTheme = { colors: { brand: [\"#2563eb\"] } };"} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/src/theme.ts":"export const mantineTheme = { colors: { brand: [\"#f97316\"] } };"} };
+const themedSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"brand.0\" mx=\"auto\" maw={400} />;";
+const tokenSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"#2563eb\" mx=\"auto\" maw={400} />;";
+const blueSemantic = { source: { framework: BuiltinHostFramework.React } };
+const amberSemantic = { source: { framework: BuiltinHostFramework.React } };
+const blueTargetSemantic = undefined;
+const amberTargetSemantic = undefined;
+const blueProject = createAdapterRouteProject(CodemodAdapterId.Mantine, CodemodAdapterId.NextYak, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.Mantine, CodemodAdapterId.NextYak, "#f97316");
 	const targetSemantic = undefined;
 
 test("mantine -> next-yak -> mantine: preserves an actionable concrete round trip", () => {
-	const first = forward.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+	const first = forward.run({ source: happySource, file: "App.tsx", semantic: sourceSemantic });
+	const second = reverse.run({ source: first.code, file: "styles.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -36,6 +41,7 @@ test("mantine -> next-yak -> mantine: preserves an actionable concrete round tri
 		expect(first.residuals.length).toBeGreaterThan(0);
 		expect(first.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(first, "mantine -> next-yak round-trip happy forward");
 	expectExplicitResidualEvidence(first);
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(second);
@@ -45,8 +51,21 @@ test("mantine -> next-yak -> mantine: preserves an actionable concrete round tri
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import { css } from "next-yak";
-		export const App = () => css\`padding: var(--mantine-spacing-md); color: red;\`;",
+		export const App = () => css\`color: blue.6; margin-left: var(--mantine-spacing-auto); margin-right: var(--mantine-spacing-auto); max-width: 400;\`;",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "static",
@@ -68,8 +87,21 @@ test("mantine -> next-yak -> mantine: preserves an actionable concrete round tri
 		    "code": "import { Box } from "@mantine/core";
 		import { css } from "next-yak";
 		export const App = () => // pandwind:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
-		css\`padding: var(--mantine-spacing-md); color: red;\`;",
+		css\`color: blue.6; margin-left: var(--mantine-spacing-auto); margin-right: var(--mantine-spacing-auto); max-width: 400;\`;",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
@@ -100,13 +132,14 @@ test("mantine -> next-yak -> mantine: preserves an actionable concrete round tri
 		    ],
 		  },
 		}
-	`);
+	`)
 });
 
-test("mantine -> next-yak -> mantine: retains edge semantics without silent loss", () => {
-	const first = forward.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+test("mantine -> next-yak -> mantine: retains the documented secondary API without silent loss", () => {
+	const first = forward.run({ source: edgeSource, file: "App.tsx", semantic: sourceSemantic });
+	const second = reverse.run({ source: first.code, file: "styles.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(first, "mantine -> next-yak round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
@@ -114,73 +147,67 @@ test("mantine -> next-yak -> mantine: retains edge semantics without silent loss
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { Box } from "@mantine/core";
-		import { css } from "next-yak";
-		export const App = () => css\`padding: var(--mantine-spacing-md); color: theme.foreground;\`;",
-		    "converted": 1,
-		    "outcomes": [
-		      {
-		        "outcome": "static",
-		        "representation": "static",
-		      },
-		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
-		  },
-		  "reverse": {
-		    "changed": true,
-		    "code": "import { Box } from "@mantine/core";
-		import { css } from "next-yak";
-		export const App = () => // pandwind:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
-		css\`padding: var(--mantine-spacing-md); color: theme.foreground;\`;",
+		    "code": "import { Button } from "@mantine/core";
+		export const App = () => <Button // pandwind:migrate-skip (route: mantine -> next-yak | parse-residual: host-framework | available: named-map, residual)
+		styles={{ root: { color: "red" } }} />;",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "residual",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "static",
+		        "representation": "residual",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		        "hint": "Mantine styles, classNames, and vars require component-aware host lowering",
 		        "kind": "host-framework",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "1 residual conversion(s)",
-		        "kind": "validation",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 1,
-		    "validations": [
-		      {
-		        "differences": [
-		          "1 residual conversion(s)",
-		        ],
-		        "lossiness": "lossy",
-		        "valid": false,
-		      },
-		    ],
+		    "validations": [],
+		  },
+		  "reverse": {
+		    "changed": false,
+		    "code": "import { Button } from "@mantine/core";
+		export const App = () => <Button // pandwind:migrate-skip (route: mantine -> next-yak | parse-residual: host-framework | available: named-map, residual)
+		styles={{ root: { color: "red" } }} />;",
+		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [],
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 
-test("mantine -> next-yak -> mantine: preserves concrete theme and project context variants", () => {
-	const firstBlue = forward.run({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const secondBlue = reverse.run({ source: firstBlue.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
-	const firstAmber = forward.run({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
-	const secondAmber = reverse.run({ source: firstAmber.code, file: "Card.tsx", semantic: amberTargetSemantic, project: amberProject });
+test("mantine -> next-yak -> mantine: preserves concrete theme and project context variants", async () => {
+	const firstBlue = await forward.runAsync({ source: themedSource, file: "App.tsx", semantic: blueSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "styles.tsx", semantic: blueTargetSemantic, project: blueProject });
+	const firstAmber = await forward.runAsync({ source: themedSource, file: "App.tsx", semantic: amberSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "styles.tsx", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Mantine, CodemodAdapterId.NextYak);
+	expectConfiguredTargetTokenEvidence(firstBlue, CodemodAdapterId.NextYak, "mantine -> next-yak round-trip token config");
+	expectRouteScenarioEvidence(firstBlue, "mantine -> next-yak round-trip blue forward");
+	expectRouteScenarioEvidence(firstAmber, "mantine -> next-yak round-trip amber forward");
+
 	expectActionableRoundTrip(firstBlue, secondBlue);
 	expectActionableRoundTrip(firstAmber, secondAmber);
 	expectExplicitResidualEvidence(firstBlue);
@@ -197,8 +224,21 @@ test("mantine -> next-yak -> mantine: preserves concrete theme and project conte
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
 		import { css } from "next-yak";
-		export const App = () => css\`padding: var(--mantine-spacing-md); color: theme.colors.brand;\`;",
+		export const App = () => css\`color: #f97316; margin-left: var(--mantine-spacing-auto); margin-right: var(--mantine-spacing-auto); max-width: 400;\`;",
 		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "static",
@@ -220,8 +260,21 @@ test("mantine -> next-yak -> mantine: preserves concrete theme and project conte
 		      "code": "import { Box } from "@mantine/core";
 		import { css } from "next-yak";
 		export const App = () => // pandwind:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
-		css\`padding: var(--mantine-spacing-md); color: theme.colors.brand;\`;",
+		css\`color: #f97316; margin-left: var(--mantine-spacing-auto); margin-right: var(--mantine-spacing-auto); max-width: 400;\`;",
 		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
@@ -257,8 +310,21 @@ test("mantine -> next-yak -> mantine: preserves concrete theme and project conte
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
 		import { css } from "next-yak";
-		export const App = () => css\`padding: var(--mantine-spacing-md); color: theme.colors.brand;\`;",
+		export const App = () => css\`color: #2563eb; margin-left: var(--mantine-spacing-auto); margin-right: var(--mantine-spacing-auto); max-width: 400;\`;",
 		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "static",
@@ -280,8 +346,21 @@ test("mantine -> next-yak -> mantine: preserves concrete theme and project conte
 		      "code": "import { Box } from "@mantine/core";
 		import { css } from "next-yak";
 		export const App = () => // pandwind:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
-		css\`padding: var(--mantine-spacing-md); color: theme.colors.brand;\`;",
+		css\`color: #2563eb; margin-left: var(--mantine-spacing-auto); margin-right: var(--mantine-spacing-auto); max-width: 400;\`;",
 		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
@@ -313,13 +392,15 @@ test("mantine -> next-yak -> mantine: preserves concrete theme and project conte
 		    },
 		  },
 		}
-	`);
+	`)
 });
 
-test("mantine -> next-yak -> mantine: resolves token references across both concrete legs", () => {
-	const first = forward.run({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
+test("mantine -> next-yak -> mantine: resolves token values across both concrete legs", async () => {
+	const first = await forward.runAsync({ source: tokenSource, file: "App.tsx", semantic: blueSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "styles.tsx", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Mantine, CodemodAdapterId.NextYak);
+	expectRouteScenarioEvidence(first, "mantine -> next-yak round-trip token forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
@@ -329,8 +410,21 @@ test("mantine -> next-yak -> mantine: resolves token references across both conc
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import { css } from "next-yak";
-		export const App = () => css\`padding: var(--mantine-spacing-md); color: brand.0;\`;",
+		export const App = () => css\`color: #2563eb; margin-left: var(--mantine-spacing-auto); margin-right: var(--mantine-spacing-auto); max-width: 400;\`;",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "static",
@@ -352,8 +446,21 @@ test("mantine -> next-yak -> mantine: resolves token references across both conc
 		    "code": "import { Box } from "@mantine/core";
 		import { css } from "next-yak";
 		export const App = () => // pandwind:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
-		css\`padding: var(--mantine-spacing-md); color: brand.0;\`;",
+		css\`color: #2563eb; margin-left: var(--mantine-spacing-auto); margin-right: var(--mantine-spacing-auto); max-width: 400;\`;",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
@@ -384,6 +491,6 @@ test("mantine -> next-yak -> mantine: resolves token references across both conc
 		    ],
 		  },
 		}
-	`);
+	`)
 });
 

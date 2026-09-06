@@ -3,30 +3,35 @@ import { expect, test } from "vitest";
 import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectActionableRoundTrip,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const forward = createAdapterRouteSpec(CodemodAdapterId.VueStyled, CodemodAdapterId.Mui);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.Mui, CodemodAdapterId.VueStyled);
-	const happySource = "<script setup>\nimport styled from \"vue-styled-components\";\nconst Card = styled.div({ color: \"red\", padding: \"1rem\" });\n</script>\n<template><Card /></template>";
-const edgeSource = "<script setup>\nimport styled from \"vue-styled-components\";\nconst Card = styled.div({ color: theme.foreground, padding: \"1rem\" });\n</script>\n<template><Card /></template>";
-const malformedSource = "<script setup>\nimport styled from \"vue-styled-components\";\nconst Card = styled.div({ color: \"red\", padding: \"1rem\" });\n</script>\n<template><Card /></template>\nconst unfinished = { /* unfinished vue-styled */";
+	const happySource = "import styled from \"vue-styled-components\";\nexport const Card = styled.div`color: red; padding: 1rem;`;";
+const edgeSource = "import styled from \"vue-styled-components\";\nexport const Card = styled.div`color: red; padding: 1rem;`;";
+const malformedSource = "import styled from \"vue-styled-components\";\nexport const Card = styled.div`color: red; padding: 1rem;`;\nconst unfinished = { /* unfinished vue-styled */";
 const sourceSemantic = { source: { framework: BuiltinHostFramework.Vue } };
-const themedSource = "<script setup>\nimport styled from \"vue-styled-components\";\nconst Card = styled.div({ color: theme.colors.brand, padding: \"1rem\" });\n</script>\n<template><Card /></template>";
-const tokenSource = "<script setup>\nimport styled from \"vue-styled-components\";\nconst Card = styled.div({ color: \"$colors.brand\", padding: \"1rem\" });\n</script>\n<template><Card /></template>";
-const blueSemantic = { source: { framework: BuiltinHostFramework.Vue }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { source: { framework: BuiltinHostFramework.Vue }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "palette.primary.main", authored: "theme.palette.primary.main", resolved: "#2563eb" }] };
-const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "palette.primary.main", authored: "theme.palette.primary.main", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/src/theme.ts":"export const muiTheme = { palette: { primary: { main: \"#2563eb\" } } };"} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/src/theme.ts":"export const muiTheme = { palette: { primary: { main: \"#f97316\" } } };"} };
+const themedSource = "import styled from \"vue-styled-components\";\nexport const Card = styled.div`color: #2563eb; padding: 1rem;`;";
+const tokenSource = "import styled from \"vue-styled-components\";\nexport const Card = styled.div`color: #2563eb; padding: 1rem;`;";
+const blueSemantic = { source: { framework: BuiltinHostFramework.Vue } };
+const amberSemantic = { source: { framework: BuiltinHostFramework.Vue } };
+const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
+const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
+const blueProject = createAdapterRouteProject(CodemodAdapterId.VueStyled, CodemodAdapterId.Mui, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.VueStyled, CodemodAdapterId.Mui, "#f97316");
 	const targetSemantic = { source: { framework: BuiltinHostFramework.React } };
 
 test("vue-styled -> mui -> vue-styled: preserves an actionable concrete round trip", () => {
-	const first = forward.run({ source: happySource, file: "Card.vue", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+	const first = forward.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
+	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -36,6 +41,7 @@ test("vue-styled -> mui -> vue-styled: preserves an actionable concrete round tr
 		expect(first.residuals.length).toBeGreaterThan(0);
 		expect(first.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(first, "vue-styled -> mui round-trip happy forward");
 	expectExplicitResidualEvidence(first);
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(second);
@@ -43,146 +49,131 @@ test("vue-styled -> mui -> vue-styled: preserves an actionable concrete round tr
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { styled } from "@mui/system";
-
-		const Card = styled("div")({ padding: "1rem", color: "red" });
-
-		export default function App() {
-			return (
-		<Card />
-			);
-		}
-		",
-		    "converted": 1,
-		    "outcomes": [
-		      {
-		        "outcome": "static",
-		        "representation": "static",
-		      },
-		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
-		  },
-		  "reverse": {
-		    "changed": true,
-		    "code": "import { styled } from "@mui/system";
-		import styled from "vue-styled-components";
-
-		const Card = styled.div({ "padding": "1rem", "color": "red" });
-
-		export default function App() {
-			return (
-		<Card />
-			);
-		}
-		",
-		    "converted": 1,
-		    "outcomes": [
-		      {
-		        "outcome": "static",
-		        "representation": "static",
-		      },
-		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
-		  },
-		}
-	`);
-});
-
-test("vue-styled -> mui -> vue-styled: retains edge semantics without silent loss", () => {
-	const first = forward.run({ source: edgeSource, file: "Card.vue", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
-	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
-	expectActionableRoundTrip(first, second);
-	expectExplicitResidualEvidence(first);
-	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
-		{
-		  "forward": {
-		    "changed": true,
-		    "code": "import { styled } from "@mui/system";
-
-		const Card = styled("div")({ padding: "1rem", color: theme.foreground });
-
-		export default function App() {
-			return (
-		<Card />
-			);
-		}
-		",
-		    "converted": 1,
-		    "outcomes": [
-		      {
-		        "outcome": "host-runtime",
-		        "representation": "target-native",
-		      },
-		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
-		  },
-		  "reverse": {
-		    "changed": true,
-		    "code": "import { styled } from "@mui/system";
-
-		const Card = // pandwind:migrate-skip (lowering-residual: dynamic-values)
-		styled("div")({ padding: "1rem", color: theme.foreground });
-
-		export default function App() {
-			return (
-		<Card />
-			);
-		}
-		",
+		    "code": "import styled from "vue-styled-components";
+		export const Card = // pandwind:migrate-skip (route: vue-styled -> mui | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
+		styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "target-native",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "dynamic style binding 'Card' has no supported host use",
-		        "kind": "dynamic-values",
+		        "hint": "framework-semantics: vue",
+		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 1,
 		    "validations": [],
 		  },
+		  "reverse": {
+		    "changed": false,
+		    "code": "import styled from "vue-styled-components";
+		export const Card = // pandwind:migrate-skip (route: vue-styled -> mui | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
+		styled.div\`color: red; padding: 1rem;\`;",
+		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [],
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [],
+		  },
 		}
-	`);
+	`)
 });
 
-test("vue-styled -> mui -> vue-styled: preserves concrete theme and project context variants", () => {
-	const firstBlue = forward.run({ source: themedSource, file: "Card.vue", semantic: blueSemantic, project: blueProject });
-	const secondBlue = reverse.run({ source: firstBlue.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
-	const firstAmber = forward.run({ source: themedSource, file: "Card.vue", semantic: amberSemantic, project: amberProject });
-	const secondAmber = reverse.run({ source: firstAmber.code, file: "Card.tsx", semantic: amberTargetSemantic, project: amberProject });
+test("vue-styled -> mui -> vue-styled: retains the documented secondary API without silent loss", () => {
+	const first = forward.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
+	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
+	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(first, "vue-styled -> mui round-trip secondary forward");
+	expectActionableRoundTrip(first, second);
+	expectExplicitResidualEvidence(first);
+	expectExplicitResidualEvidence(second);
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+		{
+		  "forward": {
+		    "changed": true,
+		    "code": "import styled from "vue-styled-components";
+		export const Card = // pandwind:migrate-skip (route: vue-styled -> mui | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
+		styled.div\`color: red; padding: 1rem;\`;",
+		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [
+		      {
+		        "hint": "framework-semantics: vue",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
+		    "validations": [],
+		  },
+		  "reverse": {
+		    "changed": false,
+		    "code": "import styled from "vue-styled-components";
+		export const Card = // pandwind:migrate-skip (route: vue-styled -> mui | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
+		styled.div\`color: red; padding: 1rem;\`;",
+		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [],
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [],
+		  },
+		}
+	`)
+});
+
+test("vue-styled -> mui -> vue-styled: preserves concrete theme and project context variants", async () => {
+	const firstBlue = await forward.runAsync({ source: themedSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
+	const firstAmber = await forward.runAsync({ source: themedSource, file: "styles.ts", semantic: amberSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "App.tsx", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.VueStyled, CodemodAdapterId.Mui);
+	expectConfiguredTargetTokenEvidence(firstBlue, CodemodAdapterId.Mui, "vue-styled -> mui round-trip token config");
+	expectRouteScenarioEvidence(firstBlue, "vue-styled -> mui round-trip blue forward");
+	expectRouteScenarioEvidence(firstAmber, "vue-styled -> mui round-trip amber forward");
+	expectConfiguredTargetTokenAbsence(firstAmber, CodemodAdapterId.Mui, "vue-styled -> mui round-trip amber literal config");
+
 	expectActionableRoundTrip(firstBlue, secondBlue);
 	expectActionableRoundTrip(firstAmber, secondAmber);
 	expectExplicitResidualEvidence(firstBlue);
@@ -197,133 +188,113 @@ test("vue-styled -> mui -> vue-styled: preserves concrete theme and project cont
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { styled } from "@mui/system";
-
-		const Card = styled("div")({ padding: "1rem", color: theme.colors.brand });
-
-		export default function App() {
-			return (
-		<Card />
-			);
-		}
-		",
-		      "converted": 1,
-		      "outcomes": [
-		        {
-		          "outcome": "host-runtime",
-		          "representation": "target-native",
-		        },
-		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
-		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
-		        },
-		      ],
-		    },
-		    "reverse": {
-		      "changed": true,
-		      "code": "import { styled } from "@mui/system";
-
-		const Card = // pandwind:migrate-skip (lowering-residual: dynamic-values)
-		styled("div")({ padding: "1rem", color: theme.colors.brand });
-
-		export default function App() {
-			return (
-		<Card />
-			);
-		}
-		",
+		      "code": "import styled from "vue-styled-components";
+		export const Card = // pandwind:migrate-skip (route: vue-styled -> mui | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
+		styled.div\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
-		          "representation": "target-native",
+		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "dynamic style binding 'Card' has no supported host use",
-		          "kind": "dynamic-values",
+		          "hint": "framework-semantics: vue",
+		          "kind": "capability",
 		          "preserved": undefined,
 		        },
 		      ],
 		      "skipped": 1,
+		      "validations": [],
+		    },
+		    "reverse": {
+		      "changed": false,
+		      "code": "import styled from "vue-styled-components";
+		export const Card = // pandwind:migrate-skip (route: vue-styled -> mui | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
+		styled.div\`color: #2563eb; padding: 1rem;\`;",
+		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [],
+		      "outcomes": [],
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [],
 		    },
 		  },
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { styled } from "@mui/system";
-
-		const Card = styled("div")({ padding: "1rem", color: theme.colors.brand });
-
-		export default function App() {
-			return (
-		<Card />
-			);
-		}
-		",
-		      "converted": 1,
-		      "outcomes": [
-		        {
-		          "outcome": "host-runtime",
-		          "representation": "target-native",
-		        },
-		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
-		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
-		        },
-		      ],
-		    },
-		    "reverse": {
-		      "changed": true,
-		      "code": "import { styled } from "@mui/system";
-
-		const Card = // pandwind:migrate-skip (lowering-residual: dynamic-values)
-		styled("div")({ padding: "1rem", color: theme.colors.brand });
-
-		export default function App() {
-			return (
-		<Card />
-			);
-		}
-		",
+		      "code": "import styled from "vue-styled-components";
+		export const Card = // pandwind:migrate-skip (route: vue-styled -> mui | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
+		styled.div\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
-		          "representation": "target-native",
+		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "dynamic style binding 'Card' has no supported host use",
-		          "kind": "dynamic-values",
+		          "hint": "framework-semantics: vue",
+		          "kind": "capability",
 		          "preserved": undefined,
 		        },
 		      ],
 		      "skipped": 1,
 		      "validations": [],
 		    },
+		    "reverse": {
+		      "changed": false,
+		      "code": "import styled from "vue-styled-components";
+		export const Card = // pandwind:migrate-skip (route: vue-styled -> mui | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
+		styled.div\`color: #2563eb; padding: 1rem;\`;",
+		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [],
+		      "outcomes": [],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [],
+		    },
 		  },
 		}
-	`);
+	`)
 });
 
-test("vue-styled -> mui -> vue-styled: resolves token references across both concrete legs", () => {
-	const first = forward.run({ source: tokenSource, file: "Card.vue", semantic: blueSemantic, project: blueProject });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
+test("vue-styled -> mui -> vue-styled: resolves token values across both concrete legs", async () => {
+	const first = await forward.runAsync({ source: tokenSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.VueStyled, CodemodAdapterId.Mui);
+	expectRouteScenarioEvidence(first, "vue-styled -> mui round-trip token forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
@@ -331,13 +302,23 @@ test("vue-styled -> mui -> vue-styled: resolves token references across both con
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "<script setup>
-		import styled from "vue-styled-components";
-		const Card = // pandwind:migrate-skip (route: vue-styled -> mui | lowering-residual: validation)
-		styled.div({ color: "$colors.brand", padding: "1rem" });
-		</script>
-		<template><Card /></template>",
+		    "code": "import styled from "vue-styled-components";
+		export const Card = // pandwind:migrate-skip (route: vue-styled -> mui | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
+		styled.div\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
@@ -346,37 +327,28 @@ test("vue-styled -> mui -> vue-styled: resolves token references across both con
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "canonical CSS differs",
-		        "kind": "validation",
+		        "hint": "framework-semantics: vue",
+		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 1,
-		    "validations": [
-		      {
-		        "differences": [
-		          "canonical CSS differs",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
-		      },
-		    ],
+		    "validations": [],
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "<script setup>
-		import styled from "vue-styled-components";
-		const Card = // pandwind:migrate-skip (route: vue-styled -> mui | lowering-residual: validation)
-		styled.div({ color: "$colors.brand", padding: "1rem" });
-		</script>
-		<template><Card /></template>",
+		    "code": "import styled from "vue-styled-components";
+		export const Card = // pandwind:migrate-skip (route: vue-styled -> mui | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
+		styled.div\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [],
 		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
 		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 

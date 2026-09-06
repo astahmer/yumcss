@@ -3,26 +3,31 @@ import { expect, test } from "vitest";
 import { CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.UnoCSS, CodemodAdapterId.Jss);
-	const happySource = "export const App = () => <div className=\"flex items-center gap-4\" />;";
-const edgeSource = "export const App = () => <div className={`[display:flex] [gap:1rem] ${runtimeClass}`} />;";
-const malformedSource = "export const App = () => <div className=\"flex items-center gap-4\" />;\nconst unfinished = { /* unfinished unocss */";
+	const happySource = "export const App = () => <div className=\"[display:flex] [align-items:center] [gap:1rem]\" />;";
+const edgeSource = "export const App = () => <div className=\"hover:[background-color:black] md:[display:flex]\" />;";
+const malformedSource = "export const App = () => <div className=\"[display:flex] [align-items:center] [gap:1rem]\" />;\nconst unfinished = { /* unfinished unocss */";
 const sourceSemantic = undefined;
-const themedSource = "export const App = () => <div className=\"flex items-center gap-4 text-brand\" />;";
-const tokenSource = "export const App = () => <div className=\"flex items-center gap-4 text-brand\" />;";
-const blueSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/uno.config.ts":"export default defineConfig({ theme: { colors: { brand: \"#2563eb\" } } });","/virtual/pandwind-route-project/app/globals.css":"@theme { --color-brand: #2563eb; --spacing-card: 1.125rem; }"} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/uno.config.ts":"export default defineConfig({ theme: { colors: { brand: \"#f97316\" } } });","/virtual/pandwind-route-project/app/globals.css":"@theme { --color-brand: #f97316; --spacing-card: 1.125rem; }"} };
+const themedSource = "export const App = () => <div className=\"text-brand p-card\" />;";
+const tokenSource = "export const App = () => <div className=\"text-brand p-card\" />;";
+const blueSemantic = undefined;
+const amberSemantic = undefined;
+const blueTargetSemantic = undefined;
+const amberTargetSemantic = undefined;
+const blueProject = createAdapterRouteProject(CodemodAdapterId.UnoCSS, CodemodAdapterId.Jss, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.UnoCSS, CodemodAdapterId.Jss, "#f97316");
 
 test("unocss -> jss: migrates concrete unocss syntax to jss", () => {
-	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
+	const result = route.run({ source: happySource, file: "App.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -37,237 +42,281 @@ test("unocss -> jss: migrates concrete unocss syntax to jss", () => {
 		expect(result.residuals.length).toBeGreaterThan(0);
 		expect(result.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(result, "unocss -> jss happy");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const App = () => // pandwind:migrate-skip (route: unocss -> jss | parse-residual: unknown-utility | available: named-map, residual)
-		<div className="flex items-center gap-4" />;",
-		  "converted": 0,
+		  "code": "import jss from "jss";
+		export const App = () => <div className={jss.createStyleSheet({ style: { gap: "1rem", alignItems: "center", display: "flex" } }).attach().classes.style}/>;",
+		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
-		      "representation": "residual",
+		      "outcome": "static",
+		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
 		    {
-		      "hint": "UnoCSS utility requires the project resolver/preset to be loaded",
-		      "kind": "unknown-utility",
-		      "preserved": undefined,
-		    },
-		    {
-		      "hint": "UnoCSS utility requires the project resolver/preset to be loaded",
-		      "kind": "unknown-utility",
-		      "preserved": undefined,
-		    },
-		    {
-		      "hint": "UnoCSS utility requires the project resolver/preset to be loaded",
-		      "kind": "unknown-utility",
-		      "preserved": undefined,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
-		  "skipped": 1,
-		  "validations": [],
 		}
-	`);
+	`)
 });
 
-test("unocss -> jss: carries concrete unocss dynamics or edge syntax explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
+test("unocss -> jss: carries a documented secondary unocss API explicitly", () => {
+	const result = route.run({ source: edgeSource, file: "App.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(result, "unocss -> jss secondary");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "// pandwind:migrate-skip (route: unocss -> jss | parse-residual: dynamic)
-		export const App = () => <div className={\`[display:flex] [gap:1rem] \${runtimeClass}\`} />;",
+		  "code": "export const App = () => // pandwind:migrate-skip (route: unocss -> jss | lowering-residual: validation)
+		<div className={jss.createStyleSheet({ style: { hover: { backgroundColor: "black" }, md: { display: "flex" } } }).attach().classes.style}/>;",
 		  "converted": 0,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "residual",
+		      "representation": "static",
 		    },
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "UnoCSS dynamic class expressions require runtime-aware target lowering",
-		      "kind": "dynamic",
+		      "hint": "canonical CSS differs",
+		      "kind": "validation",
 		      "preserved": undefined,
 		    },
 		  ],
 		  "skipped": 1,
-		  "validations": [],
+		  "validations": [
+		    {
+		      "differences": [
+		        "canonical CSS differs",
+		      ],
+		      "lossiness": "unsupported",
+		      "valid": false,
+		    },
+		  ],
 		}
-	`);
+	`)
 });
 
-test("unocss -> jss: lowers concrete theme and project context variants", () => {
-	const blue = route.run({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const amber = route.run({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
+test("unocss -> jss: loads concrete theme and project context variants", async () => {
+	const blue = await route.runAsync({ source: themedSource, file: "App.tsx", semantic: blueSemantic, project: blueProject });
+	const amber = await route.runAsync({ source: themedSource, file: "App.tsx", semantic: amberSemantic, project: amberProject });
 	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
 	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.UnoCSS, CodemodAdapterId.Jss);
+	expectConfiguredTargetTokenEvidence(blue, CodemodAdapterId.Jss, "unocss -> jss blue config");
+	expectRouteScenarioEvidence(blue, "unocss -> jss blue config");
+	expectRouteScenarioEvidence(amber, "unocss -> jss amber config");
+
 	expectExplicitResidualEvidence(blue);
 	expectExplicitResidualEvidence(amber);
 	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "export const App = () => // pandwind:migrate-skip (route: unocss -> jss | parse-residual: unknown-utility | available: named-map, residual)
-		<div className="flex items-center gap-4 text-brand" />;",
-		    "converted": 0,
+		    "code": "import jss from "jss";
+		export const App = () => <div className={jss.createStyleSheet({ style: { padding: "1.125rem", color: "#f97316" } }).attach().classes.style}/>;",
+		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
-		        "representation": "residual",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "UnoCSS utility requires the project resolver/preset to be loaded",
-		        "kind": "unknown-utility",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "UnoCSS utility requires the project resolver/preset to be loaded",
-		        "kind": "unknown-utility",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "UnoCSS utility requires the project resolver/preset to be loaded",
-		        "kind": "unknown-utility",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "UnoCSS utility requires the project resolver/preset to be loaded",
-		        "kind": "unknown-utility",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "export const App = () => // pandwind:migrate-skip (route: unocss -> jss | parse-residual: unknown-utility | available: named-map, residual)
-		<div className="flex items-center gap-4 text-brand" />;",
-		    "converted": 0,
+		    "code": "import jss from "jss";
+		export const App = () => <div className={jss.createStyleSheet({ style: { padding: "1.125rem", color: "#2563eb" } }).attach().classes.style}/>;",
+		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
-		        "representation": "residual",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "UnoCSS utility requires the project resolver/preset to be loaded",
-		        "kind": "unknown-utility",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "UnoCSS utility requires the project resolver/preset to be loaded",
-		        "kind": "unknown-utility",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "UnoCSS utility requires the project resolver/preset to be loaded",
-		        "kind": "unknown-utility",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "UnoCSS utility requires the project resolver/preset to be loaded",
-		        "kind": "unknown-utility",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 
-test("unocss -> jss: resolves concrete token references with project context", () => {
-	const result = route.run({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
+test("unocss -> jss: resolves concrete token values with project context", async () => {
+	const result = await route.runAsync({ source: tokenSource, file: "App.tsx", semantic: blueSemantic, project: blueProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.UnoCSS, CodemodAdapterId.Jss);
+	expectConfiguredTargetTokenEvidence(result, CodemodAdapterId.Jss, "unocss -> jss token config");
+	expectRouteScenarioEvidence(result, "unocss -> jss token config");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const App = () => // pandwind:migrate-skip (route: unocss -> jss | parse-residual: unknown-utility | available: named-map, residual)
-		<div className="flex items-center gap-4 text-brand" />;",
-		  "converted": 0,
+		  "code": "import jss from "jss";
+		export const App = () => <div className={jss.createStyleSheet({ style: { padding: "1.125rem", color: "#2563eb" } }).attach().classes.style}/>;",
+		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
-		      "representation": "residual",
+		      "outcome": "static",
+		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
 		    {
-		      "hint": "UnoCSS utility requires the project resolver/preset to be loaded",
-		      "kind": "unknown-utility",
-		      "preserved": undefined,
-		    },
-		    {
-		      "hint": "UnoCSS utility requires the project resolver/preset to be loaded",
-		      "kind": "unknown-utility",
-		      "preserved": undefined,
-		    },
-		    {
-		      "hint": "UnoCSS utility requires the project resolver/preset to be loaded",
-		      "kind": "unknown-utility",
-		      "preserved": undefined,
-		    },
-		    {
-		      "hint": "UnoCSS utility requires the project resolver/preset to be loaded",
-		      "kind": "unknown-utility",
-		      "preserved": undefined,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
-		  "skipped": 1,
-		  "validations": [],
 		}
-	`);
+	`)
 });
 
 test("unocss -> jss: preserves malformed concrete unocss input", () => {
-	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
+	const result = route.run({ source: malformedSource, file: "App.tsx", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished unocss */");
+	expectRouteScenarioEvidence(result, "unocss -> jss malformed");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const App = () => // pandwind:migrate-skip (route: unocss -> jss | parse-residual: unknown-utility | available: named-map, residual)
-		<div className="flex items-center gap-4" />;
+		  "code": "import jss from "jss";
+		export const App = () => <div className={jss.createStyleSheet({ style: { gap: "1rem", alignItems: "center", display: "flex" } }).attach().classes.style}/>;
 		const unfinished = { /* unfinished unocss */",
-		  "converted": 0,
+		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
-		      "representation": "residual",
+		      "outcome": "static",
+		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
 		    {
-		      "hint": "UnoCSS utility requires the project resolver/preset to be loaded",
-		      "kind": "unknown-utility",
-		      "preserved": undefined,
-		    },
-		    {
-		      "hint": "UnoCSS utility requires the project resolver/preset to be loaded",
-		      "kind": "unknown-utility",
-		      "preserved": undefined,
-		    },
-		    {
-		      "hint": "UnoCSS utility requires the project resolver/preset to be loaded",
-		      "kind": "unknown-utility",
-		      "preserved": undefined,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
-		  "skipped": 1,
-		  "validations": [],
 		}
-	`);
+	`)
 });
 

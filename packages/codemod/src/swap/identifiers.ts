@@ -79,6 +79,8 @@ export const enum CodemodPatternId {
 	StyleXCreate = "stylex-create",
 	StyleXKeyframes = "stylex-keyframes",
 	StyleXDefineVars = "stylex-define-vars",
+	RuntimeSemanticRules = "runtime-semantic-rules",
+	VanillaExtractGlobalStyle = "globalStyle",
 }
 
 export const enum CodemodCallPatternKindTag {

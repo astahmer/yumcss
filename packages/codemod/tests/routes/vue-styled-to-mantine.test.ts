@@ -3,26 +3,31 @@ import { expect, test } from "vitest";
 import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.VueStyled, CodemodAdapterId.Mantine);
-	const happySource = "<script setup>\nimport styled from \"vue-styled-components\";\nconst Card = styled.div({ color: \"red\", padding: \"1rem\" });\n</script>\n<template><Card /></template>";
-const edgeSource = "<script setup>\nimport styled from \"vue-styled-components\";\nconst Card = styled.div({ color: theme.foreground, padding: \"1rem\" });\n</script>\n<template><Card /></template>";
-const malformedSource = "<script setup>\nimport styled from \"vue-styled-components\";\nconst Card = styled.div({ color: \"red\", padding: \"1rem\" });\n</script>\n<template><Card /></template>\nconst unfinished = { /* unfinished vue-styled */";
+	const happySource = "import styled from \"vue-styled-components\";\nexport const Card = styled.div`color: red; padding: 1rem;`;";
+const edgeSource = "import styled from \"vue-styled-components\";\nexport const Card = styled.div`color: red; padding: 1rem;`;";
+const malformedSource = "import styled from \"vue-styled-components\";\nexport const Card = styled.div`color: red; padding: 1rem;`;\nconst unfinished = { /* unfinished vue-styled */";
 const sourceSemantic = { source: { framework: BuiltinHostFramework.Vue } };
-const themedSource = "<script setup>\nimport styled from \"vue-styled-components\";\nconst Card = styled.div({ color: theme.colors.brand, padding: \"1rem\" });\n</script>\n<template><Card /></template>";
-const tokenSource = "<script setup>\nimport styled from \"vue-styled-components\";\nconst Card = styled.div({ color: \"$colors.brand\", padding: \"1rem\" });\n</script>\n<template><Card /></template>";
-const blueSemantic = { source: { framework: BuiltinHostFramework.Vue }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { source: { framework: BuiltinHostFramework.Vue }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/src/theme.ts":"export const mantineTheme = { colors: { brand: [\"#2563eb\"] } };"} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/src/theme.ts":"export const mantineTheme = { colors: { brand: [\"#f97316\"] } };"} };
+const themedSource = "import styled from \"vue-styled-components\";\nexport const Card = styled.div`color: #2563eb; padding: 1rem;`;";
+const tokenSource = "import styled from \"vue-styled-components\";\nexport const Card = styled.div`color: #2563eb; padding: 1rem;`;";
+const blueSemantic = { source: { framework: BuiltinHostFramework.Vue } };
+const amberSemantic = { source: { framework: BuiltinHostFramework.Vue } };
+const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
+const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
+const blueProject = createAdapterRouteProject(CodemodAdapterId.VueStyled, CodemodAdapterId.Mantine, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.VueStyled, CodemodAdapterId.Mantine, "#f97316");
 
 test("vue-styled -> mantine: migrates concrete vue-styled syntax to mantine", () => {
-	const result = route.run({ source: happySource, file: "Card.vue", semantic: sourceSemantic });
+	const result = route.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -37,19 +42,31 @@ test("vue-styled -> mantine: migrates concrete vue-styled syntax to mantine", ()
 		expect(result.residuals.length).toBeGreaterThan(0);
 		expect(result.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(result, "vue-styled -> mantine happy");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "<script setup>
-		import { createCss } from "pandwind/css";
+		  "code": "import { createCss } from "pandwind/css";
+		import { defineComponent, h } from "vue";
 		const css = createCss();
 
-
-		const Card = css.class({ "padding": "1rem", "color": "red" });
-		</script>
-		<template><div :class="Card" /></template>",
+		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css.class({ "padding": "1rem", "color": "red" }), attrs.class] }, slots.default?.()));",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		        "portable-artifact",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "portable-artifact",
@@ -66,26 +83,37 @@ test("vue-styled -> mantine: migrates concrete vue-styled syntax to mantine", ()
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
-test("vue-styled -> mantine: carries concrete vue-styled dynamics or edge syntax explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "Card.vue", semantic: sourceSemantic });
+test("vue-styled -> mantine: carries a documented secondary vue-styled API explicitly", () => {
+	const result = route.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(result, "vue-styled -> mantine secondary");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "<script setup>
-		import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
+		  "code": "import { createCss } from "pandwind/css";
+		import { defineComponent, h } from "vue";
+		const css = createCss();
 
-
-		const Card = css.vars({ "padding": "1rem", "color": theme.foreground });
-		</script>
-		<template><div :class="Card.class" :style="Card.style" /></template>",
+		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css.class({ "padding": "1rem", "color": "red" }), attrs.class] }, slots.default?.()));",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		        "portable-artifact",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "portable-artifact",
@@ -102,30 +130,46 @@ test("vue-styled -> mantine: carries concrete vue-styled dynamics or edge syntax
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
-test("vue-styled -> mantine: lowers concrete theme and project context variants", () => {
-	const blue = route.run({ source: themedSource, file: "Card.vue", semantic: blueSemantic, project: blueProject });
-	const amber = route.run({ source: themedSource, file: "Card.vue", semantic: amberSemantic, project: amberProject });
+test("vue-styled -> mantine: loads concrete theme and project context variants", async () => {
+	const blue = await route.runAsync({ source: themedSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
+	const amber = await route.runAsync({ source: themedSource, file: "styles.ts", semantic: amberSemantic, project: amberProject });
 	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
 	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.VueStyled, CodemodAdapterId.Mantine);
+	expectConfiguredTargetTokenEvidence(blue, CodemodAdapterId.Mantine, "vue-styled -> mantine blue config");
+	expectRouteScenarioEvidence(blue, "vue-styled -> mantine blue config");
+	expectRouteScenarioEvidence(amber, "vue-styled -> mantine amber config");
+	expectConfiguredTargetTokenAbsence(amber, CodemodAdapterId.Mantine, "vue-styled -> mantine amber literal config");
+
 	expectExplicitResidualEvidence(blue);
 	expectExplicitResidualEvidence(amber);
 	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "<script setup>
-		import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
+		    "code": "import { createCss } from "pandwind/css";
+		import { defineComponent, h } from "vue";
+		const css = createCss();
 
-
-		const Card = css.vars({ "padding": "1rem", "color": theme.colors.brand });
-		</script>
-		<template><div :class="Card.class" :style="Card.style" /></template>",
+		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css.class({ "padding": "1rem", "color": "#2563eb" }), attrs.class] }, slots.default?.()));",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		          "portable-artifact",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "portable-artifact",
@@ -144,16 +188,26 @@ test("vue-styled -> mantine: lowers concrete theme and project context variants"
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "<script setup>
-		import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
+		    "code": "import { createCss } from "pandwind/css";
+		import { defineComponent, h } from "vue";
+		const css = createCss();
 
-
-		const Card = css.vars({ "padding": "1rem", "color": theme.colors.brand });
-		</script>
-		<template><div :class="Card.class" :style="Card.style" /></template>",
+		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css.class({ "padding": "1rem", "color": "var(--mantine-color-brand-0)" }), attrs.class] }, slots.default?.()));",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		          "portable-artifact",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "portable-artifact",
@@ -171,25 +225,39 @@ test("vue-styled -> mantine: lowers concrete theme and project context variants"
 		    ],
 		  },
 		}
-	`);
+	`)
 });
 
-test("vue-styled -> mantine: resolves concrete token references with project context", () => {
-	const result = route.run({ source: tokenSource, file: "Card.vue", semantic: blueSemantic, project: blueProject });
+test("vue-styled -> mantine: resolves concrete token values with project context", async () => {
+	const result = await route.runAsync({ source: tokenSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.VueStyled, CodemodAdapterId.Mantine);
+	expectConfiguredTargetTokenEvidence(result, CodemodAdapterId.Mantine, "vue-styled -> mantine token config");
+	expectRouteScenarioEvidence(result, "vue-styled -> mantine token config");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "<script setup>
-		import { createCss } from "pandwind/css";
+		  "code": "import { createCss } from "pandwind/css";
+		import { defineComponent, h } from "vue";
 		const css = createCss();
 
-
-		const Card = css.class({ "padding": "1rem", "color": "$colors.brand" });
-		</script>
-		<template><div :class="Card" /></template>",
+		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css.class({ "padding": "1rem", "color": "var(--mantine-color-brand-0)" }), attrs.class] }, slots.default?.()));",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		        "portable-artifact",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "portable-artifact",
@@ -206,25 +274,38 @@ test("vue-styled -> mantine: resolves concrete token references with project con
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
 test("vue-styled -> mantine: preserves malformed concrete vue-styled input", () => {
-	const result = route.run({ source: malformedSource, file: "Card.vue", semantic: sourceSemantic });
+	const result = route.run({ source: malformedSource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished vue-styled */");
+	expectRouteScenarioEvidence(result, "vue-styled -> mantine malformed");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "<script setup>
-		import styled from "vue-styled-components";
-		import { createCss } from "pandwind/css";
+		  "code": "import { createCss } from "pandwind/css";
+		import { defineComponent, h } from "vue";
 		const css = createCss();
-		const Card = css.class({ "padding": "1rem", "color": "red" });
-		</script>
-		<template><div :class="Card" /></template>
+
+		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css.class({ "padding": "1rem", "color": "red" }), attrs.class] }, slots.default?.()));
 		const unfinished = { /* unfinished vue-styled */",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		        "portable-artifact",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "portable-artifact",
@@ -241,6 +322,6 @@ test("vue-styled -> mantine: preserves malformed concrete vue-styled input", () 
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 

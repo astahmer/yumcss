@@ -15,8 +15,9 @@ import type {
 	StyleDeclaration,
 	StyleProgram,
 	StyleProgramResidual,
+	StyleValue,
 } from "../semantic-ir.ts";
-import { StyleProgramResidualKindTag } from "../semantic-ir.ts";
+import { StyleProgramResidualKindTag, StyleValueKindTag } from "../semantic-ir.ts";
 import {
 	CodemodAdapterId,
 	CodemodPatternId,
@@ -263,6 +264,39 @@ const sourceOptions: AdapterSourceObjectOptions = {
 	compositionArrayKeys: ["includes"],
 };
 
+function tokenamiSourceValue(
+	value: StyleValue,
+	property: string,
+	context: AdapterParseContext,
+): StyleValue {
+	if (value.kind !== StyleValueKindTag.Literal || typeof value.value !== "string") return value;
+	if (!value.value.startsWith("$")) return value;
+	const group = tokenamiTokenGroup(property);
+	const catalog = TokenCatalog.fromContract(context.config.tokenCatalog);
+	if (group === undefined || catalog === undefined) return value;
+	const reference = value.value
+		.slice(1)
+		.replace(new RegExp(`^${group}\\.`), "")
+		.replaceAll("-", ".");
+	const match = catalog.findByReference([group], reference);
+	return match === undefined
+		? value
+		: {
+				kind: StyleValueKindTag.Token,
+				ref: match.ref,
+				authored: value.value,
+				resolved: match.resolved,
+			};
+}
+
+const tokenamiSourceOptions = (_source: string, context: AdapterParseContext) => ({
+	...sourceOptions,
+	valueTransforms: {
+		"*": (value: StyleValue, property?: string) =>
+			tokenamiSourceValue(value, property ?? "", context),
+	},
+});
+
 /** Semantic Tokenami source adapter. It owns Tokenami's encoded property keys and aliases. */
 export function createTokenamiAdapter(
 	options: { readonly moduleLoader?: ProjectModuleLoader | null } = {},
@@ -310,7 +344,7 @@ export function createTokenamiAdapter(
 					loadConfigAsync: (context: AdapterConfigContext) =>
 						officialTokenamiConfig(context, moduleLoader),
 				}),
-		sourceObjectOptions: sourceOptions,
+		sourceObjectOptions: tokenamiSourceOptions,
 		tokenPolicy: TOKENAMI_TOKEN_POLICY,
 		patterns: [
 			{ name: "css", regex: /\bcss\s*\(\s*\{/g, transform: normalizeProgram },

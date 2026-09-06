@@ -3,30 +3,35 @@ import { expect, test } from "vitest";
 import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectActionableRoundTrip,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const forward = createAdapterRouteSpec(CodemodAdapterId.StyledComponents, CodemodAdapterId.Mantine);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.Mantine, CodemodAdapterId.StyledComponents);
-	const happySource = "import styled from \"styled-components\";\nexport const Card = styled.div({ color: \"red\", padding: \"1rem\" });\nexport const App = () => <Card />;";
-const edgeSource = "import styled from \"styled-components\";\nexport const Card = styled.div({ color: theme.foreground, padding: \"1rem\" });\nexport const App = () => <Card />;";
-const malformedSource = "import styled from \"styled-components\";\nexport const Card = styled.div({ color: \"red\", padding: \"1rem\" });\nexport const App = () => <Card />;\nconst unfinished = { /* unfinished styled-components */";
+	const happySource = "import styled from \"styled-components\";\nexport const Card = styled.div({ color: \"red\", padding: \"1rem\" });";
+const edgeSource = "import styled from \"styled-components\";\nexport const Card = styled.div`color: red; padding: 1rem;`;";
+const malformedSource = "import styled from \"styled-components\";\nexport const Card = styled.div({ color: \"red\", padding: \"1rem\" });\nconst unfinished = { /* unfinished styled-components */";
 const sourceSemantic = { source: { framework: BuiltinHostFramework.React } };
-const themedSource = "import styled from \"styled-components\";\nexport const Card = styled.div({ color: theme.colors.brand, padding: \"1rem\" });\nexport const App = () => <Card />;";
-const tokenSource = "import styled from \"styled-components\";\nexport const Card = styled.div({ color: \"$colors.brand\", padding: \"1rem\" });\nexport const App = () => <Card />;";
-const blueSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/src/theme.ts":"export const mantineTheme = { colors: { brand: [\"#2563eb\"] } };"} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/src/theme.ts":"export const mantineTheme = { colors: { brand: [\"#f97316\"] } };"} };
+const themedSource = "import styled from \"styled-components\";\nexport const Card = styled.div({ color: \"#2563eb\", padding: \"1rem\" });";
+const tokenSource = "import styled from \"styled-components\";\nexport const Card = styled.div({ color: \"#2563eb\", padding: \"1rem\" });";
+const blueSemantic = { source: { framework: BuiltinHostFramework.React } };
+const amberSemantic = { source: { framework: BuiltinHostFramework.React } };
+const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
+const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
+const blueProject = createAdapterRouteProject(CodemodAdapterId.StyledComponents, CodemodAdapterId.Mantine, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.StyledComponents, CodemodAdapterId.Mantine, "#f97316");
 	const targetSemantic = { source: { framework: BuiltinHostFramework.React } };
 
 test("styled-components -> mantine -> styled-components: preserves an actionable concrete round trip", () => {
 	const first = forward.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -36,6 +41,7 @@ test("styled-components -> mantine -> styled-components: preserves an actionable
 		expect(first.residuals.length).toBeGreaterThan(0);
 		expect(first.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(first, "styled-components -> mantine round-trip happy forward");
 	expectExplicitResidualEvidence(first);
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(second);
@@ -44,9 +50,21 @@ test("styled-components -> mantine -> styled-components: preserves an actionable
 		  "forward": {
 		    "changed": true,
 		    "code": "
-		export const Card = (props) => <div {...props} style={{ ...{ padding: "1rem", color: "red" }, ...props.style }} />;
-		export const App = () => <Card />;",
+		export const Card = (props) => <div {...props} style={{ ...{ padding: "1rem", color: "red" }, ...props.style }} />;",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "static",
@@ -67,9 +85,20 @@ test("styled-components -> mantine -> styled-components: preserves an actionable
 		    "changed": true,
 		    "code": "
 		export const Card = (props) => // pandwind:migrate-skip (route: mantine -> styled-components | parse-residual: dynamic | available: named-map, residual)
-		<div {...props} style={{ ...{ padding: "1rem", color: "red" }, ...props.style }} />;
-		export const App = () => <Card />;",
+		<div {...props} style={{ ...{ padding: "1rem", color: "red" }, ...props.style }} />;",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "residual",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
@@ -92,13 +121,14 @@ test("styled-components -> mantine -> styled-components: preserves an actionable
 		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 
-test("styled-components -> mantine -> styled-components: retains edge semantics without silent loss", () => {
+test("styled-components -> mantine -> styled-components: retains the documented secondary API without silent loss", () => {
 	const first = forward.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(first, "styled-components -> mantine round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
@@ -107,13 +137,25 @@ test("styled-components -> mantine -> styled-components: retains edge semantics 
 		  "forward": {
 		    "changed": true,
 		    "code": "
-		export const Card = (props) => <div {...props} style={{ ...{ padding: "1rem", color: theme.foreground }, ...props.style }} />;
-		export const App = () => <Card />;",
+		export const Card = (props) => <div {...props} style={{ ...{ padding: "1rem", color: "red" }, ...props.style }} />;",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "host-runtime",
-		        "representation": "target-native",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [],
@@ -130,9 +172,20 @@ test("styled-components -> mantine -> styled-components: retains edge semantics 
 		    "changed": true,
 		    "code": "
 		export const Card = (props) => // pandwind:migrate-skip (route: mantine -> styled-components | parse-residual: dynamic | available: named-map, residual)
-		<div {...props} style={{ ...{ padding: "1rem", color: theme.foreground }, ...props.style }} />;
-		export const App = () => <Card />;",
+		<div {...props} style={{ ...{ padding: "1rem", color: "red" }, ...props.style }} />;",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "residual",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
@@ -155,16 +208,22 @@ test("styled-components -> mantine -> styled-components: retains edge semantics 
 		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 
-test("styled-components -> mantine -> styled-components: preserves concrete theme and project context variants", () => {
-	const firstBlue = forward.run({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const secondBlue = reverse.run({ source: firstBlue.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
-	const firstAmber = forward.run({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
-	const secondAmber = reverse.run({ source: firstAmber.code, file: "Card.tsx", semantic: amberTargetSemantic, project: amberProject });
+test("styled-components -> mantine -> styled-components: preserves concrete theme and project context variants", async () => {
+	const firstBlue = await forward.runAsync({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
+	const firstAmber = await forward.runAsync({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "App.tsx", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.StyledComponents, CodemodAdapterId.Mantine);
+	expectConfiguredTargetTokenEvidence(firstBlue, CodemodAdapterId.Mantine, "styled-components -> mantine round-trip token config");
+	expectRouteScenarioEvidence(firstBlue, "styled-components -> mantine round-trip blue forward");
+	expectRouteScenarioEvidence(firstAmber, "styled-components -> mantine round-trip amber forward");
+	expectConfiguredTargetTokenAbsence(firstAmber, CodemodAdapterId.Mantine, "styled-components -> mantine round-trip amber literal config");
+
 	expectActionableRoundTrip(firstBlue, secondBlue);
 	expectActionableRoundTrip(firstAmber, secondAmber);
 	expectExplicitResidualEvidence(firstBlue);
@@ -180,13 +239,25 @@ test("styled-components -> mantine -> styled-components: preserves concrete them
 		    "forward": {
 		      "changed": true,
 		      "code": "
-		export const Card = (props) => <div {...props} style={{ ...{ padding: "1rem", color: theme.colors.brand }, ...props.style }} />;
-		export const App = () => <Card />;",
+		export const Card = (props) => <div {...props} style={{ ...{ padding: "1rem", color: "#2563eb" }, ...props.style }} />;",
 		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "host-runtime",
-		          "representation": "target-native",
+		          "outcome": "static",
+		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [],
@@ -203,9 +274,20 @@ test("styled-components -> mantine -> styled-components: preserves concrete them
 		      "changed": true,
 		      "code": "
 		export const Card = (props) => // pandwind:migrate-skip (route: mantine -> styled-components | parse-residual: dynamic | available: named-map, residual)
-		<div {...props} style={{ ...{ padding: "1rem", color: theme.colors.brand }, ...props.style }} />;
-		export const App = () => <Card />;",
+		<div {...props} style={{ ...{ padding: "1rem", color: "#2563eb" }, ...props.style }} />;",
 		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [],
+		          "availableRepresentations": [
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "residual",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
@@ -232,13 +314,25 @@ test("styled-components -> mantine -> styled-components: preserves concrete them
 		    "forward": {
 		      "changed": true,
 		      "code": "
-		export const Card = (props) => <div {...props} style={{ ...{ padding: "1rem", color: theme.colors.brand }, ...props.style }} />;
-		export const App = () => <Card />;",
+		export const Card = (props) => <div {...props} style={{ ...{ padding: "1rem", color: "var(--mantine-color-brand-0)" }, ...props.style }} />;",
 		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "host-runtime",
-		          "representation": "target-native",
+		          "outcome": "static",
+		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [],
@@ -255,9 +349,20 @@ test("styled-components -> mantine -> styled-components: preserves concrete them
 		      "changed": true,
 		      "code": "
 		export const Card = (props) => // pandwind:migrate-skip (route: mantine -> styled-components | parse-residual: dynamic | available: named-map, residual)
-		<div {...props} style={{ ...{ padding: "1rem", color: theme.colors.brand }, ...props.style }} />;
-		export const App = () => <Card />;",
+		<div {...props} style={{ ...{ padding: "1rem", color: "var(--mantine-color-brand-0)" }, ...props.style }} />;",
 		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [],
+		          "availableRepresentations": [
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "residual",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
@@ -281,13 +386,15 @@ test("styled-components -> mantine -> styled-components: preserves concrete them
 		    },
 		  },
 		}
-	`);
+	`)
 });
 
-test("styled-components -> mantine -> styled-components: resolves token references across both concrete legs", () => {
-	const first = forward.run({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
+test("styled-components -> mantine -> styled-components: resolves token values across both concrete legs", async () => {
+	const first = await forward.runAsync({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.StyledComponents, CodemodAdapterId.Mantine);
+	expectRouteScenarioEvidence(first, "styled-components -> mantine round-trip token forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
@@ -296,9 +403,21 @@ test("styled-components -> mantine -> styled-components: resolves token referenc
 		  "forward": {
 		    "changed": true,
 		    "code": "
-		export const Card = (props) => <div {...props} style={{ ...{ padding: "1rem", color: "$colors.brand" }, ...props.style }} />;
-		export const App = () => <Card />;",
+		export const Card = (props) => <div {...props} style={{ ...{ padding: "1rem", color: "var(--mantine-color-brand-0)" }, ...props.style }} />;",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "static",
@@ -319,9 +438,20 @@ test("styled-components -> mantine -> styled-components: resolves token referenc
 		    "changed": true,
 		    "code": "
 		export const Card = (props) => // pandwind:migrate-skip (route: mantine -> styled-components | parse-residual: dynamic | available: named-map, residual)
-		<div {...props} style={{ ...{ padding: "1rem", color: "$colors.brand" }, ...props.style }} />;
-		export const App = () => <Card />;",
+		<div {...props} style={{ ...{ padding: "1rem", color: "var(--mantine-color-brand-0)" }, ...props.style }} />;",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "residual",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
@@ -344,6 +474,6 @@ test("styled-components -> mantine -> styled-components: resolves token referenc
 		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 

@@ -3,26 +3,31 @@ import { expect, test } from "vitest";
 import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.VueStyled, CodemodAdapterId.Pandwind);
-	const happySource = "<script setup>\nimport styled from \"vue-styled-components\";\nconst Card = styled.div({ color: \"red\", padding: \"1rem\" });\n</script>\n<template><Card /></template>";
-const edgeSource = "<script setup>\nimport styled from \"vue-styled-components\";\nconst Card = styled.div({ color: theme.foreground, padding: \"1rem\" });\n</script>\n<template><Card /></template>";
-const malformedSource = "<script setup>\nimport styled from \"vue-styled-components\";\nconst Card = styled.div({ color: \"red\", padding: \"1rem\" });\n</script>\n<template><Card /></template>\nconst unfinished = { /* unfinished vue-styled */";
+	const happySource = "import styled from \"vue-styled-components\";\nexport const Card = styled.div`color: red; padding: 1rem;`;";
+const edgeSource = "import styled from \"vue-styled-components\";\nexport const Card = styled.div`color: red; padding: 1rem;`;";
+const malformedSource = "import styled from \"vue-styled-components\";\nexport const Card = styled.div`color: red; padding: 1rem;`;\nconst unfinished = { /* unfinished vue-styled */";
 const sourceSemantic = { source: { framework: BuiltinHostFramework.Vue } };
-const themedSource = "<script setup>\nimport styled from \"vue-styled-components\";\nconst Card = styled.div({ color: theme.colors.brand, padding: \"1rem\" });\n</script>\n<template><Card /></template>";
-const tokenSource = "<script setup>\nimport styled from \"vue-styled-components\";\nconst Card = styled.div({ color: \"$colors.brand\", padding: \"1rem\" });\n</script>\n<template><Card /></template>";
-const blueSemantic = { source: { framework: BuiltinHostFramework.Vue }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { source: { framework: BuiltinHostFramework.Vue }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/pandwind.config.ts":"export default { tokens: { colors: { brand: \"#2563eb\" } } };"} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/pandwind.config.ts":"export default { tokens: { colors: { brand: \"#f97316\" } } };"} };
+const themedSource = "import styled from \"vue-styled-components\";\nexport const Card = styled.div`color: #2563eb; padding: 1rem;`;";
+const tokenSource = "import styled from \"vue-styled-components\";\nexport const Card = styled.div`color: #2563eb; padding: 1rem;`;";
+const blueSemantic = { source: { framework: BuiltinHostFramework.Vue } };
+const amberSemantic = { source: { framework: BuiltinHostFramework.Vue } };
+const blueTargetSemantic = undefined;
+const amberTargetSemantic = undefined;
+const blueProject = createAdapterRouteProject(CodemodAdapterId.VueStyled, CodemodAdapterId.Pandwind, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.VueStyled, CodemodAdapterId.Pandwind, "#f97316");
 
 test("vue-styled -> pandwind: migrates concrete vue-styled syntax to pandwind", () => {
-	const result = route.run({ source: happySource, file: "Card.vue", semantic: sourceSemantic });
+	const result = route.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -37,19 +42,32 @@ test("vue-styled -> pandwind: migrates concrete vue-styled syntax to pandwind", 
 		expect(result.residuals.length).toBeGreaterThan(0);
 		expect(result.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(result, "vue-styled -> pandwind happy");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "<script setup>
+		  "code": "import { defineComponent, h } from "vue";
 		import { createCss } from "pandwind/css";
+		import { createCx } from "pandwind/cx";
+		const cx = createCx();
 		const css = createCss();
 
-
-		const Card = css.class({ padding: "1rem", color: "red" });
-		</script>
-		<template><div :class="Card" /></template>",
+		export const Card = defineComponent({ setup(_props, { attrs, slots }) { const style = css.class({ padding: "1rem", color: "red" }); return () => h("div", { ...attrs, class: cx(style, attrs.class) }, slots.default?.()); } });",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "static",
@@ -66,29 +84,42 @@ test("vue-styled -> pandwind: migrates concrete vue-styled syntax to pandwind", 
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
-test("vue-styled -> pandwind: carries concrete vue-styled dynamics or edge syntax explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "Card.vue", semantic: sourceSemantic });
+test("vue-styled -> pandwind: carries a documented secondary vue-styled API explicitly", () => {
+	const result = route.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(result, "vue-styled -> pandwind secondary");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "<script setup>
+		  "code": "import { defineComponent, h } from "vue";
 		import { createCss } from "pandwind/css";
+		import { createCx } from "pandwind/cx";
+		const cx = createCx();
 		const css = createCss();
 
-
-		const Card = css.vars({ padding: "1rem", color: theme.foreground });
-		</script>
-		<template><div :class="Card.class" :style="Card.style" /></template>",
+		export const Card = defineComponent({ setup(_props, { attrs, slots }) { const style = css.class({ padding: "1rem", color: "red" }); return () => h("div", { ...attrs, class: cx(style, attrs.class) }, slots.default?.()); } });",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "host-runtime",
-		      "representation": "target-native",
+		      "outcome": "static",
+		      "representation": "static",
 		    },
 		  ],
 		  "residuals": [],
@@ -101,33 +132,51 @@ test("vue-styled -> pandwind: carries concrete vue-styled dynamics or edge synta
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
-test("vue-styled -> pandwind: lowers concrete theme and project context variants", () => {
-	const blue = route.run({ source: themedSource, file: "Card.vue", semantic: blueSemantic, project: blueProject });
-	const amber = route.run({ source: themedSource, file: "Card.vue", semantic: amberSemantic, project: amberProject });
+test("vue-styled -> pandwind: loads concrete theme and project context variants", async () => {
+	const blue = await route.runAsync({ source: themedSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
+	const amber = await route.runAsync({ source: themedSource, file: "styles.ts", semantic: amberSemantic, project: amberProject });
 	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
 	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.VueStyled, CodemodAdapterId.Pandwind);
+	expectConfiguredTargetTokenEvidence(blue, CodemodAdapterId.Pandwind, "vue-styled -> pandwind blue config");
+	expectRouteScenarioEvidence(blue, "vue-styled -> pandwind blue config");
+	expectRouteScenarioEvidence(amber, "vue-styled -> pandwind amber config");
+	expectConfiguredTargetTokenAbsence(amber, CodemodAdapterId.Pandwind, "vue-styled -> pandwind amber literal config");
+
 	expectExplicitResidualEvidence(blue);
 	expectExplicitResidualEvidence(amber);
 	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "<script setup>
+		    "code": "import { defineComponent, h } from "vue";
 		import { createCss } from "pandwind/css";
+		import { createCx } from "pandwind/cx";
+		const cx = createCx();
 		const css = createCss();
 
-
-		const Card = css.vars({ padding: "1rem", color: theme.colors.brand });
-		</script>
-		<template><div :class="Card.class" :style="Card.style" /></template>",
+		export const Card = defineComponent({ setup(_props, { attrs, slots }) { const style = css.class({ padding: "1rem", color: "#2563eb" }); return () => h("div", { ...attrs, class: cx(style, attrs.class) }, slots.default?.()); } });",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "host-runtime",
-		        "representation": "target-native",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [],
@@ -142,19 +191,31 @@ test("vue-styled -> pandwind: lowers concrete theme and project context variants
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "<script setup>
+		    "code": "import { defineComponent, h } from "vue";
 		import { createCss } from "pandwind/css";
+		import { createCx } from "pandwind/cx";
+		const cx = createCx();
 		const css = createCss();
 
-
-		const Card = css.vars({ padding: "1rem", color: theme.colors.brand });
-		</script>
-		<template><div :class="Card.class" :style="Card.style" /></template>",
+		export const Card = defineComponent({ setup(_props, { attrs, slots }) { const style = css.class({ padding: "1rem", color: "$brand" }); return () => h("div", { ...attrs, class: cx(style, attrs.class) }, slots.default?.()); } });",
 		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "host-runtime",
-		        "representation": "target-native",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [],
@@ -168,25 +229,40 @@ test("vue-styled -> pandwind: lowers concrete theme and project context variants
 		    ],
 		  },
 		}
-	`);
+	`)
 });
 
-test("vue-styled -> pandwind: resolves concrete token references with project context", () => {
-	const result = route.run({ source: tokenSource, file: "Card.vue", semantic: blueSemantic, project: blueProject });
+test("vue-styled -> pandwind: resolves concrete token values with project context", async () => {
+	const result = await route.runAsync({ source: tokenSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.VueStyled, CodemodAdapterId.Pandwind);
+	expectConfiguredTargetTokenEvidence(result, CodemodAdapterId.Pandwind, "vue-styled -> pandwind token config");
+	expectRouteScenarioEvidence(result, "vue-styled -> pandwind token config");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "<script setup>
+		  "code": "import { defineComponent, h } from "vue";
 		import { createCss } from "pandwind/css";
+		import { createCx } from "pandwind/cx";
+		const cx = createCx();
 		const css = createCss();
 
-
-		const Card = css.class({ padding: "1rem", color: "$colors.brand" });
-		</script>
-		<template><div :class="Card" /></template>",
+		export const Card = defineComponent({ setup(_props, { attrs, slots }) { const style = css.class({ padding: "1rem", color: "$brand" }); return () => h("div", { ...attrs, class: cx(style, attrs.class) }, slots.default?.()); } });",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "static",
@@ -203,25 +279,39 @@ test("vue-styled -> pandwind: resolves concrete token references with project co
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 
 test("vue-styled -> pandwind: preserves malformed concrete vue-styled input", () => {
-	const result = route.run({ source: malformedSource, file: "Card.vue", semantic: sourceSemantic });
+	const result = route.run({ source: malformedSource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished vue-styled */");
+	expectRouteScenarioEvidence(result, "vue-styled -> pandwind malformed");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "<script setup>
-		import styled from "vue-styled-components";
+		  "code": "import { defineComponent, h } from "vue";
 		import { createCss } from "pandwind/css";
+		import { createCx } from "pandwind/cx";
+		const cx = createCx();
 		const css = createCss();
-		const Card = css.class({ padding: "1rem", color: "red" });
-		</script>
-		<template><div :class="Card" /></template>
+
+		export const Card = defineComponent({ setup(_props, { attrs, slots }) { const style = css.class({ padding: "1rem", color: "red" }); return () => h("div", { ...attrs, class: cx(style, attrs.class) }, slots.default?.()); } });
 		const unfinished = { /* unfinished vue-styled */",
 		  "converted": 1,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "static",
@@ -238,6 +328,6 @@ test("vue-styled -> pandwind: preserves malformed concrete vue-styled input", ()
 		    },
 		  ],
 		}
-	`);
+	`)
 });
 

@@ -3,30 +3,35 @@ import { expect, test } from "vitest";
 import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
+	createAdapterRouteProject,
+	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
+	expectConfiguredTargetTokenAbsence,
 	expectActionableRoundTrip,
 	expectExplicitResidualEvidence,
+	expectRouteScenarioEvidence,
 	routeEvidence,
 } from "../route-spec-support.ts";
 
 const forward = createAdapterRouteSpec(CodemodAdapterId.CssModules, CodemodAdapterId.SolidStyled);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.SolidStyled, CodemodAdapterId.CssModules);
-	const happySource = ".card { color: red; padding: 1rem; }\n.cardTitle { font-weight: 600; }";
-const edgeSource = ".card { color: theme.foreground; padding: 1rem; }\n.cardTitle { font-weight: 600; }";
-const malformedSource = ".card { color: red; padding: 1rem; }\n.cardTitle { font-weight: 600; }\nconst unfinished = { /* unfinished css-modules */";
+	const happySource = ".card { color: red; padding: 1rem; }";
+const edgeSource = ".card { color: red; }\n.primary { composes: card; font-weight: 600; }";
+const malformedSource = ".card { color: red; padding: 1rem; }\nconst unfinished = { /* unfinished css-modules */";
 const sourceSemantic = undefined;
-const themedSource = ".card { color: ${theme.colors.brand}; padding: 1rem; }\n.cardTitle { font-weight: 600; }";
-const tokenSource = ".card { color: var(--colors-brand); padding: 1rem; }\n.cardTitle { font-weight: 600; }";
-const blueSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueTargetSemantic = { source: { framework: BuiltinHostFramework.Solid }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
-const amberTargetSemantic = { source: { framework: BuiltinHostFramework.Solid }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {} };
+const themedSource = ".card { color: #2563eb; padding: 1rem; }";
+const tokenSource = ".card { color: #2563eb; padding: 1rem; }";
+const blueSemantic = undefined;
+const amberSemantic = undefined;
+const blueTargetSemantic = { source: { framework: BuiltinHostFramework.Solid } };
+const amberTargetSemantic = { source: { framework: BuiltinHostFramework.Solid } };
+const blueProject = createAdapterRouteProject(CodemodAdapterId.CssModules, CodemodAdapterId.SolidStyled, "#2563eb");
+const amberProject = createAdapterRouteProject(CodemodAdapterId.CssModules, CodemodAdapterId.SolidStyled, "#f97316");
 	const targetSemantic = { source: { framework: BuiltinHostFramework.Solid } };
 
 test("css-modules -> solid-styled -> css-modules: preserves an actionable concrete round trip", () => {
 	const first = forward.run({ source: happySource, file: "Card.module.css", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "styles.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -36,6 +41,7 @@ test("css-modules -> solid-styled -> css-modules: preserves an actionable concre
 		expect(first.residuals.length).toBeGreaterThan(0);
 		expect(first.code).toContain("pandwind:migrate-skip");
 	}
+	expectRouteScenarioEvidence(first, "css-modules -> solid-styled round-trip happy forward");
 	expectExplicitResidualEvidence(first);
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(second);
@@ -44,27 +50,33 @@ test("css-modules -> solid-styled -> css-modules: preserves an actionable concre
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-		export const styles = { "card": styled.div({ "padding": "1rem", "color": "red" }), "cardTitle": styled.div({ "fontWeight": "600" }) };
+		export const styles = { "card": styled.div({ "padding": "1rem", "color": "red" }) };
 		export default styles;",
-		    "converted": 2,
+		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "target-native",
-		        "representation": "named-map",
-		      },
-		      {
-		        "outcome": "target-native",
-		        "representation": "named-map",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [],
 		    "skipped": 0,
 		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
 		      {
 		        "differences": [],
 		        "lossiness": "lossless",
@@ -76,15 +88,30 @@ test("css-modules -> solid-styled -> css-modules: preserves an actionable concre
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
 		export const styles = { "card": // pandwind:migrate-skip (route: solid-styled -> css-modules | lowering-residual: framework-semantics | capability-blocked: components: component subject: styled.div | available: residual, portable-artifact)
-		styled.div({ "padding": "1rem", "color": "red" }), "cardTitle": // pandwind:migrate-skip (route: solid-styled -> css-modules | lowering-residual: framework-semantics | capability-blocked: components: component subject: styled.div | available: residual, portable-artifact)
-		styled.div({ "fontWeight": "600" }) };
+		styled.div({ "padding": "1rem", "color": "red" }) };
 		export default styles;",
 		    "converted": 0,
-		    "outcomes": [
+		    "generatedFiles": [],
+		    "loweringPlans": [
 		      {
-		        "outcome": "residual",
-		        "representation": "portable-artifact",
+		        "applied": [
+		          "dynamic-and-theme",
+		          "runtime-and-plugin",
+		        ],
+		        "availableRepresentations": [
+		          "residual",
+		          "portable-artifact",
+		        ],
+		        "representation": "residual",
+		        "residuals": [
+		          {
+		            "hint": "target lacks framework semantics",
+		            "kind": "framework-semantics",
+		          },
+		        ],
 		      },
+		    ],
+		    "outcomes": [
 		      {
 		        "outcome": "residual",
 		        "representation": "portable-artifact",
@@ -101,118 +128,106 @@ test("css-modules -> solid-styled -> css-modules: preserves an actionable concre
 		        "kind": "framework-semantics",
 		        "preserved": undefined,
 		      },
-		      {
-		        "hint": "components: component subject: styled.div",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "target lacks framework semantics",
-		        "kind": "framework-semantics",
-		        "preserved": undefined,
-		      },
 		    ],
-		    "skipped": 2,
+		    "skipped": 1,
 		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 
-test("css-modules -> solid-styled -> css-modules: retains edge semantics without silent loss", () => {
+test("css-modules -> solid-styled -> css-modules: retains the documented secondary API without silent loss", () => {
 	const first = forward.run({ source: edgeSource, file: "Card.module.css", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "styles.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(first, "css-modules -> solid-styled round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
 	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
 		{
 		  "forward": {
-		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-		export const styles = { "card": styled.div({ "padding": "1rem", "color": "theme.foreground" }), "cardTitle": styled.div({ "fontWeight": "600" }) };
-		export default styles;",
-		    "converted": 2,
-		    "outcomes": [
-		      {
-		        "outcome": "target-native",
-		        "representation": "named-map",
-		      },
-		      {
-		        "outcome": "target-native",
-		        "representation": "named-map",
-		      },
-		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
-		  },
-		  "reverse": {
-		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-		export const styles = { "card": // pandwind:migrate-skip (route: solid-styled -> css-modules | lowering-residual: framework-semantics | capability-blocked: components: component subject: styled.div | available: residual, portable-artifact)
-		styled.div({ "padding": "1rem", "color": "theme.foreground" }), "cardTitle": // pandwind:migrate-skip (route: solid-styled -> css-modules | lowering-residual: framework-semantics | capability-blocked: components: component subject: styled.div | available: residual, portable-artifact)
-		styled.div({ "fontWeight": "600" }) };
-		export default styles;",
+		    "changed": false,
+		    "code": "// pandwind:migrate-skip (lowering-residual: composition)
+		.card { color: red; }
+		.primary { composes: card; font-weight: 600; }",
 		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "residual",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "portable-artifact",
+		        "representation": "residual",
 		      },
 		      {
 		        "outcome": "residual",
-		        "representation": "portable-artifact",
+		        "representation": "residual",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "components: component subject: styled.div",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "target lacks framework semantics",
-		        "kind": "framework-semantics",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "components: component subject: styled.div",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "target lacks framework semantics",
-		        "kind": "framework-semantics",
+		        "hint": "preprocessor or CSS Modules composition needs its source context",
+		        "kind": "composition",
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 2,
+		    "skipped": 1,
+		    "validations": [],
+		  },
+		  "reverse": {
+		    "changed": false,
+		    "code": "// pandwind:migrate-skip (lowering-residual: composition)
+		.card { color: red; }
+		.primary { composes: card; font-weight: 600; }",
+		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [],
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 
-test("css-modules -> solid-styled -> css-modules: preserves concrete theme and project context variants", () => {
-	const firstBlue = forward.run({ source: themedSource, file: "Card.module.css", semantic: blueSemantic, project: blueProject });
-	const secondBlue = reverse.run({ source: firstBlue.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
-	const firstAmber = forward.run({ source: themedSource, file: "Card.module.css", semantic: amberSemantic, project: amberProject });
-	const secondAmber = reverse.run({ source: firstAmber.code, file: "Card.tsx", semantic: amberTargetSemantic, project: amberProject });
+test("css-modules -> solid-styled -> css-modules: preserves concrete theme and project context variants", async () => {
+	const firstBlue = await forward.runAsync({ source: themedSource, file: "Card.module.css", semantic: blueSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "styles.tsx", semantic: blueTargetSemantic, project: blueProject });
+	const firstAmber = await forward.runAsync({ source: themedSource, file: "Card.module.css", semantic: amberSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "styles.tsx", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.CssModules, CodemodAdapterId.SolidStyled);
+	expectConfiguredTargetTokenEvidence(firstBlue, CodemodAdapterId.SolidStyled, "css-modules -> solid-styled round-trip token config");
+	expectRouteScenarioEvidence(firstBlue, "css-modules -> solid-styled round-trip blue forward");
+	expectRouteScenarioEvidence(firstAmber, "css-modules -> solid-styled round-trip amber forward");
+	expectConfiguredTargetTokenAbsence(firstAmber, CodemodAdapterId.SolidStyled, "css-modules -> solid-styled round-trip amber literal config");
+
 	expectActionableRoundTrip(firstBlue, secondBlue);
 	expectActionableRoundTrip(firstAmber, secondAmber);
 	expectExplicitResidualEvidence(firstBlue);
@@ -228,27 +243,33 @@ test("css-modules -> solid-styled -> css-modules: preserves concrete theme and p
 		    "forward": {
 		      "changed": true,
 		      "code": "import { styled } from "solid-styled-components";
-		export const styles = { "card": styled.div({ "padding": "1rem", "color": theme.colors.brand }), "cardTitle": styled.div({ "fontWeight": "600" }) };
+		export const styles = { "card": styled.div({ "padding": "1rem", "color": "#2563eb" }) };
 		export default styles;",
-		      "converted": 2,
+		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "host-runtime",
-		          "representation": "named-map",
-		        },
-		        {
-		          "outcome": "target-native",
-		          "representation": "named-map",
+		          "outcome": "static",
+		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [],
 		      "skipped": 0,
 		      "validations": [
-		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
-		        },
 		        {
 		          "differences": [],
 		          "lossiness": "lossless",
@@ -260,15 +281,30 @@ test("css-modules -> solid-styled -> css-modules: preserves concrete theme and p
 		      "changed": true,
 		      "code": "import { styled } from "solid-styled-components";
 		export const styles = { "card": // pandwind:migrate-skip (route: solid-styled -> css-modules | lowering-residual: framework-semantics | capability-blocked: components: component subject: styled.div | available: residual, portable-artifact)
-		styled.div({ "padding": "1rem", "color": theme.colors.brand }), "cardTitle": // pandwind:migrate-skip (route: solid-styled -> css-modules | lowering-residual: framework-semantics | capability-blocked: components: component subject: styled.div | available: residual, portable-artifact)
-		styled.div({ "fontWeight": "600" }) };
+		styled.div({ "padding": "1rem", "color": "#2563eb" }) };
 		export default styles;",
 		      "converted": 0,
-		      "outcomes": [
+		      "generatedFiles": [],
+		      "loweringPlans": [
 		        {
-		          "outcome": "residual",
-		          "representation": "portable-artifact",
+		          "applied": [
+		            "dynamic-and-theme",
+		            "runtime-and-plugin",
+		          ],
+		          "availableRepresentations": [
+		            "residual",
+		            "portable-artifact",
+		          ],
+		          "representation": "residual",
+		          "residuals": [
+		            {
+		              "hint": "target lacks framework semantics",
+		              "kind": "framework-semantics",
+		            },
+		          ],
 		        },
+		      ],
+		      "outcomes": [
 		        {
 		          "outcome": "residual",
 		          "representation": "portable-artifact",
@@ -285,18 +321,8 @@ test("css-modules -> solid-styled -> css-modules: preserves concrete theme and p
 		          "kind": "framework-semantics",
 		          "preserved": undefined,
 		        },
-		        {
-		          "hint": "components: component subject: styled.div",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "target lacks framework semantics",
-		          "kind": "framework-semantics",
-		          "preserved": undefined,
-		        },
 		      ],
-		      "skipped": 2,
+		      "skipped": 1,
 		      "validations": [],
 		    },
 		  },
@@ -304,27 +330,33 @@ test("css-modules -> solid-styled -> css-modules: preserves concrete theme and p
 		    "forward": {
 		      "changed": true,
 		      "code": "import { styled } from "solid-styled-components";
-		export const styles = { "card": styled.div({ "padding": "1rem", "color": theme.colors.brand }), "cardTitle": styled.div({ "fontWeight": "600" }) };
+		export const styles = { "card": styled.div({ "padding": "1rem", "color": "#2563eb" }) };
 		export default styles;",
-		      "converted": 2,
+		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "host-runtime",
-		          "representation": "named-map",
-		        },
-		        {
-		          "outcome": "target-native",
-		          "representation": "named-map",
+		          "outcome": "static",
+		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [],
 		      "skipped": 0,
 		      "validations": [
-		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
-		        },
 		        {
 		          "differences": [],
 		          "lossiness": "lossless",
@@ -336,15 +368,30 @@ test("css-modules -> solid-styled -> css-modules: preserves concrete theme and p
 		      "changed": true,
 		      "code": "import { styled } from "solid-styled-components";
 		export const styles = { "card": // pandwind:migrate-skip (route: solid-styled -> css-modules | lowering-residual: framework-semantics | capability-blocked: components: component subject: styled.div | available: residual, portable-artifact)
-		styled.div({ "padding": "1rem", "color": theme.colors.brand }), "cardTitle": // pandwind:migrate-skip (route: solid-styled -> css-modules | lowering-residual: framework-semantics | capability-blocked: components: component subject: styled.div | available: residual, portable-artifact)
-		styled.div({ "fontWeight": "600" }) };
+		styled.div({ "padding": "1rem", "color": "#2563eb" }) };
 		export default styles;",
 		      "converted": 0,
-		      "outcomes": [
+		      "generatedFiles": [],
+		      "loweringPlans": [
 		        {
-		          "outcome": "residual",
-		          "representation": "portable-artifact",
+		          "applied": [
+		            "dynamic-and-theme",
+		            "runtime-and-plugin",
+		          ],
+		          "availableRepresentations": [
+		            "residual",
+		            "portable-artifact",
+		          ],
+		          "representation": "residual",
+		          "residuals": [
+		            {
+		              "hint": "target lacks framework semantics",
+		              "kind": "framework-semantics",
+		            },
+		          ],
 		        },
+		      ],
+		      "outcomes": [
 		        {
 		          "outcome": "residual",
 		          "representation": "portable-artifact",
@@ -361,29 +408,21 @@ test("css-modules -> solid-styled -> css-modules: preserves concrete theme and p
 		          "kind": "framework-semantics",
 		          "preserved": undefined,
 		        },
-		        {
-		          "hint": "components: component subject: styled.div",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "target lacks framework semantics",
-		          "kind": "framework-semantics",
-		          "preserved": undefined,
-		        },
 		      ],
-		      "skipped": 2,
+		      "skipped": 1,
 		      "validations": [],
 		    },
 		  },
 		}
-	`);
+	`)
 });
 
-test("css-modules -> solid-styled -> css-modules: resolves token references across both concrete legs", () => {
-	const first = forward.run({ source: tokenSource, file: "Card.module.css", semantic: blueSemantic, project: blueProject });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
+test("css-modules -> solid-styled -> css-modules: resolves token values across both concrete legs", async () => {
+	const first = await forward.runAsync({ source: tokenSource, file: "Card.module.css", semantic: blueSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "styles.tsx", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.CssModules, CodemodAdapterId.SolidStyled);
+	expectRouteScenarioEvidence(first, "css-modules -> solid-styled round-trip token forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
@@ -392,27 +431,33 @@ test("css-modules -> solid-styled -> css-modules: resolves token references acro
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-		export const styles = { "card": styled.div({ "padding": "1rem", "color": "var(--colors-brand)" }), "cardTitle": styled.div({ "fontWeight": "600" }) };
+		export const styles = { "card": styled.div({ "padding": "1rem", "color": "#2563eb" }) };
 		export default styles;",
-		    "converted": 2,
+		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "target-native",
-		        "representation": "named-map",
-		      },
-		      {
-		        "outcome": "target-native",
-		        "representation": "named-map",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [],
 		    "skipped": 0,
 		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
 		      {
 		        "differences": [],
 		        "lossiness": "lossless",
@@ -424,15 +469,30 @@ test("css-modules -> solid-styled -> css-modules: resolves token references acro
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
 		export const styles = { "card": // pandwind:migrate-skip (route: solid-styled -> css-modules | lowering-residual: framework-semantics | capability-blocked: components: component subject: styled.div | available: residual, portable-artifact)
-		styled.div({ "padding": "1rem", "color": "var(--colors-brand)" }), "cardTitle": // pandwind:migrate-skip (route: solid-styled -> css-modules | lowering-residual: framework-semantics | capability-blocked: components: component subject: styled.div | available: residual, portable-artifact)
-		styled.div({ "fontWeight": "600" }) };
+		styled.div({ "padding": "1rem", "color": "#2563eb" }) };
 		export default styles;",
 		    "converted": 0,
-		    "outcomes": [
+		    "generatedFiles": [],
+		    "loweringPlans": [
 		      {
-		        "outcome": "residual",
-		        "representation": "portable-artifact",
+		        "applied": [
+		          "dynamic-and-theme",
+		          "runtime-and-plugin",
+		        ],
+		        "availableRepresentations": [
+		          "residual",
+		          "portable-artifact",
+		        ],
+		        "representation": "residual",
+		        "residuals": [
+		          {
+		            "hint": "target lacks framework semantics",
+		            "kind": "framework-semantics",
+		          },
+		        ],
 		      },
+		    ],
+		    "outcomes": [
 		      {
 		        "outcome": "residual",
 		        "representation": "portable-artifact",
@@ -449,21 +509,11 @@ test("css-modules -> solid-styled -> css-modules: resolves token references acro
 		        "kind": "framework-semantics",
 		        "preserved": undefined,
 		      },
-		      {
-		        "hint": "components: component subject: styled.div",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "target lacks framework semantics",
-		        "kind": "framework-semantics",
-		        "preserved": undefined,
-		      },
 		    ],
-		    "skipped": 2,
+		    "skipped": 1,
 		    "validations": [],
 		  },
 		}
-	`);
+	`)
 });
 

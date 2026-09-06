@@ -128,6 +128,10 @@ function routeProjectLoader(
 						_config: config,
 						properties: new Set(["color", "backgroundColor", "padding", "bg"]),
 						utility: { shorthands: new Map([["bg", "backgroundColor"]]) },
+						token: {
+							var: (path: string) =>
+								`var(--chakra-${path.replaceAll(".", "-").replace("/", "-")})`,
+						},
 					}),
 				} as T;
 			if (
@@ -199,25 +203,37 @@ function routeProjectLoader(
 						}),
 					} as T;
 			}
+			if (hasAdapter(adapters, CodemodAdapterId.Less) && packageName === "less")
+				return {
+					render: async (source: string) => ({ css: source }),
+				} as T;
+			if (hasAdapter(adapters, CodemodAdapterId.Sass) && packageName === "sass")
+				return {
+					compileString: (source: string) => ({ css: source }),
+				} as T;
 			return undefined;
 		},
 		async importFile<T>(file: string): Promise<T | undefined> {
 			loaderCalls.files.push(file);
-			if (hasAdapter(adapters, CodemodAdapterId.ChakraUi) && file.endsWith("/theme.ts"))
-				return {
-					default: { theme: { tokens: theme } },
-				} as T;
-			if (hasAdapter(adapters, CodemodAdapterId.Mui) && file.endsWith("/src/theme.ts"))
-				return {
-					default: {
+			// Several ecosystems conventionally discover `src/theme.ts`. A shared
+			// project loader must still return the right module export for each
+			// official loader; otherwise the first adapter in the route silently
+			// masquerades as every other theme system.
+			if (file.endsWith("/src/theme.ts")) {
+				const modules: Record<string, unknown> = {};
+				if (hasAdapter(adapters, CodemodAdapterId.ChakraUi))
+					modules.chakraTheme = { theme: { tokens: theme } };
+				if (hasAdapter(adapters, CodemodAdapterId.Mui))
+					modules.muiTheme = {
 						palette: { primary: { main: color } },
 						spacing: { card: "1.125rem" },
-					},
-				} as T;
-			if (hasAdapter(adapters, CodemodAdapterId.Mantine) && file.endsWith("/src/theme.ts"))
-				return {
-					default: { colors: { brand: [color] }, spacing: { card: "1.125rem" } },
-				} as T;
+					};
+				if (hasAdapter(adapters, CodemodAdapterId.Mantine))
+					modules.mantineTheme = { colors: { brand: [color] }, spacing: { card: "1.125rem" } };
+				if (Object.keys(modules).length > 0) return modules as T;
+			}
+			if (hasAdapter(adapters, CodemodAdapterId.ChakraUi) && file.endsWith("/theme.ts"))
+				return { chakraTheme: { theme: { tokens: theme } } } as T;
 			if (hasAdapter(adapters, CodemodAdapterId.Tokenami) && file.includes("tokenami.config."))
 				return {
 					default: { tokens: { colors: { brand: { value: color } } } },
@@ -410,6 +426,24 @@ function configuredTargetTokenMarkers(target: CodemodAdapterId): readonly string
 	}
 }
 
+function configuredTargetTokenUsed(
+	code: string,
+	target: CodemodAdapterId,
+	marker: string,
+): boolean {
+	if (marker !== "card") return code.includes(marker);
+	if (
+		target !== CodemodAdapterId.Panda &&
+		target !== CodemodAdapterId.ChakraUi &&
+		target !== CodemodAdapterId.Mui
+	)
+		return code.includes(marker);
+	// `card` is also the name of nearly every generated style-map fixture. Only
+	// count it when it is emitted as a value, never when it is an object key or
+	// binding name.
+	return /(?:[:=]|\(\s*)\s*["']card["'](?:\s*[,})\]])?/u.test(code);
+}
+
 /** A token fixture must prove that the configured target chose its own spelling. */
 export function expectConfiguredTargetTokenEvidence(
 	result: AdapterMigrationResult,
@@ -420,8 +454,23 @@ export function expectConfiguredTargetTokenEvidence(
 	const markers = configuredTargetTokenMarkers(target);
 	if (markers.length === 0) return;
 	expect(
-		markers.some((marker) => result.code.includes(marker)),
+		markers.some((marker) => configuredTargetTokenUsed(result.code, target, marker)),
 		`${label} did not use a verified ${target} token or utility spelling`,
+	).toBe(true);
+}
+
+/** A literal blue fixture must remain literal when the target project is amber. */
+export function expectConfiguredTargetTokenAbsence(
+	result: AdapterMigrationResult,
+	target: CodemodAdapterId,
+	label = "configured literal route",
+): void {
+	if (result.converted === 0 || result.skipped > 0) return;
+	const markers = configuredTargetTokenMarkers(target);
+	if (markers.length === 0) return;
+	expect(
+		markers.every((marker) => !configuredTargetTokenUsed(result.code, target, marker)),
+		`${label} invented a target token for a mismatched configured value`,
 	).toBe(true);
 }
 
@@ -516,4 +565,58 @@ export function expectActionableRoundTrip(
 		return;
 	}
 	expect(reverseActionable).toBe(true);
+}
+
+/**
+ * Tailwind and UnoCSS can receive a valid class string without enough host
+ * context for a reverse codemod to identify the original style carrier. Keep
+ * that one-way projection explicit and prove that the reverse leg is an exact
+ * identity over a verified utility string rather than silently accepting any
+ * no-op.
+ */
+export function expectTargetClassProjection(
+	forward: AdapterMigrationResult,
+	reverse: AdapterMigrationResult,
+	markers: readonly string[],
+	label = "target class projection",
+): void {
+	const reverseActionable =
+		reverse.converted > 0 || reverse.skipped > 0 || reverse.residuals.length > 0;
+	const forwardHasResidual =
+		forward.skipped > 0 ||
+		forward.residuals.length > 0 ||
+		forward.outcomes.some(
+			(outcome) => outcome.outcome === StyleMigrationOutcome.Residual,
+		);
+
+	// A target adapter may legitimately preserve a source construct that has no
+	// target class carrier. In that case the reverse pass should be an exact
+	// identity, and the residual is the evidence that the source was preserved.
+	if (forwardHasResidual) {
+		expect(
+			reverse.code,
+			`${label} residual class projection changed source`,
+		).toBe(forward.code);
+		expect(
+			forward.skipped + forward.residuals.length,
+			`${label} residual projection has no residual evidence`,
+		).toBeGreaterThan(0);
+		return;
+	}
+
+	if (reverseActionable) return;
+	expect(reverse.code, `${label} reverse leg changed nothing and was not identity`).toBe(
+		forward.code,
+	);
+	expect(forward.converted, `${label} forward leg did not convert`).toBeGreaterThan(0);
+	expect(forward.skipped, `${label} forward leg skipped`).toBe(0);
+	expect(forward.residuals, `${label} forward leg has unreported residuals`).toEqual([]);
+	expect(
+		forward.outcomes.some((outcome) => outcome.outcome !== StyleMigrationOutcome.Residual),
+		`${label} forward leg has no target-native outcome`,
+	).toBe(true);
+	expect(
+		markers.some((marker) => forward.code.includes(marker)),
+		`${label} did not emit a recognizable target utility carrier`,
+	).toBe(true);
 }

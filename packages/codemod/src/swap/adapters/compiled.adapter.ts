@@ -56,6 +56,16 @@ const serializedProgramText = (program: StyleProgram): string => {
 			addRule(nested, child);
 		}
 	};
+	const firstRule = program.rules[0];
+	if (firstRule?.kind === StyleRuleKindTag.Keyframes) {
+		const keyframes: SerializedObject = { values: [], children: new Map() };
+		for (const child of firstRule.children) {
+			const frame: SerializedObject = { values: [], children: new Map() };
+			addRule(frame, child);
+			keyframes.children.set(child.selector ?? "from", frame);
+		}
+		return serializedObjectText(keyframes);
+	}
 	if (program.rules.some((rule) => rule.name !== undefined)) {
 		for (const rule of program.rules) {
 			if (rule.name === undefined) continue;

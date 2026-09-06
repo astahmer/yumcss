@@ -685,7 +685,12 @@ export function styleProgramToCanonicalCss(program: StyleProgram): string {
 		);
 		const baseConditions = rule.conditions;
 		let base: string;
-		if (rule.kind === StyleRuleKindTag.Style || rule.kind === StyleRuleKindTag.Global) {
+		if (rootDeclarations.length === 0 && rule.children.length === 0) {
+			// A style rule whose declarations are all conditional has no empty
+			// unconditional selector. Omitting that placeholder keeps the canonical
+			// form equivalent to the authored conditional rule.
+			base = "";
+		} else if (rule.kind === StyleRuleKindTag.Style || rule.kind === StyleRuleKindTag.Global) {
 			const resolved = conditionedSelector(rule, baseConditions);
 			base = renderBase(rule, rootDeclarations, rule.children, resolved.selector);
 			base = wrapConditions(base, resolved.wrappers);
