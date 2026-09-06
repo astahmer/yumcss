@@ -300,6 +300,7 @@ import {
 	createAdapterRouteSpec,
 	createAdapterRouteProject,
 	expectConfiguredProjectEvidence,
+	expectConfiguredTargetTokenEvidence,
 	expectActionableRoundTrip,
 	expectExplicitResidualEvidence,
 	expectRouteScenarioEvidence,
