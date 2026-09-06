@@ -3,7 +3,10 @@ import { dirname, resolve } from "node:path";
 import { createUnplugin } from "unplugin";
 import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
 import { createSourceWorkspace } from "pandwind/source/workspace";
-import type { AdapterMigrationOptions, AdapterMigrationResult } from "./adapter-migration.ts";
+import type {
+	AdapterMigrationOptions,
+	AdapterMigrationResult,
+} from "./adapter-migration-contract.ts";
 import type { AdapterGeneratedFile } from "./adapter-contract.ts";
 import { STYLE_MIGRATION_USE_CASE } from "./migration-use-case.ts";
 import type { AdapterCapabilityMode } from "./capabilities.ts";

@@ -1,6 +1,7 @@
 import type { AdapterParseContext } from "./adapter-contract.ts";
 import type { StyleAdapterRegistry } from "./adapter-registry.ts";
-import { runAdapterMigration, type AdapterMigrationResult } from "./adapter-migration.ts";
+import { runAdapterMigration } from "./adapter-migration.ts";
+import type { AdapterMigrationResult } from "./adapter-migration-contract.ts";
 
 /** Versioned contract for the complete registered source/target route matrix. */
 export const ADAPTER_MATRIX_SCHEMA = "pandwind.adapter-matrix/1" as const;

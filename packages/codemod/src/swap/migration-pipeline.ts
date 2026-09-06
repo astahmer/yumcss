@@ -1,4 +1,7 @@
-import type { AdapterMigrationOptions, AdapterMigrationResult } from "./adapter-migration.ts";
+import type {
+	AdapterMigrationOptions,
+	AdapterMigrationResult,
+} from "./adapter-migration-contract.ts";
 import { MigrationStageId } from "./identifiers.ts";
 import { STYLE_MIGRATION_USE_CASE, type StyleMigrationUseCase } from "./migration-use-case.ts";
 

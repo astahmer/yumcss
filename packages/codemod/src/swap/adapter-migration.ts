@@ -6,16 +6,12 @@ import {
 	type StyleProgramResidual,
 } from "./semantic-ir.ts";
 import { SourcePass } from "../source-pass-utils.ts";
-import { ensureImport } from "../shared.ts";
 import {
 	SOURCE_SCANNER_SERVICE,
 	SourceBindings,
 	createSourceProjectBindingIndex,
 	type SourceBindingIndex,
-	type SourceScanResult,
-	type SourceScannerService,
 } from "pandwind/source";
-import type { PandwindMeta } from "../meta.ts";
 import { dirnameDocumentPath, joinDocumentPath } from "../path-utils.ts";
 import {
 	inspectAdapterCapabilities,
@@ -27,7 +23,6 @@ import type {
 	AdapterDependencies,
 	AdapterGeneratedFile,
 	AdapterHostFrameworkConversion,
-	AdapterParseContext,
 	AdapterValidationResult,
 	AdapterTargetMigrationPolicy,
 	StyleAdapter,
@@ -37,17 +32,21 @@ import {
 	type StyleLoweringPlan,
 	type StyleLoweringRegistry,
 } from "./lowering.ts";
-import type { StyleSystemRegistry } from "./style-systems.ts";
 import { MigrationOutput } from "./migration-output.ts";
-import type { ProjectModuleLoader } from "./project-module-loader.ts";
-import { NODE_PROJECT_MODULE_LOADER } from "./project-module-loader.ts";
+import { NODE_PROJECT_MODULE_LOADER, type ProjectModuleLoader } from "./project-module-loader.ts";
 import { createBrowserCodemodCatalog } from "./browser-adapter-catalog.ts";
 import { MigrationDiagnostics } from "./migration-diagnostics.ts";
 import type { StyleAdapterRegistry } from "./adapter-registry.ts";
+import type {
+	AdapterMigrationExecutor,
+	AdapterMigrationOptions,
+	AdapterMigrationOutcome,
+	AdapterMigrationPorts,
+	AdapterMigrationResult,
+} from "./adapter-migration-contract.ts";
 import {
 	getHostComponentRewriter,
 	componentTagForSubject,
-	intrinsicTagForSubject,
 	isDiscardedExpressionStatement,
 	rewriteDynamicCarrier,
 	rewriteDynamicExpressionCarrier,
@@ -55,7 +54,8 @@ import {
 	type StandaloneHostComponentRewriteRequest,
 } from "./host-component-rewriter.ts";
 import { DynamicClassHost } from "./adapters/class-target-dynamic.ts";
-import { BuiltinHostFramework, detectHostFramework, type HostFramework } from "./host-adapters.ts";
+import { BuiltinHostFramework, type HostFramework } from "./host-adapters.ts";
+import { createAdapterMigrationSupport } from "./adapter-migration-support.ts";
 import {
 	StyleHostRepresentationKind,
 	StyleMigrationOutcome,
@@ -63,247 +63,6 @@ import {
 } from "./identifiers.ts";
 import { StyleProgramAnalysis } from "./style-program-analysis.ts";
 import { StyleProgramCore } from "./style-program-core.ts";
-
-function tagForStandalone(source: string, start: number): string | undefined {
-	const subject = source
-		.slice(start)
-		.match(/^styled\s*(\.\s*[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))/)?.[0]
-		.trim();
-	return subject === undefined ? undefined : intrinsicTagForSubject(subject);
-}
-
-function isStandaloneDefaultExport(source: string, start: number): boolean {
-	return /export\s+default\s*$/.test(source.slice(0, start));
-}
-
-function bindingForMatch(
-	bindings: SourceBindingIndex | undefined,
-	start: number,
-): string | undefined {
-	return bindings?.callSites.find((site) => site.start === start)?.assignedBinding;
-}
-
-function frameworkForHost(
-	file: string,
-	document: SourceScanResult,
-	semantic: AdapterParseContext["semantic"],
-	program: StyleProgram,
-	scanner: SourceScannerService,
-): string | undefined {
-	return (
-		semantic?.source?.framework ??
-		detectHostFramework(document.document.source, document.document.file)?.id ??
-		document.framework ??
-		program.source?.framework ??
-		(
-			{
-				tsx: BuiltinHostFramework.React,
-				jsx: BuiltinHostFramework.React,
-				vue: BuiltinHostFramework.Vue,
-				svelte: BuiltinHostFramework.Svelte,
-				astro: BuiltinHostFramework.Astro,
-			} as Partial<Record<string, BuiltinHostFramework>>
-		)[document.language ?? scanner.languageForFile(file)]
-	);
-}
-
-function hasHostBindingUse(
-	bindings: SourceBindingIndex | undefined,
-	binding: string | undefined,
-): boolean {
-	return binding !== undefined && bindings?.hasAttributeUse(binding) === true;
-}
-
-function hasComponentBindingUse(
-	bindings: SourceBindingIndex | undefined,
-	binding: string | undefined,
-): boolean {
-	return binding !== undefined && bindings?.hasComponentUse(binding) === true;
-}
-
-function hasInlineHostUse(
-	bindings: SourceBindingIndex | undefined,
-	start: number,
-	source: string,
-): boolean {
-	if (bindings?.hasInlineAttributeUse(start) === true) return true;
-	const openingStart = source.lastIndexOf("<", start);
-	const openingEnd = source.indexOf(">", start);
-	if (openingStart < 0 || openingEnd < start) return false;
-	const openingTag = source.slice(openingStart, openingEnd + 1);
-	for (const attribute of openingTag.matchAll(/\b(?:className|class)\s*=\s*\{/gu)) {
-		const open = openingStart + (attribute.index ?? 0) + attribute[0].lastIndexOf("{");
-		const block = SourcePass.matchBlock(source, open);
-		if (block !== null && start > open && start < block.end) return true;
-	}
-	return false;
-}
-
-function classExpressionFromEmission(emitted: string): string | undefined {
-	const expression = emitted.trim();
-	return expression.length === 0 ? undefined : expression;
-}
-
-function hostClassExpression(source: string, start: number, end: number, emitted: string): string {
-	const expression = emitted.trim();
-	if (!expression.startsWith("css.vars(") || /\.class\s*$/u.test(expression)) return emitted;
-	const tagStart = source.lastIndexOf("<", start);
-	const tagEnd = source.indexOf(">", end);
-	if (tagStart === -1 || tagEnd === -1) return emitted;
-	const openingTag = source.slice(tagStart, tagEnd + 1);
-	const classStart = Math.max(
-		openingTag.lastIndexOf("class="),
-		openingTag.lastIndexOf("className="),
-	);
-	if (classStart === -1 || tagStart + classStart > start) return emitted;
-	return `${emitted}.class`;
-}
-
-function generatedBindings(imports: ReadonlySet<string>): readonly string[] {
-	const bindings = new Set<string>();
-	for (const statement of imports) {
-		const declarations = /\b(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=/gu;
-		for (const match of statement.matchAll(declarations)) {
-			if (match[1] !== undefined) bindings.add(match[1]);
-		}
-		const clause = /^import\s+(.+?)\s+from\s+["'][^"']+["']/u.exec(statement)?.[1];
-		if (clause === undefined) continue;
-		const defaultPart = clause.split(",")[0]?.trim();
-		if (defaultPart !== undefined && /^[A-Za-z_$][\w$]*$/u.test(defaultPart))
-			bindings.add(defaultPart);
-		const namespace = /\*\s+as\s+([A-Za-z_$][\w$]*)/u.exec(clause)?.[1];
-		if (namespace !== undefined) bindings.add(namespace);
-		const named = /\{([^}]*)\}/u.exec(clause)?.[1];
-		for (const item of named?.split(",") ?? []) {
-			const local = item
-				.trim()
-				.split(/\s+as\s+/u)
-				.pop()
-				?.trim();
-			if (local !== undefined && /^[A-Za-z_$][\w$]*$/u.test(local)) bindings.add(local);
-		}
-	}
-	return [...bindings];
-}
-
-/** Keep generated module statements inside the executable block of an SFC. */
-function ensureGeneratedStatement(
-	code: string,
-	statement: string,
-	file: string,
-	scanner: SourceScannerService,
-): string {
-	if (scanner.languageForFile(file) !== "vue" || code.includes(statement))
-		return ensureImport(code, statement);
-	const script = /<script(?:\s+setup)?(?:\s[^>]*)?>/i.exec(code);
-	if (script === null) return `<script setup>\n${statement}\n</script>\n${code}`;
-	const contentStart = script.index + script[0].length;
-	const contentEnd = code.indexOf("</script>", contentStart);
-	if (contentEnd === -1)
-		return `${code.slice(0, contentStart)}\n${statement}${code.slice(contentStart)}`;
-	const content = code.slice(contentStart, contentEnd);
-	const updated = ensureImport(content, statement);
-	return `${code.slice(0, contentStart)}${updated.startsWith("\n") ? "" : "\n"}${updated}${code.slice(contentEnd)}`;
-}
-
-function fileWithExtension(file: string, extension: string | undefined): string {
-	if (extension === undefined) return file;
-	const slash = Math.max(file.lastIndexOf("/"), file.lastIndexOf("\\"));
-	const dot = file.lastIndexOf(".");
-	return dot > slash ? `${file.slice(0, dot)}${extension}` : `${file}${extension}`;
-}
-
-function selectNonOverlappingMatches<
-	T extends { start: number; end: number; program: StyleProgram },
->(matches: readonly T[]): readonly T[] {
-	const selected: T[] = [];
-	for (const match of matches.toSorted(
-		(left, right) => left.start - right.start || right.end - left.end,
-	)) {
-		const containing = selected.at(-1);
-		if (containing === undefined || match.start >= containing.end) {
-			selected.push(match);
-			continue;
-		}
-		if (
-			containing.start <= match.start &&
-			match.end <= containing.end &&
-			containing.program.source?.hostOpenTag !== undefined
-		)
-			continue;
-		if (match.start === containing.start && match.end > containing.end)
-			selected[selected.length - 1] = match;
-	}
-	return selected;
-}
-
-export interface AdapterMigrationOptions {
-	readonly from: string;
-	readonly to: string;
-	readonly file: string;
-	readonly root?: string;
-	readonly meta?: PandwindMeta;
-	readonly packageJson?: Readonly<Record<string, unknown>>;
-	readonly readFile?: (file: string) => string | undefined;
-	readonly listFiles?: (root: string) => readonly string[];
-	readonly mode?: AdapterCapabilityMode;
-	readonly skipMarker?: string;
-	/** Optional registry for third-party or core dialect routes. */
-	readonly registry?: StyleSystemRegistry;
-	/** Optional module loader override for official ecosystem package resolution. */
-	readonly moduleLoader?: ProjectModuleLoader;
-	/** Optional adapter registry, including adapters discovered from plugins. */
-	readonly adapterRegistry?: StyleAdapterRegistry;
-	/** Optional target-aware semantic lowering registry. */
-	readonly loweringRegistry?: StyleLoweringRegistry;
-	/** Framework/project metadata that cannot be recovered from syntax alone. */
-	readonly semantic?: AdapterParseContext["semantic"];
-}
-
-/** Infrastructure ports used by the adapter migration application service. */
-export interface AdapterMigrationPorts {
-	readonly adapterRegistry: StyleAdapterRegistry;
-	readonly sourceScanner: SourceScannerService;
-	readonly loweringRegistry: StyleLoweringRegistry;
-	readonly resolveAdapterRegistry?: (
-		moduleLoader?: ProjectModuleLoader,
-	) => Promise<StyleAdapterRegistry>;
-}
-
-export interface AdapterMigrationExecutor {
-	run(source: string, options: AdapterMigrationOptions): AdapterMigrationResult;
-	runAsync(source: string, options: AdapterMigrationOptions): Promise<AdapterMigrationResult>;
-}
-
-export interface AdapterMigrationResult {
-	readonly code: string;
-	/** Suggested extension when a host dialect projection changes file syntax. */
-	readonly outputExtension?: string;
-	readonly changed: boolean;
-	readonly converted: number;
-	readonly skipped: number;
-	readonly reports: readonly AdapterCapabilityReport[];
-	readonly validations: readonly AdapterValidationResult[];
-	readonly dependencies: readonly AdapterDependencies[];
-	/** Target-owned project-relative files emitted with the rewritten module. */
-	readonly generatedFiles: readonly AdapterGeneratedFile[];
-	/** Compiler-produced source maps retained as parity evidence. */
-	readonly sourceMaps?: readonly string[];
-	readonly fileChanges: readonly import("./adapter-contract.ts").AdapterFileChange[];
-	readonly residuals: readonly StyleProgramResidual[];
-	/** One inspectable representation decision for each parsed source match. */
-	readonly loweringPlans: readonly StyleLoweringPlan[];
-	/** One final, validated outcome for each parsed source match. */
-	readonly outcomes: readonly AdapterMigrationOutcome[];
-}
-
-export interface AdapterMigrationOutcome {
-	readonly sourceStart: number;
-	readonly sourceText: string;
-	readonly outcome: StyleMigrationOutcome;
-	readonly representation: StyleRepresentationKind;
-	readonly detail?: string;
-}
 
 /**
  * File migrations may omit per-rule outcomes; derive one explicit outcome per
@@ -608,6 +367,7 @@ function runAdapterMigrationInternal(
 	loadedConfigs?: LoadedAdapterConfigs,
 	ports: AdapterMigrationPorts = DEFAULT_ADAPTER_MIGRATION_PORTS,
 ): AdapterMigrationResult {
+	const support = createAdapterMigrationSupport(ports.sourceScanner);
 	const adapterRegistry = options.adapterRegistry ?? ports.adapterRegistry;
 	const route = (options.registry ?? adapterRegistry.toStyleSystemRegistry()).resolveRoute(
 		options.from,
@@ -867,7 +627,7 @@ function runAdapterMigrationInternal(
 				}) + "\n",
 		});
 	}
-	for (const [index, match] of selectNonOverlappingMatches(parsed.matches).entries()) {
+	for (const [index, match] of support.selectNonOverlappingMatches(parsed.matches).entries()) {
 		const sourceHasFunctionDynamic = StyleProgramAnalysis.hasFunctionDynamic(match.program);
 		let lowering = loweringRegistry.plan({
 			program: match.program,
@@ -883,12 +643,11 @@ function runAdapterMigrationInternal(
 		let sourceSubjectDiscarded = false;
 		const targetPolicy = targetAdapter.migration?.targetPolicy;
 		let hostRepresentation = targetPolicy?.hostRepresentation;
-		const sourceHostFramework = frameworkForHost(
+		const sourceHostFramework = support.frameworkForHost(
 			options.file,
 			document,
 			options.semantic,
 			program,
-			ports.sourceScanner,
 		);
 		const hostConversionContext = { file: options.file, source, program };
 		if (
@@ -903,12 +662,12 @@ function runAdapterMigrationInternal(
 		let emittedHostRepresentation: StyleHostRepresentationKind | undefined;
 		let targetRepresentationKind = lowering.representation;
 		let dynamicCarrier: { binding?: string; framework: string } | undefined;
-		const bindingBeforeMatch = bindingForMatch(bindings, match.start);
+		const bindingBeforeMatch = support.bindingForMatch(bindings, match.start);
 		const hasHostContext =
 			program.source?.hostOpenTag !== undefined ||
-			hasHostBindingUse(bindings, bindingBeforeMatch) ||
-			hasInlineHostUse(bindings, match.start, source) ||
-			hasComponentBindingUse(bindings, bindingBeforeMatch);
+			support.hasHostBindingUse(bindings, bindingBeforeMatch) ||
+			support.hasInlineHostUse(bindings, match.start, source) ||
+			support.hasComponentBindingUse(bindings, bindingBeforeMatch);
 		const discardableStaticSubject =
 			sourceSubject !== undefined &&
 			bindingBeforeMatch === undefined &&
@@ -1180,7 +939,7 @@ function runAdapterMigrationInternal(
 				tag !== undefined &&
 				framework !== undefined &&
 				getHostComponentRewriter(framework)?.rewriteStandalone !== undefined &&
-				isStandaloneDefaultExport(source, match.start);
+				support.isStandaloneDefaultExport(source, match.start);
 			const frameworkWrapper =
 				hasFunctionDynamic &&
 				binding !== undefined &&
@@ -1632,7 +1391,7 @@ function runAdapterMigrationInternal(
 		residuals.push(...emitted.residuals);
 		const declarationRewrite = pendingComponentDeclarationRewrites.get(index);
 		if (declarationRewrite !== undefined) {
-			const classExpression = classExpressionFromEmission(emitted.text);
+			const classExpression = support.classExpressionFromEmission(emitted.text);
 			if (classExpression === undefined) {
 				residuals.push({
 					kind: "host-framework",
@@ -1651,10 +1410,10 @@ function runAdapterMigrationInternal(
 			hasTargetHostPort(targetAdapter) &&
 			program.source?.subject === undefined &&
 			program.source?.framework !== undefined &&
-			tagForStandalone(source, match.start) !== undefined &&
-			isStandaloneDefaultExport(source, match.start)
+			support.tagForStandalone(source, match.start) !== undefined &&
+			support.isStandaloneDefaultExport(source, match.start)
 		) {
-			const tag = tagForStandalone(source, match.start);
+			const tag = support.tagForStandalone(source, match.start);
 			const rewriter =
 				tag === undefined ? undefined : getHostComponentRewriter(program.source.framework);
 			if (tag !== undefined && rewriter?.rewriteStandalone !== undefined) {
@@ -1684,7 +1443,7 @@ function runAdapterMigrationInternal(
 			edits.push({
 				start: match.start,
 				end: match.end,
-				text: hostClassExpression(source, match.start, match.end, emitted.text),
+				text: support.hostClassExpression(source, match.start, match.end, emitted.text),
 			});
 		converted++;
 		const successfulRepresentation = targetRepresentationKind;
@@ -1804,17 +1563,15 @@ function runAdapterMigrationInternal(
 		needsCx ||= rewritten.needsCx;
 	}
 	if (needsCx) {
-		runtimeEdited = ensureGeneratedStatement(
+		runtimeEdited = support.ensureGeneratedStatement(
 			runtimeEdited,
 			'import { createCx } from "pandwind/cx";',
 			options.file,
-			ports.sourceScanner,
 		);
-		runtimeEdited = ensureGeneratedStatement(
+		runtimeEdited = support.ensureGeneratedStatement(
 			runtimeEdited,
 			"const cx = createCx();",
 			options.file,
-			ports.sourceScanner,
 		);
 	}
 	const rewrite = sourceAdapter.migration?.rewrite?.({
@@ -1855,13 +1612,7 @@ function runAdapterMigrationInternal(
 	const documentSourceFramework =
 		documentProgram === undefined
 			? undefined
-			: frameworkForHost(
-					options.file,
-					document,
-					options.semantic,
-					documentProgram,
-					ports.sourceScanner,
-				);
+			: support.frameworkForHost(options.file, document, options.semantic, documentProgram);
 	const documentConversion = hostFrameworkConversion(
 		targetAdapter.migration?.targetPolicy,
 		documentSourceFramework,
@@ -1935,7 +1686,7 @@ function runAdapterMigrationInternal(
 			code,
 			[...sourceAdapter.sourceModules, ...sourceModulesToRemove],
 			sourceAdapter.sourceModuleMatchers,
-			generatedBindings(imports),
+			support.generatedBindings(imports),
 		);
 		code = MigrationOutput.removeNamedImportSpecifiers(
 			code,
@@ -1983,11 +1734,11 @@ function runAdapterMigrationInternal(
 		imports.has('import { createRuntimeCss } from "pandwind/css/runtime";');
 	if (!targetUsesPandwindCss)
 		code = MigrationOutput.removeGeneratedStatements(code, ["const css = createCss();"]);
-	const outputFile = fileWithExtension(options.file, outputExtension);
+	const outputFile = support.fileWithExtension(options.file, outputExtension);
 	for (const statement of generatedStatements)
-		code = ensureGeneratedStatement(code, statement, outputFile, ports.sourceScanner);
+		code = support.ensureGeneratedStatement(code, statement, outputFile);
 	for (const statement of MigrationOutput.consolidateImports(imports))
-		code = ensureGeneratedStatement(code, statement, outputFile, ports.sourceScanner);
+		code = support.ensureGeneratedStatement(code, statement, outputFile);
 	return {
 		code,
 		...(outputExtension === undefined ? {} : { outputExtension }),
