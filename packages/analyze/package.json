@@ -74,12 +74,14 @@
 	},
 	"dependencies": {
 		"@hono/node-server": "2.1.1",
+		"@modelcontextprotocol/server": "2.0.0",
 		"@tailwindcss/node": "4.3.3",
 		"cac": "7.0.0",
 		"hono": "4.13.5",
 		"pandwind": "workspace:*",
 		"pandwind-codemod": "workspace:*",
-		"postcss": "8.5.28"
+		"postcss": "8.5.28",
+		"zod": "4.5.4"
 	},
 	"devDependencies": {
 		"@types/node": "26.4.1",

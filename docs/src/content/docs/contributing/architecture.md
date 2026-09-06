@@ -49,9 +49,10 @@ minimal executor or any individual infrastructure port. This keeps the flat
 application boundary explicit for richer hosts.
 
 The MCP service follows the same rule. Its small port set supplies the adapter
-catalog, the migration use case, and the analyzer command. JSON-RPC parsing is
-transport code; project path safety and tool orchestration stay in the service,
-and neither layer reimplements adapter migration semantics.
+catalog, the migration use case, and the analyzer command. The official MCP
+SDK owns protocol and stdio transport details; project path safety, explicit
+apply confirmation, resource projection, and tool orchestration stay in the
+service, and neither layer reimplements adapter migration semantics.
 
 Migration skips are typed at this boundary. `capability-blocked` means the
 selected target has no safe representation for a required semantic;

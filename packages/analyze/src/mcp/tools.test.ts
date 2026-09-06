@@ -1,8 +1,9 @@
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { resolve } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 import {
+	MCP_RESOURCE,
 	MCP_TOOL,
 	createMcpProjectContext,
 	createMcpToolService,
@@ -36,6 +37,33 @@ function structured(result: { structuredContent?: unknown }): Record<string, unk
 }
 
 describe("Pandwind MCP tools", () => {
+	it("exposes the complete tool and resource catalog", async () => {
+		const service = project();
+		expect(service.tools.map(({ name }) => name)).toEqual([
+			"inspect_project",
+			"preview_migration",
+			"apply_migration",
+			"validate_migration",
+			"compare_migrations",
+			"inspect_style_program",
+			"analyze_project",
+			"benchmark_project",
+		]);
+		expect(service.resources.map(({ uri }) => uri)).toEqual([
+			MCP_RESOURCE.AdapterCatalog,
+			MCP_RESOURCE.OfficialApiMatrix,
+			MCP_RESOURCE.ProjectEvidence,
+			MCP_RESOURCE.ProjectConfiguration,
+			MCP_RESOURCE.LatestMigration,
+			MCP_RESOURCE.ResidualExplanations,
+			MCP_RESOURCE.InteropArtifact,
+			MCP_RESOURCE.LatestStylePrograms,
+		]);
+		expect(JSON.parse(await service.readResource(MCP_RESOURCE.AdapterCatalog))).toMatchObject({
+			schema: "pandwind.mcp.catalog/1",
+		});
+	});
+
 	it("inspects registered adapters using the shared source workspace", async () => {
 		const service = project();
 		const result = await service.call(MCP_TOOL.InspectProject, {});
@@ -78,6 +106,91 @@ describe("Pandwind MCP tools", () => {
 				fileChanges: [],
 			},
 		]);
+	});
+
+	it("applies only an explicitly confirmed migration plan", async () => {
+		const service = project();
+		await expect(
+			service.call(MCP_TOOL.ApplyMigration, {
+				files: ["src/button.ts"],
+				from: "pandwind",
+				to: "pandwind",
+			}),
+		).rejects.toThrow("confirm: true");
+		const result = await service.call(MCP_TOOL.ApplyMigration, {
+			files: ["src/button.ts"],
+			from: "pandwind",
+			to: "pandwind",
+			confirm: true,
+		});
+		expect(structured(result)).toMatchObject({
+			schema: "pandwind.mcp.apply-migration/1",
+			applied: true,
+		});
+
+		const root = mkdtempSync(resolve(tmpdir(), "pandwind-mcp-apply-"));
+		roots.push(root);
+		mkdirSync(resolve(root, "src"), { recursive: true });
+		writeFileSync(resolve(root, "src/source.ts"), "before");
+		const changingService = createMcpToolService(createMcpProjectContext(root), {
+			createCatalog: createBuiltinCodemodCatalog,
+			migration: {
+				runAsync: async (source) => ({
+					code: `${source}!`,
+					changed: true,
+					converted: 1,
+					skipped: 0,
+					reports: [],
+					validations: [],
+					dependencies: [],
+					generatedFiles: [],
+					fileChanges: [],
+					residuals: [],
+					loweringPlans: [],
+					outcomes: [],
+				}),
+			},
+			analyze: async () => JSON.stringify({ schema: "test" }),
+		});
+		await changingService.call(MCP_TOOL.ApplyMigration, {
+			files: ["src/source.ts"],
+			from: "fake",
+			to: "fake",
+			confirm: true,
+		});
+		expect(readFileSync(resolve(root, "src/source.ts"), "utf8")).toBe("before!");
+	});
+
+	it("compares routes, exposes style programs, and benchmarks without commands", async () => {
+		const service = project();
+		const comparison = await service.call(MCP_TOOL.CompareMigrations, {
+			files: ["src/button.ts"],
+			routes: [
+				{ from: "pandwind", to: "pandwind" },
+				{ from: "pandwind", to: "pandwind" },
+			],
+		});
+		expect(structured(comparison)).toMatchObject({
+			schema: "pandwind.mcp.compare-migrations/1",
+			routes: [{ stats: { changed: 0 } }, { stats: { changed: 0 } }],
+		});
+		const programs = await service.call(MCP_TOOL.InspectStyleProgram, {
+			files: ["src/button.ts"],
+			from: "pandwind",
+			to: "pandwind",
+		});
+		expect(structured(programs).schema).toBe("pandwind.mcp.style-program/1");
+		const benchmark = await service.call(MCP_TOOL.BenchmarkProject, {
+			files: ["src/button.ts"],
+			from: "pandwind",
+			to: "pandwind",
+			iterations: 1,
+		});
+		expect(structured(benchmark)).toMatchObject({
+			schema: "pandwind.mcp.benchmark/1",
+			commandsExecuted: [],
+			migration: { changed: 0 },
+		});
 	});
 
 	it("returns the existing analyzer JSON contract", async () => {

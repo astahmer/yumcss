@@ -1,4 +1,5 @@
-import { existsSync, readFileSync, statSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, statSync, unlinkSync, writeFileSync } from "node:fs";
+import { performance } from "node:perf_hooks";
 import { extname, isAbsolute, relative, resolve, sep } from "node:path";
 import { createSourceWorkspace } from "pandwind/source/workspace";
 import {
@@ -12,13 +13,28 @@ import { STYLE_MIGRATION_USE_CASE } from "pandwind-codemod/swap";
 import { unifiedDiff } from "pandwind-codemod/diff";
 import { runCli } from "../cli.ts";
 import { McpToolError, textToolResult } from "./tool-contract.ts";
-import type { McpToolDefinition, McpToolResult } from "./protocol.ts";
+import type { McpToolDefinition, McpToolResult } from "./contract.ts";
 
 export const MCP_TOOL = {
 	InspectProject: "inspect_project",
 	PreviewMigration: "preview_migration",
+	ApplyMigration: "apply_migration",
 	ValidateMigration: "validate_migration",
+	CompareMigrations: "compare_migrations",
+	InspectStyleProgram: "inspect_style_program",
 	AnalyzeProject: "analyze_project",
+	BenchmarkProject: "benchmark_project",
+} as const;
+
+export const MCP_RESOURCE = {
+	AdapterCatalog: "pandwind://catalog",
+	OfficialApiMatrix: "pandwind://api-matrix",
+	ProjectEvidence: "pandwind://project/evidence",
+	ProjectConfiguration: "pandwind://project/configuration",
+	LatestMigration: "pandwind://migration/latest",
+	ResidualExplanations: "pandwind://migration/residuals",
+	InteropArtifact: "pandwind://project/pandwind.interop.json",
+	LatestStylePrograms: "pandwind://migration/style-programs/latest",
 } as const;
 
 const MCP_MIGRATION_MODE = {
@@ -36,7 +52,16 @@ export interface McpProjectContext {
 
 export interface McpToolService {
 	readonly tools: readonly McpToolDefinition[];
+	readonly resources: readonly McpResourceDefinition[];
 	call(name: string, arguments_: unknown): Promise<McpToolResult>;
+	readResource(uri: string): Promise<string>;
+}
+
+export interface McpResourceDefinition {
+	readonly uri: string;
+	readonly name: string;
+	readonly description: string;
+	readonly mimeType: "application/json" | "text/plain";
 }
 
 /** Application ports used by the MCP tool façade. */
@@ -95,9 +120,54 @@ export const MCP_TOOLS: readonly McpToolDefinition[] = [
 		inputSchema: MCP_MIGRATION_INPUT_SCHEMA,
 	},
 	{
+		name: MCP_TOOL.ApplyMigration,
+		description:
+			"Apply an explicitly confirmed migration plan after checking every source, generated-file, and shared-file conflict.",
+		inputSchema: inputSchema(
+			{
+				files: MCP_MIGRATION_INPUT_SCHEMA.properties?.files ?? {},
+				from: MCP_MIGRATION_INPUT_SCHEMA.properties?.from ?? {},
+				to: MCP_MIGRATION_INPUT_SCHEMA.properties?.to ?? {},
+				mode: MCP_MIGRATION_INPUT_SCHEMA.properties?.mode ?? {},
+				confirm: { type: "boolean", description: "Must be true to write the migration." },
+			},
+			["files", "from", "to", "confirm"],
+		),
+	},
+	{
 		name: MCP_TOOL.ValidateMigration,
 		description:
 			"Run a read-only migration contract check: target validations, residuals, and generated-file conflicts.",
+		inputSchema: MCP_MIGRATION_INPUT_SCHEMA,
+	},
+	{
+		name: MCP_TOOL.CompareMigrations,
+		description:
+			"Preview several registered source-to-target routes for the same files and compare their emitted code, residuals, and validation outcomes.",
+		inputSchema: inputSchema(
+			{
+				files: { type: "array", items: { type: "string" } },
+				routes: {
+					type: "array",
+					items: {
+						type: "object",
+						properties: {
+							from: { type: "string" },
+							to: { type: "string" },
+						},
+						required: ["from", "to"],
+						additionalProperties: false,
+					},
+				},
+				mode: { type: "string", enum: Object.values(MCP_MIGRATION_MODE) },
+			},
+			["files", "routes"],
+		),
+	},
+	{
+		name: MCP_TOOL.InspectStyleProgram,
+		description:
+			"Inspect the semantic StyleProgram and lowering plans produced for source expressions, including tokens, conditions, compositions, and residuals.",
 		inputSchema: MCP_MIGRATION_INPUT_SCHEMA,
 	},
 	{
@@ -117,6 +187,72 @@ export const MCP_TOOLS: readonly McpToolDefinition[] = [
 			},
 			css: { type: "boolean", description: "Include CSS budget data." },
 		}),
+	},
+	{
+		name: MCP_TOOL.BenchmarkProject,
+		description:
+			"Measure bounded source scanning and migration throughput, memory delta, source size, and existing build artifact sizes without running project commands.",
+		inputSchema: inputSchema(
+			{
+				files: { type: "array", items: { type: "string" } },
+				from: { type: "string" },
+				to: { type: "string" },
+				mode: { type: "string", enum: Object.values(MCP_MIGRATION_MODE) },
+				iterations: { type: "integer", minimum: 1, maximum: 10 },
+			},
+			["files", "from", "to"],
+		),
+	},
+];
+
+export const MCP_RESOURCES: readonly McpResourceDefinition[] = [
+	{
+		uri: MCP_RESOURCE.AdapterCatalog,
+		name: "Pandwind adapter catalog",
+		description: "Registered source and target adapters, capabilities, and official APIs.",
+		mimeType: "application/json",
+	},
+	{
+		uri: MCP_RESOURCE.OfficialApiMatrix,
+		name: "Official adapter API matrix",
+		description: "The registered adapter capability and official API matrix.",
+		mimeType: "application/json",
+	},
+	{
+		uri: MCP_RESOURCE.ProjectEvidence,
+		name: "Project evidence",
+		description: "Detected styling ecosystems, source extensions, and configuration evidence.",
+		mimeType: "application/json",
+	},
+	{
+		uri: MCP_RESOURCE.ProjectConfiguration,
+		name: "Project configuration",
+		description: "Project package metadata and known configuration or generated artifact paths.",
+		mimeType: "application/json",
+	},
+	{
+		uri: MCP_RESOURCE.LatestMigration,
+		name: "Latest migration report",
+		description: "The latest preview or apply result produced in this MCP session.",
+		mimeType: "application/json",
+	},
+	{
+		uri: MCP_RESOURCE.ResidualExplanations,
+		name: "Migration residual explanations",
+		description: "Residual kinds, source locations, and adapter hints from the latest migration.",
+		mimeType: "application/json",
+	},
+	{
+		uri: MCP_RESOURCE.InteropArtifact,
+		name: "Pandwind interop artifact",
+		description: "The project-generated pandwind.interop.json artifact when present.",
+		mimeType: "application/json",
+	},
+	{
+		uri: MCP_RESOURCE.LatestStylePrograms,
+		name: "Latest StyleProgram snapshots",
+		description: "StyleProgram and lowering-plan snapshots from the latest inspected migration.",
+		mimeType: "application/json",
 	},
 ];
 
@@ -371,6 +507,269 @@ async function previewMigration(
 	return textToolResult({ schema: "pandwind.mcp.preview-migration/1", ...preview });
 }
 
+interface PlannedMigrationWrite {
+	readonly path: string;
+	readonly content: string;
+	readonly expectedContent?: string;
+}
+
+function planMigrationWrite(
+	context: McpProjectContext,
+	planned: Map<string, PlannedMigrationWrite>,
+	path: string,
+	content: string,
+	expectedContent: string | undefined,
+	kind: string,
+): void {
+	const normalizedPath = path.replaceAll("\\", "/");
+	const absolutePath = projectPath(context.root, normalizedPath);
+	const existing = planned.get(normalizedPath);
+	if (existing !== undefined && existing.content !== content)
+		throw new McpToolError(`conflicting ${kind} content for ${normalizedPath}`);
+	if (existing !== undefined) return;
+	if (existsSync(absolutePath)) {
+		const current = readFileSync(absolutePath, "utf8");
+		if (current !== content && (expectedContent === undefined || current !== expectedContent))
+			throw new McpToolError(`refusing to overwrite conflicting ${kind} ${normalizedPath}`);
+		if (expectedContent !== undefined && current !== expectedContent && current !== content)
+			throw new McpToolError(`refusing stale ${kind} ${normalizedPath}`);
+	} else if (expectedContent !== undefined) {
+		throw new McpToolError(`refusing missing ${kind} ${normalizedPath}`);
+	}
+	planned.set(normalizedPath, {
+		path: normalizedPath,
+		content,
+		...(expectedContent === undefined ? {} : { expectedContent }),
+	});
+}
+
+async function applyMigration(
+	context: McpProjectContext,
+	arguments_: unknown,
+	ports: McpToolPorts,
+): Promise<McpToolResult> {
+	const input = asRecord(arguments_, MCP_TOOL.ApplyMigration);
+	if (input.confirm !== true)
+		throw new McpToolError("apply_migration requires confirm: true to write project files");
+	const preview = await migrationPreview(context, arguments_, ports);
+	const planned = new Map<string, PlannedMigrationWrite>();
+	const removed = new Set<string>();
+	for (const file of preview.files) {
+		const sourcePath = projectPath(context.root, file.file);
+		const before = readFileSync(sourcePath, "utf8");
+		if (file.outputFile === file.file) {
+			if (file.code !== before)
+				planMigrationWrite(context, planned, file.file, file.code, before, "source file");
+		} else {
+			if (file.code !== before) {
+				if (existsSync(projectPath(context.root, file.outputFile)))
+					throw new McpToolError(`refusing to overwrite host-conversion output ${file.outputFile}`);
+				planMigrationWrite(context, planned, file.outputFile, file.code, undefined, "output file");
+				removed.add(file.file);
+			}
+		}
+		for (const generated of file.generatedFiles)
+			planMigrationWrite(
+				context,
+				planned,
+				generated.path,
+				generated.content,
+				undefined,
+				"generated file",
+			);
+		for (const change of file.fileChanges)
+			planMigrationWrite(
+				context,
+				planned,
+				change.path,
+				change.content,
+				change.expectedContent,
+				"shared file change",
+			);
+	}
+	for (const write of planned.values()) {
+		const absolutePath = projectPath(context.root, write.path);
+		if (existsSync(absolutePath) && readFileSync(absolutePath, "utf8") === write.content) continue;
+		mkdirSync(resolve(absolutePath, ".."), { recursive: true });
+		writeFileSync(absolutePath, write.content, { flag: existsSync(absolutePath) ? "w" : "wx" });
+	}
+	for (const path of removed) {
+		const absolutePath = projectPath(context.root, path);
+		if (existsSync(absolutePath)) unlinkSync(absolutePath);
+	}
+	return textToolResult({
+		schema: "pandwind.mcp.apply-migration/1",
+		...preview,
+		applied: true,
+		writtenFiles: [...planned.keys()].filter((path) => !removed.has(path)),
+		removedFiles: [...removed],
+		dependencies: [
+			...new Map(
+				preview.files
+					.flatMap((file) => file.dependencies)
+					.flatMap((dependency) => dependency.packages)
+					.map((dependency) => [`${dependency.name}:${dependency.range ?? ""}`, dependency]),
+			).values(),
+		],
+	});
+}
+
+function routeInput(value: unknown): { from: string; to: string } {
+	const route = asRecord(value, MCP_TOOL.CompareMigrations);
+	return {
+		from: stringValue(route.from, "route.from"),
+		to: stringValue(route.to, "route.to"),
+	};
+}
+
+async function compareMigrations(
+	context: McpProjectContext,
+	arguments_: unknown,
+	ports: McpToolPorts,
+): Promise<McpToolResult> {
+	const input = asRecord(arguments_, MCP_TOOL.CompareMigrations);
+	const files = stringArray(input.files, "files");
+	if (!Array.isArray(input.routes) || input.routes.length === 0 || input.routes.length > 8)
+		throw new McpToolError("routes must contain between 1 and 8 source-to-target routes");
+	const mode = migrationMode(input.mode);
+	const routes = [];
+	for (const rawRoute of input.routes) {
+		const route = routeInput(rawRoute);
+		const preview = await migrationPreview(context, { files, ...route, mode }, ports);
+		routes.push({
+			...route,
+			mode,
+			files: preview.files,
+			stats: {
+				changed: preview.files.filter((file) => file.changed).length,
+				converted: preview.files.reduce((sum, file) => sum + file.converted, 0),
+				skipped: preview.files.reduce((sum, file) => sum + file.skipped, 0),
+				residuals: preview.files.reduce((sum, file) => sum + file.residuals.length, 0),
+			},
+		});
+	}
+	return textToolResult({
+		schema: "pandwind.mcp.compare-migrations/1",
+		root: context.root,
+		routes,
+	});
+}
+
+async function inspectStyleProgram(
+	context: McpProjectContext,
+	arguments_: unknown,
+	ports: McpToolPorts,
+): Promise<McpToolResult> {
+	const input = asRecord(arguments_, MCP_TOOL.InspectStyleProgram);
+	const preview = await migrationPreview(context, input, ports);
+	return textToolResult({
+		schema: "pandwind.mcp.style-program/1",
+		root: preview.root,
+		from: preview.from,
+		to: preview.to,
+		mode: preview.mode,
+		files: preview.files.map((file) => ({
+			file: file.file,
+			loweringPlans: file.loweringPlans,
+			outcomes: file.outcomes,
+			residuals: file.residuals,
+			reports: file.reports,
+			validations: file.validations,
+		})),
+	});
+}
+
+function benchmarkArtifacts(context: McpProjectContext): {
+	readonly javascriptBytes: number;
+	readonly cssBytes: number;
+	readonly files: readonly string[];
+} {
+	const files = projectFiles(context).filter((file) => {
+		const relativePath = relativeProjectPath(context.root, file);
+		return /^(?:dist|build|out|\.next|storybook-static)(?:\/|$)/u.test(relativePath);
+	});
+	let javascriptBytes = 0;
+	let cssBytes = 0;
+	for (const file of files) {
+		const bytes = statSync(file).size;
+		if (/\.(?:js|mjs|cjs|ts|tsx)$/u.test(file)) javascriptBytes += bytes;
+		if (/\.css$/u.test(file)) cssBytes += bytes;
+	}
+	return {
+		javascriptBytes,
+		cssBytes,
+		files: files.map((file) => relativeProjectPath(context.root, file)).toSorted(),
+	};
+}
+
+async function benchmarkProject(
+	context: McpProjectContext,
+	arguments_: unknown,
+	ports: McpToolPorts,
+): Promise<McpToolResult> {
+	const input = asRecord(arguments_, MCP_TOOL.BenchmarkProject);
+	const files = stringArray(input.files, "files");
+	const from = stringValue(input.from, "from");
+	const to = stringValue(input.to, "to");
+	const mode = migrationMode(input.mode);
+	const iterations = input.iterations === undefined ? 3 : input.iterations;
+	if (
+		typeof iterations !== "number" ||
+		!Number.isInteger(iterations) ||
+		iterations < 1 ||
+		iterations > 10
+	)
+		throw new McpToolError("iterations must be an integer between 1 and 10");
+	const scanStart = performance.now();
+	const expanded = new Set<string>();
+	for (const pattern of files) {
+		projectPattern(pattern);
+		for (const file of context.workspace.files([pattern], context.root, {
+			includeUnsupported: true,
+		}))
+			expanded.add(file);
+	}
+	const scanMilliseconds = performance.now() - scanStart;
+	if (expanded.size === 0) throw new McpToolError("files did not match any project files");
+	const sourceBytes = [...expanded].reduce((sum, file) => sum + statSync(file).size, 0);
+	const rssBefore = process.memoryUsage().rss;
+	const migrationStart = performance.now();
+	let lastPreview: Awaited<ReturnType<typeof migrationPreview>> | undefined;
+	for (let iteration = 0; iteration < iterations; iteration++)
+		lastPreview = await migrationPreview(context, { files, from, to, mode }, ports);
+	const migrationMilliseconds = performance.now() - migrationStart;
+	const rssAfter = process.memoryUsage().rss;
+	const filesPerSecond =
+		(expanded.size * iterations * 1000) / Math.max(migrationMilliseconds, 0.001);
+	return textToolResult({
+		schema: "pandwind.mcp.benchmark/1",
+		root: context.root,
+		from,
+		to,
+		mode,
+		iterations,
+		scan: {
+			files: expanded.size,
+			milliseconds: Math.round(scanMilliseconds * 100) / 100,
+			sourceBytes,
+		},
+		migration: {
+			milliseconds: Math.round(migrationMilliseconds * 100) / 100,
+			averageMilliseconds: Math.round((migrationMilliseconds / iterations) * 100) / 100,
+			filesPerSecond: Math.round(filesPerSecond * 100) / 100,
+			changed: lastPreview?.files.filter((file) => file.changed).length ?? 0,
+			residuals: lastPreview?.files.reduce((sum, file) => sum + file.residuals.length, 0) ?? 0,
+		},
+		memory: {
+			beforeRssBytes: rssBefore,
+			afterRssBytes: rssAfter,
+			deltaRssBytes: rssAfter - rssBefore,
+		},
+		artifacts: benchmarkArtifacts(context),
+		commandsExecuted: [],
+	});
+}
+
 async function validateMigration(
 	context: McpProjectContext,
 	arguments_: unknown,
@@ -437,19 +836,138 @@ export function createMcpToolService(
 	context: McpProjectContext,
 	ports: McpToolPorts = DEFAULT_TOOL_PORTS,
 ): McpToolService {
+	const latest: {
+		migration?: unknown;
+		stylePrograms?: unknown;
+		comparison?: unknown;
+	} = {};
+	const preview = async (arguments_: unknown): Promise<McpToolResult> => {
+		const result = await previewMigration(context, arguments_, ports);
+		latest.migration = result.structuredContent;
+		return result;
+	};
+	const apply = async (arguments_: unknown): Promise<McpToolResult> => {
+		const result = await applyMigration(context, arguments_, ports);
+		latest.migration = result.structuredContent;
+		return result;
+	};
+	const inspect = async (arguments_: unknown): Promise<McpToolResult> =>
+		inspectProject(context, arguments_, ports);
+	const compare = async (arguments_: unknown): Promise<McpToolResult> => {
+		const result = await compareMigrations(context, arguments_, ports);
+		latest.comparison = result.structuredContent;
+		return result;
+	};
+	const inspectPrograms = async (arguments_: unknown): Promise<McpToolResult> => {
+		const result = await inspectStyleProgram(context, arguments_, ports);
+		latest.stylePrograms = result.structuredContent;
+		return result;
+	};
 	const calls = new Map<string, (arguments_: unknown) => Promise<McpToolResult> | McpToolResult>([
-		[MCP_TOOL.InspectProject, (arguments_) => inspectProject(context, arguments_, ports)],
-		[MCP_TOOL.PreviewMigration, (arguments_) => previewMigration(context, arguments_, ports)],
+		[MCP_TOOL.InspectProject, inspect],
+		[MCP_TOOL.PreviewMigration, preview],
+		[MCP_TOOL.ApplyMigration, apply],
 		[MCP_TOOL.ValidateMigration, (arguments_) => validateMigration(context, arguments_, ports)],
+		[MCP_TOOL.CompareMigrations, compare],
+		[MCP_TOOL.InspectStyleProgram, inspectPrograms],
 		[MCP_TOOL.AnalyzeProject, (arguments_) => analyzeProject(context, arguments_, ports)],
+		[MCP_TOOL.BenchmarkProject, (arguments_) => benchmarkProject(context, arguments_, ports)],
 	]);
+	const resourceJson = (value: unknown): string => JSON.stringify(value, null, 2);
+	const readResource = async (uri: string): Promise<string> => {
+		switch (uri) {
+			case MCP_RESOURCE.AdapterCatalog:
+			case MCP_RESOURCE.OfficialApiMatrix: {
+				const catalog = ports.createCatalog();
+				const adapters = catalog.adapters
+					.map((adapter) => ({
+						id: adapter.id,
+						version: adapter.version,
+						sourceModules: adapter.sourceModules,
+						capabilities: adapter.capabilities.capabilities,
+						officialApi: adapter.officialApi,
+					}))
+					.toSorted((a, b) => a.id.localeCompare(b.id));
+				return resourceJson({
+					schema:
+						uri === MCP_RESOURCE.AdapterCatalog
+							? "pandwind.mcp.catalog/1"
+							: "pandwind.mcp.api-matrix/1",
+					adapters,
+				});
+			}
+			case MCP_RESOURCE.ProjectEvidence: {
+				const result = inspectProject(context, { includeFiles: false }, ports);
+				return resourceJson(result.structuredContent);
+			}
+			case MCP_RESOURCE.ProjectConfiguration: {
+				const files = projectFiles(context);
+				return resourceJson({
+					schema: "pandwind.mcp.project-configuration/1",
+					root: context.root,
+					packageJson: readPackageJson(context.root),
+					files: files
+						.map((file) => relativeProjectPath(context.root, file))
+						.filter((file) =>
+							/(?:config|tailwind|uno|panda|theme|interop|package\.json)/iu.test(file),
+						)
+						.toSorted(),
+				});
+			}
+			case MCP_RESOURCE.LatestMigration:
+				return resourceJson(
+					latest.migration ?? { schema: "pandwind.mcp.migration/1", status: "no migration run" },
+				);
+			case MCP_RESOURCE.ResidualExplanations: {
+				const migration = latest.migration as
+					| { files?: readonly { file: string; residuals: readonly unknown[] }[] }
+					| undefined;
+				return resourceJson({
+					schema: "pandwind.mcp.residuals/1",
+					files:
+						migration?.files?.map((file) => ({ file: file.file, residuals: file.residuals })) ?? [],
+				});
+			}
+			case MCP_RESOURCE.InteropArtifact: {
+				const artifacts = projectFiles(context)
+					.filter((file) => {
+						const relativePath = relativeProjectPath(context.root, file);
+						return (
+							relativePath === "pandwind.interop.json" ||
+							relativePath.endsWith("/pandwind.interop.json")
+						);
+					})
+					.toSorted();
+				if (artifacts.length === 1) return readFileSync(artifacts[0]!, "utf8");
+				return resourceJson({
+					schema: "pandwind.mcp.interop/1",
+					status: artifacts.length === 0 ? "missing" : "multiple",
+					files: artifacts.map((file) => ({
+						path: relativeProjectPath(context.root, file),
+						content: readFileSync(file, "utf8"),
+					})),
+				});
+			}
+			case MCP_RESOURCE.LatestStylePrograms:
+				return resourceJson(
+					latest.stylePrograms ?? {
+						schema: "pandwind.mcp.style-program/1",
+						status: "no style program inspection run",
+					},
+				);
+			default:
+				throw new McpToolError(`unknown resource: ${uri}`);
+		}
+	};
 	return {
 		tools: MCP_TOOLS,
+		resources: MCP_RESOURCES,
 		async call(name, arguments_) {
 			const call = calls.get(name);
 			if (call === undefined) throw new McpToolError(`unknown tool: ${name}`);
 			return await call(arguments_);
 		},
+		readResource,
 	};
 }
 
