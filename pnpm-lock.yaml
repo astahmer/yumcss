@@ -87,6 +87,9 @@ importers:
         specifier: 19.2.8
         version: 19.2.8(react@19.2.8)
     devDependencies:
+      '@tailwindcss/vite':
+        specifier: 4.3.3
+        version: 4.3.3(vite@8.2.2(@types/node@26.4.1)(esbuild@0.28.2)(jiti@2.7.0)(less@4.9.1(supports-color@8.1.1))(sass@1.104.0)(terser@5.51.2)(yaml@2.9.0))
       '@types/react':
         specifier: 19.2.18
         version: 19.2.18
@@ -157,15 +160,15 @@ importers:
       oxc-parser:
         specifier: 0.148.0
         version: 0.148.0
-      prettier:
-        specifier: 3.9.6
-        version: 3.9.6
       pandwind:
         specifier: workspace:*
         version: link:../../packages/pandwind
       pandwind-codemod:
         specifier: workspace:*
         version: link:../../packages/codemod
+      prettier:
+        specifier: 3.9.6
+        version: 3.9.6
       react:
         specifier: 19.2.8
         version: 19.2.8
@@ -2914,6 +2917,13 @@ packages:
     resolution: {integrity: sha512-jx1+rPhY/5Ympkktd656HBWEBLxP7dH06losBLjjf5vgCODXvi9KhtftWcMIwTFIDqBr7cRnQkdLnAG+IOlGvQ==}
     engines: {node: '>=14.0.0'}
     cpu: [wasm32]
+    bundledDependencies:
+      - '@napi-rs/wasm-runtime'
+      - '@emnapi/core'
+      - '@emnapi/runtime'
+      - '@tybys/wasm-util'
+      - '@emnapi/wasi-threads'
+      - tslib
 
   '@tailwindcss/oxide-win32-arm64-msvc@4.3.3':
     resolution: {integrity: sha512-3rc292Ca2ceK6Ulcc/bAVnTs/3nDtoPhyEKlgPv+yQJQi/JS/AMJlqzxvlDacL1nekbrcf6bTqp/jV4qgnPxNQ==}
