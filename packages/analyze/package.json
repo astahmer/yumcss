@@ -49,6 +49,12 @@
 			"import": "./dist/studio/index.js",
 			"default": "./dist/studio/index.js"
 		},
+		"./mcp": {
+			"pandwind": "./src/mcp/server.ts",
+			"types": "./dist/mcp/server.d.ts",
+			"import": "./dist/mcp/server.js",
+			"default": "./dist/mcp/server.js"
+		},
 		"./package.json": "./package.json"
 	},
 	"publishConfig": {

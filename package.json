@@ -14,6 +14,7 @@
 		"playground": "nub run --filter playground dev",
 		"tw:generate": "nub run --filter example tw:generate",
 		"analyze": "nub run --filter pandwind-analyze cli --root \"$PWD\" --tw apps/example/src/tw.ts 'apps/example/src/**/*.ts' 'apps/example/src/**/*.tsx'",
+		"mcp": "nub run --filter pandwind-analyze cli mcp",
 		"studio": "nub run --filter pandwind-analyze studio",
 		"lint": "nub run --filter @pandwind/lint-plugin build && oxlint --deny-warnings --report-unused-disable-directives",
 		"lint:fix": "nub run --filter @pandwind/lint-plugin build && oxlint --fix --deny-warnings --report-unused-disable-directives",

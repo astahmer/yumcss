@@ -251,6 +251,11 @@ export async function runCli(argv: Array<string>): Promise<string> {
 
 async function main(): Promise<void> {
 	const argv = process.argv.slice(2);
+	if (argv[0] === "mcp") {
+		const { runMcpCommand } = await import("./mcp/server.ts");
+		await runMcpCommand(argv.slice(1));
+		return;
+	}
 	const args = parseArgs(argv);
 	console.log(await runCli(argv));
 
