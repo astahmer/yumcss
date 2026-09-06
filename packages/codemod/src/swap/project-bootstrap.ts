@@ -88,6 +88,14 @@ export const css = createRuntimeCss(pandwindPreset);
 `;
 }
 
+function dssSource(): string {
+	return `import { createDesignCss } from "pandwind/design";
+import { pandwindPreset } from "./preset";
+
+export const dss = createDesignCss(pandwindPreset);
+`;
+}
+
 function cxSource(): string {
 	return `import { createCx } from "pandwind/cx";
 import { css } from "./css";
@@ -177,6 +185,7 @@ export async function createPandwindProjectSupport(
 	const preset = projectFile(directory, "preset.ts");
 	const css = projectFile(directory, "css.ts");
 	const runtimeCss = projectFile(directory, "runtime.ts");
+	const dss = projectFile(directory, "dss.ts");
 	const cx = projectFile(directory, "cx.ts");
 	const configurationFailed = (sourceConfig.residuals?.length ?? 0) > 0;
 	const files: AdapterGeneratedFile[] = configurationFailed
@@ -185,6 +194,7 @@ export async function createPandwindProjectSupport(
 				generatedFile(preset, presetSource(sourceConfig, {}), "Pandwind target preset"),
 				generatedFile(css, cssSource(), "shared extracted css() binding"),
 				generatedFile(runtimeCss, runtimeCssSource(), "shared runtime css() binding"),
+				generatedFile(dss, dssSource(), "shared design-system dss() binding"),
 				generatedFile(cx, cxSource(), "shared cx() binding"),
 			];
 
@@ -249,7 +259,7 @@ export async function createPandwindProjectSupport(
 		bindings: {
 			...(configurationFailed
 				? {}
-				: { cssModule: css, runtimeCssModule: runtimeCss, cxModule: cx }),
+				: { cssModule: css, runtimeCssModule: runtimeCss, dssModule: dss, cxModule: cx }),
 			...(configurationFailed || !hasGeneratedTw
 				? {}
 				: { twModule: projectFile(directory, "tw.ts") }),

@@ -213,6 +213,20 @@ function makeCoreAdapter(
 						: `import { tw } from "${relativeModuleImport(context.file, modulePath, "")}";`,
 				);
 			}
+			if (dialect === SwapSourceId.Css && result.text !== "") {
+				const modulePath = context.project?.cssModule;
+				if (modulePath !== undefined)
+					imports.push(
+						`import { css } from "${relativeModuleImport(context.file, modulePath, "")}";`,
+					);
+			}
+			if (dialect === SwapSourceId.Dss && result.text !== "") {
+				const modulePath = context.project?.dssModule;
+				if (modulePath !== undefined)
+					imports.push(
+						`import { dss } from "${relativeModuleImport(context.file, modulePath, "")}";`,
+					);
+			}
 			return {
 				text: result.text,
 				imports,

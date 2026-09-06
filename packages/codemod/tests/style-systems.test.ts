@@ -7,6 +7,7 @@ import {
 	createBuiltinCodemodCatalog,
 	PANDA_STYLE_SYSTEM,
 	PANDWIND_STYLE_SYSTEM,
+	STYLE_MIGRATION_USE_CASE,
 	STYLE_SYSTEMS,
 	AdapterEvidence,
 	AdapterOfficialApiStatusTag,
@@ -15,6 +16,7 @@ import {
 	createStyleSystemRegistry as registry,
 	getCodemodAdapter,
 } from "../src/swap/index.ts";
+import { CodemodAdapterId, SwapSourceId } from "../src/swap/identifiers.ts";
 
 const stub = (id: string) => ({
 	schema: ADAPTER_CONTRACT_SCHEMA,
@@ -161,5 +163,43 @@ describe("style system and dialect registry", () => {
 			meta: exampleMeta,
 		});
 		expect(parsedDss.matches).toHaveLength(1);
+	});
+
+	test("uses a project-owned dss module for the core design target", async () => {
+		const result = await STYLE_MIGRATION_USE_CASE.runAsync(
+			'import { css } from "@emotion/css";\nconst card = css({ color: "#3182ce" });',
+			{
+				from: CodemodAdapterId.Emotion,
+				to: `${CodemodAdapterId.Pandwind}:${SwapSourceId.Dss}`,
+				file: "src/Card.tsx",
+				root: "/project",
+				mode: "safe",
+				meta: exampleMeta,
+				project: { dssModule: "pandwind/dss.ts" },
+			},
+		);
+		expect(result.converted).toBe(1);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain('import { dss } from "../pandwind/dss.ts";');
+		expect(result.code).toContain("dss(");
+	});
+
+	test("uses a project-owned css module for the core css target", async () => {
+		const result = await STYLE_MIGRATION_USE_CASE.runAsync(
+			'import { css } from "@emotion/css";\nconst card = css({ color: "#3182ce" });',
+			{
+				from: CodemodAdapterId.Emotion,
+				to: `${CodemodAdapterId.Pandwind}:${SwapSourceId.Css}`,
+				file: "src/Card.tsx",
+				root: "/project",
+				mode: "safe",
+				meta: exampleMeta,
+				project: { cssModule: "pandwind/css.ts" },
+			},
+		);
+		expect(result.converted).toBe(1);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain('import { css } from "../pandwind/css.ts";');
+		expect(result.code).toContain("css.class(");
 	});
 });

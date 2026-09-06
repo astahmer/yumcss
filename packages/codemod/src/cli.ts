@@ -143,7 +143,12 @@ const projectFiles = (root: string): readonly string[] =>
 	sourceWorkspace.files(["**/*"], root, { includeUnsupported: true });
 
 function shouldBootstrapPandwindProject(args: swapImport.MigrateCliArgs): boolean {
-	if (args.to === SwapTargetId.Tw) return args.from !== SwapSourceId.Tw;
+	if (
+		args.to === SwapTargetId.Tw ||
+		args.to === SwapTargetId.Dss ||
+		args.to === SwapTargetId.Design
+	)
+		return args.from !== SwapSourceId.Tw;
 	return (
 		(args.to === CodemodAdapterId.Pandwind && args.from !== CodemodAdapterId.Pandwind) ||
 		(args.to === SwapTargetId.CssClass && isExternalAdapterId(args.from))
@@ -221,6 +226,7 @@ const existingProjectSupport = (
 		...(modulePath("runtime.ts") === undefined
 			? {}
 			: { runtimeCssModule: modulePath("runtime.ts") }),
+		...(modulePath("dss.ts") === undefined ? {} : { dssModule: modulePath("dss.ts") }),
 		...(modulePath("tw.ts") === undefined ? {} : { twModule: modulePath("tw.ts") }),
 		...(modulePath("cx.ts") === undefined ? {} : { cxModule: modulePath("cx.ts") }),
 	};
@@ -278,12 +284,18 @@ async function mainMigrate(argv: string[]): Promise<void> {
 	const autoExternal =
 		!explicitlyExternal &&
 		args.from === SwapSourceId.Auto &&
-		args.to === SwapTargetId.CssClass &&
+		(args.to === SwapTargetId.CssClass ||
+			args.to === SwapTargetId.Design ||
+			args.to === SwapTargetId.Dss ||
+			args.to === SwapTargetId.Tw) &&
 		candidateFilePaths.some((file) => {
 			const source = readProjectFile(root)(file);
 			if (source === undefined) return false;
 			const detected = detectExternalSource(source, file.slice(root.length + 1), root);
-			return detected !== undefined && detected !== CodemodAdapterId.Pandwind;
+			return (
+				detected !== undefined &&
+				(detected !== CodemodAdapterId.Pandwind || args.to !== SwapTargetId.CssClass)
+			);
 		});
 	const external = explicitlyExternal || autoExternal;
 	const filePaths = external ? candidateFilePaths : expandPatterns(args.patterns, root);
@@ -532,9 +544,13 @@ async function runAdapterRoute(
 		? args.to
 		: args.to === SwapTargetId.Tw
 			? `${CodemodAdapterId.Pandwind}:${SwapSourceId.Tw}`
-			: args.to === SwapTargetId.CssClass
-				? CodemodAdapterId.Pandwind
-				: undefined;
+			: args.to === SwapTargetId.Dss
+				? `${CodemodAdapterId.Pandwind}:${SwapSourceId.Dss}`
+				: args.to === SwapTargetId.Design
+					? `${CodemodAdapterId.Pandwind}:${SwapSourceId.Css}`
+					: args.to === SwapTargetId.CssClass
+						? CodemodAdapterId.Pandwind
+						: undefined;
 	if (target === undefined) {
 		console.error(`codemod migrate: no registered target adapter for '${args.to}'`);
 		process.exitCode = 1;
@@ -867,9 +883,9 @@ const TOKEN_FORMATS: readonly TokenFormatId[] = [
 
 const configureTokensCommand = (command: Command): void => {
 	command
-		.option("--from <format>", "Input token format")
-		.option("--to <format>", "Output token format")
-		.option("--out <file>", "Write the converted token set to a file");
+		.option("-f, --from <format>", "Input token format")
+		.option("-t, --to <format>", "Output token format")
+		.option("-o, --out <file>", "Write the converted token set to a file");
 };
 
 const tokenFormat = (value: string | undefined, flag: string): TokenFormatId => {
@@ -916,15 +932,6 @@ const createCodemodCli = (): CAC => {
 	return cli;
 };
 
-/** Normalize the old root/swap spellings into the one migration command. */
-const normalizeCommand = (argv: readonly string[]): string[] => {
-	const [first, ...rest] = argv;
-	if (first === "-h" || first === "--help") return [...argv];
-	if (first === "migrate" || first === "tokens") return [...argv];
-	if (first === "swap") return ["migrate", ...rest];
-	return ["migrate", ...argv];
-};
-
 async function mainTokens(argv: string[]): Promise<void> {
 	const { from, to, input, out } = parseTokenArgs(argv);
 	const set = await tokenSetCodec.fromFile(from, resolve(input));
@@ -950,16 +957,19 @@ async function mainTokens(argv: string[]): Promise<void> {
 async function main(argv = process.argv.slice(2)): Promise<void> {
 	const cli = createCodemodCli();
 	cli.help();
-	const normalizedArgv = normalizeCommand(argv);
 	try {
-		cli.parse(["node", "pandwind-codemod", ...normalizedArgv], { run: false });
-		if (cli.matchedCommand === undefined) return;
+		cli.parse(["node", "pandwind-codemod", ...argv], { run: false });
+		if (cli.matchedCommand === undefined) {
+			if (argv.includes("-h") || argv.includes("--help")) return;
+			cli.outputHelp();
+			return;
+		}
 		if (cli.matchedCommand.name === "migrate") {
-			await mainMigrate(normalizedArgv.slice(1));
+			await mainMigrate(argv.slice(1));
 			return;
 		}
 		if (cli.matchedCommand.name === "tokens") {
-			await mainTokens(normalizedArgv.slice(1));
+			await mainTokens(argv.slice(1));
 			return;
 		}
 	} catch (error) {

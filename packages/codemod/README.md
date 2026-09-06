@@ -50,8 +50,8 @@ committed source change.
 
 ## One migration command
 
-Migrations use one command. The historical root command and swap subcommand are
-still accepted as compatibility spellings, but both resolve to migrate.
+Migrations use one command: `migrate`. Token-format conversion remains the
+separate `tokens` command.
 
 The command writes changes by default. Use --dry-run for a read-only plan and
 add --diff or --report when reviewing the result:
@@ -73,11 +73,11 @@ root when the command is run outside it. -h and --help work at the root, after
 migrate or tokens, and after a command's arguments.
 
 When the target is Pandwind, the command bootstraps shared project support in
-pandwind/ by default: definePreset, css.ts, runtime.ts, cx.ts, the typed
-tw.ts, its bridge, types.d.ts, the versioned interop artifact, and a derived
-theme file when the source configuration proves one. Converted files import
-those shared modules; they do not create a new createCss() instance at every
-call site. Use --out <dir> to change that folder.
+pandwind/ by default: definePreset, css.ts, runtime.ts, dss.ts, cx.ts, the
+typed tw.ts, its bridge, types.d.ts, the versioned interop artifact, and a
+derived theme file when the source configuration proves one. Converted files
+import those shared modules; they do not create a new createCss() instance at
+every call site. Use --out <dir> to change that folder.
 
 The source adapter loads the ecosystem's official project configuration when
 one is available. Verified token names, conditions, utilities, and resolved
@@ -188,9 +188,6 @@ pnpm exec pandwind-codemod migrate -f tailwindcss -t pandwind-tw src
 pnpm exec pandwind-codemod migrate -f panda -t pandwind-css src
 pnpm exec pandwind-codemod migrate -f pandwind -t unocss src
 ~~~
-
-The old swap spelling remains accepted, but new documentation and scripts
-should use migrate.
 
 ## Panda inbound migration (`migrate --from=panda`)
 
