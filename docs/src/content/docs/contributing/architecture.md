@@ -21,6 +21,28 @@ The façade is not the architecture by itself. A domain is only decomposed when
 the policy implementation is behind the port and a test can substitute a
 minimal implementation without changing orchestration.
 
+### Migration application service
+
+One source-file migration is orchestrated by the `StyleMigrationUseCase`. Its
+executor depends on four infrastructure ports: the adapter catalog, the shared
+source scanner, the lowering registry, and the project-aware adapter resolver.
+The CLI, virtual bundler plugin, browser entry point, and MCP service consume
+that use case instead of selecting the concrete runner independently. Adapter
+modules remain responsible for detection, configuration, parsing, emission,
+validation, and target-owned host policy.
+
+The default `AdapterMigrationExecutor` is assembled at the package composition
+root. Browser callers can supply an in-memory catalog and scanner, project
+hosts can supply an official-loader resolver, and tests can substitute a
+minimal executor or any individual infrastructure port. This keeps the flat
+`runAdapterMigration` function as a compatibility fast path while making the
+application boundary explicit for richer hosts.
+
+The MCP service follows the same rule. Its small port set supplies the adapter
+catalog, the migration use case, and the analyzer command. JSON-RPC parsing is
+transport code; project path safety and tool orchestration stay in the service,
+and neither layer reimplements adapter migration semantics.
+
 Migration skips are typed at this boundary. `capability-blocked` means the
 selected target has no safe representation for a required semantic;
 `parse-residual` means the source adapter could not model the source; and
