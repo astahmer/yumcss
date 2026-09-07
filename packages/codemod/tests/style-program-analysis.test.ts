@@ -79,9 +79,9 @@ describe("StyleProgramAnalysis", () => {
 			property: "color",
 			value: { kind: "dynamic" as const, expression: "theme.color" },
 		};
-		const legacyProjection = { ...program, declarations: [declaration] };
+		const flatProjection = { ...program, declarations: [declaration] };
 
-		expect(StyleProgramAnalysis.declarations(legacyProjection)).toEqual([declaration]);
-		expect(StyleProgramAnalysis.hasDynamic(legacyProjection)).toBe(true);
+		expect(StyleProgramAnalysis.declarations(flatProjection)).toEqual([declaration]);
+		expect(StyleProgramAnalysis.hasDynamic(flatProjection)).toBe(true);
 	});
 });

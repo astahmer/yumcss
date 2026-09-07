@@ -704,7 +704,7 @@ const rules: Record<string, RuleDefinition> = {
 	"design-tokens-only": {
 		create(context) {
 			const governance = governancePolicy(context);
-			const legacy = governance === undefined ? tokenPolicy(context) : undefined;
+			const configuredPolicy = governance === undefined ? tokenPolicy(context) : undefined;
 			return withResolver((node, api) => {
 				if (!isTokenLane(api)) return;
 				if (governance !== undefined) {
@@ -732,7 +732,7 @@ const rules: Record<string, RuleDefinition> = {
 					}
 					return;
 				}
-				if (legacy === undefined) return;
+				if (configuredPolicy === undefined) return;
 				for (const arg of node.arguments) {
 					const seen = new Set<AstNode>();
 					walkNode(arg, (inner) => {
@@ -744,7 +744,7 @@ const rules: Record<string, RuleDefinition> = {
 						)
 							return;
 						walkDesignValues(inner.value, seen, (literal) => {
-							if (legacy.allows(literal.value)) return;
+							if (configuredPolicy.allows(literal.value)) return;
 							context.report({
 								node: literal,
 								message:
