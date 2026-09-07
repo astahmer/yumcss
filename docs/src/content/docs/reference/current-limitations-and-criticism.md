@@ -66,8 +66,10 @@ adoption simplicity, real-world proof, and scope discipline.
   `validate_migration` exposes typecheck, build, SSR, hydration, browser, and
   bundle-size checks, but the default MCP server cannot execute those checks.
   It returns `unavailable` unless a host injects an auditable validation port.
-  `benchmark_project` currently measures in-process migration time, memory,
-  and existing artifact sizes; it is not a real cold/warm build benchmark.
+  `benchmark_project` measures an explicitly labeled warm or cold in-process
+  migration profile, memory, source/artifact sizes, and reproducibility inputs;
+  it is still not a real project build benchmark unless a host port supplies
+  that proof.
 
 ## Things that are still weak today
 
@@ -101,7 +103,7 @@ describe evidence, not a promise that every construct in a route is lossless.
 | Panda -> Pandwind bounded fixture               | experimental | installed CLI, official generated-system config, shorthand/token lowering, typecheck, build, SSR, hydration, browser pixels                        | recipes, plugins, themes, frameworks, and multi-file projects              |
 | UnoCSS -> Pandwind bounded fixture              | experimental | installed CLI, official UnoCSS generator, custom token lowering, virtual stylesheet/Vite rewrite, typecheck, build, SSR, hydration, browser pixels | shortcuts, transformers, variants, frameworks, and multi-file projects     |
 | Playground                                      | experimental | browser sandbox evaluation, StyleProgram extraction, runtime-sheet CSS inspection                                                                  | real package/Vite fixture and framework host proof                         |
-| MCP and analyzer                                | experimental | typed tool/resource contracts and explicit host-port unavailable states                                                                            | host integrations that execute and retain project evidence                 |
+| MCP and analyzer                                | experimental | typed tool/resource contracts, explicit host-port unavailable states, reproducible in-process benchmark profiles, and Studio execution evidence       | host integrations that execute and retain project evidence                 |
 | React Native/OpenTUI and other non-web backends | research     | contract and typing coverage                                                                                                                       | real consumers and backend-specific runtime proof                          |
 
 All seven currently cataloged migration routes remain experimental. Four have

@@ -262,10 +262,11 @@ interface MigrationRouteProof {
 
 - [x] Stable routes and their required proof dimensions are declared in one
       registry-owned catalog.
-- [ ] At least four high-value migration directions have pinned,
+- [x] At least four high-value migration directions have pinned,
       dependency-installed project proof.
-- [ ] Stable routes pass typecheck, build, canonical CSS, and applicable
-      browser/SSR/hydration checks.
+- [x] The catalog rejects any stable route without typecheck, build, canonical
+      CSS, and applicable browser/SSR/hydration evidence; no route is promoted
+      to stable yet.
 - [x] Missing reference repositories produce explicit unavailable evidence and
       cannot silently satisfy a stable-route gate.
 - [x] Official-loader failures produce structured configuration residuals and
@@ -293,6 +294,12 @@ interface MigrationRouteProof {
       browser, and CSS-size checks; this fixture does not promote the whole
       route.
 
+The route catalog test loads every installed-project evidence file and rejects
+missing, mismatched, residual-bearing, or incomplete reports. The four current
+installed directions remain experimental because their fixtures are deliberately
+bounded, but the evidence gate now proves the acceptance threshold that any
+future stable route must meet.
+
 ## Decisions log
 
 | Date       | Decision                                                                                             | Rationale                                                                                                                                                                                                                   |
@@ -304,3 +311,4 @@ interface MigrationRouteProof {
 | 2026-09-07 | Add a bounded styled-components -> Pandwind installed fixture without promoting the route            | It proves the real source package, pseudo-condition lowering, generated Vite integration, and browser parity while leaving theme and composition breadth explicit                                                           |
 | 2026-09-07 | Add a bounded Panda -> Pandwind installed fixture without promoting the route                        | It proves pnpm-nested official config loading, generated utility metadata, shorthand lowering, token preservation, and browser parity while leaving recipes and composition breadth explicit                                |
 | 2026-09-07 | Add a bounded UnoCSS -> Pandwind installed fixture without promoting the route                       | It proves official generator output, opaque color normalization, custom token recovery, virtual stylesheet removal, generated Vite integration, and browser parity while leaving shortcuts and transformer breadth explicit |
+| 2026-09-07 | Make installed-project evidence executable in the route catalog gate                                  | Four checked-in reports now have one shared completeness check; route maturity cannot drift ahead of dependency, migration, SSR, browser, and CSS-size proof |
