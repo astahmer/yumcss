@@ -3,7 +3,7 @@ import { TwCommand, createTwCli, parseTwCommand, type TwCliHandlers } from "../s
 
 const cwd = "/fixture/project";
 
-describe("pandwind-tw command router", () => {
+describe("pandwind-codemod tw command router", () => {
 	test("parses the complete generate command", () => {
 		const command = parseTwCommand(
 			[
@@ -101,7 +101,7 @@ describe("pandwind-tw command router", () => {
 
 	test("fails closed for malformed command lines", () => {
 		expect(() => parseTwCommand(["unknown"], cwd)).toThrow(
-			"pandwind-tw: unknown command 'unknown'",
+			"pandwind-codemod tw: unknown command 'unknown'",
 		);
 		expect(() => parseTwCommand([TwCommand.Generate, "--tokens"], cwd)).toThrow(
 			"option `--tokens <module>` value is missing",

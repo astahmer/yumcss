@@ -26,11 +26,11 @@ import { resolve } from "node:path";
 import { compile, __unstable__loadDesignSystem } from "@tailwindcss/node";
 import { parse } from "postcss";
 import { beforeAll, describe, expect, test } from "vitest";
-import { createCx } from "../src/cx/index.ts";
+import { createCx } from "pandwind/cx";
 import { canonicalProps } from "../src/tw/generate-types.ts";
-import { compileStyles, type TwNestedStyles, type TwVariantsMeta } from "../src/tw/compile.ts";
-import { createTw } from "../src/tw/runtime.ts";
-import { extractTwConfig } from "../src/vite/inline.ts";
+import { compileStyles, type TwNestedStyles, type TwVariantsMeta } from "pandwind/tw/compile";
+import { createTw } from "pandwind/tw";
+import { extractTwConfig } from "pandwind/vite/inline";
 import { rulesForClass, TW_ENTRY } from "./helpers/tailwind-proof.ts";
 
 const APP_DIR = resolve(import.meta.dirname, "../../../apps/example");

@@ -12,7 +12,7 @@ import { createCssBudgetService } from "../analysis-service.ts";
 import { examplePreset } from "@pandwind/example-preset";
 import { createStylesheet } from "pandwind/css/create-stylesheet";
 import { createCssExtractionService } from "pandwind/vite/css-extract";
-import { buildTokenGraph } from "pandwind/tw/token-graph";
+import { buildTokenGraph } from "pandwind-codemod/tw";
 import { analyzeStyleUsage, computeContrastWarnings } from "./analytics.ts";
 import {
 	flattenTokenGroups,

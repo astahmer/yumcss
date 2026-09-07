@@ -3,6 +3,8 @@ import { defineConfig } from "tsdown";
 export default defineConfig({
 	entry: [
 		"src/cli.ts",
+		"src/tw/index.ts",
+		"src/tw/cli.ts",
 		"src/diff.ts",
 		"src/swap/index.ts",
 		"src/swap/semantic-ir.ts",

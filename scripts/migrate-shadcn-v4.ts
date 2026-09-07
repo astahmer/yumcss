@@ -11,9 +11,11 @@ import { cp, mkdir, mkdtemp, readFile, readdir, rm, writeFile } from "node:fs/pr
 import { dirname, join, relative, resolve } from "node:path";
 import { tmpdir } from "node:os";
 import { promisify } from "node:util";
-import { buildPandwindInteropArtifact } from "pandwind/tw/interop";
-import { generateUtilityBridge } from "pandwind/codegen/bridge";
-import { generateDesignSystem } from "pandwind/codegen/types";
+import {
+	buildPandwindInteropArtifact,
+	generateDesignSystem,
+	generateUtilityBridge,
+} from "pandwind-codemod/tw";
 import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
 import { createStylesheet } from "pandwind/css/create-stylesheet";
 import { createCssExtractionService } from "pandwind/vite/css-extract";

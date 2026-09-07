@@ -43,7 +43,7 @@ surface; this plan adds no new public API. Compiler/codemod work only.
       call); beyond the cap -> residual diagnostics. Runtime call stays
       untouched.
 - [x] T3 - Candidate output wiring. Plugin exposes collected candidates; tests
-      cover \`@source inline\` emission shape and \`pandwind-tw scan\` module mode
+      cover \`@source inline\` emission shape and \`pandwind-codemod tw scan\` module mode
       (extend \`src/tw/collect.ts\` to consume the same evaluator). Unbounded
       values produce an explicit coverage diagnostic, never a guessed class.
 - [x] T4 - Official-engine validation of finite candidates through the

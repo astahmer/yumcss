@@ -9,7 +9,7 @@
  * - `pandwind/css`      -> engine css(): atomic CSS-in-JS (`createCss`)
  * - `pandwind/design`   -> design css(): $frame/$layout/$text vocabulary (`createDesignCss`)
  * - `pandwind/preset`   -> definePreset / defineTokens
- * - `pandwind/tw/generate`, `pandwind/codegen/*`, `pandwind/vite`,
+ * - `pandwind/tw/collect`, `pandwind/vite`,
  *   `pandwind/react-native`, `pandwind/opentui`, ...
  *
  * Do NOT add css/preset re-exports back here — the overwhelm guard is the

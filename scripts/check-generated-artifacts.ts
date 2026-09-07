@@ -86,7 +86,8 @@ const checkApp = (app: GeneratedApp): void => {
 			"nub",
 			[
 				"exec",
-				"pandwind-tw",
+				"pandwind-codemod",
+				"tw",
 				"generate",
 				"./src/tailwind.css",
 				temporarySourceRoot,

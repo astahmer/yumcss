@@ -3,7 +3,7 @@ import { resolve } from "node:path";
 import { __unstable__loadDesignSystem } from "@tailwindcss/node";
 import { describe, expect, test } from "vitest";
 import { createDesignSystemCodegen, generateDesignSystem } from "../src/tw/generate-types.ts";
-import { UTILITY_SUBKEYS } from "../src/tw/compile.ts";
+import { UTILITY_SUBKEYS } from "pandwind/tw/compile";
 
 const app = resolve(import.meta.dirname, "../../../apps/example");
 const css = readFileSync(resolve(app, "src/tailwind.css"), "utf8");

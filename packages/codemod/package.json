@@ -115,6 +115,12 @@
 			"import": "./dist/swap/browser.js",
 			"default": "./dist/swap/browser.js"
 		},
+		"./tw": {
+			"pandwind": "./src/tw/index.ts",
+			"types": "./dist/tw/index.d.ts",
+			"import": "./dist/tw/index.js",
+			"default": "./dist/tw/index.js"
+		},
 		"./package.json": "./package.json"
 	},
 	"publishConfig": {
@@ -138,7 +144,9 @@
 	"dependencies": {
 		"@tailwindcss/node": "4.3.3",
 		"cac": "7.0.0",
+		"oxc-parser": "0.148.0",
 		"pandwind": "workspace:*",
+		"postcss": "8.5.28",
 		"unplugin": "3.3.0"
 	},
 	"devDependencies": {

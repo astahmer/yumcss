@@ -2,7 +2,7 @@
 
 /*
  * Token bridge: generated from the example preset's DTCG token groups by
- * `pandwind-tw generate --tokens <preset>` (see the codegen guide). The
+ * `pandwind-codemod tw generate --tokens <preset>` (see the codegen guide). The
  * preset is the single source of truth for both
  * engines — do not edit by hand; regenerate instead.
  */
@@ -10,7 +10,7 @@
 
 /*
  * Safelist: generated @source inline directives for dynamic tw() classes by
- * `pandwind-tw scan`. Static call sites are already visible to Tailwind's
+ * `pandwind-codemod tw scan`. Static call sites are already visible to Tailwind's
  * scanner through the Vite inlining; this file covers the rest.
  */
 @import "./pandwind.safelist.css";

@@ -16,7 +16,7 @@ import { NodeKind } from "../ast-node-kind.ts";
  * `tw({ ... })` call with a literal object is replaced by its compiled class
  * string, so the classes are discovered naturally and nothing is paid at
  * runtime. Calls with dynamic arguments keep working through the runtime and
- * can still be covered by the `pandwind-tw scan` safelist.
+ * can still be covered by the `pandwind-codemod tw scan` safelist.
  */
 import { basename } from "node:path";
 import { SOURCE_SCANNER_SERVICE } from "../source-scanner.ts";
@@ -95,7 +95,7 @@ export interface PandwindViteOptions {
 	 * Receive the class candidates that bounded dynamic `tw()` calls
 	 * (ternaries, unions, finite constant sets) and unfolded finite `cx()`
 	 * calls may produce at runtime. The host registers them with the
-	 * Tailwind scanner (`@source inline` or the `pandwind-tw scan`
+	 * Tailwind scanner (`@source inline` or the `pandwind-codemod tw scan`
 	 * safelist) so every possible class has CSS. Duplicates across the
 	 * tw/cx lanes and repeated modules are already removed here; the host
 	 * only needs to accumulate or forward each batch.

@@ -63,25 +63,21 @@
 		{
 			"packageName": "pandwind",
 			"exportPaths": [
-				"./tw/generate",
 				"./tw/collect",
-				"./codegen/types",
-				"./codegen/theme",
-				"./codegen/collect",
-				"./codegen/bridge",
+				"./css/selector-scan",
 				"./source",
 				"./source/workspace"
 			],
 			"owner": "build",
 			"maturity": "stable",
-			"dependencies": ["@tailwindcss/node", "cac", "oxc-parser", "postcss"],
+			"dependencies": ["oxc-parser", "postcss"],
 			"externalContract": true,
 			"evidence": [
 				"packages/pandwind/package.json",
 				"README.md",
 				"docs/src/content/docs/tooling/codegen.md"
 			],
-			"note": "Build and scanner contracts require their optional peer dependencies."
+			"note": "The shared scanner and selector primitives remain build-time contracts; Tailwind project codegen lives in pandwind-codemod."
 		},
 		{
 			"packageName": "pandwind",
@@ -109,9 +105,7 @@
 				"./design/resolve",
 				"./lib/utils",
 				"./tw/compile",
-				"./tw/interop",
 				"./tw/literal",
-				"./tw/token-graph",
 				"./types/typings"
 			],
 			"owner": "build",
@@ -161,6 +155,7 @@
 			"packageName": "pandwind-codemod",
 			"exportPaths": [
 				".",
+				"./tw",
 				"./diff",
 				"./swap",
 				"./swap/semantic-ir",
@@ -175,7 +170,7 @@
 			],
 			"owner": "tooling",
 			"maturity": "stable",
-			"dependencies": [],
+			"dependencies": ["@tailwindcss/node", "cac", "oxc-parser", "postcss", "unplugin"],
 			"externalContract": true,
 			"evidence": [
 				"packages/codemod/package.json",

@@ -67,11 +67,11 @@ dynamic + unbounded      -> runtime fallback + explicit coverage diagnostic
       (skeleton rendering) keep their existing behavior — candidates only
       cover calls that remain fully runtime.
 - [x] T5 - Candidate plumbing unification: extend the plugin's candidate
-      collection (`@source inline` emission + `pandwind-tw scan` module
+      collection (`@source inline` emission + `pandwind-codemod tw scan` module
       mode) to accept candidates from css/design/cx lanes, not only tw.
       Deduplicate across lanes.
       Done in tusklywo (vite lane) and this revision (scan lane):
-      pandwind-tw scan now finds cx() imported from the generated tw
+      pandwind-codemod tw scan now finds cx() imported from the generated tw
       module, verifies candidates through the same strict config catalog,
       and adds only verified classes; @source inline emission dedups
       across tw and cx lanes via one fresh-set filter in vite/index.ts.

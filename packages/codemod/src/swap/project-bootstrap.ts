@@ -1,10 +1,14 @@
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join, relative, resolve } from "node:path";
 import { tmpdir } from "node:os";
-import { buildPandwindInteropArtifact } from "pandwind/tw/interop";
-import { generateUtilityBridge, BRIDGE_PROPS, type UtilityBridge } from "pandwind/codegen/bridge";
-import { generateDesignSystem } from "pandwind/codegen/types";
-import { buildThemeBlock } from "pandwind/codegen/theme";
+import {
+	buildPandwindInteropArtifact,
+	generateDesignSystem,
+	generateUtilityBridge,
+	buildThemeBlock,
+	BRIDGE_PROPS,
+	type UtilityBridge,
+} from "../tw/index.ts";
 import { extractTwConfig } from "pandwind/vite/inline";
 import type {
 	AdapterConfigContext,

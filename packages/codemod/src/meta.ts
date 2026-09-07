@@ -18,7 +18,7 @@ import { dirname, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 // Single source of truth for key -> emitted-utility mapping (textColor -> "text").
 import { UTILITY_SUBKEYS } from "pandwind/tw/compile";
-import type { PandwindInteropArtifact } from "pandwind/tw/interop";
+import type { PandwindInteropArtifact } from "./tw/index.ts";
 import type { AnyTokens } from "pandwind/types/typings";
 
 interface VariantMeta {

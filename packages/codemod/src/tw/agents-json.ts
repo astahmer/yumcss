@@ -8,7 +8,7 @@
  * intent; this describes state, and pairs with tooling (typecheck errors on
  * wrong utilities, analyze missing-css gate) that proves agent output.
  */
-import type { TwConfig } from "../vite/inline.ts";
+import type { TwConfig } from "pandwind/vite/inline";
 
 const AGENTS_SCHEMA = "pandwind.agents/1";
 /** Cap per-key literal lists; huge unions keep only a sample + total count. */

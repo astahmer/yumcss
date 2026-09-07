@@ -125,7 +125,7 @@ export async function loadThemeBlock(modulePath: string, base: string): Promise<
 	const conditions = resolvePresetConditions(module);
 	if (groups === undefined) {
 		throw new Error(
-			`pandwind-tw generate: no bridgeable token groups found in ${modulePath} (looked at default export and every named export for a .tokens field or raw DTCG groups)`,
+			`pandwind-codemod tw generate: no bridgeable token groups found in ${modulePath} (looked at default export and every named export for a .tokens field or raw DTCG groups)`,
 		);
 	}
 	let themeBlock = buildThemeBlock(

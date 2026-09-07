@@ -8,9 +8,9 @@
 		"prebuild": "nub run tw:generate && nub run tw:scan",
 		"build": "tsc -b && vite build",
 		"typecheck": "tsc --noEmit",
-		"tw:generate": "nub exec pandwind-tw generate ./src/tailwind.css ./src --tokens @pandwind/example-preset --preset-import @pandwind/example-preset --preset-export examplePreset --bridge && nub exec oxfmt ./src/bridge.ts ./src/pandwind-theme.css ./src/pandwind.interop.json",
-		"tw:prune": "nub exec pandwind-tw prune ./src/pandwind-theme.css ./src/tw.ts ./src",
-		"tw:scan": "nub exec pandwind-tw scan ./src/tw.ts ./src ./src/pandwind.safelist.css"
+		"tw:generate": "nub exec pandwind-codemod tw generate ./src/tailwind.css ./src --tokens @pandwind/example-preset --preset-import @pandwind/example-preset --preset-export examplePreset --bridge && nub exec oxfmt ./src/bridge.ts ./src/pandwind-theme.css ./src/pandwind.interop.json",
+		"tw:prune": "nub exec pandwind-codemod tw prune ./src/pandwind-theme.css ./src/tw.ts ./src",
+		"tw:scan": "nub exec pandwind-codemod tw scan ./src/tw.ts ./src ./src/pandwind.safelist.css"
 	},
 	"dependencies": {
 		"@pandwind/example-preset": "workspace:*",
@@ -25,6 +25,7 @@
 		"@vitejs/devtools": "0.7.2",
 		"@vitejs/plugin-react-swc": "4.3.3",
 		"pandwind-devtools": "workspace:*",
+		"pandwind-codemod": "workspace:*",
 		"tailwindcss": "4.3.3",
 		"typescript": "7.0.2",
 		"vite": "8.2.2"

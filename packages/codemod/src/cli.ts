@@ -18,6 +18,7 @@ import { tokenSetCodec } from "./swap/token-set.ts";
 import type { TokenFormatId } from "./swap/token-format-contracts.ts";
 import { TokenFormatId as TokenFormat } from "./swap/token-format-contracts.ts";
 import { unifiedDiff } from "./diff.ts";
+import { createTwCli } from "./tw/cli.ts";
 import { configureMigrateCommand } from "./swap/cli-args.ts";
 import {
 	createPandwindProjectSupport,
@@ -377,7 +378,7 @@ async function mainMigrate(argv: string[]): Promise<void> {
 	} catch (error) {
 		console.error(
 			`codemod migrate: failed to load generated metadata from ${metaDir}\n` +
-				"  run `nub exec pandwind-tw generate --bridge` first, or pass --meta=<dir>\n" +
+				"  run `pandwind-codemod tw generate --bridge` first, or pass --meta=<dir>\n" +
 				`  (${(error as Error).message})`,
 		);
 		process.exitCode = 1;
@@ -848,6 +849,7 @@ const createCodemodCli = (): CAC => {
 	configureMigrateCommand(migrate);
 	const tokens = cli.command("tokens <input>", "Convert token files between supported formats");
 	configureTokensCommand(tokens);
+	cli.command("tw [...args]", "Generate and inspect Pandwind Tailwind artifacts");
 	return cli;
 };
 
@@ -874,6 +876,15 @@ async function mainTokens(argv: string[]): Promise<void> {
 }
 
 async function main(argv = process.argv.slice(2)): Promise<void> {
+	if (argv[0] === "tw") {
+		try {
+			await createTwCli().run(argv.slice(1));
+		} catch (error) {
+			console.error(`pandwind-codemod tw: ${error instanceof Error ? error.message : String(error)}`);
+			process.exitCode = 1;
+		}
+		return;
+	}
 	const cli = createCodemodCli();
 	cli.help();
 	try {

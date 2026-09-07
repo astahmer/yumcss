@@ -2,7 +2,7 @@
  * `tw` runtime: converts a Panda-like style object into Tailwind class strings.
  *
  * The heavy lifting (utility types, variants, value completions) is generated
- * from the real Tailwind design system by `tw/generate-types.ts`; this module
+ * from the real Tailwind design system by the `pandwind-codemod tw generate` command; this module
  * binds a typed `tw` instance to the pure compiler in `tw/compile.ts`.
  *
  * ```ts

@@ -1,7 +1,7 @@
 import interopJson from "../pandwind.interop.json" with { type: "json" };
 import { examplePreset } from "@pandwind/example-preset";
 import type { PandwindMeta } from "pandwind-codemod/migration/meta";
-import type { PandwindInteropArtifact } from "pandwind/tw/interop";
+import type { PandwindInteropArtifact } from "pandwind-codemod/tw";
 
 const interop = interopJson as PandwindInteropArtifact;
 

@@ -1,6 +1,6 @@
-import { UTILITY_SUBKEYS } from "./compile.ts";
+import { UTILITY_SUBKEYS } from "pandwind/tw/compile";
 import { longestFunctionalPrefix } from "./codegen-catalog.ts";
-import { resolveVar, simplifyCalc } from "./theme.ts";
+import { resolveVar, simplifyCalc } from "pandwind/tw";
 
 type Values = Set<string | true>;
 type UtilityMap = Map<string, Values>;

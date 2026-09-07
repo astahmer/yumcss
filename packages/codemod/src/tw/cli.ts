@@ -14,7 +14,7 @@ import { generateTwBridge } from "./generate-bridge.ts";
 import { loadThemeBlock } from "./codegen-theme-input.ts";
 import { generateDesignSystem } from "./generate-types.ts";
 import { runTwPrune } from "./prune-theme.ts";
-import { runTwScan } from "./collect.ts";
+import { runTwScan } from "pandwind/tw/collect";
 
 /** Runtime-safe identity values for the Node CLI boundary. */
 export const TwCommand = {
@@ -130,7 +130,7 @@ const configureGenerate = (command: Command): void => {
 };
 
 const createTwCliApp = (handlers: TwCliHandlers, cwd: string): CAC => {
-	const cli = cac("pandwind-tw");
+	const cli = cac("pandwind-codemod tw");
 	const generate = cli.command(
 		"generate [css-entry] [out-dir]",
 		"Generate typed Tailwind artifacts from a CSS entrypoint",
@@ -170,12 +170,12 @@ export function parseTwCommand(argv: readonly string[], cwd = process.cwd()): Tw
 		{ generate: async () => {}, scan: async () => {}, prune: async () => {} },
 		cwd,
 	);
-	cli.parse(["node", "pandwind-tw", ...effectiveArgv], { run: false });
+	cli.parse(["node", "pandwind-codemod tw", ...effectiveArgv], { run: false });
 	const matched = cli.matchedCommand;
 	if (matched === undefined) {
 		const requested = commandName(effectiveArgv);
 		throw new Error(
-			`pandwind-tw: unknown command '${requested ?? ""}'. Expected generate, scan, or prune`,
+			`pandwind-codemod tw: unknown command '${requested ?? ""}'. Expected generate, scan, or prune`,
 		);
 	}
 	matched.checkUnknownOptions();
@@ -259,11 +259,11 @@ class DefaultTwCli implements TwCli {
 		const cli = createTwCliApp(this.handlers, this.cwd);
 		cli.help();
 		const effectiveArgv = argv.length === 0 ? [TwCommand.Generate] : [...argv];
-		cli.parse(["node", "pandwind-tw", ...effectiveArgv], { run: false });
+		cli.parse(["node", "pandwind-codemod tw", ...effectiveArgv], { run: false });
 		if (cli.matchedCommand === undefined) {
 			if (argv.includes("--help") || argv.includes("-h")) return;
 			throw new Error(
-				`pandwind-tw: unknown command '${argv[0] ?? ""}'. Expected generate, scan, or prune`,
+				`pandwind-codemod tw: unknown command '${argv[0] ?? ""}'. Expected generate, scan, or prune`,
 			);
 		}
 		await cli.runMatchedCommand();
@@ -274,12 +274,3 @@ export const createTwCli = (
 	handlers: TwCliHandlers = defaultHandlers,
 	cwd = process.cwd(),
 ): TwCli => new DefaultTwCli(handlers, cwd);
-
-if (process.argv[1] !== undefined && /cli\.[cm]?[jt]sx?$/.test(process.argv[1])) {
-	try {
-		await createTwCli().run(process.argv.slice(2));
-	} catch (error) {
-		console.error(error instanceof Error ? error.message : error);
-		process.exitCode = 1;
-	}
-}

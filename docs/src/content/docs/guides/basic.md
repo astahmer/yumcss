@@ -43,8 +43,8 @@ Add scripts to `package.json`:
 ```json
 {
 	"scripts": {
-		"tw:generate": "pandwind-tw generate ./src/tailwind.css ./src",
-		"tw:scan": "pandwind-tw scan ./src/tw.ts ./src ./src/pandwind.safelist.css"
+		"tw:generate": "pandwind-codemod tw generate ./src/tailwind.css ./src",
+		"tw:scan": "pandwind-codemod tw scan ./src/tw.ts ./src ./src/pandwind.safelist.css"
 	}
 }
 ```

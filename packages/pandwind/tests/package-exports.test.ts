@@ -18,10 +18,7 @@ const entries = [
 	"pandwind/design",
 	"pandwind/vite",
 	"pandwind/unplugin",
-	"pandwind/codegen/types",
-	"pandwind/codegen/theme",
-	"pandwind/codegen/collect",
-	"pandwind/codegen/bridge",
+	"pandwind/css/selector-scan",
 	"pandwind/react-native",
 	"pandwind/opentui",
 	"pandwind/stack",
@@ -55,7 +52,7 @@ describe("pandwind package boundary", () => {
 	test("keeps build-only packages out of runtime dependencies", () => {
 		expect(packageManifest.repository.directory).toBe("packages/pandwind");
 		expect(packageManifest.dependencies).toEqual({ csstype: "3.2.3" });
-		for (const dependency of ["@tailwindcss/node", "cac", "oxc-parser", "postcss", "unplugin"]) {
+		for (const dependency of ["oxc-parser", "postcss", "unplugin"]) {
 			expect(packageManifest.peerDependencies[dependency]).toBeDefined();
 			expect(packageManifest.peerDependenciesMeta[dependency]).toEqual({ optional: true });
 		}

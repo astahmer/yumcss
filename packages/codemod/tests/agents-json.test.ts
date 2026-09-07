@@ -11,7 +11,7 @@ import {
 	conflictsSummary,
 	utilitiesFromTypesDts,
 } from "../src/tw/agents-json.ts";
-import { extractTwConfig } from "../src/vite/inline.ts";
+import { extractTwConfig } from "pandwind/vite/inline";
 
 const TYPES = `
 export type TextValue = WithOpacityModifiers<"sm" | "base" | ${JSON.stringify("xl")} | (string & {})>;

@@ -1,5 +1,5 @@
 import { camelCaseProperty } from "./camelcase-property.ts";
-import { UTILITY_SUBKEYS } from "./compile.ts";
+import { UTILITY_SUBKEYS } from "pandwind/tw/compile";
 
 type Values = Set<string | true>;
 export type UtilityMap = Map<string, Values>;

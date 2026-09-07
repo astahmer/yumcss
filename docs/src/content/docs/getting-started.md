@@ -18,7 +18,7 @@ integration packages. Those build subpaths use optional peers, so add only the
 packages required by the lane you choose:
 
 ```sh
-# `pandwind-tw` codegen and Tailwind project loading
+# `pandwind-codemod tw` codegen and Tailwind project loading
 pnpm add -D @tailwindcss/node postcss cac
 
 # source scanning
@@ -50,8 +50,8 @@ Generate the typed `tw()` runtime and `@theme` bridge from your
 // package.json
 {
 	"scripts": {
-		"tw:generate": "pandwind-tw generate ./src/tailwind.css ./src --tokens ./src/preset.ts --bridge",
-		"tw:scan": "pandwind-tw scan ./src/tw.ts ./src ./src/pandwind.safelist.css",
+		"tw:generate": "pandwind-codemod tw generate ./src/tailwind.css ./src --tokens ./src/preset.ts --bridge",
+		"tw:scan": "pandwind-codemod tw scan ./src/tw.ts ./src ./src/pandwind.safelist.css",
 	},
 }
 ```
@@ -123,8 +123,8 @@ a visible import decision:
 
 Runtime subpaths: `pandwind/css`, `pandwind/tw`, `pandwind/cx`,
 `pandwind/preset`, `pandwind/design`, `pandwind/vite`; generic bundler
-adapters under `pandwind/unplugin`; build-time codegen helpers under
-`pandwind/codegen/{types,theme,collect,bridge}` and the `pandwind-tw` binary;
+adapters under `pandwind/unplugin`; build-time Tailwind codegen under the
+`pandwind-codemod/tw` command and subpath;
 non-web backends
 `pandwind/react-native`, `pandwind/opentui`, plus the render-agnostic
 `pandwind/stack` and framework renderers under `pandwind/stack/{react,solid,vue,preact}`.

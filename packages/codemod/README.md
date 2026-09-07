@@ -17,6 +17,24 @@ Adapters implement the versioned `pandwind.style-adapter/3` contract and are
 routed through the semantic style-program IR. Unsupported capabilities produce
 residual reports instead of silent partial rewrites.
 
+## Tailwind project tooling
+
+The `tw` subcommand owns the project-aware Tailwind loader and generated
+Pandwind artifacts. It keeps the Tailwind compiler and codegen dependencies out
+of the runtime `pandwind` package:
+
+```sh
+pandwind-codemod tw generate [css-entry] [out-dir] [--tokens <module>] [--bridge]
+pandwind-codemod tw scan [tw-entry] [src-dir] [out-file]
+pandwind-codemod tw prune [theme-css] [tw-entry] [src-dir]
+```
+
+`generate` emits the typed `tw.ts`, declarations, optional preset theme bridge,
+and optional `css()` bridge. `scan` and `prune` are explicit follow-up passes
+for dynamic candidates and unused generated theme variables. The same lane is
+available as `pandwind-codemod/tw` for scripts that need the typed tooling
+ports instead of a subprocess.
+
 Adapter authors should read [ADAPTER_SDK.md](./ADAPTER_SDK.md) for the plugin
 shape, schema versioning, capability declarations, and differential corpus
 requirements.

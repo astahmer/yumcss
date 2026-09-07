@@ -15,9 +15,9 @@
 import { compile } from "@tailwindcss/node";
 import { parse, type Root } from "postcss";
 import { describe, expect, test } from "vitest";
-import { extractTwConfig } from "../src/vite/inline.ts";
-import { createTw } from "../src/tw/runtime.ts";
-import { createCx } from "../src/cx/index.ts";
+import { extractTwConfig } from "pandwind/vite/inline";
+import { createTw } from "pandwind/tw";
+import { createCx } from "pandwind/cx";
 import { generateDesignSystem } from "../src/tw/generate-types.ts";
 
 const CSS = `@import "tailwindcss";

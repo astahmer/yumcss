@@ -109,7 +109,7 @@ async function main() {
 		}
 
 		// 4b. whole-tarball module sweep. Tooling stages are side-effect free when
-		// imported; only the `pandwind-tw` entry executes as a CLI. Browser bundles
+		// imported; only the `pandwind-codemod tw` entry executes as a CLI. Browser bundles
 		// are intentionally excluded: importing a Vite client asset in Node is not
 		// a valid package-consumption test because its module-preload bootstrap uses
 		// the browser DOM at module evaluation time.

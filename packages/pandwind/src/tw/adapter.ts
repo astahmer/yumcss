@@ -28,8 +28,10 @@ import { dashCase } from "../css/hash.ts";
 import type { ClassNameStrategy } from "../css/class-name-strategy.ts";
 import { createTokenResolver } from "../css/tokens.ts";
 import type { AnyConditions, CssConfigReturn } from "../types/typings.ts";
-import type { UtilityBridge } from "./bridge.ts";
 import type { TwVariantsMeta } from "./compile.ts";
+
+/** Generated `(property, resolved value) -> utility` lookup for Tailwind mode. */
+export type UtilityBridge = Record<string, Record<string, string>>;
 
 export interface TwAdapterOptions {
 	/** Variant metadata from the generated `tw.ts` (join separators). */

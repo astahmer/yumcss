@@ -238,7 +238,7 @@ css.class({
 		title: "Design presets",
 		blurb: "define your own theme, tokens, and conditions",
 		group: "core",
-		note: "A brand preset is data: defineTokens + definePreset. Without a generated bridge the engine falls back to arbitrary properties ([background-color:#4c51bf]) — run pandwind-tw generate to produce the bridge and these become bg-brand-500 utilities.",
+		note: "A brand preset is data: defineTokens + definePreset. Without a generated bridge the engine falls back to arbitrary properties ([background-color:#4c51bf]) — run pandwind-codemod tw generate to produce the bridge and these become bg-brand-500 utilities.",
 		variants: [
 			{
 				api: PlaygroundApi.Dss,

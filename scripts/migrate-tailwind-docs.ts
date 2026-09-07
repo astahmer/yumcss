@@ -11,9 +11,12 @@ import { cp, mkdtemp, mkdir, readFile, readdir, rm, symlink, writeFile } from "n
 import { dirname, join, relative, resolve } from "node:path";
 import { tmpdir } from "node:os";
 import { promisify } from "node:util";
-import { buildPandwindInteropArtifact, type PandwindInteropArtifact } from "pandwind/tw/interop";
-import { generateUtilityBridge } from "pandwind/codegen/bridge";
-import { generateDesignSystem } from "pandwind/codegen/types";
+import {
+	buildPandwindInteropArtifact,
+	generateDesignSystem,
+	generateUtilityBridge,
+	type PandwindInteropArtifact,
+} from "pandwind-codemod/tw";
 import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
 import { loadMetaFromSources, type PandwindMeta } from "pandwind-codemod/migration/meta";
 import { mapClassList } from "pandwind-codemod/migration/map";

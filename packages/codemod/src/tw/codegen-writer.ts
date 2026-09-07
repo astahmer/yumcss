@@ -1,7 +1,7 @@
 import { resolve } from "node:path";
 import { writeFileSync } from "node:fs";
 import { buildAgentsDocument } from "./agents-json.ts";
-import { extractTwConfig } from "../vite/inline.ts";
+import { extractTwConfig } from "pandwind/vite/inline";
 import { buildPandwindInteropArtifact } from "./interop-artifact.ts";
 
 export interface GeneratedDesignSystem {
@@ -37,7 +37,7 @@ export class CodegenArtifactWriter {
 		if (options.agents === true) {
 			const config = extractTwConfig(artifacts.twTs);
 			if (config === undefined)
-				throw new Error("pandwind-tw generate: could not extract config for agents.json");
+				throw new Error("pandwind-codemod tw generate: could not extract config for agents.json");
 			const doc = buildAgentsDocument({
 				typesDts: artifacts.typesDts,
 				config,

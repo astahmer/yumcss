@@ -100,8 +100,8 @@ an explicit `$raw`/escape lane so they are visible to review and analysis.
 ```json
 {
 	"scripts": {
-		"tw:generate": "pandwind-tw generate ./src/tailwind.css ./src --tokens ./src/design-system/preset.ts --bridge",
-		"tw:scan": "pandwind-tw scan ./src/tw.ts ./src ./src/pandwind.safelist.css"
+		"tw:generate": "pandwind-codemod tw generate ./src/tailwind.css ./src --tokens ./src/design-system/preset.ts --bridge",
+		"tw:scan": "pandwind-codemod tw scan ./src/tw.ts ./src ./src/pandwind.safelist.css"
 	}
 }
 ```
@@ -167,7 +167,7 @@ composition over hidden selector coupling.
 At CI and package boundaries:
 
 - run codegen and fail on a dirty generated diff;
-- run `pandwind-tw scan` so dynamic candidates are known;
+- run `pandwind-codemod tw scan` so dynamic candidates are known;
 - lint raw escapes and unresolved tokens;
 - run browser-state and SSR/hydration fixtures for theme changes;
 - measure CSS output and bundle size; and

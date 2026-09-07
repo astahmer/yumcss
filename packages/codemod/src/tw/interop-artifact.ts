@@ -1,6 +1,6 @@
-import { extractTwConfig, type TwConfig } from "../vite/inline.ts";
-import type { UtilityBridge } from "./bridge-generator.ts";
-import { UTILITY_SUBKEYS } from "./compile.ts";
+import { extractTwConfig, type TwConfig } from "pandwind/vite/inline";
+import type { UtilityBridge } from "pandwind/tw";
+import { UTILITY_SUBKEYS } from "pandwind/tw/compile";
 
 /** Stable generated metadata consumed by migration and analysis tooling. */
 export const PANDWIND_INTEROP_SCHEMA = "pandwind.interop/1" as const;

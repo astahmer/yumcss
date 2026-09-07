@@ -64,8 +64,8 @@ advanced build subpaths declare those packages as optional peers so a runtime
 only install stays small. Install only the lane you use:
 
 ```sh
-# typed Tailwind codegen (`pandwind-tw`) and Tailwind project loading
-pnpm add -D @tailwindcss/node postcss cac
+# typed Tailwind codegen (`pandwind-codemod tw`) and Tailwind project loading
+pnpm add -D pandwind-codemod
 
 # source scanning or the migration/analyze packages
 pnpm add -D oxc-parser
@@ -74,10 +74,9 @@ pnpm add -D oxc-parser
 pnpm add -D unplugin
 ```
 
-`pandwind` keeps these as development dependencies for its own build and tests;
-they are not installed by a runtime-only consumer. The codegen and integration
-entries report the missing optional package through the host/package manager
-when that lane is selected.
+The `pandwind-codemod` package owns the Tailwind loader and codegen command;
+they are not installed by a runtime-only `pandwind` consumer. The runtime
+package keeps only the optional packages needed by its own build and tests.
 
 For repository development only, enter the reproducible shell first. It provides
 the pinned Nub TypeScript runner, Node, pnpm, and the formatting utilities:
@@ -102,8 +101,8 @@ complete example (`defineTokens` / `defineTheme` / `definePreset`).
 // package.json
 {
 	"scripts": {
-		"tw:generate": "pandwind-tw generate ./src/tailwind.css ./src --tokens ./src/preset.ts --bridge",
-		"tw:scan": "pandwind-tw scan ./src/tw.ts ./src ./src/pandwind.safelist.css",
+		"tw:generate": "pandwind-codemod tw generate ./src/tailwind.css ./src --tokens ./src/preset.ts --bridge",
+		"tw:scan": "pandwind-codemod tw scan ./src/tw.ts ./src ./src/pandwind.safelist.css",
 	},
 }
 ```
@@ -144,8 +143,8 @@ same API either way.
 atomic styles, `cx()` to merge both. Plain strings keep working everywhere.
 
 Subpath map: `pandwind/css`, `/tw`, `/cx`, `/preset`, `/design`, `/vite`
-(runtime); `pandwind/codegen/{types,theme,collect,bridge}` and the
-`pandwind-tw` binary (build-time codegen helpers); `pandwind/unplugin` (generic
+(runtime); the `pandwind-codemod tw` command and `pandwind-codemod/tw` subpath
+(build-time codegen helpers); `pandwind/unplugin` (generic
 bundler adapters); non-web backends `pandwind/react-native`, `/opentui` and
 the render-agnostic `pandwind/stack` (+ `pandwind/stack/react`) — see
 [BACKENDS.md](./BACKENDS.md).
@@ -169,7 +168,7 @@ is _derived from the compiled design system on every run_, contains only what
 provably exists, and wrong classes are caught as TypeScript errors before an
 agent ever ships.
 
-- **`pandwind-tw generate`** — loads your `tailwind.css` through Tailwind's own design
+- **`pandwind-codemod tw generate`** — loads your `tailwind.css` through Tailwind's own design
   system (`@tailwindcss/node`) and generates two files next to it:
   - `types.d.ts` — one key per utility with literal value unions (including
     opacity modifiers like `bg-red-500/50`), recursive variant nesting, and the
@@ -180,7 +179,7 @@ agent ever ships.
   class strings: camelCase keys, array values (`ring: ["1", "gray-900/5"]`),
   negative utilities (`"-translateX": "1/2"`), compound bases
   (`flex: "col"` -> `flex flex-col`) and arbitrarily deep variant stacks.
-- **`pandwind-tw scan`** — Tailwind v4 scans source files for literal candidates, so
+- **`pandwind-codemod tw scan`** — Tailwind v4 scans source files for literal candidates, so
   dynamically composed classes are invisible to it. The scanner statically
   evaluates every `tw({ ... })` call through the same runtime and writes a
   safelist file that Tailwind generates CSS for.
@@ -216,16 +215,16 @@ agent ever ships.
   candidates, missing-css warnings with editor links) + Design-system tab
   (theme vars, typed utility unions, bridge map, preset tokens). Extend the
   CLI, not the app, when adding metrics.
-- **`pandwind-tw scan` CSS mode** — point the out-file at a `.css` path and the
+- **`pandwind-codemod tw scan` CSS mode** — point the out-file at a `.css` path and the
   scanner emits Tailwind v4 `@source inline(...)` directives instead of a JS
   safelist module; import it from `tailwind.css` and no generated JS lands in
   your source tree. Proven to generate identical rules (see
   `tests/source-inline.test.ts`).
-- **`pandwind-tw prune`** — optional post-codegen step: re-compiles the scanned
+- **`pandwind-codemod tw prune`** — optional post-codegen step: re-compiles the scanned
   `tw()` classes through the real Tailwind engine and keeps only the theme
   variables the compiled CSS actually references (the example app drops 82
   vars down to the ~20 its compiled CSS references). Caveat: breaks dynamic
-  token access — opt-in, run after `pandwind-tw generate` whenever sources change.
+  token access — opt-in, run after `pandwind-codemod tw generate` whenever sources change.
 - **`packages/codemod`** — migrate raw Tailwind authoring onto the pandwind
   APIs (`tw` / `cx` / `css` modes; dry-run + diff by default, idempotent,
   driven by the generated metadata). See
@@ -240,7 +239,7 @@ agent ever ships.
 ### DTCG design tokens → `@theme` → generated types
 
 Your preset's DTCG token groups are the single source of truth for both
-engines. `pandwind-tw generate --tokens <preset-module>` bridges them into a Tailwind v4
+engines. `pandwind-codemod tw generate --tokens <preset-module>` bridges them into a Tailwind v4
 `@theme {}` block (only real theme namespaces: color, radius, text, leading,
 font-weight, font, tracking — spacing scales and friends are skipped rather
 than guessed) and injects it while generating types:
@@ -255,7 +254,7 @@ than guessed) and injects it while generating types:
   generated output as before.
 
 ```sh
-pnpm exec pandwind-tw generate ./src/tailwind.css ./src --tokens ./src/preset.ts
+pnpm exec pandwind-codemod tw generate ./src/tailwind.css ./src --tokens ./src/preset.ts
 ```
 
 The generator accepts any module that default-exports groups or exports an
@@ -395,7 +394,7 @@ plugins: [pandwindCssVite(examplePreset), ...];
 import "pandwind:css";
 ```
 
-The plugin scans source files (like Tailwind's own scanner, and like `pandwind-tw scan`
+The plugin scans source files (like Tailwind's own scanner, and like `pandwind-codemod tw scan`
 for the safelist) for literal `css(...)` calls, resolves them through the
 design layer and serves the deduped CSS — tokens plus atomic rules. Dynamic
 calls keep working at runtime but are not extracted (same constraint as
@@ -465,7 +464,7 @@ Tailwind-class emitter instead of a hashed-atom emitter:
 ```ts
 import { createTwAdapter } from "pandwind/tw";
 import { examplePreset } from "pandwind/preset";
-import { bridge, variants } from "./bridge"; // generated by `pandwind-tw generate --bridge`
+import { bridge, variants } from "./bridge"; // generated by `pandwind-codemod tw generate --bridge`
 
 const twAdapter = createTwAdapter({ preset: examplePreset, variants, bridge });
 const dcss = createDesignCss(examplePreset, { className: twAdapter });
@@ -481,7 +480,7 @@ tokens that equal a `@theme` value yield the short utility (`$blue-500` ->
 declarations — `$input` dynamics, unknown conditions — **throw a clear error**
 instead of silently emitting a class that has no CSS in this mode.
 
-The bridge stage of `pandwind-tw generate --bridge` sweeps Tailwind's own class list and keeps only
+The bridge stage of `pandwind-codemod tw generate --bridge` sweeps Tailwind's own class list and keeps only
 direct-property utilities that resolve against your `@theme`, so the bridge
 stays small (~41 KB for the example preset) and cannot drift from what
 Tailwind actually compiles.
@@ -612,7 +611,7 @@ Inputs: `base-ref`, `working-directory`, `app-dir`, `patterns`, `pr-number`
 (for dispatch runs), and `pandwind-version`. `working-directory` and `app-dir`
 are relative to the caller checkout; `patterns` is relative to `app-dir`. The
 workflow runs the published `pandwind-analyze` package and requires the app to
-have run `pandwind-tw generate --bridge` outputs committed (the workflow reads
+have run `pandwind-codemod tw generate --bridge` outputs committed (the workflow reads
 them). Fail-open: reporting problems never fail the workflow.
 
 ## Why pandwind exists
@@ -657,7 +656,7 @@ nub run --filter example dev       # dev server (runs codegen + scan first)
 nub run test                       # vitest + tstyche
 nub run typecheck
 nub run --filter example tw:generate # regenerate types.d.ts + tw.ts (+ bridge)
-nub run --filter example tw:scan   # regenerate the safelist via pandwind-tw scan
+nub run --filter example tw:scan   # regenerate the safelist via pandwind-codemod tw scan
 nub run --filter example build     # production build (tw() inlined, css() extracted)
 ```
 

@@ -2,6 +2,10 @@ import { defineConfig } from "vitest/config";
 
 export default defineConfig({
 	test: {
+		// Tailwind's official compiler is exercised by the bridge and parity
+		// suites; a cold compiler load legitimately exceeds Vitest's default.
+		testTimeout: 30_000,
+		hookTimeout: 30_000,
 		// Workspace packages expose their sources behind the "pandwind"
 		// condition (see tsconfig.base.json customConditions). Without it,
 		// Node-style resolution falls through to a stale dist/ build and

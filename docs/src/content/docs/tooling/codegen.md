@@ -1,6 +1,6 @@
 ---
 title: Codegen — commands & flags
-description: pandwind-tw generate / scan / prune and the analyze CLI, with every flag.
+description: pandwind-codemod tw generate / scan / prune and the analyze CLI, with every flag.
 sidebar:
   order: 1
 ---
@@ -9,10 +9,10 @@ These are published package binaries and are deterministic: identical inputs
 produce byte-identical outputs. The examples use `pnpm`, but any package
 manager's equivalent executable command works.
 
-## `pandwind-tw generate` — typed runtime from your tailwind.css
+## `pandwind-codemod tw generate` — typed runtime from your tailwind.css
 
 ```
-pnpm exec pandwind-tw generate <css-entry> <out-dir> [--tokens <module>] [--agents]
+pnpm exec pandwind-codemod tw generate <css-entry> <out-dir> [--tokens <module>] [--agents]
                          [--bridge] [--bridge-file <path>]
                          [--preset-import <module>] [--preset-export <name>]
 ```
@@ -39,10 +39,10 @@ Tailwind's own design system (`@tailwindcss/node`) and writes:
   theme scopes, semantic tokens, plus the verify commands an agent runs
   (`typecheck`, `analyze --json`, the missing-css gate).
 
-## `pandwind-tw scan` — safelist from real call sites
+## `pandwind-codemod tw scan` — safelist from real call sites
 
 ```
-pnpm exec pandwind-tw scan [tw-entry] [src-dir] [out-file]
+pnpm exec pandwind-codemod tw scan [tw-entry] [src-dir] [out-file]
 ```
 
 Defaults: `src/tw.ts src src/pandwind.safelist.css`. Statically evaluates
@@ -51,16 +51,16 @@ every `tw({ ... })` call through the same runtime and writes Tailwind v4
 Import the generated file from `tailwind.css` so dynamic candidates get
 compiled CSS; no generated JS lands in your source tree.
 
-## `pandwind-tw prune` — drop unused theme variables
+## `pandwind-codemod tw prune` — drop unused theme variables
 
 ```
-pnpm exec pandwind-tw prune [theme-css] [tw-entry] [src-dir]
+pnpm exec pandwind-codemod tw prune [theme-css] [tw-entry] [src-dir]
 ```
 
 Defaults: `src/pandwind-theme.css src/tw.ts src`. Re-compiles the scanned
 classes through the real engine and keeps only the `@theme` variables the
 compiled CSS actually references. Opt-in; breaks dynamic token access; run
-after `pandwind-tw generate` whenever sources change.
+after `pandwind-codemod tw generate` whenever sources change.
 
 ## `analyze` — coverage & budget reports
 
