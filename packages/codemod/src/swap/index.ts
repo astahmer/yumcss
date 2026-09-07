@@ -15,7 +15,6 @@ import {
  * change styling — never acceptable.
  */
 import type { PandwindMeta } from "../meta.ts";
-import type { TransformOptions, TransformResult } from "../migrate.ts";
 import { SourcePass } from "../source-pass-utils.ts";
 import { hasCssBinding, relativeModuleImport, ensureImport } from "../shared.ts";
 import { SWAP_REGISTRY } from "./swap-registry.ts";
@@ -649,7 +648,14 @@ export interface SwapOptions {
 	capabilityMode?: AdapterCapabilityMode;
 }
 
-export interface SwapTransformResult extends TransformResult {
+export interface SwapTransformResult {
+	readonly code: string;
+	readonly changed: boolean;
+	/** Call sites converted through the registered source and target adapters. */
+	readonly converted: number;
+	/** Source values that remain visible because the route could not prove them. */
+	readonly unmappedTokens: readonly { file: string; token: string; reason: string }[];
+	readonly skippedByMarker: number;
 	readonly capabilityReports: readonly AdapterCapabilityReport[];
 }
 
@@ -689,7 +695,7 @@ function collectMatches(
 export function runSwap(
 	source: string,
 	meta: PandwindMeta,
-	options: SwapOptions & Pick<TransformOptions, "metaDir">,
+	options: SwapOptions,
 ): SwapTransformResult {
 	const marker = options.skipMarker ?? "pandwind:migrate-skip";
 	const file = options.file;
