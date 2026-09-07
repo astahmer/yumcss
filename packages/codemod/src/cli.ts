@@ -2,8 +2,8 @@
 /**
  * pandwind-codemod CLI.
  *
- * The CLI has one migration command for both the historical class-string
- * pass and registered adapter routes. It writes by default; `--dry-run`
+ * The CLI has one migration command for registered adapter routes. It writes
+ * by default; `--dry-run`
  * produces the same plan without changing files. `tokens` remains a separate
  * data-format conversion command.
  */
@@ -12,12 +12,7 @@ import { basename, dirname, extname, isAbsolute, relative, resolve } from "node:
 import { cac, type CAC, type Command } from "cac";
 import { createSourceWorkspace } from "pandwind/source/workspace";
 import { loadMetaFromSourcesAsync, type PandwindMeta } from "./meta.ts";
-import {
-	MigrateModeTag,
-	transformSource,
-	type MigrateMode,
-	type TransformResult,
-} from "./migrate.ts";
+import type { TransformResult } from "./migrate.ts";
 import * as swapImport from "./swap/index.ts";
 import { CodemodAdapterId, SwapSourceId, SwapTargetId } from "./swap/identifiers.ts";
 import { tokenSetCodec } from "./swap/token-set.ts";
@@ -292,26 +287,9 @@ const printPackageInstall = (result: PackageInstallResult): void => {
 	console.log(`dependencies: installed with ${result.manager} (${result.installed.join(", ")})`);
 };
 
-const LEGACY_MODES = new Set<MigrateMode>([
-	MigrateModeTag.Tw,
-	MigrateModeTag.Cx,
-	MigrateModeTag.Css,
-	MigrateModeTag.Keep,
-]);
-
-const isLegacyMode = (args: swapImport.MigrateCliArgs): boolean =>
-	args.to === MigrateModeTag.Cx ||
-	args.to === MigrateModeTag.Css ||
-	args.to === MigrateModeTag.Keep ||
-	args.sources.length > 0;
-
 async function mainMigrate(argv: string[]): Promise<void> {
 	const args = swapImport.parseMigrateArgs(argv);
 	const root = migrationRoot(args);
-	if (isLegacyMode(args)) {
-		await runLegacyMigration(args, root);
-		return;
-	}
 	const explicitlyExternal = isExternalRoute(args);
 	const candidateFilePaths = expandPatterns(
 		args.patterns,
@@ -802,91 +780,6 @@ async function runAdapterRoute(
 				files: reportEntries,
 			}),
 		);
-	}
-}
-
-async function runLegacyMigration(args: swapImport.MigrateCliArgs, root: string): Promise<void> {
-	const metaDirRelative = args.metaDir !== "" ? args.metaDir : "apps/example/src";
-	const metaDir = resolve(root, metaDirRelative);
-
-	let meta: PandwindMeta;
-	try {
-		const bridgePath = resolve(metaDir, "bridge.ts");
-		meta = await loadMetaFromSourcesAsync({
-			typesDtsPath: resolve(metaDir, "types.d.ts"),
-			twTsPath: resolve(metaDir, "tw.ts"),
-			bridgePath: existsSync(bridgePath) ? bridgePath : undefined,
-		});
-	} catch (error) {
-		console.error(
-			`codemod: failed to load generated metadata from ${metaDir}\n` +
-				"  run `nub exec pandwind-tw generate --bridge` first, or pass --meta=<dir>\n" +
-				`  (${(error as Error).message})`,
-		);
-		process.exitCode = 1;
-		return;
-	}
-
-	const filePaths = expandPatterns(args.patterns, root);
-	const fileResults: Array<{ relative: string; result: TransformResult }> = [];
-	if (filePaths.length === 0) {
-		console.error("codemod: no matching files");
-		process.exitCode = 1;
-		return;
-	}
-
-	let totalConverted = 0;
-	let totalChanged = 0;
-	let totalUnmapped = 0;
-	const mode = LEGACY_MODES.has(args.to as MigrateMode)
-		? (args.to as MigrateMode)
-		: args.to === SwapTargetId.Tw
-			? "tw"
-			: args.to === SwapTargetId.CssClass
-				? "css"
-				: "keep";
-
-	for (const file of filePaths) {
-		const relative = file.slice(root.length + 1);
-		let source: string;
-		try {
-			source = readFileSync(file, "utf8");
-		} catch {
-			continue;
-		}
-		const result: TransformResult = transformSource(source, meta, {
-			mode,
-			file: relative,
-			metaDir: metaDirRelative,
-			skipMarker: args.skipMarker,
-			sources: args.sources,
-		});
-		totalConverted += result.converted;
-		totalUnmapped += result.unmappedTokens.length;
-		fileResults.push({ relative, result });
-
-		if (!result.changed) {
-			console.log(`${relative}: no changes`);
-			continue;
-		}
-		totalChanged++;
-		if (args.diff) console.log(unifiedDiff(source, result.code, relative));
-		if (!args.dryRun) writeFileSync(file, result.code);
-		console.log(
-			`${relative}: ${args.dryRun ? "would change" : "written"} — ${result.converted} call site(s), ` +
-				`${result.unmappedTokens.length} token(s) left verbatim` +
-				(result.skippedByMarker > 0 ? `, ${result.skippedByMarker} skipped by marker` : ""),
-		);
-	}
-
-	console.log(
-		`\nsummary: ${filePaths.length} file(s) scanned · ${totalChanged} changed · ` +
-			`${totalConverted} converted · ${totalUnmapped} verbatim token(s) · mode=${mode} · ` +
-			(args.dryRun ? "dry-run (no files written)" : "WRITTEN"),
-	);
-
-	if (args.report) {
-		console.log(buildReport(fileResults));
 	}
 }
 

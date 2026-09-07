@@ -129,12 +129,13 @@ Target emitters own their documented imports, component carriers, token
 spelling, and framework rewrites. A source library's runtime context is
 preserved or reported as a residual when the target cannot represent it.
 
-### Token references and legacy modes
+### Token references
 
 Value-capable targets can use --token-refs=off|bare|group to control whether
 verified token references are emitted instead of resolved literals. The old
---to=tw, --to=css, --to=cx, and --to=keep modes remain available under
-migrate for the generated-metadata class-string pass.
+Registered source and target adapters own class-string conversion and token
+preservation. Use `--from` and `--to` to select the route; unsupported values
+remain in place with a typed residual in the migration report.
 
 ## Token configs (tokens subcommand)
 

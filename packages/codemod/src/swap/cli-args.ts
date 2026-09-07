@@ -5,8 +5,6 @@ import { CodemodAdapterId, SwapSourceId, SwapTargetId } from "./identifiers.ts";
 import { SWAP_REGISTRY } from "./swap-registry.ts";
 import type { TokenRefMode } from "./tokens.ts";
 import type { ExternalAdapterId } from "./external-adapters.ts";
-import { MigrateModeTag, type MigrateMode } from "../migrate.ts";
-import { parseSourceList, type SourceId } from "../sources.ts";
 
 const builtinAdapterIds = createBuiltinCodemodCatalog().adapters.map((adapter) => adapter.id);
 
@@ -26,7 +24,7 @@ export type SwapSource = (typeof SWAP_SOURCES)[number];
 /** The single CLI contract for project and file migrations. */
 export interface MigrateCliArgs {
 	from: SwapSource;
-	to: SwapTarget | MigrateMode;
+	to: SwapTarget;
 	/** Project root; defaults to the current working directory or an absolute-pattern root. */
 	root?: string;
 	dryRun: boolean;
@@ -49,7 +47,6 @@ export interface MigrateCliArgs {
 	/** Capability policy for adapter routes; external routes default to safe. */
 	capabilityMode?: AdapterCapabilityMode;
 	reportFormat: "text" | "json";
-	sources: readonly SourceId[];
 }
 
 export function configureMigrateCommand(command: Command): void {
@@ -136,13 +133,6 @@ const choice = <T extends string>(
 	);
 };
 
-const MIGRATE_MODES = new Set<MigrateMode>([
-	MigrateModeTag.Tw,
-	MigrateModeTag.Cx,
-	MigrateModeTag.Css,
-	MigrateModeTag.Keep,
-]);
-
 export function parseMigrateArgs(argv: string[]): MigrateCliArgs {
 	const cli = cac("pandwind-codemod migrate");
 	const command = cli.command("[...patterns]", "Migrate a project between styling adapters");
@@ -161,11 +151,8 @@ export function parseMigrateArgs(argv: string[]): MigrateCliArgs {
 	const rawTo = optionString(options, "to") ?? SwapTargetId.CssClass;
 	const fromValue = canonicalIdentifier(rawFrom);
 	const toValue = canonicalIdentifier(rawTo);
-	const sourceList = rawFrom.includes(",") ? parseSourceList(rawFrom) : [];
-	const from = sourceList.length > 0 ? SwapSourceId.Auto : choice("from", fromValue, SWAP_SOURCES);
-	const to = MIGRATE_MODES.has(toValue as MigrateMode)
-		? (toValue as MigrateMode)
-		: choice("to", toValue, SWAP_TARGETS);
+	const from = choice("from", fromValue, SWAP_SOURCES);
+	const to = choice("to", toValue, SWAP_TARGETS);
 	const tokenRefs = choice("token-refs", optionString(options, "tokenRefs"), [
 		"off",
 		"bare",
@@ -190,7 +177,6 @@ export function parseMigrateArgs(argv: string[]): MigrateCliArgs {
 		patterns: [...cli.args],
 		metaDir: optionString(options, "meta") ?? "",
 		skipMarker: optionString(options, "skipMarker") ?? "pandwind:migrate-skip",
-		sources: sourceList,
 		tokenRefs,
 		engine: optionBoolean(options, "engine"),
 		tokenize: optionBoolean(options, "tokenize"),
