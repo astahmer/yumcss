@@ -11,7 +11,7 @@
 		"build": "tsc --noEmit && vite build",
 		"typecheck": "nub run editor:types:check && tsc --noEmit",
 		"test": "vitest run --config vitest.config.ts",
-		"tw:generate": "nub exec --node pandwind-tw generate ./src/tailwind.css ./src --tokens @pandwind/example-preset --preset-import @pandwind/example-preset --preset-export examplePreset --bridge && oxfmt ./src/types.d.ts ./src/tw.ts ./src/bridge.ts ./src/pandwind-theme.css"
+		"tw:generate": "nub exec --node pandwind-tw generate ./src/tailwind.css ./src --tokens @pandwind/example-preset --preset-import @pandwind/example-preset --preset-export examplePreset --bridge && nub exec oxfmt ./src/bridge.ts ./src/pandwind-theme.css"
 	},
 	"dependencies": {
 		"@ark-ui/react": "5.39.0",

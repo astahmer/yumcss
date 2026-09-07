@@ -1205,3 +1205,12 @@ entries are deliberately marked internal because the Vite runtime-pruner emits
 those exact imports into generated code. They are a generated artifact
 contract, not authoring APIs, and their evidence is the pruner test rather
 than a public usage example.
+
+Generated Tailwind artifacts are checked with `nub run generated:check`. The
+check regenerates `tw.ts`, `types.d.ts`, `bridge.ts`, the theme, and interop
+metadata in a temporary directory, formats the source artifacts with the
+repository formatter, normalizes only machine-local artifact paths, and
+compares the result with the checked-in files. A failure names the source CSS
+entry, every stale file, and the exact app command that refreshes it. The same
+gate checks the Playground's generated Monaco declarations through
+`editor:types:check`.

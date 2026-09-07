@@ -119,14 +119,14 @@ No runtime entry should import a build or tooling implementation.
 
 ### Tech choices
 
-| Choice | Decision | Rationale |
-|--------|----------|-----------|
-| Package split | Prefer physical ownership boundaries over one universal package | Consumers should not install or reason about every Pandwind subsystem |
-| Existing subpaths | Preserve only verified user-facing subpaths | The frozen API is valuable; internal implementation paths are not compatibility contracts |
-| Build integration | Keep Tailwind/Oxc/PostCSS dependencies with codegen or build integration | These are not runtime requirements |
-| Optional tooling | Keep MCP, Studio, DevTools, and analyzer dependencies out of the runtime package | Tooling can evolve independently and may need host-specific dependencies |
-| Maturity labels | Stable / experimental / research | Broad support must not look equivalent to production proof |
-| Compatibility | No deprecated aliases or compatibility projections | Pre-launch cleanup permits one coherent boundary |
+| Choice            | Decision                                                                         | Rationale                                                                                 |
+| ----------------- | -------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| Package split     | Prefer physical ownership boundaries over one universal package                  | Consumers should not install or reason about every Pandwind subsystem                     |
+| Existing subpaths | Preserve only verified user-facing subpaths                                      | The frozen API is valuable; internal implementation paths are not compatibility contracts |
+| Build integration | Keep Tailwind/Oxc/PostCSS dependencies with codegen or build integration         | These are not runtime requirements                                                        |
+| Optional tooling  | Keep MCP, Studio, DevTools, and analyzer dependencies out of the runtime package | Tooling can evolve independently and may need host-specific dependencies                  |
+| Maturity labels   | Stable / experimental / research                                                 | Broad support must not look equivalent to production proof                                |
+| Compatibility     | No deprecated aliases or compatibility projections                               | Pre-launch cleanup permits one coherent boundary                                          |
 
 ### Architecture
 
@@ -192,12 +192,12 @@ requiring readers to understand the whole repository before choosing a lane.
 
 ### Common interactions
 
-| Action | Result |
-|--------|--------|
-| Install runtime lane | No build-only dependency is required for runtime imports |
-| Run code generation | Generated files identify their source inputs and refresh command |
+| Action                  | Result                                                                       |
+| ----------------------- | ---------------------------------------------------------------------------- |
+| Install runtime lane    | No build-only dependency is required for runtime imports                     |
+| Run code generation     | Generated files identify their source inputs and refresh command             |
 | Import an internal path | The package either rejects it or documents it as a deliberate public subpath |
-| Open advanced docs | The page shows stability, host requirements, and evidence status |
+| Open advanced docs      | The page shows stability, host requirements, and evidence status             |
 
 ## Data model
 
@@ -256,7 +256,7 @@ not a new consumer-facing runtime API.
 - [x] Internal `_runtime` paths are either removed from the public export map or
       justified by a verified external contract.
 - [x] Package repository metadata points at the actual workspace directories.
-- [ ] Generated-artifact freshness failures identify the stale file, source
+- [x] Generated-artifact freshness failures identify the stale file, source
       input, and exact refresh command.
 - [ ] Runtime size, pack/import, typecheck, and package tests pass after the
       boundary changes.
@@ -266,7 +266,7 @@ not a new consumer-facing runtime API.
 
 ## Decisions log
 
-| Date | Decision | Rationale |
-|------|----------|-----------|
-| 2026-09-07 | Split the review into product/package, migration-proof, and tooling/runtime plans | The current weaknesses have different owners and validation gates |
-| 2026-09-07 | Preserve the frozen authoring API while changing internal package ownership | Adoption problems should not be solved by adding more user-facing APIs |
+| Date       | Decision                                                                          | Rationale                                                              |
+| ---------- | --------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| 2026-09-07 | Split the review into product/package, migration-proof, and tooling/runtime plans | The current weaknesses have different owners and validation gates      |
+| 2026-09-07 | Preserve the frozen authoring API while changing internal package ownership       | Adoption problems should not be solved by adding more user-facing APIs |

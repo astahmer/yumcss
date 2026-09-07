@@ -52,6 +52,9 @@ jobs:
       - name: Format check (oxfmt)
         run: nub run format
 
+      - name: Generated artifact freshness
+        run: nub run generated:check
+
       - name: Production ownership and pivot gates
         run: nub run knip:production && nub run pivot:proof
 
