@@ -36,6 +36,7 @@ export interface MigrationRouteProofSpec {
 	readonly execution: MigrationRouteProofExecutionTag;
 	readonly requiredDimensions: readonly RealRepositoryProofDimension[];
 	readonly referenceIds: readonly string[];
+	readonly evidenceIds?: readonly string[];
 	readonly note: string;
 }
 
@@ -60,10 +61,11 @@ export const MIGRATION_ROUTE_PROOF_CATALOG: readonly MigrationRouteProofSpec[] =
 		from: CodemodAdapterId.Tailwind,
 		to: CodemodAdapterId.Pandwind,
 		maturity: MigrationRouteMaturityTag.Experimental,
-		execution: MigrationRouteProofExecutionTag.SourceOnly,
+		execution: MigrationRouteProofExecutionTag.InstalledProject,
 		requiredDimensions: PROJECT_PROOF_DIMENSIONS,
 		referenceIds: ["tailwindcss-docs-home"],
-		note: "The pinned corpus proves source routing; installed project proof is still required for promotion.",
+		evidenceIds: ["tailwind-installed-proof"],
+		note: "A bounded installed React/Vite fixture covers the project lifecycle; broader route coverage is still required for promotion.",
 	},
 	{
 		id: MigrationRouteProofRouteId.PandaToPandwind,

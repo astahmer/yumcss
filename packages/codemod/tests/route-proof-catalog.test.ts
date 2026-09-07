@@ -20,10 +20,15 @@ describe("migration route proof catalog", () => {
 			),
 		).toEqual([]);
 		expect(
-			MIGRATION_ROUTE_PROOF_CATALOG.every(
-				(route) => route.execution !== MigrationRouteProofExecutionTag.InstalledProject,
+			MIGRATION_ROUTE_PROOF_CATALOG.filter(
+				(route) => route.execution === MigrationRouteProofExecutionTag.InstalledProject,
 			),
-		).toBe(true);
+		).toMatchObject([
+			expect.objectContaining({
+				id: MigrationRouteProofRouteId.TailwindToPandwind,
+				evidenceIds: ["tailwind-installed-proof"],
+			}),
+		]);
 	});
 
 	test("matches Pandwind API dialects to the same route policy", () => {
@@ -37,5 +42,6 @@ describe("migration route proof catalog", () => {
 		).toBe(MigrationRouteProofRouteId.TailwindToPandwind);
 		expect(route?.requiredDimensions).toContain("typecheck");
 		expect(route?.requiredDimensions).toContain("build");
+		expect(route?.evidenceIds).toEqual(["tailwind-installed-proof"]);
 	});
 });
