@@ -12,7 +12,6 @@ import { basename, dirname, extname, isAbsolute, relative, resolve } from "node:
 import { cac, type CAC, type Command } from "cac";
 import { createSourceWorkspace } from "pandwind/source/workspace";
 import { loadMetaFromSourcesAsync, type PandwindMeta } from "./meta.ts";
-import type { TransformResult } from "./migrate.ts";
 import * as swapImport from "./swap/index.ts";
 import { CodemodAdapterId, SwapSourceId, SwapTargetId } from "./swap/identifiers.ts";
 import { tokenSetCodec } from "./swap/token-set.ts";
@@ -786,43 +785,6 @@ async function runAdapterRoute(
 	}
 }
 
-export interface ReportEntry {
-	relative: string;
-	result: TransformResult;
-}
-
-/**
- * Migration-completeness score: how much of the scanned class-string
- * surface flows through pandwind APIs vs what stays manual. Pure so the
- * math is unit-testable without spawning the CLI.
- */
-export function buildReport(fileResults: Array<ReportEntry>): string {
-	const totalConverted = fileResults.reduce((acc, f) => acc + f.result.converted, 0);
-	const totalSkipped = fileResults.reduce((acc, f) => acc + f.result.skippedByMarker, 0);
-	const totalVerbatim = fileResults.reduce((acc, f) => acc + f.result.unmappedTokens.length, 0);
-	const manualWork = fileResults.filter(
-		(f) => f.result.skippedByMarker > 0 || f.result.unmappedTokens.length > 0,
-	);
-	const totalSites = totalConverted + totalSkipped;
-	const lines: Array<string> = [];
-	lines.push("migration report:");
-	lines.push(
-		`  call sites through pandwind: ${totalConverted}/${totalSites}` +
-			(totalSites > 0 ? ` (${Math.round((totalConverted / totalSites) * 100)}%)` : ""),
-	);
-	lines.push(`  flagged for manual work: ${totalSkipped} site(s)`);
-	lines.push(`  tokens kept verbatim (unknown to metadata): ${totalVerbatim}`);
-	if (manualWork.length > 0) {
-		lines.push("  files needing attention:");
-		for (const f of manualWork.slice(0, 20)) {
-			lines.push(
-				`    - ${f.relative}: ${f.result.skippedByMarker} flagged, ${f.result.unmappedTokens.length} verbatim`,
-			);
-		}
-		if (manualWork.length > 20) lines.push(`    … and ${manualWork.length - 20} more`);
-	}
-	return lines.join("\n");
-}
 /**
  * Token-config conversions (plans/022): DTCG JSON <-> @theme css <->
  * definePreset <-> panda.config tokens. One TokenSet IR in between.

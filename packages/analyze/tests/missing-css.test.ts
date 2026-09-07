@@ -12,6 +12,10 @@ const app = resolve(import.meta.dirname, "../../../apps/example");
 const config = loadTwConfig(resolve(app, "src/tw.ts"));
 
 describe("missing-css warnings", () => {
+	test("missing Tailwind config reports the requested path", () => {
+		expect(() => loadTwConfig("/nonexistent/src/tw.ts")).toThrow(/tw\.ts/);
+	});
+
 	test("valid tokens are not flagged", () => {
 		const stats = analyzeSource(`export const a = cx("px-2 py-4 rounded-lg");`, "ok.ts", {
 			config,
