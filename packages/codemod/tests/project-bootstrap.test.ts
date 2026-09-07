@@ -21,4 +21,20 @@ describe("Pandwind project bootstrap", () => {
 			"createDesignCss(pandwindPreset)",
 		);
 	});
+
+	test("keeps generated css bindings open to CSS properties", async () => {
+		const support = await createPandwindProjectSupport({
+			root: "/project",
+			sourceAdapter: CodemodAdapterId.Panda,
+			outputDirectory: "pandwind",
+			readFile: () => undefined,
+			listFiles: () => [],
+		});
+
+		const preset = support.files.find((file) => file.path === "pandwind/preset.ts")?.content;
+		expect(preset).toContain(
+			'config: {} as import("pandwind/preset").AnyCssConfig',
+		);
+		expect(preset).toContain('properties: { $all: true }');
+	});
 });

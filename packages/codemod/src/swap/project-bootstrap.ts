@@ -60,7 +60,7 @@ function presetSource(
 
 export const pandwindPreset = definePreset(
 	{
-		config: {},
+		config: {} as import("pandwind/preset").AnyCssConfig,
 		tokens: ${JSON.stringify(config.tokenCatalog?.groups ?? {}, null, "\t")},
 	},
 	{
