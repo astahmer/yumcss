@@ -104,9 +104,15 @@ export function createCssExtractorPluginCore(
 			if (result.varKeys.length > 0) carriedVarKeys.set(id, result.varKeys);
 			else carriedVarKeys.delete(id);
 		}
-		const optimized = runtimePruner.transform(extracted, id);
+		const withStylesheetImport =
+			names.size > 0 &&
+			!extracted.includes(`"${virtualId}"`) &&
+			!extracted.includes(`'${virtualId}'`)
+				? `import "${virtualId}";\n${extracted}`
+				: extracted;
+		const optimized = runtimePruner.transform(withStylesheetImport, id);
 		if (optimized !== null) return optimized;
-		return extracted === code ? null : { code: extracted, map: null };
+		return withStylesheetImport === code ? null : { code: withStylesheetImport, map: null };
 	};
 
 	/** Render the full single-sheet body (default mode / debug manifest). */

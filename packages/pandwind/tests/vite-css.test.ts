@@ -495,6 +495,26 @@ const makeProject = (files: Record<string, string>): string => {
 	return dir;
 };
 
+test("static extraction retains the virtual stylesheet side effect", () => {
+	const dir = makeProject({
+		"src/css.ts": 'import { createCss } from "pandwind/css"; export const css = createCss();',
+		"src/app.tsx": 'import { css } from "./css"; export const card = css.class({ color: "red" });',
+	});
+	try {
+		const plugin = pandwindCssVite(examplePreset, { root: dir });
+		const source = readFileSync(join(dir, "src/app.tsx"), "utf8");
+		const transformed = (plugin.transform as (code: string, id: string) => { code: string } | null)(
+			source,
+			join(dir, "src/app.tsx"),
+		);
+
+		expect(transformed?.code).toContain('import "pandwind:css";');
+		expect(transformed?.code).not.toContain("css.class(");
+	} finally {
+		rmSync(dir, { recursive: true, force: true });
+	}
+});
+
 const loadGenerated = (plugin: ReturnType<typeof pandwindCssVite>): string =>
 	plugin.load("\0pandwind:css.css") as string;
 
@@ -530,7 +550,9 @@ test("pandwindCssVite generates the stylesheet from scanned files", () => {
 		expect(plugin.resolveId("pandwind:css")).toBe("\0pandwind:css.css");
 
 		const generated = loadGenerated(plugin);
-		expect(generated).toContain(":root");
+		// Design-layer calls are resolved to concrete declarations before the
+		// sheet sees them, so they do not need the preset's unused token roots.
+		expect(generated).not.toContain(":root");
 		expect(generated).toContain("width:20px");
 		expect(generated).toContain("background-color:#3182ce");
 		expect(generated).toContain("flex-direction:column");
