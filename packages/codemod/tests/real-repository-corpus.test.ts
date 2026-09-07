@@ -39,7 +39,7 @@ describe("pinned real repository corpus", () => {
 			sourceFiles: number;
 			reports: Array<{ id: string; commit: string; path: string }>;
 		};
-		expect(report.schema).toBe("pandwind.real-repository-report/3");
+		expect(report.schema).toBe("pandwind.real-repository-report/4");
 		expect(report.sourceFiles).toBe(corpus.references.length);
 		expect(
 			new Set(corpus.references.map((reference) => reference.from)).size,

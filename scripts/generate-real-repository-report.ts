@@ -7,6 +7,8 @@ import {
 	classifyRealRepositoryProof,
 	createRealRepositoryCorpus,
 	getCodemodAdapter,
+	MIGRATION_ROUTE_PROOF_CATALOG,
+	MigrationRouteProofExecutionTag,
 	runAdapterMigrationAsync,
 	runPandaMigration,
 } from "pandwind-codemod/swap";
@@ -76,7 +78,23 @@ function dependencyNames(value: readonly { packages: readonly { name: string }[]
 	].toSorted();
 }
 
-const reports = [] as Array<Record<string, unknown>>;
+interface GeneratedReport {
+	readonly id: string;
+	readonly adapterRoute: string;
+	readonly converted: number;
+	readonly skipped: number;
+	readonly residuals: number;
+	readonly promotion: {
+		readonly eligible: boolean;
+		readonly reasons: readonly string[];
+		readonly dimensions: Readonly<
+			Record<string, { readonly status: string; readonly reason?: string }>
+		>;
+	};
+	readonly [key: string]: unknown;
+}
+
+const reports = [] as GeneratedReport[];
 const fixtures = [
 	...corpus.inline,
 	...corpus.references.map((reference) => ({
@@ -240,11 +258,52 @@ for (const fixture of fixtures) {
 }
 
 const report = {
-	schema: "pandwind.real-repository-report/3",
+	schema: "pandwind.real-repository-report/4",
 	generatedFrom: "scripts/generate-real-repository-report.ts",
 	cloneRoot: "${PANDWIND_REFERENCE_ROOT:-~/.references}",
 	sourceFiles: corpus.references.length,
 	reports,
+	routeProof: MIGRATION_ROUTE_PROOF_CATALOG.map((route) => {
+		const routeReports = reports.filter(
+			(item) => item.adapterRoute === `${route.from} -> ${route.to}`,
+		);
+		const dimensions = Object.fromEntries(
+			route.requiredDimensions.map((dimension) => {
+				const statuses = routeReports.map(
+					(item) => item.promotion.dimensions[dimension]?.status ?? "unavailable",
+				);
+				const status =
+					routeReports.length === 0
+						? "unavailable"
+						: statuses.every((value) => value === "passed")
+							? "passed"
+							: statuses.some((value) => value === "failed")
+								? "failed"
+								: "pending";
+				return [dimension, { status }];
+			}),
+		);
+		const eligible =
+			route.execution === MigrationRouteProofExecutionTag.InstalledProject &&
+			routeReports.length > 0 &&
+			routeReports.every((item) => item.promotion.eligible) &&
+			route.requiredDimensions.every((dimension) => dimensions[dimension]?.status === "passed");
+		return {
+			id: route.id,
+			from: route.from,
+			to: route.to,
+			maturity: route.maturity,
+			execution: route.execution,
+			referenceIds: route.referenceIds,
+			requiredDimensions: route.requiredDimensions,
+			dimensions,
+			status: eligible ? "passed" : routeReports.length === 0 ? "unavailable" : "pending",
+			eligible,
+			reportIds: routeReports.map((item) => item.id),
+			reasons: routeReports.flatMap((item) => item.promotion.reasons),
+			note: route.note,
+		};
+	}),
 	bundleImpact: {
 		measured: false,
 		reason:

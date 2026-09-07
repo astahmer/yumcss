@@ -1,5 +1,5 @@
 {
-  "schema": "pandwind.real-repository-report/3",
+  "schema": "pandwind.real-repository-report/4",
   "generatedFrom": "scripts/generate-real-repository-report.ts",
   "cloneRoot": "${PANDWIND_REFERENCE_ROOT:-~/.references}",
   "sourceFiles": 30,
@@ -38,6 +38,14 @@
             "status": "pending",
             "reason": "adapter-level canonical CSS pair was not exposed"
           },
+          "typecheck": {
+            "status": "pending",
+            "reason": "the converted reference was not typechecked with its installed dependencies"
+          },
+          "build": {
+            "status": "pending",
+            "reason": "the converted reference was not built with its installed project tooling"
+          },
           "browser-states": {
             "status": "pending",
             "reason": "real browser states have not been executed for this reference"
@@ -62,6 +70,8 @@
         "reasons": [
           "pipeline migration has no adapter-level canonical pair",
           "adapter-level canonical CSS pair was not exposed",
+          "the converted reference was not typechecked with its installed dependencies",
+          "the converted reference was not built with its installed project tooling",
           "real browser states have not been executed for this reference",
           "real SSR and hydration have not been executed for this reference",
           "RSC/streaming proof is not available in the source-only runner",
@@ -135,6 +145,14 @@
           "canonical-css": {
             "status": "passed"
           },
+          "typecheck": {
+            "status": "pending",
+            "reason": "the converted reference was not typechecked with its installed dependencies"
+          },
+          "build": {
+            "status": "pending",
+            "reason": "the converted reference was not built with its installed project tooling"
+          },
           "browser-states": {
             "status": "pending",
             "reason": "real browser states have not been executed for this reference"
@@ -157,6 +175,8 @@
           }
         },
         "reasons": [
+          "the converted reference was not typechecked with its installed dependencies",
+          "the converted reference was not built with its installed project tooling",
           "real browser states have not been executed for this reference",
           "real SSR and hydration have not been executed for this reference",
           "RSC/streaming proof is not available in the source-only runner",
@@ -224,6 +244,14 @@
           "canonical-css": {
             "status": "passed"
           },
+          "typecheck": {
+            "status": "pending",
+            "reason": "the converted reference was not typechecked with its installed dependencies"
+          },
+          "build": {
+            "status": "pending",
+            "reason": "the converted reference was not built with its installed project tooling"
+          },
           "browser-states": {
             "status": "pending",
             "reason": "real browser states have not been executed for this reference"
@@ -246,6 +274,8 @@
           }
         },
         "reasons": [
+          "the converted reference was not typechecked with its installed dependencies",
+          "the converted reference was not built with its installed project tooling",
           "real browser states have not been executed for this reference",
           "real SSR and hydration have not been executed for this reference",
           "RSC/streaming proof is not available in the source-only runner",
@@ -310,6 +340,14 @@
             "status": "pending",
             "reason": "adapter-level canonical CSS pair was not exposed"
           },
+          "typecheck": {
+            "status": "pending",
+            "reason": "the converted reference was not typechecked with its installed dependencies"
+          },
+          "build": {
+            "status": "pending",
+            "reason": "the converted reference was not built with its installed project tooling"
+          },
           "browser-states": {
             "status": "pending",
             "reason": "real browser states have not been executed for this reference"
@@ -334,6 +372,8 @@
         "reasons": [
           "pipeline migration has no adapter-level canonical pair",
           "adapter-level canonical CSS pair was not exposed",
+          "the converted reference was not typechecked with its installed dependencies",
+          "the converted reference was not built with its installed project tooling",
           "real browser states have not been executed for this reference",
           "real SSR and hydration have not been executed for this reference",
           "RSC/streaming proof is not available in the source-only runner",
@@ -407,6 +447,14 @@
           "canonical-css": {
             "status": "passed"
           },
+          "typecheck": {
+            "status": "pending",
+            "reason": "the converted reference was not typechecked with its installed dependencies"
+          },
+          "build": {
+            "status": "pending",
+            "reason": "the converted reference was not built with its installed project tooling"
+          },
           "browser-states": {
             "status": "pending",
             "reason": "real browser states have not been executed for this reference"
@@ -429,6 +477,8 @@
           }
         },
         "reasons": [
+          "the converted reference was not typechecked with its installed dependencies",
+          "the converted reference was not built with its installed project tooling",
           "real browser states have not been executed for this reference",
           "real SSR and hydration have not been executed for this reference",
           "RSC/streaming proof is not available in the source-only runner",
@@ -496,6 +546,14 @@
           "canonical-css": {
             "status": "passed"
           },
+          "typecheck": {
+            "status": "pending",
+            "reason": "the converted reference was not typechecked with its installed dependencies"
+          },
+          "build": {
+            "status": "pending",
+            "reason": "the converted reference was not built with its installed project tooling"
+          },
           "browser-states": {
             "status": "pending",
             "reason": "real browser states have not been executed for this reference"
@@ -518,6 +576,8 @@
           }
         },
         "reasons": [
+          "the converted reference was not typechecked with its installed dependencies",
+          "the converted reference was not built with its installed project tooling",
           "real browser states have not been executed for this reference",
           "real SSR and hydration have not been executed for this reference",
           "RSC/streaming proof is not available in the source-only runner",
@@ -561,12 +621,14 @@
         ]
       },
       "sourceBytes": 774,
-      "outputBytes": 1032,
-      "outputByteDelta": 258,
+      "outputBytes": 1303,
+      "outputByteDelta": 529,
       "converted": 2,
-      "skipped": 0,
-      "residuals": 0,
-      "residualKinds": {},
+      "skipped": 2,
+      "residuals": 2,
+      "residualKinds": {
+        "configuration": 2
+      },
       "validations": 2,
       "canonicalCss": {
         "checked": true,
@@ -582,6 +644,14 @@
         "dimensions": {
           "canonical-css": {
             "status": "passed"
+          },
+          "typecheck": {
+            "status": "pending",
+            "reason": "the converted reference was not typechecked with its installed dependencies"
+          },
+          "build": {
+            "status": "pending",
+            "reason": "the converted reference was not built with its installed project tooling"
           },
           "browser-states": {
             "status": "pending",
@@ -605,6 +675,10 @@
           }
         },
         "reasons": [
+          "2 residual conversion(s) remain",
+          "2 source match(es) were skipped",
+          "the converted reference was not typechecked with its installed dependencies",
+          "the converted reference was not built with its installed project tooling",
           "real browser states have not been executed for this reference",
           "real SSR and hydration have not been executed for this reference",
           "RSC/streaming proof is not available in the source-only runner",
@@ -612,7 +686,9 @@
           "built CSS size is not measured by the source-only runner"
         ]
       },
-      "manualFixes": [],
+      "manualFixes": [
+        "Vanilla Extract createVar requires contract-aware variable lowering"
+      ],
       "emittedModules": [],
       "runtimeBundleImpact": {
         "measured": false,
@@ -630,7 +706,7 @@
         "removed": [
           "@vanilla-extract/css"
         ],
-        "byteDelta": 258
+        "byteDelta": 529
       }
     },
     {
@@ -647,8 +723,8 @@
         ]
       },
       "sourceBytes": 7459,
-      "outputBytes": 7964,
-      "outputByteDelta": 505,
+      "outputBytes": 8398,
+      "outputByteDelta": 939,
       "converted": 11,
       "skipped": 0,
       "residuals": 0,
@@ -669,6 +745,14 @@
           "canonical-css": {
             "status": "passed"
           },
+          "typecheck": {
+            "status": "pending",
+            "reason": "the converted reference was not typechecked with its installed dependencies"
+          },
+          "build": {
+            "status": "pending",
+            "reason": "the converted reference was not built with its installed project tooling"
+          },
           "browser-states": {
             "status": "pending",
             "reason": "real browser states have not been executed for this reference"
@@ -691,6 +775,8 @@
           }
         },
         "reasons": [
+          "the converted reference was not typechecked with its installed dependencies",
+          "the converted reference was not built with its installed project tooling",
           "real browser states have not been executed for this reference",
           "real SSR and hydration have not been executed for this reference",
           "RSC/streaming proof is not available in the source-only runner",
@@ -716,7 +802,7 @@
         "removed": [
           "@stitches/react"
         ],
-        "byteDelta": 505
+        "byteDelta": 939
       }
     },
     {
@@ -734,8 +820,8 @@
         ]
       },
       "sourceBytes": 1175,
-      "outputBytes": 1217,
-      "outputByteDelta": 42,
+      "outputBytes": 1141,
+      "outputByteDelta": -34,
       "converted": 4,
       "skipped": 0,
       "residuals": 0,
@@ -756,6 +842,14 @@
           "canonical-css": {
             "status": "passed"
           },
+          "typecheck": {
+            "status": "pending",
+            "reason": "the converted reference was not typechecked with its installed dependencies"
+          },
+          "build": {
+            "status": "pending",
+            "reason": "the converted reference was not built with its installed project tooling"
+          },
           "browser-states": {
             "status": "pending",
             "reason": "real browser states have not been executed for this reference"
@@ -777,6 +871,8 @@
           }
         },
         "reasons": [
+          "the converted reference was not typechecked with its installed dependencies",
+          "the converted reference was not built with its installed project tooling",
           "real browser states have not been executed for this reference",
           "real SSR and hydration have not been executed for this reference",
           "dependency graphs are not installed by the reference runner",
@@ -803,7 +899,7 @@
           "@linaria/core",
           "@linaria/react"
         ],
-        "byteDelta": 42
+        "byteDelta": -34
       }
     },
     {
@@ -821,8 +917,8 @@
         ]
       },
       "sourceBytes": 583,
-      "outputBytes": 653,
-      "outputByteDelta": 70,
+      "outputBytes": 656,
+      "outputByteDelta": 73,
       "converted": 2,
       "skipped": 0,
       "residuals": 0,
@@ -831,8 +927,8 @@
       "canonicalCss": {
         "checked": true,
         "equal": true,
-        "sourceBytes": 74,
-        "targetBytes": 74,
+        "sourceBytes": 71,
+        "targetBytes": 71,
         "byteDelta": 0
       },
       "promotion": {
@@ -842,6 +938,14 @@
         "dimensions": {
           "canonical-css": {
             "status": "passed"
+          },
+          "typecheck": {
+            "status": "pending",
+            "reason": "the converted reference was not typechecked with its installed dependencies"
+          },
+          "build": {
+            "status": "pending",
+            "reason": "the converted reference was not built with its installed project tooling"
           },
           "browser-states": {
             "status": "pending",
@@ -864,6 +968,8 @@
           }
         },
         "reasons": [
+          "the converted reference was not typechecked with its installed dependencies",
+          "the converted reference was not built with its installed project tooling",
           "real browser states have not been executed for this reference",
           "real SSR and hydration have not been executed for this reference",
           "dependency graphs are not installed by the reference runner",
@@ -890,7 +996,7 @@
           "jss",
           "react-jss"
         ],
-        "byteDelta": 70
+        "byteDelta": 73
       }
     },
     {
@@ -931,6 +1037,14 @@
           "canonical-css": {
             "status": "passed"
           },
+          "typecheck": {
+            "status": "pending",
+            "reason": "the converted reference was not typechecked with its installed dependencies"
+          },
+          "build": {
+            "status": "pending",
+            "reason": "the converted reference was not built with its installed project tooling"
+          },
           "browser-states": {
             "status": "pending",
             "reason": "real browser states have not been executed for this reference"
@@ -954,6 +1068,8 @@
         "reasons": [
           "7 residual conversion(s) remain",
           "7 source match(es) were skipped",
+          "the converted reference was not typechecked with its installed dependencies",
+          "the converted reference was not built with its installed project tooling",
           "real browser states have not been executed for this reference",
           "real SSR and hydration have not been executed for this reference",
           "dependency graphs are not installed by the reference runner",
@@ -999,13 +1115,12 @@
         ]
       },
       "sourceBytes": 3301,
-      "outputBytes": 3566,
-      "outputByteDelta": 265,
+      "outputBytes": 3500,
+      "outputByteDelta": 199,
       "converted": 1,
-      "skipped": 2,
-      "residuals": 2,
+      "skipped": 1,
+      "residuals": 1,
       "residualKinds": {
-        "capability": 1,
         "parse": 1
       },
       "validations": 1,
@@ -1023,6 +1138,14 @@
         "dimensions": {
           "canonical-css": {
             "status": "passed"
+          },
+          "typecheck": {
+            "status": "pending",
+            "reason": "the converted reference was not typechecked with its installed dependencies"
+          },
+          "build": {
+            "status": "pending",
+            "reason": "the converted reference was not built with its installed project tooling"
           },
           "browser-states": {
             "status": "pending",
@@ -1045,8 +1168,10 @@
           }
         },
         "reasons": [
-          "2 residual conversion(s) remain",
-          "2 source match(es) were skipped",
+          "1 residual conversion(s) remain",
+          "1 source match(es) were skipped",
+          "the converted reference was not typechecked with its installed dependencies",
+          "the converted reference was not built with its installed project tooling",
           "real browser states have not been executed for this reference",
           "real SSR and hydration have not been executed for this reference",
           "dependency graphs are not installed by the reference runner",
@@ -1054,7 +1179,6 @@
         ]
       },
       "manualFixes": [
-        "goober function-valued styles require a host-specific lowering",
         "goober nested template CSS requires a rule parser"
       ],
       "emittedModules": [],
@@ -1074,7 +1198,7 @@
         "removed": [
           "goober"
         ],
-        "byteDelta": 265
+        "byteDelta": 199
       }
     },
     {
@@ -1091,8 +1215,8 @@
         ]
       },
       "sourceBytes": 16434,
-      "outputBytes": 14774,
-      "outputByteDelta": -1660,
+      "outputBytes": 15054,
+      "outputByteDelta": -1380,
       "converted": 22,
       "skipped": 0,
       "residuals": 0,
@@ -1113,6 +1237,14 @@
           "canonical-css": {
             "status": "passed"
           },
+          "typecheck": {
+            "status": "pending",
+            "reason": "the converted reference was not typechecked with its installed dependencies"
+          },
+          "build": {
+            "status": "pending",
+            "reason": "the converted reference was not built with its installed project tooling"
+          },
           "browser-states": {
             "status": "pending",
             "reason": "real browser states have not been executed for this reference"
@@ -1135,6 +1267,8 @@
           }
         },
         "reasons": [
+          "the converted reference was not typechecked with its installed dependencies",
+          "the converted reference was not built with its installed project tooling",
           "real browser states have not been executed for this reference",
           "real SSR and hydration have not been executed for this reference",
           "RSC/streaming proof is not available in the source-only runner",
@@ -1160,7 +1294,7 @@
         "removed": [
           "aphrodite"
         ],
-        "byteDelta": -1660
+        "byteDelta": -1380
       }
     },
     {
@@ -1178,8 +1312,8 @@
         ]
       },
       "sourceBytes": 200,
-      "outputBytes": 280,
-      "outputByteDelta": 80,
+      "outputBytes": 278,
+      "outputByteDelta": 78,
       "converted": 1,
       "skipped": 0,
       "residuals": 0,
@@ -1200,6 +1334,14 @@
           "canonical-css": {
             "status": "passed"
           },
+          "typecheck": {
+            "status": "pending",
+            "reason": "the converted reference was not typechecked with its installed dependencies"
+          },
+          "build": {
+            "status": "pending",
+            "reason": "the converted reference was not built with its installed project tooling"
+          },
           "browser-states": {
             "status": "pending",
             "reason": "real browser states have not been executed for this reference"
@@ -1222,6 +1364,8 @@
           }
         },
         "reasons": [
+          "the converted reference was not typechecked with its installed dependencies",
+          "the converted reference was not built with its installed project tooling",
           "real browser states have not been executed for this reference",
           "real SSR and hydration have not been executed for this reference",
           "RSC/streaming proof is not available in the source-only runner",
@@ -1247,7 +1391,7 @@
         "removed": [
           "style9"
         ],
-        "byteDelta": 80
+        "byteDelta": 78
       }
     },
     {
@@ -1287,6 +1431,14 @@
           "canonical-css": {
             "status": "passed"
           },
+          "typecheck": {
+            "status": "pending",
+            "reason": "the converted reference was not typechecked with its installed dependencies"
+          },
+          "build": {
+            "status": "pending",
+            "reason": "the converted reference was not built with its installed project tooling"
+          },
           "browser-states": {
             "status": "pending",
             "reason": "real browser states have not been executed for this reference"
@@ -1309,6 +1461,8 @@
           }
         },
         "reasons": [
+          "the converted reference was not typechecked with its installed dependencies",
+          "the converted reference was not built with its installed project tooling",
           "real browser states have not been executed for this reference",
           "real SSR and hydration have not been executed for this reference",
           "RSC/streaming proof is not available in the source-only runner",
@@ -1345,15 +1499,14 @@
       "adapterRoute": "compiled -> pandwind",
       "detection": {
         "matched": true,
-        "confidence": 0.8,
+        "confidence": 0.7,
         "evidence": [
-          "from\\s+[\"']@compiled\\/(?:react|css-in-js)[\"']",
-          "\\b(?:css|styled\\.[A-Za-z_$][\\w$]*|ClassNames)\\s*[({]"
+          "from\\s+[\"']@compiled\\/(?:react|css-in-js)[\"']"
         ]
       },
       "sourceBytes": 1357,
-      "outputBytes": 1590,
-      "outputByteDelta": 233,
+      "outputBytes": 1701,
+      "outputByteDelta": 344,
       "converted": 6,
       "skipped": 0,
       "residuals": 0,
@@ -1362,8 +1515,8 @@
       "canonicalCss": {
         "checked": true,
         "equal": true,
-        "sourceBytes": 286,
-        "targetBytes": 286,
+        "sourceBytes": 277,
+        "targetBytes": 277,
         "byteDelta": 0
       },
       "promotion": {
@@ -1373,6 +1526,14 @@
         "dimensions": {
           "canonical-css": {
             "status": "passed"
+          },
+          "typecheck": {
+            "status": "pending",
+            "reason": "the converted reference was not typechecked with its installed dependencies"
+          },
+          "build": {
+            "status": "pending",
+            "reason": "the converted reference was not built with its installed project tooling"
           },
           "browser-states": {
             "status": "pending",
@@ -1396,6 +1557,8 @@
           }
         },
         "reasons": [
+          "the converted reference was not typechecked with its installed dependencies",
+          "the converted reference was not built with its installed project tooling",
           "real browser states have not been executed for this reference",
           "real SSR and hydration have not been executed for this reference",
           "RSC/streaming proof is not available in the source-only runner",
@@ -1423,7 +1586,7 @@
           "@compiled/react",
           "@compiled/css-in-js"
         ],
-        "byteDelta": 233
+        "byteDelta": 344
       }
     },
     {
@@ -1440,20 +1603,18 @@
         ]
       },
       "sourceBytes": 4251,
-      "outputBytes": 4626,
-      "outputByteDelta": 375,
-      "converted": 6,
-      "skipped": 3,
-      "residuals": 6,
-      "residualKinds": {
-        "dynamic": 6
-      },
-      "validations": 6,
+      "outputBytes": 5917,
+      "outputByteDelta": 1666,
+      "converted": 9,
+      "skipped": 0,
+      "residuals": 0,
+      "residualKinds": {},
+      "validations": 9,
       "canonicalCss": {
         "checked": true,
         "equal": true,
-        "sourceBytes": 324,
-        "targetBytes": 324,
+        "sourceBytes": 931,
+        "targetBytes": 931,
         "byteDelta": 0
       },
       "promotion": {
@@ -1463,6 +1624,14 @@
         "dimensions": {
           "canonical-css": {
             "status": "passed"
+          },
+          "typecheck": {
+            "status": "pending",
+            "reason": "the converted reference was not typechecked with its installed dependencies"
+          },
+          "build": {
+            "status": "pending",
+            "reason": "the converted reference was not built with its installed project tooling"
           },
           "browser-states": {
             "status": "pending",
@@ -1485,17 +1654,15 @@
           }
         },
         "reasons": [
-          "6 residual conversion(s) remain",
-          "3 source match(es) were skipped",
+          "the converted reference was not typechecked with its installed dependencies",
+          "the converted reference was not built with its installed project tooling",
           "real browser states have not been executed for this reference",
           "real SSR and hydration have not been executed for this reference",
           "dependency graphs are not installed by the reference runner",
           "built CSS size is not measured by the source-only runner"
         ]
       },
-      "manualFixes": [
-        "solid-styled function interpolation requires a framework prop wrapper"
-      ],
+      "manualFixes": [],
       "emittedModules": [],
       "runtimeBundleImpact": {
         "measured": false,
@@ -1513,7 +1680,7 @@
         "removed": [
           "solid-styled-components"
         ],
-        "byteDelta": 375
+        "byteDelta": 1666
       }
     },
     {
@@ -1531,8 +1698,8 @@
         ]
       },
       "sourceBytes": 6953,
-      "outputBytes": 8194,
-      "outputByteDelta": 1241,
+      "outputBytes": 8492,
+      "outputByteDelta": 1539,
       "converted": 7,
       "skipped": 0,
       "residuals": 0,
@@ -1553,6 +1720,14 @@
           "canonical-css": {
             "status": "passed"
           },
+          "typecheck": {
+            "status": "pending",
+            "reason": "the converted reference was not typechecked with its installed dependencies"
+          },
+          "build": {
+            "status": "pending",
+            "reason": "the converted reference was not built with its installed project tooling"
+          },
           "browser-states": {
             "status": "pending",
             "reason": "real browser states have not been executed for this reference"
@@ -1574,6 +1749,8 @@
           }
         },
         "reasons": [
+          "the converted reference was not typechecked with its installed dependencies",
+          "the converted reference was not built with its installed project tooling",
           "real browser states have not been executed for this reference",
           "real SSR and hydration have not been executed for this reference",
           "dependency graphs are not installed by the reference runner",
@@ -1598,7 +1775,7 @@
         "removed": [
           "vue-styled-components"
         ],
-        "byteDelta": 1241
+        "byteDelta": 1539
       }
     },
     {
@@ -1638,6 +1815,14 @@
           "canonical-css": {
             "status": "passed"
           },
+          "typecheck": {
+            "status": "pending",
+            "reason": "the converted reference was not typechecked with its installed dependencies"
+          },
+          "build": {
+            "status": "pending",
+            "reason": "the converted reference was not built with its installed project tooling"
+          },
           "browser-states": {
             "status": "pending",
             "reason": "real browser states have not been executed for this reference"
@@ -1660,6 +1845,8 @@
           }
         },
         "reasons": [
+          "the converted reference was not typechecked with its installed dependencies",
+          "the converted reference was not built with its installed project tooling",
           "real browser states have not been executed for this reference",
           "real SSR and hydration have not been executed for this reference",
           "RSC/streaming proof is not available in the source-only runner",
@@ -1702,8 +1889,8 @@
         ]
       },
       "sourceBytes": 2729,
-      "outputBytes": 2595,
-      "outputByteDelta": -134,
+      "outputBytes": 2634,
+      "outputByteDelta": -95,
       "converted": 4,
       "skipped": 0,
       "residuals": 0,
@@ -1712,8 +1899,8 @@
       "canonicalCss": {
         "checked": true,
         "equal": true,
-        "sourceBytes": 1131,
-        "targetBytes": 1131,
+        "sourceBytes": 1125,
+        "targetBytes": 1125,
         "byteDelta": 0
       },
       "promotion": {
@@ -1723,6 +1910,14 @@
         "dimensions": {
           "canonical-css": {
             "status": "passed"
+          },
+          "typecheck": {
+            "status": "pending",
+            "reason": "the converted reference was not typechecked with its installed dependencies"
+          },
+          "build": {
+            "status": "pending",
+            "reason": "the converted reference was not built with its installed project tooling"
           },
           "browser-states": {
             "status": "pending",
@@ -1746,6 +1941,8 @@
           }
         },
         "reasons": [
+          "the converted reference was not typechecked with its installed dependencies",
+          "the converted reference was not built with its installed project tooling",
           "real browser states have not been executed for this reference",
           "real SSR and hydration have not been executed for this reference",
           "RSC/streaming proof is not available in the source-only runner",
@@ -1770,7 +1967,7 @@
           "pandwind"
         ],
         "removed": [],
-        "byteDelta": -134
+        "byteDelta": -95
       }
     },
     {
@@ -1788,8 +1985,8 @@
         ]
       },
       "sourceBytes": 2921,
-      "outputBytes": 2831,
-      "outputByteDelta": -90,
+      "outputBytes": 2865,
+      "outputByteDelta": -56,
       "converted": 3,
       "skipped": 0,
       "residuals": 0,
@@ -1810,6 +2007,14 @@
           "canonical-css": {
             "status": "passed"
           },
+          "typecheck": {
+            "status": "pending",
+            "reason": "the converted reference was not typechecked with its installed dependencies"
+          },
+          "build": {
+            "status": "pending",
+            "reason": "the converted reference was not built with its installed project tooling"
+          },
           "browser-states": {
             "status": "pending",
             "reason": "real browser states have not been executed for this reference"
@@ -1832,6 +2037,8 @@
           }
         },
         "reasons": [
+          "the converted reference was not typechecked with its installed dependencies",
+          "the converted reference was not built with its installed project tooling",
           "real browser states have not been executed for this reference",
           "real SSR and hydration have not been executed for this reference",
           "RSC/streaming proof is not available in the source-only runner",
@@ -1857,7 +2064,7 @@
         "removed": [
           "next-yak"
         ],
-        "byteDelta": -90
+        "byteDelta": -56
       }
     },
     {
@@ -1875,8 +2082,8 @@
         ]
       },
       "sourceBytes": 3121,
-      "outputBytes": 3864,
-      "outputByteDelta": 743,
+      "outputBytes": 3998,
+      "outputByteDelta": 877,
       "converted": 2,
       "skipped": 0,
       "residuals": 0,
@@ -1897,6 +2104,14 @@
           "canonical-css": {
             "status": "passed"
           },
+          "typecheck": {
+            "status": "pending",
+            "reason": "the converted reference was not typechecked with its installed dependencies"
+          },
+          "build": {
+            "status": "pending",
+            "reason": "the converted reference was not built with its installed project tooling"
+          },
           "browser-states": {
             "status": "pending",
             "reason": "real browser states have not been executed for this reference"
@@ -1919,6 +2134,8 @@
           }
         },
         "reasons": [
+          "the converted reference was not typechecked with its installed dependencies",
+          "the converted reference was not built with its installed project tooling",
           "real browser states have not been executed for this reference",
           "real SSR and hydration have not been executed for this reference",
           "RSC/streaming proof is not available in the source-only runner",
@@ -1944,7 +2161,7 @@
         "removed": [
           "next-yak"
         ],
-        "byteDelta": 743
+        "byteDelta": 877
       }
     },
     {
@@ -1984,6 +2201,14 @@
           "canonical-css": {
             "status": "passed"
           },
+          "typecheck": {
+            "status": "pending",
+            "reason": "the converted reference was not typechecked with its installed dependencies"
+          },
+          "build": {
+            "status": "pending",
+            "reason": "the converted reference was not built with its installed project tooling"
+          },
           "browser-states": {
             "status": "pending",
             "reason": "real browser states have not been executed for this reference"
@@ -2006,6 +2231,8 @@
           }
         },
         "reasons": [
+          "the converted reference was not typechecked with its installed dependencies",
+          "the converted reference was not built with its installed project tooling",
           "real browser states have not been executed for this reference",
           "real SSR and hydration have not been executed for this reference",
           "RSC/streaming proof is not available in the source-only runner",
@@ -2071,6 +2298,14 @@
           "canonical-css": {
             "status": "passed"
           },
+          "typecheck": {
+            "status": "pending",
+            "reason": "the converted reference was not typechecked with its installed dependencies"
+          },
+          "build": {
+            "status": "pending",
+            "reason": "the converted reference was not built with its installed project tooling"
+          },
           "browser-states": {
             "status": "pending",
             "reason": "real browser states have not been executed for this reference"
@@ -2095,6 +2330,8 @@
         "reasons": [
           "2 residual conversion(s) remain",
           "2 source match(es) were skipped",
+          "the converted reference was not typechecked with its installed dependencies",
+          "the converted reference was not built with its installed project tooling",
           "real browser states have not been executed for this reference",
           "real SSR and hydration have not been executed for this reference",
           "RSC/streaming proof is not available in the source-only runner",
@@ -2161,6 +2398,14 @@
           "canonical-css": {
             "status": "passed"
           },
+          "typecheck": {
+            "status": "pending",
+            "reason": "the converted reference was not typechecked with its installed dependencies"
+          },
+          "build": {
+            "status": "pending",
+            "reason": "the converted reference was not built with its installed project tooling"
+          },
           "browser-states": {
             "status": "pending",
             "reason": "real browser states have not been executed for this reference"
@@ -2183,6 +2428,8 @@
           }
         },
         "reasons": [
+          "the converted reference was not typechecked with its installed dependencies",
+          "the converted reference was not built with its installed project tooling",
           "real browser states have not been executed for this reference",
           "real SSR and hydration have not been executed for this reference",
           "RSC/streaming proof is not available in the source-only runner",
@@ -2224,8 +2471,8 @@
         ]
       },
       "sourceBytes": 1921,
-      "outputBytes": 1883,
-      "outputByteDelta": -38,
+      "outputBytes": 2316,
+      "outputByteDelta": 395,
       "converted": 2,
       "skipped": 0,
       "residuals": 0,
@@ -2245,6 +2492,14 @@
         "dimensions": {
           "canonical-css": {
             "status": "passed"
+          },
+          "typecheck": {
+            "status": "pending",
+            "reason": "the converted reference was not typechecked with its installed dependencies"
+          },
+          "build": {
+            "status": "pending",
+            "reason": "the converted reference was not built with its installed project tooling"
           },
           "browser-states": {
             "status": "pending",
@@ -2268,6 +2523,8 @@
           }
         },
         "reasons": [
+          "the converted reference was not typechecked with its installed dependencies",
+          "the converted reference was not built with its installed project tooling",
           "real browser states have not been executed for this reference",
           "real SSR and hydration have not been executed for this reference",
           "RSC/streaming proof is not available in the source-only runner",
@@ -2295,7 +2552,7 @@
           "@tokenami/css",
           "@tokenami/config"
         ],
-        "byteDelta": -38
+        "byteDelta": 395
       }
     },
     {
@@ -2334,6 +2591,14 @@
             "status": "pending",
             "reason": "adapter-level canonical CSS pair was not exposed"
           },
+          "typecheck": {
+            "status": "pending",
+            "reason": "the converted reference was not typechecked with its installed dependencies"
+          },
+          "build": {
+            "status": "pending",
+            "reason": "the converted reference was not built with its installed project tooling"
+          },
           "browser-states": {
             "status": "pending",
             "reason": "real browser states have not been executed for this reference"
@@ -2360,6 +2625,8 @@
           "82 residual conversion(s) remain",
           "12 source match(es) were skipped",
           "adapter-level canonical CSS pair was not exposed",
+          "the converted reference was not typechecked with its installed dependencies",
+          "the converted reference was not built with its installed project tooling",
           "real browser states have not been executed for this reference",
           "real SSR and hydration have not been executed for this reference",
           "RSC/streaming proof is not available in the source-only runner",
@@ -2428,6 +2695,14 @@
             "status": "pending",
             "reason": "adapter-level canonical CSS pair was not exposed"
           },
+          "typecheck": {
+            "status": "pending",
+            "reason": "the converted reference was not typechecked with its installed dependencies"
+          },
+          "build": {
+            "status": "pending",
+            "reason": "the converted reference was not built with its installed project tooling"
+          },
           "browser-states": {
             "status": "pending",
             "reason": "real browser states have not been executed for this reference"
@@ -2454,6 +2729,8 @@
           "62 residual conversion(s) remain",
           "11 source match(es) were skipped",
           "adapter-level canonical CSS pair was not exposed",
+          "the converted reference was not typechecked with its installed dependencies",
+          "the converted reference was not built with its installed project tooling",
           "real browser states have not been executed for this reference",
           "real SSR and hydration have not been executed for this reference",
           "RSC/streaming proof is not available in the source-only runner",
@@ -2522,6 +2799,14 @@
           "canonical-css": {
             "status": "passed"
           },
+          "typecheck": {
+            "status": "pending",
+            "reason": "the converted reference was not typechecked with its installed dependencies"
+          },
+          "build": {
+            "status": "pending",
+            "reason": "the converted reference was not built with its installed project tooling"
+          },
           "browser-states": {
             "status": "pending",
             "reason": "real browser states have not been executed for this reference"
@@ -2544,6 +2829,8 @@
           }
         },
         "reasons": [
+          "the converted reference was not typechecked with its installed dependencies",
+          "the converted reference was not built with its installed project tooling",
           "real browser states have not been executed for this reference",
           "real SSR and hydration have not been executed for this reference",
           "RSC/streaming proof is not available in the source-only runner",
@@ -2604,6 +2891,14 @@
           "canonical-css": {
             "status": "passed"
           },
+          "typecheck": {
+            "status": "pending",
+            "reason": "the converted reference was not typechecked with its installed dependencies"
+          },
+          "build": {
+            "status": "pending",
+            "reason": "the converted reference was not built with its installed project tooling"
+          },
           "browser-states": {
             "status": "pending",
             "reason": "real browser states have not been executed for this reference"
@@ -2626,6 +2921,8 @@
           }
         },
         "reasons": [
+          "the converted reference was not typechecked with its installed dependencies",
+          "the converted reference was not built with its installed project tooling",
           "real browser states have not been executed for this reference",
           "real SSR and hydration have not been executed for this reference",
           "RSC/streaming proof is not available in the source-only runner",
@@ -2686,6 +2983,14 @@
             "status": "pending",
             "reason": "adapter-level canonical CSS pair was not exposed"
           },
+          "typecheck": {
+            "status": "pending",
+            "reason": "the converted reference was not typechecked with its installed dependencies"
+          },
+          "build": {
+            "status": "pending",
+            "reason": "the converted reference was not built with its installed project tooling"
+          },
           "browser-states": {
             "status": "pending",
             "reason": "real browser states have not been executed for this reference"
@@ -2711,6 +3016,8 @@
           "1 residual conversion(s) remain",
           "1 source match(es) were skipped",
           "adapter-level canonical CSS pair was not exposed",
+          "the converted reference was not typechecked with its installed dependencies",
+          "the converted reference was not built with its installed project tooling",
           "real browser states have not been executed for this reference",
           "real SSR and hydration have not been executed for this reference",
           "dependency graphs are not installed by the reference runner",
@@ -2768,6 +3075,14 @@
             "status": "pending",
             "reason": "adapter-level canonical CSS pair was not exposed"
           },
+          "typecheck": {
+            "status": "pending",
+            "reason": "the converted reference was not typechecked with its installed dependencies"
+          },
+          "build": {
+            "status": "pending",
+            "reason": "the converted reference was not built with its installed project tooling"
+          },
           "browser-states": {
             "status": "pending",
             "reason": "real browser states have not been executed for this reference"
@@ -2793,6 +3108,8 @@
           "1 residual conversion(s) remain",
           "1 source match(es) were skipped",
           "adapter-level canonical CSS pair was not exposed",
+          "the converted reference was not typechecked with its installed dependencies",
+          "the converted reference was not built with its installed project tooling",
           "real browser states have not been executed for this reference",
           "real SSR and hydration have not been executed for this reference",
           "dependency graphs are not installed by the reference runner",
@@ -2850,6 +3167,14 @@
           "canonical-css": {
             "status": "passed"
           },
+          "typecheck": {
+            "status": "pending",
+            "reason": "the converted reference was not typechecked with its installed dependencies"
+          },
+          "build": {
+            "status": "pending",
+            "reason": "the converted reference was not built with its installed project tooling"
+          },
           "browser-states": {
             "status": "pending",
             "reason": "real browser states have not been executed for this reference"
@@ -2871,6 +3196,8 @@
           }
         },
         "reasons": [
+          "the converted reference was not typechecked with its installed dependencies",
+          "the converted reference was not built with its installed project tooling",
           "real browser states have not been executed for this reference",
           "real SSR and hydration have not been executed for this reference",
           "dependency graphs are not installed by the reference runner",
@@ -2893,6 +3220,391 @@
         "removed": [],
         "byteDelta": 159
       }
+    }
+  ],
+  "routeProof": [
+    {
+      "id": "tailwind-to-pandwind",
+      "from": "tailwind",
+      "to": "pandwind",
+      "maturity": "experimental",
+      "execution": "source-only",
+      "referenceIds": [
+        "tailwindcss-docs-home"
+      ],
+      "requiredDimensions": [
+        "canonical-css",
+        "typecheck",
+        "build",
+        "browser-states",
+        "ssr-hydration",
+        "dependencies",
+        "css-size"
+      ],
+      "dimensions": {
+        "canonical-css": {
+          "status": "pending"
+        },
+        "typecheck": {
+          "status": "pending"
+        },
+        "build": {
+          "status": "pending"
+        },
+        "browser-states": {
+          "status": "pending"
+        },
+        "ssr-hydration": {
+          "status": "pending"
+        },
+        "dependencies": {
+          "status": "pending"
+        },
+        "css-size": {
+          "status": "pending"
+        }
+      },
+      "status": "pending",
+      "eligible": false,
+      "reportIds": [
+        "tailwindcss-docs-home"
+      ],
+      "reasons": [
+        "pipeline migration has no adapter-level canonical pair",
+        "62 residual conversion(s) remain",
+        "11 source match(es) were skipped",
+        "adapter-level canonical CSS pair was not exposed",
+        "the converted reference was not typechecked with its installed dependencies",
+        "the converted reference was not built with its installed project tooling",
+        "real browser states have not been executed for this reference",
+        "real SSR and hydration have not been executed for this reference",
+        "RSC/streaming proof is not available in the source-only runner",
+        "dependency graphs are not installed by the reference runner",
+        "built CSS size is not measured by the source-only runner"
+      ],
+      "note": "The pinned corpus proves source routing; installed project proof is still required for promotion."
+    },
+    {
+      "id": "panda-to-pandwind",
+      "from": "panda",
+      "to": "pandwind",
+      "maturity": "experimental",
+      "execution": "source-only",
+      "referenceIds": [
+        "panda-website"
+      ],
+      "requiredDimensions": [
+        "canonical-css",
+        "typecheck",
+        "build",
+        "browser-states",
+        "ssr-hydration",
+        "dependencies",
+        "css-size"
+      ],
+      "dimensions": {
+        "canonical-css": {
+          "status": "pending"
+        },
+        "typecheck": {
+          "status": "pending"
+        },
+        "build": {
+          "status": "pending"
+        },
+        "browser-states": {
+          "status": "pending"
+        },
+        "ssr-hydration": {
+          "status": "pending"
+        },
+        "dependencies": {
+          "status": "pending"
+        },
+        "css-size": {
+          "status": "pending"
+        }
+      },
+      "status": "pending",
+      "eligible": false,
+      "reportIds": [
+        "panda-website-home",
+        "panda-website"
+      ],
+      "reasons": [
+        "pipeline migration has no adapter-level canonical pair",
+        "adapter-level canonical CSS pair was not exposed",
+        "the converted reference was not typechecked with its installed dependencies",
+        "the converted reference was not built with its installed project tooling",
+        "real browser states have not been executed for this reference",
+        "real SSR and hydration have not been executed for this reference",
+        "RSC/streaming proof is not available in the source-only runner",
+        "dependency graphs are not installed by the reference runner",
+        "built CSS size is not measured by the source-only runner",
+        "pipeline migration has no adapter-level canonical pair",
+        "adapter-level canonical CSS pair was not exposed",
+        "the converted reference was not typechecked with its installed dependencies",
+        "the converted reference was not built with its installed project tooling",
+        "real browser states have not been executed for this reference",
+        "real SSR and hydration have not been executed for this reference",
+        "RSC/streaming proof is not available in the source-only runner",
+        "dependency graphs are not installed by the reference runner",
+        "built CSS size is not measured by the source-only runner"
+      ],
+      "note": "Panda uses its project migration pipeline; its generated project must be typechecked and built before promotion."
+    },
+    {
+      "id": "styled-components-to-pandwind",
+      "from": "styled-components",
+      "to": "pandwind",
+      "maturity": "experimental",
+      "execution": "source-only",
+      "referenceIds": [
+        "styled-components-benchmark"
+      ],
+      "requiredDimensions": [
+        "canonical-css",
+        "typecheck",
+        "build",
+        "browser-states",
+        "ssr-hydration",
+        "dependencies",
+        "css-size"
+      ],
+      "dimensions": {
+        "canonical-css": {
+          "status": "passed"
+        },
+        "typecheck": {
+          "status": "pending"
+        },
+        "build": {
+          "status": "pending"
+        },
+        "browser-states": {
+          "status": "pending"
+        },
+        "ssr-hydration": {
+          "status": "pending"
+        },
+        "dependencies": {
+          "status": "pending"
+        },
+        "css-size": {
+          "status": "pending"
+        }
+      },
+      "status": "pending",
+      "eligible": false,
+      "reportIds": [
+        "styled-components-benchmark"
+      ],
+      "reasons": [
+        "the converted reference was not typechecked with its installed dependencies",
+        "the converted reference was not built with its installed project tooling",
+        "real browser states have not been executed for this reference",
+        "real SSR and hydration have not been executed for this reference",
+        "RSC/streaming proof is not available in the source-only runner",
+        "dependency graphs are not installed by the reference runner",
+        "built CSS size is not measured by the source-only runner"
+      ],
+      "note": "The adapter-program/browser probe is not a dependency-installed styled-components project migration."
+    },
+    {
+      "id": "unocss-to-pandwind",
+      "from": "unocss",
+      "to": "pandwind",
+      "maturity": "experimental",
+      "execution": "source-only",
+      "referenceIds": [
+        "unocss-nextjs-page"
+      ],
+      "requiredDimensions": [
+        "canonical-css",
+        "typecheck",
+        "build",
+        "browser-states",
+        "ssr-hydration",
+        "dependencies",
+        "css-size"
+      ],
+      "dimensions": {
+        "canonical-css": {
+          "status": "pending"
+        },
+        "typecheck": {
+          "status": "pending"
+        },
+        "build": {
+          "status": "pending"
+        },
+        "browser-states": {
+          "status": "pending"
+        },
+        "ssr-hydration": {
+          "status": "pending"
+        },
+        "dependencies": {
+          "status": "pending"
+        },
+        "css-size": {
+          "status": "pending"
+        }
+      },
+      "status": "pending",
+      "eligible": false,
+      "reportIds": [
+        "unocss-nextjs-page"
+      ],
+      "reasons": [
+        "pipeline migration has no adapter-level canonical pair",
+        "82 residual conversion(s) remain",
+        "12 source match(es) were skipped",
+        "adapter-level canonical CSS pair was not exposed",
+        "the converted reference was not typechecked with its installed dependencies",
+        "the converted reference was not built with its installed project tooling",
+        "real browser states have not been executed for this reference",
+        "real SSR and hydration have not been executed for this reference",
+        "RSC/streaming proof is not available in the source-only runner",
+        "dependency graphs are not installed by the reference runner",
+        "built CSS size is not measured by the source-only runner"
+      ],
+      "note": "UnoCSS preset and plugin behavior still needs an installed project proof lane."
+    },
+    {
+      "id": "unocss-to-tailwind",
+      "from": "unocss",
+      "to": "tailwind",
+      "maturity": "experimental",
+      "execution": "unavailable",
+      "referenceIds": [],
+      "requiredDimensions": [
+        "canonical-css",
+        "typecheck",
+        "build",
+        "browser-states",
+        "ssr-hydration",
+        "dependencies",
+        "css-size"
+      ],
+      "dimensions": {
+        "canonical-css": {
+          "status": "unavailable"
+        },
+        "typecheck": {
+          "status": "unavailable"
+        },
+        "build": {
+          "status": "unavailable"
+        },
+        "browser-states": {
+          "status": "unavailable"
+        },
+        "ssr-hydration": {
+          "status": "unavailable"
+        },
+        "dependencies": {
+          "status": "unavailable"
+        },
+        "css-size": {
+          "status": "unavailable"
+        }
+      },
+      "status": "unavailable",
+      "eligible": false,
+      "reportIds": [],
+      "reasons": [],
+      "note": "The route is registered, but no pinned installed-project proof fixture exists yet."
+    },
+    {
+      "id": "tailwind-to-unocss",
+      "from": "tailwind",
+      "to": "unocss",
+      "maturity": "experimental",
+      "execution": "unavailable",
+      "referenceIds": [],
+      "requiredDimensions": [
+        "canonical-css",
+        "typecheck",
+        "build",
+        "browser-states",
+        "ssr-hydration",
+        "dependencies",
+        "css-size"
+      ],
+      "dimensions": {
+        "canonical-css": {
+          "status": "unavailable"
+        },
+        "typecheck": {
+          "status": "unavailable"
+        },
+        "build": {
+          "status": "unavailable"
+        },
+        "browser-states": {
+          "status": "unavailable"
+        },
+        "ssr-hydration": {
+          "status": "unavailable"
+        },
+        "dependencies": {
+          "status": "unavailable"
+        },
+        "css-size": {
+          "status": "unavailable"
+        }
+      },
+      "status": "unavailable",
+      "eligible": false,
+      "reportIds": [],
+      "reasons": [],
+      "note": "The route is registered, but no pinned installed-project proof fixture exists yet."
+    },
+    {
+      "id": "pandwind-to-unocss",
+      "from": "pandwind",
+      "to": "unocss",
+      "maturity": "experimental",
+      "execution": "unavailable",
+      "referenceIds": [],
+      "requiredDimensions": [
+        "canonical-css",
+        "typecheck",
+        "build",
+        "browser-states",
+        "ssr-hydration",
+        "dependencies",
+        "css-size"
+      ],
+      "dimensions": {
+        "canonical-css": {
+          "status": "unavailable"
+        },
+        "typecheck": {
+          "status": "unavailable"
+        },
+        "build": {
+          "status": "unavailable"
+        },
+        "browser-states": {
+          "status": "unavailable"
+        },
+        "ssr-hydration": {
+          "status": "unavailable"
+        },
+        "dependencies": {
+          "status": "unavailable"
+        },
+        "css-size": {
+          "status": "unavailable"
+        }
+      },
+      "status": "unavailable",
+      "eligible": false,
+      "reportIds": [],
+      "reasons": [],
+      "note": "The reverse route is available for experiments; it has no pinned project proof yet."
     }
   ],
   "bundleImpact": {
