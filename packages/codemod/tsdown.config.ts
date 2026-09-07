@@ -1,7 +1,24 @@
 import { defineConfig } from "tsdown";
 
 export default defineConfig({
-	entry: ["src/**/*.ts", "src/**/*.tsx"],
+	entry: [
+		"src/cli.ts",
+		"src/diff.ts",
+		"src/swap/index.ts",
+		"src/swap/semantic-ir.ts",
+		"src/swap/official-api-cases.ts",
+		"src/swap/identifiers.ts",
+		"src/swap/adapters/panda/theme.ts",
+		"src/swap/real-repository-corpus.ts",
+		"src/meta.ts",
+		"src/map.ts",
+		"src/migrate.ts",
+		"src/shared.ts",
+		"src/tokens.ts",
+		"src/swap/unplugin.ts",
+		"src/swap/vite.ts",
+		"src/swap/browser.ts",
+	],
 	deps: { neverBundle: true, dts: { neverBundle: true } },
 	dts: true,
 	format: "es",

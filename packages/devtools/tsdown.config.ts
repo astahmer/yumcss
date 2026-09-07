@@ -1,7 +1,7 @@
 import { defineConfig } from "tsdown";
 
 export default defineConfig({
-	entry: ["src/**/*.ts", "src/**/*.tsx"],
+	entry: ["src/index.ts", "src/client/inspect-action.ts", "src/evidence/index.ts"],
 	deps: { neverBundle: true, dts: { neverBundle: true } },
 	dts: true,
 	format: "es",

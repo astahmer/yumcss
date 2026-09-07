@@ -13,7 +13,7 @@
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/astahmer/pandwind.git",
-		"directory": "packages/pandwind-codemod"
+		"directory": "packages/codemod"
 	},
 	"bin": {
 		"pandwind-codemod": "./dist/cli.js"
