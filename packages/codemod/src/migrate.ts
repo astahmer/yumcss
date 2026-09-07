@@ -22,7 +22,7 @@ import {
 	SKIP_MARKER_DEFAULT,
 } from "./shared.ts";
 
-const enum MigrateModeTag {
+export const enum MigrateModeTag {
 	Tw = "tw",
 	Cx = "cx",
 	Css = "css",

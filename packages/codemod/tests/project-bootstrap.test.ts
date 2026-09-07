@@ -71,76 +71,88 @@ describe("Pandwind project bootstrap", () => {
 		expect(preset).toContain('"$card": "1rem"');
 	});
 
-	test("removes Tailwind graph directives while preserving authored CSS", async () => {
-		const support = await createPandwindProjectSupport({
-			root: "/project",
-			sourceAdapter: CodemodAdapterId.Tailwind,
-			targetAdapter: CodemodAdapterId.Pandwind,
-			outputDirectory: "pandwind",
-			readFile: (file) =>
-				file === "/project/styles.css"
-					? [
-							'@import "tailwindcss";',
-							"@theme { --color-brand: #123456; }",
-							".authored { color: red; }",
-						].join("\n")
-					: undefined,
-			listFiles: () => ["/project/styles.css"],
-		});
+	test(
+		"removes Tailwind graph directives while preserving authored CSS",
+		async () => {
+			const support = await createPandwindProjectSupport({
+				root: "/project",
+				sourceAdapter: CodemodAdapterId.Tailwind,
+				targetAdapter: CodemodAdapterId.Pandwind,
+				outputDirectory: "pandwind",
+				readFile: (file) =>
+					file === "/project/styles.css"
+						? [
+								'@import "tailwindcss";',
+								"@theme { --color-brand: #123456; }",
+								".authored { color: red; }",
+							].join("\n")
+						: undefined,
+				listFiles: () => ["/project/styles.css"],
+			});
 
-		expect(support.fileChanges).toContainEqual({
-			path: "styles.css",
-			expectedContent: [
-				'@import "tailwindcss";',
-				"@theme { --color-brand: #123456; }",
-				".authored { color: red; }",
-			].join("\n"),
-			content: "\n\n.authored { color: red; }",
-		});
-	}, TAILWIND_CODEGEN_TEST_TIMEOUT_MS);
+			expect(support.fileChanges).toContainEqual({
+				path: "styles.css",
+				expectedContent: [
+					'@import "tailwindcss";',
+					"@theme { --color-brand: #123456; }",
+					".authored { color: red; }",
+				].join("\n"),
+				content: "\n\n.authored { color: red; }",
+			});
+		},
+		TAILWIND_CODEGEN_TEST_TIMEOUT_MS,
+	);
 
-	test("uses an explicit TypeScript extension in generated Vite config imports", async () => {
-		const support = await createPandwindProjectSupport({
-			root: "/project",
-			sourceAdapter: CodemodAdapterId.Tailwind,
-			targetAdapter: CodemodAdapterId.Pandwind,
-			outputDirectory: "pandwind",
-			readFile: (file) => {
-				if (file === "/project/styles.css") return '@import "tailwindcss";';
-				if (file === "/project/vite.config.ts")
-					return [
+	test(
+		"uses an explicit TypeScript extension in generated Vite config imports",
+		async () => {
+			const support = await createPandwindProjectSupport({
+				root: "/project",
+				sourceAdapter: CodemodAdapterId.Tailwind,
+				targetAdapter: CodemodAdapterId.Pandwind,
+				outputDirectory: "pandwind",
+				readFile: (file) => {
+					if (file === "/project/styles.css") return '@import "tailwindcss";';
+					if (file === "/project/vite.config.ts")
+						return [
+							'import tailwindcss from "@tailwindcss/vite";',
+							'import { defineConfig } from "vite";',
+							"export default defineConfig({ plugins: [tailwindcss()] });",
+						].join("\n");
+					if (file === "/project/tsconfig.json") return '{"compilerOptions":{"strict":true}}';
+					return undefined;
+				},
+				listFiles: () => [
+					"/project/styles.css",
+					"/project/vite.config.ts",
+					"/project/tsconfig.json",
+				],
+			});
+
+			expect(support.fileChanges).toEqual([
+				{
+					path: "vite.config.ts",
+					expectedContent: [
 						'import tailwindcss from "@tailwindcss/vite";',
 						'import { defineConfig } from "vite";',
 						"export default defineConfig({ plugins: [tailwindcss()] });",
-					].join("\n");
-				if (file === "/project/tsconfig.json") return '{"compilerOptions":{"strict":true}}';
-				return undefined;
-			},
-			listFiles: () => ["/project/styles.css", "/project/vite.config.ts", "/project/tsconfig.json"],
-		});
-
-		expect(support.fileChanges).toEqual([
-			{
-				path: "vite.config.ts",
-				expectedContent: [
-					'import tailwindcss from "@tailwindcss/vite";',
-					'import { defineConfig } from "vite";',
-					"export default defineConfig({ plugins: [tailwindcss()] });",
-				].join("\n"),
-				content: [
-					'import { pandwindCssVite } from "pandwind/vite";',
-					'import { pandwindPreset } from "./pandwind/preset.ts";',
-					'import { defineConfig } from "vite";',
-					'export default defineConfig({ plugins: [pandwindCssVite(pandwindPreset, { root: "." })] });',
-				].join("\n"),
-			},
-			{
-				path: "tsconfig.json",
-				expectedContent: '{"compilerOptions":{"strict":true}}',
-				content: '{"compilerOptions":{\n\t"allowImportingTsExtensions": true,"strict":true}}',
-			},
-		]);
-	}, TAILWIND_CODEGEN_TEST_TIMEOUT_MS);
+					].join("\n"),
+					content: [
+						'import { pandwindCssVite } from "pandwind/vite";',
+						'import { pandwindPreset } from "./pandwind/preset.ts";',
+						'import { defineConfig } from "vite";',
+						'export default defineConfig({ plugins: [pandwindCssVite(pandwindPreset, { root: "." })] });',
+					].join("\n"),
+				},
+				{
+					path: "tsconfig.json",
+					expectedContent: '{"compilerOptions":{"strict":true}}',
+					content: '{"compilerOptions":{\n\t"allowImportingTsExtensions": true,"strict":true}}',
+				},
+			]);
+		},
+		TAILWIND_CODEGEN_TEST_TIMEOUT_MS,
+	);
 
 	test("adds the Pandwind Vite plugin for non-Tailwind sources", async () => {
 		const support = await createPandwindProjectSupport({

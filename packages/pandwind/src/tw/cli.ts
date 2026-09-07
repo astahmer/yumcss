@@ -8,7 +8,7 @@
  */
 import { mkdirSync, readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
-import cac, { type CAC, type Command } from "cac";
+import { cac, type CAC, type Command } from "cac";
 import { CodegenArtifactWriter } from "./codegen-writer.ts";
 import { generateTwBridge } from "./generate-bridge.ts";
 import { loadThemeBlock } from "./codegen-theme-input.ts";

@@ -15,10 +15,7 @@
 import { camelCaseProperty } from "./camelcase-property.ts";
 import { TailwindTypeEmitter, utilityKey as emittedUtilityKey } from "./codegen-emitter.ts";
 import { TailwindUtilityCatalog } from "./codegen-catalog.ts";
-import {
-	loadTailwindDesignSystem,
-	type TailwindDesignSystem,
-} from "./design-system-cache.ts";
+import { loadTailwindDesignSystem, type TailwindDesignSystem } from "./design-system-cache.ts";
 
 import { buildConflicts, detectModifierUtilities } from "./codegen-conflicts.ts";
 export { canonicalProps } from "./codegen-conflicts.ts";

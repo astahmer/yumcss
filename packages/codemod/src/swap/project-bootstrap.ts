@@ -299,7 +299,7 @@ function removeTailwindStylesheetImports(
 	readonly expectedContent: string;
 }[] {
 	if (config.adapter !== CodemodAdapterId.Tailwind) return [];
-	const cssEntry = config.files.find((file) => /\.css$/u.test(file));
+	const cssEntry = config.files.find((file) => file.endsWith(".css"));
 	if (cssEntry === undefined) return [];
 	const stylesheet = request.readFile(cssEntry);
 	if (stylesheet === undefined || stripTailwindConfiguration(stylesheet).trim() !== "") return [];
@@ -415,7 +415,7 @@ function rewriteTailwindStylesheets(
 		content: string;
 		expectedContent: string;
 	}[] = [];
-	for (const file of config.files.filter((candidate) => /\.css$/u.test(candidate))) {
+	for (const file of config.files.filter((candidate) => candidate.endsWith(".css"))) {
 		const source = request.readFile(file);
 		if (source === undefined) continue;
 		const content = stripTailwindConfiguration(source);
@@ -712,7 +712,7 @@ export async function createPandwindProjectSupport(
 				generatedFile(cx, cxSource(), "shared cx() binding"),
 			];
 
-	const cssEntry = sourceConfig.files.find((file) => /\.css$/u.test(file));
+	const cssEntry = sourceConfig.files.find((file) => file.endsWith(".css"));
 	if (!configurationFailed && cssEntry !== undefined) {
 		const stylesheet = request.readFile(cssEntry);
 		if (stylesheet !== undefined) {

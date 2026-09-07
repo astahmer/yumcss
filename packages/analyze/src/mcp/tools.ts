@@ -913,7 +913,7 @@ function benchmarkArtifacts(context: McpProjectContext): {
 	for (const file of files) {
 		const bytes = statSync(file).size;
 		if (/\.(?:js|mjs|cjs|ts|tsx)$/u.test(file)) javascriptBytes += bytes;
-		if (/\.css$/u.test(file)) cssBytes += bytes;
+		if (file.endsWith(".css")) cssBytes += bytes;
 	}
 	return {
 		javascriptBytes,

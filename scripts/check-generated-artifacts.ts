@@ -55,7 +55,9 @@ const run = (command: string, args: readonly string[], cwd = repositoryRoot): vo
 			.split("\n")
 			.slice(-8)
 			.join("\n");
-		throw new Error(`${command} ${args.join(" ")} failed${detail ? `:\n${detail}` : ""}`);
+		throw new Error(`${command} ${args.join(" ")} failed${detail ? `:\n${detail}` : ""}`, {
+			cause: error,
+		});
 	}
 };
 

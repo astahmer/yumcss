@@ -5,13 +5,11 @@ describe("Tailwind design-system loader", () => {
 	test("deduplicates concurrent loads for the same CSS graph", async () => {
 		let calls = 0;
 		const system = {} as never;
-		const load = createTailwindDesignSystemLoader(
-			async () => {
-				calls++;
-				await Promise.resolve();
-				return system;
-			},
-		);
+		const load = createTailwindDesignSystemLoader(async () => {
+			calls++;
+			await Promise.resolve();
+			return system;
+		});
 
 		const [first, second] = await Promise.all([
 			load('@import "tailwindcss";', { base: "/project" }),

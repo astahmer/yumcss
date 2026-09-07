@@ -28,7 +28,7 @@ import {
 	type AdapterCapabilityReport,
 } from "./capabilities.ts";
 import { CodemodAdapterId, MigrationSkipReason, SwapTargetId } from "./identifiers.ts";
-import type { MigrateCliArgs, SwapSource, SwapTarget } from "./cli-args.ts";
+import type { SwapSource, SwapTarget } from "./cli-args.ts";
 export { SWAP_SOURCES, SWAP_TARGETS, parseMigrateArgs } from "./cli-args.ts";
 export type { MigrateCliArgs, SwapSource, SwapTarget } from "./cli-args.ts";
 

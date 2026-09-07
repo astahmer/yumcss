@@ -1,11 +1,11 @@
-import cac, { type Command } from "cac";
+import { cac, type Command } from "cac";
 import { createBuiltinCodemodCatalog } from "./adapter-catalog.ts";
 import type { AdapterCapabilityMode } from "./capabilities.ts";
 import { CodemodAdapterId, SwapSourceId, SwapTargetId } from "./identifiers.ts";
 import { SWAP_REGISTRY } from "./swap-registry.ts";
 import type { TokenRefMode } from "./tokens.ts";
 import type { ExternalAdapterId } from "./external-adapters.ts";
-import type { MigrateMode } from "../migrate.ts";
+import { MigrateModeTag, type MigrateMode } from "../migrate.ts";
 import { parseSourceList, type SourceId } from "../sources.ts";
 
 const builtinAdapterIds = createBuiltinCodemodCatalog().adapters.map((adapter) => adapter.id);
@@ -136,7 +136,12 @@ const choice = <T extends string>(
 	);
 };
 
-const MIGRATE_MODES: readonly MigrateMode[] = ["tw", "cx", "css", "keep"];
+const MIGRATE_MODES = new Set<MigrateMode>([
+	MigrateModeTag.Tw,
+	MigrateModeTag.Cx,
+	MigrateModeTag.Css,
+	MigrateModeTag.Keep,
+]);
 
 export function parseMigrateArgs(argv: string[]): MigrateCliArgs {
 	const cli = cac("pandwind-codemod migrate");
@@ -158,7 +163,7 @@ export function parseMigrateArgs(argv: string[]): MigrateCliArgs {
 	const toValue = canonicalIdentifier(rawTo);
 	const sourceList = rawFrom.includes(",") ? parseSourceList(rawFrom) : [];
 	const from = sourceList.length > 0 ? SwapSourceId.Auto : choice("from", fromValue, SWAP_SOURCES);
-	const to = MIGRATE_MODES.includes(toValue as MigrateMode)
+	const to = MIGRATE_MODES.has(toValue as MigrateMode)
 		? (toValue as MigrateMode)
 		: choice("to", toValue, SWAP_TARGETS);
 	const tokenRefs = choice("token-refs", optionString(options, "tokenRefs"), [

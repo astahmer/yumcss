@@ -63,10 +63,7 @@ describe("NodeProjectModuleLoader", () => {
 				JSON.stringify({ name: "unavailable-pkg", type: "module", exports: {} }),
 			);
 
-			const module = await new NodeProjectModuleLoader().importPackage(
-				"unavailable-pkg",
-				root,
-			);
+			const module = await new NodeProjectModuleLoader().importPackage("unavailable-pkg", root);
 
 			expect(module).toBeUndefined();
 		} finally {

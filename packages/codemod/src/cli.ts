@@ -9,10 +9,15 @@
  */
 import { existsSync, mkdirSync, readFileSync, statSync, unlinkSync, writeFileSync } from "node:fs";
 import { basename, dirname, extname, isAbsolute, relative, resolve } from "node:path";
-import cac, { type CAC, type Command } from "cac";
+import { cac, type CAC, type Command } from "cac";
 import { createSourceWorkspace } from "pandwind/source/workspace";
 import { loadMetaFromSourcesAsync, type PandwindMeta } from "./meta.ts";
-import { transformSource, type MigrateMode, type TransformResult } from "./migrate.ts";
+import {
+	MigrateModeTag,
+	transformSource,
+	type MigrateMode,
+	type TransformResult,
+} from "./migrate.ts";
 import * as swapImport from "./swap/index.ts";
 import { CodemodAdapterId, SwapSourceId, SwapTargetId } from "./swap/identifiers.ts";
 import { tokenSetCodec } from "./swap/token-set.ts";
@@ -135,8 +140,6 @@ const optionString = (options: CliOptions, name: string): string | undefined => 
 	const value = options[name];
 	return typeof value === "string" ? value : undefined;
 };
-
-const optionBoolean = (options: CliOptions, name: string): boolean => options[name] === true;
 
 const validateCommand = (command: Command): void => {
 	command.checkUnknownOptions();
@@ -289,10 +292,18 @@ const printPackageInstall = (result: PackageInstallResult): void => {
 	console.log(`dependencies: installed with ${result.manager} (${result.installed.join(", ")})`);
 };
 
-const LEGACY_MODES: readonly MigrateMode[] = ["tw", "cx", "css", "keep"];
+const LEGACY_MODES = new Set<MigrateMode>([
+	MigrateModeTag.Tw,
+	MigrateModeTag.Cx,
+	MigrateModeTag.Css,
+	MigrateModeTag.Keep,
+]);
 
 const isLegacyMode = (args: swapImport.MigrateCliArgs): boolean =>
-	args.to === "cx" || args.to === "css" || args.to === "keep" || args.sources.length > 0;
+	args.to === MigrateModeTag.Cx ||
+	args.to === MigrateModeTag.Css ||
+	args.to === MigrateModeTag.Keep ||
+	args.sources.length > 0;
 
 async function mainMigrate(argv: string[]): Promise<void> {
 	const args = swapImport.parseMigrateArgs(argv);
@@ -827,7 +838,7 @@ async function runLegacyMigration(args: swapImport.MigrateCliArgs, root: string)
 	let totalConverted = 0;
 	let totalChanged = 0;
 	let totalUnmapped = 0;
-	const mode = LEGACY_MODES.includes(args.to as MigrateMode)
+	const mode = LEGACY_MODES.has(args.to as MigrateMode)
 		? (args.to as MigrateMode)
 		: args.to === SwapTargetId.Tw
 			? "tw"

@@ -15,7 +15,6 @@ import { dirnameDocumentPath, joinDocumentPath } from "../path-utils.ts";
 import {
 	inspectAdapterCapabilities,
 	AdapterCapabilityLevelTag,
-	type AdapterCapabilityMode,
 	type AdapterCapabilityReport,
 } from "./capabilities.ts";
 import type {
@@ -26,15 +25,10 @@ import type {
 	AdapterTargetMigrationPolicy,
 	StyleAdapter,
 } from "./adapter-contract.ts";
-import {
-	STYLE_LOWERING_REGISTRY,
-	type StyleLoweringPlan,
-	type StyleLoweringRegistry,
-} from "./lowering.ts";
+import type { StyleLoweringPlan, StyleLoweringRegistry } from "./lowering.ts";
 import { MigrationOutput } from "./migration-output.ts";
 import { NODE_PROJECT_MODULE_LOADER, type ProjectModuleLoader } from "./project-module-loader.ts";
 import { MigrationDiagnostics } from "./migration-diagnostics.ts";
-import type { StyleAdapterRegistry } from "./adapter-registry.ts";
 import type {
 	AdapterMigrationExecutor,
 	AdapterMigrationOptions,

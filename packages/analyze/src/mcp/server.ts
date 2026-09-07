@@ -1,6 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/server";
 import { StdioServerTransport } from "@modelcontextprotocol/server/stdio";
-import cac from "cac";
+import { cac } from "cac";
 import { resolve } from "node:path";
 import { z } from "zod";
 import {

@@ -3,7 +3,7 @@ import { ensureImport } from "../shared.ts";
 import type { SourceBindingIndex, SourceScanResult, SourceScannerService } from "pandwind/source";
 import type { AdapterParseContext } from "./adapter-contract.ts";
 import { intrinsicTagForSubject } from "./host-component-rewriter.ts";
-import { BuiltinHostFramework, detectHostFramework, type HostFramework } from "./host-adapters.ts";
+import { BuiltinHostFramework, detectHostFramework } from "./host-adapters.ts";
 import type { StyleProgram } from "./semantic-ir.ts";
 
 /**

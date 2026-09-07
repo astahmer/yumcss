@@ -24,6 +24,7 @@ const PACKAGE_MANAGERS: readonly PackageManagerKind[] = [
 	PackageManagerKindTag.Yarn,
 	PackageManagerKindTag.Bun,
 ];
+const PACKAGE_MANAGER_SET = new Set(PACKAGE_MANAGERS);
 
 export interface PackageInstallRequest {
 	readonly root: string;
@@ -72,7 +73,7 @@ const managerFromPackageJson = (
 	const declared = packageJson.packageManager;
 	if (typeof declared === "string") {
 		const name = declared.split("@", 1)[0];
-		if (PACKAGE_MANAGERS.includes(name as PackageManagerKind)) return name as PackageManagerKind;
+		if (PACKAGE_MANAGER_SET.has(name as PackageManagerKind)) return name as PackageManagerKind;
 	}
 	if (existsSync(`${root}/pnpm-lock.yaml`)) return PackageManagerKindTag.Pnpm;
 	if (existsSync(`${root}/yarn.lock`)) return PackageManagerKindTag.Yarn;

@@ -1,9 +1,5 @@
 import { createAdapterMigrationExecutor } from "./adapter-migration.ts";
-import type {
-	AdapterMigrationExecutor,
-	AdapterMigrationOptions,
-	AdapterMigrationResult,
-} from "./adapter-migration-contract.ts";
+import type { AdapterMigrationExecutor } from "./adapter-migration-contract.ts";
 
 /** Versioned application boundary for one source-file style migration. */
 export const STYLE_MIGRATION_USE_CASE_SCHEMA = "pandwind.style-migration-use-case/1" as const;

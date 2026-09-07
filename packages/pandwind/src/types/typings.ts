@@ -197,14 +197,9 @@ export type TypedStyleObject<
 	TPreset extends CssPreset<TConfig>,
 	TConds extends string = ThemeConds<TConfig, TPreset>,
 	TAll = TPreset["properties"] extends { $all: true } ? true : false,
-	TList extends string = Exclude<
-		Extract<keyof TPreset["properties"], string>,
-		"$all"
-	>,
+	TList extends string = Exclude<Extract<keyof TPreset["properties"], string>, "$all">,
 	TCssPropName = Extract<keyof TConfig, string>,
-	TPropList extends string = TAll extends true
-		? Extract<keyof TConfig, string> | TList
-		: TList,
+	TPropList extends string = TAll extends true ? Extract<keyof TConfig, string> | TList : TList,
 > = Nested<
 	{
 		[PropName in TPropList]?: PropName extends TCssPropName

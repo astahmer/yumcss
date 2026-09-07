@@ -11,7 +11,7 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import cac, { type CAC, type Command } from "cac";
+import { cac, type CAC, type Command } from "cac";
 import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
 import { collectFiles, type FoldSummary } from "./analyze.ts";
 import {

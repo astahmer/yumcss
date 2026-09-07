@@ -1,7 +1,7 @@
 import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
-import { STYLE_LOWERING_REGISTRY } from "./lowering.ts";
 import { createBrowserCodemodCatalog } from "./browser-adapter-catalog.ts";
-import { NODE_PROJECT_MODULE_LOADER, type ProjectModuleLoader } from "./project-module-loader.ts";
+import { STYLE_LOWERING_REGISTRY } from "./lowering.ts";
+import type { ProjectModuleLoader } from "./project-module-loader.ts";
 import type { StyleAdapterRegistry } from "./adapter-registry.ts";
 import type {
 	AdapterMigrationExecutor,
