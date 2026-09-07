@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
 import {
 	CodemodAdapterId,
@@ -5,9 +7,11 @@ import {
 	MigrationRouteMaturityTag,
 	MigrationRouteProofExecutionTag,
 	MigrationRouteProofRouteId,
+	RealRepositoryProofDimension,
 	createRealRepositoryCorpus,
 	findMigrationRouteProof,
 	validateMigrationRouteProofCatalog,
+	validateMigrationRouteProofEvidence,
 } from "../src/swap/index.ts";
 
 describe("migration route proof catalog", () => {
@@ -52,8 +56,27 @@ describe("migration route proof catalog", () => {
 		expect(
 			findMigrationRouteProof(CodemodAdapterId.Tailwind, `${CodemodAdapterId.Pandwind}:tw`)?.id,
 		).toBe(MigrationRouteProofRouteId.TailwindToPandwind);
-		expect(route?.requiredDimensions).toContain("typecheck");
-		expect(route?.requiredDimensions).toContain("build");
+		expect(route?.requiredDimensions).toContain(RealRepositoryProofDimension.Typecheck);
+		expect(route?.requiredDimensions).toContain(RealRepositoryProofDimension.Build);
 		expect(route?.evidenceIds).toEqual(["tailwind-installed-proof"]);
+	});
+
+	test("requires every installed-project route to have passing checked-in evidence", () => {
+		const evidence = new Map(
+			MIGRATION_ROUTE_PROOF_CATALOG.flatMap((route) =>
+				(route.evidenceIds ?? []).map((id) => [
+					id,
+					JSON.parse(
+						readFileSync(
+							resolve(import.meta.dirname, "../../../plans/evidence", `${id}.json`),
+							"utf8",
+						),
+					),
+				]),
+			),
+		);
+		expect(validateMigrationRouteProofEvidence(MIGRATION_ROUTE_PROOF_CATALOG, evidence)).toEqual(
+			[],
+		);
 	});
 });

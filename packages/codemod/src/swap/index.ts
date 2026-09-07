@@ -505,6 +505,7 @@ export {
 	findMigrationRouteProof,
 	migrationRouteProofCatalog,
 	validateMigrationRouteProofCatalog,
+	validateMigrationRouteProofEvidence,
 } from "./route-proof-catalog.ts";
 export type { MigrationRouteProofSpec } from "./route-proof-catalog.ts";
 export {

@@ -40,6 +40,30 @@ export interface MigrationRouteProofSpec {
 	readonly note: string;
 }
 
+interface InstalledRouteProofEvidence {
+	readonly route?: { readonly from?: string; readonly to?: string };
+	readonly dependencies?: {
+		readonly installed?: boolean;
+		readonly targetNodeModule?: boolean;
+	};
+	readonly migration?: {
+		readonly skipped?: number;
+		readonly residuals?: number;
+	};
+	readonly checks?: Readonly<Record<string, unknown>>;
+	readonly ssr?: { readonly markupEquivalent?: boolean };
+	readonly browser?: {
+		readonly equivalent?: boolean;
+		readonly changedPixels?: number;
+		readonly hydrationErrors?: readonly unknown[];
+	};
+	readonly css?: {
+		readonly sourceBytes?: number;
+		readonly targetBytes?: number;
+		readonly targetNotLarger?: boolean;
+	};
+}
+
 const PROJECT_PROOF_DIMENSIONS = [
 	RealRepositoryProofDimension.CanonicalCss,
 	RealRepositoryProofDimension.Typecheck,
@@ -178,6 +202,71 @@ export function validateMigrationRouteProofCatalog(
 			route.execution !== MigrationRouteProofExecutionTag.InstalledProject
 		)
 			errors.push(`${route.id}: stable route must use installed-project proof`);
+	}
+	return errors;
+}
+
+/**
+ * Verify the stronger installed-project claim without teaching the catalog
+ * about a fixture's implementation details. The evidence files intentionally
+ * share this small envelope even though each fixture owns its own runner.
+ */
+export function validateMigrationRouteProofEvidence(
+	catalog: readonly MigrationRouteProofSpec[],
+	evidenceById: ReadonlyMap<string, unknown>,
+): readonly string[] {
+	const errors: string[] = [];
+	for (const route of catalog) {
+		if (route.execution !== MigrationRouteProofExecutionTag.InstalledProject) continue;
+		if (route.evidenceIds === undefined || route.evidenceIds.length === 0) {
+			errors.push(`${route.id}: installed-project route has no evidence id`);
+			continue;
+		}
+		for (const evidenceId of route.evidenceIds) {
+			const value = evidenceById.get(evidenceId);
+			if (value === undefined) {
+				errors.push(`${route.id}: missing evidence ${evidenceId}`);
+				continue;
+			}
+			const evidence = value as InstalledRouteProofEvidence;
+			if (evidence.route?.from !== route.from || evidence.route?.to !== route.to)
+				errors.push(`${route.id}: evidence ${evidenceId} records a different route`);
+			if (
+				evidence.dependencies?.installed !== true ||
+				evidence.dependencies.targetNodeModule !== true
+			)
+				errors.push(`${route.id}: evidence ${evidenceId} does not prove installed dependencies`);
+			if (evidence.migration?.skipped !== 0 || evidence.migration?.residuals !== 0)
+				errors.push(`${route.id}: evidence ${evidenceId} retains skipped matches or residuals`);
+			for (const check of [
+				"sourceTypecheck",
+				"targetTypecheck",
+				"sourceBuild",
+				"targetBuild",
+				"sourceSsr",
+				"targetSsr",
+				"hydration",
+			] as const) {
+				if (evidence.checks?.[check] !== true)
+					errors.push(`${route.id}: evidence ${evidenceId} did not pass ${check}`);
+			}
+			if (evidence.ssr?.markupEquivalent !== true)
+				errors.push(`${route.id}: evidence ${evidenceId} did not prove SSR equivalence`);
+			if (
+				evidence.browser?.equivalent !== true ||
+				evidence.browser.changedPixels !== 0 ||
+				(evidence.browser.hydrationErrors?.length ?? 0) !== 0
+			)
+				errors.push(`${route.id}: evidence ${evidenceId} did not prove browser equivalence`);
+			if (
+				typeof evidence.css?.sourceBytes !== "number" ||
+				evidence.css.sourceBytes <= 0 ||
+				typeof evidence.css.targetBytes !== "number" ||
+				evidence.css.targetBytes <= 0 ||
+				(evidence.css.targetNotLarger !== undefined && evidence.css.targetNotLarger !== true)
+			)
+				errors.push(`${route.id}: evidence ${evidenceId} did not prove CSS size output`);
+		}
 	}
 	return errors;
 }
