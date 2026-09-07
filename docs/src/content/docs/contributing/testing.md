@@ -59,7 +59,9 @@ nub run pivot:proof:adapters
 ```
 
 `references:deps` installs only the explicitly pinned official packages needed
-by a reference configuration into the disposable checkout. The resulting
+by a reference configuration into the disposable checkout. Workspace-based
+references such as Panda are installed from their pinned lockfile and have the
+official config package graph built before the loader is exercised.
 `plans/evidence/adapter-reference-proof.json` records canonical CSS equality,
 CSS byte size, computed-style equivalence, hydration-style replacement, and
 structured residuals. A residual is a proof failure when the adapter claims
@@ -67,11 +69,13 @@ the capability; it is never hidden by falling back to the hand-written token
 table.
 
 The codemod corpus tests that use a real checkout prepare their own pinned
-repository before loading the test module. They clone a missing checkout,
-fetch the recorded commit when necessary, and restore tracked files in a
-partially materialized checkout. Preparation failures fail the test setup;
-they are not reported as a passing unavailable case. `references:prepare`
-remains useful when preparing the complete catalog ahead of a proof run.
+repository and matching official dependencies before loading the test module.
+They clone a missing checkout, fetch the recorded commit when necessary,
+restore tracked files in a partially materialized checkout, and build any
+workspace package required by the config loader. Preparation failures fail the
+test setup; they are not reported as a passing unavailable case.
+`references:prepare` remains useful when preparing the complete catalog ahead
+of a proof run.
 
 The full reference run is intentionally separate because it downloads pinned
 public repositories and can take substantially longer:

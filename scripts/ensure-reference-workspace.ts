@@ -1,4 +1,5 @@
 import { prepareReferenceRepositories } from "./prepare-reference-repositories.ts";
+import { prepareReferenceDependencies } from "./prepare-reference-dependencies.ts";
 import {
 	createReferenceWorkspace,
 	inspectReferenceAvailability,
@@ -23,6 +24,7 @@ export function ensureReferenceWorkspace(
 	if (pending !== undefined) return pending;
 
 	const preparation = prepareReferenceRepositories(workspace, [id], { log: false }).then(() => {
+		prepareReferenceDependencies(workspace, [id], { log: false });
 		const availability = inspectReferenceAvailability(workspace, id);
 		if (availability.status !== REFERENCE_AVAILABILITY.Available)
 			throw new Error(

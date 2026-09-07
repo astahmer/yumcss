@@ -22,7 +22,10 @@ import { loadPandaTheme, type PandaTheme } from "../src/swap/adapters/panda/them
 import { PandaJsxStylePropsModeTag } from "../src/swap/adapters/panda/style-props.ts";
 import { PandaUtilityCatalog } from "../src/swap/adapters/panda/utilities.ts";
 import { emitCssClass } from "../src/swap/emit.ts";
-import type { ProjectModuleLoader } from "../src/swap/project-module-loader.ts";
+import {
+	NODE_PROJECT_MODULE_LOADER,
+	type ProjectModuleLoader,
+} from "../src/swap/project-module-loader.ts";
 import { ensureReferenceWorkspace } from "../../../scripts/ensure-reference-workspace.ts";
 
 const pandaWebsite = await ensureReferenceWorkspace("panda");
@@ -649,7 +652,21 @@ describe("loadPandaTheme — fixture config (hermetic)", () => {
 describe("loadPandaTheme — real website panda.config.ts", () => {
 	it("resolves the pinned website configuration", async () => {
 		const configPath = `${pandaWebsite.path}/website/panda.config.ts`;
-		const theme = await loadPandaTheme(configPath);
+		let officialLoaderAvailable = false;
+		const loader: ProjectModuleLoader = {
+			async importPackage<T>(packageName: string, root: string) {
+				const module = await NODE_PROJECT_MODULE_LOADER.importPackage<T>(packageName, root);
+				if (packageName === "@pandacss/config") {
+					officialLoaderAvailable =
+						typeof (module as { loadConfig?: unknown } | undefined)?.loadConfig === "function";
+				}
+				return module;
+			},
+			importFile: (file) => NODE_PROJECT_MODULE_LOADER.importFile(file),
+		};
+		const theme = await loadPandaTheme(configPath, loader);
 		expect(theme.tokenVars.get("fg.muted")).toBe("--colors-fg-muted");
+		expect(officialLoaderAvailable).toBe(true);
+		expect(theme.officialConfigError).toBeUndefined();
 	}, 30_000);
 });
