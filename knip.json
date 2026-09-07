@@ -34,6 +34,7 @@
 				"src/cli.ts",
 				"src/collect/index.ts",
 				"src/studio/index.ts",
+				"src/studio/server.ts",
 				"studio-app/src/main.ts",
 				"vite.config.ts",
 				"tests/**/*.test.ts"
@@ -49,7 +50,12 @@
 			"project": ["src/**/*.{ts,tsx}", "vite.config.ts"]
 		},
 		"apps/playground": {
-			"entry": ["src/{main,index,App}.{ts,tsx}", "vite.config.ts", "e2e/**/*.ts"],
+			"entry": [
+				"src/{main,index,App}.{ts,tsx}",
+				"src/lib/format-playground-code.ts",
+				"vite.config.ts",
+				"e2e/**/*.ts"
+			],
 			"project": ["src/**/*.{ts,tsx}", "vite.config.ts", "e2e/**/*.ts"]
 		},
 		"examples/*": {
@@ -65,6 +71,25 @@
 			],
 			"project": ["src/**/*.{ts,tsx}", "vite.config.ts", "test/**/*.{ts,tsx,mjs}"]
 		},
+		"examples/opentui-example": {
+			"entry": ["src/index.tsx", "src/app.tsx", "test/**/*.{ts,tsx,mjs}"],
+			"project": ["src/**/*.{ts,tsx}", "test/**/*.{ts,tsx,mjs}"]
+		},
+		"examples/showcase": {
+			"entry": [
+				"src/web/App.tsx",
+				"src/native/App.tsx",
+				"src/tui/main.tsx",
+				"src/tui/app.tsx",
+				"vite.config.ts",
+				"test/**/*.{ts,tsx,mjs}"
+			],
+			"project": ["src/**/*.{ts,tsx}", "vite.config.ts", "test/**/*.{ts,tsx,mjs}"]
+		},
+		"examples/pandwind-example-preset": {
+			"entry": ["src/index.ts"],
+			"project": ["src/**/*.ts"]
+		},
 		"docs": {
 			"entry": ["astro.config.mjs", "src/content.config.ts"],
 			"project": ["src/**/*.{ts,tsx,mjs,md,mdx}", "astro.config.mjs"]
@@ -76,6 +101,8 @@
 		"@opentui/core",
 		"@tailwindcss/node",
 		"@chakra-ui/react",
+		"@hono/node-server",
+		"@pandwind/example-preset",
 		"@pandacss/config",
 		"@tokenami/config",
 		"@unocss/config",
@@ -85,6 +112,7 @@
 		"pandwind-codemod",
 		"pandwind-analyze",
 		"postcss",
+		"prettier",
 		"react",
 		"react-native",
 		"react-native-web",

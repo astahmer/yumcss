@@ -1006,6 +1006,14 @@ subpath through the source-package boundary, while the playground build and
 browser tests do. The codemod subpath is listed as a production entry in
 `knip.json`, so its exports remain owned and checked.
 
+The same boundary applies to three workspace dependencies that are intentionally
+kept in `knip.json`'s ignore list: `@pandwind/example-preset` is imported through
+the repository's `pandwind` condition and also resolved from generated/config
+strings; `prettier` is loaded through browser-only formatter subpaths; and
+`@hono/node-server` is used by the public Node studio transport entrypoint.
+Their package manifests and typechecks own those dependencies, while Knip cannot
+trace the conditional or subpath resolution reliably.
+
 The styled-components documentation site is also a reproducible acceptance
 corpus. Its pinned checkout is never edited. The migration runner exposes two
 target lanes over the same source adapter:
