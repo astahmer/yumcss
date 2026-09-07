@@ -25,13 +25,14 @@ adoption simplicity, real-world proof, and scope discipline.
   `docs/src/content/docs/reference/limitations.md` and the CSS scorecard.
 - "The setup is too dependent on generated files." A normal Tailwind lane needs
   generated `tw.ts`, `types.d.ts`, `bridge.ts`, and theme artifacts. Stale or
-  missing generated output can break the editor or build. That is powerful for
-  project-specific typing, but it is a real adoption cost.
-- "The core package is too large conceptually." `pandwind` declares 52 export
-  paths, including internal `_runtime` paths, and hard-depends on build/tooling
-  packages such as `@tailwindcss/node`, `oxc-parser`, PostCSS, Unplugin, and
-  CAC. Tree-shaking helps browser output, but installing the package still
-  brings a lot of unrelated machinery.
+  missing generated output can break the editor or build. `generated:check`
+  now catches drift for the checked-in example and Playground, but generated
+  project files remain a real adoption cost.
+- "The core package is too large conceptually." The repository currently
+  exposes 79 inventoried paths across five packages, including experimental
+  integrations and tooling. The runtime package no longer hard-depends on
+  Tailwind's loader, Oxc, PostCSS, Unplugin, or CAC, but the product still
+  asks users to understand more lanes than a focused styling library would.
 - "The official-library compatibility is brittle." Tailwind integration
   currently relies on `@tailwindcss/node`'s `__unstable__loadDesignSystem`
   API. That is the correct source of truth today, but it is also a compatibility
@@ -62,17 +63,14 @@ adoption simplicity, real-world proof, and scope discipline.
   `benchmark_project` currently measures in-process migration time, memory,
   and existing artifact sizes; it is not a real cold/warm build benchmark.
 
-## Things that are actually sloppy today
+## Things that are still weak today
 
-- The public codemod docs disagree. `packages/codemod/README.md` describes the
-  unified `migrate` command, writes by default, and `--dry-run`;
-  `docs/src/content/docs/tooling/codemod.md` still describes the old default
-  command, `swap`, dry-run-by-default behavior, and `--write`.
-- Package metadata has incorrect repository directory names in
-  `packages/analyze/package.json` and `packages/codemod/package.json`.
-- Several real-repository corpus tests intentionally skip when reference
-  repositories are not installed. A green default test run therefore does not
-  mean the full external corpus ran.
+- The generated-artifact gate covers the checked-in example and Playground,
+  while arbitrary consumer projects still need to add the same command to
+  their own build validation.
+- Reference repositories are intentionally unavailable on machines that have
+  not prepared them. The corpus tests report that state explicitly now, but a
+  green local run still does not mean the external corpus ran.
 - The repository's own coverage baseline is moderate rather than exceptional:
   codemod reports roughly 76% statements and 64% branches; analyze reports
   roughly 74% statements and 61% branches.
@@ -107,4 +105,3 @@ project-aware Tailwind/Pandwind authoring plus reliable migration between the
 top few ecosystems, with real build/browser/SSR proof.** Everything else should
 be separately packaged, explicitly experimental, or deferred until a real
 consumer requires it.
-
