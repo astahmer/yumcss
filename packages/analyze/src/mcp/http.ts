@@ -6,7 +6,6 @@ import { createMcpProjectContext, createMcpToolService } from "./tools.ts";
 
 export interface McpHttpAppOptions extends McpServerOptions {
 	readonly path?: string;
-	readonly legacy?: "stateless" | "reject";
 	readonly responseMode?: "auto" | "json" | "sse";
 }
 
@@ -27,7 +26,6 @@ export function createMcpHttpApp(root: string, options: McpHttpAppOptions = {}):
 	const service =
 		options.service ?? createMcpToolService(createMcpProjectContext(root), options.ports);
 	const handler = createMcpHandler(() => createMcpServer(root, { service }), {
-		legacy: options.legacy ?? "stateless",
 		responseMode: options.responseMode ?? "auto",
 	});
 	const app = new Hono();

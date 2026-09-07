@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { getHostStyleAdapter, HOST_STYLE_ADAPTERS } from "../src/host/index.ts";
+import { getHostStyleAdapter, HOST_STYLE_REGISTRY } from "../src/host/index.ts";
 import { createRuntimeSheet, type RuntimeSheetSnapshot } from "../src/css/runtime.ts";
 
 interface FakeStyle {
@@ -101,8 +101,7 @@ describe("CSS-in-JS pivot runtime and host fixtures", () => {
 	});
 
 	test("keeps host framework class and style bindings renderer-neutral", () => {
-		for (const id of Object.keys(HOST_STYLE_ADAPTERS)) {
-			const adapter = getHostStyleAdapter(id)!;
+		for (const adapter of HOST_STYLE_REGISTRY.adapters) {
 			const classProps = adapter.classProps("pw-card", "existing");
 			const styleProps = adapter.styleProps({ color: "red", opacity: 0.5 });
 			expect(classProps[adapter.classProp]).toBe("existing pw-card");

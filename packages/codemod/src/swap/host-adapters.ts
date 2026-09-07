@@ -346,12 +346,6 @@ export const HOST_FRAMEWORK_REGISTRY = HOST_FRAMEWORK_PLUGINS.reduce(
 	createHostFrameworkRegistry(),
 );
 
-/** Compatibility projection; new code should depend on HOST_FRAMEWORK_REGISTRY. */
-export const HOST_FRAMEWORK_ADAPTERS: Readonly<Record<BuiltinHostFramework, HostFrameworkAdapter>> =
-	Object.fromEntries(
-		HOST_FRAMEWORK_REGISTRY.adapters.map((adapter) => [adapter.id, adapter]),
-	) as Readonly<Record<BuiltinHostFramework, HostFrameworkAdapter>>;
-
 export function getHostFrameworkAdapter(id: string): HostFrameworkAdapter | undefined {
 	return HOST_FRAMEWORK_REGISTRY.get(id);
 }

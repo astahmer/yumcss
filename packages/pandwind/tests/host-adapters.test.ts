@@ -1,7 +1,7 @@
 import { describe, expect, test } from "vitest";
 import {
 	getHostStyleAdapter,
-	HOST_STYLE_ADAPTERS,
+	HOST_STYLE_REGISTRY,
 	createHostStyleRegistry,
 	HOST_STYLE_PLUGIN_SCHEMA,
 	type HostStylePlugin,
@@ -9,7 +9,7 @@ import {
 
 describe("renderer-neutral host style adapters", () => {
 	test("covers the supported host syntax families", () => {
-		expect(Object.keys(HOST_STYLE_ADAPTERS)).toEqual([
+		expect(HOST_STYLE_REGISTRY.adapters.map((adapter) => adapter.id)).toEqual([
 			"react",
 			"preact",
 			"solid",

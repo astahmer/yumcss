@@ -535,7 +535,6 @@ export {
 	BuiltinHostFramework,
 	detectHostFramework,
 	getHostFrameworkAdapter,
-	HOST_FRAMEWORK_ADAPTERS,
 	HOST_FRAMEWORK_REGISTRY,
 	HOST_FRAMEWORK_PLUGINS,
 	HOST_FRAMEWORK_PLUGIN_SCHEMA,

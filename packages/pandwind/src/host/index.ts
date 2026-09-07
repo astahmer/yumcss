@@ -83,12 +83,6 @@ export const BUILTIN_HOST_STYLE_PLUGINS: readonly HostStylePlugin[] = [
 
 export const HOST_STYLE_REGISTRY = createHostStyleRegistry(BUILTIN_HOST_STYLE_PLUGINS);
 
-/** Compatibility projection; composition-aware code should use the registry. */
-export const HOST_STYLE_ADAPTERS: Readonly<Record<BuiltinHostFramework, HostStyleAdapter>> =
-	Object.fromEntries(
-		HOST_STYLE_REGISTRY.adapters.map((adapter) => [adapter.id, adapter]),
-	) as Readonly<Record<BuiltinHostFramework, HostStyleAdapter>>;
-
 export function getHostStyleAdapter(id: string): HostStyleAdapter | undefined {
 	return HOST_STYLE_REGISTRY.get(id);
 }
