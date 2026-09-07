@@ -102,12 +102,6 @@
 			"import": "./dist/design/index.js",
 			"default": "./dist/design/index.js"
 		},
-		"./recipe": {
-			"pandwind": "./src/recipe/index.ts",
-			"types": "./dist/recipe/index.d.ts",
-			"import": "./dist/recipe/index.js",
-			"default": "./dist/recipe/index.js"
-		},
 		"./host": {
 			"pandwind": "./src/host/index.ts",
 			"types": "./dist/host/index.d.ts",

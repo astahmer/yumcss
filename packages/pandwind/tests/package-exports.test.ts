@@ -29,4 +29,16 @@ describe("pandwind package boundary", () => {
 		// resolves dist. Both are valid package-boundary resolutions.
 		expect(resolved).toMatch(/packages\/pandwind\/(?:src|dist)\//);
 	});
+
+	test("does not expose CSS compiler internals from the public css lane", async () => {
+		const cssApi = await import("pandwind/css");
+		expect("createHashFn" in cssApi).toBe(false);
+		expect("hashCssVar" in cssApi).toBe(false);
+		expect("createVarCompiler" in cssApi).toBe(false);
+		expect("VARS_ATOMS" in cssApi).toBe(false);
+	});
+
+	test("does not expose the codemod-owned recipe runtime", () => {
+		expect(() => import.meta.resolve("pandwind/recipe")).toThrow();
+	});
 });

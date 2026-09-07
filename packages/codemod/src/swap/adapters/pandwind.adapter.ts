@@ -1109,6 +1109,67 @@ export const __pandwindSlot = ({
 };
 `;
 
+const PANDWIND_RECIPE_MODULE_PATH = "__pandwind/recipe.ts";
+const PANDWIND_RECIPE_MODULE_CONTENT = `type RecipeSelection = Readonly<Record<string, string | boolean | undefined>>;
+type RecipeDefinition = {
+  readonly base?: Record<string, unknown>;
+  readonly variants?: Readonly<Record<string, Readonly<Record<string, Record<string, unknown>>>> >;
+  readonly defaultVariants?: RecipeSelection;
+  readonly compoundVariants?: readonly { readonly when: Readonly<Record<string, string | boolean>>; readonly style: Record<string, unknown> }[];
+};
+type SlotRecipeDefinition = RecipeDefinition & {
+  readonly slots: Readonly<Record<string, Record<string, unknown>>>;
+  readonly slotVariants?: Readonly<Record<string, Readonly<Record<string, Readonly<Record<string, Record<string, unknown>>>>>>;
+};
+type CssClass = { readonly class: (...styles: readonly unknown[]) => string };
+
+const selectedValues = (definition: RecipeDefinition, selection: RecipeSelection) => {
+  const values: Record<string, string | boolean> = {};
+  for (const [name, variants] of Object.entries(definition.variants ?? {})) {
+    const value = selection[name] ?? definition.defaultVariants?.[name];
+    if (value !== undefined && variants[String(value)] !== undefined) values[name] = value;
+  }
+  return values;
+};
+
+const matches = (
+  selection: RecipeSelection,
+  conditions: Readonly<Record<string, string | boolean>>,
+) => Object.entries(conditions).every(([key, value]) => selection[key] === value);
+
+export const createRecipe = (css: CssClass, definition: RecipeDefinition) =>
+  (selection: RecipeSelection = {}) => {
+    const values = selectedValues(definition, selection);
+    const styles: unknown[] = [];
+    if (definition.base !== undefined) styles.push(definition.base);
+    for (const [name, value] of Object.entries(values)) {
+      const style = definition.variants?.[name]?.[String(value)];
+      if (style !== undefined) styles.push(style);
+    }
+    for (const compound of definition.compoundVariants ?? []) {
+      if (matches({ ...values, ...selection }, compound.when)) styles.push(compound.style);
+    }
+    const generated = css.class(...styles);
+    const extra = selection.className;
+    return extra === undefined || extra === "" ? generated : generated + " " + extra;
+  };
+
+export const createSlotRecipe = (css: CssClass, definition: SlotRecipeDefinition) =>
+  (selection: RecipeSelection = {}) => {
+    const values = selectedValues(definition, selection);
+    const output: Record<string, string> = {};
+    for (const [slot, base] of Object.entries(definition.slots)) {
+      const styles: unknown[] = [base];
+      for (const [name, value] of Object.entries(values)) {
+        const style = definition.slotVariants?.[name]?.[String(value)]?.[slot];
+        if (style !== undefined) styles.push(style);
+      }
+      output[slot] = css.class(...styles);
+    }
+    return output;
+  };
+`;
+
 function sharedSlotModule(
 	context: AdapterEmitContext | undefined,
 ): { readonly importPath: string; readonly file: AdapterGeneratedFile } | undefined {
@@ -1128,6 +1189,62 @@ function sharedSlotModule(
 			purpose: "shared static component slot helper",
 			content: PANDWIND_SLOT_MODULE_CONTENT,
 		},
+	};
+}
+
+function sharedRecipeModule(
+	context: AdapterEmitContext | undefined,
+): { readonly importPath: string; readonly file: AdapterGeneratedFile } | undefined {
+	const root = context?.config.root;
+	const file = context?.file;
+	if (file === undefined) return undefined;
+	if (isAbsoluteDocumentPath(file) && root === undefined) return undefined;
+	const projectFile = isAbsoluteDocumentPath(file) ? relativeDocumentPath(root!, file) : file;
+	let importPath = relativeDocumentPath(
+		dirnameDocumentPath(projectFile),
+		PANDWIND_RECIPE_MODULE_PATH,
+	);
+	if (!importPath.startsWith(".")) importPath = `./${importPath}`;
+	return {
+		importPath,
+		file: {
+			path: PANDWIND_RECIPE_MODULE_PATH,
+			purpose: "shared recipe runtime used by migrated source",
+			content: PANDWIND_RECIPE_MODULE_CONTENT,
+		},
+	};
+}
+
+function recipeRuntime(
+	context: AdapterEmitContext | undefined,
+	imported: "createRecipe" | "createSlotRecipe",
+): {
+	readonly binding: string;
+	readonly imports: readonly string[];
+	readonly generatedStatements: readonly string[];
+	readonly generatedFiles?: readonly AdapterGeneratedFile[];
+} {
+	const binding = generatedBinding(context?.document?.document.source, `__pandwind${imported}`);
+	const sharedModule = sharedRecipeModule(context);
+	if (sharedModule !== undefined) {
+		return {
+			binding,
+			imports: [`import { ${imported} as ${binding} } from "${sharedModule.importPath}";`],
+			generatedStatements: [],
+			generatedFiles: [sharedModule.file],
+		};
+	}
+	const inlineContent = PANDWIND_RECIPE_MODULE_CONTENT.replaceAll(
+		"export const createRecipe",
+		`const ${imported === "createRecipe" ? binding : "createRecipe"}`,
+	).replaceAll(
+		"export const createSlotRecipe",
+		`const ${imported === "createSlotRecipe" ? binding : "createSlotRecipe"}`,
+	);
+	return {
+		binding,
+		imports: [],
+		generatedStatements: [inlineContent],
 	};
 }
 
@@ -1741,7 +1858,10 @@ function pandwindRecipeReferences(
 	context: AdapterParseContext,
 	imported: "createRecipe" | "createSlotRecipe",
 ): readonly string[] {
-	const bindings = context.bindings?.fromModule("pandwind/recipe");
+	const isRecipeModule = (moduleSpecifier: string): boolean =>
+		moduleSpecifier === "pandwind/recipe" ||
+		/(?:^|[\\/])__pandwind[\\/]recipe(?:\.ts)?$/u.test(moduleSpecifier);
+	const bindings = context.bindings?.bindings.filter((binding) => isRecipeModule(binding.source));
 	if (bindings !== undefined) {
 		return bindings
 			.filter((binding) => binding.importedName === imported)
@@ -1753,7 +1873,7 @@ function pandwindRecipeReferences(
 			.filter((reference, index, all) => all.indexOf(reference) === index);
 	}
 	const references = new Set<string>();
-	const moduleSource = "pandwind/recipe".replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+	const moduleSource = "(?:pandwind/recipe|[^\"']*__pandwind[\\\\/]recipe(?:\\.ts)?)";
 	const namedImport = new RegExp(`import\\s*\\{([^}]*)\\}\\s*from\\s*["']${moduleSource}["']`, "g");
 	for (const match of context.source.matchAll(namedImport)) {
 		for (const specifier of (match[1] ?? "").split(",")) {
@@ -1886,6 +2006,9 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 			/\bcss\.sheet\.registerSemanticRules\s*\(/,
 		],
 		sourceModules: ["pandwind/css", "pandwind/css/runtime", "pandwind/recipe"],
+		sourceModuleMatchers: [
+			(moduleSpecifier) => /(?:^|[\\/])__pandwind[\\/]recipe(?:\.ts)?$/u.test(moduleSpecifier),
+		],
 		configFiles: ["pandwind.config.ts", "pandwind.interop.json", "bridge.ts", "package.json"],
 		loadConfig: pandwindConfig,
 		...(moduleLoader === undefined
@@ -2180,11 +2303,16 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 						"const pandwindCx = createCx();",
 					],
 				});
+			const recipe = slotRecipe
+				? recipeRuntime(context, "createSlotRecipe")
+				: recipeVariants
+					? recipeRuntime(context, "createRecipe")
+					: undefined;
 			return finalize({
 				text: slotRecipe
-					? `createSlotRecipe(css, ${slotRecipeDefinitionObject(outputProgram, declarationsObject)})`
+					? `${recipe?.binding ?? "createSlotRecipe"}(css, ${slotRecipeDefinitionObject(outputProgram, declarationsObject)})`
 					: recipeVariants
-						? `createRecipe(css, ${recipeDefinitionObject(outputProgram, declarationsObject)})`
+						? `${recipe?.binding ?? "createRecipe"}(css, ${recipeDefinitionObject(outputProgram, declarationsObject)})`
 						: named
 							? `css.group(${renderProgramObject(outputProgram)})`
 							: functionDynamic
@@ -2197,13 +2325,13 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 				imports: slotRecipe
 					? [
 							'import { createCss } from "pandwind/css";',
-							'import { createSlotRecipe } from "pandwind/recipe";',
+							...(recipe?.imports ?? []),
 							"const css = createCss();",
 						]
 					: recipeVariants
 						? [
 								'import { createCss } from "pandwind/css";',
-								'import { createRecipe } from "pandwind/recipe";',
+								...(recipe?.imports ?? []),
 								"const css = createCss();",
 							]
 						: needsRuntimeCss
@@ -2213,6 +2341,8 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 									"const css = createRuntimeCss(pandwindPreset);",
 								]
 							: ['import { createCss } from "pandwind/css";', "const css = createCss();"],
+				generatedStatements: recipe?.generatedStatements,
+				generatedFiles: recipe?.generatedFiles,
 			});
 		},
 	});

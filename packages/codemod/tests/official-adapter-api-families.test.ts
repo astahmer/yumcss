@@ -2035,12 +2035,17 @@ describe("official adapter API families", () => {
 			  "panda/cva recipe": {
 			    "changed": true,
 			    "code": "import { createCss } from "pandwind/css";
-			import { createRecipe } from "pandwind/recipe";
+			import { createRecipe as __pandwindcreateRecipe } from "../__pandwind/recipe.ts";
 			const css = createCss();
 
-			export const button = createRecipe(css, { base: { color: "red" }, variants: { "size": { "sm": { padding: "2" } } } });",
+			export const button = __pandwindcreateRecipe(css, { base: { color: "red" }, variants: { "size": { "sm": { padding: "2" } } } });",
 			    "converted": 1,
-			    "generatedFiles": [],
+			    "generatedFiles": [
+			      {
+			        "path": "__pandwind/recipe.ts",
+			        "purpose": "shared recipe runtime used by migrated source",
+			      },
+			    ],
 			    "loweringPlans": [
 			      {
 			        "applied": [],
@@ -2184,12 +2189,17 @@ describe("official adapter API families", () => {
 			  "panda/sva slot recipe": {
 			    "changed": true,
 			    "code": "import { createCss } from "pandwind/css";
-			import { createSlotRecipe } from "pandwind/recipe";
+			import { createSlotRecipe as __pandwindcreateSlotRecipe } from "../__pandwind/recipe.ts";
 			const css = createCss();
 
-			export const card = createSlotRecipe(css, { slots: { "root": { color: "red" }, "label": {  } }, slotVariants: {  } });",
+			export const card = __pandwindcreateSlotRecipe(css, { slots: { "root": { color: "red" }, "label": {  } }, slotVariants: {  } });",
 			    "converted": 1,
-			    "generatedFiles": [],
+			    "generatedFiles": [
+			      {
+			        "path": "__pandwind/recipe.ts",
+			        "purpose": "shared recipe runtime used by migrated source",
+			      },
+			    ],
 			    "loweringPlans": [
 			      {
 			        "applied": [],
@@ -2667,12 +2677,17 @@ describe("official adapter API families", () => {
 			  "stitches/variants": {
 			    "changed": true,
 			    "code": "import { createCss } from "pandwind/css";
-			import { createRecipe } from "pandwind/recipe";
+			import { createRecipe as __pandwindcreateRecipe } from "../__pandwind/recipe.ts";
 			const css = createCss();
 
-			export const button = createRecipe(css, { base: { compoundVariants: [{ size: "sm", css: { color: "red" } }] }, variants: { "size": { "sm": { padding: 4 } } } });",
+			export const button = __pandwindcreateRecipe(css, { base: { compoundVariants: [{ size: "sm", css: { color: "red" } }] }, variants: { "size": { "sm": { padding: 4 } } } });",
 			    "converted": 1,
-			    "generatedFiles": [],
+			    "generatedFiles": [
+			      {
+			        "path": "__pandwind/recipe.ts",
+			        "purpose": "shared recipe runtime used by migrated source",
+			      },
+			    ],
 			    "loweringPlans": [
 			      {
 			        "applied": [],
@@ -3839,12 +3854,17 @@ describe("official adapter API families", () => {
 			  "vanilla-extract/recipe": {
 			    "changed": true,
 			    "code": "import { createCss } from "pandwind/css";
-			import { createRecipe } from "pandwind/recipe";
+			import { createRecipe as __pandwindcreateRecipe } from "../__pandwind/recipe.ts";
 			const css = createCss();
 
-			export const button = createRecipe(css, { base: { color: "red" }, variants: { "size": { "sm": { padding: 4 } } } });",
+			export const button = __pandwindcreateRecipe(css, { base: { color: "red" }, variants: { "size": { "sm": { padding: 4 } } } });",
 			    "converted": 1,
-			    "generatedFiles": [],
+			    "generatedFiles": [
+			      {
+			        "path": "__pandwind/recipe.ts",
+			        "purpose": "shared recipe runtime used by migrated source",
+			      },
+			    ],
 			    "loweringPlans": [
 			      {
 			        "applied": [],

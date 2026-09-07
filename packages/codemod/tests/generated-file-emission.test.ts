@@ -9,6 +9,7 @@ import {
 
 const catalog = createBuiltinCodemodCatalog();
 const emotion = catalog.registry.get(CodemodAdapterId.Emotion)!;
+const panda = catalog.registry.get(CodemodAdapterId.Panda)!;
 const pandwind = catalog.registry.get(CodemodAdapterId.Pandwind)!;
 const generatedTargetId = "test-generated-target";
 
@@ -41,6 +42,36 @@ function migrate(source: string, target: StyleAdapter): ReturnType<typeof runAda
 }
 
 describe("generated target files", () => {
+	test("moves the recipe runtime into one project-owned generated module", () => {
+		const result = runAdapterMigration(
+			'import { cva } from "styled-system/recipes";\n' +
+				'export const button = cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });\n',
+			{
+				from: CodemodAdapterId.Panda,
+				to: CodemodAdapterId.Pandwind,
+				file: "/project/src/recipes.ts",
+				root: "/project",
+				mode: "safe",
+				readFile: () => undefined,
+				adapterRegistry: createStyleAdapterRegistry([panda, pandwind]),
+			},
+		);
+
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain('from "../__pandwind/recipe.ts"');
+		expect(result.code).not.toContain('from "pandwind/recipe"');
+		expect(result.generatedFiles).toEqual([
+			expect.objectContaining({
+				path: "__pandwind/recipe.ts",
+				purpose: "shared recipe runtime used by migrated source",
+			}),
+		]);
+		expect(result.generatedFiles[0]?.content).toContain("export const createRecipe");
+		expect(result.generatedFiles[0]?.content).toContain("export const createSlotRecipe");
+	});
+
 	test("emits an expert target expression and one reusable file for one occurrence", () => {
 		const source = 'import { css } from "@emotion/css";\nconst card = css({ color: "red" });\n';
 		const result = migrate(
