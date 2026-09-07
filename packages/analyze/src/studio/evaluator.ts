@@ -11,6 +11,7 @@ import { PANDWIND_API_DIALECTS } from "pandwind-codemod/swap/browser";
 import { createSourceWorkspace } from "pandwind/source/workspace";
 import { parseThemeScopes, parseThemeVars } from "../collect/parsers.ts";
 import { crawlCssImports } from "../collect/theme-crawl.ts";
+import { STUDIO_EVIDENCE_CHECK, STUDIO_EXECUTION_LANE } from "./contracts.ts";
 import type {
 	StudioDiagnostic,
 	StudioAdapterCatalogPort,
@@ -167,6 +168,17 @@ export const createStudioCodemodEvaluator = (): StudioEvaluationPort & StudioAda
 				});
 			if (target === null) {
 				return {
+					execution: {
+						lane: STUDIO_EXECUTION_LANE.InProcess,
+						verified: [],
+						unavailable: [
+							STUDIO_EVIDENCE_CHECK.ProjectTypecheck,
+							STUDIO_EVIDENCE_CHECK.ProjectBuild,
+							STUDIO_EVIDENCE_CHECK.BrowserHost,
+							STUDIO_EVIDENCE_CHECK.SsrHydration,
+						],
+						note: "Studio has no selected target; no migration pipeline was run.",
+					},
 					diagnostics: [diagnostic("Choose a target adapter to evaluate this workspace")],
 					tree: { roots: sourceTree(request.workspace, []) },
 					themes: projectThemes(request.workspace.root, request.theme.scope, configWorkspace),
@@ -273,6 +285,17 @@ export const createStudioCodemodEvaluator = (): StudioEvaluationPort & StudioAda
 			const sourceText = sourceCode.join("\n\n");
 			const targetText = targetCode.join("\n\n");
 			return {
+				execution: {
+					lane: STUDIO_EXECUTION_LANE.InProcess,
+					verified: [STUDIO_EVIDENCE_CHECK.Migration, STUDIO_EVIDENCE_CHECK.CanonicalCss],
+					unavailable: [
+						STUDIO_EVIDENCE_CHECK.ProjectTypecheck,
+						STUDIO_EVIDENCE_CHECK.ProjectBuild,
+						STUDIO_EVIDENCE_CHECK.BrowserHost,
+						STUDIO_EVIDENCE_CHECK.SsrHydration,
+					],
+					note: "Studio runs the registered adapters in process; host build and browser checks require an explicit preview host.",
+				},
 				diagnostics,
 				tree: { roots: sourceTree(request.workspace, migrations) },
 				themes: projectThemes(request.workspace.root, request.theme.scope, configWorkspace),

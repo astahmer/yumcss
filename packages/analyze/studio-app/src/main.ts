@@ -15,6 +15,12 @@ interface StudioSnapshot {
 	target?: { source?: string; target?: string };
 	adapters?: { sources: StudioAdapterOption[]; targets: StudioAdapterOption[] };
 	evaluation?: {
+		execution?: {
+			lane: string;
+			verified: readonly string[];
+			unavailable: readonly string[];
+			note: string;
+		};
 		tree?: unknown;
 		semantic?: unknown;
 		themes?: unknown;
@@ -109,6 +115,11 @@ const render = () => {
 			sourceBytes: artifacts.sourceBytes,
 			targetBytes: artifacts.targetBytes,
 		},
+		null,
+		2,
+	);
+	$("execution").textContent = JSON.stringify(
+		evaluation?.execution || { status: "unavailable", message: "No evaluation yet." },
 		null,
 		2,
 	);

@@ -98,6 +98,11 @@ describe("studio codemod evaluator", () => {
 
 		expect(result.artifacts?.targetCode).toContain("css.class");
 		expect(result.artifacts?.sourceCode).toContain("@emotion/css");
+		expect(result.execution).toMatchObject({
+			lane: "in-process",
+			verified: ["migration", "canonical-css"],
+			unavailable: ["project-typecheck", "project-build", "browser-host", "ssr-hydration"],
+		});
 		expect(result.semantic).toHaveProperty("programs");
 		expect(result.themes).toMatchInlineSnapshot(`
 			{
@@ -184,6 +189,11 @@ describe("studio codemod evaluator", () => {
 			  },
 			]
 		`);
+		expect(result.execution).toMatchObject({
+			lane: "in-process",
+			verified: [],
+			unavailable: ["project-typecheck", "project-build", "browser-host", "ssr-hydration"],
+		});
 		expect(result.tree?.roots[0]?.label).toBe("Card.tsx");
 	});
 });

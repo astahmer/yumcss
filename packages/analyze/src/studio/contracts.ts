@@ -3,6 +3,33 @@ import type { SourceDocument, SourceScanResult } from "pandwind/source";
 export const STUDIO_SESSION_SCHEMA = "pandwind.studio-session/1" as const;
 export const STUDIO_SNAPSHOT_SCHEMA = "pandwind.studio-snapshot/1" as const;
 
+export const STUDIO_EXECUTION_LANE = {
+	InProcess: "in-process",
+	HostPreview: "host-preview",
+} as const;
+
+export type StudioExecutionLane =
+	(typeof STUDIO_EXECUTION_LANE)[keyof typeof STUDIO_EXECUTION_LANE];
+
+export const STUDIO_EVIDENCE_CHECK = {
+	Migration: "migration",
+	CanonicalCss: "canonical-css",
+	ProjectTypecheck: "project-typecheck",
+	ProjectBuild: "project-build",
+	BrowserHost: "browser-host",
+	SsrHydration: "ssr-hydration",
+} as const;
+
+export type StudioEvidenceCheck =
+	(typeof STUDIO_EVIDENCE_CHECK)[keyof typeof STUDIO_EVIDENCE_CHECK];
+
+export interface StudioExecutionEvidence {
+	readonly lane: StudioExecutionLane;
+	readonly verified: readonly StudioEvidenceCheck[];
+	readonly unavailable: readonly StudioEvidenceCheck[];
+	readonly note: string;
+}
+
 export interface StudioOpenRequest {
 	readonly root: string;
 	readonly patterns?: readonly string[];
@@ -48,6 +75,7 @@ export interface StudioEvaluationRequest {
 }
 
 export interface StudioEvaluationResult {
+	readonly execution?: StudioExecutionEvidence;
 	readonly semantic?: unknown;
 	readonly artifacts?: StudioArtifactSnapshot;
 	readonly tree?: StudioTreeSnapshot;

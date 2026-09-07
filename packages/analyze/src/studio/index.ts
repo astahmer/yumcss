@@ -1,6 +1,8 @@
 export {
 	STUDIO_SESSION_SCHEMA,
 	STUDIO_SNAPSHOT_SCHEMA,
+	STUDIO_EVIDENCE_CHECK,
+	STUDIO_EXECUTION_LANE,
 	type StudioArtifactSnapshot,
 	type StudioAdapterCatalogPort,
 	type StudioAdapterCatalogSnapshot,
@@ -12,6 +14,9 @@ export {
 	type StudioEvaluationPort,
 	type StudioEvaluationRequest,
 	type StudioEvaluationResult,
+	type StudioEvidenceCheck,
+	type StudioExecutionEvidence,
+	type StudioExecutionLane,
 	type StudioGeneratedFile,
 	type StudioOpenRequest,
 	type StudioPreviewHostPort,
