@@ -72,6 +72,7 @@ function stylesheetImportTarget(file: string, specifier: string): string | undef
 function removeTailwindStylesheetImports(
 	request: ProjectBootstrapRequest,
 	config: AdapterProjectConfig,
+	outputDirectory: string,
 ): readonly {
 	readonly path: string;
 	readonly content: string;
@@ -98,6 +99,48 @@ function removeTailwindStylesheetImports(
 			(statement, specifier: string) =>
 				stylesheetImportTarget(absoluteFile, specifier) === target ? "" : statement,
 		);
+		if (next === source) continue;
+		changes.push({
+			path: relative(request.root, absoluteFile).replaceAll("\\", "/"),
+			content: next,
+			expectedContent: source,
+		});
+	}
+	return changes;
+}
+
+function rewriteTailwindViteConfigs(
+	request: ProjectBootstrapRequest,
+	config: AdapterProjectConfig,
+	outputDirectory: string,
+): readonly {
+	readonly path: string;
+	readonly content: string;
+	readonly expectedContent: string;
+}[] {
+	if (config.adapter !== CodemodAdapterId.Tailwind) return [];
+	const presetPath = resolve(request.root, outputDirectory, "preset");
+	const changes: {
+		path: string;
+		content: string;
+		expectedContent: string;
+	}[] = [];
+	for (const file of request.listFiles(request.root)) {
+		const absoluteFile = resolve(request.root, file);
+		if (!/(?:^|\/)vite\.config\.[cm]?[jt]s$/u.test(absoluteFile)) continue;
+		const source = request.readFile(absoluteFile);
+		if (source === undefined || !source.includes("@tailwindcss/vite")) continue;
+		if (!/\btailwindcss\s*\(\s*\)/u.test(source)) continue;
+		const presetSpecifier = relative(dirname(absoluteFile), presetPath).replaceAll("\\", "/");
+		const normalizedSpecifier = presetSpecifier.startsWith(".")
+			? presetSpecifier
+			: `./${presetSpecifier}`;
+		const next = source
+			.replace(
+				/import\s+tailwindcss\s+from\s+["']@tailwindcss\/vite["'];?/u,
+				`import { pandwindCssVite } from "pandwind/vite";\nimport { pandwindPreset } from "${normalizedSpecifier}";`,
+			)
+			.replace(/\btailwindcss\s*\(\s*\)/gu, 'pandwindCssVite(pandwindPreset, { root: "." })');
 		if (next === source) continue;
 		changes.push({
 			path: relative(request.root, absoluteFile).replaceAll("\\", "/"),
@@ -321,7 +364,10 @@ export async function createPandwindProjectSupport(
 				: { twModule: projectFile(directory, "tw.ts") }),
 		},
 		files,
-		fileChanges: removeTailwindStylesheetImports(request, sourceConfig),
+		fileChanges: [
+			...removeTailwindStylesheetImports(request, sourceConfig, directory),
+			...rewriteTailwindViteConfigs(request, sourceConfig, directory),
+		],
 		...(metaFiles === undefined ? {} : { meta: loadGeneratedMeta(metaFiles, directory) }),
 		sourceConfig,
 	};
