@@ -56,6 +56,11 @@ adoption simplicity, real-world proof, and scope discipline.
   in a browser sandbox with shims and deliberately excludes project module
   loading and Tailwind's Node engine. A scenario passing there does not prove
   the same source will build correctly in a real project.
+- There is now one bounded installed-project proof for Tailwind CSS -> Pandwind:
+  it runs the real CLI, generated project files, typechecks, Vite builds, SSR,
+  hydration, and browser base/hover comparison. That raises confidence in the
+  covered lane, but one small React/Vite fixture does not establish broad
+  Tailwind route coverage.
 - "The MCP surface is ahead of the underlying proof."
   `validate_migration` exposes typecheck, build, SSR, hydration, browser, and
   bundle-size checks, but the default MCP server cannot execute those checks.
@@ -90,6 +95,7 @@ describe evidence, not a promise that every construct in a route is lossless.
 | `tw()` / `css()` / `cx()` runtime contracts     | stable       | package tests, type tests, pack/import smoke, generated artifact checks           | consumer-project coverage and host-specific behavior                       |
 | Codegen and Vite integration                    | experimental | focused runtime/Vite tests and fresh checked-in example artifacts                 | repeated proof in dependency-installed consumer projects                   |
 | Cataloged codemod routes                        | experimental | adapter contracts, source probes, route-level dimensions, explicit residuals      | installed project typecheck, build, browser, SSR/hydration, and size proof |
+| Tailwind -> Pandwind bounded fixture             | experimental | installed CLI, generated preset, typecheck, build, SSR, hydration, browser pixels | more utilities, themes, plugins, frameworks, and multi-file projects       |
 | Playground                                      | experimental | browser sandbox evaluation, StyleProgram extraction, runtime-sheet CSS inspection | real package/Vite fixture and framework host proof                         |
 | MCP and analyzer                                | experimental | typed tool/resource contracts and explicit host-port unavailable states           | host integrations that execute and retain project evidence                 |
 | React Native/OpenTUI and other non-web backends | research     | contract and typing coverage                                                      | real consumers and backend-specific runtime proof                          |
