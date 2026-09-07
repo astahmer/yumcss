@@ -177,7 +177,9 @@ describe("dev server", () => {
 		const result = await server.transformRequest(virtualId);
 		expect(result?.code).toBeDefined();
 		const css = result!.code;
-		expect(css).toContain(":root");
+		// Design-layer calls are resolved to concrete declarations before the
+		// sheet sees them, so `tokens: "used"` emits no unused preset roots.
+		expect(css).not.toContain(":root");
 		expect(css).toContain("background-color:#3182ce");
 		expect(css).toContain("border-radius:");
 		expect(css).toContain("display:flex");
@@ -333,7 +335,9 @@ describe("build", () => {
 		);
 		expect(css).toBeDefined();
 		expect(css!.source!.toString()).toContain("background-color:#3182ce");
-		expect(css!.source!.toString()).toContain(":root");
+		// The fixture has no unresolved token references left for the stylesheet
+		// collector, so used-token emission does not include a root block.
+		expect(css!.source!.toString()).not.toContain(":root");
 	});
 
 	test("root-barrel imports tree-shake: one API in, one API's code out", async () => {
