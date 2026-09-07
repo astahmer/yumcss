@@ -66,12 +66,12 @@ describe("swap tw -> css.class", () => {
 	});
 
 	test("bridge misses stay untouched with a skip marker", () => {
-		const source = `${WITH_CSS}export const C = () => <div className={tw({ gap: "4" })} />;`;
+		const source = `${WITH_CSS}export const C = () => <div className={tw({ gap: "not-a-real-value" })} />;`;
 		const result = swap(source, "css.class");
 		expect(result.converted).toBe(0);
 		expect(result.skippedByMarker).toBe(1);
 		expect(result.code).toContain("pandwind:migrate-skip");
-		expect(result.code).toContain('tw({ gap: "4" })'); // original preserved
+		expect(result.code).toContain('tw({ gap: "not-a-real-value" })'); // original preserved
 	});
 });
 
