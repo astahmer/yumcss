@@ -23,6 +23,7 @@
 		"residuals": 0,
 		"generatedSupportFiles": 11,
 		"targetUsesPandwind": true,
+		"customThemeTokenPreserved": true,
 		"sourceStylesheetImportRemoved": true,
 		"generatedVitePresetImportIsExplicit": true
 	},
@@ -37,8 +38,8 @@
 	},
 	"ssr": {
 		"markupEquivalent": true,
-		"sourceMarkup": "<div data-proof=\"true\" class=\"bg-blue-500 px-4 py-2 text-white hover:bg-blue-600\">Proof</div>",
-		"targetMarkup": "<div data-proof=\"true\" class=\"tgs34v 1szmlq4 1em65wg c0xeqe pzvf2w\">Proof</div>"
+		"sourceMarkup": "<div data-proof=\"true\" class=\"bg-brand px-4 py-2 text-white hover:bg-blue-600\">Proof</div>",
+		"targetMarkup": "<div data-proof=\"true\" class=\"tgs34v 1szmlq4 ympxnl c0xeqe pzvf2w\">Proof</div>"
 	},
 	"browser": {
 		"checked": true,
@@ -50,19 +51,19 @@
 		"changedPixels": 0,
 		"computed": {
 			"source": {
-				"base": "oklch(0.623 0.214 259.815)|rgb(255, 255, 255)|16px|8px",
+				"base": "rgb(18, 52, 86)|rgb(255, 255, 255)|16px|8px",
 				"hover": "oklch(0.546 0.245 262.881)|rgb(255, 255, 255)|16px|8px"
 			},
 			"target": {
-				"base": "oklch(0.623 0.214 259.815)|rgb(255, 255, 255)|16px|8px",
+				"base": "rgb(18, 52, 86)|rgb(255, 255, 255)|16px|8px",
 				"hover": "oklch(0.546 0.245 262.881)|rgb(255, 255, 255)|16px|8px"
 			}
 		},
 		"hydrationErrors": []
 	},
 	"css": {
-		"sourceBytes": 4595,
-		"targetBytes": 341,
+		"sourceBytes": 4568,
+		"targetBytes": 317,
 		"targetNotLarger": true
 	}
 }

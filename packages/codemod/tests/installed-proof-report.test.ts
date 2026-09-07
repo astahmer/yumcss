@@ -23,6 +23,7 @@ interface TailwindInstalledProofReport {
 		readonly skipped: number;
 		readonly residuals: number;
 		readonly targetUsesPandwind: boolean;
+		readonly customThemeTokenPreserved: boolean;
 		readonly sourceStylesheetImportRemoved: boolean;
 		readonly generatedVitePresetImportIsExplicit: boolean;
 	};
@@ -79,6 +80,7 @@ describe("installed adapter proof artifacts", () => {
 				skipped: 0,
 				residuals: 0,
 				targetUsesPandwind: true,
+				customThemeTokenPreserved: true,
 				sourceStylesheetImportRemoved: true,
 				generatedVitePresetImportIsExplicit: true,
 			},

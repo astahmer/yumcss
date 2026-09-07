@@ -66,6 +66,33 @@ describe("Pandwind project bootstrap", () => {
 		expect(preset).toContain('"$card": "1rem"');
 	});
 
+	test("removes Tailwind graph directives while preserving authored CSS", async () => {
+		const support = await createPandwindProjectSupport({
+			root: "/project",
+			sourceAdapter: CodemodAdapterId.Tailwind,
+			outputDirectory: "pandwind",
+			readFile: (file) =>
+				file === "/project/styles.css"
+					? [
+							'@import "tailwindcss";',
+							"@theme { --color-brand: #123456; }",
+							".authored { color: red; }",
+						].join("\n")
+					: undefined,
+			listFiles: () => ["/project/styles.css"],
+		});
+
+		expect(support.fileChanges).toContainEqual({
+			path: "styles.css",
+			expectedContent: [
+				'@import "tailwindcss";',
+				"@theme { --color-brand: #123456; }",
+				".authored { color: red; }",
+			].join("\n"),
+			content: "\n\n.authored { color: red; }",
+		});
+	});
+
 	test("uses an explicit TypeScript extension in generated Vite config imports", async () => {
 		const support = await createPandwindProjectSupport({
 			root: "/project",

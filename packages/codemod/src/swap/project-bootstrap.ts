@@ -162,9 +162,124 @@ function customVariantConditions(css: string): Record<string, string> {
 	return conditions;
 }
 
-function isTailwindOnlyStylesheet(css: string): boolean {
-	const source = css.replace(/\/\*[\s\S]*?\*\//gu, "").trim();
-	return /^@import\s+(?:url\(\s*)?["']tailwindcss["']\s*\)?\s*;$/u.test(source);
+const TAILWIND_CONFIGURATION_RULES = new Set([
+	"theme",
+	"utility",
+	"plugin",
+	"custom-variant",
+	"source",
+	"reference",
+	"config",
+]);
+
+const TAILWIND_IMPORT = /^@import\s+(?:url\(\s*)?["']tailwindcss["']\s*\)?\s*;$/u;
+
+function cssAtRuleEnd(source: string, start: number): number {
+	let quote: string | undefined;
+	let comment = false;
+	let braces = 0;
+	for (let index = start; index < source.length; index++) {
+		const character = source[index]!;
+		const next = source[index + 1];
+		if (comment) {
+			if (character === "*" && next === "/") {
+				comment = false;
+				index++;
+			}
+			continue;
+		}
+		if (quote !== undefined) {
+			if (character === "\\") index++;
+			else if (character === quote) quote = undefined;
+			continue;
+		}
+		if (character === "/" && next === "*") {
+			comment = true;
+			index++;
+			continue;
+		}
+		if (character === '"' || character === "'") {
+			quote = character;
+			continue;
+		}
+		if (character === "{") {
+			braces++;
+			continue;
+		}
+		if (character === "}" && braces > 0) {
+			braces--;
+			if (braces === 0) return index + 1;
+			continue;
+		}
+		if (character === ";" && braces === 0) return index + 1;
+	}
+	return source.length;
+}
+
+/** Remove Tailwind graph directives after their values have been captured by the official loader. */
+function stripTailwindConfiguration(source: string): string {
+	let output = "";
+	let index = 0;
+	let quote: string | undefined;
+	let comment = false;
+	while (index < source.length) {
+		const character = source[index]!;
+		const next = source[index + 1];
+		if (comment) {
+			output += character;
+			if (character === "*" && next === "/") {
+				output += next;
+				index += 2;
+				comment = false;
+				continue;
+			}
+			index++;
+			continue;
+		}
+		if (quote !== undefined) {
+			output += character;
+			if (character === "\\" && next !== undefined) {
+				output += next;
+				index += 2;
+				continue;
+			}
+			if (character === quote) quote = undefined;
+			index++;
+			continue;
+		}
+		if (character === "/" && next === "*") {
+			output += "/*";
+			index += 2;
+			comment = true;
+			continue;
+		}
+		if (character === '"' || character === "'") {
+			output += character;
+			quote = character;
+			index++;
+			continue;
+		}
+		if (character !== "@") {
+			output += character;
+			index++;
+			continue;
+		}
+		const match = /^@([A-Za-z-]+)/u.exec(source.slice(index));
+		if (match?.[1] === undefined) {
+			output += character;
+			index++;
+			continue;
+		}
+		const end = cssAtRuleEnd(source, index + match[0].length);
+		const fragment = source.slice(index, end);
+		const name = match[1].toLowerCase();
+		const remove =
+			TAILWIND_CONFIGURATION_RULES.has(name) ||
+			(name === "import" && TAILWIND_IMPORT.test(fragment));
+		if (!remove) output += fragment;
+		index = end;
+	}
+	return output.trim() === "" ? "" : output;
 }
 
 function stylesheetImportTarget(file: string, specifier: string): string | undefined {
@@ -175,7 +290,6 @@ function stylesheetImportTarget(file: string, specifier: string): string | undef
 function removeTailwindStylesheetImports(
 	request: ProjectBootstrapRequest,
 	config: AdapterProjectConfig,
-	outputDirectory: string,
 ): readonly {
 	readonly path: string;
 	readonly content: string;
@@ -185,7 +299,7 @@ function removeTailwindStylesheetImports(
 	const cssEntry = config.files.find((file) => /\.css$/u.test(file));
 	if (cssEntry === undefined) return [];
 	const stylesheet = request.readFile(cssEntry);
-	if (stylesheet === undefined || !isTailwindOnlyStylesheet(stylesheet)) return [];
+	if (stylesheet === undefined || stripTailwindConfiguration(stylesheet).trim() !== "") return [];
 	const target = resolve(request.root, cssEntry);
 	const changes: {
 		path: string;
@@ -206,6 +320,34 @@ function removeTailwindStylesheetImports(
 		changes.push({
 			path: relative(request.root, absoluteFile).replaceAll("\\", "/"),
 			content: next,
+			expectedContent: source,
+		});
+	}
+	return changes;
+}
+
+function rewriteTailwindStylesheets(
+	request: ProjectBootstrapRequest,
+	config: AdapterProjectConfig,
+): readonly {
+	readonly path: string;
+	readonly content: string;
+	readonly expectedContent: string;
+}[] {
+	if (config.adapter !== CodemodAdapterId.Tailwind) return [];
+	const changes: {
+		path: string;
+		content: string;
+		expectedContent: string;
+	}[] = [];
+	for (const file of config.files.filter((candidate) => /\.css$/u.test(candidate))) {
+		const source = request.readFile(file);
+		if (source === undefined) continue;
+		const content = stripTailwindConfiguration(source);
+		if (content.trim() === "" || content === source) continue;
+		changes.push({
+			path: relative(request.root, resolve(request.root, file)).replaceAll("\\", "/"),
+			content,
 			expectedContent: source,
 		});
 	}
@@ -528,7 +670,8 @@ export async function createPandwindProjectSupport(
 		},
 		files,
 		fileChanges: [
-			...removeTailwindStylesheetImports(request, sourceConfig, directory),
+			...rewriteTailwindStylesheets(request, sourceConfig),
+			...removeTailwindStylesheetImports(request, sourceConfig),
 			...viteConfigChanges,
 			...enableTypeScriptExtensionImports(request, viteConfigChanges.length > 0),
 		],

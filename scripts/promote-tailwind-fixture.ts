@@ -19,7 +19,7 @@ import {
 import { tmpdir } from "node:os";
 import { dirname, extname, join, relative, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
-import { CodemodAdapterId, runAdapterMigrationAsync } from "pandwind-codemod/swap";
+import { CodemodAdapterId } from "pandwind-codemod/swap";
 
 const repositoryRoot = resolve(import.meta.dirname, "..");
 const pandwindPackageRoot = join(repositoryRoot, "packages/pandwind");
@@ -43,7 +43,7 @@ const versions = {
 const sourceApp = `import "../styles.css";
 
 export const App = () => (
-	<div data-proof className="bg-blue-500 px-4 py-2 text-white hover:bg-blue-600">
+	<div data-proof className="bg-brand px-4 py-2 text-white hover:bg-blue-600">
 		Proof
 	</div>
 );
@@ -100,6 +100,7 @@ interface TailwindInstalledProof {
 		readonly residuals: number;
 		readonly generatedSupportFiles: number;
 		readonly targetUsesPandwind: boolean;
+		readonly customThemeTokenPreserved: boolean;
 		readonly sourceStylesheetImportRemoved: boolean;
 		readonly generatedVitePresetImportIsExplicit: boolean;
 	};
@@ -130,6 +131,7 @@ function proofIsComplete(report: TailwindInstalledProof): boolean {
 		report.migration.skipped === 0 &&
 		report.migration.residuals === 0 &&
 		report.migration.targetUsesPandwind &&
+		report.migration.customThemeTokenPreserved &&
 		report.migration.sourceStylesheetImportRemoved &&
 		report.migration.generatedVitePresetImportIsExplicit &&
 		report.dependencies.targetNodeModule &&
@@ -142,6 +144,27 @@ function proofIsComplete(report: TailwindInstalledProof): boolean {
 
 function run(command: string, args: readonly string[], cwd: string): void {
 	execFileSync(command, [...args], { cwd, stdio: "inherit" });
+}
+
+function runCaptured(command: string, args: readonly string[], cwd: string): string {
+	const output = execFileSync(command, [...args], { cwd, encoding: "utf8" });
+	process.stdout.write(output);
+	return output;
+}
+
+function migrationSummary(output: string): {
+	readonly converted: number;
+	readonly skipped: number;
+	readonly residuals: number;
+} {
+	const match = /[—-]\s*(\d+) converted, (\d+) skipped, (\d+) residual\(s\)/u.exec(output);
+	if (match?.[1] === undefined || match[2] === undefined || match[3] === undefined)
+		throw new Error("installed Tailwind proof could not read the codemod migration summary");
+	return {
+		converted: Number(match[1]),
+		skipped: Number(match[2]),
+		residuals: Number(match[3]),
+	};
 }
 
 function writeJson(path: string, value: unknown): void {
@@ -181,7 +204,10 @@ function createFixture(root: string, includePandwind: boolean): void {
 	mkdirSync(join(root, "src"), { recursive: true });
 	writeJson(join(root, "package.json"), packageJson(includePandwind));
 	writeJson(join(root, "tsconfig.json"), tsConfig);
-	writeFileSync(join(root, "styles.css"), '@import "tailwindcss";\n');
+	writeFileSync(
+		join(root, "styles.css"),
+		['@import "tailwindcss";', "", "@theme { --color-brand: #123456; }"].join("\n") + "\n",
+	);
 	writeFileSync(join(root, "vite.config.ts"), sourceViteConfig);
 	writeFileSync(join(root, "src/App.tsx"), sourceApp);
 	writeFileSync(
@@ -374,39 +400,26 @@ export async function runTailwindInstalledProof(): Promise<TailwindInstalledProo
 	run("pnpm", ["install", "--ignore-scripts", "--no-frozen-lockfile"], sourceRoot);
 	run("pnpm", ["install", "--ignore-scripts", "--no-frozen-lockfile"], targetRoot);
 	run("pnpm", ["run", "typecheck"], sourceRoot);
-	const sourceMigration = await runAdapterMigrationAsync(sourceApp, {
-		from: CodemodAdapterId.Tailwind,
-		to: CodemodAdapterId.Pandwind,
-		file: "src/App.tsx",
-		root: targetRoot,
-		readFile: (file) => {
-			try {
-				return readFileSync(file, "utf8");
-			} catch {
-				return undefined;
-			}
-		},
-		listFiles: () => allFiles(targetRoot),
-		packageJson: JSON.parse(readFileSync(join(targetRoot, "package.json"), "utf8")),
-	});
-	run(
-		"nub",
-		[
-			"--conditions",
-			"pandwind",
-			join(repositoryRoot, "packages/codemod/src/cli.ts"),
-			"migrate",
-			"--from",
-			"tailwindcss",
-			"--to",
-			"pandwind",
-			"--root",
-			targetRoot,
-			"--no-install",
-			"src/App.tsx",
-			"--report",
-		],
-		repositoryRoot,
+	const migration = migrationSummary(
+		runCaptured(
+			"nub",
+			[
+				"--conditions",
+				"pandwind",
+				join(repositoryRoot, "packages/codemod/src/cli.ts"),
+				"migrate",
+				"--from",
+				"tailwindcss",
+				"--to",
+				"pandwind",
+				"--root",
+				targetRoot,
+				"--no-install",
+				"src/App.tsx",
+				"--report",
+			],
+			repositoryRoot,
+		),
 	);
 	const migratedApp = readFileSync(join(targetRoot, "src/App.tsx"), "utf8");
 	const generatedSupportFiles = allFiles(join(targetRoot, "pandwind")).map((file) =>
@@ -438,11 +451,12 @@ export async function runTailwindInstalledProof(): Promise<TailwindInstalledProo
 			targetNodeModule: existsSync(join(targetRoot, "node_modules/pandwind/package.json")),
 		},
 		migration: {
-			converted: sourceMigration.converted,
-			skipped: sourceMigration.skipped,
-			residuals: sourceMigration.residuals.length,
+			converted: migration.converted,
+			skipped: migration.skipped,
+			residuals: migration.residuals,
 			generatedSupportFiles: generatedSupportFiles.length,
 			targetUsesPandwind: migratedApp.includes("pandwind"),
+			customThemeTokenPreserved: migratedApp.includes('backgroundColor: "$brand"'),
 			sourceStylesheetImportRemoved: !migratedApp.includes("../styles.css"),
 			generatedVitePresetImportIsExplicit: targetViteConfig.includes("./pandwind/preset.ts"),
 		},
