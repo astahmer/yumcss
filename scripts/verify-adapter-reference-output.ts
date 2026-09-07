@@ -1,6 +1,6 @@
 import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
-import { dirname, join, normalize, resolve } from "node:path";
+import { dirname, join, normalize, relative, resolve } from "node:path";
 import { tmpdir } from "node:os";
 import {
 	BuiltinHostFramework,
@@ -107,6 +107,7 @@ const IMPORT_PACKAGES: Readonly<Record<string, readonly SandboxEntry[]>> = {
 function partitionImports(
 	sourceImports: readonly string[],
 	outputImports: readonly string[],
+	generatedImports: ReadonlySet<string> = new Set(),
 ): { packages: SandboxEntry[]; stubs: readonly string[]; unpinned: readonly string[] } {
 	const source = new Set(sourceImports);
 	const added = outputImports.filter((specifier) => !source.has(specifier));
@@ -139,6 +140,7 @@ function partitionImports(
 	};
 	for (const specifier of source) if (!pinned(specifier)) stubs.push(specifier);
 	for (const specifier of added) {
+		if (generatedImports.has(specifier)) continue;
 		if (pinned(specifier)) continue;
 		if (source.has(specifier)) stubs.push(specifier);
 		else unpinned.push(specifier);
@@ -156,14 +158,16 @@ function collectImportSpecifiers(code: string): string[] {
 	return [...merged];
 }
 
-function relativeStubModules(source: string, output: string): Record<string, string> {
+function relativeStubModules(
+	sourceModules: readonly { readonly code: string; readonly path: string }[],
+): Record<string, string> {
 	const modules = new Map<string, Set<string>>();
 	const add = (path: string, name: string): void => {
 		const names = modules.get(path) ?? new Set<string>();
 		if (name !== "") names.add(name);
 		modules.set(path, names);
 	};
-	for (const code of [source, output]) {
+	for (const { code, path: importer } of sourceModules) {
 		for (const match of code.matchAll(
 			/import\s+(?:(type)\s+)?(\{[^}]*\}|[A-Za-z_$][\w$]*)(?:\s*,\s*\{([^}]*)\})?\s+from\s+["'](\.[^"']*)["']/g,
 		)) {
@@ -181,7 +185,7 @@ function relativeStubModules(source: string, output: string): Record<string, str
 			);
 			const target = match[4]!;
 			const normalized = target.replace(/\.(?:js|mjs|ts|tsx)$/, "");
-			const file = `${normalize(join("src", normalized))}.ts`;
+			const file = `${normalize(join(dirname(importer), normalized))}.ts`;
 			for (const name of names) add(file, name);
 		}
 	}
@@ -451,21 +455,28 @@ async function verifyReference(reference: {
 		moduleLoader: harnessModuleLoader,
 		semantic: { source: { file: reference.path, framework: reference.framework } },
 	});
-	const imports = collectImportSpecifiers(migration.code);
-	const moduleText = typecheckSourceText(
-		reference.id,
-		[
-			...migration.generatedFiles
-				.filter((file) => file.path.endsWith(".ts") || file.path.endsWith(".tsx"))
-				.map((file) => `// generated artifact: ${file.path}\n`),
-			migration.code,
-		].join("\n"),
+	const migratedPath = `src/${reference.path.replace(/\.[^.]+$/u, ".tsx")}`;
+	const generatedModules = migration.generatedFiles.map((file) => ({
+		code: file.content,
+		path: `src/${file.path}`,
+	}));
+	const generatedImports = new Set(
+		migration.generatedFiles.map((file) => {
+			let specifier = normalize(relative(dirname(reference.path), file.path));
+			if (!specifier.startsWith(".")) specifier = `./${specifier}`;
+			return specifier;
+		}),
 	);
+	const moduleText = typecheckSourceText(reference.id, migration.code);
+	const imports = [
+		...collectImportSpecifiers(moduleText),
+		...generatedModules.flatMap(({ code }) => collectImportSpecifiers(code)),
+	];
 	const sourceImports = collectImportSpecifiers(source);
 	// Source-file facts that shape the sandbox: a test file needs test-runner
 	// globals, and untyped upstream sources need the implicit-any escape.
 	const sourceIsTest = /\b(?:describe|it|test)\s*\(/.test(source);
-	const partition = partitionImports(sourceImports, imports);
+	const partition = partitionImports(sourceImports, imports, generatedImports);
 	const sandboxPackages =
 		reference.framework === BuiltinHostFramework.Solid
 			? [
@@ -508,14 +519,19 @@ async function verifyReference(reference: {
 		sandboxKey,
 		sandboxPackages,
 		{
-			"src/migrated.tsx": moduleText,
+			[migratedPath]: moduleText,
+			...Object.fromEntries(generatedModules.map(({ code, path }) => [path, code])),
 			...Object.fromEntries(
 				partition.stubs.map((specifier, index) => [
 					`src/stubs/${index}-${specifier.replace(/[^a-z0-9-]+/gi, "-")}.d.ts`,
 					stubModuleText(specifier, [...(stubNames.get(specifier) ?? [])]),
 				]),
 			),
-			...relativeStubModules(source, moduleText),
+			...relativeStubModules([
+				{ code: source, path: migratedPath },
+				{ code: moduleText, path: migratedPath },
+				...generatedModules,
+			]),
 			...(sourceIsTest ? { "src/globals.d.ts": TEST_GLOBALS_DTS } : {}),
 		},
 		!sourceIsTest && !/\.(?:js|jsx)$/u.test(reference.path),
