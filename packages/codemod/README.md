@@ -56,7 +56,7 @@ separate `tokens` command.
 The command writes changes by default. Use --dry-run for a read-only plan and
 add --diff or --report when reviewing the result:
 
-~~~sh
+```sh
 # Tailwind classes -> a project-owned typed Pandwind tw() module
 pnpm exec pandwind-codemod migrate -f tailwindcss -t pandwind-tw src
 
@@ -66,7 +66,7 @@ pnpm exec pandwind-codemod migrate -f styled-components -t pandwind-css \
 
 # Pandwind -> another registered adapter
 pnpm exec pandwind-codemod migrate --from pandwind --to unocss src
-~~~
+```
 
 -f is short for --from, -t is short for --to, and --root selects a project
 root when the command is run outside it. -h and --help work at the root, after
@@ -107,23 +107,23 @@ pandwind:migrate-skip residual. --report prints residual details and
 
 ### Pandwind API targets
 
-| target | output |
-| --- | --- |
-| pandwind-css / pandwind | shared css.class() bindings and a generated preset |
-| pandwind-tw / tw | shared generated typed tw() binding and bridge |
-| pandwind-dss / dss | Pandwind design-system object calls |
-| css.class | existing Pandwind css binding, with condition nesting |
-| design / dss | $frame, $layout, $text, and $raw vocabulary |
+| target                  | output                                                |
+| ----------------------- | ----------------------------------------------------- |
+| pandwind-css / pandwind | shared css.class() bindings and a generated preset    |
+| pandwind-tw / tw        | shared generated typed tw() binding and bridge        |
+| pandwind-dss / dss      | Pandwind design-system object calls                   |
+| css.class               | existing Pandwind css binding, with condition nesting |
+| design / dss            | $frame, $layout, $text, and $raw vocabulary           |
 
 ### External targets
 
 The same command handles routes such as:
 
-~~~sh
+```sh
 pnpm exec pandwind-codemod migrate -f tailwindcss -t panda src
 pnpm exec pandwind-codemod migrate -f unocss -t tailwindcss src
 pnpm exec pandwind-codemod migrate -f styled-components -t chakra-ui-v3 src
-~~~
+```
 
 Target emitters own their documented imports, component carriers, token
 spelling, and framework rewrites. A source library's runtime context is
@@ -141,7 +141,7 @@ migrate for the generated-metadata class-string pass.
 tokens remains a separate data-format conversion command. It uses one
 normalized TokenSet IR between importers and exporters:
 
-~~~sh
+```sh
 # DTCG JSON -> Tailwind @theme CSS
 pnpm exec pandwind-codemod tokens --from dtcg --to theme tokens.json --out theme.css
 
@@ -150,7 +150,7 @@ pnpm exec pandwind-codemod tokens --from panda --to dtcg panda.config.ts --out t
 
 # a Pandwind definePreset file -> Panda snippet on stdout
 pnpm exec pandwind-codemod tokens --from preset --to panda src/preset.ts
-~~~
+```
 
 Supported formats are dtcg, theme, panda, preset, sd, figma, rootcss, and
 stylex. Use pandwind-codemod tokens --help for the validated format list.
@@ -182,12 +182,12 @@ semantic parsing, target emission, dependencies, capabilities, and residuals.
 For example, the following routes use the same command and project-aware
 configuration boundary:
 
-~~~sh
+```sh
 pnpm exec pandwind-codemod migrate -f styled-components -t pandwind-css src
 pnpm exec pandwind-codemod migrate -f tailwindcss -t pandwind-tw src
 pnpm exec pandwind-codemod migrate -f panda -t pandwind-css src
 pnpm exec pandwind-codemod migrate -f pandwind -t unocss src
-~~~
+```
 
 ## Panda inbound migration (`migrate --from=panda`)
 

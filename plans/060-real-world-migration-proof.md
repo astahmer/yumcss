@@ -113,15 +113,15 @@ Every promotion record must distinguish:
 
 ### Tech choices
 
-| Choice | Decision | Rationale |
-|--------|----------|-----------|
-| Stable routes | Start with four high-value directions | Depth is more valuable than an unverified all-to-all matrix |
-| Config loading | Official package from project root through an injectable loader | Custom presets and plugins must be interpreted by their owner |
-| Reference projects | Pinned, dependency-installed, isolated workspaces | Source snapshots alone cannot prove build or host behavior |
-| Browser proof | Existing browser/SSR differential harness | Reuse the current validator instead of creating route-specific scripts |
-| Missing reference | Explicit unavailable result; required stable route fails | A skipped test must not look like proof |
-| Residual policy | Preserve source and emit typed residuals | Safe failure is better than plausible incorrect code |
-| Route catalog | Registry-owned metadata generates docs and tests | Avoid stale hand-maintained matrices |
+| Choice             | Decision                                                        | Rationale                                                              |
+| ------------------ | --------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| Stable routes      | Start with four high-value directions                           | Depth is more valuable than an unverified all-to-all matrix            |
+| Config loading     | Official package from project root through an injectable loader | Custom presets and plugins must be interpreted by their owner          |
+| Reference projects | Pinned, dependency-installed, isolated workspaces               | Source snapshots alone cannot prove build or host behavior             |
+| Browser proof      | Existing browser/SSR differential harness                       | Reuse the current validator instead of creating route-specific scripts |
+| Missing reference  | Explicit unavailable result; required stable route fails        | A skipped test must not look like proof                                |
+| Residual policy    | Preserve source and emit typed residuals                        | Safe failure is better than plausible incorrect code                   |
+| Route catalog      | Registry-owned metadata generates docs and tests                | Avoid stale hand-maintained matrices                                   |
 
 ### Architecture
 
@@ -184,13 +184,13 @@ comments and MCP responses.
 
 ### Common interactions
 
-| Action | Result |
-|--------|--------|
-| Run a stable route | Conversion and all required proof dimensions execute |
-| Run an experimental route | Output is produced with an explicit maturity label |
-| Reference repository is absent | The report says unavailable and CI applies the route policy |
-| Official loader fails | Source is preserved and a configuration residual identifies the failure |
-| Build or browser proof fails | Route is not promoted and the failing artifact is retained |
+| Action                         | Result                                                                  |
+| ------------------------------ | ----------------------------------------------------------------------- |
+| Run a stable route             | Conversion and all required proof dimensions execute                    |
+| Run an experimental route      | Output is produced with an explicit maturity label                      |
+| Reference repository is absent | The report says unavailable and CI applies the route policy             |
+| Official loader fails          | Source is preserved and a configuration residual identifies the failure |
+| Build or browser proof fails   | Route is not promoted and the failing artifact is retained              |
 
 ## Data model
 
@@ -203,10 +203,15 @@ interface MigrationRouteProof {
 		readonly commit: string;
 		readonly path: string;
 	};
-	readonly dimensions: Readonly<Record<
-		"canonical-css" | "typecheck" | "build" | "browser" | "ssr-hydration" | "css-size",
-		{ readonly status: "passed" | "failed" | "unavailable" | "not-applicable"; readonly evidence?: string }
-	>>;
+	readonly dimensions: Readonly<
+		Record<
+			"canonical-css" | "typecheck" | "build" | "browser" | "ssr-hydration" | "css-size",
+			{
+				readonly status: "passed" | "failed" | "unavailable" | "not-applicable";
+				readonly evidence?: string;
+			}
+		>
+	>;
 	readonly converted: number;
 	readonly residuals: readonly {
 		readonly kind: string;
@@ -274,7 +279,7 @@ interface MigrationRouteProof {
 
 ## Decisions log
 
-| Date | Decision | Rationale |
-|------|----------|-----------|
+| Date       | Decision                                                                 | Rationale                                                                          |
+| ---------- | ------------------------------------------------------------------------ | ---------------------------------------------------------------------------------- |
 | 2026-09-07 | Start with four high-value routes instead of promoting the entire matrix | Real build and host proof is expensive and breadth currently overstates confidence |
-| 2026-09-07 | Treat unavailable external references as evidence, not green skips | A passing local suite must describe what it actually executed |
+| 2026-09-07 | Treat unavailable external references as evidence, not green skips       | A passing local suite must describe what it actually executed                      |

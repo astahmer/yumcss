@@ -33,39 +33,39 @@ presented as successfully resolved configuration. Their documented config,
 provider, runtime, or theme APIs are covered by the official family catalog and
 typed context/runtime assertions.
 
-| Source adapter | Directional routes | Round trips | Primary API | Family APIs | Status |
-| --- | ---: | ---: | --- | --- | --- |
-| pandwind | 30 | 30 | checked | checked | complete |
-| panda | 30 | 30 | checked | checked | complete |
-| stylex | 30 | 30 | checked | checked | complete |
-| emotion | 30 | 30 | checked | checked | complete |
-| styled-components | 30 | 30 | checked | checked | complete |
-| vanilla-extract | 30 | 30 | checked | checked | complete |
-| stitches | 30 | 30 | checked | checked | complete |
-| linaria | 30 | 30 | checked | checked | complete |
-| jss | 30 | 30 | checked | checked | complete |
-| fela | 30 | 30 | checked | checked | complete |
-| goober | 30 | 30 | checked | checked | complete |
-| aphrodite | 30 | 30 | checked | checked | complete |
-| treat | 30 | 30 | checked | checked | complete |
-| compiled | 30 | 30 | checked | checked | complete |
-| chakra-ui | 30 | 30 | checked | checked | complete |
-| mui | 30 | 30 | checked | checked | complete |
-| mantine | 30 | 30 | checked | checked | complete |
-| next-yak | 30 | 30 | checked | checked | complete |
-| bamboo | 30 | 30 | checked | checked | complete |
-| style9 | 30 | 30 | checked | checked | complete |
-| solid-styled | 30 | 30 | checked | checked | complete |
-| vue-styled | 30 | 30 | checked | checked | complete |
-| react-native | 30 | 30 | checked | checked | complete |
-| tailwind | 30 | 30 | checked | checked | complete |
-| tokenami | 30 | 30 | checked | checked | complete |
-| unocss | 30 | 30 | checked | checked | complete |
-| tamagui | 30 | 30 | checked | checked | complete |
-| css-modules | 30 | 30 | checked | checked | complete |
-| sass | 30 | 30 | checked | checked | complete |
-| less | 30 | 30 | checked | checked | complete |
-| authored-css | 30 | 30 | checked | checked | complete |
+| Source adapter    | Directional routes | Round trips | Primary API | Family APIs | Status   |
+| ----------------- | -----------------: | ----------: | ----------- | ----------- | -------- |
+| pandwind          |                 30 |          30 | checked     | checked     | complete |
+| panda             |                 30 |          30 | checked     | checked     | complete |
+| stylex            |                 30 |          30 | checked     | checked     | complete |
+| emotion           |                 30 |          30 | checked     | checked     | complete |
+| styled-components |                 30 |          30 | checked     | checked     | complete |
+| vanilla-extract   |                 30 |          30 | checked     | checked     | complete |
+| stitches          |                 30 |          30 | checked     | checked     | complete |
+| linaria           |                 30 |          30 | checked     | checked     | complete |
+| jss               |                 30 |          30 | checked     | checked     | complete |
+| fela              |                 30 |          30 | checked     | checked     | complete |
+| goober            |                 30 |          30 | checked     | checked     | complete |
+| aphrodite         |                 30 |          30 | checked     | checked     | complete |
+| treat             |                 30 |          30 | checked     | checked     | complete |
+| compiled          |                 30 |          30 | checked     | checked     | complete |
+| chakra-ui         |                 30 |          30 | checked     | checked     | complete |
+| mui               |                 30 |          30 | checked     | checked     | complete |
+| mantine           |                 30 |          30 | checked     | checked     | complete |
+| next-yak          |                 30 |          30 | checked     | checked     | complete |
+| bamboo            |                 30 |          30 | checked     | checked     | complete |
+| style9            |                 30 |          30 | checked     | checked     | complete |
+| solid-styled      |                 30 |          30 | checked     | checked     | complete |
+| vue-styled        |                 30 |          30 | checked     | checked     | complete |
+| react-native      |                 30 |          30 | checked     | checked     | complete |
+| tailwind          |                 30 |          30 | checked     | checked     | complete |
+| tokenami          |                 30 |          30 | checked     | checked     | complete |
+| unocss            |                 30 |          30 | checked     | checked     | complete |
+| tamagui           |                 30 |          30 | checked     | checked     | complete |
+| css-modules       |                 30 |          30 | checked     | checked     | complete |
+| sass              |                 30 |          30 | checked     | checked     | complete |
+| less              |                 30 |          30 | checked     | checked     | complete |
+| authored-css      |                 30 |          30 | checked     | checked     | complete |
 
 The source API catalog is in
 `packages/codemod/src/swap/official-api-cases.ts`. The primary and family

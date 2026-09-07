@@ -358,22 +358,22 @@ sent to the browser.
 - [x] `pandwind studio` starts locally from a real repository and shuts down cleanly.
 - [x] No browser bundle contains Node filesystem/path/module-loader code.
 - [x] The session uses the shared workspace/scanner and does not duplicate parser,
-  glob, or extension logic.
+      glob, or extension logic.
 - [x] Source adapter detection and official config loading are visible, typed, and
-  fail with structured diagnostics when unavailable.
+      fail with structured diagnostics when unavailable.
 - [x] Editing a supported style updates semantic output, generated CSS, residuals,
-  token usage, and the static component/style tree without writing files.
+      token usage, and the static component/style tree without writing files.
 - [x] Switching among `css.class`, `dss`, `tw`, and registered external targets
-  uses the existing adapter registry and preserves the flat `SwapIR` fast path.
+      uses the existing adapter registry and preserves the flat `SwapIR` fast path.
 - [x] Imported CSS themes, custom tokens, multiple scopes, `@source inline`, and
-  container-query conditions remain visible and are not flattened incorrectly.
+      container-query conditions remain visible and are not flattened incorrectly.
 - [x] Every generated artifact has provenance and canonical CSS/size metrics.
 - [x] A supported host preview proves at least one real visual/computed-style
-  update; unsupported hosts show an explicit unavailable state.
+      update; unsupported hosts show an explicit unavailable state.
 - [x] Unit, integration, Playwright-BDD, typecheck, lint, format, Knip, and focused
-  performance gates pass.
+      performance gates pass.
 - [x] The studio never silently drops an unsupported semantic: it preserves the
-  source representation or reports a typed residual.
+      source representation or reports a typed residual.
 
 The real-host proof is reproducible with `pnpm studio:proof:host`; it starts an
 isolated local page, injects the evaluated stylesheet, and asserts the browser

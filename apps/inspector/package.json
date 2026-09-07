@@ -8,8 +8,8 @@
 		"test": "vitest run"
 	},
 	"dependencies": {
-		"pandwind-analyze": "workspace:*",
 		"pandwind": "workspace:*",
+		"pandwind-analyze": "workspace:*",
 		"react": "19.2.8",
 		"react-dom": "19.2.8"
 	},
