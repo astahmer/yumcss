@@ -1,6 +1,7 @@
 import {
 	CodemodAdapterId,
 	createBuiltinCodemodCatalog,
+	findMigrationRouteProof,
 	PANDWIND_API_DIALECTS,
 	runAdapterMigration,
 	type AdapterCapabilityReport,
@@ -14,6 +15,22 @@ import { officialApiCases, officialApiFamilyCases } from "pandwind-codemod/swap/
 import { PLAYGROUND_MIGRATION_META } from "./migration-meta.ts";
 import { createPlaygroundTailwindResolver } from "./tailwind-default-resolver.ts";
 
+export const MIGRATION_LAB_EXECUTION_LANE = {
+	Sandbox: "sandbox",
+} as const;
+
+export const MIGRATION_LAB_EXECUTION_SCOPE = {
+	BrowserAdapterProgram: "browser-adapter-program",
+} as const;
+
+export interface MigrationLabExecutionEvidence {
+	readonly lane: (typeof MIGRATION_LAB_EXECUTION_LANE)[keyof typeof MIGRATION_LAB_EXECUTION_LANE];
+	readonly scope: (typeof MIGRATION_LAB_EXECUTION_SCOPE)[keyof typeof MIGRATION_LAB_EXECUTION_SCOPE];
+	readonly verified: readonly string[];
+	readonly unavailable: readonly string[];
+	readonly note: string;
+}
+
 export interface MigrationLabEndpoint {
 	readonly id: string;
 	readonly label: string;
@@ -24,6 +41,8 @@ export interface MigrationLabEndpoint {
 
 export interface MigrationLabResult {
 	readonly ok: true;
+	readonly execution: MigrationLabExecutionEvidence;
+	readonly routeProof: ReturnType<typeof findMigrationRouteProof>;
 	readonly code: string;
 	readonly changed: boolean;
 	readonly converted: number;
@@ -38,6 +57,15 @@ export interface MigrationLabResult {
 	readonly dependencies: readonly AdapterDependencies[];
 	readonly outcomes: readonly AdapterMigrationOutcome[];
 }
+
+export const MIGRATION_LAB_EVIDENCE_CHECK = {
+	AdapterProgram: "adapter-program",
+	ResidualReport: "residual-report",
+	ProjectTypecheck: "project-typecheck",
+	ProjectBuild: "project-build",
+	BrowserHost: "browser-host",
+	SsrHydration: "ssr-hydration",
+} as const;
 
 interface MigrationLabError {
 	readonly ok: false;
@@ -372,7 +400,26 @@ export function createMigrationLab(options: MigrationLabOptions = {}): Migration
 					meta: PLAYGROUND_MIGRATION_META,
 					mode: "safe",
 				});
-				return { ok: true, ...result };
+				return {
+					ok: true,
+					execution: {
+						lane: MIGRATION_LAB_EXECUTION_LANE.Sandbox,
+						scope: MIGRATION_LAB_EXECUTION_SCOPE.BrowserAdapterProgram,
+						verified: [
+							MIGRATION_LAB_EVIDENCE_CHECK.AdapterProgram,
+							MIGRATION_LAB_EVIDENCE_CHECK.ResidualReport,
+						],
+						unavailable: [
+							MIGRATION_LAB_EVIDENCE_CHECK.ProjectTypecheck,
+							MIGRATION_LAB_EVIDENCE_CHECK.ProjectBuild,
+							MIGRATION_LAB_EVIDENCE_CHECK.BrowserHost,
+							MIGRATION_LAB_EVIDENCE_CHECK.SsrHydration,
+						],
+						note: "This browser lab runs the adapter program; it does not build or run a host project.",
+					},
+					routeProof: findMigrationRouteProof(from, to),
+					...result,
+				};
 			} catch (error) {
 				return {
 					ok: false,

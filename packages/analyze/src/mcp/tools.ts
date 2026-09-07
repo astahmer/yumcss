@@ -4,6 +4,8 @@ import { extname, isAbsolute, relative, resolve, sep } from "node:path";
 import { createSourceWorkspace } from "pandwind/source/workspace";
 import {
 	createBuiltinCodemodCatalog,
+	findMigrationRouteProof,
+	migrationRouteProofCatalog,
 	type AdapterCapabilityMode,
 	type AdapterMigrationResult,
 	type CodemodAdapterCatalog,
@@ -15,19 +17,35 @@ import { runCli } from "../cli.ts";
 import { McpToolError, textToolResult } from "./tool-contract.ts";
 import {
 	MCP_MIGRATION_MODE,
+	MCP_BENCHMARK_SCOPE,
+	MCP_EXECUTION_LANE,
+	MCP_PROVENANCE_SOURCE,
 	MCP_RESOURCE,
 	MCP_TOOL,
 	MCP_VALIDATION_CHECK,
+	MCP_VALIDATION_STATUS,
+	type McpBenchmarkScope,
+	type McpExecutionLane,
+	type McpProvenanceSource,
 	type McpValidationCheck,
+	type McpValidationStatus,
 } from "./contract.ts";
 import type { McpToolDefinition, McpToolResult } from "./contract.ts";
 
 export {
 	MCP_MIGRATION_MODE,
+	MCP_BENCHMARK_SCOPE,
+	MCP_EXECUTION_LANE,
+	MCP_PROVENANCE_SOURCE,
 	MCP_RESOURCE,
 	MCP_TOOL,
 	MCP_VALIDATION_CHECK,
+	MCP_VALIDATION_STATUS,
+	type McpBenchmarkScope,
+	type McpExecutionLane,
+	type McpProvenanceSource,
 	type McpValidationCheck,
+	type McpValidationStatus,
 } from "./contract.ts";
 
 const MCP_PROJECT_SCHEMA = "pandwind.mcp.project/2" as const;
@@ -67,9 +85,16 @@ export interface McpValidationRequest {
 
 export interface McpValidationResult {
 	readonly check: McpValidationCheck;
-	readonly status: "passed" | "failed" | "unavailable";
+	readonly status: McpValidationStatus;
+	readonly executionLane: McpExecutionLane;
 	readonly detail?: string;
 	readonly commandsExecuted?: readonly string[];
+	readonly requiredHostCapability?: McpValidationCheck;
+	readonly provenance?: {
+		readonly source: McpProvenanceSource;
+		readonly host?: string;
+		readonly evidence?: readonly string[];
+	};
 }
 
 /**
@@ -81,12 +106,35 @@ export interface McpValidationPort {
 	run(request: McpValidationRequest): Promise<readonly McpValidationResult[]>;
 }
 
+export interface McpBenchmarkRequest {
+	readonly root: string;
+	readonly from: string;
+	readonly to: string;
+	readonly mode: AdapterCapabilityMode;
+	readonly files: readonly string[];
+	readonly iterations: number;
+}
+
+export interface McpBenchmarkResult {
+	readonly executionLane: McpExecutionLane;
+	readonly scope: McpBenchmarkScope;
+	readonly profile: string;
+	readonly measurements: Readonly<Record<string, unknown>>;
+	readonly commandsExecuted?: readonly string[];
+	readonly limitations?: readonly string[];
+}
+
+export interface McpBenchmarkPort {
+	run(request: McpBenchmarkRequest): Promise<McpBenchmarkResult>;
+}
+
 /** Application ports used by the MCP tool façade. */
 export interface McpToolPorts {
 	readonly createCatalog: () => CodemodAdapterCatalog;
 	readonly migration: Pick<StyleMigrationUseCase, "runAsync">;
 	readonly analyze: (argv: readonly string[]) => Promise<string>;
 	readonly validation?: McpValidationPort;
+	readonly benchmark?: McpBenchmarkPort;
 }
 
 const DEFAULT_TOOL_PORTS: McpToolPorts = {
@@ -268,6 +316,13 @@ export const MCP_RESOURCES: readonly McpResourceDefinition[] = [
 		uri: MCP_RESOURCE.OfficialApiMatrix,
 		name: "Official adapter API matrix",
 		description: "The registered adapter capability and official API matrix.",
+		mimeType: "application/json",
+	},
+	{
+		uri: MCP_RESOURCE.MigrationRouteCatalog,
+		name: "Migration route proof catalog",
+		description:
+			"Route maturity, proof lanes, required dimensions, and unavailable reference evidence.",
 		mimeType: "application/json",
 	},
 	{
@@ -592,6 +647,7 @@ async function migrationPreview(
 	readonly from: string;
 	readonly to: string;
 	readonly mode: AdapterCapabilityMode;
+	readonly routeProof: ReturnType<typeof findMigrationRouteProof>;
 	readonly files: readonly ReturnType<typeof serializeMigration>[];
 }> {
 	const input = asRecord(arguments_, MCP_TOOL.PreviewMigration);
@@ -626,7 +682,14 @@ async function migrationPreview(
 		});
 		results.push(serializeMigration(context.root, file, result, before));
 	}
-	return { root: context.root, from, to, mode, files: results };
+	return {
+		root: context.root,
+		from,
+		to,
+		mode,
+		routeProof: findMigrationRouteProof(from, to),
+		files: results,
+	};
 }
 
 async function previewMigration(
@@ -770,6 +833,7 @@ async function compareMigrations(
 		routes.push({
 			...route,
 			mode,
+			routeProof: findMigrationRouteProof(route.from, route.to),
 			files: preview.files,
 			stats: {
 				changed: preview.files.filter((file) => file.changed).length,
@@ -799,6 +863,7 @@ async function inspectStyleProgram(
 		from: preview.from,
 		to: preview.to,
 		mode: preview.mode,
+		routeProof: preview.routeProof,
 		files: preview.files.map((file) => ({
 			file: file.file,
 			loweringPlans: file.loweringPlans,
@@ -862,6 +927,27 @@ async function benchmarkProject(
 	}
 	const scanMilliseconds = performance.now() - scanStart;
 	if (expanded.size === 0) throw new McpToolError("files did not match any project files");
+	if (ports.benchmark !== undefined) {
+		const benchmark = await ports.benchmark.run({
+			root: context.root,
+			from,
+			to,
+			mode,
+			files,
+			iterations,
+		});
+		return textToolResult({
+			schema: "pandwind.mcp.benchmark/2",
+			root: context.root,
+			from,
+			to,
+			mode,
+			iterations,
+			routeProof: findMigrationRouteProof(from, to),
+			benchmark,
+			commandsExecuted: benchmark.commandsExecuted ?? [],
+		});
+	}
 	const sourceBytes = [...expanded].reduce((sum, file) => sum + statSync(file).size, 0);
 	const rssBefore = process.memoryUsage().rss;
 	const migrationStart = performance.now();
@@ -873,12 +959,20 @@ async function benchmarkProject(
 	const filesPerSecond =
 		(expanded.size * iterations * 1000) / Math.max(migrationMilliseconds, 0.001);
 	return textToolResult({
-		schema: "pandwind.mcp.benchmark/1",
+		schema: "pandwind.mcp.benchmark/2",
 		root: context.root,
 		from,
 		to,
 		mode,
 		iterations,
+		routeProof: lastPreview?.routeProof,
+		executionLane: MCP_EXECUTION_LANE.InProcess,
+		scope: MCP_BENCHMARK_SCOPE.InProcessMigration,
+		profile: "warm-in-process",
+		limitations: [
+			"does not run the project's typecheck, build, browser, SSR, or bundle pipeline",
+			"timings include the current process and workspace scanner state",
+		],
 		scan: {
 			files: expanded.size,
 			milliseconds: Math.round(scanMilliseconds * 100) / 100,
@@ -938,9 +1032,14 @@ async function validateMigration(
 					file.checks.residualFree &&
 					file.checks.generatedFilesConflictFree,
 			)
-				? ("passed" as const)
-				: ("failed" as const),
+				? MCP_VALIDATION_STATUS.Passed
+				: MCP_VALIDATION_STATUS.Failed,
+			executionLane: MCP_EXECUTION_LANE.InProcess,
 			detail: "adapter validations, residuals, and target semantics",
+			provenance: {
+				source: MCP_PROVENANCE_SOURCE.Adapter,
+				evidence: ["adapter validations", "generated-file conflict check"],
+			},
 		},
 		{
 			check: MCP_VALIDATION_CHECK.CanonicalCss,
@@ -949,9 +1048,14 @@ async function validateMigration(
 					(validation) => validation.canonicalSource === validation.canonicalTarget,
 				),
 			)
-				? ("passed" as const)
-				: ("failed" as const),
+				? MCP_VALIDATION_STATUS.Passed
+				: MCP_VALIDATION_STATUS.Failed,
+			executionLane: MCP_EXECUTION_LANE.InProcess,
 			detail: "adapter-provided canonical CSS pairs",
+			provenance: {
+				source: MCP_PROVENANCE_SOURCE.Adapter,
+				evidence: ["adapter canonical CSS comparison"],
+			},
 		},
 	];
 	const externalChecks = requestedChecks.filter((check) =>
@@ -962,9 +1066,12 @@ async function validateMigration(
 		if (ports.validation === undefined) {
 			projectChecks = externalChecks.map((check) => ({
 				check,
-				status: "unavailable" as const,
+				status: MCP_VALIDATION_STATUS.Unavailable,
+				executionLane: MCP_EXECUTION_LANE.HostProject,
 				detail:
 					"no host validation port is configured; supply an auditable project validator to run this check",
+				requiredHostCapability: check,
+				provenance: { source: MCP_PROVENANCE_SOURCE.Host },
 			}));
 		} else {
 			try {
@@ -985,15 +1092,20 @@ async function validateMigration(
 					(check) =>
 						byCheck.get(check) ?? {
 							check,
-							status: "unavailable" as const,
+							status: MCP_VALIDATION_STATUS.Unavailable,
+							executionLane: MCP_EXECUTION_LANE.HostProject,
 							detail: "host validation port did not return a result for this check",
+							requiredHostCapability: check,
+							provenance: { source: MCP_PROVENANCE_SOURCE.Host },
 						},
 				);
 			} catch (error) {
 				projectChecks = externalChecks.map((check) => ({
 					check,
-					status: "failed" as const,
+					status: MCP_VALIDATION_STATUS.Failed,
+					executionLane: MCP_EXECUTION_LANE.HostProject,
 					detail: error instanceof Error ? error.message : String(error),
+					provenance: { source: MCP_PROVENANCE_SOURCE.Host },
 				}));
 			}
 		}
@@ -1002,7 +1114,9 @@ async function validateMigration(
 	return textToolResult({
 		schema: "pandwind.mcp.validate-migration/2",
 		...preview,
-		valid: files.every((file) => file.valid) && checks.every((check) => check.status === "passed"),
+		valid:
+			files.every((file) => file.valid) &&
+			checks.every((check) => check.status === MCP_VALIDATION_STATUS.Passed),
 		requestedChecks,
 		checks,
 		commandsExecuted: projectChecks.flatMap((check) => check.commandsExecuted ?? []),
@@ -1131,6 +1245,8 @@ export function createMcpToolService(
 					adapters,
 				});
 			}
+			case MCP_RESOURCE.MigrationRouteCatalog:
+				return resourceJson(migrationRouteProofCatalog());
 			case MCP_RESOURCE.ProjectEvidence: {
 				const result = await inspectProject(context, { includeFiles: false }, ports);
 				return resourceJson(result.structuredContent);

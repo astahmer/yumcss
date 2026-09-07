@@ -18,6 +18,7 @@ export {
 	MIGRATION_ROUTE_PROOF_CATALOG,
 	MigrationRouteMaturityTag,
 	MigrationRouteProofExecutionTag,
+	MigrationRouteProofRouteId,
 	findMigrationRouteProof,
 } from "./route-proof-catalog.ts";
 export type { MigrationRouteProofSpec } from "./route-proof-catalog.ts";

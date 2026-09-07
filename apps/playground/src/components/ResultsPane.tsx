@@ -3,6 +3,7 @@ import { codeToHtml } from "shiki";
 import type { StyleProgram } from "pandwind-codemod/swap/semantic-ir";
 import { GhostButton, Pane, ResizableSplitter, type ResizableSplitterPanel } from "./ui.tsx";
 import type {
+	PlaygroundExecutionEvidence,
 	PlaygroundResult,
 	PlaygroundSheetResult,
 	PlaygroundStyleMapping,
@@ -131,6 +132,75 @@ function FoldSection(props: { fold: string; note: string }) {
 			>
 				{props.note}
 			</p>
+		</Pane>
+	);
+}
+
+function EvidenceList(props: { label: string; values: readonly string[]; tone: string }) {
+	return (
+		<div
+			className={uiCss.class({
+				display: "flex",
+				flexWrap: "wrap",
+				alignItems: "center",
+				gap: "6px",
+			})}
+		>
+			<span className={uiCss.class({ color: "#71717a" })}>{props.label}</span>
+			{props.values.map((value) => (
+				<span
+					key={value}
+					className={uiCss.class({
+						border: "1px solid",
+						borderColor: props.tone,
+						borderRadius: "4px",
+						padding: "2px 6px",
+						fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+						fontSize: "10px",
+						color: props.tone,
+					})}
+				>
+					{value}
+				</span>
+			))}
+		</div>
+	);
+}
+
+function ExecutionEvidenceSection(props: { evidence: PlaygroundExecutionEvidence }) {
+	return (
+		<Pane
+			label="Execution evidence"
+			right={
+				<span
+					className={uiCss.class({
+						marginRight: "4px",
+						border: "1px solid rgba(56,189,248,0.25)",
+						borderRadius: "4px",
+						padding: "2px 6px",
+						fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+						fontSize: "10px",
+						color: "#7dd3fc",
+					})}
+				>
+					{props.evidence.lane}
+				</span>
+			}
+		>
+			<div
+				className={uiCss.class({
+					display: "grid",
+					gap: "8px",
+					padding: "10px 12px",
+					fontSize: "11px",
+					lineHeight: "16px",
+					color: "#a1a1aa",
+				})}
+			>
+				<p className={uiCss.class({ margin: "0", color: "#d4d4d8" })}>{props.evidence.note}</p>
+				<EvidenceList label="verified" values={props.evidence.verified} tone="#6ee7b7" />
+				<EvidenceList label="unavailable" values={props.evidence.unavailable} tone="#fcd34d" />
+			</div>
 		</Pane>
 	);
 }
@@ -696,6 +766,12 @@ export function ResultsPane(props: { result: PlaygroundResult }) {
 		);
 	}
 	const panels: ResizableSplitterPanel[] = [
+		{
+			id: "execution-evidence",
+			initialSize: 16,
+			minSize: 10,
+			content: <ExecutionEvidenceSection evidence={r.execution} />,
+		},
 		{
 			id: "class-string",
 			initialSize: 14,

@@ -3,8 +3,12 @@ import { tmpdir } from "node:os";
 import { resolve } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 import {
+	MCP_BENCHMARK_SCOPE,
+	MCP_EXECUTION_LANE,
 	MCP_RESOURCE,
 	MCP_TOOL,
+	MCP_VALIDATION_CHECK,
+	MCP_VALIDATION_STATUS,
 	createMcpProjectContext,
 	createMcpToolService,
 	type McpToolPorts,
@@ -52,6 +56,7 @@ describe("Pandwind MCP tools", () => {
 		expect(service.resources.map(({ uri }) => uri)).toEqual([
 			MCP_RESOURCE.AdapterCatalog,
 			MCP_RESOURCE.OfficialApiMatrix,
+			MCP_RESOURCE.MigrationRouteCatalog,
 			MCP_RESOURCE.ProjectEvidence,
 			MCP_RESOURCE.ProjectConfiguration,
 			MCP_RESOURCE.LatestMigration,
@@ -62,6 +67,11 @@ describe("Pandwind MCP tools", () => {
 		]);
 		expect(JSON.parse(await service.readResource(MCP_RESOURCE.AdapterCatalog))).toMatchObject({
 			schema: "pandwind.mcp.catalog/1",
+		});
+		expect(
+			JSON.parse(await service.readResource(MCP_RESOURCE.MigrationRouteCatalog)),
+		).toMatchObject({
+			schema: "pandwind.migration-route-proof-catalog/1",
 		});
 	});
 
@@ -188,7 +198,9 @@ describe("Pandwind MCP tools", () => {
 			iterations: 1,
 		});
 		expect(structured(benchmark)).toMatchObject({
-			schema: "pandwind.mcp.benchmark/1",
+			schema: "pandwind.mcp.benchmark/2",
+			executionLane: MCP_EXECUTION_LANE.InProcess,
+			scope: MCP_BENCHMARK_SCOPE.InProcessMigration,
 			commandsExecuted: [],
 			migration: { changed: 0 },
 		});
@@ -219,8 +231,16 @@ describe("Pandwind MCP tools", () => {
 			valid: true,
 			files: [{ valid: true }],
 			checks: [
-				{ check: "contract", status: "passed" },
-				{ check: "canonical-css", status: "passed" },
+				{
+					check: "contract",
+					status: MCP_VALIDATION_STATUS.Passed,
+					executionLane: MCP_EXECUTION_LANE.InProcess,
+				},
+				{
+					check: "canonical-css",
+					status: MCP_VALIDATION_STATUS.Passed,
+					executionLane: MCP_EXECUTION_LANE.InProcess,
+				},
 			],
 		});
 	});
@@ -236,9 +256,33 @@ describe("Pandwind MCP tools", () => {
 		).rejects.toThrow("project-relative");
 	});
 
+	it("reports host checks as unavailable without a validation port", async () => {
+		const service = project();
+		const result = await service.call(MCP_TOOL.ValidateMigration, {
+			files: ["src/button.ts"],
+			from: "pandwind",
+			to: "pandwind",
+			checks: [MCP_VALIDATION_CHECK.Typecheck],
+		});
+		const value = structured(result);
+		expect(value.valid).toBe(false);
+		expect(value.checks).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({
+					check: MCP_VALIDATION_CHECK.Typecheck,
+					status: MCP_VALIDATION_STATUS.Unavailable,
+					executionLane: MCP_EXECUTION_LANE.HostProject,
+					requiredHostCapability: MCP_VALIDATION_CHECK.Typecheck,
+				}),
+			]),
+		);
+	});
+
 	it("accepts substituted migration and analyzer ports", async () => {
 		const root = mkdtempSync(resolve(tmpdir(), "pandwind-mcp-ports-"));
 		roots.push(root);
+		mkdirSync(resolve(root, "src"), { recursive: true });
+		writeFileSync(resolve(root, "src/source.ts"), "before");
 		const context = createMcpProjectContext(root);
 		const calls: string[] = [];
 		const ports: McpToolPorts = {
@@ -266,11 +310,36 @@ describe("Pandwind MCP tools", () => {
 				calls.push("analyze");
 				return JSON.stringify({ schema: "test" });
 			},
+			benchmark: {
+				run: async ({ from, to, iterations }) => ({
+					executionLane: MCP_EXECUTION_LANE.HostProject,
+					scope: MCP_BENCHMARK_SCOPE.Project,
+					profile: `${from}-to-${to}`,
+					measurements: { iterations },
+					commandsExecuted: ["host:build"],
+					limitations: [],
+				}),
+			},
 		};
 		const service = createMcpToolService(context, ports);
 
 		await service.call(MCP_TOOL.AnalyzeProject, {});
 		expect(calls).toEqual(["analyze", "analyze"]);
+		const benchmark = await service.call(MCP_TOOL.BenchmarkProject, {
+			files: ["src/source.ts"],
+			from: "fake",
+			to: "fake",
+			iterations: 1,
+		});
+		expect(structured(benchmark)).toMatchObject({
+			schema: "pandwind.mcp.benchmark/2",
+			benchmark: {
+				executionLane: MCP_EXECUTION_LANE.HostProject,
+				scope: MCP_BENCHMARK_SCOPE.Project,
+				commandsExecuted: ["host:build"],
+			},
+			commandsExecuted: ["host:build"],
+		});
 	});
 
 	it("runs only the explicitly supplied host validation checks", async () => {
@@ -303,7 +372,8 @@ describe("Pandwind MCP tools", () => {
 					requested.push(...checks);
 					return checks.map((check) => ({
 						check,
-						status: "passed" as const,
+						status: MCP_VALIDATION_STATUS.Passed,
+						executionLane: MCP_EXECUTION_LANE.HostProject,
 						commandsExecuted: [`host:${check}`],
 					}));
 				},
@@ -319,8 +389,14 @@ describe("Pandwind MCP tools", () => {
 		expect(value.valid).toBe(true);
 		expect(value.checks).toEqual(
 			expect.arrayContaining([
-				expect.objectContaining({ check: "typecheck", status: "passed" }),
-				expect.objectContaining({ check: "build", status: "passed" }),
+				expect.objectContaining({
+					check: MCP_VALIDATION_CHECK.Typecheck,
+					status: MCP_VALIDATION_STATUS.Passed,
+				}),
+				expect.objectContaining({
+					check: MCP_VALIDATION_CHECK.Build,
+					status: MCP_VALIDATION_STATUS.Passed,
+				}),
 			]),
 		);
 		expect(value.commandsExecuted).toEqual(["host:typecheck", "host:build"]);

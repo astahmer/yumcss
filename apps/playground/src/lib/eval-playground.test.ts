@@ -12,7 +12,14 @@ import { createUnoCssAdapter } from "pandwind/css";
 import { createRuntimeCss } from "pandwind/css/runtime";
 import { StyleValueKindTag } from "pandwind-codemod/swap/semantic-ir";
 import { tw } from "../tw.ts";
-import { evalPlayground, evalSiblingModule, type EvalInput } from "./eval-playground.ts";
+import {
+	PLAYGROUND_EXECUTION_LANE,
+	PLAYGROUND_EXECUTION_SCOPE,
+	PLAYGROUND_EVIDENCE_CHECK,
+	evalPlayground,
+	evalSiblingModule,
+	type EvalInput,
+} from "./eval-playground.ts";
 
 const run = (
 	code: string,
@@ -41,6 +48,14 @@ describe("evalPlayground", () => {
 		const result = run(`tw({ bgColor: "red-500" })`);
 		expect(result.ok).toBe(true);
 		if (result.ok) {
+			expect(result.execution).toMatchObject({
+				lane: PLAYGROUND_EXECUTION_LANE.Sandbox,
+				scope: PLAYGROUND_EXECUTION_SCOPE.BrowserEvaluator,
+				verified: expect.arrayContaining([
+					PLAYGROUND_EVIDENCE_CHECK.RuntimeEvaluation,
+					PLAYGROUND_EVIDENCE_CHECK.StyleProgramExtraction,
+				]),
+			});
 			expect(result.output).toContain("bg-red-500");
 			expect(result.fold).toBe("full");
 			expect(result.killed).toEqual([]);

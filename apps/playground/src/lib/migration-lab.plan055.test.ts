@@ -33,9 +33,9 @@ describe("migration lab plan 055 adapters", () => {
 			import { createCx } from "pandwind/cx";
 			const cx = createCx();
 			const css = createCss();
-			const __pandwindSlot = (defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Component {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
+			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Component {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
 
-			export const Card = __pandwindSlot((View), css.class({ padding: 16, color: "red" }), "pw-1l0hnhk", undefined, "className", {}, cx);"
+			export const Card = __pandwindSlot({ defaultComponent: (View), style: css.class({ padding: 16, color: "red" }), stableClass: "pw-1l0hnhk", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });"
 		`);
 		roundtrip(lab, CodemodAdapterId.Tamagui);
 	});

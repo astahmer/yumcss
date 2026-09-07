@@ -8,6 +8,7 @@ import {
 	MIGRATION_LAB,
 	type MigrationLabScenario,
 	type MigrationLabEndpoint,
+	type MigrationLabExecutionEvidence,
 	type MigrationLabResult,
 } from "../lib/migration-lab.ts";
 import { formatPlaygroundCode } from "../lib/format-playground-code.ts";
@@ -285,6 +286,74 @@ function Summary(props: { result: MigrationLabResult }) {
 					</div>
 				</div>
 			))}
+		</div>
+	);
+}
+
+function ProofBoundary(props: {
+	execution: MigrationLabExecutionEvidence;
+	routeProof: MigrationLabResult["routeProof"];
+}) {
+	const route = props.routeProof;
+	return (
+		<div
+			className={uiCss.class({
+				display: "grid",
+				gap: "8px",
+				padding: "10px 12px",
+				fontSize: "11px",
+				lineHeight: "16px",
+				color: "#a1a1aa",
+			})}
+		>
+			<div className={uiCss.class({ display: "flex", flexWrap: "wrap", gap: "6px" })}>
+				<span
+					className={uiCss.class({
+						border: "1px solid rgba(56,189,248,0.25)",
+						borderRadius: "4px",
+						padding: "2px 6px",
+						fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+						fontSize: "10px",
+						color: "#7dd3fc",
+					})}
+				>
+					lane: {props.execution.lane}
+				</span>
+				<span
+					className={uiCss.class({
+						border: "1px solid rgba(251,191,36,0.25)",
+						borderRadius: "4px",
+						padding: "2px 6px",
+						fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+						fontSize: "10px",
+						color: "#fcd34d",
+					})}
+				>
+					{route === undefined ? "route: unregistered" : `route: ${route.maturity}`}
+				</span>
+				{route === undefined ? null : (
+					<span
+						className={uiCss.class({
+							border: "1px solid rgba(161,161,170,0.2)",
+							borderRadius: "4px",
+							padding: "2px 6px",
+							fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+							fontSize: "10px",
+							color: "#a1a1aa",
+						})}
+					>
+						proof: {route.execution}
+					</span>
+				)}
+			</div>
+			<p className={uiCss.class({ margin: "0", color: "#d4d4d8" })}>{props.execution.note}</p>
+			<p className={uiCss.class({ margin: "0", color: "#71717a" })}>
+				verified: {props.execution.verified.join(", ")}; unavailable:{" "}
+				{props.execution.unavailable.join(", ")}
+			</p>
+			{route === undefined ? null : (
+				<p className={uiCss.class({ margin: "0", color: "#71717a" })}>{route.note}</p>
+			)}
 		</div>
 	);
 }
@@ -587,6 +656,16 @@ function ResultPane(props: {
 			</Pane>
 		);
 	const panels: ResizableSplitterPanel[] = [
+		{
+			id: "proof-boundary",
+			initialSize: 16,
+			minSize: 11,
+			content: (
+				<Pane label="Proof boundary">
+					<ProofBoundary execution={props.result.execution} routeProof={props.result.routeProof} />
+				</Pane>
+			),
+		},
 		{
 			id: "migration-output",
 			initialSize: 30,

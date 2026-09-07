@@ -24,9 +24,43 @@ export const MCP_VALIDATION_CHECK = {
 
 export type McpValidationCheck = (typeof MCP_VALIDATION_CHECK)[keyof typeof MCP_VALIDATION_CHECK];
 
+export const MCP_VALIDATION_STATUS = {
+	Passed: "passed",
+	Failed: "failed",
+	Unavailable: "unavailable",
+	Skipped: "skipped",
+	NotApplicable: "not-applicable",
+} as const;
+
+export type McpValidationStatus =
+	(typeof MCP_VALIDATION_STATUS)[keyof typeof MCP_VALIDATION_STATUS];
+
+export const MCP_EXECUTION_LANE = {
+	InProcess: "in-process",
+	HostProject: "host-project",
+} as const;
+
+export type McpExecutionLane = (typeof MCP_EXECUTION_LANE)[keyof typeof MCP_EXECUTION_LANE];
+
+export const MCP_PROVENANCE_SOURCE = {
+	Adapter: "adapter",
+	Host: "host",
+} as const;
+
+export type McpProvenanceSource =
+	(typeof MCP_PROVENANCE_SOURCE)[keyof typeof MCP_PROVENANCE_SOURCE];
+
+export const MCP_BENCHMARK_SCOPE = {
+	InProcessMigration: "in-process-migration",
+	Project: "project",
+} as const;
+
+export type McpBenchmarkScope = (typeof MCP_BENCHMARK_SCOPE)[keyof typeof MCP_BENCHMARK_SCOPE];
+
 export const MCP_RESOURCE = {
 	AdapterCatalog: "pandwind://catalog",
 	OfficialApiMatrix: "pandwind://api-matrix",
+	MigrationRouteCatalog: "pandwind://migration/routes",
 	ProjectEvidence: "pandwind://project/evidence",
 	ProjectConfiguration: "pandwind://project/configuration",
 	LatestMigration: "pandwind://migration/latest",

@@ -43,6 +43,32 @@ export interface PlaygroundStyleMapping {
 	active: boolean;
 }
 
+export const PLAYGROUND_EXECUTION_LANE = {
+	Sandbox: "sandbox",
+} as const;
+
+export const PLAYGROUND_EXECUTION_SCOPE = {
+	BrowserEvaluator: "browser-evaluator",
+} as const;
+
+export const PLAYGROUND_EVIDENCE_CHECK = {
+	RuntimeEvaluation: "runtime-evaluation",
+	StyleProgramExtraction: "styleprogram-extraction",
+	RuntimeSheetCss: "runtime-sheet-css",
+	ProjectTypecheck: "project-typecheck",
+	ProjectBuild: "project-build",
+	BrowserHost: "browser-host",
+	SsrHydration: "ssr-hydration",
+} as const;
+
+export interface PlaygroundExecutionEvidence {
+	readonly lane: (typeof PLAYGROUND_EXECUTION_LANE)[keyof typeof PLAYGROUND_EXECUTION_LANE];
+	readonly scope: (typeof PLAYGROUND_EXECUTION_SCOPE)[keyof typeof PLAYGROUND_EXECUTION_SCOPE];
+	readonly verified: readonly string[];
+	readonly unavailable: readonly string[];
+	readonly note: string;
+}
+
 interface PlaygroundSuccess {
 	ok: true;
 	/** The merged class string produced by the runtime. */
@@ -74,6 +100,8 @@ interface PlaygroundSuccess {
 	styleMappings: PlaygroundStyleMapping[];
 	/** Neutral semantic programs extracted from static style-call objects. */
 	programs: StyleProgram[];
+	/** What this browser evaluator proves, and which host checks remain unavailable. */
+	execution: PlaygroundExecutionEvidence;
 }
 
 export type PlaygroundResult = PlaygroundSuccess | { ok: false; error: string };
@@ -1079,6 +1107,22 @@ function runOnce(input: EvalInput, mode: EvalMode): PlaygroundResult {
 
 	const success: PlaygroundSuccess = {
 		ok: true,
+		execution: {
+			lane: PLAYGROUND_EXECUTION_LANE.Sandbox,
+			scope: PLAYGROUND_EXECUTION_SCOPE.BrowserEvaluator,
+			verified: [
+				PLAYGROUND_EVIDENCE_CHECK.RuntimeEvaluation,
+				PLAYGROUND_EVIDENCE_CHECK.StyleProgramExtraction,
+				...(sheets.length > 0 ? [PLAYGROUND_EVIDENCE_CHECK.RuntimeSheetCss] : []),
+			],
+			unavailable: [
+				PLAYGROUND_EVIDENCE_CHECK.ProjectTypecheck,
+				PLAYGROUND_EVIDENCE_CHECK.ProjectBuild,
+				PLAYGROUND_EVIDENCE_CHECK.BrowserHost,
+				PLAYGROUND_EVIDENCE_CHECK.SsrHydration,
+			],
+			note: "This result runs in the browser sandbox; it does not execute a host project pipeline.",
+		},
 		output: finalClass,
 		tokensIn: uniqueIn,
 		survived: dedupe(survived),

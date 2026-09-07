@@ -2,9 +2,15 @@ import { describe, expect, test } from "vitest";
 import {
 	BUILTIN_CODEMOD_ADAPTER_IDS,
 	CodemodAdapterId,
+	MigrationRouteMaturityTag,
+	MigrationRouteProofRouteId,
 	PANDWIND_API_DIALECTS,
 } from "pandwind-codemod/swap/browser";
-import { createMigrationLab } from "./migration-lab.ts";
+import {
+	MIGRATION_LAB_EXECUTION_LANE,
+	MIGRATION_LAB_EXECUTION_SCOPE,
+	createMigrationLab,
+} from "./migration-lab.ts";
 
 describe("migration lab", () => {
 	test("projects the built-in adapter registry into both endpoint lists", () => {
@@ -64,6 +70,27 @@ describe("migration lab", () => {
 		expect(result.residuals).toEqual([]);
 		expect(result.code).toContain("css.class");
 		expect(result.validations[0]).toMatchObject({ valid: true, lossiness: "lossless" });
+	});
+
+	test("labels the browser proof boundary and registered route maturity", () => {
+		const lab = createMigrationLab();
+		const result = lab.migrate(
+			CodemodAdapterId.StyledComponents,
+			CodemodAdapterId.Pandwind,
+			lab.sampleFor(CodemodAdapterId.StyledComponents),
+		);
+
+		expect(result.ok).toBe(true);
+		if (!result.ok) return;
+		expect(result.execution).toMatchObject({
+			lane: MIGRATION_LAB_EXECUTION_LANE.Sandbox,
+			scope: MIGRATION_LAB_EXECUTION_SCOPE.BrowserAdapterProgram,
+			verified: expect.arrayContaining(["adapter-program", "residual-report"]),
+		});
+		expect(result.routeProof).toMatchObject({
+			id: MigrationRouteProofRouteId.StyledComponentsToPandwind,
+			maturity: MigrationRouteMaturityTag.Experimental,
+		});
 	});
 
 	test("returns an explicit error for a route the registry does not know", () => {
@@ -149,7 +176,7 @@ describe("migration lab", () => {
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
 		expect(result.code).toContain("const __pandwindSlot =");
-		expect(result.code).toContain("export const Card = __pandwindSlot((Link),");
+		expect(result.code).toContain("export const Card = __pandwindSlot({ defaultComponent: (Link),");
 		expect(result.code).not.toMatch(/export const Card = css\.class\(/u);
 	});
 
