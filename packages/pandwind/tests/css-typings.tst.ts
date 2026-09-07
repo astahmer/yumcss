@@ -1,5 +1,6 @@
 import { expect, test } from "tstyche";
 import { createCss } from "../src/css/create-css.ts";
+import { definePreset, type AnyCssConfig } from "../src/preset/index.ts";
 import { examplePreset } from "@pandwind/example-preset";
 
 const css = createCss(examplePreset);
@@ -34,4 +35,13 @@ test("createCss rejects properties and token values outside the preset", () => {
 test("the untyped convenience form remains available", () => {
 	const loose = createCss();
 	expect(loose({ arbitraryProperty: "value" })).type.toBe<Compiled>();
+});
+
+test("an open preset config keeps arbitrary CSS properties typed", () => {
+	const preset = definePreset(
+		{ config: {} as AnyCssConfig, tokens: {} },
+		{ strict: true, conditions: {}, properties: { $all: true } },
+	);
+	const generated = createCss(preset);
+	expect(generated.class({ backgroundColor: "var(--brand)", color: "white" })).type.toBe<string>();
 });
