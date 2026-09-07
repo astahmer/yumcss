@@ -50,6 +50,93 @@ const scalarTokenValues = (config: AdapterProjectConfig): Set<string> =>
 		Object.values(config.tokenCatalog?.groups ?? {}).flatMap((group) => Object.values(group)),
 	);
 
+const TOKEN_PROPERTIES = {
+	colors: [
+		"color",
+		"background",
+		"backgroundColor",
+		"borderColor",
+		"borderTopColor",
+		"borderRightColor",
+		"borderBottomColor",
+		"borderLeftColor",
+		"outlineColor",
+		"textDecorationColor",
+		"textEmphasisColor",
+		"fill",
+		"stroke",
+	],
+	spacing: [
+		"gap",
+		"rowGap",
+		"columnGap",
+		"padding",
+		"paddingTop",
+		"paddingRight",
+		"paddingBottom",
+		"paddingLeft",
+		"paddingInline",
+		"paddingInlineStart",
+		"paddingInlineEnd",
+		"paddingBlock",
+		"paddingBlockStart",
+		"paddingBlockEnd",
+		"margin",
+		"marginTop",
+		"marginRight",
+		"marginBottom",
+		"marginLeft",
+		"marginInline",
+		"marginInlineStart",
+		"marginInlineEnd",
+		"marginBlock",
+		"marginBlockStart",
+		"marginBlockEnd",
+		"top",
+		"right",
+		"bottom",
+		"left",
+		"inset",
+		"insetInline",
+		"insetInlineStart",
+		"insetInlineEnd",
+		"insetBlock",
+		"insetBlockStart",
+		"insetBlockEnd",
+		"width",
+		"minWidth",
+		"maxWidth",
+		"height",
+		"minHeight",
+		"maxHeight",
+	],
+	radii: [
+		"borderRadius",
+		"borderTopLeftRadius",
+		"borderTopRightRadius",
+		"borderBottomRightRadius",
+		"borderBottomLeftRadius",
+	],
+	fonts: ["fontFamily"],
+	fontSizes: ["fontSize"],
+	fontWeights: ["fontWeight"],
+	lineHeights: ["lineHeight"],
+	letterSpacings: ["letterSpacing"],
+	shadows: ["boxShadow", "textShadow"],
+	zIndices: ["zIndex"],
+} as const satisfies Readonly<Record<string, readonly string[]>>;
+
+function presetPropertiesSource(
+	groups: Readonly<Record<string, Readonly<Record<string, string>>>>,
+): string {
+	const properties: Record<string, { $tokens: string } | true> = { $all: true };
+	for (const [group, names] of Object.entries(TOKEN_PROPERTIES)) {
+		if (groups[group] === undefined) continue;
+		for (const property of names) properties[property] = { $tokens: group };
+	}
+	return JSON.stringify(properties, null, "\t");
+}
+
 function customVariantConditions(css: string): Record<string, string> {
 	const conditions: Record<string, string> = {};
 	for (const line of css.split("\n")) {
@@ -155,17 +242,18 @@ function presetSource(
 	config: AdapterProjectConfig,
 	conditions: Readonly<Record<string, string>>,
 ): string {
+	const tokens = config.tokenCatalog?.groups ?? {};
 	return `import { definePreset } from "pandwind/preset";
 
 export const pandwindPreset = definePreset(
 	{
 		config: {} as import("pandwind/preset").AnyCssConfig,
-		tokens: ${JSON.stringify(config.tokenCatalog?.groups ?? {}, null, "\t")},
+		tokens: ${JSON.stringify(tokens, null, "\t")},
 	},
 	{
 		strict: true,
 		conditions: ${JSON.stringify(conditions, null, "\t")},
-		properties: { $all: true },
+		properties: ${presetPropertiesSource(tokens)},
 	},
 );
 `;

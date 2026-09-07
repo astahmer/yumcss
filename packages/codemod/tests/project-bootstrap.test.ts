@@ -32,9 +32,26 @@ describe("Pandwind project bootstrap", () => {
 		});
 
 		const preset = support.files.find((file) => file.path === "pandwind/preset.ts")?.content;
-		expect(preset).toContain(
-			'config: {} as import("pandwind/preset").AnyCssConfig',
-		);
-		expect(preset).toContain('properties: { $all: true }');
+		expect(preset).toContain('config: {} as import("pandwind/preset").AnyCssConfig');
+		expect(preset).toContain('"$all": true');
+	});
+
+	test("maps generated token groups to the properties that can consume them", async () => {
+		const support = await createPandwindProjectSupport({
+			root: "/project",
+			sourceAdapter: CodemodAdapterId.Tailwind,
+			outputDirectory: "pandwind",
+			readFile: (file) =>
+				file === "/project/styles.css"
+					? "@theme { --color-brand: #123456; --spacing-card: 1rem; }"
+					: undefined,
+			listFiles: () => ["/project/styles.css"],
+		});
+
+		const preset = support.files.find((file) => file.path === "pandwind/preset.ts")?.content;
+		expect(preset).toContain('"color": {');
+		expect(preset).toContain('"$tokens": "colors"');
+		expect(preset).toContain('"padding": {');
+		expect(preset).toContain('"$tokens": "spacing"');
 	});
 });
