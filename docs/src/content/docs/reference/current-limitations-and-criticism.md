@@ -56,11 +56,12 @@ adoption simplicity, real-world proof, and scope discipline.
   in a browser sandbox with shims and deliberately excludes project module
   loading and Tailwind's Node engine. A scenario passing there does not prove
   the same source will build correctly in a real project.
-- There are now three bounded installed-project proofs for Tailwind CSS ->
-  Pandwind, styled-components -> Pandwind, and Panda -> Pandwind. They run the
-  real CLI, generated project files, typechecks, Vite builds, SSR, hydration,
-  and browser base/hover comparisons. That raises confidence in the covered
-  lanes, but small React/Vite fixtures do not establish broad route coverage.
+- There are now four bounded installed-project proofs for Tailwind CSS ->
+  Pandwind, styled-components -> Pandwind, Panda -> Pandwind, and UnoCSS ->
+  Pandwind. They run the real CLI, generated project files, typechecks, Vite
+  builds, SSR, hydration, and browser base/hover comparisons. That raises
+  confidence in the covered lanes, but small React/Vite fixtures do not
+  establish broad route coverage.
 - "The MCP surface is ahead of the underlying proof."
   `validate_migration` exposes typecheck, build, SSR, hydration, browser, and
   bundle-size checks, but the default MCP server cannot execute those checks.
@@ -90,20 +91,21 @@ The repository now records route proof in one catalog and exposes the same
 boundary through the evidence report, MCP, and browser tooling. These labels
 describe evidence, not a promise that every construct in a route is lossless.
 
-| Surface                                         | Maturity     | Evidence currently available                                                      | Still required before a stronger claim                                     |
-| ----------------------------------------------- | ------------ | --------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
-| `tw()` / `css()` / `cx()` runtime contracts     | stable       | package tests, type tests, pack/import smoke, generated artifact checks           | consumer-project coverage and host-specific behavior                       |
-| Codegen and Vite integration                    | experimental | focused runtime/Vite tests and fresh checked-in example artifacts                 | repeated proof in dependency-installed consumer projects                   |
-| Cataloged codemod routes                        | experimental | adapter contracts, source probes, route-level dimensions, explicit residuals      | installed project typecheck, build, browser, SSR/hydration, and size proof |
-| Tailwind -> Pandwind bounded fixture             | experimental | installed CLI, generated preset, typecheck, build, SSR, hydration, browser pixels | more utilities, themes, plugins, frameworks, and multi-file projects       |
-| styled-components -> Pandwind bounded fixture   | experimental | installed CLI, generated Vite integration, typecheck, build, SSR, hydration, browser pixels | themes, component composition, dynamic props, and multi-file projects     |
-| Panda -> Pandwind bounded fixture               | experimental | installed CLI, official generated-system config, shorthand/token lowering, typecheck, build, SSR, hydration, browser pixels | recipes, plugins, themes, frameworks, and multi-file projects |
-| Playground                                      | experimental | browser sandbox evaluation, StyleProgram extraction, runtime-sheet CSS inspection | real package/Vite fixture and framework host proof                         |
-| MCP and analyzer                                | experimental | typed tool/resource contracts and explicit host-port unavailable states           | host integrations that execute and retain project evidence                 |
-| React Native/OpenTUI and other non-web backends | research     | contract and typing coverage                                                      | real consumers and backend-specific runtime proof                          |
+| Surface                                         | Maturity     | Evidence currently available                                                                                                                       | Still required before a stronger claim                                     |
+| ----------------------------------------------- | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| `tw()` / `css()` / `cx()` runtime contracts     | stable       | package tests, type tests, pack/import smoke, generated artifact checks                                                                            | consumer-project coverage and host-specific behavior                       |
+| Codegen and Vite integration                    | experimental | focused runtime/Vite tests and fresh checked-in example artifacts                                                                                  | repeated proof in dependency-installed consumer projects                   |
+| Cataloged codemod routes                        | experimental | adapter contracts, source probes, route-level dimensions, explicit residuals                                                                       | installed project typecheck, build, browser, SSR/hydration, and size proof |
+| Tailwind -> Pandwind bounded fixture            | experimental | installed CLI, generated preset, typecheck, build, SSR, hydration, browser pixels                                                                  | more utilities, themes, plugins, frameworks, and multi-file projects       |
+| styled-components -> Pandwind bounded fixture   | experimental | installed CLI, generated Vite integration, typecheck, build, SSR, hydration, browser pixels                                                        | themes, component composition, dynamic props, and multi-file projects      |
+| Panda -> Pandwind bounded fixture               | experimental | installed CLI, official generated-system config, shorthand/token lowering, typecheck, build, SSR, hydration, browser pixels                        | recipes, plugins, themes, frameworks, and multi-file projects              |
+| UnoCSS -> Pandwind bounded fixture              | experimental | installed CLI, official UnoCSS generator, custom token lowering, virtual stylesheet/Vite rewrite, typecheck, build, SSR, hydration, browser pixels | shortcuts, transformers, variants, frameworks, and multi-file projects     |
+| Playground                                      | experimental | browser sandbox evaluation, StyleProgram extraction, runtime-sheet CSS inspection                                                                  | real package/Vite fixture and framework host proof                         |
+| MCP and analyzer                                | experimental | typed tool/resource contracts and explicit host-port unavailable states                                                                            | host integrations that execute and retain project evidence                 |
+| React Native/OpenTUI and other non-web backends | research     | contract and typing coverage                                                                                                                       | real consumers and backend-specific runtime proof                          |
 
-All seven currently cataloged migration routes remain experimental. Three have
-bounded installed-project evidence, two have source-only pinned references, and
+All seven currently cataloged migration routes remain experimental. Four have
+bounded installed-project evidence, one has a source-only pinned reference, and
 two are explicitly unavailable because no installed project proof exists yet.
 A route becomes stable only after every required dimension is passed by an
 installed-project execution lane.

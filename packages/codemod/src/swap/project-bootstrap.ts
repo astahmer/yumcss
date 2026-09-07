@@ -43,6 +43,8 @@ export interface PandwindProjectSupport {
 
 const posixPath = (value: string): string => value.replaceAll("\\", "/");
 
+const escapeRegExp = (value: string): string => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
 const projectFile = (directory: string, name: string): string =>
 	posixPath(join(directory.replaceAll("\\", "/"), name));
 
@@ -366,6 +368,39 @@ function removePandaStylesheetImports(
 	return changes;
 }
 
+function removeUnoStylesheetImports(
+	request: ProjectBootstrapRequest,
+	config: AdapterProjectConfig,
+): readonly {
+	readonly path: string;
+	readonly content: string;
+	readonly expectedContent: string;
+}[] {
+	if (config.adapter !== CodemodAdapterId.UnoCSS) return [];
+	const changes: {
+		path: string;
+		content: string;
+		expectedContent: string;
+	}[] = [];
+	for (const file of request.listFiles(request.root)) {
+		const absoluteFile = resolve(request.root, file);
+		if (!/\.(?:[cm]?[jt]sx?|vue|svelte|astro)$/u.test(absoluteFile)) continue;
+		const source = request.readFile(absoluteFile);
+		if (source === undefined) continue;
+		const next = source.replace(
+			/^[ \t]*import\s*["'](?:virtual:uno\.css|uno\.css)["']\s*;?[ \t]*$/gmu,
+			"",
+		);
+		if (next === source) continue;
+		changes.push({
+			path: relative(request.root, absoluteFile).replaceAll("\\", "/"),
+			content: next,
+			expectedContent: source,
+		});
+	}
+	return changes;
+}
+
 function rewriteTailwindStylesheets(
 	request: ProjectBootstrapRequest,
 	config: AdapterProjectConfig,
@@ -433,6 +468,18 @@ function rewritePandwindViteConfigs(
 					`import { pandwindCssVite } from "pandwind/vite";\nimport { pandwindPreset } from "${typedPresetSpecifier}";`,
 				)
 				.replace(/\btailwindcss\s*\(\s*\)/gu, pandwindPlugin);
+		} else if (config.adapter === CodemodAdapterId.UnoCSS) {
+			const unoImport = /import\s+([A-Za-z_$][\w$]*)\s+from\s+["']unocss\/vite["'];?/u.exec(source);
+			const unoBinding = unoImport?.[1];
+			if (unoImport === null || unoBinding === undefined) continue;
+			const call = new RegExp(`\\b${escapeRegExp(unoBinding)}\\s*\\(\\s*\\)`, "u");
+			if (!call.test(source)) continue;
+			next = source
+				.replace(
+					/import\s+[A-Za-z_$][\w$]*\s+from\s+["']unocss\/vite["'];?/u,
+					`import { pandwindCssVite } from "pandwind/vite";\nimport { pandwindPreset } from "${typedPresetSpecifier}";`,
+				)
+				.replace(call, pandwindPlugin);
 		} else {
 			if (source.includes("pandwindCssVite(")) continue;
 			const withImports =
@@ -737,6 +784,7 @@ export async function createPandwindProjectSupport(
 			...rewriteTailwindStylesheets(request, sourceConfig),
 			...removeTailwindStylesheetImports(request, sourceConfig),
 			...removePandaStylesheetImports(request, sourceConfig),
+			...removeUnoStylesheetImports(request, sourceConfig),
 			...viteConfigChanges,
 			...enableTypeScriptExtensionImports(request, viteConfigChanges.length > 0),
 		],

@@ -117,6 +117,10 @@ interface PandaInstalledProofReport {
 	};
 }
 
+interface UnoCssInstalledProofReport extends PandaInstalledProofReport {
+	readonly route: { readonly from: string; readonly to: string };
+}
+
 describe("installed adapter proof artifacts", () => {
 	test("keeps the promoted Goober report lossless and browser-equivalent", () => {
 		const report = JSON.parse(
@@ -223,6 +227,44 @@ describe("installed adapter proof artifacts", () => {
 		expect(report).toMatchObject({
 			schema: "pandwind.installed-project-proof/1",
 			route: { from: "panda", to: "pandwind" },
+			dependencies: { installed: true, targetNodeModule: true },
+			migration: {
+				converted: 1,
+				skipped: 0,
+				residuals: 0,
+				targetUsesPandwind: true,
+				customTokenPreserved: true,
+				sourceStylesheetImportRemoved: true,
+				generatedVitePresetImportIsExplicit: true,
+				generatedVitePluginPresent: true,
+			},
+			checks: {
+				sourceTypecheck: true,
+				targetTypecheck: true,
+				sourceBuild: true,
+				targetBuild: true,
+				sourceSsr: true,
+				targetSsr: true,
+				hydration: true,
+			},
+			ssr: { markupEquivalent: true },
+			browser: { equivalent: true, changedPixels: 0, hydrationErrors: [] },
+			css: { targetNotLarger: true },
+		});
+		expect(report.css.sourceBytes).toBeGreaterThan(0);
+		expect(report.css.targetBytes).toBeGreaterThan(0);
+	});
+
+	test("keeps the installed UnoCSS project proof complete", () => {
+		const report = JSON.parse(
+			readFileSync(
+				resolve(import.meta.dirname, "../../../plans/evidence/unocss-installed-proof.json"),
+				"utf8",
+			),
+		) as UnoCssInstalledProofReport;
+		expect(report).toMatchObject({
+			schema: "pandwind.installed-project-proof/1",
+			route: { from: "unocss", to: "pandwind" },
 			dependencies: { installed: true, targetNodeModule: true },
 			migration: {
 				converted: 1,

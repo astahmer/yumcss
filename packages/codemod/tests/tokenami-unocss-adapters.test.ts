@@ -221,6 +221,19 @@ describe("Tokenami and UnoCSS semantic adapters", () => {
 		);
 	});
 
+	test("materializes UnoCSS opaque color variables for target token matching", () => {
+		const resolver = createUnoCssResolverFromCss(
+			".bg-brand{--un-bg-opacity:1;background-color:rgb(18 52 86/var(--un-bg-opacity))}",
+		);
+
+		expect(resolver.resolve("bg-brand", {} as never)).toEqual([
+			expect.objectContaining({
+				property: "backgroundColor",
+				value: { kind: "literal", value: "#123456" },
+			}),
+		]);
+	});
+
 	test("decodes escaped official utility selectors and CSS theme aliases", () => {
 		const resolver = createUnoCssResolverFromCss(
 			".hover\\:bg-\\[\\#383838\\]:hover{background-color:#383838}" +

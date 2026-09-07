@@ -62,6 +62,15 @@ const unescapeUnoCssSelector = (value: string): string =>
 const cssPropertyToStyleProperty = (value: string): string =>
 	value.replace(/-([a-z])/g, (_match, letter: string) => letter.toUpperCase());
 
+function normalizeUnoGeneratedValue(value: string): string {
+	const opaque = value.replace(/\s*\/\s*var\(--un-(?:bg|text)-opacity\)\s*/u, "");
+	const rgb = /^rgb\(\s*(\d+)\s+(\d+)\s+(\d+)\s*\)$/u.exec(opaque);
+	if (rgb?.[1] === undefined || rgb[2] === undefined || rgb[3] === undefined) return value;
+	const channels = [rgb[1], rgb[2], rgb[3]].map(Number);
+	if (channels.some((channel) => channel < 0 || channel > 255)) return value;
+	return `#${channels.map((channel) => channel.toString(16).padStart(2, "0")).join("")}`;
+}
+
 function generatedAtRuleCondition(rule: GeneratedCssAtRule): StyleCondition | undefined {
 	const params = rule.params.trim();
 	if (params === "") return undefined;
@@ -115,8 +124,9 @@ export function createUnoCssResolverFromCss(css: string): UnoCssTokenResolver {
 		const node = current.node;
 		if (node.type === GeneratedCssNodeKind.Declaration) {
 			if (!current.insideStyleRule) continue;
+			if (node.prop.trim().startsWith("--")) continue;
 			const name = cssPropertyToStyleProperty(node.prop.trim());
-			const value = node.value.trim();
+			const value = normalizeUnoGeneratedValue(node.value.trim());
 			if (name === "" || value === "") continue;
 			for (const entry of current.currentRules) {
 				const existing = entries.get(entry.token) ?? [];

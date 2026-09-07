@@ -36,6 +36,10 @@ describe("migration route proof catalog", () => {
 				id: MigrationRouteProofRouteId.StyledComponentsToPandwind,
 				evidenceIds: ["styled-components-installed-proof"],
 			}),
+			expect.objectContaining({
+				id: MigrationRouteProofRouteId.UnoCssToPandwind,
+				evidenceIds: ["unocss-installed-proof"],
+			}),
 		]);
 	});
 

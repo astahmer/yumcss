@@ -94,10 +94,11 @@ export const MIGRATION_ROUTE_PROOF_CATALOG: readonly MigrationRouteProofSpec[] =
 		from: CodemodAdapterId.UnoCSS,
 		to: CodemodAdapterId.Pandwind,
 		maturity: MigrationRouteMaturityTag.Experimental,
-		execution: MigrationRouteProofExecutionTag.SourceOnly,
+		execution: MigrationRouteProofExecutionTag.InstalledProject,
 		requiredDimensions: PROJECT_PROOF_DIMENSIONS,
 		referenceIds: ["unocss-nextjs-page"],
-		note: "UnoCSS preset and plugin behavior still needs an installed project proof lane.",
+		evidenceIds: ["unocss-installed-proof"],
+		note: "A bounded installed React/Vite fixture covers the official UnoCSS generator, custom token lowering, virtual stylesheet removal, generated Vite integration, SSR, hydration, browser parity, and CSS size; broader preset and framework coverage is still required for promotion.",
 	},
 	{
 		id: MigrationRouteProofRouteId.UnoCssToTailwind,

@@ -203,4 +203,41 @@ describe("Pandwind project bootstrap", () => {
 			expectedContent: 'import "../styled-system/styles.css";\nexport const App = () => null;\n',
 		});
 	});
+
+	test("replaces UnoCSS Vite support and removes its virtual stylesheet import", async () => {
+		const root = "/project";
+		const files = new Map<string, string>([
+			[`${root}/src/main.tsx`, 'import "virtual:uno.css";\nexport const App = () => null;\n'],
+			[
+				`${root}/vite.config.ts`,
+				[
+					'import UnoCSS from "unocss/vite";',
+					'import { defineConfig } from "vite";',
+					"export default defineConfig({ plugins: [UnoCSS()] });",
+				].join("\n"),
+			],
+		]);
+		const support = await createPandwindProjectSupport({
+			root,
+			sourceAdapter: CodemodAdapterId.UnoCSS,
+			targetAdapter: CodemodAdapterId.Pandwind,
+			outputDirectory: "pandwind",
+			readFile: (file) => files.get(file),
+			listFiles: () => [...files.keys()],
+		});
+
+		expect(support.fileChanges).toContainEqual({
+			path: "src/main.tsx",
+			content: "\nexport const App = () => null;\n",
+			expectedContent: 'import "virtual:uno.css";\nexport const App = () => null;\n',
+		});
+		expect(support.fileChanges.find((change) => change.path === "vite.config.ts")?.content).toBe(
+			[
+				'import { pandwindCssVite } from "pandwind/vite";',
+				'import { pandwindPreset } from "./pandwind/preset.ts";',
+				'import { defineConfig } from "vite";',
+				'export default defineConfig({ plugins: [pandwindCssVite(pandwindPreset, { root: "." })] });',
+			].join("\n"),
+		);
+	});
 });
