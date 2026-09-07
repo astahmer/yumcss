@@ -27,6 +27,7 @@ import {
 import { PACKAGE_INSTALLER, type PackageInstallResult } from "./package-installer.ts";
 import {
 	AdapterDependencyKindTag,
+	type AdapterFileChange,
 	type AdapterDependencies,
 	type AdapterProjectBindings,
 } from "./swap/adapter-contract.ts";
@@ -102,6 +103,30 @@ function applyFileChanges(
 	files: readonly { readonly path: string; readonly content: string }[],
 ): void {
 	for (const file of files) writeFileSync(resolve(root, file.path), file.content);
+}
+
+/** Apply a project-level deletion to the migrated source before it is written. */
+function applyProjectedFileChange(
+	source: string,
+	migrated: string,
+	change: AdapterFileChange | undefined,
+): string {
+	if (change?.expectedContent !== source) return migrated;
+	const remaining = new Map<string, number>();
+	for (const line of change.content.split(/\r?\n/u))
+		remaining.set(line, (remaining.get(line) ?? 0) + 1);
+	let output = migrated;
+	for (const line of source.split(/\r?\n/u)) {
+		const count = remaining.get(line) ?? 0;
+		if (count > 0) {
+			remaining.set(line, count - 1);
+			continue;
+		}
+		if (line.trim() === "") continue;
+		const escaped = line.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+		output = output.replace(new RegExp(`^${escaped}(?:\\r?\\n|$)`, "mu"), "");
+	}
+	return output;
 }
 
 type CliOptions = Readonly<Record<string, unknown>>;
@@ -234,6 +259,7 @@ const existingProjectSupport = (
 		metaDirectory: relativeDirectory,
 		bindings,
 		files: [],
+		fileChanges: [],
 		meta,
 		sourceConfig: { adapter: CodemodAdapterId.Pandwind, root, files: [], values: {} },
 	};
@@ -580,6 +606,10 @@ async function runAdapterRoute(
 	const plannedFileChanges = new Map<string, string>();
 	const projectFiles = sourceWorkspace.files(["**/*"], root, { includeUnsupported: true });
 	const projectGeneratedFiles = project?.files ?? [];
+	const projectFileChanges = project?.fileChanges ?? [];
+	const projectFileChangeByPath = new Map(
+		projectFileChanges.map((change) => [change.path, change]),
+	);
 	const targetDependencies: AdapterDependencies[] =
 		project === undefined
 			? []
@@ -660,7 +690,17 @@ async function runAdapterRoute(
 			);
 		validatePlannedGeneratedFiles(root, result.generatedFiles, plannedGeneratedFiles);
 		validatePlannedFileChanges(root, result.fileChanges, plannedFileChanges);
-		pendingWrites.push({ file, outputFile, relative, result });
+		const projectedCode = applyProjectedFileChange(
+			source,
+			result.code,
+			projectFileChangeByPath.get(relative),
+		);
+		pendingWrites.push({
+			file,
+			outputFile,
+			relative,
+			result: projectedCode === result.code ? result : { ...result, code: projectedCode },
+		});
 		if (args.dryRun && args.reportFormat !== "json")
 			console.log(
 				`${relative}: would change — ${result.converted} converted, ` +
@@ -676,8 +716,12 @@ async function runAdapterRoute(
 	if (pendingWrites.length > 0 && projectGeneratedFiles.length > 0) {
 		validatePlannedGeneratedFiles(root, projectGeneratedFiles, plannedGeneratedFiles);
 	}
+	if (pendingWrites.length > 0 && projectFileChanges.length > 0) {
+		validatePlannedFileChanges(root, projectFileChanges, plannedFileChanges);
+	}
 	if (!args.dryRun) {
 		if (pendingWrites.length > 0) writeGeneratedFiles(root, projectGeneratedFiles);
+		applyFileChanges(root, projectFileChanges);
 		for (const pending of pendingWrites) {
 			writeGeneratedFiles(root, pending.result.generatedFiles);
 			if (pending.outputFile === pending.file) writeFileSync(pending.file, pending.result.code);

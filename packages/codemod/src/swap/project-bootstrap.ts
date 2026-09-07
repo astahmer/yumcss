@@ -1,5 +1,5 @@
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
-import { dirname, join, resolve } from "node:path";
+import { dirname, join, relative, resolve } from "node:path";
 import { tmpdir } from "node:os";
 import { buildPandwindInteropArtifact } from "pandwind/tw/interop";
 import { generateUtilityBridge, BRIDGE_PROPS, type UtilityBridge } from "pandwind/codegen/bridge";
@@ -15,6 +15,7 @@ import type {
 import type { PandwindMeta } from "../meta.ts";
 import { loadMetaFromSources } from "../meta.ts";
 import { createBuiltinCodemodCatalog } from "./adapter-catalog.ts";
+import { CodemodAdapterId } from "./identifiers.ts";
 
 export interface ProjectBootstrapRequest {
 	readonly root: string;
@@ -29,6 +30,12 @@ export interface PandwindProjectSupport {
 	readonly metaDirectory: string;
 	readonly bindings: AdapterProjectBindings;
 	readonly files: readonly AdapterGeneratedFile[];
+	/** Existing source files that the target project no longer needs to load. */
+	readonly fileChanges: readonly {
+		readonly path: string;
+		readonly content: string;
+		readonly expectedContent?: string;
+	}[];
 	readonly meta?: PandwindMeta;
 	readonly sourceConfig: AdapterProjectConfig;
 }
@@ -50,6 +57,55 @@ function customVariantConditions(css: string): Record<string, string> {
 		if (match?.[1] !== undefined && match[2] !== undefined) conditions[match[1]] = match[2].trim();
 	}
 	return conditions;
+}
+
+function isTailwindOnlyStylesheet(css: string): boolean {
+	const source = css.replace(/\/\*[\s\S]*?\*\//gu, "").trim();
+	return /^@import\s+(?:url\(\s*)?["']tailwindcss["']\s*\)?\s*;$/u.test(source);
+}
+
+function stylesheetImportTarget(file: string, specifier: string): string | undefined {
+	if (!specifier.startsWith(".")) return undefined;
+	return resolve(dirname(file), specifier);
+}
+
+function removeTailwindStylesheetImports(
+	request: ProjectBootstrapRequest,
+	config: AdapterProjectConfig,
+): readonly {
+	readonly path: string;
+	readonly content: string;
+	readonly expectedContent: string;
+}[] {
+	if (config.adapter !== CodemodAdapterId.Tailwind) return [];
+	const cssEntry = config.files.find((file) => /\.css$/u.test(file));
+	if (cssEntry === undefined) return [];
+	const stylesheet = request.readFile(cssEntry);
+	if (stylesheet === undefined || !isTailwindOnlyStylesheet(stylesheet)) return [];
+	const target = resolve(request.root, cssEntry);
+	const changes: {
+		path: string;
+		content: string;
+		expectedContent: string;
+	}[] = [];
+	for (const file of request.listFiles(request.root)) {
+		const absoluteFile = resolve(request.root, file);
+		if (!/\.(?:[cm]?[jt]sx?|vue|svelte|astro)$/u.test(absoluteFile)) continue;
+		const source = request.readFile(absoluteFile);
+		if (source === undefined) continue;
+		const next = source.replace(
+			/^[ \t]*import\s*["']([^"']+\.css)["']\s*;?[ \t]*$/gmu,
+			(statement, specifier: string) =>
+				stylesheetImportTarget(absoluteFile, specifier) === target ? "" : statement,
+		);
+		if (next === source) continue;
+		changes.push({
+			path: relative(request.root, absoluteFile).replaceAll("\\", "/"),
+			content: next,
+			expectedContent: source,
+		});
+	}
+	return changes;
 }
 
 function presetSource(
@@ -265,6 +321,7 @@ export async function createPandwindProjectSupport(
 				: { twModule: projectFile(directory, "tw.ts") }),
 		},
 		files,
+		fileChanges: removeTailwindStylesheetImports(request, sourceConfig),
 		...(metaFiles === undefined ? {} : { meta: loadGeneratedMeta(metaFiles, directory) }),
 		sourceConfig,
 	};

@@ -1530,7 +1530,7 @@ function jssNamedClassMap(
 					declarations,
 				};
 			})
-			.filter((rule): rule is StyleRule => rule !== undefined);
+			.filter((rule) => rule !== undefined) as StyleRule[];
 		const single = {
 			...program,
 			rules,
