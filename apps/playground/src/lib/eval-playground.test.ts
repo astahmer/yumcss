@@ -6,7 +6,7 @@ import { describe, expect, test } from "vitest";
 import { cx } from "../cx.ts";
 import { css } from "../css.ts";
 import { resolveDesignStyle } from "pandwind/design/resolve";
-import { examplePreset } from "pandwind/preset";
+import { examplePreset } from "@pandwind/example-preset";
 import { createNamedAtomsStrategy } from "pandwind/css";
 import { createUnoCssAdapter } from "pandwind/css";
 import { createRuntimeCss } from "pandwind/css/runtime";
@@ -242,7 +242,7 @@ describe("evalPlayground", () => {
 			[
 				'import { createRuntimeCss } from "pandwind/css/runtime";',
 				'import { createNamedAtomsStrategy } from "pandwind/css";',
-				'import { examplePreset } from "pandwind/preset";',
+				'import { examplePreset } from "@pandwind/example-preset";',
 				"",
 				'const css = createRuntimeCss(examplePreset, { className: createNamedAtomsStrategy("demo") });',
 				'css.class({ color: "red-500" });',
@@ -251,7 +251,7 @@ describe("evalPlayground", () => {
 			{
 				"pandwind/css/runtime": { createRuntimeCss },
 				"pandwind/css": { createNamedAtomsStrategy },
-				"pandwind/preset": { examplePreset },
+				"@pandwind/example-preset": { examplePreset },
 			},
 		);
 		expect(result.ok).toBe(true);
@@ -266,7 +266,7 @@ describe("evalPlayground", () => {
 		const result = run(
 			[
 				'import { createRuntimeCss } from "pandwind/css/runtime";',
-				'import { examplePreset } from "pandwind/preset";',
+				'import { examplePreset } from "@pandwind/example-preset";',
 				"",
 				'const css = createRuntimeCss(examplePreset, { className: "ignored-by-playground" });',
 				'css.class({ color: "red-500" });',
@@ -274,7 +274,7 @@ describe("evalPlayground", () => {
 			undefined,
 			{
 				"pandwind/css/runtime": { createRuntimeCss },
-				"pandwind/preset": { examplePreset },
+				"@pandwind/example-preset": { examplePreset },
 			},
 			createNamedAtomsStrategy("selected"),
 		);
@@ -289,7 +289,7 @@ describe("evalPlayground", () => {
 		const result = run(
 			[
 				'import { createRuntimeCss } from "pandwind/css/runtime";',
-				'import { examplePreset } from "pandwind/preset";',
+				'import { examplePreset } from "@pandwind/example-preset";',
 				"",
 				"const css = createRuntimeCss(examplePreset);",
 				'css.class({ color: "red" });',
@@ -297,7 +297,7 @@ describe("evalPlayground", () => {
 			undefined,
 			{
 				"pandwind/css/runtime": { createRuntimeCss },
-				"pandwind/preset": { examplePreset },
+				"@pandwind/example-preset": { examplePreset },
 			},
 			createUnoCssAdapter({ preset: examplePreset }),
 		);
@@ -310,7 +310,7 @@ describe("evalPlayground", () => {
 			[
 				'import { createRuntimeCss } from "pandwind/css/runtime";',
 				'import { createNamedAtomsStrategy } from "pandwind/css";',
-				'import { examplePreset } from "pandwind/preset";',
+				'import { examplePreset } from "@pandwind/example-preset";',
 				"",
 				'const css = createRuntimeCss(examplePreset, { className: createNamedAtomsStrategy("demo") });',
 				'css.class({ color: "red-500", _hover: { color: "blue-500" } });',
@@ -319,7 +319,7 @@ describe("evalPlayground", () => {
 			{
 				"pandwind/css/runtime": { createRuntimeCss },
 				"pandwind/css": { createNamedAtomsStrategy },
-				"pandwind/preset": { examplePreset },
+				"@pandwind/example-preset": { examplePreset },
 			},
 		);
 		expect(result.ok).toBe(true);

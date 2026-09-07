@@ -1,7 +1,7 @@
 import { createRequire } from "node:module";
 import { dirname, join } from "node:path";
 import react from "@vitejs/plugin-react-swc";
-import { examplePreset } from "pandwind/preset";
+import { examplePreset } from "@pandwind/example-preset";
 import { pandwindCssVite } from "pandwind/vite";
 import { defineConfig } from "vite";
 import { tailwindDefaultCssPlugin } from "./tailwind-default-css-plugin.ts";

@@ -120,7 +120,7 @@ cx(buttons.primary, "px-4")`,
 				files: oneFile(
 					"Example.tsx",
 					`import { createDesignCss } from "pandwind/design";
-import { examplePreset } from "pandwind/preset";
+import { examplePreset } from "@pandwind/example-preset";
 
 const dcss = createDesignCss(examplePreset);
 

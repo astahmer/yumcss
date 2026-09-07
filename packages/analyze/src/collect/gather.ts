@@ -9,7 +9,7 @@ import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
 import { createSourceWorkspace } from "pandwind/source/workspace";
 import { runCli } from "../cli.ts";
 import { createCssBudgetService } from "../analysis-service.ts";
-import { examplePreset } from "pandwind/preset/example-preset";
+import { examplePreset } from "@pandwind/example-preset";
 import { createStylesheet } from "pandwind/css/create-stylesheet";
 import { createCssExtractionService } from "pandwind/vite/css-extract";
 import { buildTokenGraph } from "pandwind/tw/token-graph";
@@ -249,7 +249,7 @@ export async function gather(repoRoot?: string): Promise<CollectPayload> {
 	// safelist file downgrades every unused candidate to review-required (its
 	// class strings cannot be attributed to token ids without guessing).
 	const presetLoad = await loadOfficialPresetModule(
-		isDogfoodApp ? "pandwind/preset/example-preset" : `./${APP}/src/pandwind.preset.ts`,
+		isDogfoodApp ? "@pandwind/example-preset" : `./${APP}/src/pandwind.preset.ts`,
 		root,
 	);
 	const { tokenContext, policy } = projectGovernanceInputs(presetLoad);

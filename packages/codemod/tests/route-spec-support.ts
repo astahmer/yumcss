@@ -129,8 +129,7 @@ function routeProjectLoader(
 						properties: new Set(["color", "backgroundColor", "padding", "bg"]),
 						utility: { shorthands: new Map([["bg", "backgroundColor"]]) },
 						token: {
-							var: (path: string) =>
-								`var(--chakra-${path.replaceAll(".", "-").replace("/", "-")})`,
+							var: (path: string) => `var(--chakra-${path.replaceAll(".", "-").replace("/", "-")})`,
 						},
 					}),
 				} as T;
@@ -585,18 +584,13 @@ export function expectTargetClassProjection(
 	const forwardHasResidual =
 		forward.skipped > 0 ||
 		forward.residuals.length > 0 ||
-		forward.outcomes.some(
-			(outcome) => outcome.outcome === StyleMigrationOutcome.Residual,
-		);
+		forward.outcomes.some((outcome) => outcome.outcome === StyleMigrationOutcome.Residual);
 
 	// A target adapter may legitimately preserve a source construct that has no
 	// target class carrier. In that case the reverse pass should be an exact
 	// identity, and the residual is the evidence that the source was preserved.
 	if (forwardHasResidual) {
-		expect(
-			reverse.code,
-			`${label} residual class projection changed source`,
-		).toBe(forward.code);
+		expect(reverse.code, `${label} residual class projection changed source`).toBe(forward.code);
 		expect(
 			forward.skipped + forward.residuals.length,
 			`${label} residual projection has no residual evidence`,

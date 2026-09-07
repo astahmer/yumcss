@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { examplePreset } from "../src/preset/example-preset.ts";
+import { examplePreset } from "@pandwind/example-preset";
 import { createCssExtractorPluginCore } from "../src/vite/css-core.ts";
 import { createInlineTwPluginCore } from "../src/vite/index.ts";
 import { createRuntimePruningTransform } from "../src/vite/runtime-pruner.ts";

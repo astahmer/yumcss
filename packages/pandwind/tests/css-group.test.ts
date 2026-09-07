@@ -1,6 +1,6 @@
 import { expect, test } from "vitest";
 import { createCss } from "../src/css/create-css.ts";
-import type { examplePreset } from "../src/preset/example-preset.ts";
+import type { examplePreset } from "@pandwind/example-preset";
 
 test("css group", () => {
 	const css = createCss<typeof examplePreset>({ debug: true });

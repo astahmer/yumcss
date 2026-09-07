@@ -8,7 +8,7 @@
  */
 import { expect, test } from "tstyche";
 import { createCx, createDesignCss } from "../src/rn.ts";
-import { examplePreset } from "../src/preset/example-preset.ts";
+import { examplePreset } from "@pandwind/example-preset";
 
 const css = createDesignCss(examplePreset);
 

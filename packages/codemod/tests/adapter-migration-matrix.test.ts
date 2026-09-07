@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { examplePreset } from "pandwind/preset";
+import { examplePreset } from "@pandwind/example-preset";
 import { resolve } from "node:path";
 import { loadMetaFromSources } from "../src/meta.ts";
 import {

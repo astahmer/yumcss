@@ -37,7 +37,7 @@ import { createNamedAtomsStrategy } from "../src/css/named-atoms-strategy.ts";
 import { createStylesheet } from "../src/css/create-stylesheet.ts";
 import { escapeIdentifier } from "../src/css/hash.ts";
 import { createCx } from "../src/cx/index.ts";
-import { examplePreset } from "../src/preset/example-preset.ts";
+import { examplePreset } from "@pandwind/example-preset";
 import { extractTwConfig } from "../src/vite/inline.ts";
 import { PostCssNodeKind } from "./helpers/postcss-node-kind.ts";
 

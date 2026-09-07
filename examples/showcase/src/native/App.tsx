@@ -9,7 +9,7 @@
 import { useState } from "react";
 import { Text, View } from "react-native";
 import { createDesignCss } from "pandwind/react-native";
-import { examplePreset } from "pandwind/preset";
+import { examplePreset } from "@pandwind/example-preset";
 import { body, header, status } from "../shared-styles.ts";
 
 let isDark = false;

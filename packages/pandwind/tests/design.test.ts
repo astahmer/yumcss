@@ -6,7 +6,7 @@ import {
 	DesignStyleResolver,
 	resolveDesignStyle,
 } from "../src/design/resolve.ts";
-import { examplePreset } from "../src/preset/example-preset.ts";
+import { examplePreset } from "@pandwind/example-preset";
 
 const tokens = examplePreset.tokens;
 

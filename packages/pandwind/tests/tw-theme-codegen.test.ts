@@ -226,7 +226,7 @@ describe("resolvePresetConditions", () => {
 
 describe("loadThemeBlock package-specifier resolution", () => {
 	// Regression: the generate CLI resolved bare package specifiers (e.g.
-	// `pandwind/preset/example-preset`) via a bare dynamic import, so Node's
+	// `@pandwind/example-preset`) via a bare dynamic import, so Node's
 	// self-reference resolution used the *nearest* package.json. A stray
 	// manifest inside the pandwind dist tree then redirected the specifier to
 	// a nonexistent `dist/dist/...` path and broke generate. Resolution must
@@ -262,7 +262,7 @@ describe("loadThemeBlock package-specifier resolution", () => {
 			// base = the app calling the CLI; the stray dist manifest must be
 			// irrelevant because resolution goes through createRequire(base).
 			const themeBlock = await built.loadThemeBlock(
-				"pandwind/preset/example-preset",
+				"@pandwind/example-preset",
 				resolve(import.meta.dirname, "../../../apps/example"),
 			);
 			expect(themeBlock).toContain("--color");

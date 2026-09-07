@@ -4,7 +4,7 @@ import {
 	createRuntimeDesignCss,
 	createRuntimeSheet,
 } from "../src/css/runtime.ts";
-import { examplePreset } from "../src/preset/example-preset.ts";
+import { examplePreset } from "@pandwind/example-preset";
 import type {
 	RuntimeDeclaration,
 	RuntimeDocument,

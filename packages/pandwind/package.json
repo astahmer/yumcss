@@ -192,12 +192,6 @@
 			"import": "./dist/lib/utils.js",
 			"default": "./dist/lib/utils.js"
 		},
-		"./preset/example-preset": {
-			"pandwind": "./src/preset/example-preset.ts",
-			"types": "./dist/preset/example-preset.d.ts",
-			"import": "./dist/preset/example-preset.js",
-			"default": "./dist/preset/example-preset.js"
-		},
 		"./tw/compile": {
 			"pandwind": "./src/tw/compile.ts",
 			"types": "./dist/tw/compile.d.ts",

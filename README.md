@@ -72,7 +72,7 @@ nub install --frozen-lockfile
 > release preflight.
 
 **1. Preset** — define your design system once (`src/preset.ts`): tokens,
-radii, conditions. See the `pandwind/preset/example-preset` export for a
+radii, conditions. See the `@pandwind/example-preset` workspace package for a
 complete example (`defineTokens` / `defineTheme` / `definePreset`).
 
 **2. Codegen** — generate the typed `tw()` runtime + `@theme` bridge from your

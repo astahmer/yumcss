@@ -11,7 +11,7 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import webpack, { type Compiler, type Configuration, type Stats, type Watching } from "webpack";
 import { describe, expect, test } from "vitest";
-import { examplePreset } from "../src/preset/example-preset.ts";
+import { examplePreset } from "@pandwind/example-preset";
 import { pandwindWebpack, pandwindWebpackCss } from "../src/unplugin.ts";
 
 const packageRoot = resolve(import.meta.dirname, "..");

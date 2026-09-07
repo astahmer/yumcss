@@ -3,7 +3,7 @@ import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { expect, test } from "vitest";
 import { createTwAdapter } from "../src/tw/adapter.ts";
-import { examplePreset } from "../src/preset/example-preset.ts";
+import { examplePreset } from "@pandwind/example-preset";
 import { pandwindCssVite } from "../src/vite/css.ts";
 import { createCssExtractionService, createCssSourceScanner } from "../src/vite/css-extract.ts";
 import { CssSourceScannerService } from "../src/vite/css-source-scanner.ts";

@@ -20,7 +20,7 @@ import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { build, createServer, type ViteDevServer } from "vite";
-import { examplePreset } from "../src/preset/example-preset.ts";
+import { examplePreset } from "@pandwind/example-preset";
 import { RollupOutputKind } from "./helpers/rollup-output-kind.ts";
 import { escapeIdentifier } from "../src/css/hash.ts";
 import { pandwindCssVite } from "../src/vite/css.ts";
@@ -52,7 +52,7 @@ export const tw = /* @__PURE__ */ createTw({
 
 const DESIGN_SOURCE = `
 import { createDesignCss } from "pandwind/design";
-import { examplePreset } from "pandwind/preset";
+import { examplePreset } from "@pandwind/example-preset";
 
 export const css = createDesignCss(examplePreset);
 `;

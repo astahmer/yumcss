@@ -4,7 +4,7 @@
  * pad [4, 8] -> per-side cell expansion. `_dark` resolves at boot.
  */
 import { createDesignCss } from "pandwind/opentui";
-import { examplePreset } from "pandwind/preset";
+import { examplePreset } from "@pandwind/example-preset";
 import { body, header, status } from "../shared-styles.ts";
 
 export interface AppProps {

@@ -154,7 +154,7 @@ export async function loadThemeBlock(modulePath: string, base: string): Promise<
 
 /**
  * Resolve a tokens module to an importable specifier. Package specifiers
- * (e.g. `pandwind/preset/example-preset`) resolve against the CLI's project
+ * (e.g. `@pandwind/example-preset`) resolve against the CLI's project
  * root via CJS resolution, never against the importing file's own package:
  * a stray `package.json` anywhere between the two would otherwise redirect
  * Node's self-reference resolution and double a path segment

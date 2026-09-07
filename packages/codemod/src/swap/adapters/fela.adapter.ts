@@ -1,9 +1,5 @@
 import { makeExtraAdapter } from "./extra-adapter-runtime.ts";
-import type {
-	AdapterMatch,
-	AdapterParseContext,
-	AdapterParseResult,
-} from "../adapter-contract.ts";
+import type { AdapterMatch, AdapterParseContext, AdapterParseResult } from "../adapter-contract.ts";
 import {
 	StyleProgramResidualKindTag,
 	styleProgramFromRules,
@@ -19,7 +15,10 @@ import {
 	StyleNamedRuleStrategy,
 } from "../identifiers.ts";
 
-function balancedCall(source: string, open: number): { readonly end: number; readonly body: string } | undefined {
+function balancedCall(
+	source: string,
+	open: number,
+): { readonly end: number; readonly body: string } | undefined {
 	let depth = 0;
 	let quote: string | undefined;
 	for (let index = open; index < source.length; index++) {
@@ -29,7 +28,7 @@ function balancedCall(source: string, open: number): { readonly end: number; rea
 			else if (character === quote) quote = undefined;
 			continue;
 		}
-		if (character === "\"" || character === "'" || character === "`") {
+		if (character === '"' || character === "'" || character === "`") {
 			quote = character;
 			continue;
 		}
@@ -52,7 +51,7 @@ function topLevelComma(source: string): number | undefined {
 			else if (character === quote) quote = undefined;
 			continue;
 		}
-		if (character === "\"" || character === "'" || character === "`") {
+		if (character === '"' || character === "'" || character === "`") {
 			quote = character;
 			continue;
 		}
@@ -126,7 +125,9 @@ function parseFelaComponents(source: string, context: AdapterParseContext): Adap
 		const styleSource = call.body.slice(0, firstComma).trim();
 		const remaining = call.body.slice(firstComma + 1).trim();
 		const secondComma = topLevelComma(remaining);
-		const subject = (secondComma === undefined ? remaining : remaining.slice(0, secondComma)).trim();
+		const subject = (
+			secondComma === undefined ? remaining : remaining.slice(0, secondComma)
+		).trim();
 		const extraArguments = secondComma === undefined ? "" : remaining.slice(secondComma + 1).trim();
 		const staticFunction = /^\(\s*\)\s*=>\s*\(\s*\{/u.exec(styleSource);
 		const subjectExpression =

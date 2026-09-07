@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
 import { createStylesheet, getPropertyPriority } from "../src/css/create-stylesheet.ts";
-import { examplePreset } from "../src/preset/example-preset.ts";
+import { examplePreset } from "@pandwind/example-preset";
 
 describe("deterministic CSS cascade ordering", () => {
 	test("normalizes camelCase physical properties before applying priorities", () => {

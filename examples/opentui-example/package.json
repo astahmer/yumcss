@@ -11,6 +11,7 @@
 	"dependencies": {
 		"@opentui/core": "0.5.10",
 		"@opentui/react": "0.5.10",
+		"@pandwind/example-preset": "workspace:*",
 		"pandwind": "workspace:*",
 		"react": "19.2.8"
 	},

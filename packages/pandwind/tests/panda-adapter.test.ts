@@ -2,7 +2,7 @@ import { describe, expect, test } from "vitest";
 import { createCss } from "../src/css/create-css.ts";
 import { pandaShared } from "./helpers/panda-oracle.ts";
 import { createPandaAdapter } from "../src/css/panda-adapter.ts";
-import { examplePreset } from "../src/preset/example-preset.ts";
+import { examplePreset } from "@pandwind/example-preset";
 
 /** Panda example-preset shorthand map (mirrors the generated classNameByProp). */
 const propClasses = { backgroundColor: "bg", color: "text", width: "w", display: "d", margin: "m" };

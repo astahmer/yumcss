@@ -537,8 +537,7 @@ function representationFor(
 	}
 	if (
 		result.program.rules.some((rule) => rule.name !== undefined) &&
-		level(context.target, AdapterCapabilityTag.NamedRules) !==
-			AdapterCapabilityLevelTag.Unsupported
+		level(context.target, AdapterCapabilityTag.NamedRules) !== AdapterCapabilityLevelTag.Unsupported
 	)
 		return StyleRepresentationKind.NamedMap;
 	if (hasDynamic) {

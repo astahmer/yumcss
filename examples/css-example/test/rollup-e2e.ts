@@ -5,7 +5,7 @@ import { transformSync } from "esbuild";
 import { nodeResolve } from "@rollup/plugin-node-resolve";
 import { rollup, type OutputChunk, type Plugin } from "rollup";
 import { chromium } from "playwright-core";
-import { examplePreset } from "pandwind/preset/example-preset";
+import { examplePreset } from "@pandwind/example-preset";
 import { pandwindRollupCss } from "pandwind/unplugin";
 
 const repoRoot = resolve(import.meta.dirname, "../../..");
@@ -75,7 +75,7 @@ writeFileSync(
 	join(source, "design.ts"),
 	[
 		'import { createDesignCss } from "pandwind/design";',
-		'import { examplePreset } from "pandwind/preset/example-preset";',
+		'import { examplePreset } from "@pandwind/example-preset";',
 		"export const dcss = createDesignCss(examplePreset);",
 	].join("\n"),
 );

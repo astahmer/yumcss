@@ -5,7 +5,7 @@
  * examples/css-example.
  */
 import { createDesignCss } from "pandwind/design";
-import { examplePreset } from "pandwind/preset";
+import { examplePreset } from "@pandwind/example-preset";
 import { header, status, body } from "../shared-styles.ts";
 
 const css = createDesignCss(examplePreset);

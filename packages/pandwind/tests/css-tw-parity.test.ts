@@ -20,7 +20,7 @@ import { parse, type Root } from "postcss";
 import { describe, expect, test } from "vitest";
 import { createStylesheet } from "../src/css/create-stylesheet.ts";
 import { createDesignCss } from "../src/design/index.ts";
-import { examplePreset } from "../src/preset/example-preset.ts";
+import { examplePreset } from "@pandwind/example-preset";
 import {
 	compileClasses,
 	resolveVar,

@@ -176,7 +176,7 @@ describe("inlineCxCalls folds through importedConstants", () => {
 	test("folded output equals real runtime cx for the same values", async () => {
 		const { createDesignCss } = await import("../src/design/index.ts");
 		const { createCx } = await import("../src/cx/index.ts");
-		const { examplePreset } = await import("../src/preset/example-preset.ts");
+		const { examplePreset } = await import("@pandwind/example-preset");
 		const designCss = createDesignCss(examplePreset);
 		const real = createCx({
 			css: designCss as never,

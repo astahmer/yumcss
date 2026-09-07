@@ -95,7 +95,7 @@ const DEFAULT_TOOL_PORTS: McpToolPorts = {
 	analyze: (argv) => runCli([...argv]),
 };
 
-const DEFAULT_ANALYZE_PRESET = "pandwind/preset/example-preset";
+const DEFAULT_ANALYZE_PRESET = "@pandwind/example-preset";
 
 const DEFAULT_VALIDATION_CHECKS: readonly McpValidationCheck[] = [
 	MCP_VALIDATION_CHECK.Contract,

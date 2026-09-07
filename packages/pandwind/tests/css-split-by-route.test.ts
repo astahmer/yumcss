@@ -10,7 +10,7 @@ import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { describe, expect, test } from "vitest";
 import { pandwindCssVite } from "../src/vite/css.ts";
-import { examplePreset } from "../src/preset/example-preset.ts";
+import { examplePreset } from "@pandwind/example-preset";
 
 const makeProject = (): string => {
 	const dir = mkdtempSync(join(tmpdir(), "pandwind-split-"));

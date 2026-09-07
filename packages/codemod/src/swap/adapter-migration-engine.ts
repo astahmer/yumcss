@@ -1428,10 +1428,7 @@ function runAdapterMigrationInternal(
 			...(emissionDetail === undefined || emissionDetail === "" ? {} : { detail: emissionDetail }),
 		});
 	}
-	const edited = SourcePass.applyEdits(
-		source,
-		withoutDuplicateSkipMarkers(source, edits, marker),
-	);
+	const edited = SourcePass.applyEdits(source, withoutDuplicateSkipMarkers(source, edits, marker));
 	let runtimeEdited = edited;
 	let needsCx = false;
 	for (const request of targetHostRewrites) {

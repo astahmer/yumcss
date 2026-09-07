@@ -4,7 +4,7 @@ import { describe, expect, test } from "vitest";
 import { createCss } from "../src/css/create-css.ts";
 import { createDesignCss } from "../src/design/index.ts";
 import { createCx } from "../src/cx/index.ts";
-import { examplePreset } from "../src/preset/example-preset.ts";
+import { examplePreset } from "@pandwind/example-preset";
 import { extractTwConfig } from "../src/vite/inline.ts";
 import { tw } from "../../../apps/example/src/tw.ts";
 

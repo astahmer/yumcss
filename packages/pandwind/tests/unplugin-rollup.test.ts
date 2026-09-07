@@ -13,7 +13,7 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { rollup } from "rollup";
 import { describe, expect, test } from "vitest";
-import { examplePreset } from "../src/preset/example-preset.ts";
+import { examplePreset } from "@pandwind/example-preset";
 import { pandwindRollup, pandwindUnpluginCss } from "../src/unplugin.ts";
 import { RollupOutputKind } from "./helpers/rollup-output-kind.ts";
 

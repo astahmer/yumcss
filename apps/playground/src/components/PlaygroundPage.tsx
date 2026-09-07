@@ -11,7 +11,7 @@ import {
 } from "../lib/examples.ts";
 import { evalPlayground, evalSiblingModule, type EvalInput } from "../lib/eval-playground.ts";
 import { resolveDesignStyle } from "pandwind/design/resolve";
-import { examplePreset } from "pandwind/preset";
+import { examplePreset } from "@pandwind/example-preset";
 import { SANDBOX_MODULES } from "../lib/sandbox-modules.ts";
 import {
 	CLASS_NAME_ADAPTERS,

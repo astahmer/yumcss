@@ -333,10 +333,10 @@ function supportFiles(lane: EffectDocsLane): Record<string, string> {
 	};
 	if (lane === EffectDocsLane.Css)
 		files["proof/pandwind/css.ts"] =
-			'import { createCss } from "pandwind/css";\nimport { examplePreset } from "pandwind/preset/example-preset";\nimport { twAdapter } from "./bridge";\n\nexport const css = createCss(examplePreset, { className: twAdapter });\n';
+			'import { createCss } from "pandwind/css";\nimport { examplePreset } from "@pandwind/example-preset";\nimport { twAdapter } from "./bridge";\n\nexport const css = createCss(examplePreset, { className: twAdapter });\n';
 	if (lane === EffectDocsLane.DesignCss)
 		files["proof/pandwind/dcss.ts"] =
-			'import { createDesignCss } from "pandwind/design";\nimport type { CssFn } from "pandwind/css";\nimport { examplePreset } from "pandwind/preset/example-preset";\nimport { twAdapter } from "./bridge";\n\nexport const dcss = createDesignCss(examplePreset, { className: twAdapter }) as unknown as CssFn;\n';
+			'import { createDesignCss } from "pandwind/design";\nimport type { CssFn } from "pandwind/css";\nimport { examplePreset } from "@pandwind/example-preset";\nimport { twAdapter } from "./bridge";\n\nexport const dcss = createDesignCss(examplePreset, { className: twAdapter }) as unknown as CssFn;\n';
 	return files;
 }
 

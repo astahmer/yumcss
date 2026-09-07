@@ -91,7 +91,7 @@ export const ANALYZE_JSON_SCHEMA = "pandwind.analyze/2";
 /** Version tag for the governance lane document. */
 export const GOVERNANCE_JSON_SCHEMA = "pandwind.analyze.governance/1";
 /** Default official preset for the governance lane. */
-export const DEFAULT_GOVERNANCE_PRESET = "pandwind/preset/example-preset";
+export const DEFAULT_GOVERNANCE_PRESET = "@pandwind/example-preset";
 
 type CliOptions = Readonly<Record<string, unknown>>;
 

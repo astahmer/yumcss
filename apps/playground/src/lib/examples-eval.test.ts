@@ -6,7 +6,7 @@ import { css as designCss } from "../css.ts";
 import { cx } from "../cx.ts";
 import { createCss } from "pandwind/css";
 import { resolveDesignStyle } from "pandwind/design/resolve";
-import { examplePreset } from "pandwind/preset";
+import { examplePreset } from "@pandwind/example-preset";
 import { SANDBOX_MODULES } from "./sandbox-modules.ts";
 
 function makeInput(code: string, moduleBindings?: EvalInput["moduleBindings"]): EvalInput {

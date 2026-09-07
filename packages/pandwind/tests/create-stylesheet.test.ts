@@ -1,7 +1,7 @@
 import { expect, test } from "vitest";
 import { createCss } from "../src/css/create-css.ts";
 import { createStylesheet } from "../src/css/create-stylesheet.ts";
-import { examplePreset } from "../src/preset/example-preset.ts";
+import { examplePreset } from "@pandwind/example-preset";
 
 test("css gen simple prop", () => {
 	const sheet = createStylesheet(examplePreset, { debug: false });

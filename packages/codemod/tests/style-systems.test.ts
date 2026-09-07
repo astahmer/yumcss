@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
 import { resolve } from "node:path";
-import { examplePreset } from "pandwind/preset";
+import { examplePreset } from "@pandwind/example-preset";
 import { loadMetaFromSources } from "../src/meta.ts";
 import {
 	ADAPTER_CONTRACT_SCHEMA,

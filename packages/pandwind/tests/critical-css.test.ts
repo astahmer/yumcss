@@ -10,7 +10,7 @@ import { dirname, join } from "node:path";
 import { describe, expect, test } from "vitest";
 import { pandwindCssVite } from "../src/vite/css.ts";
 import { renderCriticalHtml } from "../src/vite/critical-css.ts";
-import { examplePreset } from "../src/preset/example-preset.ts";
+import { examplePreset } from "@pandwind/example-preset";
 
 const htmlDoc = (title: string) =>
 	`<!doctype html>\n<html>\n<head><title>${title}</title></head>\n<body></body>\n</html>`;

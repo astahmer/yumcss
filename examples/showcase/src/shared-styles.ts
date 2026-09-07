@@ -14,7 +14,7 @@
  * If you change a token here, all three targets change together.
  */
 import type { DesignStyleObject } from "pandwind/design";
-import type { examplePreset } from "pandwind/preset";
+import type { examplePreset } from "@pandwind/example-preset";
 
 type Styles = DesignStyleObject<typeof examplePreset>;
 

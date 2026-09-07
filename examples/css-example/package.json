@@ -13,6 +13,7 @@
 		"test:rollup": "nub test/rollup-e2e.ts"
 	},
 	"dependencies": {
+		"@pandwind/example-preset": "workspace:*",
 		"class-variance-authority": "0.7.1",
 		"pandwind": "workspace:*",
 		"react": "19.2.8",

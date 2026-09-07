@@ -21,7 +21,7 @@ import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { createServer } from "vite";
 import react from "@vitejs/plugin-react-swc";
-import { examplePreset } from "pandwind/preset";
+import { examplePreset } from "@pandwind/example-preset";
 import { pandwindCssVite } from "pandwind/vite";
 
 const root = realpathSync(mkdtempSync(join(tmpdir(), "pandwind-vite-hmr-")));
@@ -53,7 +53,7 @@ const writeFixture = (color) => {
 		join(root, "src/css.ts"),
 		[
 			'import { createDesignCss } from "pandwind/design";',
-			'import { examplePreset } from "pandwind/preset";',
+			'import { examplePreset } from "@pandwind/example-preset";',
 			"export const css = createDesignCss(examplePreset);",
 		].join("\n"),
 	);

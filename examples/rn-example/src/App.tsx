@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Pressable, Text, View } from "react-native";
 import { createCx, createDesignCss } from "pandwind/react-native";
-import { examplePreset } from "pandwind/preset";
+import { examplePreset } from "@pandwind/example-preset";
 
 /* ---------------------------------------------------------------------------
  * rn-example — a real react-native-web host consuming pandwind/react-native.

@@ -1,12 +1,7 @@
 import { createNamedAtomsStrategy } from "pandwind/css";
 import { createRuntimeCss, createRuntimeDesignCss } from "pandwind/css/runtime";
-import {
-	definePreset,
-	defineSemanticTokens,
-	defineTheme,
-	defineTokens,
-	examplePreset,
-} from "pandwind/preset";
+import { definePreset, defineSemanticTokens, defineTheme, defineTokens } from "pandwind/preset";
+import { examplePreset } from "@pandwind/example-preset";
 
 // The playground has a real preset available, so its createCss() sandbox
 // binding can expose the same generated sheet that a Vite build would emit.
@@ -28,6 +23,12 @@ export const SANDBOX_MODULES = {
 		defineSemanticTokens,
 		defineTheme,
 		defineTokens,
+	},
+	"@pandwind/example-preset": {
 		examplePreset,
+		definePreset,
+		defineSemanticTokens,
+		defineTheme,
+		defineTokens,
 	},
 } as const;

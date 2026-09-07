@@ -6,7 +6,7 @@
  */
 import { expect, test } from "tstyche";
 import { createCx, createDesignCss } from "../src/opentui.ts";
-import { examplePreset } from "../src/preset/example-preset.ts";
+import { examplePreset } from "@pandwind/example-preset";
 
 const css = createDesignCss(examplePreset);
 

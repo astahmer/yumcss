@@ -13,7 +13,7 @@ import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
 import { loadMetaFromSources } from "../src/meta.ts";
 import { transformSource } from "../src/migrate.ts";
-import { examplePreset } from "pandwind/preset";
+import { examplePreset } from "@pandwind/example-preset";
 import { CodemodAdapterId } from "../src/swap/index.ts";
 
 const appDir = resolve(import.meta.dirname, "../../../apps/example/src");

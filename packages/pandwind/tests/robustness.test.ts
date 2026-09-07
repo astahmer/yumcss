@@ -16,7 +16,7 @@ import { describe, expect, test } from "vitest";
 import { createCx } from "../src/cx/index.ts";
 import { createCss } from "../src/css/index.ts";
 import { createStylesheet } from "../src/css/create-stylesheet.ts";
-import { examplePreset } from "../src/preset/example-preset.ts";
+import { examplePreset } from "@pandwind/example-preset";
 import { createTwAdapter } from "../src/tw/adapter.ts";
 import { compileStyles, type TwConflictsMeta, type TwNestedStyles } from "../src/tw/compile.ts";
 import { compileClasses, rulesForClass } from "./helpers/tailwind-proof.ts";

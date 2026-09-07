@@ -653,7 +653,7 @@ function useProjectBindings(
 	const runtime = emission.imports.some((statement) =>
 		/from\s+["']pandwind\/css\/runtime["']/u.test(statement),
 	);
-	const cssModule = runtime ? project.runtimeCssModule ?? project.cssModule : project.cssModule;
+	const cssModule = runtime ? (project.runtimeCssModule ?? project.cssModule) : project.cssModule;
 	let text = emission.text;
 	let imports = [...emission.imports];
 	if (cssModule !== undefined) {
@@ -668,9 +668,9 @@ function useProjectBindings(
 		);
 		const specifier = projectImportSpecifier(file, cssModule);
 		imports.push(
-				binding === "css"
-					? `import { css } from "${specifier}";`
-					: `import { css as ${binding} } from "${specifier}";`,
+			binding === "css"
+				? `import { css } from "${specifier}";`
+				: `import { css as ${binding} } from "${specifier}";`,
 		);
 	}
 	if (project.cxModule !== undefined) {
@@ -1941,12 +1941,12 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 				generatedStatements?: readonly string[];
 				generatedFiles?: readonly AdapterGeneratedFile[];
 			}) => ({
-					...useProjectBindings(
-						renameGeneratedCssBinding(emission, cssBinding),
-						cssBinding,
-						context?.file ?? "",
-						context?.project,
-					),
+				...useProjectBindings(
+					renameGeneratedCssBinding(emission, cssBinding),
+					cssBinding,
+					context?.file ?? "",
+					context?.project,
+				),
 				...(emission.generatedStatements === undefined
 					? {}
 					: { generatedStatements: emission.generatedStatements }),

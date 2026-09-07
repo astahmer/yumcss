@@ -1,5 +1,5 @@
 import { createDesignCss } from "pandwind/design";
-import { examplePreset } from "pandwind/preset";
+import { examplePreset } from "@pandwind/example-preset";
 import { twAdapter } from "./bridge.ts";
 
 /** Design-layer css() used by the sandbox (same preset as tw()). */

@@ -5,7 +5,7 @@ import {
 	createUnoCssAdapter,
 	type ClassNameStrategy,
 } from "pandwind/css";
-import { examplePreset } from "pandwind/preset";
+import { examplePreset } from "@pandwind/example-preset";
 import { twAdapter } from "../bridge.ts";
 
 /** Runtime-selectable class-name strategies shown by the own-API playground. */

@@ -3,7 +3,7 @@ import { createGenerator } from "@unocss/core";
 import { createCss } from "../src/css/create-css.ts";
 import { unoPresetMini } from "./helpers/unocss-oracle.ts";
 import { createUnoCssAdapter } from "../src/css/unocss-adapter.ts";
-import { examplePreset } from "../src/preset/example-preset.ts";
+import { examplePreset } from "@pandwind/example-preset";
 
 /**
  * Compile proof: emitted candidates must match real UnoCSS rules and

@@ -70,7 +70,7 @@ same preset and engine to both plugins:
 
 ```ts
 import { createPandwindEngineContext, pandwindCssVite, pandwindVite } from "pandwind/vite";
-import { examplePreset } from "pandwind/preset";
+import { examplePreset } from "@pandwind/example-preset";
 
 const engine = createPandwindEngineContext({ preset: examplePreset });
 

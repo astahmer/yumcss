@@ -1,7 +1,7 @@
 import { describe, expect, test } from "vitest";
 import { loadMetaFromSources } from "../src/meta.ts";
 import { runSwap, SWAP_TARGETS } from "../src/swap/index.ts";
-import { examplePreset } from "pandwind/preset";
+import { examplePreset } from "@pandwind/example-preset";
 
 const appDir = new URL("../../../apps/example/src/", import.meta.url).pathname;
 const meta = loadMetaFromSources({

@@ -165,7 +165,10 @@ const runRevision = async (worktree: string): Promise<BenchmarkResult> => {
 	// using today's package exports here would benchmark the current tip rather
 	// than the revision named by the benchmark record.
 	const cssModule = await importFrom(worktree, "packages/pandwind/src/css/create-css.ts");
-	const presetModule = await importFrom(worktree, "packages/pandwind/src/preset/example-preset.ts");
+	const presetPath = existsSync(join(worktree, "examples/pandwind-example-preset/src/index.ts"))
+		? "examples/pandwind-example-preset/src/index.ts"
+		: "packages/pandwind/src/preset/example-preset.ts";
+	const presetModule = await importFrom(worktree, presetPath);
 	const stylesheetModule = await importFrom(
 		worktree,
 		"packages/pandwind/src/css/create-stylesheet.ts",

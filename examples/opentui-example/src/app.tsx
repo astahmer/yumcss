@@ -13,7 +13,7 @@
  * - text rows: unconditional and themed content.
  */
 import { createDesignCss } from "pandwind/opentui";
-import { examplePreset } from "pandwind/preset";
+import { examplePreset } from "@pandwind/example-preset";
 
 export interface AppProps {
 	/** Boot-time value of the `_dark` resolver (default: light). */

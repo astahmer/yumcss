@@ -1,6 +1,6 @@
 import { expect, test } from "vitest";
 import { createCss } from "../src/css/create-css.ts";
-import { examplePreset } from "../src/preset/example-preset.ts";
+import { examplePreset } from "@pandwind/example-preset";
 
 test("preset-bound createCss keeps the same runtime class contract", () => {
 	const bound = createCss(examplePreset);

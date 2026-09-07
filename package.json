@@ -51,6 +51,7 @@
 		"@changesets/cli": "3.0.2",
 		"@effect/platform-node": "4.0.0-beta.107",
 		"@pandacss/config": "1.12.1",
+		"@pandwind/example-preset": "workspace:*",
 		"@playwright/test": "1.62.1",
 		"@tokenami/config": "0.0.101",
 		"@unocss/config": "66.10.0",

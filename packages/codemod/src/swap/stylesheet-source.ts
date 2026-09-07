@@ -783,8 +783,7 @@ export function parseStylesheetPrograms(
 			const name = match.program.rules[0]?.name;
 			if (name === undefined || !localCompositions.has(name)) continue;
 			const result = expand(name, new Set());
-			if (result !== undefined)
-				matches[index] = { ...match, program: result };
+			if (result !== undefined) matches[index] = { ...match, program: result };
 		}
 	}
 	return { matches, residuals };
@@ -956,8 +955,7 @@ export function createStylesheetFileMigration(
 					program: sourceProgram,
 					target: context.target.capabilities,
 					mode: "safe",
-					hostFramework:
-						context.target.migration?.targetPolicy?.handlesFrameworkSemantics === true,
+					hostFramework: context.target.migration?.targetPolicy?.handlesFrameworkSemantics === true,
 				});
 				loweringPlans.push(lowering);
 				const rule = match.program.rules[0];
@@ -993,14 +991,13 @@ export function createStylesheetFileMigration(
 								blockers: capabilityReport.blockers.filter(
 									(issue) => !resolvedCapabilities.has(issue.capability),
 								),
-								convertible: capabilityReport.blockers.every(
-									(issue) => resolvedCapabilities.has(issue.capability),
+								convertible: capabilityReport.blockers.every((issue) =>
+									resolvedCapabilities.has(issue.capability),
 								),
 							};
-				const semanticResiduals = [
-					...lowering.program.residuals,
-					...lowering.residuals,
-				].filter((residual) => residual.preserved !== true);
+				const semanticResiduals = [...lowering.program.residuals, ...lowering.residuals].filter(
+					(residual) => residual.preserved !== true,
+				);
 				if (!effectiveCapabilityReport.convertible || semanticResiduals.length > 0) {
 					residuals.push(
 						...lowering.program.residuals,
@@ -1034,12 +1031,12 @@ export function createStylesheetFileMigration(
 				emittedSemantics[index] = emission.semantic;
 				emissionResiduals[index] = emission.residuals;
 				for (const statement of emission.imports ?? []) imports.add(statement);
-				for (const statement of emission.generatedStatements ?? []) generatedStatements.add(statement);
+				for (const statement of emission.generatedStatements ?? [])
+					generatedStatements.add(statement);
 				emittedPreambles[index] = [
 					...MigrationOutput.consolidateImports(emission.imports ?? []),
 					...(emission.generatedStatements ?? []),
-				]
-					.join("\n");
+				].join("\n");
 				residuals.push(...emission.residuals);
 				if (emission.generatedFiles !== undefined)
 					residuals.push({
@@ -1194,11 +1191,13 @@ export function createStylesheetFileMigration(
 			});
 			const invalidValidations = validations.filter((validation) => !validation.valid);
 			if (invalidValidations.length > 0) {
-				const validationResiduals: StyleProgramResidual[] = invalidValidations.map((validation) => ({
-					kind: StyleProgramResidualKindTag.Capability,
-					text: validation.canonicalTarget,
-					hint: `target emission failed canonical validation: ${validation.differences.join(", ")}`,
-				}));
+				const validationResiduals: StyleProgramResidual[] = invalidValidations.map(
+					(validation) => ({
+						kind: StyleProgramResidualKindTag.Capability,
+						text: validation.canonicalTarget,
+						hint: `target emission failed canonical validation: ${validation.differences.join(", ")}`,
+					}),
+				);
 				const code =
 					MigrationDiagnostics.skipMarker({
 						marker: "pandwind:migrate-skip",
@@ -1466,8 +1465,7 @@ export function createPreprocessorFileMigration(
 							residuals.length === 0
 								? StyleMigrationOutcome.Static
 								: StyleMigrationOutcome.Residual,
-						representation:
-								plans[index]?.representation ?? StyleRepresentationKind.Residual,
+						representation: plans[index]?.representation ?? StyleRepresentationKind.Residual,
 					})),
 					dependencies:
 						compiled.dependencies === undefined

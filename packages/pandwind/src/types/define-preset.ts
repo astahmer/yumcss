@@ -33,11 +33,3 @@ export const defineSemanticTokens = <
 ) => tokens;
 export const defineConditions = <T extends AnyConditions>(cond: T) => cond;
 export const defineProperties = <T extends AnyPresetProperties<any, any>>(props: T) => props;
-
-export const define = {
-	theme: defineTheme,
-	tokens: defineTokens,
-	semanticTokens: defineSemanticTokens,
-	conditions: defineConditions,
-	properties: defineProperties,
-};

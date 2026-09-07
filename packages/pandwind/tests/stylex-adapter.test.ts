@@ -2,7 +2,7 @@ import { describe, expect, test } from "vitest";
 import { createCss } from "../src/css/create-css.ts";
 import { createStyleXAdapter } from "../src/css/stylex-adapter.ts";
 import { createStylesheet } from "../src/css/create-stylesheet.ts";
-import { examplePreset } from "../src/preset/example-preset.ts";
+import { examplePreset } from "@pandwind/example-preset";
 
 describe("StyleX class-name adapter", () => {
 	test("emits StyleX-shaped atomic names for static declarations", () => {

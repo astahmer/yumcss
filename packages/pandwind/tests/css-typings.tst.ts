@@ -1,6 +1,6 @@
 import { expect, test } from "tstyche";
 import { createCss } from "../src/css/create-css.ts";
-import { examplePreset } from "../src/preset/example-preset.ts";
+import { examplePreset } from "@pandwind/example-preset";
 
 const css = createCss(examplePreset);
 type Compiled = Record<string, string>;

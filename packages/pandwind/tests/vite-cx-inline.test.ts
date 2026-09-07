@@ -482,7 +482,7 @@ describe("tw() constant propagation", () => {
 // css() atom folding (plan 007 item A)
 // ---------------------------------------------------------------------------
 import { createDesignCss } from "../src/design/index.ts";
-import { examplePreset } from "../src/preset/example-preset.ts";
+import { examplePreset } from "@pandwind/example-preset";
 import { createStylesheet } from "../src/css/create-stylesheet.ts";
 import { escapeIdentifier } from "../src/css/hash.ts";
 import { PostCssNodeKind } from "./helpers/postcss-node-kind.ts";

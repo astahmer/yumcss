@@ -7,7 +7,7 @@
 import { expect, test } from "tstyche";
 import { createDesignCss } from "../src/design/index.ts";
 import type { DesignStyleObject } from "../src/design/types.ts";
-import { examplePreset } from "../src/preset/example-preset.ts";
+import { examplePreset } from "@pandwind/example-preset";
 
 const css = createDesignCss(examplePreset);
 type Compiled = Record<string, string>;

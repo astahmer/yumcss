@@ -23,6 +23,9 @@ importers:
       '@pandacss/config':
         specifier: 1.12.1
         version: 1.12.1
+      '@pandwind/example-preset':
+        specifier: workspace:*
+        version: link:examples/pandwind-example-preset
       '@playwright/test':
         specifier: 1.62.1
         version: 1.62.1
@@ -77,6 +80,9 @@ importers:
 
   apps/example:
     dependencies:
+      '@pandwind/example-preset':
+        specifier: workspace:*
+        version: link:../../examples/pandwind-example-preset
       pandwind:
         specifier: workspace:*
         version: link:../../packages/pandwind
@@ -160,6 +166,9 @@ importers:
       '@monaco-editor/react':
         specifier: 4.7.0
         version: 4.7.0(monaco-editor@0.56.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      '@pandwind/example-preset':
+        specifier: workspace:*
+        version: link:../../examples/pandwind-example-preset
       '@tanstack/react-router':
         specifier: 1.170.32
         version: 1.170.32(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
@@ -237,6 +246,9 @@ importers:
 
   examples/css-example:
     dependencies:
+      '@pandwind/example-preset':
+        specifier: workspace:*
+        version: link:../pandwind-example-preset
       class-variance-authority:
         specifier: 0.7.1
         version: 0.7.1
@@ -286,6 +298,9 @@ importers:
       '@opentui/react':
         specifier: 0.5.10
         version: 0.5.10(react-devtools-core@7.0.1)(react@19.2.8)(typescript@7.0.2)(web-tree-sitter@0.25.10)(ws@8.21.3)
+      '@pandwind/example-preset':
+        specifier: workspace:*
+        version: link:../pandwind-example-preset
       pandwind:
         specifier: workspace:*
         version: link:../../packages/pandwind
@@ -303,8 +318,20 @@ importers:
         specifier: 7.0.2
         version: 7.0.2
 
+  examples/pandwind-example-preset:
+    dependencies:
+      csstype:
+        specifier: 3.2.3
+        version: 3.2.3
+      pandwind:
+        specifier: workspace:*
+        version: link:../../packages/pandwind
+
   examples/rn-example:
     dependencies:
+      '@pandwind/example-preset':
+        specifier: workspace:*
+        version: link:../pandwind-example-preset
       pandwind:
         specifier: workspace:*
         version: link:../../packages/pandwind
@@ -345,6 +372,9 @@ importers:
       '@opentui/react':
         specifier: 0.5.10
         version: 0.5.10(react-devtools-core@7.0.1)(react@19.2.8)(typescript@7.0.2)(web-tree-sitter@0.25.10)(ws@8.21.3)
+      '@pandwind/example-preset':
+        specifier: workspace:*
+        version: link:../pandwind-example-preset
       pandwind:
         specifier: workspace:*
         version: link:../../packages/pandwind
@@ -394,6 +424,9 @@ importers:
       '@modelcontextprotocol/server':
         specifier: 2.0.0
         version: 2.0.0
+      '@pandwind/example-preset':
+        specifier: workspace:*
+        version: link:../../examples/pandwind-example-preset
       '@tailwindcss/node':
         specifier: 4.3.3
         version: 4.3.3
@@ -462,6 +495,9 @@ importers:
       '@mantine/core':
         specifier: 9.6.0
         version: 9.6.0(@mantine/hooks@9.6.0(react@19.2.8))(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      '@pandwind/example-preset':
+        specifier: workspace:*
+        version: link:../../examples/pandwind-example-preset
       '@types/node':
         specifier: 26.4.1
         version: 26.4.1
@@ -497,7 +533,7 @@ importers:
         version: 19.2.8
       react-dom:
         specifier: 19.2.8
-        version: 19.2.8
+        version: 19.2.8(react@19.2.8)
     devDependencies:
       '@types/node':
         specifier: 26.4.1
@@ -507,13 +543,13 @@ importers:
         version: 19.2.18
       '@types/react-dom':
         specifier: 19.2.7
-        version: 19.2.7
+        version: 19.2.7(@types/react@19.2.18)
       '@vitejs/devtools':
         specifier: 0.7.2
         version: 0.7.2(@devframes/json-render@0.9.12(@devframes/hub@0.9.12(crossws@0.4.12(srvx@1.0.3))(devframe@0.9.12(cac@7.0.0)(srvx@1.0.3)))(devframe@0.9.12(cac@7.0.0)(srvx@1.0.3)))(crossws@0.4.12(srvx@1.0.3))(srvx@1.0.3)(vite@8.2.2)
       '@vitejs/plugin-react-swc':
         specifier: 4.3.3
-        version: 4.3.3
+        version: 4.3.3(@swc/helpers@0.5.23)(vite@8.2.2)
       tsdown:
         specifier: 0.23.0
         version: 0.23.0(@vitejs/devtools@0.7.2)(@volar/typescript@2.4.28(typescript@7.0.2))(oxc-resolver@11.24.2)(typescript@7.0.2)

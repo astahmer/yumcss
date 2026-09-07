@@ -179,7 +179,8 @@ function standaloneClassLiteral(
 ): { value: string; start: number; end: number } | undefined {
 	const match = /^\s*(["'])([^"']+)\1\s*;?\s*$/u.exec(source);
 	if (match?.[2] === undefined) return undefined;
-	if (!match[2].split(/\s+/u).some((token) => resolver.resolve(token) !== undefined)) return undefined;
+	if (!match[2].split(/\s+/u).some((token) => resolver.resolve(token) !== undefined))
+		return undefined;
 	const start = source.indexOf(match[1]!, match[0].indexOf(match[1]!));
 	return start < 0 ? undefined : { value: match[2], start, end: start + match[2].length + 2 };
 }
@@ -301,7 +302,9 @@ function standaloneClassMap(
 	| undefined {
 	const outer = /^\s*\{([\s\S]*)\}\s*;?\s*$/u.exec(source);
 	if (outer?.[1] === undefined) return undefined;
-	const entries = [...outer[1].matchAll(/(["'])([A-Za-z_$][\w$-]*)\1\s*:\s*(["'])([^"']+)\3/g)].filter(
+	const entries = [
+		...outer[1].matchAll(/(["'])([A-Za-z_$][\w$-]*)\1\s*:\s*(["'])([^"']+)\3/g),
+	].filter(
 		(entry) =>
 			entry[4] !== undefined &&
 			entry[4].split(/\s+/u).some((token) => resolver.resolve(token) !== undefined),
@@ -322,7 +325,9 @@ function assignedClassMap(
 		if (open < 0) continue;
 		const block = SourcePass.matchBlock(source, open);
 		if (block === null) continue;
-		const entries = [...block.body.matchAll(/(["'])([A-Za-z_$][\w$-]*)\1\s*:\s*(["'])([^"']+)\3/g)].filter(
+		const entries = [
+			...block.body.matchAll(/(["'])([A-Za-z_$][\w$-]*)\1\s*:\s*(["'])([^"']+)\3/g),
+		].filter(
 			(entry) =>
 				entry[4] !== undefined &&
 				entry[4].split(/\s+/u).some((token) => resolver.resolve(token) !== undefined),
@@ -467,8 +472,8 @@ function parseTailwind(
 			binding === undefined ||
 			value === undefined ||
 			boundNames.has(binding) ||
-			!value.includes("[") &&
-			!value.split(/\s+/u).some((token) => resolver.resolve(token) !== undefined)
+			(!value.includes("[") &&
+				!value.split(/\s+/u).some((token) => resolver.resolve(token) !== undefined))
 		)
 			continue;
 		const valueStart =

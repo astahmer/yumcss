@@ -14,7 +14,7 @@
 import { describe, expect, test } from "vitest";
 import { createRnBackend } from "../src/backends/react-native.ts";
 import { createDesignCss, createCx } from "../src/rn.ts";
-import { examplePreset } from "../src/preset/example-preset.ts";
+import { examplePreset } from "@pandwind/example-preset";
 
 describe("rn value/unit policy", () => {
 	test("lengths become unitless numbers (px verbatim, rem x16, negatives ok)", () => {

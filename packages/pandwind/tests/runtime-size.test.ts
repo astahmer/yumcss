@@ -26,7 +26,7 @@ import { gzipSync } from "node:zlib";
 import { resolve } from "node:path";
 import { buildSync } from "esbuild";
 import { expect, test } from "vitest";
-import { examplePreset } from "../src/preset/example-preset.ts";
+import { examplePreset } from "@pandwind/example-preset";
 import { createCssExtractionService } from "../src/vite/css-extract.ts";
 import { createRuntimePruningTransform } from "../src/vite/runtime-pruner.ts";
 

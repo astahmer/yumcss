@@ -81,6 +81,7 @@
 	"dependencies": {
 		"@hono/node-server": "2.1.1",
 		"@modelcontextprotocol/server": "2.0.0",
+		"@pandwind/example-preset": "workspace:*",
 		"@tailwindcss/node": "4.3.3",
 		"cac": "7.0.0",
 		"hono": "4.13.5",

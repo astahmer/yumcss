@@ -1,5 +1,5 @@
 import interopJson from "../pandwind.interop.json" with { type: "json" };
-import { examplePreset } from "pandwind/preset";
+import { examplePreset } from "@pandwind/example-preset";
 import type { PandwindMeta } from "pandwind-codemod/migration/meta";
 import type { PandwindInteropArtifact } from "pandwind/tw/interop";
 

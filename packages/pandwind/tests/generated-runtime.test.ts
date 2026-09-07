@@ -8,6 +8,7 @@ import { __unstable__loadDesignSystem } from "@tailwindcss/node";
 import { describe, expect, test } from "vitest";
 import { tw } from "../../../apps/example/src/tw.ts";
 import { collectTwClasses } from "../src/tw/collect.ts";
+import { createSourceWorkspace } from "../src/source-workspace.ts";
 
 const app = resolve(import.meta.dirname, "../../../apps/example");
 const safelistEntries = (): Array<string> =>
@@ -43,10 +44,9 @@ describe("generated tw runtime", () => {
 	test("safelist matches scanner output and every class compiles", async () => {
 		const css = readFileSync(resolve(app, "src/tailwind.css"), "utf8");
 		const system = await __unstable__loadDesignSystem(css, { base: resolve(app, "src") });
-		const scanned = await collectTwClasses(
-			[resolve(app, "src/css-in-js-app.tsx"), resolve(app, "src/dogfood-app.tsx")],
-			resolve(app, "src/tw.ts"),
-		);
+		const workspace = createSourceWorkspace();
+		const files = workspace.files(["**/*"], resolve(app, "src"));
+		const scanned = await collectTwClasses(files, resolve(app, "src/tw.ts"), workspace);
 		const safelist = safelistEntries();
 
 		expect([...scanned].toSorted()).toEqual([...safelist].toSorted());

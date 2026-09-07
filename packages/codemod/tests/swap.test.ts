@@ -18,7 +18,7 @@ import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
 import { loadMetaFromSources } from "../src/meta.ts";
 import { runSwap, SWAP_TARGETS } from "../src/swap/index.ts";
-import { examplePreset } from "pandwind/preset";
+import { examplePreset } from "@pandwind/example-preset";
 
 const appDir = resolve(import.meta.dirname, "../../../apps/example/src");
 const meta = loadMetaFromSources({
@@ -439,7 +439,7 @@ describe("TokenSet conversions", () => {
 	});
 
 	test("definePreset imports via dynamic import of the real preset", async () => {
-		const set = await T.fromDefinePreset("pandwind/preset/example-preset");
+		const set = await T.fromDefinePreset("@pandwind/example-preset");
 		expect(set.groups.colors?.["$blue-500"]).toBe("#3182ce");
 	});
 

@@ -166,7 +166,7 @@ The design lane gives your team a small, typed vocabulary such as `$frame`,
 ```ts
 // src/design.ts
 import { createDesignCss } from "pandwind/design";
-import { examplePreset } from "pandwind/preset";
+import { examplePreset } from "@pandwind/example-preset";
 
 export const dcss = createDesignCss(examplePreset);
 ```

@@ -32,7 +32,7 @@ import { describe, expect, test } from "vitest";
 import { ATOM_REGISTRY, type AtomRegistry } from "../src/css/atoms.ts";
 import { createCx as createWebCx } from "../src/cx/index.ts";
 import { createDesignCss as createWebDesignCss } from "../src/design/index.ts";
-import { examplePreset } from "../src/preset/example-preset.ts";
+import { examplePreset } from "@pandwind/example-preset";
 import {
 	createCx as createOpentuiCx,
 	createDesignCss as createOpentuiDesignCss,

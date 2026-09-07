@@ -1,5 +1,5 @@
 import { createDesignCss } from "pandwind/design";
-import { examplePreset } from "pandwind/preset";
+import { examplePreset } from "@pandwind/example-preset";
 
 /**
  * The project's design CSS uses the Figma inspector vocabulary

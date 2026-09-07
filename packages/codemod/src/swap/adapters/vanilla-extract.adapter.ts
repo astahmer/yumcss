@@ -11,10 +11,7 @@ import {
 	StyleNamedRuleStrategy,
 	StyleProgramEmissionHint,
 } from "../identifiers.ts";
-import {
-	preserveUnsupportedRecipeFields,
-	recipeSourceObjectOptions,
-} from "./recipe-source.ts";
+import { preserveUnsupportedRecipeFields, recipeSourceObjectOptions } from "./recipe-source.ts";
 
 const runtimeFallbackVar =
 	"const fallbackVar = (variable: string, fallback: string) => `var(${variable}, ${fallback})`;";

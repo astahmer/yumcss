@@ -1,10 +1,5 @@
 import type { StandardProperties } from "csstype";
-import {
-	definePreset,
-	defineSemanticTokens,
-	defineTheme,
-	defineTokens,
-} from "../types/define-preset.ts";
+import { definePreset, defineSemanticTokens, defineTheme, defineTokens } from "pandwind/preset";
 
 const tokens = defineTokens({
 	colors: {

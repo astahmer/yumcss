@@ -16,7 +16,7 @@
 import { describe, expect, test } from "vitest";
 import { createOpentuiBackend } from "../src/backends/opentui.ts";
 import { createDesignCss, createCx } from "../src/opentui.ts";
-import { examplePreset } from "../src/preset/example-preset.ts";
+import { examplePreset } from "@pandwind/example-preset";
 
 describe("opentui unit policy", () => {
 	test("lengths quantize to cells with the default cellSize of 4", () => {

@@ -150,6 +150,7 @@
 	"devDependencies": {
 		"@chakra-ui/react": "3.37.0",
 		"@mantine/core": "9.6.0",
+		"@pandwind/example-preset": "workspace:*",
 		"@types/node": "26.4.1",
 		"@vitest/coverage-v8": "5.0.0",
 		"jss": "10.10.0",
