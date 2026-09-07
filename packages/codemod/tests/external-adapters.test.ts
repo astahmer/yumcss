@@ -1715,7 +1715,8 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
 		expect(result.code).not.toContain('import jss from "jss";');
-		expect(result.code).toContain('const sheet = css.group({ button: { color: "red" } })');
+		expect(result.code).toContain('const sheet = { "button": css.class({ color: "red" }) }');
+		expect(result.code).not.toContain("css.group");
 		expect(result.code).toContain("button!.classList.add(sheet.button)");
 	});
 

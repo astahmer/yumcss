@@ -1485,6 +1485,59 @@ function runtimeKeyframes(program: StyleProgram, context: AdapterEmitContext | u
 	return `(() => { const name = ${JSON.stringify(name)}; css.sheet.registerSemanticRules([{ kind: "keyframes", name, children: [${children.join(", ")}] }]); return name; })()`;
 }
 
+function jssNamedClassMap(
+	program: StyleProgram,
+	renderProgramObject: (program: StyleProgram) => string,
+): string | undefined {
+	if (program.source?.adapter !== CodemodAdapterId.Jss) return undefined;
+	const names = new Set<string>();
+	for (const rule of program.rules) {
+		for (const condition of rule.conditions) {
+			if (condition.kind === SemanticConditionKindTag.Named) names.add(condition.name);
+		}
+		for (const declaration of rule.declarations) {
+			for (const condition of declaration.conditions) {
+				if (condition.kind === SemanticConditionKindTag.Named) names.add(condition.name);
+			}
+		}
+	}
+	if (names.size === 0) return undefined;
+	const entries = [...names].map((name) => {
+		const rules = program.rules
+			.map((rule) => {
+				const declarations = rule.declarations
+					.filter((declaration) =>
+						declaration.conditions.some(
+							(condition) =>
+								condition.kind === SemanticConditionKindTag.Named && condition.name === name,
+						),
+					)
+					.map((declaration) => ({
+						...declaration,
+						conditions: declaration.conditions.filter(
+							(condition) => condition.kind !== SemanticConditionKindTag.Named,
+						),
+					}));
+				if (declarations.length === 0) return undefined;
+				return {
+					...rule,
+					conditions: rule.conditions.filter(
+						(condition) => condition.kind !== SemanticConditionKindTag.Named,
+					),
+					declarations,
+				};
+			})
+			.filter((rule): rule is StyleRule => rule !== undefined);
+		const single = {
+			...program,
+			rules,
+			declarations: rules.flatMap((rule) => rule.declarations),
+		};
+		return `${JSON.stringify(name)}: css.class(${renderProgramObject(single)})`;
+	});
+	return `{ ${entries.join(", ")} }`;
+}
+
 function runtimeGlobalRule(rule: StyleProgram["rules"][number], root: boolean): string {
 	const kind = root && rule.kind === StyleRuleKindTag.Style ? StyleRuleKindTag.Global : rule.kind;
 	const conditions = rule.conditions.map(
@@ -2272,6 +2325,10 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 					) || rule.children.some(containsFunction)
 				);
 			});
+			const jssClassMap =
+				!dynamic && !functionDynamic
+					? jssNamedClassMap(outputProgram, renderProgramObject)
+					: undefined;
 			const recipeVariants =
 				program.compositions?.some(
 					(composition) => composition.kind === StyleProgramCompositionKind.Recipe,
@@ -2314,7 +2371,7 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 					: recipeVariants
 						? `${recipe?.binding ?? "createRecipe"}(css, ${recipeDefinitionObject(outputProgram, declarationsObject)})`
 						: named
-							? `css.group(${renderProgramObject(outputProgram)})`
+							? (jssClassMap ?? `css.group(${renderProgramObject(outputProgram)})`)
 							: functionDynamic
 								? `css.group(${renderProgramObject(outputProgram)})`
 								: runtimeStandalone
