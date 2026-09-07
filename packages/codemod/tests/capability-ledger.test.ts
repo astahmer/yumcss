@@ -3,6 +3,7 @@ import {
 	AdapterCapabilityEvidenceStatusTag,
 	AdapterCapabilityLevelTag,
 	AdapterCapabilityTag,
+	AdapterCoverageEvidenceKindTag,
 	CodemodAdapterId,
 	RealRepositoryProofDimension,
 	RealRepositoryProofDimensionStatus,
@@ -47,17 +48,29 @@ describe("adapter capability ledger", () => {
 			{
 				adapter: CodemodAdapterId.Emotion,
 				fixture: "emotion-real",
-				kind: "real-repository" as const,
-				capabilities: ["declarations" as const],
+				kind: AdapterCoverageEvidenceKindTag.RealRepository,
+				capabilities: [AdapterCapabilityTag.Declarations],
 				proof: {
 					[RealRepositoryProofDimension.CanonicalCss]: RealRepositoryProofDimensionStatus.Passed,
+					[RealRepositoryProofDimension.Typecheck]: RealRepositoryProofDimensionStatus.Passed,
+					[RealRepositoryProofDimension.Build]: RealRepositoryProofDimensionStatus.Passed,
 					[RealRepositoryProofDimension.Dependencies]: RealRepositoryProofDimensionStatus.Passed,
 					[RealRepositoryProofDimension.CssSize]: RealRepositoryProofDimensionStatus.Passed,
 				},
 			},
 		];
 		const ledger = createAdapterCapabilityLedger(registry, { evidence });
-		const declaration = ledger.get(CodemodAdapterId.Emotion, "declarations");
+		const declaration = ledger.get(CodemodAdapterId.Emotion, AdapterCapabilityTag.Declarations);
+
+		expect(declaration?.evidence.status).toBe(AdapterCapabilityEvidenceStatusTag.Promoted);
+		expect(declaration?.evidence.proof.required).toEqual([
+			RealRepositoryProofDimension.CanonicalCss,
+			RealRepositoryProofDimension.Typecheck,
+			RealRepositoryProofDimension.Build,
+			RealRepositoryProofDimension.Dependencies,
+			RealRepositoryProofDimension.CssSize,
+		]);
+		expect(declaration?.evidence.proof.passed).toEqual(declaration?.evidence.proof.required);
 
 		expect(declaration?.evidence).toMatchInlineSnapshot(`
 			{
@@ -66,11 +79,15 @@ describe("adapter capability ledger", () => {
 			  "proof": {
 			    "passed": [
 			      "canonical-css",
+			      "typecheck",
+			      "build",
 			      "dependencies",
 			      "css-size",
 			    ],
 			    "required": [
 			      "canonical-css",
+			      "typecheck",
+			      "build",
 			      "dependencies",
 			      "css-size",
 			    ],
