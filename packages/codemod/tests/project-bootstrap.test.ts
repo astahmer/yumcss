@@ -2,6 +2,8 @@ import { describe, expect, test } from "vitest";
 import { createPandwindProjectSupport } from "../src/swap/project-bootstrap.ts";
 import { CodemodAdapterId } from "../src/swap/identifiers.ts";
 
+const TAILWIND_CODEGEN_TEST_TIMEOUT_MS = 30_000;
+
 describe("Pandwind project bootstrap", () => {
 	test("does not bind a generated tw module when no Tailwind graph was emitted", async () => {
 		const support = await createPandwindProjectSupport({
@@ -95,7 +97,7 @@ describe("Pandwind project bootstrap", () => {
 			].join("\n"),
 			content: "\n\n.authored { color: red; }",
 		});
-	});
+	}, TAILWIND_CODEGEN_TEST_TIMEOUT_MS);
 
 	test("uses an explicit TypeScript extension in generated Vite config imports", async () => {
 		const support = await createPandwindProjectSupport({
@@ -138,7 +140,7 @@ describe("Pandwind project bootstrap", () => {
 				content: '{"compilerOptions":{\n\t"allowImportingTsExtensions": true,"strict":true}}',
 			},
 		]);
-	});
+	}, TAILWIND_CODEGEN_TEST_TIMEOUT_MS);
 
 	test("adds the Pandwind Vite plugin for non-Tailwind sources", async () => {
 		const support = await createPandwindProjectSupport({

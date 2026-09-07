@@ -1,7 +1,7 @@
-import { __unstable__loadDesignSystem } from "@tailwindcss/node";
 import { parse } from "postcss";
 import type { Rule } from "postcss";
 import { canonicalProps } from "./codegen-conflicts.ts";
+import { loadTailwindDesignSystem } from "./design-system-cache.ts";
 import { selectorClassMatches } from "../css/selector-scan.ts";
 import { resolveVar, simplifyCalc } from "./theme.ts";
 
@@ -155,7 +155,7 @@ async function generateUtilityBridge(
 	base: string,
 	options: { props?: readonly string[]; values?: ReadonlySet<string> } = {},
 ): Promise<UtilityBridge> {
-	const ds = await __unstable__loadDesignSystem(entry, { base });
+	const ds = await loadTailwindDesignSystem(entry, { base });
 	const allowlist = new Set(options.props ?? BRIDGE_PROPS);
 	const valueFilter = options.values;
 	const authoredTokenNames = authoredThemeTokenNames(entry);
