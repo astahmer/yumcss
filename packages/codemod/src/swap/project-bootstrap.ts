@@ -277,7 +277,8 @@ export const pandwindPreset = definePreset(
 }
 
 function cssSource(): string {
-	return `import { createCss } from "pandwind/css";
+	return `import "pandwind:css";
+import { createCss } from "pandwind/css";
 import { pandwindPreset } from "./preset";
 
 export const css = createCss(pandwindPreset);

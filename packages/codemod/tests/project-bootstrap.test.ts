@@ -16,6 +16,9 @@ describe("Pandwind project bootstrap", () => {
 		expect(support.bindings.twModule).toBeUndefined();
 		expect(support.bindings.cssModule).toBe("pandwind/css.ts");
 		expect(support.files.map((file) => file.path)).toContain("pandwind/dss.ts");
+		expect(support.files.find((file) => file.path === "pandwind/css.ts")?.content).toContain(
+			'import "pandwind:css";',
+		);
 		expect(support.bindings.dssModule).toBe("pandwind/dss.ts");
 		expect(support.files.find((file) => file.path === "pandwind/dss.ts")?.content).toContain(
 			"createDesignCss(pandwindPreset)",
