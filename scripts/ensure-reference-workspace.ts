@@ -23,8 +23,8 @@ export function ensureReferenceWorkspace(
 	const pending = pendingPreparations.get(key);
 	if (pending !== undefined) return pending;
 
-	const preparation = prepareReferenceRepositories(workspace, [id], { log: false }).then(() => {
-		prepareReferenceDependencies(workspace, [id], { log: false });
+	const preparation = prepareReferenceRepositories(workspace, [id], { log: false }).then(async () => {
+		await prepareReferenceDependencies(workspace, [id], { log: false });
 		const availability = inspectReferenceAvailability(workspace, id);
 		if (availability.status !== REFERENCE_AVAILABILITY.Available)
 			throw new Error(

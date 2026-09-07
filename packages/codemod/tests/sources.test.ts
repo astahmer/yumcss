@@ -1,249 +1,136 @@
 /**
- * Source-library migration fixtures — styled-components, stylex.
+ * Source-adapter routes.
  *
- * Contract under test (plans/008 + 011 §5):
- * - literal-only patterns convert onto pandwind APIs (css.class / tw / cx);
- * - interpolated/nested/pseudo/shorthand shapes are FLAGGED with an
- *   inserted migrate-skip comment — never half-converted;
- * - conversions require an existing pandwind css binding in the file;
- * - every path is idempotent: a second run is a no-op;
- * - detectors are opt-in via `sources` — without them nothing changes.
+ * These fixtures exercise the registered source adapters directly. They keep
+ * the target-native conversion and conservative host semantics visible without
+ * relying on the removed regex mode façade.
  */
-import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
-import { loadMetaFromSources } from "../src/meta.ts";
-import { transformSource } from "../src/migrate.ts";
-import { examplePreset } from "@pandwind/example-preset";
-import { CodemodAdapterId } from "../src/swap/index.ts";
+import {
+	BuiltinHostFramework,
+	CodemodAdapterId,
+	createBuiltinCodemodCatalog,
+	runAdapterMigration,
+} from "../src/swap/index.ts";
 
-const appDir = resolve(import.meta.dirname, "../../../apps/example/src");
-const meta = loadMetaFromSources({
-	typesDtsPath: resolve(appDir, "types.d.ts"),
-	twTsPath: resolve(appDir, "tw.ts"),
-	bridgePath: resolve(appDir, "bridge.ts"),
-	tokens: examplePreset.tokens,
-});
+const catalog = createBuiltinCodemodCatalog();
 
-const CSS_BINDING = "const css = createDesignCss(examplePreset);";
-
-/** styled-components pass with a css binding pre-seeded into the file. */
-function styled(source: string) {
-	return transformSource(`${CSS_BINDING}\n${source}`, meta, {
-		mode: "keep",
+function migrate(source: string, from: CodemodAdapterId) {
+	return runAdapterMigration(source, {
+		from,
+		to: CodemodAdapterId.Pandwind,
 		file: "test.tsx",
-		sources: [CodemodAdapterId.StyledComponents],
+		mode: "safe",
+		readFile: () => undefined,
+		adapterRegistry: catalog.registry,
+		semantic: { source: { framework: BuiltinHostFramework.React } },
 	});
 }
 
-function stylex(source: string) {
-	return transformSource(`${CSS_BINDING}\n${source}`, meta, {
-		mode: "keep",
-		file: "test.tsx",
-		sources: [CodemodAdapterId.StyleX],
-	});
-}
+describe("styled-components source adapter", () => {
+	test("converts a static intrinsic component and its JSX host", () => {
+		const result = migrate(
+			'import styled from "styled-components";\n' +
+				'const Card = styled.div({ color: "red", padding: "1rem" });\n' +
+				'export const App = () => <Card className="extra">content</Card>;',
+			CodemodAdapterId.StyledComponents,
+		);
 
-describe("styled-components source", () => {
-	test("flat literal template converts to a typed tw() const and rewrites JSX usage", () => {
-		const result = styled(`
-const Card = styled.div\`
-	color: #3182ce;
-	background-color: gray;
-\`;
-export const App = () => (
-	<Card className="p-4">hi</Card>
-);`);
 		expect(result.changed).toBe(true);
-		expect(result.converted).toBe(1);
-		expect(result.code).not.toContain("styled.div");
-		expect(result.code).toContain("css.class({");
-		// JSX tag swapped to the intrinsic element; the existing static
-		// className merges with the styled const via cx().
-		expect(result.code).toContain('<div className={cx(Card, "p-4")}>');
-		expect(result.code).toContain("</div>");
+		expect(result.converted).toBeGreaterThan(0);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).not.toContain("styled-components");
+		expect(result.code).toContain("css.class");
+		expect(result.code).toContain("<div");
+		expect(result.code).toContain("extra");
 	});
 
-	test("declarations the bridge knows map onto typed tw keys", () => {
-		const result = styled(`
-const Text = styled.span\`
-	background-color: #3182ce;
-\`;`);
-		expect(result.code).toContain("tw({");
-		expect(result.code).toContain('"bgColor": "blue-500"');
+	test("converts a literal tagged template through the same route", () => {
+		const result = migrate(
+			'import styled from "styled-components";\n' +
+				"const Link = styled.a`color: papayawhip; padding: 1rem;`;\n" +
+				"export const App = () => <Link />;",
+			CodemodAdapterId.StyledComponents,
+		);
+
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).not.toContain("styled.a");
+		expect(result.code).toContain("css.class");
 	});
 
-	test("interpolated templates are flagged with a marker, not converted", () => {
-		const result = styled(`
-const Dyn = styled.button\`
-	color: \${props => props.color};
-\`;`);
-		expect(result.changed).toBe(true);
-		expect(result.converted).toBe(0);
-		expect(result.skippedByMarker).toBe(1);
+	test("keeps component inheritance as a component-level projection", () => {
+		const result = migrate(
+			'import styled from "styled-components";\n' +
+				"const Link = (props: { href: string }) => <a {...props} />;\n" +
+				'export const Card = styled(Link)({ color: "red" });',
+			CodemodAdapterId.StyledComponents,
+		);
+
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain("export const Card");
+		expect(result.code).toContain("Link");
+		expect(result.code).not.toContain("styled(Link)");
+	});
+
+	test("preserves an unsupported runtime context beside a typed residual", () => {
+		const result = migrate(
+			'import { ThemeProvider } from "styled-components";\n' +
+				"export const App = () => <ThemeProvider theme={theme}><div /></ThemeProvider>;",
+			CodemodAdapterId.StyledComponents,
+		);
+
+		expect(result.skipped).toBeGreaterThan(0);
+		expect(result.residuals.length).toBeGreaterThan(0);
+		expect(result.code).toContain("ThemeProvider");
 		expect(result.code).toContain("pandwind:migrate-skip");
-		expect(result.code).toContain("styled.button");
 	});
 
-	test("nested selectors are flagged, not converted", () => {
-		const result = styled(`
-const Nested = styled.div\`
-	color: red;
-	&:hover {
-		color: blue;
-	}
-\`;`);
-		expect(result.converted).toBe(0);
-		expect(result.skippedByMarker).toBe(1);
-		expect(result.code).toContain("nested selectors");
-	});
+	test("does not treat styled syntax in comments as a source match", () => {
+		const result = migrate(
+			'import styled from "styled-components";\n' +
+				"// const Fake = styled.div({ color: 'red' });\n" +
+				'export const Card = styled.div({ color: "blue" });',
+			CodemodAdapterId.StyledComponents,
+		);
 
-	test("styled(<Component>) inheritance stays as-is", () => {
-		const result = styled(`
-const Extended = styled(Base)\`
-	color: red;
-\`;`);
-		expect(result.converted).toBe(0);
-		expect(result.code).toContain("component inheritance");
-	});
-
-	test("no pandwind css binding -> flagged", () => {
-		const result = transformSource("const Card = styled.div`\n\tcolor: red;\n`;", meta, {
-			mode: "keep",
-			file: "t.tsx",
-			sources: [CodemodAdapterId.StyledComponents],
-		});
-		expect(result.converted).toBe(0);
-		expect(result.code).toContain("needs an existing pandwind css binding");
-	});
-});
-
-// Corpus ported from astahmer/pandabox codemods (styled2panda fixtures,
-// plans/012 §1d): same input shapes, asserting OUR documented behavior.
-describe("styled2panda corpus parity", () => {
-	test("import transform: the styled-components import is removed on conversion", () => {
-		const result = styled(`
-import styled from 'styled-components';
-
-const Link = styled.a\`
-	background: papayawhip;
-	color: #bf4f74;
-\`;`);
 		expect(result.converted).toBe(1);
-		expect(result.code).not.toContain("from 'styled-components'");
-		expect(result.code).toContain("css.class({");
-	});
-
-	test("cross-component selector interpolation (${Link}:hover &) is flagged, not converted", () => {
-		const result = styled(`
-import styled from 'styled-components'
-
-const Icon = styled.svg\`
-	width: 48px;
-\${Link}:hover & {
-	fill: rebeccapurple;
-}
-\`;`);
-		expect(result.converted).toBe(0);
-		expect(result.skippedByMarker).toBe(1);
-		expect(result.code).toContain("pandwind:migrate-skip");
-		// the original template survives untouched
-		expect(result.code).toContain("rebeccapurple");
-	});
-
-	test("composition file: flat siblings convert while styled(<Component>) stays as-is", () => {
-		const result = styled(`
-import styled from 'styled-components'
-
-const Button = styled.button\`
-	color: #BF4F74;
-	font-size: 1em;
-	margin: 1em;
-\`;
-
-const TomatoButton = styled(Button)\`
-	color: tomato;
-	border-color: tomato;
-\`;`);
-		expect(result.converted).toBe(1);
-		expect(result.code).toContain("css.class({"); // Button converted
-		expect(result.code).toContain("styled(Button)"); // inheritance kept
-		expect(result.code).toContain("component inheritance");
-	});
-});
-
-// Context awareness: patterns inside comments and string literals are
-// documentation/examples, not code — they must be left untouched.
-describe("context awareness", () => {
-	test("a styled.div pattern inside a comment is not converted or mangled", () => {
-		const source = `${CSS_BINDING}
-// docs: const Fake = styled.div\`color: red;\`;
-export const Icon = styled.div\`
-	color: blue;
-\`;`;
-		const result = transformSource(source, meta, {
-			mode: "keep",
-			file: "c.tsx",
-			sources: [CodemodAdapterId.StyledComponents],
-		});
-		expect(result.converted).toBe(1); // only the REAL component
-		expect(result.code).toContain("// docs: const Fake = styled.div");
+		expect(result.code).toContain("Fake = styled.div");
 		expect(result.code).not.toContain("Fake = css.class");
 	});
-
-	test("a styled.div example inside a string literal is left untouched", () => {
-		const source = `${CSS_BINDING}
-const snippet = "const Fake = styled.div\`color: red;\`";
-export const Card = styled.div\`
-	color: blue;
-\`;`;
-		const result = transformSource(source, meta, {
-			mode: "keep",
-			file: "s.tsx",
-			sources: [CodemodAdapterId.StyledComponents],
-		});
-		expect(result.converted).toBe(1);
-		expect(result.code).toContain('snippet = "const Fake = styled.div');
-		expect(result.code).not.toContain('snippet = "const Fake = css.class');
-	});
 });
 
-describe("stylex source", () => {
-	test("literal stylex.create becomes an object of css.class values", () => {
-		const result = stylex(`
-import * as stylex from "@stylexjs/stylex";
-const styles = stylex.create({
-	card: {
-		color: "#3182ce",
-		backgroundColor: "gray",
-	},
-});
-export const A = () => <div className={styles.card} />;`);
+describe("StyleX source adapter", () => {
+	test("converts literal stylex.create entries into Pandwind classes", () => {
+		const result = migrate(
+			'import * as stylex from "@stylexjs/stylex";\n' +
+				'const styles = stylex.create({ card: { color: "#3182ce", padding: "1rem" } });\n' +
+				"export const App = () => <div className={styles.card} />;",
+			CodemodAdapterId.StyleX,
+		);
+
 		expect(result.changed).toBe(true);
-		expect(result.converted).toBe(1);
+		expect(result.converted).toBeGreaterThan(0);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
 		expect(result.code).not.toContain("stylex.create");
 		expect(result.code).not.toContain("@stylexjs/stylex");
-		expect(result.code).toContain('"card": css.class({');
+		expect(result.code).toContain("css.class");
 	});
 
-	test("stylex.props merges become cx calls", () => {
-		const result = stylex(`
-import * as stylex from "@stylexjs/stylex";
-export const cls = stylex.props(styles.a, styles.b);`);
-		expect(result.code).toContain("cx(styles.a, styles.b)");
-	});
+	test("lowers a non-literal stylex value through Pandwind's dynamic carrier", () => {
+		const result = migrate(
+			'import * as stylex from "@stylexjs/stylex";\n' +
+				"const styles = stylex.create({ card: { color: getColor() } });",
+			CodemodAdapterId.StyleX,
+		);
 
-	test("pseudo/media entries flag the whole create call", () => {
-		const result = stylex(`
-import * as stylex from "@stylexjs/stylex";
-const styles = stylex.create({
-	card: {
-		color: "red",
-		":hover": { color: "blue" },
-	},
-});`);
-		expect(result.converted).toBe(0);
-		expect(result.skippedByMarker).toBe(1);
-		expect(result.code).toContain("pseudo/media");
-		expect(result.code).toContain("stylex.create");
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).not.toContain("stylex.create");
+		expect(result.code).toContain("css.vars");
+		expect(result.code).toContain("getColor()");
 	});
 });

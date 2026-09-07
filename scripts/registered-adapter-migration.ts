@@ -1,10 +1,12 @@
-import { readFileSync, readdir } from "node:fs";
+import { readFileSync } from "node:fs";
+import { readdir } from "node:fs/promises";
 import { resolve } from "node:path";
 import {
-	CodemodAdapterId,
-	createBuiltinCodemodCatalog,
+	createPandwindAdapter,
+	createStyleAdapterRegistry,
+	createTailwindAdapter,
 	runAdapterMigrationAsync,
-	SwapSourceId,
+	NODE_PROJECT_MODULE_LOADER,
 	type AdapterMigrationResult,
 	type AdapterProjectBindings,
 } from "pandwind-codemod/swap";
@@ -18,18 +20,22 @@ export interface CorpusTransformResult {
 	readonly skippedByMarker: number;
 }
 
-export interface TailwindCorpusMigrationOptions {
+export interface RegisteredMigrationOptions {
 	readonly source: string;
 	/** Root-relative document identifier used by the adapter and emitted imports. */
 	readonly file: string;
 	readonly root: string;
 	readonly files: readonly string[];
 	readonly meta: PandwindMeta;
-	readonly dialect: SwapSourceId;
+	readonly from: string;
+	readonly to: string;
 	readonly project?: AdapterProjectBindings;
 }
 
-const catalog = createBuiltinCodemodCatalog();
+const adapterRegistry = createStyleAdapterRegistry([
+	createTailwindAdapter({ moduleLoader: NODE_PROJECT_MODULE_LOADER }),
+	createPandwindAdapter({ moduleLoader: null }),
+]);
 
 function readProjectFile(root: string, file: string): string | undefined {
 	try {
@@ -53,12 +59,12 @@ function toCorpusResult(result: AdapterMigrationResult, file: string): CorpusTra
 	};
 }
 
-export async function migrateTailwindCorpusFile(
-	options: TailwindCorpusMigrationOptions,
+export async function migrateRegisteredFile(
+	options: RegisteredMigrationOptions,
 ): Promise<CorpusTransformResult> {
 	const result = await runAdapterMigrationAsync(options.source, {
-		from: CodemodAdapterId.Tailwind,
-		to: `${CodemodAdapterId.Pandwind}:${options.dialect}`,
+		from: options.from,
+		to: options.to,
 		file: options.file,
 		root: options.root,
 		meta: options.meta,
@@ -66,7 +72,7 @@ export async function migrateTailwindCorpusFile(
 		readFile: (file) => readProjectFile(options.root, file),
 		listFiles: () => options.files,
 		...(options.project === undefined ? {} : { project: options.project }),
-		adapterRegistry: catalog.registry,
+		adapterRegistry,
 	});
 	return toCorpusResult(result, options.file);
 }

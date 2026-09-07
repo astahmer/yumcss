@@ -106,6 +106,9 @@ export const presetProperties = defineProperties({
 	// transform props
 	transform: true,
 	transformOrigin: true,
+	translate: true,
+	rotate: true,
+	scale: true,
 	// static properties
 	zIndex: tokens.zIndices,
 	transition: {

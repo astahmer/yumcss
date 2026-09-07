@@ -21,6 +21,7 @@ describe("project-aware migration metadata", () => {
 		const meta = loadMetaFromSources(sourceOptions);
 
 		expect(meta.tokens).toBeUndefined();
+		expect(meta.bridgeInverse.get("flex")).toEqual({ property: "display", value: "flex" });
 	});
 
 	test("loads the versioned interop artifact without generated source files", () => {

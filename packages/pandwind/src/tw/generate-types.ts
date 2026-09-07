@@ -52,8 +52,48 @@ export interface DesignSystemCodegenDependencies {
 export interface GeneratedDesignSystemSource {
 	readonly typesDts: string;
 	readonly twTs: string;
+	/**
+	 * Selectors supplied by Tailwind's own variant registry. Consumers that
+	 * materialize a Pandwind preset can use these to preserve custom and
+	 * configured variant semantics without maintaining a second vocabulary.
+	 */
+	readonly variantConditions: Readonly<Record<string, string | readonly string[]>>;
 	readonly utilityCount: number;
 	readonly variantCount: number;
+}
+
+function variantConditionSelectors(selector: string): readonly string[] {
+	const parts: string[] = [];
+	let current = selector.trim();
+	for (;;) {
+		const nested = /^(@[^{}]+)\s*\{([\s\S]*)\}$/u.exec(current);
+		if (nested?.[1] === undefined || nested[2] === undefined) break;
+		parts.push(nested[1].trim());
+		current = nested[2].trim();
+	}
+	if (current !== "") parts.push(current);
+	return parts;
+}
+
+function collectVariantConditions(
+	system: TailwindDesignSystem,
+): Readonly<Record<string, string | readonly string[]>> {
+	const conditions: Record<string, string | readonly string[]> = {};
+	for (const variant of system.getVariants()) {
+		const add = (name: string, value?: string): void => {
+			const selectors = variant
+				.selectors(value === undefined ? {} : { value })
+				.flatMap(variantConditionSelectors);
+			if (selectors.length === 0) return;
+			conditions[`_${name}`] = selectors.length === 1 ? selectors[0]! : selectors;
+		};
+		add(variant.name);
+		for (const value of variant.values) {
+			const name = variant.hasDash ? `${variant.name}-${value}` : `${variant.name}${value}`;
+			add(name, value);
+		}
+	}
+	return conditions;
 }
 
 export interface GenerateDesignSystemOptions {
@@ -120,6 +160,7 @@ ${this.emitter.utilities(types, modifierCapable)}
 ${this.emitter.variants(variants, utilityKeyNames)}
 `,
 			twTs: this.emitter.runtime(variants, conflicts, compose, wildcardValues, valueTokens),
+			variantConditions: collectVariantConditions(system),
 			utilityCount: types.size,
 			variantCount: variants.length,
 		};

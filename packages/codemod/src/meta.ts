@@ -135,14 +135,17 @@ function parseConflicts(twTs: string): Map<string, Record<string, string[]>> {
 
 function parseBridge(bridgeTs: string): Map<string, { property: string; value: string }> {
 	const inverse = new Map<string, { property: string; value: string }>();
-	const propRegex = /"([^"]+)"\s*:\s*\{([^{}]*)\}/g;
-	const utilRegex = /"([^"]+)"\s*:\s*"([^"]+)"/g;
+	const propRegex = /(?:"([^"]+)"|([A-Za-z_$][\w$-]*))\s*:\s*\{([^{}]*)\}/g;
+	const utilRegex = /(?:"([^"]+)"|([A-Za-z_$][\w$-]*))\s*:\s*"([^"]+)"/g;
 	for (const propMatch of bridgeTs.matchAll(propRegex)) {
-		const property = propMatch[1]!;
-		for (const utilMatch of propMatch[2]!.matchAll(utilRegex)) {
-			const utilityClass = utilMatch[2]!;
+		const property = propMatch[1] ?? propMatch[2];
+		const values = propMatch[3];
+		if (property === undefined || values === undefined) continue;
+		for (const utilMatch of values.matchAll(utilRegex)) {
+			const utilityClass = utilMatch[3];
+			if (utilityClass === undefined) continue;
 			if (!inverse.has(utilityClass)) {
-				inverse.set(utilityClass, { property, value: utilMatch[1]! });
+				inverse.set(utilityClass, { property, value: utilMatch[1] ?? utilMatch[2] ?? "" });
 			}
 		}
 	}

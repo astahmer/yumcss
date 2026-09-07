@@ -125,6 +125,64 @@ function defaultResolve(token: string): readonly StyleDeclaration[] | undefined 
 	return arbitraryUtility(utility, prefixes);
 }
 
+/**
+ * A generated Pandwind interop artifact is enough to parse a static Tailwind
+ * class without booting Tailwind's compiler. The bridge carries the resolved
+ * declaration for each base utility; generated variants supply the condition
+ * names around it. This is the deterministic path used by corpus tooling,
+ * while the official loader remains authoritative when no artifact exists.
+ */
+function resolverFromInteropMeta(
+	meta: AdapterParseContext["meta"],
+): TailwindUtilityResolver | undefined {
+	if (meta?.bridgeInverse === undefined || meta.bridgeInverse.size === 0) return undefined;
+	return {
+		resolve(token) {
+			const parts = splitUtilityToken(token);
+			const utility = parts.pop();
+			if (utility === undefined) return undefined;
+			if (parts.some((variant) => !meta.variants.has(variant))) return undefined;
+			const conditions = parts.map(authoredVariantCondition);
+			const entry = meta.bridgeInverse.get(utility);
+			if (entry !== undefined)
+				return [
+					{
+						conditions,
+						property: cssProperty(entry.property),
+						value: { kind: StyleValueKindTag.Literal, value: entry.value },
+					},
+				];
+			let prefix: string | undefined;
+			let value = "";
+			for (const candidate of meta.conflicts.keys()) {
+				if (
+					utility === candidate ||
+					(utility.startsWith(`${candidate}-`) && candidate.length > (prefix?.length ?? 0))
+				) {
+					prefix = candidate;
+					value = utility === candidate ? "" : utility.slice(candidate.length + 1);
+				}
+			}
+			if (prefix === undefined || value === "") return undefined;
+			const typedValue = meta.keysByBase
+				.get(prefix)
+				?.some((key) =>
+					key.valueType === undefined
+						? false
+						: meta.valueLiterals.get(key.valueType)?.has(value) === true,
+				);
+			if (typedValue !== true) return undefined;
+			const properties = meta.conflicts.get(prefix)?.[value] ?? meta.conflicts.get(prefix)?.["*"];
+			if (properties === undefined) return undefined;
+			return properties.map((property) => ({
+				conditions,
+				property: cssProperty(property),
+				value: { kind: StyleValueKindTag.Literal, value },
+			}));
+		},
+	};
+}
+
 function openingTagForAttribute(
 	source: string,
 	attributeStart: number,
@@ -427,7 +485,7 @@ function parseTailwind(
 					hostStyleAttributes: [attribute[0]!],
 				},
 				residuals: unknown.map((token) => ({
-					kind: "unknown-utility",
+					kind: StyleProgramResidualKindTag.UnknownUtility,
 					text: token,
 					hint: "Tailwind utility requires the project engine or a custom preset",
 				})),
@@ -509,7 +567,8 @@ function parseTailwind(
 			continue;
 		matches.push(parseClassValue(value, context, resolver, start, start + value.length + 2));
 	}
-	for (const text of collectDynamicClassAttributes(source))
+	const generatedPandwindTw = /\bfrom\s*["']pandwind(?:["']|\/)/u.test(source);
+	for (const text of generatedPandwindTw ? [] : collectDynamicClassAttributes(source))
 		residuals.push({
 			kind: StyleProgramResidualKindTag.Dynamic,
 			text,
@@ -825,6 +884,16 @@ type TailwindEnginePackage = {
 	}>;
 };
 
+type TailwindClassicConfig = Record<string, unknown>;
+
+type TailwindClassicPlugin = (config?: TailwindClassicConfig) => unknown;
+
+type TailwindClassicPostCss = (plugins?: readonly unknown[]) => {
+	process(input: string, options: { readonly from: string }): Promise<{ readonly css: string }>;
+};
+
+type TailwindClassicResolveConfig = (config: TailwindClassicConfig) => Record<string, unknown>;
+
 type TailwindDesignSystem = Awaited<
 	ReturnType<NonNullable<TailwindEnginePackage["__unstable__loadDesignSystem"]>>
 >;
@@ -935,13 +1004,174 @@ function generatedAtRuleCondition(rule: GeneratedCssAtRule): StyleCondition | un
 	return undefined;
 }
 
+function escapeGeneratedClassName(value: string): string {
+	let escaped = "";
+	for (let index = 0; index < value.length; index++) {
+		const character = value[index]!;
+		if (index === 0 && /[0-9]/u.test(character)) {
+			escaped += `\\${character.codePointAt(0)!.toString(16)} `;
+		} else if (/[A-Za-z0-9_-]/u.test(character)) {
+			escaped += character;
+		} else {
+			escaped += `\\${character}`;
+		}
+	}
+	return escaped;
+}
+
+function defaultExport<T>(value: unknown): T | undefined {
+	if (typeof value === "object" && value !== null && "default" in value) {
+		const defaultValue = (value as { readonly default?: unknown }).default;
+		return defaultValue === undefined ? undefined : (defaultValue as T);
+	}
+	return value as T;
+}
+
+function record(value: unknown): Record<string, unknown> {
+	return typeof value === "object" && value !== null && !Array.isArray(value)
+		? (value as Record<string, unknown>)
+		: {};
+}
+
+function classicConfigFiles(context: AdapterConfigContext): readonly string[] {
+	if (context.root === undefined) return [];
+	const names = /(?:^|\/)tailwind\.config\.(?:c|m)?(?:j|t)s$/u;
+	return (context.listFiles?.(context.root) ?? [])
+		.map((file) => (file.startsWith("/") ? file : joinDocumentPath(context.root!, file)))
+		.filter((file) => names.test(file))
+		.toSorted();
+}
+
+function classicContentFiles(context: AdapterConfigContext): readonly string[] {
+	if (context.root === undefined) return [];
+	const extensions = /\.(?:astro|html|js|jsx|md|mdx|svelte|tsx?|vue)$/u;
+	return (context.listFiles?.(context.root) ?? [])
+		.map((file) => (file.startsWith("/") ? file : joinDocumentPath(context.root!, file)))
+		.filter((file) => extensions.test(file))
+		.filter((file) => !/(?:^|\/)tailwind\.config\.(?:c|m)?(?:j|t)s$/u.test(file))
+		.toSorted();
+}
+
+function unescapeGeneratedClassName(value: string): string {
+	return value
+		.replace(/\\([0-9a-f]{1,6})(?:\s)?/giu, (_match, hex: string) =>
+			String.fromCodePoint(Number.parseInt(hex, 16)),
+		)
+		.replace(/\\(.)/gu, "$1");
+}
+
+function generatedClassNames(selector: string): readonly string[] {
+	const names = new Set<string>();
+	for (const match of selector.matchAll(/\.((?:\\.|[A-Za-z0-9_-])+)/gu)) {
+		const encoded = match[1];
+		if (encoded !== undefined) names.add(unescapeGeneratedClassName(encoded));
+	}
+	return [...names];
+}
+
+function parseClassicTailwindCss(css: string): TailwindOfficialUtilityResolver {
+	const declarationsByCandidate = new Map<string, readonly StyleDeclaration[]>();
+	const append = (candidate: string, declarations: readonly StyleDeclaration[]): void => {
+		if (declarations.length === 0) return;
+		const existing = declarationsByCandidate.get(candidate) ?? [];
+		declarationsByCandidate.set(candidate, [...existing, ...declarations]);
+	};
+	const collect = (
+		nodes: readonly GeneratedCssNode[],
+		candidate: string,
+		conditions: readonly StyleCondition[],
+	): void => {
+		const declarations: StyleDeclaration[] = [];
+		for (const node of nodes) {
+			if (node.type === GeneratedCssNodeKind.Declaration) {
+				const property = node.prop.trim();
+				const value = node.value.trim();
+				if (property !== "" && value !== "")
+					declarations.push({
+						...literal(cssProperty(property), value),
+						conditions,
+					});
+				continue;
+			}
+			if (node.type === GeneratedCssNodeKind.AtRule) {
+				const condition = generatedAtRuleCondition(node);
+				collect(
+					node.nodes,
+					candidate,
+					condition === undefined ? conditions : [...conditions, condition],
+				);
+				continue;
+			}
+			collect(node.nodes, candidate, [
+				...conditions,
+				...generatedSelectorConditions(node.selector, candidate),
+			]);
+		}
+		append(candidate, declarations);
+	};
+	const visit = (
+		nodes: readonly GeneratedCssNode[],
+		conditions: readonly StyleCondition[],
+	): void => {
+		for (const node of nodes) {
+			if (node.type === GeneratedCssNodeKind.AtRule) {
+				const condition = generatedAtRuleCondition(node);
+				visit(node.nodes, condition === undefined ? conditions : [...conditions, condition]);
+				continue;
+			}
+			if (node.type !== GeneratedCssNodeKind.Rule) continue;
+			for (const candidate of generatedClassNames(node.selector))
+				collect(node.nodes, candidate, [
+					...conditions,
+					...generatedSelectorConditions(node.selector, candidate),
+				]);
+		}
+	};
+	visit(parseGeneratedCss(css), []);
+	return {
+		resolve: (token) => declarationsByCandidate.get(token),
+		candidates: () => [...declarationsByCandidate.keys()],
+	};
+}
+
+function classicTokenCatalog(
+	config: TailwindClassicConfig,
+	resolveConfig: TailwindClassicResolveConfig | undefined,
+) {
+	if (resolveConfig === undefined) return undefined;
+	const resolved = resolveConfig({ ...config, content: [] });
+	const theme = record(resolved.theme);
+	return TokenCatalog.fromNested({
+		colors: theme.colors,
+		spacing: theme.spacing,
+		radii: theme.borderRadius,
+		fontSizes: theme.fontSize,
+		fontWeights: theme.fontWeight,
+		lineHeights: theme.lineHeight,
+		letterSpacings: theme.letterSpacing,
+		fonts: theme.fontFamily,
+		shadows: theme.boxShadow,
+	})?.contract;
+}
+
 function generatedSelectorConditions(selector: string, token: string): readonly StyleCondition[] {
+	const normalized = selector.trim();
+	if (normalized.startsWith("&"))
+		return [{ kind: "selector", name: normalized, value: normalized }];
+	if (/(?::where|:is|:not|:has)\(/u.test(normalized)) {
+		const classMarker = `.${escapeGeneratedClassName(token)}`;
+		const classStart = normalized.indexOf(classMarker);
+		if (classStart >= 0) {
+			const relative =
+				normalized.slice(0, classStart) + "&" + normalized.slice(classStart + classMarker.length);
+			return [{ kind: "selector", name: relative, value: relative }];
+		}
+	}
 	const conditions: StyleCondition[] = [];
 	for (const match of selector.matchAll(/(?<!\\):([a-z-]+)(?:\([^)]*\))?/giu)) {
 		const name = match[1];
 		if (name !== undefined) conditions.push(generatedPseudoCondition(name));
 	}
-	const normalized = selector.trim();
 	if (
 		conditions.length === 0 &&
 		(normalized.includes("[") ||
@@ -1043,6 +1273,73 @@ function tailwindCssFiles(
 	return candidates;
 }
 
+async function classicConfig(
+	context: AdapterConfigContext,
+	loader: ProjectModuleLoader,
+	fallback: AdapterProjectConfig,
+): Promise<AdapterProjectConfig | undefined> {
+	const configFile = classicConfigFiles(context)[0];
+	if (configFile === undefined || context.root === undefined || context.readFile === undefined)
+		return undefined;
+	try {
+		const loadedConfig = await loader.importFile<unknown>(configFile);
+		const loaded = defaultExport<TailwindClassicConfig>(loadedConfig);
+		if (loaded === undefined || Array.isArray(loaded))
+			return AdapterEvidence.configurationFailure(
+				fallback,
+				"Tailwind project configuration",
+				`official Tailwind config is not an object: ${configFile}`,
+			);
+		const [tailwindModule, postcssModule, resolveConfigModule] = await Promise.all([
+			loader.importPackage<unknown>("tailwindcss", context.root),
+			loader.importPackage<unknown>("postcss", context.root),
+			loader.importPackage<unknown>("tailwindcss/resolveConfig", context.root),
+		]);
+		const tailwind = defaultExport<TailwindClassicPlugin>(tailwindModule);
+		const postcss = defaultExport<TailwindClassicPostCss>(postcssModule);
+		if (tailwind === undefined || postcss === undefined) {
+			return AdapterEvidence.configurationFailure(
+				fallback,
+				"Tailwind project configuration",
+				"the official Tailwind 3 compiler requires the tailwindcss and postcss packages",
+			);
+		}
+		const content = classicContentFiles(context).flatMap((file) => {
+			const raw = context.readFile?.(file);
+			if (raw === undefined) return [];
+			const extension = file.slice(file.lastIndexOf(".") + 1);
+			return [{ raw, extension }];
+		});
+		const compiled = await postcss([tailwind({ ...loaded, content })]).process(
+			"@tailwind utilities;",
+			{ from: configFile },
+		);
+		const resolver = parseClassicTailwindCss(compiled.css);
+		const resolveConfig = defaultExport<TailwindClassicResolveConfig>(resolveConfigModule);
+		const cssFiles = tailwindCssFiles(context);
+		return {
+			...fallback,
+			files: [configFile, ...cssFiles.map(({ file }) => file)],
+			tokenCatalog: classicTokenCatalog(loaded, resolveConfig),
+			values: {
+				...fallback.values,
+				tailwindResolver: resolver,
+				officialConfigPackages: [
+					"tailwindcss",
+					"postcss",
+					...(resolveConfig === undefined ? [] : ["tailwindcss/resolveConfig"]),
+				],
+			},
+		};
+	} catch (error) {
+		return AdapterEvidence.configurationFailure(
+			fallback,
+			"Tailwind project configuration",
+			`official Tailwind 3 config loading failed: ${error instanceof Error ? error.message : String(error)}`,
+		);
+	}
+}
+
 async function officialConfig(
 	context: AdapterConfigContext,
 	loader: ProjectModuleLoader,
@@ -1050,11 +1347,13 @@ async function officialConfig(
 	const fallback = config(context);
 	if (context.root === undefined || context.readFile === undefined) return fallback;
 	const cssFiles = tailwindCssFiles(context);
+	const classic = await classicConfig(context, loader, fallback);
 	const module = await loader.importPackage<TailwindEnginePackage>(
 		"@tailwindcss/node",
 		context.root,
 	);
 	if (module?.__unstable__loadDesignSystem === undefined) {
+		if (classic !== undefined) return classic;
 		const hasTailwindConfiguration = cssFiles.some(({ text }) =>
 			/@(?:import|tailwind|theme|utility|plugin|config|custom-variant|source|reference)\b/u.test(
 				text,
@@ -1070,6 +1369,7 @@ async function officialConfig(
 	}
 	const cssFile = cssFiles[0];
 	if (cssFile === undefined) {
+		if (classic !== undefined) return classic;
 		// An async official loader without the filesystem discovery port cannot
 		// establish which CSS graph defines the project. Preserve source and make
 		// that missing evidence visible instead of pretending the fallback is the
@@ -1094,16 +1394,12 @@ async function officialConfig(
 			base: dirnameDocumentPath(cssFile.file),
 		});
 		const theme = tailwindThemeValues(system);
-		const candidates = (system.getClassList?.() ?? []).map(([candidate]) => candidate);
-		const compiled = system.candidatesToCss(candidates);
+		let candidates: string[] | undefined;
+		const allCandidates = (): readonly string[] =>
+			(candidates ??= (system.getClassList?.() ?? []).map(([candidate]) => candidate));
+		const catalogCandidates = allCandidates();
+		const catalogCss = system.candidatesToCss(catalogCandidates);
 		const cache = new Map<string, readonly StyleDeclaration[] | undefined>();
-		for (let index = 0; index < candidates.length; index++) {
-			const candidate = candidates[index]!;
-			cache.set(
-				candidate,
-				resolveTailwindDeclarations(parseEngineCss(compiled[index] ?? "", candidate), theme),
-			);
-		}
 		const resolver: TailwindOfficialUtilityResolver = {
 			resolve(token) {
 				if (cache.has(token)) return cache.get(token);
@@ -1115,7 +1411,7 @@ async function officialConfig(
 				return resolved;
 			},
 			candidates() {
-				return candidates;
+				return allCandidates();
 			},
 		};
 		return {
@@ -1123,7 +1419,7 @@ async function officialConfig(
 			files: cssFiles.map(({ file }) =>
 				file.startsWith(context.root!) ? file : joinDocumentPath(context.root!, file),
 			),
-			tokenCatalog: tailwindTokenCatalog(system, candidates, compiled, theme)?.contract,
+			tokenCatalog: tailwindTokenCatalog(system, catalogCandidates, catalogCss, theme)?.contract,
 			values: {
 				...fallback.values,
 				tailwindResolver: resolver,
@@ -1131,6 +1427,7 @@ async function officialConfig(
 			},
 		};
 	} catch (error) {
+		if (classic !== undefined) return classic;
 		return {
 			...fallback,
 			residuals: [
@@ -1147,6 +1444,7 @@ async function officialConfig(
 export function createTailwindAdapter(options: TailwindAdapterOptions = {}): StyleAdapter {
 	const fallbackResolver = options.resolver ?? { resolve: defaultResolve };
 	const moduleLoader = options.moduleLoader === null ? undefined : options.moduleLoader;
+	const officialConfigCache = new Map<string, Promise<AdapterProjectConfig>>();
 	return {
 		schema: ADAPTER_CONTRACT_SCHEMA,
 		id: CodemodAdapterId.Tailwind,
@@ -1196,9 +1494,12 @@ export function createTailwindAdapter(options: TailwindAdapterOptions = {}): Sty
 			},
 		},
 		detect: (context) => {
+			const generatedPandwindTw = /\bfrom\s*["']pandwind(?:["']|\/)/u.test(context.source);
+			const dynamicAttributes = generatedPandwindTw
+				? []
+				: collectDynamicClassAttributes(context.source);
 			const matched =
-				detectStaticClassTarget(context.source).matched ||
-				collectDynamicClassAttributes(context.source).length > 0;
+				detectStaticClassTarget(context.source).matched || dynamicAttributes.length > 0;
 			const configured = /(?:tailwindcss|@tailwindcss\/)/u.test(context.source);
 			return {
 				matched,
@@ -1207,7 +1508,7 @@ export function createTailwindAdapter(options: TailwindAdapterOptions = {}): Sty
 					? [
 							configured
 								? "tailwind-package"
-								: collectDynamicClassAttributes(context.source).length > 0
+								: dynamicAttributes.length > 0
 									? "dynamic-class-attribute"
 									: "literal-class-attribute",
 						]
@@ -1218,14 +1519,28 @@ export function createTailwindAdapter(options: TailwindAdapterOptions = {}): Sty
 		...(moduleLoader === undefined
 			? {}
 			: {
-					loadConfigAsync: async (context: AdapterConfigContext) =>
-						AdapterEvidence.normalizeConfig(await officialConfig(context, moduleLoader)),
+					loadConfigAsync: (context: AdapterConfigContext) => {
+						if (context.root === undefined)
+							return officialConfig(context, moduleLoader).then((value) =>
+								AdapterEvidence.normalizeConfig(value),
+							);
+						let loaded = officialConfigCache.get(context.root);
+						if (loaded === undefined) {
+							loaded = officialConfig(context, moduleLoader).then((value) =>
+								AdapterEvidence.normalizeConfig(value),
+							);
+							officialConfigCache.set(context.root, loaded);
+						}
+						return loaded;
+					},
 				}),
 		parse: (source, context) =>
 			parseTailwind(
 				source,
 				context,
-				(context.config.values.tailwindResolver as TailwindUtilityResolver | undefined) ??
+				options.resolver ??
+					(context.config.values.tailwindResolver as TailwindUtilityResolver | undefined) ??
+					resolverFromInteropMeta(context.meta) ??
 					fallbackResolver,
 			),
 		emit: (program, context) => {

@@ -73,6 +73,7 @@ const PANDWIND_TARGET_POLICY: AdapterTargetMigrationPolicy = {
 	demotesFactoryHosts: false,
 	hostRepresentation: StyleHostRepresentationKind.Class,
 	standaloneHostRepresentation: StyleHostRepresentationKind.Class,
+	preservesResidualKindsForRepresentation: () => [StyleProgramResidualKindTag.UnknownUtility],
 	resolveHostRepresentation: ({ program, hasHostContext, framework }) => {
 		if (hasHostContext || program.source?.subject === undefined)
 			return StyleHostRepresentationKind.Class;

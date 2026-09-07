@@ -1245,6 +1245,7 @@ function runAdapterMigrationInternal(
 		// validation. A failed validation is an aggregate consequence; it must
 		// not hide the precise semantic reason emitted by the target adapter.
 		residuals.push(...emitted.residuals);
+		residuals.push(...(emitted.preservedResiduals ?? []));
 		const emittedForValidation = MigrationOutput.validationSource(emitted.text, program);
 		if (
 			targetAdapter.migration?.targetPolicy?.rewriteHost !== undefined &&

@@ -11,7 +11,8 @@
  * their own tooling afterwards.
  */
 import type { PandwindMeta } from "../meta.ts";
-import { mapToken } from "../map.ts";
+import { mapClassList, mapToken, type MappedToken } from "../map.ts";
+import { tokenizeClassList } from "../tokens.ts";
 import type { AnyTokens } from "pandwind/types/typings";
 import type { SwapEntry, SwapIR } from "./ir.ts";
 import { TokenRefModeTag, type TokenRefMode } from "./tokens.ts";
@@ -19,6 +20,7 @@ import { SwapResidualKindTag } from "./ir.ts";
 import type { StyleProgram } from "./semantic-ir.ts";
 import type { AdapterCapabilities, AdapterCapabilityReport } from "./capabilities.ts";
 import { CSS_PROPERTY_ALIASES } from "./property-aliases.ts";
+import { CodemodAdapterId } from "./identifiers.ts";
 
 export interface EmitterContext {
 	/** 1-based ordinal of the call site within the current file pass. */
@@ -116,6 +118,10 @@ function sortByCanonicalOrder(entries: SwapEntry[]): SwapEntry[] {
 export interface EmitterResult {
 	text: string;
 	residuals: SwapIR["residuals"];
+	/** The emitted expression contains a residual class carrier and needs `cx`. */
+	needsCx?: boolean;
+	/** Source tokens retained by the emitted class carrier; they do not invalidate validation. */
+	preservedResiduals?: SwapIR["residuals"];
 	/** File-level statements to inject after imports (structural targets). */
 	headers?: string[];
 	/** Module imports the emitted code requires. */
@@ -211,7 +217,40 @@ const wrapCall = (callee: string, inner: string): string => `${callee}({ ${inner
 /* css.class                                                           */
 /* ------------------------------------------------------------------ */
 
-export const emitCssClass: Emitter = (ir, _meta, ctx) => {
+function bridgeContainsValue(meta: PandwindMeta, entry: SwapEntry): boolean {
+	const property = camel(entry.prop);
+	const value = String(entry.value);
+	for (const resolved of meta.bridgeInverse.values()) {
+		if (camel(resolved.property) === property && resolved.value === value) return true;
+	}
+	return false;
+}
+
+function isGeneratedLiteral(meta: PandwindMeta, value: SwapEntry["value"]): boolean {
+	if (typeof value !== "string") return false;
+	for (const literals of meta.valueLiterals.values()) {
+		if (literals.has(value)) return true;
+	}
+	return false;
+}
+
+export const emitCssClass: Emitter = (ir, meta, ctx) => {
+	if (ctx.program?.source?.adapter === CodemodAdapterId.Tailwind) {
+		const unresolved = ir.entries.find(
+			(entry) => isGeneratedLiteral(meta, entry.value) && !bridgeContainsValue(meta, entry),
+		);
+		if (unresolved !== undefined)
+			return {
+				text: "",
+				residuals: [
+					{
+						kind: SwapResidualKindTag.UnknownValue,
+						text: `${unresolved.prop}: ${String(unresolved.value)}`,
+						hint: "Tailwind design value has no resolved bridge entry for css.class()",
+					},
+				],
+			};
+	}
 	const groups = groupByConditions(ir.entries);
 	const inner = renderInlineScopes(
 		[...groups.values()].map((entries) => ({
@@ -251,9 +290,56 @@ function isKnownVariant(meta: PandwindMeta, name: string): boolean {
 	return meta.variants.has(name) || DATA_ARIA_VARIANT.test(name) || name === "*" || name === "**";
 }
 
+const dashedProperty = (property: string): string =>
+	property.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
+
+const mappedUtilityCache = new WeakMap<PandwindMeta, Map<string, string | null>>();
+
+function typedUtilityForEntry(meta: PandwindMeta, entry: SwapEntry): string | undefined {
+	const key = `${entry.prop}|${String(entry.value)}`;
+	let cache = mappedUtilityCache.get(meta);
+	if (cache === undefined) {
+		cache = new Map();
+		mappedUtilityCache.set(meta, cache);
+	}
+	const cached = cache.get(key);
+	if (cached !== undefined) return cached === null || cached === "" ? undefined : cached;
+
+	const property = dashedProperty(entry.prop);
+	const value = String(entry.value);
+	for (const [prefix, values] of meta.conflicts) {
+		const direct = values[value];
+		if (direct?.includes(property) === true) {
+			const utility = value === "" ? prefix : `${prefix}-${value}`;
+			if (mapToken(utility, meta) !== null) {
+				cache.set(key, utility);
+				return utility;
+			}
+		}
+		if (
+			values["*"]?.includes(property) === true &&
+			meta.keysByBase
+				.get(prefix)
+				?.some(
+					(candidate) =>
+						candidate.valueType !== undefined &&
+						meta.valueLiterals.get(candidate.valueType)?.has(value) === true,
+				)
+		) {
+			const utility = `${prefix}-${value}`;
+			if (mapToken(utility, meta) !== null) {
+				cache.set(key, utility);
+				return utility;
+			}
+		}
+	}
+	cache.set(key, "");
+	return undefined;
+}
+
 interface TwSlot {
 	key: string;
-	value: string | true;
+	value: string | true | Array<string | true>;
 }
 type TwTree = Map<string, TwTree | TwSlot[]>;
 
@@ -270,9 +356,9 @@ function insertIntoTree(meta: PandwindMeta, tree: TwTree, entry: SwapEntry): str
 		}
 		node = child as TwTree;
 	}
-	const utility = forwardIndex(meta).get(
-		`${entry.prop.toLowerCase()}|${String(entry.value).toLowerCase()}`,
-	);
+	const utility =
+		forwardIndex(meta).get(`${entry.prop.toLowerCase()}|${String(entry.value).toLowerCase()}`) ??
+		typedUtilityForEntry(meta, entry);
 	if (utility === undefined) {
 		return `no utility for ${entry.prop}: ${String(entry.value)} (bridge miss)`;
 	}
@@ -300,7 +386,79 @@ function renderTwInline(tree: TwTree): string {
 	return parts.join(", ");
 }
 
-const emitTwObject: Emitter = (ir, meta) => {
+function insertMappedToken(tree: TwTree, mapped: MappedToken): void {
+	let node = tree;
+	for (const condition of mapped.variants) {
+		let child = node.get(condition);
+		if (child === undefined || Array.isArray(child)) {
+			child = new Map();
+			node.set(condition, child as TwTree);
+		}
+		node = child as TwTree;
+	}
+	const slots = node.get("");
+	if (slots === undefined) node.set("", [{ key: mapped.key, value: mapped.value }]);
+	else {
+		const existing = (slots as TwSlot[]).find((slot) => slot.key === mapped.key);
+		if (existing === undefined) (slots as TwSlot[]).push({ key: mapped.key, value: mapped.value });
+		else if (Array.isArray(existing.value)) existing.value = [...existing.value, mapped.value];
+		else existing.value = [existing.value, mapped.value];
+	}
+}
+
+function staticClassValue(program: StyleProgram): string | undefined {
+	for (const attribute of program.source?.hostStyleAttributes ?? []) {
+		const match = /\b(?:className|class)\s*=\s*(?:"([^"]*)"|'([^']*)')/u.exec(attribute);
+		const value = match?.[1] ?? match?.[2];
+		if (value !== undefined) return value;
+	}
+	return undefined;
+}
+
+function emitTailwindClassCarrier(
+	ir: SwapIR,
+	meta: PandwindMeta,
+	program: StyleProgram,
+): EmitterResult | undefined {
+	const classString = staticClassValue(program);
+	if (classString === undefined) return undefined;
+	const sourceResiduals = new Set(
+		program.residuals
+			.filter(
+				(residual) =>
+					residual.kind === "unknown-utility" ||
+					residual.kind === SwapResidualKindTag.UnknownValue,
+			)
+			.map((residual) => residual.text),
+	);
+	const mapped = mapClassList(classString, meta).mapped.filter(
+		(token) => !sourceResiduals.has(token.raw),
+	);
+	const mappedNames = new Set(mapped.map((token) => token.raw));
+	const residual = tokenizeClassList(classString).filter((token) => !mappedNames.has(token));
+	if (mapped.length === 0) return undefined;
+	const tree: TwTree = new Map();
+	for (const token of mapped) insertMappedToken(tree, token);
+	const tw = `tw({ ${renderTwInline(tree)} })`;
+	if (residual.length === 0) return { text: tw, residuals: [] };
+	return {
+		text: `cx(${tw}, ${JSON.stringify(residual.join(" "))})`,
+		residuals: [],
+		needsCx: true,
+		preservedResiduals: residual.map((token) => ({
+			kind: SwapResidualKindTag.UnknownValue,
+			text: token,
+			hint: "Tailwind utility is retained as a class-string residual",
+			preserved: true,
+		})),
+	};
+}
+
+const emitTwObject: Emitter = (ir, meta, ctx) => {
+	if (ctx.program?.source?.adapter === CodemodAdapterId.Tailwind) {
+		const carrier = emitTailwindClassCarrier(ir, meta, ctx.program);
+		if (carrier !== undefined) return carrier;
+	}
 	const residuals: SwapIR["residuals"] = [];
 	const tree: TwTree = new Map();
 	let placed = 0;

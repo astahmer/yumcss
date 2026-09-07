@@ -63,4 +63,20 @@ describe("generated CSS parser", () => {
 		expect(Array.isArray(nodes)).toBe(true);
 		expect(() => parseGeneratedCss('{"name":"x"')).not.toThrow();
 	});
+
+	test("does not terminate a selector at an escaped quote", () => {
+		const nodes = parseGeneratedCss(
+			'.font-\\[\\"Times_New_Roman\\"\\]{font-family:Times}.text-sm{font-size:.875rem}',
+		);
+
+		expect(nodes).toHaveLength(2);
+		expect(nodes[0]).toMatchObject({
+			type: GeneratedCssNodeKind.Rule,
+			selector: '.font-\\[\\"Times_New_Roman\\"\\]',
+		});
+		expect(nodes[1]).toMatchObject({
+			type: GeneratedCssNodeKind.Rule,
+			selector: '.text-sm',
+		});
+	});
 });

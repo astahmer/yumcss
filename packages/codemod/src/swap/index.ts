@@ -303,6 +303,7 @@ export type {
 	AdapterMatch,
 	AdapterParseContext,
 	AdapterParseResult,
+	AdapterProjectBindings,
 	AdapterProjectConfig,
 	AdapterTokenCatalog,
 	AdapterTokenPolicy,

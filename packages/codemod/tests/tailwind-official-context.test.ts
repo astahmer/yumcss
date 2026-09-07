@@ -29,6 +29,8 @@ function loader(): ProjectModuleLoader {
 							if (candidate === "tab-4") return "@layer utilities { .tab-4 { tab-size: 4; } }";
 							if (candidate === "hover:tab-4")
 								return "@layer utilities { .hover\\:tab-4:hover { tab-size: 4; } }";
+							if (candidate === "rtl:rotate-180")
+								return '.rtl\\:rotate-180:where([dir="rtl"] *) { rotate: 180deg; }';
 							if (candidate === "prose")
 								return "@layer utilities { @media (min-width: 48rem) { .prose { max-width: 65ch; } } }";
 							if (candidate === "theme-tab-4")
@@ -130,6 +132,19 @@ describe("Tailwind official CSS context", () => {
 			const css = createCss();
 			export const App = () => <div className={css.class({ "[data-theme=midnight] &": { tabSize: "4" } })}/>;"
 		`);
+	});
+
+	test("retains Tailwind selector wrappers such as rtl and dark", async () => {
+		const result = await migrate(
+			'export const App = () => <div className="rtl:rotate-180" />;',
+			files(),
+		);
+
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain('"&:where([dir=\\"rtl\\"] *)"');
+		expect(result.code).toContain('rotate: "180deg"');
 	});
 
 	test("resolves official spacing variables before lowering utilities", async () => {

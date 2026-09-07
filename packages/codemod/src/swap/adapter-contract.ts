@@ -235,6 +235,8 @@ export interface AdapterEmitResult {
 	readonly dependencies?: AdapterDependencies;
 	readonly generatedFiles?: readonly AdapterGeneratedFile[];
 	readonly emissionDecisions?: readonly AdapterEmissionDecision[];
+	/** Residual source tokens retained by an explicit target carrier. */
+	readonly preservedResiduals?: readonly StyleProgramResidual[];
 	readonly residuals: readonly StyleProgramResidual[];
 }
 

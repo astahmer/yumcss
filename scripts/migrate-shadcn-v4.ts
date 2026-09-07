@@ -18,10 +18,14 @@ import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
 import { createStylesheet } from "pandwind/css/create-stylesheet";
 import { createCssExtractionService } from "pandwind/vite/css-extract";
 import { pandwindPreset } from "pandwind/preset";
-import { ensureImport, relativeModuleImport } from "pandwind-codemod/migration/shared";
 import { loadMetaFromSources, type PandwindMeta } from "pandwind-codemod/migration/meta";
-import { transformSource, type TransformResult } from "pandwind-codemod/migration/source";
+import { CodemodAdapterId, SwapSourceId } from "pandwind-codemod/swap";
 import { createReferenceWorkspace } from "./reference-workspace.ts";
+import {
+	discoverProjectFiles,
+	migrateRegisteredFile,
+	type CorpusTransformResult,
+} from "./registered-adapter-migration.ts";
 
 const execFileAsync = promisify(execFile);
 const repositoryRoot = resolve(import.meta.dirname, "..");
@@ -71,11 +75,12 @@ interface GeneratedMetadata {
 	readonly typesDts: string;
 	readonly twTs: string;
 	readonly interop: ReturnType<typeof buildPandwindInteropArtifact>;
+	readonly variantConditions: Readonly<Record<string, string | readonly string[]>>;
 }
 
 interface LaneAdapter {
 	readonly lane: ShadcnV4MigrationLane;
-	transform(source: string, file: string, metadata: PandwindMeta): TransformResult;
+	transform(source: string, file: string, metadata: PandwindMeta): Promise<CorpusTransformResult>;
 }
 
 async function collectSourceFiles(root: string): Promise<string[]> {
@@ -141,34 +146,41 @@ async function generatedMetadata(referenceRoot: string): Promise<GeneratedMetada
 			typesDts: generated.typesDts,
 			twTs: generated.twTs,
 			interop,
+			variantConditions: generated.variantConditions,
 		};
 	} finally {
 		await rm(metadataRoot, { recursive: true, force: true });
 	}
 }
 
-function createLane(lane: ShadcnV4MigrationLane): LaneAdapter {
+function createLane(
+	lane: ShadcnV4MigrationLane,
+	root: string,
+	files: readonly string[],
+): LaneAdapter {
 	return {
 		lane,
-		transform(source, file, metadata) {
-			if (lane === ShadcnV4MigrationLane.Tw)
-				return transformSource(source, metadata, {
-					mode: "tw",
-					file,
-					metaDir: supportRoot,
-				});
-
-			const exported = lane === ShadcnV4MigrationLane.Css ? "css" : "dcss";
-			const binding = lane === ShadcnV4MigrationLane.Css ? "__pandwindCss" : "__pandwindDcss";
-			const importPath = relativeModuleImport(file, supportRoot, exported);
-			const prepared = ensureImport(
+		async transform(source, file, metadata) {
+			const dialect =
+				lane === ShadcnV4MigrationLane.Tw
+					? SwapSourceId.Tw
+					: lane === ShadcnV4MigrationLane.Css
+						? SwapSourceId.Css
+						: SwapSourceId.Dss;
+			return migrateRegisteredFile({
 				source,
-				`import { ${exported} as ${binding} } from "${importPath}";`,
-			);
-			return transformSource(prepared, metadata, {
-				mode: "css",
 				file,
-				cssBinding: binding,
+				root,
+				files,
+				meta: metadata,
+				from: CodemodAdapterId.Tailwind,
+				to: `${CodemodAdapterId.Pandwind}:${dialect}`,
+				project:
+					lane === ShadcnV4MigrationLane.Tw
+						? { twModule: `${supportRoot}/tw`, cxModule: `${supportRoot}/cx` }
+						: lane === ShadcnV4MigrationLane.Css
+							? { cssModule: `${supportRoot}/css` }
+							: { dssModule: `${supportRoot}/dss` },
 			});
 		},
 	};
@@ -179,16 +191,21 @@ function laneSource(lane: ShadcnV4MigrationLane): string {
 		return `import { createCx } from "pandwind/cx";\nimport { __pandwindConfig } from "./tw";\n\nexport const cx = createCx(__pandwindConfig);\n`;
 	if (lane === ShadcnV4MigrationLane.Css)
 		return `import { createCss } from "pandwind/css";\nimport { pandwindPreset } from "pandwind/preset";\n\nexport const css = createCss(pandwindPreset);\n`;
-	return `import { createDesignCss } from "pandwind/design";\nimport { pandwindPreset } from "pandwind/preset";\n\nexport const dcss = createDesignCss(pandwindPreset);\n`;
+	return `import { createDesignCss } from "pandwind/design";\nimport { pandwindPreset } from "pandwind/preset";\n\nexport const dss = createDesignCss(pandwindPreset);\n`;
 }
 
 function staticStylesheetSource(
 	transformed: ReadonlyMap<string, string>,
 	lane: ShadcnV4MigrationLane,
+	variantConditions: Readonly<Record<string, string | readonly string[]>>,
 ): string {
-	const matchers = lane === ShadcnV4MigrationLane.Css ? ["css"] : ["dcss"];
-	const service = createCssExtractionService({ matchers, preset: pandwindPreset });
-	const stylesheet = createStylesheet(pandwindPreset);
+	const matchers = lane === ShadcnV4MigrationLane.Css ? ["css"] : ["dss"];
+	const extractionPreset = {
+		...pandwindPreset,
+		conditions: { ...pandwindPreset.conditions, ...variantConditions },
+	};
+	const service = createCssExtractionService({ matchers, preset: extractionPreset });
+	const stylesheet = createStylesheet(extractionPreset);
 	let callSites = 0;
 	let extracted = 0;
 	for (const [file, code] of transformed) {
@@ -202,7 +219,15 @@ function staticStylesheetSource(
 			);
 		const extraction = service.extractFile(code, file);
 		extracted += extraction.sources.length;
-		for (const { style } of extraction.sources) stylesheet.process([style]);
+		for (const { style } of extraction.sources) {
+			try {
+				stylesheet.process([style]);
+			} catch (error) {
+				throw new Error(
+					`${lane} static artifact failed for ${file}: ${error instanceof Error ? error.message : String(error)}`,
+				);
+			}
+		}
 		for (const key of extraction.varKeys) stylesheet.processVarKey(key);
 	}
 	if (callSites !== extracted)
@@ -228,7 +253,8 @@ function supportFiles(
 	if (lane === ShadcnV4MigrationLane.Tw) {
 		files[`${supportRoot}/cx.ts`] = laneSource(lane);
 	} else {
-		files[`${supportRoot}/${lane}.ts`] = laneSource(lane);
+		files[`${supportRoot}/${lane === ShadcnV4MigrationLane.Css ? "css" : "dss"}.ts`] =
+			laneSource(lane);
 		files[`${supportRoot}/styles.css`] = staticCss;
 	}
 	files[sourceCatalogFile] = sourceCatalog;
@@ -323,7 +349,7 @@ export class ShadcnV4Migration {
 			await execFileAsync("git", ["-C", referenceRoot, "rev-parse", "HEAD"], { encoding: "utf8" })
 		).stdout.trim();
 		const metadata = await generatedMetadata(referenceRoot);
-		const adapter = createLane(lane);
+		const adapter = createLane(lane, referenceRoot, await discoverProjectFiles(referenceRoot));
 		const transformed = new Map<string, string>();
 		const sourceCatalogParts: string[] = [];
 		const residuals: ShadcnV4MigrationReport["residualSamples"][number][] = [];
@@ -336,7 +362,7 @@ export class ShadcnV4Migration {
 		for (const absolute of await collectSourceFiles(referenceRoot)) {
 			const source = await readFile(absolute, "utf8");
 			const file = relative(referenceRoot, absolute).replaceAll("\\", "/");
-			const result = adapter.transform(source, file, metadata.meta);
+			const result = await adapter.transform(source, file, metadata.meta);
 			if (!result.changed && result.unmappedTokens.length === 0) {
 				if (lane !== ShadcnV4MigrationLane.Tw) sourceCatalogParts.push(source);
 				continue;
@@ -357,7 +383,9 @@ export class ShadcnV4Migration {
 				? await collectSourceCatalog(referenceRoot)
 				: sourceCatalogParts.join("\n");
 		const staticCss =
-			lane === ShadcnV4MigrationLane.Tw ? "" : staticStylesheetSource(transformed, lane);
+			lane === ShadcnV4MigrationLane.Tw
+				? ""
+				: staticStylesheetSource(transformed, lane, metadata.variantConditions);
 		if (options.outputRoot !== undefined)
 			await materialize(
 				referenceRoot,

@@ -185,6 +185,18 @@ function makeCoreAdapter(
 					: ["pandwind/css"],
 		capabilities: CORE_CAPABILITIES(id),
 		dependencies: CORE_DEPENDENCIES,
+		...(role === "target" && dialect === SwapSourceId.Tw
+			? {
+					migration: {
+						targetPolicy: {
+							resolveRepresentation: ({ representation }) => representation,
+							preservesResidualKindsForRepresentation: () => [
+								StyleProgramResidualKindTag.UnknownUtility,
+							],
+						},
+					},
+				}
+			: {}),
 		detect: (context) => ({
 			matched: new RegExp(`\\b${dialect}\\s*\\(`).test(context.source),
 			confidence: 1,
@@ -205,8 +217,21 @@ function makeCoreAdapter(
 						},
 					],
 				};
-			const result = emitter(swapIRFromStyleProgram(program), meta, { index: context.index, meta });
+			const result = emitter(swapIRFromStyleProgram(program), meta, {
+				index: context.index,
+				meta,
+				program,
+			});
 			const imports = [...(result.imports ?? [])];
+			if (result.needsCx === true) {
+				if (context.project?.cxModule === undefined) {
+					imports.push('import { createCx } from "pandwind/cx";', "const cx = createCx();");
+				} else {
+					imports.push(
+						`import { cx } from "${relativeModuleImport(context.file, context.project.cxModule, "")}";`,
+					);
+				}
+			}
 			let text = result.text;
 			const host = program.source;
 			if (
@@ -262,6 +287,9 @@ function makeCoreAdapter(
 			return {
 				text,
 				imports,
+				...(result.preservedResiduals === undefined
+					? {}
+					: { preservedResiduals: result.preservedResiduals }),
 				residuals: [...result.residuals],
 				// Core targets are emitted by the same versioned semantic projection
 				// that owns their parser. Keep that program as validation evidence;

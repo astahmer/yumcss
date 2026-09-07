@@ -13,11 +13,15 @@ import { dirname, join, relative, resolve } from "node:path";
 import { promisify } from "node:util";
 import { loadMetaFromSources, type PandwindMeta } from "pandwind-codemod/migration/meta";
 import { mapClassList } from "pandwind-codemod/migration/map";
-import { transformSource, type TransformResult } from "pandwind-codemod/migration/source";
-import { ensureImport, relativeModuleImport } from "pandwind-codemod/migration/shared";
+import { relativeModuleImport } from "pandwind-codemod/migration/shared";
+import { CodemodAdapterId, SwapSourceId } from "pandwind-codemod/swap";
 import { tokenizeClassList } from "pandwind-codemod/migration/tokens";
 import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
 import { createReferenceWorkspace } from "./reference-workspace.ts";
+import {
+	migrateRegisteredFile,
+	type CorpusTransformResult,
+} from "./registered-adapter-migration.ts";
 
 const execFileAsync = promisify(execFile);
 
@@ -178,11 +182,9 @@ function serializeDeclarations(
 	const declarations: Array<[string, string]> = [];
 	const residual: string[] = [];
 	for (const token of tokenizeClassList(classString)) {
-		const resolved = meta.bridgeDeclarations.get(token);
+		const resolved = meta.bridgeInverse.get(token);
 		if (resolved === undefined) residual.push(token);
-		else
-			for (const declaration of resolved)
-				declarations.push([camelProperty(declaration.property), declaration.value]);
+		else declarations.push([camelProperty(resolved.property), resolved.value]);
 	}
 	const body = declarations
 		.map(([property, value]) => {
@@ -208,9 +210,9 @@ function applyAstroLane(
 	importFile: string,
 	lane: EffectDocsLane,
 	meta: PandwindMeta,
-): TransformResult {
+): CorpusTransformResult {
 	const edits: Array<{ start: number; end: number; text: string }> = [];
-	const unmappedTokens: TransformResult["unmappedTokens"] = [];
+	const unmappedTokens: CorpusTransformResult["unmappedTokens"] = [];
 	let converted = 0;
 	let needsCx = false;
 	const localStyleTokens = astroLocalStyleClassTokens(source);
@@ -242,7 +244,7 @@ function applyAstroLane(
 		if (!isTw && declarations.mapped === 0) continue;
 		const root: ObjectNode = { entries: [] };
 		if (isTw) for (const mapped of outcome.mapped) insertMapped(root, mapped);
-		const api = isTw ? "tw" : lane === EffectDocsLane.Css ? "css" : "dcss";
+		const api = isTw ? "tw" : lane === EffectDocsLane.Css ? "css" : "dss";
 		const residual = residualTokens.join(" ");
 		const styles = isTw
 			? serializeObject(root, "\t")
@@ -261,7 +263,7 @@ function applyAstroLane(
 	if (edits.length === 0)
 		return { code: source, changed: false, converted: 0, unmappedTokens, skippedByMarker: 0 };
 	let code = applyEdits(source, edits);
-	const api = lane === EffectDocsLane.Tw ? "tw" : lane === EffectDocsLane.Css ? "css" : "dcss";
+	const api = lane === EffectDocsLane.Tw ? "tw" : lane === EffectDocsLane.Css ? "css" : "dss";
 	const apiImport = `import { ${api} } from "${relativeModuleImport(importFile, "proof/pandwind", api)}";`;
 	const cxImport = `import { cx } from "${relativeModuleImport(importFile, "proof/pandwind", "cx")}";`;
 	const frontmatter = code.startsWith("---") ? code.indexOf("\n---", 3) : -1;
@@ -289,24 +291,32 @@ function transformFile(
 	source: string,
 	file: string,
 	meta: PandwindMeta,
-): TransformResult {
-	const importFile = join("apps/web", file).replaceAll("\\", "/");
-	if (file.endsWith(".astro")) return applyAstroLane(source, file, importFile, lane, meta);
-	if (lane === EffectDocsLane.Tw)
-		return transformSource(source, meta, {
-			mode: "tw",
-			file: importFile,
-			metaDir: "proof/pandwind",
-		});
-	const api = lane === EffectDocsLane.Css ? "css" : "dcss";
-	const prepared = ensureImport(
+	root: string,
+	files: readonly string[],
+): Promise<CorpusTransformResult> {
+	if (file.endsWith(".astro"))
+		return Promise.resolve(applyAstroLane(source, file, file, lane, meta));
+	const dialect =
+		lane === EffectDocsLane.Tw
+			? SwapSourceId.Tw
+			: lane === EffectDocsLane.Css
+				? SwapSourceId.Css
+				: SwapSourceId.Dss;
+	const project =
+		lane === EffectDocsLane.Tw
+			? { twModule: "proof/pandwind/tw.ts", cxModule: "proof/pandwind/cx.ts" }
+			: lane === EffectDocsLane.Css
+				? { cssModule: "proof/pandwind/css.ts", cxModule: "proof/pandwind/cx.ts" }
+				: { dssModule: "proof/pandwind/dss.ts", cxModule: "proof/pandwind/cx.ts" };
+	return migrateRegisteredFile({
 		source,
-		`import { ${api} as pandwind${api === "css" ? "Css" : "Dcss"} } from "${relativeModuleImport(importFile, "proof/pandwind", api)}";`,
-	);
-	return transformSource(prepared, meta, {
-		mode: "css",
-		file: importFile,
-		cssBinding: api === "css" ? "pandwindCss" : "pandwindDcss",
+		file,
+		root,
+		files,
+		meta,
+		from: CodemodAdapterId.Tailwind,
+		to: `${CodemodAdapterId.Pandwind}:${dialect}`,
+		project,
 	});
 }
 
@@ -335,8 +345,8 @@ function supportFiles(lane: EffectDocsLane): Record<string, string> {
 		files["proof/pandwind/css.ts"] =
 			'import { createCss } from "pandwind/css";\nimport { examplePreset } from "@pandwind/example-preset";\nimport { twAdapter } from "./bridge";\n\nexport const css = createCss(examplePreset, { className: twAdapter });\n';
 	if (lane === EffectDocsLane.DesignCss)
-		files["proof/pandwind/dcss.ts"] =
-			'import { createDesignCss } from "pandwind/design";\nimport type { CssFn } from "pandwind/css";\nimport { examplePreset } from "@pandwind/example-preset";\nimport { twAdapter } from "./bridge";\n\nexport const dcss = createDesignCss(examplePreset, { className: twAdapter }) as unknown as CssFn;\n';
+		files["proof/pandwind/dss.ts"] =
+			'import { createDesignCss } from "pandwind/design";\nimport { examplePreset } from "@pandwind/example-preset";\nimport { twAdapter } from "./bridge";\n\nexport const dss = createDesignCss(examplePreset, { className: twAdapter });\n';
 	return files;
 }
 
@@ -427,15 +437,16 @@ async function main(): Promise<void> {
 	let sourceBytes = 0;
 	let outputBytes = 0;
 	for (const absolute of files) {
-		const file = relative(join(referenceRoot, "apps/web"), absolute).replaceAll("\\", "/");
+		const relativeFile = relative(join(referenceRoot, "apps/web"), absolute).replaceAll("\\", "/");
+		const file = join("apps/web", relativeFile).replaceAll("\\", "/");
 		const source = await readFile(absolute, "utf8");
 		collectTokens(source, tokens);
-		const result = transformFile(lane, source, file, meta);
+		const result = await transformFile(lane, source, file, meta, referenceRoot, files);
 		sourceBytes += Buffer.byteLength(source);
 		outputBytes += Buffer.byteLength(result.code);
 		convertedCallSites += result.converted;
 		residuals.push(...result.unmappedTokens);
-		if (result.changed) changed.set(join("apps/web", file), result.code);
+		if (result.changed) changed.set(file, result.code);
 	}
 	await materialize(referenceRoot, outputRoot, lane, changed, tokens);
 	const { stdout: referenceCommit } = await execFileAsync("git", [

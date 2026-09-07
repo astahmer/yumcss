@@ -51,6 +51,12 @@ function skipTrivia(css: string, start: number): number {
 	return index;
 }
 
+function isEscaped(css: string, index: number): boolean {
+	let backslashes = 0;
+	for (let cursor = index - 1; cursor >= 0 && css[cursor] === "\\"; cursor--) backslashes++;
+	return backslashes % 2 === 1;
+}
+
 function scanPrelude(css: string, start: number): { readonly text: string; readonly end: number } {
 	let index = start;
 	let quote: string | undefined;
@@ -61,12 +67,12 @@ function scanPrelude(css: string, start: number): { readonly text: string; reado
 		if (quote !== undefined) {
 			if (character === "\\") index += 2;
 			else {
-				if (character === quote) quote = undefined;
+				if (character === quote && !isEscaped(css, index)) quote = undefined;
 				index++;
 			}
 			continue;
 		}
-		if (character === '"' || character === "'") {
+		if ((character === '"' || character === "'") && !isEscaped(css, index)) {
 			quote = character;
 			index++;
 			continue;

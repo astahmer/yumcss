@@ -17,9 +17,12 @@ import { generateDesignSystem } from "pandwind/codegen/types";
 import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
 import { loadMetaFromSources, type PandwindMeta } from "pandwind-codemod/migration/meta";
 import { mapClassList } from "pandwind-codemod/migration/map";
-import { transformSource, type TransformResult } from "pandwind-codemod/migration/source";
-import { ensureImport, relativeModuleImport } from "pandwind-codemod/migration/shared";
+import { CodemodAdapterId, SwapSourceId } from "pandwind-codemod/swap";
 import { createReferenceWorkspace } from "./reference-workspace.ts";
+import {
+	migrateRegisteredFile,
+	type CorpusTransformResult,
+} from "./registered-adapter-migration.ts";
 
 const execFileAsync = promisify(execFile);
 const referenceWorkspace = createReferenceWorkspace();
@@ -58,7 +61,13 @@ export interface TailwindDocsMigrationOptions {
 
 interface LaneAdapter {
 	readonly id: TailwindDocsLane;
-	transform(source: string, file: string, meta: PandwindMeta): TransformResult;
+	transform(
+		source: string,
+		file: string,
+		meta: PandwindMeta,
+		root: string,
+		files: readonly string[],
+	): Promise<CorpusTransformResult>;
 }
 
 /**
@@ -163,46 +172,43 @@ async function generatedMetadata(referenceRoot: string): Promise<GeneratedMetada
 function createLane(id: TailwindDocsLane): LaneAdapter {
 	return {
 		id,
-		transform(source, file, meta) {
-			if (id === TailwindDocsLane.Tw) {
-				if (tailwindDocsHostAdapter.preservedSource(source, file)) {
-					return {
-						code: source,
-						changed: false,
-						converted: 0,
-						unmappedTokens: [
-							{
-								file,
-								token: "<Transition><MenuItems anchor> host composition",
-								reason: "preserved because Headless UI owns the production ref/Fragment contract",
-							},
-						],
-						skippedByMarker: 0,
-					};
-				}
-				return transformSource(source, meta, {
-					mode: "tw",
-					file,
-					metaDir: "src/pandwind",
-				});
+		async transform(source, file, meta, root, files) {
+			if (id === TailwindDocsLane.Tw && tailwindDocsHostAdapter.preservedSource(source, file)) {
+				return {
+					code: source,
+					changed: false,
+					converted: 0,
+					unmappedTokens: [
+						{
+							file,
+							token: "<Transition><MenuItems anchor> host composition",
+							reason: "preserved because Headless UI owns the production ref/Fragment contract",
+						},
+					],
+					skippedByMarker: 0,
+				};
 			}
-
-			const importPath = relativeModuleImport(file, "src/pandwind", "css");
-			const binding = id === TailwindDocsLane.CssClass ? "pandwindCss" : "pandwindDcss";
-			const prepared = ensureImport(source, `import { css as ${binding} } from "${importPath}";`);
-			const result = transformSource(prepared, meta, {
-				mode: "css",
+			const dialect =
+				id === TailwindDocsLane.Tw
+					? SwapSourceId.Tw
+					: id === TailwindDocsLane.CssClass
+						? SwapSourceId.Css
+						: SwapSourceId.Dss;
+			return migrateRegisteredFile({
+				source,
 				file,
-				cssBinding: binding,
+				root,
+				files,
+				meta,
+				from: CodemodAdapterId.Tailwind,
+				to: `${CodemodAdapterId.Pandwind}:${dialect}`,
+				project:
+					id === TailwindDocsLane.Tw
+						? { twModule: "src/pandwind/tw", cxModule: "src/pandwind/cx" }
+						: id === TailwindDocsLane.CssClass
+							? { cssModule: "src/pandwind/css" }
+							: { dssModule: "src/pandwind/dcss" },
 			});
-			if (id === TailwindDocsLane.CssClass) return result;
-			return {
-				...result,
-				code: result.code.replace(
-					`import { css as ${binding} } from "${importPath}";`,
-					`import { dcss as ${binding} } from "${relativeModuleImport(file, "src/pandwind", "dcss")}";`,
-				),
-			};
 		},
 	};
 }
@@ -301,7 +307,7 @@ export class TailwindDocsMigration {
 					mappedTokens.add(token);
 				}
 			}
-			const result = adapter.transform(source, file, metadata.meta);
+			const result = await adapter.transform(source, file, metadata.meta, referenceRoot, files);
 			if (result.converted === 0 && result.unmappedTokens.length === 0) continue;
 			sourceFiles++;
 			if (result.changed) changedFiles++;

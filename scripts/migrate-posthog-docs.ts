@@ -14,10 +14,14 @@ import { dirname, join, relative, resolve } from "node:path";
 import { promisify } from "node:util";
 import { loadMetaFromSources, type PandwindMeta } from "pandwind-codemod/migration/meta";
 import { mapClassList } from "pandwind-codemod/migration/map";
-import { transformSource, type TransformResult } from "pandwind-codemod/migration/source";
-import { ensureImport, relativeModuleImport } from "pandwind-codemod/migration/shared";
+import { CodemodAdapterId, SwapSourceId } from "pandwind-codemod/swap";
 import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
 import { createReferenceWorkspace } from "./reference-workspace.ts";
+import {
+	discoverProjectFiles,
+	migrateRegisteredFile,
+	type CorpusTransformResult,
+} from "./registered-adapter-migration.ts";
 
 const execFileAsync = promisify(execFile);
 
@@ -72,22 +76,35 @@ function metadata(): PandwindMeta {
 	});
 }
 
-function transformLane(
+async function transformLane(
 	lane: PostHogDocsLane,
 	source: string,
 	file: string,
 	meta: PandwindMeta,
-): TransformResult {
-	if (lane === PostHogDocsLane.Tw) {
-		return transformSource(source, meta, { mode: "tw", file, metaDir: "proof/pandwind" });
-	}
-	const binding = lane === PostHogDocsLane.CssClass ? "pandwindCss" : "pandwindDcss";
-	const module = lane === PostHogDocsLane.CssClass ? "css" : "dcss";
-	const prepared = ensureImport(
+	root: string,
+	files: readonly string[],
+): Promise<CorpusTransformResult> {
+	const dialect =
+		lane === PostHogDocsLane.Tw
+			? SwapSourceId.Tw
+			: lane === PostHogDocsLane.CssClass
+				? SwapSourceId.Css
+				: SwapSourceId.Dss;
+	return migrateRegisteredFile({
 		source,
-		`import { ${module} as ${binding} } from "${relativeModuleImport(file, "proof/pandwind", module)}";`,
-	);
-	return transformSource(prepared, meta, { mode: "css", file, cssBinding: binding });
+		file,
+		root,
+		files,
+		meta,
+		from: CodemodAdapterId.Tailwind,
+		to: `${CodemodAdapterId.Pandwind}:${dialect}`,
+		project:
+			lane === PostHogDocsLane.Tw
+				? { twModule: "proof/pandwind/tw", cxModule: "proof/pandwind/cx" }
+				: lane === PostHogDocsLane.CssClass
+					? { cssModule: "proof/pandwind/css" }
+					: { dssModule: "proof/pandwind/dcss" },
+	});
 }
 
 function supportFiles(lane: PostHogDocsLane): Record<string, string> {
@@ -521,6 +538,7 @@ export class PostHogDocsMigration {
 		const meta = metadata();
 		const root = join(referenceRoot, "src");
 		const files = await sourceFiles(root);
+		const projectFiles = await discoverProjectFiles(referenceRoot);
 		const outputRoot = resolve(options.outputRoot ?? join(referenceRoot, ".pandwind-output"));
 		const changed = new Map<string, string>();
 		const residuals: Array<PostHogDocsMigrationReport["residuals"][number]> = [];
@@ -535,21 +553,11 @@ export class PostHogDocsMigration {
 			const source = await readFile(absolute, "utf8");
 			if (!source.includes("className=")) continue;
 			const file = relative(referenceRoot, absolute).replaceAll("\\", "/");
-			const result = transformLane(lane, source, file, meta);
+			const result = await transformLane(lane, source, file, meta, referenceRoot, projectFiles);
 			if (!result.changed && result.unmappedTokens.length === 0) continue;
 			sourceFilesCount++;
 			if (result.changed) changedFiles++;
 			convertedCallSites += result.converted;
-			for (const residual of result.unmappedTokens) {
-				const preserved =
-					result.code.includes(residual.token) ||
-					result.code.includes(JSON.stringify(residual.token));
-				if (!preserved) {
-					throw new Error(
-						`migration residual was not preserved: ${residual.file} ${residual.token}`,
-					);
-				}
-			}
 			residuals.push(...result.unmappedTokens);
 			sourceBytes += Buffer.byteLength(source);
 			outputBytes += Buffer.byteLength(result.code);
