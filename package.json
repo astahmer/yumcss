@@ -22,6 +22,7 @@
 		"format:fix": "oxfmt",
 		"knip": "knip --reporter compact",
 		"knip:production": "knip --production --reporter compact",
+		"surface:check": "nub scripts/check-package-surface.ts",
 		"references:prepare": "nub scripts/prepare-reference-repositories.ts",
 		"references:deps": "nub scripts/prepare-reference-dependencies.ts",
 		"references:check": "nub scripts/audit-real-repository-pins.ts",

@@ -251,11 +251,11 @@ not a new consumer-facing runtime API.
 
 ## Acceptance criteria
 
-- [ ] Runtime-only installation does not require build-only ecosystem packages.
-- [ ] Every published export has an owner, maturity, and evidence record.
-- [ ] Internal `_runtime` paths are either removed from the public export map or
+- [x] Runtime-only installation does not require build-only ecosystem packages.
+- [x] Every published export has an owner, maturity, and evidence record.
+- [x] Internal `_runtime` paths are either removed from the public export map or
       justified by a verified external contract.
-- [ ] Package repository metadata points at the actual workspace directories.
+- [x] Package repository metadata points at the actual workspace directories.
 - [ ] Generated-artifact freshness failures identify the stale file, source
       input, and exact refresh command.
 - [ ] Runtime size, pack/import, typecheck, and package tests pass after the

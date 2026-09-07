@@ -1186,3 +1186,22 @@ provide them. The package tests keep inline snapshots for diagnostic shape and
 ordinary assertions for safety, including deep ASTs, aliases, shadowing,
 custom token policy, nested dynamics, runtime carriers, JSX prop conflicts,
 and both valid and invalid residual markers.
+
+## Package surface boundary
+
+The published package surface is tracked as repository evidence in
+`plans/evidence/package-surface.json`. Each export is classified by its owning
+lane (`runtime`, `build`, `integration`, or `tooling`), maturity, dependency
+requirements, external-contract status, and proof files. The `surface:check`
+script compares that inventory with every workspace `package.json`, verifies
+repository directory metadata, and rejects build-only dependencies in
+`pandwind`'s runtime dependency set.
+
+The stable runtime lane keeps `tw`, `css`, `cx`, presets, design contracts, and
+host types. Tailwind/Oxc/PostCSS/CAC/Unplugin are optional peers for the
+explicit codegen, scanner, and bundler lanes; they remain development
+dependencies for Pandwind's own build and test commands. The `_runtime/*`
+entries are deliberately marked internal because the Vite runtime-pruner emits
+those exact imports into generated code. They are a generated artifact
+contract, not authoring APIs, and their evidence is the pruner test rather
+than a public usage example.

@@ -1,0 +1,248 @@
+{
+	"schema": "pandwind.package-surface/1",
+	"records": [
+		{
+			"packageName": "pandwind",
+			"exportPaths": [
+				".",
+				"./css",
+				"./css/runtime",
+				"./cx",
+				"./preset",
+				"./design",
+				"./tw",
+				"./host"
+			],
+			"owner": "runtime",
+			"maturity": "stable",
+			"dependencies": ["csstype"],
+			"externalContract": true,
+			"evidence": [
+				"packages/pandwind/package.json",
+				"packages/pandwind/tests/package-exports.test.ts",
+				"docs/src/content/docs/getting-started.md"
+			],
+			"note": "The frozen authoring and host contracts."
+		},
+		{
+			"packageName": "pandwind",
+			"exportPaths": ["./css/stylex", "./css/panda", "./css/unocss"],
+			"owner": "integration",
+			"maturity": "experimental",
+			"dependencies": [],
+			"externalContract": true,
+			"evidence": [
+				"packages/pandwind/package.json",
+				"docs/src/content/docs/interop/css-in-js-adapters.md"
+			],
+			"note": "ClassNameStrategy integrations remain opt-in and adapter-owned."
+		},
+		{
+			"packageName": "pandwind",
+			"exportPaths": [
+				"./stack",
+				"./stack/react",
+				"./stack/solid",
+				"./stack/vue",
+				"./stack/preact",
+				"./react-native",
+				"./opentui",
+				"./backends"
+			],
+			"owner": "integration",
+			"maturity": "research",
+			"dependencies": [],
+			"externalContract": true,
+			"evidence": [
+				"packages/pandwind/package.json",
+				"docs/src/content/docs/reference/backends.md",
+				"docs/src/content/docs/contributing/architecture.md"
+			],
+			"note": "Non-default targets are retained, but they are not equivalent to the web lane."
+		},
+		{
+			"packageName": "pandwind",
+			"exportPaths": [
+				"./tw/generate",
+				"./tw/collect",
+				"./codegen/types",
+				"./codegen/theme",
+				"./codegen/collect",
+				"./codegen/bridge",
+				"./source",
+				"./source/workspace"
+			],
+			"owner": "build",
+			"maturity": "stable",
+			"dependencies": ["@tailwindcss/node", "cac", "oxc-parser", "postcss"],
+			"externalContract": true,
+			"evidence": [
+				"packages/pandwind/package.json",
+				"README.md",
+				"docs/src/content/docs/tooling/codegen.md"
+			],
+			"note": "Build and scanner contracts require their optional peer dependencies."
+		},
+		{
+			"packageName": "pandwind",
+			"exportPaths": ["./vite", "./unplugin"],
+			"owner": "integration",
+			"maturity": "stable",
+			"dependencies": ["unplugin"],
+			"externalContract": true,
+			"evidence": [
+				"packages/pandwind/package.json",
+				"docs/src/content/docs/tooling/vite-plugins.md",
+				"docs/src/content/docs/tooling/multi-bundler.md"
+			],
+			"note": "Bundler integration is explicit and has a separate optional peer lane."
+		},
+		{
+			"packageName": "pandwind",
+			"exportPaths": [
+				"./vite/css-extract",
+				"./vite/cross-module-consts",
+				"./vite/cx-inline",
+				"./vite/inline",
+				"./vite/stack-fold",
+				"./css/create-stylesheet",
+				"./design/resolve",
+				"./lib/utils",
+				"./tw/compile",
+				"./tw/interop",
+				"./tw/literal",
+				"./tw/token-graph",
+				"./types/typings"
+			],
+			"owner": "build",
+			"maturity": "experimental",
+			"dependencies": ["oxc-parser", "postcss"],
+			"externalContract": false,
+			"evidence": [
+				"packages/pandwind/package.json",
+				"plans/059-product-surface-and-package-boundary.md",
+				"docs/src/content/docs/contributing/architecture.md"
+			],
+			"note": "Workspace compatibility paths. New consumers should use an owning package entry."
+		},
+		{
+			"packageName": "pandwind",
+			"exportPaths": [
+				"./_runtime/css-base",
+				"./_runtime/css-class",
+				"./_runtime/css-vars",
+				"./_runtime/css-raw",
+				"./_runtime/css-props",
+				"./_runtime/css-group",
+				"./_runtime/css-input"
+			],
+			"owner": "runtime",
+			"maturity": "stable",
+			"dependencies": [],
+			"externalContract": false,
+			"evidence": [
+				"packages/pandwind/package.json",
+				"packages/pandwind/src/vite/runtime-pruner.ts",
+				"packages/pandwind/tests/runtime-pruner.test.ts"
+			],
+			"note": "Private generated imports emitted by runtime pruning; removing them would break the generated artifact contract."
+		},
+		{
+			"packageName": "pandwind",
+			"exportPaths": ["./package.json"],
+			"owner": "runtime",
+			"maturity": "stable",
+			"dependencies": [],
+			"externalContract": true,
+			"evidence": ["packages/pandwind/package.json"],
+			"note": "Standard package metadata entry."
+		},
+		{
+			"packageName": "pandwind-codemod",
+			"exportPaths": [
+				".",
+				"./diff",
+				"./swap",
+				"./swap/semantic-ir",
+				"./migration/meta",
+				"./migration/map",
+				"./migration/source",
+				"./migration/shared",
+				"./migration/tokens",
+				"./swap/unplugin",
+				"./swap/vite",
+				"./swap/browser",
+				"./package.json"
+			],
+			"owner": "tooling",
+			"maturity": "stable",
+			"dependencies": [],
+			"externalContract": true,
+			"evidence": [
+				"packages/codemod/package.json",
+				"packages/codemod/README.md",
+				"docs/src/content/docs/tooling/codemod.md"
+			],
+			"note": "The supported migration and virtual-bundler tooling contract."
+		},
+		{
+			"packageName": "pandwind-codemod",
+			"exportPaths": [
+				"./swap/official-api-cases",
+				"./swap/identifiers",
+				"./swap/official/panda",
+				"./swap/corpus"
+			],
+			"owner": "tooling",
+			"maturity": "experimental",
+			"dependencies": [],
+			"externalContract": false,
+			"evidence": [
+				"packages/codemod/package.json",
+				"plans/060-real-world-migration-proof.md",
+				"packages/codemod/tests/official-adapter-api-matrix.test.ts"
+			],
+			"note": "Catalog and proof data used by the migration lab and verification tooling."
+		},
+		{
+			"packageName": "pandwind-analyze",
+			"exportPaths": [".", "./collect", "./governance", "./studio", "./mcp", "./mcp/http", "./package.json"],
+			"owner": "tooling",
+			"maturity": "experimental",
+			"dependencies": [],
+			"externalContract": true,
+			"evidence": [
+				"packages/analyze/package.json",
+				"packages/analyze/README.md",
+				"plans/062-tooling-trust-and-agent-surfaces.md"
+			],
+			"note": "Analyzer, Studio, and MCP are host tooling rather than runtime authoring APIs."
+		},
+		{
+			"packageName": "pandwind-devtools",
+			"exportPaths": [".", "./inspect-action", "./evidence", "./package.json"],
+			"owner": "tooling",
+			"maturity": "experimental",
+			"dependencies": [],
+			"externalContract": true,
+			"evidence": [
+				"packages/devtools/package.json",
+				"plans/062-tooling-trust-and-agent-surfaces.md"
+			],
+			"note": "Optional Vite inspection tooling."
+		},
+		{
+			"packageName": "@pandwind/lint-plugin",
+			"exportPaths": ["."],
+			"owner": "tooling",
+			"maturity": "experimental",
+			"dependencies": [],
+			"externalContract": true,
+			"evidence": [
+				"packages/lint-plugin/package.json",
+				"packages/lint-plugin/README.md"
+			],
+			"note": "Opt-in source-shape linting."
+		}
+	]
+}
