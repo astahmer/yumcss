@@ -59,6 +59,26 @@ repository source tree or a special TypeScript runner.
 pnpm add pandwind
 ```
 
+The runtime lane has no Tailwind, PostCSS, parser, or bundler dependency. The
+advanced build subpaths declare those packages as optional peers so a runtime
+only install stays small. Install only the lane you use:
+
+```sh
+# typed Tailwind codegen (`pandwind-tw`) and Tailwind project loading
+pnpm add -D @tailwindcss/node postcss cac
+
+# source scanning or the migration/analyze packages
+pnpm add -D oxc-parser
+
+# Vite/unplugin integration
+pnpm add -D unplugin
+```
+
+`pandwind` keeps these as development dependencies for its own build and tests;
+they are not installed by a runtime-only consumer. The codegen and integration
+entries report the missing optional package through the host/package manager
+when that lane is selected.
+
 For repository development only, enter the reproducible shell first. It provides
 the pinned Nub TypeScript runner, Node, pnpm, and the formatting utilities:
 

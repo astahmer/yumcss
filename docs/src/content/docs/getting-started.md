@@ -13,6 +13,21 @@ repository source tree or a special TypeScript runner.
 pnpm add pandwind
 ```
 
+The core runtime does not install Tailwind, PostCSS, the parser, or bundler
+integration packages. Those build subpaths use optional peers, so add only the
+packages required by the lane you choose:
+
+```sh
+# `pandwind-tw` codegen and Tailwind project loading
+pnpm add -D @tailwindcss/node postcss cac
+
+# source scanning
+pnpm add -D oxc-parser
+
+# Vite/unplugin integration
+pnpm add -D unplugin
+```
+
 There are three steps: define a preset, generate the Tailwind artifacts, add vite plugins, and use
 the APIs.
 

@@ -1,4 +1,14 @@
+import { readFileSync } from "node:fs";
 import { describe, expect, test } from "vitest";
+
+const packageManifest = JSON.parse(
+	readFileSync(new URL("../package.json", import.meta.url), "utf8"),
+) as {
+	readonly repository: { readonly directory: string };
+	readonly dependencies: Readonly<Record<string, string>>;
+	readonly peerDependencies: Readonly<Record<string, string>>;
+	readonly peerDependenciesMeta: Readonly<Record<string, { readonly optional?: boolean }>>;
+};
 
 const entries = [
 	"pandwind/css",
@@ -40,5 +50,14 @@ describe("pandwind package boundary", () => {
 
 	test("does not expose the codemod-owned recipe runtime", () => {
 		expect(() => import.meta.resolve("pandwind/recipe")).toThrow();
+	});
+
+	test("keeps build-only packages out of runtime dependencies", () => {
+		expect(packageManifest.repository.directory).toBe("packages/pandwind");
+		expect(packageManifest.dependencies).toEqual({ csstype: "3.2.3" });
+		for (const dependency of ["@tailwindcss/node", "cac", "oxc-parser", "postcss", "unplugin"]) {
+			expect(packageManifest.peerDependencies[dependency]).toBeDefined();
+			expect(packageManifest.peerDependenciesMeta[dependency]).toEqual({ optional: true });
+		}
 	});
 });

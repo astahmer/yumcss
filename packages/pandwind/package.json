@@ -330,20 +330,19 @@
 		"test:types": "tstyche --target 6.0.3"
 	},
 	"dependencies": {
-		"@tailwindcss/node": "4.3.3",
-		"cac": "7.0.0",
-		"csstype": "3.2.3",
-		"oxc-parser": "0.148.0",
-		"postcss": "8.5.28",
-		"unplugin": "3.3.0"
+		"csstype": "3.2.3"
 	},
 	"devDependencies": {
+		"@tailwindcss/node": "4.3.3",
 		"@types/node": "26.4.1",
 		"@types/react": "19.2.18",
 		"@types/react-dom": "19.2.7",
 		"@unocss/core": "66.10.0",
 		"@vitest/coverage-v8": "5.0.0",
+		"cac": "7.0.0",
 		"esbuild": "0.28.2",
+		"oxc-parser": "0.148.0",
+		"postcss": "8.5.28",
 		"preact": "10.29.8",
 		"preact-render-to-string": "6.7.0",
 		"react-dom": "19.2.8",
@@ -353,19 +352,37 @@
 		"tsdown": "0.23.0",
 		"tstyche": "7.2.3",
 		"typescript": "7.0.2",
+		"unplugin": "3.3.0",
 		"vite": "8.2.2",
 		"vitest": "5.0.0",
 		"vue": "3.5.42",
 		"webpack": "5.110.3"
 	},
 	"peerDependencies": {
+		"@tailwindcss/node": "4.3.3",
+		"cac": "7.0.0",
+		"oxc-parser": "0.148.0",
+		"postcss": "8.5.28",
 		"preact": ">=10.0.0",
 		"react": ">=18.0.0",
 		"solid-js": ">=1.8.0",
+		"unplugin": "3.3.0",
 		"vite": ">=5.0.0",
 		"vue": ">=3.3.0"
 	},
 	"peerDependenciesMeta": {
+		"@tailwindcss/node": {
+			"optional": true
+		},
+		"cac": {
+			"optional": true
+		},
+		"oxc-parser": {
+			"optional": true
+		},
+		"postcss": {
+			"optional": true
+		},
 		"preact": {
 			"optional": true
 		},
@@ -373,6 +390,9 @@
 			"optional": true
 		},
 		"solid-js": {
+			"optional": true
+		},
+		"unplugin": {
 			"optional": true
 		},
 		"vue": {

@@ -580,28 +580,16 @@ importers:
 
   packages/pandwind:
     dependencies:
-      '@tailwindcss/node':
-        specifier: 4.3.3
-        version: 4.3.3
-      cac:
-        specifier: 7.0.0
-        version: 7.0.0
       csstype:
         specifier: 3.2.3
         version: 3.2.3
-      oxc-parser:
-        specifier: 0.148.0
-        version: 0.148.0
-      postcss:
-        specifier: 8.5.28
-        version: 8.5.28
       react:
         specifier: '>=18.0.0'
         version: 19.2.8
-      unplugin:
-        specifier: 3.3.0
-        version: 3.3.0(esbuild@0.28.2)(rolldown@1.2.7)(rollup@4.63.1)(vite@8.2.2)(webpack@5.110.3(@swc/core@1.16.1(@swc/helpers@0.5.23))(csso@5.0.5)(esbuild@0.28.2)(lightningcss@1.33.0)(postcss@8.5.28)(sharp@0.35.4(@types/node@26.4.1))(svgo@4.1.0))
     devDependencies:
+      '@tailwindcss/node':
+        specifier: 4.3.3
+        version: 4.3.3
       '@types/node':
         specifier: 26.4.1
         version: 26.4.1
@@ -617,9 +605,18 @@ importers:
       '@vitest/coverage-v8':
         specifier: 5.0.0
         version: 5.0.0(vitest@5.0.0)
+      cac:
+        specifier: 7.0.0
+        version: 7.0.0
       esbuild:
         specifier: 0.28.2
         version: 0.28.2
+      oxc-parser:
+        specifier: 0.148.0
+        version: 0.148.0
+      postcss:
+        specifier: 8.5.28
+        version: 8.5.28
       preact:
         specifier: 10.29.8
         version: 10.29.8(preact-render-to-string@6.7.0)
@@ -647,6 +644,9 @@ importers:
       typescript:
         specifier: 7.0.2
         version: 7.0.2
+      unplugin:
+        specifier: 3.3.0
+        version: 3.3.0(esbuild@0.28.2)(rolldown@1.2.7)(rollup@4.63.1)(vite@8.2.2)(webpack@5.110.3(@swc/core@1.16.1(@swc/helpers@0.5.23))(csso@5.0.5)(esbuild@0.28.2)(lightningcss@1.33.0)(postcss@8.5.28)(sharp@0.35.4(@types/node@26.4.1))(svgo@4.1.0))
       vite:
         specifier: 8.2.2
         version: 8.2.2(@types/node@26.4.1)(@vitejs/devtools@0.7.2)(esbuild@0.28.2)(jiti@2.7.0)(less@4.9.1(supports-color@8.1.1))(sass@1.104.0)(terser@5.51.2)(yaml@2.9.0)
