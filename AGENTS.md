@@ -209,7 +209,7 @@ install` may update it compatibly. CI must provision Nub before invoking
   its declared package name and subpath exports. Do not import
   `packages/*/src/*` or `node_modules/*/src/*` from applications, scripts,
   tests, examples, or documentation. Build-time commands use the package's
-	declared binaries (for example, `pandwind-codemod tw generate`) rather than reaching
+  declared binaries (for example, `pandwind-codemod tw generate`) rather than reaching
   into source files. Direct source paths are allowed only when a harness must
   load an exact historical worktree revision or intentionally bundles a
   package from the current repository; those sites must document that reason.

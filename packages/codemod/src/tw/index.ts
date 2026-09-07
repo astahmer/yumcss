@@ -17,11 +17,7 @@ export {
 	type TwPruneCommand,
 	type TwScanCommand,
 } from "./cli.ts";
-export {
-	BRIDGE_PROPS,
-	generateUtilityBridge,
-	type UtilityBridge,
-} from "./bridge.ts";
+export { BRIDGE_PROPS, generateUtilityBridge, type UtilityBridge } from "./bridge.ts";
 export {
 	createDesignSystemCodegen,
 	generateDesignSystem,

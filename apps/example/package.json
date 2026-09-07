@@ -24,8 +24,8 @@
 		"@types/react-dom": "19.2.7",
 		"@vitejs/devtools": "0.7.2",
 		"@vitejs/plugin-react-swc": "4.3.3",
-		"pandwind-devtools": "workspace:*",
 		"pandwind-codemod": "workspace:*",
+		"pandwind-devtools": "workspace:*",
 		"tailwindcss": "4.3.3",
 		"typescript": "7.0.2",
 		"vite": "8.2.2"

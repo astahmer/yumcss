@@ -28,6 +28,6 @@ export async function generateUtilityBridge(
 	entry: string,
 	base: string,
 	options: { props?: readonly string[]; values?: ReadonlySet<string> } = {},
-	): Promise<import("pandwind/tw").UtilityBridge> {
+): Promise<import("pandwind/tw").UtilityBridge> {
 	return new UtilityBridgeGenerator().generate(entry, base, options);
 }

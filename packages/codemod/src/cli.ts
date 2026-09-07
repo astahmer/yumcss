@@ -880,7 +880,9 @@ async function main(argv = process.argv.slice(2)): Promise<void> {
 		try {
 			await createTwCli().run(argv.slice(1));
 		} catch (error) {
-			console.error(`pandwind-codemod tw: ${error instanceof Error ? error.message : String(error)}`);
+			console.error(
+				`pandwind-codemod tw: ${error instanceof Error ? error.message : String(error)}`,
+			);
 			process.exitCode = 1;
 		}
 		return;
