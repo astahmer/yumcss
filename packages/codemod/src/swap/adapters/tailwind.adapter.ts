@@ -825,8 +825,72 @@ type TailwindEnginePackage = {
 	}>;
 };
 
+type TailwindDesignSystem = Awaited<
+	ReturnType<NonNullable<TailwindEnginePackage["__unstable__loadDesignSystem"]>>
+>;
+
+const TAILWIND_THEME_VARIABLE = /var\((--[A-Za-z0-9_-]+)(?:,\s*([^)]*))?\)/gu;
+const TAILWIND_LENGTH = /^(-?(?:\d+|\d*\.\d+))(rem|em|px|%)$/u;
+const TAILWIND_SPACING_CALC = /^calc\(\s*var\(--spacing\)\s*\*\s*(-?(?:\d+|\d*\.\d+))\s*\)$/u;
+
+function tailwindThemeValues(system: TailwindDesignSystem): Map<string, string> {
+	return new Map(
+		[...(system.theme?.entries() ?? [])].flatMap(([variable, entry]) =>
+			entry.value === undefined ? [] : [[variable, entry.value] as const],
+		),
+	);
+}
+
+function resolveTailwindThemeValue(value: string, theme: ReadonlyMap<string, string>): string {
+	let current = value;
+	for (let index = 0; index < 8; index++) {
+		const next = current.replace(TAILWIND_THEME_VARIABLE, (match, name, fallback) => {
+			const resolved = theme.get(name);
+			return resolved ?? (fallback === undefined ? match : fallback.trim());
+		});
+		if (next === current) break;
+		current = next;
+	}
+	const calc = current.match(/^calc\(\s*([^*]+?)\s*\*\s*([^)]*?)\s*\)$/u);
+	if (calc?.[1] === undefined || calc[2] === undefined) return current;
+	const left = calc[1].trim().match(TAILWIND_LENGTH);
+	const right = Number(calc[2].trim());
+	if (left === null || !Number.isFinite(right)) return current;
+	return `${Number(left[1]) * right}${left[2]}`;
+}
+
+function resolveTailwindDeclarations(
+	declarations: readonly StyleDeclaration[] | undefined,
+	theme: ReadonlyMap<string, string>,
+): readonly StyleDeclaration[] | undefined {
+	if (declarations === undefined) return undefined;
+	return declarations.map((declaration) => {
+		if (declaration.value.kind !== StyleValueKindTag.Literal) return declaration;
+		if (typeof declaration.value.value !== "string") return declaration;
+		const value = resolveTailwindThemeValue(declaration.value.value, theme);
+		return value === declaration.value.value
+			? declaration
+			: { ...declaration, value: { ...declaration.value, value } };
+	});
+}
+
+function spacingTokenFromCssValue(
+	value: string,
+	theme: ReadonlyMap<string, string>,
+): { readonly key: string; readonly value: string } | undefined {
+	const match = value.match(TAILWIND_SPACING_CALC);
+	if (match?.[1] === undefined) return undefined;
+	const factor = Number(match[1]);
+	if (!Number.isFinite(factor) || factor < 0) return undefined;
+	const resolved = resolveTailwindThemeValue(value, theme);
+	return resolved === value ? undefined : { key: String(factor), value: resolved };
+}
+
 function tailwindTokenCatalog(
-	system: Awaited<ReturnType<NonNullable<TailwindEnginePackage["__unstable__loadDesignSystem"]>>>,
+	system: TailwindDesignSystem,
+	candidates: readonly string[] = system.getClassList?.().map(([candidate]) => candidate) ?? [],
+	compiled: readonly (string | null)[] = [],
+	theme = tailwindThemeValues(system),
 ) {
 	const groups: Record<string, Record<string, string>> = {};
 	const groupNames: Readonly<Record<string, string>> = {
@@ -848,6 +912,15 @@ function tailwindTokenCatalog(
 		const group = match?.[1] === undefined ? undefined : groupNames[match[1]];
 		if (group === undefined || match?.[2] === undefined || entry.value === undefined) continue;
 		(groups[group] ??= {})[match[2]] = entry.value;
+	}
+	for (let index = 0; index < candidates.length; index++) {
+		const declarations = parseEngineCss(compiled[index] ?? "", candidates[index]!);
+		for (const declaration of declarations ?? []) {
+			if (declaration.value.kind !== StyleValueKindTag.Literal) continue;
+			if (typeof declaration.value.value !== "string") continue;
+			const spacing = spacingTokenFromCssValue(declaration.value.value, theme);
+			if (spacing !== undefined) (groups.spacing ??= {})[spacing.key] ??= spacing.value;
+		}
 	}
 	return TokenCatalog.fromGroups(groups);
 }
@@ -1020,17 +1093,24 @@ async function officialConfig(
 		const system = await module.__unstable__loadDesignSystem(cssFile.text, {
 			base: dirnameDocumentPath(cssFile.file),
 		});
+		const theme = tailwindThemeValues(system);
 		const candidates = (system.getClassList?.() ?? []).map(([candidate]) => candidate);
 		const compiled = system.candidatesToCss(candidates);
 		const cache = new Map<string, readonly StyleDeclaration[] | undefined>();
 		for (let index = 0; index < candidates.length; index++) {
 			const candidate = candidates[index]!;
-			cache.set(candidate, parseEngineCss(compiled[index] ?? "", candidate));
+			cache.set(
+				candidate,
+				resolveTailwindDeclarations(parseEngineCss(compiled[index] ?? "", candidate), theme),
+			);
 		}
 		const resolver: TailwindOfficialUtilityResolver = {
 			resolve(token) {
 				if (cache.has(token)) return cache.get(token);
-				const resolved = parseEngineCss(system.candidatesToCss([token])[0] ?? "", token);
+				const resolved = resolveTailwindDeclarations(
+					parseEngineCss(system.candidatesToCss([token])[0] ?? "", token),
+					theme,
+				);
 				cache.set(token, resolved);
 				return resolved;
 			},
@@ -1043,7 +1123,7 @@ async function officialConfig(
 			files: cssFiles.map(({ file }) =>
 				file.startsWith(context.root!) ? file : joinDocumentPath(context.root!, file),
 			),
-			tokenCatalog: tailwindTokenCatalog(system)?.contract,
+			tokenCatalog: tailwindTokenCatalog(system, candidates, compiled, theme)?.contract,
 			values: {
 				...fallback.values,
 				tailwindResolver: resolver,

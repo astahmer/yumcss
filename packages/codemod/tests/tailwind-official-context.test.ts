@@ -47,7 +47,11 @@ function loader(): ProjectModuleLoader {
 	};
 }
 
-function migrate(source: string, projectFiles: Readonly<Record<string, string>>) {
+function migrate(
+	source: string,
+	projectFiles: Readonly<Record<string, string>>,
+	moduleLoader: ProjectModuleLoader = loader(),
+) {
 	const target = createPandwindAdapter({ moduleLoader: null });
 	return runAdapterMigrationAsync(source, {
 		from: CodemodAdapterId.Tailwind,
@@ -56,11 +60,33 @@ function migrate(source: string, projectFiles: Readonly<Record<string, string>>)
 		root,
 		readFile: (path) => projectFiles[path],
 		listFiles: () => Object.keys(projectFiles),
-		adapterRegistry: createStyleAdapterRegistry([
-			createTailwindAdapter({ moduleLoader: loader() }),
-			target,
-		]),
+		adapterRegistry: createStyleAdapterRegistry([createTailwindAdapter({ moduleLoader }), target]),
 	});
+}
+
+function spacingLoader(): ProjectModuleLoader {
+	return {
+		async importPackage(packageName) {
+			if (packageName !== "@tailwindcss/node") return undefined;
+			return {
+				__unstable__loadDesignSystem: async () => ({
+					candidatesToCss: (candidates: readonly string[]) =>
+						candidates.map((candidate) =>
+							candidate === "p-4"
+								? "@layer utilities { .p-4 { padding: calc(var(--spacing) * 4); } }"
+								: null,
+						),
+					getClassList: () => [["p-4", {}] as const],
+					theme: {
+						entries: () => new Map([["--spacing", { value: "0.25rem" }]]),
+					},
+				}),
+			} as never;
+		},
+		async importFile() {
+			return undefined;
+		},
+	};
 }
 
 describe("Tailwind official CSS context", () => {
@@ -104,6 +130,33 @@ describe("Tailwind official CSS context", () => {
 			const css = createCss();
 			export const App = () => <div className={css.class({ "[data-theme=midnight] &": { tabSize: "4" } })}/>;"
 		`);
+	});
+
+	test("resolves official spacing variables before lowering utilities", async () => {
+		const projectFiles: Readonly<Record<string, string>> = files();
+		const config = await createTailwindAdapter({ moduleLoader: spacingLoader() }).loadConfigAsync?.(
+			{
+				file,
+				source: "",
+				root,
+				listFiles: () => [cssFile],
+				readFile: (path) => projectFiles[path],
+			},
+		);
+		expect(config?.tokenCatalog?.groups.spacing).toEqual({ "4": "1rem" });
+
+		const result = await migrate(
+			'export const App = () => <div className="p-4" />;',
+			files(),
+			spacingLoader(),
+		);
+
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain('padding: "1rem"');
+		expect(result.code).not.toContain("var(--spacing)");
+		expect(result.code).not.toContain("calc(var(--spacing)");
 	});
 
 	test("reports a missing project CSS graph instead of silently using fallback utilities", async () => {

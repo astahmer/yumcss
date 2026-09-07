@@ -14,6 +14,36 @@ interface InstalledProofReport {
 	readonly browser: { readonly equivalent: boolean; readonly errors: readonly string[] };
 }
 
+interface TailwindInstalledProofReport {
+	readonly schema: string;
+	readonly route: { readonly from: string; readonly to: string };
+	readonly dependencies: { readonly installed: boolean; readonly targetNodeModule: boolean };
+	readonly migration: {
+		readonly converted: number;
+		readonly skipped: number;
+		readonly residuals: number;
+		readonly targetUsesPandwind: boolean;
+		readonly sourceStylesheetImportRemoved: boolean;
+		readonly generatedVitePresetImportIsExplicit: boolean;
+	};
+	readonly checks: {
+		readonly sourceTypecheck: boolean;
+		readonly targetTypecheck: boolean;
+		readonly sourceBuild: boolean;
+		readonly targetBuild: boolean;
+		readonly sourceSsr: boolean;
+		readonly targetSsr: boolean;
+		readonly hydration: boolean;
+	};
+	readonly ssr: { readonly markupEquivalent: boolean };
+	readonly browser: {
+		readonly equivalent: boolean;
+		readonly changedPixels: number;
+		readonly hydrationErrors: readonly string[];
+	};
+	readonly css: { readonly sourceBytes: number; readonly targetBytes: number };
+}
+
 describe("installed adapter proof artifacts", () => {
 	test("keeps the promoted Goober report lossless and browser-equivalent", () => {
 		const report = JSON.parse(
@@ -31,5 +61,40 @@ describe("installed adapter proof artifacts", () => {
 		});
 		expect(report.ssr).toMatchObject({ markupEquivalent: true, notLarger: true });
 		expect(report.browser).toMatchObject({ equivalent: true, errors: [] });
+	});
+
+	test("keeps the installed Tailwind project proof complete", () => {
+		const report = JSON.parse(
+			readFileSync(
+				resolve(import.meta.dirname, "../../../plans/evidence/tailwind-installed-proof.json"),
+				"utf8",
+			),
+		) as TailwindInstalledProofReport;
+		expect(report).toMatchObject({
+			schema: "pandwind.installed-project-proof/1",
+			route: { from: "tailwind", to: "pandwind" },
+			dependencies: { installed: true, targetNodeModule: true },
+			migration: {
+				converted: 1,
+				skipped: 0,
+				residuals: 0,
+				targetUsesPandwind: true,
+				sourceStylesheetImportRemoved: true,
+				generatedVitePresetImportIsExplicit: true,
+			},
+			checks: {
+				sourceTypecheck: true,
+				targetTypecheck: true,
+				sourceBuild: true,
+				targetBuild: true,
+				sourceSsr: true,
+				targetSsr: true,
+				hydration: true,
+			},
+			ssr: { markupEquivalent: true },
+			browser: { equivalent: true, changedPixels: 0, hydrationErrors: [] },
+		});
+		expect(report.css.sourceBytes).toBeGreaterThan(0);
+		expect(report.css.targetBytes).toBeGreaterThan(0);
 	});
 });

@@ -19,6 +19,12 @@ describe("Pandwind project bootstrap", () => {
 		expect(support.files.find((file) => file.path === "pandwind/css.ts")?.content).toContain(
 			'import "pandwind:css";',
 		);
+		expect(support.files.find((file) => file.path === "pandwind/css.ts")?.content).toContain(
+			'reference path="./vite-env.d.ts"',
+		);
+		expect(support.files.find((file) => file.path === "pandwind/vite-env.d.ts")?.content).toContain(
+			'declare module "pandwind:css"',
+		);
 		expect(support.bindings.dssModule).toBe("pandwind/dss.ts");
 		expect(support.files.find((file) => file.path === "pandwind/dss.ts")?.content).toContain(
 			"createDesignCss(pandwindPreset)",
@@ -73,9 +79,10 @@ describe("Pandwind project bootstrap", () => {
 						'import { defineConfig } from "vite";',
 						"export default defineConfig({ plugins: [tailwindcss()] });",
 					].join("\n");
+				if (file === "/project/tsconfig.json") return '{"compilerOptions":{"strict":true}}';
 				return undefined;
 			},
-			listFiles: () => ["/project/styles.css", "/project/vite.config.ts"],
+			listFiles: () => ["/project/styles.css", "/project/vite.config.ts", "/project/tsconfig.json"],
 		});
 
 		expect(support.fileChanges).toEqual([
@@ -92,6 +99,11 @@ describe("Pandwind project bootstrap", () => {
 					'import { defineConfig } from "vite";',
 					'export default defineConfig({ plugins: [pandwindCssVite(pandwindPreset, { root: "." })] });',
 				].join("\n"),
+			},
+			{
+				path: "tsconfig.json",
+				expectedContent: '{"compilerOptions":{"strict":true}}',
+				content: '{"compilerOptions":{\n\t"allowImportingTsExtensions": true,"strict":true}}',
 			},
 		]);
 	});

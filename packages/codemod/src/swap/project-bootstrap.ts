@@ -255,6 +255,50 @@ function rewriteTailwindViteConfigs(
 	return changes;
 }
 
+function enableTypeScriptExtensionImports(
+	request: ProjectBootstrapRequest,
+	needsExtensionImports: boolean,
+): readonly {
+	readonly path: string;
+	readonly content: string;
+	readonly expectedContent: string;
+}[] {
+	if (!needsExtensionImports) return [];
+	const configPath = request.listFiles(request.root).find((file) => {
+		return resolve(request.root, file) === resolve(request.root, "tsconfig.json");
+	});
+	if (configPath === undefined) return [];
+	const source = request.readFile(resolve(request.root, configPath));
+	if (source === undefined || /"allowImportingTsExtensions"\s*:\s*true/u.test(source)) return [];
+	const newline = source.includes("\r\n") ? "\r\n" : "\n";
+	const compilerOptions = /("compilerOptions"\s*:\s*\{)/u.exec(source);
+	let content: string;
+	if (compilerOptions !== null && compilerOptions.index !== undefined) {
+		const lineStart = source.lastIndexOf("\n", compilerOptions.index) + 1;
+		const linePrefix = source.slice(lineStart, compilerOptions.index);
+		const indentation = /^\s*/u.exec(linePrefix)?.[0] ?? "";
+		content =
+			source.slice(0, compilerOptions.index + compilerOptions[0].length) +
+			`${newline}${indentation}\t"allowImportingTsExtensions": true,` +
+			source.slice(compilerOptions.index + compilerOptions[0].length);
+	} else {
+		const openingBrace = source.indexOf("{");
+		if (openingBrace < 0) return [];
+		content =
+			source.slice(0, openingBrace + 1) +
+			`${newline}\t"compilerOptions": {${newline}\t\t"allowImportingTsExtensions": true${newline}\t},` +
+			source.slice(openingBrace + 1);
+	}
+	if (content === source) return [];
+	return [
+		{
+			path: relative(request.root, resolve(request.root, configPath)).replaceAll("\\", "/"),
+			content,
+			expectedContent: source,
+		},
+	];
+}
+
 function presetSource(
 	config: AdapterProjectConfig,
 	conditions: Readonly<Record<string, string>>,
@@ -278,11 +322,20 @@ export const pandwindPreset = definePreset(
 }
 
 function cssSource(): string {
-	return `import "pandwind:css";
+	return `/// <reference path="./vite-env.d.ts" />
+import "pandwind:css";
 import { createCss } from "pandwind/css";
 import { pandwindPreset } from "./preset";
 
 export const css = createCss(pandwindPreset);
+`;
+}
+
+function viteEnvSource(): string {
+	return `/// <reference types="vite/client" />
+
+/** Virtual CSS module served by \`pandwindCssVite\`. */
+declare module "pandwind:css";
 `;
 }
 
@@ -390,6 +443,7 @@ export async function createPandwindProjectSupport(
 	const directory = posixPath(request.outputDirectory).replace(/\/$/u, "");
 	const preset = projectFile(directory, "preset.ts");
 	const css = projectFile(directory, "css.ts");
+	const viteEnv = projectFile(directory, "vite-env.d.ts");
 	const runtimeCss = projectFile(directory, "runtime.ts");
 	const dss = projectFile(directory, "dss.ts");
 	const cx = projectFile(directory, "cx.ts");
@@ -399,6 +453,7 @@ export async function createPandwindProjectSupport(
 		: [
 				generatedFile(preset, presetSource(sourceConfig, {}), "Pandwind target preset"),
 				generatedFile(css, cssSource(), "shared extracted css() binding"),
+				generatedFile(viteEnv, viteEnvSource(), "Pandwind Vite virtual-module types"),
 				generatedFile(runtimeCss, runtimeCssSource(), "shared runtime css() binding"),
 				generatedFile(dss, dssSource(), "shared design-system dss() binding"),
 				generatedFile(cx, cxSource(), "shared cx() binding"),
@@ -460,6 +515,7 @@ export async function createPandwindProjectSupport(
 		? files
 		: undefined;
 	const hasGeneratedTw = files.some((file) => file.path === projectFile(directory, "tw.ts"));
+	const viteConfigChanges = rewriteTailwindViteConfigs(request, sourceConfig, directory);
 	return {
 		metaDirectory: directory,
 		bindings: {
@@ -473,7 +529,8 @@ export async function createPandwindProjectSupport(
 		files,
 		fileChanges: [
 			...removeTailwindStylesheetImports(request, sourceConfig, directory),
-			...rewriteTailwindViteConfigs(request, sourceConfig, directory),
+			...viteConfigChanges,
+			...enableTypeScriptExtensionImports(request, viteConfigChanges.length > 0),
 		],
 		...(metaFiles === undefined ? {} : { meta: loadGeneratedMeta(metaFiles, directory) }),
 		sourceConfig,
