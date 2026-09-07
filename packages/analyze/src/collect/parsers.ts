@@ -9,8 +9,8 @@ import type { ThemeVar, TokenSection, UtilityUnion } from "./types.ts";
 /**
  * Parse `@theme [modifier] { --name: value; }` blocks from any css source.
  * Handles multiple blocks, modifiers (`inline`, `default`, `static`, …),
- * brace-matched bodies (the old single-block index scan missed every file
- * whose block wasn't literally `@theme {` on one line).
+ * brace-matched bodies so modifiers and multiline headers are handled without
+ * depending on the block appearing literally as `@theme {` on one line.
  */
 export const parseThemeVars = (bridgeCss: string): Array<ThemeVar> => {
 	const vars: Array<ThemeVar> = [];

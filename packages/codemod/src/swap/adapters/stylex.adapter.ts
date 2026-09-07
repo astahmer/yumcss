@@ -928,7 +928,7 @@ export function createStyleXAdapter(options: StyleXAdapterOptions = {}) {
 				// runtime-only carrier. Rewrite the static consumers even when the
 				// file remains partial; leaving `stylex.props(staticGroup)` in place
 				// would type-check against the wrong compiled-style contract and would
-				// make the static portion depend on the old runtime.
+				// make the static portion depend on the source runtime.
 				if (targetId !== CodemodAdapterId.Pandwind) return { code, residuals: [] };
 				let rewritten = code;
 				const cssBinding = generatedCssBinding(source);

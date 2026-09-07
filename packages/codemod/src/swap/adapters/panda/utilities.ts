@@ -28,9 +28,9 @@ export class PandaUtilityCatalog {
 				continue;
 			}
 			// Panda's effective config uses the utility key as the canonical
-			// property and describes its authored aliases separately. Older
-			// project-defined utilities may still expose an explicit `property`;
-			// accept both shapes so the official loader remains the source of truth.
+			// property and describes its authored aliases separately. Project-defined
+			// utilities may expose an explicit `property`; accept both shapes while
+			// keeping the official loader as the source of truth.
 			const property = typeof definition.property === "string" ? definition.property : name;
 			names.add(name);
 			names.add(property);

@@ -768,9 +768,8 @@ root.
 Source transformation primitives have one owner: `SourcePass` in
 `packages/codemod/src/source-pass-utils.ts`. It scopes balanced-block matching,
 excluded-range calculation, offset-safe edits, and residual-marker insertion
-behind one small class. The legacy copies in the source migration façade and
-the general migration runner were removed; adapter and pipeline code consumes
-this owner instead. The migration composition root is kept in
+behind one small class. Adapter and pipeline code consume this owner directly.
+The migration composition root is kept in
 `adapter-migration.ts`, while the port-driven algorithm lives in
 `adapter-migration-engine.ts`. The engine does not construct the adapter
 registry, scanner, or lowering registry; the composition root supplies them.
@@ -1145,7 +1144,7 @@ Virtual migration is an evaluation and progressive-adoption lane. It keeps
 source files and package manifests unchanged, while making generated target
 artifacts available through virtual module ids. It must be configured in each
 relevant client and SSR build, and it cannot provide editor-visible source
-parity or remove the old runtime dependency by itself. Once the route is
+parity or remove the source runtime dependency by itself. Once the route is
 accepted, the CLI codemod remains the explicit path to a committed migration.
 
 The contract is intentionally tested at the plugin boundary in

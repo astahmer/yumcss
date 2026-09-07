@@ -962,7 +962,7 @@ function runOnce(input: EvalInput, mode: EvalMode): PlaygroundResult {
 	 * Instrumented css() binding. The wrapper exposes the SAME surface as the
 	 * real css() (callable plus every namespaced method the instance carries:
 	 * class / raw / vars / props / group / input), so sandbox code can use the
-	 * full documented API without crashing on a partial shim.
+	 * full documented API without crashing on a partial runtime adapter.
 	 */
 	const cssCall =
 		(method?: string) =>

@@ -1005,7 +1005,7 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 		`${emittedPatternNames.map((n) => `export { ${n} } from "./${n}";`).join("\n")}\n`,
 	);
 
-	// token() shim when the app uses styled-system/tokens.
+	// token() bridge when the app uses styled-system/tokens.
 	if (files.some((f) => /styled-system\/tokens/.test(f.source))) {
 		const rows = [...theme.tokenVars.entries()]
 			.toSorted(([a], [b]) => a.localeCompare(b))

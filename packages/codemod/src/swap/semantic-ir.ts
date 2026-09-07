@@ -252,7 +252,7 @@ export interface StyleProgram {
 	readonly schema: typeof STYLE_PROGRAM_SCHEMA;
 	/** Ordered semantic rules; the complete interop representation. */
 	readonly rules: readonly StyleRule[];
-	/** Root declarations retained as the cheap projection for old emitters. */
+	/** Root declarations retained as the cheap projection for flat consumers. */
 	readonly declarations: readonly StyleDeclaration[];
 	readonly residuals: readonly StyleProgramResidual[];
 	/** All authored source locations represented by rules and dynamic values. */

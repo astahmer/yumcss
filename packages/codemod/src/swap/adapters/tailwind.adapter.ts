@@ -673,8 +673,8 @@ type TailwindOfficialUtilityResolver = TailwindUtilityResolver & {
 /**
  * Tailwind owns the utility vocabulary. When its design system is loaded,
  * enumerate the candidates it actually registered and let its compiler verify
- * the declaration. The syntax fallback below remains only for injected
- * resolvers that expose the older `resolve`-only contract.
+ * the declaration. The syntax fallback below remains for injected resolvers
+ * that expose only `resolve` and therefore cannot enumerate candidates.
  */
 function officialTailwindUtility(
 	declaration: StyleDeclaration,
