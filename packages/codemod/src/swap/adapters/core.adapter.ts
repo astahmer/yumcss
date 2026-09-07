@@ -35,6 +35,8 @@ import {
 } from "../identifiers.ts";
 import { AdapterEvidence } from "../adapter-evidence.ts";
 import { relativeModuleImport } from "../../shared.ts";
+import { BuiltinHostFramework } from "../host-adapters.ts";
+import { JsxStyleHost } from "../jsx-style-host.ts";
 
 const CORE_DEPENDENCIES: AdapterDependencies = {
 	packages: [{ name: "pandwind", kind: AdapterDependencyKindTag.Runtime }],
@@ -205,6 +207,36 @@ function makeCoreAdapter(
 				};
 			const result = emitter(swapIRFromStyleProgram(program), meta, { index: context.index, meta });
 			const imports = [...(result.imports ?? [])];
+			let text = result.text;
+			const host = program.source;
+			if (
+				role !== "source" &&
+				text !== "" &&
+				host?.hostOpenTag !== undefined &&
+				host.hostStyleAttributes !== undefined
+			) {
+				const framework =
+					host.framework ??
+					context.document?.framework ??
+					(/\.(?:jsx|tsx|mdx)$/u.test(context.file) ? BuiltinHostFramework.React : undefined);
+				const rendered = JsxStyleHost.render(
+					host.hostOpenTag,
+					host.hostStyleAttributes,
+					text,
+					framework,
+					host.hostTag,
+				);
+				text = rendered.text;
+				if (rendered.needsCx) {
+					if (context.project?.cxModule === undefined) {
+						imports.push('import { createCx } from "pandwind/cx";', "const cx = createCx();");
+					} else {
+						imports.push(
+							`import { cx } from "${relativeModuleImport(context.file, context.project.cxModule, "")}";`,
+						);
+					}
+				}
+			}
 			if (dialect === SwapSourceId.Tw && result.text !== "") {
 				const modulePath = context.project?.twModule;
 				imports.push(
@@ -228,7 +260,7 @@ function makeCoreAdapter(
 					);
 			}
 			return {
-				text: result.text,
+				text,
 				imports,
 				residuals: [...result.residuals],
 				// Core targets are emitted by the same versioned semantic projection

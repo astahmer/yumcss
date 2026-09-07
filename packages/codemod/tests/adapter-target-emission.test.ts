@@ -1,4 +1,7 @@
+import { resolve } from "node:path";
+import { readFileSync } from "node:fs";
 import { describe, expect, test } from "vitest";
+import { loadMetaFromSources } from "../src/meta.ts";
 import { StyleProgramResidualKindTag } from "../src/swap/semantic-ir.ts";
 import {
 	BuiltinHostFramework,
@@ -7,9 +10,25 @@ import {
 	createStyleAdapterRegistry,
 	externalIdentifier,
 	runAdapterMigration,
+	runAdapterMigrationAsync,
+	SwapSourceId,
 } from "../src/swap/index.ts";
+import { NODE_PROJECT_MODULE_LOADER } from "../src/swap/project-module-loader.ts";
 
 const catalog = createBuiltinCodemodCatalog();
+const nodeCatalog = createBuiltinCodemodCatalog(NODE_PROJECT_MODULE_LOADER);
+const exampleRoot = resolve(import.meta.dirname, "../../../apps/example");
+const exampleSourceDir = resolve(import.meta.dirname, "../../../apps/example/src");
+const exampleFiles = [
+	resolve(exampleSourceDir, "tailwind.css"),
+	resolve(exampleSourceDir, "pandwind-theme.css"),
+	resolve(exampleSourceDir, "pandwind.safelist.css"),
+];
+const exampleMeta = loadMetaFromSources({
+	typesDtsPath: resolve(exampleSourceDir, "types.d.ts"),
+	twTsPath: resolve(exampleSourceDir, "tw.ts"),
+	bridgePath: resolve(exampleSourceDir, "bridge.ts"),
+});
 
 function migrate(source: string, from: CodemodAdapterId, to: CodemodAdapterId, file = "Card.tsx") {
 	return runAdapterMigration(source, {
@@ -23,6 +42,34 @@ function migrate(source: string, from: CodemodAdapterId, to: CodemodAdapterId, f
 }
 
 describe("target adapter emission contract", () => {
+	test("preserves the JSX host when targeting Pandwind's tw dialect", async () => {
+		const result = await runAdapterMigrationAsync('<div className="bg-black" />', {
+			from: CodemodAdapterId.Tailwind,
+			to: `${CodemodAdapterId.Pandwind}:${SwapSourceId.Tw}`,
+			file: resolve(exampleRoot, "Card.tsx"),
+			root: exampleRoot,
+			mode: "safe",
+			meta: exampleMeta,
+			readFile: (file) => {
+				try {
+					return readFileSync(file, "utf8");
+				} catch {
+					return undefined;
+				}
+			},
+			listFiles: () => exampleFiles,
+			moduleLoader: NODE_PROJECT_MODULE_LOADER,
+			adapterRegistry: nodeCatalog.registry,
+		});
+
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain("<div className={tw(");
+		expect(result.code).toContain('import { tw } from "pandwind";');
+		expect(result.code).not.toMatch(/^\s*tw\(\{/u);
+		expect(result.validations).toMatchObject([{ valid: true }]);
+	});
+
 	test("uses Chakra's css prop instead of a fabricated className css carrier", () => {
 		const result = migrate(
 			'import { css } from "styled-system/css";\n' +
