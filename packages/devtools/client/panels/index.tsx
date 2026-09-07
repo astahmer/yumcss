@@ -19,13 +19,13 @@ export const PANEL_ID = {
 } as const;
 export type PanelId = (typeof PANEL_ID)[keyof typeof PANEL_ID];
 
-export interface DevtoolsPanelContext {
+interface DevtoolsPanelContext {
 	readonly migration?: DevtoolsMigrationPreview;
 	readonly catalog: readonly MigrationCatalogEntry[];
 	readonly onPreviewMigration: (form: FormData) => void;
 }
 
-export interface DevtoolsPanelProps {
+interface DevtoolsPanelProps {
 	readonly snapshot: PanelSnapshot;
 	readonly context: DevtoolsPanelContext;
 }

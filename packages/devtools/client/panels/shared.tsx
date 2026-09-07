@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import type { DevtoolsEvidenceSnapshot } from "../../src/evidence/store.ts";
 
 export type PanelSnapshot = DevtoolsEvidenceSnapshot;
-export type BadgeTone = "good" | "warn" | "quiet";
+type BadgeTone = "good" | "warn" | "quiet";
 
 export interface BadgeProps {
 	readonly label: string;
