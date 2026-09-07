@@ -158,16 +158,9 @@ function integrateNextApp(
 			}
 		}
 	}
-	// Older codemod runs registered the same plugin with the bare `pandwind-css`
-	// id. Normalize that registration so reruns converge on the CSS virtual
-	// module that Next/Webpack can resolve.
 	if (nextConfig.includes("pandwindWebpackCss")) {
 		nextConfig = ensureImport(nextConfig, pluginImport);
 		nextConfig = ensureImport(nextConfig, presetImport);
-		nextConfig = nextConfig.replaceAll(
-			'virtualId: "pandwind-css"',
-			'virtualId: "pandwind-css.css"',
-		);
 	}
 	if (nextConfig !== config) {
 		notes.push(`registered pandwindWebpackCss in ${relative(projectRoot, configPath)}`);

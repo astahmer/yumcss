@@ -1085,11 +1085,11 @@ identical `(path, content)` pairs across matches, and reports a typed
 preserves the entire source module so a migration can never leave a partially
 converted project.
 
-The CLI writes generated files only with `--write`. It preflights existing
-files: identical content is safe to reuse, while different content is a hard
-error rather than an overwrite. This makes one source occurrence able to add a
-reusable target module without duplicating it when later occurrences request
-the same artifact. The regression contract lives in
+The CLI writes generated files by default and previews them with `--dry-run`.
+It preflights existing files: identical content is safe to reuse, while
+different content is a hard error rather than an overwrite. This makes one
+source occurrence able to add a reusable target module without duplicating it
+when later occurrences request the same artifact. The regression contract lives in
 `packages/codemod/tests/generated-file-emission.test.ts`; its inline snapshots
 show the expert target expression, the generated module, repeated-artifact
 deduplication, and source-preserving conflict behavior, with ordinary

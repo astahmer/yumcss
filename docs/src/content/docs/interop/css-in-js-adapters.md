@@ -16,10 +16,10 @@ Run a dry migration first. The external adapter path does not require generated
 pandwind metadata:
 
 ```sh
-pandwind-codemod swap \
+pandwind-codemod migrate \
   --from=emotion \
   --to=css.class \
-  --diff --report \
+  --dry-run --diff --report \
   "src/**/*.{ts,tsx}"
 ```
 
@@ -37,7 +37,7 @@ same semantic adapter contract. `--to=css.class` is the pandwind target
 spelling; external targets can be selected directly too:
 
 ```sh
-pandwind-codemod swap --from=styled-components --to=emotion --write "src/**/*.tsx"
+pandwind-codemod migrate --from=styled-components --to=emotion --dry-run "src/**/*.tsx"
 ```
 
 See the [official API matrix](/interop/official-api-matrix/) for the
@@ -45,8 +45,8 @@ documented syntax families each adapter recognizes, the forms that remain
 explicit residuals, and the evidence source for every claim.
 
 With `--from=auto`, the CLI uses adapter detection evidence from imports and
-known authoring calls. Pass `--meta` only for the existing pandwind/Tailwind
-swap path or other migrations that need generated project metadata.
+known authoring calls. Pass `--meta` when a migration needs generated project
+metadata.
 
 ## Safety and residuals
 
@@ -64,9 +64,8 @@ Emotion class factory in safe mode; it remains in place with a `components`
 capability residual.
 
 The `--report` output is a migration worklist: it shows converted and skipped
-sites, residual counts, and capability blockers. Use `--diff` before `--write`;
-partial mode is an adapter API option for controlled tooling, not the CLI's
-default safety policy.
+sites, residual counts, and capability blockers. Use `--dry-run --diff` before
+applying a write; remove `--dry-run` when the result is ready to apply.
 
 ### Why a capability skip can still be correct
 
@@ -273,7 +272,7 @@ are safe when their values are literal; composition remains explicit until a
 target provides an equivalent mixin or recipe lowering.
 
 ```sh
-pandwind-codemod swap --from=tokenami --to=css.class --safe --diff \
+pandwind-codemod migrate --from=tokenami --to=css.class --safe --diff \
   "src/**/*.{ts,tsx}"
 ```
 

@@ -493,7 +493,7 @@ describe("runPandaMigration", () => {
 		expect(report.filesChanged).toBe(0);
 	});
 
-	it("normalizes the old Next virtual stylesheet integration on reruns", async () => {
+	it("keeps the current Next virtual stylesheet integration stable", async () => {
 		const dir = makeProject();
 		mkdirSync(join(dir, "app"), { recursive: true });
 		writeFileSync(
@@ -509,7 +509,7 @@ describe("runPandaMigration", () => {
 				'import { preset } from "./src/pandwind/preset.ts";',
 				"export default {",
 				"\twebpack(config) {",
-				'\t\tconfig.plugins.push(pandwindWebpackCss({ preset, virtualId: "pandwind-css" }));',
+				'\t\tconfig.plugins.push(pandwindWebpackCss({ preset, virtualId: "pandwind-css.css" }));',
 				"\t\treturn config;",
 				"\t},",
 				"};",
@@ -517,7 +517,7 @@ describe("runPandaMigration", () => {
 		);
 		writeFileSync(
 			join(dir, "app", "layout.tsx"),
-			'import "pandwind-css";\nexport default function Layout() { return null; }\n',
+			'import "pandwind-css.css";\nexport default function Layout() { return null; }\n',
 		);
 		writeFileSync(join(dir, "src", "page.tsx"), "export const Page = () => <div />;\n");
 
@@ -533,9 +533,6 @@ describe("runPandaMigration", () => {
 
 		expect(readFileSync(join(dir, "next.config.mjs"), "utf8")).toContain(
 			'virtualId: "pandwind-css.css"',
-		);
-		expect(readFileSync(join(dir, "next.config.mjs"), "utf8")).not.toContain(
-			'virtualId: "pandwind-css" }',
 		);
 		expect(readFileSync(join(dir, "app", "layout.tsx"), "utf8")).toBe(
 			'import "pandwind-css.css";\nexport default function Layout() { return null; }\n',

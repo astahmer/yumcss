@@ -35,18 +35,18 @@ conversion can be reused by every source adapter.
 For an adapter-backed source, use:
 
 ```sh
-pnpm exec pandwind-codemod swap \
+pnpm exec pandwind-codemod migrate \
   --from=<source> --to=css.class \
-  --out=pandwind --diff --report \
+  --out=pandwind --dry-run --diff --report \
   'src/**/*.{js,jsx,ts,tsx,vue,svelte,astro}'
 ```
 
-Use `--report=json` for CI tooling, `--safe` to rewrite only lossless sites,
-`--partial` when an explicit partial migration is acceptable, and `--write`
-to apply the result. Keep generated output separate until the report is
-reviewed.
+Use `--report-format json` for CI tooling, `--safe` to rewrite only lossless
+sites, and `--partial` when an explicit partial migration is acceptable. The
+command writes by default; keep `--dry-run` while reviewing the report, then
+remove it to apply the result.
 
-For a full Panda project migration, the staged project command also handles
+For a full Panda project migration, the same command also handles
 discovery, config/theme loading, scanning, conversion, emission, rewrites, and
 validation. Run it in a disposable branch and inspect residuals before
 deleting source configuration.
@@ -63,7 +63,7 @@ Panda is the closest semantic source because both systems have typed style
 objects, conditions, tokens, and recipe concepts.
 
 ```sh
-pnpm exec pandwind-codemod swap \
+pnpm exec pandwind-codemod migrate \
   --from=panda --to=css.class --out=pandwind --diff --report \
   'src/**/*.{ts,tsx}'
 ```
@@ -84,7 +84,7 @@ are emitted as target modules, while unsupported behavior remains a residual.
 ## StyleX
 
 ```sh
-pnpm exec pandwind-codemod swap \
+pnpm exec pandwind-codemod migrate \
   --from=stylex --to=css.class --safe --diff --report \
   'src/**/*.{js,jsx,ts,tsx}'
 ```
@@ -105,10 +105,10 @@ framework or prop semantics.
 
 Tailwind is both a Pandwind target and a source lane. For class-heavy code,
 use the scanner and typed `tw()` helper rather than rewriting every string by
-hand. For object-style wrappers, use the swap command:
+hand. For object-style wrappers, use the same migration command:
 
 ```sh
-pnpm exec pandwind-codemod swap --from=tw --to=css.class --diff --report \
+pnpm exec pandwind-codemod migrate --from=tw --to=css.class --diff --report \
   'src/**/*.{ts,tsx,vue,svelte,astro}'
 ```
 
@@ -165,7 +165,7 @@ than guessing.
 ## Emotion
 
 ```sh
-pnpm exec pandwind-codemod swap --from=emotion --to=css.class --diff --report \
+pnpm exec pandwind-codemod migrate --from=emotion --to=css.class --diff --report \
   'src/**/*.{ts,tsx,js,jsx}'
 ```
 
@@ -184,7 +184,7 @@ be lowered to `css.vars()` or remain residuals.
 ## styled-components
 
 ```sh
-pnpm exec pandwind-codemod swap --from=styled-components --to=css.class \
+pnpm exec pandwind-codemod migrate --from=styled-components --to=css.class \
   --diff --report 'src/**/*.{ts,tsx,js,jsx}'
 ```
 
@@ -207,7 +207,7 @@ theme context in a browser and SSR fixture.
 ## vanilla-extract
 
 ```sh
-pnpm exec pandwind-codemod swap --from=vanilla-extract --to=css.class \
+pnpm exec pandwind-codemod migrate --from=vanilla-extract --to=css.class \
   --diff --report 'src/**/*.{ts,tsx}'
 ```
 
@@ -225,7 +225,7 @@ font faces, and theme contracts. Runtime values are not automatically static.
 ## Stitches
 
 ```sh
-pnpm exec pandwind-codemod swap --from=stitches --to=css.class \
+pnpm exec pandwind-codemod migrate --from=stitches --to=css.class \
   --diff --report 'src/**/*.{ts,tsx}'
 ```
 
@@ -240,7 +240,7 @@ object renames.
 ## Linaria
 
 ```sh
-pnpm exec pandwind-codemod swap --from=linaria --to=css.class \
+pnpm exec pandwind-codemod migrate --from=linaria --to=css.class \
   --safe --diff --report 'src/**/*.{ts,tsx,js,jsx}'
 ```
 
@@ -251,7 +251,7 @@ and SSR ordering in the report until the target fixture proves equivalence.
 ## JSS and React-JSS
 
 ```sh
-pnpm exec pandwind-codemod swap --from=jss --to=css.class --diff --report \
+pnpm exec pandwind-codemod migrate --from=jss --to=css.class --diff --report \
   'src/**/*.{ts,tsx,js,jsx}'
 ```
 
@@ -263,8 +263,8 @@ static `css.class` call preserves imperative updates.
 ## Fela and Goober
 
 ```sh
-pnpm exec pandwind-codemod swap --from=fela --to=css.class --diff --report 'src/**/*.{ts,tsx}'
-pnpm exec pandwind-codemod swap --from=goober --to=css.class --diff --report 'src/**/*.{ts,tsx}'
+pnpm exec pandwind-codemod migrate --from=fela --to=css.class --diff --report 'src/**/*.{ts,tsx}'
+pnpm exec pandwind-codemod migrate --from=goober --to=css.class --diff --report 'src/**/*.{ts,tsx}'
 ```
 
 These adapters cover common object-style declarations. Renderer configuration,
@@ -276,7 +276,7 @@ for values that change without changing rule shape.
 ## Aphrodite
 
 ```sh
-pnpm exec pandwind-codemod swap --from=aphrodite --to=css.class --diff --report \
+pnpm exec pandwind-codemod migrate --from=aphrodite --to=css.class --diff --report \
   'src/**/*.{ts,tsx}'
 ```
 
@@ -287,7 +287,7 @@ keep them explicit rather than flattening them into ordinary declarations.
 ## Treat
 
 ```sh
-pnpm exec pandwind-codemod swap --from=treat --to=css.class --diff --report \
+pnpm exec pandwind-codemod migrate --from=treat --to=css.class --diff --report \
   'src/**/*.{ts,tsx}'
 ```
 
@@ -297,8 +297,8 @@ Check generated class order and theme file boundaries after conversion.
 ## Compiled and Style9
 
 ```sh
-pnpm exec pandwind-codemod swap --from=compiled --to=css.class --diff --report 'src/**/*.{ts,tsx}'
-pnpm exec pandwind-codemod swap --from=style9 --to=css.class --diff --report 'src/**/*.{ts,tsx}'
+pnpm exec pandwind-codemod migrate --from=compiled --to=css.class --diff --report 'src/**/*.{ts,tsx}'
+pnpm exec pandwind-codemod migrate --from=style9 --to=css.class --diff --report 'src/**/*.{ts,tsx}'
 ```
 
 Validate atomic precedence, compile-time restrictions, responsive states, and
@@ -310,9 +310,9 @@ These are component-system migrations as well as styling migrations. Start by
 converting theme tokens, then convert component props and style objects:
 
 ```sh
-pnpm exec pandwind-codemod swap --from=chakra-ui --to=css.class --diff --report 'src/**/*.{ts,tsx}'
-pnpm exec pandwind-codemod swap --from=mui --to=css.class --diff --report 'src/**/*.{ts,tsx}'
-pnpm exec pandwind-codemod swap --from=mantine --to=css.class --diff --report 'src/**/*.{ts,tsx}'
+pnpm exec pandwind-codemod migrate --from=chakra-ui --to=css.class --diff --report 'src/**/*.{ts,tsx}'
+pnpm exec pandwind-codemod migrate --from=mui --to=css.class --diff --report 'src/**/*.{ts,tsx}'
+pnpm exec pandwind-codemod migrate --from=mantine --to=css.class --diff --report 'src/**/*.{ts,tsx}'
 ```
 
 ```tsx
@@ -331,7 +331,7 @@ fixture.
 ## Next-yak
 
 ```sh
-pnpm exec pandwind-codemod swap --from=next-yak --to=css.class --diff --report \
+pnpm exec pandwind-codemod migrate --from=next-yak --to=css.class --diff --report \
   'src/**/*.{ts,tsx}'
 ```
 
@@ -341,8 +341,8 @@ server/client boundaries, import ordering, and generated artifact placement.
 ## Solid and Vue styled systems
 
 ```sh
-pnpm exec pandwind-codemod swap --from=solid-styled --to=css.class --diff --report 'src/**/*.{ts,tsx}'
-pnpm exec pandwind-codemod swap --from=vue-styled --to=css.class --diff --report 'src/**/*.{vue,ts}'
+pnpm exec pandwind-codemod migrate --from=solid-styled --to=css.class --diff --report 'src/**/*.{ts,tsx}'
+pnpm exec pandwind-codemod migrate --from=vue-styled --to=css.class --diff --report 'src/**/*.{vue,ts}'
 ```
 
 Function-valued styles need framework-specific prop and theme wrappers. Keep
@@ -355,14 +355,14 @@ Bamboo uses its adapter and should be checked for its composition/runtime
 semantics:
 
 ```sh
-pnpm exec pandwind-codemod swap --from=bamboo --to=css.class --diff --report 'src/**/*.{ts,tsx}'
+pnpm exec pandwind-codemod migrate --from=bamboo --to=css.class --diff --report 'src/**/*.{ts,tsx}'
 ```
 
 React Native is a separate backend target. Use the source adapter to produce
 semantic IR, then validate the RN backend rather than comparing browser CSS:
 
 ```sh
-pnpm exec pandwind-codemod swap --from=react-native --to=css.class --diff --report 'src/**/*.{ts,tsx}'
+pnpm exec pandwind-codemod migrate --from=react-native --to=css.class --diff --report 'src/**/*.{ts,tsx}'
 ```
 
 Platform selectors, layout differences, accessibility props, and unsupported
@@ -388,7 +388,7 @@ boundary. See [adapter contracts](/reference/adapter-contract/) and
 ## Tamagui
 
 ```sh
-pnpm exec pandwind-codemod swap --from=tamagui --to=css.class \
+pnpm exec pandwind-codemod migrate --from=tamagui --to=css.class \
   --diff --report 'src/**/*.{ts,tsx,js,jsx}'
 ```
 
@@ -401,11 +401,11 @@ keeps the source and reports a configuration or dynamic residual.
 ## CSS Modules, Sass, Less, and authored CSS
 
 ```sh
-pnpm exec pandwind-codemod swap --from=css-modules --to=css.class \
+pnpm exec pandwind-codemod migrate --from=css-modules --to=css.class \
   --diff --report 'src/**/*.module.css'
-pnpm exec pandwind-codemod swap --from=sass --to=authored-css \
+pnpm exec pandwind-codemod migrate --from=sass --to=authored-css \
   --diff --report 'src/**/*.{scss,sass}'
-pnpm exec pandwind-codemod swap --from=less --to=authored-css \
+pnpm exec pandwind-codemod migrate --from=less --to=authored-css \
   --diff --report 'src/**/*.less'
 ```
 

@@ -1242,13 +1242,12 @@ function tailwindCssFiles(
 ): readonly { file: string; text: string }[] {
 	if (context.root === undefined || context.readFile === undefined) return [];
 	const discovered = context.listFiles?.(context.root) ?? [];
-	// Discovery targets the v4 CSS entry (the official engine's design-system
-	// source). Legacy tailwind.config.js is still supported by v4, but only
-	// through an explicit `@config "./tailwind.config.js";` at-rule inside a
-	// CSS file, which the engine resolves from here; a standalone JS config
-	// without a referencing CSS entry is not loadable design-system evidence.
-	// Restricting discovery to .css also keeps documentation prose that quotes
-	// "@import" from becoming a false configuration entry.
+	// v4 configuration is discovered from CSS entrypoints because that is the
+	// official engine's design-system source. A classic JavaScript config is
+	// loaded separately when the project exposes one, while v4's `@config`
+	// directive is resolved from its referencing CSS entry. Restricting this
+	// scan to .css also keeps documentation prose that quotes "@import" from
+	// becoming a false configuration entry.
 	const candidates = discovered
 		.filter((file) => file.endsWith(".css"))
 		.map((file) => ({
