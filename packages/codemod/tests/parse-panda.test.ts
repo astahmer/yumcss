@@ -10,7 +10,6 @@
  * - theme/recipes/button.recipe.ts      (defineRecipe: variants, spread)
  */
 import { describe, expect, expectTypeOf, it } from "vitest";
-import { existsSync } from "node:fs";
 import {
 	normalizePandaStyleObject,
 	pandaRecipeToIr,
@@ -24,8 +23,13 @@ import { PandaJsxStylePropsModeTag } from "../src/swap/adapters/panda/style-prop
 import { PandaUtilityCatalog } from "../src/swap/adapters/panda/utilities.ts";
 import { emitCssClass } from "../src/swap/emit.ts";
 import type { ProjectModuleLoader } from "../src/swap/project-module-loader.ts";
+import {
+	createReferenceWorkspace,
+	inspectReferenceAvailability,
+	REFERENCE_AVAILABILITY,
+} from "../../../scripts/reference-workspace.ts";
 
-const WEBSITE = `${process.env.HOME}/dev/panda/website`;
+const pandaWebsite = inspectReferenceAvailability(createReferenceWorkspace(), "panda-website");
 
 /** Theme mirroring what loadPandaTheme produces for the website config. */
 const siteTheme: PandaTheme = {
@@ -643,19 +647,30 @@ describe("loadPandaTheme — fixture config (hermetic)", () => {
 });
 
 describe("loadPandaTheme — real website panda.config.ts (best-effort)", () => {
-	const configPath = `${WEBSITE}/panda.config.ts`;
-	it.skipIf(!existsSync(configPath))(
-		"resolves when host node_modules exist",
-		async () => {
-			try {
-				const theme = await loadPandaTheme(configPath);
-				expect(theme.tokenVars.get("fg.muted")).toBe("--colors-fg-muted");
-			} catch (error) {
-				const message = (error as Error).message;
-				if (message.includes("Cannot find package")) return; // host deps absent — hermetic fixture covers the shape
-				throw error;
+	it("resolves when the pinned website is available, or reports why it is unavailable", async () => {
+		const configPath = `${pandaWebsite.path}/panda.config.ts`;
+		if (pandaWebsite.status === REFERENCE_AVAILABILITY.Unavailable) {
+			expect(pandaWebsite).toEqual({
+				id: "panda-website",
+				path: pandaWebsite.path,
+				status: "unavailable",
+				prepareCommand: "nub run references:prepare",
+			});
+			return;
+		}
+		try {
+			const theme = await loadPandaTheme(configPath);
+			expect(theme.tokenVars.get("fg.muted")).toBe("--colors-fg-muted");
+		} catch (error) {
+			const message = (error as Error).message;
+			if (message.includes("Cannot find package")) {
+				expect({ status: "unavailable", reason: "host dependencies" }).toEqual({
+					status: "unavailable",
+					reason: "host dependencies",
+				});
+				return;
 			}
-		},
-		30_000,
-	);
+			throw error;
+		}
+	}, 30_000);
 });

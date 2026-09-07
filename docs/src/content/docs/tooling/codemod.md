@@ -5,26 +5,28 @@ sidebar:
   order: 4
 ---
 
-`packages/codemod` has two related workflows. The default mode upgrades raw
-Tailwind/class composition onto Pandwind APIs using generated project
-metadata. The `swap` mode routes a source adapter through the semantic IR to a
-target adapter, so migrations are not implemented as one bespoke function for
-each pair.
+`packages/codemod` has one migration workflow. It routes a source adapter
+through the semantic IR to a target adapter, and uses the same command for
+Tailwind/class composition, ecosystem swaps, and Pandwind's own APIs. Token
+format conversion remains a separate `tokens` command.
 
 ```sh
-# analysis only (default): reports what WOULD change
-pnpm exec pandwind-codemod "src/**/*.tsx" --to=tw
+# write a Tailwind project migration by default
+pnpm exec pandwind-codemod migrate --from=tailwindcss --to=pandwind-tw "src/**/*.tsx"
 
-# preview exact diffs, then apply
-pnpm exec pandwind-codemod "src/**/*.tsx" --to=tw --diff --write
+# preview exact diffs without changing files
+pnpm exec pandwind-codemod migrate --from=tailwindcss --to=pandwind-tw \
+  "src/**/*.tsx" --dry-run --diff --report
 
-# migrate away from a source library through the adapter contract
-pnpm exec pandwind-codemod swap --from=styled-components --to=css.class \
-  "src/**/*.{ts,tsx}" --diff --write
+# migrate between registered ecosystems
+pnpm exec pandwind-codemod migrate --from=styled-components --to=pandwind-css \
+  "src/**/*.{ts,tsx}" --diff
 ```
 
-Run `--diff` before `--write`. The default is dry-run and safe mode; the
-source remains untouched when the target cannot represent the complete call.
+Migrations write changes by default. Use `--dry-run` for a read-only preview;
+`--diff` and `--report` can be combined with either mode. The source remains
+untouched when the target cannot represent the complete call, unless
+`--partial` explicitly permits the target's partial capability contract.
 
 ## Default metadata-driven modes
 
@@ -140,9 +142,9 @@ The same pipeline supports `tw`, `css.class`, `design`, `tailwind`, `panda`,
 and `stylex` target dialects:
 
 ```sh
-pnpm exec pandwind-codemod swap --from=auto --to=css.class "src/**/*.tsx" --diff --write
-pnpm exec pandwind-codemod swap --from=design --to=tw "src/**/*.tsx" --diff --write
-pnpm exec pandwind-codemod swap --from=css --to=tailwind "src/**/*.tsx" --diff --write
+pnpm exec pandwind-codemod migrate --from=auto --to=pandwind-css "src/**/*.tsx" --dry-run --diff
+pnpm exec pandwind-codemod migrate --from=pandwind-dss --to=pandwind-tw "src/**/*.tsx" --diff
+pnpm exec pandwind-codemod migrate --from=pandwind-css --to=tailwindcss "src/**/*.tsx" --diff
 ```
 
 Literal declarations use the flat `SwapIR` fast path. Rich rules use the
@@ -152,7 +154,7 @@ ordering, dynamic metadata, and provenance.
 Panda project migration is the staged variant of this workflow:
 
 ```sh
-pnpm exec pandwind-codemod swap --from=panda --to=css.class \
+pnpm exec pandwind-codemod migrate --from=panda --to=pandwind-css \
   --out=pandwind --diff --report \
   'src/**/*.{ts,tsx}'
 ```
@@ -179,7 +181,7 @@ normalized representation is shared.
 
 ## Safety rails and reports
 
-- dry-run by default; `--diff` shows changes and `--write` applies them;
+- writes are enabled by default; `--dry-run` disables writes and `--diff` shows changes;
 - safe mode rewrites only calls whose required target capabilities are proven;
 - `--partial` permits capabilities explicitly declared as partial;
 - rewrites are idempotent;

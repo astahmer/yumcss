@@ -1,9 +1,25 @@
+import { existsSync } from "node:fs";
 import { homedir } from "node:os";
 import { join, resolve } from "node:path";
 
 export interface ReferenceWorkspace {
 	readonly root: string;
 	path(id: string): string;
+}
+
+export const REFERENCE_AVAILABILITY = {
+	Available: "available",
+	Unavailable: "unavailable",
+} as const;
+
+export type ReferenceAvailabilityStatus =
+	(typeof REFERENCE_AVAILABILITY)[keyof typeof REFERENCE_AVAILABILITY];
+
+export interface ReferenceAvailability {
+	readonly id: string;
+	readonly path: string;
+	readonly status: ReferenceAvailabilityStatus;
+	readonly prepareCommand: "nub run references:prepare";
 }
 
 export function createReferenceWorkspace(root?: string): ReferenceWorkspace {
@@ -13,5 +29,20 @@ export function createReferenceWorkspace(root?: string): ReferenceWorkspace {
 	return {
 		root: workspaceRoot,
 		path: (id) => join(workspaceRoot, id),
+	};
+}
+
+export function inspectReferenceAvailability(
+	workspace: ReferenceWorkspace,
+	id: string,
+): ReferenceAvailability {
+	const path = workspace.path(id);
+	return {
+		id,
+		path,
+		status: existsSync(path)
+			? REFERENCE_AVAILABILITY.Available
+			: REFERENCE_AVAILABILITY.Unavailable,
+		prepareCommand: "nub run references:prepare",
 	};
 }
