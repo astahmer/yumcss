@@ -257,72 +257,28 @@ async function coverageSection() {
 	return `### cx() fold coverage (build-time elimination)\n\n${table}${note}`;
 }
 
-/**
- * Measures fold coverage for one tree. Tries the modern options-object call
- * first (constants + partial folding + cross-module imports); on older trees
- * whose inlineCxCalls lacks those features it retries the minimal legacy
- * call so the base column still reports honest numbers.
- */
+/** Measures fold coverage through the current options-object folding API. */
 async function measureTree(dir) {
 	const { inlineCxCalls, config } = await loadTreeModules(dir);
 
-	const runOne = (entry, features) => {
-		const importedConstants =
-			features.importedConstantsSupported && entry.imports
-				? new Map(
-						Object.entries(entry.imports).map(([name, value]) => [name, { value, declStart: 0 }]),
-					)
-				: undefined;
+	const runOne = (entry) => {
+		const importedConstants = entry.imports
+			? new Map(
+					Object.entries(entry.imports).map(([name, value]) => [name, { value, declStart: 0 }]),
+				)
+			: undefined;
 		return inlineCxCalls(entry.source, "app.ts", config, new Set(["cx"]), {
-			constants: features.constants,
-			partialFold: features.partialFold,
+			constants: true,
+			partialFold: true,
 			...(importedConstants ? { importedConstants } : {}),
 		});
 	};
-
-	let features = { constants: true, partialFold: true, importedConstantsSupported: true };
-	try {
-		// Probe: does this tree's pass accept the modern options shape?
-		runOne(COVERAGE_CORPUS[0], features);
-	} catch {
-		// Legacy signature (fold context as 5th param) — retry without extras.
-		features = {
-			constants: false,
-			partialFold: false,
-			importedConstantsSupported: false,
-			legacy: true,
-		};
-	}
-
-	if (features.legacy) {
-		let full = 0;
-		let runtimeCount = 0;
-		for (const entry of COVERAGE_CORPUS) {
-			try {
-				const { code, inlined } = inlineCxCalls(entry.source, "app.ts", config, new Set(["cx"]));
-				if (inlined === 0) runtimeCount++;
-				else if (!code.includes(" ? ")) full++;
-				else runtimeCount++; // partial folds unsupported on this tree
-			} catch {
-				runtimeCount++;
-			}
-		}
-		const total = COVERAGE_CORPUS.length;
-		return {
-			full,
-			partial: 0,
-			runtime: runtimeCount,
-			total,
-			pct: Math.round((full / total) * 100),
-			legacy: true,
-		};
-	}
 
 	let full = 0;
 	let partial = 0;
 	let runtimeCount = 0;
 	for (const entry of COVERAGE_CORPUS) {
-		const { code, inlined } = runOne(entry, features);
+		const { code, inlined } = runOne(entry);
 		if (inlined === 0) runtimeCount++;
 		else if (code.includes(" ? ")) partial++;
 		else full++;
