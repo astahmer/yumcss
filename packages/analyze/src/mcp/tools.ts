@@ -18,6 +18,7 @@ import { McpToolError, textToolResult } from "./tool-contract.ts";
 import {
 	MCP_MIGRATION_MODE,
 	MCP_BENCHMARK_SCOPE,
+	MCP_BENCHMARK_MEASUREMENT_MODE,
 	MCP_EXECUTION_LANE,
 	MCP_PROVENANCE_SOURCE,
 	MCP_RESOURCE,
@@ -25,6 +26,7 @@ import {
 	MCP_VALIDATION_CHECK,
 	MCP_VALIDATION_STATUS,
 	type McpBenchmarkScope,
+	type McpBenchmarkMeasurementMode,
 	type McpExecutionLane,
 	type McpProvenanceSource,
 	type McpValidationCheck,
@@ -35,6 +37,7 @@ import type { McpToolDefinition, McpToolResult } from "./contract.ts";
 export {
 	MCP_MIGRATION_MODE,
 	MCP_BENCHMARK_SCOPE,
+	MCP_BENCHMARK_MEASUREMENT_MODE,
 	MCP_EXECUTION_LANE,
 	MCP_PROVENANCE_SOURCE,
 	MCP_RESOURCE,
@@ -42,6 +45,7 @@ export {
 	MCP_VALIDATION_CHECK,
 	MCP_VALIDATION_STATUS,
 	type McpBenchmarkScope,
+	type McpBenchmarkMeasurementMode,
 	type McpExecutionLane,
 	type McpProvenanceSource,
 	type McpValidationCheck,
@@ -113,11 +117,13 @@ export interface McpBenchmarkRequest {
 	readonly mode: AdapterCapabilityMode;
 	readonly files: readonly string[];
 	readonly iterations: number;
+	readonly measurementMode: McpBenchmarkMeasurementMode;
 }
 
 export interface McpBenchmarkResult {
 	readonly executionLane: McpExecutionLane;
 	readonly scope: McpBenchmarkScope;
+	readonly measurementMode: McpBenchmarkMeasurementMode;
 	readonly profile: string;
 	readonly measurements: Readonly<Record<string, unknown>>;
 	readonly commandsExecuted?: readonly string[];
@@ -291,7 +297,7 @@ export const MCP_TOOLS: readonly McpToolDefinition[] = [
 	{
 		name: MCP_TOOL.BenchmarkProject,
 		description:
-			"Measure bounded source scanning and migration throughput, memory delta, source size, and existing build artifact sizes without running project commands.",
+			"Measure bounded source scanning and migration throughput with an explicit warm or cold in-process profile; host ports may provide project-build measurements.",
 		inputSchema: inputSchema(
 			{
 				files: { type: "array", items: { type: "string" } },
@@ -299,6 +305,12 @@ export const MCP_TOOLS: readonly McpToolDefinition[] = [
 				to: { type: "string" },
 				mode: { type: "string", enum: Object.values(MCP_MIGRATION_MODE) },
 				iterations: { type: "integer", minimum: 1, maximum: 10 },
+				benchmarkMode: {
+					type: "string",
+					enum: Object.values(MCP_BENCHMARK_MEASUREMENT_MODE),
+					description:
+						"Use warm process state or recreate the project workspace for each iteration.",
+				},
 			},
 			["files", "from", "to"],
 		),
@@ -398,6 +410,18 @@ function validationChecks(value: unknown): readonly McpValidationCheck[] {
 		return check as McpValidationCheck;
 	});
 	return [...new Set(checks)];
+}
+
+function benchmarkMeasurementMode(value: unknown): McpBenchmarkMeasurementMode {
+	if (value === undefined) return MCP_BENCHMARK_MEASUREMENT_MODE.Warm;
+	if (
+		value === MCP_BENCHMARK_MEASUREMENT_MODE.Warm ||
+		value === MCP_BENCHMARK_MEASUREMENT_MODE.Cold
+	)
+		return value;
+	throw new McpToolError(
+		`benchmarkMode must be one of ${Object.values(MCP_BENCHMARK_MEASUREMENT_MODE).join(", ")}`,
+	);
 }
 
 function projectPath(root: string, candidate: string): string {
@@ -908,6 +932,7 @@ async function benchmarkProject(
 	const from = stringValue(input.from, "from");
 	const to = stringValue(input.to, "to");
 	const mode = migrationMode(input.mode);
+	const measurementMode = benchmarkMeasurementMode(input.benchmarkMode);
 	const iterations = input.iterations === undefined ? 3 : input.iterations;
 	if (
 		typeof iterations !== "number" ||
@@ -935,6 +960,7 @@ async function benchmarkProject(
 			mode,
 			files,
 			iterations,
+			measurementMode,
 		});
 		return textToolResult({
 			schema: "pandwind.mcp.benchmark/2",
@@ -943,6 +969,17 @@ async function benchmarkProject(
 			to,
 			mode,
 			iterations,
+			measurementMode,
+			inputs: {
+				root: context.root,
+				from,
+				to,
+				mode,
+				files,
+				iterations,
+				fileCount: expanded.size,
+				sourceBytes: [...expanded].reduce((sum, file) => sum + statSync(file).size, 0),
+			},
 			routeProof: findMigrationRouteProof(from, to),
 			benchmark,
 			commandsExecuted: benchmark.commandsExecuted ?? [],
@@ -952,8 +989,13 @@ async function benchmarkProject(
 	const rssBefore = process.memoryUsage().rss;
 	const migrationStart = performance.now();
 	let lastPreview: Awaited<ReturnType<typeof migrationPreview>> | undefined;
-	for (let iteration = 0; iteration < iterations; iteration++)
-		lastPreview = await migrationPreview(context, { files, from, to, mode }, ports);
+	for (let iteration = 0; iteration < iterations; iteration++) {
+		const iterationContext =
+			measurementMode === MCP_BENCHMARK_MEASUREMENT_MODE.Cold
+				? createMcpProjectContext(context.root)
+				: context;
+		lastPreview = await migrationPreview(iterationContext, { files, from, to, mode }, ports);
+	}
 	const migrationMilliseconds = performance.now() - migrationStart;
 	const rssAfter = process.memoryUsage().rss;
 	const filesPerSecond =
@@ -965,10 +1007,21 @@ async function benchmarkProject(
 		to,
 		mode,
 		iterations,
+		measurementMode,
+		inputs: {
+			root: context.root,
+			from,
+			to,
+			mode,
+			files,
+			iterations,
+			fileCount: expanded.size,
+			sourceBytes,
+		},
 		routeProof: lastPreview?.routeProof,
 		executionLane: MCP_EXECUTION_LANE.InProcess,
 		scope: MCP_BENCHMARK_SCOPE.InProcessMigration,
-		profile: "warm-in-process",
+		profile: `${measurementMode}-in-process`,
 		limitations: [
 			"does not run the project's typecheck, build, browser, SSR, or bundle pipeline",
 			"timings include the current process and workspace scanner state",

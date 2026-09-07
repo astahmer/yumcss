@@ -4,6 +4,7 @@ import { resolve } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 import {
 	MCP_BENCHMARK_SCOPE,
+	MCP_BENCHMARK_MEASUREMENT_MODE,
 	MCP_EXECUTION_LANE,
 	MCP_RESOURCE,
 	MCP_TOOL,
@@ -201,8 +202,31 @@ describe("Pandwind MCP tools", () => {
 			schema: "pandwind.mcp.benchmark/2",
 			executionLane: MCP_EXECUTION_LANE.InProcess,
 			scope: MCP_BENCHMARK_SCOPE.InProcessMigration,
+			measurementMode: MCP_BENCHMARK_MEASUREMENT_MODE.Warm,
+			profile: "warm-in-process",
 			commandsExecuted: [],
 			migration: { changed: 0 },
+		});
+	});
+
+	it("records a reproducible cold in-process benchmark profile", async () => {
+		const service = project();
+		const result = await service.call(MCP_TOOL.BenchmarkProject, {
+			files: ["src/button.ts"],
+			from: "pandwind",
+			to: "pandwind",
+			iterations: 2,
+			benchmarkMode: MCP_BENCHMARK_MEASUREMENT_MODE.Cold,
+		});
+		expect(structured(result)).toMatchObject({
+			schema: "pandwind.mcp.benchmark/2",
+			measurementMode: MCP_BENCHMARK_MEASUREMENT_MODE.Cold,
+			profile: "cold-in-process",
+			inputs: {
+				iterations: 2,
+				fileCount: 1,
+				files: ["src/button.ts"],
+			},
 		});
 	});
 
@@ -311,9 +335,10 @@ describe("Pandwind MCP tools", () => {
 				return JSON.stringify({ schema: "test" });
 			},
 			benchmark: {
-				run: async ({ from, to, iterations }) => ({
+				run: async ({ from, to, iterations, measurementMode }) => ({
 					executionLane: MCP_EXECUTION_LANE.HostProject,
 					scope: MCP_BENCHMARK_SCOPE.Project,
+					measurementMode,
 					profile: `${from}-to-${to}`,
 					measurements: { iterations },
 					commandsExecuted: ["host:build"],
@@ -336,6 +361,7 @@ describe("Pandwind MCP tools", () => {
 			benchmark: {
 				executionLane: MCP_EXECUTION_LANE.HostProject,
 				scope: MCP_BENCHMARK_SCOPE.Project,
+				measurementMode: MCP_BENCHMARK_MEASUREMENT_MODE.Warm,
 				commandsExecuted: ["host:build"],
 			},
 			commandsExecuted: ["host:build"],

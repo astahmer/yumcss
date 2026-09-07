@@ -57,6 +57,14 @@ export const MCP_BENCHMARK_SCOPE = {
 
 export type McpBenchmarkScope = (typeof MCP_BENCHMARK_SCOPE)[keyof typeof MCP_BENCHMARK_SCOPE];
 
+export const MCP_BENCHMARK_MEASUREMENT_MODE = {
+	Warm: "warm",
+	Cold: "cold",
+} as const;
+
+export type McpBenchmarkMeasurementMode =
+	(typeof MCP_BENCHMARK_MEASUREMENT_MODE)[keyof typeof MCP_BENCHMARK_MEASUREMENT_MODE];
+
 export const MCP_RESOURCE = {
 	AdapterCatalog: "pandwind://catalog",
 	OfficialApiMatrix: "pandwind://api-matrix",

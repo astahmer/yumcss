@@ -4,6 +4,7 @@ import cac from "cac";
 import { resolve } from "node:path";
 import { z } from "zod";
 import {
+	MCP_BENCHMARK_MEASUREMENT_MODE,
 	MCP_MIGRATION_MODE,
 	MCP_TOOL,
 	MCP_VALIDATION_CHECK,
@@ -73,6 +74,9 @@ const benchmarkProjectSchema = {
 	to: z.string().min(1),
 	mode: z.enum(Object.values(MCP_MIGRATION_MODE) as [string, ...string[]]).optional(),
 	iterations: z.number().int().min(1).max(10).optional(),
+	benchmarkMode: z
+		.enum(Object.values(MCP_BENCHMARK_MEASUREMENT_MODE) as [string, ...string[]])
+		.optional(),
 };
 
 export interface McpServerOptions {
