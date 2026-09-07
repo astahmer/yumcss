@@ -39,4 +39,38 @@ describe("NodeProjectModuleLoader", () => {
 			rmSync(root, { recursive: true, force: true });
 		}
 	});
+
+	test("treats an optional package with an unusable exports map as unavailable", async () => {
+		const root = mkdtempSync(join(tmpdir(), "pandwind-project-loader-"));
+		try {
+			writeFileSync(
+				join(root, "package.json"),
+				JSON.stringify({
+					private: true,
+					dependencies: { "host-pkg": "1.0.0" },
+				}),
+			);
+			const host = join(root, "node_modules/host-pkg");
+			const unavailable = join(host, "node_modules/unavailable-pkg");
+			mkdirSync(unavailable, { recursive: true });
+			writeFileSync(
+				join(host, "package.json"),
+				JSON.stringify({ name: "host-pkg", type: "module", main: "index.js" }),
+			);
+			writeFileSync(join(host, "index.js"), "export const host = true;\n");
+			writeFileSync(
+				join(unavailable, "package.json"),
+				JSON.stringify({ name: "unavailable-pkg", type: "module", exports: {} }),
+			);
+
+			const module = await new NodeProjectModuleLoader().importPackage(
+				"unavailable-pkg",
+				root,
+			);
+
+			expect(module).toBeUndefined();
+		} finally {
+			rmSync(root, { recursive: true, force: true });
+		}
+	});
 });

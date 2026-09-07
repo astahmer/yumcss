@@ -7,14 +7,16 @@ export interface ProjectModuleLoader {
 	importFile<T>(file: string): Promise<T | undefined>;
 }
 
-function isMissingModule(error: unknown): boolean {
+function isUnavailableModule(error: unknown): boolean {
+	if (!(error instanceof Error)) return false;
+	const code = "code" in error ? (error as Error & { code?: string }).code : undefined;
 	return (
-		(error instanceof Error &&
-			"code" in error &&
-			(error as Error & { code?: string }).code === "MODULE_NOT_FOUND") ||
-		(error instanceof Error &&
-			"code" in error &&
-			(error as Error & { code?: string }).code === "ERR_MODULE_NOT_FOUND")
+		code === "MODULE_NOT_FOUND" ||
+		code === "ERR_MODULE_NOT_FOUND" ||
+		code === "ERR_PACKAGE_PATH_NOT_EXPORTED" ||
+		code === "ERR_INVALID_PACKAGE_CONFIG" ||
+		code === "ERR_INVALID_MODULE_SPECIFIER" ||
+		code === "ERR_UNSUPPORTED_DIR_IMPORT"
 	);
 }
 
@@ -60,20 +62,20 @@ function resolvePackage(
 	try {
 		return importer.resolve(packageName);
 	} catch (error) {
-		if (!isMissingModule(error)) throw error;
+		if (!isUnavailableModule(error)) throw error;
 	}
 	for (const dependency of packageNames(root)) {
 		let dependencyEntry: string;
 		try {
 			dependencyEntry = importer.resolve(dependency);
 		} catch (error) {
-			if (isMissingModule(error)) continue;
+			if (isUnavailableModule(error)) continue;
 			throw error;
 		}
 		try {
 			return createNodeRequire(dependencyEntry).resolve(packageName);
 		} catch (error) {
-			if (isMissingModule(error)) continue;
+			if (isUnavailableModule(error)) continue;
 			throw error;
 		}
 	}
@@ -92,7 +94,7 @@ export class NodeProjectModuleLoader implements ProjectModuleLoader {
 			if (resolved === undefined) return undefined;
 			return (await import(/* @vite-ignore */ pathToFileURL(resolved).href)) as T;
 		} catch (error) {
-			if (isMissingModule(error)) return undefined;
+			if (isUnavailableModule(error)) return undefined;
 			throw error;
 		}
 	}
@@ -102,7 +104,7 @@ export class NodeProjectModuleLoader implements ProjectModuleLoader {
 			const { pathToFileURL } = await import(/* @vite-ignore */ "node:url");
 			return (await import(/* @vite-ignore */ pathToFileURL(file).href)) as T;
 		} catch (error) {
-			if (isMissingModule(error)) return undefined;
+			if (isUnavailableModule(error)) return undefined;
 			throw error;
 		}
 	}
