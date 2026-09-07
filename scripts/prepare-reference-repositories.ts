@@ -1,14 +1,33 @@
 import { execFileSync } from "node:child_process";
 import { createReferenceWorkspace } from "./reference-workspace.ts";
-import { createPinnedReferenceRepositoryCatalog } from "./reference-repository-catalog.ts";
+import {
+	createPinnedReferenceRepositoryCatalog,
+	resolveReferenceCheckoutId,
+} from "./reference-repository-catalog.ts";
 import { createEffectToolingFileSystem, createEffectToolingTaskRunner } from "./effect-tooling.ts";
 
-async function run(workspace: ReturnType<typeof createReferenceWorkspace>): Promise<void> {
+export interface PrepareReferenceRepositoriesOptions {
+	readonly log?: boolean;
+}
+
+export async function prepareReferenceRepositories(
+	workspace: ReturnType<typeof createReferenceWorkspace>,
+	ids?: readonly string[],
+	options: PrepareReferenceRepositoriesOptions = {},
+): Promise<readonly string[]> {
 	const fileSystem = createEffectToolingFileSystem();
 	const taskRunner = createEffectToolingTaskRunner();
 	await fileSystem.ensureDirectory(workspace.root);
+	const requested = ids === undefined ? undefined : new Set(ids.map(resolveReferenceCheckoutId));
+	const references = createPinnedReferenceRepositoryCatalog().filter(
+		(reference) => requested === undefined || requested.has(reference.id),
+	);
+	if (references.length === 0)
+		throw new Error(
+			`no pinned reference repositories matched: ${ids?.join(", ") ?? "<empty catalog>"}`,
+		);
 	const results = await taskRunner.run(
-		createPinnedReferenceRepositoryCatalog().map((reference) => ({
+		references.map((reference) => ({
 			id: reference.id,
 			run: async () => {
 				const target = await fileSystem.resolve(workspace.root, reference.id);
@@ -28,6 +47,9 @@ async function run(workspace: ReturnType<typeof createReferenceWorkspace>): Prom
 						stdio: "ignore",
 					});
 				}
+				execFileSync("git", ["-C", target, "reset", "--hard", reference.commit], {
+					stdio: "ignore",
+				});
 				const verified = execFileSync("git", ["-C", target, "rev-parse", "HEAD"], {
 					encoding: "utf8",
 				}).trim();
@@ -40,11 +62,14 @@ async function run(workspace: ReturnType<typeof createReferenceWorkspace>): Prom
 		})),
 		{ concurrency: 2 },
 	);
-	for (const result of results) console.log(result);
+	if (options.log !== false) {
+		for (const result of results) console.log(result);
+	}
+	return results;
 }
 
 if (import.meta.main) {
-	run(createReferenceWorkspace()).catch((error: unknown) => {
+	prepareReferenceRepositories(createReferenceWorkspace()).catch((error: unknown) => {
 		console.error(error);
 		process.exitCode = 1;
 	});

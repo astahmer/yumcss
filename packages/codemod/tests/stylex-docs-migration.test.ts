@@ -1,9 +1,10 @@
 import { describe, expect, test } from "vitest";
 import { StylexDocsMigration } from "../../../scripts/migrate-stylex-docs.ts";
 import { StylexDocsLane } from "../../../scripts/migrate-stylex-docs.ts";
-import { createReferenceWorkspace } from "../../../scripts/reference-workspace.ts";
+import { ensureReferenceWorkspace } from "../../../scripts/ensure-reference-workspace.ts";
 
-const root = createReferenceWorkspace().path("stylex/packages/docs");
+const stylexReference = await ensureReferenceWorkspace("stylex");
+const root = `${stylexReference.path}/packages/docs`;
 
 describe("StyleX docs migration lanes", () => {
 	test("runtime-css lane emits the Pandwind group API", async () => {

@@ -1,25 +1,12 @@
 import { describe, expect, test } from "vitest";
 import { ChakraDocsLane, ChakraDocsMigration } from "../../../scripts/migrate-chakra-docs.ts";
-import {
-	createReferenceWorkspace,
-	inspectReferenceAvailability,
-	REFERENCE_AVAILABILITY,
-} from "../../../scripts/reference-workspace.ts";
+import { ensureReferenceWorkspace } from "../../../scripts/ensure-reference-workspace.ts";
 
-const referenceAvailability = inspectReferenceAvailability(createReferenceWorkspace(), "chakra-ui");
+const referenceAvailability = await ensureReferenceWorkspace("chakra-ui");
 const referenceRoot = referenceAvailability.path;
 
 describe("Chakra docs migration corpus", () => {
-	test("converts supported Chakra styles or reports the unavailable corpus", async () => {
-		if (referenceAvailability.status === REFERENCE_AVAILABILITY.Unavailable) {
-			expect(referenceAvailability).toEqual({
-				id: "chakra-ui",
-				path: referenceRoot,
-				status: "unavailable",
-				prepareCommand: "nub run references:prepare",
-			});
-			return;
-		}
+	test("converts supported Chakra styles from the pinned corpus", async () => {
 		for (const lane of ChakraDocsMigration.lanes) {
 			const report = await ChakraDocsMigration.run(lane, { referenceRoot });
 			expect(report.referenceCommit).toMatch(/^[0-9a-f]{40}$/);

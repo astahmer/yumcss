@@ -101,3 +101,23 @@ export function createPinnedReferenceRepositoryCatalog(): readonly PinnedReferen
 		return true;
 	});
 }
+
+/** Resolve a logical corpus id to the checkout name used by the workspace. */
+export function resolveReferenceCheckoutId(id: string): string {
+	const checkoutIds = getReferenceCheckoutIds();
+	const [head] = id.split("/");
+	return checkoutIds.get(head ?? id) ?? head ?? id;
+}
+
+let referenceCheckoutIds: ReadonlyMap<string, string> | undefined;
+
+function getReferenceCheckoutIds(): ReadonlyMap<string, string> {
+	if (referenceCheckoutIds !== undefined) return referenceCheckoutIds;
+	const aliases = new Map<string, string>();
+	for (const reference of createRealRepositoryCorpus().references) {
+		aliases.set(reference.id, reference.clone);
+		aliases.set(reference.clone, reference.clone);
+	}
+	referenceCheckoutIds = aliases;
+	return aliases;
+}

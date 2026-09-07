@@ -23,13 +23,9 @@ import { PandaJsxStylePropsModeTag } from "../src/swap/adapters/panda/style-prop
 import { PandaUtilityCatalog } from "../src/swap/adapters/panda/utilities.ts";
 import { emitCssClass } from "../src/swap/emit.ts";
 import type { ProjectModuleLoader } from "../src/swap/project-module-loader.ts";
-import {
-	createReferenceWorkspace,
-	inspectReferenceAvailability,
-	REFERENCE_AVAILABILITY,
-} from "../../../scripts/reference-workspace.ts";
+import { ensureReferenceWorkspace } from "../../../scripts/ensure-reference-workspace.ts";
 
-const pandaWebsite = inspectReferenceAvailability(createReferenceWorkspace(), "panda-website");
+const pandaWebsite = await ensureReferenceWorkspace("panda");
 
 /** Theme mirroring what loadPandaTheme produces for the website config. */
 const siteTheme: PandaTheme = {
@@ -650,31 +646,10 @@ describe("loadPandaTheme — fixture config (hermetic)", () => {
 	});
 });
 
-describe("loadPandaTheme — real website panda.config.ts (best-effort)", () => {
-	it("resolves when the pinned website is available, or reports why it is unavailable", async () => {
-		const configPath = `${pandaWebsite.path}/panda.config.ts`;
-		if (pandaWebsite.status === REFERENCE_AVAILABILITY.Unavailable) {
-			expect(pandaWebsite).toEqual({
-				id: "panda-website",
-				path: pandaWebsite.path,
-				status: "unavailable",
-				prepareCommand: "nub run references:prepare",
-			});
-			return;
-		}
-		try {
-			const theme = await loadPandaTheme(configPath);
-			expect(theme.tokenVars.get("fg.muted")).toBe("--colors-fg-muted");
-		} catch (error) {
-			const message = (error as Error).message;
-			if (message.includes("Cannot find package")) {
-				expect({ status: "unavailable", reason: "host dependencies" }).toEqual({
-					status: "unavailable",
-					reason: "host dependencies",
-				});
-				return;
-			}
-			throw error;
-		}
+describe("loadPandaTheme — real website panda.config.ts", () => {
+	it("resolves the pinned website configuration", async () => {
+		const configPath = `${pandaWebsite.path}/website/panda.config.ts`;
+		const theme = await loadPandaTheme(configPath);
+		expect(theme.tokenVars.get("fg.muted")).toBe("--colors-fg-muted");
 	}, 30_000);
 });

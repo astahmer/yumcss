@@ -1,28 +1,12 @@
 import { describe, expect, test } from "vitest";
 import { TailwindDocsLane, TailwindDocsMigration } from "../../../scripts/migrate-tailwind-docs.ts";
-import {
-	createReferenceWorkspace,
-	inspectReferenceAvailability,
-	REFERENCE_AVAILABILITY,
-} from "../../../scripts/reference-workspace.ts";
+import { ensureReferenceWorkspace } from "../../../scripts/ensure-reference-workspace.ts";
 
-const referenceAvailability = inspectReferenceAvailability(
-	createReferenceWorkspace(),
-	"tailwindcss.com",
-);
+const referenceAvailability = await ensureReferenceWorkspace("tailwindcss.com");
 const referenceRoot = referenceAvailability.path;
 
 describe("Tailwind docs migration corpus", () => {
-	test("covers every supported Pandwind lane or reports the unavailable corpus", async () => {
-		if (referenceAvailability.status === REFERENCE_AVAILABILITY.Unavailable) {
-			expect(referenceAvailability).toEqual({
-				id: "tailwindcss.com",
-				path: referenceRoot,
-				status: "unavailable",
-				prepareCommand: "nub run references:prepare",
-			});
-			return;
-		}
+	test("covers every supported Pandwind lane from the pinned corpus", async () => {
 		for (const lane of TailwindDocsMigration.lanes) {
 			const report = await TailwindDocsMigration.run(lane, { referenceRoot });
 			expect(report.referenceCommit).toMatch(/^[0-9a-f]{40}$/);

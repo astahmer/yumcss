@@ -66,6 +66,13 @@ structured residuals. A residual is a proof failure when the adapter claims
 the capability; it is never hidden by falling back to the hand-written token
 table.
 
+The codemod corpus tests that use a real checkout prepare their own pinned
+repository before loading the test module. They clone a missing checkout,
+fetch the recorded commit when necessary, and restore tracked files in a
+partially materialized checkout. Preparation failures fail the test setup;
+they are not reported as a passing unavailable case. `references:prepare`
+remains useful when preparing the complete catalog ahead of a proof run.
+
 The full reference run is intentionally separate because it downloads pinned
 public repositories and can take substantially longer:
 

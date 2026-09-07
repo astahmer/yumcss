@@ -1,6 +1,7 @@
 import { existsSync } from "node:fs";
 import { homedir } from "node:os";
 import { join, resolve } from "node:path";
+import { resolveReferenceCheckoutId } from "./reference-repository-catalog.ts";
 
 export interface ReferenceWorkspace {
 	readonly root: string;
@@ -28,7 +29,10 @@ export function createReferenceWorkspace(root?: string): ReferenceWorkspace {
 	);
 	return {
 		root: workspaceRoot,
-		path: (id) => join(workspaceRoot, id),
+		path: (id) => {
+			const [checkoutId, ...segments] = id.split("/");
+			return join(workspaceRoot, resolveReferenceCheckoutId(checkoutId ?? id), ...segments);
+		},
 	};
 }
 
