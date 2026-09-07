@@ -497,6 +497,17 @@ export type {
 export { createRealRepositoryCorpus } from "./real-repository-corpus.ts";
 export type { RealRepositoryCorpus, RealRepositoryReference } from "./real-repository-corpus.ts";
 export {
+	MIGRATION_ROUTE_PROOF_CATALOG,
+	MIGRATION_ROUTE_PROOF_CATALOG_SCHEMA,
+	MigrationRouteMaturityTag,
+	MigrationRouteProofExecutionTag,
+	MigrationRouteProofRouteId,
+	findMigrationRouteProof,
+	migrationRouteProofCatalog,
+	validateMigrationRouteProofCatalog,
+} from "./route-proof-catalog.ts";
+export type { MigrationRouteProofSpec } from "./route-proof-catalog.ts";
+export {
 	REAL_REPOSITORY_PROOF_SCHEMA,
 	classifyRealRepositoryProof,
 } from "./real-repository-proof.ts";

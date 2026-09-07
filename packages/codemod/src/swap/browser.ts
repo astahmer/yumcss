@@ -14,6 +14,13 @@ export { runAdapterMigration } from "./adapter-migration.ts";
 export type { AdapterMigrationOutcome } from "./adapter-contract.ts";
 export { CodemodAdapterId, StyleMigrationOutcome, SwapSourceId } from "./identifiers.ts";
 export { BUILTIN_CODEMOD_ADAPTER_IDS } from "./identifiers.ts";
+export {
+	MIGRATION_ROUTE_PROOF_CATALOG,
+	MigrationRouteMaturityTag,
+	MigrationRouteProofExecutionTag,
+	findMigrationRouteProof,
+} from "./route-proof-catalog.ts";
+export type { MigrationRouteProofSpec } from "./route-proof-catalog.ts";
 export type { AdapterCapabilityReport } from "./capabilities.ts";
 export type {
 	AdapterDependencies,

@@ -35,6 +35,8 @@ export interface PromotionMigrationResult {
 
 export interface PromotionProofResult {
 	readonly canonicalCssEqual: boolean;
+	readonly typecheckPassed?: boolean;
+	readonly buildPassed?: boolean;
 	readonly browserEquivalent: boolean;
 	readonly hydrationEquivalent: boolean;
 	readonly streamingEquivalent: boolean | null;
@@ -111,6 +113,10 @@ function missingProofDimensions(
 		switch (dimension) {
 			case RealRepositoryProofDimension.CanonicalCss:
 				return !proof.canonicalCssEqual;
+			case RealRepositoryProofDimension.Typecheck:
+				return proof.typecheckPassed !== true;
+			case RealRepositoryProofDimension.Build:
+				return proof.buildPassed !== true;
 			case RealRepositoryProofDimension.BrowserStates:
 				return !proof.browserEquivalent;
 			case RealRepositoryProofDimension.SsrHydration:

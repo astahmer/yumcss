@@ -49,6 +49,8 @@ export interface CapabilityLedgerOptions {
 
 const REAL_PROOF_DIMENSIONS = [
 	RealRepositoryProofDimension.CanonicalCss,
+	RealRepositoryProofDimension.Typecheck,
+	RealRepositoryProofDimension.Build,
 	RealRepositoryProofDimension.BrowserStates,
 	RealRepositoryProofDimension.SsrHydration,
 	RealRepositoryProofDimension.RscStreaming,
@@ -107,6 +109,8 @@ const requiresSsrProof = new Set<AdapterCapability>([
 function requiredProof(capability: AdapterCapability): readonly RealRepositoryProofDimension[] {
 	const dimensions = new Set<RealRepositoryProofDimension>([
 		RealRepositoryProofDimension.CanonicalCss,
+		RealRepositoryProofDimension.Typecheck,
+		RealRepositoryProofDimension.Build,
 		RealRepositoryProofDimension.Dependencies,
 		RealRepositoryProofDimension.CssSize,
 	]);

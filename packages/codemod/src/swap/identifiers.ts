@@ -324,6 +324,8 @@ export const enum StyleNamedRuleStrategy {
 /** Independent evidence dimensions used by real-repository promotion reports. */
 export const enum RealRepositoryProofDimension {
 	CanonicalCss = "canonical-css",
+	Typecheck = "typecheck",
+	Build = "build",
 	BrowserStates = "browser-states",
 	SsrHydration = "ssr-hydration",
 	RscStreaming = "rsc-streaming",
@@ -334,6 +336,8 @@ export const enum RealRepositoryProofDimension {
 /** Ordered dimensions used when a capability ledger is rendered or serialized. */
 export const REAL_REPOSITORY_PROOF_DIMENSIONS = [
 	RealRepositoryProofDimension.CanonicalCss,
+	RealRepositoryProofDimension.Typecheck,
+	RealRepositoryProofDimension.Build,
 	RealRepositoryProofDimension.BrowserStates,
 	RealRepositoryProofDimension.SsrHydration,
 	RealRepositoryProofDimension.RscStreaming,

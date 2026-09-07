@@ -11,6 +11,8 @@ export interface RealRepositoryProofInput {
 	readonly runtimeDependent: boolean;
 	readonly canonicalChecked: boolean;
 	readonly canonicalEqual?: boolean;
+	readonly typecheckProven?: boolean;
+	readonly buildProven?: boolean;
 	readonly residuals: number;
 	readonly skipped: number;
 	readonly streamingApplicable: boolean;
@@ -67,6 +69,14 @@ export function classifyRealRepositoryProof(
 		: input.canonicalEqual === true
 			? passed()
 			: failed("canonical CSS differs");
+	const typecheck =
+		input.typecheckProven === true
+			? passed()
+			: pending("the converted reference was not typechecked with its installed dependencies");
+	const build =
+		input.buildProven === true
+			? passed()
+			: pending("the converted reference was not built with its installed project tooling");
 	const browser =
 		input.browserProven === true
 			? passed()
@@ -90,6 +100,8 @@ export function classifyRealRepositoryProof(
 			: pending("built CSS size is not measured by the source-only runner");
 	const dimensions = {
 		[RealRepositoryProofDimension.CanonicalCss]: canonical,
+		[RealRepositoryProofDimension.Typecheck]: typecheck,
+		[RealRepositoryProofDimension.Build]: build,
 		[RealRepositoryProofDimension.BrowserStates]: browser,
 		[RealRepositoryProofDimension.SsrHydration]: ssr,
 		[RealRepositoryProofDimension.RscStreaming]: streaming,

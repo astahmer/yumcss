@@ -13,6 +13,8 @@ describe("real repository proof classification", () => {
 			runtimeDependent: false,
 			canonicalChecked: true,
 			canonicalEqual: true,
+			typecheckProven: true,
+			buildProven: true,
 			residuals: 0,
 			skipped: 0,
 			streamingApplicable: false,
