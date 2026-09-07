@@ -355,6 +355,14 @@ function materializeTailwindTokens(
 	return declarations.map((declaration) => materializeTailwindToken(declaration, catalog));
 }
 
+function collectTailwindDynamicClassAttributes(source: string): readonly string[] {
+	const attributes = collectDynamicClassAttributes(source);
+	if (!/\bfrom\s*["']pandwind(?:["']|\/)/u.test(source)) return attributes;
+	const pandwindStyleCarrier =
+		/\b(?:tw|d?css)\s*(?:\(|\.(?:class|vars|props|group|input|raw)\s*\()/u;
+	return attributes.filter((attribute) => !pandwindStyleCarrier.test(attribute));
+}
+
 function standaloneClassMap(
 	source: string,
 	resolver: TailwindUtilityResolver,
@@ -567,7 +575,7 @@ function parseTailwind(
 			continue;
 		matches.push(parseClassValue(value, context, resolver, start, start + value.length + 2));
 	}
-	for (const text of collectDynamicClassAttributes(source))
+	for (const text of collectTailwindDynamicClassAttributes(source))
 		residuals.push({
 			kind: StyleProgramResidualKindTag.Dynamic,
 			text,
@@ -1492,7 +1500,7 @@ export function createTailwindAdapter(options: TailwindAdapterOptions = {}): Sty
 			},
 		},
 		detect: (context) => {
-			const dynamicAttributes = collectDynamicClassAttributes(context.source);
+			const dynamicAttributes = collectTailwindDynamicClassAttributes(context.source);
 			const matched =
 				detectStaticClassTarget(context.source).matched || dynamicAttributes.length > 0;
 			const configured = /(?:tailwindcss|@tailwindcss\/)/u.test(context.source);
