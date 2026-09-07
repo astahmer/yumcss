@@ -144,7 +144,7 @@ export interface CollectPayload {
 		rules: Array<{ selector: string; declarations: string }>;
 	}>;
 	contrastWarnings?: ContrastWarning[];
-	/** Inspector-side token graph (built by the app via pandwind/token-graph). */
+	/** Inspector-side token graph (built by the app via pandwind-codemod/tw). */
 	tokenGraph: unknown;
 	designSystem: {
 		themeVars: Array<ThemeVar>;

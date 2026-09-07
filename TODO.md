@@ -9,7 +9,7 @@
   the generated runtime (`pnpm test`).
 - Generated conflict map (per-property, variant-scoped, compose-aware) —
   tailwind-merge semantics without a hand-maintained config.
-- `pandwind-tw scan` — oxc-based scanner emitting a Tailwind safelist.
+- `pandwind-codemod tw scan` — oxc-based scanner emitting a Tailwind safelist.
 - `pandwindVite()` — statically inlines literal `tw()` calls before Tailwind's
   scanner (runtime cost zero, tree-shakable), with the same conflict merge at
   compile time.
@@ -58,7 +58,7 @@
 - **Split overloaded utilities** — semantic sub-keys (`textColor`, `textSize`,
   `textAlign`, `textWrap`, `textOverflow`) are generated at codegen time and
   documented in the README.
-- **DTCG design-token integration for `tw()`** — `pandwind-tw generate --tokens`
+- **DTCG design-token integration for `tw()`** — `pandwind-codemod tw generate --tokens`
   bridges tokens into `@theme` and the generated types.
 - **Compile-time `cx()`** — the vite inliner folds literal `cx()` calls,
   differentially proven byte-identical to the runtime.
@@ -82,7 +82,7 @@
   benchmark rig before publishing claims.
 - **Safelist-free mode** — a custom Tailwind extractor that understands
   `tw()` objects, or first-class `@source inline` guidance; today the inliner
-  already makes literal calls visible, and `pandwind-tw scan` covers the rest.
+  already makes literal calls visible, and `pandwind-codemod tw scan` covers the rest.
 - **Publish to JSR / pkg.pr.new** once the API settles.
 
 # What we deliberately don't do (and why)
