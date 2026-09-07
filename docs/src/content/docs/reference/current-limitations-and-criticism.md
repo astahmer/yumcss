@@ -96,14 +96,16 @@ describe evidence, not a promise that every construct in a route is lossless.
 | Codegen and Vite integration                    | experimental | focused runtime/Vite tests and fresh checked-in example artifacts                 | repeated proof in dependency-installed consumer projects                   |
 | Cataloged codemod routes                        | experimental | adapter contracts, source probes, route-level dimensions, explicit residuals      | installed project typecheck, build, browser, SSR/hydration, and size proof |
 | Tailwind -> Pandwind bounded fixture             | experimental | installed CLI, generated preset, typecheck, build, SSR, hydration, browser pixels | more utilities, themes, plugins, frameworks, and multi-file projects       |
+| styled-components -> Pandwind bounded fixture   | experimental | installed CLI, generated Vite integration, typecheck, build, SSR, hydration, browser pixels | themes, component composition, dynamic props, and multi-file projects     |
 | Playground                                      | experimental | browser sandbox evaluation, StyleProgram extraction, runtime-sheet CSS inspection | real package/Vite fixture and framework host proof                         |
 | MCP and analyzer                                | experimental | typed tool/resource contracts and explicit host-port unavailable states           | host integrations that execute and retain project evidence                 |
 | React Native/OpenTUI and other non-web backends | research     | contract and typing coverage                                                      | real consumers and backend-specific runtime proof                          |
 
-All seven currently cataloged migration routes remain experimental. Four have
-source-only pinned references; three are explicitly unavailable because no
-installed project proof exists yet. A route becomes stable only after every
-required dimension is passed by an installed-project execution lane.
+All seven currently cataloged migration routes remain experimental. Two have
+bounded installed-project evidence, three have source-only pinned references,
+and two are explicitly unavailable because no installed project proof exists
+yet. A route becomes stable only after every required dimension is passed by an
+installed-project execution lane.
 
 ## The most questionable scope
 

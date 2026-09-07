@@ -20,6 +20,7 @@ import { CodemodAdapterId } from "./identifiers.ts";
 export interface ProjectBootstrapRequest {
 	readonly root: string;
 	readonly sourceAdapter: string;
+	readonly targetAdapter: string;
 	readonly outputDirectory: string;
 	readonly readFile: (file: string) => string | undefined;
 	readonly listFiles: (root: string) => readonly string[];
@@ -354,7 +355,7 @@ function rewriteTailwindStylesheets(
 	return changes;
 }
 
-function rewriteTailwindViteConfigs(
+function rewritePandwindViteConfigs(
 	request: ProjectBootstrapRequest,
 	config: AdapterProjectConfig,
 	outputDirectory: string,
@@ -363,7 +364,7 @@ function rewriteTailwindViteConfigs(
 	readonly content: string;
 	readonly expectedContent: string;
 }[] {
-	if (config.adapter !== CodemodAdapterId.Tailwind) return [];
+	if (request.targetAdapter !== CodemodAdapterId.Pandwind) return [];
 	const presetPath = resolve(request.root, outputDirectory, "preset");
 	const changes: {
 		path: string;
@@ -374,19 +375,46 @@ function rewriteTailwindViteConfigs(
 		const absoluteFile = resolve(request.root, file);
 		if (!/(?:^|\/)vite\.config\.[cm]?[jt]s$/u.test(absoluteFile)) continue;
 		const source = request.readFile(absoluteFile);
-		if (source === undefined || !source.includes("@tailwindcss/vite")) continue;
-		if (!/\btailwindcss\s*\(\s*\)/u.test(source)) continue;
+		if (source === undefined) continue;
 		const presetSpecifier = relative(dirname(absoluteFile), presetPath).replaceAll("\\", "/");
 		const normalizedSpecifier = presetSpecifier.startsWith(".")
 			? presetSpecifier
 			: `./${presetSpecifier}`;
 		const typedPresetSpecifier = `${normalizedSpecifier}.ts`;
-		const next = source
-			.replace(
-				/import\s+tailwindcss\s+from\s+["']@tailwindcss\/vite["'];?/u,
-				`import { pandwindCssVite } from "pandwind/vite";\nimport { pandwindPreset } from "${typedPresetSpecifier}";`,
-			)
-			.replace(/\btailwindcss\s*\(\s*\)/gu, 'pandwindCssVite(pandwindPreset, { root: "." })');
+		const pandwindPlugin = 'pandwindCssVite(pandwindPreset, { root: "." })';
+		let next: string;
+		if (
+			config.adapter === CodemodAdapterId.Tailwind &&
+			source.includes("@tailwindcss/vite") &&
+			/\btailwindcss\s*\(\s*\)/u.test(source)
+		) {
+			next = source
+				.replace(
+					/import\s+tailwindcss\s+from\s+["']@tailwindcss\/vite["'];?/u,
+					`import { pandwindCssVite } from "pandwind/vite";\nimport { pandwindPreset } from "${typedPresetSpecifier}";`,
+				)
+				.replace(/\btailwindcss\s*\(\s*\)/gu, pandwindPlugin);
+		} else {
+			if (source.includes("pandwindCssVite(")) continue;
+			const withImports =
+				`import { pandwindCssVite } from "pandwind/vite";\nimport { pandwindPreset } from "${typedPresetSpecifier}";\n` +
+				source;
+			if (/\bplugins\s*:\s*\[\s*\]/u.test(withImports)) {
+				next = withImports.replace(
+					/(\bplugins\s*:\s*)\[\s*\]/u,
+					`$1[${pandwindPlugin}]`,
+				);
+			} else if (/\bplugins\s*:\s*\[/u.test(withImports)) {
+				next = withImports.replace(/(\bplugins\s*:\s*\[)/u, `$1${pandwindPlugin}, `);
+			} else if (/defineConfig\s*\(\s*\{\s*/u.test(withImports)) {
+				next = withImports.replace(
+					/(defineConfig\s*\(\s*\{\s*)/u,
+					`$1plugins: [${pandwindPlugin}], `,
+				);
+			} else {
+				continue;
+			}
+		}
 		if (next === source) continue;
 		changes.push({
 			path: relative(request.root, absoluteFile).replaceAll("\\", "/"),
@@ -657,7 +685,7 @@ export async function createPandwindProjectSupport(
 		? files
 		: undefined;
 	const hasGeneratedTw = files.some((file) => file.path === projectFile(directory, "tw.ts"));
-	const viteConfigChanges = rewriteTailwindViteConfigs(request, sourceConfig, directory);
+	const viteConfigChanges = rewritePandwindViteConfigs(request, sourceConfig, directory);
 	return {
 		metaDirectory: directory,
 		bindings: {

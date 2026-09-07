@@ -82,10 +82,11 @@ export const MIGRATION_ROUTE_PROOF_CATALOG: readonly MigrationRouteProofSpec[] =
 		from: CodemodAdapterId.StyledComponents,
 		to: CodemodAdapterId.Pandwind,
 		maturity: MigrationRouteMaturityTag.Experimental,
-		execution: MigrationRouteProofExecutionTag.SourceOnly,
+		execution: MigrationRouteProofExecutionTag.InstalledProject,
 		requiredDimensions: PROJECT_PROOF_DIMENSIONS,
 		referenceIds: ["styled-components-benchmark"],
-		note: "The adapter-program/browser probe is not a dependency-installed styled-components project migration.",
+		evidenceIds: ["styled-components-installed-proof"],
+		note: "A bounded installed React/Vite fixture covers a styled object and pseudo-condition; broader component and theme coverage is still required for promotion.",
 	},
 	{
 		id: MigrationRouteProofRouteId.UnoCssToPandwind,

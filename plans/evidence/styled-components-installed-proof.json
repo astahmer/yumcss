@@ -1,0 +1,68 @@
+{
+	"schema": "pandwind.installed-project-proof/1",
+	"route": {
+		"from": "styled-components",
+		"to": "pandwind"
+	},
+	"fixture": {
+		"files": [
+			"src/App.tsx",
+			"vite.config.ts"
+		],
+		"isolated": true
+	},
+	"dependencies": {
+		"installed": true,
+		"targetPackage": "file:/Users/astahmer/dev/pandwind/packages/pandwind",
+		"targetNodeModule": true
+	},
+	"migration": {
+		"converted": 1,
+		"skipped": 0,
+		"residuals": 0,
+		"generatedSupportFiles": 6,
+		"targetUsesPandwind": true,
+		"sourceImportRemoved": true,
+		"generatedVitePresetImportIsExplicit": true,
+		"generatedVitePluginPresent": true
+	},
+	"checks": {
+		"sourceTypecheck": true,
+		"targetTypecheck": true,
+		"sourceBuild": true,
+		"targetBuild": true,
+		"sourceSsr": true,
+		"targetSsr": true,
+		"hydration": true
+	},
+	"ssr": {
+		"markupEquivalent": true,
+		"sourceMarkup": "<button data-proof=\"true\" class=\"sc-bRKDuR hZa-Dvf\">Proof</button>",
+		"targetMarkup": "<button data-proof=\"true\" class=\"49nlxi 1tp51qt 1ko11iu 7nvuka jp2vkl\">Proof</button>"
+	},
+	"browser": {
+		"checked": true,
+		"states": [
+			"base",
+			"hover"
+		],
+		"equivalent": true,
+		"changedPixels": 0,
+		"computed": {
+			"source": {
+				"base": "rgb(18, 52, 86)|rgb(255, 255, 255)|16px|8px",
+				"hover": "rgb(35, 69, 103)|rgb(255, 255, 255)|16px|8px"
+			},
+			"target": {
+				"base": "rgb(18, 52, 86)|rgb(255, 255, 255)|16px|8px",
+				"hover": "rgb(35, 69, 103)|rgb(255, 255, 255)|16px|8px"
+			}
+		},
+		"hydrationErrors": []
+	},
+	"css": {
+		"sourceBytes": 181,
+		"targetBytes": 141,
+		"targetNotLarger": true
+	}
+}

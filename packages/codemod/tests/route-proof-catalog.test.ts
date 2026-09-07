@@ -28,6 +28,10 @@ describe("migration route proof catalog", () => {
 				id: MigrationRouteProofRouteId.TailwindToPandwind,
 				evidenceIds: ["tailwind-installed-proof"],
 			}),
+			expect.objectContaining({
+				id: MigrationRouteProofRouteId.StyledComponentsToPandwind,
+				evidenceIds: ["styled-components-installed-proof"],
+			}),
 		]);
 	});
 

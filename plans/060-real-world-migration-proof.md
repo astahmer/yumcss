@@ -279,6 +279,10 @@ interface MigrationRouteProof {
 - [x] A bounded Tailwind CSS -> Pandwind installed-project fixture passes the
       CLI, generated-support-file, typecheck, build, SSR, hydration, browser,
       and CSS-size checks; this fixture does not promote the whole route.
+- [x] A bounded styled-components -> Pandwind installed-project fixture passes
+      the CLI, generated Vite integration, typecheck, build, SSR, hydration,
+      browser, and CSS-size checks; this fixture does not promote the whole
+      route.
 
 ## Decisions log
 
@@ -288,3 +292,4 @@ interface MigrationRouteProof {
 | 2026-09-07 | Treat unavailable external references as evidence, not green skips                                   | A passing local suite must describe what it actually executed                      |
 | 2026-09-07 | Keep every catalog route experimental until an installed-project lane passes all required dimensions | The current corpus is source-only and cannot justify a stable migration promise    |
 | 2026-09-07 | Add a bounded Tailwind -> Pandwind installed fixture without promoting the route | It proves the project lifecycle and official spacing resolution while leaving breadth and framework coverage explicit |
+| 2026-09-07 | Add a bounded styled-components -> Pandwind installed fixture without promoting the route | It proves the real source package, pseudo-condition lowering, generated Vite integration, and browser parity while leaving theme and composition breadth explicit |

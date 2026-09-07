@@ -7,6 +7,7 @@ describe("Pandwind project bootstrap", () => {
 		const support = await createPandwindProjectSupport({
 			root: "/project",
 			sourceAdapter: CodemodAdapterId.Panda,
+			targetAdapter: CodemodAdapterId.Pandwind,
 			outputDirectory: "pandwind",
 			readFile: () => undefined,
 			listFiles: () => [],
@@ -35,6 +36,7 @@ describe("Pandwind project bootstrap", () => {
 		const support = await createPandwindProjectSupport({
 			root: "/project",
 			sourceAdapter: CodemodAdapterId.Panda,
+			targetAdapter: CodemodAdapterId.Pandwind,
 			outputDirectory: "pandwind",
 			readFile: () => undefined,
 			listFiles: () => [],
@@ -49,6 +51,7 @@ describe("Pandwind project bootstrap", () => {
 		const support = await createPandwindProjectSupport({
 			root: "/project",
 			sourceAdapter: CodemodAdapterId.Tailwind,
+			targetAdapter: CodemodAdapterId.Pandwind,
 			outputDirectory: "pandwind",
 			readFile: (file) =>
 				file === "/project/styles.css"
@@ -70,6 +73,7 @@ describe("Pandwind project bootstrap", () => {
 		const support = await createPandwindProjectSupport({
 			root: "/project",
 			sourceAdapter: CodemodAdapterId.Tailwind,
+			targetAdapter: CodemodAdapterId.Pandwind,
 			outputDirectory: "pandwind",
 			readFile: (file) =>
 				file === "/project/styles.css"
@@ -97,6 +101,7 @@ describe("Pandwind project bootstrap", () => {
 		const support = await createPandwindProjectSupport({
 			root: "/project",
 			sourceAdapter: CodemodAdapterId.Tailwind,
+			targetAdapter: CodemodAdapterId.Pandwind,
 			outputDirectory: "pandwind",
 			readFile: (file) => {
 				if (file === "/project/styles.css") return '@import "tailwindcss";';
@@ -119,6 +124,46 @@ describe("Pandwind project bootstrap", () => {
 					'import tailwindcss from "@tailwindcss/vite";',
 					'import { defineConfig } from "vite";',
 					"export default defineConfig({ plugins: [tailwindcss()] });",
+				].join("\n"),
+				content: [
+					'import { pandwindCssVite } from "pandwind/vite";',
+					'import { pandwindPreset } from "./pandwind/preset.ts";',
+					'import { defineConfig } from "vite";',
+					'export default defineConfig({ plugins: [pandwindCssVite(pandwindPreset, { root: "." })] });',
+				].join("\n"),
+			},
+			{
+				path: "tsconfig.json",
+				expectedContent: '{"compilerOptions":{"strict":true}}',
+				content: '{"compilerOptions":{\n\t"allowImportingTsExtensions": true,"strict":true}}',
+			},
+		]);
+	});
+
+	test("adds the Pandwind Vite plugin for non-Tailwind sources", async () => {
+		const support = await createPandwindProjectSupport({
+			root: "/project",
+			sourceAdapter: CodemodAdapterId.StyledComponents,
+			targetAdapter: CodemodAdapterId.Pandwind,
+			outputDirectory: "pandwind",
+			readFile: (file) =>
+				file === "/project/vite.config.ts"
+					? [
+							'import { defineConfig } from "vite";',
+							"export default defineConfig({ plugins: [] });",
+						].join("\n")
+					: file === "/project/tsconfig.json"
+						? '{"compilerOptions":{"strict":true}}'
+						: undefined,
+			listFiles: () => ["/project/vite.config.ts", "/project/tsconfig.json"],
+		});
+
+		expect(support.fileChanges).toEqual([
+			{
+				path: "vite.config.ts",
+				expectedContent: [
+					'import { defineConfig } from "vite";',
+					"export default defineConfig({ plugins: [] });",
 				].join("\n"),
 				content: [
 					'import { pandwindCssVite } from "pandwind/vite";',

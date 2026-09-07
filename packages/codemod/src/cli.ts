@@ -363,6 +363,7 @@ async function mainMigrate(argv: string[]): Promise<void> {
 				project = await createPandwindProjectSupport({
 					root,
 					sourceAdapter,
+					targetAdapter: args.to,
 					outputDirectory: projectOutputDirectory(root, args.outDir || "pandwind"),
 					readFile: readProjectFile(root),
 					listFiles: projectFiles,
