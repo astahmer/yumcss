@@ -426,8 +426,7 @@ function emitTailwindClassCarrier(
 		program.residuals
 			.filter(
 				(residual) =>
-					residual.kind === "unknown-utility" ||
-					residual.kind === SwapResidualKindTag.UnknownValue,
+					residual.kind === "unknown-utility" || residual.kind === SwapResidualKindTag.UnknownValue,
 			)
 			.map((residual) => residual.text),
 	);

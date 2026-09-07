@@ -1,7 +1,7 @@
 import { cac, type Command } from "cac";
 import { createBuiltinCodemodCatalog } from "./adapter-catalog.ts";
 import type { AdapterCapabilityMode } from "./capabilities.ts";
-import { CodemodAdapterId, SwapSourceId, SwapTargetId } from "./identifiers.ts";
+import { CodemodAdapterId, SwapTargetId } from "./identifiers.ts";
 import { SWAP_REGISTRY } from "./swap-registry.ts";
 import type { TokenRefMode } from "./tokens.ts";
 import type { ExternalAdapterId } from "./external-adapters.ts";

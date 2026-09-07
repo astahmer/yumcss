@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { getHostStyleAdapter, HOST_STYLE_REGISTRY } from "../src/host/index.ts";
+import { HOST_STYLE_REGISTRY } from "../src/host/index.ts";
 import { createRuntimeSheet, type RuntimeSheetSnapshot } from "../src/css/runtime.ts";
 
 interface FakeStyle {

@@ -23,15 +23,17 @@ export function ensureReferenceWorkspace(
 	const pending = pendingPreparations.get(key);
 	if (pending !== undefined) return pending;
 
-	const preparation = prepareReferenceRepositories(workspace, [id], { log: false }).then(async () => {
-		await prepareReferenceDependencies(workspace, [id], { log: false });
-		const availability = inspectReferenceAvailability(workspace, id);
-		if (availability.status !== REFERENCE_AVAILABILITY.Available)
-			throw new Error(
-				`reference workspace was not materialized: ${availability.path} (${availability.prepareCommand})`,
-			);
-		return availability;
-	});
+	const preparation = prepareReferenceRepositories(workspace, [id], { log: false }).then(
+		async () => {
+			await prepareReferenceDependencies(workspace, [id], { log: false });
+			const availability = inspectReferenceAvailability(workspace, id);
+			if (availability.status !== REFERENCE_AVAILABILITY.Available)
+				throw new Error(
+					`reference workspace was not materialized: ${availability.path} (${availability.prepareCommand})`,
+				);
+			return availability;
+		},
+	);
 	pendingPreparations.set(key, preparation);
 	return preparation;
 }

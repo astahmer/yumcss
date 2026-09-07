@@ -76,7 +76,7 @@ describe("generated CSS parser", () => {
 		});
 		expect(nodes[1]).toMatchObject({
 			type: GeneratedCssNodeKind.Rule,
-			selector: '.text-sm',
+			selector: ".text-sm",
 		});
 	});
 });

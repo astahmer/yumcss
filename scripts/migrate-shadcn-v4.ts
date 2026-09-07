@@ -225,6 +225,7 @@ function staticStylesheetSource(
 			} catch (error) {
 				throw new Error(
 					`${lane} static artifact failed for ${file}: ${error instanceof Error ? error.message : String(error)}`,
+					{ cause: error },
 				);
 			}
 		}

@@ -35,16 +35,16 @@ silently changing the result.
 
 ## API and artifact matrix
 
-| Entry point             | Input                                                | Primary execution                          | Output                             | Best for                               |
-| ----------------------- | ---------------------------------------------------- | ------------------------------------------ | ---------------------------------- | -------------------------------------- |
-| `tw()`                  | Typed utility object                                 | Static fold, Tailwind scan                 | Class string                       | Utility-first CSS with minimal runtime |
-| `css()`                 | CSS/property object                                  | Atomic declaration lowering                | Class/declaration map              | CSS-in-JS and extracted atoms          |
-| `createDesignCss()`     | `$frame`/`$layout`/`$text` object                    | Design vocabulary resolution, then `css()` | Class/declaration map              | A constrained design-system language   |
-| `cx()`                  | Strings, arrays, conditional values, foldable styles | Conflict-aware merge                       | Class string                       | Composition across all lanes           |
-| `pandwindVite()`        | Source modules                                       | Scan, fold `tw`/`cx`, optional CSS folding | Transformed modules                | Build-time elimination                 |
-| `pandwindCssVite()`     | Source modules plus preset                           | Scan, extract, canonicalize, serve         | Virtual CSS sheet                  | Atomic CSS extraction                  |
+| Entry point                | Input                                                | Primary execution                          | Output                             | Best for                               |
+| -------------------------- | ---------------------------------------------------- | ------------------------------------------ | ---------------------------------- | -------------------------------------- |
+| `tw()`                     | Typed utility object                                 | Static fold, Tailwind scan                 | Class string                       | Utility-first CSS with minimal runtime |
+| `css()`                    | CSS/property object                                  | Atomic declaration lowering                | Class/declaration map              | CSS-in-JS and extracted atoms          |
+| `createDesignCss()`        | `$frame`/`$layout`/`$text` object                    | Design vocabulary resolution, then `css()` | Class/declaration map              | A constrained design-system language   |
+| `cx()`                     | Strings, arrays, conditional values, foldable styles | Conflict-aware merge                       | Class string                       | Composition across all lanes           |
+| `pandwindVite()`           | Source modules                                       | Scan, fold `tw`/`cx`, optional CSS folding | Transformed modules                | Build-time elimination                 |
+| `pandwindCssVite()`        | Source modules plus preset                           | Scan, extract, canonicalize, serve         | Virtual CSS sheet                  | Atomic CSS extraction                  |
 | `pandwind-codemod migrate` | Source ecosystem                                     | Adapter + semantic IR + target lowering    | Rewritten source and report        | Migration between style systems        |
-| `pandwind-analyze`      | Source/generated artifacts                           | Shared scan/classify/inspect               | Coverage, residual, budget reports | Adoption and regression control        |
+| `pandwind-analyze`         | Source/generated artifacts                           | Shared scan/classify/inspect               | Coverage, residual, budget reports | Adoption and regression control        |
 
 ## The runtime lanes
 
