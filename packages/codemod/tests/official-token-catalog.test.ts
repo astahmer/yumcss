@@ -423,6 +423,57 @@ describe("official custom-token loaders", () => {
 		`);
 	});
 
+	test("recovers Tailwind token names from namespaced CSS variables", async () => {
+		const loader: ProjectModuleLoader = {
+			async importPackage() {
+				return {
+					__unstable__loadDesignSystem: async () => ({
+						theme: {
+							entries: () => [
+								["--color-blue-500", { value: "#3b82f6" }],
+								["--color-white", { value: "#fff" }],
+							],
+						},
+						getClassList: () => [["bg-blue-500"], ["text-white"]],
+						candidatesToCss: (candidates: readonly string[]) =>
+							candidates.map((candidate) =>
+								candidate === "bg-blue-500"
+									? ".bg-blue-500{background-color:var(--color-blue-500)}"
+									: ".text-white{color:var(--color-white)}",
+							),
+					}),
+				} as never;
+			},
+			async importFile() {
+				return undefined;
+			},
+		};
+		const adapter = createTailwindAdapter({ moduleLoader: loader });
+		const target = createPandwindAdapter({ moduleLoader: loader });
+		const result = await runAdapterMigrationAsync(
+			'import "./styles.css";\nexport const card = <div className="bg-blue-500 text-white" />;',
+			{
+				from: CodemodAdapterId.Tailwind,
+				to: CodemodAdapterId.Pandwind,
+				file: "src/Card.tsx",
+				root: "/project",
+				readFile: (file) =>
+					file === "/project/src/styles.css" ? '@import "tailwindcss";' : undefined,
+				listFiles: () => ["/project/src/styles.css", "/project/src/Card.tsx"],
+				moduleLoader: loader,
+				adapterRegistry: createStyleAdapterRegistry([adapter, target]),
+				project: { cssModule: "pandwind/css.ts" },
+			},
+		);
+
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain('backgroundColor: "$blue-500"');
+		expect(result.code).toContain('color: "$white"');
+		expect(result.code).not.toContain("var(--color-blue-500)");
+	});
+
 	test("reports an explicit residual when generated Pandwind preset loading fails", async () => {
 		const loader: ProjectModuleLoader = {
 			async importPackage() {

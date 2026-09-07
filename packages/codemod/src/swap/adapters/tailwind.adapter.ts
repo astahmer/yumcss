@@ -266,13 +266,16 @@ function materializeTailwindToken(
 	if (catalog === undefined || declaration.value.kind !== StyleValueKindTag.Literal)
 		return declaration;
 	if (typeof declaration.value.value !== "string") return declaration;
-	const variable = /^var\(--([a-z-]+)-([^),\s]+)\)$/u.exec(declaration.value.value);
-	const namespace = variable?.[1];
+	const variable = /^var\(--(.+)\)$/u.exec(declaration.value.value)?.[1];
+	if (variable === undefined) return declaration;
+	const namespace = Object.values(tailwindTokenNamespaces)
+		.toSorted((left, right) => right.length - left.length)
+		.find((candidate) => variable.startsWith(`${candidate}-`));
 	const group = Object.entries(tailwindTokenNamespaces).find(
 		([, value]) => value === namespace,
 	)?.[0];
-	const tokenKey = variable?.[2];
-	if (group === undefined || tokenKey === undefined) return declaration;
+	const tokenKey = namespace === undefined ? undefined : variable.slice(namespace.length + 1);
+	if (group === undefined || tokenKey === undefined || tokenKey === "") return declaration;
 	const match = catalog.findByReference([group], tokenKey.replaceAll("-", "."));
 	return match === undefined
 		? declaration

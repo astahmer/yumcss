@@ -472,7 +472,10 @@ function preserveKnownPresetTokens(
 ): StyleProgram {
 	const catalog =
 		TokenCatalog.fromContract(context?.config.tokenCatalog) ??
-		TokenCatalog.fromAnyTokens(context?.meta?.tokens);
+		TokenCatalog.fromAnyTokens(context?.meta?.tokens) ??
+		(context?.project === undefined
+			? undefined
+			: TokenCatalog.fromContract(context.sourceConfig?.tokenCatalog));
 	if (catalog === undefined) return program;
 	return catalog.preserveProgram(
 		program,

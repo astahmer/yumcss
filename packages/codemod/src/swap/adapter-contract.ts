@@ -174,6 +174,8 @@ export interface AdapterParseResult {
 export interface AdapterEmitContext {
 	readonly file: string;
 	readonly config: AdapterProjectConfig;
+	/** Source-owned configuration evidence available to a generated target project. */
+	readonly sourceConfig?: AdapterProjectConfig;
 	readonly mode: AdapterCapabilityMode;
 	readonly capability?: AdapterCapabilityReport;
 	/** Residuals produced by generic lowering before target emission. */

@@ -1174,6 +1174,7 @@ function runAdapterMigrationInternal(
 		const emitContext = {
 			file: options.file,
 			config: targetConfig,
+			sourceConfig: config,
 			mode,
 			capability: effectiveReport,
 			loweringResiduals: carrierResiduals,
