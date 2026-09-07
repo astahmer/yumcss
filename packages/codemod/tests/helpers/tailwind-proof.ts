@@ -7,7 +7,7 @@
 import { compile } from "@tailwindcss/node";
 import { parse, type Root, type Rule } from "postcss";
 import { selectorClassMatches } from "pandwind/css/selector-scan";
-import { resolveVar, themeVariables } from "pandwind/tw";
+import { themeVariables } from "pandwind/tw";
 export { resolveVar } from "pandwind/tw";
 
 /** Default Tailwind entry — the same stylesheet the example app imports. */
