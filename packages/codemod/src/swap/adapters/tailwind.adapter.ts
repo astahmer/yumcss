@@ -567,8 +567,7 @@ function parseTailwind(
 			continue;
 		matches.push(parseClassValue(value, context, resolver, start, start + value.length + 2));
 	}
-	const generatedPandwindTw = /\bfrom\s*["']pandwind(?:["']|\/)/u.test(source);
-	for (const text of generatedPandwindTw ? [] : collectDynamicClassAttributes(source))
+	for (const text of collectDynamicClassAttributes(source))
 		residuals.push({
 			kind: StyleProgramResidualKindTag.Dynamic,
 			text,
@@ -1493,10 +1492,7 @@ export function createTailwindAdapter(options: TailwindAdapterOptions = {}): Sty
 			},
 		},
 		detect: (context) => {
-			const generatedPandwindTw = /\bfrom\s*["']pandwind(?:["']|\/)/u.test(context.source);
-			const dynamicAttributes = generatedPandwindTw
-				? []
-				: collectDynamicClassAttributes(context.source);
+			const dynamicAttributes = collectDynamicClassAttributes(context.source);
 			const matched =
 				detectStaticClassTarget(context.source).matched || dynamicAttributes.length > 0;
 			const configured = /(?:tailwindcss|@tailwindcss\/)/u.test(context.source);
