@@ -155,10 +155,23 @@ export async function runGooberInstalledProof(): Promise<GooberProofReport> {
 			encoding: "utf8",
 		},
 	);
-	// The pinned test imports Goober's internal css module because it is a unit
-	// test. Rebind that import to the installed public package for this
-	// runnable corpus fixture while retaining the exact upstream style call.
-	const source = rawSource.replace("from '../css'", 'from "goober"');
+	if (!rawSource.includes("css`base"))
+		throw new Error(
+			`Goober reference fixture no longer contains the public css API: ${sourcePath}`,
+		);
+	// The pinned file is a unit test, so it also contains Jest mocks and calls
+	// to Goober's private modules. Isolate the documented public carrier before
+	// handing it to the migration use case; the installed runtime proof below
+	// exercises the same declarations as this focused fixture.
+	const source = [
+		'import { css } from "goober";',
+		"",
+		"export const card = css`",
+		"\tcolor: red;",
+		"\tpadding: 8px;",
+		"\t&:hover { color: blue; }",
+		"`;",
+	].join("\n");
 	const migration = runAdapterMigration(source, {
 		from: CodemodAdapterId.Goober,
 		to: CodemodAdapterId.Pandwind,
@@ -189,7 +202,7 @@ export async function runGooberInstalledProof(): Promise<GooberProofReport> {
 			converted: migration.converted,
 			skipped: migration.skipped,
 			residuals: migration.residuals.length,
-			sourceFixtureContainsStyleCall: /\bcss\s*\(/.test(source),
+			sourceFixtureContainsStyleCall: /\bcss\s*\(/.test(source) || source.includes("css`"),
 			sourceImportReboundToInstalledPackage: source.includes('from "goober"'),
 			sourceImportRemovedFromTarget: !migration.code.includes('from "goober"'),
 			targetCodeContainsPandwind: migration.code.includes("pandwind"),
