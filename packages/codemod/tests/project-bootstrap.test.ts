@@ -59,4 +59,40 @@ describe("Pandwind project bootstrap", () => {
 		expect(preset).toContain('"$brand": "#123456"');
 		expect(preset).toContain('"$card": "1rem"');
 	});
+
+	test("uses an explicit TypeScript extension in generated Vite config imports", async () => {
+		const support = await createPandwindProjectSupport({
+			root: "/project",
+			sourceAdapter: CodemodAdapterId.Tailwind,
+			outputDirectory: "pandwind",
+			readFile: (file) => {
+				if (file === "/project/styles.css") return '@import "tailwindcss";';
+				if (file === "/project/vite.config.ts")
+					return [
+						'import tailwindcss from "@tailwindcss/vite";',
+						'import { defineConfig } from "vite";',
+						"export default defineConfig({ plugins: [tailwindcss()] });",
+					].join("\n");
+				return undefined;
+			},
+			listFiles: () => ["/project/styles.css", "/project/vite.config.ts"],
+		});
+
+		expect(support.fileChanges).toEqual([
+			{
+				path: "vite.config.ts",
+				expectedContent: [
+					'import tailwindcss from "@tailwindcss/vite";',
+					'import { defineConfig } from "vite";',
+					"export default defineConfig({ plugins: [tailwindcss()] });",
+				].join("\n"),
+				content: [
+					'import { pandwindCssVite } from "pandwind/vite";',
+					'import { pandwindPreset } from "./pandwind/preset.ts";',
+					'import { defineConfig } from "vite";',
+					'export default defineConfig({ plugins: [pandwindCssVite(pandwindPreset, { root: "." })] });',
+				].join("\n"),
+			},
+		]);
+	});
 });

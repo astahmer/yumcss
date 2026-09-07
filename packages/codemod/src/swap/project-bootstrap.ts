@@ -238,10 +238,11 @@ function rewriteTailwindViteConfigs(
 		const normalizedSpecifier = presetSpecifier.startsWith(".")
 			? presetSpecifier
 			: `./${presetSpecifier}`;
+		const typedPresetSpecifier = `${normalizedSpecifier}.ts`;
 		const next = source
 			.replace(
 				/import\s+tailwindcss\s+from\s+["']@tailwindcss\/vite["'];?/u,
-				`import { pandwindCssVite } from "pandwind/vite";\nimport { pandwindPreset } from "${normalizedSpecifier}";`,
+				`import { pandwindCssVite } from "pandwind/vite";\nimport { pandwindPreset } from "${typedPresetSpecifier}";`,
 			)
 			.replace(/\btailwindcss\s*\(\s*\)/gu, 'pandwindCssVite(pandwindPreset, { root: "." })');
 		if (next === source) continue;
