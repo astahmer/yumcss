@@ -260,26 +260,27 @@ interface MigrationRouteProof {
 
 ## Acceptance criteria
 
-- [ ] Stable routes and their required proof dimensions are declared in one
+- [x] Stable routes and their required proof dimensions are declared in one
       registry-owned catalog.
 - [ ] At least four high-value migration directions have pinned,
       dependency-installed project proof.
 - [ ] Stable routes pass typecheck, build, canonical CSS, and applicable
       browser/SSR/hydration checks.
-- [ ] Missing reference repositories produce explicit unavailable evidence and
+- [x] Missing reference repositories produce explicit unavailable evidence and
       cannot silently satisfy a stable-route gate.
-- [ ] Official-loader failures produce structured configuration residuals and
+- [x] Official-loader failures produce structured configuration residuals and
       preserve source.
-- [ ] The checked-in evidence report contains no unexplained pending dimension
+- [x] The checked-in evidence report contains no unexplained pending dimension
       for a route labeled stable.
-- [ ] CLI, docs, Playground, and MCP show the same route maturity and residual
+- [x] CLI, docs, Playground, and MCP show the same route maturity and residual
       semantics.
-- [ ] Existing adapter-specific tests remain meaningful and are not replaced by
+- [x] Existing adapter-specific tests remain meaningful and are not replaced by
       regenerated snapshots alone.
 
 ## Decisions log
 
-| Date       | Decision                                                                 | Rationale                                                                          |
-| ---------- | ------------------------------------------------------------------------ | ---------------------------------------------------------------------------------- |
-| 2026-09-07 | Start with four high-value routes instead of promoting the entire matrix | Real build and host proof is expensive and breadth currently overstates confidence |
-| 2026-09-07 | Treat unavailable external references as evidence, not green skips       | A passing local suite must describe what it actually executed                      |
+| Date       | Decision                                                                                             | Rationale                                                                          |
+| ---------- | ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| 2026-09-07 | Start with four high-value routes instead of promoting the entire matrix                             | Real build and host proof is expensive and breadth currently overstates confidence |
+| 2026-09-07 | Treat unavailable external references as evidence, not green skips                                   | A passing local suite must describe what it actually executed                      |
+| 2026-09-07 | Keep every catalog route experimental until an installed-project lane passes all required dimensions | The current corpus is source-only and cannot justify a stable migration promise    |

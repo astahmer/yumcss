@@ -39,7 +39,7 @@ adoption simplicity, real-world proof, and scope discipline.
   risk when Tailwind changes internals.
 - "The codemod matrix looks broader than the actual guarantee." The checked-in
   real-repository report contains 33 reports, with 27 passed proof dimensions,
-  162 pending dimensions, and 6 pipeline-unpaired references. The adapter
+  228 pending dimensions, and 6 pipeline-unpaired references. The adapter
   reference proof has 29 small probes, 139 converted sites, 10 residuals, and
   26 fully valid migrations. That is useful evidence, but it is not proof that
   arbitrary production applications migrate cleanly.
@@ -78,6 +78,26 @@ adoption simplicity, real-world proof, and scope discipline.
   `0.1.0` product: about 129 Pandwind source files, 149 codemod source files,
   dozens of registries and contracts, and many ecosystem adapters. The
   abstraction cost is real.
+
+## Maturity and proof
+
+The repository now records route proof in one catalog and exposes the same
+boundary through the evidence report, MCP, and browser tooling. These labels
+describe evidence, not a promise that every construct in a route is lossless.
+
+| Surface                                         | Maturity     | Evidence currently available                                                      | Still required before a stronger claim                                     |
+| ----------------------------------------------- | ------------ | --------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| `tw()` / `css()` / `cx()` runtime contracts     | stable       | package tests, type tests, pack/import smoke, generated artifact checks           | consumer-project coverage and host-specific behavior                       |
+| Codegen and Vite integration                    | experimental | focused runtime/Vite tests and fresh checked-in example artifacts                 | repeated proof in dependency-installed consumer projects                   |
+| Cataloged codemod routes                        | experimental | adapter contracts, source probes, route-level dimensions, explicit residuals      | installed project typecheck, build, browser, SSR/hydration, and size proof |
+| Playground                                      | experimental | browser sandbox evaluation, StyleProgram extraction, runtime-sheet CSS inspection | real package/Vite fixture and framework host proof                         |
+| MCP and analyzer                                | experimental | typed tool/resource contracts and explicit host-port unavailable states           | host integrations that execute and retain project evidence                 |
+| React Native/OpenTUI and other non-web backends | research     | contract and typing coverage                                                      | real consumers and backend-specific runtime proof                          |
+
+All seven currently cataloged migration routes remain experimental. Four have
+source-only pinned references; three are explicitly unavailable because no
+installed project proof exists yet. A route becomes stable only after every
+required dimension is passed by an installed-project execution lane.
 
 ## The most questionable scope
 

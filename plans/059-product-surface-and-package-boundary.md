@@ -258,11 +258,16 @@ not a new consumer-facing runtime API.
 - [x] Package repository metadata points at the actual workspace directories.
 - [x] Generated-artifact freshness failures identify the stale file, source
       input, and exact refresh command.
-- [ ] Runtime size, pack/import, typecheck, and package tests pass after the
+- [x] Runtime size, pack/import, typecheck, and package tests pass after the
       boundary changes.
-- [ ] The primary adoption path fits in one short guide and does not require
+- [x] The primary adoption path fits in one short guide and does not require
       users to understand the codemod, MCP, or non-web backend architecture.
-- [ ] Documentation no longer presents experimental breadth as stable support.
+- [x] Documentation no longer presents experimental breadth as stable support.
+
+Evidence: `nub run --filter pandwind test`, `nub run typecheck`, the package
+pack/import smoke, `nub run generated:check`, and `nub run surface:check` pass.
+The Basic mode guide is the short primary path; the current limitations page
+now labels runtime, codegen, codemod, Playground, MCP, and non-web maturity.
 
 ## Decisions log
 

@@ -574,6 +574,7 @@ async function runAdapterRoute(
 			text: string;
 			hint?: string;
 		}[];
+		routeProof?: ReturnType<typeof swapImport.findMigrationRouteProof>;
 	}> = [];
 	const plannedGeneratedFiles = new Map<string, string>();
 	const plannedFileChanges = new Map<string, string>();
@@ -640,6 +641,7 @@ async function runAdapterRoute(
 				text: residual.text,
 				...(residual.hint === undefined ? {} : { hint: residual.hint }),
 			})),
+			routeProof: swapImport.findMigrationRouteProof(from, target),
 		});
 		totalConverted += result.converted;
 		totalSkipped += result.skipped;
@@ -712,11 +714,13 @@ async function runAdapterRoute(
 				projectGeneratedFiles.map((file) => file.path).join(", "),
 		);
 	if (args.report && args.reportFormat === "text") {
+		const routeProof = swapImport.findMigrationRouteProof(args.from, target);
 		const residualDetails = reportEntries.flatMap((entry) =>
 			entry.residualDetails.map((residual) => ({ file: entry.file, ...residual })),
 		);
 		const lines = [
 			"migration report:",
+			`  route proof: ${routeProof === undefined ? "unregistered" : `${routeProof.maturity} / ${routeProof.execution}`}`,
 			`  call sites through the target API: ${totalConverted}`,
 			`  residuals needing attention: ${totalResiduals}`,
 		];
@@ -737,6 +741,7 @@ async function runAdapterRoute(
 				from: args.from,
 				to: target,
 				mode: args.capabilityMode ?? "safe",
+				routeProof: swapImport.findMigrationRouteProof(args.from, target),
 				projectGeneratedFiles: projectGeneratedFiles.map((file) => file.path),
 				files: reportEntries,
 			}),

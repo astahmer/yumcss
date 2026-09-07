@@ -4,6 +4,7 @@ import {
 	MIGRATION_ROUTE_PROOF_CATALOG,
 	MigrationRouteMaturityTag,
 	MigrationRouteProofExecutionTag,
+	MigrationRouteProofRouteId,
 	createRealRepositoryCorpus,
 	findMigrationRouteProof,
 	validateMigrationRouteProofCatalog,
@@ -30,7 +31,10 @@ describe("migration route proof catalog", () => {
 			CodemodAdapterId.Tailwind,
 			`${CodemodAdapterId.Pandwind}/tw`,
 		);
-		expect(route?.id).toBe("tailwind-to-pandwind");
+		expect(route?.id).toBe(MigrationRouteProofRouteId.TailwindToPandwind);
+		expect(
+			findMigrationRouteProof(CodemodAdapterId.Tailwind, `${CodemodAdapterId.Pandwind}:tw`)?.id,
+		).toBe(MigrationRouteProofRouteId.TailwindToPandwind);
 		expect(route?.requiredDimensions).toContain("typecheck");
 		expect(route?.requiredDimensions).toContain("build");
 	});

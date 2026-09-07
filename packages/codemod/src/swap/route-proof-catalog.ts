@@ -138,8 +138,8 @@ export function migrationRouteProofCatalog(): {
 }
 
 function adapterIdForRoute(value: string): string {
-	const slash = value.indexOf("/");
-	return slash === -1 ? value : value.slice(0, slash);
+	const separator = value.search(/[/:]/u);
+	return separator === -1 ? value : value.slice(0, separator);
 }
 
 export function findMigrationRouteProof(
