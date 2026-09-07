@@ -373,7 +373,7 @@ function walkTwEntries(
 		for (const cls of emitted) {
 			const bridgeHit = meta.bridgeInverse.get(cls);
 			if (bridgeHit === undefined) {
-				// --engine: resolve through the real Tailwind engine when wired.
+				// --engine: resolve through the real Tailwind engine when supplied.
 				const resolved = _missResolver?.(cls);
 				if (resolved !== undefined && resolved !== null && resolved.length > 0) {
 					for (const decl of resolved) {

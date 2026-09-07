@@ -407,10 +407,9 @@ async function mainMigrate(argv: string[]): Promise<void> {
 		return;
 	}
 
-	// Wired for the upcoming --engine resolution pass; unused until then.
-	let _engineResolver: import("./swap/engine.ts").TwMissResolver | undefined;
+	let engineResolver: import("./swap/engine.ts").TwMissResolver | undefined;
 	if (args.engine) {
-		_engineResolver = await swapImport
+		engineResolver = await swapImport
 			.createEngineMissResolver({
 				css: readFileSync(resolve(metaDir, "tailwind.css"), "utf8"),
 				base: metaDir,
@@ -446,6 +445,10 @@ async function mainMigrate(argv: string[]): Promise<void> {
 			metaDir: metaDirRelative,
 			skipMarker: args.skipMarker,
 			capabilityMode: args.capabilityMode,
+			engineResolver,
+			tokenize: args.tokenize,
+			sort: args.sort,
+			dedup: args.dedup,
 		});
 		totalConverted += result.converted;
 		totalResiduals += result.unmappedTokens.length;
