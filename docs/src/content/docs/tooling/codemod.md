@@ -1,6 +1,6 @@
 ---
 title: Codemods — migrate to and from Pandwind
-description: Use the raw-authoring codemod or the adapter-backed swap pipeline to migrate styling systems safely.
+description: Use the adapter-backed migration pipeline to migrate styling systems safely.
 sidebar:
   order: 4
 ---
@@ -28,23 +28,7 @@ Migrations write changes by default. Use `--dry-run` for a read-only preview;
 untouched when the target cannot represent the complete call, unless
 `--partial` explicitly permits the target's partial capability contract.
 
-## Default metadata-driven modes
-
-The default workflow is driven by the project's generated `types.d.ts`,
-`tw.ts`, and `bridge.ts` rather than hand-maintained mappings.
-
-| mode        | behavior                                                                                                                          |
-| ----------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| `--to=tw`   | static class strings → typed `tw({...})` objects; variants become nesting and overloaded utilities use the generated conflict map |
-| `--to=cx`   | `clsx`, `classnames`, `classcat`, and `tailwind-merge` composition → Pandwind `cx()`                                              |
-| `--to=css`  | bridge-mappable static strings → `css.class({...})` with resolved declarations                                                    |
-| `--to=keep` | analysis only: counts mappable, unmappable, and verbatim tokens                                                                   |
-
-Unknown utilities, arbitrary values, important modifiers, and dynamic class
-construction remain verbatim or are wrapped in `cx()` so the codemod never
-silently loses a class.
-
-## Adapter-backed swaps
+## Registered adapter migrations
 
 The built-in registry contains independently owned implementations for these
 source families:
@@ -56,12 +40,12 @@ source families:
 | `stylex`, `solid-styled`, `vue-styled`, `react-native`                                                                                        | compatible Pandwind target lanes                         | host/framework semantics and runtime carriers where static extraction is not safe                 |
 
 ```sh
-pnpm exec pandwind-codemod swap --from=emotion --to=css.class --safe --diff \
-  "src/**/*.{js,jsx,ts,tsx}"
-pnpm exec pandwind-codemod swap --from=stylex --to=css.class --safe --diff \
-  "src/**/*.{js,jsx,ts,tsx}"
-pnpm exec pandwind-codemod swap --from=chakra-ui --to=css.class --diff \
-  "src/**/*.{ts,tsx}"
+pnpm exec pandwind-codemod migrate --from=emotion --to=pandwind-css --safe --diff \
+	"src/**/*.{js,jsx,ts,tsx}"
+pnpm exec pandwind-codemod migrate --from=stylex --to=pandwind-css --safe --diff \
+	"src/**/*.{js,jsx,ts,tsx}"
+pnpm exec pandwind-codemod migrate --from=chakra-ui --to=pandwind-css --diff \
+	"src/**/*.{ts,tsx}"
 ```
 
 The target adapter creates or consolidates its Pandwind binding as needed.

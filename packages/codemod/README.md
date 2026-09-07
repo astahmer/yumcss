@@ -132,8 +132,8 @@ preserved or reported as a residual when the target cannot represent it.
 ### Token references
 
 Value-capable targets can use --token-refs=off|bare|group to control whether
-verified token references are emitted instead of resolved literals. The old
-Registered source and target adapters own class-string conversion and token
+verified token references are emitted instead of resolved literals. Registered
+source and target adapters own class-string conversion and token
 preservation. Use `--from` and `--to` to select the route; unsupported values
 remain in place with a typed residual in the migration report.
 

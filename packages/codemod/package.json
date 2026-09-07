@@ -85,12 +85,6 @@
 			"import": "./dist/map.js",
 			"default": "./dist/map.js"
 		},
-		"./migration/source": {
-			"pandwind": "./src/migrate.ts",
-			"types": "./dist/migrate.d.ts",
-			"import": "./dist/migrate.js",
-			"default": "./dist/migrate.js"
-		},
 		"./migration/shared": {
 			"pandwind": "./src/shared.ts",
 			"types": "./dist/shared.d.ts",

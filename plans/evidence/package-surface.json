@@ -166,7 +166,6 @@
 				"./swap/semantic-ir",
 				"./migration/meta",
 				"./migration/map",
-				"./migration/source",
 				"./migration/shared",
 				"./migration/tokens",
 				"./swap/unplugin",

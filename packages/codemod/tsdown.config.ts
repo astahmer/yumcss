@@ -12,7 +12,6 @@ export default defineConfig({
 		"src/swap/real-repository-corpus.ts",
 		"src/meta.ts",
 		"src/map.ts",
-		"src/migrate.ts",
 		"src/shared.ts",
 		"src/tokens.ts",
 		"src/swap/unplugin.ts",

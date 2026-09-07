@@ -6,7 +6,6 @@ const entries = [
 	"pandwind-codemod/swap/corpus",
 	"pandwind-codemod/migration/meta",
 	"pandwind-codemod/migration/map",
-	"pandwind-codemod/migration/source",
 	"pandwind-codemod/migration/shared",
 	"pandwind-codemod/migration/tokens",
 ] as const;
