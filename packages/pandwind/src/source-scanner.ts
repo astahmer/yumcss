@@ -119,7 +119,7 @@ export interface SourceLanguageClassifier {
 
 /** Shared scanner facade consumed by build, analyze, codemod, and collection.
  * Keeping file/language/parser policy here prevents each consumer from growing
- * its own extension table or parser compatibility shim. */
+ * its own extension table or parser-selection policy. */
 export interface SourceScannerService {
 	readonly registry: SourceScannerRegistry;
 	languageForFile(file: string): SourceLanguage;
