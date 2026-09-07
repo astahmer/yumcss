@@ -327,6 +327,45 @@ function removeTailwindStylesheetImports(
 	return changes;
 }
 
+function removePandaStylesheetImports(
+	request: ProjectBootstrapRequest,
+	config: AdapterProjectConfig,
+): readonly {
+	readonly path: string;
+	readonly content: string;
+	readonly expectedContent: string;
+}[] {
+	if (config.adapter !== CodemodAdapterId.Panda) return [];
+	const stylesheet = request
+		.listFiles(request.root)
+		.find((file) => /(?:^|[\\/])styled-system[\\/]styles\.css$/u.test(file));
+	if (stylesheet === undefined) return [];
+	const target = resolve(request.root, stylesheet);
+	const changes: {
+		path: string;
+		content: string;
+		expectedContent: string;
+	}[] = [];
+	for (const file of request.listFiles(request.root)) {
+		const absoluteFile = resolve(request.root, file);
+		if (!/\.(?:[cm]?[jt]sx?|vue|svelte|astro)$/u.test(absoluteFile)) continue;
+		const source = request.readFile(absoluteFile);
+		if (source === undefined) continue;
+		const next = source.replace(
+			/^[ \t]*import\s*["']([^"']+styled-system[\\/]styles\.css)["']\s*;?[ \t]*$/gmu,
+			(statement, specifier: string) =>
+				stylesheetImportTarget(absoluteFile, specifier) === target ? "" : statement,
+		);
+		if (next === source) continue;
+		changes.push({
+			path: relative(request.root, absoluteFile).replaceAll("\\", "/"),
+			content: next,
+			expectedContent: source,
+		});
+	}
+	return changes;
+}
+
 function rewriteTailwindStylesheets(
 	request: ProjectBootstrapRequest,
 	config: AdapterProjectConfig,
@@ -400,10 +439,7 @@ function rewritePandwindViteConfigs(
 				`import { pandwindCssVite } from "pandwind/vite";\nimport { pandwindPreset } from "${typedPresetSpecifier}";\n` +
 				source;
 			if (/\bplugins\s*:\s*\[\s*\]/u.test(withImports)) {
-				next = withImports.replace(
-					/(\bplugins\s*:\s*)\[\s*\]/u,
-					`$1[${pandwindPlugin}]`,
-				);
+				next = withImports.replace(/(\bplugins\s*:\s*)\[\s*\]/u, `$1[${pandwindPlugin}]`);
 			} else if (/\bplugins\s*:\s*\[/u.test(withImports)) {
 				next = withImports.replace(/(\bplugins\s*:\s*\[)/u, `$1${pandwindPlugin}, `);
 			} else if (/defineConfig\s*\(\s*\{\s*/u.test(withImports)) {
@@ -700,6 +736,7 @@ export async function createPandwindProjectSupport(
 		fileChanges: [
 			...rewriteTailwindStylesheets(request, sourceConfig),
 			...removeTailwindStylesheetImports(request, sourceConfig),
+			...removePandaStylesheetImports(request, sourceConfig),
 			...viteConfigChanges,
 			...enableTypeScriptExtensionImports(request, viteConfigChanges.length > 0),
 		],

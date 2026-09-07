@@ -85,6 +85,43 @@ describe("effective ecosystem configuration", () => {
 		`);
 	});
 
+	test("reads Panda's merged utility metadata shape from the official config", async () => {
+		const loader: ProjectModuleLoader = {
+			async importPackage(packageName) {
+				if (packageName !== "@pandacss/config") return undefined;
+				return {
+					loadConfig: async () => ({
+						config: {
+							utilities: {
+								background: {
+									className: "bg",
+									shorthand: "bg",
+									values: "colors",
+									group: "Background",
+								},
+								paddingInline: {
+									className: "px",
+									shorthand: ["paddingX", "px"],
+									values: "spacing",
+									group: "Padding",
+								},
+							},
+						},
+					}),
+				} as never;
+			},
+			async importFile() {
+				throw new Error("direct config import must not run");
+			},
+		};
+
+		const theme = await loadPandaTheme("/project/panda.config.ts", loader);
+
+		expect(theme.utilityCatalog.resolveProperty("bg")).toBe("background");
+		expect(theme.utilityCatalog.resolveProperty("paddingX")).toBe("paddingInline");
+		expect(theme.utilityCatalog.resolveProperty("px")).toBe("paddingInline");
+	});
+
 	test("extracts custom Panda utilities in the dependency-free fallback", async () => {
 		const configPath = "/project/panda.config.ts";
 		const theme = await loadPandaTheme(
@@ -111,6 +148,7 @@ describe("effective ecosystem configuration", () => {
 			  },
 			  "utilityNames": Set {
 			    "cardInset",
+			    "inset",
 			    "ci",
 			  },
 			}

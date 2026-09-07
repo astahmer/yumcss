@@ -415,6 +415,7 @@ function runtimeSemanticRuleMatches(
 
 const PANDWIND_TOKEN_GROUPS: ReadonlyArray<readonly [RegExp, string]> = [
 	[/color$/i, "colors"],
+	[/^background$/i, "colors"],
 	[/^(?:background|border|outline|text)Color$/i, "colors"],
 	[/^(?:fill|stroke)$/i, "colors"],
 	[/radius$/i, "radii"],

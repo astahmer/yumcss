@@ -49,7 +49,8 @@ function pandaFactoryHostTag(program: StyleProgram): StyleProgram {
  */
 
 const pandaTokenGroup = (property: string): string | undefined => {
-	if (property === "color" || property.endsWith("Color")) return "colors";
+	if (property === "color" || property === "background" || property.endsWith("Color"))
+		return "colors";
 	if (property === "borderRadius") return "radii";
 	if (property === "fontSize") return "fontSizes";
 	if (property === "fontWeight") return "fontWeights";
@@ -78,12 +79,15 @@ function pandaSourceValue(
 	context: import("../adapter-contract.ts").AdapterParseContext,
 ): StyleValue {
 	if (value.kind !== StyleValueKindTag.Literal || typeof value.value !== "string") return value;
-	const group = pandaTokenGroup(property);
 	const theme = context.config.values.pandaTheme as PandaTheme | undefined;
+	const canonicalProperty = theme?.utilityCatalog.resolveProperty(property) ?? property;
 	const token =
-		group === undefined
+		pandaTokenGroup(canonicalProperty) === undefined
 			? undefined
-			: TokenCatalog.fromContract(theme?.tokenCatalog)?.findByReference([group], value.value);
+			: TokenCatalog.fromContract(theme?.tokenCatalog)?.findByReference(
+					[pandaTokenGroup(canonicalProperty)!],
+					value.value,
+				);
 	if (token === undefined) return value;
 	return {
 		kind: "token",

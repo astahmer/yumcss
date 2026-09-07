@@ -29,6 +29,10 @@ describe("migration route proof catalog", () => {
 				evidenceIds: ["tailwind-installed-proof"],
 			}),
 			expect.objectContaining({
+				id: MigrationRouteProofRouteId.PandaToPandwind,
+				evidenceIds: ["panda-installed-proof"],
+			}),
+			expect.objectContaining({
 				id: MigrationRouteProofRouteId.StyledComponentsToPandwind,
 				evidenceIds: ["styled-components-installed-proof"],
 			}),

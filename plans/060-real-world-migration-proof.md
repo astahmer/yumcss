@@ -283,6 +283,10 @@ interface MigrationRouteProof {
       the CLI, generated Vite integration, typecheck, build, SSR, hydration,
       browser, and CSS-size checks; this fixture does not promote the whole
       route.
+- [x] A bounded Panda -> Pandwind installed-project fixture passes the CLI,
+      official generated-system config loading, shorthand/token lowering,
+      typecheck, build, SSR, hydration, browser, and CSS-size checks; this
+      fixture does not promote the whole route.
 
 ## Decisions log
 
@@ -293,3 +297,4 @@ interface MigrationRouteProof {
 | 2026-09-07 | Keep every catalog route experimental until an installed-project lane passes all required dimensions | The current corpus is source-only and cannot justify a stable migration promise    |
 | 2026-09-07 | Add a bounded Tailwind -> Pandwind installed fixture without promoting the route | It proves the project lifecycle and official spacing resolution while leaving breadth and framework coverage explicit |
 | 2026-09-07 | Add a bounded styled-components -> Pandwind installed fixture without promoting the route | It proves the real source package, pseudo-condition lowering, generated Vite integration, and browser parity while leaving theme and composition breadth explicit |
+| 2026-09-07 | Add a bounded Panda -> Pandwind installed fixture without promoting the route | It proves pnpm-nested official config loading, generated utility metadata, shorthand lowering, token preservation, and browser parity while leaving recipes and composition breadth explicit |

@@ -179,4 +179,28 @@ describe("Pandwind project bootstrap", () => {
 			},
 		]);
 	});
+
+	test("removes the generated Panda stylesheet import when bootstrapping Pandwind", async () => {
+		const root = "/project";
+		const files = new Map<string, string>([
+			[
+				`${root}/src/main.tsx`,
+				'import "../styled-system/styles.css";\nexport const App = () => null;\n',
+			],
+			[`${root}/styled-system/styles.css`, ".panda { color: red; }\n"],
+		]);
+		const support = await createPandwindProjectSupport({
+			root,
+			sourceAdapter: CodemodAdapterId.Panda,
+			targetAdapter: CodemodAdapterId.Pandwind,
+			outputDirectory: "pandwind",
+			readFile: (file) => files.get(file),
+			listFiles: () => [...files.keys()],
+		});
+		const change = support.fileChanges.find((candidate) => candidate.path === "src/main.tsx");
+		expect(change).toMatchObject({
+			content: "\nexport const App = () => null;\n",
+			expectedContent: 'import "../styled-system/styles.css";\nexport const App = () => null;\n',
+		});
+	});
 });

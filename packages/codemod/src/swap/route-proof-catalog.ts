@@ -72,10 +72,11 @@ export const MIGRATION_ROUTE_PROOF_CATALOG: readonly MigrationRouteProofSpec[] =
 		from: CodemodAdapterId.Panda,
 		to: CodemodAdapterId.Pandwind,
 		maturity: MigrationRouteMaturityTag.Experimental,
-		execution: MigrationRouteProofExecutionTag.SourceOnly,
+		execution: MigrationRouteProofExecutionTag.InstalledProject,
 		requiredDimensions: PROJECT_PROOF_DIMENSIONS,
 		referenceIds: ["panda-website"],
-		note: "Panda uses its project migration pipeline; its generated project must be typechecked and built before promotion.",
+		evidenceIds: ["panda-installed-proof"],
+		note: "A bounded installed React/Vite fixture covers official generated-system loading, shorthand lowering, token preservation, SSR, hydration, and browser parity; broader recipe and framework coverage is still required for promotion.",
 	},
 	{
 		id: MigrationRouteProofRouteId.StyledComponentsToPandwind,

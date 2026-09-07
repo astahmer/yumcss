@@ -371,6 +371,38 @@ describe("official custom-token loaders", () => {
 		});
 	});
 
+	test("preserves color tokens when the declaration uses the CSS background property", () => {
+		const catalog = TokenCatalog.fromGroups({ colors: { brand: "#123456" } })?.contract;
+		const adapter = createBuiltinCodemodCatalog().registry.get(CodemodAdapterId.Pandwind);
+		expect(adapter?.tokenPolicy).toBeDefined();
+		const program = styleProgramFromRules([
+			{
+				kind: "style",
+				conditions: [],
+				declarations: [
+					{ conditions: [], property: "background", value: { kind: "literal", value: "#123456" } },
+				],
+				children: [],
+				order: 0,
+			},
+		]);
+		const config = {
+			adapter: CodemodAdapterId.Pandwind,
+			files: [],
+			values: {},
+			tokenCatalog: catalog,
+		};
+		const emitContext = { ...context, config, mode: "safe" as const, index: 0 };
+		const preserved = adapter!.tokenPolicy!.preserve(program, emitContext);
+
+		expect(preserved.declarations[0]?.value).toMatchObject({
+			kind: "token",
+			ref: "brand",
+			resolved: "#123456",
+		});
+		expect(adapter!.emit(preserved, emitContext).text).toContain('background: "$brand"');
+	});
+
 	test("reuses generated Pandwind preset tokens during an async migration", async () => {
 		const loader: ProjectModuleLoader = {
 			async importPackage() {
