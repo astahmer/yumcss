@@ -32,6 +32,8 @@ export interface StylesheetPolicies {
 	readonly ordering?: StylesheetOrderingPolicy;
 	readonly serializer?: RuleSerializerPolicy;
 	readonly decoder?: AtomicPathDecoderPolicy;
+	/** Emit every preset token, or only token paths referenced by processed styles. */
+	readonly tokens?: "all" | "used";
 }
 
 export const createStylesheet = (
@@ -45,6 +47,7 @@ export const createStylesheet = (
 	const ordering = policies.ordering ?? createStylesheetOrderingPolicy();
 	const serializer = policies.serializer ?? defaultRuleSerializer;
 	const decoder = policies.decoder ?? defaultAtomicPathDecoder;
+	const tokenEmission = policies.tokens ?? "all";
 
 	const hashFn = options.hashFn ?? createHashFn(Boolean(options.debug));
 	const debug = Boolean(options.debug);
@@ -77,6 +80,8 @@ export const createStylesheet = (
 	const cssVars = new Map<string, TokenDeclaration>();
 
 	const tokenMaps = buildTokenMaps(preset, debug);
+	const usedTokenPaths = new Set<string>();
+	let tokensCache: string | undefined;
 
 	const presetTokens = preset.tokens ?? {};
 	// Pre-compute the `:root` token declarations (the class-value maps live
@@ -147,6 +152,15 @@ export const createStylesheet = (
 			if (cache.has(pairId)) continue;
 
 			const atomic = decoder.decode(preset.conditions, pairId);
+			const tokenGroup = tokenMaps.groupByProp.get(atomic.prop!);
+			const tokenNames = tokenMaps.tokensByProp.get(atomic.prop!);
+			if (tokenNames?.has(normalizedValue)) {
+				const tokenPath = `${tokenGroup ?? atomic.prop!}.${normalizedValue}`;
+				if (!usedTokenPaths.has(tokenPath)) {
+					usedTokenPaths.add(tokenPath);
+					tokensCache = undefined;
+				}
+			}
 			const value = resolveTokenValue(tokenMaps, atomic.prop!, normalizedValue);
 
 			const css = serializer.serialize([dashCase(atomic.prop!), value].join(":"), {
@@ -175,7 +189,6 @@ export const createStylesheet = (
 	 * of which values a given element sets inline.
 	 */
 	const varCache = new Map<string, Rule>();
-	let tokensCache: string | undefined;
 	const processVarKey = (flatKey: string): void => {
 		const rawParts = pathParts(flatKey, true, false);
 		const first = rawParts[0]!;
@@ -208,18 +221,30 @@ export const createStylesheet = (
 		varCache.set(orderedKey, { id: orderedKey, css, priority: atomic.priority });
 	};
 
+	const tokenEntries = (): TokenDeclaration[] =>
+		Array.from(cssVars.entries())
+			.filter(([path]) => {
+				if (tokenEmission === "all") return true;
+				for (const usedPath of usedTokenPaths) {
+					if (path === usedPath || path.startsWith(`${usedPath}.`)) return true;
+				}
+				return false;
+			})
+			.map(([, token]) => token)
+			.toSorted((a, b) => {
+				const prio = a.priority - b.priority;
+				if (prio === 0) return a.declaration.localeCompare(b.declaration);
+				return prio;
+			});
+
 	const gen = {
+		tokenEntries,
 		tokens: () => {
 			// Token declarations are derived entirely from the immutable preset;
 			// unlike atomic and var rules, this map never changes after creation.
 			// Keep the serialized form so runtime `css()` calls do not repeatedly
 			// allocate, sort, and join the same root declarations.
-			return (tokensCache ??= Array.from(cssVars.values())
-				.toSorted((a, b) => {
-					const prio = a.priority - b.priority;
-					if (prio === 0) return a.declaration.localeCompare(b.declaration);
-					return prio;
-				})
+			return (tokensCache ??= tokenEntries()
 				.map((token) => token.declaration)
 				.join("\n"));
 		},

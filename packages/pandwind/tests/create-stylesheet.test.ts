@@ -3,6 +3,22 @@ import { createCss } from "../src/css/create-css.ts";
 import { createStylesheet } from "../src/css/create-stylesheet.ts";
 import { examplePreset } from "@pandwind/example-preset";
 
+test("can emit only token declarations referenced by extracted styles", () => {
+	const preset = {
+		conditions: {},
+		properties: { $all: true, color: { $tokens: "colors" } },
+		strict: true,
+		tokens: { colors: { $brand: "#123456", $unused: "#abcdef" } },
+	} as never;
+	const css = createCss();
+	const used = createStylesheet(preset, {}, { tokens: "used" });
+	used.process([css.raw({ color: "$brand" })]);
+
+	expect(used.gen.tokens()).toContain("#123456");
+	expect(used.gen.tokens()).not.toContain("#abcdef");
+	expect(createStylesheet(preset).gen.tokens()).toContain("#abcdef");
+});
+
 test("css gen simple prop", () => {
 	const sheet = createStylesheet(examplePreset, { debug: false });
 	const css = createCss<typeof examplePreset>({ debug: false });

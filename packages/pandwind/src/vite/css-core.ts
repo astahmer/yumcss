@@ -150,7 +150,7 @@ export function createCssExtractorPluginCore(
 
 	/** Re-scan changed files and return a fresh stylesheet with every rule. */
 	const collect = (files: Array<string> = workspace.files()) => {
-		const sheet = createStylesheet(preset, { className });
+		const sheet = createStylesheet(preset, { className }, { tokens: "used" });
 		const seen = new Set(files);
 
 		for (const file of files) {
@@ -173,7 +173,7 @@ export function createCssExtractorPluginCore(
 	};
 
 	interface BucketSheet {
-		tokens: string;
+		tokenEntries: Array<{ declaration: string; priority: number }>;
 		atomicIds: Set<string>;
 		varIds: Set<string>;
 		atomic: Array<{ id: string; css: string; priority: number }>;
@@ -182,7 +182,7 @@ export function createCssExtractorPluginCore(
 
 	/** Build a sheet from ONLY the given files and list its rule identities. */
 	const buildBucket = (files: Array<string>): BucketSheet => {
-		const sheet = createStylesheet(preset, { className });
+		const sheet = createStylesheet(preset, { className }, { tokens: "used" });
 		for (const file of files) {
 			const entry = scanFile(file);
 			for (const { style } of entry.sources) sheet.process([style]);
@@ -194,7 +194,7 @@ export function createCssExtractorPluginCore(
 		// Ids are namespaced by kind ("a:"/"v:") so the shared-rule
 		// intersection can count them in one map without collisions.
 		return {
-			tokens: sheet.gen.tokens(),
+			tokenEntries: sheet.gen.tokenEntries(),
 			atomicIds: new Set(atomic.map((e) => `a:${e.id}`)),
 			varIds: new Set(vars.map((e) => `v:${e.id}`)),
 			atomic,
@@ -247,6 +247,16 @@ export function createCssExtractorPluginCore(
 
 		const commonBucket = buckets.get(COMMON_BUCKET)!;
 		const anyBucket = buckets.get(routes[0]!.name)!;
+		const tokenEntries = Array.from(
+			new Map(
+				[...buckets.values()]
+					.flatMap((bucket) => bucket.tokenEntries)
+					.map((entry) => [entry.declaration, entry] as const),
+			).values(),
+		).toSorted((a, b) => {
+			const priority = a.priority - b.priority;
+			return priority === 0 ? a.declaration.localeCompare(b.declaration) : priority;
+		});
 		const commonAtomic = [
 			...pickCommon(anyBucket.atomic, "a"),
 			...commonBucket.atomic.map((e) => ({ ...e, id: `a:${e.id}` })),
@@ -256,7 +266,11 @@ export function createCssExtractorPluginCore(
 			...commonBucket.vars.map((e) => ({ ...e, id: `v:${e.id}` })),
 		].toSorted((a, b) => a.priority - b.priority);
 
-		const common = render(commonAtomic, commonVars, commonBucket.tokens || anyBucket.tokens);
+		const common = render(
+			commonAtomic,
+			commonVars,
+			tokenEntries.map((entry) => entry.declaration).join("\n"),
+		);
 
 		const out = new Map<string, string>();
 		for (const [name, bucket] of buckets) {

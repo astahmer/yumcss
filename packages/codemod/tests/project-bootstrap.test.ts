@@ -53,5 +53,7 @@ describe("Pandwind project bootstrap", () => {
 		expect(preset).toContain('"$tokens": "colors"');
 		expect(preset).toContain('"padding": {');
 		expect(preset).toContain('"$tokens": "spacing"');
+		expect(preset).toContain('"$brand": "#123456"');
+		expect(preset).toContain('"$card": "1rem"');
 	});
 });

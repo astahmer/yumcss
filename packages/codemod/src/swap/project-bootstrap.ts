@@ -137,6 +137,22 @@ function presetPropertiesSource(
 	return JSON.stringify(properties, null, "\t");
 }
 
+function pandwindTokenGroups(
+	groups: Readonly<Record<string, Readonly<Record<string, string>>>>,
+): Record<string, Record<string, string>> {
+	return Object.fromEntries(
+		Object.entries(groups).map(([group, values]) => [
+			group,
+			Object.fromEntries(
+				Object.entries(values).map(([key, value]) => [
+					`$${key.replace(/^\$/u, "").replaceAll(".", "-")}`,
+					value,
+				]),
+			),
+		]),
+	);
+}
+
 function customVariantConditions(css: string): Record<string, string> {
 	const conditions: Record<string, string> = {};
 	for (const line of css.split("\n")) {
@@ -242,7 +258,8 @@ function presetSource(
 	config: AdapterProjectConfig,
 	conditions: Readonly<Record<string, string>>,
 ): string {
-	const tokens = config.tokenCatalog?.groups ?? {};
+	const sourceTokens = config.tokenCatalog?.groups ?? {};
+	const tokens = pandwindTokenGroups(sourceTokens);
 	return `import { definePreset } from "pandwind/preset";
 
 export const pandwindPreset = definePreset(
@@ -253,7 +270,7 @@ export const pandwindPreset = definePreset(
 	{
 		strict: true,
 		conditions: ${JSON.stringify(conditions, null, "\t")},
-		properties: ${presetPropertiesSource(tokens)},
+		properties: ${presetPropertiesSource(sourceTokens)},
 	},
 );
 `;
