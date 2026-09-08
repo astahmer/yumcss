@@ -824,7 +824,7 @@ async function migrationPreview(
 		from,
 		to,
 		mode,
-		routeProof: findMigrationRouteProof(from, to, catalog.systems),
+		routeProof: findMigrationRouteProof(from, to, catalog.registry),
 		executionEvidence: [
 			inProcessEvidence(
 				["adapter-program", "residual-report"],
@@ -1117,7 +1117,7 @@ async function benchmarkProject(
 				fileCount: expanded.size,
 				sourceBytes: [...expanded].reduce((sum, file) => sum + statSync(file).size, 0),
 			},
-			routeProof: findMigrationRouteProof(from, to, catalog.systems),
+			routeProof: findMigrationRouteProof(from, to, catalog.registry),
 			benchmark,
 			executionEvidence: [
 				executionEvidence(
@@ -1452,7 +1452,7 @@ export function createMcpToolService(
 			}
 			case MCP_RESOURCE.MigrationRouteCatalog: {
 				const catalog = ports.createCatalog();
-				return resourceJson(migrationRouteProofCatalog(catalog.systems));
+				return resourceJson(migrationRouteProofCatalog(catalog.registry));
 			}
 			case MCP_RESOURCE.ProjectEvidence: {
 				const result = await inspectProject(context, { includeFiles: false }, ports);

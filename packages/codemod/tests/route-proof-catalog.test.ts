@@ -169,11 +169,11 @@ describe("migration route proof catalog", () => {
 
 	test("covers every registered route with an explicit research policy", () => {
 		const catalog = createBuiltinCodemodCatalog();
-		const expanded = migrationRouteProofCatalog(catalog.systems);
+		const expanded = migrationRouteProofCatalog(catalog.registry);
 		const route = findMigrationRouteProof(
 			CodemodAdapterId.Emotion,
 			CodemodAdapterId.Mui,
-			catalog.systems,
+			catalog.registry,
 		);
 
 		expect(route).toMatchObject({
@@ -186,7 +186,7 @@ describe("migration route proof catalog", () => {
 			validateMigrationRouteProofCatalog(createRealRepositoryCorpus(), expanded.routes),
 		).toEqual([]);
 		expect(
-			findMigrationRouteProof("missing-source", CodemodAdapterId.Pandwind, catalog.systems),
+			findMigrationRouteProof("missing-source", CodemodAdapterId.Pandwind, catalog.registry),
 		).toBeUndefined();
 	});
 });

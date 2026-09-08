@@ -204,7 +204,7 @@ export function createAdapterCapabilityLedger(
 	options: CapabilityLedgerOptions = {},
 ): AdapterCapabilityLedger {
 	const evidence = options.evidence ?? [];
-	const systems = registry.toStyleSystemRegistry();
+	const systems = registry;
 	const entries = registry.adapters.flatMap((adapter) => {
 		const dialect = systems.getDialect(adapter.id);
 		const source = dialect?.role !== StyleDialectRoleTag.Target;

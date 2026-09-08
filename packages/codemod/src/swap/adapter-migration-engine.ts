@@ -264,10 +264,7 @@ async function runAdapterMigrationAsyncInternal(
 				: withProjectLoaderFallback(options.moduleLoader),
 		)) ??
 		ports.adapterRegistry;
-	const route = (options.registry ?? adapterRegistry.toStyleSystemRegistry()).resolveRoute(
-		options.from,
-		options.to,
-	);
+	const route = (options.registry ?? adapterRegistry).resolveRoute(options.from, options.to);
 	if (route.source.id === route.target.id) return noOpMigration(source);
 	const context = migrationContext(source, options);
 	const detection = route.source.detect(context);
@@ -323,10 +320,7 @@ function runAdapterMigrationInternal(
 ): AdapterMigrationResult {
 	const support = createAdapterMigrationSupport(ports.sourceScanner);
 	const adapterRegistry = options.adapterRegistry ?? ports.adapterRegistry;
-	const route = (options.registry ?? adapterRegistry.toStyleSystemRegistry()).resolveRoute(
-		options.from,
-		options.to,
-	);
+	const route = (options.registry ?? adapterRegistry).resolveRoute(options.from, options.to);
 	const sourceAdapter = route.source;
 	const targetAdapter = route.target;
 	// Migrating a dialect to itself is an identity operation. Do not make the

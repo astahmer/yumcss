@@ -8,10 +8,7 @@ import {
 } from "./adapter-manifest.ts";
 import {
 	asStyleDialect,
-	createStyleSystem,
 	createStyleSystemRegistry,
-	StyleDialectRoleTag,
-	type StyleSystemAdapter,
 	type StyleSystemRegistry,
 } from "./style-systems.ts";
 import {
@@ -20,7 +17,6 @@ import {
 	type AdapterCapabilityMatrixEntry,
 } from "./capabilities.ts";
 import { PANDA_STYLE_SYSTEM, PANDWIND_STYLE_SYSTEM } from "./adapters/core.adapter.ts";
-import { CodemodAdapterId } from "./identifiers.ts";
 import {
 	projectDynamicClassMigration,
 	projectPortableDynamicMigration,
@@ -57,11 +53,15 @@ export interface AdapterDiscoveryOptions {
 
 export interface StyleAdapterRegistry {
 	readonly adapters: readonly StyleAdapter[];
+	/** Canonical route view owned by the adapter registry. */
+	readonly systems: StyleSystemRegistry["systems"];
 	register(adapter: StyleAdapter): StyleAdapterRegistry;
 	registerPlugin(plugin: StyleAdapterPlugin): StyleAdapterRegistry;
 	get(id: string): StyleAdapter | undefined;
 	capabilityMatrix(): AdapterCapabilityMatrix;
-	toStyleSystemRegistry(): StyleSystemRegistry;
+	getSystem: StyleSystemRegistry["getSystem"];
+	getDialect: StyleSystemRegistry["getDialect"];
+	resolveRoute: StyleSystemRegistry["resolveRoute"];
 	discover(
 		specifiers: readonly string[],
 		options?: AdapterDiscoveryOptions,
@@ -173,13 +173,19 @@ export function createStyleAdapterPlugin(
 
 class DefaultStyleAdapterRegistry implements StyleAdapterRegistry {
 	private readonly values = new Map<string, StyleAdapter>();
+	private readonly routeRegistry: StyleSystemRegistry;
 
 	constructor(initial: readonly StyleAdapter[]) {
+		this.routeRegistry = createStyleSystemRegistry([PANDA_STYLE_SYSTEM, PANDWIND_STYLE_SYSTEM]);
 		for (const adapter of initial) this.register(adapter);
 	}
 
 	get adapters(): readonly StyleAdapter[] {
 		return [...this.values.values()];
+	}
+
+	get systems(): StyleSystemRegistry["systems"] {
+		return this.routeRegistry.systems;
 	}
 
 	register(adapter: StyleAdapter): StyleAdapterRegistry {
@@ -188,6 +194,14 @@ class DefaultStyleAdapterRegistry implements StyleAdapterRegistry {
 		if (this.values.has(normalized.id))
 			throw new Error(`style adapter already registered: ${normalized.id}`);
 		this.values.set(normalized.id, normalized);
+		try {
+			this.routeRegistry.registerDialect(
+				asStyleDialect(normalized, { system: normalized.id, dialect: normalized.id }),
+			);
+		} catch (error) {
+			this.values.delete(normalized.id);
+			throw error;
+		}
 		return this;
 	}
 
@@ -213,44 +227,19 @@ class DefaultStyleAdapterRegistry implements StyleAdapterRegistry {
 		);
 	}
 
-	toStyleSystemRegistry(): StyleSystemRegistry {
-		const adapters = this.adapters;
-		const panda = adapters.find((adapter) => adapter.id === CodemodAdapterId.Panda);
-		const pandwind = adapters.find((adapter) => adapter.id === CodemodAdapterId.Pandwind);
-		const systems: StyleSystemAdapter[] = [
-			createStyleSystem(CodemodAdapterId.Panda, [
-				...(panda === undefined
-					? []
-					: [asStyleDialect(panda, { system: CodemodAdapterId.Panda, dialect: panda.id })]),
-				...PANDA_STYLE_SYSTEM.dialects,
-			]),
-			createStyleSystem(CodemodAdapterId.Pandwind, [
-				...(pandwind === undefined
-					? []
-					: [
-							asStyleDialect(pandwind, {
-								system: CodemodAdapterId.Pandwind,
-								dialect: pandwind.id,
-							}),
-						]),
-				...PANDWIND_STYLE_SYSTEM.dialects,
-			]),
-			...adapters
-				.filter(
-					(adapter) =>
-						adapter.id !== CodemodAdapterId.Panda && adapter.id !== CodemodAdapterId.Pandwind,
-				)
-				.map((adapter) =>
-					createStyleSystem(adapter.id, [
-						asStyleDialect(adapter, {
-							system: adapter.id,
-							dialect: adapter.id,
-							role: StyleDialectRoleTag.Both,
-						}),
-					]),
-				),
-		];
-		return createStyleSystemRegistry(systems);
+	getSystem(id: string): ReturnType<StyleSystemRegistry["getSystem"]> {
+		return this.routeRegistry.getSystem(id);
+	}
+
+	getDialect(address: Parameters<StyleSystemRegistry["getDialect"]>[0]) {
+		return this.routeRegistry.getDialect(address);
+	}
+
+	resolveRoute(
+		from: Parameters<StyleSystemRegistry["resolveRoute"]>[0],
+		to: Parameters<StyleSystemRegistry["resolveRoute"]>[1],
+	): ReturnType<StyleSystemRegistry["resolveRoute"]> {
+		return this.routeRegistry.resolveRoute(from, to);
 	}
 
 	async discover(

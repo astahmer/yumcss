@@ -35,16 +35,20 @@ export interface StyleMigrationRoute {
 	readonly target: StyleDialectAdapter;
 }
 
-export interface StyleSystemRegistry {
+/** Read-only route view shared by migration and evidence consumers. */
+export interface StyleDialectResolver {
 	readonly systems: readonly StyleSystemAdapter[];
-	register(system: StyleSystemAdapter): StyleSystemRegistry;
-	registerDialect(dialect: StyleDialectAdapter): StyleSystemRegistry;
 	getSystem(id: string): StyleSystemAdapter | undefined;
 	getDialect(address: StyleDialectAddress | string): StyleDialectAdapter | undefined;
 	resolveRoute(
 		from: StyleDialectAddress | string,
 		to: StyleDialectAddress | string,
 	): StyleMigrationRoute;
+}
+
+export interface StyleSystemRegistry extends StyleDialectResolver {
+	register(system: StyleSystemAdapter): StyleSystemRegistry;
+	registerDialect(dialect: StyleDialectAdapter): StyleSystemRegistry;
 }
 
 export interface StyleDialectOptions {

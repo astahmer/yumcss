@@ -8,7 +8,6 @@ import {
 	PANDA_STYLE_SYSTEM,
 	PANDWIND_STYLE_SYSTEM,
 	STYLE_MIGRATION_USE_CASE,
-	STYLE_SYSTEMS,
 	AdapterEvidence,
 	AdapterOfficialApiStatusTag,
 	asStyleDialect,
@@ -80,17 +79,17 @@ describe("style system and dialect registry", () => {
 
 	test("keeps the existing external adapter API as a projection of the registry", () => {
 		const catalog = createBuiltinCodemodCatalog();
-		expect(catalog.systems.getDialect("emotion")?.system).toBe("emotion");
+		expect(catalog.registry.getDialect("emotion")?.system).toBe("emotion");
 		expect(getCodemodAdapter("linaria")?.id).toBe("linaria");
-		expect(catalog.systems.getDialect("panda")?.id).toBe("panda");
-		expect(catalog.systems.getDialect("pandwind")?.id).toBe("pandwind");
-		expect(catalog.systems.systems.length).toBeGreaterThanOrEqual(7);
+		expect(catalog.registry.getDialect("panda")?.id).toBe("panda");
+		expect(catalog.registry.getDialect("pandwind")?.id).toBe("pandwind");
+		expect(catalog.registry.systems.length).toBeGreaterThanOrEqual(7);
 	});
 
 	test("projects core dialects and modern adapters through one route registry", () => {
 		const catalog = createBuiltinCodemodCatalog();
-		const pandaToPandwind = catalog.systems.resolveRoute("panda", "pandwind");
-		const pandaTwToPandwindCss = catalog.systems.resolveRoute(
+		const pandaToPandwind = catalog.registry.resolveRoute("panda", "pandwind");
+		const pandaTwToPandwindCss = catalog.registry.resolveRoute(
 			{ system: "panda", dialect: "tw" },
 			{ system: "pandwind", dialect: "css" },
 		);
@@ -112,7 +111,7 @@ describe("style system and dialect registry", () => {
 			"css",
 		]);
 		expect(
-			STYLE_SYSTEMS.resolveRoute(
+			createBuiltinCodemodCatalog().registry.resolveRoute(
 				{ system: "panda", dialect: "tw" },
 				{ system: "pandwind", dialect: "dss" },
 			).target.id,

@@ -437,16 +437,16 @@ export type {
 	StyleDialectOptions,
 	StyleDialectRole,
 	StyleMigrationRoute,
+	StyleDialectResolver,
 	StyleSystemAdapter,
 	StyleSystemRegistry,
 } from "./style-systems.ts";
 export { STYLE_SYSTEM_SCHEMA } from "./style-systems.ts";
 export {
-	STYLE_SYSTEMS,
 	CORE_STYLE_SYSTEMS,
 	PANDA_STYLE_SYSTEM,
 	PANDWIND_STYLE_SYSTEM,
-} from "./systems.ts";
+} from "./adapters/core.adapter.ts";
 export {
 	SWAP_REGISTRY,
 	SWAP_SOURCE_ADAPTERS,

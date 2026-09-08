@@ -5,7 +5,7 @@ import {
 	RealRepositoryProofDimensionStatus,
 } from "./identifiers.ts";
 import type { RealRepositoryCorpus } from "./real-repository-corpus.ts";
-import { StyleDialectRoleTag, type StyleSystemRegistry } from "./style-systems.ts";
+import { StyleDialectRoleTag, type StyleDialectResolver } from "./style-systems.ts";
 
 /** Versioned route-level maturity and proof policy used by tooling surfaces. */
 export const MIGRATION_ROUTE_PROOF_CATALOG_SCHEMA =
@@ -258,9 +258,9 @@ export const MIGRATION_ROUTE_PROOF_CATALOG: readonly MigrationRouteProofSpec[] =
 ] as const;
 
 function registeredDialect(
-	registry: StyleSystemRegistry,
+	registry: StyleDialectResolver,
 	address: string,
-): ReturnType<StyleSystemRegistry["getDialect"]> {
+): ReturnType<StyleDialectResolver["getDialect"]> {
 	return registry.getDialect(address) ?? registry.getDialect(adapterIdForRoute(address));
 }
 
@@ -280,7 +280,7 @@ function unclassifiedRoute(from: string, to: string): MigrationRouteProofSpec {
 }
 
 function registeredRoutePairs(
-	registry: StyleSystemRegistry,
+	registry: StyleDialectResolver,
 ): readonly { readonly from: string; readonly to: string }[] {
 	const dialects = registry.systems.flatMap((system) => system.dialects);
 	const sources = dialects.filter((dialect) => dialect.role !== StyleDialectRoleTag.Target);
@@ -305,7 +305,7 @@ function registeredRoutePairs(
  * route catalog honest for built-ins and plugins alike: an unproven route is
  * visible and unavailable instead of looking unregistered.
  */
-export function migrationRouteProofCatalog(registry?: StyleSystemRegistry): {
+export function migrationRouteProofCatalog(registry?: StyleDialectResolver): {
 	readonly schema: typeof MIGRATION_ROUTE_PROOF_CATALOG_SCHEMA;
 	readonly routes: readonly MigrationRouteProofSpec[];
 } {
@@ -333,7 +333,7 @@ function adapterIdForRoute(value: string): string {
 export function findMigrationRouteProof(
 	from: string,
 	to: string,
-	registry?: StyleSystemRegistry,
+	registry?: StyleDialectResolver,
 ): MigrationRouteProofSpec | undefined {
 	const source = adapterIdForRoute(from);
 	const target = adapterIdForRoute(to);

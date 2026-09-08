@@ -10,7 +10,7 @@ import {
 } from "../src/swap/index.ts";
 
 describe("third-party adapter registry", () => {
-	test("discovers a plugin module and projects it into migration routes", async () => {
+	test("discovers a plugin module in the canonical migration routes", async () => {
 		const registry = createStyleAdapterRegistry();
 		const emotion = createBuiltinCodemodCatalog().registry.get("emotion")!;
 		const plugin = createStyleAdapterPlugin("test-plugin", [emotion]);
@@ -20,9 +20,7 @@ describe("third-party adapter registry", () => {
 		const results = await registry.discover(["test-plugin"], { load: async () => plugin });
 		expect(results[0]).toMatchObject({ registered: ["emotion"], errors: [] });
 		expect(registry.get("emotion")).toBe(emotion);
-		expect(registry.toStyleSystemRegistry().resolveRoute("emotion", "emotion").target.id).toBe(
-			"emotion",
-		);
+		expect(registry.resolveRoute("emotion", "emotion").target.id).toBe("emotion");
 	});
 
 	test("reads the package manifest convention and validates adapter metadata", () => {

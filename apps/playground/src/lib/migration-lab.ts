@@ -323,7 +323,7 @@ function endpointFor(adapter: StyleAdapter, role: "source" | "target"): Migratio
 }
 
 function pandwindApiEndpoint(
-	registry: ReturnType<typeof createBuiltinCodemodCatalog>["systems"],
+	registry: ReturnType<typeof createBuiltinCodemodCatalog>["registry"],
 	api: (typeof PANDWIND_API_DIALECTS)[number],
 ): MigrationLabEndpoint {
 	const route = `${CodemodAdapterId.Pandwind}/${api.dialect}`;
@@ -359,7 +359,7 @@ export function createMigrationLab(options: MigrationLabOptions = {}): Migration
 			adapter,
 		}));
 	const pandwindTargets = PANDWIND_API_DIALECTS.map((api) =>
-		pandwindApiEndpoint(catalog.systems, api),
+		pandwindApiEndpoint(catalog.registry, api),
 	);
 	return {
 		ready: options.ready ?? Promise.resolve(),
@@ -395,7 +395,7 @@ export function createMigrationLab(options: MigrationLabOptions = {}): Migration
 					to,
 					file: fileFor(catalog.registry, from, source),
 					readFile: () => undefined,
-					registry: catalog.systems,
+					registry: catalog.registry,
 					adapterRegistry: catalog.registry,
 					meta: PLAYGROUND_MIGRATION_META,
 					mode: "safe",
@@ -417,7 +417,7 @@ export function createMigrationLab(options: MigrationLabOptions = {}): Migration
 						],
 						note: "This browser lab runs the adapter program; it does not build or run a host project.",
 					},
-					routeProof: findMigrationRouteProof(from, to, catalog.systems),
+					routeProof: findMigrationRouteProof(from, to, catalog.registry),
 					...result,
 				};
 			} catch (error) {

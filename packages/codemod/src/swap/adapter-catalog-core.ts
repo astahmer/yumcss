@@ -3,12 +3,10 @@ import {
 	type StyleAdapterPlugin,
 	type StyleAdapterRegistry,
 } from "./adapter-registry.ts";
-import type { StyleSystemRegistry } from "./style-systems.ts";
 
 export interface CodemodAdapterCatalog {
 	readonly adapters: StyleAdapterRegistry["adapters"];
 	readonly registry: StyleAdapterRegistry;
-	readonly systems: StyleSystemRegistry;
 }
 
 /** Compose a catalog from an environment-owned plugin without importing Node facilities. */
@@ -19,6 +17,5 @@ export function createCodemodAdapterCatalog(plugin: StyleAdapterPlugin): Codemod
 	return {
 		adapters,
 		registry,
-		systems: registry.toStyleSystemRegistry(),
 	};
 }

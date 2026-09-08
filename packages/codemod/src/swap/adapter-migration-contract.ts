@@ -13,7 +13,7 @@ import type { AdapterCapabilityMode, AdapterCapabilityReport } from "./capabilit
 import type { StyleLoweringPlan, StyleLoweringRegistry } from "./lowering.ts";
 import type { ProjectModuleLoader } from "./project-module-loader.ts";
 import type { StyleAdapterRegistry } from "./adapter-registry.ts";
-import type { StyleSystemRegistry } from "./style-systems.ts";
+import type { StyleDialectResolver } from "./style-systems.ts";
 import type { StyleProgramResidual } from "./semantic-ir.ts";
 import type { TokenReferenceFormat } from "./tokens.ts";
 
@@ -31,7 +31,7 @@ export interface AdapterMigrationOptions {
 	readonly listFiles?: (root: string) => readonly string[];
 	readonly mode?: AdapterCapabilityMode;
 	readonly skipMarker?: string;
-	readonly registry?: StyleSystemRegistry;
+	readonly registry?: StyleDialectResolver;
 	readonly moduleLoader?: ProjectModuleLoader;
 	readonly adapterRegistry?: StyleAdapterRegistry;
 	readonly loweringRegistry?: StyleLoweringRegistry;
