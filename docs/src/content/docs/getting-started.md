@@ -65,6 +65,10 @@ stylesheet (`@source inline` directives — import it from `tailwind.css`), and
 `src/pandwind-theme.css` (the token bridge — import it too). The `--tokens`
 flag feeds your preset's DTCG token groups in; drop it if you don't use tokens.
 
+`bridge.ts` is optional build-time and migration metadata. Pandwind does not
+import it automatically; it becomes a runtime dependency only when the
+application explicitly imports `twAdapter` as its Tailwind class strategy.
+
 ## 3. Vite plugins
 
 Fold literal calls at build time:

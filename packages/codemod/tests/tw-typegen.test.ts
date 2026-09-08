@@ -93,6 +93,12 @@ describe("typegen", () => {
 
 		expect(twTs).toContain('group: { join: "-" }');
 		expect(twTs).toContain('"@": { join: "" }');
+		expect(twTs).toContain("export const __pandwindBuildMetadata");
+		const configStart = twTs.indexOf("export const __pandwindConfig");
+		const buildMetadataStart = twTs.indexOf("export const __pandwindBuildMetadata");
+		expect(configStart).toBeGreaterThanOrEqual(0);
+		expect(buildMetadataStart).toBeGreaterThan(configStart);
+		expect(twTs.slice(configStart, buildMetadataStart)).not.toContain("wildcardValues");
 		// Every variant is emitted now (default `:` joins included) so the
 		// tailwind css() adapter can look any condition up.
 		const variantsBlock = twTs.slice(0, twTs.indexOf("conflicts:"));

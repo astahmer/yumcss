@@ -29,11 +29,25 @@ pandwind-codemod tw scan [tw-entry] [src-dir] [out-file]
 pandwind-codemod tw prune [theme-css] [tw-entry] [src-dir]
 ```
 
-`generate` emits the typed `tw.ts`, declarations, optional preset theme bridge,
-and optional `css()` bridge. `scan` and `prune` are explicit follow-up passes
-for dynamic candidates and unused generated theme variables. The same lane is
-available as `pandwind-codemod/tw` for scripts that need the typed tooling
-ports instead of a subprocess.
+`generate` emits the typed `tw.ts`, declarations, the optional preset theme
+bridge, and the optional `css()` bridge. `tw.ts` is a project-owned runtime
+binding: Pandwind does not import it automatically, so a project only pays for
+it when its source imports `tw()` or its generated conflict metadata for `cx()`.
+The generated `__pandwindBuildMetadata` catalog is consumed by Vite and
+codemod tooling and is tree-shaken when the application does not import it.
+
+`bridge.ts` is a separate, optional artifact. It is generated for build-time
+and migration tooling, but Pandwind does not import it automatically. Its
+`twAdapter` becomes a runtime dependency only when the application explicitly
+chooses Tailwind utility classes as its `ClassNameStrategy` (for example, in
+`createDesignCss(..., { className: twAdapter })`). Ordinary Pandwind `css()`
+and `tw()` usage does not need the bridge. The playground imports it only for
+its explicit Tailwind adapter selector.
+
+`scan` and `prune` are explicit follow-up passes for dynamic candidates and
+unused generated theme variables. The same lane is available as
+`pandwind-codemod/tw` for scripts that need the typed tooling ports instead of
+a subprocess.
 
 Adapter authors should read [ADAPTER_SDK.md](./ADAPTER_SDK.md) for the plugin
 shape, schema versioning, capability declarations, and differential corpus
@@ -92,10 +106,12 @@ migrate or tokens, and after a command's arguments.
 
 When the target is Pandwind, the command bootstraps shared project support in
 pandwind/ by default: definePreset, css.ts, runtime.ts, dss.ts, cx.ts, the
-typed tw.ts, its bridge, types.d.ts, the versioned interop artifact, and a
-derived theme file when the source configuration proves one. Converted files
-import those shared modules; they do not create a new createCss() instance at
-every call site. Use --out <dir> to change that folder.
+typed tw.ts, its optional bridge, types.d.ts, the versioned interop artifact,
+and a derived theme file when the source configuration proves one. Converted
+files import those shared modules; they do not create a new createCss() instance
+at every call site. Use --out <dir> to change that folder. The bridge is not a
+default runtime import; keep it only when the target project needs the
+Tailwind-class strategy or the build-time bridge metadata.
 
 The source adapter loads the ecosystem's official project configuration when
 one is available. Verified token names, conditions, utilities, and resolved

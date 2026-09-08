@@ -24,10 +24,11 @@ adoption simplicity, real-world proof, and scope discipline.
   authored CSS or runtime rules. The limitations are documented in
   `docs/src/content/docs/reference/limitations.md` and the CSS scorecard.
 - "The setup is too dependent on generated files." A normal Tailwind lane needs
-  generated `tw.ts`, `types.d.ts`, `bridge.ts`, and theme artifacts. Stale or
-  missing generated output can break the editor or build. `generated:check`
-  now catches drift for the checked-in example and Playground, but generated
-  project files remain a real adoption cost.
+  generated `tw.ts`, `types.d.ts`, and theme artifacts; `bridge.ts` is optional
+  and is only a runtime dependency when the project explicitly selects its
+  `twAdapter`. Stale or missing generated output can break the editor or build.
+  `generated:check` now catches drift for the checked-in example and Playground,
+  but generated project files remain a real adoption cost.
 - "The core package is too large conceptually." The repository currently
   exposes 79 inventoried paths across five packages, including experimental
   integrations and tooling. The runtime package no longer hard-depends on

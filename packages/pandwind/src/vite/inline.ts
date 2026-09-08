@@ -107,19 +107,36 @@ export function extractTwConfig(source: string): TwConfig | undefined {
 			}
 		}
 	});
-	const resolveArg = (argument: Expression): Expression => {
-		if (argument.type !== NodeKind.Identifier) return argument;
-		const name = (argument as unknown as { name?: string }).name;
-		if (name === undefined || name.startsWith("$")) return argument;
-		return (topLevelConsts.get(name) ?? argument) as Expression;
+	// Generated runtime metadata shares repeated arrays and token catalogs in
+	// module-level consts. Resolve those references lazily so the extractor
+	// accepts the compact generated form as well as a fully inline object.
+	const constantValues = new Map<string, unknown>();
+	const resolving = new Set<string>();
+	const resolveConstant = (name: string): unknown => {
+		if (constantValues.has(name)) return constantValues.get(name);
+		const initializer = topLevelConsts.get(name);
+		if (initializer === undefined || resolving.has(name)) return undefined;
+		resolving.add(name);
+		const value = evalLiteral(initializer, {
+			get: resolveConstant,
+		} as LiteralConstantScope);
+		resolving.delete(name);
+		constantValues.set(name, value);
+		return value;
 	};
+	const constantScope = { get: resolveConstant } as LiteralConstantScope;
+	const buildMetadata = resolveConstant("__pandwindBuildMetadata");
+	const buildWildcardValues =
+		typeof buildMetadata === "object" && buildMetadata !== null
+			? (buildMetadata as { wildcardValues?: unknown }).wildcardValues
+			: undefined;
 	walk(result.program, (node) => {
 		if (config !== undefined || node.type !== NodeKind.CallExpression) return;
 		const callee = node.callee as OxcNode | null;
 		if (callee?.type !== NodeKind.Identifier || callee.name !== "createTw") return;
 		const argument = (node.arguments as Expression[])[0];
 		if (argument === undefined || argument === null) return;
-		const literal = evalLiteral(resolveArg(argument));
+		const literal = evalLiteral(argument, constantScope);
 		if (typeof literal !== "object" || literal === null) return;
 		const options = literal as Record<string, unknown>;
 		const variants = options.variants;
@@ -130,7 +147,7 @@ export function extractTwConfig(source: string): TwConfig | undefined {
 				typeof options.conflicts === "object" && options.conflicts !== null
 					? (options.conflicts as TwConflictsMeta)
 					: undefined,
-			wildcardValues: normalizeWildcardValues(options.wildcardValues),
+			wildcardValues: normalizeWildcardValues(options.wildcardValues ?? buildWildcardValues),
 			valueTokens:
 				typeof options.valueTokens === "object" && options.valueTokens !== null
 					? (options.valueTokens as TwValueTokensMeta)

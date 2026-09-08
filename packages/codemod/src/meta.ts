@@ -10,8 +10,10 @@
  *   per-value CSS property lists are the ground truth for disambiguating
  *   overloaded utilities (`text-blue-500` -> ["color"] -> `textColor`,
  *   `text-lg` -> ["font-size","line-height"] -> `textSize`);
- * - `bridge.ts` — the (property, resolved value) -> utility map, inverted
- *   for `css()` mode so emitted declarations carry exact resolved values.
+ * - `bridge.ts` — an optional (property, resolved value) -> utility map,
+ *   inverted for `css()` mode so emitted declarations carry exact resolved
+ *   values. Pandwind does not import this artifact automatically; it is a
+ *   runtime dependency only when an app explicitly selects its `twAdapter`.
  */
 import { readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";

@@ -28,7 +28,13 @@ tw({ rounded: "xl", bg: "white", p: "6", hover: { bg: "gray-50" } });
     opacity modifiers like `bg-red-500/50`), recursive variant nesting, and
     the open-ended `(string & {})` escape hatch for arbitrary values.
   - `tw.ts` — the typed `tw` instance, wired with the variant metadata, the
-    utility **conflict map**, and the list of **composing** utilities.
+    utility **conflict map**, and the list of **composing** utilities. Pandwind
+    does not import this generated module automatically; a project only pays
+    for it when its source imports `tw()` or its generated conflict metadata.
+  - `bridge.ts` when `--bridge` is enabled — an optional build-time and
+    migration artifact for the Tailwind `ClassNameStrategy`. Pandwind does not
+    import it automatically; it enters the runtime graph only when the project
+    explicitly selects its generated `twAdapter`.
 - **`tw()` runtime** — a few dozen lines that walk the style object and
   compose class strings: camelCase keys, array values
   (`ring: ["1", "gray-900/5"]`), negative utilities (`"-translateX": "1/2"`),

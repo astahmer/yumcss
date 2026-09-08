@@ -18,6 +18,7 @@ describe("extractTwConfig", () => {
 		expect(config!.conflicts?.p?.["*"]?.length).toBeGreaterThan(0);
 		expect(config!.conflicts?.text?.["gray-900"]).toEqual(["color"]);
 		expect(config!.compose).toContain("translate-x");
+		expect(config!.wildcardValues?.bg).toContain("blue-500");
 	});
 });
 

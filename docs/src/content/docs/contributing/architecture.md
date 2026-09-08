@@ -349,8 +349,10 @@ selectors emitted by the official engine.
 
 Generated-project metadata is a versioned artifact, `pandwind.interop.json`.
 Tailwind codegen writes its utility/type/variant/conflict/theme view there, and
-bridge generation refreshes the bridge section from the compiled design
-system. Migration tooling consumes that artifact when present and only falls
+bridge generation refreshes the optional bridge section from the compiled
+design system. Pandwind does not import generated `bridge.ts` automatically;
+only an explicit `twAdapter` selection adds it to an application's runtime
+graph. Migration tooling consumes that artifact when present and only falls
 back to parsing `types.d.ts`/`tw.ts` for projects generated before the artifact
 was introduced. The artifact is the project-context boundary; it must never
 contain assumptions about the example application.

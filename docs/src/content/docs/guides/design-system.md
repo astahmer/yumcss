@@ -19,13 +19,17 @@ src/
     preset.ts
     conditions.ts
     index.ts
-  tw.ts                 # generated
-  bridge.ts             # generated Tailwind bridge
+  tw.ts                 # generated typed runtime binding
+  bridge.ts             # optional generated Tailwind class strategy
   tailwind.css
 ```
 
 Export the preset from a stable module. Applications, component packages,
 Vite, codegen, and codemods should all consume that same module.
+
+The generated `bridge.ts` is not imported automatically by Pandwind. It stays
+build-time/migration metadata unless the application explicitly selects its
+`twAdapter` for Tailwind class output.
 
 ## 2. Define tokens
 

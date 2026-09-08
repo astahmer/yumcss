@@ -29,10 +29,13 @@ Tailwind's own design system (`@tailwindcss/node`) and writes:
   Tailwind v4 `@theme` bridge) and injects token-derived values into the
   generated unions. Accepts a bare groups object, `{ tokens }`, or any export
   carrying a `.tokens` field (a full preset works).
-- With `--bridge` — additionally writes `bridge.ts` and refreshes the bridge
-  section of `pandwind.interop.json`, using the configured preset. `--bridge`
-  can be combined with `--bridge-file`, `--preset-import`, and
-  `--preset-export`.
+- With `--bridge` — additionally writes the optional `bridge.ts` and refreshes
+  the bridge section of `pandwind.interop.json`, using the configured preset.
+  Pandwind does not import this file automatically. Its `twAdapter` becomes a
+  runtime dependency only when the project explicitly selects Tailwind class
+  output for `createDesignCss` or `pandwindCssVite`; otherwise it remains
+  build-time/migration metadata. `--bridge` can be combined with
+  `--bridge-file`, `--preset-import`, and `--preset-export`.
 - With `--agents` — additionally writes `pandwind.agents.json`, the
   machine-readable capability file: every utility key with its literal value
   union (capped, with counts), variant set, conflict families, compose list,

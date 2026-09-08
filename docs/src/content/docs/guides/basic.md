@@ -58,8 +58,10 @@ pnpm run tw:scan
 ```
 
 This creates the typed `src/tw.ts`, declarations, and a safelist stylesheet
-(`@source inline` directives — import it from `tailwind.css`). If your design
-tokens live in a preset, pass it to codegen with
+(`@source inline` directives — import it from `tailwind.css`). With `--bridge`,
+codegen also writes an optional `src/bridge.ts`; Pandwind does not import it
+automatically, and it becomes runtime code only when the project explicitly
+selects its `twAdapter`. If your design tokens live in a preset, pass it to codegen with
 `--tokens ./src/preset.ts`; see [Build a design system](/guides/design-system/).
 
 ## 4. Configure Vite
