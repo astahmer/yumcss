@@ -75,8 +75,9 @@ function styleExpressionCandidates(
 	];
 }
 
-function isIntrinsicHost(hostOpenTag: string | undefined): boolean {
-	return /^<([a-z][\w-]*)\b/u.test(hostOpenTag?.trim() ?? "");
+function isIntrinsicHost(hostOpenTag: string | undefined, source: string | undefined): boolean {
+	if (hostOpenTag !== undefined) return /^<([a-z][\w-]*)\b/u.test(hostOpenTag.trim());
+	return /<([a-z][\w-]*)\b[^>]*\b(?:className|class)\s*=/su.test(source ?? "");
 }
 
 function rewriteRsdHost(
@@ -201,11 +202,17 @@ const reactStrictDom = defineCodemodAdapter({
 			handlesSourceHostAttributes: true,
 			hostFrameworks: [BuiltinHostFramework.React],
 			hostRepresentation: StyleHostRepresentationKind.StyleProp,
-			resolveHostRepresentation: ({ framework, sourceFramework, hasHostContext, program }) => {
+			resolveHostRepresentation: ({
+				framework,
+				sourceFramework,
+				hasHostContext,
+				program,
+				source,
+			}) => {
 				const hostFramework = sourceFramework ?? framework;
 				return (hostFramework === undefined || hostFramework === BuiltinHostFramework.React) &&
 					hasHostContext &&
-					isIntrinsicHost(program.source?.hostOpenTag)
+					isIntrinsicHost(program.source?.hostOpenTag, source)
 					? StyleHostRepresentationKind.StyleProp
 					: undefined;
 			},
