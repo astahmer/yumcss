@@ -71,11 +71,20 @@ describe("Pandwind MCP tools", () => {
 		expect(JSON.parse(await service.readResource(MCP_RESOURCE.AdapterCatalog))).toMatchObject({
 			schema: "pandwind.mcp.catalog/1",
 		});
-		expect(
-			JSON.parse(await service.readResource(MCP_RESOURCE.MigrationRouteCatalog)),
-		).toMatchObject({
-			schema: "pandwind.migration-route-proof-catalog/1",
-		});
+		const routes = JSON.parse(await service.readResource(MCP_RESOURCE.MigrationRouteCatalog)) as {
+			schema: string;
+			routes: readonly { id: string; from: string; to: string }[];
+		};
+		expect(routes).toMatchObject({ schema: "pandwind.migration-route-proof-catalog/1" });
+		expect(routes.routes).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({
+					id: "unclassified:emotion->mui",
+					from: "emotion",
+					to: "mui",
+				}),
+			]),
+		);
 	});
 
 	it("inspects registered adapters using the shared source workspace", async () => {
@@ -90,6 +99,12 @@ describe("Pandwind MCP tools", () => {
 				(adapter) => adapter.id === "pandwind",
 			),
 		).toBe(true);
+		expect(value.executionEvidence).toEqual([
+			expect.objectContaining({
+				lane: MCP_EVIDENCE_LANE.InProcess,
+				status: MCP_EVIDENCE_STATUS.Verified,
+			}),
+		]);
 	});
 
 	it("previews a route without changing the project", async () => {
