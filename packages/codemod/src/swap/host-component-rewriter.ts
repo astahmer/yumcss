@@ -1,4 +1,5 @@
 import { SourcePass } from "../source-pass-utils.ts";
+import { SourceBindings, SourceHostUseKind } from "pandwind/source";
 import { StyleProgramResidualKindTag } from "./semantic-ir.ts";
 import type { StyleProgramResidual } from "./semantic-ir.ts";
 import {
@@ -140,20 +141,76 @@ function findTagEnd(source: string, start: number): number | undefined {
 	return undefined;
 }
 
-function tagMatches(
-	source: string,
-	binding: string,
-): Array<{ start: number; end: number; text: string }> {
+interface TagMatch {
+	readonly start: number;
+	readonly end: number;
+	readonly text: string;
+	readonly closing: boolean;
+}
+
+function tagMatches(source: string, binding: string): TagMatch[] {
 	const pattern = new RegExp(`<\\/?\\s*${binding}\\b`, "g");
-	const matches: Array<{ start: number; end: number; text: string }> = [];
+	const matches: TagMatch[] = [];
 	for (const match of source.matchAll(pattern)) {
 		const start = match.index ?? 0;
 		const end = findTagEnd(source, start) ?? source.indexOf(">", start);
 		if (end === undefined) continue;
 		if (end < 0) continue;
-		matches.push({ start, end: end + 1, text: source.slice(start, end + 1) });
+		matches.push({
+			start,
+			end: end + 1,
+			text: source.slice(start, end + 1),
+			closing: /^<\//u.test(match[0]!),
+		});
 	}
 	return matches;
+}
+
+/**
+ * Resolve JSX hosts from the shared source index. The ranges are owned by the
+ * parser, so braces, strings, comments, nested elements, and closing tags are
+ * never rediscovered by a second regex parser.
+ */
+function scannedTagMatches(source: string, file: string, binding: string): TagMatch[] | undefined {
+	try {
+		const index = SourceBindings.fromDocument({ file, source });
+		const uses = index.hostUses.filter(
+			(use) =>
+				use.kind === SourceHostUseKind.Component &&
+				use.localName === binding &&
+				!index.isShadowedAt(binding, use.start),
+		);
+		return uses.flatMap((use) => [
+			{
+				start: use.start,
+				end: use.end,
+				text: source.slice(use.start, use.end),
+				closing: false,
+			},
+			...(use.closing === undefined
+				? []
+				: [
+						{
+							start: use.closing.start,
+							end: use.closing.end,
+							text: source.slice(use.closing.start, use.closing.end),
+							closing: true,
+						},
+					]),
+		]);
+	} catch {
+		// Vue/Svelte snippets without a parseable script island still use the
+		// bounded template matcher below. TypeScript/JSX callers fail closed.
+		return undefined;
+	}
+}
+
+function hostTagMatches(request: HostComponentRewriteRequest): TagMatch[] {
+	const file = request.file ?? "pandwind-component.tsx";
+	const scanned = scannedTagMatches(request.source, file, request.binding);
+	if (scanned !== undefined) return scanned;
+	if (/\.(?:tsx?|jsx?|mdx)$/iu.test(file)) return [];
+	return tagMatches(request.source, request.binding);
 }
 
 function rewriteJsx(request: HostComponentRewriteRequest): HostComponentRewriteResult {
@@ -166,11 +223,11 @@ function rewriteJsx(request: HostComponentRewriteRequest): HostComponentRewriteR
 	);
 	const tag = request.tag;
 	const binding = request.binding;
-	for (const match of tagMatches(request.source, binding)) {
+	for (const match of hostTagMatches(request)) {
 		const start = match.start;
 		if (mask.isExcluded(start)) continue;
 		const text = match.text;
-		if (new RegExp(`<\\/\\s*${binding}\\b`).test(text)) {
+		if (match.closing) {
 			edits.push({ start, end: match.end, text: `</${tag}>` });
 			found = true;
 			continue;

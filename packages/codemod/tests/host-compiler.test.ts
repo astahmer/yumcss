@@ -78,6 +78,25 @@ describe("framework-native host compiler contract", () => {
 		);
 	});
 
+	test("uses scanner-owned JSX ranges and leaves shadowed component names alone", () => {
+		const rewriter = getHostComponentRewriter("react");
+		const source = [
+			'function render(Card: unknown) { return <Card data-id="shadowed" />; }',
+			"export const App = () => <Card><span>child</span></Card>;",
+		].join("\n");
+		const result = rewriter!.rewrite({
+			source,
+			file: "App.tsx",
+			binding: "Card",
+			tag: "div",
+			framework: "react",
+			classExpression: "card.class",
+		});
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain('return <Card data-id="shadowed" />;');
+		expect(result.code).toContain("<div className={card.class}><span>child</span></div>");
+	});
+
 	test("preserves self-closing template hosts", () => {
 		const rewriter = getHostComponentRewriter("vue");
 		expect(rewriter).toBeDefined();

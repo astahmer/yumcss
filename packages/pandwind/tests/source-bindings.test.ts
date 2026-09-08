@@ -216,6 +216,17 @@ describe("source binding index", () => {
 		expect(index.hasInlineAttributeUse(source.indexOf("Card} />"))).toBe(true);
 	});
 
+	test("retains parser-owned closing JSX ranges", () => {
+		const source = "const view = <Card><span>child</span></Card>;";
+		const index = SourceBindings.fromDocument({ file: "hosts.tsx", source });
+		const card = index.hostUses.find((use) => use.localName === "Card");
+
+		expect(card?.closing).toEqual({
+			start: source.indexOf("</Card>"),
+			end: source.indexOf("</Card>") + "</Card>".length,
+		});
+	});
+
 	test("indexes script bindings and template hosts in a Vue SFC", () => {
 		const source = [
 			"<script setup>",

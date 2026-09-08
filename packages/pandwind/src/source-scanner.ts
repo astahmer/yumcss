@@ -553,11 +553,13 @@ export {
 	SourceBindings,
 	SourceBindingKind,
 	SourceCallSiteKind,
+	SourceHostUseKind,
 	type SourceBinding,
 	type SourceCallSite,
 	type SourceBindingIndex,
 	type SourceExportAll,
 	type SourceReexport,
+	type SourceHostUse,
 } from "./source-bindings.ts";
 export {
 	SOURCE_PROJECT_BINDINGS_SCHEMA,

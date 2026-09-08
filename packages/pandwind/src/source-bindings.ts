@@ -50,17 +50,19 @@ export interface SourceCallSite {
 	readonly assignedBinding?: string;
 }
 
-const SourceHostUseKind = {
+export const SourceHostUseKind = {
 	Component: "component",
 	Attribute: "attribute",
 } as const;
-type SourceHostUseKind = (typeof SourceHostUseKind)[keyof typeof SourceHostUseKind];
+export type SourceHostUseKind = (typeof SourceHostUseKind)[keyof typeof SourceHostUseKind];
 
 export interface SourceHostUse {
 	readonly kind: SourceHostUseKind;
 	readonly localName: string;
 	readonly start: number;
 	readonly end: number;
+	/** AST range for a non-self-closing JSX element's closing tag. */
+	readonly closing?: SourceRange;
 }
 
 export interface SourceBindingIndex {
@@ -176,6 +178,14 @@ const embeddedPrograms = (document: SourceDocument): readonly EmbeddedProgram[] 
 				...use,
 				start: use.start - prefixLength,
 				end: use.end - prefixLength,
+				...(use.closing === undefined
+					? {}
+					: {
+							closing: {
+								start: use.closing.start - prefixLength,
+								end: use.closing.end - prefixLength,
+							},
+						}),
 			}));
 			programs.push({
 				program: parsed.program as unknown as OxcNode,
@@ -462,7 +472,7 @@ function collectCallSites(program: OxcNode, bindings: readonly SourceBinding[]):
 
 function collectHostUses(program: OxcNode): SourceHostUse[] {
 	const uses: SourceHostUse[] = [];
-	walkWithParent(program, (node) => {
+	walkWithParent(program, (node, parent) => {
 		if (node.type !== NodeKind.JSXOpeningElement) return;
 		const element = node as {
 			name?: { type?: string; name?: string };
@@ -471,6 +481,14 @@ function collectHostUses(program: OxcNode): SourceHostUse[] {
 			end?: number;
 		};
 		const name = element.name;
+		const closingElement =
+			parent?.type === NodeKind.JSXElement
+				? (parent as { closingElement?: { start?: number; end?: number } | null }).closingElement
+				: undefined;
+		const closing =
+			closingElement?.start !== undefined && closingElement.end !== undefined
+				? { start: closingElement.start, end: closingElement.end }
+				: undefined;
 		if (
 			name?.type === NodeKind.JSXIdentifier &&
 			typeof name.name === "string" &&
@@ -482,6 +500,7 @@ function collectHostUses(program: OxcNode): SourceHostUse[] {
 				localName: name.name,
 				start: element.start,
 				end: element.end,
+				...(closing === undefined ? {} : { closing }),
 			});
 		for (const rawAttribute of element.attributes ?? []) {
 			if (rawAttribute === null || typeof rawAttribute !== "object") continue;
