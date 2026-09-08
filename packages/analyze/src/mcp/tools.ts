@@ -207,6 +207,69 @@ function validationEvidence(check: McpValidationResult): McpExecutionEvidence {
 	);
 }
 
+function hostValidationResults(
+	requested: readonly McpValidationCheck[],
+	supplied: readonly McpValidationResult[],
+): readonly McpValidationResult[] {
+	const requestedSet = new Set(requested);
+	const validStatuses = new Set(Object.values(MCP_VALIDATION_STATUS));
+	const byCheck = new Map<McpValidationCheck, McpValidationResult>();
+	const contractErrors: string[] = [];
+	for (const result of supplied) {
+		if (!requestedSet.has(result.check)) {
+			contractErrors.push(`unexpected check '${String(result.check)}'`);
+			continue;
+		}
+		if (byCheck.has(result.check)) {
+			contractErrors.push(`duplicate result for '${result.check}'`);
+			continue;
+		}
+		if (!validStatuses.has(result.status)) {
+			contractErrors.push(`invalid status '${String(result.status)}' for '${result.check}'`);
+			continue;
+		}
+		if (result.executionLane !== MCP_EXECUTION_LANE.HostProject) {
+			contractErrors.push(`result for '${result.check}' is not marked as host-project evidence`);
+			continue;
+		}
+		byCheck.set(result.check, result);
+	}
+	if (contractErrors.length > 0) {
+		const detail = `host validation port violated its result contract: ${contractErrors.join("; ")}`;
+		return requested.map((check) => ({
+			check,
+			status: MCP_VALIDATION_STATUS.Failed,
+			executionLane: MCP_EXECUTION_LANE.HostProject,
+			detail,
+			provenance: { source: MCP_PROVENANCE_SOURCE.Host },
+		}));
+	}
+	return requested.map(
+		(check) =>
+			byCheck.get(check) ?? {
+				check,
+				status: MCP_VALIDATION_STATUS.Unavailable,
+				executionLane: MCP_EXECUTION_LANE.HostProject,
+				detail: "host validation port did not return a result for this check",
+				requiredHostCapability: check,
+				provenance: { source: MCP_PROVENANCE_SOURCE.Host },
+			},
+	);
+}
+
+function hostBenchmarkResult(
+	result: McpBenchmarkResult,
+	requestedMeasurementMode: McpBenchmarkMeasurementMode,
+): McpBenchmarkResult {
+	if (result.executionLane !== MCP_EXECUTION_LANE.HostProject)
+		throw new McpToolError("benchmark port must return host-project evidence");
+	if (result.scope !== MCP_BENCHMARK_SCOPE.Project)
+		throw new McpToolError("benchmark port must return project-scope measurements");
+	if (result.measurementMode !== requestedMeasurementMode)
+		throw new McpToolError("benchmark port returned a different measurement mode");
+	return result;
+}
+
 const inputSchema = (
 	properties: Readonly<Record<string, unknown>>,
 	required: readonly string[] = [],
@@ -1024,15 +1087,18 @@ async function benchmarkProject(
 	const scanMilliseconds = performance.now() - scanStart;
 	if (expanded.size === 0) throw new McpToolError("files did not match any project files");
 	if (ports.benchmark !== undefined) {
-		const benchmark = await ports.benchmark.run({
-			root: context.root,
-			from,
-			to,
-			mode,
-			files,
-			iterations,
+		const benchmark = hostBenchmarkResult(
+			await ports.benchmark.run({
+				root: context.root,
+				from,
+				to,
+				mode,
+				files,
+				iterations,
+				measurementMode,
+			}),
 			measurementMode,
-		});
+		);
 		return textToolResult({
 			schema: "pandwind.mcp.benchmark/2",
 			root: context.root,
@@ -1227,18 +1293,7 @@ async function validateMigration(
 					})),
 					checks: externalChecks,
 				});
-				const byCheck = new Map(suppliedChecks.map((check) => [check.check, check]));
-				projectChecks = externalChecks.map(
-					(check) =>
-						byCheck.get(check) ?? {
-							check,
-							status: MCP_VALIDATION_STATUS.Unavailable,
-							executionLane: MCP_EXECUTION_LANE.HostProject,
-							detail: "host validation port did not return a result for this check",
-							requiredHostCapability: check,
-							provenance: { source: MCP_PROVENANCE_SOURCE.Host },
-						},
-				);
+				projectChecks = hostValidationResults(externalChecks, suppliedChecks);
 			} catch (error) {
 				projectChecks = externalChecks.map((check) => ({
 					check,

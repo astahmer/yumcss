@@ -274,6 +274,55 @@ describe("Pandwind MCP tools", () => {
 		});
 	});
 
+	it.each([
+		["execution lane", { executionLane: MCP_EXECUTION_LANE.InProcess }],
+		["scope", { scope: MCP_BENCHMARK_SCOPE.InProcessMigration }],
+		["measurement mode", { measurementMode: MCP_BENCHMARK_MEASUREMENT_MODE.Cold }],
+	] as const)("rejects host benchmark evidence with an invalid %s", async (_label, invalid) => {
+		const root = mkdtempSync(resolve(tmpdir(), "pandwind-mcp-benchmark-contract-"));
+		roots.push(root);
+		mkdirSync(resolve(root, "src"), { recursive: true });
+		writeFileSync(resolve(root, "src/source.ts"), "before");
+		const service = createMcpToolService(createMcpProjectContext(root), {
+			createCatalog: createBuiltinCodemodCatalog,
+			migration: {
+				runAsync: async (source) => ({
+					code: source,
+					changed: false,
+					converted: 0,
+					skipped: 0,
+					reports: [],
+					validations: [],
+					dependencies: [],
+					generatedFiles: [],
+					fileChanges: [],
+					residuals: [],
+					loweringPlans: [],
+					outcomes: [],
+				}),
+			},
+			analyze: async () => JSON.stringify({ schema: "test" }),
+			benchmark: {
+				run: async ({ measurementMode }) => ({
+					executionLane: MCP_EXECUTION_LANE.HostProject,
+					scope: MCP_BENCHMARK_SCOPE.Project,
+					measurementMode,
+					profile: "invalid-contract",
+					measurements: {},
+					...invalid,
+				}),
+			},
+		});
+		await expect(
+			service.call(MCP_TOOL.BenchmarkProject, {
+				files: ["src/source.ts"],
+				from: "fake",
+				to: "fake",
+				iterations: 1,
+			}),
+		).rejects.toThrow("benchmark port");
+	});
+
 	it("returns the existing analyzer JSON contract", async () => {
 		const service = project();
 		const result = await service.call(MCP_TOOL.AnalyzeProject, {
@@ -538,6 +587,65 @@ describe("Pandwind MCP tools", () => {
 				expect.objectContaining({
 					checks: [MCP_VALIDATION_CHECK.Build],
 					status: MCP_EVIDENCE_STATUS.NotApplicable,
+				}),
+			]),
+		);
+	});
+
+	it("fails closed when a host validation port returns invalid evidence", async () => {
+		const root = mkdtempSync(resolve(tmpdir(), "pandwind-mcp-validation-contract-"));
+		roots.push(root);
+		mkdirSync(resolve(root, "src"), { recursive: true });
+		writeFileSync(resolve(root, "src/source.ts"), "before");
+		const service = createMcpToolService(createMcpProjectContext(root), {
+			createCatalog: createBuiltinCodemodCatalog,
+			migration: {
+				runAsync: async (source) => ({
+					code: source,
+					changed: false,
+					converted: 0,
+					skipped: 0,
+					reports: [],
+					validations: [],
+					dependencies: [],
+					generatedFiles: [],
+					fileChanges: [],
+					residuals: [],
+					loweringPlans: [],
+					outcomes: [],
+				}),
+			},
+			analyze: async () => JSON.stringify({ schema: "test" }),
+			validation: {
+				run: async () => [
+					{
+						check: MCP_VALIDATION_CHECK.Typecheck,
+						status: MCP_VALIDATION_STATUS.Passed,
+						executionLane: MCP_EXECUTION_LANE.HostProject,
+					},
+					{
+						check: MCP_VALIDATION_CHECK.Typecheck,
+						status: MCP_VALIDATION_STATUS.Passed,
+						executionLane: MCP_EXECUTION_LANE.HostProject,
+					},
+				],
+			},
+		});
+		const value = structured(
+			await service.call(MCP_TOOL.ValidateMigration, {
+				files: ["src/source.ts"],
+				from: "fake",
+				to: "fake",
+				checks: [MCP_VALIDATION_CHECK.Typecheck],
+			}),
+		);
+		expect(value.valid).toBe(false);
+		expect(value.checks).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({
+					check: MCP_VALIDATION_CHECK.Typecheck,
+					status: MCP_VALIDATION_STATUS.Failed,
+					detail: expect.stringContaining("duplicate result"),
 				}),
 			]),
 		);
