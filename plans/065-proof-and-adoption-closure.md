@@ -98,7 +98,7 @@ validation, and host ports. No new central ecosystem switchboard is allowed.
 
 ## Acceptance criteria
 
-- [ ] Every pull request checks installed-route evidence freshness and
+- [x] Every pull request checks installed-route evidence freshness and
       generated artifact budgets without needing external reference clones.
 - [ ] Shared host rewrites use scanner-owned ranges for the supported syntax;
       unsupported syntax remains source-preserving with a typed residual.
@@ -111,6 +111,15 @@ validation, and host ports. No new central ecosystem switchboard is allowed.
 - [ ] Consumer generated-artifact checks are documented and actionable.
 - [ ] Limitations and implementation-status pages match the actual evidence
       catalog and plan files.
+
+## Progress — 2026-09-08
+
+- Ordinary CI now runs the installed-route evidence gate and generated artifact
+  budget check in addition to the existing offline pivot proof.
+- The plan inventory and implementation-status documentation no longer use the
+  stale `063–068` aggregate label for the current plan files.
+- Local checks passed for all four installed-route evidence records, generated
+  artifact budgets, formatting, and diff hygiene.
 
 ## Decisions log
 
