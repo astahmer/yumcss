@@ -1,6 +1,6 @@
 import {
 	CodemodAdapterId,
-	createBuiltinCodemodCatalog,
+	createBrowserCodemodCatalog,
 	findMigrationRouteProof,
 	PANDWIND_API_DIALECTS,
 	runAdapterMigration,
@@ -323,7 +323,7 @@ function endpointFor(adapter: StyleAdapter, role: "source" | "target"): Migratio
 }
 
 function pandwindApiEndpoint(
-	registry: ReturnType<typeof createBuiltinCodemodCatalog>["registry"],
+	registry: ReturnType<typeof createBrowserCodemodCatalog>["registry"],
 	api: (typeof PANDWIND_API_DIALECTS)[number],
 ): MigrationLabEndpoint {
 	const route = `${CodemodAdapterId.Pandwind}/${api.dialect}`;
@@ -346,7 +346,7 @@ function fileFor(
 
 /** Browser composition root for the same registry-backed migration use case as the CLI. */
 export function createMigrationLab(options: MigrationLabOptions = {}): MigrationLab {
-	const catalog = createBuiltinCodemodCatalog(
+	const catalog = createBrowserCodemodCatalog(
 		options.tailwindResolver === undefined
 			? undefined
 			: { tailwindResolver: options.tailwindResolver },
