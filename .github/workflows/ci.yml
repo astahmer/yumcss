@@ -56,7 +56,11 @@ jobs:
         run: nub run generated:check
 
       - name: Production ownership and pivot gates
-        run: nub run knip:production && nub run pivot:proof
+        run: >-
+          nub run knip:production &&
+          nub run generated:budget &&
+          nub run pivot:proof &&
+          nub run pivot:proof:installed:routes
 
   # Preview tarballs for every PR (pkg.pr.new) — installable without merging.
   # Preview the same built package shape that will be published; failures are
