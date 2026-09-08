@@ -30,6 +30,7 @@ function writeJsTwModule(dir: string): string {
 	src = src.replace(/^import [^\n]*$/gm, "");
 	src = src.replace(/createTw<[^>(]*>\(/, "createTw(");
 	// plain .js fixture: strip TS-only annotations from the generated module
+	src = src.replace(/: string\[\]/g, "");
 	src = src.replace("__pandwindConfig: TwOptions = {", "__pandwindConfig = {");
 	const target = join(dir, "tw.js");
 	writeFileSync(target, src);

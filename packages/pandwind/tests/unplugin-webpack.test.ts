@@ -21,6 +21,7 @@ function writeJsTwModule(dir: string): string {
 	let source = readFileSync(exampleTwModule, "utf8");
 	source = source.replace(/^import [^\n]*$/gm, "");
 	source = source.replace(/createTw<[^>(]*>\(/, "createTw(");
+	source = source.replace(/: string\[\]/g, "");
 	source = source.replace("__pandwindConfig: TwOptions = {", "__pandwindConfig = {");
 	const target = join(dir, "tw.js");
 	writeFileSync(target, source);
