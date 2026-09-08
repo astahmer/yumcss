@@ -52,12 +52,20 @@ that use case instead of selecting the concrete runner independently. Adapter
 modules remain responsible for detection, configuration, parsing, emission,
 validation, and target-owned host policy.
 
-The default `AdapterMigrationExecutor` is assembled at the package composition
-root. Browser callers can supply an in-memory catalog and scanner, project
-hosts can supply an official-loader resolver, and tests can substitute a
-minimal executor or any individual infrastructure port. This keeps the flat
-`runAdapterMigration` function as a compatibility fast path while making the
-application boundary explicit for richer hosts.
+The default `StyleMigrationImplementation` is assembled at the package
+composition root and exposed through `createStyleMigrationUseCase`. Browser
+callers can supply an in-memory catalog and scanner, project hosts can supply
+an official-loader resolver, and tests can substitute the implementation or
+any individual infrastructure port. `runAdapterMigration` and its async form
+remain thin convenience calls over that use case; they cannot bypass the
+canonical application boundary. The flat `SwapIR` path remains independent
+and cheap.
+
+The Node and browser catalog composition roots use the same built-in adapter
+plugin and registry assembler. Their only difference is injected capability:
+Node supplies module loading, filesystem reads, and cross-module resolution,
+while browser callers supply an in-memory Tailwind resolver. The adapter
+identity set is therefore one registry view even when the host effects differ.
 
 The MCP service follows the same rule. Its port set supplies the adapter
 catalog, the migration use case, the analyzer command, and optional host-owned
@@ -741,10 +749,13 @@ types instead: Node's strip-only loader cannot execute TypeScript enum syntax or
 parameter properties.
 
 Prefer one cohesive façade, registry, or class over a module that exports a
-collection of unrelated operations. Export a primitive only when it is an
-independent contract or a narrow public entry point. Knip is the required
-check for unused exports; dynamic/public entry points must be documented when
-they cannot be inferred statically.
+collection of unrelated operations. The analyzer's collect subpath exposes
+named collection operations directly, the Studio workspace has one factory,
+and the backend registry has one factory collection and lookup view. Export a
+primitive only when it is an independent contract or a narrow public entry
+point. Knip is the required check for unused exports; generated `tw.ts`
+artifacts and explicit package subpaths are documented entrypoints rather than
+dead-code exceptions.
 
 ## Definition of done
 

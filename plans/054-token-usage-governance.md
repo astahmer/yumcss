@@ -215,9 +215,9 @@ TokenSourceRegistry
 
 Each ecosystem owns its loader and policy adapter. The governance service only
 coordinates ports and consumes neutral token definitions and usage facts.
-Existing `TokenCatalog`, `StyleProgram`, `SourceScannerService`, and
-`CollectionToolkit` remain the implementation foundations; this plan does not
-create a second token graph or a second scanner.
+Existing `TokenCatalog`, `StyleProgram`, `SourceScannerService`, and the
+named collection operations remain the implementation foundations; this plan
+does not create a second token graph or a second scanner.
 
 ## What this allows
 

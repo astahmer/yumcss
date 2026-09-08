@@ -90,7 +90,7 @@ live — preset module alongside themes?
 ## Outcomes — L3 component tier IMPLEMENTED (2026-08-24, model A)
 
 Scope-override model A as approved. `buildComponentScopes` in
-src/tw/generate-theme.ts + `resolveComponents` in generate-types.ts:
+src/tw/generate-theme.ts + `resolveComponents` in codegen-theme-input.ts:
 
 - Authoring: `components: { button: { primary: "$color-brand" } }` on the
   tokens module. Key mapping (documented, no guessing beyond these):
