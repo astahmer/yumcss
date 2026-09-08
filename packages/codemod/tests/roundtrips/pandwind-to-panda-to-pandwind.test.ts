@@ -274,7 +274,7 @@ test("pandwind -> panda -> pandwind: preserves concrete theme and project contex
 		const css = createCss();
 
 
-		export const card = css.class({ padding: "1rem", color: "brand.500" });",
+		export const card = css.class({ padding: "1rem", color: "brand" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -348,7 +348,7 @@ test("pandwind -> panda -> pandwind: preserves concrete theme and project contex
 		const css = createCss();
 
 
-		export const card = css.class({ padding: "1rem", color: "brand.500" });",
+		export const card = css.class({ padding: "1rem", color: "brand" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -436,7 +436,7 @@ test("pandwind -> panda -> pandwind: resolves token values across both concrete 
 		const css = createCss();
 
 
-		export const card = css.class({ padding: "1rem", color: "brand.500" });",
+		export const card = css.class({ padding: "1rem", color: "brand" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -470,4 +470,3 @@ test("pandwind -> panda -> pandwind: resolves token values across both concrete 
 		}
 	`)
 });
-

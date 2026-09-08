@@ -154,7 +154,7 @@ test("panda -> pandwind: loads concrete theme and project context variants", asy
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const card = css.class({ color: "brand.500", "&:hover": { color: "brand.500" } });",
+		export const card = css.class({ color: "brand", "&:hover": { color: "brand" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -190,7 +190,7 @@ test("panda -> pandwind: loads concrete theme and project context variants", asy
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const card = css.class({ color: "brand.500", "&:hover": { color: "brand.500" } });",
+		export const card = css.class({ color: "brand", "&:hover": { color: "brand" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -317,4 +317,3 @@ test("panda -> pandwind: preserves malformed concrete panda input", () => {
 		}
 	`)
 });
-

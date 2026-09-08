@@ -250,7 +250,7 @@ test("pandwind -> chakra-ui -> pandwind: preserves concrete theme and project co
 		import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const card = css.class({ padding: "1rem", color: "brand.500" });",
+		export const card = css.class({ padding: "1rem", color: "brand" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -324,7 +324,7 @@ test("pandwind -> chakra-ui -> pandwind: preserves concrete theme and project co
 		import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const card = css.class({ padding: "1rem", color: "brand.500" });",
+		export const card = css.class({ padding: "1rem", color: "brand" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -412,7 +412,7 @@ test("pandwind -> chakra-ui -> pandwind: resolves token values across both concr
 		import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const card = css.class({ padding: "1rem", color: "brand.500" });",
+		export const card = css.class({ padding: "1rem", color: "brand" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -446,4 +446,3 @@ test("pandwind -> chakra-ui -> pandwind: resolves token values across both concr
 		}
 	`)
 });
-

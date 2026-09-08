@@ -146,7 +146,7 @@ test("chakra-ui -> pandwind: loads concrete theme and project context variants",
 		    "code": "import { Box } from "@chakra-ui/react";
 		import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const App = () => <Box p="4"  className={css.class({ backgroundColor: "brand.500" })}/>;",
+		export const App = () => <Box p="4"  className={css.class({ backgroundColor: "brand" })}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -182,7 +182,7 @@ test("chakra-ui -> pandwind: loads concrete theme and project context variants",
 		    "code": "import { Box } from "@chakra-ui/react";
 		import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const App = () => <Box p="4"  className={css.class({ backgroundColor: "brand.500" })}/>;",
+		export const App = () => <Box p="4"  className={css.class({ backgroundColor: "brand" })}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -309,4 +309,3 @@ test("chakra-ui -> pandwind: preserves malformed concrete chakra-ui input", () =
 		}
 	`)
 });
-
