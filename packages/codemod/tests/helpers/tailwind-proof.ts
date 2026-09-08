@@ -23,18 +23,6 @@ export function rulesForClass(root: Root, className: string): Rule[] {
 	return found;
 }
 
-/**
- * The selector tail after the class itself — `.hover\:text-blue-400:hover`
- * with class `hover:text-blue-400` yields `:hover`. Comparing tails proves
- * css() conditions and tw() variants attach the same pseudo-classes.
- */
-function selectorTail(selector: string, className: string): string {
-	const matches = selectorClassMatches(selector);
-	const match = matches.find((entry) => entry.value === className) ?? matches.at(-1);
-	if (!match) return "";
-	return selector.slice(match.end).trim();
-}
-
 /** Compile classes with the real Tailwind engine and parse the output. */
 export async function compileClasses(
 	entry: string,

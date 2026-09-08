@@ -10,7 +10,6 @@
  */
 import {
 	type GovernanceCoverageBoundary,
-	type GovernanceDiagnostic,
 	type RawTokenSuggestion,
 	type TokenDefinition,
 	type TokenGovernanceSummary,

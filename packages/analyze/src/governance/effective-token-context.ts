@@ -12,7 +12,7 @@
  * diagnostics that downgrade certainty; the builder never invents tokens
  * from a guessed default vocabulary.
  */
-import type { GovernanceDiagnostic, TokenDefinition, TokenDefinitionLayer } from "./contracts.ts";
+import type { GovernanceDiagnostic, TokenDefinition } from "./contracts.ts";
 import { mergeDefinition, tokenId } from "./ledger.ts";
 
 export interface EffectiveTokenContextInputs {
@@ -213,7 +213,3 @@ export function buildEffectiveTokenContext(
 		diagnostics: diagnosticsFromFailures(inputs),
 	};
 }
-
-/** Layer helper for callers mapping ecosystem tiers into governance layers. */
-const layerForTokenGroup = (group: string): TokenDefinitionLayer =>
-	group === "semantic" ? "semantic" : "raw";

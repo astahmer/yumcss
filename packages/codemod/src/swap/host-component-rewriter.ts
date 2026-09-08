@@ -160,7 +160,7 @@ function tagMatches(source: string, binding: string): TagMatch[] {
 			start,
 			end: end + 1,
 			text: source.slice(start, end + 1),
-			closing: /^<\//u.test(match[0]!),
+			closing: match[0]!.startsWith("</"),
 		});
 	}
 	return matches;
