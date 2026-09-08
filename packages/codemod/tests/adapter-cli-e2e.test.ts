@@ -92,7 +92,13 @@ describe("adapter migration e2e matrix", () => {
 				{ cwd: codemodRoot, encoding: "utf8" },
 			);
 			const report = JSON.parse(output) as {
-				readonly files: readonly [{ readonly file: string; readonly outputFile?: string }];
+				readonly files: readonly [
+					{
+						readonly file: string;
+						readonly outputFile?: string;
+						readonly canonical: { readonly checked: boolean; readonly equal: boolean };
+					},
+				];
 			};
 			const outputFile = report.files[0]?.outputFile;
 			expect(outputFile).toMatch(/App\.tsx$/u);
@@ -100,6 +106,7 @@ describe("adapter migration e2e matrix", () => {
 			expect(outputFile === undefined ? false : existsSync(resolve(directory, outputFile))).toBe(
 				true,
 			);
+			expect(report.files[0]?.canonical).toMatchObject({ checked: true, equal: true });
 		} finally {
 			rmSync(directory, { recursive: true, force: true });
 		}

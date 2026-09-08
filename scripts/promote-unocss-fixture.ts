@@ -20,6 +20,10 @@ import { tmpdir } from "node:os";
 import { extname, join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { CodemodAdapterId } from "pandwind-codemod/swap";
+import {
+	parseInstalledProofMigration,
+	type InstalledProofCanonicalEvidence,
+} from "./installed-proof.ts";
 
 const repositoryRoot = resolve(import.meta.dirname, "..");
 const pandwindPackageRoot = join(repositoryRoot, "packages/pandwind");
@@ -112,6 +116,7 @@ interface UnoCssInstalledProof {
 		readonly converted: number;
 		readonly skipped: number;
 		readonly residuals: number;
+		readonly canonical: InstalledProofCanonicalEvidence;
 		readonly targetUsesPandwind: boolean;
 		readonly customTokenPreserved: boolean;
 		readonly sourceStylesheetImportRemoved: boolean;
@@ -141,6 +146,8 @@ function proofIsComplete(report: UnoCssInstalledProof): boolean {
 		report.migration.converted > 0 &&
 		report.migration.skipped === 0 &&
 		report.migration.residuals === 0 &&
+		report.migration.canonical.checked &&
+		report.migration.canonical.equal &&
 		report.migration.targetUsesPandwind &&
 		report.migration.customTokenPreserved &&
 		report.migration.sourceStylesheetImportRemoved &&
@@ -399,24 +406,28 @@ async function main(): Promise<void> {
 		run("pnpm", ["run", "build"], sourceRoot);
 		createTargetFixture(sourceRoot, targetRoot);
 		run("pnpm", ["install", "--ignore-scripts"], targetRoot);
-		runCaptured(
-			"nub",
-			[
-				"--conditions",
-				"pandwind",
-				"packages/codemod/src/cli.ts",
-				"migrate",
-				"--from",
-				CodemodAdapterId.UnoCSS,
-				"--to",
-				CodemodAdapterId.Pandwind,
-				"--root",
-				targetRoot,
-				"--no-install",
-				"src/App.tsx",
-				"--report",
-			],
-			repositoryRoot,
+		const migration = parseInstalledProofMigration(
+			runCaptured(
+				"nub",
+				[
+					"--conditions",
+					"pandwind",
+					"packages/codemod/src/cli.ts",
+					"migrate",
+					"--from",
+					CodemodAdapterId.UnoCSS,
+					"--to",
+					CodemodAdapterId.Pandwind,
+					"--root",
+					targetRoot,
+					"--no-install",
+					"src/App.tsx",
+					"--report",
+					"--report-format=json",
+				],
+				repositoryRoot,
+			),
+			"UnoCSS",
 		);
 		run("pnpm", ["run", "typecheck"], targetRoot);
 		const migratedApp = readFileSync(join(targetRoot, "src/App.tsx"), "utf8");
@@ -444,9 +455,7 @@ async function main(): Promise<void> {
 				targetNodeModule: packageInstalled(targetRoot, "pandwind"),
 			},
 			migration: {
-				converted: 1,
-				skipped: 0,
-				residuals: 0,
+				...migration,
 				targetUsesPandwind: migratedApp.includes("pandwind"),
 				customTokenPreserved:
 					preset.includes("123456") &&

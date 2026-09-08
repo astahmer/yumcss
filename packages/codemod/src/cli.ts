@@ -590,6 +590,13 @@ async function runAdapterRoute(
 		converted: number;
 		skipped: number;
 		residuals: number;
+		canonical: {
+			checked: boolean;
+			equal: boolean;
+			sourceBytes: number;
+			targetBytes: number;
+			differences: readonly string[];
+		};
 		residualDetails: readonly {
 			kind: string;
 			text: string;
@@ -662,6 +669,23 @@ async function runAdapterRoute(
 			converted: result.converted,
 			skipped: result.skipped,
 			residuals: result.residuals.length,
+			canonical: {
+				checked: result.validations.length > 0,
+				equal:
+					result.validations.length > 0 &&
+					result.validations.every(
+						(validation) => validation.canonicalSource === validation.canonicalTarget,
+					),
+				sourceBytes: result.validations.reduce(
+					(total, validation) => total + Buffer.byteLength(validation.canonicalSource),
+					0,
+				),
+				targetBytes: result.validations.reduce(
+					(total, validation) => total + Buffer.byteLength(validation.canonicalTarget),
+					0,
+				),
+				differences: result.validations.flatMap((validation) => validation.differences),
+			},
 			residualDetails: result.residuals.map((residual) => ({
 				kind: residual.kind,
 				text: residual.text,

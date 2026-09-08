@@ -20,6 +20,10 @@ import { tmpdir } from "node:os";
 import { dirname, extname, join, relative, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { CodemodAdapterId } from "pandwind-codemod/swap";
+import {
+	parseInstalledProofMigration,
+	type InstalledProofCanonicalEvidence,
+} from "./installed-proof.ts";
 
 const repositoryRoot = resolve(import.meta.dirname, "..");
 const pandwindPackageRoot = join(repositoryRoot, "packages/pandwind");
@@ -98,6 +102,7 @@ interface TailwindInstalledProof {
 		readonly converted: number;
 		readonly skipped: number;
 		readonly residuals: number;
+		readonly canonical: InstalledProofCanonicalEvidence;
 		readonly generatedSupportFiles: number;
 		readonly targetUsesPandwind: boolean;
 		readonly customThemeTokenPreserved: boolean;
@@ -130,6 +135,8 @@ function proofIsComplete(report: TailwindInstalledProof): boolean {
 	return (
 		report.migration.skipped === 0 &&
 		report.migration.residuals === 0 &&
+		report.migration.canonical.checked &&
+		report.migration.canonical.equal &&
 		report.migration.targetUsesPandwind &&
 		report.migration.customThemeTokenPreserved &&
 		report.migration.sourceStylesheetImportRemoved &&
@@ -150,21 +157,6 @@ function runCaptured(command: string, args: readonly string[], cwd: string): str
 	const output = execFileSync(command, [...args], { cwd, encoding: "utf8" });
 	process.stdout.write(output);
 	return output;
-}
-
-function migrationSummary(output: string): {
-	readonly converted: number;
-	readonly skipped: number;
-	readonly residuals: number;
-} {
-	const match = /[—-]\s*(\d+) converted, (\d+) skipped, (\d+) residual\(s\)/u.exec(output);
-	if (match?.[1] === undefined || match[2] === undefined || match[3] === undefined)
-		throw new Error("installed Tailwind proof could not read the codemod migration summary");
-	return {
-		converted: Number(match[1]),
-		skipped: Number(match[2]),
-		residuals: Number(match[3]),
-	};
 }
 
 function writeJson(path: string, value: unknown): void {
@@ -400,7 +392,7 @@ export async function runTailwindInstalledProof(): Promise<TailwindInstalledProo
 	run("pnpm", ["install", "--ignore-scripts", "--no-frozen-lockfile"], sourceRoot);
 	run("pnpm", ["install", "--ignore-scripts", "--no-frozen-lockfile"], targetRoot);
 	run("pnpm", ["run", "typecheck"], sourceRoot);
-	const migration = migrationSummary(
+	const migration = parseInstalledProofMigration(
 		runCaptured(
 			"nub",
 			[
@@ -417,9 +409,11 @@ export async function runTailwindInstalledProof(): Promise<TailwindInstalledProo
 				"--no-install",
 				"src/App.tsx",
 				"--report",
+				"--report-format=json",
 			],
 			repositoryRoot,
 		),
+		"Tailwind",
 	);
 	const migratedApp = readFileSync(join(targetRoot, "src/App.tsx"), "utf8");
 	const generatedSupportFiles = allFiles(join(targetRoot, "pandwind")).map((file) =>
