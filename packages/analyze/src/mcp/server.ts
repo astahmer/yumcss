@@ -17,6 +17,17 @@ import {
 	type McpToolService,
 } from "./tools.ts";
 
+export type {
+	McpBenchmarkPort,
+	McpBenchmarkRequest,
+	McpBenchmarkResult,
+	McpValidationPort,
+	McpValidationRequest,
+	McpValidationResult,
+	McpToolPorts,
+	McpToolService,
+} from "./tools.ts";
+
 export const MCP_COMMAND = "mcp" as const;
 
 export const MCP_SERVER_INFO = {

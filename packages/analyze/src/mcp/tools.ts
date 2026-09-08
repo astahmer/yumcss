@@ -59,7 +59,7 @@ interface McpResourceDefinition {
 	readonly mimeType: "application/json" | "text/plain";
 }
 
-interface McpValidationRequest {
+export interface McpValidationRequest {
 	readonly root: string;
 	readonly from: string;
 	readonly to: string;
@@ -72,7 +72,7 @@ interface McpValidationRequest {
 	readonly checks: readonly McpValidationCheck[];
 }
 
-interface McpValidationResult {
+export interface McpValidationResult {
 	readonly check: McpValidationCheck;
 	readonly status: McpValidationStatus;
 	readonly executionLane: McpExecutionLane;
@@ -91,11 +91,16 @@ interface McpValidationResult {
  * from a tool caller; a CLI, IDE, or repository integration supplies this
  * port when it has an auditable typecheck/build/browser/SSR runner.
  */
-interface McpValidationPort {
+/**
+ * Explicit host-project validation seam. Implementations own the project
+ * runner and must return one result per requested check with commands and
+ * provenance that an agent can audit.
+ */
+export interface McpValidationPort {
 	run(request: McpValidationRequest): Promise<readonly McpValidationResult[]>;
 }
 
-interface McpBenchmarkRequest {
+export interface McpBenchmarkRequest {
 	readonly root: string;
 	readonly from: string;
 	readonly to: string;
@@ -105,7 +110,7 @@ interface McpBenchmarkRequest {
 	readonly measurementMode: McpBenchmarkMeasurementMode;
 }
 
-interface McpBenchmarkResult {
+export interface McpBenchmarkResult {
 	readonly executionLane: McpExecutionLane;
 	readonly scope: McpBenchmarkScope;
 	readonly measurementMode: McpBenchmarkMeasurementMode;
@@ -115,7 +120,8 @@ interface McpBenchmarkResult {
 	readonly limitations?: readonly string[];
 }
 
-interface McpBenchmarkPort {
+/** Host-owned benchmark seam; arbitrary MCP tool input is never executed. */
+export interface McpBenchmarkPort {
 	run(request: McpBenchmarkRequest): Promise<McpBenchmarkResult>;
 }
 
