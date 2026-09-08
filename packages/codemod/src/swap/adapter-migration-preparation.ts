@@ -151,12 +151,10 @@ function prepareResolvedMigration(
 	source: string,
 	options: AdapterMigrationOptions,
 	adapterRegistry: StyleAdapterRegistry,
+	route: ReturnType<StyleAdapterRegistry["resolveRoute"]>,
+	context: AdapterConfigContext,
 	configs: { readonly source: AdapterProjectConfig; readonly target: AdapterProjectConfig },
 ): PreparationResult {
-	const route = (options.registry ?? adapterRegistry).resolveRoute(options.from, options.to);
-	if (route.source.id === route.target.id) return noOpMigration(source);
-	const context = migrationContext(source, options);
-	if (!route.source.detect(context).matched) return noOpMigration(source);
 	const residuals = [...(configs.source.residuals ?? []), ...(configs.target.residuals ?? [])];
 	if (residuals.length > 0)
 		return configurationResiduals(source, residuals, options.skipMarker ?? "pandwind:migrate-skip");
@@ -180,7 +178,7 @@ export function prepareMigration(
 	if (route.source.id === route.target.id) return noOpMigration(source);
 	const context = migrationContext(source, options);
 	if (!route.source.detect(context).matched) return noOpMigration(source);
-	return prepareResolvedMigration(source, options, adapterRegistry, {
+	return prepareResolvedMigration(source, options, adapterRegistry, route, context, {
 		source: route.source.loadConfig(context),
 		target: route.target.loadConfig(context),
 	});
@@ -208,7 +206,7 @@ export async function prepareMigrationAsync(
 			route.source.loadConfigAsync?.(context) ?? route.source.loadConfig(context),
 			route.target.loadConfigAsync?.(context) ?? route.target.loadConfig(context),
 		]);
-		return prepareResolvedMigration(source, options, adapterRegistry, {
+		return prepareResolvedMigration(source, options, adapterRegistry, route, context, {
 			source: sourceConfig,
 			target: targetConfig,
 		});
