@@ -190,12 +190,13 @@ function inProcessEvidence(checks: readonly string[], detail: string): McpExecut
 }
 
 function validationEvidence(check: McpValidationResult): McpExecutionEvidence {
-	const status =
-		check.status === MCP_VALIDATION_STATUS.Passed
-			? MCP_EVIDENCE_STATUS.Verified
-			: check.status === MCP_VALIDATION_STATUS.Unavailable
-				? MCP_EVIDENCE_STATUS.Unavailable
-				: MCP_EVIDENCE_STATUS.Failed;
+	const status = {
+		[MCP_VALIDATION_STATUS.Passed]: MCP_EVIDENCE_STATUS.Verified,
+		[MCP_VALIDATION_STATUS.Failed]: MCP_EVIDENCE_STATUS.Failed,
+		[MCP_VALIDATION_STATUS.Unavailable]: MCP_EVIDENCE_STATUS.Unavailable,
+		[MCP_VALIDATION_STATUS.Skipped]: MCP_EVIDENCE_STATUS.Skipped,
+		[MCP_VALIDATION_STATUS.NotApplicable]: MCP_EVIDENCE_STATUS.NotApplicable,
+	}[check.status];
 	return executionEvidence(
 		check.executionLane === MCP_EXECUTION_LANE.HostProject
 			? MCP_EVIDENCE_LANE.HostVerified
@@ -1447,7 +1448,12 @@ export function createMcpToolService(
 						);
 					})
 					.toSorted();
-				if (artifacts.length === 1) return readFileSync(artifacts[0]!, "utf8");
+				if (artifacts.length === 1)
+					return resourceJson({
+						schema: "pandwind.mcp.interop/1",
+						path: relativeProjectPath(context.root, artifacts[0]!),
+						content: readFileSync(artifacts[0]!, "utf8"),
+					});
 				return resourceJson({
 					schema: "pandwind.mcp.interop/1",
 					status: artifacts.length === 0 ? "missing" : "multiple",

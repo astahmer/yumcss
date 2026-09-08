@@ -36,6 +36,7 @@ function project() {
 		resolve(root, "src/button.ts"),
 		`import { createCss } from "pandwind/css";\nconst css = createCss();\nexport const button = css.class({ color: "red" });\n`,
 	);
+	writeFileSync(resolve(root, "pandwind.interop.json"), '{"schema":"pandwind.interop/1"}\n');
 	return createMcpToolService(createMcpProjectContext(root));
 }
 
@@ -70,6 +71,11 @@ describe("Pandwind MCP tools", () => {
 		]);
 		expect(JSON.parse(await service.readResource(MCP_RESOURCE.AdapterCatalog))).toMatchObject({
 			schema: "pandwind.mcp.catalog/1",
+		});
+		expect(JSON.parse(await service.readResource(MCP_RESOURCE.InteropArtifact))).toMatchObject({
+			schema: "pandwind.mcp.interop/1",
+			path: "pandwind.interop.json",
+			content: '{"schema":"pandwind.interop/1"}\n',
 		});
 		const routes = JSON.parse(await service.readResource(MCP_RESOURCE.MigrationRouteCatalog)) as {
 			schema: string;
@@ -474,5 +480,66 @@ describe("Pandwind MCP tools", () => {
 		);
 		expect(value.commandsExecuted).toEqual(["host:typecheck", "host:build"]);
 		expect(requested).toEqual(["typecheck", "build"]);
+	});
+
+	it("preserves skipped and not-applicable host statuses in evidence", async () => {
+		const root = mkdtempSync(resolve(tmpdir(), "pandwind-mcp-validation-status-"));
+		roots.push(root);
+		mkdirSync(resolve(root, "src"), { recursive: true });
+		writeFileSync(resolve(root, "src/source.ts"), "before");
+		const service = createMcpToolService(createMcpProjectContext(root), {
+			createCatalog: createBuiltinCodemodCatalog,
+			migration: {
+				runAsync: async (source) => ({
+					code: source,
+					changed: false,
+					converted: 0,
+					skipped: 0,
+					reports: [],
+					validations: [],
+					dependencies: [],
+					generatedFiles: [],
+					fileChanges: [],
+					residuals: [],
+					loweringPlans: [],
+					outcomes: [],
+				}),
+			},
+			analyze: async () => JSON.stringify({ schema: "test" }),
+			validation: {
+				run: async () => [
+					{
+						check: MCP_VALIDATION_CHECK.Typecheck,
+						status: MCP_VALIDATION_STATUS.Skipped,
+						executionLane: MCP_EXECUTION_LANE.HostProject,
+					},
+					{
+						check: MCP_VALIDATION_CHECK.Build,
+						status: MCP_VALIDATION_STATUS.NotApplicable,
+						executionLane: MCP_EXECUTION_LANE.HostProject,
+					},
+				],
+			},
+		});
+		const value = structured(
+			await service.call(MCP_TOOL.ValidateMigration, {
+				files: ["src/source.ts"],
+				from: "fake",
+				to: "fake",
+				checks: [MCP_VALIDATION_CHECK.Typecheck, MCP_VALIDATION_CHECK.Build],
+			}),
+		);
+		expect(value.executionEvidence).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({
+					checks: [MCP_VALIDATION_CHECK.Typecheck],
+					status: MCP_EVIDENCE_STATUS.Skipped,
+				}),
+				expect.objectContaining({
+					checks: [MCP_VALIDATION_CHECK.Build],
+					status: MCP_EVIDENCE_STATUS.NotApplicable,
+				}),
+			]),
+		);
 	});
 });

@@ -56,6 +56,8 @@ export const MCP_EVIDENCE_STATUS = {
 	Verified: "verified",
 	Unavailable: "unavailable",
 	Failed: "failed",
+	Skipped: "skipped",
+	NotApplicable: "not-applicable",
 } as const;
 
 export type McpEvidenceStatus = (typeof MCP_EVIDENCE_STATUS)[keyof typeof MCP_EVIDENCE_STATUS];
