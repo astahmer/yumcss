@@ -59,7 +59,7 @@ describe("verified Pandwind token preservation", () => {
 
 	test("can force the legacy Stitches spelling for inferred references", () => {
 		const result = migrate(
-			'import { css } from "@emotion/css";\n' + 'export const card = css({ color: "#3182ce" });',
+			'import { css } from "@emotion/css";\nexport const card = css({ color: "#3182ce" });',
 			exampleMeta,
 			TokenReferenceFormat.Stitches,
 		);

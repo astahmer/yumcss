@@ -1,5 +1,5 @@
 import { computeExcludedRanges as scanExcludedRanges } from "pandwind/source";
-import MagicString from "magic-string";
+import { MagicString } from "magic-string";
 
 export type SourceEdit = { readonly start: number; readonly end: number; readonly text: string };
 
