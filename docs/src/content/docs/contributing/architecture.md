@@ -1096,9 +1096,10 @@ deliberate:
   subset. A residual matrix is safety evidence, not universal-compatibility
   proof.
 - `plans/044-ast-config-and-project-context.md` is complete for shared AST
-  imports, shadow scopes, semantic call-site ranges, and bounded relative
-  re-export resolution. It remains open for AST ownership of every host
-  rewrite range and broader official-loader/custom-context coverage.
+  imports, shadow scopes, semantic call-site ranges, bounded relative
+  re-export resolution, and the shared JSX host path. Adapter-specific host
+  syntax and broader official-loader/custom-context coverage remain bounded by
+  the adapter contracts.
 - `plans/024-panda-inbound-codemod.md` is complete for the automated product
   scope; dependency-installed typecheck and visual acceptance belong to the
   external pinned Panda host repository.
@@ -1110,15 +1111,18 @@ deliberate:
   compiler-aware runtime pruning. Its runtime-only accessor checklist is not
   pending work.
 - `plans/054-token-usage-governance.md` is complete for the tooling ledger: versioned report, effective universe, strictness classification, exact suggestions, reachability, prune changesets, CLI/Inspector/lint/codemod consumption, and the governance bench. Studio-side paginated queries for very large catalogs and an approved write-mode removal command remain bounded follow-ups inside their owning plans, not open governance work.
-- `plans/065-proof-and-adoption-closure.md` owns the next actionable wave:
-  ordinary-CI evidence checks, scanner-backed host rewrites, broader custom
-  project-context fixtures, additional installed-project proofs, an opt-in MCP
-  validation host, and consumer generated-artifact checks.
+- `plans/065-proof-and-adoption-closure.md` is complete for ordinary-CI
+  evidence checks, scanner-backed shared JSX host rewrites, official-loader
+  context fixtures, a multi-file installed-project proof, typed opt-in MCP host
+  seams, and consumer generated-artifact verification. Adapter-specific host
+  syntax, broader frameworks, and arbitrary project execution remain bounded by
+  their owning contracts.
 
-The remaining unchecked items in plans 040, 041, and 044 are therefore split
-between the bounded follow-up above and deliberate product limits. New work
-should first add a capability contract and proof to an owning plan rather than
-create a parallel architecture or duplicate an already-shipped plan.
+The remaining unchecked items in plans 040 and 041, plus adapter-specific
+portions of 044, are deliberate product limits or evidence requests owned by
+the relevant adapter. New work should first add a capability contract and
+proof to an owning plan rather than create a parallel architecture or duplicate
+an already-shipped plan.
 
 ## Expert target emission and generated files
 

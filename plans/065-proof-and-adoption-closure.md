@@ -1,6 +1,6 @@
 # Plan 065 — proof and adoption closure
 
-Status: in progress
+Status: complete
 
 ## Context
 
@@ -100,16 +100,16 @@ validation, and host ports. No new central ecosystem switchboard is allowed.
 
 - [x] Every pull request checks installed-route evidence freshness and
       generated artifact budgets without needing external reference clones.
-- [ ] Shared host rewrites use scanner-owned ranges for the supported syntax;
+- [x] Shared host rewrites use scanner-owned ranges for the supported syntax;
       unsupported syntax remains source-preserving with a typed residual.
-- [ ] Each claimed official project-context capability has default/custom/
+- [x] Each claimed official project-context capability has default/custom/
       unavailable fixtures and provenance assertions.
-- [ ] At least one additional multi-file or non-default-framework installed
+- [x] At least one additional multi-file or non-default-framework installed
       proof is promoted without weakening existing residual gates.
-- [ ] MCP host checks are executable through an injected auditable port and
+- [x] MCP host checks are executable through an injected auditable port and
       remain explicitly unavailable when no host is supplied.
-- [ ] Consumer generated-artifact checks are documented and actionable.
-- [ ] Limitations and implementation-status pages match the actual evidence
+- [x] Consumer generated-artifact checks are documented and actionable.
+- [x] Limitations and implementation-status pages match the actual evidence
       catalog and plan files.
 
 ## Progress — 2026-09-08
@@ -120,6 +120,24 @@ validation, and host ports. No new central ecosystem switchboard is allowed.
   stale `063–068` aggregate label for the current plan files.
 - Local checks passed for all four installed-route evidence records, generated
   artifact budgets, formatting, and diff hygiene.
+- Shared JSX host rewrites now consume `SourceBindings` opening/closing ranges;
+  `host-compiler.test.ts` covers nested hosts and shadowed bindings while the
+  source scanner test proves the parser-owned closing range.
+- Official project-context coverage is recorded by
+  `official-token-catalog.test.ts`, `tailwind-official-context.test.ts`,
+  `unocss-official-context.test.ts`, `effective-config.test.ts`, and
+  `official-loader-failures.test.ts`, including default, custom, unavailable,
+  and provenance-sensitive paths for the supported loaders.
+- The Tailwind installed proof now migrates `src/**/*.tsx`, including a real
+  imported `src/Badge.tsx`; the report aggregates every migrated file and the
+  source/target lifecycle checks still pass with zero residuals.
+- MCP validation and benchmark execution remain host-owned through exported
+  `McpValidationPort` and `McpBenchmarkPort` contracts. The default service
+  keeps host-only checks explicitly unavailable, and substitution plus HTTP
+  contract tests cover both paths.
+- `pandwind-codemod tw verify` checks consumer manifest freshness, project-root
+  path safety, ownership, and raw/gzip budgets; the command and budget format
+  are documented in the codemod and codegen guides.
 
 ## Decisions log
 
@@ -127,3 +145,4 @@ validation, and host ports. No new central ecosystem switchboard is allowed.
 | ---------- | ------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
 | 2026-09-08 | Treat proof breadth, host syntax, config context, and MCP execution as separate workstreams | They need different ports, fixtures, and evidence; one matrix count obscures the real gaps           |
 | 2026-09-08 | Add cheap evidence checks to ordinary CI, keep expensive promotion runs separate            | Pull requests should catch stale claims without requiring reference clones or browser promotion cost |
+| 2026-09-08 | Keep MCP project checks behind an injected host port                                      | A generic default shell runner would make arbitrary project execution unauditable and unsafe        |

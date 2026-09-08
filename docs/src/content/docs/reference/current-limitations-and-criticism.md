@@ -27,8 +27,10 @@ adoption simplicity, real-world proof, and scope discipline.
   generated `tw.ts`, `types.d.ts`, and theme artifacts; `bridge.ts` is optional
   and is only a runtime dependency when the project explicitly selects its
   `twAdapter`. Stale or missing generated output can break the editor or build.
-  `generated:check` now catches drift for the checked-in example and Playground,
-  but generated project files remain a real adoption cost.
+  `generated:check` catches drift for the checked-in example and Playground, and
+  `pandwind-codemod tw verify` gives consumer projects a copyable freshness,
+  ownership, and raw/gzip budget check. Generated project files remain a real
+  adoption cost.
 - "The core package is too large conceptually." The repository currently
   exposes 79 inventoried paths across five packages, including experimental
   integrations and tooling. The runtime package no longer hard-depends on
@@ -60,9 +62,10 @@ adoption simplicity, real-world proof, and scope discipline.
 - There are now four bounded installed-project proofs for Tailwind CSS ->
   Pandwind, styled-components -> Pandwind, Panda -> Pandwind, and UnoCSS ->
   Pandwind. They run the real CLI, generated project files, typechecks, Vite
-  builds, SSR, hydration, and browser base/hover comparisons. That raises
-  confidence in the covered lanes, but small React/Vite fixtures do not
-  establish broad route coverage.
+  builds, SSR, hydration, and browser base/hover comparisons. The Tailwind
+  proof also migrates an imported second source module and aggregates its
+  canonical evidence. That raises confidence in the covered lanes, but small
+  React/Vite fixtures do not establish broad route coverage.
 - Those four proofs are now checked by one registry-owned gate. The read-only
   `pivot:proof:installed:routes` command validates every checked-in report, and
   `pivot:proof:installed:routes:run` reruns all four project lanes in CI. A
@@ -80,8 +83,8 @@ adoption simplicity, real-world proof, and scope discipline.
 
 ## Things that are still weak today
 
-- The generated-artifact gate covers the checked-in example and Playground,
-  while arbitrary consumer projects still need to add the same command to
+- The generated-artifact gate covers the checked-in example and Playground;
+  arbitrary consumer projects still need to add `pandwind-codemod tw verify` to
   their own build validation.
 - Reference repositories are intentionally unavailable on machines that have
   not prepared them. The corpus tests report that state explicitly now, but a
@@ -105,7 +108,7 @@ describe evidence, not a promise that every construct in a route is lossless.
 | `tw()` / `css()` / `cx()` runtime contracts     | stable       | package tests, type tests, pack/import smoke, generated artifact checks                                                                                                        | consumer-project coverage and host-specific behavior                       |
 | Codegen and Vite integration                    | experimental | focused runtime/Vite tests and fresh checked-in example artifacts                                                                                                              | repeated proof in dependency-installed consumer projects                   |
 | Cataloged codemod routes                        | experimental | adapter contracts, source probes, route-level dimensions, explicit residuals                                                                                                   | installed project typecheck, build, browser, SSR/hydration, and size proof |
-| Tailwind -> Pandwind bounded fixture            | experimental | installed CLI, generated preset, typecheck, build, SSR, hydration, browser pixels                                                                                              | more utilities, themes, plugins, frameworks, and multi-file projects       |
+| Tailwind -> Pandwind bounded fixture            | experimental | installed CLI, generated preset, two-source-module migration, typecheck, build, SSR, hydration, browser pixels                                                                 | more utilities, themes, plugins, frameworks, and larger projects           |
 | styled-components -> Pandwind bounded fixture   | experimental | installed CLI, generated Vite integration, typecheck, build, SSR, hydration, browser pixels                                                                                    | themes, component composition, dynamic props, and multi-file projects      |
 | Panda -> Pandwind bounded fixture               | experimental | installed CLI, official generated-system config, shorthand/token lowering, typecheck, build, SSR, hydration, browser pixels                                                    | recipes, plugins, themes, frameworks, and multi-file projects              |
 | UnoCSS -> Pandwind bounded fixture              | experimental | installed CLI, official UnoCSS generator, custom token lowering, virtual stylesheet/Vite rewrite, typecheck, build, SSR, hydration, browser pixels                             | shortcuts, transformers, variants, frameworks, and multi-file projects     |
