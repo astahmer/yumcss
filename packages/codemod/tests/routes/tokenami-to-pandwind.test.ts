@@ -84,6 +84,7 @@ test("tokenami -> pandwind: migrates concrete tokenami syntax to pandwind", () =
 	`)
 });
 
+
 test("tokenami -> pandwind: carries a documented secondary tokenami API explicitly", () => {
 	const result = route.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
@@ -150,7 +151,7 @@ test("tokenami -> pandwind: loads concrete theme and project context variants", 
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const card = css.class({ cardGap: "1rem", color: "$colors.brand" });",
+		export const card = css.class({ cardGap: "1rem", color: "brand" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -186,7 +187,7 @@ test("tokenami -> pandwind: loads concrete theme and project context variants", 
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const card = css.class({ cardGap: "1rem", color: "$colors.brand" });",
+		export const card = css.class({ cardGap: "1rem", color: "brand" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -313,4 +314,3 @@ test("tokenami -> pandwind: preserves malformed concrete tokenami input", () => 
 		}
 	`)
 });
-
