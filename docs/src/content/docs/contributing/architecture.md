@@ -21,6 +21,17 @@ The façade is not the architecture by itself. A domain is only decomposed when
 the policy implementation is behind the port and a test can substitute a
 minimal implementation without changing orchestration.
 
+Each policy has one orchestration port and one default composition. The
+codemod adapter registry owns the canonical route view used by migration,
+capability, and proof consumers; it does not rebuild a second built-in route
+registry for each caller. `StyleSystemRegistry` remains the injectable mutable
+constructor for custom system composition, while the default adapter registry
+owns its single instance. The analyze fold service follows the same boundary:
+`FoldAnalysisPort` owns analysis, summary formatting, and residual collection,
+with one default implementation and a substitution test. Smaller ports remain
+only where they represent an independently replaceable policy, such as CSS
+budget measurement or workspace access.
+
 ### CLI composition roots
 
 Published command entry points use the lightweight `cac` command parser for
