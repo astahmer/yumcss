@@ -38,6 +38,9 @@ importers:
       '@unocss/core':
         specifier: 66.10.0
         version: 66.10.0
+      cac:
+        specifier: 7.0.0
+        version: 7.0.0
       effect:
         specifier: 4.0.0-beta.107
         version: 4.0.0-beta.107

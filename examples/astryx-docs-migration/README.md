@@ -22,17 +22,20 @@ and screenshots remain disposable artifacts under `/private/tmp` and `/tmp`.
 Run from the Pandwind repository root:
 
 ```sh
-nub scripts/migrate-astryx-docs.ts static-css \
-  /Users/astahmer/.references/astryx/apps/docsite \
-  /private/tmp/pandwind-astryx-repo/apps/docsite
+nub scripts/run-migration-proof.ts run astryx-docs static-css \
+	--references-root /Users/astahmer/.references \
+	--output-root /private/tmp/pandwind-astryx-repo/apps/docsite \
+	--no-prepare
 
-nub scripts/migrate-astryx-docs.ts runtime-css \
-  /Users/astahmer/.references/astryx/apps/docsite \
-  /private/tmp/pandwind-astryx-runtime-final/apps/docsite
+nub scripts/run-migration-proof.ts run astryx-docs runtime-css \
+	--references-root /Users/astahmer/.references \
+	--output-root /private/tmp/pandwind-astryx-runtime-final/apps/docsite \
+	--no-prepare
 
-nub scripts/migrate-astryx-docs.ts design-dss \
-  /Users/astahmer/.references/astryx/apps/docsite \
-  /private/tmp/pandwind-astryx-design-final/apps/docsite
+nub scripts/run-migration-proof.ts run astryx-docs design-dss \
+	--references-root /Users/astahmer/.references \
+	--output-root /private/tmp/pandwind-astryx-design-final/apps/docsite \
+	--no-prepare
 ```
 
 The migrated output must have a writable copy of the monorepo `packages/`

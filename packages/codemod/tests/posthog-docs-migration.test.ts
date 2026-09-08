@@ -1,5 +1,8 @@
 import { describe, expect, test } from "vitest";
-import { PostHogDocsLane, PostHogDocsMigration } from "../../../scripts/migrate-posthog-docs.ts";
+import {
+	PostHogDocsLane,
+	PostHogDocsMigration,
+} from "../../../scripts/migration-proofs/migrate-posthog-docs.ts";
 import { ensureReferenceWorkspace } from "../../../scripts/ensure-reference-workspace.ts";
 
 const referenceAvailability = await ensureReferenceWorkspace("posthog-com");

@@ -20,20 +20,22 @@ static-first Tailwind migration:
 Run the corpus report with:
 
 ```sh
-nub scripts/migrate-posthog-docs.ts tw
-nub scripts/migrate-posthog-docs.ts css-class
+nub scripts/run-migration-proof.ts run posthog-docs tw
+nub scripts/run-migration-proof.ts run posthog-docs css-class
 ```
 
 Materialize a disposable Gatsby application with:
 
 ```sh
-nub scripts/migrate-posthog-docs.ts tw /tmp/pandwind-posthog-docs-tw
+nub scripts/run-migration-proof.ts run posthog-docs tw \
+	--output-root /tmp/pandwind-posthog-docs-tw
 ```
 
 Materialize the untouched baseline with the same pinned checkout:
 
 ```sh
-nub scripts/migrate-posthog-docs.ts baseline /tmp/pandwind-posthog-docs-baseline
+nub scripts/run-migration-proof.ts run posthog-docs baseline \
+	--output-root /tmp/pandwind-posthog-docs-baseline
 ```
 
 After serving the baseline and each built lane, run the exhaustive proof:

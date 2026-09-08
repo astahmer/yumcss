@@ -1,5 +1,8 @@
 import { describe, expect, test } from "vitest";
-import { ShadcnV4Migration, ShadcnV4MigrationLane } from "../../../scripts/migrate-shadcn-v4.ts";
+import {
+	ShadcnV4Migration,
+	ShadcnV4MigrationLane,
+} from "../../../scripts/migration-proofs/migrate-shadcn-v4.ts";
 import { ensureReferenceWorkspace } from "../../../scripts/ensure-reference-workspace.ts";
 
 const referenceAvailability = await ensureReferenceWorkspace("shadcn-ui");

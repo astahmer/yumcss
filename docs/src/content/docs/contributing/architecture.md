@@ -344,7 +344,7 @@ selectors emitted by the official engine.
 | Design vocabulary      | module adapter registry                                                                                                                      | `design/resolve.ts`                                                                                                                                                                                                                                                                                                                   |
 | Analyze/reporting      | source analysis, residual policy, candidate scanning, artifact compilation, budget metrics, artifact inspection, workspace, and report ports | `analyze/analysis-service.ts`, `analyze/css-residual-collector.ts`, `analyze/css-budget-*.ts`, `analyze/css-artifact-inspection.ts`, `analyze/analysis-report.ts`                                                                                                                                                                     |
 | Utility bridge         | Tailwind compilation, selector filtering, value resolution, and bridge emission                                                              | `packages/codemod/src/tw/bridge.ts`, `packages/codemod/src/tw/bridge-generator.ts`                                                                                                                                                                                                                                                    |
-| Real repository proof  | pinned reference materialization, source migration lanes, SSR/browser checks, route failures, and CSS-size accounting                        | `scripts/migrate-chakra-docs.ts`, `scripts/verify-chakra-docs.ts`, `examples/chakra-ui-docs-migration/README.md`                                                                                                                                                                                                                      |
+| Real repository proof  | pinned reference materialization, source migration lanes, SSR/browser checks, route failures, and CSS-size accounting                        | `scripts/run-migration-proof.ts`, `scripts/migration-proof-catalog.ts`, `scripts/verify-chakra-docs.ts`, `examples/chakra-ui-docs-migration/README.md`                                                                                                                                                                                |
 | Runtime specialization | static-call rewriting, usage-aware factory pruning, factory-elision safety, virtual runtime modules, and runtime-size regression proof       | `vite/css-call-rewriter.ts`, `vite/runtime-pruner.ts`, `vite/css-core.ts`, `tests/runtime-size.test.ts`                                                                                                                                                                                                                               |
 
 Generated-project metadata is a versioned artifact, `pandwind.interop.json`.
@@ -1019,8 +1019,10 @@ corpus. Its pinned checkout is never edited. The migration runner exposes two
 target lanes over the same source adapter:
 
 ```sh
-nub scripts/migrate-styled-components-docs.ts runtime-css /tmp/pandwind-styled-runtime
-nub scripts/migrate-styled-components-docs.ts design-css /tmp/pandwind-styled-design
+nub scripts/run-migration-proof.ts run styled-components-docs runtime-css \
+	--output-root /tmp/pandwind-styled-runtime
+nub scripts/run-migration-proof.ts run styled-components-docs design-css \
+	--output-root /tmp/pandwind-styled-design
 ```
 
 The runner owns disposable materialization and lane accounting; the adapter

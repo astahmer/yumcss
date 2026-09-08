@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
-import { StylexDocsMigration } from "../../../scripts/migrate-stylex-docs.ts";
-import { StylexDocsLane } from "../../../scripts/migrate-stylex-docs.ts";
+import { StylexDocsMigration } from "../../../scripts/migration-proofs/migrate-stylex-docs.ts";
+import { StylexDocsLane } from "../../../scripts/migration-proofs/migrate-stylex-docs.ts";
 import { ensureReferenceWorkspace } from "../../../scripts/ensure-reference-workspace.ts";
 
 const stylexReference = await ensureReferenceWorkspace("stylex");

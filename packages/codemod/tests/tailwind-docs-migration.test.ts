@@ -1,5 +1,8 @@
 import { describe, expect, test } from "vitest";
-import { TailwindDocsLane, TailwindDocsMigration } from "../../../scripts/migrate-tailwind-docs.ts";
+import {
+	TailwindDocsLane,
+	TailwindDocsMigration,
+} from "../../../scripts/migration-proofs/migrate-tailwind-docs.ts";
 import { ensureReferenceWorkspace } from "../../../scripts/ensure-reference-workspace.ts";
 
 const referenceAvailability = await ensureReferenceWorkspace("tailwindcss.com");

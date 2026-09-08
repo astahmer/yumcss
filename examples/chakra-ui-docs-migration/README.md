@@ -14,8 +14,10 @@ The same Chakra source adapter is routed through two target dialects:
 Run a lane and optionally materialize a buildable disposable worktree:
 
 ```sh
-nub scripts/migrate-chakra-docs.ts css-class /tmp/pandwind-chakra-css
-nub scripts/migrate-chakra-docs.ts design-css /tmp/pandwind-chakra-dcss
+nub scripts/run-migration-proof.ts run chakra-docs css-class \
+	--output-root /tmp/pandwind-chakra-css
+nub scripts/run-migration-proof.ts run chakra-docs design-css \
+	--output-root /tmp/pandwind-chakra-dcss
 ```
 
 The runner scans the full `apps/www` source tree, preserves non-style Chakra

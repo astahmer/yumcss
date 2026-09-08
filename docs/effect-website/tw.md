@@ -21,7 +21,8 @@ original behavior.
 From the Pandwind repository:
 
 ```sh
-nub scripts/migrate-effect-docs.ts tw /tmp/pandwind-effect-tw
+nub scripts/run-migration-proof.ts run effect-docs tw \
+	--output-root /tmp/pandwind-effect-tw
 cd /tmp/pandwind-effect-tw
 pnpm install --no-frozen-lockfile
 nub exec vp run build

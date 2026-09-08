@@ -1,5 +1,8 @@
 import { describe, expect, test } from "vitest";
-import { ChakraDocsLane, ChakraDocsMigration } from "../../../scripts/migrate-chakra-docs.ts";
+import {
+	ChakraDocsLane,
+	ChakraDocsMigration,
+} from "../../../scripts/migration-proofs/migrate-chakra-docs.ts";
 import { ensureReferenceWorkspace } from "../../../scripts/ensure-reference-workspace.ts";
 
 const referenceAvailability = await ensureReferenceWorkspace("chakra-ui");

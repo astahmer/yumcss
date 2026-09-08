@@ -16,7 +16,8 @@ the design façade, while the bridge remains the single target class adapter.
 ## Reproduce
 
 ```sh
-nub scripts/migrate-effect-docs.ts design-css /tmp/pandwind-effect-design
+nub scripts/run-migration-proof.ts run effect-docs design-css \
+	--output-root /tmp/pandwind-effect-design
 cd /tmp/pandwind-effect-design
 pnpm install --no-frozen-lockfile
 nub exec vp run build

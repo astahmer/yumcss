@@ -51,7 +51,8 @@ hydration behavior remain part of the comparison.
 From the Pandwind checkout:
 
 ```sh
-nub scripts/migrate-emotion-site.ts /tmp/pandwind-emotion-site-candidate
+nub scripts/run-migration-proof.ts run emotion-site \
+	--output-root /tmp/pandwind-emotion-site-candidate
 ```
 
 Build the candidate app:
@@ -93,5 +94,5 @@ This real project exposed and now covers several adapter requirements:
 
 The reference checkout and its commit are recorded in the repository's
 `reference-repos.md`. The materializer is
-`scripts/migrate-emotion-site.ts`, and the independent browser verifier is
+the `emotion-site` scenario in `scripts/run-migration-proof.ts`, and the independent browser verifier is
 `scripts/verify-emotion-site.mjs`.

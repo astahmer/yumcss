@@ -18,15 +18,16 @@ The runner uses the same generated Tailwind design system for every lane:
 Run a lane against the pinned reference:
 
 ```sh
-nub scripts/migrate-tailwind-docs.ts tw
-nub scripts/migrate-tailwind-docs.ts css-class
-nub scripts/migrate-tailwind-docs.ts design-dss
+nub scripts/run-migration-proof.ts run tailwind-docs tw
+nub scripts/run-migration-proof.ts run tailwind-docs css-class
+nub scripts/run-migration-proof.ts run tailwind-docs design-dss
 ```
 
 Materialize a complete Next.js app for browser/build validation:
 
 ```sh
-nub scripts/migrate-tailwind-docs.ts tw /tmp/pandwind-tailwind-docs-tw
+nub scripts/run-migration-proof.ts run tailwind-docs tw \
+	--output-root /tmp/pandwind-tailwind-docs-tw
 ```
 
 The output directory is intentionally disposable. Install its upstream

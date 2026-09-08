@@ -23,9 +23,9 @@ Run one lane and print its proof report:
 ```sh
 nub run references:prepare
 
-nub scripts/migrate-stylex-docs.ts runtime-css
-nub scripts/migrate-stylex-docs.ts atomic-css
-nub scripts/migrate-stylex-docs.ts design-dss
+nub scripts/run-migration-proof.ts run stylex-docs runtime-css
+nub scripts/run-migration-proof.ts run stylex-docs atomic-css
+nub scripts/run-migration-proof.ts run stylex-docs design-dss
 ```
 
 For the built browser proof, start a clean StyleX build on port `4311` and a
