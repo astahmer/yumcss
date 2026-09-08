@@ -25,10 +25,7 @@ export interface PreparedAdapterMigration {
 
 type PreparationResult = PreparedAdapterMigration | AdapterMigrationResult;
 
-export function migrationContext(
-	source: string,
-	options: AdapterMigrationOptions,
-): AdapterConfigContext {
+function migrationContext(source: string, options: AdapterMigrationOptions): AdapterConfigContext {
 	return {
 		file: options.file,
 		source,
@@ -39,7 +36,7 @@ export function migrationContext(
 	};
 }
 
-export function noOpMigration(source: string): AdapterMigrationResult {
+function noOpMigration(source: string): AdapterMigrationResult {
 	return {
 		code: source,
 		changed: false,
@@ -92,7 +89,7 @@ function configurationResult(
 	};
 }
 
-export function configurationFailure(
+function configurationFailure(
 	source: string,
 	detail: string,
 	marker = "pandwind:migrate-skip",
