@@ -98,7 +98,6 @@ export interface SheetShape {
 export type { CssCallSite, CssDiagnostic, CssDiagnosticKind } from "../css-diagnostics.ts";
 export type { AuthoredCssImport } from "../css-diagnostics.ts";
 export type { TokenGovernanceReport } from "../governance/contracts.ts";
-export type { GovernancePruneChangeset } from "../governance/prune-changeset.ts";
 
 export interface CollectPayload {
 	meta: { root: string };

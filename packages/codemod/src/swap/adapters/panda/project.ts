@@ -16,12 +16,12 @@ import { join } from "node:path";
 import { CodemodAdapterId } from "../../identifiers.ts";
 import { createSourceWorkspace } from "pandwind/source/workspace";
 
-export const enum PandaFactoryComponentKindTag {
+const enum PandaFactoryComponentKindTag {
 	Style = "style",
 	Recipe = "recipe",
 }
 
-export const enum PandaDefinitionKindTag {
+const enum PandaDefinitionKindTag {
 	Cva = "cva",
 	Sva = "sva",
 }

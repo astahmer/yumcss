@@ -50,7 +50,7 @@ export const MCP_EVIDENCE_LANE = {
 	HostVerified: "host-verified",
 } as const;
 
-export type McpEvidenceLane = (typeof MCP_EVIDENCE_LANE)[keyof typeof MCP_EVIDENCE_LANE];
+type McpEvidenceLane = (typeof MCP_EVIDENCE_LANE)[keyof typeof MCP_EVIDENCE_LANE];
 
 export const MCP_EVIDENCE_STATUS = {
 	Verified: "verified",
@@ -60,7 +60,7 @@ export const MCP_EVIDENCE_STATUS = {
 	NotApplicable: "not-applicable",
 } as const;
 
-export type McpEvidenceStatus = (typeof MCP_EVIDENCE_STATUS)[keyof typeof MCP_EVIDENCE_STATUS];
+type McpEvidenceStatus = (typeof MCP_EVIDENCE_STATUS)[keyof typeof MCP_EVIDENCE_STATUS];
 
 export interface McpExecutionEvidence {
 	readonly lane: McpEvidenceLane;

@@ -45,7 +45,7 @@ export interface PandaMigrationStageResult {
 	readonly artifacts?: PandaMigrationArtifacts;
 }
 
-export interface PandaMigrationStage {
+interface PandaMigrationStage {
 	readonly id: string;
 	readonly phase: PandaMigrationPhase;
 	run(context: PandaMigrationContext): Promise<PandaMigrationStageResult>;

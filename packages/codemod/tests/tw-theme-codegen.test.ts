@@ -27,11 +27,8 @@ import {
 	themeTokenName,
 	themeVarsFromTokens,
 } from "../src/tw/generate-theme.ts";
-import {
-	generateDesignSystem,
-	resolvePresetConditions,
-	resolveTokenGroups,
-} from "../src/tw/generate-types.ts";
+import { generateDesignSystem } from "../src/tw/generate-types.ts";
+import { resolvePresetConditions, resolveTokenGroups } from "../src/tw/codegen-theme-input.ts";
 
 const app = resolve(import.meta.dirname, "../../../apps/example");
 const srcDir = resolve(app, "src");

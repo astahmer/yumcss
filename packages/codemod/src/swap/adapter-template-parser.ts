@@ -31,7 +31,7 @@ export function templateValueExpression(rawValue: string): string {
  * contract lowers `function-values`. Strip a TypeScript return annotation so
  * the arrow is valid at runtime; the value expression is the annotated body.
  */
-export function functionValueExpression(rawValue: string): string | undefined {
+function functionValueExpression(rawValue: string): string | undefined {
 	const expression = templateValueExpression(rawValue);
 	const annotated =
 		// The annotation must be arrow-free (`[^=>]*`); a function-typed return

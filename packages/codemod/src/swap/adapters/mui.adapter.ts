@@ -725,5 +725,3 @@ export function createMuiAdapter(
 		},
 	});
 }
-
-export default createMuiAdapter();

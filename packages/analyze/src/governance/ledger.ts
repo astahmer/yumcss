@@ -49,7 +49,7 @@ export const compareUsage = (a: TokenUsage, b: TokenUsage): number =>
 	USAGE_KIND_ORDER[a.kind] - USAGE_KIND_ORDER[b.kind];
 
 /** Merge two provenance lists, dropping exact duplicates, order-preserving. */
-export const mergeProvenance = (
+const mergeProvenance = (
 	a: TokenDefinition["provenance"],
 	b: TokenDefinition["provenance"],
 ): TokenDefinition["provenance"] => {
@@ -110,15 +110,6 @@ export const usageKey = (u: TokenUsage): string =>
 /** Deterministic suggestion identity for deduplication. */
 export const suggestionKey = (s: RawTokenSuggestion): string =>
 	[s.file, s.start, s.end, s.property ?? "", s.tokenId].join("\u0000");
-
-export interface LedgerInputs {
-	readonly definitions: readonly TokenDefinition[];
-	readonly usage: readonly TokenUsage[];
-	readonly suggestions: readonly RawTokenSuggestion[];
-	readonly unusedCandidates: readonly UnusedTokenCandidate[];
-	readonly diagnostics: readonly GovernanceDiagnostic[];
-	readonly boundaryHits: Readonly<Record<GovernanceCoverageBoundary, readonly string[]>>;
-}
 
 export const ALL_BOUNDARIES: GovernanceCoverageBoundary[] = [
 	"dynamic-expression",

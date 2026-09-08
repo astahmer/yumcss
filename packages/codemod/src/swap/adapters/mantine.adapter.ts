@@ -660,5 +660,3 @@ export function createMantineAdapter(
 		},
 	});
 }
-
-export default createMantineAdapter();

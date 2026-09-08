@@ -58,7 +58,7 @@ export interface MigrationLabResult {
 	readonly outcomes: readonly AdapterMigrationOutcome[];
 }
 
-export const MIGRATION_LAB_EVIDENCE_CHECK = {
+const MIGRATION_LAB_EVIDENCE_CHECK = {
 	AdapterProgram: "adapter-program",
 	ResidualReport: "residual-report",
 	ProjectTypecheck: "project-typecheck",

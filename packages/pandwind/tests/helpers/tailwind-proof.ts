@@ -11,7 +11,6 @@ import { selectorClassMatches } from "../../src/css/selector-scan.ts";
 export { resolveVar } from "../../src/tw/theme.ts";
 
 /** Default Tailwind entry — the same stylesheet the example app imports. */
-export const TW_ENTRY = '@import "tailwindcss";';
 
 /** Rules whose selector references the class (escaped forms included). */
 export function rulesForClass(root: Root, className: string): Rule[] {

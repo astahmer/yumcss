@@ -13,13 +13,13 @@ export const GeneratedCssNodeKind = {
 	AtRule: "atrule",
 } as const;
 
-export interface GeneratedCssDeclaration {
+interface GeneratedCssDeclaration {
 	readonly type: typeof GeneratedCssNodeKind.Declaration;
 	readonly prop: string;
 	readonly value: string;
 }
 
-export interface GeneratedCssRule {
+interface GeneratedCssRule {
 	readonly type: typeof GeneratedCssNodeKind.Rule;
 	readonly selector: string;
 	readonly nodes: readonly GeneratedCssNode[];

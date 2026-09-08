@@ -2,6 +2,7 @@ import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "nod
 import { tmpdir } from "node:os";
 import { resolve } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
+import { createMcpProjectContext, createMcpToolService, type McpToolPorts } from "./tools.ts";
 import {
 	MCP_BENCHMARK_SCOPE,
 	MCP_BENCHMARK_MEASUREMENT_MODE,
@@ -12,10 +13,7 @@ import {
 	MCP_TOOL,
 	MCP_VALIDATION_CHECK,
 	MCP_VALIDATION_STATUS,
-	createMcpProjectContext,
-	createMcpToolService,
-	type McpToolPorts,
-} from "./tools.ts";
+} from "./contract.ts";
 import { createBuiltinCodemodCatalog } from "pandwind-codemod/swap";
 
 const roots: string[] = [];

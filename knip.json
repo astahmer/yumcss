@@ -33,6 +33,9 @@
 			"entry": [
 				"src/cli.ts",
 				"src/collect/index.ts",
+				"src/governance/index.ts",
+				"src/mcp/http.ts",
+				"src/mcp/server.ts",
 				"src/studio/index.ts",
 				"src/studio/server.ts",
 				"studio-app/src/main.ts",
@@ -129,6 +132,8 @@
 		"**/tests/fixtures/**/*",
 		"**/src/types.d.ts",
 		"**/src/bridge.ts",
+		"apps/example/src/tw.ts",
+		"apps/playground/src/tw.ts",
 		"**/src/generated/**",
 		"**/*.bench.{ts,mts}"
 	]

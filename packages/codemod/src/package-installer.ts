@@ -16,7 +16,7 @@ export const PackageManagerKindTag = {
 	Bun: "bun",
 } as const;
 
-export type PackageManagerKind = (typeof PackageManagerKindTag)[keyof typeof PackageManagerKindTag];
+type PackageManagerKind = (typeof PackageManagerKindTag)[keyof typeof PackageManagerKindTag];
 
 const PACKAGE_MANAGERS: readonly PackageManagerKind[] = [
 	PackageManagerKindTag.Pnpm,
@@ -26,7 +26,7 @@ const PACKAGE_MANAGERS: readonly PackageManagerKind[] = [
 ];
 const PACKAGE_MANAGER_SET = new Set(PACKAGE_MANAGERS);
 
-export interface PackageInstallRequest {
+interface PackageInstallRequest {
 	readonly root: string;
 	readonly packageJson: Readonly<Record<string, unknown>>;
 	readonly dependencies: readonly AdapterDependencies[];

@@ -28,7 +28,7 @@ export function rulesForClass(root: Root, className: string): Rule[] {
  * with class `hover:text-blue-400` yields `:hover`. Comparing tails proves
  * css() conditions and tw() variants attach the same pseudo-classes.
  */
-export function selectorTail(selector: string, className: string): string {
+function selectorTail(selector: string, className: string): string {
 	const matches = selectorClassMatches(selector);
 	const match = matches.find((entry) => entry.value === className) ?? matches.at(-1);
 	if (!match) return "";

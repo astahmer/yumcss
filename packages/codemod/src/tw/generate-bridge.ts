@@ -119,7 +119,7 @@ export const twAdapter = createTwAdapter({
 	}
 }
 
-export const createTwBridgeGenerator = (): TwBridgeGenerator => new DefaultTwBridgeGenerator();
+const createTwBridgeGenerator = (): TwBridgeGenerator => new DefaultTwBridgeGenerator();
 
 export const generateTwBridge = async (
 	options: GenerateTwBridgeOptions,

@@ -37,27 +37,6 @@ import {
 } from "./contract.ts";
 import type { McpToolDefinition, McpToolResult } from "./contract.ts";
 
-export {
-	MCP_MIGRATION_MODE,
-	MCP_BENCHMARK_SCOPE,
-	MCP_BENCHMARK_MEASUREMENT_MODE,
-	MCP_EVIDENCE_LANE,
-	MCP_EVIDENCE_STATUS,
-	MCP_EXECUTION_LANE,
-	MCP_PROVENANCE_SOURCE,
-	MCP_RESOURCE,
-	MCP_TOOL,
-	MCP_VALIDATION_CHECK,
-	MCP_VALIDATION_STATUS,
-	type McpBenchmarkScope,
-	type McpBenchmarkMeasurementMode,
-	type McpExecutionEvidence,
-	type McpExecutionLane,
-	type McpProvenanceSource,
-	type McpValidationCheck,
-	type McpValidationStatus,
-} from "./contract.ts";
-
 const MCP_PROJECT_SCHEMA = "pandwind.mcp.project/2" as const;
 const MCP_FILE_LIST_LIMIT = 500;
 
@@ -73,14 +52,14 @@ export interface McpToolService {
 	readResource(uri: string): Promise<string>;
 }
 
-export interface McpResourceDefinition {
+interface McpResourceDefinition {
 	readonly uri: string;
 	readonly name: string;
 	readonly description: string;
 	readonly mimeType: "application/json" | "text/plain";
 }
 
-export interface McpValidationRequest {
+interface McpValidationRequest {
 	readonly root: string;
 	readonly from: string;
 	readonly to: string;
@@ -93,7 +72,7 @@ export interface McpValidationRequest {
 	readonly checks: readonly McpValidationCheck[];
 }
 
-export interface McpValidationResult {
+interface McpValidationResult {
 	readonly check: McpValidationCheck;
 	readonly status: McpValidationStatus;
 	readonly executionLane: McpExecutionLane;
@@ -112,11 +91,11 @@ export interface McpValidationResult {
  * from a tool caller; a CLI, IDE, or repository integration supplies this
  * port when it has an auditable typecheck/build/browser/SSR runner.
  */
-export interface McpValidationPort {
+interface McpValidationPort {
 	run(request: McpValidationRequest): Promise<readonly McpValidationResult[]>;
 }
 
-export interface McpBenchmarkRequest {
+interface McpBenchmarkRequest {
 	readonly root: string;
 	readonly from: string;
 	readonly to: string;
@@ -126,7 +105,7 @@ export interface McpBenchmarkRequest {
 	readonly measurementMode: McpBenchmarkMeasurementMode;
 }
 
-export interface McpBenchmarkResult {
+interface McpBenchmarkResult {
 	readonly executionLane: McpExecutionLane;
 	readonly scope: McpBenchmarkScope;
 	readonly measurementMode: McpBenchmarkMeasurementMode;
@@ -136,7 +115,7 @@ export interface McpBenchmarkResult {
 	readonly limitations?: readonly string[];
 }
 
-export interface McpBenchmarkPort {
+interface McpBenchmarkPort {
 	run(request: McpBenchmarkRequest): Promise<McpBenchmarkResult>;
 }
 
@@ -294,7 +273,7 @@ const MCP_MIGRATION_INPUT_SCHEMA = inputSchema(
 	["files", "from", "to"],
 );
 
-export const MCP_TOOLS: readonly McpToolDefinition[] = [
+const MCP_TOOLS: readonly McpToolDefinition[] = [
 	{
 		name: MCP_TOOL.InspectProject,
 		description:
@@ -422,7 +401,7 @@ export const MCP_TOOLS: readonly McpToolDefinition[] = [
 	},
 ];
 
-export const MCP_RESOURCES: readonly McpResourceDefinition[] = [
+const MCP_RESOURCES: readonly McpResourceDefinition[] = [
 	{
 		uri: MCP_RESOURCE.AdapterCatalog,
 		name: "Pandwind adapter catalog",

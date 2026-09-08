@@ -91,7 +91,7 @@ export interface StylesheetSourcePort {
 	parse(source: string): StylesheetSourceDocument;
 }
 
-export interface StylesheetCompilerResult {
+interface StylesheetCompilerResult {
 	readonly css: string;
 	readonly dependencies?: readonly string[];
 	readonly sourceMap?: string;
@@ -110,10 +110,10 @@ export interface StylesheetCompilerPort {
  * config. Targets declare their family through adapter-owned evidence, so
  * migrations compose on the declared contract instead of adapter name checks.
  */
-export const STYLESHEET_FAMILY_CONFIG_KEY = "sourceFamily";
+const STYLESHEET_FAMILY_CONFIG_KEY = "sourceFamily";
 
 /** A target whose declared config marks it as a stylesheet-family member. */
-export const isStylesheetFamilyConfig = (config: AdapterProjectConfig): boolean =>
+const isStylesheetFamilyConfig = (config: AdapterProjectConfig): boolean =>
 	typeof config.values[STYLESHEET_FAMILY_CONFIG_KEY] === "string";
 
 /**
@@ -121,7 +121,7 @@ export const isStylesheetFamilyConfig = (config: AdapterProjectConfig): boolean 
  * migrated file carries the target family's extension. The evidence comes from
  * the target adapter's declared source family, never a hardcoded route table.
  */
-export function stylesheetFamilyExtension(config: AdapterProjectConfig): string | undefined {
+function stylesheetFamilyExtension(config: AdapterProjectConfig): string | undefined {
 	const family = config.values[STYLESHEET_FAMILY_CONFIG_KEY];
 	if (family === CodemodAdapterId.CssModules) return ".module.css";
 	if (family === CodemodAdapterId.Sass) return ".scss";

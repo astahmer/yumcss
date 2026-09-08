@@ -50,11 +50,11 @@ export interface SourceCallSite {
 	readonly assignedBinding?: string;
 }
 
-export const SourceHostUseKind = {
+const SourceHostUseKind = {
 	Component: "component",
 	Attribute: "attribute",
 } as const;
-export type SourceHostUseKind = (typeof SourceHostUseKind)[keyof typeof SourceHostUseKind];
+type SourceHostUseKind = (typeof SourceHostUseKind)[keyof typeof SourceHostUseKind];
 
 export interface SourceHostUse {
 	readonly kind: SourceHostUseKind;

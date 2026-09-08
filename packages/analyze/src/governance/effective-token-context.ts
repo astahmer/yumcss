@@ -215,5 +215,5 @@ export function buildEffectiveTokenContext(
 }
 
 /** Layer helper for callers mapping ecosystem tiers into governance layers. */
-export const layerForTokenGroup = (group: string): TokenDefinitionLayer =>
+const layerForTokenGroup = (group: string): TokenDefinitionLayer =>
 	group === "semantic" ? "semantic" : "raw";

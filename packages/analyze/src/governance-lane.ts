@@ -18,14 +18,14 @@ import {
 import { GOVERNANCE_JSON_SCHEMA, type CliArgs } from "./cli.ts";
 
 /** Governance JSON document shape (schema: pandwind.analyze.governance/1). */
-export interface GovernanceCliDocument {
+interface GovernanceCliDocument {
 	readonly schema: typeof GOVERNANCE_JSON_SCHEMA;
 	readonly governance: ReturnType<typeof analyzeTokenGovernance>;
 	readonly changeset: ReturnType<typeof buildGovernancePruneChangeset>;
 }
 
 /** Short human summary (~10 lines) of the report. */
-export function formatGovernanceSummary(
+function formatGovernanceSummary(
 	report: ReturnType<typeof analyzeTokenGovernance>,
 	changeset: ReturnType<typeof buildGovernancePruneChangeset>,
 ): string {

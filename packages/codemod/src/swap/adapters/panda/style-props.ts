@@ -8,11 +8,7 @@ export const enum PandaJsxStylePropsModeTag {
 	None = "none",
 }
 
-export type PandaStylePropEvidence =
-	| "official-package"
-	| "generated-system"
-	| "config"
-	| "fallback";
+type PandaStylePropEvidence = "official-package" | "generated-system" | "config" | "fallback";
 
 export interface PandaStylePropContract {
 	readonly mode: PandaJsxStylePropsModeTag;

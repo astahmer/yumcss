@@ -159,7 +159,7 @@ function walkObject(
 	flushTopLevel();
 }
 
-export interface PolicySets {
+interface PolicySets {
 	strictProperties: ReadonlySet<string>;
 	allowedValues: ReadonlySet<string>;
 	allowedPrefixes: readonly string[];
