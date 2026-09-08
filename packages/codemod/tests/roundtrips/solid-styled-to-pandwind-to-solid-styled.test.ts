@@ -254,7 +254,7 @@ test("solid-styled -> pandwind -> solid-styled: preserves concrete theme and pro
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
 		import { createCx } from "pandwind/cx";
-		import { __pandwindSlot } from "../__pandwind/slot.tsx";
+		import { __pandwindSlot } from "../__pandwind/slot";
 		const cx = createCx();
 		const css = createCss();
 
@@ -298,7 +298,7 @@ test("solid-styled -> pandwind -> solid-styled: preserves concrete theme and pro
 		      "changed": true,
 		      "code": "
 		import { createCx } from "pandwind/cx";
-		import { __pandwindSlot } from "../__pandwind/slot.tsx";
+		import { __pandwindSlot } from "../__pandwind/slot";
 		import { styled } from "solid-styled-components";
 		const cx = createCx();
 		export const Card = __pandwindSlot({ defaultComponent: "div", style: styled.div({ "padding": "1rem", "color": "#2563eb" }), stableClass: "pw-t6bw3o", inheritedClass: undefined, classAttribute: "class", attrs: {}, joinClass: cx });",
@@ -340,7 +340,7 @@ test("solid-styled -> pandwind -> solid-styled: preserves concrete theme and pro
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
 		import { createCx } from "pandwind/cx";
-		import { __pandwindSlot } from "../__pandwind/slot.tsx";
+		import { __pandwindSlot } from "../__pandwind/slot";
 		const cx = createCx();
 		const css = createCss();
 
@@ -384,7 +384,7 @@ test("solid-styled -> pandwind -> solid-styled: preserves concrete theme and pro
 		      "changed": true,
 		      "code": "
 		import { createCx } from "pandwind/cx";
-		import { __pandwindSlot } from "../__pandwind/slot.tsx";
+		import { __pandwindSlot } from "../__pandwind/slot";
 		import { styled } from "solid-styled-components";
 		const cx = createCx();
 		export const Card = __pandwindSlot({ defaultComponent: "div", style: styled.div({ "padding": "1rem", "color": "#2563eb" }), stableClass: "pw-t6bw3o", inheritedClass: undefined, classAttribute: "class", attrs: {}, joinClass: cx });",
@@ -441,7 +441,7 @@ test("solid-styled -> pandwind -> solid-styled: resolves token values across bot
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		import { createCx } from "pandwind/cx";
-		import { __pandwindSlot } from "../__pandwind/slot.tsx";
+		import { __pandwindSlot } from "../__pandwind/slot";
 		const cx = createCx();
 		const css = createCss();
 
@@ -485,7 +485,7 @@ test("solid-styled -> pandwind -> solid-styled: resolves token values across bot
 		    "changed": true,
 		    "code": "
 		import { createCx } from "pandwind/cx";
-		import { __pandwindSlot } from "../__pandwind/slot.tsx";
+		import { __pandwindSlot } from "../__pandwind/slot";
 		import { styled } from "solid-styled-components";
 		const cx = createCx();
 		export const Card = __pandwindSlot({ defaultComponent: "div", style: styled.div({ "padding": "1rem", "color": "#2563eb" }), stableClass: "pw-t6bw3o", inheritedClass: undefined, classAttribute: "class", attrs: {}, joinClass: cx });",

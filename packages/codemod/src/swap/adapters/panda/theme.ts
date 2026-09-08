@@ -490,9 +490,26 @@ function loadPandaThemeFromSource(
 	const tokenVars = new Map<string, string>();
 	const tokens: Record<string, Record<string, unknown>> = {};
 	const textStyles = new Map<string, Record<string, unknown>>();
+	const conditions: Record<string, string | string[]> = {};
 	let utilityCatalog = PandaUtilityCatalog.empty();
 	const chunks: Array<string> = [configSource, ...extraSources];
 	for (const chunk of chunks) {
+		for (const m of chunk.matchAll(
+			/(?:conditions)\s*[:=]\s*(?:defineConditions)?\s*(?:\(\s*)?\{/g,
+		)) {
+			const open = (m.index ?? 0) + m[0].length - 1;
+			const block = SourcePass.matchBlock(chunk, open);
+			if (block === null) continue;
+			const parsed = parseObjectLiteral(block.body);
+			const plain = parsed === null ? undefined : literalToPlain(parsed);
+			if (!isPlainObject(plain)) continue;
+			const configured = isPlainObject(plain.extend) ? plain.extend : plain;
+			for (const [name, value] of Object.entries(configured)) {
+				if (typeof value === "string") conditions[name] = value;
+				else if (Array.isArray(value) && value.every((item) => typeof item === "string"))
+					conditions[name] = value as string[];
+			}
+		}
 		for (const m of chunk.matchAll(
 			/(?:semanticTokens|tokens|textStyles|utilities)\s*[:=]\s*(?:defineSemanticTokens|defineTokens|defineTextStyles|defineUtility)?\s*(?:\(\s*)?\{/g,
 		)) {
@@ -521,7 +538,7 @@ function loadPandaThemeFromSource(
 	resolveTokenReferences(tokens);
 	return {
 		tokens,
-		conditions: {},
+		conditions,
 		tokenVars,
 		textStyles,
 		customPatterns: new Map(),

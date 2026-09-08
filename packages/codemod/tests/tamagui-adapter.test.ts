@@ -79,8 +79,8 @@ describe("Tamagui adapter", () => {
 			'import { View, styled } from "@tamagui/core";\nexport const Panel = styled(View, { padding: 16 });',
 		);
 
-		expect(card.code).toContain('import { __pandwindSlot } from "../__pandwind/slot.tsx";');
-		expect(panel.code).toContain('import { __pandwindSlot } from "../../__pandwind/slot.tsx";');
+		expect(card.code).toContain('import { __pandwindSlot } from "../__pandwind/slot";');
+		expect(panel.code).toContain('import { __pandwindSlot } from "../../__pandwind/slot";');
 		expect(card.code).not.toContain("const __pandwindSlot =");
 		expect(panel.code).not.toContain("const __pandwindSlot =");
 		expect(card.code).toContain(

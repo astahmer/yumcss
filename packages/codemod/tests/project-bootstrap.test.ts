@@ -49,6 +49,32 @@ describe("Pandwind project bootstrap", () => {
 		expect(preset).toContain('"$all": true');
 	});
 
+	test("carries source named conditions into the generated preset", async () => {
+		const root = "/project";
+		const files = new Map<string, string>([
+			[
+				`${root}/panda.config.ts`,
+				[
+					"export default {",
+					"\tconditions: { extend: { midnight: '[data-theme=midnight] &' } },",
+					"};",
+				].join("\n"),
+			],
+		]);
+		const support = await createPandwindProjectSupport({
+			root,
+			sourceAdapter: CodemodAdapterId.Panda,
+			targetAdapter: CodemodAdapterId.Pandwind,
+			outputDirectory: "pandwind",
+			readFile: (file) => files.get(file),
+			listFiles: () => [...files.keys()],
+		});
+
+		const preset = support.files.find((file) => file.path === "pandwind/preset.ts")?.content;
+		expect(preset).toContain('"base": ""');
+		expect(preset).toContain('"midnight": "[data-theme=midnight] &"');
+	});
+
 	test("maps generated token groups to the properties that can consume them", async () => {
 		const support = await createPandwindProjectSupport({
 			root: "/project",
@@ -271,5 +297,51 @@ describe("Pandwind project bootstrap", () => {
 				'export default defineConfig({ plugins: [pandwindCssVite(pandwindPreset, { root: "." })] });',
 			].join("\n"),
 		);
+	});
+
+	test("uses a file-like virtual stylesheet and wires Next/Webpack", async () => {
+		const root = "/project";
+		const files = new Map<string, string>([
+			[
+				`${root}/next.config.mjs`,
+				"const config = { images: { remotePatterns: [] } };\nexport default config;\n",
+			],
+			[
+				`${root}/app/layout.tsx`,
+				'"use client";\n\nexport default function Layout() { return <html />; }\n',
+			],
+		]);
+		const support = await createPandwindProjectSupport({
+			root,
+			sourceAdapter: CodemodAdapterId.Panda,
+			targetAdapter: CodemodAdapterId.Pandwind,
+			outputDirectory: "pandwind",
+			readFile: (file) => files.get(file),
+			listFiles: () => [...files.keys()],
+			packageJson: { dependencies: { next: "15.0.0" } },
+		});
+
+		const css = support.files.find((file) => file.path === "pandwind/css.ts")?.content;
+		expect(css).toContain('import "pandwind-css.css";');
+		expect(css).not.toContain('import "pandwind:css";');
+		expect(support.files.map((file) => file.path)).toContain("pandwind/preset.mjs");
+		expect(support.fileChanges).toContainEqual({
+			path: "next.config.mjs",
+			expectedContent:
+				"const config = { images: { remotePatterns: [] } };\nexport default config;\n",
+			content: expect.stringContaining('import { pandwindWebpackCss } from "pandwind/unplugin";'),
+		});
+		expect(
+			support.fileChanges.find((change) => change.path === "next.config.mjs")?.content,
+		).toContain('import { pandwindPreset } from "./pandwind/preset.mjs";');
+		expect(
+			support.fileChanges.find((change) => change.path === "next.config.mjs")?.content,
+		).toContain('virtualId: "pandwind-css.css"');
+		expect(support.fileChanges).toContainEqual({
+			path: "app/layout.tsx",
+			expectedContent: '"use client";\n\nexport default function Layout() { return <html />; }\n',
+			content:
+				'"use client";\n\nimport "pandwind-css.css";\nexport default function Layout() { return <html />; }\n',
+		});
 	});
 });

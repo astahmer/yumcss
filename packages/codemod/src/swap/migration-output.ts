@@ -11,7 +11,10 @@ export class MigrationOutput {
 	): string {
 		const ownedModules = new Set(modules);
 		const reserved = new Set(reservedBindings);
-		const imports = /\bimport\s+(?:[^;]*?\s+from\s+)?["']([^"']+)["']\s*;?/g;
+		// Keep line breaks outside the match. The rewritten import may be kept
+		// with a reduced specifier list; consuming the following newline would
+		// concatenate it with the first non-import statement.
+		const imports = /\bimport\s+(?:[^;]*?\s+from\s+)?["']([^"']+)["'][ \t]*;?/g;
 		const edits: Array<{ start: number; end: number; text: string }> = [];
 		const body = code
 			.replace(imports, "")
@@ -130,7 +133,7 @@ export class MigrationOutput {
 		candidates: readonly string[],
 	): string {
 		const owned = new Set(modules);
-		const pattern = /import\s*\{([^}]*)\}\s*from\s*(["'])([^"']+)\2\s*;?/gu;
+		const pattern = /import\s*\{([^}]*)\}\s*from\s*(["'])([^"']+)\2[ \t]*;?/gu;
 		const edits: Array<{ start: number; end: number; text: string }> = [];
 		for (const match of code.matchAll(pattern)) {
 			if (match[3] === undefined || !owned.has(match[3])) continue;

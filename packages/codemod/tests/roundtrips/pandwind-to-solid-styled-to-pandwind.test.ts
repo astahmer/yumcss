@@ -266,7 +266,7 @@ test("pandwind -> solid-styled -> pandwind: preserves concrete theme and project
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
 		import { createCx } from "pandwind/cx";
-		import { __pandwindSlot } from "../__pandwind/slot.tsx";
+		import { __pandwindSlot } from "../__pandwind/slot";
 		const cx = createCx();
 		const css = createCss();
 
@@ -351,7 +351,7 @@ test("pandwind -> solid-styled -> pandwind: preserves concrete theme and project
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
 		import { createCx } from "pandwind/cx";
-		import { __pandwindSlot } from "../__pandwind/slot.tsx";
+		import { __pandwindSlot } from "../__pandwind/slot";
 		const cx = createCx();
 		const css = createCss();
 
@@ -449,7 +449,7 @@ test("pandwind -> solid-styled -> pandwind: resolves token values across both co
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		import { createCx } from "pandwind/cx";
-		import { __pandwindSlot } from "../__pandwind/slot.tsx";
+		import { __pandwindSlot } from "../__pandwind/slot";
 		const cx = createCx();
 		const css = createCss();
 

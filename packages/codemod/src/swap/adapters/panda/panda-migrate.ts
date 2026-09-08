@@ -1304,7 +1304,7 @@ function removeUnusedVariantImports(source: string, cssImportPath: string): stri
 		return [...source.matchAll(re)].some((match) => !excluded.isExcluded(match.index ?? -1));
 	};
 	return source.replace(
-		/import\s*\{([^}]+)\}\s*from\s*(["'])([^"']*\/pandwind\/css)\2\s*;?/g,
+		/import\s*\{([^}]+)\}\s*from\s*(["'])([^"']*\/pandwind\/css)\2[ \t]*;?/g,
 		(_full, specifiers: string, quote: string, path: string, offset: number) => {
 			if (excluded.isExcluded(offset) && !isActualImportSpecifier(source, offset)) return _full;
 			const kept = specifiers
@@ -1329,7 +1329,7 @@ function removeUnusedFactoryImports(source: string): string {
 		(match) => !excluded.isExcluded(match.index ?? -1),
 	);
 	return source.replace(
-		/import\s*\{([^}]+)\}\s*from\s*(["'])([^"']*\/pandwind\/jsx)\2\s*;?/g,
+		/import\s*\{([^}]+)\}\s*from\s*(["'])([^"']*\/pandwind\/jsx)\2[ \t]*;?/g,
 		(_full, specifiers: string, quote: string, path: string, offset: number) => {
 			if (excluded.isExcluded(offset) && !isActualImportSpecifier(source, offset)) return _full;
 			const kept = specifiers

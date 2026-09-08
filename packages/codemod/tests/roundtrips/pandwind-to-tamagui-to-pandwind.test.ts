@@ -249,7 +249,7 @@ test("pandwind -> tamagui -> pandwind: preserves concrete theme and project cont
 		      "code": "import { View } from "@tamagui/core";
 		import { createCss } from "pandwind/css";
 		import { createCx } from "pandwind/cx";
-		import { __pandwindSlot } from "../__pandwind/slot.tsx";
+		import { __pandwindSlot } from "../__pandwind/slot";
 		const cx = createCx();
 		const css = createCss();
 
@@ -330,7 +330,7 @@ test("pandwind -> tamagui -> pandwind: preserves concrete theme and project cont
 		      "code": "import { View } from "@tamagui/core";
 		import { createCss } from "pandwind/css";
 		import { createCx } from "pandwind/cx";
-		import { __pandwindSlot } from "../__pandwind/slot.tsx";
+		import { __pandwindSlot } from "../__pandwind/slot";
 		const cx = createCx();
 		const css = createCss();
 
@@ -425,7 +425,7 @@ test("pandwind -> tamagui -> pandwind: resolves token values across both concret
 		    "code": "import { View } from "@tamagui/core";
 		import { createCss } from "pandwind/css";
 		import { createCx } from "pandwind/cx";
-		import { __pandwindSlot } from "../__pandwind/slot.tsx";
+		import { __pandwindSlot } from "../__pandwind/slot";
 		const cx = createCx();
 		const css = createCss();
 

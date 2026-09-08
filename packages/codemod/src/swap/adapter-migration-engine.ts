@@ -89,6 +89,53 @@ function hasAdjacentSkipMarker(source: string, position: number, marker: string)
 	return prefix.slice(previousLineStart, previousLineEnd).includes(marker);
 }
 
+function sourceImportsBinding(
+	source: string,
+	binding: string,
+	modules: readonly string[],
+	matchers: readonly ((moduleSpecifier: string) => boolean)[] = [],
+): boolean {
+	const owned = new Set(modules);
+	for (const match of source.matchAll(/\bimport\s+([\s\S]*?)\s+from\s+["']([^"']+)["']/gu)) {
+		const clause = match[1]?.trim() ?? "";
+		const moduleSpecifier = match[2];
+		if (
+			moduleSpecifier === undefined ||
+			(!owned.has(moduleSpecifier) && !matchers.some((matcher) => matcher(moduleSpecifier)))
+		)
+			continue;
+		const named = /\{([^}]*)\}/u.exec(clause)?.[1] ?? "";
+		if (
+			named
+				.split(",")
+				.map((specifier) =>
+					specifier
+						.trim()
+						.split(/\s+as\s+/u)
+						.pop()
+						?.trim(),
+				)
+				.some((local) => local === binding)
+		)
+			return true;
+		const defaultImport = clause.split(",")[0]?.trim();
+		if (defaultImport === binding) return true;
+	}
+	return false;
+}
+
+function aliasTargetCssBinding(code: string): string {
+	return code
+		.replace(
+			/import\s*\{\s*css\s*\}\s*from\s*(["'])([^"']*pandwind\/css(?:\/runtime)?)[^"']*\1/gu,
+			"import { css as pandwindCss } from $1$2$1",
+		)
+		.replace(/\bconst\s+css\s*=\s*(create(?:Runtime)?Css)\(/gu, "const pandwindCss = $1(")
+		.replace(/\bcss(?=\.(?:class|vars|raw|props|group|input|sheet)\b)/gu, "pandwindCss")
+		.replace(/\b(create(?:Recipe|SlotRecipe)\(\s*)css(?=\s*,)/gu, "$1pandwindCss")
+		.replace(/\b(createCx\(\{\s*)css(?=\s*\})/gu, "$1pandwindCss");
+}
+
 function withoutDuplicateSkipMarkers(
 	source: string,
 	edits: readonly { readonly start: number; readonly end: number; readonly text: string }[],
@@ -1517,6 +1564,48 @@ function runAdapterMigrationInternal(
 		imports.has('import { createRuntimeCss } from "pandwind/css/runtime";');
 	if (!targetUsesPandwindCss)
 		code = MigrationOutput.removeGeneratedStatements(code, ["const css = createCss();"]);
+	const sourceCssSurvives =
+		(skipped > 0 || residuals.length > 0) &&
+		sourceImportsBinding(
+			source,
+			"css",
+			sourceAdapter.sourceModules,
+			sourceAdapter.sourceModuleMatchers,
+		);
+	if (sourceCssSurvives) {
+		code = aliasTargetCssBinding(code);
+		for (const statement of [...imports]) {
+			const aliased = aliasTargetCssBinding(statement);
+			if (aliased !== statement) {
+				imports.delete(statement);
+				imports.add(aliased);
+			}
+		}
+		for (const statement of [...generatedStatements]) {
+			const aliased = aliasTargetCssBinding(statement);
+			if (aliased !== statement) {
+				generatedStatements.delete(statement);
+				generatedStatements.add(aliased);
+			}
+		}
+	}
+	if (
+		(skipped > 0 || residuals.length > 0) &&
+		sourceImportsBinding(
+			source,
+			"cx",
+			sourceAdapter.sourceModules,
+			sourceAdapter.sourceModuleMatchers,
+		)
+	) {
+		for (const statement of [...imports]) {
+			if (
+				/^import\s*\{\s*cx\s*\}\s*from\s*["'][^"']*pandwind\/cx["'];?$/u.test(statement.trim()) ||
+				/^const\s+cx\s*=\s*createCx\(\);?$/u.test(statement.trim())
+			)
+				imports.delete(statement);
+		}
+	}
 	const outputFile = support.fileWithExtension(options.file, outputExtension);
 	for (const statement of generatedStatements)
 		code = support.ensureGeneratedStatement(code, statement, outputFile);

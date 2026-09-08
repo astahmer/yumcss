@@ -169,8 +169,8 @@ describe("remaining adapter-owned custom semantics", () => {
 			import { ThemeProvider } from "@emotion/react";
 			import { css } from "@emotion/css";
 			import { createCss } from "pandwind/css";
-			const css = createCss();
-			export const card = css.vars({ color: theme.colors.brand });
+			const pandwindCss = createCss();
+			export const card = pandwindCss.vars({ color: theme.colors.brand });
 			export const App = () => // pandwind:migrate-skip (route: emotion -> pandwind | parse-residual: runtime-context | available: named-map, residual)
 			<ThemeProvider theme={theme}><div /></ThemeProvider>;"
 		`);
@@ -300,9 +300,9 @@ describe("remaining adapter-owned custom semantics", () => {
 		expect(result.code).toContain("setup(React.createElement)");
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { createCss } from "pandwind/css";
-			const css = createCss();
+			const pandwindCss = createCss();
 			import { css, setup } from "goober"; // pandwind:migrate-skip (route: goober -> pandwind | parse-residual: configuration | available: named-map, residual)
-			setup(React.createElement); export const card = css.vars({ color: theme.colors.brand });"
+			setup(React.createElement); export const card = pandwindCss.vars({ color: theme.colors.brand });"
 		`);
 	});
 

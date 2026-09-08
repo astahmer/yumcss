@@ -418,7 +418,15 @@ export function inferSemanticConditionKind(name: string): SemanticConditionKind 
 	if (/^@media(?:\s|$)/.test(name)) return "media";
 	if (/^@container(?:\s|$)/.test(name)) return "container";
 	if (/^@supports(?:\s|$)/.test(name)) return "supports";
-	if (name.startsWith("&") || name.startsWith("[") || name.startsWith(":")) return "selector";
+	if (
+		name.includes("&") ||
+		name.startsWith(".") ||
+		name.startsWith("#") ||
+		name.startsWith("&") ||
+		name.startsWith("[") ||
+		name.startsWith(":")
+	)
+		return "selector";
 	if (PSEUDO_CONDITIONS.has(name.replace(/^:/, ""))) return "pseudo";
 	return "named";
 }
@@ -1025,6 +1033,7 @@ function looksLikePropertyValueConditions(
 			return (
 				propertyName === "default" ||
 				propertyName === "base" ||
+				propertyName?.startsWith("_") === true ||
 				propertyName?.startsWith(":") === true ||
 				propertyName?.startsWith("&") === true ||
 				propertyName?.startsWith("[") === true ||

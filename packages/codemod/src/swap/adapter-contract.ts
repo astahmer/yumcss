@@ -83,6 +83,11 @@ export interface AdapterProjectConfig {
 	readonly files: readonly string[];
 	readonly values: Readonly<Record<string, unknown>>;
 	/**
+	 * Normalized named conditions discovered by the owning config loader.
+	 * Targets can consume this catalog without knowing which ecosystem produced it.
+	 */
+	readonly conditionCatalog?: AdapterConditionCatalog;
+	/**
 	 * Normalized design-token values discovered by the owning config loader.
 	 * The catalog is deliberately neutral; each target adapter decides whether
 	 * a verified match can be emitted in its native token syntax.
@@ -97,6 +102,9 @@ export interface AdapterProjectConfig {
 	/** Generated artifacts that are authoritative over source re-interpretation. */
 	readonly artifacts?: readonly AdapterGeneratedArtifactEvidence[];
 }
+
+export type AdapterConditionValue = string | readonly string[];
+export type AdapterConditionCatalog = Readonly<Record<string, AdapterConditionValue>>;
 
 /** Project-owned modules shared by generated target code. Paths are root-relative. */
 export interface AdapterProjectBindings {

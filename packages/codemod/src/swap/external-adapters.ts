@@ -371,7 +371,10 @@ function styledSubject(source: string, start: number): Partial<StyleProgramSourc
 }
 
 function conditionKey(condition: StyleProgram["rules"][number]["conditions"][number]): string {
-	if (condition.raw !== undefined) {
+	// A raw source key such as Panda's `_dark` is only a fallback. When the
+	// official source config supplied a resolved selector, the resolved value
+	// is the semantic condition that must reach the target stylesheet.
+	if (condition.raw !== undefined && condition.value === undefined) {
 		if (condition.raw.startsWith("_")) return `&:${condition.raw.slice(1)}`;
 		return condition.raw;
 	}
@@ -384,10 +387,10 @@ function conditionKey(condition: StyleProgram["rules"][number]["conditions"][num
 	if (condition.kind === SemanticConditionKindTag.Supports)
 		return condition.value === undefined ? condition.name : `@supports ${condition.value}`;
 	if (condition.kind === SemanticConditionKindTag.Selector) {
-		if (!condition.name.includes("&"))
-			return condition.name.startsWith(":") || condition.name.startsWith("[")
-				? `&${condition.name}`
-				: condition.name;
+		const selector = condition.value ?? condition.name;
+		if (!selector.includes("&"))
+			return selector.startsWith(":") || selector.startsWith("[") ? `&${selector}` : selector;
+		return selector;
 	}
 	return condition.name;
 }

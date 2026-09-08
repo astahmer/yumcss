@@ -1,5 +1,10 @@
 import { CodemodCallPatternFormTag } from "../identifiers.ts";
-import { StyleProgramResidualKindTag, StyleValueKindTag } from "../semantic-ir.ts";
+import {
+	StyleProgramResidualKindTag,
+	StyleValueKindTag,
+	inferSemanticConditionKind,
+	type SemanticConditionKind,
+} from "../semantic-ir.ts";
 import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
 import type {
 	AdapterConfigContext,
@@ -97,6 +102,20 @@ function pandaSourceValue(
 	};
 }
 
+function pandaSourceConditions(theme: PandaTheme | undefined): {
+	readonly conditionKinds: Readonly<Record<string, SemanticConditionKind>>;
+	readonly conditionValues: Readonly<Record<string, string>>;
+} {
+	const conditionKinds: Record<string, SemanticConditionKind> = {};
+	const conditionValues: Record<string, string> = {};
+	for (const [name, raw] of Object.entries(theme?.conditions ?? {})) {
+		if (typeof raw !== "string") continue;
+		conditionValues[name] = raw.replace(/^@(media|container|supports)\s+/u, "");
+		conditionKinds[name] = inferSemanticConditionKind(raw);
+	}
+	return { conditionKinds, conditionValues };
+}
+
 function pandaConfig(context: AdapterConfigContext): AdapterProjectConfig {
 	return {
 		adapter: CodemodAdapterId.Panda,
@@ -149,6 +168,7 @@ async function officialPandaConfig(
 			return {
 				...fallback,
 				files: [...fallback.files, path],
+				conditionCatalog: theme.conditions,
 				tokenCatalog: theme.tokenCatalog,
 				...(theme.officialConfigError === undefined
 					? {}
@@ -287,6 +307,8 @@ export function createPandaAdapter(options: PandaAdapterOptions = {}) {
 		preserveNamedRules: (context) => context.sourceModules?.includes("pandwind/recipe") === true,
 		tokenPolicy: PANDA_TOKEN_POLICY,
 		sourceObjectOptions: (_source, context) => ({
+			...pandaSourceConditions(context.config.values.pandaTheme as PandaTheme | undefined),
+			propertyValueConditions: true,
 			propertyAliases: Object.fromEntries(
 				(
 					(context.config.values.pandaTheme as PandaTheme | undefined)?.utilityCatalog

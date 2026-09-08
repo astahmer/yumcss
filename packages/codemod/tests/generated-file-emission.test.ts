@@ -60,7 +60,7 @@ describe("generated target files", () => {
 		expect(result.converted).toBe(1);
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
-		expect(result.code).toContain('from "../__pandwind/recipe.ts"');
+		expect(result.code).toContain('from "../__pandwind/recipe"');
 		expect(result.code).not.toContain('from "pandwind/recipe"');
 		expect(result.generatedFiles).toEqual([
 			expect.objectContaining({
@@ -70,6 +70,33 @@ describe("generated target files", () => {
 		]);
 		expect(result.generatedFiles[0]?.content).toContain("export const createRecipe");
 		expect(result.generatedFiles[0]?.content).toContain("export const createSlotRecipe");
+	});
+
+	test("keeps generated imports outside multiline imports and declarations", () => {
+		const source = [
+			'import { css } from "styled-system/css";',
+			"import {",
+			"  Box,",
+			"  Stack,",
+			'} from "styled-system/jsx";',
+			"",
+			'export const card = css({ color: "red" });',
+		].join("\n");
+		const result = runAdapterMigration(source, {
+			from: CodemodAdapterId.Panda,
+			to: CodemodAdapterId.Pandwind,
+			file: "src/Card.tsx",
+			root: "/project",
+			mode: "safe",
+			readFile: () => undefined,
+			adapterRegistry: createStyleAdapterRegistry([panda, pandwind]),
+		});
+
+		expect(result.residuals).toEqual([]);
+		expect(result.validations.every((validation) => validation.valid)).toBe(true);
+		expect(result.code).toContain("export const card = css.class");
+		expect(result.code).not.toMatch(/from "styled-system\/jsx";export const card/u);
+		expect(result.code).not.toMatch(/;export const card/u);
 	});
 
 	test("emits an expert target expression and one reusable file for one occurrence", () => {

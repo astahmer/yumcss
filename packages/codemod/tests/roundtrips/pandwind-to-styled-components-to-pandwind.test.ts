@@ -381,7 +381,7 @@ test("pandwind -> styled-components -> pandwind: resolves token values across bo
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		import { createCx } from "pandwind/cx";
-		import { __pandwindSlot } from "../__pandwind/slot.tsx";
+		import { __pandwindSlot } from "../__pandwind/slot";
 		const cx = createCx();
 		const css = createCss();
 

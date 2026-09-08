@@ -569,4 +569,49 @@ export const Button = () => <styled.button brandShadow="soft" data-testid="butto
 
 		expect(theme.tokens.colors?.[`level-0`]).toBe("#123456");
 	});
+
+	test("uses official Panda conditions for conditional style objects", async () => {
+		const source = `import { css } from "styled-system/css";
+const styles = {
+		kbd: css({ background: { base: "white", _dark: "black" }, minWidth: { sm: "200px" } }),
+};
+export const App = () => <kbd className={styles.kbd} />;`;
+		const loader: ProjectModuleLoader = {
+			async importPackage(packageName) {
+				if (packageName !== "@pandacss/config") return undefined;
+				return {
+					loadConfig: async () => ({
+						config: {
+							conditions: { extend: { dark: ".dark &" } },
+							theme: { extend: { breakpoints: { sm: "640px" } } },
+						},
+					}),
+				} as never;
+			},
+			async importFile() {
+				return undefined;
+			},
+		};
+		const result = await runAdapterMigrationAsync(source, {
+			from: "panda",
+			to: "pandwind",
+			file: "src/App.tsx",
+			root: "/project",
+			adapterRegistry: createStyleAdapterRegistry([
+				createPandaAdapter({ moduleLoader: loader }),
+				createPandwindAdapter({ moduleLoader: null }),
+			]),
+			readFile: (file) => (file.endsWith("panda.config.ts") ? "export default {};" : undefined),
+			listFiles: () => ["/project/panda.config.ts"],
+		});
+
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain("kbd: css.class");
+		expect(result.code).not.toContain("kbd: css.vars");
+		expect(result.code).toContain('".dark &"');
+		expect(result.code).not.toContain('"&:dark"');
+		expect(result.validations.every((validation) => validation.valid)).toBe(true);
+	});
 });

@@ -36,11 +36,19 @@ export { unifiedDiff } from "./diff.ts";
 function writeGeneratedFiles(
 	root: string,
 	files: readonly { readonly path: string; readonly content: string }[],
+	overwrite = false,
 ): void {
 	const resolved = files.map((file) => ({
 		...file,
 		absolutePath: resolve(root, file.path),
 	}));
+	if (overwrite) {
+		for (const file of resolved) {
+			mkdirSync(dirname(file.absolutePath), { recursive: true });
+			writeFileSync(file.absolutePath, file.content);
+		}
+		return;
+	}
 	for (const file of resolved) {
 		if (!existsSync(file.absolutePath)) continue;
 		const current = readFileSync(file.absolutePath, "utf8");
@@ -60,6 +68,7 @@ function validatePlannedGeneratedFiles(
 	root: string,
 	files: readonly { readonly path: string; readonly content: string }[],
 	planned: Map<string, string>,
+	overwrite = false,
 ): void {
 	for (const file of files) {
 		const plannedContent = planned.get(file.path);
@@ -67,7 +76,11 @@ function validatePlannedGeneratedFiles(
 			throw new Error(`codemod: conflicting generated file ${file.path} in one migration run`);
 		planned.set(file.path, file.content);
 		const absolutePath = resolve(root, file.path);
-		if (existsSync(absolutePath) && readFileSync(absolutePath, "utf8") !== file.content)
+		if (
+			!overwrite &&
+			existsSync(absolutePath) &&
+			readFileSync(absolutePath, "utf8") !== file.content
+		)
 			throw new Error(`codemod: refusing to overwrite conflicting generated file ${absolutePath}`);
 	}
 }
@@ -712,7 +725,7 @@ async function runAdapterRoute(
 			throw new Error(
 				`codemod: refusing to overwrite existing host-conversion output ${outputFile}`,
 			);
-		validatePlannedGeneratedFiles(root, result.generatedFiles, plannedGeneratedFiles);
+		validatePlannedGeneratedFiles(root, result.generatedFiles, plannedGeneratedFiles, args.force);
 		validatePlannedFileChanges(root, result.fileChanges, plannedFileChanges);
 		const projectedCode = applyProjectedFileChange(
 			source,
@@ -738,16 +751,17 @@ async function runAdapterRoute(
 		}
 	}
 	if (pendingWrites.length > 0 && projectGeneratedFiles.length > 0) {
-		validatePlannedGeneratedFiles(root, projectGeneratedFiles, plannedGeneratedFiles);
+		validatePlannedGeneratedFiles(root, projectGeneratedFiles, plannedGeneratedFiles, args.force);
 	}
 	if (pendingWrites.length > 0 && projectFileChanges.length > 0) {
 		validatePlannedFileChanges(root, projectFileChanges, plannedFileChanges);
 	}
 	if (!args.dryRun) {
-		if (pendingWrites.length > 0) writeGeneratedFiles(root, projectGeneratedFiles);
+		if (pendingWrites.length > 0 || args.force)
+			writeGeneratedFiles(root, projectGeneratedFiles, args.force);
 		applyFileChanges(root, projectFileChanges);
 		for (const pending of pendingWrites) {
-			writeGeneratedFiles(root, pending.result.generatedFiles);
+			writeGeneratedFiles(root, pending.result.generatedFiles, args.force);
 			if (pending.outputFile === pending.file) writeFileSync(pending.file, pending.result.code);
 			else {
 				writeFileSync(pending.outputFile, pending.result.code, { flag: "wx" });

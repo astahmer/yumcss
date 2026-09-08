@@ -154,7 +154,7 @@ test("solid-styled -> pandwind: loads concrete theme and project context variant
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		import { createCx } from "pandwind/cx";
-		import { __pandwindSlot } from "../__pandwind/slot.tsx";
+		import { __pandwindSlot } from "../__pandwind/slot";
 		const cx = createCx();
 		const css = createCss();
 
@@ -198,7 +198,7 @@ test("solid-styled -> pandwind: loads concrete theme and project context variant
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		import { createCx } from "pandwind/cx";
-		import { __pandwindSlot } from "../__pandwind/slot.tsx";
+		import { __pandwindSlot } from "../__pandwind/slot";
 		const cx = createCx();
 		const css = createCss();
 
@@ -254,7 +254,7 @@ test("solid-styled -> pandwind: resolves concrete token values with project cont
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
 		import { createCx } from "pandwind/cx";
-		import { __pandwindSlot } from "../__pandwind/slot.tsx";
+		import { __pandwindSlot } from "../__pandwind/slot";
 		const cx = createCx();
 		const css = createCss();
 

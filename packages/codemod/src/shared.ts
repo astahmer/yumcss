@@ -43,7 +43,30 @@ export function ensureImport(code: string, statement: string): string {
 		}
 		if (lastImportEnd !== -1 && trimmed !== "") break;
 	}
-	if (lastImportEnd === -1) return `${statement}\n${code}`;
+	if (lastImportEnd === -1) {
+		let directiveEnd = -1;
+		let afterDirective = -1;
+		let sawDirective = false;
+		for (let i = 0; i < lines.length; i++) {
+			const trimmed = lines[i]!.trim();
+			if (trimmed === "" || trimmed.startsWith("//") || trimmed.startsWith("/*")) {
+				if (sawDirective) afterDirective = i + 1;
+				continue;
+			}
+			if (/^(['"]).*\1\s*;?$/u.test(trimmed)) {
+				sawDirective = true;
+				directiveEnd = i;
+				afterDirective = i + 1;
+				continue;
+			}
+			break;
+		}
+		if (directiveEnd !== -1) {
+			lines.splice(afterDirective, 0, statement);
+			return lines.join("\n");
+		}
+		return `${statement}\n${code}`;
+	}
 	lines.splice(lastImportEnd + 1, 0, statement);
 	return lines.join("\n");
 }

@@ -1118,15 +1118,19 @@ export const __pandwindSlot = ({
 
 const PANDWIND_RECIPE_MODULE_PATH = "__pandwind/recipe.ts";
 const PANDWIND_RECIPE_MODULE_CONTENT = `type RecipeSelection = Readonly<Record<string, string | boolean | undefined>>;
+type StyleRecord = Record<string, unknown>;
+type SlotStyleMap = Readonly<Record<string, StyleRecord>>;
+type SlotVariantMap = Readonly<Record<string, SlotStyleMap>>;
+type SlotVariants = Readonly<Record<string, SlotVariantMap>>;
 type RecipeDefinition = {
-  readonly base?: Record<string, unknown>;
-  readonly variants?: Readonly<Record<string, Readonly<Record<string, Record<string, unknown>>>> >;
+  readonly base?: StyleRecord;
+  readonly variants?: Readonly<Record<string, Readonly<Record<string, StyleRecord>>>>;
   readonly defaultVariants?: RecipeSelection;
-  readonly compoundVariants?: readonly { readonly when: Readonly<Record<string, string | boolean>>; readonly style: Record<string, unknown> }[];
+  readonly compoundVariants?: readonly { readonly when: Readonly<Record<string, string | boolean>>; readonly style: StyleRecord }[];
 };
 type SlotRecipeDefinition = RecipeDefinition & {
-  readonly slots: Readonly<Record<string, Record<string, unknown>>>;
-  readonly slotVariants?: Readonly<Record<string, Readonly<Record<string, Readonly<Record<string, Record<string, unknown>>>>>>;
+  readonly slots: SlotStyleMap;
+  readonly slotVariants?: SlotVariants;
 };
 type CssClass = { readonly class: (...styles: readonly unknown[]) => string };
 
@@ -1186,7 +1190,7 @@ function sharedSlotModule(
 	const projectFile = isAbsoluteDocumentPath(file) ? relativeDocumentPath(root, file) : file;
 	let importPath = relativeDocumentPath(
 		dirnameDocumentPath(projectFile),
-		PANDWIND_SLOT_MODULE_PATH,
+		PANDWIND_SLOT_MODULE_PATH.replace(/\.(?:[cm]?tsx?|jsx?)$/u, ""),
 	);
 	if (!importPath.startsWith(".")) importPath = `./${importPath}`;
 	return {
@@ -1209,7 +1213,7 @@ function sharedRecipeModule(
 	const projectFile = isAbsoluteDocumentPath(file) ? relativeDocumentPath(root!, file) : file;
 	let importPath = relativeDocumentPath(
 		dirnameDocumentPath(projectFile),
-		PANDWIND_RECIPE_MODULE_PATH,
+		PANDWIND_RECIPE_MODULE_PATH.replace(/\.(?:[cm]?tsx?|jsx?)$/u, ""),
 	);
 	if (!importPath.startsWith(".")) importPath = `./${importPath}`;
 	return {
@@ -1499,6 +1503,7 @@ function jssNamedClassMap(
 	if (program.source?.adapter !== CodemodAdapterId.Jss) return undefined;
 	const names = new Set<string>();
 	for (const rule of program.rules) {
+		if (rule.name !== undefined) names.add(rule.name);
 		for (const condition of rule.conditions) {
 			if (condition.kind === SemanticConditionKindTag.Named) names.add(condition.name);
 		}
@@ -1510,31 +1515,39 @@ function jssNamedClassMap(
 	}
 	if (names.size === 0) return undefined;
 	const entries = [...names].map((name) => {
-		const rules = program.rules
-			.map((rule) => {
-				const declarations = rule.declarations
-					.filter((declaration) =>
+		const rules: StyleRule[] = program.rules.flatMap((rule): StyleRule[] => {
+			if (rule.name === name) {
+				const { name: _name, ...unnamedRule } = rule;
+				return [unnamedRule];
+			}
+			const ruleConditionMatch = rule.conditions.some(
+				(condition) => condition.kind === SemanticConditionKindTag.Named && condition.name === name,
+			);
+			const declarations = rule.declarations
+				.filter(
+					(declaration) =>
+						ruleConditionMatch ||
 						declaration.conditions.some(
 							(condition) =>
 								condition.kind === SemanticConditionKindTag.Named && condition.name === name,
 						),
-					)
-					.map((declaration) => ({
-						...declaration,
-						conditions: declaration.conditions.filter(
-							(condition) => condition.kind !== SemanticConditionKindTag.Named,
-						),
-					}));
-				if (declarations.length === 0) return undefined;
-				return {
-					...rule,
-					conditions: rule.conditions.filter(
+				)
+				.map((declaration) => ({
+					...declaration,
+					conditions: declaration.conditions.filter(
 						(condition) => condition.kind !== SemanticConditionKindTag.Named,
 					),
-					declarations,
-				};
-			})
-			.filter((rule) => rule !== undefined) as StyleRule[];
+				}));
+			if (declarations.length === 0) return [];
+			const selectedRule: StyleRule = {
+				...rule,
+				conditions: rule.conditions.filter(
+					(condition) => condition.kind !== SemanticConditionKindTag.Named,
+				),
+				declarations,
+			};
+			return [selectedRule];
+		});
 		const single = {
 			...program,
 			rules,
@@ -2305,13 +2318,10 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 						"const css = createRuntimeCss(pandwindPreset);",
 					],
 				});
-			const named =
-				program.rules.some((rule) => rule.name !== undefined) ||
-				program.declarations.some((declaration) =>
-					declaration.conditions.some(
-						(condition) => condition.kind === SemanticConditionKindTag.Named,
-					),
-				);
+			// Named conditions such as Panda's `_dark` still belong to one
+			// class-string style call. A group is only required when the source
+			// actually authored named style members (for example `{ card: {...} }`).
+			const authoredNamed = program.rules.some((rule) => rule.name !== undefined);
 			const dynamic = program.rules.some(function containsDynamic(rule): boolean {
 				return (
 					rule.declarations.some(
@@ -2336,6 +2346,7 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 				!dynamic && !functionDynamic
 					? jssNamedClassMap(outputProgram, renderProgramObject)
 					: undefined;
+			const named = authoredNamed || jssClassMap !== undefined;
 			const recipeVariants =
 				program.compositions?.some(
 					(composition) => composition.kind === StyleProgramCompositionKind.Recipe,

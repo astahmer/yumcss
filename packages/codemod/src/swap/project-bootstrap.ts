@@ -12,6 +12,7 @@ import {
 import { extractTwConfig } from "pandwind/vite/inline";
 import type {
 	AdapterConfigContext,
+	AdapterConditionCatalog,
 	AdapterGeneratedFile,
 	AdapterProjectConfig,
 	AdapterProjectBindings,
@@ -20,6 +21,11 @@ import type { PandwindMeta } from "../meta.ts";
 import { loadMetaFromSources } from "../meta.ts";
 import { createBuiltinCodemodCatalog } from "./adapter-catalog.ts";
 import { CodemodAdapterId } from "./identifiers.ts";
+import {
+	PANDWIND_NEXT_CSS_ID,
+	planPandwindNextIntegration,
+	type HostFileChange,
+} from "./host-integration.ts";
 
 export interface ProjectBootstrapRequest {
 	readonly root: string;
@@ -558,29 +564,37 @@ function enableTypeScriptExtensionImports(
 
 function presetSource(
 	config: AdapterProjectConfig,
-	conditions: Readonly<Record<string, string>>,
+	conditions: AdapterConditionCatalog,
+	typescript = true,
 ): string {
 	const sourceTokens = config.tokenCatalog?.groups ?? {};
 	const tokens = pandwindTokenGroups(sourceTokens);
+	const configType = typescript ? ' as import("pandwind/preset").AnyCssConfig' : "";
+	const presetConditions: AdapterConditionCatalog = {
+		base: "",
+		...(config.conditionCatalog ?? {}),
+		...conditions,
+	};
 	return `import { definePreset } from "pandwind/preset";
 
 export const pandwindPreset = definePreset(
 	{
-		config: {} as import("pandwind/preset").AnyCssConfig,
+		config: {}${configType},
 		tokens: ${JSON.stringify(tokens, null, "\t")},
 	},
 	{
 		strict: true,
-		conditions: ${JSON.stringify(conditions, null, "\t")},
+		conditions: ${JSON.stringify(presetConditions, null, "\t")},
 		properties: ${presetPropertiesSource(sourceTokens)},
 	},
 );
 `;
 }
 
-function cssSource(): string {
+function cssSource(nextHost: boolean): string {
+	const virtualId = nextHost ? PANDWIND_NEXT_CSS_ID : "pandwind:css";
 	return `/// <reference path="./vite-env.d.ts" />
-import "pandwind:css";
+import "${virtualId}";
 import { createCss } from "pandwind/css";
 import { pandwindPreset } from "./preset";
 
@@ -593,6 +607,8 @@ function viteEnvSource(): string {
 
 /** Virtual CSS module served by \`pandwindCssVite\`. */
 declare module "pandwind:css";
+/** File-like virtual CSS module served by \`pandwindWebpackCss\`. */
+declare module "${PANDWIND_NEXT_CSS_ID}";
 `;
 }
 
@@ -700,7 +716,23 @@ export async function createPandwindProjectSupport(
 ): Promise<PandwindProjectSupport> {
 	const sourceConfig = await loadSourceConfig(request);
 	const directory = posixPath(request.outputDirectory).replace(/\/$/u, "");
+	const nextIntegration =
+		request.targetAdapter === CodemodAdapterId.Pandwind
+			? planPandwindNextIntegration({
+					projectRoot: request.root,
+					outputDirectory: directory,
+					fileSystem: {
+						read: request.readFile,
+						exists: (file) =>
+							request
+								.listFiles(request.root)
+								.some((candidate) => resolve(request.root, candidate) === file),
+					},
+					...(request.packageJson === undefined ? {} : { packageJson: request.packageJson }),
+				})
+			: { enabled: false, fileChanges: [], notes: [] };
 	const preset = projectFile(directory, "preset.ts");
+	const runtimePreset = projectFile(directory, "preset.mjs");
 	const css = projectFile(directory, "css.ts");
 	const viteEnv = projectFile(directory, "vite-env.d.ts");
 	const runtimeCss = projectFile(directory, "runtime.ts");
@@ -711,7 +743,16 @@ export async function createPandwindProjectSupport(
 		? []
 		: [
 				generatedFile(preset, presetSource(sourceConfig, {}), "Pandwind target preset"),
-				generatedFile(css, cssSource(), "shared extracted css() binding"),
+				...(nextIntegration.enabled
+					? [
+							generatedFile(
+								runtimePreset,
+								presetSource(sourceConfig, {}, false),
+								"Next/Webpack runtime preset",
+							),
+						]
+					: []),
+				generatedFile(css, cssSource(nextIntegration.enabled), "shared extracted css() binding"),
 				generatedFile(viteEnv, viteEnvSource(), "Pandwind Vite virtual-module types"),
 				generatedFile(runtimeCss, runtimeCssSource(), "shared runtime css() binding"),
 				generatedFile(dss, dssSource(), "shared design-system dss() binding"),
@@ -730,6 +771,14 @@ export async function createPandwindProjectSupport(
 				withConditions,
 				"Pandwind target preset",
 			);
+			const runtimePresetFile = files.find((file) => file.path === runtimePreset);
+			if (runtimePresetFile !== undefined) {
+				files[files.indexOf(runtimePresetFile)] = generatedFile(
+					runtimePreset,
+					presetSource(sourceConfig, conditions, false),
+					"Next/Webpack runtime preset",
+				);
+			}
 			const base = dirname(cssEntry);
 			const generated = await generateDesignSystem(stylesheet, base);
 			const bridge = await generateUtilityBridge(stylesheet, base, {
@@ -774,6 +823,11 @@ export async function createPandwindProjectSupport(
 		: undefined;
 	const hasGeneratedTw = files.some((file) => file.path === projectFile(directory, "tw.ts"));
 	const viteConfigChanges = rewritePandwindViteConfigs(request, sourceConfig, directory);
+	const hostFileChanges: readonly HostFileChange[] = nextIntegration.fileChanges;
+	const normalizedHostChanges = hostFileChanges.map((change) => ({
+		...change,
+		path: relative(request.root, change.path).replaceAll("\\", "/"),
+	}));
 	return {
 		metaDirectory: directory,
 		bindings: {
@@ -790,6 +844,7 @@ export async function createPandwindProjectSupport(
 			...removeTailwindStylesheetImports(request, sourceConfig),
 			...removePandaStylesheetImports(request, sourceConfig),
 			...removeUnoStylesheetImports(request, sourceConfig),
+			...normalizedHostChanges,
 			...viteConfigChanges,
 			...enableTypeScriptExtensionImports(request, viteConfigChanges.length > 0),
 		],

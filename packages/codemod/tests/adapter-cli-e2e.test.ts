@@ -1,5 +1,5 @@
 import { execFileSync } from "node:child_process";
-import { existsSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { describe, expect, test } from "vitest";
 import {
@@ -107,6 +107,49 @@ describe("adapter migration e2e matrix", () => {
 				true,
 			);
 			expect(report.files[0]?.canonical).toMatchObject({ checked: true, equal: true });
+		} finally {
+			rmSync(directory, { recursive: true, force: true });
+		}
+	}, 120_000);
+
+	test("--force regenerates conflicting project support files", () => {
+		const directory = mkdtempSync(join(repoRoot, ".tmp-codemod-force-"));
+		const sourceFile = join(directory, "App.tsx");
+		writeFileSync(
+			join(directory, "package.json"),
+			JSON.stringify({ name: "codemod-force-fixture", private: true }),
+		);
+		writeFileSync(
+			join(directory, "panda.config.ts"),
+			"export default { conditions: { extend: { midnight: '[data-theme=midnight] &' } } };\n",
+		);
+		writeFileSync(
+			sourceFile,
+			'import { css } from "styled-system/css";\nexport const title = css({ base: { fontSize: "3xl" } });\n',
+		);
+		mkdirSync(join(directory, "pandwind"), { recursive: true });
+		const presetFile = join(directory, "pandwind/preset.ts");
+		writeFileSync(presetFile, "export const pandwindPreset = { conditions: {} };\n");
+		try {
+			execFileSync(
+				"nub",
+				[
+					"src/cli.ts",
+					"migrate",
+					"--root",
+					directory,
+					`--from=${CodemodAdapterId.Panda}`,
+					`--to=${CodemodAdapterId.Pandwind}`,
+					"--force",
+					"--no-install",
+					"--report=json",
+					sourceFile,
+				],
+				{ cwd: codemodRoot, encoding: "utf8" },
+			);
+			const preset = readFileSync(presetFile, "utf8");
+			expect(preset).toContain('"base": ""');
+			expect(preset).toContain('"midnight": "[data-theme=midnight] &"');
 		} finally {
 			rmSync(directory, { recursive: true, force: true });
 		}
