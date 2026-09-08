@@ -1552,10 +1552,6 @@ function cssModuleConsumerChanges(
 	}
 	return changes;
 }
-export interface StylesheetSourcePort {
-	parse(source: string): StylesheetSourceDocument;
-}
-
 /**
  * Delimiter scanning must treat a ${` + q(`...`) + `} interpolation as an opaque unit:
  * its braces and semicolons belong to the embedded expression, never to the
