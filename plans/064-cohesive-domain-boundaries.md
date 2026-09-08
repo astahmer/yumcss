@@ -52,10 +52,12 @@ pipeline.
 
 ## Completed revisions
 
-- `oxomptts` / `ebe00d0e`: removed the duplicate stylesheet port declaration.
-- `xyxnwpxs` / `d007d9ec`: centralized migration preparation for sync and
+- `uqmzputl` / `064c3e77`: removed the duplicate stylesheet port declaration.
+- `swrmlxys` / `254d1efc`: centralized migration preparation for sync and
   async execution.
-- `rnttsttx` / `a1cda459`: fixed route resolution to occur once per prepared
+- `xyxnwpxs` / `d007d9ec`: fixed route resolution to occur once per prepared
   migration.
-- The architecture guide records the retained MCP and stylesheet ownership
-  decisions and the new preparation owner.
+- `rnttsttx` / `e19311fb`: recorded the retained MCP and stylesheet ownership
+  decisions and the new preparation owner in the architecture guide.
+- `okyxoool` / `de1bd640`: kept preparation helpers private after the Knip
+  export audit.
