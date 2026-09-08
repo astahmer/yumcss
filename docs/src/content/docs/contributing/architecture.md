@@ -58,6 +58,15 @@ migration semantics. Typecheck, build, browser, SSR, hydration, and bundle
 checks enter through the typed validation port, never through arbitrary shell
 arguments from an MCP caller.
 
+Every MCP result carries an `executionEvidence` collection. The evidence lane
+distinguishes in-process adapter evaluation, sandbox execution, installed
+fixture proof, and host validation; its status separately records verified,
+unavailable, or failed work. The route-proof catalog is expanded from the
+same style-system registry used by migration, so a registered route without a
+fixture is represented by an unavailable research policy rather than omitted
+from the tooling surface. Installed-project evidence must also declare an
+isolated fixture and its files before the route can claim that proof tier.
+
 Migration skips are typed at this boundary. `capability-blocked` means the
 selected target has no safe representation for a required semantic;
 `parse-residual` means the source adapter could not model the source; and

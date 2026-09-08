@@ -27,12 +27,15 @@ The tools are:
 - `inspect_style_program` — inspect StyleProgram and lowering-plan snapshots;
 - `benchmark_project` — measure bounded scan/migration throughput and existing artifact sizes.
 
-The server also exposes resources for the adapter/API matrix, project evidence
-and configuration, the latest migration, comparison, and residual reports, the
-generated `pandwind.interop.json`, and the latest StyleProgram snapshots.
+The server also exposes resources for the adapter/API matrix, the registry-
+expanded migration route proof catalog, project evidence and configuration, the
+latest migration, comparison, and residual reports, the generated
+`pandwind.interop.json`, and the latest StyleProgram snapshots.
 Preview, comparison, inspection, analysis, and benchmarking never write files
 or execute project commands. Validation is read-only; project commands remain
 explicit host actions supplied through the typed validation port, so the MCP
-boundary never accepts arbitrary shell commands. The same server registration
+boundary never accepts arbitrary shell commands. Every structured result also
+contains `executionEvidence`, which labels the execution lane and reports
+verified, unavailable, or failed evidence. The same server registration
 can also be mounted in a Hono app through the `pandwind-analyze/mcp/http`
 subpath and the official Streamable HTTP handler.
