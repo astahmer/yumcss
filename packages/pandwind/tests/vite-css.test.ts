@@ -141,6 +141,25 @@ test("diagnoseCssSources reports unsupported constructs and missed extraction", 
 	`);
 });
 
+test("diagnoseCssSources reports dynamic React Strict DOM web entries", () => {
+	const code = `
+		import { createCss } from "pandwind/react-strict-dom";
+		const css = createCss();
+		css.create({ opacity: (value) => ({ opacity: value }) });
+	`;
+	const id = "src/card.tsx";
+	const names = scan().findImports(code, id);
+	const diagnostics = extract().diagnose(code, id, names);
+
+	expect(names).toEqual(new Set(["css"]));
+	expect(diagnostics).toHaveLength(1);
+	expect(diagnostics[0]).toMatchObject({
+		kind: "missing-extraction",
+		message: expect.stringContaining("css.create"),
+		suggestion: expect.stringContaining("style shape literal"),
+	});
+});
+
 test("extractCssSources records stable call provenance without changing styles", () => {
 	const code = `\n\nimport { css as design } from "./design";\nconst a = design.class({ $text: { color: "$blue-500" } });`;
 	const sources = extract().extract(code, "/src/card.tsx", new Set(["design"]));

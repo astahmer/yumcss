@@ -9,12 +9,11 @@ const styles = css.create({
 		padding: "1rem",
 	},
 	selected: { borderColor: "blue", borderWidth: "2px" },
-	opacity: (value: number) => ({ opacity: value }),
 });
 
-export function App({ selected = false, opacity = 1 }) {
+export function App({ selected = false }) {
 	return (
-		<html.div style={[styles.card, selected && styles.selected, styles.opacity(opacity)]}>
+		<html.div style={[styles.card, selected && styles.selected]}>
 			<html.span>React Strict DOM + Pandwind</html.span>
 		</html.div>
 	);

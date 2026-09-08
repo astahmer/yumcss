@@ -28,11 +28,10 @@ const css = createCss();
 const styles = css.create({
 	card: { color: "red", padding: "1rem", borderRadius: "8px" },
 	active: { backgroundColor: "blue" },
-	opacity: (value: number) => ({ opacity: value }),
 });
 
-export function Card({ active, opacity }: { active: boolean; opacity: number }) {
-	return <html.div style={[styles.card, active && styles.active, styles.opacity(opacity)]} />;
+export function Card({ active }: { active: boolean }) {
+	return <html.div style={[styles.card, active && styles.active]} />;
 }
 ```
 
