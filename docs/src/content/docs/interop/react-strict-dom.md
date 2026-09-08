@@ -41,6 +41,31 @@ marker and atomic class values expected by React Strict DOM's web style
 carrier. The corresponding stylesheet must still be extracted or served by
 the Pandwind CSS pipeline; the style map does not inject CSS by itself.
 
+For static web maps, connect the existing Pandwind CSS plugin to the same
+StyleX class-name strategy. The plugin recognizes `createCss()` imported from
+`pandwind/react-strict-dom`, extracts each literal entry in `css.create(...)`,
+and leaves the RSD source API intact:
+
+```ts
+import { createStyleXAdapter } from "pandwind/css/stylex";
+import { pandwindCssVite } from "pandwind/vite";
+import { examplePreset } from "@pandwind/example-preset";
+
+export default {
+	plugins: [
+		pandwindCssVite(examplePreset, {
+			className: createStyleXAdapter({ conditions: examplePreset.conditions }),
+		}),
+	],
+};
+```
+
+Pass the same condition metadata to `createCss({ conditions })` when the
+source uses conditional styles. Dynamic RSD style functions remain on RSD's
+compiler/runtime path; Pandwind does not guess CSS for an unbounded value.
+Explicit native `createCss({ platform: ReactStrictDomPlatform.Native })`
+bindings are ignored by this web stylesheet scanner.
+
 For native, select the native backend explicitly:
 
 ```tsx

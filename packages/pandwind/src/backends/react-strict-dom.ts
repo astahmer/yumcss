@@ -22,8 +22,17 @@ export type ReactStrictDomCompiledStyle = Readonly<{
 	readonly [property: string]: string | true;
 }>;
 
+/** Plain style object returned by the native RSD export. */
+export type ReactStrictDomNativeStyle = Readonly<Record<string, unknown>>;
+
 /** RSD's platform-dependent style artifact. */
-export type ReactStrictDomStyle = ReactStrictDomCompiledStyle | Record<string, unknown>;
+export type ReactStrictDomStyle = ReactStrictDomCompiledStyle | ReactStrictDomNativeStyle;
+
+/** Resolve the public style result to the selected platform at compile time. */
+export type ReactStrictDomStyleFor<TPlatform extends ReactStrictDomPlatform> =
+	TPlatform extends typeof ReactStrictDomPlatform.Native
+		? ReactStrictDomNativeStyle
+		: ReactStrictDomCompiledStyle;
 
 interface ReactStrictDomBackendBaseOptions {
 	readonly name?: string;

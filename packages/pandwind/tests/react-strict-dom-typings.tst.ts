@@ -1,5 +1,9 @@
 import { expect, test } from "tstyche";
 import { createCss, ReactStrictDomPlatform } from "../src/react-strict-dom.ts";
+import type {
+	ReactStrictDomCompiledStyle,
+	ReactStrictDomNativeStyle,
+} from "../src/backends/react-strict-dom.ts";
 
 const web = createCss();
 const native = createCss({ platform: ReactStrictDomPlatform.Native });
@@ -11,13 +15,16 @@ test("css.create preserves named style keys and dynamic arguments", () => {
 	});
 
 	expect(styles.root).type.toBeAssignableTo<Record<string, unknown>>();
+	expect(styles.root).type.toBeAssignableTo<ReactStrictDomCompiledStyle>();
 	expect(styles.opacity).type.toBeCallableWith(0.5);
 	// @ts-expect-error not assignable
 	styles.opacity("half");
 });
 
 test("native and web surfaces share the style-definition shape", () => {
-	expect(native.create({ root: { padding: "4px" } }).root).type.toBeAssignableTo<
-		Record<string, unknown>
-	>();
+	expect(
+		native.create({ root: { padding: "4px" } }).root,
+	).type.toBeAssignableTo<ReactStrictDomNativeStyle>();
+	expect(native({ padding: "4px" })).type.toBeAssignableTo<ReactStrictDomNativeStyle>();
+	expect(web({ padding: "4px" })).type.toBeAssignableTo<ReactStrictDomCompiledStyle>();
 });

@@ -12,3 +12,9 @@ into its React entry point.
 React Strict DOM remains responsible for its platform compiler, host runtime,
 and `html.*` component implementation. Pandwind only supplies the style
 artifact and does not add RSD or StyleX to an application's dependency graph.
+
+For a web build, add `pandwindCssVite` with `createStyleXAdapter` to the host's
+Vite configuration. Static entries in `css.create({ ... })` are then emitted
+into the generated stylesheet while the source keeps using React Strict DOM's
+`html.*` and `style` APIs. Native builds use the native Pandwind entry point
+and do not run the web stylesheet scanner.
