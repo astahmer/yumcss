@@ -61,6 +61,13 @@ remain thin convenience calls over that use case; they cannot bypass the
 canonical application boundary. The flat `SwapIR` path remains independent
 and cheap.
 
+Route resolution, source detection, official source/target configuration
+loading, configuration residual handling, and file-migration selection are
+owned by `adapter-migration-preparation.ts`. Both synchronous and asynchronous
+execution prepare the same route object before the engine lowers a file. This
+keeps the engine focused on semantic negotiation, emission, validation, host
+rewrites, and atomic output assembly instead of maintaining two setup paths.
+
 The Node and browser catalog composition roots use the same built-in adapter
 plugin and registry assembler. Their only difference is injected capability:
 Node supplies module loading, filesystem reads, and cross-module resolution,
