@@ -73,7 +73,11 @@ export function createDesignCss<TPreset extends DesignPreset>(
 	preset: TPreset,
 	options: ReactStrictDomBackendOptions = {},
 ): ReactStrictDomDesignCssFn<TPreset> {
-	const backend = createReactStrictDomBackend(options) as ObjectBackend;
+	const backend = createReactStrictDomBackend(
+		options.platform === ReactStrictDomPlatform.Native
+			? options
+			: { ...options, conditions: options.conditions ?? preset.conditions },
+	) as ObjectBackend;
 	return createDesignObjectCss(preset, backend) as ReactStrictDomDesignCssFn<TPreset>;
 }
 

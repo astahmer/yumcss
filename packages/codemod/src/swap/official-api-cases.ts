@@ -58,7 +58,7 @@ export function officialApiCases(): readonly OfficialApiCase[] {
 			source:
 				'import { css, html } from "react-strict-dom";\nconst styles = css.create({ card: { color: "red", padding: "1rem" } });\nexport const Card = () => <html.div style={styles.card} />;',
 			documentation:
-				"https://github.com/facebook/react-strict-dom/blob/main/packages/react-strict-dom/README.md",
+				"https://github.com/react/react-strict-dom/blob/main/packages/react-strict-dom/README.md",
 		},
 		{
 			adapter: CodemodAdapterId.Emotion,

@@ -4,8 +4,10 @@ import {
 	createCss,
 	createCx,
 	createDesignCss,
+	createReactStrictDomBackend,
 	ReactStrictDomPlatform,
 } from "../src/react-strict-dom.ts";
+import { resolveDesignStyle } from "../src/design/resolve.ts";
 
 describe("pandwind/react-strict-dom web surface", () => {
 	test("exposes RSD's named css.create style carrier", () => {
@@ -27,6 +29,20 @@ describe("pandwind/react-strict-dom web surface", () => {
 		expect(style.$$css).toBe(true);
 		expect(style.backgroundColor).toMatch(/^x/);
 		expect(style.padding).toMatch(/^x/);
+	});
+
+	test("uses the preset condition selectors for design style identities", () => {
+		const css = createDesignCss(examplePreset);
+		const style = css({ _hover: { $frame: { fill: "$blue-500" } } });
+		const resolved = resolveDesignStyle(
+			{ _hover: { $frame: { fill: "$blue-500" } } },
+			examplePreset.tokens,
+		);
+		const expected = createReactStrictDomBackend({
+			conditions: examplePreset.conditions,
+		}).resolve(resolved);
+
+		expect(style._hover__backgroundColor).toBe(expected._hover__backgroundColor);
 	});
 
 	test("merges compiled web style maps through createCx", () => {
