@@ -39,6 +39,30 @@ const render = (
 		.filter(Boolean)
 		.join("\n");
 
+const addImportAfterDirectives = (source: string, statement: string): string => {
+	const lines = source.split("\n");
+	let directiveEnd = -1;
+	let insertAt = -1;
+	let sawDirective = false;
+	for (let index = 0; index < lines.length; index++) {
+		const trimmed = lines[index]!.trim();
+		if (trimmed === "" || trimmed.startsWith("//") || trimmed.startsWith("/*")) {
+			if (sawDirective) insertAt = index + 1;
+			continue;
+		}
+		if (/^(['"]).*\1\s*;?$/u.test(trimmed)) {
+			sawDirective = true;
+			directiveEnd = index;
+			insertAt = index + 1;
+			continue;
+		}
+		break;
+	}
+	if (directiveEnd === -1) return `${statement}\n${source}`;
+	lines.splice(insertAt, 0, statement);
+	return lines.join("\n");
+};
+
 export function createCssExtractorPluginCore(
 	preset: CssExtractorPreset,
 	options: PandwindCssViteOptions = {},
@@ -93,6 +117,10 @@ export function createCssExtractorPluginCore(
 	const carriedVarKeys = new Map<string, readonly string[]>();
 
 	const transform = (code: string, id: string): { code: string; map: null } | null => {
+		// Webpack hosts can invoke a universal plugin for compiler-owned modules
+		// without a resource path. Those modules are outside the source graph and
+		// must pass through untouched rather than reaching the path filters below.
+		if (typeof code !== "string" || typeof id !== "string") return null;
 		if (id.includes("node_modules")) return null;
 		if (!isScanned(id)) return null;
 		const names = sourceService.findCssImports(code, id, matchers);
@@ -108,7 +136,7 @@ export function createCssExtractorPluginCore(
 			names.size > 0 &&
 			!extracted.includes(`"${virtualId}"`) &&
 			!extracted.includes(`'${virtualId}'`)
-				? `import "${virtualId}";\n${extracted}`
+				? addImportAfterDirectives(extracted, `import "${virtualId}";`)
 				: extracted;
 		const optimized = runtimePruner.transform(withStylesheetImport, id);
 		if (optimized !== null) return optimized;

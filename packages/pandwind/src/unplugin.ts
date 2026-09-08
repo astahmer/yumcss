@@ -124,12 +124,16 @@ export interface PandwindUnpluginCssOptions extends PandwindCssViteOptions {
 export const pandwindUnpluginCss = createUnplugin((options: PandwindUnpluginCssOptions) => {
 	const core = createCssExtractorPluginCore(options.preset, options);
 	const virtualId = options.virtualId ?? "pandwind:css";
+	const resolvedVirtualId = `\0${virtualId}.css`;
+	const encodedVirtualId = encodeURIComponent(resolvedVirtualId);
 	const plugin: {
 		name: string;
 		enforce: "pre";
 		transform: typeof core.transform;
+		transformInclude: (id: string) => boolean;
 		resolveId: (source: string) => string | null;
 		load: (id: string) => string | null;
+		loadInclude: (id: string) => boolean;
 		watchChange: (id: string) => void;
 		vite: { handleHotUpdate(ctx: HmrContext): ModuleNode[] | undefined };
 		webpack?: (compiler: unknown) => void;
@@ -137,12 +141,20 @@ export const pandwindUnpluginCss = createUnplugin((options: PandwindUnpluginCssO
 		name: core.name,
 		enforce: "pre" as const,
 		transform: core.transform,
+		transformInclude(id: string) {
+			const resource = id.split(/[?#]/u, 1)[0]!;
+			return MODULE_EXTENSIONS.some((extension) => resource.endsWith(extension));
+		},
 		resolveId(source: string) {
 			return core.resolveId(source);
 		},
 		load(id: string) {
-			const encodedVirtualId = encodeURIComponent(`\0${virtualId}.css`);
-			return core.load(id.endsWith(encodedVirtualId) ? `\0${virtualId}.css` : id);
+			return core.load(
+				id === resolvedVirtualId || id.endsWith(encodedVirtualId) ? resolvedVirtualId : id,
+			);
+		},
+		loadInclude(id: string) {
+			return id === resolvedVirtualId || id.endsWith(encodedVirtualId);
 		},
 		watchChange(id: string) {
 			core.invalidate(id);

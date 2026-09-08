@@ -13,6 +13,7 @@ import webpack, { type Compiler, type Configuration, type Stats, type Watching }
 import { describe, expect, test } from "vitest";
 import { examplePreset } from "@pandwind/example-preset";
 import { pandwindWebpack, pandwindWebpackCss } from "../src/unplugin.ts";
+import { createCssExtractorPluginCore } from "../src/vite/css-core.ts";
 
 const packageRoot = resolve(import.meta.dirname, "..");
 const exampleTwModule = resolve(packageRoot, "../../apps/example/src/tw.ts");
@@ -52,6 +53,83 @@ function runWebpack(config: Configuration): Promise<Stats> {
 }
 
 describe("pandwindWebpack", () => {
+	test("ignores host transforms without a resource path", () => {
+		const core = createCssExtractorPluginCore(examplePreset);
+		expect(core.transform("export default {}", undefined as never)).toBeNull();
+	});
+
+	test("limits the Webpack load hook to the virtual stylesheet", () => {
+		const dir = mkdtempSync(join(tmpdir(), "pandwind-unplugin-webpack-hooks-"));
+		try {
+			const compiler = webpack({
+				context: dir,
+				plugins: [pandwindWebpackCss({ preset: examplePreset, root: dir })],
+			});
+			const loadRule = compiler.options.module.rules.find(
+				(rule) => typeof (rule as { include?: unknown }).include === "function",
+			) as { include?: (id: string) => boolean } | undefined;
+			expect(loadRule).toBeDefined();
+			const include = loadRule?.include;
+			expect(include?.(join(dir, "node_modules/next/dist/compiled/@vercel/og/index.node.js"))).toBe(
+				false,
+			);
+			expect(include?.(resolve(dir, "_virtual_") + encodeURIComponent("\0pandwind:css.css"))).toBe(
+				true,
+			);
+		} finally {
+			rmSync(dir, { recursive: true, force: true });
+		}
+	});
+
+	test("does not install the transform loader for binary resources", () => {
+		const dir = mkdtempSync(join(tmpdir(), "pandwind-unplugin-webpack-transform-"));
+		try {
+			const compiler = webpack({
+				context: dir,
+				plugins: [pandwindWebpackCss({ preset: examplePreset, root: dir })],
+			});
+			const transformRule = compiler.options.module.rules.find(
+				(rule) => typeof (rule as { use?: unknown }).use === "function",
+			) as { use?: (data: { resource: string; resourceQuery: string }) => unknown[] } | undefined;
+			expect(transformRule).toBeDefined();
+			const use = transformRule?.use;
+			expect(use?.({ resource: join(dir, "asset.wasm"), resourceQuery: "" })).toEqual([]);
+			expect(use?.({ resource: join(dir, "module.tsx"), resourceQuery: "" })).toHaveLength(1);
+		} finally {
+			rmSync(dir, { recursive: true, force: true });
+		}
+	});
+
+	test("keeps client directives before the extracted stylesheet import", () => {
+		const core = createCssExtractorPluginCore(examplePreset);
+		const result = core.transform(
+			[
+				"'use client';",
+				'import { css } from "pandwind/css";',
+				'export const card = css.class({ color: "red" });',
+			].join("\n"),
+			"/tmp/pandwind-client-component.tsx",
+		);
+		expect(result?.code).toMatch(/^'use client';\n\n?import "pandwind:css";/u);
+	});
+
+	test("does not treat later string literals as directives", () => {
+		const core = createCssExtractorPluginCore(examplePreset);
+		const result = core.transform(
+			[
+				"'use client';",
+				'import { css } from "pandwind/css";',
+				"const labels = [",
+				'\t"first",',
+				"];",
+				'export const card = css.class({ color: "red" });',
+			].join("\n"),
+			"/tmp/pandwind-client-component.tsx",
+		);
+		expect(result?.code).toMatch(/^'use client';\n\n?import "pandwind:css";/u);
+		expect(result?.code).not.toContain('"first",\nimport "pandwind:css";');
+	});
+
 	test("folds tw() calls in a real webpack build", async () => {
 		const dir = mkdtempSync(join(tmpdir(), "pandwind-unplugin-webpack-"));
 		const outputDir = join(dir, "dist");
