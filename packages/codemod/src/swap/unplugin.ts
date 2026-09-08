@@ -12,7 +12,7 @@ import { STYLE_MIGRATION_USE_CASE } from "./migration-use-case.ts";
 import type { AdapterCapabilityMode } from "./capabilities.ts";
 import type { StyleLoweringRegistry } from "./lowering.ts";
 import type { StyleAdapterRegistry } from "./adapter-registry.ts";
-import type { StyleSystemRegistry } from "./style-systems.ts";
+import type { StyleDialectResolver } from "./style-systems.ts";
 
 export interface VirtualMigrationResidual {
 	readonly file: string;
@@ -30,7 +30,7 @@ export interface PandwindMigrateOptions {
 	readonly include?: readonly RegExp[];
 	readonly exclude?: readonly RegExp[];
 	readonly mode?: AdapterCapabilityMode;
-	readonly registry?: StyleSystemRegistry;
+	readonly registry?: StyleDialectResolver;
 	readonly adapterRegistry?: StyleAdapterRegistry;
 	readonly loweringRegistry?: StyleLoweringRegistry;
 	readonly readFile?: (file: string) => string | undefined;

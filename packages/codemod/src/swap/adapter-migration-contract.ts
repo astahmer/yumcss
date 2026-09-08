@@ -31,6 +31,7 @@ export interface AdapterMigrationOptions {
 	readonly listFiles?: (root: string) => readonly string[];
 	readonly mode?: AdapterCapabilityMode;
 	readonly skipMarker?: string;
+	/** Read-only route resolution; mutation belongs to the adapter registry. */
 	readonly registry?: StyleDialectResolver;
 	readonly moduleLoader?: ProjectModuleLoader;
 	readonly adapterRegistry?: StyleAdapterRegistry;

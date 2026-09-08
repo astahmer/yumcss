@@ -9,6 +9,7 @@ import {
 import {
 	asStyleDialect,
 	createStyleSystemRegistry,
+	type StyleDialectResolver,
 	type StyleSystemRegistry,
 } from "./style-systems.ts";
 import {
@@ -51,17 +52,12 @@ export interface AdapterDiscoveryOptions {
 	) => Promise<Readonly<Record<string, unknown>> | undefined>;
 }
 
-export interface StyleAdapterRegistry {
+export interface StyleAdapterRegistry extends StyleDialectResolver {
 	readonly adapters: readonly StyleAdapter[];
-	/** Canonical route view owned by the adapter registry. */
-	readonly systems: StyleSystemRegistry["systems"];
 	register(adapter: StyleAdapter): StyleAdapterRegistry;
 	registerPlugin(plugin: StyleAdapterPlugin): StyleAdapterRegistry;
 	get(id: string): StyleAdapter | undefined;
 	capabilityMatrix(): AdapterCapabilityMatrix;
-	getSystem: StyleSystemRegistry["getSystem"];
-	getDialect: StyleSystemRegistry["getDialect"];
-	resolveRoute: StyleSystemRegistry["resolveRoute"];
 	discover(
 		specifiers: readonly string[],
 		options?: AdapterDiscoveryOptions,
@@ -184,7 +180,7 @@ class DefaultStyleAdapterRegistry implements StyleAdapterRegistry {
 		return [...this.values.values()];
 	}
 
-	get systems(): StyleSystemRegistry["systems"] {
+	get systems(): StyleDialectResolver["systems"] {
 		return this.routeRegistry.systems;
 	}
 
@@ -227,18 +223,18 @@ class DefaultStyleAdapterRegistry implements StyleAdapterRegistry {
 		);
 	}
 
-	getSystem(id: string): ReturnType<StyleSystemRegistry["getSystem"]> {
+	getSystem(id: string): ReturnType<StyleDialectResolver["getSystem"]> {
 		return this.routeRegistry.getSystem(id);
 	}
 
-	getDialect(address: Parameters<StyleSystemRegistry["getDialect"]>[0]) {
+	getDialect(address: Parameters<StyleDialectResolver["getDialect"]>[0]) {
 		return this.routeRegistry.getDialect(address);
 	}
 
 	resolveRoute(
-		from: Parameters<StyleSystemRegistry["resolveRoute"]>[0],
-		to: Parameters<StyleSystemRegistry["resolveRoute"]>[1],
-	): ReturnType<StyleSystemRegistry["resolveRoute"]> {
+		from: Parameters<StyleDialectResolver["resolveRoute"]>[0],
+		to: Parameters<StyleDialectResolver["resolveRoute"]>[1],
+	): ReturnType<StyleDialectResolver["resolveRoute"]> {
 		return this.routeRegistry.resolveRoute(from, to);
 	}
 
