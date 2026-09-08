@@ -265,7 +265,7 @@ test("pandwind -> aphrodite -> pandwind: preserves concrete theme and project co
 		const css = createCss();
 
 
-		export const card = css.class({ padding: "1rem", color: "$brand" });",
+		export const card = css.class({ padding: "1rem", color: "brand" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -342,7 +342,7 @@ test("pandwind -> aphrodite -> pandwind: preserves concrete theme and project co
 		const css = createCss();
 
 
-		export const card = css.class({ padding: "1rem", color: "$brand" });",
+		export const card = css.class({ padding: "1rem", color: "brand" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -432,7 +432,7 @@ test("pandwind -> aphrodite -> pandwind: resolves token values across both concr
 		const css = createCss();
 
 
-		export const card = css.class({ padding: "1rem", color: "$brand" });",
+		export const card = css.class({ padding: "1rem", color: "brand" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

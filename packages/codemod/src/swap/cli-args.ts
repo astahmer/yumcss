@@ -3,7 +3,12 @@ import { createBuiltinCodemodCatalog } from "./adapter-catalog.ts";
 import type { AdapterCapabilityMode } from "./capabilities.ts";
 import { CodemodAdapterId, SwapTargetId } from "./identifiers.ts";
 import { SWAP_REGISTRY } from "./swap-registry.ts";
-import type { TokenRefMode } from "./tokens.ts";
+import {
+	TOKEN_REFERENCE_FORMATS,
+	TokenReferenceFormat,
+	type TokenReferenceFormat as TokenReferenceFormatValue,
+	type TokenRefMode,
+} from "./tokens.ts";
 import type { ExternalAdapterId } from "./external-adapters.ts";
 
 const builtinAdapterIds = createBuiltinCodemodCatalog().adapters.map((adapter) => adapter.id);
@@ -36,6 +41,7 @@ export interface MigrateCliArgs {
 	metaDir: string;
 	skipMarker: string;
 	tokenRefs: TokenRefMode;
+	tokenReferenceFormat: TokenReferenceFormatValue;
 	engine: boolean;
 	tokenize: boolean;
 	sort: boolean;
@@ -72,6 +78,9 @@ export function configureMigrateCommand(command: Command): void {
 			default: "pandwind:migrate-skip",
 		})
 		.option("--token-refs <mode>", "Token references: off, bare, or group", { default: "bare" })
+		.option("--token-format <format>", "Token spelling: preserve, dot-delimited, or stitches", {
+			default: TokenReferenceFormat.Preserve,
+		})
 		.option("--engine", "Resolve unknown Tailwind utilities through the engine")
 		.option("--tokenize", "Rewrite eligible raw values to token references")
 		.option("--sort", "Sort emitted declarations canonically")
@@ -158,6 +167,11 @@ export function parseMigrateArgs(argv: string[]): MigrateCliArgs {
 		"bare",
 		"group",
 	] as const);
+	const tokenReferenceFormat = choice(
+		"token-format",
+		optionString(options, "tokenFormat"),
+		TOKEN_REFERENCE_FORMATS,
+	);
 	const reportFormat = choice("report-format", optionString(options, "reportFormat"), [
 		"text",
 		"json",
@@ -178,6 +192,7 @@ export function parseMigrateArgs(argv: string[]): MigrateCliArgs {
 		metaDir: optionString(options, "meta") ?? "",
 		skipMarker: optionString(options, "skipMarker") ?? "pandwind:migrate-skip",
 		tokenRefs,
+		tokenReferenceFormat,
 		engine: optionBoolean(options, "engine"),
 		tokenize: optionBoolean(options, "tokenize"),
 		sort: optionBoolean(options, "sort"),

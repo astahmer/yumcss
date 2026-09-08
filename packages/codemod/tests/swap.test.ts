@@ -17,7 +17,7 @@ import { tmpdir } from "node:os";
 import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
 import { loadMetaFromSources } from "../src/meta.ts";
-import { runSwap, SWAP_TARGETS } from "../src/swap/index.ts";
+import { runSwap, SWAP_TARGETS, TokenReferenceFormat } from "../src/swap/index.ts";
 import { examplePreset } from "@pandwind/example-preset";
 
 const appDir = resolve(import.meta.dirname, "../../../apps/example/src");
@@ -144,7 +144,7 @@ describe("swap design vocabulary", () => {
 		);
 		expect(result.converted).toBe(1);
 		expect(result.code).toContain("$frame: {");
-		expect(result.code).toContain('fill: "$blue-500"');
+		expect(result.code).toContain('fill: "blue.500"');
 		expect(result.code).toContain('corners: "lg"');
 		expect(result.code).toMatch(/pad: \[4, 8\]/);
 	});
@@ -362,11 +362,21 @@ describe("outbound: stylex", () => {
 /* ------------------------------------------------------------------ */
 
 describe("token references + single-line output", () => {
-	test("panda emits bare token refs by default (authored $tokens)", () => {
+	test("panda preserves authored token refs by default", () => {
 		const result = swapTo(`const card = css.class({ backgroundColor: "$blue-500" });`, "panda");
-		expect(result.code).toContain('backgroundColor: "blue.500"');
-		expect(result.code).not.toContain('"$blue-500"');
+		expect(result.code).toContain('backgroundColor: "$blue-500"');
 		expect(result.code).toContain("css({ "); // single line, no pretty print
+	});
+
+	test("panda can force dot-delimited token refs", () => {
+		const result = runSwapRaw(`const card = css.class({ backgroundColor: "$blue-500" });`, meta, {
+			from: "auto",
+			to: "panda",
+			file: "t.tsx",
+			metaDir: "apps/example/src",
+			tokenReferenceFormat: TokenReferenceFormat.DotDelimited,
+		});
+		expect(result.code).toContain('backgroundColor: "blue.500"');
 	});
 
 	test("resolved values round-trip to token refs through the preset", () => {
@@ -384,6 +394,7 @@ describe("token references + single-line output", () => {
 			file: "t.tsx",
 			metaDir: "apps/example/src",
 			tokenRefs: "group",
+			tokenReferenceFormat: TokenReferenceFormat.DotDelimited,
 		});
 		expect(result.code).toContain('backgroundColor: "colors.blue.500"');
 	});
@@ -404,7 +415,7 @@ describe("token references + single-line output", () => {
 			`${WITH_CSS}export const Card = () => (\n\t<div className={css.class({ $frame: { fill: "$gray-100" }, _hover: { $frame: { fill: "$gray-800" } } })} />\n);`,
 			"design",
 		);
-		// Raw preset keys round-trip verbatim into the vocabulary; one line.
+		// Authored token references are preserved by the default format; one line.
 		expect(result.code).toContain(
 			'css.class({ $frame: { fill: "$gray-100" }, _hover: { $frame: { fill: "$gray-800" } } })',
 		);

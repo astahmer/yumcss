@@ -185,7 +185,7 @@ test("tamagui -> pandwind: loads concrete theme and project context variants", a
 		    "code": "import { View } from "tamagui";
 		import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const Card = css.class({ padding: "$4", color: "$brand" });
+		export const Card = css.class({ padding: "$4", color: "brand" });
 		export const App = () => <View className={Card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -234,7 +234,7 @@ test("tamagui -> pandwind: resolves concrete token values with project context",
 		  "code": "import { View } from "tamagui";
 		import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const Card = css.class({ padding: "$4", color: "$brand" });
+		export const Card = css.class({ padding: "$4", color: "brand" });
 		export const App = () => <View className={Card} />;",
 		  "converted": 1,
 		  "generatedFiles": [],

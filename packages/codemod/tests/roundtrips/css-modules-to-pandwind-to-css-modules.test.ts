@@ -361,7 +361,7 @@ test("css-modules -> pandwind -> css-modules: preserves concrete theme and proje
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const styles = { "card": css.class({ padding: "1rem", color: "$brand" }) };
+		export const styles = { "card": css.class({ padding: "1rem", color: "brand" }) };
 		export default styles;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -398,7 +398,7 @@ test("css-modules -> pandwind -> css-modules: preserves concrete theme and proje
 		      "code": "import { createCss } from "pandwind/css";
 
 		const css = createCss();
-		export const styles = { "card": css.class({ "padding": "1rem", "color": "$brand" }) };
+		export const styles = { "card": css.class({ "padding": "1rem", "color": "brand" }) };
 		export default styles;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -452,7 +452,7 @@ test("css-modules -> pandwind -> css-modules: resolves token values across both 
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const styles = { "card": css.class({ padding: "1rem", color: "$brand" }) };
+		export const styles = { "card": css.class({ padding: "1rem", color: "brand" }) };
 		export default styles;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -489,7 +489,7 @@ test("css-modules -> pandwind -> css-modules: resolves token values across both 
 		    "code": "import { createCss } from "pandwind/css";
 
 		const css = createCss();
-		export const styles = { "card": css.class({ "padding": "1rem", "color": "$brand" }) };
+		export const styles = { "card": css.class({ "padding": "1rem", "color": "brand" }) };
 		export default styles;",
 		    "converted": 1,
 		    "generatedFiles": [],

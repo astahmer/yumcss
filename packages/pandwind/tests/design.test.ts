@@ -51,6 +51,12 @@ test("resolve $frame — the box", () => {
 	});
 });
 
+test("resolve $frame with dot-delimited aliases from legacy presets", () => {
+	expect(resolveDesignStyle({ $frame: { fill: "blue.500" } }, tokens)).toEqual({
+		backgroundColor: "#3182ce",
+	});
+});
+
 test("resolve $frame — corners, border, blur and axis padding", () => {
 	expect(
 		resolveDesignStyle(

@@ -380,7 +380,7 @@ test("pandwind -> bamboo -> pandwind: resolves token values across both concrete
 		const css = createCss();
 
 
-		export const card = css.class({ padding: "1rem", color: "$brand" });",
+		export const card = css.class({ padding: "1rem", color: "brand" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

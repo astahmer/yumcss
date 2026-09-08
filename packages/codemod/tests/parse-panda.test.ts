@@ -21,6 +21,7 @@ import {
 import { loadPandaTheme, type PandaTheme } from "../src/swap/adapters/panda/theme.ts";
 import { PandaJsxStylePropsModeTag } from "../src/swap/adapters/panda/style-props.ts";
 import { PandaUtilityCatalog } from "../src/swap/adapters/panda/utilities.ts";
+import { TokenReferenceFormat } from "../src/swap/tokens.ts";
 import { emitCssClass } from "../src/swap/emit.ts";
 import {
 	NODE_PROJECT_MODULE_LOADER,
@@ -269,9 +270,16 @@ describe("pandaStyleToIr — navbar.tsx shapes", () => {
 		const ir = pandaStyleToIr({ color: "fg.muted", _hover: { color: "fg" } }, siteTheme);
 		expect(ir.residuals).toEqual([]);
 		expect(ir.entries).toEqual([
-			{ conditions: [], prop: "color", value: "$fg-muted" },
-			{ conditions: ["hover"], prop: "color", value: "$fg" },
+			{ conditions: [], prop: "color", value: "fg.muted" },
+			{ conditions: ["hover"], prop: "color", value: "fg" },
 		]);
+	});
+
+	it("supports an explicit Stitches token spelling", () => {
+		const ir = pandaStyleToIr({ color: "fg.muted" }, siteTheme, {
+			tokenReferenceFormat: TokenReferenceFormat.Stitches,
+		});
+		expect(ir.entries).toEqual([{ conditions: [], prop: "color", value: "$fg-muted" }]);
 	});
 
 	it("chains nested conditions outermost-first (_dark -> _hover)", () => {
@@ -339,7 +347,7 @@ describe("pandaStyleToIr — mdx/pre.tsx cva base", () => {
 		const ir = pandaStyleToIr(base, siteTheme);
 		const bg = ir.entries.find((e) => e.prop === "backgroundColor");
 		// Known token path + important suffix stays AS WRITTEN.
-		expect(bg?.value).toBe("$bg-muted!");
+		expect(bg?.value).toBe("bg.muted!");
 	});
 
 	it("expands shorthands to canonical properties", () => {
@@ -414,7 +422,7 @@ describe("pandaStyleToIr — mdx/pre.tsx cva base", () => {
 			siteTheme,
 		);
 		expect(ir.entries).toEqual([
-			{ conditions: [], prop: "--margin", value: "$spacing-6" },
+			{ conditions: [], prop: "--margin", value: "spacing.6" },
 			{ conditions: [], prop: "marginTop", value: "var(--margin)" },
 			{ conditions: ["first"], prop: "marginTop", value: "0" },
 		]);
@@ -483,7 +491,7 @@ describe("pandaRecipeToIr — feature-marquee.section.tsx sva", () => {
 		expect(root.entries).toContainEqual({
 			conditions: [],
 			prop: "backgroundColor",
-			value: "$bg",
+			value: "bg",
 		});
 		expect(root.entries).toContainEqual({ conditions: [], prop: "fontWeight", value: "semibold" });
 	});
@@ -531,7 +539,7 @@ describe("pandaRecipeToIr — button.recipe.ts defineRecipe", () => {
 		expect(main?.entries).toContainEqual({
 			conditions: [],
 			prop: "backgroundColor",
-			value: "$bg-emphasized",
+			value: "bg.emphasized",
 		});
 		expect(main?.entries).toContainEqual({ conditions: [], prop: "color", value: "black" });
 	});
@@ -571,7 +579,7 @@ describe("parsePandaCalls scanning", () => {
 		].join("\n");
 		const calls = parsePandaCalls(source, () => false, { theme: siteTheme });
 		expect(calls.map((c) => c.kind)).toEqual(["css", "cva", "sva"]);
-		expect(calls[0]!.ir?.entries).toEqual([{ conditions: [], prop: "color", value: "$fg-muted" }]);
+		expect(calls[0]!.ir?.entries).toEqual([{ conditions: [], prop: "color", value: "fg.muted" }]);
 		expect(calls[1]!.recipe?.base[""]?.entries).toEqual([
 			{ conditions: [], prop: "padding", value: "4" },
 		]);
@@ -620,8 +628,8 @@ describe("loadPandaTheme — fixture config (hermetic)", () => {
 		const ir = pandaStyleToIr({ color: "fg.muted", _hover: { color: "fg.headline" } }, theme);
 		expect(ir.residuals).toEqual([]);
 		expect(ir.entries).toEqual([
-			{ conditions: [], prop: "color", value: "$fg-muted" },
-			{ conditions: ["hover"], prop: "color", value: "$fg-headline" },
+			{ conditions: [], prop: "color", value: "fg.muted" },
+			{ conditions: ["hover"], prop: "color", value: "fg.headline" },
 		]);
 	});
 

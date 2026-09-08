@@ -253,7 +253,7 @@ test("pandwind -> unocss -> pandwind: preserves concrete theme and project conte
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const card = css.class({ color: "$brand", ".\\\\[padding\\\\:1rem\\\\]": { padding: "1rem" } });",
+		export const card = css.class({ color: "brand", ".\\\\[padding\\\\:1rem\\\\]": { padding: "1rem" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -328,7 +328,7 @@ test("pandwind -> unocss -> pandwind: preserves concrete theme and project conte
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const card = css.class({ color: "$brand", ".\\\\[padding\\\\:1rem\\\\]": { padding: "1rem" } });",
+		export const card = css.class({ color: "brand", ".\\\\[padding\\\\:1rem\\\\]": { padding: "1rem" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -416,7 +416,7 @@ test("pandwind -> unocss -> pandwind: resolves token values across both concrete
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const card = css.class({ color: "$brand", ".\\\\[padding\\\\:1rem\\\\]": { padding: "1rem" } });",
+		export const card = css.class({ color: "brand", ".\\\\[padding\\\\:1rem\\\\]": { padding: "1rem" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

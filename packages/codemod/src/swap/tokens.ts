@@ -62,9 +62,9 @@ export type TokenReferenceFormatter = (
 	existingAuthored?: string,
 ) => string;
 
-/** Normalize a preset token key (`$blue-500`, `4`, `lg`) to a ref (`blue.500`, `4`, `lg`). */
+/** Normalize a legacy `$blue-500` key to a dot-delimited ref. */
 export function normalizeTokenKey(key: string): string {
-	return key.replace(/^\$/, "").replace(/-/g, ".");
+	return key.startsWith("$") ? key.slice(1).replaceAll("-", ".") : key;
 }
 
 /**

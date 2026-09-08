@@ -24,6 +24,7 @@ import { SourcePass } from "../source-pass-utils.ts";
 import type { SwapIR } from "./ir.ts";
 import { SwapResidualKindTag } from "./ir.ts";
 import {
+	normalizeTokenKey,
 	resolvedAuthoredToken,
 	suggestionLookup,
 	type GovernanceSuggestionInput,
@@ -495,17 +496,72 @@ export function literalValueToPlain(value: LitValue): unknown {
 	return root;
 }
 
-function flattenToIr(flat: Record<string, unknown>): SwapIR {
+function flattenToIr(
+	flat: Record<string, unknown>,
+	authoredByResolvedValue: ReadonlyMap<string, string> = new Map(),
+): SwapIR {
 	const ir: SwapIR = { entries: [], residuals: [] };
 	for (const [key, raw] of Object.entries(flattenStyle(flat as never))) {
 		const { conditions, prop } = splitFlatKey(key);
+		const value = typeof raw === "string" ? raw : (raw as string);
+		const authored =
+			typeof value === "string" ? authoredByResolvedValue.get(value.toLowerCase()) : undefined;
 		ir.entries.push({
 			conditions,
 			prop: camelProp(prop),
-			value: typeof raw === "string" ? raw : (raw as string),
+			value,
+			...(authored === undefined ? {} : { authored }),
 		});
 	}
 	return ir;
+}
+
+/**
+ * Keep an authored design token only when its resolved value is unique and no
+ * literal in the same call could have produced it. This keeps the flat fast
+ * path conservative while allowing `preserve` to retain an explicit legacy
+ * spelling such as `$blue-500`.
+ */
+function authoredDesignTokens(
+	style: unknown,
+	tokens: AnyTokens | undefined,
+): ReadonlyMap<string, string> {
+	if (tokens === undefined) return new Map();
+	const candidates = new Map<string, Set<string>>();
+	const literalValues = new Set<string>();
+	const visit = (value: unknown): void => {
+		if (typeof value === "string") {
+			if (!value.startsWith("$")) {
+				literalValues.add(value.toLowerCase());
+				return;
+			}
+			const normalized = normalizeTokenKey(value).toLowerCase();
+			for (const values of Object.values(tokens)) {
+				for (const [key, resolved] of Object.entries(values)) {
+					if (typeof resolved === "string" && normalizeTokenKey(key).toLowerCase() === normalized) {
+						const resolvedKey = resolved.toLowerCase();
+						const matches = candidates.get(resolvedKey) ?? new Set<string>();
+						matches.add(value);
+						candidates.set(resolvedKey, matches);
+					}
+				}
+			}
+			return;
+		}
+		if (Array.isArray(value)) {
+			for (const item of value) visit(item);
+			return;
+		}
+		if (typeof value === "object" && value !== null)
+			for (const child of Object.values(value as Record<string, unknown>)) visit(child);
+	};
+	visit(style);
+	const out = new Map<string, string>();
+	for (const [resolved, authored] of candidates) {
+		if (literalValues.has(resolved) || authored.size !== 1) continue;
+		out.set(resolved, authored.values().next().value!);
+	}
+	return out;
 }
 
 /**
@@ -557,7 +613,10 @@ export function parseCssLiterals(
 			for (const { key, value } of parsed.keys) style[key] = literalValueToPlain(value);
 			const design = Object.keys(style).some((k) => k.startsWith("$"));
 			let ir = design
-				? flattenToIr(resolveDesignStyle(style, options.tokens) as never)
+				? flattenToIr(
+						resolveDesignStyle(style, options.tokens) as never,
+						authoredDesignTokens(style, options.tokens),
+					)
 				: flattenToIr(style);
 			if (!design && options.tokenize === true) {
 				// Tokenize-this: raw values with an authored preset token become

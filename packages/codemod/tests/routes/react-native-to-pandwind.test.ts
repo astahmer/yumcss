@@ -185,7 +185,7 @@ test("react-native -> pandwind: loads concrete theme and project context variant
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const styles = { "card": css.class({ padding: 8, color: "$brand" }) };",
+		export const styles = { "card": css.class({ padding: 8, color: "brand" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -233,7 +233,7 @@ test("react-native -> pandwind: resolves concrete token values with project cont
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const styles = { "card": css.class({ padding: 8, color: "$brand" }) };",
+		export const styles = { "card": css.class({ padding: 8, color: "brand" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [

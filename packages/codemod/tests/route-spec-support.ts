@@ -407,7 +407,7 @@ export function expectConfiguredProjectEvidence(
 function configuredTargetTokenMarkers(target: CodemodAdapterId): readonly string[] {
 	switch (target) {
 		case CodemodAdapterId.Pandwind:
-			return ["$brand", "$card"];
+			return ["brand", "$brand", "card"];
 		case CodemodAdapterId.Panda:
 		case CodemodAdapterId.ChakraUi:
 			return ["brand.500", "card"];
@@ -432,6 +432,7 @@ function configuredTargetTokenUsed(
 ): boolean {
 	if (marker !== "card") return code.includes(marker);
 	if (
+		target !== CodemodAdapterId.Pandwind &&
 		target !== CodemodAdapterId.Panda &&
 		target !== CodemodAdapterId.ChakraUi &&
 		target !== CodemodAdapterId.Mui

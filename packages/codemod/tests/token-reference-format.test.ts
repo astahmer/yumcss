@@ -3,6 +3,7 @@ import {
 	TokenReferenceFormat,
 	formatTokenPath,
 	formatTokenReference,
+	normalizeTokenKey,
 	type TokenCatalogMatch,
 } from "../src/swap/tokens.ts";
 
@@ -31,5 +32,10 @@ describe("token reference formats", () => {
 	test("emits the Stitches-compatible dollar and hyphen spelling", () => {
 		expect(formatTokenReference(blue, TokenReferenceFormat.Stitches)).toBe("$blue-500");
 		expect(formatTokenPath("fg.muted", TokenReferenceFormat.Stitches)).toBe("$fg-muted");
+	});
+
+	test("only converts hyphens in the legacy dollar-prefixed spelling", () => {
+		expect(normalizeTokenKey("$blue-500")).toBe("blue.500");
+		expect(normalizeTokenKey("brand-blue")).toBe("brand-blue");
 	});
 });

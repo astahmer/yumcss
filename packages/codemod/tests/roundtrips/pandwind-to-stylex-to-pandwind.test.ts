@@ -399,7 +399,7 @@ test("pandwind -> stylex -> pandwind: resolves token values across both concrete
 		const css = createCss();
 
 
-		export const card = { "style": css.class({ padding: "1rem", color: "$brand" }) }.style;",
+		export const card = { "style": css.class({ padding: "1rem", color: "brand" }) }.style;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

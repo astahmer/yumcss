@@ -148,7 +148,7 @@ test("mui -> pandwind: loads concrete theme and project context variants", async
 		    "code": "import { Box } from "@mui/material";
 		import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const App = () => <Box className={css.class({ padding: "16px", color: "$brand" })}/>;",
+		export const App = () => <Box className={css.class({ padding: "16px", color: "brand" })}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -184,7 +184,7 @@ test("mui -> pandwind: loads concrete theme and project context variants", async
 		    "code": "import { Box } from "@mui/material";
 		import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const App = () => <Box className={css.class({ padding: "16px", color: "$brand" })}/>;",
+		export const App = () => <Box className={css.class({ padding: "16px", color: "brand" })}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -232,7 +232,7 @@ test("mui -> pandwind: resolves concrete token values with project context", asy
 		  "code": "import { Box } from "@mui/material";
 		import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const App = () => <Box className={css.class({ padding: "16px", color: "$brand" })}/>;",
+		export const App = () => <Box className={css.class({ padding: "16px", color: "brand" })}/>;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [

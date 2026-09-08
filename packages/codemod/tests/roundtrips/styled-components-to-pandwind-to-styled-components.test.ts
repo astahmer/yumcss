@@ -338,7 +338,7 @@ test("styled-components -> pandwind -> styled-components: preserves concrete the
 		const cx = createCx();
 		const css = createCss();
 
-		export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "$brand" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
+		export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "brand" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
 		      "converted": 1,
 		      "generatedFiles": [
 		        {
@@ -381,7 +381,7 @@ test("styled-components -> pandwind -> styled-components: preserves concrete the
 		import { __pandwindSlot } from "../__pandwind/slot.tsx";
 		const cx = createCx();
 		export const Card = __pandwindSlot({ defaultComponent: "div", style: // pandwind:migrate-skip (route: pandwind -> styled-components | lowering-residual: validation)
-		css.class({ padding: "1rem", color: "$brand" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
+		css.class({ padding: "1rem", color: "brand" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -444,7 +444,7 @@ test("styled-components -> pandwind -> styled-components: resolves token values 
 		const cx = createCx();
 		const css = createCss();
 
-		export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "$brand" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
+		export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "brand" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
 		    "converted": 1,
 		    "generatedFiles": [
 		      {
@@ -487,7 +487,7 @@ test("styled-components -> pandwind -> styled-components: resolves token values 
 		import { __pandwindSlot } from "../__pandwind/slot.tsx";
 		const cx = createCx();
 		export const Card = __pandwindSlot({ defaultComponent: "div", style: // pandwind:migrate-skip (route: pandwind -> styled-components | lowering-residual: validation)
-		css.class({ padding: "1rem", color: "$brand" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
+		css.class({ padding: "1rem", color: "brand" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

@@ -1178,6 +1178,7 @@ function runAdapterMigrationInternal(
 			sourceModuleMatchers: sourceAdapter.sourceModuleMatchers,
 			meta: options.meta,
 			project: options.project,
+			tokenReferenceFormat: options.tokenReferenceFormat,
 			host: {
 				...(bindingBeforeMatch === undefined ? {} : { binding: bindingBeforeMatch }),
 				...(hostFramework === undefined ? {} : { framework: hostFramework }),

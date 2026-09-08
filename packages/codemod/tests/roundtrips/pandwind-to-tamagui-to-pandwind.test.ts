@@ -429,7 +429,7 @@ test("pandwind -> tamagui -> pandwind: resolves token values across both concret
 		const cx = createCx();
 		const css = createCss();
 
-		export const card = __pandwindSlot({ defaultComponent: (View), style: css.class({ padding: "1rem", color: "$brand" }), stableClass: "pw-1fmduj8", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
+		export const card = __pandwindSlot({ defaultComponent: (View), style: css.class({ padding: "1rem", color: "brand" }), stableClass: "pw-1fmduj8", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
 		    "converted": 1,
 		    "generatedFiles": [
 		      {

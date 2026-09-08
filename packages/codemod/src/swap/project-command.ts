@@ -1,4 +1,5 @@
 import type { PandwindMeta } from "../meta.ts";
+import type { TokenReferenceFormat } from "./tokens.ts";
 
 /** Port for project-wide migrations that need more than one source match. */
 export interface ProjectMigrationContext {
@@ -11,6 +12,7 @@ export interface ProjectMigrationContext {
 	readonly report: boolean;
 	readonly write: boolean;
 	readonly skipMarker: string;
+	readonly tokenReferenceFormat?: TokenReferenceFormat;
 }
 
 export interface ProjectMigrationCommand {

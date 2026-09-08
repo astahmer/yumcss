@@ -20,6 +20,7 @@ const pandaMigrationCommand: ProjectMigrationCommand = {
 			diff: context.diff,
 			skipMarker: context.skipMarker,
 			force: context.force,
+			tokenReferenceFormat: context.tokenReferenceFormat,
 		});
 		console.log(
 			`\nproject migration: ${report.filesScanned} file(s) scanned · ${report.filesChanged} changed · ` +

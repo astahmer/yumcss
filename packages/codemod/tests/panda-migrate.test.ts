@@ -26,7 +26,7 @@ import { pandaStyleToIr, type PandaRecipeIR } from "../src/swap/adapters/panda/p
 import type { PandaProjectFileSystem } from "../src/swap/adapters/panda/panda-file-system.ts";
 import { PandaJsxStylePropsModeTag } from "../src/swap/adapters/panda/style-props.ts";
 import { PandaUtilityCatalog } from "../src/swap/adapters/panda/utilities.ts";
-import { CodemodAdapterId, parseMigrateArgs } from "../src/swap/index.ts";
+import { CodemodAdapterId, parseMigrateArgs, TokenReferenceFormat } from "../src/swap/index.ts";
 import type { PandwindMeta } from "../src/meta.ts";
 
 let meta: PandwindMeta;
@@ -225,6 +225,20 @@ describe("supporting migration primitives", () => {
 		expect(args.from).toBe(CodemodAdapterId.Tailwind);
 		expect(args.to).toBe("tw");
 		expect(args.dryRun).toBe(false);
+		expect(args.tokenReferenceFormat).toBe(TokenReferenceFormat.Preserve);
+	});
+
+	it("accepts explicit token spelling policies", () => {
+		const args = parseMigrateArgs([
+			"--token-format",
+			"stitches",
+			"--from",
+			"emotion",
+			"--to",
+			"pandwind",
+			"Card.tsx",
+		]);
+		expect(args.tokenReferenceFormat).toBe(TokenReferenceFormat.Stitches);
 	});
 
 	it("supports an explicit dry run without retaining a write flag", () => {

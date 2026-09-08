@@ -241,7 +241,7 @@ test("unocss -> pandwind -> unocss: preserves concrete theme and project context
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const App = () => <div className={css.class({ padding: "$card", color: "$brand" })}/>;",
+		export const App = () => <div className={css.class({ padding: "card", color: "brand" })}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -276,7 +276,7 @@ test("unocss -> pandwind -> unocss: preserves concrete theme and project context
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
 		export const App = () => <div className={// pandwind:migrate-skip (route: pandwind -> unocss | lowering-residual: validation)
-		css.class({ padding: "$card", color: "$brand" })}/>;",
+		css.class({ padding: "card", color: "brand" })}/>;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -324,7 +324,7 @@ test("unocss -> pandwind -> unocss: preserves concrete theme and project context
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const App = () => <div className={css.class({ padding: "$card", color: "$brand" })}/>;",
+		export const App = () => <div className={css.class({ padding: "card", color: "brand" })}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -359,7 +359,7 @@ test("unocss -> pandwind -> unocss: preserves concrete theme and project context
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
 		export const App = () => <div className={// pandwind:migrate-skip (route: pandwind -> unocss | lowering-residual: validation)
-		css.class({ padding: "$card", color: "$brand" })}/>;",
+		css.class({ padding: "card", color: "brand" })}/>;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -421,7 +421,7 @@ test("unocss -> pandwind -> unocss: resolves token values across both concrete l
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const App = () => <div className={css.class({ padding: "$card", color: "$brand" })}/>;",
+		export const App = () => <div className={css.class({ padding: "card", color: "brand" })}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -456,7 +456,7 @@ test("unocss -> pandwind -> unocss: resolves token values across both concrete l
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		export const App = () => <div className={// pandwind:migrate-skip (route: pandwind -> unocss | lowering-residual: validation)
-		css.class({ padding: "$card", color: "$brand" })}/>;",
+		css.class({ padding: "card", color: "brand" })}/>;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

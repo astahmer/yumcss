@@ -14,8 +14,8 @@
  *   (`mt: { base: '6', _first: '0' }` -> two entries);
  * - `'!'`-important values and CSS custom-property declarations pass through
  *   verbatim (never dropped);
- * - semantic token references resolve to authored `$token` refs when the
- *   ingested host theme knows them; otherwise they fall back to panda's
+ * - semantic token references resolve to the configured token spelling when
+ *   the ingested host theme knows them; otherwise they fall back to Panda's
  *   generated CSS var + an explicit residual;
  * - `textStyle: '<name>'` expands inline from the ingested theme (a
  *   textStyle is bundled utilities); unknown names are residuals.
@@ -31,6 +31,11 @@ import type { PandaTheme } from "./theme.ts";
 import { emptyPandaTheme } from "./theme.ts";
 import { SourcePass } from "../../../source-pass-utils.ts";
 import { CSS_PROPERTY_ALIASES } from "../../property-aliases.ts";
+import {
+	formatTokenPath,
+	TokenReferenceFormat,
+	type TokenReferenceFormat as TokenReferenceFormatValue,
+} from "../../tokens.ts";
 import { PandaUtilityCatalog } from "./utilities.ts";
 
 const enum PandaStyleTaskKindTag {
@@ -156,7 +161,7 @@ export function normalizePandaStyleObject(
 const TOKEN_PATH_RE = /^[a-zA-Z][\w-]*(?:\.[a-zA-Z][\w-]*)+$/;
 
 // Simple Panda values are ambiguous across token groups (`sm` is a font size,
-// radius, spacing value, etc.). Only turn them into `$` references when the
+// radius, spacing value, etc.). Only turn them into token references when the
 // declaration has a matching theme-driven group; dotted paths remain safe to
 // resolve everywhere because Panda uses them as explicit group paths.
 const SIMPLE_TOKEN_PROPS = new Set([
@@ -188,9 +193,9 @@ function fallbackVarForPath(path: string): string {
 	return `var(--${group}-${segments.map((segment) => segment.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`)).join("-")})`;
 }
 
-/** Authored pandwind token ref for a known host-theme path (`fg.muted` -> `$fg-muted`). */
-function authoredRefForPath(path: string): string {
-	return `$${path.replace(/\./g, "-")}`;
+/** Authored Pandwind token ref for a known host-theme path (`fg.muted` -> `fg.muted`). */
+function authoredRefForPath(path: string, format: TokenReferenceFormatValue): string {
+	return formatTokenPath(path, format);
 }
 
 interface ResolvedValue {
@@ -202,6 +207,7 @@ function resolveValue(
 	raw: string | number | boolean,
 	prop: string,
 	theme: PandaTheme,
+	format: TokenReferenceFormatValue,
 ): ResolvedValue {
 	if (typeof raw !== "string") return { value: raw === false ? "false" : raw };
 	// '!'-important suffix survives resolution verbatim.
@@ -209,7 +215,7 @@ function resolveValue(
 	const bare = important ? raw.slice(0, -1) : raw;
 	let resolved: ResolvedValue;
 	if (theme.tokenVars.has(bare) && (bare.includes(".") || SIMPLE_TOKEN_PROPS.has(prop))) {
-		resolved = { value: authoredRefForPath(bare) };
+		resolved = { value: authoredRefForPath(bare, format) };
 	} else if (TOKEN_PATH_RE.test(bare)) {
 		// Dotted candidate the theme does not know — CSS-variable fallback
 		// into panda's generated custom properties + explicit residual.
@@ -258,6 +264,7 @@ function walkStyle(
 	conditions: string[],
 	ir: SwapIR,
 	theme: PandaTheme,
+	format: TokenReferenceFormatValue,
 ): void {
 	const tasks: StyleTask[] = [{ kind: PandaStyleTaskKindTag.Style, style, conditions }];
 	while (tasks.length > 0) {
@@ -419,7 +426,7 @@ function walkStyle(
 			continue;
 		}
 
-		const resolved = resolveValue(raw, prop, theme);
+		const resolved = resolveValue(raw, prop, theme, format);
 		if (resolved.residual !== undefined) ir.residuals.push(resolved.residual);
 		pushEntries(ir, [
 			{
@@ -445,9 +452,10 @@ function isConditionishMap(raw: Record<string, unknown>, theme: PandaTheme): boo
 export function pandaStyleToIr(
 	style: Record<string, unknown>,
 	theme: PandaTheme = emptyPandaTheme,
+	options: { tokenReferenceFormat?: TokenReferenceFormatValue } = {},
 ): SwapIR {
 	const ir: SwapIR = { entries: [], residuals: [] };
-	walkStyle(style, [], ir, theme);
+	walkStyle(style, [], ir, theme, options.tokenReferenceFormat ?? TokenReferenceFormat.Preserve);
 	return ir;
 }
 
@@ -486,6 +494,7 @@ function styleIrOrResidual(
 	slot: string,
 	theme: PandaTheme,
 	residuals: SwapResidual[],
+	format: TokenReferenceFormatValue,
 ): SwapIR {
 	if (!isPlainObject(raw)) {
 		residuals.push({
@@ -495,7 +504,7 @@ function styleIrOrResidual(
 		});
 		return { entries: [], residuals: [] };
 	}
-	return pandaStyleToIr(raw, theme);
+	return pandaStyleToIr(raw, theme, { tokenReferenceFormat: format });
 }
 
 /** Parse a literal cva/sva/defineRecipe body into per-slot IR. */
@@ -503,7 +512,9 @@ export function pandaRecipeToIr(
 	body: LiteralObject,
 	kind: "cva" | "sva",
 	theme: PandaTheme = emptyPandaTheme,
+	options: { tokenReferenceFormat?: TokenReferenceFormatValue } = {},
 ): PandaRecipeIR {
+	const format = options.tokenReferenceFormat ?? TokenReferenceFormat.Preserve;
 	const recipe: PandaRecipeIR = {
 		kind,
 		slots: null,
@@ -525,10 +536,10 @@ export function pandaRecipeToIr(
 	if (isPlainObject(base)) {
 		if (kind === PandaRecipeKindTag.Sva) {
 			for (const [slot, style] of Object.entries(base)) {
-				recipe.base[slot] = styleIrOrResidual(style, slot, theme, recipe.residuals);
+				recipe.base[slot] = styleIrOrResidual(style, slot, theme, recipe.residuals, format);
 			}
 		} else {
-			recipe.base[""] = styleIrOrResidual(base, "", theme, recipe.residuals);
+			recipe.base[""] = styleIrOrResidual(base, "", theme, recipe.residuals, format);
 		}
 	}
 
@@ -561,6 +572,7 @@ export function pandaRecipeToIr(
 							slot,
 							theme,
 							recipe.residuals,
+							format,
 						);
 					}
 				} else {
@@ -569,6 +581,7 @@ export function pandaRecipeToIr(
 						"",
 						theme,
 						recipe.residuals,
+						format,
 					);
 				}
 			}
@@ -612,10 +625,10 @@ export function pandaRecipeToIr(
 			const slots: Record<string, SwapIR> = {};
 			if (kind === PandaRecipeKindTag.Sva && isPlainObject(css)) {
 				for (const [slot, slotStyle] of Object.entries(css)) {
-					slots[slot] = styleIrOrResidual(slotStyle, slot, theme, recipe.residuals);
+					slots[slot] = styleIrOrResidual(slotStyle, slot, theme, recipe.residuals, format);
 				}
 			} else {
-				slots[""] = styleIrOrResidual(css, "", theme, recipe.residuals);
+				slots[""] = styleIrOrResidual(css, "", theme, recipe.residuals, format);
 			}
 			recipe.compoundVariants.push({ matchers, slots });
 		}
@@ -691,9 +704,10 @@ function scanCalls(
 export function parsePandaCalls(
 	source: string,
 	excluded: (start: number) => boolean,
-	options: { theme?: PandaTheme } = {},
+	options: { theme?: PandaTheme; tokenReferenceFormat?: TokenReferenceFormatValue } = {},
 ): Array<PandaCall> {
 	const theme = options.theme ?? emptyPandaTheme;
+	const format = options.tokenReferenceFormat ?? TokenReferenceFormat.Preserve;
 	const calls: PandaCall[] = [];
 
 	scanCalls(
@@ -719,7 +733,9 @@ export function parsePandaCalls(
 				start: match.index,
 				end: block.end,
 				kind: PandaCallKindTag.Css,
-				ir: pandaStyleToIr(literalValueToPlain(parsed) as never, theme),
+				ir: pandaStyleToIr(literalValueToPlain(parsed) as never, theme, {
+					tokenReferenceFormat: format,
+				}),
 			};
 		},
 		calls,
@@ -743,7 +759,9 @@ export function parsePandaCalls(
 				start: match.index,
 				end: block.end,
 				kind: PandaCallKindTag.Cva,
-				recipe: pandaRecipeToIr(parsed, PandaRecipeKindTag.Cva, theme),
+				recipe: pandaRecipeToIr(parsed, PandaRecipeKindTag.Cva, theme, {
+					tokenReferenceFormat: format,
+				}),
 			};
 		},
 		calls,
@@ -767,7 +785,9 @@ export function parsePandaCalls(
 				start: match.index,
 				end: block.end,
 				kind: PandaCallKindTag.Sva,
-				recipe: pandaRecipeToIr(parsed, PandaRecipeKindTag.Sva, theme),
+				recipe: pandaRecipeToIr(parsed, PandaRecipeKindTag.Sva, theme, {
+					tokenReferenceFormat: format,
+				}),
 			};
 		},
 		calls,

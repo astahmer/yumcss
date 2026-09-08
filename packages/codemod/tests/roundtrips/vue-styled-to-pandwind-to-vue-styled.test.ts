@@ -337,7 +337,7 @@ test("vue-styled -> pandwind -> vue-styled: preserves concrete theme and project
 		const cx = createCx();
 		const css = createCss();
 
-		export const Card = defineComponent({ setup(_props, { attrs, slots }) { const style = css.class({ padding: "1rem", color: "$brand" }); return () => h("div", { ...attrs, class: cx(style, attrs.class) }, slots.default?.()); } });",
+		export const Card = defineComponent({ setup(_props, { attrs, slots }) { const style = css.class({ padding: "1rem", color: "brand" }); return () => h("div", { ...attrs, class: cx(style, attrs.class) }, slots.default?.()); } });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -433,7 +433,7 @@ test("vue-styled -> pandwind -> vue-styled: resolves token values across both co
 		const cx = createCx();
 		const css = createCss();
 
-		export const Card = defineComponent({ setup(_props, { attrs, slots }) { const style = css.class({ padding: "1rem", color: "$brand" }); return () => h("div", { ...attrs, class: cx(style, attrs.class) }, slots.default?.()); } });",
+		export const Card = defineComponent({ setup(_props, { attrs, slots }) { const style = css.class({ padding: "1rem", color: "brand" }); return () => h("div", { ...attrs, class: cx(style, attrs.class) }, slots.default?.()); } });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

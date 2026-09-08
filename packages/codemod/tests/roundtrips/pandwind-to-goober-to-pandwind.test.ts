@@ -265,7 +265,7 @@ test("pandwind -> goober -> pandwind: preserves concrete theme and project conte
 		const css = createCss();
 
 
-		export const card = css.class({ padding: "1rem", color: "$brand" });",
+		export const card = css.class({ padding: "1rem", color: "brand" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -342,7 +342,7 @@ test("pandwind -> goober -> pandwind: preserves concrete theme and project conte
 		const css = createCss();
 
 
-		export const card = css.class({ padding: "1rem", color: "$brand" });",
+		export const card = css.class({ padding: "1rem", color: "brand" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -432,7 +432,7 @@ test("pandwind -> goober -> pandwind: resolves token values across both concrete
 		const css = createCss();
 
 
-		export const card = css.class({ padding: "1rem", color: "$brand" });",
+		export const card = css.class({ padding: "1rem", color: "brand" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

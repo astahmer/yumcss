@@ -268,7 +268,7 @@ test("pandwind -> react-native -> pandwind: preserves concrete theme and project
 		const css = createCss();
 
 
-		export const card = css.class({ padding: 16, color: "$brand" });",
+		export const card = css.class({ padding: 16, color: "brand" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -346,7 +346,7 @@ test("pandwind -> react-native -> pandwind: preserves concrete theme and project
 		const css = createCss();
 
 
-		export const card = css.class({ padding: 16, color: "$brand" });",
+		export const card = css.class({ padding: 16, color: "brand" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -437,7 +437,7 @@ test("pandwind -> react-native -> pandwind: resolves token values across both co
 		const css = createCss();
 
 
-		export const card = css.class({ padding: 16, color: "$brand" });",
+		export const card = css.class({ padding: 16, color: "brand" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

@@ -155,6 +155,18 @@ source and target adapters own class-string conversion and token
 preservation. Use `--from` and `--to` to select the route; unsupported values
 remain in place with a typed residual in the migration report.
 
+Token spelling is configured independently with
+`--token-format=preserve|dot-delimited|stitches`:
+
+- `preserve` is the default. It keeps an authored source spelling when the
+  semantic token carried one; a reference inferred from an exact raw-value
+  match uses the canonical `blue.500` form.
+- `dot-delimited` always emits canonical paths such as `blue.500`.
+- `stitches` emits the `$blue-500` spelling used by Stitches-style APIs.
+
+`--token-refs` controls whether a target qualifies a reference with its group;
+`--token-format` controls the spelling of the token path itself.
+
 ## Token configs (tokens subcommand)
 
 tokens remains a separate data-format conversion command. It uses one

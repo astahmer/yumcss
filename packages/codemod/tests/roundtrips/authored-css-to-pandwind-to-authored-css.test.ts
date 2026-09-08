@@ -365,7 +365,7 @@ test("authored-css -> pandwind -> authored-css: preserves concrete theme and pro
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const styles = { "card": css.class({ padding: "1rem", color: "$brand" }) };
+		export const styles = { "card": css.class({ padding: "1rem", color: "brand" }) };
 		export default styles;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -402,7 +402,7 @@ test("authored-css -> pandwind -> authored-css: preserves concrete theme and pro
 		      "code": "import { createCss } from "pandwind/css";
 
 		const css = createCss();
-		export const styles = { "card": css.class({ "padding": "1rem", "color": "$brand" }) };
+		export const styles = { "card": css.class({ "padding": "1rem", "color": "brand" }) };
 		export default styles;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -456,7 +456,7 @@ test("authored-css -> pandwind -> authored-css: resolves token values across bot
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const styles = { "card": css.class({ padding: "1rem", color: "$brand" }) };
+		export const styles = { "card": css.class({ padding: "1rem", color: "brand" }) };
 		export default styles;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -493,7 +493,7 @@ test("authored-css -> pandwind -> authored-css: resolves token values across bot
 		    "code": "import { createCss } from "pandwind/css";
 
 		const css = createCss();
-		export const styles = { "card": css.class({ "padding": "1rem", "color": "$brand" }) };
+		export const styles = { "card": css.class({ "padding": "1rem", "color": "brand" }) };
 		export default styles;",
 		    "converted": 1,
 		    "generatedFiles": [],

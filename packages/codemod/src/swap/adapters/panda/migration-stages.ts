@@ -6,20 +6,39 @@ import { emitCssClass } from "../../emit.ts";
 import { parseObjectLiteral } from "../../parse.ts";
 import type { PandaTheme } from "./theme.ts";
 import { pandaRecipeToIr, pandaStyleToIr } from "./parse.ts";
+import type { TokenReferenceFormat } from "../../tokens.ts";
 
 export const PANDA_MIGRATION_STAGES_SCHEMA = "pandwind.panda-migration-stages/1" as const;
 
-export function convertPandaStyle(style: Record<string, unknown>, theme: PandaTheme) {
-	return pandaStyleToIr(style, theme);
+export function convertPandaStyle(
+	style: Record<string, unknown>,
+	theme: PandaTheme,
+	tokenReferenceFormat?: TokenReferenceFormat,
+) {
+	return pandaStyleToIr(style, theme, { tokenReferenceFormat });
 }
 
-export function convertPandaRecipe(body: string, kind: "cva" | "sva", theme: PandaTheme) {
+export function convertPandaRecipe(
+	body: string,
+	kind: "cva" | "sva",
+	theme: PandaTheme,
+	tokenReferenceFormat?: TokenReferenceFormat,
+) {
 	const parsed = parseObjectLiteral(body);
-	return parsed === null ? null : pandaRecipeToIr(parsed, kind, theme);
+	return parsed === null ? null : pandaRecipeToIr(parsed, kind, theme, { tokenReferenceFormat });
 }
 
-export function emitPandaStyle(ir: Parameters<typeof emitCssClass>[0], meta: PandwindMeta): string {
-	return emitCssClass(ir, meta, { index: 1, tokenRefs: "bare", sort: true }).text;
+export function emitPandaStyle(
+	ir: Parameters<typeof emitCssClass>[0],
+	meta: PandwindMeta,
+	tokenReferenceFormat?: TokenReferenceFormat,
+): string {
+	return emitCssClass(ir, meta, {
+		index: 1,
+		tokenRefs: "bare",
+		sort: true,
+		tokenReferenceFormat,
+	}).text;
 }
 
 export function rewritePandaSource(

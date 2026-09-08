@@ -354,7 +354,7 @@ test("style9 -> pandwind -> style9: preserves concrete theme and project context
 		const cx = createCx();
 		const css = createCss();
 
-		export const styles = css.group({ card: { color: "$brand" } });",
+		export const styles = css.group({ card: { color: "brand" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -391,7 +391,7 @@ test("style9 -> pandwind -> style9: preserves concrete theme and project context
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		export const styles = // pandwind:migrate-skip (route: pandwind -> style9 | lowering-residual: validation)
-		css.group({ card: { color: "$brand" } });",
+		css.group({ card: { color: "brand" } });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -456,7 +456,7 @@ test("style9 -> pandwind -> style9: resolves token values across both concrete l
 		const cx = createCx();
 		const css = createCss();
 
-		export const styles = css.group({ card: { color: "$brand" } });",
+		export const styles = css.group({ card: { color: "brand" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -493,7 +493,7 @@ test("style9 -> pandwind -> style9: resolves token values across both concrete l
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		export const styles = // pandwind:migrate-skip (route: pandwind -> style9 | lowering-residual: validation)
-		css.group({ card: { color: "$brand" } });",
+		css.group({ card: { color: "brand" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

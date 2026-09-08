@@ -295,7 +295,7 @@ test("fela -> pandwind -> fela: preserves concrete theme and project context var
 		import { createCss } from "pandwind/css";
 		const css = createCss();
 		const renderer = createRenderer();
-		export const card = css.class({ color: "$brand" });",
+		export const card = css.class({ color: "brand" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -387,7 +387,7 @@ test("fela -> pandwind -> fela: resolves token values across both concrete legs"
 		import { createCss } from "pandwind/css";
 		const css = createCss();
 		const renderer = createRenderer();
-		export const card = css.class({ color: "$brand" });",
+		export const card = css.class({ color: "brand" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

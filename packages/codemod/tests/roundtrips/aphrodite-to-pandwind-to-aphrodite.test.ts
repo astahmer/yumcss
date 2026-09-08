@@ -320,7 +320,7 @@ test("aphrodite -> pandwind -> aphrodite: preserves concrete theme and project c
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const styles = { "card": css.class({ padding: 8, color: "$brand" }) };",
+		export const styles = { "card": css.class({ padding: 8, color: "brand" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -410,7 +410,7 @@ test("aphrodite -> pandwind -> aphrodite: resolves token values across both conc
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const styles = { "card": css.class({ padding: 8, color: "$brand" }) };",
+		export const styles = { "card": css.class({ padding: 8, color: "brand" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

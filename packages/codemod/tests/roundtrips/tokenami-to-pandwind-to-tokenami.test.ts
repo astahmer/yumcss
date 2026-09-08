@@ -240,7 +240,7 @@ test("tokenami -> pandwind -> tokenami: preserves concrete theme and project con
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const card = css.class({ cardGap: "1rem", color: "$brand" });",
+		export const card = css.class({ cardGap: "1rem", color: "$colors.brand" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -313,7 +313,7 @@ test("tokenami -> pandwind -> tokenami: preserves concrete theme and project con
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const card = css.class({ cardGap: "1rem", color: "$brand" });",
+		export const card = css.class({ cardGap: "1rem", color: "$colors.brand" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -400,7 +400,7 @@ test("tokenami -> pandwind -> tokenami: resolves token values across both concre
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const card = css.class({ cardGap: "1rem", color: "$brand" });",
+		export const card = css.class({ cardGap: "1rem", color: "brand" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

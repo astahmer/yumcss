@@ -7,6 +7,7 @@ import {
 	createBuiltinCodemodCatalog,
 	runAdapterMigration,
 } from "../src/swap/index.ts";
+import { TokenReferenceFormat } from "../src/swap/tokens.ts";
 
 const catalog = createBuiltinCodemodCatalog();
 const exampleSource = resolve(import.meta.dirname, "../../../apps/example/src");
@@ -17,7 +18,11 @@ const exampleMeta = loadMetaFromSources({
 	tokens: examplePreset.tokens,
 });
 
-function migrate(source: string, meta?: typeof exampleMeta) {
+function migrate(
+	source: string,
+	meta?: typeof exampleMeta,
+	tokenReferenceFormat?: TokenReferenceFormat,
+) {
 	return runAdapterMigration(source, {
 		from: CodemodAdapterId.Emotion,
 		to: CodemodAdapterId.Pandwind,
@@ -26,6 +31,7 @@ function migrate(source: string, meta?: typeof exampleMeta) {
 		readFile: () => undefined,
 		adapterRegistry: catalog.registry,
 		meta,
+		tokenReferenceFormat,
 	});
 }
 
@@ -39,16 +45,27 @@ describe("verified Pandwind token preservation", () => {
 
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
-		expect(result.code).toContain('color: "$blue-500"');
+		expect(result.code).toContain('color: "blue.500"');
 		expect(result.code).not.toContain('color: "#3182ce"');
-		expect(result.code).toContain('padding: "$4"');
-		expect(result.code).toContain('borderRadius: "$lg"');
+		expect(result.code).toContain('padding: "4"');
+		expect(result.code).toContain('borderRadius: "lg"');
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { createCss } from "pandwind/css";
 			const css = createCss();
 
-			export const card = css.class({ padding: "$4", borderRadius: "$lg", color: "$blue-500" });"
+			export const card = css.class({ padding: "4", borderRadius: "lg", color: "blue.500" });"
 		`);
+	});
+
+	test("can force the legacy Stitches spelling for inferred references", () => {
+		const result = migrate(
+			'import { css } from "@emotion/css";\n' + 'export const card = css({ color: "#3182ce" });',
+			exampleMeta,
+			TokenReferenceFormat.Stitches,
+		);
+
+		expect(result.code).toContain('color: "$blue-500"');
+		expect(result.code).not.toContain('color: "#3182ce"');
 	});
 
 	test("keeps a literal when no target preset is available to prove a token", () => {

@@ -204,7 +204,7 @@ test("authored-css -> pandwind: loads concrete theme and project context variant
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const styles = { "card": css.class({ padding: "1rem", color: "$brand" }) };
+		export const styles = { "card": css.class({ padding: "1rem", color: "brand" }) };
 		export default styles;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -252,7 +252,7 @@ test("authored-css -> pandwind: resolves concrete token values with project cont
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const styles = { "card": css.class({ padding: "1rem", color: "$brand" }) };
+		export const styles = { "card": css.class({ padding: "1rem", color: "brand" }) };
 		export default styles;",
 		  "converted": 1,
 		  "generatedFiles": [],

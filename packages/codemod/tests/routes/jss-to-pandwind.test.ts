@@ -185,7 +185,7 @@ test("jss -> pandwind: loads concrete theme and project context variants", async
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const useStyles = { "card": css.class({ color: "$brand" }) };",
+		export const useStyles = { "card": css.class({ color: "brand" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -233,7 +233,7 @@ test("jss -> pandwind: resolves concrete token values with project context", asy
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const useStyles = { "card": css.class({ color: "$brand" }) };",
+		export const useStyles = { "card": css.class({ color: "brand" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [

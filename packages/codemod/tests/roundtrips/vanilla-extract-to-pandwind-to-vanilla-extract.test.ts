@@ -317,7 +317,7 @@ test("vanilla-extract -> pandwind -> vanilla-extract: preserves concrete theme a
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const card = css.class({ padding: 8, color: "$brand" });",
+		export const card = css.class({ padding: 8, color: "brand" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -352,7 +352,7 @@ test("vanilla-extract -> pandwind -> vanilla-extract: preserves concrete theme a
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
 		export const card = // pandwind:migrate-skip (route: pandwind -> vanilla-extract | lowering-residual: validation)
-		css.class({ padding: 8, color: "$brand" });",
+		css.class({ padding: 8, color: "brand" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -414,7 +414,7 @@ test("vanilla-extract -> pandwind -> vanilla-extract: resolves token values acro
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const card = css.class({ padding: 8, color: "$brand" });",
+		export const card = css.class({ padding: 8, color: "brand" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -449,7 +449,7 @@ test("vanilla-extract -> pandwind -> vanilla-extract: resolves token values acro
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		export const card = // pandwind:migrate-skip (route: pandwind -> vanilla-extract | lowering-residual: validation)
-		css.class({ padding: 8, color: "$brand" });",
+		css.class({ padding: 8, color: "brand" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

@@ -298,7 +298,7 @@ test("sass -> pandwind -> sass: preserves concrete theme and project context var
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const styles = { "card": css.class({ padding: "1rem", color: "$brand" }) };
+		export const styles = { "card": css.class({ padding: "1rem", color: "brand" }) };
 		export default styles;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -335,7 +335,7 @@ test("sass -> pandwind -> sass: preserves concrete theme and project context var
 		      "code": "import { createCss } from "pandwind/css";
 
 		const css = createCss();
-		export const styles = { "card": css.class({ "padding": "1rem", "color": "$brand" }) };
+		export const styles = { "card": css.class({ "padding": "1rem", "color": "brand" }) };
 		export default styles;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -389,7 +389,7 @@ test("sass -> pandwind -> sass: resolves token values across both concrete legs"
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const styles = { "card": css.class({ padding: "1rem", color: "$brand" }) };
+		export const styles = { "card": css.class({ padding: "1rem", color: "brand" }) };
 		export default styles;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -426,7 +426,7 @@ test("sass -> pandwind -> sass: resolves token values across both concrete legs"
 		    "code": "import { createCss } from "pandwind/css";
 
 		const css = createCss();
-		export const styles = { "card": css.class({ "padding": "1rem", "color": "$brand" }) };
+		export const styles = { "card": css.class({ "padding": "1rem", "color": "brand" }) };
 		export default styles;",
 		    "converted": 1,
 		    "generatedFiles": [],

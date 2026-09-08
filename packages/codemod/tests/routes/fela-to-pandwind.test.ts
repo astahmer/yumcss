@@ -186,7 +186,7 @@ test("fela -> pandwind: loads concrete theme and project context variants", asyn
 		import { createCss } from "pandwind/css";
 		const css = createCss();
 		const renderer = createRenderer();
-		export const card = css.class({ color: "$brand" });",
+		export const card = css.class({ color: "brand" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -235,7 +235,7 @@ test("fela -> pandwind: resolves concrete token values with project context", as
 		import { createCss } from "pandwind/css";
 		const css = createCss();
 		const renderer = createRenderer();
-		export const card = css.class({ color: "$brand" });",
+		export const card = css.class({ color: "brand" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [

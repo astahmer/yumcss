@@ -19,7 +19,11 @@ import { SourcePass } from "../source-pass-utils.ts";
 import { hasCssBinding, relativeModuleImport, ensureImport } from "../shared.ts";
 import { SWAP_REGISTRY } from "./swap-registry.ts";
 import { createBuiltinCodemodCatalog } from "./adapter-catalog.ts";
-import type { TokenRefMode } from "./tokens.ts";
+import {
+	TokenReferenceFormat,
+	type TokenReferenceFormat as TokenReferenceFormatValue,
+	type TokenRefMode,
+} from "./tokens.ts";
 import {
 	inspectAdapterCapabilities,
 	type AdapterCapabilities,
@@ -333,6 +337,7 @@ export type {
 	TokenGroupForProperty,
 	TokenReferenceFormatter,
 } from "./tokens.ts";
+export { TOKEN_REFERENCE_FORMATS, TokenReferenceFormat } from "./tokens.ts";
 export {
 	STYLE_LOWERING_REGISTRY,
 	STYLE_LOWERING_SCHEMA,
@@ -618,9 +623,11 @@ export interface SwapOptions {
 	metaDir?: string;
 	/** Token-reference emission for value-capable targets (default "bare"). */
 	tokenRefs?: TokenRefMode;
+	/** Token spelling policy for references emitted by the flat route. */
+	tokenReferenceFormat?: TokenReferenceFormatValue;
 	/** Resolve bridge misses through the real Tailwind engine. */
 	engineResolver?: (utilityClass: string) => readonly { prop: string; value: string }[] | null;
-	/** Tokenize-this: rewrite raw values to authored $tokens (css sources). */
+	/** Tokenize-this: rewrite verified raw values to token references (CSS sources). */
 	tokenize?: boolean;
 	/** Exact raw->token suggestions from a governance report (plans/054).
 	 * When supplied with `tokenize`, ONLY suggested (property, rawValue) pairs
@@ -722,6 +729,7 @@ export function runSwap(
 
 	let siteIndex = 0;
 	const tokenRefs: TokenRefMode = options.tokenRefs ?? "bare";
+	const tokenReferenceFormat = options.tokenReferenceFormat ?? TokenReferenceFormat.Preserve;
 	const headers: string[] = [];
 	const imports: string[] = [];
 	for (const match of matches) {
@@ -776,6 +784,7 @@ export function runSwap(
 			program,
 			capabilities,
 			capabilityReport,
+			tokenReferenceFormat,
 		});
 		if (result.headers !== undefined && result.headers.length > 0) headers.push(...result.headers);
 		if (result.imports !== undefined && result.imports.length > 0) imports.push(...result.imports);

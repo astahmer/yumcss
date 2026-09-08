@@ -19,6 +19,11 @@ import { PandaRecipeKindTag, type PandaRecipeIR } from "./parse.ts";
 import { CSS_PROPERTY_ALIASES } from "../../property-aliases.ts";
 import { expandBuiltinPattern } from "./patterns.ts";
 import type { PandaTheme } from "./theme.ts";
+import {
+	formatTokenPath,
+	TokenReferenceFormat,
+	type TokenReferenceFormat as TokenReferenceFormatValue,
+} from "../../tokens.ts";
 
 const q = (v: string | number | boolean): string =>
 	typeof v === "string" ? JSON.stringify(v) : String(v);
@@ -96,17 +101,21 @@ declare module "pandwind-css.css" {}
  * `<outDir>/preset.ts` — the host Panda theme lowered to a Pandwind preset.
  *
  * Panda keeps semantic tokens in nested `{ value: ... }` objects while
- * Pandwind consumes flat `$token-name` maps. The migration loader performs
- * the lossless flattening; this generated boundary only adapts the data and
- * attaches the token groups to the properties that use them.
+ * Pandwind consumes flat token maps. The migration loader performs the
+ * lossless flattening; this generated boundary adapts the selected token
+ * spelling and attaches the token groups to the properties that use them.
  */
-export function renderPandaPreset(theme: PandaTheme): string {
+
+export function renderPandaPreset(
+	theme: PandaTheme,
+	tokenReferenceFormat: TokenReferenceFormatValue = TokenReferenceFormat.Preserve,
+): string {
 	const tokens = Object.fromEntries(
 		Object.entries(theme.tokens ?? {}).map(([group, values]) => [
 			group,
 			Object.fromEntries(
 				Object.entries(values).map(([path, value]) => [
-					path.startsWith("$") ? path : `$${path.replaceAll(".", "-")}`,
+					formatTokenPath(path, tokenReferenceFormat, path.startsWith("$") ? path : undefined),
 					value,
 				]),
 			),
@@ -237,7 +246,10 @@ export const preset = {
 }
 
 /** `<outDir>/internal.ts` — runtime shorthand/canonicalization for pattern modules. */
-export function renderInternalHelpers(theme: PandaTheme): string {
+export function renderInternalHelpers(
+	theme: PandaTheme,
+	tokenReferenceFormat: TokenReferenceFormatValue = TokenReferenceFormat.Preserve,
+): string {
 	const entries = [...theme.utilityCatalog.propertyAliases.entries()]
 		.map(([k, v]) => `\t${q(k)}: ${q(CSS_PROPERTY_ALIASES.get(v) ?? v)},`)
 		.join("\n");
@@ -314,7 +326,10 @@ export function renderInternalHelpers(theme: PandaTheme): string {
 			Object.entries(theme.tokens).map(([group, values]) => [
 				group,
 				Object.fromEntries(
-					Object.keys(values).map((path) => [path, `$${path.replaceAll(".", "-")}`]),
+					Object.keys(values).map((path) => [
+						path,
+						formatTokenPath(path, tokenReferenceFormat, path.startsWith("$") ? path : undefined),
+					]),
 				),
 			]),
 		),
@@ -345,10 +360,19 @@ const radiusExpansions: Record<string, string[]> = {
 const textStyles: Record<string, Record<string, unknown>> = ${generatedTextStyles};
 const tokenGroupsByProperty: Record<string, string> = ${generatedTokenGroups};
 const tokenRefs: Record<string, Record<string, string>> = ${generatedTokenRefs};
+const tokenReferenceFormat = ${JSON.stringify(tokenReferenceFormat)};
+const tokenReference = (path: string): string => {
+	const normalized = path.startsWith("$") ? path.slice(1).replaceAll("-", ".") : path;
+	if (tokenReferenceFormat === ${JSON.stringify(TokenReferenceFormat.Stitches)})
+		return "$" + normalized.replaceAll(".", "-");
+	return tokenReferenceFormat === ${JSON.stringify(TokenReferenceFormat.DotDelimited)}
+		? normalized
+		: path;
+};
 const builtInTokens = pandwindPreset.tokens as unknown as Record<string, Record<string, unknown>>;
 for (const [group, values] of Object.entries(builtInTokens)) {
 	const refs = tokenRefs[group] ?? {};
-	for (const path of Object.keys(values)) refs[path] ??= "$" + path.replaceAll(".", "-");
+	for (const path of Object.keys(values)) refs[path] ??= tokenReference(path);
 	tokenRefs[group] = refs;
 }
 
@@ -426,8 +450,18 @@ export function splitStyleProps(props: Record<string, unknown>): {
 /* IR -> css.class(...) text                                           */
 /* ------------------------------------------------------------------ */
 
-function irToCall(ir: SwapIR, meta: PandwindMeta, index = 1): string {
-	const result = emitCssClass(ir, meta, { index, tokenRefs: "bare", sort: true });
+function irToCall(
+	ir: SwapIR,
+	meta: PandwindMeta,
+	index = 1,
+	tokenReferenceFormat?: TokenReferenceFormatValue,
+): string {
+	const result = emitCssClass(ir, meta, {
+		index,
+		tokenRefs: "bare",
+		sort: true,
+		tokenReferenceFormat,
+	});
 	if (result.text === "") return "";
 	return result.text;
 }
@@ -446,6 +480,8 @@ function mergeIrs(irs: Array<SwapIR>): SwapIR {
 interface ModuleOptions {
 	/** Import statement for the app's css/cx binding inside emitted modules. */
 	cssImport: string;
+	/** Token spelling policy used by generated style calls. */
+	tokenReferenceFormat?: TokenReferenceFormatValue;
 }
 
 function renderSlotClass(callText: string): string {
@@ -475,7 +511,9 @@ export function renderRecipeModule(
 	for (const slot of slotNames) {
 		const label = slot === "" ? "base" : `base_${slot}`;
 		const ir = recipe.base[slot];
-		lines.push(`const ${label} = ${renderSlotClass(ir === undefined ? "" : irToCall(ir, meta))};`);
+		lines.push(
+			`const ${label} = ${renderSlotClass(ir === undefined ? "" : irToCall(ir, meta, 1, options.tokenReferenceFormat))};`,
+		);
 	}
 
 	// Variant value tables.
@@ -488,14 +526,14 @@ export function renderRecipeModule(
 				for (const slot of slotNames) {
 					const ir = slotMap[slot];
 					lines.push(
-						`\t\t\t${JSON.stringify(slot)}: ${renderSlotClass(ir === undefined ? "" : irToCall(ir, meta))},`,
+						`\t\t\t${JSON.stringify(slot)}: ${renderSlotClass(ir === undefined ? "" : irToCall(ir, meta, 1, options.tokenReferenceFormat))},`,
 					);
 				}
 				lines.push("\t\t},");
 			} else {
 				const ir = slotMap[""];
 				lines.push(
-					`\t\t${JSON.stringify(valueName)}: ${renderSlotClass(ir === undefined ? "" : irToCall(ir, meta))},`,
+					`\t\t${JSON.stringify(valueName)}: ${renderSlotClass(ir === undefined ? "" : irToCall(ir, meta, 1, options.tokenReferenceFormat))},`,
 				);
 			}
 		}
@@ -566,7 +604,7 @@ export function renderRecipeModule(
 			for (const slot of slotNames) {
 				const ir = compound.slots[slot];
 				lines.push(
-					`\t\tif (out[${JSON.stringify(slot)}] !== undefined) out[${JSON.stringify(slot)}].push(${renderSlotClass(ir === undefined || ir.entries.length + ir.residuals.length === 0 ? "" : irToCall(ir, meta))});`,
+					`\t\tif (out[${JSON.stringify(slot)}] !== undefined) out[${JSON.stringify(slot)}].push(${renderSlotClass(ir === undefined || ir.entries.length + ir.residuals.length === 0 ? "" : irToCall(ir, meta, 1, options.tokenReferenceFormat))});`,
 				);
 			}
 			lines.push("\t}");
@@ -575,7 +613,7 @@ export function renderRecipeModule(
 			const push =
 				ir === undefined || (ir.entries.length === 0 && ir.residuals.length === 0)
 					? ""
-					: ` parts.push(${irToCall(ir, meta)});`;
+					: ` parts.push(${irToCall(ir, meta, 1, options.tokenReferenceFormat)});`;
 			lines.push(`\tif (${guard}) {${push} }`);
 		}
 	}
@@ -720,6 +758,7 @@ export function foldRecipeCall(
 	recipe: PandaRecipeIR,
 	props: Record<string, string>,
 	meta: PandwindMeta,
+	tokenReferenceFormat?: TokenReferenceFormatValue,
 ): { text: string; ir: SwapIR } | null {
 	const selected: Array<SwapIR> = [];
 	const slot = recipe.base[""];
@@ -743,7 +782,7 @@ export function foldRecipeCall(
 	}
 	const merged = mergeIrs(selected);
 	if (merged.entries.length === 0 && merged.residuals.length === 0) return null;
-	const text = irToCall(merged, meta);
+	const text = irToCall(merged, meta, 1, tokenReferenceFormat);
 	if (text === "") return null;
 	return { text, ir: merged };
 }

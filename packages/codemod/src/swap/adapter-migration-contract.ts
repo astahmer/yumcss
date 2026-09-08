@@ -15,6 +15,7 @@ import type { ProjectModuleLoader } from "./project-module-loader.ts";
 import type { StyleAdapterRegistry } from "./adapter-registry.ts";
 import type { StyleSystemRegistry } from "./style-systems.ts";
 import type { StyleProgramResidual } from "./semantic-ir.ts";
+import type { TokenReferenceFormat } from "./tokens.ts";
 
 export type { AdapterMigrationOutcome } from "./adapter-contract.ts";
 
@@ -37,6 +38,8 @@ export interface AdapterMigrationOptions {
 	readonly semantic?: AdapterParseContext["semantic"];
 	/** Root-relative shared target modules prepared for this migration. */
 	readonly project?: AdapterProjectBindings;
+	/** Token spelling policy selected for target-owned references. */
+	readonly tokenReferenceFormat?: TokenReferenceFormat;
 }
 
 /** Infrastructure ports used by the adapter migration application service. */

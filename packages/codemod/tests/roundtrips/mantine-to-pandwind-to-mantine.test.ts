@@ -212,7 +212,7 @@ test("mantine -> pandwind -> mantine: preserves concrete theme and project conte
 		      "code": "import { Box } from "@mantine/core";
 		import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const App = () => <Box className={css.class({ color: "$brand", marginLeft: "var(--mantine-spacing-auto)", marginRight: "var(--mantine-spacing-auto)", maxWidth: 400 })}/>;",
+		export const App = () => <Box className={css.class({ color: "brand", marginLeft: "var(--mantine-spacing-auto)", marginRight: "var(--mantine-spacing-auto)", maxWidth: 400 })}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -285,7 +285,7 @@ test("mantine -> pandwind -> mantine: preserves concrete theme and project conte
 		      "code": "import { Box } from "@mantine/core";
 		import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const App = () => <Box className={css.class({ color: "$brand", marginLeft: "var(--mantine-spacing-auto)", marginRight: "var(--mantine-spacing-auto)", maxWidth: 400 })}/>;",
+		export const App = () => <Box className={css.class({ color: "brand", marginLeft: "var(--mantine-spacing-auto)", marginRight: "var(--mantine-spacing-auto)", maxWidth: 400 })}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -372,7 +372,7 @@ test("mantine -> pandwind -> mantine: resolves token values across both concrete
 		    "code": "import { Box } from "@mantine/core";
 		import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const App = () => <Box className={css.class({ color: "$brand", marginLeft: "var(--mantine-spacing-auto)", marginRight: "var(--mantine-spacing-auto)", maxWidth: 400 })}/>;",
+		export const App = () => <Box className={css.class({ color: "brand", marginLeft: "var(--mantine-spacing-auto)", marginRight: "var(--mantine-spacing-auto)", maxWidth: 400 })}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

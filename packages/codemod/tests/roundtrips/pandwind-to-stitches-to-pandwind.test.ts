@@ -390,7 +390,7 @@ test("pandwind -> stitches -> pandwind: resolves token values across both concre
 		const css = createCss();
 
 
-		export const card = css.class({ padding: "1rem", color: "$brand" });",
+		export const card = css.class({ padding: "1rem", color: "brand" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

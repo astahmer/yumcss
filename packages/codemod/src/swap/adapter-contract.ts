@@ -30,6 +30,7 @@ import type {
 	AdapterOfficialApiManifest,
 	AdapterPluginChain,
 } from "./adapter-evidence.ts";
+import type { TokenReferenceFormat } from "./tokens.ts";
 
 /** Versioned source/target adapter protocol for the migration pivot. */
 export const ADAPTER_CONTRACT_SCHEMA = "pandwind.style-adapter/3" as const;
@@ -188,6 +189,8 @@ export interface AdapterEmitContext {
 	readonly sourceModules?: readonly string[];
 	/** Source-owned module patterns whose imports are removed after target emission. */
 	readonly sourceModuleMatchers?: readonly ((moduleSpecifier: string) => boolean)[];
+	/** Token spelling policy selected for this migration. */
+	readonly tokenReferenceFormat?: TokenReferenceFormat;
 	/** Shared target modules prepared by a project migration. */
 	readonly project?: AdapterProjectBindings;
 	/** Host binding context for adapters that emit framework wrappers. */

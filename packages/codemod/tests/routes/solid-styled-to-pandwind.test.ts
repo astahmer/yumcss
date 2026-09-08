@@ -202,7 +202,7 @@ test("solid-styled -> pandwind: loads concrete theme and project context variant
 		const cx = createCx();
 		const css = createCss();
 
-		export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "$brand" }), stableClass: "pw-t6bw3o", inheritedClass: undefined, classAttribute: "class", attrs: {}, joinClass: cx });",
+		export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "brand" }), stableClass: "pw-t6bw3o", inheritedClass: undefined, classAttribute: "class", attrs: {}, joinClass: cx });",
 		    "converted": 1,
 		    "generatedFiles": [
 		      {
@@ -258,7 +258,7 @@ test("solid-styled -> pandwind: resolves concrete token values with project cont
 		const cx = createCx();
 		const css = createCss();
 
-		export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "$brand" }), stableClass: "pw-t6bw3o", inheritedClass: undefined, classAttribute: "class", attrs: {}, joinClass: cx });",
+		export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "brand" }), stableClass: "pw-t6bw3o", inheritedClass: undefined, classAttribute: "class", attrs: {}, joinClass: cx });",
 		  "converted": 1,
 		  "generatedFiles": [
 		    {

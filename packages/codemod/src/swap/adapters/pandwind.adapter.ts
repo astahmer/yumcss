@@ -47,7 +47,7 @@ import {
 	componentExpressionForSubject,
 	intrinsicTagForSubject,
 } from "../host-component-rewriter.ts";
-import { TokenCatalog } from "../tokens.ts";
+import { formatTokenReference, normalizeTokenKey, TokenCatalog } from "../tokens.ts";
 import type { ProjectModuleLoader } from "../project-module-loader.ts";
 import {
 	dirnameDocumentPath,
@@ -441,14 +441,13 @@ function pandwindSourceValue(
 	context: AdapterParseContext,
 ): StyleValue {
 	if (value.kind !== StyleValueKindTag.Literal || typeof value.value !== "string") return value;
-	if (!value.value.startsWith("$")) return value;
 	const group = pandwindTokenGroup(property);
 	const catalog = TokenCatalog.fromContract(context.config.tokenCatalog);
 	if (group === undefined || catalog === undefined) return value;
-	const reference = value.value
-		.slice(1)
-		.replace(new RegExp(`^${group}\\.`), "")
-		.replaceAll("-", ".");
+	const normalized = normalizeTokenKey(value.value);
+	const reference = normalized.startsWith(`${group}.`)
+		? normalized.slice(group.length + 1)
+		: normalized;
 	const match = catalog.findByReference([group], reference);
 	return match === undefined
 		? value
@@ -482,7 +481,8 @@ function preserveKnownPresetTokens(
 	return catalog.preserveProgram(
 		program,
 		pandwindTokenGroup,
-		(match) => `$${match.ref.replaceAll(".", "-")}`,
+		(match, _property, existingAuthored) =>
+			formatTokenReference(match, context?.tokenReferenceFormat, existingAuthored),
 	);
 }
 

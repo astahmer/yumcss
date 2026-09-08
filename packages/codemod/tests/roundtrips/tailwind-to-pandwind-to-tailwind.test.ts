@@ -241,7 +241,7 @@ test("tailwind -> pandwind -> tailwind: preserves concrete theme and project con
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const App = () => <div className={css.class({ padding: "$card", color: "$brand" })}/>;",
+		export const App = () => <div className={css.class({ padding: "card", color: "brand" })}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -315,7 +315,7 @@ test("tailwind -> pandwind -> tailwind: preserves concrete theme and project con
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const App = () => <div className={css.class({ padding: "$card", color: "$brand" })}/>;",
+		export const App = () => <div className={css.class({ padding: "card", color: "brand" })}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -403,7 +403,7 @@ test("tailwind -> pandwind -> tailwind: resolves token values across both concre
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const App = () => <div className={css.class({ padding: "$card", color: "$brand" })}/>;",
+		export const App = () => <div className={css.class({ padding: "card", color: "brand" })}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

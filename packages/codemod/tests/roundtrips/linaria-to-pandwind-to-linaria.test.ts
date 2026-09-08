@@ -316,7 +316,7 @@ test("linaria -> pandwind -> linaria: preserves concrete theme and project conte
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const card = css.class({ padding: "1rem", color: "$brand" });",
+		export const card = css.class({ padding: "1rem", color: "brand" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -351,7 +351,7 @@ test("linaria -> pandwind -> linaria: preserves concrete theme and project conte
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
 		export const card = // pandwind:migrate-skip (route: pandwind -> linaria | lowering-residual: validation)
-		css.class({ padding: "1rem", color: "$brand" });",
+		css.class({ padding: "1rem", color: "brand" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -413,7 +413,7 @@ test("linaria -> pandwind -> linaria: resolves token values across both concrete
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const card = css.class({ padding: "1rem", color: "$brand" });",
+		export const card = css.class({ padding: "1rem", color: "brand" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -448,7 +448,7 @@ test("linaria -> pandwind -> linaria: resolves token values across both concrete
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		export const card = // pandwind:migrate-skip (route: pandwind -> linaria | lowering-residual: validation)
-		css.class({ padding: "1rem", color: "$brand" });",
+		css.class({ padding: "1rem", color: "brand" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

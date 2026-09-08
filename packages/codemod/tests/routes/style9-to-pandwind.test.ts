@@ -193,7 +193,7 @@ test("style9 -> pandwind: loads concrete theme and project context variants", as
 		const cx = createCx();
 		const css = createCss();
 
-		export const styles = css.group({ card: { color: "$brand" } });",
+		export const styles = css.group({ card: { color: "brand" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -243,7 +243,7 @@ test("style9 -> pandwind: resolves concrete token values with project context", 
 		const cx = createCx();
 		const css = createCss();
 
-		export const styles = css.group({ card: { color: "$brand" } });",
+		export const styles = css.group({ card: { color: "brand" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [

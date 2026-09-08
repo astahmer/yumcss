@@ -145,7 +145,7 @@ test("tailwind -> pandwind: loads concrete theme and project context variants", 
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const App = () => <div className={css.class({ padding: "$card", color: "$brand" })}/>;",
+		export const App = () => <div className={css.class({ padding: "card", color: "brand" })}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -180,7 +180,7 @@ test("tailwind -> pandwind: loads concrete theme and project context variants", 
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const App = () => <div className={css.class({ padding: "$card", color: "$brand" })}/>;",
+		export const App = () => <div className={css.class({ padding: "card", color: "brand" })}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -227,7 +227,7 @@ test("tailwind -> pandwind: resolves concrete token values with project context"
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const App = () => <div className={css.class({ padding: "$card", color: "$brand" })}/>;",
+		export const App = () => <div className={css.class({ padding: "card", color: "brand" })}/>;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [

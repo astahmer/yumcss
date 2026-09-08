@@ -185,7 +185,7 @@ test("stylex -> pandwind: loads concrete theme and project context variants", as
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const styles = { "card": css.class({ padding: "8px", color: "$brand" }) };",
+		export const styles = { "card": css.class({ padding: "8px", color: "brand" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -233,7 +233,7 @@ test("stylex -> pandwind: resolves concrete token values with project context", 
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const styles = { "card": css.class({ padding: "8px", color: "$brand" }) };",
+		export const styles = { "card": css.class({ padding: "8px", color: "brand" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [

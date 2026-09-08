@@ -316,7 +316,7 @@ test("compiled -> pandwind -> compiled: preserves concrete theme and project con
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const card = css.class({ padding: 8, color: "$brand" });",
+		export const card = css.class({ padding: 8, color: "brand" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -351,7 +351,7 @@ test("compiled -> pandwind -> compiled: preserves concrete theme and project con
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
 		export const card = // pandwind:migrate-skip (route: pandwind -> compiled | lowering-residual: validation)
-		css.class({ padding: 8, color: "$brand" });",
+		css.class({ padding: 8, color: "brand" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -413,7 +413,7 @@ test("compiled -> pandwind -> compiled: resolves token values across both concre
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const card = css.class({ padding: 8, color: "$brand" });",
+		export const card = css.class({ padding: 8, color: "brand" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -448,7 +448,7 @@ test("compiled -> pandwind -> compiled: resolves token values across both concre
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		export const card = // pandwind:migrate-skip (route: pandwind -> compiled | lowering-residual: validation)
-		css.class({ padding: 8, color: "$brand" });",
+		css.class({ padding: 8, color: "brand" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

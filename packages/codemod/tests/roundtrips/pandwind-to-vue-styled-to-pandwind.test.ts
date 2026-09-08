@@ -271,7 +271,7 @@ test("pandwind -> vue-styled -> pandwind: preserves concrete theme and project c
 		const css = createCss();
 
 
-		export const card = defineComponent({ setup(_props, { attrs, slots }) { const style = css.class({ padding: "1rem", color: "$brand" }); return () => h("div", { ...attrs, class: cx(style, attrs.class) }, slots.default?.()); } });",
+		export const card = defineComponent({ setup(_props, { attrs, slots }) { const style = css.class({ padding: "1rem", color: "brand" }); return () => h("div", { ...attrs, class: cx(style, attrs.class) }, slots.default?.()); } });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -351,7 +351,7 @@ test("pandwind -> vue-styled -> pandwind: preserves concrete theme and project c
 		const css = createCss();
 
 
-		export const card = defineComponent({ setup(_props, { attrs, slots }) { const style = css.class({ padding: "1rem", color: "$brand" }); return () => h("div", { ...attrs, class: cx(style, attrs.class) }, slots.default?.()); } });",
+		export const card = defineComponent({ setup(_props, { attrs, slots }) { const style = css.class({ padding: "1rem", color: "brand" }); return () => h("div", { ...attrs, class: cx(style, attrs.class) }, slots.default?.()); } });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -444,7 +444,7 @@ test("pandwind -> vue-styled -> pandwind: resolves token values across both conc
 		const css = createCss();
 
 
-		export const card = defineComponent({ setup(_props, { attrs, slots }) { const style = css.class({ padding: "1rem", color: "$brand" }); return () => h("div", { ...attrs, class: cx(style, attrs.class) }, slots.default?.()); } });",
+		export const card = defineComponent({ setup(_props, { attrs, slots }) { const style = css.class({ padding: "1rem", color: "brand" }); return () => h("div", { ...attrs, class: cx(style, attrs.class) }, slots.default?.()); } });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

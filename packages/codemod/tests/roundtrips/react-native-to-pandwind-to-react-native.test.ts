@@ -319,7 +319,7 @@ test("react-native -> pandwind -> react-native: preserves concrete theme and pro
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const styles = { "card": css.class({ padding: 8, color: "$brand" }) };",
+		export const styles = { "card": css.class({ padding: 8, color: "brand" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -410,7 +410,7 @@ test("react-native -> pandwind -> react-native: resolves token values across bot
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const styles = { "card": css.class({ padding: 8, color: "$brand" }) };",
+		export const styles = { "card": css.class({ padding: 8, color: "brand" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

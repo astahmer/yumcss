@@ -17,6 +17,7 @@ import type {
 	Token,
 } from "../types/typings.ts";
 import { hashCssVar } from "./hash.ts";
+import { tokenNameAliases } from "../lib/token-path.ts";
 
 export interface TokenMaps {
 	tokensByProp: Map<string, Set<string>>;
@@ -49,15 +50,18 @@ export function buildTokenMaps(
 			const cssVarHash = hashCssVar(pairs.join([group, tokenName]), debug);
 			const tokenPath = `${group}.${tokenName}`;
 
-			tokenList.add(tokenName);
-			flatTokens.set(tokenPath, {
+			const token: Token = {
 				group,
 				path: tokenPath,
 				name: tokenName,
 				value: tokenValue,
 				hash,
 				cssVar: cssVarRef(cssVarHash),
-			});
+			};
+			for (const alias of tokenNameAliases(tokenName)) {
+				tokenList.add(alias);
+				flatTokens.set(`${group}.${alias}`, token);
+			}
 		}
 	}
 
@@ -89,15 +93,16 @@ export function buildTokenMaps(
 				tokensByProp.set(prop, new Set());
 			}
 			const tokenList = tokensByProp.get(prop)!;
-			tokenList.add(token);
+			for (const alias of tokenNameAliases(token)) tokenList.add(alias);
 
 			const tokenPath = `${prop}.${token}`;
-			flatTokens.set(tokenPath, {
+			const simpleToken: SimpleToken = {
 				path: tokenPath,
 				name: token,
 				value: preset.properties[prop][token],
 				hash: pairs.join([prop, token]),
-			} satisfies SimpleToken);
+			};
+			for (const alias of tokenNameAliases(token)) flatTokens.set(`${prop}.${alias}`, simpleToken);
 		}
 	}
 

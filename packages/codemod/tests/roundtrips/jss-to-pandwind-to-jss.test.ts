@@ -316,7 +316,7 @@ test("jss -> pandwind -> jss: preserves concrete theme and project context varia
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const useStyles = { "card": css.class({ color: "$brand" }) };",
+		export const useStyles = { "card": css.class({ color: "brand" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -351,7 +351,7 @@ test("jss -> pandwind -> jss: preserves concrete theme and project context varia
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
 		export const useStyles = { "card": // pandwind:migrate-skip (route: pandwind -> jss | lowering-residual: validation)
-		css.class({ color: "$brand" }) };",
+		css.class({ color: "brand" }) };",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -413,7 +413,7 @@ test("jss -> pandwind -> jss: resolves token values across both concrete legs", 
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const useStyles = { "card": css.class({ color: "$brand" }) };",
+		export const useStyles = { "card": css.class({ color: "brand" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -448,7 +448,7 @@ test("jss -> pandwind -> jss: resolves token values across both concrete legs", 
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		export const useStyles = { "card": // pandwind:migrate-skip (route: pandwind -> jss | lowering-residual: validation)
-		css.class({ color: "$brand" }) };",
+		css.class({ color: "brand" }) };",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

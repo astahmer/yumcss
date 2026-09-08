@@ -397,6 +397,7 @@ async function mainMigrate(argv: string[]): Promise<void> {
 			report: args.report,
 			write: !args.dryRun,
 			skipMarker: args.skipMarker,
+			tokenReferenceFormat: args.tokenReferenceFormat,
 		});
 		return;
 	}
@@ -449,6 +450,7 @@ async function mainMigrate(argv: string[]): Promise<void> {
 			tokenize: args.tokenize,
 			sort: args.sort,
 			dedup: args.dedup,
+			tokenReferenceFormat: args.tokenReferenceFormat,
 		});
 		totalConverted += result.converted;
 		totalResiduals += result.unmappedTokens.length;
@@ -645,6 +647,7 @@ async function runAdapterRoute(
 			meta,
 			packageJson,
 			project: project?.bindings,
+			tokenReferenceFormat: args.tokenReferenceFormat,
 		});
 		const codeChanged = result.code !== source;
 		const outputFile =

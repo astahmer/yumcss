@@ -14,6 +14,8 @@ export interface SwapEntry {
 	conditions: string[];
 	/** camelCase canonical CSS property. */
 	prop: string;
+	/** Optional token spelling retained when a source call authored one. */
+	authored?: string;
 	/**
 	 * Resolved value as written by the source (design-vocab entries carry
 	 * concrete values — `#3182ce` — because resolveDesignStyle already ran;

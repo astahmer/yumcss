@@ -310,7 +310,7 @@ test("bamboo -> pandwind -> bamboo: preserves concrete theme and project context
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const card = css.class({ color: "$brand" });",
+		export const card = css.class({ color: "brand" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -345,7 +345,7 @@ test("bamboo -> pandwind -> bamboo: preserves concrete theme and project context
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
 		export const card = // pandwind:migrate-skip (route: pandwind -> bamboo | lowering-residual: validation)
-		css.class({ color: "$brand" });",
+		css.class({ color: "brand" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -405,7 +405,7 @@ test("bamboo -> pandwind -> bamboo: resolves token values across both concrete l
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const card = css.class({ color: "$brand" });",
+		export const card = css.class({ color: "brand" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -440,7 +440,7 @@ test("bamboo -> pandwind -> bamboo: resolves token values across both concrete l
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		export const card = // pandwind:migrate-skip (route: pandwind -> bamboo | lowering-residual: validation)
-		css.class({ color: "$brand" });",
+		css.class({ color: "brand" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

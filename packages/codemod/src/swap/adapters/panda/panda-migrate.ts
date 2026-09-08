@@ -50,6 +50,10 @@ import {
 } from "./migration-stages.ts";
 import type { PandaTheme } from "./theme.ts";
 import { literalToPlain, normalizePandaStyleObject, parsePandaCalls } from "./parse.ts";
+import {
+	TokenReferenceFormat,
+	type TokenReferenceFormat as TokenReferenceFormatValue,
+} from "../../tokens.ts";
 
 export interface PandaMigrateOptions {
 	projectRoot: string;
@@ -66,6 +70,8 @@ export interface PandaMigrateOptions {
 	workspace?: PandaMigrationWorkspace;
 	/** @internal injectable host-file effects for config integration and emission. */
 	fileSystem?: PandaProjectFileSystem;
+	/** Token spelling policy used by generated Pandwind sources and modules. */
+	tokenReferenceFormat?: TokenReferenceFormatValue;
 }
 
 export interface PandaMigrateReport {
@@ -104,8 +110,12 @@ export function inferCommonRoot(files: Array<{ path: string }>): string {
 /* emission helpers                                                    */
 /* ------------------------------------------------------------------ */
 
-function irToText(ir: SwapIrLike, meta: PandwindMeta): string {
-	return emitPandaStyle(ir, meta);
+function irToText(
+	ir: SwapIrLike,
+	meta: PandwindMeta,
+	tokenReferenceFormat?: TokenReferenceFormatValue,
+): string {
+	return emitPandaStyle(ir, meta, tokenReferenceFormat);
 }
 
 const cssImportFor = (depth: number): string =>
@@ -666,6 +676,7 @@ export function factoryEdits(
 	source: string,
 	meta: PandwindMeta,
 	theme: PandaTheme,
+	tokenReferenceFormat?: TokenReferenceFormatValue,
 ): Array<{ start: number; end: number; text: string }> | null {
 	const kept: Array<string> = [];
 	const styleEntries: Array<[string, unknown]> = [];
@@ -707,8 +718,8 @@ export function factoryEdits(
 
 	const styleObj: Record<string, unknown> = {};
 	for (const [k, v] of styleEntries) styleObj[theme.utilityCatalog.resolveProperty(k) ?? k] = v;
-	const ir = convertPandaStyle(styleObj, theme);
-	const text = irToText(ir, meta);
+	const ir = convertPandaStyle(styleObj, theme, tokenReferenceFormat);
+	const text = irToText(ir, meta, tokenReferenceFormat);
 	if (text === "") return null;
 
 	const normalizedStyle = normalizePandaStyleObject(
@@ -747,6 +758,7 @@ export function factoryEdits(
 
 export async function runPandaMigration(options: PandaMigrateOptions): Promise<PandaMigrateReport> {
 	const { projectRoot, meta, skipMarker } = options;
+	const tokenReferenceFormat = options.tokenReferenceFormat ?? TokenReferenceFormat.Preserve;
 	const outDirName = options.outDirName || "pandwind";
 	const report: PandaMigrateReport = {
 		filesScanned: 0,
@@ -814,10 +826,10 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 		emitted.push({ path, content });
 	};
 
-	queueEmission(join(outDir, "preset.ts"), renderPandaPreset(theme));
+	queueEmission(join(outDir, "preset.ts"), renderPandaPreset(theme, tokenReferenceFormat));
 	queueEmission(join(outDir, "css.ts"), renderCssBootstrap(true));
 	queueEmission(join(outDir, "virtual.d.ts"), renderVirtualCssDeclaration());
-	queueEmission(join(outDir, "internal.ts"), renderInternalHelpers(theme));
+	queueEmission(join(outDir, "internal.ts"), renderInternalHelpers(theme, tokenReferenceFormat));
 
 	/** Extra per-file edits: declaration removals, folds, import insertion. */
 	const fileExtras = new Map<string, Array<{ start: number; end: number; text: string }>>();
@@ -838,7 +850,7 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 				`definition '${def.name}': anatomy/spread elements dropped (parts() has no pandwind runtime meaning)`,
 			);
 		}
-		const ir = convertPandaRecipe(bodyText, def.kind, theme);
+		const ir = convertPandaRecipe(bodyText, def.kind, theme, tokenReferenceFormat);
 		if (ir === null) return null;
 		for (const residual of ir.residuals) countResidual(report, residual.kind);
 		return ir;
@@ -861,7 +873,10 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 		recipeModuleNames.set(`${def.file.path}#${def.start}`, moduleName);
 		emittedRecipeDefs.push(def);
 		const cssImport = `import { css, cx } from "${cssImportFor(1)}";`;
-		let content = renderRecipeModule(exportName, ir, meta, { cssImport });
+		let content = renderRecipeModule(exportName, ir, meta, {
+			cssImport,
+			tokenReferenceFormat,
+		});
 		if (anatomyOnly) {
 			content =
 				`// ${skipMarker} (ark-ui anatomy/parts recipe — slot styling needs a manual pass)\n` +
@@ -915,7 +930,7 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 		}
 		if (ir.kind === PandaRecipeKindTag.Cva && sites.length === 1 && sites[0]!.argsLiteral) {
 			const site = sites[0]!;
-			const folded = foldRecipeCall(ir, site.props ?? {}, meta);
+			const folded = foldRecipeCall(ir, site.props ?? {}, meta, tokenReferenceFormat);
 			if (folded !== null) {
 				addExtra(def.file.path, { start: def.start, end: def.end, text: "" });
 				addExtra(site.file.path, {
@@ -1092,9 +1107,12 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 		const masked = (start: number): boolean => mask.isExcluded(start);
 
 		// css({...}) -> css.class({...}) / marker
-		for (const call of parsePandaCalls(file.source, masked, { theme })) {
+		for (const call of parsePandaCalls(file.source, masked, {
+			theme,
+			tokenReferenceFormat,
+		})) {
 			if (call.kind !== PandaCallKindTag.Css || call.ir === undefined) continue;
-			const text = irToText(call.ir, meta);
+			const text = irToText(call.ir, meta, tokenReferenceFormat);
 			for (const residual of call.ir.residuals) countResidual(report, residual.kind);
 			const hasUnrepresentable = call.ir.residuals.some(
 				(residual) => residual.kind === SwapResidualKindTag.Unrepresentable,
@@ -1149,7 +1167,7 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 
 		// <panda.x …>
 		for (const el of scanFactoryElements(file.source, masked)) {
-			const elEdits = factoryEdits(el, file.source, meta, theme);
+			const elEdits = factoryEdits(el, file.source, meta, theme, tokenReferenceFormat);
 			if (elEdits === null) {
 				report.factoryElementsFlagged++;
 				countResidual(report, "dynamic");
@@ -1168,6 +1186,7 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 						]),
 				),
 				theme,
+				tokenReferenceFormat,
 			);
 			for (const residual of factoryIr.residuals) countResidual(report, residual.kind);
 			// rename the matching </panda.x> closer too (nesting-aware)

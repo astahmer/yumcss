@@ -186,7 +186,7 @@ test("aphrodite -> pandwind: loads concrete theme and project context variants",
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const styles = { "card": css.class({ padding: 8, color: "$brand" }) };",
+		export const styles = { "card": css.class({ padding: 8, color: "brand" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -234,7 +234,7 @@ test("aphrodite -> pandwind: resolves concrete token values with project context
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const styles = { "card": css.class({ padding: 8, color: "$brand" }) };",
+		export const styles = { "card": css.class({ padding: 8, color: "brand" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [

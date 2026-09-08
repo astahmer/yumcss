@@ -1,7 +1,15 @@
 import type { SwapEntry } from "../../ir.ts";
 import type { Emitter } from "../../emit.ts";
 import { ADAPTER_CAPABILITIES_SCHEMA } from "../../capabilities.ts";
-import { authoredTokenRef, qualifyRef, resolvedTokenRef, TokenRefModeTag } from "../../tokens.ts";
+import {
+	authoredTokenRef,
+	formatTokenPath,
+	qualifyRef,
+	resolvedTokenRef,
+	TokenReferenceFormat,
+	TokenRefModeTag,
+	type TokenReferenceFormat as TokenReferenceFormatValue,
+} from "../../tokens.ts";
 import { CodemodAdapterId } from "../../identifiers.ts";
 
 const propertyGroups: Record<string, string> = {
@@ -26,18 +34,22 @@ function tokenValue(
 	entry: SwapEntry,
 	mode: "off" | "bare" | "group",
 	tokens: import("pandwind/types/typings").AnyTokens | undefined,
+	format: TokenReferenceFormatValue,
 ): string | true | number | Array<string | number> {
 	if (mode === TokenRefModeTag.Off) return entry.value;
 	if (typeof entry.value !== "string") return entry.value;
 	const authored = authoredTokenRef(entry.value);
 	if (authored !== null) {
 		const group = propertyGroups[entry.prop] ?? "colors";
-		return mode === TokenRefModeTag.Group ? qualifyRef(authored, group) : authored;
+		const formatted = formatTokenPath(authored, format, entry.value);
+		return mode === TokenRefModeTag.Group ? qualifyRef(formatted, group) : formatted;
 	}
 	const group = propertyGroups[entry.prop];
 	if (group === undefined) return entry.value;
 	const ref = resolvedTokenRef([group], entry.value, tokens);
-	return ref === null ? entry.value : mode === TokenRefModeTag.Group ? qualifyRef(ref, group) : ref;
+	if (ref === null) return entry.value;
+	const formatted = formatTokenPath(ref, format);
+	return mode === TokenRefModeTag.Group ? qualifyRef(formatted, group) : formatted;
 }
 const formatValue = (value: string | true | number | Array<string | number>): string =>
 	typeof value === "string"
@@ -59,7 +71,14 @@ const emitPanda: Emitter = (ir, meta, context) => {
 		const body = entries
 			.map(
 				(entry) =>
-					`${entry.prop}: ${formatValue(tokenValue(entry, context.tokenRefs ?? "bare", meta.tokens))}`,
+					`${entry.prop}: ${formatValue(
+						tokenValue(
+							entry,
+							context.tokenRefs ?? "bare",
+							meta.tokens,
+							context.tokenReferenceFormat ?? TokenReferenceFormat.Preserve,
+						),
+					)}`,
 			)
 			.join(", ");
 		if (conditions.length === 0) parts.unshift(body);

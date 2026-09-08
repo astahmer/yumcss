@@ -271,7 +271,7 @@ test("pandwind -> solid-styled -> pandwind: preserves concrete theme and project
 		const css = createCss();
 
 
-		export const card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "$brand" }), stableClass: "pw-t752ck", inheritedClass: undefined, classAttribute: "class", attrs: {}, joinClass: cx });",
+		export const card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "brand" }), stableClass: "pw-t752ck", inheritedClass: undefined, classAttribute: "class", attrs: {}, joinClass: cx });",
 		      "converted": 1,
 		      "generatedFiles": [
 		        {
@@ -356,7 +356,7 @@ test("pandwind -> solid-styled -> pandwind: preserves concrete theme and project
 		const css = createCss();
 
 
-		export const card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "$brand" }), stableClass: "pw-t752ck", inheritedClass: undefined, classAttribute: "class", attrs: {}, joinClass: cx });",
+		export const card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "brand" }), stableClass: "pw-t752ck", inheritedClass: undefined, classAttribute: "class", attrs: {}, joinClass: cx });",
 		      "converted": 1,
 		      "generatedFiles": [
 		        {
@@ -454,7 +454,7 @@ test("pandwind -> solid-styled -> pandwind: resolves token values across both co
 		const css = createCss();
 
 
-		export const card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "$brand" }), stableClass: "pw-t752ck", inheritedClass: undefined, classAttribute: "class", attrs: {}, joinClass: cx });",
+		export const card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "brand" }), stableClass: "pw-t752ck", inheritedClass: undefined, classAttribute: "class", attrs: {}, joinClass: cx });",
 		    "converted": 1,
 		    "generatedFiles": [
 		      {

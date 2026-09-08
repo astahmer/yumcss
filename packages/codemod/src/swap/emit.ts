@@ -15,7 +15,14 @@ import { mapClassList, mapToken, type MappedToken } from "../map.ts";
 import { tokenizeClassList } from "../tokens.ts";
 import type { AnyTokens } from "pandwind/types/typings";
 import type { SwapEntry, SwapIR } from "./ir.ts";
-import { TokenRefModeTag, type TokenRefMode } from "./tokens.ts";
+import {
+	authoredTokenRef,
+	formatTokenPath,
+	TokenReferenceFormat,
+	TokenRefModeTag,
+	type TokenReferenceFormat as TokenReferenceFormatValue,
+	type TokenRefMode,
+} from "./tokens.ts";
 import { SwapResidualKindTag } from "./ir.ts";
 import type { StyleProgram } from "./semantic-ir.ts";
 import type { AdapterCapabilities, AdapterCapabilityReport } from "./capabilities.ts";
@@ -27,6 +34,8 @@ export interface EmitterContext {
 	index: number;
 	/** How token references are emitted ("off" = resolved literals). */
 	tokenRefs?: TokenRefMode;
+	/** Token spelling policy for inferred token references. */
+	tokenReferenceFormat?: TokenReferenceFormat;
 	/** Canonical CSS property-order sorting inside emitted scopes. */
 	sort?: boolean;
 	/** Versioned semantic view for adapters; flat emitters may use `SwapIR`. */
@@ -515,13 +524,23 @@ function toDesignTokenRef(
 	value: string,
 	mode: TokenRefMode,
 	fallbackGroup: string,
+	format: TokenReferenceFormatValue,
+	existingAuthored?: string,
 ): string | number | null {
+	const sourceAuthored = existingAuthored ?? (authoredTokenRef(value) === null ? undefined : value);
+	const sourceRef = sourceAuthored === undefined ? null : authoredTokenRef(sourceAuthored);
+	if (sourceRef !== null) {
+		const formatted = formatTokenPath(sourceRef, format, sourceAuthored);
+		if (mode === TokenRefModeTag.Group) return `${fallbackGroup}.${formatted}`;
+		return /^\d+$/.test(formatted) ? Number(formatted) : formatted;
+	}
 	for (const group of groups) {
 		const hit = inverseTokens(tokens).get(group)?.get(value.toLowerCase());
 		if (hit !== undefined) {
-			if (mode === TokenRefModeTag.Group) return `${group}.${hit}`;
+			const formatted = formatTokenPath(hit, format, existingAuthored);
+			if (mode === TokenRefModeTag.Group) return `${group}.${formatted}`;
 			// Bare spacing keys are numbers in the vocabulary (pad: [4, 8]).
-			return /^\d+$/.test(hit) ? Number(hit) : hit;
+			return /^\d+$/.test(formatted) ? Number(formatted) : formatted;
 		}
 	}
 	void fallbackGroup;
@@ -545,6 +564,7 @@ function placeEntry(
 	scope: DesignScope,
 	mode: TokenRefMode,
 	tokens: AnyTokens | undefined,
+	format: TokenReferenceFormatValue,
 ): boolean {
 	const str = typeof entry.value === "string" ? entry.value : String(entry.value);
 
@@ -557,7 +577,7 @@ function placeEntry(
 			return true;
 		case "backgroundColor":
 		case "background": {
-			const ref = toDesignTokenRef(tokens, ["colors"], str, mode, "colors");
+			const ref = toDesignTokenRef(tokens, ["colors"], str, mode, "colors", format, entry.authored);
 			if (ref === null) return false;
 			scope.frame.push(["fill", ref]);
 			return true;
@@ -565,7 +585,9 @@ function placeEntry(
 		case "borderRadius": {
 			const list = splitList(str);
 			if (list === null) return false;
-			const refs = list.map((part) => toDesignTokenRef(tokens, ["radii"], part, mode, "radii"));
+			const refs = list.map((part) =>
+				toDesignTokenRef(tokens, ["radii"], part, mode, "radii", format, entry.authored),
+			);
 			if (refs.some((r) => r === null)) return false;
 			scope.frame.push(["corners", refs.length === 1 ? (refs[0] as string) : (refs as string[])]);
 			return true;
@@ -573,14 +595,24 @@ function placeEntry(
 		case "padding": {
 			const list = splitList(str);
 			if (list === null) return false;
-			const refs = list.map((part) => toDesignTokenRef(tokens, ["spacing"], part, mode, "spacing"));
+			const refs = list.map((part) =>
+				toDesignTokenRef(tokens, ["spacing"], part, mode, "spacing", format, entry.authored),
+			);
 			if (refs.some((r) => r === null)) return false;
 			scope.frame.push(["pad", refs.length === 1 ? refs[0] : refs]);
 			return true;
 		}
 		case "paddingInline":
 		case "paddingBlock": {
-			const ref = toDesignTokenRef(tokens, ["spacing"], str, mode, "spacing");
+			const ref = toDesignTokenRef(
+				tokens,
+				["spacing"],
+				str,
+				mode,
+				"spacing",
+				format,
+				entry.authored,
+			);
 			if (ref === null) return false;
 			scope.frame.push([entry.prop === "paddingInline" ? "padX" : "padY", ref]);
 			return true;
@@ -597,7 +629,15 @@ function placeEntry(
 		case "gap":
 		case "columnGap":
 		case "rowGap": {
-			const ref = toDesignTokenRef(tokens, ["spacing"], str, mode, "spacing");
+			const ref = toDesignTokenRef(
+				tokens,
+				["spacing"],
+				str,
+				mode,
+				"spacing",
+				format,
+				entry.authored,
+			);
 			if (ref === null) return false;
 			scope.layout.push([
 				entry.prop === "gap" ? "gap" : entry.prop === "columnGap" ? "gapX" : "gapY",
@@ -613,25 +653,41 @@ function placeEntry(
 			return str === "nowrap"; // default value — drop silently
 		}
 		case "color": {
-			const ref = toDesignTokenRef(tokens, ["colors"], str, mode, "colors");
+			const ref = toDesignTokenRef(tokens, ["colors"], str, mode, "colors", format, entry.authored);
 			if (ref === null) return false;
 			scope.text.push(["color", ref]);
 			return true;
 		}
 		case "fontSize": {
-			const ref = toDesignTokenRef(tokens, ["fontSizes"], str, mode, "fontSizes");
+			const ref = toDesignTokenRef(
+				tokens,
+				["fontSizes"],
+				str,
+				mode,
+				"fontSizes",
+				format,
+				entry.authored,
+			);
 			if (ref === null) return false;
 			scope.text.push(["size", ref]);
 			return true;
 		}
 		case "fontWeight": {
-			const ref = toDesignTokenRef(tokens, ["fontWeights"], str, mode, "fontWeights");
+			const ref = toDesignTokenRef(
+				tokens,
+				["fontWeights"],
+				str,
+				mode,
+				"fontWeights",
+				format,
+				entry.authored,
+			);
 			if (ref === null) return false;
 			scope.text.push(["weight", ref]);
 			return true;
 		}
 		case "fontFamily": {
-			const ref = toDesignTokenRef(tokens, ["fonts"], str, mode, "fonts");
+			const ref = toDesignTokenRef(tokens, ["fonts"], str, mode, "fonts", format, entry.authored);
 			if (ref === null) return false;
 			scope.text.push(["font", ref]);
 			return true;
@@ -656,6 +712,7 @@ function emitDesignVocabWithCallee(
 ): EmitterResult {
 	const residuals: SwapIR["residuals"] = [];
 	const mode: TokenRefMode = ctx.tokenRefs ?? "bare";
+	const format = ctx.tokenReferenceFormat ?? TokenReferenceFormat.Preserve;
 	const groups = groupByConditions(ir.entries);
 	const parts: string[] = [];
 	for (const groupEntries of groups.values()) {
@@ -683,7 +740,7 @@ function emitDesignVocabWithCallee(
 				}
 				continue;
 			}
-			if (!placeEntry(entry, scope, mode, meta.tokens)) {
+			if (!placeEntry(entry, scope, mode, meta.tokens, format)) {
 				scope.raw.push([entry.prop, entry.value]);
 				residuals.push({
 					kind: SwapResidualKindTag.UnknownValue,

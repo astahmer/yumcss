@@ -345,7 +345,7 @@ describe("official custom-token loaders", () => {
 			"css({ color: "brand.500" })"
 		`);
 		expect(emit(CodemodAdapterId.Pandwind)).toMatchInlineSnapshot(`
-			"css.class({ color: "$brand-500" })"
+			"css.class({ color: "brand.500" })"
 		`);
 		const preserve = (adapter: StyleAdapter) =>
 			adapter.tokenPolicy!.preserve(literalProgram, {
@@ -400,7 +400,7 @@ describe("official custom-token loaders", () => {
 			ref: "brand",
 			resolved: "#123456",
 		});
-		expect(adapter!.emit(preserved, emitContext).text).toContain('background: "$brand"');
+		expect(adapter!.emit(preserved, emitContext).text).toContain('background: "brand"');
 	});
 
 	test("reuses generated Pandwind preset tokens during an async migration", async () => {
@@ -445,13 +445,13 @@ describe("official custom-token loaders", () => {
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).toContain('color: "$brand-500"');
+		expect(result.code).toContain('color: "brand.500"');
 		expect(result.code).not.toContain('color: "#123456"');
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { createCss } from "pandwind/css";
 			const css = createCss();
 
-			export const card = css.class({ color: "$brand-500" });"
+			export const card = css.class({ color: "brand.500" });"
 		`);
 	});
 
@@ -501,8 +501,8 @@ describe("official custom-token loaders", () => {
 		expect(result.converted).toBe(1);
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
-		expect(result.code).toContain('backgroundColor: "$blue-500"');
-		expect(result.code).toContain('color: "$white"');
+		expect(result.code).toContain('backgroundColor: "blue-500"');
+		expect(result.code).toContain('color: "white"');
 		expect(result.code).not.toContain("var(--color-blue-500)");
 	});
 

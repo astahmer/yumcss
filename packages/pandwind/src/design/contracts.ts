@@ -1,4 +1,5 @@
 import type { AnyTokens, StyleObject } from "../types/typings.ts";
+import { canonicalTokenName } from "../lib/token-path.ts";
 
 export type DesignModuleKey = "$frame" | "$layout" | "$text";
 export type TokenLookup = (group: string, value: string | number) => string;
@@ -30,5 +31,11 @@ export const createTokenLookup =
 	(group, value) => {
 		if (typeof value === "number") return String(value);
 		const groupTokens = tokens?.[group];
-		return groupTokens?.[value] !== undefined ? String(groupTokens[value]) : value;
+		if (groupTokens?.[value] !== undefined) return String(groupTokens[value]);
+		const canonical = canonicalTokenName(value);
+		if (groupTokens?.[canonical] !== undefined) return String(groupTokens[canonical]);
+		for (const [name, tokenValue] of Object.entries(groupTokens ?? {})) {
+			if (canonicalTokenName(name) === canonical) return String(tokenValue);
+		}
+		return value;
 	};
