@@ -4,7 +4,7 @@ import { OPENTUI_BACKEND } from "./opentui.ts";
 import { REACT_NATIVE_BACKEND } from "./react-native.ts";
 import type { StyleBackendFactory } from "./registry.ts";
 
-export const BUILTIN_STYLE_BACKEND_PLUGINS: readonly StyleBackendFactory[] = [
+export const BUILTIN_STYLE_BACKEND_FACTORIES: readonly StyleBackendFactory[] = [
 	CSS_BACKEND,
 	OBJECT_BACKEND,
 	REACT_NATIVE_BACKEND,

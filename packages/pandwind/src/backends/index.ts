@@ -20,16 +20,10 @@ export type { OpentuiBackendOptions } from "./opentui.ts";
 export {
 	STYLE_BACKEND_SCHEMA,
 	STYLE_BACKEND_FACTORIES,
-	STYLE_BACKEND_PLUGINS,
 	STYLE_BACKENDS,
 	createStyleBackendRegistry,
 } from "./registry.ts";
-export type {
-	BuiltinBackendId,
-	StyleBackendFactory,
-	StyleBackendPlugin,
-	StyleBackendRegistry,
-} from "./registry.ts";
+export type { BuiltinBackendId, StyleBackendFactory, StyleBackendRegistry } from "./registry.ts";
 export type {
 	BackendArtifactKind,
 	BackendCapabilityContract,
@@ -41,7 +35,6 @@ export type {
 	StyleBackend,
 } from "./types.ts";
 export { StyleBackendId } from "./types.ts";
-export { BUILTIN_STYLE_BACKEND_PLUGINS } from "./plugin.ts";
 export { STYLE_BACKEND_CONTRACT_SCHEMA, createStyleBackendContractSuite } from "./contract.ts";
 export type {
 	StyleBackendContractFailure,

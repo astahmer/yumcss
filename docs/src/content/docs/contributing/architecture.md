@@ -969,7 +969,7 @@ bare-object output and proves reversibility for JSS, Aphrodite, Style9, StyleX,
 and React Native named-style routes.
 
 Backends follow the same rule. CSS, object, React Native, and OpenTUI are
-registered as `StyleBackendFactory` plugins and are exercised by the generic
+registered as `StyleBackendFactory` implementations and are exercised by the generic
 `StyleBackendContractSuite`. The suite checks construction, capability
 publication, representative lowering, and stable repeated declarations; a
 new backend can be substituted in a local registry without changing the

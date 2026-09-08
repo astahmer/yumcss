@@ -30,9 +30,9 @@ describe("style backend registry", () => {
 		expect(registry.create<string>("test-target").declare("color", "red")).toBe("color:red");
 	});
 
-	test("names the extension point as a plugin registry", () => {
-		const plugin = STYLE_BACKENDS.factories[0]!;
-		const registry = createStyleBackendRegistry().registerPlugin(plugin);
-		expect(registry.plugins.map((entry) => entry.id)).toEqual([plugin.id]);
+	test("keeps the extension point as a factory registry", () => {
+		const factory = STYLE_BACKENDS.factories[0]!;
+		const registry = createStyleBackendRegistry().register(factory);
+		expect(registry.factories.map((entry) => entry.id)).toEqual([factory.id]);
 	});
 });

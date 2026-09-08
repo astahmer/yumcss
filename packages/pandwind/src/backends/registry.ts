@@ -1,4 +1,4 @@
-import { BUILTIN_STYLE_BACKEND_PLUGINS } from "./plugin.ts";
+import { BUILTIN_STYLE_BACKEND_FACTORIES } from "./plugin.ts";
 import { STYLE_BACKEND_SCHEMA, type StyleBackend, type StyleBackendId } from "./types.ts";
 import type { BackendCapabilityContract } from "./types.ts";
 
@@ -11,16 +11,9 @@ export interface StyleBackendFactory<TOptions = unknown, TArtifact = unknown> {
 	create(options?: TOptions): StyleBackend<TArtifact>;
 }
 
-export interface StyleBackendPlugin<
-	TOptions = unknown,
-	TArtifact = unknown,
-> extends StyleBackendFactory<TOptions, TArtifact> {}
-
 export interface StyleBackendRegistry {
-	readonly plugins: readonly StyleBackendPlugin[];
 	readonly factories: readonly StyleBackendFactory[];
 	register(factory: StyleBackendFactory): StyleBackendRegistry;
-	registerPlugin(plugin: StyleBackendPlugin): StyleBackendRegistry;
 	get(id: string): StyleBackendFactory | undefined;
 	create<TArtifact = unknown>(id: string, options?: unknown): StyleBackend<TArtifact>;
 }
@@ -30,21 +23,15 @@ export function createStyleBackendRegistry(
 ): StyleBackendRegistry {
 	const factories = new Map<string, StyleBackendFactory>();
 	const registry: StyleBackendRegistry = {
-		get plugins() {
-			return [...factories.values()];
-		},
 		get factories() {
 			return [...factories.values()];
 		},
 		register(factory) {
-			return registry.registerPlugin(factory);
-		},
-		registerPlugin(plugin) {
-			if (plugin.schema !== STYLE_BACKEND_SCHEMA)
-				throw new Error(`unsupported style backend schema: ${plugin.schema}`);
-			if (factories.has(plugin.id))
-				throw new Error(`style backend already registered: ${plugin.id}`);
-			factories.set(plugin.id, plugin);
+			if (factory.schema !== STYLE_BACKEND_SCHEMA)
+				throw new Error(`unsupported style backend schema: ${factory.schema}`);
+			if (factories.has(factory.id))
+				throw new Error(`style backend already registered: ${factory.id}`);
+			factories.set(factory.id, factory);
 			return registry;
 		},
 		get: (id) => factories.get(id),
@@ -62,9 +49,7 @@ export type BuiltinBackendId = StyleBackendId;
 
 /** Built-ins are composed here; individual adapters do not know the registry. */
 export const STYLE_BACKEND_FACTORIES: readonly StyleBackendFactory[] =
-	BUILTIN_STYLE_BACKEND_PLUGINS;
-
-export const STYLE_BACKEND_PLUGINS: readonly StyleBackendPlugin[] = BUILTIN_STYLE_BACKEND_PLUGINS;
+	BUILTIN_STYLE_BACKEND_FACTORIES;
 
 export const STYLE_BACKENDS: StyleBackendRegistry =
 	createStyleBackendRegistry(STYLE_BACKEND_FACTORIES);
