@@ -360,9 +360,10 @@ describe("runPandaMigration", () => {
 		expect(app).not.toContain("styled-system");
 		expect(app).toContain("<div className={css.class(");
 		expect(app).toContain("</div>");
-		// trailing comma tolerated; the target preset spelling is the Pandwind
-		// `$gray-100` reference, not Panda's dotted source path.
-		expect(app).toContain('css.class({ background: "$gray-100"');
+		// The fixture only declares the custom `fg` token, so the unknown Panda
+		// default path remains an authored dotted value until target metadata
+		// proves a matching Pandwind token.
+		expect(app).toContain('css.class({ backgroundColor: "gray.100"');
 
 		// recipe module emitted with identical public name
 		const barrel = readFileSync(join(dir, "src", "pandwind", "recipes", "index.ts"), "utf8");
