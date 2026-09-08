@@ -1085,7 +1085,7 @@ Suggestion safety is exact-match only: a raw literal is replaceable when the tar
 ## Plan inventory and remaining claims
 
 Every Markdown file under `plans/` was reviewed against the current source,
-tests, and recorded evidence on 2026-09-02. Plans marked complete describe
+tests, and recorded evidence on 2026-09-08. Plans marked complete describe
 shipped behavior; they are not reopened because an older design sketch still
 contains an unchecked example. The remaining implementation boundaries are
 deliberate:
@@ -1110,11 +1110,15 @@ deliberate:
   compiler-aware runtime pruning. Its runtime-only accessor checklist is not
   pending work.
 - `plans/054-token-usage-governance.md` is complete for the tooling ledger: versioned report, effective universe, strictness classification, exact suggestions, reachability, prune changesets, CLI/Inspector/lint/codemod consumption, and the governance bench. Studio-side paginated queries for very large catalogs and an approved write-mode removal command remain bounded follow-ups inside their owning plans, not open governance work.
+- `plans/065-proof-and-adoption-closure.md` owns the next actionable wave:
+  ordinary-CI evidence checks, scanner-backed host rewrites, broader custom
+  project-context fixtures, additional installed-project proofs, an opt-in MCP
+  validation host, and consumer generated-artifact checks.
 
-No other reviewed plan currently identifies an actionable, unimplemented
-product change separate from those boundaries. New work should first add a
-capability contract and proof to one of the open plans rather than create a
-parallel architecture or duplicate an already-shipped plan.
+The remaining unchecked items in plans 040, 041, and 044 are therefore split
+between the bounded follow-up above and deliberate product limits. New work
+should first add a capability contract and proof to an owning plan rather than
+create a parallel architecture or duplicate an already-shipped plan.
 
 ## Expert target emission and generated files
 
