@@ -1,6 +1,6 @@
 /**
  * Collection engine (plans/023 unification) — the shared layer between the
- * analyze CLI and apps/inspector's studio server. One import point:
+ * analyze CLI and apps/inspector's studio server.
  *
  * - payload assembly: {@link gather}
  * - generated-artifact parsers: parseThemeVars / parseUtilityUnions /
@@ -12,7 +12,6 @@
  *   (runCli, createCssBudgetService, collectFiles, loadTwConfig)
  */
 export { gather } from "./gather.ts";
-export { CollectionToolkit } from "./facade.ts";
 export { analyzeStyleUsage, buildPruneChangeset, computeContrastWarnings } from "./analytics.ts";
 export {
 	flattenTokenGroups,
@@ -56,8 +55,6 @@ export type {
 	UtilityUnion,
 } from "./types.ts";
 
-// Facade over the analyze core primitives — consumers of ./collect get the
-// whole collection toolbox from one specifier.
 export { collectFiles, loadTwConfig } from "../analyze.ts";
 export { runCli } from "../cli.ts";
 export {

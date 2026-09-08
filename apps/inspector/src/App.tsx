@@ -4,7 +4,12 @@ import { InspectorApi, type AnalyticsHistoryPoint, type HistoryListItem } from "
 import { diffRuns, type HistoryEntry } from "./lib/history-diff.ts";
 import { InspectorExport } from "./lib/export.ts";
 import { filterNamed, makeTextMatcher } from "./lib/filter.ts";
-import { CollectionToolkit, type ThemeVarCategory } from "pandwind-analyze/collect";
+import {
+	groupThemeVars,
+	resolveChain,
+	splitTokenValue,
+	type ThemeVarCategory,
+} from "pandwind-analyze/collect";
 import type { StudioPayload, ThemeVar, TokenSection, TokenGraph, TokenTier } from "./types.ts";
 import {
 	authoredTokenSpelling,
@@ -79,14 +84,14 @@ function ColorSwatches(props: {
 	matches: (text: string) => boolean;
 }) {
 	const swatches = filterNamed(props.section.entries, props.matches).map((entry) => {
-		const split = CollectionToolkit.splitTokenValue(entry.value);
+		const split = splitTokenValue(entry.value);
 		if (split.conditionBound && split.json !== null) {
 			return { name: entry.name, modes: split.json, chain: [entry.name] };
 		}
 		if (isHex(split.raw))
 			return { name: entry.name, modes: { base: split.raw }, chain: [entry.name] };
 		// $ref or named ref -> resolve through raw colors
-		const chain = CollectionToolkit.resolveChain(split.raw, props.rawColors);
+		const chain = resolveChain(split.raw, props.rawColors);
 		const leaf = chain[chain.length - 1] ?? "";
 		if (isHex(leaf)) return { name: entry.name, modes: { base: leaf }, chain };
 		return null;
@@ -144,9 +149,9 @@ function DesignSystemView(props: {
 	const sectionsById = new Map(d.tokenSections.map((s) => [s.id, s]));
 	const rawColors = new Map<string, string>();
 	for (const e of sectionsById.get("colors")?.entries ?? []) {
-		if (!CollectionToolkit.splitTokenValue(e.value).conditionBound) rawColors.set(e.name, e.value);
+		if (!splitTokenValue(e.value).conditionBound) rawColors.set(e.name, e.value);
 	}
-	const groupedVars = useMemo(() => CollectionToolkit.groupThemeVars(d.themeVars), [d.themeVars]);
+	const groupedVars = useMemo(() => groupThemeVars(d.themeVars), [d.themeVars]);
 
 	const fontSizeEntries = sectionsById.get("fontSizes")?.entries ?? [];
 	const weightEntries = sectionsById.get("fontWeights")?.entries ?? [];

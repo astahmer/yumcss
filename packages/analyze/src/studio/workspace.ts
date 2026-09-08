@@ -191,5 +191,3 @@ class DefaultStudioWorkspace implements StudioWorkspacePort {
 
 export const createStudioWorkspace = (options: StudioWorkspaceOptions = {}): StudioWorkspacePort =>
 	new DefaultStudioWorkspace(options);
-
-export const createNodeStudioWorkspace = (): StudioWorkspacePort => createStudioWorkspace();

@@ -6,7 +6,7 @@ import { createStudioCodemodEvaluator } from "./evaluator.ts";
 import { createStudioServer } from "./server.ts";
 import { createStudioSession } from "./session.ts";
 import { createStaticStudioPreviewHost } from "./static-preview.ts";
-import { createNodeStudioWorkspace } from "./workspace.ts";
+import { createStudioWorkspace } from "./workspace.ts";
 
 const openInBrowser = (url: string): void => {
 	const command =
@@ -26,7 +26,7 @@ const validateCommand = (command: Command): void => {
 };
 
 const runStudio = async (root: string, shouldOpen: boolean): Promise<void> => {
-	const workspace = createNodeStudioWorkspace();
+	const workspace = createStudioWorkspace();
 	const evaluator = createStudioCodemodEvaluator();
 	const session = createStudioSession({
 		workspace,

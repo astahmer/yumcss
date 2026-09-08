@@ -44,7 +44,7 @@ export type { StudioAppHandle, StudioAppOptions } from "./app.ts";
 export { createInMemoryStudioUiProvider } from "./ui-provider.ts";
 export type { StudioUiPort } from "./ui-provider.ts";
 export { createNodeStudioUiProvider } from "./ui-node.ts";
-export { createNodeStudioWorkspace, createStudioWorkspace } from "./workspace.ts";
+export { createStudioWorkspace } from "./workspace.ts";
 export type { StudioWorkspaceOptions, StudioWorkspaceWatcher } from "./workspace.ts";
 export { createStudioCodemodEvaluator } from "./evaluator.ts";
 export { runStudioCli } from "./cli.ts";
