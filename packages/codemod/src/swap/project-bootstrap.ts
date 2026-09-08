@@ -572,7 +572,7 @@ function presetSource(
 	const configType = typescript ? ' as import("pandwind/preset").AnyCssConfig' : "";
 	const presetConditions: AdapterConditionCatalog = {
 		base: "",
-		...(config.conditionCatalog ?? {}),
+		...config.conditionCatalog,
 		...conditions,
 	};
 	return `import { definePreset } from "pandwind/preset";

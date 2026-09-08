@@ -103,7 +103,7 @@ export interface AdapterProjectConfig {
 	readonly artifacts?: readonly AdapterGeneratedArtifactEvidence[];
 }
 
-export type AdapterConditionValue = string | readonly string[];
+type AdapterConditionValue = string | readonly string[];
 export type AdapterConditionCatalog = Readonly<Record<string, AdapterConditionValue>>;
 
 /** Project-owned modules shared by generated target code. Paths are root-relative. */

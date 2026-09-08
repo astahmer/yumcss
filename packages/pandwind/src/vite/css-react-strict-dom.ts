@@ -2,7 +2,7 @@ import { NodeKind } from "../ast-node-kind.ts";
 import { walk, type OxcNode } from "../tw/literal.ts";
 
 /** The Pandwind RSD carrier is an explicit CSS source, independent of basenames. */
-export const REACT_STRICT_DOM_SOURCE = "pandwind/react-strict-dom" as const;
+const REACT_STRICT_DOM_SOURCE = "pandwind/react-strict-dom" as const;
 const REACT_STRICT_DOM_NATIVE_PLATFORM = "native" as const;
 const REACT_STRICT_DOM_NATIVE_MEMBER = "Native" as const;
 

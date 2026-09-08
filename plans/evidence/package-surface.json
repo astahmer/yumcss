@@ -47,7 +47,8 @@
 				"./stack/preact",
 				"./react-native",
 				"./opentui",
-				"./backends"
+				"./backends",
+				"./react-strict-dom"
 			],
 			"owner": "integration",
 			"maturity": "research",

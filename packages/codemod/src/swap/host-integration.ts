@@ -5,7 +5,7 @@ import { ensureImport } from "../shared.ts";
 /** The file-like virtual id used by Next/Webpack, where URI schemes are rejected. */
 export const PANDWIND_NEXT_CSS_ID = "pandwind-css.css" as const;
 
-export interface HostProjectFileSystem {
+interface HostProjectFileSystem {
 	read(path: string): string | undefined;
 	exists(path: string): boolean;
 }

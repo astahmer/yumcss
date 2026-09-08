@@ -169,9 +169,8 @@ export async function executeMigrationProof(
 	const scenario = requireScenario(request.scenario);
 	const lane = requireLane(scenario, request.lane);
 	const workspace = createReferenceWorkspace(request.referencesRoot);
-	const referenceSelection: MigrationProofReferenceSelection = {
-		...(request.reference === undefined ? {} : { reference: request.reference }),
-	};
+	const referenceSelection: MigrationProofReferenceSelection =
+		request.reference === undefined ? {} : { reference: request.reference };
 	if (request.prepare) await prepareScenario(scenario, referenceSelection, workspace);
 	const result = await scenario.run(lane, {
 		...runContext(request, workspace, scenario, writeEnvelope),

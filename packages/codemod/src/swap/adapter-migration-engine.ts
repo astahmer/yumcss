@@ -1574,14 +1574,14 @@ function runAdapterMigrationInternal(
 		);
 	if (sourceCssSurvives) {
 		code = aliasTargetCssBinding(code);
-		for (const statement of [...imports]) {
+		for (const statement of imports) {
 			const aliased = aliasTargetCssBinding(statement);
 			if (aliased !== statement) {
 				imports.delete(statement);
 				imports.add(aliased);
 			}
 		}
-		for (const statement of [...generatedStatements]) {
+		for (const statement of generatedStatements) {
 			const aliased = aliasTargetCssBinding(statement);
 			if (aliased !== statement) {
 				generatedStatements.delete(statement);
@@ -1598,7 +1598,7 @@ function runAdapterMigrationInternal(
 			sourceAdapter.sourceModuleMatchers,
 		)
 	) {
-		for (const statement of [...imports]) {
+		for (const statement of imports) {
 			if (
 				/^import\s*\{\s*cx\s*\}\s*from\s*["'][^"']*pandwind\/cx["'];?$/u.test(statement.trim()) ||
 				/^const\s+cx\s*=\s*createCx\(\);?$/u.test(statement.trim())

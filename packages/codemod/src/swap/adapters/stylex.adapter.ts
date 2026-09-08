@@ -665,7 +665,7 @@ const STYLEX_PROPERTY_NAMES = new Set([
 	"zIndex",
 ]);
 
-export function stylexNumericValue(value: StyleValue, property?: string): StyleValue {
+function stylexNumericValue(value: StyleValue, property?: string): StyleValue {
 	const numeric =
 		value.kind === StyleValueKindTag.Literal && typeof value.value === "number"
 			? value.value
