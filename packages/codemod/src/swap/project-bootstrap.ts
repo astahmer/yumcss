@@ -666,6 +666,7 @@ async function loadSourceConfig(request: ProjectBootstrapRequest): Promise<Adapt
 function loadGeneratedMeta(
 	files: readonly AdapterGeneratedFile[],
 	directory: string,
+	tokens: Readonly<Record<string, Readonly<Record<string, string>>>> | undefined,
 ): PandwindMeta {
 	const temp = mkdtempSync(join(tmpdir(), "pandwind-codemod-meta-"));
 	try {
@@ -686,6 +687,7 @@ function loadGeneratedMeta(
 			twTsPath: join(temp, "tw.ts"),
 			bridgePath: join(temp, "bridge.ts"),
 			interopPath: join(temp, "pandwind.interop.json"),
+			tokens: tokens === undefined ? undefined : pandwindTokenGroups(tokens),
 		});
 	} finally {
 		rmSync(temp, { recursive: true, force: true });
@@ -791,7 +793,11 @@ export async function createPandwindProjectSupport(
 			...viteConfigChanges,
 			...enableTypeScriptExtensionImports(request, viteConfigChanges.length > 0),
 		],
-		...(metaFiles === undefined ? {} : { meta: loadGeneratedMeta(metaFiles, directory) }),
+		...(metaFiles === undefined
+			? {}
+			: {
+					meta: loadGeneratedMeta(metaFiles, directory, sourceConfig.tokenCatalog?.groups),
+				}),
 		sourceConfig,
 	};
 }

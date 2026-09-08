@@ -71,6 +71,24 @@ describe("Pandwind project bootstrap", () => {
 		expect(preset).toContain('"$card": "1rem"');
 	});
 
+	test("carries generated target token spellings into the migration metadata", async () => {
+		const support = await createPandwindProjectSupport({
+			root: "/project",
+			sourceAdapter: CodemodAdapterId.Tailwind,
+			targetAdapter: CodemodAdapterId.Pandwind,
+			outputDirectory: "pandwind",
+			readFile: (file) =>
+				file === "/project/styles.css"
+					? '@import "tailwindcss";\n@theme { --color-brand: #123456; }'
+					: undefined,
+			listFiles: () => ["/project/styles.css"],
+		});
+
+		expect(support.meta?.tokens).toMatchObject({
+			colors: { $brand: "#123456" },
+		});
+	});
+
 	test(
 		"removes Tailwind graph directives while preserving authored CSS",
 		async () => {

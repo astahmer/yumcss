@@ -46,7 +46,7 @@
 	"ssr": {
 		"markupEquivalent": true,
 		"sourceMarkup": "<div data-proof=\"true\" class=\"bg-brand px-4 py-2 text-white hover:bg-blue-600\">Proof</div>",
-		"targetMarkup": "<div data-proof=\"true\" class=\"tgs34v 1szmlq4 ympxnl c0xeqe pzvf2w\">Proof</div>"
+		"targetMarkup": "<div data-proof=\"true\" class=\"3yks9n 1dszenz 1mfwe5l 7nvuka 19foiwf\">Proof</div>"
 	},
 	"browser": {
 		"checked": true,
@@ -70,7 +70,7 @@
 	},
 	"css": {
 		"sourceBytes": 4568,
-		"targetBytes": 317,
+		"targetBytes": 331,
 		"targetNotLarger": true
 	}
 }
