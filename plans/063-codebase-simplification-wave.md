@@ -1,6 +1,6 @@
 # Codebase simplification wave plan
 
-Status: proposed
+Status: complete
 
 ## Context
 
@@ -289,68 +289,85 @@ This record is evidence for the cleanup, not a new package API.
 
 ## Implementation steps
 
-1. Create the candidate inventory from source imports, package exports, docs,
-   tests, and generated entrypoints. Mark each candidate keep, merge, or
-   delete before changing code.
-2. Add the canonical migration-use-case substitution test and migrate CLI,
-   unplugin, playground, and matrix callers to it.
-3. Remove the generic one-stage migration pipeline and executor/use-case
-   forwarding layers that have no independent consumer. Keep thin convenience
-   calls only when the inventory proves they are useful.
-4. Consolidate Node/browser catalog assembly behind one environment-aware
-   composition boundary. Add adapter identity parity and browser-safety tests.
-5. Delete `CollectionToolkit` and update inspector imports. Delete the no-op
-   `createNodeStudioWorkspace` alias and update the Studio CLI and tests.
-6. Simplify the backend registry's duplicate collections and audit the source
-   scanner classifier/service projections. Preserve any surface with an
-   independent lifecycle and add a substitution test for it.
-7. Audit `packages/codemod/src/swap/index.ts` and package exports. Remove only
-   unconsumed internal re-exports and add an explicit surface ownership check.
-8. Update architecture documentation and relevant package READMEs. Record
-   removed names and their replacements so stale internal imports fail clearly.
-9. Run focused tests after each slice, then full codemod/analyze/playground
-   suites, typechecks, builds, docs checks, Knip, package export smoke tests,
-   and `git diff --check`.
-10. Split every slice into its own JJ revision. The working copy must retain
-    unrelated user changes without absorbing them into cleanup revisions.
+1. [x] Create the candidate inventory from source imports, package exports, docs,
+       tests, and generated entrypoints. Mark each candidate keep, merge, or
+       delete before changing code.
+2. [x] Add the canonical migration-use-case substitution test and migrate CLI,
+       unplugin, playground, and matrix callers to it.
+3. [x] Remove the generic one-stage migration pipeline and executor/use-case
+       forwarding layers that have no independent consumer. Keep thin convenience
+       calls only when the inventory proves they are useful.
+4. [x] Consolidate Node/browser catalog assembly behind one environment-aware
+       composition boundary. Add adapter identity parity and browser-safety tests.
+5. [x] Delete `CollectionToolkit` and update inspector imports. Delete the no-op
+       `createNodeStudioWorkspace` alias and update the Studio CLI and tests.
+6. [x] Simplify the backend registry's duplicate collections and audit the source
+       scanner classifier/service projections. Preserve any surface with an
+       independent lifecycle and add a substitution test for it.
+7. [x] Audit `packages/codemod/src/swap/index.ts` and package exports. Remove only
+       unconsumed internal re-exports and add an explicit surface ownership check.
+8. [x] Update architecture documentation and relevant package READMEs. Record
+       removed names and their replacements so stale internal imports fail clearly.
+9. [x] Run focused tests after each slice, then full codemod/analyze/playground
+       suites, typechecks, builds, docs checks, Knip, package export smoke tests,
+       and `git diff --check`.
+10. [x] Split every slice into its own JJ revision. The working copy must retain
+        unrelated user changes without absorbing them into cleanup revisions.
 
-## Open questions
+## Resolved decisions
 
-1. Should `runAdapterMigration*` remain as documented thin convenience calls,
-   or should all codemod callers use `STYLE_MIGRATION_USE_CASE` directly?
-2. Does any external consumer rely on the generic pipeline schema, or can it be
-   removed before the first release as an unneeded compatibility shape?
-3. Should the shared catalog assembler receive a single environment object, or
-   should the existing module-loader and Tailwind-resolver ports remain
-   separate for clearer dependency ownership?
-4. Which codemod `swap` exports are deliberate package contracts versus
-   repository-only test/proof helpers?
-5. Does the source scanner need a public classifier port at all once its
-   service exposes the same behavior, or does a non-parser consumer use it
-   independently?
+1. Keep `runAdapterMigration` and `runAdapterMigrationAsync` as thin calls over
+   `STYLE_MIGRATION_USE_CASE`; callers that need composition use the port
+   directly, while the convenience functions cannot bypass it.
+2. Remove the generic one-stage pipeline and executor compatibility shapes.
+   Panda's multi-stage pipeline remains because it owns a distinct project
+   migration lifecycle.
+3. Keep module-loader, filesystem-reader, cross-module-resolver, and
+   Tailwind-resolver capabilities as separate injected ports. They have
+   different host safety and lifecycle requirements even though Node and
+   browser catalogs now share one adapter plugin/registry assembler.
+4. Treat `packages/codemod/src/swap/index.ts` and the explicit analyze package
+   subpaths as the public contract. Remove implementation-only forwarding
+   exports, and list every public subpath as a Knip entry.
+5. Keep the source scanner registry/service split. The registry owns mutable
+   adapter/plugin registration; the service owns shared parse/scan access.
+   Their internal classifier is private and has no separate public projection.
+
+The implementation slices are recorded in focused revisions:
+
+- `c4f77491` — canonical migration use case;
+- `42a89a2c` — shared Node/browser catalog assembly;
+- `0b69ddaf` — analyzer and Studio facade removal;
+- `fe8bd76b` — backend registry projection removal;
+- `eb227be6` — source-scanner classifier projection cleanup;
+- `cc507348` — codemod and tooling export cleanup;
+- `80da8102` — architecture ownership documentation;
+- `2e071acc` — generated JavaScript bundler fixture correction;
+- `cf880387` — Playground browser catalog caller correction;
+- `b4d26528` — repository formatting normalization.
 
 ## Acceptance criteria
 
-- [ ] One canonical generic migration orchestration port and one default
+- [x] One canonical generic migration orchestration port and one default
       implementation remain; no generic one-stage pipeline bypasses it.
-- [ ] CLI, unplugin, Playground, MCP, and matrix callers use the same
+- [x] CLI, unplugin, Playground, MCP, and matrix callers use the same
       migration composition boundary.
-- [ ] Node and browser catalogs share adapter identity composition and differ
+- [x] Node and browser catalogs share adapter identity composition and differ
       only through explicit injected environment capabilities.
-- [ ] `CollectionToolkit` and the no-op Studio workspace alias are removed or
+- [x] `CollectionToolkit` and the no-op Studio workspace alias are removed or
       have a documented, evidence-backed reason to remain.
-- [ ] Backend registry duplicate projections are removed; source-scanner
+- [x] Backend registry duplicate projections are removed; source-scanner
       projections are either consolidated or justified by independent policy
       and substitution tests.
-- [ ] Every retained orchestration port has one default implementation and at
+- [x] Every retained orchestration port has one default implementation and at
       least one focused substitution test.
-- [ ] The codemod export surface contains no unowned, unconsumed forwarding
+- [x] The codemod export surface contains no unowned, unconsumed forwarding
       symbols; package smoke imports cover intentional public subpaths.
-- [ ] The architecture guide records the final ownership map and the removed
+- [x] The architecture guide records the final ownership map and the removed
       compatibility paths.
-- [ ] Focused tests, full codemod/analyze/playground tests, typechecks, builds,
+- [x] Focused tests, full codemod/analyze/playground tests, typechecks, builds,
       docs checks, Knip, package export checks, and formatting pass.
-- [ ] Each implementation slice is recorded in a focused JJ revision, and
+- [x] Each implementation slice is recorded in a focused JJ revision, and
       unrelated working-copy changes remain untouched.
 
 ## Decisions log
