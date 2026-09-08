@@ -124,6 +124,7 @@ export {
 	RealRepositoryProofDimension,
 	RealRepositoryProofDimensionStatus,
 	RealRepositoryProofStatus,
+	InstalledProjectProofCheckTag,
 	DifferentialProofMode,
 	MigrationStageId,
 	HostComponentRewriterId,
@@ -507,12 +508,17 @@ export {
 	MigrationRouteMaturityTag,
 	MigrationRouteProofExecutionTag,
 	MigrationRouteProofRouteId,
+	evaluateMigrationRouteProof,
 	findMigrationRouteProof,
 	migrationRouteProofCatalog,
 	validateMigrationRouteProofCatalog,
 	validateMigrationRouteProofEvidence,
 } from "./route-proof-catalog.ts";
-export type { MigrationRouteProofSpec } from "./route-proof-catalog.ts";
+export type {
+	MigrationRouteProofDimensionResult,
+	MigrationRouteProofEvaluation,
+	MigrationRouteProofSpec,
+} from "./route-proof-catalog.ts";
 export {
 	REAL_REPOSITORY_PROOF_SCHEMA,
 	classifyRealRepositoryProof,

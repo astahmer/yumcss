@@ -8,7 +8,9 @@ import {
 	MigrationRouteProofExecutionTag,
 	MigrationRouteProofRouteId,
 	RealRepositoryProofDimension,
+	RealRepositoryProofDimensionStatus,
 	createRealRepositoryCorpus,
+	evaluateMigrationRouteProof,
 	findMigrationRouteProof,
 	validateMigrationRouteProofCatalog,
 	validateMigrationRouteProofEvidence,
@@ -78,5 +80,44 @@ describe("migration route proof catalog", () => {
 		expect(validateMigrationRouteProofEvidence(MIGRATION_ROUTE_PROOF_CATALOG, evidence)).toEqual(
 			[],
 		);
+	});
+
+	test("does not confuse browser parity with canonical CSS proof", () => {
+		const route = MIGRATION_ROUTE_PROOF_CATALOG.find(
+			(candidate) => candidate.id === MigrationRouteProofRouteId.TailwindToPandwind,
+		);
+		if (route === undefined) throw new Error("missing Tailwind route");
+		const report = JSON.parse(
+			readFileSync(
+				resolve(import.meta.dirname, "../../../plans/evidence/tailwind-installed-proof.json"),
+				"utf8",
+			),
+		) as unknown;
+		const evaluation = evaluateMigrationRouteProof(route, new Map([["tailwind-installed-proof", report]]));
+
+		expect(evaluation.eligible).toBe(false);
+		expect(evaluation.dimensions[RealRepositoryProofDimension.BrowserStates].status).toBe(
+			RealRepositoryProofDimensionStatus.Passed,
+		);
+		expect(evaluation.dimensions[RealRepositoryProofDimension.CanonicalCss].status).toBe(
+			RealRepositoryProofDimensionStatus.Unavailable,
+		);
+		expect(evaluation.reasons).toContain(
+			"adapter-level canonical CSS comparison was not recorded",
+		);
+	});
+
+	test("labels routes without installed evidence as unavailable", () => {
+		const route = MIGRATION_ROUTE_PROOF_CATALOG.find(
+			(candidate) => candidate.id === MigrationRouteProofRouteId.TailwindToUnoCss,
+		);
+		if (route === undefined) throw new Error("missing Tailwind to UnoCSS route");
+		const evaluation = evaluateMigrationRouteProof(route, new Map());
+
+		expect(evaluation.eligible).toBe(false);
+		expect(evaluation.dimensions[RealRepositoryProofDimension.Typecheck].status).toBe(
+			RealRepositoryProofDimensionStatus.Unavailable,
+		);
+		expect(evaluation.reasons).toContain("no checked-in evidence is available");
 	});
 });

@@ -357,7 +357,20 @@ export const enum RealRepositoryProofDimensionStatus {
 	Passed = "passed",
 	Failed = "failed",
 	Pending = "pending",
+	Unavailable = "unavailable",
+	PipelineUnpaired = "pipeline-unpaired",
 	NotApplicable = "not-applicable",
+}
+
+/** Stable keys emitted by installed-project proof runners. */
+export const enum InstalledProjectProofCheckTag {
+	SourceTypecheck = "sourceTypecheck",
+	TargetTypecheck = "targetTypecheck",
+	SourceBuild = "sourceBuild",
+	TargetBuild = "targetBuild",
+	SourceSsr = "sourceSsr",
+	TargetSsr = "targetSsr",
+	Hydration = "hydration",
 }
 
 /** Evidence state; source-static is not a claim of browser/SSR promotion. */
