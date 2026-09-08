@@ -27,7 +27,6 @@ import type {
 } from "./adapter-contract.ts";
 import type { StyleLoweringPlan, StyleLoweringRegistry } from "./lowering.ts";
 import { MigrationOutput } from "./migration-output.ts";
-import { NODE_PROJECT_MODULE_LOADER, type ProjectModuleLoader } from "./project-module-loader.ts";
 import { MigrationDiagnostics } from "./migration-diagnostics.ts";
 import type {
 	AdapterMigrationOptions,
@@ -55,6 +54,12 @@ import {
 } from "./identifiers.ts";
 import { StyleProgramAnalysis } from "./style-program-analysis.ts";
 import { StyleProgramCore } from "./style-program-core.ts";
+import {
+	isMigrationResult,
+	prepareMigration,
+	prepareMigrationAsync,
+	type PreparedAdapterMigration,
+} from "./adapter-migration-preparation.ts";
 
 /**
  * File migrations may omit per-rule outcomes; derive one explicit outcome per
@@ -73,34 +78,6 @@ function derivedFileOutcomes(
 				: StyleMigrationOutcome.TargetNative,
 		representation: plan.representation,
 	}));
-}
-
-function migrationContext(source: string, options: AdapterMigrationOptions) {
-	return {
-		file: options.file,
-		source,
-		root: options.root,
-		packageJson: options.packageJson,
-		readFile: options.readFile,
-		listFiles: options.listFiles,
-	};
-}
-
-function noOpMigration(source: string): AdapterMigrationResult {
-	return {
-		code: source,
-		changed: false,
-		converted: 0,
-		skipped: 0,
-		reports: [],
-		validations: [],
-		dependencies: [],
-		generatedFiles: [],
-		fileChanges: [],
-		residuals: [],
-		loweringPlans: [],
-		outcomes: [],
-	};
 }
 
 function hasAdjacentSkipMarker(source: string, position: number, marker: string): boolean {
@@ -122,80 +99,6 @@ function withoutDuplicateSkipMarkers(
 			!(edit.start === edit.end && edit.text.includes(marker)) ||
 			!hasAdjacentSkipMarker(source, edit.start, marker),
 	);
-}
-
-interface LoadedAdapterConfigs {
-	readonly source: ReturnType<StyleAdapter["loadConfig"]>;
-	readonly target: ReturnType<StyleAdapter["loadConfig"]>;
-}
-
-/**
- * Migration callers may inject a loader scoped to a harness root (sandbox,
- * proof script) while adapters resolve optional packages from the migrated
- * project root. The fallback order preserves that boundary: project first,
- * caller-provided loader second.
- */
-function withProjectLoaderFallback(fallback: ProjectModuleLoader): ProjectModuleLoader {
-	return {
-		async importPackage<T>(packageName: string, root: string): Promise<T | undefined> {
-			return (
-				(await NODE_PROJECT_MODULE_LOADER.importPackage<T>(packageName, root)) ??
-				(await fallback.importPackage<T>(packageName, root))
-			);
-		},
-		importFile<T>(file: string): Promise<T | undefined> {
-			return NODE_PROJECT_MODULE_LOADER.importFile<T>(file).then(
-				(loaded) => loaded ?? fallback.importFile<T>(file),
-			);
-		},
-	};
-}
-
-function configurationFailure(
-	source: string,
-	detail: string,
-	marker = "pandwind:migrate-skip",
-): AdapterMigrationResult {
-	return {
-		code:
-			MigrationDiagnostics.skipMarker({
-				marker,
-				configurationResiduals: [
-					{
-						kind: StyleProgramResidualKindTag.Configuration,
-						text: "official project configuration",
-						hint: `official adapter configuration loading failed: ${detail}`,
-					},
-				],
-			}) +
-			"\n" +
-			source,
-		changed: false,
-		converted: 0,
-		skipped: 1,
-		reports: [],
-		validations: [],
-		dependencies: [],
-		generatedFiles: [],
-		fileChanges: [],
-		residuals: [
-			{
-				kind: StyleProgramResidualKindTag.Configuration,
-				text: "official project configuration",
-				hint: `official adapter configuration loading failed: ${detail}`,
-			},
-		],
-		loweringPlans: [],
-		outcomes: [
-			{
-				sourceStart: 0,
-				sourceText: source,
-				outcome: StyleMigrationOutcome.Residual,
-				representation: StyleRepresentationKind.Residual,
-				detail: "official project configuration could not be loaded",
-			},
-		],
-	};
 }
 
 function hasTargetHostPort(adapter: StyleAdapter): boolean {
@@ -256,43 +159,17 @@ async function runAdapterMigrationAsyncInternal(
 	options: AdapterMigrationOptions,
 	ports: AdapterMigrationPorts,
 ): Promise<AdapterMigrationResult> {
-	const adapterRegistry =
-		options.adapterRegistry ??
-		(await ports.resolveAdapterRegistry?.(
-			options.moduleLoader === undefined
-				? undefined
-				: withProjectLoaderFallback(options.moduleLoader),
-		)) ??
-		ports.adapterRegistry;
-	const route = (options.registry ?? adapterRegistry).resolveRoute(options.from, options.to);
-	if (route.source.id === route.target.id) return noOpMigration(source);
-	const context = migrationContext(source, options);
-	const detection = route.source.detect(context);
-	if (!detection.matched)
-		return runAdapterMigrationInternal(source, { ...options, adapterRegistry }, ports);
-	let sourceConfig: LoadedAdapterConfigs["source"];
-	let targetConfig: LoadedAdapterConfigs["target"];
-	try {
-		[sourceConfig, targetConfig] = await Promise.all([
-			route.source.loadConfigAsync?.(context) ?? route.source.loadConfig(context),
-			route.target.loadConfigAsync?.(context) ?? route.target.loadConfig(context),
-		]);
-	} catch (error) {
-		return configurationFailure(
-			source,
-			error instanceof Error ? error.message : String(error),
-			options.skipMarker,
-		);
-	}
-	const fileMigration = route.source.migration?.file;
+	const preparation = await prepareMigrationAsync(source, options, ports);
+	if (isMigrationResult(preparation)) return preparation;
+	const fileMigration = preparation.sourceAdapter.migration?.file;
 	if (fileMigration?.runAsync !== undefined) {
 		const result = await fileMigration.runAsync({
 			source,
 			file: options.file,
 			root: options.root,
-			target: route.target,
-			sourceConfig,
-			targetConfig,
+			target: preparation.targetAdapter,
+			sourceConfig: preparation.sourceConfig,
+			targetConfig: preparation.targetConfig,
 			readFile: options.readFile,
 			listFiles: options.listFiles,
 		});
@@ -306,66 +183,20 @@ async function runAdapterMigrationAsyncInternal(
 			outcomes: result.outcomes ?? derivedFileOutcomes(source, result.loweringPlans),
 		};
 	}
-	return runAdapterMigrationInternal(source, { ...options, adapterRegistry }, ports, {
-		source: sourceConfig,
-		target: targetConfig,
-	});
+	return runAdapterMigrationInternal(source, options, ports, preparation);
 }
 
 function runAdapterMigrationInternal(
 	source: string,
 	options: AdapterMigrationOptions,
 	ports: AdapterMigrationPorts,
-	loadedConfigs?: LoadedAdapterConfigs,
+	prepared?: PreparedAdapterMigration,
 ): AdapterMigrationResult {
 	const support = createAdapterMigrationSupport(ports.sourceScanner);
-	const adapterRegistry = options.adapterRegistry ?? ports.adapterRegistry;
-	const route = (options.registry ?? adapterRegistry).resolveRoute(options.from, options.to);
-	const sourceAdapter = route.source;
-	const targetAdapter = route.target;
-	// Migrating a dialect to itself is an identity operation. Do not make the
-	// source re-enter target capability negotiation: that can turn a valid
-	// source construct into a false mismatch merely because the adapter marks
-	// its cross-framework component contract as partial.
-	if (sourceAdapter.id === targetAdapter.id) return noOpMigration(source);
-	const context = migrationContext(source, options);
+	const preparation = prepared ?? prepareMigration(source, options, ports);
+	if (isMigrationResult(preparation)) return preparation;
+	const { sourceAdapter, targetAdapter, context, sourceConfig: config, targetConfig } = preparation;
 	const readFile = context.readFile;
-	const detection = sourceAdapter.detect(context);
-	if (!detection.matched) return noOpMigration(source);
-	const config = loadedConfigs?.source ?? sourceAdapter.loadConfig(context);
-	const targetConfig = loadedConfigs?.target ?? targetAdapter.loadConfig(context);
-	const configurationResiduals = [...(config.residuals ?? []), ...(targetConfig.residuals ?? [])];
-	if (configurationResiduals.length > 0) {
-		const marker = options.skipMarker ?? "pandwind:migrate-skip";
-		return {
-			code:
-				MigrationDiagnostics.skipMarker({
-					marker,
-					configurationResiduals,
-				}) +
-				"\n" +
-				source,
-			changed: false,
-			converted: 0,
-			skipped: 1,
-			reports: [],
-			validations: [],
-			dependencies: [],
-			generatedFiles: [],
-			fileChanges: [],
-			residuals: configurationResiduals,
-			loweringPlans: [],
-			outcomes: [
-				{
-					sourceStart: 0,
-					sourceText: source,
-					outcome: StyleMigrationOutcome.Residual,
-					representation: StyleRepresentationKind.Residual,
-					detail: "official project configuration could not be loaded",
-				},
-			],
-		};
-	}
 	const fileMigration = sourceAdapter.migration?.file;
 	if (fileMigration !== undefined) {
 		const result = fileMigration.run({
