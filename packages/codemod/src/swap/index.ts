@@ -41,10 +41,6 @@ const builtinAdapterIds = builtinAdapterCatalog.adapters.map((adapter) => adapte
 export const BUILTIN_CODEMOD_CATALOG = builtinAdapterCatalog;
 import type { SwapIR } from "./ir.ts";
 
-export type SwapMissResolver = (
-	utilityClass: string,
-) => Array<{ prop: string; value: string }> | null;
-
 export { createEngineMissResolver } from "./engine.ts";
 export { runPandaMigration } from "./adapters/panda/index.ts";
 export type { PandaMigrateOptions, PandaMigrateReport } from "./adapters/panda/index.ts";
@@ -81,7 +77,6 @@ export {
 	rewritePandaSource,
 	validatePandaSource,
 } from "./adapters/panda/index.ts";
-export type { TwMissResolver } from "./engine.ts";
 export {
 	STYLE_PROGRAM_SCHEMA,
 	SemanticConditionKindTag,
@@ -214,10 +209,6 @@ export {
 	type OfficialApiExpectation,
 	type OfficialApiFamilyCase,
 } from "./official-api-cases.ts";
-export {
-	createStyleDeclarationOrderingPolicy,
-	type StyleDeclarationOrderingPolicy,
-} from "./style-declaration-order.ts";
 export {
 	STYLE_PROGRAM_ARTIFACT_SCHEMA,
 	STYLE_PROGRAM_CORE_COMPATIBILITY_SCHEMA,
