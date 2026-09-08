@@ -1,4 +1,5 @@
 import { computeExcludedRanges as scanExcludedRanges } from "pandwind/source";
+import MagicString from "magic-string";
 
 export type SourceEdit = { readonly start: number; readonly end: number; readonly text: string };
 
@@ -6,15 +7,16 @@ export type SourceEdit = { readonly start: number; readonly end: number; readonl
 export class SourcePass {
 	static applyEdits(source: string, edits: readonly SourceEdit[]): string {
 		if (edits.length === 0) return source;
-		if (edits.length === 1) {
-			const edit = edits[0]!;
-			return source.slice(0, edit.start) + edit.text + source.slice(edit.end);
-		}
-		let output = source;
+		const output = new MagicString(source);
+		// MagicString keeps every range anchored to the original source. Applying
+		// replacements right-to-left preserves the historical ordering for edits
+		// that share an insertion point while letting MagicString reject overlaps
+		// instead of silently corrupting the generated file.
 		for (const edit of [...edits].toSorted((left, right) => right.start - left.start)) {
-			output = output.slice(0, edit.start) + edit.text + output.slice(edit.end);
+			if (edit.start === edit.end) output.appendLeft(edit.start, edit.text);
+			else output.update(edit.start, edit.end, edit.text);
 		}
-		return output;
+		return output.toString();
 	}
 
 	static computeExcludedRanges(

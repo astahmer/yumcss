@@ -488,6 +488,9 @@ importers:
       cac:
         specifier: 7.0.0
         version: 7.0.0
+      magic-string:
+        specifier: 1.2.3
+        version: 1.2.3
       oxc-parser:
         specifier: 0.148.0
         version: 0.148.0

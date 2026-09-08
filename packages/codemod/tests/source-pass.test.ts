@@ -23,6 +23,24 @@ describe("SourcePass", () => {
 		).toBe("let value = new;");
 	});
 
+	test("keeps insertion order at a shared source position", () => {
+		expect(
+			SourcePass.applyEdits("ab", [
+				{ start: 0, end: 0, text: "first" },
+				{ start: 0, end: 0, text: "second" },
+			]),
+		).toBe("firstsecondab");
+	});
+
+	test("rejects overlapping source ranges", () => {
+		expect(() =>
+			SourcePass.applyEdits("abcdef", [
+				{ start: 0, end: 3, text: "first" },
+				{ start: 2, end: 4, text: "second" },
+			]),
+		).toThrow();
+	});
+
 	test("matches nested blocks and returns the exclusive end", () => {
 		const source = "css({ color: red, states: { hover: { color: blue } } })";
 		const block = SourcePass.matchBlock(source, source.indexOf("{"));
