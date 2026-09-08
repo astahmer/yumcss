@@ -122,11 +122,19 @@ async function prepareScenario(
 	workspace: ReferenceWorkspace,
 ): Promise<void> {
 	const ids = referenceIds(scenario, request);
-	if (ids.length === 0)
+	if (ids.length === 0) {
 		throw new Error(
 			`migration proof '${scenario.id}' has no reference id; pass --reference <id> for the generic repository scenario`,
 		);
-	for (const id of ids) {
+	}
+	await prepareReferences(ids, workspace);
+}
+
+async function prepareReferences(
+	ids: Iterable<string>,
+	workspace: ReferenceWorkspace,
+): Promise<void> {
+	for (const id of new Set(ids)) {
 		const availability = await ensureReferenceWorkspace(id, workspace);
 		console.log(`prepared ${availability.id}: ${availability.path}`);
 	}
@@ -192,6 +200,13 @@ function outputForLane(
 export async function executeAllMigrationProofs(
 	options: Omit<MigrationProofRequest, "scenario" | "lane">,
 ): Promise<MigrationProofBatchResult> {
+	const workspace = createReferenceWorkspace(options.referencesRoot);
+	if (options.prepare) {
+		const references = MIGRATION_PROOF_SCENARIOS.flatMap((scenario) =>
+			referenceIds(scenario, { reference: options.reference }),
+		);
+		await prepareReferences(references, workspace);
+	}
 	const results: MigrationProofResult[] = [];
 	for (const scenario of MIGRATION_PROOF_SCENARIOS) {
 		if (scenario.id === MIGRATION_PROOF_SCENARIO.ReferenceRepository) {
@@ -202,6 +217,7 @@ export async function executeAllMigrationProofs(
 					scenario: scenario.id,
 					outputRoot: outputForLane(options.outputRoot, scenario.id, undefined),
 					reportPath: undefined,
+					prepare: false,
 				}),
 			);
 			continue;
@@ -214,6 +230,7 @@ export async function executeAllMigrationProofs(
 					lane,
 					outputRoot: outputForLane(options.outputRoot, scenario.id, lane),
 					reportPath: undefined,
+					prepare: false,
 				}),
 			);
 		}
