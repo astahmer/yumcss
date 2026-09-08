@@ -24,7 +24,8 @@
 		"pandwind-extraction/migration-skip-reason": "error",
 		"pandwind-extraction/no-stale-migration-skip": "error",
 		"pandwind-extraction/require-migration-residual": "error",
-		"pandwind-extraction/no-conflicting-style-props": "error"
+		"pandwind-extraction/no-conflicting-style-props": "error",
+		"pandwind-extraction/no-raw-ast-identities": "error"
 	},
 	"ignorePatterns": [
 		"**/apps/example/src/types.d.ts",
@@ -58,7 +59,8 @@
 				"pandwind-extraction/migration-skip-reason": "off",
 				"pandwind-extraction/no-stale-migration-skip": "off",
 				"pandwind-extraction/require-migration-residual": "off",
-				"pandwind-extraction/no-conflicting-style-props": "off"
+				"pandwind-extraction/no-conflicting-style-props": "off",
+				"pandwind-extraction/no-raw-ast-identities": "off"
 			}
 		}
 	]

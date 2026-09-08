@@ -38,7 +38,7 @@ function readAttributes(opening: Record<string, unknown>): { attrs: JsxAttr[] } 
 	const attrs: JsxAttr[] = [];
 	const pieces: string[] = [];
 	for (const attr of (opening.attributes ?? []) as Array<Record<string, unknown>>) {
-		if (attr["type"] === "JSXAttribute") {
+		if (attr["type"] === NodeKind.JSXAttribute) {
 			const name = ((attr["name"] as { name?: string })?.name ?? "") as string;
 			const valueNode = attr["value"] as Record<string, unknown> | undefined;
 			let value: string | number | undefined;
@@ -48,9 +48,9 @@ function readAttributes(opening: Record<string, unknown>): { attrs: JsxAttr[] } 
 				pieces.push(String((attr["name"] as { raw?: string })?.raw ?? name));
 				continue;
 			}
-			if (valueNode["type"] === "Literal" || valueNode["type"] === "StringLiteral") {
+			if (valueNode["type"] === NodeKind.Literal) {
 				value = valueNode["value"] as string | number;
-			} else if (valueNode["type"] === "JSXExpressionContainer") {
+			} else if (valueNode["type"] === NodeKind.JSXExpressionContainer) {
 				const inner = valueNode["expression"] as Record<string, unknown>;
 				if (inner?.type === NodeKind.Literal) value = inner["value"] as string | number;
 				else dynamic = true;

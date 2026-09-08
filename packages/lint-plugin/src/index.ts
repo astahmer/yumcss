@@ -16,6 +16,7 @@
  * - no-stale-migration-skip: static calls must not retain stale skip markers
  * - require-migration-residual: dynamic static-lane calls need a marker
  * - no-conflicting-style-props: css.props() must not compete with host props
+ * - no-raw-ast-identities: parser node discriminants must use an owned table
  */
 
 import { NodeKind } from "./ast-node-kind.ts";
@@ -61,6 +62,7 @@ const RUNTIME_STYLE_METHODS = new Set<string>([
 ]);
 const DESIGN_MODULE_KEYS = new Set(["$frame", "$layout", "$text"]);
 const MIGRATION_MARKER = "pandwind:migrate-skip";
+const AST_IDENTITY_VALUES = new Set(Object.values(NodeKind));
 
 type AstNode = { type: string; [key: string]: any };
 type AstValue = AstNode | AstValue[] | null | undefined | string | number | boolean;
@@ -124,6 +126,28 @@ const walkNode = (root: AstValue, visit: AstVisitor): void => {
 			if (key !== "parent" && key !== "type") stack.push(node[key]);
 		}
 	}
+};
+
+const isAstIdentityLiteral = (node: AstNode | undefined): boolean =>
+	node?.type === NodeKind.Literal &&
+	typeof node.value === "string" &&
+	AST_IDENTITY_VALUES.has(node.value as (typeof NodeKind)[keyof typeof NodeKind]);
+
+const memberPropertyName = (node: AstNode | undefined): string | undefined => {
+	if (node?.type !== NodeKind.MemberExpression) return undefined;
+	if (!node.computed && node.property?.type === NodeKind.Identifier) return node.property.name;
+	if (node.computed && node.property?.type === NodeKind.Literal)
+		return typeof node.property.value === "string" ? node.property.value : undefined;
+	return undefined;
+};
+
+const rawAstIdentityNode = (node: AstNode): AstNode | undefined => {
+	if (node.type !== NodeKind.BinaryExpression) return undefined;
+	if (!["===", "!==", "==", "!="].includes(node.operator)) return undefined;
+	const sides = [node.left, node.right] as AstNode[];
+	const member = sides.find((side) => memberPropertyName(side) === "type");
+	const literal = sides.find((side) => isAstIdentityLiteral(side));
+	return member !== undefined && literal !== undefined ? literal : undefined;
 };
 
 const propertyName = (property: AstNode): string | undefined => {
@@ -914,6 +938,24 @@ const rules: Record<string, RuleDefinition> = {
 								data: { prop: prop.name },
 							});
 						}
+					});
+				},
+			};
+		},
+	},
+	"no-raw-ast-identities": {
+		create(context) {
+			return {
+				Program(node) {
+					walkNode(node, (inner) => {
+						const literal = rawAstIdentityNode(inner);
+						if (literal === undefined) return;
+						context.report({
+							node: literal,
+							message:
+								"pandwind: raw parser node identity {{value}} must use NodeKind or the owning typed identity table",
+							data: { value: literal.value as string },
+						});
 					});
 				},
 			};

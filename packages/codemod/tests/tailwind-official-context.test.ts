@@ -159,6 +159,10 @@ describe("Tailwind official CSS context", () => {
 			},
 		);
 		expect(config?.tokenCatalog?.groups.spacing).toEqual({ "4": "1rem" });
+		expect(config?.values.tailwindOfficialApi).toEqual({
+			api: "@tailwindcss/node.__unstable__loadDesignSystem",
+			status: "verified",
+		});
 
 		const result = await migrate(
 			'export const App = () => <div className="p-4" />;',
@@ -220,5 +224,40 @@ describe("Tailwind official CSS context", () => {
 		expect(result.code).toContain("pandwind:migrate-skip (configuration-residual: configuration)");
 		expect(result.code).toContain(source);
 		expect(result.residuals[0]).toEqual(expect.objectContaining({ kind: "configuration" }));
+	});
+
+	test("reports an incompatible official loader shape before invoking it", async () => {
+		const projectFiles: Readonly<Record<string, string>> = files();
+		const incompatibleLoader: ProjectModuleLoader = {
+			async importPackage() {
+				return { __unstable__loadDesignSystem: "legacy-api" } as never;
+			},
+			async importFile() {
+				return undefined;
+			},
+		};
+		const config = await createTailwindAdapter({
+			moduleLoader: incompatibleLoader,
+		}).loadConfigAsync?.({
+			file,
+			root,
+			readFile: (path) => projectFiles[path],
+			listFiles: () => [cssFile],
+			source: "",
+		});
+
+		expect(config?.values.tailwindOfficialApi).toEqual({
+			api: "@tailwindcss/node.__unstable__loadDesignSystem",
+			status: "incompatible",
+			detail:
+				"the installed @tailwindcss/node package does not expose the expected loader function",
+		});
+		expect(config?.residuals).toEqual([
+			{
+				kind: "configuration",
+				text: "Tailwind project configuration",
+				hint: "the installed @tailwindcss/node package does not expose the expected loader function",
+			},
+		]);
 	});
 });

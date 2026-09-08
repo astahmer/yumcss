@@ -879,17 +879,65 @@ function config(context: AdapterConfigContext): AdapterProjectConfig {
 }
 
 type TailwindEnginePackage = {
-	__unstable__loadDesignSystem?: (
-		css: string,
-		options: { readonly base: string },
-	) => Promise<{
-		candidatesToCss(candidates: readonly string[]): readonly (string | null)[];
-		getClassList?: () => readonly (readonly [string, unknown])[];
-		theme?: {
-			entries(): Iterable<readonly [string, { readonly value?: string }]>;
-		};
-	}>;
+	__unstable__loadDesignSystem?: unknown;
 };
+
+type TailwindLoadDesignSystem = (
+	css: string,
+	options: { readonly base: string },
+) => Promise<unknown>;
+
+type TailwindDesignSystem = {
+	candidatesToCss(candidates: readonly string[]): readonly (string | null)[];
+	getClassList?: () => readonly (readonly [string, unknown])[];
+	theme?: {
+		entries(): Iterable<readonly [string, { readonly value?: string }]>;
+	};
+};
+
+const TAILWIND_OFFICIAL_API = {
+	LoadDesignSystem: "@tailwindcss/node.__unstable__loadDesignSystem",
+} as const;
+
+const TAILWIND_OFFICIAL_API_STATUS = {
+	Unavailable: "unavailable",
+	Incompatible: "incompatible",
+	Available: "available",
+	Verified: "verified",
+	Failed: "failed",
+} as const;
+
+type TailwindOfficialApiProbe = {
+	readonly api: typeof TAILWIND_OFFICIAL_API.LoadDesignSystem;
+	readonly status: (typeof TAILWIND_OFFICIAL_API_STATUS)[keyof typeof TAILWIND_OFFICIAL_API_STATUS];
+	readonly detail?: string;
+};
+
+const tailwindApiProbe = (
+	status: TailwindOfficialApiProbe["status"],
+	detail?: string,
+): TailwindOfficialApiProbe => ({
+	api: TAILWIND_OFFICIAL_API.LoadDesignSystem,
+	status,
+	...(detail === undefined ? {} : { detail }),
+});
+
+function isTailwindLoadDesignSystem(value: unknown): value is TailwindLoadDesignSystem {
+	return typeof value === "function";
+}
+
+function isTailwindDesignSystem(value: unknown): value is TailwindDesignSystem {
+	if (typeof value !== "object" || value === null) return false;
+	const system = value as Record<string, unknown>;
+	if (typeof system.candidatesToCss !== "function") return false;
+	if (system.getClassList !== undefined && typeof system.getClassList !== "function") return false;
+	if (system.theme === undefined) return true;
+	return (
+		typeof system.theme === "object" &&
+		system.theme !== null &&
+		typeof (system.theme as { entries?: unknown }).entries === "function"
+	);
+}
 
 type TailwindClassicConfig = Record<string, unknown>;
 
@@ -900,10 +948,6 @@ type TailwindClassicPostCss = (plugins?: readonly unknown[]) => {
 };
 
 type TailwindClassicResolveConfig = (config: TailwindClassicConfig) => Record<string, unknown>;
-
-type TailwindDesignSystem = Awaited<
-	ReturnType<NonNullable<TailwindEnginePackage["__unstable__loadDesignSystem"]>>
->;
 
 const TAILWIND_THEME_VARIABLE = /var\((--[A-Za-z0-9_-]+)(?:,\s*([^)]*))?\)/gu;
 const TAILWIND_LENGTH = /^(-?(?:\d+|\d*\.\d+))(rem|em|px|%)$/u;
@@ -1358,7 +1402,26 @@ async function officialConfig(
 		"@tailwindcss/node",
 		context.root,
 	);
-	if (module?.__unstable__loadDesignSystem === undefined) {
+	const officialProbe =
+		module === undefined
+			? tailwindApiProbe(
+					TAILWIND_OFFICIAL_API_STATUS.Unavailable,
+					"the official @tailwindcss/node loader is unavailable for a discovered Tailwind CSS graph",
+				)
+			: isTailwindLoadDesignSystem(module.__unstable__loadDesignSystem)
+				? tailwindApiProbe(TAILWIND_OFFICIAL_API_STATUS.Available)
+				: tailwindApiProbe(
+						TAILWIND_OFFICIAL_API_STATUS.Incompatible,
+						"the installed @tailwindcss/node package does not expose the expected loader function",
+					);
+	const withOfficialProbe = (
+		base: AdapterProjectConfig,
+		probe: TailwindOfficialApiProbe = officialProbe,
+	): AdapterProjectConfig => ({
+		...base,
+		values: { ...base.values, tailwindOfficialApi: probe },
+	});
+	if (officialProbe.status !== TAILWIND_OFFICIAL_API_STATUS.Available) {
 		if (classic !== undefined) return classic;
 		const hasTailwindConfiguration = cssFiles.some(({ text }) =>
 			/@(?:import|tailwind|theme|utility|plugin|config|custom-variant|source|reference)\b/u.test(
@@ -1367,11 +1430,12 @@ async function officialConfig(
 		);
 		return hasTailwindConfiguration
 			? AdapterEvidence.configurationFailure(
-					fallback,
+					withOfficialProbe(fallback),
 					"Tailwind project configuration",
-					"the official @tailwindcss/node loader is unavailable for a discovered Tailwind CSS graph",
+					officialProbe.detail ??
+						"the official @tailwindcss/node loader is unavailable for a discovered Tailwind CSS graph",
 				)
-			: fallback;
+			: withOfficialProbe(fallback);
 	}
 	const cssFile = cssFiles[0];
 	if (cssFile === undefined) {
@@ -1382,7 +1446,7 @@ async function officialConfig(
 		// project's Tailwind configuration.
 		if (context.listFiles === undefined)
 			return {
-				...fallback,
+				...withOfficialProbe(fallback),
 				residuals: [
 					{
 						kind: StyleProgramResidualKindTag.Configuration,
@@ -1391,14 +1455,22 @@ async function officialConfig(
 					},
 				],
 			};
-		return fallback;
+		return withOfficialProbe(fallback);
 	}
 	try {
 		// The official engine resolves @import graph files relative to the CSS
 		// file's directory, not the project root.
-		const system = await module.__unstable__loadDesignSystem(cssFile.text, {
+		const loadDesignSystem = module?.__unstable__loadDesignSystem;
+		if (!isTailwindLoadDesignSystem(loadDesignSystem))
+			throw new Error(officialProbe.detail ?? "Tailwind loader API is incompatible");
+		const loadedSystem = await loadDesignSystem(cssFile.text, {
 			base: dirnameDocumentPath(cssFile.file),
 		});
+		if (!isTailwindDesignSystem(loadedSystem))
+			throw new Error(
+				"@tailwindcss/node.__unstable__loadDesignSystem returned an incompatible design-system shape",
+			);
+		const system = loadedSystem;
 		const theme = tailwindThemeValues(system);
 		let candidates: string[] | undefined;
 		const allCandidates = (): readonly string[] =>
@@ -1421,13 +1493,14 @@ async function officialConfig(
 			},
 		};
 		return {
-			...fallback,
+			...withOfficialProbe(fallback, tailwindApiProbe(TAILWIND_OFFICIAL_API_STATUS.Verified)),
 			files: cssFiles.map(({ file }) =>
 				file.startsWith(context.root!) ? file : joinDocumentPath(context.root!, file),
 			),
 			tokenCatalog: tailwindTokenCatalog(system, catalogCandidates, catalogCss, theme)?.contract,
 			values: {
 				...fallback.values,
+				tailwindOfficialApi: tailwindApiProbe(TAILWIND_OFFICIAL_API_STATUS.Verified),
 				tailwindResolver: resolver,
 				officialConfigPackages: ["@tailwindcss/node"],
 			},
@@ -1435,7 +1508,13 @@ async function officialConfig(
 	} catch (error) {
 		if (classic !== undefined) return classic;
 		return {
-			...fallback,
+			...withOfficialProbe(
+				fallback,
+				tailwindApiProbe(
+					TAILWIND_OFFICIAL_API_STATUS.Failed,
+					`official loader invocation failed: ${error instanceof Error ? error.message : String(error)}`,
+				),
+			),
 			residuals: [
 				{
 					kind: StyleProgramResidualKindTag.Configuration,

@@ -318,6 +318,23 @@ utility(active ? "opacity-100" : "opacity-50", disabled ? "cursor-not-allowed" :
 });
 
 describe("Pandwind Oxlint static safety rules", () => {
+	test("requires the owned AST identity table for parser node comparisons", () => {
+		const reports = runRule(
+			"no-raw-ast-identities",
+			`const isCall = (node) => node.type === "CallExpression";
+const isNotButton = (node) => node.type !== "Button";
+const isTyped = (node) => node.type === NodeKind.CallExpression;`,
+		);
+
+		expect(reports).toHaveLength(1);
+		expect(reports[0]).toMatchObject({
+			data: { value: "CallExpression" },
+			message:
+				"pandwind: raw parser node identity {{value}} must use NodeKind or the owning typed identity table",
+			nodeType: "Literal",
+		});
+	});
+
 	test("uses an explicit token policy instead of a hardcoded scale vocabulary", () => {
 		const code = `import { createDesignCss } from "pandwind/design";
 const dcss = createDesignCss(preset);

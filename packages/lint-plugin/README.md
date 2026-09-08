@@ -68,6 +68,10 @@ report-only because
 deleting an explicit host prop would change behavior; the Pandwind codemod must
 merge those values through the target host semantics. All rules are
 deliberately conservative when source ranges are not available.
+`no-raw-ast-identities` keeps parser node discriminants such as
+`"CallExpression"` behind the shared `NodeKind` table. It only recognizes
+known parser node identities, so authored CSS properties and application data
+remain ordinary strings.
 
 For generated project policy, prefer passing values derived from the project's
 official config or `pandwind.interop.json` artifact at the composition boundary.
@@ -90,7 +94,8 @@ file is the runtime plugin entry because Oxlint loads JavaScript plugins:
 		"pandwind-extraction/migration-skip-reason": "error",
 		"pandwind-extraction/no-stale-migration-skip": "error",
 		"pandwind-extraction/require-migration-residual": "error",
-		"pandwind-extraction/no-conflicting-style-props": "error"
+		"pandwind-extraction/no-conflicting-style-props": "error",
+		"pandwind-extraction/no-raw-ast-identities": "error"
 	}
 }
 ```
