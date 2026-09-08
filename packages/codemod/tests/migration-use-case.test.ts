@@ -6,6 +6,7 @@ import {
 	createStyleMigrationUseCase,
 	type AdapterMigrationResult,
 	type StyleMigrationUseCase,
+	type StyleDialectResolver,
 } from "../src/swap/index.ts";
 import { createAdapterMigrationEngine } from "../src/swap/adapter-migration-engine.ts";
 import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
@@ -71,5 +72,39 @@ describe("style migration use case", () => {
 
 		expect(migrated.converted).toBe(1);
 		expect(scans).toBe(1);
+	});
+
+	test("prepares sync and async routes exactly once", async () => {
+		const catalog = createBuiltinCodemodCatalog();
+		let resolutions = 0;
+		const registry: StyleDialectResolver = {
+			get systems() {
+				return catalog.registry.systems;
+			},
+			getSystem: (id) => catalog.registry.getSystem(id),
+			getDialect: (address) => catalog.registry.getDialect(address),
+			resolveRoute: (from, to) => {
+				resolutions++;
+				return catalog.registry.resolveRoute(from, to);
+			},
+		};
+		const useCase = createStyleMigrationUseCase(
+			createAdapterMigrationEngine({
+				adapterRegistry: catalog.registry,
+				sourceScanner: SOURCE_SCANNER_SERVICE,
+				loweringRegistry: STYLE_LOWERING_REGISTRY,
+			}),
+		);
+		const source = 'import { css } from "@emotion/react";\nconst card = css({ color: "red" });';
+		const options = { from: "emotion", to: "styled-components", file: "Card.tsx", registry };
+
+		const sync = useCase.run(source, options);
+		expect(sync.converted).toBe(1);
+		expect(resolutions).toBe(1);
+
+		resolutions = 0;
+		const asyncResult = await useCase.runAsync(source, options);
+		expect(asyncResult.converted).toBe(1);
+		expect(resolutions).toBe(1);
 	});
 });
