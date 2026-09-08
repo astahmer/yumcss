@@ -1,4 +1,5 @@
 import { NodeKind } from "../ast-node-kind.ts";
+import { identifierName, memberName } from "./ast-walk.ts";
 import { walk, type OxcNode } from "../tw/literal.ts";
 
 /** The Pandwind RSD carrier is an explicit CSS source, independent of basenames. */
@@ -35,12 +36,6 @@ export interface ReactStrictDomBindings {
 	readonly nativePlatformNames: ReadonlySet<string>;
 	readonly cssNames: ReadonlySet<string>;
 }
-
-const identifierName = (node: OxcNode | null | undefined): string | undefined =>
-	node?.type === NodeKind.Identifier ? (node as { name?: string }).name : undefined;
-
-const memberName = (node: OxcNode | null | undefined): string | undefined =>
-	node?.type === NodeKind.MemberExpression ? (node as MemberExpression).property?.name : undefined;
 
 const isNativePlatformValue = (
 	node: OxcNode | null | undefined,

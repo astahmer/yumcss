@@ -9,6 +9,22 @@ import { NodeKind } from "../ast-node-kind.ts";
  */
 import type { OxcNode } from "../tw/literal.ts";
 
+interface IdentifierNode extends OxcNode {
+	name?: string;
+}
+
+interface MemberNode extends OxcNode {
+	property?: IdentifierNode | null;
+}
+
+/** Read an identifier binding without repeating AST shape casts in each pass. */
+export const identifierName = (node: OxcNode | null | undefined): string | undefined =>
+	node?.type === NodeKind.Identifier ? (node as IdentifierNode).name : undefined;
+
+/** Read a member name without coupling callers to Oxc's node shape. */
+export const memberName = (node: OxcNode | null | undefined): string | undefined =>
+	node?.type === NodeKind.MemberExpression ? (node as MemberNode).property?.name : undefined;
+
 /** Depth-first walk over every object node reachable from `node`. */
 function* iterAll(node: OxcNode): Generator<OxcNode> {
 	const queue: unknown[] = [node];

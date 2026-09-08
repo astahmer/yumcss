@@ -1,6 +1,7 @@
 import { SOURCE_SCANNER_SERVICE } from "../source-scanner.ts";
 import { walkWithParent, type OxcNode } from "../tw/literal.ts";
 import { ImportKindTag, NodeKind } from "../ast-node-kind.ts";
+import { identifierName, memberName as genericMemberName } from "./ast-walk.ts";
 
 const CssRuntimeMethodTag = {
 	Class: "class",
@@ -71,14 +72,11 @@ const isCreateCssImport = (specifier: ImportSpecifierNode, declaration: ImportNo
 
 const isCssRuntimeSource = (source: string): boolean => CSS_RUNTIME_SOURCES.test(source);
 
-const identifierName = (node: OxcNode | null | undefined): string | undefined =>
-	node?.type === NodeKind.Identifier ? (node as IdentifierNode).name : undefined;
-
 const memberName = (node: OxcNode | null | undefined): CssRuntimeMethodTag | undefined => {
 	if (node?.type !== NodeKind.MemberExpression) return undefined;
 	const member = node as MemberNode;
 	if (member.computed === true) return undefined;
-	const name = member.property?.name;
+	const name = genericMemberName(node);
 	return ALL_METHODS.includes(name as CssRuntimeMethodTag)
 		? (name as CssRuntimeMethodTag)
 		: undefined;

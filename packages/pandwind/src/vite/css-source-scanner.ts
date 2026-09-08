@@ -1,5 +1,6 @@
 import { SOURCE_SCANNER_SERVICE, type SourceScannerService } from "../source-scanner.ts";
 import { evalLiteral, type OxcNode, walk } from "../tw/literal.ts";
+import { memberName } from "./ast-walk.ts";
 import type {
 	AuthoredCssImport,
 	CssCallSite,
@@ -63,11 +64,6 @@ const location = (code: string, start: number): { line: number; column: number }
 
 const authoredSpecifier = (source: string): boolean => /\.css(?:[?#].*)?$/.test(source);
 
-const memberName = (callee: OxcNode | null): string | undefined =>
-	callee?.type === NodeKind.MemberExpression
-		? (callee as { property?: { name?: string } | null }).property?.name
-		: undefined;
-
 const isMemberCall = (callee: OxcNode | null, names: ReadonlySet<string>): boolean => {
 	if (callee?.type !== NodeKind.MemberExpression) return false;
 	const object = (callee as { object?: OxcNode | null }).object;
@@ -87,8 +83,7 @@ const callKind = (
 	if (callee?.type === NodeKind.Identifier && names.has((callee as { name?: string }).name ?? "")) {
 		return "css";
 	}
-	if (isReactStrictDomCreateCall(callee, reactStrictDom.cssNames))
-		return "css.create";
+	if (isReactStrictDomCreateCall(callee, reactStrictDom.cssNames)) return "css.create";
 	if (!isMemberCall(callee, names)) return undefined;
 	const member = memberName(callee);
 	return member === "class" || member === "raw" || member === "group" ? `css.${member}` : undefined;
