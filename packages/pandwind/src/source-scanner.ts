@@ -110,7 +110,7 @@ export interface SourceScannerRegistry {
 	scan(document: SourceDocument): SourceScanResult;
 }
 
-export interface SourceLanguageClassifier {
+interface SourceLanguageClassifier {
 	languageForFile(file: string): SourceLanguage;
 	isSupportedFile(file: string): boolean;
 	isScriptFile(file: string): boolean;
@@ -159,20 +159,8 @@ export interface SourceScannerContractSuite {
 	): SourceScannerContractResult;
 }
 
-export function sourceLanguageForFile(file: string): SourceLanguage {
+function sourceLanguageForFile(file: string): SourceLanguage {
 	return SOURCE_LANGUAGE_CLASSIFIER.languageForFile(file);
-}
-
-export function isSupportedSourceFile(file: string): boolean {
-	return SOURCE_LANGUAGE_CLASSIFIER.isSupportedFile(file);
-}
-
-export function isScriptSourceFile(file: string): boolean {
-	return SOURCE_LANGUAGE_CLASSIFIER.isScriptFile(file);
-}
-
-export function isTypeScriptSourceFile(file: string): boolean {
-	return SOURCE_LANGUAGE_CLASSIFIER.isTypeScriptFile(file);
 }
 
 const isOxcLanguage = (language: SourceLanguage): boolean =>
@@ -451,7 +439,7 @@ export const SOURCE_LANGUAGE_ADAPTERS: readonly SourceLanguageAdapter[] = [
 	makeFrameworkAdapter(SourceLanguageAdapterId.Astro, "astro", ["astro"], [/^[\s\S]*$/]),
 ];
 
-export function createSourceLanguageClassifier(
+function createSourceLanguageClassifier(
 	adapters: readonly SourceLanguageAdapter[],
 ): SourceLanguageClassifier {
 	const languagesByExtension = new Map<string, SourceLanguage>();
@@ -481,7 +469,7 @@ export function createSourceLanguageClassifier(
 	};
 }
 
-export const SOURCE_LANGUAGE_CLASSIFIER = createSourceLanguageClassifier(SOURCE_LANGUAGE_ADAPTERS);
+const SOURCE_LANGUAGE_CLASSIFIER = createSourceLanguageClassifier(SOURCE_LANGUAGE_ADAPTERS);
 
 export const BUILTIN_SOURCE_SCANNER_PLUGIN: SourceScannerPlugin = {
 	schema: SOURCE_SCANNER_PLUGIN_SCHEMA,
