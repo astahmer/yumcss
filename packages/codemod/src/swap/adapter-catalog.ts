@@ -2,7 +2,6 @@ import { readFileSync } from "node:fs";
 import { NODE_PROJECT_MODULE_LOADER, type ProjectModuleLoader } from "./project-module-loader.ts";
 import { createBuiltinAdapterPlugin } from "./adapters/plugin.ts";
 import { createCrossModuleConstResolver } from "pandwind/vite/cross-module-consts";
-import type { AdapterConfigContext, StyleAdapter } from "./adapter-contract.ts";
 import { createCodemodAdapterCatalog, type CodemodAdapterCatalog } from "./adapter-catalog-core.ts";
 
 export type { CodemodAdapterCatalog } from "./adapter-catalog-core.ts";
@@ -11,7 +10,6 @@ export type { CodemodAdapterCatalog } from "./adapter-catalog-core.ts";
 export function createBuiltinCodemodCatalog(
 	moduleLoader: ProjectModuleLoader = NODE_PROJECT_MODULE_LOADER,
 ): CodemodAdapterCatalog {
-	const sourcePlugin = createBuiltinAdapterPlugin(moduleLoader, createCrossModuleConstResolver());
 	const readFile = (file: string): string | undefined => {
 		try {
 			return readFileSync(file, "utf8");
@@ -19,16 +17,11 @@ export function createBuiltinCodemodCatalog(
 			return undefined;
 		}
 	};
-	const adapters = sourcePlugin.adapters.map((adapter): StyleAdapter => ({
-		...adapter,
-		loadConfig: (context: AdapterConfigContext) =>
-			adapter.loadConfig({ ...context, readFile: context.readFile ?? readFile }),
-		...(adapter.loadConfigAsync === undefined
-			? {}
-			: {
-					loadConfigAsync: (context: AdapterConfigContext) =>
-						adapter.loadConfigAsync!({ ...context, readFile: context.readFile ?? readFile }),
-				}),
-	}));
-	return createCodemodAdapterCatalog({ ...sourcePlugin, adapters });
+	return createCodemodAdapterCatalog(
+		createBuiltinAdapterPlugin({
+			moduleLoader,
+			stylexResolver: createCrossModuleConstResolver(),
+			readFile,
+		}),
+	);
 }

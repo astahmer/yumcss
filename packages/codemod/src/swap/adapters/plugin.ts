@@ -1,4 +1,5 @@
 import { createStyleAdapterPlugin, type StyleAdapterPlugin } from "../adapter-registry.ts";
+import type { AdapterConfigContext, StyleAdapter } from "../adapter-contract.ts";
 import { CodemodPluginId } from "../identifiers.ts";
 import type { ProjectModuleLoader } from "../project-module-loader.ts";
 import type { StyleXImportedReferenceResolver } from "./stylex.adapter.ts";
@@ -35,14 +36,37 @@ import { createSassAdapter, sassAdapter } from "./sass.adapter.ts";
 import { createTamaguiAdapter } from "./tamagui.adapter.ts";
 
 /** The built-in set is a composition root; adapter modules remain opaque to callers. */
+export interface BuiltinAdapterPluginOptions {
+	readonly moduleLoader?: ProjectModuleLoader;
+	readonly stylexResolver?: StyleXImportedReferenceResolver;
+	readonly tailwindResolver?: TailwindUtilityResolver;
+	readonly readFile?: (file: string) => string | undefined;
+}
+
+function withProjectFileReader(
+	adapter: StyleAdapter,
+	readFile: BuiltinAdapterPluginOptions["readFile"],
+): StyleAdapter {
+	if (readFile === undefined) return adapter;
+	return {
+		...adapter,
+		loadConfig: (context: AdapterConfigContext) =>
+			adapter.loadConfig({ ...context, readFile: context.readFile ?? readFile }),
+		...(adapter.loadConfigAsync === undefined
+			? {}
+			: {
+					loadConfigAsync: (context: AdapterConfigContext) =>
+						adapter.loadConfigAsync!({ ...context, readFile: context.readFile ?? readFile }),
+				}),
+	};
+}
 
 export function createBuiltinAdapterPlugin(
-	moduleLoader?: ProjectModuleLoader,
-	stylexResolver?: StyleXImportedReferenceResolver,
-	options?: { readonly tailwindResolver?: TailwindUtilityResolver },
+	options: BuiltinAdapterPluginOptions = {},
 ): StyleAdapterPlugin {
+	const { moduleLoader, stylexResolver, tailwindResolver, readFile } = options;
 	const stylex = createStyleXAdapter({ crossModuleResolver: stylexResolver });
-	return createStyleAdapterPlugin(CodemodPluginId.BuiltinAdapters, [
+	const adapters: readonly StyleAdapter[] = [
 		createPandwindAdapter({ moduleLoader: moduleLoader ?? null }),
 		bamboo,
 		moduleLoader === undefined
@@ -62,7 +86,7 @@ export function createBuiltinAdapterPlugin(
 		nextYak,
 		createPandaAdapter({ moduleLoader: moduleLoader ?? null }),
 		moduleLoader === undefined
-			? createTailwindAdapter({ moduleLoader: null, resolver: options?.tailwindResolver })
+			? createTailwindAdapter({ moduleLoader: null, resolver: tailwindResolver })
 			: createTailwindAdapter({ moduleLoader }),
 		jss,
 		stylex,
@@ -88,7 +112,9 @@ export function createBuiltinAdapterPlugin(
 		moduleLoader === undefined
 			? createTamaguiAdapter({ moduleLoader: null })
 			: createTamaguiAdapter({ moduleLoader }),
-	]);
+	];
+	return createStyleAdapterPlugin(
+		CodemodPluginId.BuiltinAdapters,
+		adapters.map((adapter) => withProjectFileReader(adapter, readFile)),
+	);
 }
-
-export const BUILTIN_ADAPTER_PLUGIN: StyleAdapterPlugin = createBuiltinAdapterPlugin();

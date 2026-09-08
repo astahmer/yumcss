@@ -1,5 +1,5 @@
 import { createCodemodAdapterCatalog, type CodemodAdapterCatalog } from "./adapter-catalog-core.ts";
-import { BUILTIN_ADAPTER_PLUGIN, createBuiltinAdapterPlugin } from "./adapters/plugin.ts";
+import { createBuiltinAdapterPlugin } from "./adapters/plugin.ts";
 import type { TailwindUtilityResolver } from "./adapters/tailwind.adapter.ts";
 
 export interface BrowserCodemodCatalogOptions {
@@ -12,10 +12,6 @@ export function createBrowserCodemodCatalog(
 	options: BrowserCodemodCatalogOptions = {},
 ): CodemodAdapterCatalog {
 	return createCodemodAdapterCatalog(
-		options.tailwindResolver === undefined
-			? BUILTIN_ADAPTER_PLUGIN
-			: createBuiltinAdapterPlugin(undefined, undefined, {
-					tailwindResolver: options.tailwindResolver,
-				}),
+		createBuiltinAdapterPlugin({ tailwindResolver: options.tailwindResolver }),
 	);
 }

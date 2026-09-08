@@ -6,7 +6,7 @@
  * migration use case, with callers supplying an in-memory source document.
  */
 export {
-	createBrowserCodemodCatalog as createBuiltinCodemodCatalog,
+	createBrowserCodemodCatalog,
 	type BrowserCodemodCatalogOptions,
 } from "./browser-adapter-catalog.ts";
 export { PANDWIND_API_DIALECTS } from "./adapters/core.adapter.ts";

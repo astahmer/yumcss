@@ -3,9 +3,10 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import {
 	CodemodAdapterId,
-	createBuiltinCodemodCatalog as createBrowserCodemodCatalog,
+	createBrowserCodemodCatalog,
 	runAdapterMigration as runBrowserAdapterMigration,
 } from "../src/swap/browser.ts";
+import { createBuiltinCodemodCatalog } from "../src/swap/adapter-catalog.ts";
 import type { ProjectMigrationCommand } from "../src/swap/project-command.ts";
 import type { SwapIR } from "../src/swap/ir.ts";
 import type { SwapOutboundAdapter } from "../src/swap/outbound.ts";
@@ -23,6 +24,13 @@ describe("codemod public source surfaces", () => {
 		expect(catalog.adapters.length).toBeGreaterThan(1);
 		expect(result.converted).toBe(1);
 		expect(result.residuals).toEqual([]);
+	});
+
+	test("assembles the same built-in adapter identities in Node and browser profiles", () => {
+		const nodeIds = createBuiltinCodemodCatalog().adapters.map((adapter) => adapter.id);
+		const browserIds = createBrowserCodemodCatalog().adapters.map((adapter) => adapter.id);
+
+		expect(browserIds).toEqual(nodeIds);
 	});
 
 	test("keeps the browser migration use case free of node-only imports", () => {
