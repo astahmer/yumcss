@@ -75,6 +75,13 @@ describe("pandwind-codemod tw command router", () => {
 			inputFiles: ["/fixture/project/src/tailwind.css"],
 			cwd,
 		});
+		const verify = parseTwCommand([TwCommand.Verify], cwd);
+		expect(verify).toEqual({
+			command: TwCommand.Verify,
+			root: cwd,
+			manifest: `${cwd}/src/pandwind.generated.json`,
+			report: false,
+		});
 	});
 
 	test("dispatches only through injected stage handlers", async () => {
@@ -92,6 +99,9 @@ describe("pandwind-codemod tw command router", () => {
 			async manifest(command) {
 				calls.push(`manifest:${command.outDir}`);
 			},
+			async verify(command) {
+				calls.push(`verify:${command.root}`);
+			},
 		};
 
 		const cli = createTwCli(handlers, cwd);
@@ -99,6 +109,7 @@ describe("pandwind-codemod tw command router", () => {
 		await cli.run([TwCommand.Scan, "tw.ts", "src", "safe.ts"]);
 		await cli.run([TwCommand.Prune, "theme.css", "tw.ts", "src"]);
 		await cli.run([TwCommand.Manifest, "src", "input.css"]);
+		await cli.run([TwCommand.Verify]);
 
 		expect(calls).toMatchInlineSnapshot(`
 			[
@@ -106,9 +117,10 @@ describe("pandwind-codemod tw command router", () => {
 			  "scan:/fixture/project/safe.ts",
 			  "prune:/fixture/project/theme.css",
 			  "manifest:/fixture/project/src",
+			  "verify:/fixture/project",
 			]
 		`);
-		expect(calls).toHaveLength(4);
+		expect(calls).toHaveLength(5);
 	});
 
 	test("fails closed for malformed command lines", () => {

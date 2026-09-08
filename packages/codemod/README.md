@@ -27,6 +27,7 @@ of the runtime `pandwind` package:
 pandwind-codemod tw generate [css-entry] [out-dir] [--tokens <module>] [--bridge]
 pandwind-codemod tw scan [tw-entry] [src-dir] [out-file]
 pandwind-codemod tw prune [theme-css] [tw-entry] [src-dir]
+pandwind-codemod tw verify [project-root] [--manifest <path>] [--budget <path>]
 ```
 
 `generate` emits the typed `tw.ts`, declarations, the optional preset theme
@@ -45,9 +46,28 @@ and `tw()` usage does not need the bridge. The playground imports it only for
 its explicit Tailwind adapter selector.
 
 `scan` and `prune` are explicit follow-up passes for dynamic candidates and
-unused generated theme variables. The same lane is available as
-`pandwind-codemod/tw` for scripts that need the typed tooling ports instead of
-a subprocess.
+unused generated theme variables. `verify` is the consumer-side freshness
+gate: it checks every input and generated artifact hash in
+`pandwind.generated.json`, and an optional budget file can declare
+`maxRawBytes`, `maxGzipBytes`, and expected ownership for each generated path.
+Use `--report` when a CI job should collect the JSON report without failing the
+process. The same lane is available as `pandwind-codemod/tw` for scripts that
+need the typed tooling ports instead of a subprocess.
+
+Example budget file:
+
+```json
+{
+	"schema": "pandwind.generated-budget/1",
+	"artifacts": {
+		"src/tw.ts": {
+			"ownership": "runtime",
+			"maxRawBytes": 200000,
+			"maxGzipBytes": 50000
+		}
+	}
+}
+```
 
 Adapter authors should read [ADAPTER_SDK.md](./ADAPTER_SDK.md) for the plugin
 shape, schema versioning, capability declarations, and differential corpus

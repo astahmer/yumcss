@@ -17,7 +17,16 @@ export {
 	type TwManifestCommand,
 	type TwPruneCommand,
 	type TwScanCommand,
+	type TwVerifyCommand,
 } from "./cli.ts";
+export {
+	checkGeneratedArtifactManifest,
+	PANDWIND_GENERATED_BUDGET_SCHEMA,
+	type GeneratedArtifactBudget,
+	type GeneratedArtifactBudgetFile,
+	type GeneratedArtifactCheck,
+	type GeneratedArtifactCheckReport,
+} from "./artifact-check.ts";
 export { BRIDGE_PROPS, generateUtilityBridge, type UtilityBridge } from "./bridge.ts";
 export {
 	createDesignSystemCodegen,

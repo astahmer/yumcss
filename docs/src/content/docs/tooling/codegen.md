@@ -65,6 +65,23 @@ classes through the real engine and keeps only the `@theme` variables the
 compiled CSS actually references. Opt-in; breaks dynamic token access; run
 after `pandwind-codemod tw generate` whenever sources change.
 
+## `pandwind-codemod tw verify` — consumer freshness and size gate
+
+```sh
+pnpm exec pandwind-codemod tw verify . \
+	--manifest src/pandwind.generated.json \
+	--budget pandwind.generated-budget.json
+```
+
+This checks the hashes for every input and generated file recorded by the
+manifest. The optional budget file uses schema `pandwind.generated-budget/1`
+and maps generated paths to `maxRawBytes`, `maxGzipBytes`, and an optional
+ownership tag. It is safe to run after formatting because the manifest can be
+refreshed with `pandwind-codemod tw manifest src src/tailwind.css`. Add the
+verify command to the consumer project's ordinary typecheck/build workflow so
+stale generated declarations, runtime bindings, or bridge artifacts fail with
+the exact path visible in the report.
+
 ## `analyze` — coverage & budget reports
 
 ```

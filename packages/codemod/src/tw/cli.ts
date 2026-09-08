@@ -15,6 +15,11 @@ import { loadThemeBlock } from "./codegen-theme-input.ts";
 import { generateDesignSystem } from "./generate-types.ts";
 import { runTwPrune } from "./prune-theme.ts";
 import { runTwScan } from "pandwind/tw/collect";
+import {
+	checkGeneratedArtifactManifest,
+	PANDWIND_GENERATED_BUDGET_SCHEMA,
+	type GeneratedArtifactBudgetFile,
+} from "./artifact-check.ts";
 
 /** Runtime-safe identity values for the Node CLI boundary. */
 export const TwCommand = {
@@ -22,6 +27,7 @@ export const TwCommand = {
 	Scan: "scan",
 	Prune: "prune",
 	Manifest: "manifest",
+	Verify: "verify",
 } as const;
 
 export type TwCommandName = (typeof TwCommand)[keyof typeof TwCommand];
@@ -61,11 +67,20 @@ export interface TwManifestCommand {
 	readonly cwd: string;
 }
 
+export interface TwVerifyCommand {
+	readonly command: typeof TwCommand.Verify;
+	readonly root: string;
+	readonly manifest: string;
+	readonly budget?: string;
+	readonly report: boolean;
+}
+
 export type TwCommandInvocation =
 	| TwGenerateCommand
 	| TwScanCommand
 	| TwPruneCommand
-	| TwManifestCommand;
+	| TwManifestCommand
+	| TwVerifyCommand;
 
 const DEFAULT_PRESET_IMPORT = "pandwind/preset";
 const DEFAULT_PRESET_EXPORT = "examplePreset";
@@ -75,6 +90,7 @@ export interface TwCliHandlers {
 	scan(command: TwScanCommand): Promise<void>;
 	prune(command: TwPruneCommand): Promise<void>;
 	manifest(command: TwManifestCommand): Promise<void>;
+	verify(command: TwVerifyCommand): Promise<void>;
 }
 
 export interface TwCli {
@@ -141,6 +157,22 @@ const manifestCommand = (cwd: string, positionals: readonly string[]): TwManifes
 	cwd,
 });
 
+const verifyCommand = (
+	cwd: string,
+	positionals: readonly string[],
+	options: CliOptions,
+): TwVerifyCommand => {
+	const root = resolve(cwd, positionals[0] ?? ".");
+	const budget = optionString(options, "budget");
+	return {
+		command: TwCommand.Verify,
+		root,
+		manifest: resolve(root, optionString(options, "manifest") ?? "src/pandwind.generated.json"),
+		...(budget === undefined ? {} : { budget: resolve(root, budget) }),
+		report: optionBoolean(options, "report"),
+	};
+};
+
 const configureGenerate = (command: Command): void => {
 	command
 		.option("--tokens <module>", "Token module to bridge into the generated theme")
@@ -188,6 +220,19 @@ const createTwCliApp = (handlers: TwCliHandlers, cwd: string): CAC => {
 	manifest.action((...actionArgs: Array<unknown>) =>
 		handlers.manifest(manifestCommand(cwd, actionPositionals(actionArgs.slice(0, -1)))),
 	);
+
+	const verify = cli.command(
+		"verify [root]",
+		"Verify generated artifact hashes and optional raw/gzip budgets",
+	);
+	verify
+		.option("--manifest <path>", "Generated manifest path relative to the project root")
+		.option("--budget <path>", "Optional JSON budget file")
+		.option("--report", "Print failures without returning a failing exit code");
+	verify.action((...actionArgs: Array<unknown>) => {
+		const options = (actionArgs.at(-1) ?? {}) as CliOptions;
+		return handlers.verify(verifyCommand(cwd, actionPositionals(actionArgs.slice(0, -1)), options));
+	});
 	return cli;
 };
 
@@ -202,6 +247,7 @@ export function parseTwCommand(argv: readonly string[], cwd = process.cwd()): Tw
 			scan: async () => {},
 			prune: async () => {},
 			manifest: async () => {},
+			verify: async () => {},
 		},
 		cwd,
 	);
@@ -210,7 +256,7 @@ export function parseTwCommand(argv: readonly string[], cwd = process.cwd()): Tw
 	if (matched === undefined) {
 		const requested = commandName(effectiveArgv);
 		throw new Error(
-			`pandwind-codemod tw: unknown command '${requested ?? ""}'. Expected generate, scan, prune, or manifest`,
+			`pandwind-codemod tw: unknown command '${requested ?? ""}'. Expected generate, scan, prune, manifest, or verify`,
 		);
 	}
 	matched.checkUnknownOptions();
@@ -220,7 +266,8 @@ export function parseTwCommand(argv: readonly string[], cwd = process.cwd()): Tw
 	if (matched.name === TwCommand.Generate) return generateCommand(cwd, cli.args, cli.options);
 	if (matched.name === TwCommand.Scan) return scanCommand(cwd, cli.args);
 	if (matched.name === TwCommand.Prune) return pruneCommand(cwd, cli.args);
-	return manifestCommand(cwd, cli.args);
+	if (matched.name === TwCommand.Manifest) return manifestCommand(cwd, cli.args);
+	return verifyCommand(cwd, cli.args, cli.options);
 }
 
 const defaultHandlers: TwCliHandlers = {
@@ -298,6 +345,23 @@ const defaultHandlers: TwCliHandlers = {
 		});
 		console.log(`pandwind: refreshed generated artifact manifest in ${command.outDir}`);
 	},
+	async verify(command) {
+		let budget: GeneratedArtifactBudgetFile | undefined;
+		if (command.budget !== undefined) {
+			budget = JSON.parse(readFileSync(command.budget, "utf8")) as GeneratedArtifactBudgetFile;
+			if (budget.schema !== PANDWIND_GENERATED_BUDGET_SCHEMA)
+				throw new Error(`pandwind-codemod tw verify: unsupported budget schema ${budget.schema}`);
+		}
+		const report = checkGeneratedArtifactManifest(command.root, command.manifest, budget);
+		console.log(JSON.stringify(report, null, "\t"));
+		if (!report.valid && !command.report)
+			throw new Error(
+				[
+					"Generated Pandwind artifacts failed verification:",
+					...report.failures.map((failure) => `- ${failure}`),
+				].join("\n"),
+			);
+	},
 };
 
 class DefaultTwCli implements TwCli {
@@ -317,7 +381,7 @@ class DefaultTwCli implements TwCli {
 		if (cli.matchedCommand === undefined) {
 			if (argv.includes("--help") || argv.includes("-h")) return;
 			throw new Error(
-				`pandwind-codemod tw: unknown command '${argv[0] ?? ""}'. Expected generate, scan, prune, or manifest`,
+				`pandwind-codemod tw: unknown command '${argv[0] ?? ""}'. Expected generate, scan, prune, manifest, or verify`,
 			);
 		}
 		await cli.runMatchedCommand();

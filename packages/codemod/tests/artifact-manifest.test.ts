@@ -1,6 +1,11 @@
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
+import { tmpdir } from "node:os";
 import { describe, expect, test } from "vitest";
 import {
 	buildGeneratedArtifactManifest,
+	checkGeneratedArtifactManifest,
+	PANDWIND_GENERATED_BUDGET_SCHEMA,
 	GeneratedArtifactOwnershipTag,
 	PANDWIND_GENERATED_MANIFEST_SCHEMA,
 	hashGeneratedContent,
@@ -50,5 +55,45 @@ describe("generated artifact manifest", () => {
 				},
 			],
 		});
+	});
+
+	test("verifies consumer manifests, budgets, and stale artifacts", () => {
+		const root = mkdtempSync(join(tmpdir(), "pandwind-generated-check-"));
+		try {
+			mkdirSync(join(root, "src"), { recursive: true });
+			const input = "@import 'tailwindcss';";
+			const artifact = "export const tw = 1;";
+			writeFileSync(join(root, "src/tailwind.css"), input);
+			writeFileSync(join(root, "src/tw.ts"), artifact);
+			const manifest = buildGeneratedArtifactManifest({
+				inputs: [{ path: "src/tailwind.css", content: input }],
+				artifacts: [
+					{
+						path: "src/tw.ts",
+						ownership: GeneratedArtifactOwnershipTag.Runtime,
+						content: artifact,
+					},
+				],
+			});
+			writeFileSync(join(root, "src/pandwind.generated.json"), JSON.stringify(manifest));
+			const budget = {
+				schema: PANDWIND_GENERATED_BUDGET_SCHEMA,
+				artifacts: {
+					"src/tw.ts": {
+						ownership: GeneratedArtifactOwnershipTag.Runtime,
+						maxRawBytes: artifact.length,
+						maxGzipBytes: 100,
+					},
+				},
+			} as const;
+
+			expect(checkGeneratedArtifactManifest(root, undefined, budget).valid).toBe(true);
+			writeFileSync(join(root, "src/tw.ts"), `${artifact} changed`);
+			const stale = checkGeneratedArtifactManifest(root, undefined, budget);
+			expect(stale.valid).toBe(false);
+			expect(stale.failures).toContain("artifact is stale: src/tw.ts");
+		} finally {
+			rmSync(root, { recursive: true, force: true });
+		}
 	});
 });
