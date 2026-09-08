@@ -742,7 +742,6 @@ export async function createPandwindProjectSupport(
 				typesDts: generated.typesDts,
 				twTs: generated.twTs,
 				bridge,
-				artifactDir: directory,
 				...(theme === "" ? {} : { themeBlock: theme }),
 			});
 			files.push(

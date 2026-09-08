@@ -357,9 +357,9 @@ back to parsing `types.d.ts`/`tw.ts` for projects generated before the artifact
 was introduced. The artifact is the project-context boundary; it must never
 contain assumptions about the example application.
 
-`pandwind.agents.json` points to this artifact in `generatedFrom` so automated
-tooling can discover the same context without guessing which generated files
-exist.
+`pandwind.agents.json` points to this artifact in `generatedFrom` using paths
+relative to the metadata directory, so the files remain portable when a
+project is moved or checked out on another machine.
 
 The flat `SwapIR` is deliberately retained as the cheap path. Rich migrations
 use the versioned semantic `StyleProgram`; neither path is allowed to know a

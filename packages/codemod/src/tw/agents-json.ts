@@ -22,6 +22,7 @@ export interface AgentsUtility {
 
 export interface AgentsDocument {
 	schema: string;
+	/** Paths are relative to the directory containing this artifact. */
 	generatedFrom: {
 		types: string;
 		runtime: string;
@@ -84,7 +85,6 @@ export function buildAgentsDocument(options: {
 	typesDts: string;
 	config: TwConfig;
 	themeBlock: string;
-	artifactDir: string;
 }): AgentsDocument {
 	const { config } = options;
 	const themeScopes = [...options.themeBlock.matchAll(/\[data-theme="([^"]+)"\]/g)].map(
@@ -98,11 +98,11 @@ export function buildAgentsDocument(options: {
 	return {
 		schema: AGENTS_SCHEMA,
 		generatedFrom: {
-			types: `${options.artifactDir}/types.d.ts`,
-			runtime: `${options.artifactDir}/tw.ts`,
-			bridge: `${options.artifactDir}/bridge.ts`,
-			interop: `${options.artifactDir}/pandwind.interop.json`,
-			theme: options.themeBlock ? `${options.artifactDir}/pandwind-theme.css` : undefined,
+			types: "types.d.ts",
+			runtime: "tw.ts",
+			bridge: "bridge.ts",
+			interop: "pandwind.interop.json",
+			theme: options.themeBlock ? "pandwind-theme.css" : undefined,
 		},
 		utilities: utilitiesFromTypesDts(options.typesDts),
 		variants: Object.keys(config.variants ?? {}),

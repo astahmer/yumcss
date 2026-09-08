@@ -21,6 +21,7 @@ export const TwCommand = {
 	Generate: "generate",
 	Scan: "scan",
 	Prune: "prune",
+	Manifest: "manifest",
 } as const;
 
 export type TwCommandName = (typeof TwCommand)[keyof typeof TwCommand];
@@ -53,7 +54,18 @@ export interface TwPruneCommand {
 	readonly base: string;
 }
 
-export type TwCommandInvocation = TwGenerateCommand | TwScanCommand | TwPruneCommand;
+export interface TwManifestCommand {
+	readonly command: typeof TwCommand.Manifest;
+	readonly outDir: string;
+	readonly inputFiles: readonly string[];
+	readonly cwd: string;
+}
+
+export type TwCommandInvocation =
+	| TwGenerateCommand
+	| TwScanCommand
+	| TwPruneCommand
+	| TwManifestCommand;
 
 const DEFAULT_PRESET_IMPORT = "pandwind/preset";
 const DEFAULT_PRESET_EXPORT = "examplePreset";
@@ -62,6 +74,7 @@ export interface TwCliHandlers {
 	generate(command: TwGenerateCommand): Promise<void>;
 	scan(command: TwScanCommand): Promise<void>;
 	prune(command: TwPruneCommand): Promise<void>;
+	manifest(command: TwManifestCommand): Promise<void>;
 }
 
 export interface TwCli {
@@ -119,6 +132,15 @@ const pruneCommand = (cwd: string, positionals: readonly string[]): TwPruneComma
 	base: cwd,
 });
 
+const manifestCommand = (cwd: string, positionals: readonly string[]): TwManifestCommand => ({
+	command: TwCommand.Manifest,
+	outDir: resolve(cwd, positionals[0] ?? "src"),
+	inputFiles: (positionals.length > 1 ? positionals.slice(1) : ["src/tailwind.css"]).map((file) =>
+		resolve(cwd, file),
+	),
+	cwd,
+});
+
 const configureGenerate = (command: Command): void => {
 	command
 		.option("--tokens <module>", "Token module to bridge into the generated theme")
@@ -158,6 +180,14 @@ const createTwCliApp = (handlers: TwCliHandlers, cwd: string): CAC => {
 	prune.action((...actionArgs: Array<unknown>) =>
 		handlers.prune(pruneCommand(cwd, actionPositionals(actionArgs.slice(0, -1)))),
 	);
+
+	const manifest = cli.command(
+		"manifest [out-dir] [input-files...]",
+		"Refresh the generated artifact manifest after formatting or other file transforms",
+	);
+	manifest.action((...actionArgs: Array<unknown>) =>
+		handlers.manifest(manifestCommand(cwd, actionPositionals(actionArgs.slice(0, -1)))),
+	);
 	return cli;
 };
 
@@ -167,7 +197,7 @@ const commandName = (argv: readonly string[]): string | undefined =>
 export function parseTwCommand(argv: readonly string[], cwd = process.cwd()): TwCommandInvocation {
 	const effectiveArgv = argv.length === 0 ? [TwCommand.Generate] : [...argv];
 	const cli = createTwCliApp(
-		{ generate: async () => {}, scan: async () => {}, prune: async () => {} },
+		{ generate: async () => {}, scan: async () => {}, prune: async () => {}, manifest: async () => {} },
 		cwd,
 	);
 	cli.parse(["node", "pandwind-codemod tw", ...effectiveArgv], { run: false });
@@ -175,7 +205,7 @@ export function parseTwCommand(argv: readonly string[], cwd = process.cwd()): Tw
 	if (matched === undefined) {
 		const requested = commandName(effectiveArgv);
 		throw new Error(
-			`pandwind-codemod tw: unknown command '${requested ?? ""}'. Expected generate, scan, or prune`,
+			`pandwind-codemod tw: unknown command '${requested ?? ""}'. Expected generate, scan, prune, or manifest`,
 		);
 	}
 	matched.checkUnknownOptions();
@@ -184,7 +214,8 @@ export function parseTwCommand(argv: readonly string[], cwd = process.cwd()): Tw
 	matched.checkUnusedArgs();
 	if (matched.name === TwCommand.Generate) return generateCommand(cwd, cli.args, cli.options);
 	if (matched.name === TwCommand.Scan) return scanCommand(cwd, cli.args);
-	return pruneCommand(cwd, cli.args);
+	if (matched.name === TwCommand.Prune) return pruneCommand(cwd, cli.args);
+	return manifestCommand(cwd, cli.args);
 }
 
 const defaultHandlers: TwCliHandlers = {
@@ -201,7 +232,12 @@ const defaultHandlers: TwCliHandlers = {
 		);
 		new CodegenArtifactWriter().write(
 			{ ...source, themeBlock },
-			{ outDir: command.outDir, agents: command.agents },
+			{
+				outDir: command.outDir,
+				agents: command.agents,
+				projectRoot: command.cwd,
+				inputs: [{ path: command.cssEntry, content: readFileSync(command.cssEntry, "utf8") }],
+			},
 		);
 		if (command.bridge) {
 			mkdirSync(dirname(command.bridgeFile), { recursive: true });
@@ -211,6 +247,11 @@ const defaultHandlers: TwCliHandlers = {
 				outFile: command.bridgeFile,
 				presetImport: command.presetImport,
 				presetExport: command.presetExport,
+			});
+			new CodegenArtifactWriter().writeManifest({
+				outDir: command.outDir,
+				projectRoot: command.cwd,
+				inputs: [{ path: command.cssEntry, content: readFileSync(command.cssEntry, "utf8") }],
 			});
 			console.log(
 				`pandwind: generated types.d.ts (${source.utilityCount} utilities, ${source.variantCount} variants), tw.ts, and bridge.ts (${bridge.propertyCount} properties)`,
@@ -244,6 +285,14 @@ const defaultHandlers: TwCliHandlers = {
 			`pandwind: pruned ${result.themeCss} (${result.beforeVariables} -> ${result.afterVariables} theme vars from ${result.scannedFiles} scanned files)`,
 		);
 	},
+	async manifest(command) {
+		new CodegenArtifactWriter().writeManifest({
+			outDir: command.outDir,
+			projectRoot: command.cwd,
+			inputs: command.inputFiles.map((path) => ({ path, content: readFileSync(path, "utf8") })),
+		});
+		console.log(`pandwind: refreshed generated artifact manifest in ${command.outDir}`);
+	},
 };
 
 class DefaultTwCli implements TwCli {
@@ -263,7 +312,7 @@ class DefaultTwCli implements TwCli {
 		if (cli.matchedCommand === undefined) {
 			if (argv.includes("--help") || argv.includes("-h")) return;
 			throw new Error(
-				`pandwind-codemod tw: unknown command '${argv[0] ?? ""}'. Expected generate, scan, or prune`,
+				`pandwind-codemod tw: unknown command '${argv[0] ?? ""}'. Expected generate, scan, prune, or manifest`,
 			);
 		}
 		await cli.runMatchedCommand();

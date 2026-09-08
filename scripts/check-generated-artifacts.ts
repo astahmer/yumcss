@@ -1,7 +1,11 @@
 import { execFileSync } from "node:child_process";
-import { existsSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { basename, join, relative, resolve } from "node:path";
 import { tmpdir } from "node:os";
+import {
+	buildGeneratedArtifactManifest,
+	GeneratedArtifactOwnershipTag,
+} from "pandwind-codemod/tw";
 
 const repositoryRoot = resolve(import.meta.dirname, "..");
 
@@ -10,6 +14,7 @@ const generatedFiles = [
 	"tw.ts",
 	"bridge.ts",
 	"pandwind.interop.json",
+	"pandwind.generated.json",
 	"pandwind-theme.css",
 ] as const;
 
@@ -29,7 +34,7 @@ const apps: readonly GeneratedApp[] = [
 		root: resolve(repositoryRoot, "apps/example"),
 		source: resolve(repositoryRoot, "apps/example/src/tailwind.css"),
 		tokens: "@pandwind/example-preset",
-		formatFiles: ["bridge.ts", "pandwind-theme.css"],
+		formatFiles: ["bridge.ts", "pandwind-theme.css", "pandwind.interop.json"],
 	},
 	{
 		name: "playground",
@@ -106,6 +111,33 @@ const checkApp = (app: GeneratedApp): void => {
 			.map((file) => join(temporarySourceRoot, file))
 			.filter((path) => existsSync(path));
 		run("nub", ["exec", "oxfmt", ...formatTargets], app.root);
+		const manifest = buildGeneratedArtifactManifest({
+			inputs: [{ path: relative(app.root, app.source), content: readFileSync(app.source, "utf8") }],
+			artifacts: [
+				["types.d.ts", GeneratedArtifactOwnershipTag.Editor],
+				["tw.ts", GeneratedArtifactOwnershipTag.Runtime],
+				["pandwind.interop.json", GeneratedArtifactOwnershipTag.BuildOnly],
+				["pandwind-theme.css", GeneratedArtifactOwnershipTag.Runtime],
+				["pandwind.agents.json", GeneratedArtifactOwnershipTag.Editor],
+				["bridge.ts", GeneratedArtifactOwnershipTag.Optional],
+			]
+				.flatMap(([name, ownership]) => {
+					const path = join(temporarySourceRoot, name);
+					return existsSync(path)
+						? [
+								{
+									path: relative(temporaryRoot, path).replaceAll("\\", "/"),
+									ownership,
+									content: readFileSync(path, "utf8"),
+								},
+							]
+						: [];
+				}),
+		});
+		writeFileSync(
+			join(temporarySourceRoot, "pandwind.generated.json"),
+			`${JSON.stringify(manifest, null, "\t")}\n`,
+		);
 
 		const stale: string[] = [];
 		for (const file of generatedFiles) {

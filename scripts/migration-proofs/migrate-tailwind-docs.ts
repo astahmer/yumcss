@@ -154,7 +154,6 @@ async function generatedMetadata(referenceRoot: string): Promise<GeneratedMetada
 			typesDts: generated.typesDts,
 			twTs: generated.twTs,
 			bridge,
-			artifactDir: "generated",
 		});
 		await writeFile(join(tempRoot, "pandwind.interop.json"), `${JSON.stringify(interop)}\n`);
 		return {

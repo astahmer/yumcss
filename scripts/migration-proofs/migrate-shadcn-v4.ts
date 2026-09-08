@@ -136,7 +136,6 @@ async function generatedMetadata(referenceRoot: string): Promise<GeneratedMetada
 		typesDts: generated.typesDts,
 		twTs: generated.twTs,
 		bridge,
-		artifactDir: supportRoot,
 	});
 	const metadataRoot = await mkdtemp(join(tmpdir(), "pandwind-shadcn-v4-metadata-"));
 	try {

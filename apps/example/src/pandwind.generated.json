@@ -1,0 +1,37 @@
+{
+	"schema": "pandwind.generated/1",
+	"generator": "pandwind-codemod tw generate",
+	"inputs": [
+		{
+			"path": "src/tailwind.css",
+			"hash": "58bc5b6e06ed4711380275619c89a287878eb474f360e7eec5ddfa85b8a94128"
+		}
+	],
+	"artifacts": [
+		{
+			"path": "src/bridge.ts",
+			"ownership": "optional",
+			"hash": "dc1b4825ff8c469da4d1f9d616394e98962bbcadccee5ff8895fd4c21e6acf93"
+		},
+		{
+			"path": "src/pandwind-theme.css",
+			"ownership": "runtime",
+			"hash": "2a0bbfe2a13b04cad9896b58beb44b6e23394806f61f5156e787cfa5ca9aeef5"
+		},
+		{
+			"path": "src/pandwind.interop.json",
+			"ownership": "build-only",
+			"hash": "42f061f1e7d58e56c7f77776c07410b4738cd6be0f507326c1ba09b85abe72a7"
+		},
+		{
+			"path": "src/tw.ts",
+			"ownership": "runtime",
+			"hash": "624c4e2acf0de403101a62fab90a4285ff52261785b1188db4b63ddc29a6b8a1"
+		},
+		{
+			"path": "src/types.d.ts",
+			"ownership": "editor",
+			"hash": "e89d816e7dc9f99f09a0935f965a03e1eeba8d30842bab6dc000c4c753ba9644"
+		}
+	]
+}

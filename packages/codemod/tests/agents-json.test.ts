@@ -53,22 +53,22 @@ describe("buildAgentsDocument — determinism + shape", () => {
 		].join("\n"),
 	)!;
 
-	test("stable across runs", () => {
+		test("stable across runs", () => {
 		const mk = () =>
-			buildAgentsDocument({ typesDts: TYPES, config, themeBlock, artifactDir: "/out" });
+			buildAgentsDocument({ typesDts: TYPES, config, themeBlock });
 		expect(JSON.stringify(mk())).toBe(JSON.stringify(mk()));
 	});
 
 	test("shape: schema, workflows, artifactMap, scopes", () => {
-		const doc = buildAgentsDocument({ typesDts: TYPES, config, themeBlock, artifactDir: "/out" });
+		const doc = buildAgentsDocument({ typesDts: TYPES, config, themeBlock });
 		expect(doc.schema).toBe("pandwind.agents/1");
 		expect(doc.variants).toEqual(["hover", "dark"]);
 		expect(doc.compose).toEqual(["shadow"]);
 		expect(doc.themeScopes).toEqual(['[data-theme="dark"]']);
 		expect(doc.semanticTokens["--color-surface"]).toBe("#fff");
 		expect(doc.workflows.verifyTypes).toContain("typecheck");
-		expect(doc.generatedFrom.types).toBe("/out/types.d.ts");
-		expect(doc.generatedFrom.interop).toBe("/out/pandwind.interop.json");
+		expect(doc.generatedFrom.types).toBe("types.d.ts");
+		expect(doc.generatedFrom.interop).toBe("pandwind.interop.json");
 		expect(Object.keys(doc.utilities)).toContain("text");
 	});
 });

@@ -68,6 +68,13 @@ describe("pandwind-codemod tw command router", () => {
 		`);
 		expect(scan.command).toBe(TwCommand.Scan);
 		expect(prune.command).toBe(TwCommand.Prune);
+		const manifest = parseTwCommand([TwCommand.Manifest], cwd);
+		expect(manifest).toEqual({
+			command: TwCommand.Manifest,
+			outDir: "/fixture/project/src",
+			inputFiles: ["/fixture/project/src/tailwind.css"],
+			cwd,
+		});
 	});
 
 	test("dispatches only through injected stage handlers", async () => {
@@ -82,21 +89,26 @@ describe("pandwind-codemod tw command router", () => {
 			async prune(command) {
 				calls.push(`prune:${command.themeCss}`);
 			},
+			async manifest(command) {
+				calls.push(`manifest:${command.outDir}`);
+			},
 		};
 
 		const cli = createTwCli(handlers, cwd);
 		await cli.run([TwCommand.Generate, "input.css", "out"]);
 		await cli.run([TwCommand.Scan, "tw.ts", "src", "safe.ts"]);
 		await cli.run([TwCommand.Prune, "theme.css", "tw.ts", "src"]);
+		await cli.run([TwCommand.Manifest, "src", "input.css"]);
 
 		expect(calls).toMatchInlineSnapshot(`
 			[
 			  "generate:/fixture/project/input.css",
 			  "scan:/fixture/project/safe.ts",
 			  "prune:/fixture/project/theme.css",
+			  "manifest:/fixture/project/src",
 			]
 		`);
-		expect(calls).toHaveLength(3);
+		expect(calls).toHaveLength(4);
 	});
 
 	test("fails closed for malformed command lines", () => {

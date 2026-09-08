@@ -105,7 +105,6 @@ export const twAdapter = createTwAdapter({
 				typesDts: readFileSync(typesPath, "utf8"),
 				twTs: twSource,
 				bridge,
-				artifactDir: dirname(options.outFile),
 				themeBlock: existsSync(themePath) ? readFileSync(themePath, "utf8") : "",
 			});
 			writeFileSync(interopPath, `${JSON.stringify(artifact, null, "\t")}\n`);

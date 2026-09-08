@@ -14,6 +14,7 @@ export interface PandwindInteropUtility {
 
 export interface PandwindInteropArtifact {
 	readonly schema: typeof PANDWIND_INTEROP_SCHEMA;
+	/** Paths are relative to the directory containing this artifact. */
 	readonly generatedFrom: {
 		readonly types: string;
 		readonly runtime: string;
@@ -39,7 +40,6 @@ export interface BuildPandwindInteropArtifactOptions {
 	readonly twTs: string;
 	readonly bridge?: UtilityBridge;
 	readonly themeBlock?: string;
-	readonly artifactDir: string;
 }
 
 const dashCase = (name: string): string =>
@@ -99,10 +99,10 @@ export function buildPandwindInteropArtifact(
 	return {
 		schema: PANDWIND_INTEROP_SCHEMA,
 		generatedFrom: {
-			types: `${options.artifactDir}/types.d.ts`,
-			runtime: `${options.artifactDir}/tw.ts`,
-			bridge: `${options.artifactDir}/bridge.ts`,
-			...(options.themeBlock ? { theme: `${options.artifactDir}/pandwind-theme.css` } : {}),
+			types: "types.d.ts",
+			runtime: "tw.ts",
+			bridge: "bridge.ts",
+			...(options.themeBlock ? { theme: "pandwind-theme.css" } : {}),
 		},
 		utilities: utilitiesFromTypes(options.typesDts),
 		tw: {

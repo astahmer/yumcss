@@ -14,6 +14,7 @@ export {
 	type TwCommandInvocation,
 	type TwCommandName,
 	type TwGenerateCommand,
+	type TwManifestCommand,
 	type TwPruneCommand,
 	type TwScanCommand,
 } from "./cli.ts";
@@ -44,6 +45,16 @@ export {
 	type ThemeTokenGroups,
 	type ThemeVar,
 } from "./generate-theme.ts";
+export {
+	buildGeneratedArtifactManifest,
+	hashGeneratedContent,
+	PANDWIND_GENERATED_MANIFEST_SCHEMA,
+	GeneratedArtifactOwnershipTag,
+	type GeneratedArtifactInput,
+	type GeneratedArtifactEntry,
+	type GeneratedArtifactManifestOptions,
+	type PandwindGeneratedManifest,
+} from "./artifact-manifest.ts";
 export {
 	buildPandwindInteropArtifact,
 	PANDWIND_INTEROP_SCHEMA,

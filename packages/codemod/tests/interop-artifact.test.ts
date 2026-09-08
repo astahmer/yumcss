@@ -23,7 +23,6 @@ describe("pandwind interop artifact", () => {
 		const artifact = buildPandwindInteropArtifact({
 			typesDts: types,
 			twTs: tw,
-			artifactDir: "/project/src",
 			themeBlock:
 				'@theme {\n\t--color-brand: #3182ce;\n}\n[data-theme="dark"] {\n\t--color-brand: #90cdf4;\n}',
 			bridge: { "background-color": { "#3182ce": "bg-blue-500" } },

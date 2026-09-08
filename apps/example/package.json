@@ -8,7 +8,7 @@
 		"prebuild": "nub run tw:generate && nub run tw:scan",
 		"build": "tsc -b && vite build",
 		"typecheck": "tsc --noEmit",
-		"tw:generate": "nub exec pandwind-codemod tw generate ./src/tailwind.css ./src --tokens @pandwind/example-preset --preset-import @pandwind/example-preset --preset-export examplePreset --bridge && nub exec oxfmt ./src/bridge.ts ./src/pandwind-theme.css ./src/pandwind.interop.json",
+		"tw:generate": "nub exec pandwind-codemod tw generate ./src/tailwind.css ./src --tokens @pandwind/example-preset --preset-import @pandwind/example-preset --preset-export examplePreset --bridge && nub exec oxfmt ./src/bridge.ts ./src/pandwind-theme.css ./src/pandwind.interop.json && nub exec pandwind-codemod tw manifest ./src ./src/tailwind.css",
 		"tw:prune": "nub exec pandwind-codemod tw prune ./src/pandwind-theme.css ./src/tw.ts ./src",
 		"tw:scan": "nub exec pandwind-codemod tw scan ./src/tw.ts ./src ./src/pandwind.safelist.css"
 	},
