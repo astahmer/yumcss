@@ -2,8 +2,8 @@
  * Prove a bounded Panda -> Pandwind project migration with the real CLI and
  * installed Panda generated-system output. The fixture covers a custom token,
  * a spacing token, a pseudo-condition, generated project support, and the
- * source/target build boundary. Browser and SSR parity are added once the
- * project bootstrap has a real stylesheet handoff.
+ * source/target build boundary, SSR, hydration, and browser base/hover
+ * behavior.
  */
 import { createServer } from "node:http";
 import { execFileSync, spawnSync } from "node:child_process";
