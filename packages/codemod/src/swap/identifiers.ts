@@ -84,6 +84,7 @@ export const enum CodemodPatternId {
 	ReactStrictDomCreate = "react-strict-dom-create",
 	ReactStrictDomKeyframes = "react-strict-dom-keyframes",
 	ReactStrictDomDefineVars = "react-strict-dom-define-vars",
+	ReactStrictDomCompat = "react-strict-dom-compat",
 	RuntimeSemanticRules = "runtime-semantic-rules",
 	VanillaExtractGlobalStyle = "globalStyle",
 	PandwindRecipe = "pandwind-recipe",

@@ -437,6 +437,14 @@ export function officialApiFamilyCases(): readonly OfficialApiFamilyCase[] {
 				'import { css } from "react-strict-dom";\nexport const theme = css.createTheme({ accent: "red" });',
 		},
 		{
+			adapter: CodemodAdapterId.ReactStrictDom,
+			name: "compat.native boundary",
+			expectation: "residual",
+			file: "compat.native.tsx",
+			source:
+				'import { compat } from "react-strict-dom";\nimport { Text } from "react-native";\nexport const Label = () => <compat.native as="text">{(props) => <Text {...props} />}</compat.native>;',
+		},
+		{
 			adapter: CodemodAdapterId.Emotion,
 			name: "tagged css template",
 			expectation: "converted",

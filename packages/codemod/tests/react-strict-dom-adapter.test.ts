@@ -60,6 +60,23 @@ describe("react-strict-dom codemod adapter", () => {
 		expect(result.code).toContain("pandwind:migrate-skip");
 	});
 
+	test("preserves compat.native as a typed host-boundary residual", () => {
+		const result = migrate(
+			'import { compat } from "react-strict-dom";\nimport { Text } from "react-native";\nexport const Label = () => <compat.native as="text">{(props) => <Text {...props} />}</compat.native>;',
+			CodemodAdapterId.ReactStrictDom,
+			CodemodAdapterId.Pandwind,
+			"compat.native.tsx",
+		);
+
+		expect(result.converted).toBe(0);
+		expect(result.skipped).toBeGreaterThan(0);
+		expect(result.residuals).toEqual(
+			expect.arrayContaining([expect.objectContaining({ kind: "capability" })]),
+		);
+		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("compat.native");
+	});
+
 	test("lowers the documented keyframes and defineVars forms", () => {
 		const result = migrate(
 			'import { css } from "react-strict-dom";\nexport const pulse = css.keyframes({ from: { opacity: 0 }, to: { opacity: 1 } });\nexport const theme = css.defineVars({ accent: "red" });',

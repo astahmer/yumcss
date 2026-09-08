@@ -2360,6 +2360,41 @@ describe("official adapter API families", () => {
 			      },
 			    ],
 			  },
+			  "react-strict-dom/compat.native boundary": {
+			    "changed": true,
+			    "code": "import { compat } from "react-strict-dom";
+			import { Text } from "react-native";
+			export const Label = () => // pandwind:migrate-skip (route: react-strict-dom -> pandwind | parse-residual: capability | available: named-map, residual)
+			<compat.native as="text">{(props) => <Text {...props} />}</compat.native>;",
+			    "converted": 0,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "residual",
+			        "residuals": [],
+			      },
+			    ],
+			    "outcomes": [
+			      {
+			        "outcome": "residual",
+			        "representation": "residual",
+			      },
+			    ],
+			    "residuals": [
+			      {
+			        "hint": "React Strict DOM compat.native requires an explicit native host boundary",
+			        "kind": "capability",
+			        "preserved": undefined,
+			      },
+			    ],
+			    "skipped": 1,
+			    "validations": [],
+			  },
 			  "react-strict-dom/css.createTheme context": {
 			    "changed": true,
 			    "code": "import { css } from "react-strict-dom";

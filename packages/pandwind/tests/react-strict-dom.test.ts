@@ -28,6 +28,19 @@ describe("pandwind/react-strict-dom web surface", () => {
 		expect(style.backgroundColor).toMatch(/^x/);
 		expect(style.padding).toMatch(/^x/);
 	});
+
+	test("merges compiled web style maps through createCx", () => {
+		const css = createCss();
+		const cx = createCx();
+		const first = css({ color: "red", padding: "4px" });
+		const second = css({ color: "blue" });
+
+		const merged = cx(first, second);
+
+		expect(merged.$$css).toBe(true);
+		expect(merged.color).toBe(second.color);
+		expect(merged.padding).toBe(first.padding);
+	});
 });
 
 describe("pandwind/react-strict-dom native surface", () => {

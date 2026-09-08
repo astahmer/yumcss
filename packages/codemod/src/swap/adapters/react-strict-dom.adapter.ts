@@ -51,6 +51,19 @@ const cssResidualPattern = (name: string, method: "createTheme" | "props"): Call
 	},
 });
 
+const compatResidualPattern: CallPattern = {
+	name: CodemodPatternId.ReactStrictDomCompat,
+	regex: /<compat\.native\b/g,
+	regexForBinding: (binding: { readonly localName: string }) =>
+		new RegExp(`<${escapeRegExp(binding.localName)}\\.native\\b`, "g"),
+	semanticBindings: [{ source: RSD_MODULE, imported: "compat" }],
+	form: CodemodCallPatternFormTag.Residual,
+	residual: {
+		kind: StyleProgramResidualKindTag.Capability,
+		hint: "React Strict DOM compat.native requires an explicit native host boundary",
+	},
+};
+
 function styleExpressionCandidates(
 	binding: string | undefined,
 	emittedExpression: string,
@@ -156,6 +169,7 @@ const reactStrictDom = defineCodemodAdapter({
 		cssCallPattern(CodemodPatternId.ReactStrictDomDefineVars, "defineVars"),
 		cssResidualPattern("react-strict-dom-create-theme", "createTheme"),
 		cssResidualPattern("react-strict-dom-css-props", "props"),
+		compatResidualPattern,
 	],
 	packages: CodemodAdapterKit.dependency(RSD_MODULE, AdapterDependencyKindTag.Runtime),
 	capabilities: CodemodAdapterKit.allRuleCapabilities(CodemodAdapterId.ReactStrictDom, "partial", {
