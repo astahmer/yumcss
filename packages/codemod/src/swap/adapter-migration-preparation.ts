@@ -15,7 +15,6 @@ import { StyleMigrationOutcome, StyleRepresentationKind } from "./identifiers.ts
 import type { StyleAdapterRegistry } from "./adapter-registry.ts";
 
 export interface PreparedAdapterMigration {
-	readonly adapterRegistry: StyleAdapterRegistry;
 	readonly sourceAdapter: StyleAdapter;
 	readonly targetAdapter: StyleAdapter;
 	readonly context: AdapterConfigContext;
@@ -147,7 +146,6 @@ function registryFor(
 function prepareResolvedMigration(
 	source: string,
 	options: AdapterMigrationOptions,
-	adapterRegistry: StyleAdapterRegistry,
 	route: ReturnType<StyleAdapterRegistry["resolveRoute"]>,
 	context: AdapterConfigContext,
 	configs: { readonly source: AdapterProjectConfig; readonly target: AdapterProjectConfig },
@@ -156,7 +154,6 @@ function prepareResolvedMigration(
 	if (residuals.length > 0)
 		return configurationResiduals(source, residuals, options.skipMarker ?? "pandwind:migrate-skip");
 	return {
-		adapterRegistry,
 		sourceAdapter: route.source,
 		targetAdapter: route.target,
 		context,
@@ -175,7 +172,7 @@ export function prepareMigration(
 	if (route.source.id === route.target.id) return noOpMigration(source);
 	const context = migrationContext(source, options);
 	if (!route.source.detect(context).matched) return noOpMigration(source);
-	return prepareResolvedMigration(source, options, adapterRegistry, route, context, {
+	return prepareResolvedMigration(source, options, route, context, {
 		source: route.source.loadConfig(context),
 		target: route.target.loadConfig(context),
 	});
@@ -203,7 +200,7 @@ export async function prepareMigrationAsync(
 			route.source.loadConfigAsync?.(context) ?? route.source.loadConfig(context),
 			route.target.loadConfigAsync?.(context) ?? route.target.loadConfig(context),
 		]);
-		return prepareResolvedMigration(source, options, adapterRegistry, route, context, {
+		return prepareResolvedMigration(source, options, route, context, {
 			source: sourceConfig,
 			target: targetConfig,
 		});
