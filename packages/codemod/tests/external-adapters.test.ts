@@ -34,6 +34,10 @@ describe("CSS-in-JS adapter contract v2", () => {
 			treat: "import { style } from './styles.treat'; style({ color: 'red' })",
 			compiled: "import { css } from '@compiled/react'; css({ color: 'red' })",
 			stylex: "import stylex from '@stylexjs/stylex'; stylex.create({ card: { color: 'red' } })",
+			[CodemodAdapterId.ReactStrictDom]:
+				'import { css, html } from "react-strict-dom";\n' +
+				'const styles = css.create({ card: { color: "red" } });\n' +
+				"export const Card = () => <html.div style={styles.card} />;",
 			"solid-styled":
 				"import { styled } from 'solid-styled-components'; styled.div({ color: 'red' })",
 			"vue-styled": "import styled from 'vue-styled-components'; styled.div({ color: 'red' })",
@@ -69,7 +73,9 @@ describe("CSS-in-JS adapter contract v2", () => {
 							? "styles.scss"
 							: id === CodemodAdapterId.Less
 								? "styles.less"
-								: "styles.ts";
+								: id === CodemodAdapterId.ReactStrictDom
+									? "styles.tsx"
+									: "styles.ts";
 			const detection = adapter.detect({ file, source: samples[id]! });
 			expect(detection, `${id} detection`).toMatchObject({
 				matched: true,

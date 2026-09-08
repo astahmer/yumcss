@@ -62,6 +62,7 @@ const sourcePackages: Readonly<Record<string, readonly string[]>> = {
 	"solid-styled": ["solid-styled-components"],
 	"vue-styled": ["vue-styled-components"],
 	stylex: ["@stylexjs/stylex"],
+	"react-strict-dom": ["react-strict-dom"],
 	bamboo: ["@bamboocss/dev", "@bamboocss/vite"],
 	"next-yak": ["next-yak"],
 	"chakra-ui": ["@chakra-ui/react"],

@@ -289,6 +289,16 @@ export default styled.div({
 				framework: "react",
 			},
 			{
+				id: "react-strict-dom-web",
+				repository: "https://github.com/react/react-strict-dom",
+				clone: "react-strict-dom",
+				commit: "86a8033d3fd7272258d421c926b2a588be36eb6f",
+				path: "apps/example-ui/Button/index.js",
+				from: CodemodAdapterId.ReactStrictDom,
+				to: CodemodAdapterId.Pandwind,
+				framework: "react",
+			},
+			{
 				id: "bamboo-benchmark-realistic-button",
 				repository: "https://github.com/jantimon/css-in-js-bench",
 				clone: "css-in-js-bench",

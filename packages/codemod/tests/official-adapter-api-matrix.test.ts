@@ -1204,4 +1204,23 @@ describe("official primary API forms", () => {
 			}
 		`);
 	});
+
+	test.each([CodemodAdapterId.Tailwind, CodemodAdapterId.UnoCSS])(
+		"projects %s class carriers to React Strict DOM html/style hosts",
+		(adapter) => {
+			const result = runAdapterMigration('<div className="[color:red] [padding:1rem]" />', {
+				from: adapter,
+				to: CodemodAdapterId.ReactStrictDom,
+				file: "App.tsx",
+				mode: "safe",
+				semantic: { source: { framework: BuiltinHostFramework.React } },
+			});
+			expect(result.converted).toBe(1);
+			expect(result.skipped).toBe(0);
+			expect(result.residuals).toEqual([]);
+			expect(result.code).toContain('import { css, html } from "react-strict-dom";');
+			expect(result.code).toContain("<html.div style={css.create");
+			expect(result.code).not.toContain("className=");
+		},
+	);
 });

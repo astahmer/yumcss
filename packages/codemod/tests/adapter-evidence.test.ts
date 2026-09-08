@@ -100,6 +100,11 @@ describe("adapter evidence contracts", () => {
 			    "id": "stylex",
 			  },
 			  {
+			    "apiCount": 7,
+			    "configCount": 1,
+			    "id": "react-strict-dom",
+			  },
+			  {
 			    "apiCount": 3,
 			    "configCount": 0,
 			    "id": "fela",

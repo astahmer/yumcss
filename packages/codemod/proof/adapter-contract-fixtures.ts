@@ -81,6 +81,14 @@ export const adapterContractFixtures: readonly AdapterContractFixture[] = [
 		source: "import stylex from '@stylexjs/stylex'; stylex.create({ card: { color: 'red' } })",
 	},
 	{
+		adapter: CodemodAdapterId.ReactStrictDom,
+		file: "react-strict-dom.tsx",
+		source:
+			'import { css, html } from "react-strict-dom";\n' +
+			'const styles = css.create({ card: { color: "red", padding: "1rem" } });\n' +
+			"export const Card = () => <html.div style={styles.card} />;",
+	},
+	{
 		adapter: CodemodAdapterId.SolidStyled,
 		file: "solid-styled.ts",
 		source: "import { styled } from 'solid-styled-components'; styled.div`color: red;`",

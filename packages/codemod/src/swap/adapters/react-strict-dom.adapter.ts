@@ -75,6 +75,10 @@ function styleExpressionCandidates(
 	];
 }
 
+function isIntrinsicHost(hostOpenTag: string | undefined): boolean {
+	return /^<([a-z][\w-]*)\b/u.test(hostOpenTag?.trim() ?? "");
+}
+
 function rewriteRsdHost(
 	code: string,
 	binding: string | undefined,
@@ -85,17 +89,19 @@ function rewriteRsdHost(
 		for (const attribute of ["className", "class"] as const) {
 			const pattern = new RegExp(`(\\s)${attribute}\\s*=\\s*\\{\\s*${escaped}\\s*\\}`);
 			const match = pattern.exec(code);
-			if (match === null || match.index === undefined) continue;
-			const tagStart = code.lastIndexOf("<", match.index);
-			const tagEnd = code.indexOf(">", match.index);
+			const literalMatch =
+				match ?? new RegExp(`(\\s)${attribute}\\s*=\\s*(?:"[^"]*"|'[^']*')`).exec(code);
+			if (literalMatch === null || literalMatch.index === undefined) continue;
+			const tagStart = code.lastIndexOf("<", literalMatch.index);
+			const tagEnd = code.indexOf(">", literalMatch.index);
 			if (tagStart < 0 || tagEnd < 0) continue;
 			const openingTag = code.slice(tagStart, tagEnd + 1);
 			const tagMatch = /^<([a-z][\w.-]*)\b/u.exec(openingTag);
 			if (tagMatch?.[1] === undefined || tagMatch[1].includes(".")) continue;
 			const tag = tagMatch[1];
-			const replacedAttribute = `${match[1]}style={${expression}}`;
+			const replacedAttribute = `${literalMatch[1]}style={${expression}}`;
 			const nextTag = openingTag.replace(new RegExp(`^<${escapeRegExp(tag)}\\b`), `<html.${tag}`);
-			const nextOpeningTag = nextTag.replace(match[0], replacedAttribute);
+			const nextOpeningTag = nextTag.replace(literalMatch[0], replacedAttribute);
 			return {
 				code: `${code.slice(0, tagStart)}${nextOpeningTag}${code.slice(tagEnd + 1)}`,
 				matched: true,
@@ -195,10 +201,11 @@ const reactStrictDom = defineCodemodAdapter({
 			handlesSourceHostAttributes: true,
 			hostFrameworks: [BuiltinHostFramework.React],
 			hostRepresentation: StyleHostRepresentationKind.StyleProp,
-			resolveHostRepresentation: ({ framework, sourceFramework, hasHostContext }) => {
+			resolveHostRepresentation: ({ framework, sourceFramework, hasHostContext, program }) => {
 				const hostFramework = sourceFramework ?? framework;
 				return (hostFramework === undefined || hostFramework === BuiltinHostFramework.React) &&
-					hasHostContext
+					hasHostContext &&
+					isIntrinsicHost(program.source?.hostOpenTag)
 					? StyleHostRepresentationKind.StyleProp
 					: undefined;
 			},

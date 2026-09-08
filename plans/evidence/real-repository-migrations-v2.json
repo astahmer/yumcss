@@ -2,7 +2,7 @@
   "schema": "pandwind.real-repository-report/4",
   "generatedFrom": "scripts/generate-real-repository-report.ts",
   "cloneRoot": "${PANDWIND_REFERENCE_ROOT:-~/.references}",
-  "sourceFiles": 30,
+  "sourceFiles": 31,
   "reports": [
     {
       "id": "panda-website-home",
@@ -1873,6 +1873,103 @@
           "@stylexjs/stylex"
         ],
         "byteDelta": -36
+      }
+    },
+    {
+      "id": "react-strict-dom-web",
+      "repository": "https://github.com/react/react-strict-dom",
+      "commit": "86a8033d3fd7272258d421c926b2a588be36eb6f",
+      "path": "apps/example-ui/Button/index.js",
+      "adapterRoute": "react-strict-dom -> pandwind",
+      "detection": {
+        "matched": true,
+        "confidence": 0.9,
+        "evidence": [
+          "from\\s+[\"']react-strict-dom[\"']",
+          "\\bcss\\.create\\s*\\("
+        ]
+      },
+      "sourceBytes": 937,
+      "outputBytes": 899,
+      "outputByteDelta": -38,
+      "converted": 1,
+      "skipped": 0,
+      "residuals": 0,
+      "residualKinds": {},
+      "validations": 1,
+      "canonicalCss": {
+        "checked": true,
+        "equal": true,
+        "sourceBytes": 234,
+        "targetBytes": 234,
+        "byteDelta": 0
+      },
+      "promotion": {
+        "schema": "pandwind.real-repository-proof/1",
+        "status": "source-static",
+        "eligible": false,
+        "dimensions": {
+          "canonical-css": {
+            "status": "passed"
+          },
+          "typecheck": {
+            "status": "pending",
+            "reason": "the converted reference was not typechecked with its installed dependencies"
+          },
+          "build": {
+            "status": "pending",
+            "reason": "the converted reference was not built with its installed project tooling"
+          },
+          "browser-states": {
+            "status": "pending",
+            "reason": "real browser states have not been executed for this reference"
+          },
+          "ssr-hydration": {
+            "status": "pending",
+            "reason": "real SSR and hydration have not been executed for this reference"
+          },
+          "rsc-streaming": {
+            "status": "pending",
+            "reason": "RSC/streaming proof is not available in the source-only runner"
+          },
+          "dependencies": {
+            "status": "pending",
+            "reason": "dependency graphs are not installed by the reference runner"
+          },
+          "css-size": {
+            "status": "pending",
+            "reason": "built CSS size is not measured by the source-only runner"
+          }
+        },
+        "reasons": [
+          "the converted reference was not typechecked with its installed dependencies",
+          "the converted reference was not built with its installed project tooling",
+          "real browser states have not been executed for this reference",
+          "real SSR and hydration have not been executed for this reference",
+          "RSC/streaming proof is not available in the source-only runner",
+          "dependency graphs are not installed by the reference runner",
+          "built CSS size is not measured by the source-only runner"
+        ]
+      },
+      "manualFixes": [],
+      "emittedModules": [],
+      "runtimeBundleImpact": {
+        "measured": false,
+        "measurement": "source-artifact",
+        "notMeasuredReason": "reference repositories are intentionally not installed or bundled in CI",
+        "sourceRuntimePackages": [
+          "react-strict-dom"
+        ],
+        "targetRuntimePackages": [
+          "pandwind"
+        ],
+        "added": [
+          "pandwind"
+        ],
+        "removed": [
+          "react-strict-dom"
+        ],
+        "byteDelta": -38
       }
     },
     {
