@@ -25,7 +25,7 @@ export type {
 	ReactStrictDomBackendOptions,
 	ReactStrictDomCompiledStyle,
 	ReactStrictDomNativeBackendOptions,
-	ReactStrictDomPlatform,
+	ReactStrictDomPlatform as ReactStrictDomPlatformType,
 	ReactStrictDomWebBackendOptions,
 	ReactStrictDomStyle,
 } from "./react-strict-dom.ts";
