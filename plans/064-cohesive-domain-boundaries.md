@@ -63,3 +63,5 @@ pipeline.
   export audit.
 - `orypomrr` / `ce904c0b`: added a sync/async regression proving each prepared
   migration resolves its route once.
+- `romwlmnr` / `44726da6`: removed the unused registry field from the prepared
+  migration boundary.
