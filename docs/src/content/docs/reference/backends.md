@@ -54,13 +54,13 @@ The IR is today's flat style object, pinned by `FlatStyleIR`
 
 ## Targets
 
-| Backend         | Export                  | Terminal artifact                       | Unit policy                                                             |
-| --------------- | ----------------------- | --------------------------------------- | ----------------------------------------------------------------------- |
-| `css` (default) | `pandwind/css`          | class strings + generated stylesheet    | CSS units verbatim                                                      |
-| `react-native`  | `pandwind/react-native` | registered style objects (`style` prop) | automatic: px → unitless dp numbers, rem × 16                           |
-| `react-strict-dom` | `pandwind/react-strict-dom` | StyleX-compatible web maps or native style objects | web atomic classes; native RN unit/shorthand policy |
-| `opentui`       | `pandwind/opentui`      | plain style objects (`style` prop)      | declared-with-default: cells = round(px / cellSize), cellSize default 4 |
-| `canvas`        | —                       | draw-call style objects                 | deferred until a concrete consumer exists                               |
+| Backend            | Export                      | Terminal artifact                                  | Unit policy                                                             |
+| ------------------ | --------------------------- | -------------------------------------------------- | ----------------------------------------------------------------------- |
+| `css` (default)    | `pandwind/css`              | class strings + generated stylesheet               | CSS units verbatim                                                      |
+| `react-native`     | `pandwind/react-native`     | registered style objects (`style` prop)            | automatic: px → unitless dp numbers, rem × 16                           |
+| `react-strict-dom` | `pandwind/react-strict-dom` | StyleX-compatible web maps or native style objects | web atomic classes; native RN unit/shorthand policy                     |
+| `opentui`          | `pandwind/opentui`          | plain style objects (`style` prop)                 | declared-with-default: cells = round(px / cellSize), cellSize default 4 |
+| `canvas`           | —                           | draw-call style objects                            | deferred until a concrete consumer exists                               |
 
 Selection is per-module via subpath imports — a module graph should not mix
 targets, two css instances cannot fight over one registry, and existing web

@@ -276,7 +276,7 @@ identity.
 | ---------------- | --------------------------------- | -------------------------------------- | ----------------------------------------- |
 | CSS              | Classes, rules, custom properties | Selectors, media/supports, layers, SSR | Browser CSS is required                   |
 | React Native     | Style objects                     | Platform layout and native props       | No browser selectors/at-rules             |
-| React Strict DOM | StyleX web maps or native objects | RSD `style` carrier on web/native       | RSD host/compiler remains external        |
+| React Strict DOM | StyleX web maps or native objects | RSD `style` carrier on web/native      | RSD host/compiler remains external        |
 | OpenTUI          | Terminal object/frame output      | Cell sizing, borders, theme states     | No browser cascade or DOM                 |
 | Tailwind adapter | Utility class strings             | Existing Tailwind compiler/config      | Utilities must be catalogued/discoverable |
 
