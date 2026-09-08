@@ -61,3 +61,5 @@ pipeline.
   decisions and the new preparation owner in the architecture guide.
 - `okyxoool` / `de1bd640`: kept preparation helpers private after the Knip
   export audit.
+- `orypomrr` / `ce904c0b`: added a sync/async regression proving each prepared
+  migration resolves its route once.
