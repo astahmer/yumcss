@@ -177,6 +177,7 @@ describe("Tokenami and UnoCSS semantic adapters", () => {
 			to: CodemodAdapterId.Pandwind,
 			file: "App.tsx",
 			root: "/project",
+			listFiles: () => ["/project/uno.config.ts"],
 			adapterRegistry: registry,
 		});
 		expect(result.skipped).toBe(0);
@@ -293,6 +294,7 @@ describe("Tokenami and UnoCSS semantic adapters", () => {
 				file: "App.tsx",
 				source,
 				root,
+				listFiles: () => [join(root, "uno.config.ts")],
 			});
 			expect(config?.values.officialConfigPackages).toEqual(["@unocss/config", "@unocss/core"]);
 			const parsed = adapter.parse(source, {
@@ -335,7 +337,12 @@ describe("Tokenami and UnoCSS semantic adapters", () => {
 			},
 		});
 		const source = '<div className="brand" />';
-		const config = await adapter.loadConfigAsync?.({ file: "App.tsx", source, root: "/project" });
+		const config = await adapter.loadConfigAsync?.({
+			file: "App.tsx",
+			source,
+			root: "/project",
+			listFiles: () => ["/project/uno.config.ts"],
+		});
 		expect(config?.residuals).toEqual(
 			expect.arrayContaining([
 				expect.objectContaining({ kind: "configuration", text: "UnoCSS project configuration" }),
@@ -381,6 +388,7 @@ describe("Tokenami and UnoCSS semantic adapters", () => {
 			to: CodemodAdapterId.Pandwind,
 			file: "App.tsx",
 			root: "/project",
+			listFiles: () => ["/project/uno.config.ts"],
 			adapterRegistry: createStyleAdapterRegistry([adapter, pandwind]),
 		});
 		expect(result.changed).toBe(false);

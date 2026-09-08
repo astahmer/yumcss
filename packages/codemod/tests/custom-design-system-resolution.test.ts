@@ -410,6 +410,7 @@ describe("custom design-system context resolution", () => {
 		const target = createUnoCssAdapter({ moduleLoader: loader });
 		const result = await migrateTo(target, {
 			[`${root}/src/Card.tsx`]: "",
+			[`${root}/uno.config.ts`]: "export default {}",
 		});
 
 		expect(result.converted).toBe(1);
@@ -430,6 +431,7 @@ describe("custom design-system context resolution", () => {
 				file,
 				root,
 				readFile: projectFiles({}),
+				listFiles: () => [`${root}/uno.config.ts`],
 				adapterRegistry: createStyleAdapterRegistry([
 					target,
 					createPandwindAdapter({ moduleLoader: null }),
