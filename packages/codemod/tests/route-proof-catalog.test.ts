@@ -82,6 +82,12 @@ describe("migration route proof catalog", () => {
 		expect(validateMigrationRouteProofEvidence(MIGRATION_ROUTE_PROOF_CATALOG, evidence)).toEqual(
 			[],
 		);
+		for (const route of MIGRATION_ROUTE_PROOF_CATALOG.filter(
+			(candidate) => candidate.execution === MigrationRouteProofExecutionTag.InstalledProject,
+		)) {
+			const evaluation = evaluateMigrationRouteProof(route, evidence);
+			expect(evaluation.eligible, `${route.id}: ${evaluation.reasons.join("; ")}`).toBe(true);
+		}
 	});
 
 	test("does not confuse browser parity with canonical CSS proof", () => {

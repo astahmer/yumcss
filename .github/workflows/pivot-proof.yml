@@ -50,7 +50,7 @@ jobs:
         run: nub run pivot:proof:chakra
 
       - name: Run installed promotion proofs
-        run: nub run pivot:proof:installed && nub run pivot:proof:installed:emotion
+        run: nub run pivot:proof:installed && nub run pivot:proof:installed:emotion && nub run pivot:proof:installed:routes:run
 
       - name: Upload source-only proof report
         uses: actions/upload-artifact@v4
