@@ -42,7 +42,7 @@ Pandwind now has the core architecture required to act as a CSS-in-JS pivot:
   evidence from runtime-pending, source-mismatch, and pipeline-unpaired
   entries across canonical CSS, browser, SSR/hydration, streaming,
   dependency, and CSS-size dimensions;
-- CSS, React Native, and OpenTUI backend contracts, plus renderer-neutral host
+- CSS, React Native, React Strict DOM, and OpenTUI backend contracts, plus renderer-neutral host
   seams for React, Preact, Solid, Vue, Svelte, Astro, Qwik, and native markup;
 - release preflight, pack/import smoke tests, generated agent metadata, the
   analyzer, and the inspector provenance/coverage surfaces.
@@ -83,6 +83,7 @@ arbitrary framework-specific runtime behavior can be made lossless.
 | 062          | Complete for sandbox/Studio evidence labels, typed MCP validation and benchmark ports, scoped resources, and visible CSS/IR diagnostics                                                                                                                                                               | [Analyze and Studio](/tooling/analyze-and-studio/), [Current limitations](/reference/current-limitations-and-criticism/)                             |
 | 063–064      | Complete for the codebase simplification wave, cohesive migration boundaries, registry ownership, and the retained substitution-test architecture                                                                                                                                                     | [Architecture](/contributing/architecture/), [Testing](/contributing/testing/)                                                                       |
 | 065          | Complete for ordinary-CI proof gates, scanner-owned shared JSX host ranges, official-loader context evidence, a multi-file installed Tailwind proof, typed opt-in MCP host seams, and consumer generated-artifact verification; broader framework and ecosystem proof remains explicitly experimental | [Architecture](/contributing/architecture/), [Testing](/contributing/testing/), [Current limitations](/reference/current-limitations-and-criticism/) |
+| 066          | Complete for the React Strict DOM web/native style backend, public style surface, bidirectional codemod adapter, documented API evidence, and copyable examples; RSD host/compiler semantics remain explicitly external | [Backends](/reference/backends/), [React Strict DOM integration](/interop/react-strict-dom/), [Adapter migrations](/interop/css-in-js-adapters/) |
 
 ## What remains intentionally bounded
 

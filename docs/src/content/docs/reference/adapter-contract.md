@@ -53,7 +53,7 @@ guessing target token names.
 The built-in registry currently includes pandwind, Panda, Tailwind, Emotion,
 styled-components, Chakra UI, MUI, Mantine, vanilla-extract, Stitches,
 Linaria, JSS, Fela, Goober, Aphrodite, Style9, Treat, Compiled, StyleX,
-Solid/Vue styled systems, Bamboo, Next-yak, React Native, Tamagui, CSS
+React Strict DOM, Solid/Vue styled systems, Bamboo, Next-yak, React Native, Tamagui, CSS
 Modules, Sass, Less, and authored CSS. The common migration entry point is
 `runAdapterMigration`, while `runDifferentialFixture` reparses the emitted
 target and can add browser-state, SSR/hydration, streaming, dependency, and

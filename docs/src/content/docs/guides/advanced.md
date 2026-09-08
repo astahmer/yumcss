@@ -15,7 +15,8 @@ source style intent → semantic style program → backend → class/CSS/runtime
 
 `tw()`, `css()`, and design `css()` are deliberately small façades over that
 pipeline. The same semantic intent can be lowered to Tailwind classes, atomic
-CSS, React Native objects, or OpenTUI output where the backend supports it.
+CSS, React Native objects, React Strict DOM artifacts, or OpenTUI output where
+the backend supports it.
 
 ## Choose the execution model
 

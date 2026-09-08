@@ -1,6 +1,6 @@
 ---
 title: Style backends — one design system, every target
-description: Lower the same resolved design IR to web CSS, React Native style objects or OpenTUI styles.
+description: Lower the same resolved design IR to web CSS, React Native, React Strict DOM, or OpenTUI styles.
 sidebar:
   order: 1
 ---
@@ -30,6 +30,7 @@ design vocabulary  css() / createDesignCss()   ← frozen core API, unchanged
   → StyleBackend              ← the seam: IR → whatever the target consumes
        ├─ css           class names + stylesheet (atom registry + vite extract)
        ├─ react-native  registered style objects on the RN `style` prop
+       ├─ react-strict-dom  StyleX-compatible web maps or native style objects
        ├─ opentui       plain style objects on OpenTUI's `style` prop
        └─ canvas        plain objects for draw code — deferred
 ```
@@ -57,6 +58,7 @@ The IR is today's flat style object, pinned by `FlatStyleIR`
 | --------------- | ----------------------- | --------------------------------------- | ----------------------------------------------------------------------- |
 | `css` (default) | `pandwind/css`          | class strings + generated stylesheet    | CSS units verbatim                                                      |
 | `react-native`  | `pandwind/react-native` | registered style objects (`style` prop) | automatic: px → unitless dp numbers, rem × 16                           |
+| `react-strict-dom` | `pandwind/react-strict-dom` | StyleX-compatible web maps or native style objects | web atomic classes; native RN unit/shorthand policy |
 | `opentui`       | `pandwind/opentui`      | plain style objects (`style` prop)      | declared-with-default: cells = round(px / cellSize), cellSize default 4 |
 | `canvas`        | —                       | draw-call style objects                 | deferred until a concrete consumer exists                               |
 
@@ -113,6 +115,35 @@ Same skeleton, same registry guarantees, same `cx` merge semantics as RN;
 only the value/unit policy differs. Terminals own fonts, so typography-shape
 props (`fontSize`, `fontFamily`, …) refuse loudly instead of emitting dead
 styles.
+
+### React Strict DOM
+
+React Strict DOM uses a platform-dependent `style` artifact. Pandwind keeps the
+same target identity while selecting the artifact explicitly:
+
+```tsx
+import { html } from "react-strict-dom";
+import { createCss, ReactStrictDomPlatform } from "pandwind/react-strict-dom";
+
+const webCss = createCss();
+const webStyles = webCss.create({ card: { color: "red", padding: "1rem" } });
+
+const nativeCss = createCss({ platform: ReactStrictDomPlatform.Native });
+const nativeStyles = nativeCss.create({ card: { color: "red", padding: "1rem" } });
+
+// Web: StyleX-compatible compiled map; native: plain RN style object.
+export const Card = () => <html.div style={webStyles.card} />;
+export const NativeCard = () => <html.div style={nativeStyles.card} />;
+```
+
+The web map carries RSD's `$$css` marker and atomic class values. Pandwind's
+CSS extraction or runtime-sheet path must provide the matching stylesheet.
+The native map uses the React Native backend's unit and shorthand policy.
+`react-strict-dom` remains the owner of `html.*`, host props, events, and its
+platform compiler; Pandwind does not bundle those dependencies.
+
+For migration coverage and the conservative residual policy, see the
+[React Strict DOM integration guide](/interop/react-strict-dom/).
 
 ## Condition policy (strict)
 

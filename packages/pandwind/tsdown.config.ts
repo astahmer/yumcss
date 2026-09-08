@@ -35,6 +35,7 @@ export default defineConfig({
 		"src/rn.ts",
 		"src/types/typings.ts",
 		"src/opentui.ts",
+		"src/react-strict-dom.ts",
 		"src/backends/index.ts",
 		"src/source-scanner.ts",
 		"src/source-workspace.ts",

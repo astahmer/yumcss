@@ -25,7 +25,7 @@ pandwind-codemod migrate \
 
 The built-in adapter set covers `emotion`, `styled-components`, `chakra-ui`, `mui`, `mantine`,
 `vanilla-extract`, `stitches`, `linaria`, `jss`, `fela`, `goober`,
-`aphrodite`, `style9`, `treat`, `compiled`, `stylex`, `solid-styled`,
+`aphrodite`, `style9`, `treat`, `compiled`, `stylex`, `react-strict-dom`, `solid-styled`,
 `vue-styled`, `bamboo`, `next-yak`, `tokenami`, `unocss`, and `pandwind`.
 Static source adapters additionally cover `tamagui`, `css-modules`, `sass`,
 `less`, and authored `css`. Their stylesheet-aware file migrations can emit

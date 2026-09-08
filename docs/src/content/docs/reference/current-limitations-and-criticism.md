@@ -114,7 +114,7 @@ describe evidence, not a promise that every construct in a route is lossless.
 | UnoCSS -> Pandwind bounded fixture              | experimental | installed CLI, official UnoCSS generator, custom token lowering, virtual stylesheet/Vite rewrite, typecheck, build, SSR, hydration, browser pixels                             | shortcuts, transformers, variants, frameworks, and multi-file projects     |
 | Playground                                      | experimental | browser sandbox evaluation, StyleProgram extraction, runtime-sheet CSS inspection                                                                                              | real package/Vite fixture and framework host proof                         |
 | MCP and analyzer                                | experimental | typed tool/resource contracts, per-result execution evidence, explicit host-port unavailable states, reproducible in-process benchmark profiles, and Studio execution evidence | host integrations that execute and retain project evidence                 |
-| React Native/OpenTUI and other non-web backends | research     | contract and typing coverage                                                                                                                                                   | real consumers and backend-specific runtime proof                          |
+| React Native/React Strict DOM/OpenTUI and other non-web backends | research     | contract and typing coverage                                                                                                                                                   | real consumers and backend-specific runtime proof                          |
 
 The catalog has seven named route policies plus an unavailable research policy
 for every additional route the adapter registry can resolve. Four named routes
@@ -124,7 +124,7 @@ by an installed-project execution lane.
 
 ## The most questionable scope
 
-- The design CSS lane, React Native/OpenTUI backends, MCP, DevTools,
+- The design CSS lane, React Native/React Strict DOM/OpenTUI backends, MCP, DevTools,
   Playground, and 30-plus adapters all make sense individually, but together
   they dilute the main product.
 - The non-web backends are especially hard to justify until there are real

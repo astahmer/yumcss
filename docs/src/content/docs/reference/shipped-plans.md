@@ -127,9 +127,20 @@ changing adapter or scanner contracts.
 ### Backends — plan 021
 
 The resolved style IR is lowered through one backend contract with separate
-CSS, React Native, and OpenTUI implementations. CSS owns selectors, cascade,
-SSR, and browser artifacts; object backends own their unit, condition, and
-capability policies. Canvas remains deferred until a concrete consumer exists.
+CSS, React Native, React Strict DOM, and OpenTUI implementations. CSS owns
+selectors, cascade, SSR, and browser artifacts; object backends own their unit,
+condition, and capability policies. Canvas remains deferred until a concrete
+consumer exists.
+
+### React Strict DOM support — plan 066
+
+React Strict DOM has a target-owned style backend and
+`pandwind/react-strict-dom` surface. Web uses StyleX-compatible compiled maps;
+native uses the React Native object policy. The codemod recognizes `css.create`,
+`html.*`, `style`, `css.keyframes`, and `css.defineVars` and preserves
+`compat.native`, compiler themes, and host/provider behavior as typed residuals.
+The package is not bundled into Pandwind; RSD remains responsible for its host
+runtime and platform compiler. See [React Strict DOM integration](/interop/react-strict-dom/).
 
 ### Bidirectional codemods and Panda — plans 022 and 024
 

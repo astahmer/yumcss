@@ -986,7 +986,7 @@ generic runner exceptions. The route corpus consequently catches invalid
 bare-object output and proves reversibility for JSS, Aphrodite, Style9, StyleX,
 and React Native named-style routes.
 
-Backends follow the same rule. CSS, object, React Native, and OpenTUI are
+Backends follow the same rule. CSS, object, React Native, React Strict DOM, and OpenTUI are
 registered as `StyleBackendFactory` implementations and are exercised by the generic
 `StyleBackendContractSuite`. The suite checks construction, capability
 publication, representative lowering, and stable repeated declarations; a

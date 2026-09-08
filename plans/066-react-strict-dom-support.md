@@ -2,7 +2,7 @@
 
 ## Status
 
-In progress.
+Complete.
 
 ## Context
 
@@ -78,16 +78,21 @@ adapter.
 
 ## Acceptance criteria
 
-- [ ] web and native backend contract tests pass, including stable artifact
+- [x] web and native backend contract tests pass, including stable artifact
       shape, conditions, and unsupported declarations;
-- [ ] the RSD subpath has type tests and runtime tests for named static styles;
-- [ ] codemod source/target tests cover `css.create`, `html.div`, style arrays,
+- [x] the RSD subpath has type tests and runtime tests for named static styles;
+- [x] codemod source/target tests cover `css.create`, `html.div`, style arrays,
       custom static values, and typed residuals for runtime-only APIs;
-- [ ] official API matrix and family evidence includes RSD's documented forms;
-- [ ] a copyable example demonstrates the web and native target paths without
+- [x] official API matrix and family evidence includes RSD's documented forms;
+- [x] a copyable example demonstrates the web and native target paths without
       adding RSD as a Pandwind runtime dependency;
-- [ ] package builds, typechecks, focused codemod suites, and formatting pass;
-- [ ] the final docs state the exact compiler/runtime boundary and limitations.
+- [x] package builds, typechecks, focused codemod suites, and formatting pass;
+- [x] the final docs state the exact compiler/runtime boundary and limitations.
+
+Evidence is split across the focused JJ revisions that introduced the backend,
+public surface, codemod, residual hardening, and documentation. The final
+validation commands are recorded in the task result; the existing core runtime
+size snapshot is updated only for the intentional registry graph change.
 
 ## Non-goals
 
