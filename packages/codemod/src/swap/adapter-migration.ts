@@ -4,11 +4,13 @@ import { STYLE_LOWERING_REGISTRY } from "./lowering.ts";
 import type { ProjectModuleLoader } from "./project-module-loader.ts";
 import type { StyleAdapterRegistry } from "./adapter-registry.ts";
 import type {
-	AdapterMigrationExecutor,
 	AdapterMigrationOptions,
 	AdapterMigrationPorts,
 	AdapterMigrationResult,
+	StyleMigrationImplementation,
+	StyleMigrationUseCase,
 } from "./adapter-migration-contract.ts";
+import { STYLE_MIGRATION_USE_CASE_SCHEMA } from "./adapter-migration-contract.ts";
 import { createAdapterMigrationEngine } from "./adapter-migration-engine.ts";
 
 async function resolveNodeAdapterRegistry(
@@ -28,20 +30,26 @@ const DEFAULT_ADAPTER_MIGRATION_PORTS: AdapterMigrationPorts = {
 	resolveAdapterRegistry: resolveNodeAdapterRegistry,
 };
 
-export function createAdapterMigrationExecutor(
-	ports: AdapterMigrationPorts = DEFAULT_ADAPTER_MIGRATION_PORTS,
-): AdapterMigrationExecutor {
-	return createAdapterMigrationEngine(ports);
+export function createStyleMigrationUseCase(
+	implementation: StyleMigrationImplementation = createAdapterMigrationEngine(
+		DEFAULT_ADAPTER_MIGRATION_PORTS,
+	),
+): StyleMigrationUseCase {
+	return {
+		schema: STYLE_MIGRATION_USE_CASE_SCHEMA,
+		run: (source, options) => implementation.run(source, options),
+		runAsync: (source, options) => implementation.runAsync(source, options),
+	};
 }
 
-const DEFAULT_ADAPTER_MIGRATION_EXECUTOR = createAdapterMigrationExecutor();
+export const STYLE_MIGRATION_USE_CASE = createStyleMigrationUseCase();
 
 /** Run one v2 adapter-to-adapter migration over a source file. */
 export function runAdapterMigration(
 	source: string,
 	options: AdapterMigrationOptions,
 ): AdapterMigrationResult {
-	return DEFAULT_ADAPTER_MIGRATION_EXECUTOR.run(source, options);
+	return STYLE_MIGRATION_USE_CASE.run(source, options);
 }
 
 /**
@@ -53,5 +61,5 @@ export function runAdapterMigrationAsync(
 	source: string,
 	options: AdapterMigrationOptions,
 ): Promise<AdapterMigrationResult> {
-	return DEFAULT_ADAPTER_MIGRATION_EXECUTOR.runAsync(source, options);
+	return STYLE_MIGRATION_USE_CASE.runAsync(source, options);
 }

@@ -392,10 +392,6 @@ export const enum DifferentialExpectedTag {
 	Residual = "residual",
 }
 
-export const enum MigrationStageId {
-	AdapterMigration = "adapter-migration",
-}
-
 export const enum HostComponentRewriterId {
 	JsxIntrinsicComponent = "jsx-intrinsic-component",
 	TemplateIntrinsicComponent = "template-intrinsic-component",

@@ -19,6 +19,9 @@ import type { TokenReferenceFormat } from "./tokens.ts";
 
 export type { AdapterMigrationOutcome } from "./adapter-contract.ts";
 
+/** Versioned application boundary for one source-file style migration. */
+export const STYLE_MIGRATION_USE_CASE_SCHEMA = "pandwind.style-migration-use-case/1" as const;
+
 /** Input and infrastructure boundary for one source-file migration. */
 export interface AdapterMigrationOptions {
 	readonly from: string;
@@ -53,10 +56,13 @@ export interface AdapterMigrationPorts {
 	) => Promise<StyleAdapterRegistry>;
 }
 
-export interface AdapterMigrationExecutor {
+export interface StyleMigrationUseCase {
+	readonly schema: typeof STYLE_MIGRATION_USE_CASE_SCHEMA;
 	run(source: string, options: AdapterMigrationOptions): AdapterMigrationResult;
 	runAsync(source: string, options: AdapterMigrationOptions): Promise<AdapterMigrationResult>;
 }
+
+export type StyleMigrationImplementation = Pick<StyleMigrationUseCase, "run" | "runAsync">;
 
 export interface AdapterMigrationResult {
 	readonly code: string;

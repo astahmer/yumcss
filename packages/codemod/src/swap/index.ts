@@ -128,7 +128,6 @@ export {
 	RealRepositoryProofStatus,
 	InstalledProjectProofCheckTag,
 	DifferentialProofMode,
-	MigrationStageId,
 	HostComponentRewriterId,
 	PandaMigrationStageId,
 	CodemodCallPatternFormTag,
@@ -260,6 +259,8 @@ export {
 } from "./capabilities.ts";
 export type { AdapterCapabilityMatrix, AdapterCapabilityMatrixEntry } from "./capabilities.ts";
 export { runAdapterMigration, runAdapterMigrationAsync } from "./adapter-migration.ts";
+export { STYLE_MIGRATION_USE_CASE, createStyleMigrationUseCase } from "./adapter-migration.ts";
+export { STYLE_MIGRATION_USE_CASE_SCHEMA } from "./adapter-migration-contract.ts";
 export { CodemodAdapterKit, defineCodemodAdapter } from "./external-adapters.ts";
 export type { ExternalAdapterId } from "./external-adapters.ts";
 export { createBuiltinCodemodCatalog } from "./adapter-catalog.ts";
@@ -357,13 +358,12 @@ export type {
 	StyleLoweringResult,
 	StyleLoweringPlan,
 } from "./lowering.ts";
-export { createAdapterMigrationExecutor } from "./adapter-migration.ts";
 export type {
-	AdapterMigrationExecutor,
 	AdapterMigrationOptions,
 	AdapterMigrationPorts,
 	AdapterMigrationResult,
 	AdapterMigrationOutcome,
+	StyleMigrationUseCase,
 } from "./adapter-migration-contract.ts";
 export { createAdapterContractSuite } from "./adapter-contract-suite.ts";
 export type {
@@ -391,22 +391,6 @@ export type {
 	AdapterSourceObjectOptions,
 	AdapterSourceObjectOptionsProvider,
 } from "./external-adapters.ts";
-export {
-	ADAPTER_MIGRATION_PIPELINE,
-	MIGRATION_PIPELINE_SCHEMA,
-	createAdapterMigrationPipeline,
-} from "./migration-pipeline.ts";
-export {
-	STYLE_MIGRATION_USE_CASE,
-	STYLE_MIGRATION_USE_CASE_SCHEMA,
-	createStyleMigrationUseCase,
-} from "./migration-use-case.ts";
-export type {
-	AdapterMigrationInput,
-	AdapterMigrationPipeline,
-	MigrationStage,
-} from "./migration-pipeline.ts";
-export type { StyleMigrationUseCase } from "./migration-use-case.ts";
 export {
 	ADAPTER_PLUGIN_SCHEMA,
 	createStyleAdapterPlugin,

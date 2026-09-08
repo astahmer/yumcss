@@ -8,7 +8,7 @@ import type {
 	AdapterMigrationResult,
 } from "./adapter-migration-contract.ts";
 import type { AdapterGeneratedFile } from "./adapter-contract.ts";
-import { STYLE_MIGRATION_USE_CASE } from "./migration-use-case.ts";
+import { STYLE_MIGRATION_USE_CASE } from "./adapter-migration.ts";
 import type { AdapterCapabilityMode } from "./capabilities.ts";
 import type { StyleLoweringRegistry } from "./lowering.ts";
 import type { StyleAdapterRegistry } from "./adapter-registry.ts";

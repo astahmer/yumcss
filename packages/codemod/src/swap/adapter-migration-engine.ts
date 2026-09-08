@@ -30,11 +30,11 @@ import { MigrationOutput } from "./migration-output.ts";
 import { NODE_PROJECT_MODULE_LOADER, type ProjectModuleLoader } from "./project-module-loader.ts";
 import { MigrationDiagnostics } from "./migration-diagnostics.ts";
 import type {
-	AdapterMigrationExecutor,
 	AdapterMigrationOptions,
 	AdapterMigrationOutcome,
 	AdapterMigrationPorts,
 	AdapterMigrationResult,
+	StyleMigrationImplementation,
 } from "./adapter-migration-contract.ts";
 import {
 	getHostComponentRewriter,
@@ -1710,7 +1710,7 @@ function runAdapterMigrationInternal(
 
 export function createAdapterMigrationEngine(
 	ports: AdapterMigrationPorts,
-): AdapterMigrationExecutor {
+): StyleMigrationImplementation {
 	return {
 		run: (source, options) =>
 			runAdapterMigrationInternal(
