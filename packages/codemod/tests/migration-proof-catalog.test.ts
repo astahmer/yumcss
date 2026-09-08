@@ -4,7 +4,6 @@ import {
 	MIGRATION_PROOF_SCENARIOS,
 	migrationProofScenario,
 } from "../../../scripts/migration-proof-catalog.ts";
-import { AstryxDocsLane } from "../../../scripts/migration-proofs/migrate-astryx-docs.ts";
 import { createReferenceWorkspace } from "../../../scripts/reference-workspace.ts";
 import { executeMigrationProof } from "../../../scripts/run-migration-proof.ts";
 
@@ -26,19 +25,10 @@ describe("migration proof catalog", () => {
 		]);
 	});
 
-	test("keeps legacy positional parsing inside each scenario descriptor", () => {
-		const scenario = migrationProofScenario(MIGRATION_PROOF_SCENARIO.AstryxDocs);
-		expect(
-			scenario?.parseLegacyArgs?.([
-				AstryxDocsLane.StaticCss,
-				"/references/astryx/apps/docsite",
-				"/tmp/astryx",
-			]),
-		).toEqual({
-			lane: AstryxDocsLane.StaticCss,
-			sourceRoot: "/references/astryx/apps/docsite",
-			outputRoot: "/tmp/astryx",
-		});
+	test("resolves references through the modern scenario contract", () => {
+		const scenario = migrationProofScenario(MIGRATION_PROOF_SCENARIO.ReferenceRepository);
+		expect(scenario?.references({ reference: "panda" })).toEqual(["panda"]);
+		expect(scenario?.references({})).toEqual([]);
 	});
 
 	test("resolves nested reference roots from one workspace provider", () => {

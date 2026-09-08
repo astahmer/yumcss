@@ -6,7 +6,7 @@ import {
 	MIGRATION_PROOF_SCENARIO,
 	MIGRATION_PROOF_SCENARIOS,
 	migrationProofScenario,
-	type LegacyMigrationProofRequest,
+	type MigrationProofReferenceSelection,
 	type MigrationProofScenario,
 	type MigrationProofScenarioContext,
 	type MigrationProofScenarioId,
@@ -111,17 +111,17 @@ function requireLane(
 
 function referenceIds(
 	scenario: MigrationProofScenario,
-	request: LegacyMigrationProofRequest,
+	selection: MigrationProofReferenceSelection,
 ): readonly string[] {
-	return scenario.references(request);
+	return scenario.references(selection);
 }
 
 async function prepareScenario(
 	scenario: MigrationProofScenario,
-	request: LegacyMigrationProofRequest,
+	selection: MigrationProofReferenceSelection,
 	workspace: ReferenceWorkspace,
 ): Promise<void> {
-	const ids = referenceIds(scenario, request);
+	const ids = referenceIds(scenario, selection);
 	if (ids.length === 0) {
 		throw new Error(
 			`migration proof '${scenario.id}' has no reference id; pass --reference <id> for the generic repository scenario`,
@@ -169,11 +169,10 @@ export async function executeMigrationProof(
 	const scenario = requireScenario(request.scenario);
 	const lane = requireLane(scenario, request.lane);
 	const workspace = createReferenceWorkspace(request.referencesRoot);
-	const legacyRequest: LegacyMigrationProofRequest = {
-		lane,
+	const referenceSelection: MigrationProofReferenceSelection = {
 		...(request.reference === undefined ? {} : { reference: request.reference }),
 	};
-	if (request.prepare) await prepareScenario(scenario, legacyRequest, workspace);
+	if (request.prepare) await prepareScenario(scenario, referenceSelection, workspace);
 	const result = await scenario.run(lane, {
 		...runContext(request, workspace, scenario, writeEnvelope),
 	});
@@ -322,34 +321,6 @@ export async function runMigrationProofCli(argv = process.argv.slice(2)): Promis
 	}
 	throw new Error(`unsupported migration proof command: ${command.name}`);
 }
-
-export async function runMigrationProofCompat(
-	scenarioId: MigrationProofScenarioId,
-	argv: readonly string[],
-): Promise<void> {
-	if (argv.includes("-h") || argv.includes("--help")) {
-		await runMigrationProofCli([MIGRATION_PROOF_COMMAND.Run, scenarioId, "--help"]);
-		return;
-	}
-	const scenario = requireScenario(scenarioId);
-	const parsed = scenario.parseLegacyArgs?.(argv) ?? {};
-	const result = await executeMigrationProof(
-		{
-			scenario: scenario.id,
-			lane: parsed.lane,
-			reference: parsed.reference,
-			sourceRoot: parsed.sourceRoot,
-			referencesRoot: undefined,
-			outputRoot: parsed.outputRoot,
-			reportPath: parsed.reportPath,
-			prepare: false,
-		},
-		{ envelope: false },
-	);
-	console.log(JSON.stringify(result.result, null, 2));
-	if (scenario.isFailure?.(result.result)) process.exitCode = 1;
-}
-
 if (import.meta.main) {
 	await runMigrationProofCli().catch((error: unknown) => {
 		console.error(error instanceof Error ? error.message : String(error));

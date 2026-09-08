@@ -48,54 +48,25 @@ export interface MigrationProofScenarioContext {
 	readonly reference?: string;
 }
 
-export interface LegacyMigrationProofRequest {
-	readonly lane?: string;
-	readonly sourceRoot?: string;
-	readonly outputRoot?: string;
-	readonly reportPath?: string;
+export interface MigrationProofReferenceSelection {
 	readonly reference?: string;
 }
 
 export interface MigrationProofScenario {
 	readonly id: MigrationProofScenarioId;
 	readonly label: string;
-	readonly references: (request: LegacyMigrationProofRequest) => readonly string[];
+	readonly references: (selection: MigrationProofReferenceSelection) => readonly string[];
 	readonly lanes: readonly string[];
 	readonly resolveSourceRoot: (workspace: ReferenceWorkspace) => string;
 	readonly run: (
 		lane: string | undefined,
 		context: MigrationProofScenarioContext,
 	) => Promise<unknown>;
-	readonly parseLegacyArgs?: (args: readonly string[]) => LegacyMigrationProofRequest;
-	readonly isFailure?: (result: unknown) => boolean;
 }
 
 function requireLane(id: MigrationProofScenarioId, lane: string | undefined): string {
 	if (lane === undefined) throw new Error(`migration proof '${id}' requires a lane`);
 	return lane;
-}
-
-function positionalArgs(args: readonly string[]): readonly string[] {
-	const values: string[] = [];
-	for (let index = 0; index < args.length; index++) {
-		const value = args[index];
-		if (value === undefined || value.startsWith("-")) continue;
-		const previous = args[index - 1];
-		if (previous === "--reference" || previous === "--report") continue;
-		values.push(value);
-	}
-	return values;
-}
-
-function optionValue(args: readonly string[], name: string): string | undefined {
-	const equals = args.find((argument) => argument.startsWith(`${name}=`));
-	if (equals !== undefined) return equals.slice(name.length + 1);
-	const index = args.indexOf(name);
-	return index < 0 ? undefined : args[index + 1];
-}
-
-function legacyOutput(args: readonly string[], index: number): string | undefined {
-	return positionalArgs(args)[index];
 }
 
 const asTryx: MigrationProofScenario = {
@@ -112,11 +83,6 @@ const asTryx: MigrationProofScenario = {
 				outputRoot: context.outputRoot,
 			},
 		),
-	parseLegacyArgs: (args) => ({
-		lane: legacyOutput(args, 0),
-		sourceRoot: legacyOutput(args, 1),
-		outputRoot: legacyOutput(args, 2),
-	}),
 };
 
 const chakra: MigrationProofScenario = {
@@ -133,10 +99,6 @@ const chakra: MigrationProofScenario = {
 				outputRoot: context.outputRoot,
 			},
 		),
-	parseLegacyArgs: (args) => ({
-		lane: legacyOutput(args, 0),
-		outputRoot: args.includes("--dry-run") ? undefined : legacyOutput(args, 1),
-	}),
 };
 
 const effect: MigrationProofScenario = {
@@ -153,10 +115,6 @@ const effect: MigrationProofScenario = {
 				outputRoot: context.outputRoot,
 			},
 		),
-	parseLegacyArgs: (args) => ({
-		lane: legacyOutput(args, 0) ?? EffectDocsLane.Tw,
-		outputRoot: legacyOutput(args, 1) ?? "/tmp/pandwind-effect-tw",
-	}),
 };
 
 const emotion: MigrationProofScenario = {
@@ -173,7 +131,6 @@ const emotion: MigrationProofScenario = {
 				outputRoot: context.outputRoot,
 			},
 		),
-	parseLegacyArgs: (args) => ({ outputRoot: legacyOutput(args, 0) }),
 };
 
 const posthog: MigrationProofScenario = {
@@ -201,10 +158,6 @@ const posthog: MigrationProofScenario = {
 			},
 		);
 	},
-	parseLegacyArgs: (args) => ({
-		lane: legacyOutput(args, 0),
-		outputRoot: legacyOutput(args, 1),
-	}),
 };
 
 const referenceRepository: MigrationProofScenario = {
@@ -221,18 +174,6 @@ const referenceRepository: MigrationProofScenario = {
 			outputRoot: context.outputRoot,
 			reportPath: context.reportPath,
 		});
-	},
-	parseLegacyArgs: (args) => ({
-		reference: optionValue(args, "--reference"),
-		reportPath: optionValue(args, "--report"),
-	}),
-	isFailure: (result) => {
-		if (typeof result !== "object" || result === null) return false;
-		const report = result as { skipped?: unknown; residuals?: unknown };
-		return (
-			(typeof report.skipped === "number" && report.skipped > 0) ||
-			(typeof report.residuals === "number" && report.residuals > 0)
-		);
 	},
 };
 
@@ -251,11 +192,6 @@ const shadcn: MigrationProofScenario = {
 				reportPath: context.reportPath,
 			},
 		),
-	parseLegacyArgs: (args) => ({
-		lane: legacyOutput(args, 0),
-		outputRoot: legacyOutput(args, 1),
-		reportPath: optionValue(args, "--report"),
-	}),
 };
 
 const styledComponents: MigrationProofScenario = {
@@ -272,7 +208,6 @@ const styledComponents: MigrationProofScenario = {
 				outputRoot: context.outputRoot,
 			},
 		),
-	parseLegacyArgs: (args) => ({ lane: legacyOutput(args, 0), outputRoot: legacyOutput(args, 1) }),
 };
 
 const stylex: MigrationProofScenario = {
@@ -287,11 +222,6 @@ const stylex: MigrationProofScenario = {
 			requireLane(MIGRATION_PROOF_SCENARIO.StylexDocs, lane) as StylexDocsLane,
 			context.outputRoot,
 		),
-	parseLegacyArgs: (args) => ({
-		lane: legacyOutput(args, 0),
-		sourceRoot: legacyOutput(args, 1),
-		outputRoot: legacyOutput(args, 2),
-	}),
 };
 
 const tailwind: MigrationProofScenario = {
@@ -308,7 +238,6 @@ const tailwind: MigrationProofScenario = {
 				outputRoot: context.outputRoot,
 			},
 		),
-	parseLegacyArgs: (args) => ({ lane: legacyOutput(args, 0), outputRoot: legacyOutput(args, 1) }),
 };
 
 export const MIGRATION_PROOF_SCENARIOS: readonly MigrationProofScenario[] = [
