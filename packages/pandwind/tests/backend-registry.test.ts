@@ -2,6 +2,7 @@ import { describe, expect, test } from "vitest";
 import {
 	STYLE_BACKEND_SCHEMA,
 	STYLE_BACKENDS,
+	StyleBackendId,
 	createStyleBackendRegistry,
 	type StyleBackendFactory,
 } from "../src/backends/index.ts";
@@ -9,14 +10,15 @@ import {
 describe("style backend registry", () => {
 	test("exposes all built-in lowering lanes through one factory contract", () => {
 		expect(STYLE_BACKENDS.factories.map((factory) => factory.id)).toEqual([
-			"css",
-			"object",
-			"react-native",
-			"opentui",
+			StyleBackendId.Css,
+			StyleBackendId.Object,
+			StyleBackendId.ReactNative,
+			StyleBackendId.ReactStrictDom,
+			StyleBackendId.OpenTui,
 		]);
-		expect(STYLE_BACKENDS.create("css").name).toBe("css");
-		expect(STYLE_BACKENDS.create("react-native").name).toBe("react-native");
-		expect(STYLE_BACKENDS.create("opentui").name).toBe("opentui");
+		expect(STYLE_BACKENDS.create(StyleBackendId.Css).name).toBe(StyleBackendId.Css);
+		expect(STYLE_BACKENDS.create(StyleBackendId.ReactNative).name).toBe(StyleBackendId.ReactNative);
+		expect(STYLE_BACKENDS.create(StyleBackendId.OpenTui).name).toBe(StyleBackendId.OpenTui);
 	});
 
 	test("allows a new target without changing callers", () => {

@@ -213,6 +213,12 @@
 			"import": "./dist/opentui.js",
 			"default": "./dist/opentui.js"
 		},
+		"./react-strict-dom": {
+			"pandwind": "./src/react-strict-dom.ts",
+			"types": "./dist/react-strict-dom.d.ts",
+			"import": "./dist/react-strict-dom.js",
+			"default": "./dist/react-strict-dom.js"
+		},
 		"./backends": {
 			"pandwind": "./src/backends/index.ts",
 			"types": "./dist/backends/index.d.ts",

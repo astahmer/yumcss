@@ -21,6 +21,7 @@ const entries = [
 	"pandwind/css/selector-scan",
 	"pandwind/react-native",
 	"pandwind/opentui",
+	"pandwind/react-strict-dom",
 	"pandwind/stack",
 	"pandwind/stack/react",
 	"pandwind/stack/solid",

@@ -15,6 +15,20 @@ export type {
 } from "./object.ts";
 export { createRnBackend } from "./react-native.ts";
 export type { RnBackendOptions } from "./react-native.ts";
+export {
+	createReactStrictDomBackend,
+	ReactStrictDomPlatform,
+	REACT_STRICT_DOM_BACKEND,
+} from "./react-strict-dom.ts";
+export type {
+	ReactStrictDomBackend,
+	ReactStrictDomBackendOptions,
+	ReactStrictDomCompiledStyle,
+	ReactStrictDomNativeBackendOptions,
+	ReactStrictDomPlatform,
+	ReactStrictDomWebBackendOptions,
+	ReactStrictDomStyle,
+} from "./react-strict-dom.ts";
 export { createOpentuiBackend } from "./opentui.ts";
 export type { OpentuiBackendOptions } from "./opentui.ts";
 export {

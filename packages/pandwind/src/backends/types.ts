@@ -48,6 +48,7 @@ export const StyleBackendId = {
 	Css: "css",
 	Object: "object",
 	ReactNative: "react-native",
+	ReactStrictDom: "react-strict-dom",
 	OpenTui: "opentui",
 } as const;
 

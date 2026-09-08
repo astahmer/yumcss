@@ -19,6 +19,7 @@ const contractFixtures = [
 		declarations: { color: "red" },
 	},
 	{ backend: StyleBackendId.ReactNative, declarations: { color: "red" } },
+	{ backend: StyleBackendId.ReactStrictDom, declarations: { color: "red" } },
 	{ backend: StyleBackendId.OpenTui, declarations: { color: "red" } },
 ] as const;
 
