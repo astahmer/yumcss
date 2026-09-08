@@ -16,7 +16,7 @@ export interface CssSourceProvenance {
 	readonly end: number;
 	readonly line: number;
 	readonly column: number;
-	readonly callKind: "css" | "css.class" | "css.raw" | "css.group" | "pattern";
+	readonly callKind: "css" | "css.class" | "css.raw" | "css.group" | "css.create" | "pattern";
 }
 
 export interface CssCallSite extends CssSourceProvenance {

@@ -9,6 +9,11 @@ import type {
 	CssSourceScanner,
 } from "./css-extraction-contracts.ts";
 import { NodeKind } from "../ast-node-kind.ts";
+import {
+	findReactStrictDomBindings,
+	isReactStrictDomCreateCall,
+	type ReactStrictDomBindings,
+} from "./css-react-strict-dom.ts";
 
 /**
  * Language-aware source observations for the CSS extraction façade.
@@ -77,10 +82,13 @@ const isMemberCall = (callee: OxcNode | null, names: ReadonlySet<string>): boole
 const callKind = (
 	callee: OxcNode | null,
 	names: ReadonlySet<string>,
+	reactStrictDom: ReactStrictDomBindings,
 ): CssCallSite["callKind"] | undefined => {
 	if (callee?.type === NodeKind.Identifier && names.has((callee as { name?: string }).name ?? "")) {
 		return "css";
 	}
+	if (isReactStrictDomCreateCall(callee, reactStrictDom.cssNames))
+		return "css.create";
 	if (!isMemberCall(callee, names)) return undefined;
 	const member = memberName(callee);
 	return member === "class" || member === "raw" || member === "group" ? `css.${member}` : undefined;
@@ -110,6 +118,7 @@ const collectNames = (program: OxcNode, matchers: readonly (string | RegExp)[]):
 			}
 		}
 	});
+	for (const name of findReactStrictDomBindings(program).cssNames) names.add(name);
 	return names;
 };
 
@@ -121,10 +130,11 @@ const findCallSites = (
 ): readonly CssCallSite[] => {
 	if (names.size === 0) return [];
 	const sites: CssCallSite[] = [];
+	const reactStrictDom = findReactStrictDomBindings(program);
 	walk(program, (node) => {
 		if (node.type !== NodeKind.CallExpression) return;
 		const call = node as CallNode;
-		const kind = callKind(call.callee, names);
+		const kind = callKind(call.callee, names, reactStrictDom);
 		if (kind === undefined) return;
 		const staticArguments = call.arguments.filter(isObjectLiteral).length;
 		sites.push({
@@ -327,59 +337,59 @@ export class CssDiagnosticScanner implements CssDiagnosticReporter {
 			["supports", "Authored @supports rules are not extracted yet."],
 			["property", "Authored @property rules are not extracted yet."],
 		]);
-		walk(
+		const parsed =
 			program ??
-				(this.sourceScanner.parse({
+			(this.sourceScanner.parse({
+				file: id,
+				source: code,
+				language: this.sourceScanner.languageForFile(id),
+			}).program as unknown as OxcNode);
+		const reactStrictDom = findReactStrictDomBindings(parsed);
+		walk(parsed, (node) => {
+			if (node.type !== NodeKind.CallExpression) return;
+			const call = node as CallNode;
+			if (call.callee?.type !== NodeKind.MemberExpression) return;
+			const object = (call.callee as { object?: OxcNode | null }).object;
+			if (
+				object?.type !== NodeKind.Identifier ||
+				!names.has((object as { name?: string }).name ?? "")
+			)
+				return;
+			const member = memberName(call.callee);
+			const start = call.start;
+			const position = location(code, start);
+			if (member !== undefined && unsupported.has(member)) {
+				diagnostics.push({
+					kind: "unsupported-construct",
 					file: id,
-					source: code,
-					language: this.sourceScanner.languageForFile(id),
-				}).program as unknown as OxcNode),
-			(node) => {
-				if (node.type !== NodeKind.CallExpression) return;
-				const call = node as CallNode;
-				if (call.callee?.type !== NodeKind.MemberExpression) return;
-				const object = (call.callee as { object?: OxcNode | null }).object;
-				if (
-					object?.type !== NodeKind.Identifier ||
-					!names.has((object as { name?: string }).name ?? "")
-				)
-					return;
-				const member = memberName(call.callee);
-				const start = call.start;
-				const position = location(code, start);
-				if (member !== undefined && unsupported.has(member)) {
-					diagnostics.push({
-						kind: "unsupported-construct",
-						file: id,
-						start,
-						end: call.end,
-						...position,
-						message: unsupported.get(member)!,
-						suggestion:
-							"Use css.class/css.raw for declarations, or keep this rule in authored CSS until build-time support is added.",
-					});
-					return;
-				}
-				const kind = callKind(call.callee, names);
-				if (kind === undefined) return;
-				const staticArguments = call.arguments.filter(isObjectLiteral).length;
-				if (call.arguments.length === 0 || staticArguments !== call.arguments.length) {
-					diagnostics.push({
-						kind: "missing-extraction",
-						file: id,
-						start,
-						end: call.end,
-						...position,
-						message:
-							call.arguments.length === 0
-								? `${kind} has no style object to extract.`
-								: `${kind} has dynamic argument(s); only literal style objects enter the generated stylesheet.`,
-						suggestion:
-							"Keep the style shape literal for build-time extraction, or use css.vars for dynamic values and verify the runtime path.",
-					});
-				}
-			},
-		);
+					start,
+					end: call.end,
+					...position,
+					message: unsupported.get(member)!,
+					suggestion:
+						"Use css.class/css.raw for declarations, or keep this rule in authored CSS until build-time support is added.",
+				});
+				return;
+			}
+			const kind = callKind(call.callee, names, reactStrictDom);
+			if (kind === undefined) return;
+			const staticArguments = call.arguments.filter(isObjectLiteral).length;
+			if (call.arguments.length === 0 || staticArguments !== call.arguments.length) {
+				diagnostics.push({
+					kind: "missing-extraction",
+					file: id,
+					start,
+					end: call.end,
+					...position,
+					message:
+						call.arguments.length === 0
+							? `${kind} has no style object to extract.`
+							: `${kind} has dynamic argument(s); only literal style objects enter the generated stylesheet.`,
+					suggestion:
+						"Keep the style shape literal for build-time extraction, or use css.vars for dynamic values and verify the runtime path.",
+				});
+			}
+		});
 		return diagnostics;
 	}
 }

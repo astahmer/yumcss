@@ -17,6 +17,7 @@ import type {
 } from "./css-extraction-contracts.ts";
 import type { CssSourceScanner } from "./css-extraction-contracts.ts";
 import { NodeKind } from "../ast-node-kind.ts";
+import { findReactStrictDomBindings, isReactStrictDomCreateCall } from "./css-react-strict-dom.ts";
 
 /** Resolves literal style calls into artifacts while preserving source provenance. */
 interface CallNode extends OxcNode {
@@ -44,14 +45,19 @@ export class DesignCssArtifactExtractor implements CssArtifactExtractor {
 	extract(code: string, id: string, names: ReadonlySet<string>): ExtractedCssStyle[] {
 		const parsed = this.parse(id, code);
 		const sources: ExtractedCssStyle[] = [];
+		const reactStrictDom = findReactStrictDomBindings(parsed);
 		// Finite-candidate discovery needs same-module constants; built lazily
 		// so all-literal files never pay for the constant walk.
 		let moduleConsts: LiteralConstantScope | undefined;
 		walk(parsed, (node) => {
 			if (node.type !== NodeKind.CallExpression) return;
 			const call = node as CallNode;
-			const kind = this.callKind(call.callee, names);
+			const kind = this.callKind(call.callee, names, reactStrictDom.cssNames);
 			if (kind === undefined) return;
+			if (kind === "css.create") {
+				this.extractNamedStyles(sources, code, id, call);
+				return;
+			}
 			for (const argument of call.arguments) {
 				const literal = evalLiteral(argument as never);
 				if (typeof literal !== "object" || literal === null) {
@@ -188,16 +194,47 @@ export class DesignCssArtifactExtractor implements CssArtifactExtractor {
 	private callKind(
 		callee: OxcNode | null,
 		names: ReadonlySet<string>,
+		reactStrictDomNames: ReadonlySet<string>,
 	): ExtractedCssStyle["provenance"]["callKind"] | undefined {
 		if (callee?.type === NodeKind.Identifier && names.has((callee as { name?: string }).name ?? ""))
 			return "css";
 		if (callee?.type !== NodeKind.MemberExpression) return undefined;
 		const object = (callee as { object?: OxcNode | null }).object;
 		const member = (callee as { property?: { name?: string } | null }).property?.name;
+		if (isReactStrictDomCreateCall(callee, reactStrictDomNames)) return "css.create";
 		return object?.type === NodeKind.Identifier &&
 			names.has((object as { name?: string }).name ?? "") &&
 			(member === "class" || member === "raw" || member === "group")
 			? `css.${member}`
 			: undefined;
+	}
+
+	private extractNamedStyles(
+		sources: ExtractedCssStyle[],
+		code: string,
+		id: string,
+		call: CallNode,
+	): void {
+		const argument = call.arguments[0] as { type?: string; properties?: unknown[] } | undefined;
+		if (argument?.type !== NodeKind.ObjectExpression) return;
+		for (const property of argument.properties ?? []) {
+			const entry = property as {
+				type?: string;
+				value?: OxcNode;
+			};
+			if (entry.type !== NodeKind.Property || entry.value === undefined) continue;
+			const literal = evalLiteral(entry.value as never);
+			if (typeof literal === "object" && literal !== null && !Array.isArray(literal)) {
+				this.pushStyle(sources, code, id, call, "css.create", literal as Record<string, unknown>);
+				continue;
+			}
+			const body =
+				entry.value.type === NodeKind.ArrowFunctionExpression ||
+				entry.value.type === NodeKind.FunctionExpression
+					? (entry.value as { body?: OxcNode }).body
+					: undefined;
+			if (body?.type === NodeKind.ObjectExpression)
+				this.pushPartialLiteral(sources, code, id, call, "css.create", body);
+		}
 	}
 }

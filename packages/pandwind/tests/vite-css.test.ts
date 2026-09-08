@@ -3,6 +3,7 @@ import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { expect, test } from "vitest";
 import { createTwAdapter } from "../src/tw/adapter.ts";
+import { createStyleXAdapter } from "../src/css/stylex-adapter.ts";
 import { examplePreset } from "@pandwind/example-preset";
 import { pandwindCssVite } from "../src/vite/css.ts";
 import { createCssExtractionService, createCssSourceScanner } from "../src/vite/css-extract.ts";
@@ -510,6 +511,66 @@ test("static extraction retains the virtual stylesheet side effect", () => {
 
 		expect(transformed?.code).toContain('import "pandwind:css";');
 		expect(transformed?.code).not.toContain("css.class(");
+	} finally {
+		rmSync(dir, { recursive: true, force: true });
+	}
+});
+
+test("pandwindCssVite extracts static React Strict DOM css.create maps", () => {
+	const dir = makeProject({
+		"src/app.tsx": `
+			import { createCss } from "pandwind/react-strict-dom";
+			const css = createCss();
+			const styles = css.create({
+				card: { color: "red", padding: "1rem" },
+				active: { backgroundColor: "blue" },
+			});
+			export const card = styles.card;
+		`,
+	});
+	try {
+		const plugin = pandwindCssVite(examplePreset, {
+			className: createStyleXAdapter(),
+			root: dir,
+		});
+		const source = readFileSync(join(dir, "src/app.tsx"), "utf8");
+		const transformed = (plugin.transform as (code: string, id: string) => { code: string } | null)(
+			source,
+			join(dir, "src/app.tsx"),
+		);
+
+		expect(transformed?.code).toContain('import "pandwind:css";');
+		expect(transformed?.code).toContain("css.create");
+		expect(loadGenerated(plugin)).toContain("color:red");
+		expect(loadGenerated(plugin)).toContain("padding:1rem");
+		expect(loadGenerated(plugin)).toContain("background-color:blue");
+	} finally {
+		rmSync(dir, { recursive: true, force: true });
+	}
+});
+
+test("React Strict DOM native css carriers stay out of web stylesheet extraction", () => {
+	const dir = makeProject({
+		"src/app.tsx": `
+			import { createCss, ReactStrictDomPlatform } from "pandwind/react-strict-dom";
+			const css = createCss({ platform: ReactStrictDomPlatform.Native });
+			const styles = css.create({ card: { color: "red" } });
+			export const card = styles.card;
+		`,
+	});
+	try {
+		const plugin = pandwindCssVite(examplePreset, {
+			className: createStyleXAdapter(),
+			root: dir,
+		});
+		const source = readFileSync(join(dir, "src/app.tsx"), "utf8");
+		const transformed = (plugin.transform as (code: string, id: string) => { code: string } | null)(
+			source,
+			join(dir, "src/app.tsx"),
+		);
+
+		expect(transformed).toBeNull();
+		expect(loadGenerated(plugin)).toBe("");
 	} finally {
 		rmSync(dir, { recursive: true, force: true });
 	}
