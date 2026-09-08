@@ -32,9 +32,7 @@ const styles = css.create({
 });
 
 export function Card({ active, opacity }: { active: boolean; opacity: number }) {
-	return (
-		<html.div style={[styles.card, active && styles.active, styles.opacity(opacity)]} />
-	);
+	return <html.div style={[styles.card, active && styles.active, styles.opacity(opacity)]} />;
 }
 ```
 
@@ -47,10 +45,7 @@ For native, select the native backend explicitly:
 
 ```tsx
 import { html } from "react-strict-dom";
-import {
-	createCss,
-	ReactStrictDomPlatform,
-} from "pandwind/react-strict-dom";
+import { createCss, ReactStrictDomPlatform } from "pandwind/react-strict-dom";
 
 const css = createCss({ platform: ReactStrictDomPlatform.Native });
 const styles = css.create({ card: { padding: "1rem", borderRadius: "4px 8px" } });
@@ -97,12 +92,15 @@ The supported static path includes:
 - style arrays that can be represented by `cx` on the Pandwind side;
 - `css.keyframes` and `css.defineVars` as Pandwind semantic rules;
 - Pandwind class carriers emitted as `css.create(...)` plus `html.* style`.
+- static Tailwind and UnoCSS class carriers on intrinsic hosts projected to
+  `html.* style` when the source adapter can prove the host shape;
 
 The adapter preserves source code with a typed residual when the meaning is
 owned by RSD's host/compiler layer. This includes `css.createTheme`,
 `compat.native`, `css.props`, provider/compiler configuration, dynamic host
-components, and non-React host syntax. A residual is intentional: removing
-those APIs would claim a migration that Pandwind cannot prove equivalent.
+components such as Chakra `Box`, and non-React host syntax. A residual is
+intentional: removing those APIs would claim a migration that Pandwind cannot
+prove equivalent.
 
 The executable API evidence lives in
 [`official-api-matrix.test.ts`](https://github.com/astahmer/pandwind/blob/main/packages/codemod/tests/official-adapter-api-matrix.test.ts),

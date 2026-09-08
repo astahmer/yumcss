@@ -44,6 +44,24 @@ describe("react-strict-dom codemod adapter", () => {
 		expect(result.code).not.toContain("className=");
 	});
 
+	test("preserves component hosts when RSD cannot prove an intrinsic host", () => {
+		const result = migrate(
+			'import { Box } from "@chakra-ui/react";\n' +
+				'export const Card = () => <Box className={css.class({ color: "red" })} />;',
+			CodemodAdapterId.Pandwind,
+			CodemodAdapterId.ReactStrictDom,
+		);
+
+		expect(result.converted).toBe(0);
+		expect(result.skipped).toBeGreaterThan(0);
+		expect(result.residuals).toEqual(
+			expect.arrayContaining([expect.objectContaining({ kind: "host-framework" })]),
+		);
+		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("@chakra-ui/react");
+		expect(result.code).not.toContain('from "react-strict-dom"');
+	});
+
 	test("preserves compiler-only theme APIs as typed residuals", () => {
 		const result = migrate(
 			'import { css } from "react-strict-dom";\nexport const theme = css.createTheme({ accent: "red" });',
