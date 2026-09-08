@@ -21,6 +21,21 @@ export const enum TokenRefModeTag {
 	Group = "group",
 }
 
+/** Token spelling policies used by codemod target emitters. */
+export const TokenReferenceFormat = {
+	Preserve: "preserve",
+	DotDelimited: "dot-delimited",
+	Stitches: "stitches",
+} as const;
+
+export type TokenReferenceFormat = (typeof TokenReferenceFormat)[keyof typeof TokenReferenceFormat];
+
+export const TOKEN_REFERENCE_FORMATS = [
+	TokenReferenceFormat.Preserve,
+	TokenReferenceFormat.DotDelimited,
+	TokenReferenceFormat.Stitches,
+] as const;
+
 export interface TokenCatalogMatch {
 	readonly group: string;
 	readonly key: string;
@@ -41,11 +56,44 @@ export function resolvedStyleValue(
 }
 
 export type TokenGroupForProperty = (property: string) => string | undefined;
-export type TokenReferenceFormatter = (match: TokenCatalogMatch, property: string) => string;
+export type TokenReferenceFormatter = (
+	match: TokenCatalogMatch,
+	property: string,
+	existingAuthored?: string,
+) => string;
 
 /** Normalize a preset token key (`$blue-500`, `4`, `lg`) to a ref (`blue.500`, `4`, `lg`). */
-function normalizeTokenKey(key: string): string {
+export function normalizeTokenKey(key: string): string {
 	return key.replace(/^\$/, "").replace(/-/g, ".");
+}
+
+/**
+ * Format a canonical token path for source emitted by a codemod.
+ *
+ * `preserve` only preserves an authored spelling when the source actually had
+ * one. A reference synthesized from a resolved literal uses the canonical
+ * dot-delimited path, which keeps new output free of the historical `$` form.
+ */
+export function formatTokenPath(
+	path: string,
+	format: TokenReferenceFormat = TokenReferenceFormat.Preserve,
+	existingAuthored?: string,
+): string {
+	if (format === TokenReferenceFormat.Preserve && existingAuthored !== undefined)
+		return existingAuthored;
+	const normalized = normalizeTokenKey(path);
+	return format === TokenReferenceFormat.Stitches
+		? `$${normalized.replaceAll(".", "-")}`
+		: normalized;
+}
+
+/** Format a catalog match according to a migration's token naming policy. */
+export function formatTokenReference(
+	match: TokenCatalogMatch,
+	format: TokenReferenceFormat = TokenReferenceFormat.Preserve,
+	existingAuthored?: string,
+): string {
+	return formatTokenPath(match.ref, format, existingAuthored);
 }
 
 function normalizedTokenValue(value: unknown): string | undefined {
@@ -190,7 +238,14 @@ export class TokenCatalog {
 						  (typeof value.value === "string" || typeof value.value === "number")
 						? this.findUnique([group], String(value.value))
 						: undefined;
-			const authored = match === undefined ? undefined : formatReference(match, property);
+			const authored =
+				match === undefined
+					? undefined
+					: formatReference(
+							match,
+							property,
+							value.kind === StyleValueKindTag.Token ? value.authored : undefined,
+						);
 			if (
 				match === undefined ||
 				authored === undefined ||
