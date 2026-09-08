@@ -52,6 +52,15 @@ export function officialApiCases(): readonly OfficialApiCase[] {
 			documentation: "https://stylexjs.com/docs/learn/",
 		},
 		{
+			adapter: CodemodAdapterId.ReactStrictDom,
+			name: "react-strict-dom css.create",
+			file: "Card.tsx",
+			source:
+				'import { css, html } from "react-strict-dom";\nconst styles = css.create({ card: { color: "red", padding: "1rem" } });\nexport const Card = () => <html.div style={styles.card} />;',
+			documentation:
+				"https://github.com/facebook/react-strict-dom/blob/main/packages/react-strict-dom/README.md",
+		},
+		{
 			adapter: CodemodAdapterId.Emotion,
 			name: "@emotion/css object",
 			file: "styles.ts",
@@ -402,6 +411,30 @@ export function officialApiFamilyCases(): readonly OfficialApiFamilyCase[] {
 			file: "theme.ts",
 			source:
 				'import * as stylex from "@stylexjs/stylex";\nimport { vars } from "./vars";\nexport const theme = stylex.createTheme(vars, { accent: "blue" });',
+		},
+		{
+			adapter: CodemodAdapterId.ReactStrictDom,
+			name: "css.keyframes",
+			expectation: "converted",
+			file: "styles.ts",
+			source:
+				'import { css } from "react-strict-dom";\nexport const pulse = css.keyframes({ from: { opacity: 0 }, to: { opacity: 1 } });',
+		},
+		{
+			adapter: CodemodAdapterId.ReactStrictDom,
+			name: "css.defineVars",
+			expectation: "converted",
+			file: "styles.ts",
+			source:
+				'import { css } from "react-strict-dom";\nexport const theme = css.defineVars({ accent: "red" });',
+		},
+		{
+			adapter: CodemodAdapterId.ReactStrictDom,
+			name: "css.createTheme context",
+			expectation: "residual",
+			file: "theme.ts",
+			source:
+				'import { css } from "react-strict-dom";\nexport const theme = css.createTheme({ accent: "red" });',
 		},
 		{
 			adapter: CodemodAdapterId.Emotion,

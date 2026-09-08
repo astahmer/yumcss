@@ -22,6 +22,7 @@ import solidStyled from "./solid-styled.adapter.ts";
 import stitches from "./stitches.adapter.ts";
 import style9 from "./style9.adapter.ts";
 import { createStyleXAdapter } from "./stylex.adapter.ts";
+import reactStrictDom from "./react-strict-dom.adapter.ts";
 import styledComponents from "./styled-components.adapter.ts";
 import { createTailwindAdapter, type TailwindUtilityResolver } from "./tailwind.adapter.ts";
 import treat from "./treat.adapter.ts";
@@ -90,6 +91,7 @@ export function createBuiltinAdapterPlugin(
 			: createTailwindAdapter({ moduleLoader }),
 		jss,
 		stylex,
+		reactStrictDom,
 		fela,
 		goober,
 		aphrodite,

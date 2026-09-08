@@ -77,7 +77,7 @@ import { AdapterEvidence, type AdapterOfficialApiManifestOptions } from "./adapt
 /** Adapter ids are registry-defined so adding an adapter does not require a central union edit. */
 export type ExternalAdapterId = string;
 
-type CallPattern = {
+export type CallPattern = {
 	readonly name: string;
 	readonly regex: RegExp;
 	/** Restrict residual or syntax patterns to source files using this adapter. */

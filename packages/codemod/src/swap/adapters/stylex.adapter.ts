@@ -278,10 +278,11 @@ function importedStyleReferences(
 	}
 }
 
-function sourceObjectOptions(
+export function createStyleXSourceObjectOptions(
 	source: string,
 	context: AdapterParseContext,
 	resolver: StyleXImportedReferenceResolver | undefined,
+	apiName = "stylex",
 ) {
 	const conditionValues = stylexConditionValues(source);
 	const computedKeys = Object.fromEntries([
@@ -295,7 +296,7 @@ function sourceObjectOptions(
 		]),
 	]);
 	const dynamicReferences: Record<string, string> = {
-		...stylexVariableReferences(source),
+		...stylexVariableReferences(source, apiName),
 		...importedStyleReferences(context, resolver),
 	};
 	return {
@@ -315,10 +316,17 @@ function sourceObjectOptions(
 	};
 }
 
-function stylexVariableReferences(source: string): Readonly<Record<string, string>> {
+function stylexVariableReferences(
+	source: string,
+	apiName: string,
+): Readonly<Record<string, string>> {
 	const references: Record<string, string> = {};
+	const escapedApiName = apiName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 	for (const match of source.matchAll(
-		/\b(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*stylex\.defineVars\s*\(/g,
+		new RegExp(
+			`\\b(?:const|let|var)\\s+([A-Za-z_$][\\w$]*)\\s*=\\s*${escapedApiName}\\.defineVars\\s*\\(`,
+			"g",
+		),
 	)) {
 		const binding = match[1];
 		if (binding === undefined) continue;
@@ -657,7 +665,7 @@ const STYLEX_PROPERTY_NAMES = new Set([
 	"zIndex",
 ]);
 
-function stylexNumericValue(value: StyleValue, property?: string): StyleValue {
+export function stylexNumericValue(value: StyleValue, property?: string): StyleValue {
 	const numeric =
 		value.kind === StyleValueKindTag.Literal && typeof value.value === "number"
 			? value.value
@@ -737,7 +745,7 @@ function evaluateNumericExpression(expression: string): number | undefined {
 	return index === tokens.length ? value : undefined;
 }
 
-function normalizeStyleXVariables(program: StyleProgram): StyleProgram {
+export function normalizeStyleXVariables(program: StyleProgram): StyleProgram {
 	const root = program.rules[0];
 	const variableProperty = (property: string): string =>
 		property.startsWith("--") ? property : `--${property}`;
@@ -810,7 +818,7 @@ export function createStyleXAdapter(options: StyleXAdapterOptions = {}) {
 		sourceModules: ["@stylexjs/stylex"],
 		configFiles: ["package.json"],
 		sourceObjectOptions: (source, context) =>
-			sourceObjectOptions(source, context, options.crossModuleResolver),
+			createStyleXSourceObjectOptions(source, context, options.crossModuleResolver),
 		migration: {
 			targetPolicy: {
 				handlesHostRewrites: true,

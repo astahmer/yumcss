@@ -2360,6 +2360,114 @@ describe("official adapter API families", () => {
 			      },
 			    ],
 			  },
+			  "react-strict-dom/css.createTheme context": {
+			    "changed": true,
+			    "code": "import { css } from "react-strict-dom";
+			export const theme = // pandwind:migrate-skip (route: react-strict-dom -> pandwind | parse-residual: configuration | available: named-map, residual)
+			css.createTheme({ accent: "red" });",
+			    "converted": 0,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "residual",
+			        "residuals": [],
+			      },
+			    ],
+			    "outcomes": [
+			      {
+			        "outcome": "residual",
+			        "representation": "residual",
+			      },
+			    ],
+			    "residuals": [
+			      {
+			        "hint": "React Strict DOM css.createTheme needs the platform compiler and theme context",
+			        "kind": "configuration",
+			        "preserved": undefined,
+			      },
+			    ],
+			    "skipped": 1,
+			    "validations": [],
+			  },
+			  "react-strict-dom/css.defineVars": {
+			    "changed": true,
+			    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+			import { pandwindPreset } from "pandwind/preset";
+			const css = createRuntimeCss(pandwindPreset);
+
+			export const theme = (css.sheet.registerSemanticRules([{ kind: "global", selector: ":root", declarations: [{ property: "--accent", value: "red" }] }]), { "accent": "var(--accent)" });",
+			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "static",
+			        "residuals": [],
+			      },
+			    ],
+			    "outcomes": [
+			      {
+			        "outcome": "static",
+			        "representation": "static",
+			      },
+			    ],
+			    "residuals": [],
+			    "skipped": 0,
+			    "validations": [
+			      {
+			        "differences": [],
+			        "lossiness": "lossless",
+			        "valid": true,
+			      },
+			    ],
+			  },
+			  "react-strict-dom/css.keyframes": {
+			    "changed": true,
+			    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+			import { pandwindPreset } from "pandwind/preset";
+			const css = createRuntimeCss(pandwindPreset);
+
+			export const pulse = (() => { const name = "pw-kf-pulse"; css.sheet.registerSemanticRules([{ kind: "keyframes", name, children: [{ kind: "style", selector: "from", declarations: [{ property: "opacity", value: 0 }] }, { kind: "style", selector: "to", declarations: [{ property: "opacity", value: 1 }] }] }]); return name; })();",
+			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "named-map",
+			        "residuals": [],
+			      },
+			    ],
+			    "outcomes": [
+			      {
+			        "outcome": "target-native",
+			        "representation": "named-map",
+			      },
+			    ],
+			    "residuals": [],
+			    "skipped": 0,
+			    "validations": [
+			      {
+			        "differences": [],
+			        "lossiness": "lossless",
+			        "valid": true,
+			      },
+			    ],
+			  },
 			  "sass/scss mixins": {
 			    "changed": false,
 			    "code": "// pandwind:migrate-skip (lowering-residual: capability, parse)

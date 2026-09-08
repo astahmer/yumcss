@@ -689,6 +689,43 @@ describe("official primary API forms", () => {
 			      },
 			    ],
 			  },
+			  "react-strict-dom/react-strict-dom css.create": {
+			    "changed": true,
+			    "code": "import { createCss } from "pandwind/css";
+			const css = createCss();
+
+			const styles = { "card": css.class({ padding: "1rem", color: "red" }) };
+			export const Card = () => <div className={styles.card} />;",
+			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "named-map",
+			        "residuals": [],
+			      },
+			    ],
+			    "outcomes": [
+			      {
+			        "outcome": "target-native",
+			        "representation": "named-map",
+			      },
+			    ],
+			    "residuals": [],
+			    "skipped": 0,
+			    "validations": [
+			      {
+			        "differences": [],
+			        "lossiness": "lossless",
+			        "valid": true,
+			      },
+			    ],
+			  },
 			  "sass/scss rule": {
 			    "changed": true,
 			    "code": "import { createCss } from "pandwind/css";
