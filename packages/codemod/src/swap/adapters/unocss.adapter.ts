@@ -581,6 +581,10 @@ async function officialConfig(
 		context
 			.listFiles?.(context.root)
 			.filter((candidate) => /(?:^|[\\/])uno\.config\.(?:ts|js|mjs|cjs)$/u.test(candidate)) ?? [];
+	// Do not ask the official loader to invent a project configuration when the
+	// project has no UnoCSS config. Its missing-config diagnostic is noisy, and
+	// the neutral fallback is the only safe evidence in that case.
+	if (configFiles.length === 0) return fallback;
 	const [configPackage, corePackage] = await Promise.all([
 		loader.importPackage<UnoConfigPackage>("@unocss/config", context.root),
 		loader.importPackage<UnoCorePackage>("@unocss/core", context.root),

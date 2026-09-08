@@ -80,7 +80,10 @@ describe("UnoCSS official extraction context", () => {
 				'const classes = "badge-brand";',
 				'export const App = () => <div className="badge-brand" data-x={classes} />;',
 			].join("\n"),
-			{ [cssFile]: "@theme { --color-brand: #123456; }" },
+			{
+				[cssFile]: "@theme { --color-brand: #123456; }",
+				[`${root}/uno.config.ts`]: "export default {}",
+			},
 			candidates,
 		);
 
@@ -100,7 +103,10 @@ describe("UnoCSS official extraction context", () => {
 		const candidates: string[][] = [];
 		const result = await migrate(
 			'export const App = () => <div className={"shortcut-brand bg-brand"} />;',
-			{ [cssFile]: "@theme { --color-brand: #123456; }" },
+			{
+				[cssFile]: "@theme { --color-brand: #123456; }",
+				[`${root}/uno.config.ts`]: "export default {}",
+			},
 			candidates,
 		);
 

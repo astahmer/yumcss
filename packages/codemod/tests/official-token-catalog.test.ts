@@ -23,6 +23,7 @@ const context = {
 	file: "src/App.tsx",
 	source: "",
 	root: "/project",
+	listFiles: () => ["/project/uno.config.ts"],
 };
 
 const literalProgram = styleProgramFromRules([
