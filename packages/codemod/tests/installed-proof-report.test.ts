@@ -2,6 +2,14 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
 
+interface InstalledCanonicalProof {
+	readonly checked: boolean;
+	readonly equal: boolean;
+	readonly sourceBytes: number;
+	readonly targetBytes: number;
+	readonly differences: readonly string[];
+}
+
 interface InstalledProofReport {
 	readonly schema: string;
 	readonly adapter: string;
@@ -22,6 +30,7 @@ interface TailwindInstalledProofReport {
 		readonly converted: number;
 		readonly skipped: number;
 		readonly residuals: number;
+		readonly canonical: InstalledCanonicalProof;
 		readonly targetUsesPandwind: boolean;
 		readonly customThemeTokenPreserved: boolean;
 		readonly sourceStylesheetImportRemoved: boolean;
@@ -53,6 +62,7 @@ interface StyledComponentsInstalledProofReport {
 		readonly converted: number;
 		readonly skipped: number;
 		readonly residuals: number;
+		readonly canonical: InstalledCanonicalProof;
 		readonly generatedSupportFiles: number;
 		readonly targetUsesPandwind: boolean;
 		readonly sourceImportRemoved: boolean;
@@ -89,6 +99,7 @@ interface PandaInstalledProofReport {
 		readonly converted: number;
 		readonly skipped: number;
 		readonly residuals: number;
+		readonly canonical: InstalledCanonicalProof;
 		readonly targetUsesPandwind: boolean;
 		readonly customTokenPreserved: boolean;
 		readonly sourceStylesheetImportRemoved: boolean;
@@ -155,6 +166,7 @@ describe("installed adapter proof artifacts", () => {
 				converted: 1,
 				skipped: 0,
 				residuals: 0,
+				canonical: { checked: true, equal: true, differences: [] },
 				targetUsesPandwind: true,
 				customThemeTokenPreserved: true,
 				sourceStylesheetImportRemoved: true,
@@ -194,6 +206,7 @@ describe("installed adapter proof artifacts", () => {
 				converted: 1,
 				skipped: 0,
 				residuals: 0,
+				canonical: { checked: true, equal: true, differences: [] },
 				generatedSupportFiles: expect.any(Number),
 				targetUsesPandwind: true,
 				sourceImportRemoved: true,
@@ -232,6 +245,7 @@ describe("installed adapter proof artifacts", () => {
 				converted: 1,
 				skipped: 0,
 				residuals: 0,
+				canonical: { checked: true, equal: true, differences: [] },
 				targetUsesPandwind: true,
 				customTokenPreserved: true,
 				sourceStylesheetImportRemoved: true,
@@ -270,6 +284,7 @@ describe("installed adapter proof artifacts", () => {
 				converted: 1,
 				skipped: 0,
 				residuals: 0,
+				canonical: { checked: true, equal: true, differences: [] },
 				targetUsesPandwind: true,
 				customTokenPreserved: true,
 				sourceStylesheetImportRemoved: true,

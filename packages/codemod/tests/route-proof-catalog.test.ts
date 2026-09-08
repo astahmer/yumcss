@@ -94,10 +94,14 @@ describe("migration route proof catalog", () => {
 				resolve(import.meta.dirname, "../../../plans/evidence/tailwind-installed-proof.json"),
 				"utf8",
 			),
-		) as unknown;
+		) as { readonly migration: Readonly<Record<string, unknown>> };
+		const withoutCanonical = {
+			...report,
+			migration: { ...report.migration, canonical: undefined },
+		};
 		const evaluation = evaluateMigrationRouteProof(
 			route,
-			new Map([["tailwind-installed-proof", report]]),
+			new Map([["tailwind-installed-proof", withoutCanonical]]),
 		);
 
 		expect(evaluation.eligible).toBe(false);
@@ -108,6 +112,14 @@ describe("migration route proof catalog", () => {
 			RealRepositoryProofDimensionStatus.Unavailable,
 		);
 		expect(evaluation.reasons).toContain("adapter-level canonical CSS comparison was not recorded");
+		expect(
+			validateMigrationRouteProofEvidence(
+				[route],
+				new Map([["tailwind-installed-proof", withoutCanonical]]),
+			),
+		).toContain(
+			"tailwind-to-pandwind: evidence tailwind-installed-proof did not prove canonical CSS equality",
+		);
 	});
 
 	test("requires installed evidence to identify an isolated host fixture", () => {

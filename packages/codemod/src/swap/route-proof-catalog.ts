@@ -76,9 +76,9 @@ interface InstalledRouteProofEvidence {
 	readonly migration?: {
 		readonly skipped?: number;
 		readonly residuals?: number;
+		readonly canonical?: { readonly checked?: boolean; readonly equal?: boolean };
 	};
 	readonly checks?: Readonly<Record<string, unknown>>;
-	readonly canonical?: { readonly equal?: boolean };
 	readonly ssr?: { readonly markupEquivalent?: boolean };
 	readonly browser?: {
 		readonly equivalent?: boolean;
@@ -116,7 +116,8 @@ function dimensionEvidence(
 	if (evidence === undefined) return unavailable("no installed-project evidence is available");
 	switch (dimension) {
 		case RealRepositoryProofDimension.CanonicalCss:
-			return evidence.checks?.canonicalCss === true || evidence.canonical?.equal === true
+			return evidence.migration?.canonical?.checked === true &&
+				evidence.migration.canonical.equal === true
 				? passed()
 				: unavailable("adapter-level canonical CSS comparison was not recorded");
 		case RealRepositoryProofDimension.Typecheck: {
@@ -487,6 +488,11 @@ export function validateMigrationRouteProofEvidence(
 				errors.push(`${route.id}: evidence ${evidenceId} does not prove installed dependencies`);
 			if (evidence.migration?.skipped !== 0 || evidence.migration?.residuals !== 0)
 				errors.push(`${route.id}: evidence ${evidenceId} retains skipped matches or residuals`);
+			if (
+				evidence.migration?.canonical?.checked !== true ||
+				evidence.migration.canonical.equal !== true
+			)
+				errors.push(`${route.id}: evidence ${evidenceId} did not prove canonical CSS equality`);
 			for (const check of [
 				"sourceTypecheck",
 				"targetTypecheck",

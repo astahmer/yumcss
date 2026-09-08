@@ -21,6 +21,13 @@
 		"converted": 1,
 		"skipped": 0,
 		"residuals": 0,
+		"canonical": {
+			"checked": true,
+			"equal": true,
+			"sourceBytes": 150,
+			"targetBytes": 150,
+			"differences": []
+		},
 		"generatedSupportFiles": 11,
 		"targetUsesPandwind": true,
 		"customThemeTokenPreserved": true,

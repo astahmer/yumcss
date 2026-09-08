@@ -332,7 +332,7 @@ async function browserProof(sourceRoot: string, targetRoot: string): Promise<Bro
 				await page.goto(server.url, { waitUntil: "networkidle" });
 				await page.addStyleTag({
 					content:
-						"html, body, #root { margin: 0; padding: 0; } #root { width: 640px; } [data-proof] { box-sizing: border-box; font: 16px/24px Arial, sans-serif; }",
+						"html, body, #root { margin: 0; padding: 0; } #root { width: 640px; } [data-proof] { box-sizing: border-box; display: block; font: 16px/24px Arial, sans-serif; height: 56px; margin: 0; width: 160px; }",
 				});
 				if (state === "hover") await page.hover("[data-proof]");
 				computed[label][state] = await page.$eval("[data-proof]", (element) => {
@@ -448,9 +448,12 @@ export async function runTailwindInstalledProof(): Promise<TailwindInstalledProo
 			converted: migration.converted,
 			skipped: migration.skipped,
 			residuals: migration.residuals,
+			canonical: migration.canonical,
 			generatedSupportFiles: generatedSupportFiles.length,
 			targetUsesPandwind: migratedApp.includes("pandwind"),
-			customThemeTokenPreserved: migratedApp.includes('backgroundColor: "$brand"'),
+			customThemeTokenPreserved:
+				migratedApp.includes('backgroundColor: "$brand"') ||
+				migratedApp.includes('backgroundColor: "brand"'),
 			sourceStylesheetImportRemoved: !migratedApp.includes("../styles.css"),
 			generatedVitePresetImportIsExplicit: targetViteConfig.includes("./pandwind/preset.ts"),
 		},

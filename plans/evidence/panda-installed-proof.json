@@ -21,6 +21,13 @@
 		"converted": 1,
 		"skipped": 0,
 		"residuals": 0,
+		"canonical": {
+			"checked": true,
+			"equal": true,
+			"sourceBytes": 100,
+			"targetBytes": 100,
+			"differences": []
+		},
 		"targetUsesPandwind": true,
 		"customTokenPreserved": true,
 		"sourceStylesheetImportRemoved": true,

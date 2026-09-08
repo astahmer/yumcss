@@ -20,6 +20,13 @@
 		"converted": 1,
 		"skipped": 0,
 		"residuals": 0,
+		"canonical": {
+			"checked": true,
+			"equal": true,
+			"sourceBytes": 90,
+			"targetBytes": 90,
+			"differences": []
+		},
 		"generatedSupportFiles": 6,
 		"targetUsesPandwind": true,
 		"sourceImportRemoved": true,
