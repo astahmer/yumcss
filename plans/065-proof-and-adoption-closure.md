@@ -145,4 +145,4 @@ validation, and host ports. No new central ecosystem switchboard is allowed.
 | ---------- | ------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
 | 2026-09-08 | Treat proof breadth, host syntax, config context, and MCP execution as separate workstreams | They need different ports, fixtures, and evidence; one matrix count obscures the real gaps           |
 | 2026-09-08 | Add cheap evidence checks to ordinary CI, keep expensive promotion runs separate            | Pull requests should catch stale claims without requiring reference clones or browser promotion cost |
-| 2026-09-08 | Keep MCP project checks behind an injected host port                                      | A generic default shell runner would make arbitrary project execution unauditable and unsafe        |
+| 2026-09-08 | Keep MCP project checks behind an injected host port                                        | A generic default shell runner would make arbitrary project execution unauditable and unsafe         |
