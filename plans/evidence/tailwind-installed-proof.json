@@ -7,6 +7,7 @@
 	"fixture": {
 		"files": [
 			"src/App.tsx",
+			"src/Badge.tsx",
 			"styles.css",
 			"vite.config.ts"
 		],
@@ -18,14 +19,14 @@
 		"targetNodeModule": true
 	},
 	"migration": {
-		"converted": 1,
+		"converted": 2,
 		"skipped": 0,
 		"residuals": 0,
 		"canonical": {
 			"checked": true,
 			"equal": true,
-			"sourceBytes": 150,
-			"targetBytes": 150,
+			"sourceBytes": 321,
+			"targetBytes": 321,
 			"differences": []
 		},
 		"generatedSupportFiles": 11,
@@ -45,8 +46,8 @@
 	},
 	"ssr": {
 		"markupEquivalent": true,
-		"sourceMarkup": "<div data-proof=\"true\" class=\"bg-brand px-4 py-2 text-white hover:bg-blue-600\">Proof</div>",
-		"targetMarkup": "<div data-proof=\"true\" class=\"3yks9n 1dszenz 1mfwe5l 7nvuka 19foiwf\">Proof</div>"
+		"sourceMarkup": "<div data-proof=\"true\" class=\"bg-brand px-4 py-2 text-white hover:bg-blue-600\"><span data-proof-badge=\"true\" class=\"ml-2 rounded bg-brand px-2 text-white hover:bg-blue-600\">Badge</span>Proof</div>",
+		"targetMarkup": "<div data-proof=\"true\" class=\"3yks9n 1dszenz 1mfwe5l 7nvuka 19foiwf\"><span data-proof-badge=\"true\" class=\"1tw1qrg ufhzan 1mfwe5l 7nvuka udhvg0 19foiwf\">Badge</span>Proof</div>"
 	},
 	"browser": {
 		"checked": true,
@@ -69,8 +70,8 @@
 		"hydrationErrors": []
 	},
 	"css": {
-		"sourceBytes": 4568,
-		"targetBytes": 331,
+		"sourceBytes": 4687,
+		"targetBytes": 460,
 		"targetNotLarger": true
 	}
 }

@@ -163,7 +163,7 @@ describe("installed adapter proof artifacts", () => {
 			route: { from: "tailwind", to: "pandwind" },
 			dependencies: { installed: true, targetNodeModule: true },
 			migration: {
-				converted: 1,
+				converted: 2,
 				skipped: 0,
 				residuals: 0,
 				canonical: { checked: true, equal: true, differences: [] },

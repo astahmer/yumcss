@@ -45,11 +45,20 @@ const versions = {
 } as const;
 
 const sourceApp = `import "../styles.css";
+import { Badge } from "./Badge";
 
 export const App = () => (
 	<div data-proof className="bg-brand px-4 py-2 text-white hover:bg-blue-600">
+		<Badge />
 		Proof
 	</div>
+);
+`;
+
+const sourceBadge = `export const Badge = () => (
+	<span data-proof-badge className="ml-2 rounded bg-brand px-2 text-white hover:bg-blue-600">
+		Badge
+	</span>
 );
 `;
 
@@ -202,6 +211,7 @@ function createFixture(root: string, includePandwind: boolean): void {
 	);
 	writeFileSync(join(root, "vite.config.ts"), sourceViteConfig);
 	writeFileSync(join(root, "src/App.tsx"), sourceApp);
+	writeFileSync(join(root, "src/Badge.tsx"), sourceBadge);
 	writeFileSync(
 		join(root, "src/main.tsx"),
 		[
@@ -407,7 +417,7 @@ export async function runTailwindInstalledProof(): Promise<TailwindInstalledProo
 				"--root",
 				targetRoot,
 				"--no-install",
-				"src/App.tsx",
+				"src/**/*.tsx",
 				"--report",
 				"--report-format=json",
 			],
@@ -434,11 +444,14 @@ export async function runTailwindInstalledProof(): Promise<TailwindInstalledProo
 	const targetCss = generatedCss(targetRoot);
 	const browser = await browserProof(sourceRoot, targetRoot);
 	const normalizeMarkup = (markup: string): string =>
-		markup.replace(/class="[^"]*"/u, 'class="CLASS"');
+		markup.replace(/class="[^"]*"/gu, 'class="CLASS"');
 	const result: TailwindInstalledProof = {
 		schema: proofSchema,
 		route: { from: CodemodAdapterId.Tailwind, to: CodemodAdapterId.Pandwind },
-		fixture: { files: ["src/App.tsx", "styles.css", "vite.config.ts"], isolated: true },
+		fixture: {
+			files: ["src/App.tsx", "src/Badge.tsx", "styles.css", "vite.config.ts"],
+			isolated: true,
+		},
 		dependencies: {
 			installed: true,
 			targetPackage: installedTargetPackage.dependencies?.pandwind ?? "",
