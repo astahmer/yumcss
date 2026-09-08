@@ -155,8 +155,14 @@ export const createStylesheet = (
 			const tokenGroup = tokenMaps.groupByProp.get(atomic.prop!);
 			const tokenNames = tokenMaps.tokensByProp.get(atomic.prop!);
 			if (tokenNames?.has(normalizedValue)) {
-				const tokenPath = `${tokenGroup ?? atomic.prop!}.${normalizedValue}`;
-				if (!usedTokenPaths.has(tokenPath)) {
+				// `tokenNames` contains every accepted spelling, including aliases
+				// such as `brand` for a preset key `$brand`. Track the canonical
+				// preset path so used-token emission keeps the variable declaration
+				// for whichever spelling the caller authored.
+				const tokenPath = tokenMaps.flatTokens.get(
+					`${tokenGroup ?? atomic.prop!}.${normalizedValue}`,
+				)?.path;
+				if (tokenPath !== undefined && !usedTokenPaths.has(tokenPath)) {
 					usedTokenPaths.add(tokenPath);
 					tokensCache = undefined;
 				}

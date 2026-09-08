@@ -19,6 +19,22 @@ test("can emit only token declarations referenced by extracted styles", () => {
 	expect(createStylesheet(preset).gen.tokens()).toContain("#abcdef");
 });
 
+test("emits a used token declaration for every accepted token spelling", () => {
+	const preset = {
+		conditions: {},
+		properties: { $all: true, color: { $tokens: "colors" } },
+		strict: true,
+		tokens: { colors: { $brand: "#123456" } },
+	} as never;
+
+	for (const value of ["brand", "$brand"]) {
+		const sheet = createStylesheet(preset, {}, { tokens: "used" });
+		sheet.process([{ color: value }]);
+
+		expect(sheet.gen.tokens()).toContain("#123456");
+	}
+});
+
 test("css gen simple prop", () => {
 	const sheet = createStylesheet(examplePreset, { debug: false });
 	const css = createCss<typeof examplePreset>({ debug: false });

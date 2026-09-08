@@ -47,7 +47,12 @@ import {
 	componentExpressionForSubject,
 	intrinsicTagForSubject,
 } from "../host-component-rewriter.ts";
-import { formatTokenReference, normalizeTokenKey, TokenCatalog } from "../tokens.ts";
+import {
+	formatTokenReference,
+	normalizeTokenKey,
+	TokenCatalog,
+	TokenReferenceFormat,
+} from "../tokens.ts";
 import type { ProjectModuleLoader } from "../project-module-loader.ts";
 import {
 	dirnameDocumentPath,
@@ -478,11 +483,18 @@ function preserveKnownPresetTokens(
 			? undefined
 			: TokenCatalog.fromContract(context.sourceConfig?.tokenCatalog));
 	if (catalog === undefined) return program;
-	return catalog.preserveProgram(
-		program,
-		pandwindTokenGroup,
-		(match, _property, existingAuthored) =>
-			formatTokenReference(match, context?.tokenReferenceFormat, existingAuthored),
+	return catalog.preserveProgram(program, pandwindTokenGroup, (match) =>
+		formatTokenReference(
+			match,
+			// A generated Pandwind preset stores legacy `$foo-bar` keys, and
+			// the runtime accepts their dot-delimited aliases. Preserve the
+			// token identity while emitting a spelling the target extractor and
+			// typed API both recognize. Explicit migration formats still win.
+			context?.tokenReferenceFormat === undefined ||
+				context.tokenReferenceFormat === TokenReferenceFormat.Preserve
+				? TokenReferenceFormat.Stitches
+				: context.tokenReferenceFormat,
+		),
 	);
 }
 
