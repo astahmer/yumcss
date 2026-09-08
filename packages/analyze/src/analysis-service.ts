@@ -27,51 +27,26 @@ export interface FoldAnalysisPort {
 	format(summary: FoldSummary): string;
 }
 
-export interface FileFoldAnalyzerPort {
-	analyze(source: string, file: string, options: AnalyzeOptions): FileFoldStats;
-}
-
-export interface FoldSummaryPort {
-	summarize(files: Array<FileFoldStats>): FoldSummary;
-}
-
-export interface FoldReportPort {
-	format(summary: FoldSummary): string;
-}
-
 export interface FoldAnalysisDependencies {
-	readonly analyzer?: FileFoldAnalyzerPort;
+	/** Optional replacement for the complete fold-analysis policy. */
+	readonly implementation?: Partial<FoldAnalysisPort>;
 	/** Residual policy used by the default source analyzer. */
 	readonly residuals?: CssResidualCollector;
-	readonly summary?: FoldSummaryPort;
-	readonly report?: FoldReportPort;
 }
 
-class FoldAnalysisService implements FoldAnalysisPort {
-	private readonly analyzer: FileFoldAnalyzerPort;
-	private readonly summary: FoldSummaryPort;
-	private readonly report: FoldReportPort;
-
-	constructor(
-		analyzer: FileFoldAnalyzerPort = { analyze: analyzeSource },
-		summary: FoldSummaryPort = { summarize },
-		report: FoldReportPort = { format: formatReport },
-	) {
-		this.analyzer = analyzer;
-		this.summary = summary;
-		this.report = report;
-	}
+class DefaultFoldAnalysis implements FoldAnalysisPort {
+	constructor(private readonly residuals?: CssResidualCollector) {}
 
 	analyze(source: string, file: string, options: AnalyzeOptions): FileFoldStats {
-		return this.analyzer.analyze(source, file, options);
+		return analyzeSource(source, file, options, { residuals: this.residuals });
 	}
 
 	summarize(files: Array<FileFoldStats>): FoldSummary {
-		return this.summary.summarize(files);
+		return summarize(files);
 	}
 
 	format(summary: FoldSummary): string {
-		return this.report.format(summary);
+		return formatReport(summary);
 	}
 }
 
@@ -179,17 +154,18 @@ class DefaultAnalysisWorkspace implements AnalysisWorkspacePort {
 export const createFoldAnalysisService = (
 	dependencies: FoldAnalysisDependencies = {},
 ): FoldAnalysisPort => {
-	const analyzer =
-		dependencies.analyzer ??
-		({
-			analyze: (source, file, options) =>
-				analyzeSource(source, file, options, { residuals: dependencies.residuals }),
-		} satisfies FileFoldAnalyzerPort);
-	return new FoldAnalysisService(
-		analyzer,
-		dependencies.summary ?? { summarize },
-		dependencies.report ?? { format: formatReport },
-	);
+	const defaults = new DefaultFoldAnalysis(dependencies.residuals);
+	return {
+		analyze:
+			dependencies.implementation?.analyze?.bind(dependencies.implementation) ??
+			defaults.analyze.bind(defaults),
+		summarize:
+			dependencies.implementation?.summarize?.bind(dependencies.implementation) ??
+			defaults.summarize.bind(defaults),
+		format:
+			dependencies.implementation?.format?.bind(dependencies.implementation) ??
+			defaults.format.bind(defaults),
+	};
 };
 export const createAnalysisWorkspace = (): AnalysisWorkspacePort => new DefaultAnalysisWorkspace();
 export const createCssBudgetService = (dependencies: CssBudgetDependencies = {}): CssBudgetPort =>

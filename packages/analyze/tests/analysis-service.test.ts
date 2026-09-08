@@ -1,12 +1,6 @@
 import { describe, expect, test } from "vitest";
 import { parse } from "postcss";
-import {
-	createFoldAnalysisService,
-	createCssBudgetService,
-	type FileFoldAnalyzerPort,
-	type FoldReportPort,
-	type FoldSummaryPort,
-} from "../src/analysis-service.ts";
+import { createFoldAnalysisService, createCssBudgetService } from "../src/analysis-service.ts";
 import type { FileFoldStats, FoldSummary } from "../src/analyze.ts";
 import type { CssResidualCollector } from "../src/css-residual-collector.ts";
 
@@ -41,30 +35,24 @@ const summary: FoldSummary = {
 };
 
 describe("analysis composition ports", () => {
-	test("orchestration accepts substituted analyzer, summary, and report policies", () => {
+	test("orchestration accepts one substituted fold-analysis policy", () => {
 		const calls: string[] = [];
-		const analyzer: FileFoldAnalyzerPort = {
+		const implementation = {
 			analyze: () => {
 				calls.push("analyze");
 				return stats;
 			},
-		};
-		const summaryPolicy: FoldSummaryPort = {
 			summarize: () => {
 				calls.push("summarize");
 				return summary;
 			},
-		};
-		const report: FoldReportPort = {
 			format: () => {
 				calls.push("format");
 				return "fake report";
 			},
 		};
 		const service = createFoldAnalysisService({
-			analyzer,
-			summary: summaryPolicy,
-			report,
+			implementation,
 		});
 		expect(service.analyze("", "fixture.tsx", {} as never)).toBe(stats);
 		expect(service.summarize([stats])).toBe(summary);
