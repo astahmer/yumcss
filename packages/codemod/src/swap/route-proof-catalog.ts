@@ -5,6 +5,7 @@ import {
 	RealRepositoryProofDimensionStatus,
 } from "./identifiers.ts";
 import type { RealRepositoryCorpus } from "./real-repository-corpus.ts";
+import { StyleDialectRoleTag, type StyleSystemRegistry } from "./style-systems.ts";
 
 /** Versioned route-level maturity and proof policy used by tooling surfaces. */
 export const MIGRATION_ROUTE_PROOF_CATALOG_SCHEMA =
@@ -32,12 +33,14 @@ export const enum MigrationRouteProofRouteId {
 	UnoCssToTailwind = "unocss-to-tailwind",
 	TailwindToUnoCss = "tailwind-to-unocss",
 	PandwindToUnoCss = "pandwind-to-unocss",
+	Unclassified = "unclassified",
 }
 
 export interface MigrationRouteProofSpec {
-	readonly id: MigrationRouteProofRouteId;
-	readonly from: CodemodAdapterId;
-	readonly to: CodemodAdapterId;
+	/** Built-in routes use the const-enum ids; plugin routes use a derived id. */
+	readonly id: string;
+	readonly from: string;
+	readonly to: string;
 	readonly maturity: MigrationRouteMaturityTag;
 	readonly execution: MigrationRouteProofExecutionTag;
 	readonly requiredDimensions: readonly RealRepositoryProofDimension[];
@@ -62,6 +65,10 @@ export interface MigrationRouteProofEvaluation {
 
 interface InstalledRouteProofEvidence {
 	readonly route?: { readonly from?: string; readonly to?: string };
+	readonly fixture?: {
+		readonly isolated?: boolean;
+		readonly files?: readonly string[];
+	};
 	readonly dependencies?: {
 		readonly installed?: boolean;
 		readonly targetNodeModule?: boolean;
@@ -249,13 +256,71 @@ export const MIGRATION_ROUTE_PROOF_CATALOG: readonly MigrationRouteProofSpec[] =
 	},
 ] as const;
 
-export function migrationRouteProofCatalog(): {
+function registeredDialect(
+	registry: StyleSystemRegistry,
+	address: string,
+): ReturnType<StyleSystemRegistry["getDialect"]> {
+	return registry.getDialect(address) ?? registry.getDialect(adapterIdForRoute(address));
+}
+
+function unclassifiedRoute(from: string, to: string): MigrationRouteProofSpec {
+	const source = adapterIdForRoute(from);
+	const target = adapterIdForRoute(to);
+	return {
+		id: `${MigrationRouteProofRouteId.Unclassified}:${source}->${target}`,
+		from: source,
+		to: target,
+		maturity: MigrationRouteMaturityTag.Research,
+		execution: MigrationRouteProofExecutionTag.Unavailable,
+		requiredDimensions: PROJECT_PROOF_DIMENSIONS,
+		referenceIds: [],
+		note: "The route is registered, but no route-specific installed-project proof is available; inspect the adapter result as research evidence and treat host validation as required.",
+	};
+}
+
+function registeredRoutePairs(
+	registry: StyleSystemRegistry,
+): readonly { readonly from: string; readonly to: string }[] {
+	const dialects = registry.systems.flatMap((system) => system.dialects);
+	const sources = dialects.filter((dialect) => dialect.role !== StyleDialectRoleTag.Target);
+	const targets = dialects.filter((dialect) => dialect.role !== StyleDialectRoleTag.Source);
+	const pairs = new Map<string, { readonly from: string; readonly to: string }>();
+	for (const source of sources) {
+		for (const target of targets) {
+			const from = adapterIdForRoute(source.id);
+			const to = adapterIdForRoute(target.id);
+			const key = `${from}->${to}`;
+			if (!pairs.has(key)) pairs.set(key, { from, to });
+		}
+	}
+	return [...pairs.values()].toSorted((left, right) =>
+		`${left.from}->${left.to}`.localeCompare(`${right.from}->${right.to}`),
+	);
+}
+
+/**
+ * Expand the static proof policies with an explicit research policy for every
+ * route the supplied adapter registry can actually resolve. This keeps the
+ * route catalog honest for built-ins and plugins alike: an unproven route is
+ * visible and unavailable instead of looking unregistered.
+ */
+export function migrationRouteProofCatalog(registry?: StyleSystemRegistry): {
 	readonly schema: typeof MIGRATION_ROUTE_PROOF_CATALOG_SCHEMA;
 	readonly routes: readonly MigrationRouteProofSpec[];
 } {
+	if (registry === undefined) {
+		return {
+			schema: MIGRATION_ROUTE_PROOF_CATALOG_SCHEMA,
+			routes: MIGRATION_ROUTE_PROOF_CATALOG,
+		};
+	}
+	const known = new Set(MIGRATION_ROUTE_PROOF_CATALOG.map((route) => `${route.from}->${route.to}`));
+	const fallback = registeredRoutePairs(registry)
+		.filter(({ from, to }) => !known.has(`${from}->${to}`))
+		.map(({ from, to }) => unclassifiedRoute(from, to));
 	return {
 		schema: MIGRATION_ROUTE_PROOF_CATALOG_SCHEMA,
-		routes: MIGRATION_ROUTE_PROOF_CATALOG,
+		routes: [...MIGRATION_ROUTE_PROOF_CATALOG, ...fallback],
 	};
 }
 
@@ -267,12 +332,24 @@ function adapterIdForRoute(value: string): string {
 export function findMigrationRouteProof(
 	from: string,
 	to: string,
+	registry?: StyleSystemRegistry,
 ): MigrationRouteProofSpec | undefined {
 	const source = adapterIdForRoute(from);
 	const target = adapterIdForRoute(to);
-	return MIGRATION_ROUTE_PROOF_CATALOG.find(
+	const known = MIGRATION_ROUTE_PROOF_CATALOG.find(
 		(route) => route.from === source && route.to === target,
 	);
+	if (known !== undefined || registry === undefined) return known;
+	const sourceDialect = registeredDialect(registry, from);
+	const targetDialect = registeredDialect(registry, to);
+	if (
+		sourceDialect === undefined ||
+		targetDialect === undefined ||
+		sourceDialect.role === StyleDialectRoleTag.Target ||
+		targetDialect.role === StyleDialectRoleTag.Source
+	)
+		return undefined;
+	return unclassifiedRoute(sourceDialect.id, targetDialect.id);
 }
 
 /**
@@ -351,11 +428,12 @@ export function evaluateMigrationRouteProof(
 
 export function validateMigrationRouteProofCatalog(
 	corpus: RealRepositoryCorpus,
+	catalog: readonly MigrationRouteProofSpec[] = MIGRATION_ROUTE_PROOF_CATALOG,
 ): readonly string[] {
 	const errors: string[] = [];
 	const routeIds = new Set<string>();
 	const referenceIds = new Set(corpus.references.map((reference) => reference.id));
-	for (const route of MIGRATION_ROUTE_PROOF_CATALOG) {
+	for (const route of catalog) {
 		if (routeIds.has(route.id)) errors.push(`duplicate route id: ${route.id}`);
 		routeIds.add(route.id);
 		if (route.requiredDimensions.length === 0)
@@ -398,6 +476,10 @@ export function validateMigrationRouteProofEvidence(
 			const evidence = value as InstalledRouteProofEvidence;
 			if (evidence.route?.from !== route.from || evidence.route?.to !== route.to)
 				errors.push(`${route.id}: evidence ${evidenceId} records a different route`);
+			if (evidence.fixture?.isolated !== true)
+				errors.push(`${route.id}: evidence ${evidenceId} does not prove an isolated fixture`);
+			if (evidence.fixture?.files === undefined || evidence.fixture.files.length === 0)
+				errors.push(`${route.id}: evidence ${evidenceId} does not declare fixture files`);
 			if (
 				evidence.dependencies?.installed !== true ||
 				evidence.dependencies.targetNodeModule !== true

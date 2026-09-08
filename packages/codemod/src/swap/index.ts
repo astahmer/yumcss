@@ -37,6 +37,8 @@ export type { MigrateCliArgs, SwapSource, SwapTarget } from "./cli-args.ts";
 
 const builtinAdapterCatalog = createBuiltinCodemodCatalog();
 const builtinAdapterIds = builtinAdapterCatalog.adapters.map((adapter) => adapter.id);
+/** Shared composition root for CLI and other Node tooling proof surfaces. */
+export const BUILTIN_CODEMOD_CATALOG = builtinAdapterCatalog;
 import type { SwapIR } from "./ir.ts";
 
 export type SwapMissResolver = (

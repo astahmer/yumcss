@@ -10,8 +10,10 @@ import {
 	RealRepositoryProofDimension,
 	RealRepositoryProofDimensionStatus,
 	createRealRepositoryCorpus,
+	createBuiltinCodemodCatalog,
 	evaluateMigrationRouteProof,
 	findMigrationRouteProof,
+	migrationRouteProofCatalog,
 	validateMigrationRouteProofCatalog,
 	validateMigrationRouteProofEvidence,
 } from "../src/swap/index.ts";
@@ -93,7 +95,10 @@ describe("migration route proof catalog", () => {
 				"utf8",
 			),
 		) as unknown;
-		const evaluation = evaluateMigrationRouteProof(route, new Map([["tailwind-installed-proof", report]]));
+		const evaluation = evaluateMigrationRouteProof(
+			route,
+			new Map([["tailwind-installed-proof", report]]),
+		);
 
 		expect(evaluation.eligible).toBe(false);
 		expect(evaluation.dimensions[RealRepositoryProofDimension.BrowserStates].status).toBe(
@@ -102,8 +107,31 @@ describe("migration route proof catalog", () => {
 		expect(evaluation.dimensions[RealRepositoryProofDimension.CanonicalCss].status).toBe(
 			RealRepositoryProofDimensionStatus.Unavailable,
 		);
-		expect(evaluation.reasons).toContain(
-			"adapter-level canonical CSS comparison was not recorded",
+		expect(evaluation.reasons).toContain("adapter-level canonical CSS comparison was not recorded");
+	});
+
+	test("requires installed evidence to identify an isolated host fixture", () => {
+		const route = MIGRATION_ROUTE_PROOF_CATALOG.find(
+			(candidate) => candidate.id === MigrationRouteProofRouteId.TailwindToPandwind,
+		);
+		if (route === undefined) throw new Error("missing Tailwind route");
+		const evidence = JSON.parse(
+			readFileSync(
+				resolve(import.meta.dirname, "../../../plans/evidence/tailwind-installed-proof.json"),
+				"utf8",
+			),
+		) as { fixture: { isolated: boolean; files: string[] } };
+		const withoutFixture = { ...evidence, fixture: { isolated: false, files: [] } };
+		const errors = validateMigrationRouteProofEvidence(
+			[route],
+			new Map([["tailwind-installed-proof", withoutFixture]]),
+		);
+
+		expect(errors).toContain(
+			"tailwind-to-pandwind: evidence tailwind-installed-proof does not prove an isolated fixture",
+		);
+		expect(errors).toContain(
+			"tailwind-to-pandwind: evidence tailwind-installed-proof does not declare fixture files",
 		);
 	});
 
@@ -119,5 +147,28 @@ describe("migration route proof catalog", () => {
 			RealRepositoryProofDimensionStatus.Unavailable,
 		);
 		expect(evaluation.reasons).toContain("no checked-in evidence is available");
+	});
+
+	test("covers every registered route with an explicit research policy", () => {
+		const catalog = createBuiltinCodemodCatalog();
+		const expanded = migrationRouteProofCatalog(catalog.systems);
+		const route = findMigrationRouteProof(
+			CodemodAdapterId.Emotion,
+			CodemodAdapterId.Mui,
+			catalog.systems,
+		);
+
+		expect(route).toMatchObject({
+			id: `${MigrationRouteProofRouteId.Unclassified}:emotion->mui`,
+			maturity: MigrationRouteMaturityTag.Research,
+			execution: MigrationRouteProofExecutionTag.Unavailable,
+		});
+		expect(expanded.routes).toContainEqual(route);
+		expect(
+			validateMigrationRouteProofCatalog(createRealRepositoryCorpus(), expanded.routes),
+		).toEqual([]);
+		expect(
+			findMigrationRouteProof("missing-source", CodemodAdapterId.Pandwind, catalog.systems),
+		).toBeUndefined();
 	});
 });

@@ -417,7 +417,7 @@ export function createMigrationLab(options: MigrationLabOptions = {}): Migration
 						],
 						note: "This browser lab runs the adapter program; it does not build or run a host project.",
 					},
-					routeProof: findMigrationRouteProof(from, to),
+					routeProof: findMigrationRouteProof(from, to, catalog.systems),
 					...result,
 				};
 			} catch (error) {

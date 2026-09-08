@@ -42,6 +42,31 @@ export const MCP_EXECUTION_LANE = {
 
 export type McpExecutionLane = (typeof MCP_EXECUTION_LANE)[keyof typeof MCP_EXECUTION_LANE];
 
+/** Evidence boundary used by every MCP result, including unavailable checks. */
+export const MCP_EVIDENCE_LANE = {
+	Sandbox: "sandbox",
+	InProcess: "in-process",
+	FixtureVerified: "fixture-verified",
+	HostVerified: "host-verified",
+} as const;
+
+export type McpEvidenceLane = (typeof MCP_EVIDENCE_LANE)[keyof typeof MCP_EVIDENCE_LANE];
+
+export const MCP_EVIDENCE_STATUS = {
+	Verified: "verified",
+	Unavailable: "unavailable",
+	Failed: "failed",
+} as const;
+
+export type McpEvidenceStatus = (typeof MCP_EVIDENCE_STATUS)[keyof typeof MCP_EVIDENCE_STATUS];
+
+export interface McpExecutionEvidence {
+	readonly lane: McpEvidenceLane;
+	readonly status: McpEvidenceStatus;
+	readonly checks: readonly string[];
+	readonly detail: string;
+}
+
 export const MCP_PROVENANCE_SOURCE = {
 	Adapter: "adapter",
 	Host: "host",

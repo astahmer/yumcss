@@ -667,7 +667,11 @@ async function runAdapterRoute(
 				text: residual.text,
 				...(residual.hint === undefined ? {} : { hint: residual.hint }),
 			})),
-			routeProof: swapImport.findMigrationRouteProof(from, target),
+			routeProof: swapImport.findMigrationRouteProof(
+				from,
+				target,
+				swapImport.BUILTIN_CODEMOD_CATALOG.systems,
+			),
 		});
 		totalConverted += result.converted;
 		totalSkipped += result.skipped;
@@ -754,7 +758,11 @@ async function runAdapterRoute(
 				projectGeneratedFiles.map((file) => file.path).join(", "),
 		);
 	if (args.report && args.reportFormat === "text") {
-		const routeProof = swapImport.findMigrationRouteProof(args.from, target);
+		const routeProof = swapImport.findMigrationRouteProof(
+			args.from,
+			target,
+			swapImport.BUILTIN_CODEMOD_CATALOG.systems,
+		);
 		const residualDetails = reportEntries.flatMap((entry) =>
 			entry.residualDetails.map((residual) => ({ file: entry.file, ...residual })),
 		);
@@ -781,7 +789,11 @@ async function runAdapterRoute(
 				from: args.from,
 				to: target,
 				mode: args.capabilityMode ?? "safe",
-				routeProof: swapImport.findMigrationRouteProof(args.from, target),
+				routeProof: swapImport.findMigrationRouteProof(
+					args.from,
+					target,
+					swapImport.BUILTIN_CODEMOD_CATALOG.systems,
+				),
 				projectGeneratedFiles: projectGeneratedFiles.map((file) => file.path),
 				files: reportEntries,
 			}),

@@ -19,6 +19,8 @@ import {
 	MCP_MIGRATION_MODE,
 	MCP_BENCHMARK_SCOPE,
 	MCP_BENCHMARK_MEASUREMENT_MODE,
+	MCP_EVIDENCE_LANE,
+	MCP_EVIDENCE_STATUS,
 	MCP_EXECUTION_LANE,
 	MCP_PROVENANCE_SOURCE,
 	MCP_RESOURCE,
@@ -27,6 +29,7 @@ import {
 	MCP_VALIDATION_STATUS,
 	type McpBenchmarkScope,
 	type McpBenchmarkMeasurementMode,
+	type McpExecutionEvidence,
 	type McpExecutionLane,
 	type McpProvenanceSource,
 	type McpValidationCheck,
@@ -38,6 +41,8 @@ export {
 	MCP_MIGRATION_MODE,
 	MCP_BENCHMARK_SCOPE,
 	MCP_BENCHMARK_MEASUREMENT_MODE,
+	MCP_EVIDENCE_LANE,
+	MCP_EVIDENCE_STATUS,
 	MCP_EXECUTION_LANE,
 	MCP_PROVENANCE_SOURCE,
 	MCP_RESOURCE,
@@ -46,6 +51,7 @@ export {
 	MCP_VALIDATION_STATUS,
 	type McpBenchmarkScope,
 	type McpBenchmarkMeasurementMode,
+	type McpExecutionEvidence,
 	type McpExecutionLane,
 	type McpProvenanceSource,
 	type McpValidationCheck,
@@ -164,6 +170,41 @@ const EXTERNAL_VALIDATION_CHECKS: readonly McpValidationCheck[] = [
 	MCP_VALIDATION_CHECK.Browser,
 	MCP_VALIDATION_CHECK.BundleSize,
 ];
+
+function executionEvidence(
+	lane: McpExecutionEvidence["lane"],
+	status: McpExecutionEvidence["status"],
+	checks: readonly string[],
+	detail: string,
+): McpExecutionEvidence {
+	return { lane, status, checks, detail };
+}
+
+function inProcessEvidence(checks: readonly string[], detail: string): McpExecutionEvidence {
+	return executionEvidence(
+		MCP_EVIDENCE_LANE.InProcess,
+		MCP_EVIDENCE_STATUS.Verified,
+		checks,
+		detail,
+	);
+}
+
+function validationEvidence(check: McpValidationResult): McpExecutionEvidence {
+	const status =
+		check.status === MCP_VALIDATION_STATUS.Passed
+			? MCP_EVIDENCE_STATUS.Verified
+			: check.status === MCP_VALIDATION_STATUS.Unavailable
+				? MCP_EVIDENCE_STATUS.Unavailable
+				: MCP_EVIDENCE_STATUS.Failed;
+	return executionEvidence(
+		check.executionLane === MCP_EXECUTION_LANE.HostProject
+			? MCP_EVIDENCE_LANE.HostVerified
+			: MCP_EVIDENCE_LANE.InProcess,
+		status,
+		[check.check],
+		check.detail ?? `validation check ${check.check} returned ${check.status}`,
+	);
+}
 
 const inputSchema = (
 	properties: Readonly<Record<string, unknown>>,
@@ -586,6 +627,12 @@ async function inspectProject(
 	return textToolResult({
 		schema: MCP_PROJECT_SCHEMA,
 		root: context.root,
+		executionEvidence: [
+			inProcessEvidence(
+				["adapter-detection", "configuration-resolution"],
+				"Detection and configuration were evaluated in the MCP process; no host project was built or rendered.",
+			),
+		],
 		files: {
 			count: files.length,
 			sourceExtensions: Object.fromEntries(
@@ -672,6 +719,7 @@ async function migrationPreview(
 	readonly to: string;
 	readonly mode: AdapterCapabilityMode;
 	readonly routeProof: ReturnType<typeof findMigrationRouteProof>;
+	readonly executionEvidence: readonly McpExecutionEvidence[];
 	readonly files: readonly ReturnType<typeof serializeMigration>[];
 }> {
 	const input = asRecord(arguments_, MCP_TOOL.PreviewMigration);
@@ -679,6 +727,7 @@ async function migrationPreview(
 	const from = stringValue(input.from, "from");
 	const to = stringValue(input.to, "to");
 	const mode = migrationMode(input.mode);
+	const catalog = ports.createCatalog();
 	const expanded = new Set<string>();
 	for (const pattern of files) {
 		projectPattern(pattern);
@@ -711,7 +760,13 @@ async function migrationPreview(
 		from,
 		to,
 		mode,
-		routeProof: findMigrationRouteProof(from, to),
+		routeProof: findMigrationRouteProof(from, to, catalog.systems),
+		executionEvidence: [
+			inProcessEvidence(
+				["adapter-program", "residual-report"],
+				"The migration was previewed in process against project-relative files; no project files were written.",
+			),
+		],
 		files: results,
 	};
 }
@@ -818,6 +873,13 @@ async function applyMigration(
 	return textToolResult({
 		schema: "pandwind.mcp.apply-migration/1",
 		...preview,
+		executionEvidence: [
+			...preview.executionEvidence,
+			inProcessEvidence(
+				["conflict-safe-write", "generated-file-write"],
+				"The explicitly confirmed migration was written by the MCP process after conflict checks.",
+			),
+		],
 		applied: true,
 		writtenFiles: [...planned.keys()].filter((path) => !removed.has(path)),
 		removedFiles: [...removed],
@@ -857,7 +919,7 @@ async function compareMigrations(
 		routes.push({
 			...route,
 			mode,
-			routeProof: findMigrationRouteProof(route.from, route.to),
+			routeProof: preview.routeProof,
 			files: preview.files,
 			stats: {
 				changed: preview.files.filter((file) => file.changed).length,
@@ -870,6 +932,12 @@ async function compareMigrations(
 	return textToolResult({
 		schema: "pandwind.mcp.compare-migrations/1",
 		root: context.root,
+		executionEvidence: [
+			inProcessEvidence(
+				["adapter-program", "route-comparison", "residual-report"],
+				"All compared routes were evaluated in process; no host project validation was run.",
+			),
+		],
 		routes,
 	});
 }
@@ -888,6 +956,7 @@ async function inspectStyleProgram(
 		to: preview.to,
 		mode: preview.mode,
 		routeProof: preview.routeProof,
+		executionEvidence: preview.executionEvidence,
 		files: preview.files.map((file) => ({
 			file: file.file,
 			loweringPlans: file.loweringPlans,
@@ -933,6 +1002,7 @@ async function benchmarkProject(
 	const to = stringValue(input.to, "to");
 	const mode = migrationMode(input.mode);
 	const measurementMode = benchmarkMeasurementMode(input.benchmarkMode);
+	const catalog = ports.createCatalog();
 	const iterations = input.iterations === undefined ? 3 : input.iterations;
 	if (
 		typeof iterations !== "number" ||
@@ -980,8 +1050,18 @@ async function benchmarkProject(
 				fileCount: expanded.size,
 				sourceBytes: [...expanded].reduce((sum, file) => sum + statSync(file).size, 0),
 			},
-			routeProof: findMigrationRouteProof(from, to),
+			routeProof: findMigrationRouteProof(from, to, catalog.systems),
 			benchmark,
+			executionEvidence: [
+				executionEvidence(
+					benchmark.executionLane === MCP_EXECUTION_LANE.HostProject
+						? MCP_EVIDENCE_LANE.HostVerified
+						: MCP_EVIDENCE_LANE.InProcess,
+					MCP_EVIDENCE_STATUS.Verified,
+					["host-benchmark"],
+					"Benchmark measurements were supplied by the explicit benchmark port.",
+				),
+			],
 			commandsExecuted: benchmark.commandsExecuted ?? [],
 		});
 	}
@@ -1019,6 +1099,12 @@ async function benchmarkProject(
 			sourceBytes,
 		},
 		routeProof: lastPreview?.routeProof,
+		executionEvidence: [
+			inProcessEvidence(
+				["source-scan", "adapter-program", "throughput-measurement"],
+				"The benchmark measured in-process scanning and migration only; no host project pipeline was run.",
+			),
+		],
 		executionLane: MCP_EXECUTION_LANE.InProcess,
 		scope: MCP_BENCHMARK_SCOPE.InProcessMigration,
 		profile: `${measurementMode}-in-process`,
@@ -1172,6 +1258,10 @@ async function validateMigration(
 			checks.every((check) => check.status === MCP_VALIDATION_STATUS.Passed),
 		requestedChecks,
 		checks,
+		executionEvidence: [
+			...preview.executionEvidence,
+			...checks.map((check) => validationEvidence(check)),
+		],
 		commandsExecuted: projectChecks.flatMap((check) => check.commandsExecuted ?? []),
 		files,
 	});
@@ -1219,6 +1309,12 @@ async function analyzeProject(
 	return textToolResult({
 		schema: "pandwind.mcp.analyze-project/1",
 		root: context.root,
+		executionEvidence: [
+			inProcessEvidence(
+				["fold-analysis", "token-governance", "adapter-detection"],
+				"Analysis and token governance ran through the injected analyzer in process; no host build was run.",
+			),
+		],
 		analysis: foldReport,
 		governance: governanceReport,
 		adapterCoverage: {
@@ -1298,8 +1394,10 @@ export function createMcpToolService(
 					adapters,
 				});
 			}
-			case MCP_RESOURCE.MigrationRouteCatalog:
-				return resourceJson(migrationRouteProofCatalog());
+			case MCP_RESOURCE.MigrationRouteCatalog: {
+				const catalog = ports.createCatalog();
+				return resourceJson(migrationRouteProofCatalog(catalog.systems));
+			}
 			case MCP_RESOURCE.ProjectEvidence: {
 				const result = await inspectProject(context, { includeFiles: false }, ports);
 				return resourceJson(result.structuredContent);

@@ -5,6 +5,8 @@ import { afterEach, describe, expect, it } from "vitest";
 import {
 	MCP_BENCHMARK_SCOPE,
 	MCP_BENCHMARK_MEASUREMENT_MODE,
+	MCP_EVIDENCE_LANE,
+	MCP_EVIDENCE_STATUS,
 	MCP_EXECUTION_LANE,
 	MCP_RESOURCE,
 	MCP_TOOL,
@@ -98,6 +100,12 @@ describe("Pandwind MCP tools", () => {
 			to: "pandwind",
 		});
 		const value = structured(result);
+		expect(value.executionEvidence).toEqual([
+			expect.objectContaining({
+				lane: MCP_EVIDENCE_LANE.InProcess,
+				status: MCP_EVIDENCE_STATUS.Verified,
+			}),
+		]);
 		const files = value.files as Array<{ file: string; changed: boolean }>;
 		expect(files).toEqual([
 			{
@@ -184,6 +192,12 @@ describe("Pandwind MCP tools", () => {
 		});
 		expect(structured(comparison)).toMatchObject({
 			schema: "pandwind.mcp.compare-migrations/1",
+			executionEvidence: [
+				expect.objectContaining({
+					lane: MCP_EVIDENCE_LANE.InProcess,
+					status: MCP_EVIDENCE_STATUS.Verified,
+				}),
+			],
 			routes: [{ stats: { changed: 0 } }, { stats: { changed: 0 } }],
 		});
 		const programs = await service.call(MCP_TOOL.InspectStyleProgram, {
@@ -192,6 +206,9 @@ describe("Pandwind MCP tools", () => {
 			to: "pandwind",
 		});
 		expect(structured(programs).schema).toBe("pandwind.mcp.style-program/1");
+		expect(structured(programs).executionEvidence).toEqual([
+			expect.objectContaining({ lane: MCP_EVIDENCE_LANE.InProcess }),
+		]);
 		const benchmark = await service.call(MCP_TOOL.BenchmarkProject, {
 			files: ["src/button.ts"],
 			from: "pandwind",
@@ -206,6 +223,12 @@ describe("Pandwind MCP tools", () => {
 			profile: "warm-in-process",
 			commandsExecuted: [],
 			migration: { changed: 0 },
+			executionEvidence: [
+				expect.objectContaining({
+					lane: MCP_EVIDENCE_LANE.InProcess,
+					status: MCP_EVIDENCE_STATUS.Verified,
+				}),
+			],
 		});
 	});
 
@@ -297,6 +320,15 @@ describe("Pandwind MCP tools", () => {
 					status: MCP_VALIDATION_STATUS.Unavailable,
 					executionLane: MCP_EXECUTION_LANE.HostProject,
 					requiredHostCapability: MCP_VALIDATION_CHECK.Typecheck,
+				}),
+			]),
+		);
+		expect(value.executionEvidence).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({
+					lane: MCP_EVIDENCE_LANE.HostVerified,
+					status: MCP_EVIDENCE_STATUS.Unavailable,
+					checks: [MCP_VALIDATION_CHECK.Typecheck],
 				}),
 			]),
 		);
