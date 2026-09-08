@@ -197,7 +197,12 @@ const commandName = (argv: readonly string[]): string | undefined =>
 export function parseTwCommand(argv: readonly string[], cwd = process.cwd()): TwCommandInvocation {
 	const effectiveArgv = argv.length === 0 ? [TwCommand.Generate] : [...argv];
 	const cli = createTwCliApp(
-		{ generate: async () => {}, scan: async () => {}, prune: async () => {}, manifest: async () => {} },
+		{
+			generate: async () => {},
+			scan: async () => {},
+			prune: async () => {},
+			manifest: async () => {},
+		},
 		cwd,
 	);
 	cli.parse(["node", "pandwind-codemod tw", ...effectiveArgv], { run: false });

@@ -2,10 +2,7 @@ import { execFileSync } from "node:child_process";
 import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { basename, join, relative, resolve } from "node:path";
 import { tmpdir } from "node:os";
-import {
-	buildGeneratedArtifactManifest,
-	GeneratedArtifactOwnershipTag,
-} from "pandwind-codemod/tw";
+import { buildGeneratedArtifactManifest, GeneratedArtifactOwnershipTag } from "pandwind-codemod/tw";
 
 const repositoryRoot = resolve(import.meta.dirname, "..");
 
@@ -120,19 +117,18 @@ const checkApp = (app: GeneratedApp): void => {
 				["pandwind-theme.css", GeneratedArtifactOwnershipTag.Runtime],
 				["pandwind.agents.json", GeneratedArtifactOwnershipTag.Editor],
 				["bridge.ts", GeneratedArtifactOwnershipTag.Optional],
-			]
-				.flatMap(([name, ownership]) => {
-					const path = join(temporarySourceRoot, name);
-					return existsSync(path)
-						? [
-								{
-									path: relative(temporaryRoot, path).replaceAll("\\", "/"),
-									ownership,
-									content: readFileSync(path, "utf8"),
-								},
-							]
-						: [];
-				}),
+			].flatMap(([name, ownership]) => {
+				const path = join(temporarySourceRoot, name);
+				return existsSync(path)
+					? [
+							{
+								path: relative(temporaryRoot, path).replaceAll("\\", "/"),
+								ownership,
+								content: readFileSync(path, "utf8"),
+							},
+						]
+					: [];
+			}),
 		});
 		writeFileSync(
 			join(temporarySourceRoot, "pandwind.generated.json"),

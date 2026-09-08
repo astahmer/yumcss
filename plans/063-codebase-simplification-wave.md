@@ -187,16 +187,16 @@ stale import should fail at typecheck or package-surface validation.
 
 ### Tech choices
 
-| Choice | Decision | Rationale |
-|--------|----------|-----------|
-| Generic migration pipeline | Remove the one-stage generic wrapper after consumer audit | Panda already has a real multi-stage pipeline; the generic wrapper currently adds no policy |
-| Migration convenience functions | Keep only as thin calls over the canonical use case when evidence requires them | Convenience is acceptable when it cannot bypass orchestration |
-| Catalog environments | One assembler with injected loader/resolver capabilities | Browser and Node need different effects, not different adapter catalogs |
-| Collection API | Direct cohesive exports by subpath | A static bag of unrelated functions is not a domain abstraction |
-| Studio workspace | One workspace factory with injectable watcher | The current Node alias does not add behavior |
-| Backend registry | One canonical factory collection and lookup view | Identical plugin/factory projections create naming drift |
-| Export cleanup | Consumer/evidence-driven deletion | Pre-launch code has no reason to retain unreferenced compatibility aliases |
-| Testing | Substitution tests at each retained port plus package-surface checks | Passing behavior tests alone cannot prove ownership is singular |
+| Choice                          | Decision                                                                        | Rationale                                                                                   |
+| ------------------------------- | ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| Generic migration pipeline      | Remove the one-stage generic wrapper after consumer audit                       | Panda already has a real multi-stage pipeline; the generic wrapper currently adds no policy |
+| Migration convenience functions | Keep only as thin calls over the canonical use case when evidence requires them | Convenience is acceptable when it cannot bypass orchestration                               |
+| Catalog environments            | One assembler with injected loader/resolver capabilities                        | Browser and Node need different effects, not different adapter catalogs                     |
+| Collection API                  | Direct cohesive exports by subpath                                              | A static bag of unrelated functions is not a domain abstraction                             |
+| Studio workspace                | One workspace factory with injectable watcher                                   | The current Node alias does not add behavior                                                |
+| Backend registry                | One canonical factory collection and lookup view                                | Identical plugin/factory projections create naming drift                                    |
+| Export cleanup                  | Consumer/evidence-driven deletion                                               | Pre-launch code has no reason to retain unreferenced compatibility aliases                  |
+| Testing                         | Substitution tests at each retained port plus package-surface checks            | Passing behavior tests alone cannot prove ownership is singular                             |
 
 ### Architecture
 
@@ -259,13 +259,13 @@ Not applicable. The plan changes internal and package-tooling structure only.
 
 ### Common interactions
 
-| Action | Result |
-|--------|--------|
-| Run a codemod migration | The CLI and virtual plugin use the same canonical use-case port |
-| Create a browser catalog | The browser profile injects browser-safe capabilities into the shared assembler |
+| Action                    | Result                                                                                              |
+| ------------------------- | --------------------------------------------------------------------------------------------------- |
+| Run a codemod migration   | The CLI and virtual plugin use the same canonical use-case port                                     |
+| Create a browser catalog  | The browser profile injects browser-safe capabilities into the shared assembler                     |
 | Import collection helpers | Consumers import the named helper from the collect subpath; no static toolkit namespace is required |
-| Add a backend | The backend registry exposes one factory contract and one lookup collection |
-| Add an internal export | The surface check requires an owner and consumer evidence |
+| Add a backend             | The backend registry exposes one factory contract and one lookup collection                         |
+| Add an internal export    | The surface check requires an owner and consumer evidence                                           |
 
 ## Data model
 
@@ -355,8 +355,8 @@ This record is evidence for the cleanup, not a new package API.
 
 ## Decisions log
 
-| Date | Decision | Rationale |
-|------|----------|-----------|
-| 2026-09-08 | Start with orchestration, catalog, facade, registry, and export duplication | These are concrete duplicate paths remaining after the first simplification wave |
-| 2026-09-08 | Preserve the flat `SwapIR` fast path and distinct domain registries | The architecture policy treats them as intentional replaceable boundaries, not accidental wrappers |
-| 2026-09-08 | Require consumer evidence before deleting package exports | Pre-release cleanup allows deletion, but undocumented assumptions still need to be surfaced by tests |
+| Date       | Decision                                                                    | Rationale                                                                                            |
+| ---------- | --------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| 2026-09-08 | Start with orchestration, catalog, facade, registry, and export duplication | These are concrete duplicate paths remaining after the first simplification wave                     |
+| 2026-09-08 | Preserve the flat `SwapIR` fast path and distinct domain registries         | The architecture policy treats them as intentional replaceable boundaries, not accidental wrappers   |
+| 2026-09-08 | Require consumer evidence before deleting package exports                   | Pre-release cleanup allows deletion, but undocumented assumptions still need to be surfaced by tests |

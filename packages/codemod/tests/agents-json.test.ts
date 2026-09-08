@@ -53,9 +53,8 @@ describe("buildAgentsDocument — determinism + shape", () => {
 		].join("\n"),
 	)!;
 
-		test("stable across runs", () => {
-		const mk = () =>
-			buildAgentsDocument({ typesDts: TYPES, config, themeBlock });
+	test("stable across runs", () => {
+		const mk = () => buildAgentsDocument({ typesDts: TYPES, config, themeBlock });
 		expect(JSON.stringify(mk())).toBe(JSON.stringify(mk()));
 	});
 

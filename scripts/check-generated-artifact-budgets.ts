@@ -143,5 +143,7 @@ const report: BudgetReport = { schema: budget.schema, baseline: budget.baseline,
 
 console.log(JSON.stringify(report, null, "\t"));
 if (failures.length > 0 && !process.argv.slice(2).includes("--report")) {
-	throw new Error(["Generated artifact budgets failed:", ...failures.map((failure) => `- ${failure}`)].join("\n"));
+	throw new Error(
+		["Generated artifact budgets failed:", ...failures.map((failure) => `- ${failure}`)].join("\n"),
+	);
 }
