@@ -5,7 +5,7 @@ sidebar:
   order: 6
 ---
 
-_Review snapshot: 2026-09-07._
+_Review snapshot: 2026-09-08._
 
 The blunt answer: Pandwind is technically ambitious, but currently tries to be
 too many products at once. The core idea is useful; the weakest parts are
@@ -63,6 +63,11 @@ adoption simplicity, real-world proof, and scope discipline.
   builds, SSR, hydration, and browser base/hover comparisons. That raises
   confidence in the covered lanes, but small React/Vite fixtures do not
   establish broad route coverage.
+- Those four proofs are now checked by one registry-owned gate. The read-only
+  `pivot:proof:installed:routes` command validates every checked-in report, and
+  `pivot:proof:installed:routes:run` reruns all four project lanes in CI. A
+  missing, stale, residual-bearing, or incomplete report fails the gate rather
+  than being treated as route coverage.
 - "The MCP surface is ahead of the underlying proof."
   `validate_migration` exposes typecheck, build, SSR, hydration, browser, and
   bundle-size checks, but the default MCP server cannot execute those checks.
