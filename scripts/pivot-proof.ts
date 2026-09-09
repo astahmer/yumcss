@@ -9,6 +9,7 @@ import {
 	createAdapterConformanceSuite,
 	createBuiltinCodemodCatalog,
 	createRealRepositoryCorpus,
+	createSemanticContractSuite,
 	RealRepositoryProofDimension,
 	RealRepositoryProofDimensionStatus,
 	requiredAdapterCapabilities,
@@ -17,6 +18,10 @@ import {
 } from "pandwind-codemod/swap";
 import { adapterContractFixtures } from "../packages/codemod/proof/adapter-contract-fixtures.ts";
 import { completeAdapterMatrixFixtures } from "../packages/codemod/proof/adapter-matrix-fixtures.ts";
+import {
+	SEMANTIC_PROOF_FAMILIES,
+	semanticContractFixtures,
+} from "../packages/codemod/proof/semantic-contract-fixtures.ts";
 import { createReferenceWorkspace } from "./reference-workspace.ts";
 import { createPinnedReferenceRepositoryCatalog } from "./reference-repository-catalog.ts";
 
@@ -120,6 +125,21 @@ function runOfflineGate(): void {
 		throw new Error(
 			`bidirectional route matrix failed:\n${JSON.stringify(routeMatrix.failures, null, 2)}`,
 		);
+	const semantic = createSemanticContractSuite(catalog.registry).run(semanticContractFixtures);
+	if (semantic.failed > 0)
+		throw new Error(
+			`semantic contract gate failed:\n${JSON.stringify(semantic.failures, null, 2)}`,
+		);
+	const coveredSemanticFamilies = new Set(
+		semanticContractFixtures.flatMap((fixture) => fixture.covers),
+	);
+	const missingSemanticFamilies = SEMANTIC_PROOF_FAMILIES.filter(
+		(family) => !coveredSemanticFamilies.has(family),
+	);
+	if (missingSemanticFamilies.length > 0)
+		throw new Error(
+			`semantic contract corpus is missing families: ${missingSemanticFamilies.join(", ")}`,
+		);
 
 	const evidence: AdapterCoverageEvidence[] = adapterContractFixtures.map((fixture) =>
 		parseFixtureEvidence(catalog.registry, fixture),
@@ -194,6 +214,13 @@ function runOfflineGate(): void {
 					adapters: conformance.direct.length,
 					directPhases: ["detection", "configuration", "parsing", "emission", "validation"],
 					scenarios: ["happy", "edge", "malformed"],
+				},
+				semanticContract: {
+					fixtures: semanticContractFixtures.length,
+					families: SEMANTIC_PROOF_FAMILIES.length,
+					cases: semantic.cases.length,
+					validated: semantic.validated,
+					explicitResiduals: semantic.explicitResiduals,
 				},
 				fixtureOnlyAdapters: [...fixtureOnlyAdapters],
 				capabilities: coverage.capabilityTotals,
