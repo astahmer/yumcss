@@ -177,19 +177,30 @@ complete CSS string is requested once after the timed calls. Emotion was run
 without a DOM as well, so this isolates style resolution, hashing, caching, and
 sheet bookkeeping rather than measuring browser style insertion.
 
-The seven-property repeated case is the closest comparison to the corpus above:
+The seven-property repeated case is the closest comparison to the corpus above.
+This run used the optimized runtime path, including declaration memoization,
+batched sheet registration, incremental ordering, and CSSOM insertion when a
+mounted browser sheet is available:
 
-| case                                                 |       pandwind |  `@emotion/css` | reading                                                                    |
-| ---------------------------------------------------- | -------------: | --------------: | -------------------------------------------------------------------------- |
-| repeated seven-property `runtimeCss.class()`         |  ~202K ops/sec |  ~1.10M ops/sec | Emotion is about 5.5× faster for this repeated call shape.                 |
-| fresh unique one-property `runtimeCss.class()` rules |  ~331K ops/sec |   ~608K ops/sec | The lazy Pandwind sheet is within about 2× on this first-vocabulary shape. |
-| repeated one-property `runtimeCss.vars()`            | ~1.08M ops/sec | ~3.02M ops/sec* | Pandwind keeps one stable class and moves the changing value inline.       |
+| case                                                 |         pandwind |  `@emotion/css` | reading                                                                   |
+| ---------------------------------------------------- | ---------------: | --------------: | ------------------------------------------------------------------------- |
+| repeated seven-property `runtimeCss.class()`         |   ~1.10M ops/sec | ~1.72M ops/sec | Emotion is about 1.6× faster for this repeated call shape.                |
+| fresh unique one-property `runtimeCss.class()` rules |   ~2.66M ops/sec | ~1.49M ops/sec | Pandwind is about 1.8× faster while registering each new rule.            |
+| repeated one-property `runtimeCss.vars()`            |   ~2.12M ops/sec | ~2.91M ops/sec* | Pandwind keeps one stable class and moves the changing value inline.      |
+
+The representative browser bundle for `createRuntimeCss()` is **28,828 bytes
+minified / 10,920 gzip** with an empty preset. The ordinary `createCss()` entry
+is **6,960 / 3,055** in the same guard. The runtime entry is intentionally
+larger because it carries the stylesheet compiler, rule ordering, and optional
+DOM sink; `packages/pandwind/tests/runtime-size.test.ts` protects both entries
+with separate budgets.
 
 `*` The `vars()` row is a semantic comparison rather than an identical
 operation: Emotion's call creates or looks up a CSS class, while Pandwind's
 `vars()` deliberately avoids a class per value and emits an inline custom
-property. Browser-mounted mode also includes DOM stylesheet writes and should
-be benchmarked separately for a specific host.
+property. The table measures Pandwind's lazy no-DOM sheet; mounted browser
+mode uses CSSOM insertion for new rules and should be benchmarked separately
+for a specific host.
 
 This is why `createRuntimeCss()` is not the default application path. A normal
 Vite application should use `createCss()` with extraction; literal calls are

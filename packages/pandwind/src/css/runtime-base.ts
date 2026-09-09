@@ -104,6 +104,22 @@ const preserveNullResets = (value: unknown, property = ""): unknown => {
 	return copy ?? value;
 };
 
+const normalizeStyleInput = (style: StyleObject): StyleObject => {
+	for (const key in style) {
+		const value = style[key];
+		if (value == null || typeof value === "object") return preserveNullResets(style) as StyleObject;
+	}
+	return style;
+};
+
+const isFlatStyle = (style: StyleObject): boolean => {
+	for (const key in style) {
+		const value = style[key];
+		if (value == null || typeof value === "object") return false;
+	}
+	return true;
+};
+
 const isPreset = (value: CreateCssOptions | TypedPreset): value is TypedPreset =>
 	typeof value === "object" &&
 	value !== null &&
@@ -129,12 +145,20 @@ export function createCssRuntime(
 	const atoms = backend.atoms;
 
 	const compileStyles = (...styles: Array<StyleObject>): CompiledStyles => {
+		if (styles.length === 1 && isFlatStyle(styles[0]!)) {
+			const compiled = {} as CompiledStyles;
+			for (const key in styles[0]) {
+				compiled[key] = backend.declare(key, styles[0]![key]! as string);
+			}
+			Object.defineProperty(compiled, "$$css", { value: true, enumerable: false });
+			return compiled;
+		}
 		let source: StyleObject;
 		if (styles.length === 1) {
-			source = preserveNullResets(styles[0]) as StyleObject;
+			source = normalizeStyleInput(styles[0]!);
 		} else {
 			source = {};
-			for (const style of styles) Object.assign(source, preserveNullResets(style));
+			for (const style of styles) Object.assign(source, normalizeStyleInput(style));
 		}
 		const flat = flattenStyle(source);
 		const compiled = {} as CompiledStyles;

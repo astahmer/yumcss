@@ -130,6 +130,7 @@ const updatingSnapshots = (): boolean => {
 test("runtime entries stay stylex-sized", async () => {
 	const sizes = {
 		css: bundle("runtime-css.ts"),
+		"css, runtime sheet": bundle("runtime-css-sheet.ts"),
 		"css, all static calls": bundleAfterCssExtraction("runtime-css-static.ts"),
 		"css, dynamic fallback": bundle("runtime-css-dynamic.ts"),
 		"css, compiler-pruned call": await bundleAfterRuntimePruning("runtime-css-pruned-call.ts"),
