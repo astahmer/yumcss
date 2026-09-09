@@ -12,10 +12,13 @@ import {
 } from "./contract.ts";
 import {
 	createMcpProjectContext,
+	createMcpToolPorts,
 	createMcpToolService,
+	type McpValidationPort,
 	type McpToolPorts,
 	type McpToolService,
 } from "./tools.ts";
+import { createNodeMcpValidationPort } from "./node-validation.ts";
 
 export type {
 	McpBenchmarkPort,
@@ -92,12 +95,22 @@ const benchmarkProjectSchema = {
 
 export interface McpServerOptions {
 	readonly ports?: McpToolPorts;
+	readonly validation?: McpValidationPort;
 	readonly service?: McpToolService;
 }
 
+export { createNodeMcpValidationPort } from "./node-validation.ts";
+
 export function createMcpServer(root: string, options: McpServerOptions = {}): McpServer {
 	const service =
-		options.service ?? createMcpToolService(createMcpProjectContext(root), options.ports);
+		options.service ??
+		createMcpToolService(
+			createMcpProjectContext(root),
+			options.ports ??
+				createMcpToolPorts(
+					options.validation === undefined ? {} : { validation: options.validation },
+				),
+		);
 	const server = new McpServer(MCP_SERVER_INFO, {
 		capabilities: { tools: {}, resources: {} },
 	});
@@ -215,6 +228,10 @@ export async function runMcpServer(root: string, options: McpServerOptions = {})
 export async function runMcpCommand(argv: readonly string[]): Promise<void> {
 	const cli = cac("pandwind-analyze mcp");
 	cli.option("--root <dir>", "Project root", { default: "." });
+	cli.option(
+		"--host-checks",
+		"Run declared project validation scripts in an isolated temporary workspace",
+	);
 	cli.help();
 	cli.parse(["node", "pandwind-analyze mcp", ...argv], { run: false });
 	if (cli.matchedCommand !== undefined) return;
@@ -222,7 +239,9 @@ export async function runMcpCommand(argv: readonly string[]): Promise<void> {
 	cli.globalCommand.checkOptionValue();
 	cli.globalCommand.checkUnusedArgs();
 	const root = cli.options.root;
-	await runMcpServer(resolve(process.cwd(), typeof root === "string" ? root : "."));
+	await runMcpServer(resolve(process.cwd(), typeof root === "string" ? root : "."), {
+		validation: cli.options.hostChecks === true ? createNodeMcpValidationPort() : undefined,
+	});
 }
 
 export { MCP_TOOL };

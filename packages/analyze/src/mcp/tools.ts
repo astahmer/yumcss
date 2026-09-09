@@ -68,6 +68,16 @@ export interface McpValidationRequest {
 		readonly file: string;
 		readonly code: string;
 		readonly outputFile: string;
+		readonly removeSource: boolean;
+		readonly generatedFiles: readonly {
+			readonly path: string;
+			readonly content: string;
+		}[];
+		readonly fileChanges: readonly {
+			readonly path: string;
+			readonly content: string;
+			readonly expectedContent?: string;
+		}[];
 	}[];
 	readonly checks: readonly McpValidationCheck[];
 }
@@ -139,6 +149,12 @@ const DEFAULT_TOOL_PORTS: McpToolPorts = {
 	migration: STYLE_MIGRATION_USE_CASE,
 	analyze: (argv) => runCli([...argv]),
 };
+
+export function createMcpToolPorts(
+	overrides: Partial<Pick<McpToolPorts, "validation" | "benchmark">> = {},
+): McpToolPorts {
+	return { ...DEFAULT_TOOL_PORTS, ...overrides };
+}
 
 const DEFAULT_ANALYZE_PRESET = "@pandwind/example-preset";
 
@@ -1275,6 +1291,13 @@ async function validateMigration(
 						file: file.file,
 						code: file.code,
 						outputFile: file.outputFile,
+						removeSource: file.outputFile !== file.file && file.changed,
+						generatedFiles: file.generatedFiles.map(({ path, content }) => ({ path, content })),
+						fileChanges: file.fileChanges.map(({ path, content, expectedContent }) => ({
+							path,
+							content,
+							...(expectedContent === undefined ? {} : { expectedContent }),
+						})),
 					})),
 					checks: externalChecks,
 				});

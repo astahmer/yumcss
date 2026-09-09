@@ -26,7 +26,7 @@ import {
 	formatCssDiagnostics,
 } from "./css-diagnostics.ts";
 import { runGovernanceLane } from "./governance-lane.ts";
-import { MCP_COMMAND, runMcpServer } from "./mcp/server.ts";
+import { MCP_COMMAND, createNodeMcpValidationPort, runMcpServer } from "./mcp/server.ts";
 
 export interface CliArgs {
 	patterns: Array<string>;
@@ -136,7 +136,11 @@ const createAnalyzeCli = (): CAC => {
 		.command("mcp", "Run the read-only Model Context Protocol server")
 		.option("--root <dir>", "Project root", {
 			default: ".",
-		});
+		})
+		.option(
+			"--host-checks",
+			"Run declared project validation scripts in an isolated temporary workspace",
+		);
 	return cli;
 };
 
@@ -316,7 +320,11 @@ async function main(argv = process.argv.slice(2)): Promise<void> {
 		validateCommand(command);
 		if (command.name === MCP_COMMAND) {
 			const root = resolve(process.cwd(), optionString(cli.options as CliOptions, "root") ?? ".");
-			await runMcpServer(root);
+			await runMcpServer(root, {
+				validation: optionBoolean(cli.options as CliOptions, "hostChecks")
+					? createNodeMcpValidationPort()
+					: undefined,
+			});
 			return;
 		}
 		await runAnalyzeCommand(parseArgs(argv));

@@ -66,8 +66,8 @@ describe("studio codemod evaluator", () => {
 			      "role": "both",
 			    },
 			  ],
-			  "sourceCount": 31,
-			  "targetCount": 34,
+			  "sourceCount": 32,
+			  "targetCount": 35,
 			}
 		`);
 	});
