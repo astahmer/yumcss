@@ -22,6 +22,7 @@ import {
 import type { McpValidationPort, McpValidationRequest, McpValidationResult } from "./tools.ts";
 
 const NODE_VALIDATION_TIMEOUT_MS = 120_000;
+const NODE_VALIDATION_OUTPUT_LIMIT = 8_192;
 
 const VALIDATION_SCRIPTS: Readonly<
 	Record<Exclude<McpValidationCheck, "contract" | "canonical-css">, readonly string[]>
@@ -63,6 +64,7 @@ interface ScriptRun {
 	readonly status: number | null;
 	readonly signal: NodeJS.Signals | null;
 	readonly timedOut: boolean;
+	readonly output: string;
 	readonly spawnError?: Error;
 }
 
@@ -142,15 +144,23 @@ function writeOverlayFile(root: string, path: string, content: string): void {
 function applyOverlay(root: string, request: McpValidationRequest): void {
 	for (const file of request.files) {
 		safeRelativePath(root, file.outputFile);
+		if (file.outputFile !== file.file && existsSync(safeRelativePath(root, file.outputFile)))
+			throw new Error(`conversion output already exists: ${file.outputFile}`);
 		if (file.removeSource && file.outputFile !== file.file) {
 			const source = safeRelativePath(root, file.file);
 			if (existsSync(source)) unlinkSync(source);
 		}
 		writeOverlayFile(root, file.outputFile, file.code);
-		for (const generated of file.generatedFiles)
+		for (const generated of file.generatedFiles) {
+			const path = safeRelativePath(root, generated.path);
+			if (existsSync(path) && readFileSync(path, "utf8") !== generated.content)
+				throw new Error(`generated file conflicts with the project: ${generated.path}`);
 			writeOverlayFile(root, generated.path, generated.content);
+		}
 		for (const change of file.fileChanges) {
 			const path = safeRelativePath(root, change.path);
+			if (!existsSync(path))
+				throw new Error(`shared file change target does not exist: ${change.path}`);
 			if (change.expectedContent !== undefined && existsSync(path)) {
 				const current = readFileSync(path, "utf8");
 				if (current !== change.expectedContent && current !== change.content)
@@ -176,8 +186,12 @@ function runScript(
 		});
 		let settled = false;
 		let timedOut = false;
-		child.stdout?.on("data", () => undefined);
-		child.stderr?.on("data", () => undefined);
+		let output = "";
+		const consume = (chunk: Buffer): void => {
+			output = `${output}${chunk.toString("utf8")}`.slice(-NODE_VALIDATION_OUTPUT_LIMIT);
+		};
+		child.stdout?.on("data", consume);
+		child.stderr?.on("data", consume);
 		const timer = setTimeout(() => {
 			timedOut = true;
 			child.kill("SIGTERM");
@@ -189,9 +203,9 @@ function runScript(
 			resolveRun(run);
 		};
 		child.once("error", (error) =>
-			finish({ command, status: null, signal: null, timedOut, spawnError: error }),
+			finish({ command, status: null, signal: null, timedOut, output, spawnError: error }),
 		);
-		child.once("close", (status, signal) => finish({ command, status, signal, timedOut }));
+		child.once("close", (status, signal) => finish({ command, status, signal, timedOut, output }));
 	});
 }
 
@@ -207,12 +221,13 @@ function resultFor(
 	status: (typeof MCP_VALIDATION_STATUS)[keyof typeof MCP_VALIDATION_STATUS],
 	detail: string,
 	command?: string,
+	output?: string,
 ): McpValidationResult {
 	return {
 		check,
 		status,
 		executionLane: MCP_EXECUTION_LANE.HostProject,
-		detail,
+		detail: output === undefined || output === "" ? detail : `${detail}\n${output}`,
 		...(command === undefined ? {} : { commandsExecuted: [command] }),
 		provenance: {
 			source: MCP_PROVENANCE_SOURCE.Host,
@@ -280,6 +295,7 @@ export function createNodeMcpValidationPort(
 								MCP_VALIDATION_STATUS.Failed,
 								`${command} exceeded ${timeoutMs}ms`,
 								command,
+								run.output,
 							),
 						);
 						continue;
@@ -296,6 +312,7 @@ export function createNodeMcpValidationPort(
 							MCP_VALIDATION_STATUS.Failed,
 							`${command} failed with ${run.signal === null ? `exit code ${String(run.status)}` : run.signal}`,
 							command,
+							run.output,
 						),
 					);
 				}

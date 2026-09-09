@@ -79,4 +79,40 @@ describe("Node MCP validation host", () => {
 			executionLane: MCP_EXECUTION_LANE.HostProject,
 		});
 	});
+
+	it("returns bounded package-script output when validation fails", async () => {
+		const root = mkdtempSync(join(process.cwd(), ".tmp-mcp-validation-"));
+		roots.push(root);
+		mkdirSync(join(root, "src"), { recursive: true });
+		writeFileSync(join(root, "src/button.ts"), "before");
+		writeFileSync(
+			join(root, "package.json"),
+			JSON.stringify({
+				private: true,
+				scripts: { typecheck: "node -e \"console.error('validation detail'); process.exit(1)\"" },
+			}),
+		);
+
+		const [result] = await createNodeMcpValidationPort().run(request(root));
+
+		expect(result).toMatchObject({
+			check: MCP_VALIDATION_CHECK.Typecheck,
+			status: MCP_VALIDATION_STATUS.Failed,
+		});
+		expect(result?.detail).toContain("validation detail");
+	});
+
+	it("rejects generated-file conflicts in the isolated overlay", async () => {
+		const root = mkdtempSync(join(process.cwd(), ".tmp-mcp-validation-"));
+		roots.push(root);
+		mkdirSync(join(root, "src"), { recursive: true });
+		mkdirSync(join(root, "generated"), { recursive: true });
+		writeFileSync(join(root, "src/button.ts"), "before");
+		writeFileSync(join(root, "generated/marker.txt"), "old");
+		writeFileSync(join(root, "package.json"), JSON.stringify({ private: true, scripts: {} }));
+
+		await expect(createNodeMcpValidationPort().run(request(root))).rejects.toThrow(
+			"generated file conflicts",
+		);
+	});
 });
