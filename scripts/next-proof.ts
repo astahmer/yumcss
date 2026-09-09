@@ -180,8 +180,12 @@ async function waitForServer(child: ChildProcess, url: string): Promise<void> {
 	throw new Error(`Next server did not become ready:\n${output}`);
 }
 
-async function startNextServer(root: string, port: number): Promise<NextServer> {
-	const child = spawn(nextBinary(root), ["start", "-p", String(port)], {
+async function startNextServer(
+	root: string,
+	port: number,
+	executable?: string,
+): Promise<NextServer> {
+	const child = spawn(executable ?? nextBinary(root), ["start", "-p", String(port)], {
 		cwd: root,
 		stdio: ["ignore", "pipe", "pipe"],
 	});
@@ -387,6 +391,7 @@ export async function proveNextInstallation(options: {
 	readonly repositoryRoot: string;
 	readonly sourceRoot: string;
 	readonly targetRoot: string;
+	readonly nextBinary?: string;
 	readonly browserRoutes?: readonly string[];
 	readonly ignoredConsoleErrorPatterns?: readonly RegExp[];
 }): Promise<NextInstalledProof> {
@@ -396,8 +401,16 @@ export async function proveNextInstallation(options: {
 	const routes = [...new Set([...sourceRoutes, ...targetRoutes])].toSorted();
 	const rscRoutes = routes.filter(isRscRoute);
 	const browserRoutesToCheck = options.browserRoutes ?? rscRoutes;
-	const sourceServer = await startNextServer(options.sourceRoot, await getFreePort());
-	const targetServer = await startNextServer(options.targetRoot, await getFreePort());
+	const sourceServer = await startNextServer(
+		options.sourceRoot,
+		await getFreePort(),
+		options.nextBinary,
+	);
+	const targetServer = await startNextServer(
+		options.targetRoot,
+		await getFreePort(),
+		options.nextBinary,
+	);
 	try {
 		const [http, rsc, browser] = await Promise.all([
 			compareHttpRoutes(sourceServer, targetServer, routes),

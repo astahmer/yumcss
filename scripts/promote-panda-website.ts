@@ -83,12 +83,17 @@ function run(command: string, args: readonly string[], cwd: string): void {
 	execFileSync(command, [...args], { cwd, stdio: "inherit" });
 }
 
-function binary(root: string, name: string, fallbackRoot: string): string {
+function binary(root: string, name: string, preparedRoots: readonly string[]): string {
+	// pnpm's copied workspace shims keep relative links to the original
+	// workspace packages. Run the prepared checkout's shim instead; it keeps
+	// those links valid while its cwd still controls the proof project.
+	for (const preparedRoot of preparedRoots) {
+		const prepared = join(preparedRoot, "node_modules/.bin", name);
+		if (existsSync(prepared)) return prepared;
+	}
 	const local = join(root, "node_modules/.bin", name);
 	if (existsSync(local)) return local;
-	const fallback = join(fallbackRoot, "node_modules/.bin", name);
-	if (existsSync(fallback)) return fallback;
-	throw new Error(`missing installed binary ${name} in ${root} or ${fallbackRoot}`);
+	throw new Error(`missing installed binary ${name} in ${root} or prepared roots`);
 }
 
 function copyWebsite(source: string, target: string): void {
@@ -277,10 +282,11 @@ async function main(): Promise<void> {
 			join(referenceRoot, "node_modules"),
 		);
 
-		const panda = binary(sourceRoot, "panda", join(websiteRoot, ".."));
-		const velite = binary(sourceRoot, "velite", join(websiteRoot, ".."));
-		const tsc = binary(sourceRoot, "tsc", join(websiteRoot, ".."));
-		const next = binary(sourceRoot, "next", join(websiteRoot, ".."));
+		const preparedRoots = [websiteRoot, referenceRoot];
+		const panda = binary(sourceRoot, "panda", preparedRoots);
+		const velite = binary(sourceRoot, "velite", preparedRoots);
+		const tsc = binary(sourceRoot, "tsc", preparedRoots);
+		const next = binary(sourceRoot, "next", preparedRoots);
 		run(panda, ["codegen"], sourceRoot);
 		run(velite, ["--clean"], sourceRoot);
 		run(tsc, ["--noEmit"], sourceRoot);
@@ -316,14 +322,15 @@ async function main(): Promise<void> {
 			repositoryRoot,
 		);
 		const migration = parseMigrationOutput(migrationOutput);
-		const targetNext = binary(targetRoot, "next", join(websiteRoot, ".."));
-		const targetTsc = binary(targetRoot, "tsc", join(websiteRoot, ".."));
+		const targetNext = binary(targetRoot, "next", preparedRoots);
+		const targetTsc = binary(targetRoot, "tsc", preparedRoots);
 		run(targetTsc, ["--noEmit"], targetRoot);
 		run(targetNext, ["build"], targetRoot);
 		const nextProof = await proveNextInstallation({
 			repositoryRoot,
 			sourceRoot,
 			targetRoot,
+			nextBinary: next,
 			ignoredConsoleErrorPatterns: [
 				/pandamastery\.com/u,
 				/Failed to load resource: net::ERR_FAILED/u,
