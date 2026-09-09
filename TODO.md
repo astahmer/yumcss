@@ -66,24 +66,24 @@
   ~2.7M ops/sec, at or above tailwind-merge on realistic class lists (see
   BENCH.md).
 
-# What we want
+# Remaining optional work
 
-- **Adapter modes** — the tw adapter proves the "one API, swappable output"
-  idea: the same `css()` surface could emit panda-style or stylex-style
-  classes behind a different `ClassNameStrategy` (or a starlight-style
-  string) without changing app code. The `createTwAdapter` contract is the
-  first instance; generalize it once a second consumer appears.
-- **Cross-engine CSS-dedup proof for non-tw modes** — the adapter guarantees
-  one rule per class in tw mode; the equivalent guarantee for panda/stylex
-  modes needs the same bridge + test treatment.
-- **SIZE.md / BENCH.md freshness** — both docs are real local measurements
-  (last re-measured 2026-08-22/23; sizes now quote the committed
-  `runtime-size.json.snap` snapshot). Re-run the size gate and the scratch
-  benchmark rig before publishing claims.
+- **Further ClassNameStrategy integrations** — the swappable class-name
+  contract is now exercised by the Tailwind, Panda, UnoCSS, StyleX, and named
+  atom strategies. Add another strategy only with a real target contract and
+  its own CSS, runtime, and substitution proof.
+- **Cross-engine CSS deduplication** — the built-in class strategies share the
+  same declaration-level extraction and conflict tests. Extend the parity
+  corpus when a new strategy introduces a different stylesheet owner.
+- **SIZE.md / BENCH.md freshness** — the runtime-size snapshot is the enforced
+  record of truth and the benchmark pages must be refreshed when the measured
+  runtime or competitor versions change. These numbers remain local evidence,
+  not published performance claims.
 - **Safelist-free mode** — a custom Tailwind extractor that understands
   `tw()` objects, or first-class `@source inline` guidance; today the inliner
   already makes literal calls visible, and `pandwind-codemod tw scan` covers the rest.
-- **Publish to JSR / pkg.pr.new** once the API settles.
+- **Publish to npm/JSR/pkg.pr.new** once the API and proof boundary settle; the
+  repository already has pack, smoke, changeset, and provenance checks.
 
 # What we deliberately don't do (and why)
 

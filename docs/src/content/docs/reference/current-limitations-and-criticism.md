@@ -41,8 +41,8 @@ adoption simplicity, real-world proof, and scope discipline.
   API. That is the correct source of truth today, but it is also a compatibility
   risk when Tailwind changes internals.
 - "The codemod matrix looks broader than the actual guarantee." The checked-in
-  real-repository report contains 33 reports, with 27 passed proof dimensions,
-  228 pending dimensions, and 6 pipeline-unpaired references. The adapter
+  real-repository report contains 34 reports, with 28 passed proof dimensions,
+  235 pending dimensions, and 6 pipeline-unpaired references. The adapter
   reference proof has 29 small probes, 139 converted sites, 10 residuals, and
   26 fully valid migrations. That is useful evidence, but it is not proof that
   arbitrary production applications migrate cleanly.
