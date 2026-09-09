@@ -360,7 +360,10 @@ const radiusExpansions: Record<string, string[]> = {
 const textStyles: Record<string, Record<string, unknown>> = ${generatedTextStyles};
 const tokenGroupsByProperty: Record<string, string> = ${generatedTokenGroups};
 const tokenRefs: Record<string, Record<string, string>> = ${generatedTokenRefs};
-const tokenReferenceFormat = ${JSON.stringify(tokenReferenceFormat)};
+const tokenReferenceFormat = ${JSON.stringify(tokenReferenceFormat)} as
+	| "preserve"
+	| "dot-delimited"
+	| "stitches";
 const tokenReference = (path: string): string => {
 	const normalized = path.startsWith("$") ? path.slice(1).replaceAll("-", ".") : path;
 	if (tokenReferenceFormat === ${JSON.stringify(TokenReferenceFormat.Stitches)})

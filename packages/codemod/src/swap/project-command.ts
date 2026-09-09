@@ -1,4 +1,5 @@
 import type { PandwindMeta } from "../meta.ts";
+import type { AdapterDependencies } from "./adapter-contract.ts";
 import type { TokenReferenceFormat } from "./tokens.ts";
 
 /** Port for project-wide migrations that need more than one source match. */
@@ -17,5 +18,9 @@ export interface ProjectMigrationContext {
 
 export interface ProjectMigrationCommand {
 	readonly id: string;
+	/** Target ids for which this project-level pipeline owns the route. */
+	readonly targets: readonly string[];
+	/** Dependencies required by the target project support emitted by this command. */
+	readonly dependencies?: AdapterDependencies;
 	run(context: ProjectMigrationContext): Promise<void>;
 }

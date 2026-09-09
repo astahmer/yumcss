@@ -1,9 +1,14 @@
 import { inferCommonRoot, runPandaMigration } from "./panda-migrate.ts";
 import type { ProjectMigrationCommand } from "../../project-command.ts";
-import { CodemodAdapterId } from "../../identifiers.ts";
+import { AdapterDependencyKindTag } from "../../adapter-contract.ts";
+import { CodemodAdapterId, SwapTargetId } from "../../identifiers.ts";
 
 const pandaMigrationCommand: ProjectMigrationCommand = {
 	id: CodemodAdapterId.Panda,
+	targets: [CodemodAdapterId.Pandwind, SwapTargetId.CssClass],
+	dependencies: {
+		packages: [{ name: "pandwind", kind: AdapterDependencyKindTag.Runtime }],
+	},
 	async run(context) {
 		if (context.filePaths.length === 0) {
 			console.error("codemod migrate: no matching files for project migration");

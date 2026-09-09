@@ -54,6 +54,20 @@ export interface PandwindMeta {
 	interop: PandwindInteropArtifact | undefined;
 }
 
+/** Empty target metadata for project migrations that do not consume a bridge. */
+export function createEmptyPandwindMeta(): PandwindMeta {
+	return {
+		keys: [],
+		keysByBase: new Map(),
+		valueLiterals: new Map(),
+		variants: new Map(),
+		conflicts: new Map(),
+		bridgeInverse: new Map(),
+		tokens: undefined,
+		interop: undefined,
+	};
+}
+
 const dashCase = (key: string): string => key.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`);
 
 /** The utility prefix a tw() key emits (sub-keys resolve onto their base). */

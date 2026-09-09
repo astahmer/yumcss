@@ -51,6 +51,7 @@ describe("codemod public source surfaces", () => {
 		};
 		const command: ProjectMigrationCommand = {
 			id: "test",
+			targets: [],
 			run: async () => undefined,
 		};
 

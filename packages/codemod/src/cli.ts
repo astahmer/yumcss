@@ -11,7 +11,7 @@ import { existsSync, mkdirSync, readFileSync, statSync, unlinkSync, writeFileSyn
 import { basename, dirname, extname, isAbsolute, relative, resolve } from "node:path";
 import { cac, type CAC, type Command } from "cac";
 import { createSourceWorkspace } from "pandwind/source/workspace";
-import { loadMetaFromSourcesAsync, type PandwindMeta } from "./meta.ts";
+import { createEmptyPandwindMeta, loadMetaFromSourcesAsync, type PandwindMeta } from "./meta.ts";
 import * as swapImport from "./swap/index.ts";
 import { CodemodAdapterId, SwapSourceId, SwapTargetId } from "./swap/identifiers.ts";
 import { tokenSetCodec } from "./swap/token-set.ts";
@@ -278,7 +278,10 @@ const printPackageInstall = (result: PackageInstallResult): void => {
 async function mainMigrate(argv: string[]): Promise<void> {
 	const args = swapImport.parseMigrateArgs(argv);
 	const root = migrationRoot(args);
-	const explicitlyExternal = isExternalRoute(args);
+	const packageJson = readPackageJson(root);
+	const projectMigration = swapImport.getProjectMigrationCommand(args.from);
+	const ownsProjectRoute = projectMigration?.targets.includes(args.to) ?? false;
+	const explicitlyExternal = isExternalRoute(args) && !ownsProjectRoute;
 	const candidateFilePaths = expandPatterns(
 		args.patterns,
 		root,
@@ -305,7 +308,6 @@ async function mainMigrate(argv: string[]): Promise<void> {
 	if (external) {
 		let meta: PandwindMeta | undefined;
 		let project: PandwindProjectSupport | undefined;
-		const packageJson = readPackageJson(root);
 		if (args.metaDir !== "") {
 			const metaDir = resolve(root, args.metaDir);
 			try {
@@ -355,30 +357,47 @@ async function mainMigrate(argv: string[]): Promise<void> {
 	const metaDirRelative = args.metaDir !== "" ? args.metaDir : "examples/example/src";
 	const metaDir = resolve(root, metaDirRelative);
 
-	let meta: PandwindMeta;
-	try {
-		const bridgePath = resolve(metaDir, "bridge.ts");
-		meta = await loadMetaFromSourcesAsync({
-			typesDtsPath: resolve(metaDir, "types.d.ts"),
-			twTsPath: resolve(metaDir, "tw.ts"),
-			bridgePath: existsSync(bridgePath) ? bridgePath : undefined,
-		});
-	} catch (error) {
+	let meta: PandwindMeta = createEmptyPandwindMeta();
+	const typesDtsPath = resolve(metaDir, "types.d.ts");
+	const twTsPath = resolve(metaDir, "tw.ts");
+	if (existsSync(typesDtsPath) && existsSync(twTsPath)) {
+		try {
+			const bridgePath = resolve(metaDir, "bridge.ts");
+			meta = await loadMetaFromSourcesAsync({
+				typesDtsPath,
+				twTsPath,
+				bridgePath: existsSync(bridgePath) ? bridgePath : undefined,
+			});
+		} catch (error) {
+			console.error(
+				`codemod migrate: failed to load generated metadata from ${metaDir}\n` +
+					"  run `pandwind-codemod tw generate --bridge` first, or pass --meta=<dir>\n" +
+					`  (${(error as Error).message})`,
+			);
+			process.exitCode = 1;
+			return;
+		}
+	} else if (!ownsProjectRoute) {
 		console.error(
-			`codemod migrate: failed to load generated metadata from ${metaDir}\n` +
-				"  run `pandwind-codemod tw generate --bridge` first, or pass --meta=<dir>\n" +
-				`  (${(error as Error).message})`,
+			`codemod migrate: generated metadata is missing from ${metaDir}\n` +
+				"  run `pandwind-codemod tw generate --bridge` first, or pass --meta=<dir>",
 		);
 		process.exitCode = 1;
 		return;
 	}
 
-	const projectMigration = swapImport.getProjectMigrationCommand(args.from);
 	if (projectMigration !== undefined) {
+		if (!ownsProjectRoute) {
+			console.error(
+				`codemod migrate: project adapter '${args.from}' does not support target '${args.to}'`,
+			);
+			process.exitCode = 1;
+			return;
+		}
 		await projectMigration.run({
 			patterns: args.patterns,
 			filePaths,
-			meta,
+			meta: meta ?? createEmptyPandwindMeta(),
 			...(args.outDir === undefined ? {} : { outDir: args.outDir }),
 			...(args.force === undefined ? {} : { force: args.force }),
 			diff: args.diff,
@@ -387,6 +406,20 @@ async function mainMigrate(argv: string[]): Promise<void> {
 			skipMarker: args.skipMarker,
 			tokenReferenceFormat: args.tokenReferenceFormat,
 		});
+		if (
+			!args.dryRun &&
+			args.install &&
+			projectMigration.dependencies !== undefined &&
+			packageJson !== undefined &&
+			filePaths.length > 0
+		) {
+			const installed = await PACKAGE_INSTALLER.install({
+				root,
+				packageJson,
+				dependencies: [projectMigration.dependencies],
+			});
+			if (args.reportFormat !== "json") printPackageInstall(installed);
+		}
 		return;
 	}
 

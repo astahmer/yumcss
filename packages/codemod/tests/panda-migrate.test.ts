@@ -393,6 +393,39 @@ describe("runPandaMigration", () => {
 		const bootstrap = readFileSync(join(dir, "src", "pandwind", "css.ts"), "utf8");
 		expect(bootstrap).toContain("createDesignCss");
 		expect(bootstrap).toContain("createCx");
+		const internal = readFileSync(join(dir, "src", "pandwind", "internal.ts"), "utf8");
+		expect(internal).toContain(
+			'const tokenReferenceFormat = "preserve" as\n\t| "preserve"\n\t| "dot-delimited"\n\t| "stitches";',
+		);
+	});
+
+	it("does not rewrite Panda examples embedded in template strings", async () => {
+		const dir = makeProject();
+		const sample = [
+			'import { outdent } from "outdent";',
+			"const example = outdent`",
+			'import { css } from "./styled-system/css";',
+			'const className = css({ color: "red" });',
+			"`;",
+			'export const App = () => css({ color: "blue" });',
+			"",
+		].join("\n");
+		writeFileSync(join(dir, "src", "examples.tsx"), sample);
+
+		await runPandaMigration({
+			projectRoot: dir,
+			patterns: ["src/**/*.tsx"],
+			meta,
+			outDirName: "pandwind",
+			write: true,
+			diff: false,
+			skipMarker: "pandwind:migrate-skip",
+		});
+
+		const output = readFileSync(join(dir, "src", "examples.tsx"), "utf8");
+		expect(output).toContain('import { css } from "./styled-system/css";');
+		expect(output).toContain('const className = css({ color: "red" });');
+		expect(output).toContain('export const App = () => css.class({ color: "blue" });');
 	});
 
 	it("removes a local recipe call including its closing parenthesis", async () => {
