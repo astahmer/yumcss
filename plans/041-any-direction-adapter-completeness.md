@@ -31,8 +31,9 @@ registry-derived target suite. This closes the common false capability skip
 for static `styled.div`-style subjects without making the runner know any
 ecosystem-specific syntax.
 
-The current playground matrix is clean for its 26 registered endpoints (676
-ordered routes). Chakra target emission preserves CSS-origin numeric dimensions
+The current codemod registry has 32 registered adapters. Its contract matrix
+covers 6,144 cases across all ordered pairs, safe and partial modes, and happy,
+edge, and malformed scenarios. Chakra target emission preserves CSS-origin numeric dimensions
 (`16` means `16px` in CSS-in-JS) and named-map semantic projections are retained
 through the generic adapter wrapper. Standalone static Next-yak and
 Solid-styled intrinsic subjects now lower to React Native `View` components,
@@ -87,21 +88,22 @@ the flat CLI path keeps its low-cost parser/emitter.
 
 ## Current evidence and known gap
 
-The current versioned registry and route matrix exercise all 26 registered
+The current versioned registry and route matrix exercise all 32 registered
 modern adapters and retain the flat `SwapIR` fast path. The route catalog also
 exposes the flat Panda/Pandwind dialects through the same style-system
 registry. Named style maps and function-valued styles now have explicit
 representation contracts. The route proof is no longer only a single happy
 fixture: the shared proof corpus exercises happy, edge, and malformed inputs
-in safe and partial modes. The codemod suite currently passes 702 test files
-(one intentionally skipped) and 2,739 tests (one intentionally skipped),
-including the adapter coverage gate and generated directional route specs. The
-CLI e2e matrix passes 106 tests across the ordered routes, and the route proof
-passes 4,056 cases.
+in safe and partial modes. The codemod suite currently passes 1,979 test files
+and 9,581 tests with no skipped tests, including the adapter coverage gate and
+generated directional route specs. The CLI e2e suite passes 131 tests, and the
+registry contract proof passes 6,144 cases.
 
 The fast directional suite lives in `packages/codemod/tests/routes`. It has one
-generated file for every distinct ordered adapter pair (650 files for the 26
-registered adapters), with happy, edge, and malformed scenarios in each file.
+generated file for every distinct ordered adapter pair with a concrete source
+fixture (930 files currently), with happy, edge, and malformed scenarios in
+each file. The registry contract additionally covers pairs without a generated
+source fixture.
 Every scenario records an inline snapshot of complete migration evidence:
 changed code, selected representation, outcome, validation, and typed
 residuals. The tests also assert conversion counts, validation success for
@@ -115,8 +117,8 @@ The companion `packages/codemod/tests/roundtrips` directory has one generated
 real, adapter-specific source programs—not scenario labels—through both legs
 and snapshots each leg independently. Assertions require the reverse leg to
 convert, report an explicit residual, or preserve a visible fallback; they
-reject an unreported silent no-op. The fast proof currently passes 650
-directional files / 3,250 tests and 650 round-trip files / 2,600 tests. Each
+reject an unreported silent no-op. The fast proof currently passes 930
+directional files / 4,650 tests and 930 round-trip files / 3,720 tests. Each
 file includes happy, edge, malformed, theme/config, and token-context
 scenarios; round-trip files exercise the same contexts across both legs. The
 snapshots remain diagnostic, while executable assertions independently require
@@ -311,23 +313,20 @@ artifact; current source and the browser-safe matrix assert that it is absent.
 The bidirectional codemod proof work is complete for the registered adapter
 matrix:
 
-- 26 contract fixtures cover detection, configuration, parsing, capabilities,
+- 32 contract fixtures cover detection, configuration, parsing, capabilities,
   emission, and validation for every registered adapter.
 - `createAdapterConformanceSuite()` directly exercises every adapter-owned
   detection, configuration, parsing, emission, and validation port before the
   ordered route matrix runs. Source-side semantic metadata is not judged as a
   target capability; that negotiation remains an ordered-route concern.
-- 4,056 Cartesian route cases cover every ordered source/target pair, both
-  capability modes, and all three proof scenarios (26 × 26 × 2 × 3).
-- 104 per-adapter CLI end-to-end cases spawn the real command, write temporary
-  files, parse JSON reports, and cover every adapter in both `adapter →
-Pandwind` and `Pandwind → adapter` directions, including edge inputs. The full
-  public-boundary suite runs all 676 ordered source/target pairs through the
-  real CLI, passing happy, edge, and malformed files together for every pair.
-  The expensive suite is invoked with `pnpm --filter pandwind-codemod test:e2e`;
-  the default coverage suite runs the same corpus in-process.
+- 6,144 Cartesian route cases cover every ordered source/target pair, both
+  capability modes, and all three proof scenarios (32 × 32 × 2 × 3).
+- The CLI e2e suite passes 131 tests. Its large route matrix runs through the
+  migration use case with in-memory files; one focused test retains the real
+  CLI boundary for argument parsing, discovery, writes, and extension changes.
+  The suite is invoked with `pnpm --filter pandwind-codemod run test:e2e`.
 - The same proof corpus is owned by `packages/codemod/proof` and consumed by
-  both Vitest and `pnpm pivot:proof`; the proof command reports the same 4,056
+  both Vitest and `pnpm pivot:proof`; the proof command reports the same 6,144
   route cases as the test suite.
 - Every skipped route must preserve its source and carry a typed residual;
   the obsolete generic `adapter capability mismatch` marker is rejected.
@@ -448,9 +447,10 @@ cannot be rewritten safely. In each case the source remains intact. A target
 adapter becomes bidirectionally usable by adding a representation and its
 substitution proof, not by making the capability report permissive.
 
-After the class-host projection revision, the deterministic matrix reports
-`4,056` cases, `0` route failures, `274` cases with typed residuals, and `271`
-source-preserving skips. The largest remaining groups are free theme
+The current deterministic matrix reports `6,144` cases and `0` route failures.
+Residual and source-preserving counts are asserted per case and vary with the
+fixture context; they are expected evidence of conservative behavior rather
+than a route-completion metric. The largest remaining groups are free theme
 expressions inside styled subjects, framework-specific component subjects,
 and project utilities whose official preset/generator context is unavailable.
 They are actionable semantic/configuration gaps, not the obsolete generic

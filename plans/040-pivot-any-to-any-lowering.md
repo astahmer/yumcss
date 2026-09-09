@@ -132,10 +132,11 @@ For every registered source and target pair:
 - canonical CSS and output-size comparisons are recorded;
 - residual tests prove unsupported semantics remain visible and actionable.
 
-The existing Cartesian route test is the baseline: it invokes all 576
-registered routes and rejects silent outcomes. It must be upgraded from
-“conversion or residual exists” to capability-specific proof once each
-lowering is implemented.
+The current Cartesian route contract invokes every registered source/target
+pair in safe and partial modes with happy, edge, and malformed scenarios. The
+current catalog has 32 adapters, so the contract covers 6,144 cases
+(`32 × 32 × 2 × 3`) and rejects silent outcomes. This remains route-level
+evidence; capability-specific proof is still required for each semantic family.
 
 ### 7. Enforce completion in CI
 
@@ -156,7 +157,7 @@ CI must fail when:
 - [x] Configuration failures are source-visible and categorized separately.
 - [x] Lowering plans expose the selected and available representations.
 - [ ] Every HIR construct has a target lowering, runtime carrier, or residual.
-- [ ] Every registered source×target route is exercised in both modes.
+- [x] Every registered source×target route is exercised in both modes.
 - [ ] Static extraction wins whenever the source is statically representable.
 - [ ] Runtime fallback is emitted only for genuinely dynamic semantics.
 - [ ] Framework host rewrites are AST/scanner-backed and validated.
@@ -164,8 +165,8 @@ CI must fail when:
       explicit.
 - [ ] Every adapter passes unit, integration, browser, SSR, hydration, and
       applicable streaming proofs.
-- [ ] The full route matrix and residual policy are enforced in CI.
-- [ ] Documentation describes the actual proof boundary and no longer implies
+- [x] The full route matrix and residual policy are enforced in CI.
+- [x] Documentation describes the actual proof boundary and no longer implies
       that a generic capability marker is an acceptable final outcome.
 
 ## Current implementation evidence
@@ -191,9 +192,11 @@ The first wave is implemented and tested in focused JJ revisions:
   report the real semantic limitation instead of mislabeling it as a CSS
   condition mismatch.
 
-The remaining checkboxes are intentionally still open until each capability
-family has a concrete lowering and differential proof rather than only a
-route-level outcome.
+The remaining unchecked items are capability-family and production-proof
+boundaries: universal HIR lowering, static/runtime policy across every
+adapter, framework host semantics, official configuration breadth, and
+per-adapter browser/SSR/hydration/streaming evidence. The route matrix,
+residual enforcement, and documentation boundary above are complete.
 
 ## Non-goals
 

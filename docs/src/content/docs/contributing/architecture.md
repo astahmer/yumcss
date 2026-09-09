@@ -956,9 +956,9 @@ promotion.
 
 Directional route behavior has a dedicated fast proof layer in
 `packages/codemod/tests/routes`. The generator currently creates one file for
-each distinct ordered pair in the 26-adapter syntax-fixture corpus (650 files).
-The broader registry also contains source families whose dedicated stylesheet
-or component tests are not generated into this directory. Each route file
+each distinct ordered pair with a concrete source fixture (930 files). The
+broader registry contract covers all 32 registered adapters, including pairs
+whose source family does not have a generated file in this directory. Each route file
 covers a static happy path, a dynamic or otherwise
 non-happy edge path, malformed input, theme/config variants, and token
 references, with inline snapshots of emitted code, selected representation,
@@ -978,8 +978,8 @@ The snapshots are deliberately paired with executable assertions: reverse
 conversion, an explicit residual, or a visible source-preserving fallback is
 required. A byte-stable second leg is valid only when the reverse adapter
 actually parsed and converted it; a silent no-op is rejected. The current fast
-syntax-fixture corpus is 650 directional files (3,250 tests) plus 650
-round-trip files (2,600 tests). Context cases provide a virtual project root and adapter-owned config
+syntax-fixture corpus is 930 directional files (4,650 tests) plus 930
+round-trip files (3,720 tests). Context cases provide a virtual project root and adapter-owned config
 files, use blue and amber token values, and exercise native token spellings
 where the ecosystem has them. Run this isolated proof with
 `pnpm --dir packages/codemod exec vitest --config
