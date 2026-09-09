@@ -61,6 +61,15 @@ remain thin convenience calls over that use case; they cannot bypass the
 canonical application boundary. The flat `SwapIR` path remains independent
 and cheap.
 
+The codemod adapter assembly is split by policy ownership. `adapter-definition`
+defines the adapter kit and configuration/detection composition, `adapter-parser`
+owns source-language parsing, `adapter-renderers` owns target syntax rendering,
+and `adapter-validation` owns semantic program checks. `external-adapters` now
+only assembles and registers those policies, while migration route policy lives
+in its own internal module. This keeps the registry/composition root small and
+lets parser, renderer, or validation implementations be substituted without
+changing migration orchestration.
+
 Route resolution, source detection, official source/target configuration
 loading, configuration residual handling, and file-migration selection are
 owned by `adapter-migration-preparation.ts`. Both synchronous and asynchronous
