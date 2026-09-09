@@ -2,6 +2,7 @@
 	color-scheme: light;
 	font-family: ui-sans-serif, system-ui, sans-serif;
 	-webkit-font-smoothing: antialiased;
+	--example-accent: #0284c7;
 }
 
 html,
