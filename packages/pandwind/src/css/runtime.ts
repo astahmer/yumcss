@@ -84,7 +84,7 @@ function runtimeOptions(preset: CssConfigReturn, options: RuntimeCssOptions): Ru
 	const stylesheet = createStylesheet(preset, cssOptions);
 	let tokensSynced = false;
 	let pendingStyles: StyleObject[] = [];
-	const syncedVarIds = new Set<string>();
+	const pendingStyleIds = new Set<string>();
 	const sync = (rules: readonly RuntimeRule[] = []): void => {
 		if (!tokensSynced) {
 			sheet.setTokens(stylesheet.gen.tokens());
@@ -99,13 +99,13 @@ function runtimeOptions(preset: CssConfigReturn, options: RuntimeCssOptions): Ru
 		const added = stylesheet.process(styles);
 		sync(Array.from(added.values()));
 	};
-	const syncVars = (): void => {
+	const syncVars = (keys: readonly string[]): void => {
 		flush();
-		const newRules = stylesheet.gen.varEntries().filter((rule) => {
-			if (syncedVarIds.has(rule.id)) return false;
-			syncedVarIds.add(rule.id);
-			return true;
-		});
+		const newRules: RuntimeRule[] = [];
+		for (const key of keys) {
+			const rule = stylesheet.processVarKey(key);
+			if (rule !== undefined) newRules.push(rule);
+		}
 		if (newRules.length > 0) sync(newRules);
 	};
 	const authoredStrategy = cssOptions.className;
@@ -113,7 +113,11 @@ function runtimeOptions(preset: CssConfigReturn, options: RuntimeCssOptions): Ru
 		name: authoredStrategy?.name ?? "runtime",
 		sheetBacked: authoredStrategy?.sheetBacked,
 		toClassName: (key, value) => {
-			pendingStyles.push({ [key]: value } as StyleObject);
+			const id = `${key}\u0000${value}`;
+			if (!pendingStyleIds.has(id)) {
+				pendingStyleIds.add(id);
+				pendingStyles.push({ [key]: value } as StyleObject);
+			}
 			return authoredStrategy?.toClassName(key, value) ?? null;
 		},
 	};
@@ -125,10 +129,11 @@ function runtimeOptions(preset: CssConfigReturn, options: RuntimeCssOptions): Ru
 			const vars = css.vars;
 			css.vars = (...styles) => {
 				const output = vars(...styles);
+				const keys: string[] = [];
 				for (const atom of output[VARS_ATOMS] ?? []) {
-					for (const key of atom.keys) stylesheet.processVarKey(key);
+					keys.push(...atom.keys);
 				}
-				syncVars();
+				syncVars(keys);
 				return output;
 			};
 		},

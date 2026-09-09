@@ -195,7 +195,7 @@ export const createStylesheet = (
 	 * of which values a given element sets inline.
 	 */
 	const varCache = new Map<string, Rule>();
-	const processVarKey = (flatKey: string): void => {
+	const processVarKey = (flatKey: string): Rule | undefined => {
 		const rawParts = pathParts(flatKey, true, false);
 		const first = rawParts[0]!;
 		const last = rawParts[rawParts.length - 1]!;
@@ -224,7 +224,9 @@ export const createStylesheet = (
 			...atomic.conditions,
 			className: `.${varCompiler.escapeClass(varCompiler.classFor(orderedKey))}`,
 		});
-		varCache.set(orderedKey, { id: orderedKey, css, priority: atomic.priority });
+		const rule = { id: orderedKey, css, priority: atomic.priority };
+		varCache.set(orderedKey, rule);
+		return rule;
 	};
 
 	const tokenEntries = (): TokenDeclaration[] =>

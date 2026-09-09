@@ -4,11 +4,12 @@ import type { RuntimeCssAttachment } from "./runtime-base.ts";
 
 /** Attach the dynamic-value projection that emits classes plus custom properties. */
 export const attachVars: RuntimeCssAttachment = (css, context) => {
+	const compiler = createVarCompiler(
+		context.backendOptions.conditions && Object.keys(context.backendOptions.conditions),
+	);
 	css.vars = (...styles: Array<StyleObject>): VarsOutput => {
 		const flat = context.flatten(context.assign(...styles));
-		const { atoms, style } = createVarCompiler(
-			context.backendOptions.conditions && Object.keys(context.backendOptions.conditions),
-		).encode(flat);
+		const { atoms, style } = compiler.encode(flat);
 		const output: VarsOutput = {
 			class: atoms.map((atom) => atom.cls).join(" "),
 			style,
