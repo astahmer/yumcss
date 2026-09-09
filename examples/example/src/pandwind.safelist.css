@@ -55,6 +55,16 @@
 @source inline("shadow-sm");
 @source inline("text-gray-700");
 @source inline("underline");
+@source inline("min-w-0");
+@source inline("flex-row");
+@source inline("items-center");
+@source inline("grow-1");
+@source inline("cursor-pointer");
+@source inline("font-normal");
+@source inline("max-h-96");
+@source inline("shrink-0");
+@source inline("px-2");
+@source inline("py-1");
 @source inline("mt-4");
 @source inline("bg-brand");
 @source inline("px-4");
@@ -76,6 +86,5 @@
 @source inline("font-mono");
 @source inline("sm:flex");
 @source inline("sm:flex-row");
-@source inline("grow-1");
 @source inline("text-gray-500");
 @source inline("dark:text-gray-300");
