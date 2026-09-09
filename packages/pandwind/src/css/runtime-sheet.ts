@@ -47,6 +47,7 @@ export function createRuntimeSheet(
 	let rendered = "";
 	let orderedGeneration = -1;
 	let ordered: RuntimeRule[] = [];
+	let mounted = false;
 	const invalidate = (): void => {
 		generation++;
 	};
@@ -71,7 +72,7 @@ export function createRuntimeSheet(
 	const render = (): void => sink.update(css());
 	const refresh = (): void => {
 		if (options.autoMount !== false) sink.mount(css());
-		else render();
+		else if (mounted) render();
 	};
 	const register = (rules: readonly RuntimeRule[]): void => {
 		if (store.register(rules)) {
@@ -110,8 +111,14 @@ export function createRuntimeSheet(
 		setTokens,
 		snapshot,
 		hydrate,
-		mount: () => sink.mount(css()),
-		unmount: () => sink.unmount(),
+		mount: () => {
+			mounted = sink.mount(css());
+			return mounted;
+		},
+		unmount: () => {
+			sink.unmount();
+			mounted = false;
+		},
 	};
 }
 

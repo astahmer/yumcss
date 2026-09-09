@@ -8,6 +8,7 @@ import { createStylesheet } from "./create-stylesheet.ts";
 import { createCss, type CreateCssOptions, type CssFn } from "./create-css.ts";
 import {
 	createRuntimeSheet,
+	type RuntimeRule,
 	type RuntimeSheet,
 	type RuntimeSheetOptions,
 } from "./runtime-sheet.ts";
@@ -53,6 +54,7 @@ export type RuntimeCssFn<TStyles extends StyleObject = StyleObject> = CssFn<TSty
 interface RuntimeBinding {
 	sheet: RuntimeSheet;
 	cssOptions: CreateCssOptions;
+	flush: () => void;
 	registerVars: (css: CssFn<StyleObject>) => void;
 }
 
@@ -80,23 +82,45 @@ function runtimeOptions(preset: CssConfigReturn, options: RuntimeCssOptions): Ru
 	const sheet = runtimeSheetFor(options);
 	const { sheet: _sheet, sheetOptions: _sheetOptions, ...cssOptions } = options;
 	const stylesheet = createStylesheet(preset, cssOptions);
-	const sync = (): void => {
-		sheet.setTokens(stylesheet.gen.tokens());
-		sheet.register([...stylesheet.gen.atomicEntries(), ...stylesheet.gen.varEntries()]);
+	let tokensSynced = false;
+	let pendingRules: RuntimeRule[] = [];
+	const syncedVarIds = new Set<string>();
+	const sync = (rules: readonly RuntimeRule[] = []): void => {
+		if (!tokensSynced) {
+			sheet.setTokens(stylesheet.gen.tokens());
+			tokensSynced = true;
+		}
+		if (rules.length > 0) sheet.register(rules);
+	};
+	const flush = (): void => {
+		if (pendingRules.length === 0) return;
+		const rules = pendingRules;
+		pendingRules = [];
+		sync(rules);
+	};
+	const syncVars = (): void => {
+		flush();
+		const newRules = stylesheet.gen.varEntries().filter((rule) => {
+			if (syncedVarIds.has(rule.id)) return false;
+			syncedVarIds.add(rule.id);
+			return true;
+		});
+		if (newRules.length > 0) sync(newRules);
 	};
 	const authoredStrategy = cssOptions.className;
 	const runtimeStrategy: ClassNameStrategy = {
 		name: authoredStrategy?.name ?? "runtime",
 		sheetBacked: authoredStrategy?.sheetBacked,
 		toClassName: (key, value) => {
-			stylesheet.process([{ [key]: value } as StyleObject]);
-			sync();
+			const added = stylesheet.process([{ [key]: value } as StyleObject]);
+			pendingRules.push(...added.values());
 			return authoredStrategy?.toClassName(key, value) ?? null;
 		},
 	};
 	return {
 		sheet,
 		cssOptions: { ...cssOptions, className: runtimeStrategy },
+		flush,
 		registerVars: (css) => {
 			const vars = css.vars;
 			css.vars = (...styles) => {
@@ -104,11 +128,45 @@ function runtimeOptions(preset: CssConfigReturn, options: RuntimeCssOptions): Ru
 				for (const atom of output[VARS_ATOMS] ?? []) {
 					for (const key of atom.keys) stylesheet.processVarKey(key);
 				}
-				sync();
+				syncVars();
 				return output;
 			};
 		},
 	};
+}
+
+/**
+ * A compiled call can discover several atomic rules before the caller needs
+ * the result. Keep those discoveries together so a runtime sheet orders and
+ * serializes the stylesheet once per public call instead of once per
+ * declaration.
+ */
+function withRuntimeFlush(css: CssFn<StyleObject>, runtime: RuntimeBinding): CssFn<StyleObject> {
+	const original = css;
+	const flushed = ((...styles: Array<StyleObject>) => {
+		try {
+			return original(...styles);
+		} finally {
+			runtime.flush();
+		}
+	}) as CssFn<StyleObject>;
+	Object.assign(flushed, original);
+	flushed.class = (...styles: Array<StyleObject>) => {
+		try {
+			return original.class(...styles);
+		} finally {
+			runtime.flush();
+		}
+	};
+	const group = original.group as unknown as (groups: Record<string, unknown>) => unknown;
+	flushed.group = ((groups: Record<string, unknown>) => {
+		try {
+			return group(groups);
+		} finally {
+			runtime.flush();
+		}
+	}) as unknown as typeof flushed.group;
+	return flushed;
 }
 
 /** Create the full runtime CSS-in-JS engine for a preset. */
@@ -123,7 +181,8 @@ export function createRuntimeCss<
 		TypedStyleObject<TPreset["_config"], TPreset["tokens"], TPreset>
 	>;
 	runtime.registerVars(css as unknown as CssFn<StyleObject>);
-	return Object.assign(css, { sheet: runtime.sheet }) as RuntimeCssFn<
+	const flushed = withRuntimeFlush(css as unknown as CssFn<StyleObject>, runtime);
+	return Object.assign(flushed, { sheet: runtime.sheet }) as RuntimeCssFn<
 		TypedStyleObject<TPreset["_config"], TPreset["tokens"], TPreset>
 	>;
 }
@@ -136,7 +195,10 @@ export function createRuntimeDesignCss<TPreset extends DesignPreset>(
 	const runtime = runtimeOptions(preset, options);
 	const css = createDesignCss(preset, runtime.cssOptions) as CssFn<DesignStyleObject<TPreset>>;
 	runtime.registerVars(css as unknown as CssFn<StyleObject>);
-	return Object.assign(css, { sheet: runtime.sheet }) as RuntimeCssFn<DesignStyleObject<TPreset>>;
+	const flushed = withRuntimeFlush(css as unknown as CssFn<StyleObject>, runtime);
+	return Object.assign(flushed, { sheet: runtime.sheet }) as RuntimeCssFn<
+		DesignStyleObject<TPreset>
+	>;
 }
 
 export { createRuntimeSheet } from "./runtime-sheet.ts";

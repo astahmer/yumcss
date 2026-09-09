@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { createCss } from "../src/css/create-css.ts";
+import { createCss, type CssFn } from "../src/css/create-css.ts";
 import {
 	createRuntimeCss,
 	createRuntimeDesignCss,
@@ -15,6 +15,7 @@ import type {
 	RuntimeStyleElement,
 	RuntimeStyleElementSink,
 } from "../src/css/runtime-sheet.ts";
+import type { StyleObject } from "../src/types/typings.ts";
 
 type RuntimeContractSurface = {
 	document: RuntimeDocument;
@@ -60,6 +61,28 @@ test("runtime sheet caches ordering and serialization until its state changes", 
 	expect(orderCalls).toBe(2);
 });
 
+test("lazy sheets defer serialization until they are read or mounted", () => {
+	let orderCalls = 0;
+	const sheet = createRuntimeSheet(
+		{ autoMount: false },
+		{
+			ordering: {
+				order: (rules) => {
+					orderCalls++;
+					return Array.from(rules.values());
+				},
+			},
+		},
+	);
+
+	sheet.register([{ id: "a", css: ".a{color:red}", priority: 1 }]);
+	sheet.register([{ id: "b", css: ".b{color:blue}", priority: 2 }]);
+
+	expect(orderCalls).toBe(0);
+	expect(sheet.css()).toContain(".a{color:red}");
+	expect(orderCalls).toBe(1);
+});
+
 describe("runtime CSS-in-JS sheet", () => {
 	test("collects preset-bound css() rules for SSR without a DOM", () => {
 		const sheet = createRuntimeSheet({ autoMount: false });
@@ -81,6 +104,34 @@ describe("runtime CSS-in-JS sheet", () => {
 
 		expect(second).toBe(first);
 		expect(sheet.snapshot().rules).toHaveLength(1);
+	});
+
+	test("batches and registers only newly discovered runtime rules", () => {
+		let updates = 0;
+		const sheet = createRuntimeSheet(
+			{ autoMount: false },
+			{
+				sink: {
+					mount: () => true,
+					update: () => {
+						updates++;
+					},
+					unmount: () => undefined,
+				},
+			},
+		);
+		const css = createRuntimeCss(examplePreset, { sheet });
+		expect(sheet.mount()).toBe(true);
+		const before = updates;
+
+		css.class({ color: "$blue-500", padding: 4 });
+		const firstUpdateCount = updates - before;
+		css.class({ color: "$blue-500", padding: 4 });
+
+		// One update installs the token prelude and one installs both atomic
+		// rules. Repeating the same call does not touch the sheet.
+		expect(firstUpdateCount).toBe(2);
+		expect(updates).toBe(firstUpdateCount);
 	});
 
 	test("shares the default sheet across module-scoped runtime CSS instances", () => {
@@ -121,6 +172,19 @@ describe("runtime CSS-in-JS sheet", () => {
 		expect(props.style).toEqual({ "--background": "#0284c7" });
 		expect(sheet.css()).toContain("background-color:var(--background)");
 		expect(props.className).toBeDefined();
+	});
+
+	test("runtime function groups register their var rules", () => {
+		const sheet = createRuntimeSheet({ autoMount: false });
+		const css = createRuntimeCss(examplePreset, { sheet });
+		const groups = (css as unknown as CssFn<StyleObject>).group({
+			item: (padding: number) => ({ padding }),
+		});
+
+		const props = css.props(groups.item(8));
+
+		expect(props.style).toEqual({ "--pw-c-padding": "8px" });
+		expect(sheet.css()).toContain(".pw-padding");
 	});
 
 	test("createCss and createRuntimeCss share input output; only runtime adds a sheet", () => {

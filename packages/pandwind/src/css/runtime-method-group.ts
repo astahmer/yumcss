@@ -48,7 +48,12 @@ export const attachGroup: RuntimeCssAttachment = (css, context) => {
 		for (const [name, groupStyles] of Object.entries(groups)) {
 			if (typeof groupStyles === "function") {
 				if (vars === undefined) throw new Error("css.group function values require css.vars");
-				merged[name] = (...args: unknown[]) => vars(groupStyles(...args));
+				merged[name] = (...args: unknown[]) => {
+					// Resolve the method at call time so runtime bindings installed
+					// after attachment can observe and register the var key.
+					const currentVars = css.vars as typeof vars;
+					return (currentVars ?? vars)(groupStyles(...args));
+				};
 			} else {
 				merged[name] = transform(groupStyles);
 			}
