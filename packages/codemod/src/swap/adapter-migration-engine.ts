@@ -20,12 +20,9 @@ import {
 import type {
 	AdapterDependencies,
 	AdapterGeneratedFile,
-	AdapterHostFrameworkConversion,
 	AdapterValidationResult,
-	AdapterTargetMigrationPolicy,
-	StyleAdapter,
 } from "./adapter-contract.ts";
-import type { StyleLoweringPlan, StyleLoweringRegistry } from "./lowering.ts";
+import type { StyleLoweringPlan } from "./lowering.ts";
 import { MigrationOutput } from "./migration-output.ts";
 import { MigrationDiagnostics } from "./migration-diagnostics.ts";
 import type {
