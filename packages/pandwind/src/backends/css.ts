@@ -60,7 +60,7 @@ export function createCssBackend(options: CssBackendOptions = {}): StyleBackend 
 	const strategy: ClassNameStrategy | undefined = options.className;
 	const sheetBacked = strategy?.sheetBacked === true;
 	const atoms: AtomRegistry = new Map();
-	const declarations = new Map<string, string>();
+	const declarations = new Map<string, Map<string, string>>();
 
 	const declare = (key: string, value: string): string => {
 		const orderedKey = canonicalStyleKey(key);
@@ -68,8 +68,12 @@ export function createCssBackend(options: CssBackendOptions = {}): StyleBackend 
 		const property =
 			propertySeparator === -1 ? orderedKey : orderedKey.slice(propertySeparator + 2);
 		const rawValue = normalizeCssValue(property, value);
-		const cacheKey = `${orderedKey}\u0000${rawValue}`;
-		const cached = declarations.get(cacheKey);
+		let values = declarations.get(orderedKey);
+		if (values === undefined) {
+			values = new Map();
+			declarations.set(orderedKey, values);
+		}
+		const cached = values.get(rawValue);
 		if (cached !== undefined) return cached;
 		// The stylesheet canonicalizes flattened condition paths before it
 		// hashes them. Do the same at declaration time so inverted nesting
@@ -81,7 +85,7 @@ export function createCssBackend(options: CssBackendOptions = {}): StyleBackend 
 				// stylesheet, so their classes join the atom registry — that is
 				// what keeps cx() merging and the generated rules working.
 				if (sheetBacked && !atoms.has(custom)) atoms.set(custom, key);
-				declarations.set(cacheKey, custom);
+				values.set(rawValue, custom);
 				return custom;
 			}
 		}
@@ -89,7 +93,7 @@ export function createCssBackend(options: CssBackendOptions = {}): StyleBackend 
 		// Keep the written key for cx()'s property-signature parser; only the
 		// class identity uses the canonical key shared with the stylesheet.
 		if (!atoms.has(atom)) atoms.set(atom, key);
-		declarations.set(cacheKey, atom);
+		values.set(rawValue, atom);
 		return atom;
 	};
 
