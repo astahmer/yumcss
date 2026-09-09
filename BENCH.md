@@ -179,11 +179,11 @@ sheet bookkeeping rather than measuring browser style insertion.
 
 The seven-property repeated case is the closest comparison to the corpus above:
 
-| case                                                 |       pandwind |  `@emotion/css` | reading                                                              |
-| ---------------------------------------------------- | -------------: | --------------: | -------------------------------------------------------------------- |
-| repeated seven-property `runtimeCss.class()`         |  ~171K ops/sec |  ~1.01M ops/sec | Emotion is about 6× faster for this repeated call shape.             |
-| fresh unique one-property `runtimeCss.class()` rules |  ~271K ops/sec |   ~369K ops/sec | The lazy Pandwind sheet is in the same order of magnitude.           |
-| repeated one-property `runtimeCss.vars()`            | ~0.96M ops/sec | ~3.04M ops/sec* | Pandwind keeps one stable class and moves the changing value inline. |
+| case                                                 |       pandwind |  `@emotion/css` | reading                                                                    |
+| ---------------------------------------------------- | -------------: | --------------: | -------------------------------------------------------------------------- |
+| repeated seven-property `runtimeCss.class()`         |  ~202K ops/sec |  ~1.10M ops/sec | Emotion is about 5.5× faster for this repeated call shape.                 |
+| fresh unique one-property `runtimeCss.class()` rules |  ~331K ops/sec |   ~608K ops/sec | The lazy Pandwind sheet is within about 2× on this first-vocabulary shape. |
+| repeated one-property `runtimeCss.vars()`            | ~1.08M ops/sec | ~3.02M ops/sec* | Pandwind keeps one stable class and moves the changing value inline.       |
 
 `*` The `vars()` row is a semantic comparison rather than an identical
 operation: Emotion's call creates or looks up a CSS class, while Pandwind's
