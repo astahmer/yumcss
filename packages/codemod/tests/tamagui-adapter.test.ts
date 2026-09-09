@@ -2,12 +2,55 @@ import { describe, expect, test } from "vitest";
 import {
 	CodemodAdapterId,
 	createBuiltinCodemodCatalog,
+	createTamaguiAdapter,
 	runAdapterMigration,
 } from "../src/swap/index.ts";
 
 const catalog = createBuiltinCodemodCatalog();
 
 describe("Tamagui adapter", () => {
+	test.each([
+		{
+			name: "missing compiler",
+			compiler: undefined,
+			hint: "the official @tamagui/static compiler is unavailable for a discovered config",
+		},
+		{
+			name: "compiler without project evaluation",
+			compiler: {},
+			hint: "the official Tamagui compiler was detected but did not evaluate the discovered project config",
+		},
+	] as const)("fails closed for a discovered config with $name", async ({ compiler, hint }) => {
+		const adapter = createTamaguiAdapter({
+			moduleLoader: {
+				async importPackage<T>() {
+					return compiler as T | undefined;
+				},
+				async importFile() {
+					return undefined;
+				},
+			},
+		});
+		const config = await adapter.loadConfigAsync?.({
+			file: "src/App.tsx",
+			source: "",
+			root: "/project",
+			readFile: (file) => (file.endsWith("tamagui.config.ts") ? "export default {};" : undefined),
+			listFiles: () => ["/project/tamagui.config.ts"],
+		});
+
+		expect(config?.values.officialCompiler).toBe(
+			compiler === undefined ? "unavailable" : "available",
+		);
+		expect(config?.residuals).toEqual([
+			expect.objectContaining({
+				kind: "configuration",
+				text: "Tamagui project configuration",
+				hint,
+			}),
+		]);
+	});
+
 	test("converts a documented static styled definition without inventing defaults", () => {
 		const source = [
 			'import { View, styled } from "@tamagui/core";',

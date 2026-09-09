@@ -1,5 +1,6 @@
 import { CodemodCallPatternFormTag } from "../identifiers.ts";
 import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
+import { AdapterEvidence } from "../adapter-evidence.ts";
 import type {
 	AdapterConfigContext,
 	AdapterParseContext,
@@ -286,13 +287,25 @@ export function createTamaguiAdapter(
 								? undefined
 								: await moduleLoader.importPackage("@tamagui/static", context.root);
 						const fallback = config(CodemodAdapterId.Tamagui, context);
-						return {
-							...fallback,
-							values: {
-								...fallback.values,
-								officialCompiler: loaded === undefined ? "unavailable" : "available",
-							},
+						const values = {
+							...fallback.values,
+							officialCompiler: loaded === undefined ? "unavailable" : "available",
 						};
+						const configFiles = (
+							Array.isArray(fallback.values.configFiles) ? fallback.values.configFiles : []
+						).filter((file): file is string => typeof file === "string");
+						const withCompiler = {
+							...fallback,
+							values,
+						};
+						if (configFiles.length === 0) return withCompiler;
+						return AdapterEvidence.configurationFailure(
+							withCompiler,
+							"Tamagui project configuration",
+							loaded === undefined
+								? "the official @tamagui/static compiler is unavailable for a discovered config"
+								: "the official Tamagui compiler was detected but did not evaluate the discovered project config",
+						);
 					},
 				}),
 		parse: parseTamaguiStyles,
