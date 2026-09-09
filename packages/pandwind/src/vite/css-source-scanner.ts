@@ -9,7 +9,7 @@ import type {
 	CssSourceInspection,
 	CssSourceScanner,
 } from "./css-extraction-contracts.ts";
-import { NodeKind } from "../ast-node-kind.ts";
+import { ImportKindTag, NodeKind } from "../ast-node-kind.ts";
 import {
 	findReactStrictDomBindings,
 	isReactStrictDomCreateCall,
@@ -27,12 +27,14 @@ interface ImportNode extends OxcNode {
 	end?: number;
 	source?: { value?: string };
 	specifiers?: OxcSpecifier[];
+	importKind?: string;
 }
 
 interface OxcSpecifier {
 	type: string;
 	imported?: { name?: string };
 	local?: { name?: string };
+	importKind?: string;
 }
 
 interface CallNode extends OxcNode {
@@ -75,6 +77,20 @@ const isMemberCall = (callee: OxcNode | null, names: ReadonlySet<string>): boole
 	);
 };
 
+/**
+ * A matched CSS module may export its carrier under any value name, such as
+ * `untypedCss`. Factory imports are deliberately excluded because their
+ * arguments describe configuration rather than style declarations.
+ */
+const isCssCarrierImport = (declaration: ImportNode, specifier: OxcSpecifier): boolean => {
+	if (declaration.importKind === ImportKindTag.Type || specifier.importKind === ImportKindTag.Type)
+		return false;
+	if (specifier.type === NodeKind.ImportDefaultSpecifier) return true;
+	if (specifier.type !== NodeKind.ImportSpecifier) return false;
+	const imported = specifier.imported?.name;
+	return typeof imported === "string" && !imported.startsWith("create");
+};
+
 const callKind = (
 	callee: OxcNode | null,
 	names: ReadonlySet<string>,
@@ -104,13 +120,7 @@ const collectNames = (program: OxcNode, matchers: readonly (string | RegExp)[]):
 		for (const specifier of declaration.specifiers ?? []) {
 			const local = specifier.local?.name;
 			if (typeof local !== "string") continue;
-			if (
-				specifier.type === NodeKind.ImportDefaultSpecifier ||
-				(specifier.type === NodeKind.ImportSpecifier &&
-					(specifier.imported?.name === "css" || specifier.imported?.name === "dcss"))
-			) {
-				names.add(local);
-			}
+			if (isCssCarrierImport(declaration, specifier)) names.add(local);
 		}
 	});
 	for (const name of findReactStrictDomBindings(program).cssNames) names.add(name);

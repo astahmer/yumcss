@@ -227,6 +227,18 @@ test("findCssImports collects named, default and aliased css bindings", () => {
 	);
 });
 
+test("findCssImports accepts named carriers and ignores factories and type imports", () => {
+	const code = `
+		import { createCss as makeCss, untypedCss } from "./css";
+		import type { CssFn } from "./css";
+		import { createDesignCss, dcss as design } from "./design";
+	`;
+
+	expect(scan(["css", "design"]).findImports(code, "app.tsx")).toEqual(
+		new Set(["untypedCss", "design"]),
+	);
+});
+
 test("the CSS scanner ignores stylesheet and virtual module ids", () => {
 	const scanner = createCssExtractionService({ matchers: ["css"], preset: examplePreset }).scanner;
 	const source = 'import { css } from "./design"; css({ color: "red" });';
@@ -603,6 +615,38 @@ const relevantCss = (css: string, markers: readonly string[]): string =>
 		.split("\n")
 		.filter((line) => markers.some((marker) => line.includes(marker)))
 		.join("\n");
+
+test("pandwindCssVite extracts carriers exported under non-css names", () => {
+	const dir = makeProject({
+		"src/css.ts":
+			'import { createCss } from "pandwind/css"; export const untypedCss = createCss();',
+		"src/app.tsx": `
+			import { untypedCss } from "./css";
+			export const text = untypedCss.class({
+				color: "var(--demo-accent)",
+				padding: "var(--demo-gap)",
+				border: "1px solid var(--demo-accent)",
+			});
+		`,
+	});
+
+	try {
+		const plugin = pandwindCssVite(examplePreset, { root: dir });
+		const source = readFileSync(join(dir, "src/app.tsx"), "utf8");
+		const transformed = (plugin.transform as (code: string, id: string) => { code: string } | null)(
+			source,
+			join(dir, "src/app.tsx"),
+		);
+		const generated = loadGenerated(plugin);
+
+		expect(transformed?.code).not.toContain("untypedCss.class(");
+		expect(generated).toContain("color:var(--demo-accent)");
+		expect(generated).toContain("padding:var(--demo-gap)");
+		expect(generated).toContain("border:1px solid var(--demo-accent)");
+	} finally {
+		rmSync(dir, { recursive: true, force: true });
+	}
+});
 
 test("pandwindCssVite generates the stylesheet from scanned files", () => {
 	const dir = makeProject({
