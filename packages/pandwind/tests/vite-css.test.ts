@@ -768,6 +768,43 @@ test("static extraction includes and rewrites literal css groups", () => {
 	}
 });
 
+test("static extraction emits css.input group rules for createCss", () => {
+	const dir = makeProject({
+		"src/css.ts": 'import { createCss } from "pandwind/css"; export const css = createCss();',
+		"src/app.tsx": `
+			import { css } from "./css";
+			type ButtonInput = { background: string };
+			const styles = css.group({
+				button: {
+					$input: {} as ButtonInput,
+					display: "block",
+					backgroundColor: css.input("background"),
+					padding: "1rem",
+				},
+			});
+			export const App = ({ background }: ButtonInput) => (
+				<button {...css.props(styles.button({ background }))} />
+			);
+		`,
+	});
+	try {
+		const plugin = pandwindCssVite(examplePreset, { root: dir });
+		const source = readFileSync(join(dir, "src/app.tsx"), "utf8");
+		const transformed = (plugin.transform as (code: string, id: string) => { code: string } | null)(
+			source,
+			join(dir, "src/app.tsx"),
+		);
+		const generated = loadGenerated(plugin);
+
+		expect(transformed?.code).toContain("css.group({");
+		expect(generated).toContain("background-color:var(--background)");
+		expect(generated).toContain("display:block");
+		expect(generated).toContain("padding:1rem");
+	} finally {
+		rmSync(dir, { recursive: true, force: true });
+	}
+});
+
 test("static direct factory calls are marked pure for bundler elimination", () => {
 	const code = `
 		import { createCss } from "../../src/css/index.ts";

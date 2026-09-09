@@ -1,5 +1,5 @@
 import { useState, type PropsWithChildren } from "react";
-import { css, runtimeCss, untypedCss } from "../css";
+import { css, untypedCss } from "../css";
 import { cx } from "../cx";
 import { tw } from "../tw";
 
@@ -8,19 +8,22 @@ type DynamicButtonInput = {
 	padding: string;
 };
 
-const dynamicButtonGroup = runtimeCss.group({
+// With pandwindCssVite, createCss is enough for typed input groups: the
+// structural `var(--...)` rules are extracted at build time and only the
+// changing values travel through the host style prop.
+const dynamicButtonGroup = css.group({
 	button: {
 		$input: {} as DynamicButtonInput,
 		display: "block",
-		backgroundColor: runtimeCss.input("background"),
+		backgroundColor: css.input("background"),
 		color: "$white",
-		padding: runtimeCss.input("padding"),
+		padding: css.input("padding"),
 		borderRadius: "md",
 	},
 });
 
 function DynamicInputButton({ children, ...input }: PropsWithChildren<DynamicButtonInput>) {
-	const props = runtimeCss.props(dynamicButtonGroup.button(input));
+	const props = css.props(dynamicButtonGroup.button(input));
 	return (
 		<button type="button" className={props.className} style={props.style}>
 			{children}
@@ -40,7 +43,8 @@ const semanticSurfaceClass = untypedCss.class({ backgroundColor: "var(--color-su
  *
  * - state selects finite `tw()` values, so both classes remain discoverable;
  * - `css.vars()` carries a user value through an inline custom property; and
- * - a runtime-sheet group keeps its class stable while its inputs change.
+ * - a typed css.input group keeps its class stable while its inputs change;
+ *   pandwindCssVite emits the structural rules without a runtime sheet.
  */
 export function DynamicApp() {
 	const [tone, setTone] = useState<Tone>("blue");
@@ -144,7 +148,7 @@ export function DynamicApp() {
 					css.vars() keeps the selected color in an inline custom property.
 				</p>
 				<DynamicInputButton background={accent} padding={`${padding}px ${padding * 2}px`}>
-					createRuntimeCss() typed input group
+					createCss() typed input group
 				</DynamicInputButton>
 			</div>
 

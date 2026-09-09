@@ -16,7 +16,8 @@ import type {
 	ExtractedCssStyle,
 } from "./css-extraction-contracts.ts";
 import type { CssSourceScanner } from "./css-extraction-contracts.ts";
-import { NodeKind } from "../ast-node-kind.ts";
+import { NodeKind, PropertyKindTag } from "../ast-node-kind.ts";
+import { cssVar } from "../lib/utils.ts";
 import { findReactStrictDomBindings, isReactStrictDomCreateCall } from "./css-react-strict-dom.ts";
 
 /** Resolves literal style calls into artifacts while preserving source provenance. */
@@ -26,6 +27,89 @@ interface CallNode extends OxcNode {
 	callee: OxcNode | null;
 	arguments: unknown[];
 }
+
+interface PropertyNode extends OxcNode {
+	key?: OxcNode;
+	value?: OxcNode;
+	kind?: string;
+	computed?: boolean;
+	method?: boolean;
+	shorthand?: boolean;
+}
+
+type EvaluatedValue = {
+	readonly ok: true;
+	readonly value: unknown;
+	readonly hasInput: boolean;
+};
+
+const propertyName = (property: PropertyNode): string | undefined => {
+	const key = property.key;
+	if (key?.type === NodeKind.Identifier) return (key as { name?: string }).name;
+	if (key?.type === NodeKind.Literal) {
+		const value = (key as { value?: unknown }).value;
+		return typeof value === "string" ? value : undefined;
+	}
+	return undefined;
+};
+
+const inputName = (node: OxcNode | undefined, names: ReadonlySet<string>): string | undefined => {
+	if (node?.type !== NodeKind.CallExpression) return undefined;
+	const call = node as CallNode;
+	const callee = call.callee;
+	if (callee?.type !== NodeKind.MemberExpression) return undefined;
+	const object = (callee as { object?: OxcNode | null }).object;
+	const property = (callee as { property?: { name?: string } | null }).property;
+	if (
+		object?.type !== NodeKind.Identifier ||
+		!names.has((object as { name?: string }).name ?? "") ||
+		property?.name !== "input" ||
+		call.arguments.length !== 1
+	)
+		return undefined;
+	const value = evalLiteral(call.arguments[0] as never);
+	return typeof value === "string" ? value : undefined;
+};
+
+/**
+ * Evaluate a dynamic group style while replacing its `css.input()` markers
+ * with the value-independent CSS variable references used by the runtime
+ * group compiler. `$input` is a TypeScript-only input contract and never
+ * belongs in the generated stylesheet.
+ */
+const evaluateInputStyle = (
+	node: OxcNode | undefined,
+	names: ReadonlySet<string>,
+): EvaluatedValue | undefined => {
+	const name = inputName(node, names);
+	if (name !== undefined) {
+		return { ok: true, value: `var(${cssVar(name)})`, hasInput: true };
+	}
+	if (node?.type === NodeKind.ObjectExpression) {
+		const value: Record<string, unknown> = {};
+		let hasInput = false;
+		for (const child of (node as { properties?: PropertyNode[] }).properties ?? []) {
+			if (
+				child.type !== NodeKind.Property ||
+				child.kind !== PropertyKindTag.Init ||
+				child.computed === true ||
+				child.method === true ||
+				child.shorthand === true
+			)
+				return undefined;
+			const key = propertyName(child);
+			if (key === undefined) return undefined;
+			if (key === "$input") continue;
+			const evaluated = evaluateInputStyle(child.value, names);
+			if (evaluated === undefined) return undefined;
+			hasInput ||= evaluated.hasInput;
+			value[key] = evaluated.value;
+		}
+		return { ok: true, value, hasInput };
+	}
+	const value = evalLiteral(node as never);
+	return value === undefined ? undefined : { ok: true, value, hasInput: false };
+};
 
 export class DesignCssArtifactExtractor implements CssArtifactExtractor {
 	private readonly scanner: CssSourceScanner;
@@ -59,6 +143,13 @@ export class DesignCssArtifactExtractor implements CssArtifactExtractor {
 				return;
 			}
 			for (const argument of call.arguments) {
+				if (kind === "css.group") {
+					const groupStyles = this.extractInputGroupStyles(argument, names);
+					if (groupStyles !== undefined) {
+						for (const style of groupStyles) this.pushStyle(sources, code, id, call, kind, style);
+						continue;
+					}
+				}
 				const literal = evalLiteral(argument as never);
 				if (typeof literal !== "object" || literal === null) {
 					this.pushPartialLiteral(sources, code, id, call, kind, argument);
@@ -86,6 +177,34 @@ export class DesignCssArtifactExtractor implements CssArtifactExtractor {
 		});
 		for (const pattern of this.patterns) sources.push(...pattern.extract(code, id, this.preset));
 		return sources;
+	}
+
+	/**
+	 * Build stylesheet candidates for `css.group()` definitions that use
+	 * `css.input()`. The group remains a runtime function, but its structural
+	 * `var(--name)` declarations can be extracted just like `css.vars()`.
+	 */
+	private extractInputGroupStyles(
+		argument: unknown,
+		names: ReadonlySet<string>,
+	): readonly Record<string, unknown>[] | undefined {
+		const node = argument as OxcNode | undefined;
+		if (node?.type !== NodeKind.ObjectExpression) return undefined;
+		const styles: Array<Record<string, unknown>> = [];
+		let hasInput = false;
+		for (const property of (node as { properties?: PropertyNode[] }).properties ?? []) {
+			if (property.type !== NodeKind.Property) continue;
+			const evaluated = evaluateInputStyle(property.value, names);
+			if (
+				evaluated === undefined ||
+				typeof evaluated.value !== "object" ||
+				evaluated.value === null
+			)
+				continue;
+			hasInput ||= evaluated.hasInput;
+			styles.push(evaluated.value as Record<string, unknown>);
+		}
+		return hasInput ? styles : undefined;
 	}
 
 	extractFile(code: string, id: string): CssFileExtraction {

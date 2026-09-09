@@ -335,9 +335,24 @@ const css = createCss(
 );
 ```
 
-It is the "better stylex + panda" half of the repo: no runtime style
-resolution, merged at object-build time via property priorities. See
+It is the "better stylex + panda" half of the repo: `createCss()` compiles
+styles at call time but does not own a stylesheet or inject a style element.
+Use it with `pandwindCssVite()` so literal calls, `css.vars()`, and
+`css.input()` group rules are emitted at build time. See
 `packages/pandwind/tests/css-*.test.ts` for the behavior contract.
+
+### `createCss()` and `createRuntimeCss()`
+
+`createCss(preset)` is the default application API. It returns the complete
+typed CSS surface and leaves stylesheet delivery to the build extractor. Its
+dynamic `css.vars()` and `css.input()` outputs are usable without a runtime
+sheet when the extractor emits their stable rules.
+
+`createRuntimeCss(preset)` from `pandwind/css/runtime` has the same CSS methods
+plus an attached `RuntimeSheet`. It is for runtime-only packages, runtime
+created class rules, or SSR hosts that need to collect and hydrate CSS without
+a generated CSS entry. It adds runtime sheet registration and should be an
+explicit choice rather than the default for a Vite application.
 
 ### Design css() — the Figma-inspector vocabulary
 
@@ -396,11 +411,13 @@ plugins: [pandwindCssVite(examplePreset), ...];
 import "pandwind:css";
 ```
 
-The plugin scans source files (like Tailwind's own scanner, and like `pandwind-codemod tw scan`
-for the safelist) for literal `css(...)` calls, resolves them through the
-design layer and serves the deduped CSS — tokens plus atomic rules. Dynamic
-calls keep working at runtime but are not extracted (same constraint as
-dynamic class names in plain Tailwind).
+The plugin scans source files (like Tailwind's own scanner, and like
+`pandwind-codemod tw scan` for the safelist) for literal `css(...)` calls,
+resolves them through the design layer and serves the deduped CSS — tokens plus
+atomic rules. It also emits the stable `var(...)` rules for `css.vars()` and
+`css.input()` groups; changing values stay in inline custom properties.
+Unknown dynamic calls keep their runtime fallback and need an explicit runtime
+sheet or a `css.vars()` carrier.
 
 ## `cx()` — merge everything, last-wins
 

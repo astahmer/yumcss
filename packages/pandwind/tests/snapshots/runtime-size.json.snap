@@ -29,11 +29,11 @@
   },
   "cx": {
     "min": 12628,
-    "gz": 5317
+    "gz": 5318
   },
   "all (css+tw+cx)": {
     "min": 15309,
-    "gz": 6286
+    "gz": 6285
   },
   "stylesheet generator (build-time only)": {
     "min": 22276,

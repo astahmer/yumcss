@@ -11,10 +11,10 @@ sidebar:
 > [design css()](/api/design-css/) if you want the ~30-prop Figma vocabulary
 > on top of this same engine. This page is the engine underneath both.
 
-`createCss(preset)` returns a typed `css()` that flattens a style object into
-hashed atomic classes, with design tokens, property-priority merging, variant
-conditions and a `$input` escape hatch for dynamic values. `createCss()` remains
-available as an intentionally loose convenience form.
+`createCss(preset)` returns the preferred typed `css()` that flattens a style
+object into hashed atomic classes, with design tokens, property-priority
+merging, variant conditions and a `$input` escape hatch for dynamic values.
+`createCss()` remains available as an intentionally loose convenience form.
 
 ```ts
 import { createCss } from "pandwind/css";
@@ -29,9 +29,9 @@ const css = createCss(
 ```
 
 It is the "better stylex + panda" half of the repo: literal calls can be
-extracted at build time, while dynamic calls use the runtime style resolver
-and its ordered sheet contract. See `packages/pandwind/tests/css-*.test.ts`
-for the behavior contract.
+extracted at build time, while dynamic values can use inline custom properties
+or an explicit runtime sheet. See `packages/pandwind/tests/css-*.test.ts` for
+the behavior contract.
 
 ## The surface at a glance — return shapes
 
@@ -46,7 +46,7 @@ they differ only in what they hand back:
 | `css.raw({ ... })`            | `{ color: "red" }` — plain style object, untouched                                  | escape hatch _out_ of the atomic pipeline: inline-`style` targets (React Native, opentui), or forcing a call to stay invisible to the vite extractor |
 | `css.props(...)`              | `{ className, style }` — spread onto an element                                     | combining compiled maps with `vars()` outputs in one shot                                                                                            |
 | `css.group({ btn: { ... } })` | named map of compiled outputs                                                       | pre-compiling a set of related styles behind one name                                                                                                |
-| `css.input(name)`             | `"input>$name"` marker                                                              | referencing a `$input` value inside a dynamic group                                                                                                  |
+| `css.input(name)`             | `"input>$name"` marker                                                              | referencing a `$input` value inside a dynamic group; the Vite extractor emits its structural `var(...)` rule                                      |
 
 Notes that hold for all of them:
 
@@ -119,6 +119,55 @@ inline `style` objects instead of classes (React Native, opentui), or when
 you explicitly want a call to stay invisible to `pandwindCssVite`. You lose
 dedup/extraction but keep preset token resolution and typing.
 
+### `createCss()` versus `createRuntimeCss()`
+
+Use `createCss(preset)` by default. It owns the typed style compiler and returns
+classes, declaration maps, and inline variable props, but it does not create a
+style element or mutate a stylesheet. In a built web application,
+`pandwindCssVite(preset)` or the equivalent unplugin extracts the structural
+CSS. This includes the value-independent rules for `css.vars()` and
+`css.input()` groups, while the changing values remain in the returned inline
+custom properties.
+
+```tsx
+const css = createCss(preset);
+
+const button = css.group({
+  button: {
+    $input: {} as { background: string },
+    backgroundColor: css.input("background"),
+    color: "$white",
+  },
+});
+
+declare const runtimeColor: string;
+const props = css.props(button.button({ background: runtimeColor }));
+<button {...props} />;
+```
+
+`createRuntimeCss(preset)` from `pandwind/css/runtime` exposes the same
+`CssFn` methods and adds a `RuntimeSheet`. It is an explicit runtime CSS
+fallback, not a smaller or different style API: calls register their atomic
+and variable rules in that sheet, which can auto-mount in a browser or be
+serialized and hydrated by a host. Use it for runtime-only packages without a
+build-time CSS entry, genuinely runtime-created class rules, or code that must
+collect a sheet during SSR. It adds the sheet and its registration machinery to
+the runtime bundle, so a normal Vite application should use `createCss` with
+`css.vars()` / `css.input()` instead.
+
+```ts
+import { createRuntimeCss } from "pandwind/css/runtime";
+
+const runtimeCss = createRuntimeCss(preset);
+const className = runtimeCss.class({ color: getColorAtRuntime() });
+const cssTextForSsr = runtimeCss.sheet.css();
+```
+
+Without either a generated stylesheet or a runtime sheet, `createCss()` still
+returns the correct class and inline variable data, but a browser has no CSS
+rule to apply. This is why `createRuntimeCss()` exists; it is not required for
+dynamic values when the build extractor is present.
+
 ## Static extraction (`pandwindCssVite`)
 
 The css() classes are hashed deterministically; the stylesheet is generated
@@ -140,9 +189,11 @@ import "pandwind:css";
 
 The plugin scans source files (like Tailwind's own scanner) for literal
 `css(...)` calls, resolves them through the design layer and serves the
-deduped CSS — tokens plus atomic rules. Dynamic calls keep working at runtime
-but are not extracted (same constraint as dynamic class names in plain
-Tailwind), with one refinement: when a dynamic argument is provably **finite**
+deduped CSS — tokens plus atomic rules. `css.vars()` and `css.input()` groups
+contribute their stable structural rules while their runtime values stay
+inline. Unknown dynamic calls keep working at runtime but are not extracted
+(same constraint as dynamic class names in plain Tailwind), with one refinement:
+when a dynamic argument is provably **finite**
 (a ternary, union, array, or set of known constants), the plugin registers
 every possible class the call may produce, so runtime selection still has
 CSS. Only verified classes are registered; anything the design system cannot

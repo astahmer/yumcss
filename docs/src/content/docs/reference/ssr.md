@@ -25,6 +25,13 @@ Static rules still belong in the generated CSS entry, while dynamic values can
 use the inline custom properties returned by `css.vars()` or an adapter-owned
 runtime sheet.
 
+`createCss(preset)` is the normal choice when the application has a build-time
+CSS entry: `pandwindCssVite()` emits the stable rules for `css.vars()` and
+`css.input()` while the rendered values remain serializable inline props.
+`createRuntimeCss(preset)` is the explicit choice when the host must collect
+atomic rules during rendering, has no generated CSS entry, or needs the
+attached `RuntimeSheet` for SSR snapshot extraction and hydration.
+
 ## Integration matrix
 
 | Host/integration                             | Static extraction                                     | Dynamic values        | Proof level                                                               |

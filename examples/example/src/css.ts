@@ -9,8 +9,11 @@ import { examplePreset } from "@pandwind/example-preset";
 export const css = createCss(examplePreset);
 
 /**
- * The runtime-sheet variant. Use this when a style group carries values that
- * are supplied at render time through `input()`.
+ * The explicit runtime-sheet variant. Prefer `css` above in applications
+ * using `pandwindCssVite`: `css.vars()` and `css.input()` keep runtime values
+ * inline while the plugin emits their value-independent rules. Use this
+ * variant when code must register CSS without a build-time extractor, or when
+ * the caller needs the `sheet` for SSR extraction, hydration, or inspection.
  */
 export const runtimeCss = createRuntimeCss(examplePreset);
 

@@ -34,13 +34,13 @@ const staticGroups = css.group({
 		padding: 4,
 	},
 });
-const runtimeButtonGroup = runtimeCss.group({
+const inputButtonGroup = css.group({
 	button: {
 		$input: {} as RuntimeButtonInput,
-		backgroundColor: runtimeCss.input("background"),
+		backgroundColor: css.input("background"),
 		borderRadius: "md",
 		color: "$white",
-		padding: runtimeCss.input("padding"),
+		padding: css.input("padding"),
 	},
 });
 const rawStyle = untypedCss.raw({
@@ -129,12 +129,13 @@ export function ApiCatalogApp() {
 	const [accent, setAccent] = useState("#0284c7");
 	const [runtimePadding, setRuntimePadding] = useState(12);
 	const varsProps = css.props(css.vars({ color: accent }));
-	const runtimeProps = runtimeCss.props(
-		runtimeButtonGroup.button({
+	const inputProps = css.props(
+		inputButtonGroup.button({
 			background: accent,
 			padding: `${runtimePadding}px ${runtimePadding * 2}px`,
 		}),
 	);
+	const runtimeClass = runtimeCss.class({ outlineColor: accent });
 
 	return (
 		<section
@@ -222,9 +223,9 @@ export function ApiCatalogApp() {
 				</ApiCard>
 
 				<ApiCard
-					name="createRuntimeCss() + input()"
-					call={`runtimeCss.group({ button: { $input, padding: runtimeCss.input("padding") } })`}
-					detail="a typed runtime group keeps its input contract and registers a sheet rule"
+					name="createCss() + input()"
+					call={`css.group({ button: { $input, padding: css.input("padding") } })`}
+					detail="a typed input group keeps its class stable; pandwindCssVite extracts its structural var rules"
 				>
 					<label className={tw({ flex: "col", gap: "2", textSize: "sm" })}>
 						Runtime padding: {runtimePadding}px
@@ -236,10 +237,20 @@ export function ApiCatalogApp() {
 							value={runtimePadding}
 							onChange={(event) => setRuntimePadding(Number(event.currentTarget.value))}
 						/>
-						<button type="button" {...runtimeProps}>
-							Typed runtime button
+						<button type="button" {...inputProps}>
+							Typed input group
 						</button>
 					</label>
+				</ApiCard>
+
+				<ApiCard
+					name="createRuntimeCss()"
+					call={`const runtimeCss = createRuntimeCss(preset); runtimeCss.class({ outlineColor: value })`}
+					detail="use when runtime code must register CSS itself; prefer css.vars() for unbounded values in a built app"
+				>
+					<div className={catalogCx(runtimeClass, tw({ rounded: "md", border: "2", p: "3" }))}>
+						This outline rule is registered through the runtime sheet.
+					</div>
 				</ApiCard>
 
 				<ApiCard

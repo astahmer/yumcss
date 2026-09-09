@@ -1,4 +1,5 @@
 import { describe, expect, test } from "vitest";
+import { createCss } from "../src/css/create-css.ts";
 import {
 	createRuntimeCss,
 	createRuntimeDesignCss,
@@ -120,6 +121,29 @@ describe("runtime CSS-in-JS sheet", () => {
 		expect(props.style).toEqual({ "--background": "#0284c7" });
 		expect(sheet.css()).toContain("background-color:var(--background)");
 		expect(props.className).toBeDefined();
+	});
+
+	test("createCss and createRuntimeCss share input output; only runtime adds a sheet", () => {
+		const css = createCss(examplePreset);
+		const sheet = createRuntimeSheet({ autoMount: false });
+		const runtimeCss = createRuntimeCss(examplePreset, { sheet });
+		const createInputGroup = (engine: typeof css) =>
+			engine.group({
+				button: {
+					$input: { background: {} as string },
+					backgroundColor: engine.input("background"),
+					color: "$white",
+				},
+			});
+
+		const staticProps = css.props(createInputGroup(css).button({ background: "#0284c7" }));
+		const runtimeProps = runtimeCss.props(
+			createInputGroup(runtimeCss).button({ background: "#0284c7" }),
+		);
+
+		expect("sheet" in css).toBe(false);
+		expect(runtimeProps).toEqual(staticProps);
+		expect(sheet.css()).toContain("background-color:var(--background)");
 	});
 
 	test("design css shares the preset-bound runtime path", () => {
