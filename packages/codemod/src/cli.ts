@@ -27,7 +27,6 @@ import {
 import { PACKAGE_INSTALLER, type PackageInstallResult } from "./package-installer.ts";
 import {
 	AdapterDependencyKindTag,
-	type AdapterFileChange,
 	type AdapterDependencies,
 	type AdapterProjectBindings,
 } from "./swap/adapter-contract.ts";
@@ -116,30 +115,6 @@ function applyFileChanges(
 	files: readonly { readonly path: string; readonly content: string }[],
 ): void {
 	for (const file of files) writeFileSync(resolve(root, file.path), file.content);
-}
-
-/** Apply a project-level deletion to the migrated source before it is written. */
-function applyProjectedFileChange(
-	source: string,
-	migrated: string,
-	change: AdapterFileChange | undefined,
-): string {
-	if (change?.expectedContent !== source) return migrated;
-	const remaining = new Map<string, number>();
-	for (const line of change.content.split(/\r?\n/u))
-		remaining.set(line, (remaining.get(line) ?? 0) + 1);
-	let output = migrated;
-	for (const line of source.split(/\r?\n/u)) {
-		const count = remaining.get(line) ?? 0;
-		if (count > 0) {
-			remaining.set(line, count - 1);
-			continue;
-		}
-		if (line.trim() === "") continue;
-		const escaped = line.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-		output = output.replace(new RegExp(`^${escaped}(?:\\r?\\n|$)`, "mu"), "");
-	}
-	return output;
 }
 
 type CliOptions = Readonly<Record<string, unknown>>;
@@ -655,7 +630,10 @@ async function runAdapterRoute(
 			if (args.reportFormat !== "json") console.log(`${relative}: no external adapter detected`);
 			continue;
 		}
-		const result = await swapImport.STYLE_MIGRATION_USE_CASE.runAsync(source, {
+		const projectFileChange = projectFileChangeByPath.get(relative);
+		const migrationSource =
+			projectFileChange?.expectedContent === source ? projectFileChange.content : source;
+		const result = await swapImport.STYLE_MIGRATION_USE_CASE.runAsync(migrationSource, {
 			from,
 			to: target,
 			file: relative,
@@ -727,16 +705,11 @@ async function runAdapterRoute(
 			);
 		validatePlannedGeneratedFiles(root, result.generatedFiles, plannedGeneratedFiles, args.force);
 		validatePlannedFileChanges(root, result.fileChanges, plannedFileChanges);
-		const projectedCode = applyProjectedFileChange(
-			source,
-			result.code,
-			projectFileChangeByPath.get(relative),
-		);
 		pendingWrites.push({
 			file,
 			outputFile,
 			relative,
-			result: projectedCode === result.code ? result : { ...result, code: projectedCode },
+			result,
 		});
 		if (args.dryRun && args.reportFormat !== "json")
 			console.log(

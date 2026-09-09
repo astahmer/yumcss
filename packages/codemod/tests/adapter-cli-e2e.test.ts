@@ -155,6 +155,57 @@ describe("adapter migration e2e matrix", () => {
 		}
 	}, 120_000);
 
+	test("composes Next host changes with a Pandwind target alias", () => {
+		const directory = mkdtempSync(join(repoRoot, ".tmp-codemod-next-"));
+		mkdirSync(join(directory, "app"), { recursive: true });
+		const sourceFile = join(directory, "App.tsx");
+		writeFileSync(
+			join(directory, "package.json"),
+			JSON.stringify({
+				name: "codemod-next-fixture",
+				private: true,
+				dependencies: { next: "15.0.0", "styled-components": "6.0.0" },
+			}),
+		);
+		writeFileSync(join(directory, "next.config.mjs"), "const config = {};\nexport default config;\n");
+		writeFileSync(
+			join(directory, "app/layout.tsx"),
+			"export default function Layout() { return <div />; }\n",
+		);
+		writeFileSync(
+			sourceFile,
+			'import styled from "styled-components";\nexport const Card = styled.div`color: red;`;\n',
+		);
+		try {
+			execFileSync(
+				"nub",
+				[
+					"src/cli.ts",
+					"migrate",
+					"--root",
+					directory,
+					`--from=${CodemodAdapterId.StyledComponents}`,
+					"--to=pandwind-css",
+					"--no-install",
+					"--report=json",
+					sourceFile,
+				],
+				{ cwd: codemodRoot, encoding: "utf8" },
+			);
+			expect(readFileSync(join(directory, "pandwind/css.ts"), "utf8")).toContain(
+				'import "pandwind-css.css";',
+			);
+			expect(readFileSync(join(directory, "app/layout.tsx"), "utf8")).toContain(
+				'import "pandwind-css.css";',
+		);
+			expect(readFileSync(join(directory, "next.config.mjs"), "utf8")).toContain(
+				"pandwindWebpackCss",
+			);
+		} finally {
+			rmSync(directory, { recursive: true, force: true });
+		}
+	}, 120_000);
+
 	test.each(catalog.adapters.map((adapter) => adapter.id))(
 		"executes the %s -> Pandwind use case with safe source preservation",
 		async (sourceAdapter) => {
