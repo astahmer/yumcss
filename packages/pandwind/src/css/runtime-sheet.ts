@@ -41,6 +41,9 @@ export function createRuntimeSheet(
 	const serializer = ports.serializer ?? new SemanticRuleSerializer();
 	const canonicalizer = ports.canonicalizer ?? new SemanticRuleCanonicalizer(serializer);
 	const sink = ports.sink ?? new DomStyleElementSink(options);
+	const hasDocument =
+		options.document !== undefined || (globalThis as { document?: unknown }).document !== undefined;
+	const autoMount = options.autoMount ?? (ports.sink !== undefined || hasDocument);
 	let tokens = "";
 	let generation = 0;
 	let renderedGeneration = -1;
@@ -71,7 +74,7 @@ export function createRuntimeSheet(
 	};
 	const render = (): void => sink.update(css());
 	const refresh = (): void => {
-		if (options.autoMount !== false) sink.mount(css());
+		if (autoMount) mounted = sink.mount(css());
 		else if (mounted) render();
 	};
 	const register = (rules: readonly RuntimeRule[]): void => {
