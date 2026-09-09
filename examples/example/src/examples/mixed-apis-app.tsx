@@ -1,10 +1,7 @@
-import { AtomicApp } from "../atomic-app";
-import { CssInJsApp } from "../css-in-js-app";
 import { DesignApp } from "../design-app";
 import { DogfoodApp } from "../dogfood-app";
 import { ApiCatalogApp } from "./api-catalog-app";
 import { DynamicApp } from "./dynamic-app";
-import { TailwindApp } from "./tailwind-app";
 import { ThemesApp } from "./themes-app";
 import { TypedTwApp } from "./typed-tw-app";
 import { TypedComponentsApp } from "./typed-components-app";
@@ -18,13 +15,10 @@ import { TypedComponentsApp } from "./typed-components-app";
 export function MixedApisApp() {
 	return (
 		<>
-			<TailwindApp />
 			<TypedTwApp />
 			<DynamicApp />
 			<TypedComponentsApp />
 			<ThemesApp />
-			<AtomicApp />
-			<CssInJsApp />
 			<DesignApp />
 			<DogfoodApp />
 			<ApiCatalogApp />

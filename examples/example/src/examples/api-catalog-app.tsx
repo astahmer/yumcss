@@ -1,7 +1,7 @@
 import type { PropsWithChildren } from "react";
 import { useState } from "react";
 import { createCx } from "pandwind/cx";
-import { css, runtimeCss, untypedCss } from "../css";
+import { css, relaxedCss, runtimeCss, untypedCss } from "../css";
 import { css as designCss } from "../design";
 import { tw } from "../tw";
 
@@ -47,6 +47,11 @@ const rawStyle = untypedCss.raw({
 	backgroundColor: "#f9fafb",
 	border: "1px solid #e5e7eb",
 	padding: "8px 12px",
+});
+const relaxedStyle = relaxedCss.raw({
+	borderRadius: "10px",
+	color: "rebeccapurple",
+	padding: "12px",
 });
 const catalogCx = createCx({ css: designCss });
 const composedClassName = catalogCx(
@@ -269,7 +274,10 @@ export function ApiCatalogApp() {
 					<div className={tw({ flex: "col", gap: "2", textSize: "sm" })}>
 						<strong>Preset-bound in this page:</strong>
 						<code>{`css({ color: "$blue-600", padding: 8 })`}</code>
-						<span>Use the no-argument factory when an open style object is intentional.</span>
+						<div style={relaxedStyle}>
+							<strong>strict: false</strong> allows values such as <code>rebeccapurple</code> and
+							<code>10px</code> while keeping the preset's conditions.
+						</div>
 					</div>
 				</ApiCard>
 

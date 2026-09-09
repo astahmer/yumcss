@@ -60,6 +60,11 @@
 @source inline("px-4");
 @source inline("py-2");
 @source inline("mt-3");
+@source inline("bg-sky-600");
+@source inline("hover:bg-sky-700");
+@source inline("focus-visible:outline-2");
+@source inline("focus-visible:outline-sky-600");
+@source inline("focus-visible:outline-offset-2");
 @source inline("space-y-6");
 @source inline("shadow-lg");
 @source inline("ring-1");
@@ -69,12 +74,8 @@
 @source inline("px-1");
 @source inline("py-0.5");
 @source inline("font-mono");
-@source inline("bg-sky-600");
-@source inline("hover:bg-sky-700");
-@source inline("focus-visible:outline-2");
-@source inline("focus-visible:outline-sky-600");
-@source inline("focus-visible:outline-offset-2");
 @source inline("sm:flex");
 @source inline("sm:flex-row");
+@source inline("grow-1");
 @source inline("text-gray-500");
 @source inline("dark:text-gray-300");
