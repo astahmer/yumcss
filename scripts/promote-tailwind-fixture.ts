@@ -200,7 +200,7 @@ function createFixture(root: string, includePandwind: boolean): void {
 }
 
 export async function runTailwindInstalledProof(): Promise<TailwindInstalledProof> {
-	run("nub", ["run", "--filter", "pandwind", "build"], repositoryRoot);
+	run("pnpm", ["--filter", "pandwind", "run", "build"], repositoryRoot);
 	return withInstalledProofProject(
 		"pandwind-tailwind-installed-proof-",
 		async ({ sourceRoot, targetRoot }) => {

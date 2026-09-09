@@ -33,7 +33,7 @@ const check = (name, ok, detail = "") => {
 	if (!ok) failures++;
 };
 
-const server = spawn("nub", ["exec", "vite", "--port", String(PORT), "--strictPort"], {
+const server = spawn("pnpm", ["exec", "vite", "--port", String(PORT), "--strictPort"], {
 	cwd: new URL("..", import.meta.url).pathname,
 	stdio: ["ignore", "pipe", "pipe"],
 });

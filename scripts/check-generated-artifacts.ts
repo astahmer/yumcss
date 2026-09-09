@@ -171,7 +171,7 @@ const checkApp = (app: GeneratedApp): void => {
 
 try {
 	for (const app of apps) checkApp(app);
-	run("nub", ["run", "--filter", "playground", "editor:types:check"]);
+	run("pnpm", ["--filter", "playground", "run", "editor:types:check"]);
 	console.log("Generated Pandwind artifacts and playground declarations are fresh.");
 } catch (error) {
 	console.error(error instanceof Error ? error.message : error);

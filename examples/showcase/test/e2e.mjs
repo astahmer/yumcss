@@ -33,7 +33,7 @@ const PORT = 4670;
 const BASE_URL = `http://localhost:${PORT}/`;
 const TIMEOUT = 30_000;
 
-const server = spawn("nub", ["exec", "vite", "--port", String(PORT), "--strictPort"], {
+const server = spawn("pnpm", ["exec", "vite", "--port", String(PORT), "--strictPort"], {
 	cwd: new URL("..", import.meta.url).pathname,
 	stdio: "ignore",
 });

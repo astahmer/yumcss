@@ -186,7 +186,7 @@ function createFixture(root: string, includePandwind: boolean): void {
 }
 
 export async function runStyledComponentsInstalledProof(): Promise<StyledComponentsInstalledProof> {
-	run("nub", ["run", "--filter", "pandwind", "build"], repositoryRoot);
+	run("pnpm", ["--filter", "pandwind", "run", "build"], repositoryRoot);
 	return withInstalledProofProject(
 		"pandwind-styled-components-installed-proof-",
 		async ({ sourceRoot, targetRoot }) => {
