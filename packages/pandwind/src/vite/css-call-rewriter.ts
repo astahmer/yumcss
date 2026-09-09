@@ -5,7 +5,7 @@ import type { ClassNameStrategy } from "../css/class-name-strategy.ts";
 import type { CssCallRewriter, CssPreset, InlineCssResult } from "./css-extraction-contracts.ts";
 import { SOURCE_SCANNER_SERVICE } from "../source-scanner.ts";
 import type { StyleObject } from "../types/typings.ts";
-import { NodeKind } from "../ast-node-kind.ts";
+import { NodeKind, PropertyKindTag } from "../ast-node-kind.ts";
 
 /** Static rewrite port; unsupported or dynamic calls remain untouched. */
 interface CallNode extends OxcNode {
@@ -15,15 +15,52 @@ interface CallNode extends OxcNode {
 	arguments: unknown[];
 }
 
+export interface StaticCssCallRewriterOptions {
+	readonly transformDynamicClassName?: boolean;
+}
+
+interface PropertyNode extends OxcNode {
+	start?: number;
+	end?: number;
+	key?: OxcNode | null;
+	value?: OxcNode | null;
+	kind?: string;
+	computed?: boolean;
+	method?: boolean;
+	shorthand?: boolean;
+}
+
+interface SplitStyleArgument {
+	readonly staticProperties: readonly PropertyNode[];
+	readonly dynamicProperties: readonly PropertyNode[];
+}
+
+interface RangedNode extends OxcNode {
+	readonly start: number;
+	readonly end: number;
+}
+
+interface ClassNameHost {
+	readonly attribute: RangedNode;
+}
+
 export class StaticCssCallRewriter implements CssCallRewriter {
 	private readonly preset: CssPreset;
 	private readonly className: ClassNameStrategy | undefined;
+	private readonly transformDynamicClassName: boolean;
 	/** Var toggle keys introduced by carriers this rewriter emitted. */
 	private readonly varKeys = new Set<string>();
 
-	constructor(preset: CssPreset, className?: ClassNameStrategy) {
+	constructor(
+		preset: CssPreset,
+		className?: ClassNameStrategy,
+		options: StaticCssCallRewriterOptions = {},
+	) {
 		this.preset = preset;
 		this.className = className;
+		this.transformDynamicClassName =
+			options.transformDynamicClassName === true &&
+			(className === undefined || className.sheetBacked === true);
 	}
 
 	inline(code: string, id: string, names: ReadonlySet<string>): InlineCssResult {
@@ -62,6 +99,22 @@ export class StaticCssCallRewriter implements CssCallRewriter {
 					}
 				}
 				if (kind === undefined || call.arguments.length === 0) return;
+				const classNameHost =
+					kind === "class" && this.transformDynamicClassName
+						? directClassNameHost(parent, ancestors)
+						: undefined;
+				if (classNameHost !== undefined) {
+					const carrier = dynamicClassNameCarrier(code, call, carrierName!);
+					if (carrier !== undefined) {
+						edits.push({
+							start: classNameHost.attribute.start!,
+							end: classNameHost.attribute.end!,
+							text: `{...${carrier.text}}`,
+						});
+						for (const key of carrier.varKeys) this.varKeys.add(key);
+						return;
+					}
+				}
 				const objectArguments = call.arguments.filter(
 					(argument) => (argument as { type?: string } | null)?.type === NodeKind.ObjectExpression,
 				);
@@ -77,10 +130,7 @@ export class StaticCssCallRewriter implements CssCallRewriter {
 					// JSX host. Plain code positions keep the runtime fallback.
 					// The runtime carrier re-derives the static subset itself, so
 					// vars atoms never collide with stylesheet rules for the same keys.
-					const isJsxPosition =
-						parent?.type === NodeKind.JSXExpressionContainer ||
-						parent?.type === NodeKind.JSXSpreadAttribute ||
-						ancestors.at(-2)?.type === NodeKind.JSXExpressionContainer;
+					const isJsxPosition = parent?.type === NodeKind.JSXSpreadAttribute;
 					if (isJsxPosition && carrierName !== undefined) {
 						const ranges = call.arguments.map(
 							(argument) => argument as { start?: number; end?: number },
@@ -141,6 +191,151 @@ export class StaticCssCallRewriter implements CssCallRewriter {
 		return { code: output, inlined: edits.length, varKeys: [...this.varKeys] };
 	}
 }
+
+/**
+ * Find the narrow JSX host shape supported by the opt-in dynamic-class pass.
+ * `css.props()` returns both `className` and `style`, so an existing style or
+ * spread prop could change precedence in ways this source rewrite cannot
+ * prove equivalent.
+ */
+const directClassNameHost = (
+	parent: OxcNode | undefined,
+	ancestors: readonly OxcNode[],
+): ClassNameHost | undefined => {
+	if (parent?.type !== NodeKind.JSXExpressionContainer) return undefined;
+	const attribute = ancestors.at(-2) as (OxcNode & { value?: OxcNode | null }) | undefined;
+	const openingElement = ancestors.at(-3) as
+		| (OxcNode & { attributes?: readonly OxcNode[] })
+		| undefined;
+	if (
+		attribute?.type !== NodeKind.JSXAttribute ||
+		attribute.value !== parent ||
+		(attribute.name as { name?: string } | undefined)?.name !== "className" ||
+		openingElement?.type !== NodeKind.JSXOpeningElement
+	)
+		return undefined;
+	if (
+		(openingElement.attributes ?? []).some((candidate) => {
+			if (candidate === attribute) return false;
+			if (candidate.type === NodeKind.JSXSpreadAttribute) return true;
+			return (
+				candidate.type === NodeKind.JSXAttribute &&
+				(candidate as { name?: { name?: string } }).name?.name === "style"
+			);
+		})
+	)
+		return undefined;
+	return {
+		attribute: attribute as RangedNode,
+	};
+};
+
+const stylePropertyName = (property: PropertyNode): string | undefined => {
+	const key = property.key;
+	if (key?.type === NodeKind.Identifier) return (key as { name?: string }).name;
+	if (key?.type === NodeKind.Literal) {
+		const value = (key as { value?: unknown }).value;
+		return typeof value === "string" ? value : undefined;
+	}
+	return undefined;
+};
+
+/** Split one flat style object without changing any runtime value expression. */
+const splitStyleArgument = (code: string, argument: unknown): SplitStyleArgument | undefined => {
+	const node = argument as (OxcNode & { properties?: readonly PropertyNode[] }) | undefined;
+	if (node?.type !== NodeKind.ObjectExpression) return undefined;
+	const staticProperties: PropertyNode[] = [];
+	const dynamicProperties: PropertyNode[] = [];
+	for (const property of node.properties ?? []) {
+		if (
+			property.type !== NodeKind.Property ||
+			property.kind !== PropertyKindTag.Init ||
+			property.computed === true ||
+			property.method === true ||
+			property.shorthand === true ||
+			property.start === undefined ||
+			property.end === undefined
+		)
+			return undefined;
+		const name = stylePropertyName(property);
+		const value = property.value;
+		// Conditions, design-layer modules, spreads, and nested dynamic objects
+		// need their own semantic lowering; the first pass is scalar only.
+		if (
+			name === undefined ||
+			name.startsWith("_") ||
+			name.startsWith("$") ||
+			value === undefined ||
+			value === null
+		)
+			return undefined;
+		if (evalLiteral(value as never) !== undefined) {
+			staticProperties.push(property);
+			continue;
+		}
+		if (
+			value.type === NodeKind.ObjectExpression ||
+			value.type === NodeKind.ArrayExpression ||
+			value.type === NodeKind.ArrowFunctionExpression ||
+			value.type === NodeKind.FunctionExpression
+		)
+			return undefined;
+		dynamicProperties.push(property);
+	}
+	return { staticProperties, dynamicProperties };
+};
+
+const renderStyleObject = (code: string, properties: readonly PropertyNode[]): string =>
+	`{ ${properties.map((property) => code.slice(property.start!, property.end!)).join(", ")} }`;
+
+/**
+ * Build the props carrier for a direct className binding. The generated
+ * `css.vars()` call contains only dynamic declarations; static declarations
+ * remain on the ordinary class lane and keep their extracted atomic rules.
+ */
+const dynamicClassNameCarrier = (
+	code: string,
+	call: CallNode,
+	carrierName: string,
+): { readonly text: string; readonly varKeys: readonly string[] } | undefined => {
+	const splits = call.arguments.map((argument) => splitStyleArgument(code, argument));
+	if (splits.some((split): split is undefined => split === undefined)) return undefined;
+	const resolved = splits as SplitStyleArgument[];
+	const staticArguments = resolved
+		.map(({ staticProperties }) =>
+			staticProperties.length === 0 ? undefined : renderStyleObject(code, staticProperties),
+		)
+		.filter((value): value is string => value !== undefined);
+	const dynamicArguments = resolved
+		.map(({ dynamicProperties }) =>
+			dynamicProperties.length === 0 ? undefined : renderStyleObject(code, dynamicProperties),
+		)
+		.filter((value): value is string => value !== undefined);
+	if (dynamicArguments.length === 0) return undefined;
+
+	const staticNames = new Set(
+		resolved.flatMap(({ staticProperties }) =>
+			staticProperties.map((property) => stylePropertyName(property)!),
+		),
+	);
+	const dynamicNames = new Set(
+		resolved.flatMap(({ dynamicProperties }) =>
+			dynamicProperties.map((property) => stylePropertyName(property)!),
+		),
+	);
+	if ([...staticNames].some((name) => dynamicNames.has(name))) return undefined;
+
+	const inputs = [
+		`${carrierName}.vars(${dynamicArguments.join(", ")})`,
+		...(staticArguments.length === 0
+			? []
+			: [`${carrierName}.class(${staticArguments.join(", ")})`]),
+	];
+	return {
+		text: `${carrierName}.props(${inputs.join(", ")})`,
+		varKeys: [...dynamicNames],
+	};
+};
 
 /** At least one ordinary property with a literal value (see pushPartialLiteral). */
 const hasLiteralProperty = (node: OxcNode): boolean =>

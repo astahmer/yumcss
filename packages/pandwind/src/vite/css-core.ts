@@ -9,6 +9,7 @@ import { createStylesheet } from "../css/create-stylesheet.ts";
 import type { ClassNameStrategy } from "../css/class-name-strategy.ts";
 import { renderCriticalHtml } from "./critical-css.ts";
 import type { CssExtractorPreset, PandwindCssViteOptions } from "./css.ts";
+import { StaticCssCallRewriter } from "./css-call-rewriter.ts";
 import { createCssSourceService } from "./css-source-service.ts";
 import { createCssSourceWorkspace } from "./css-source-workspace.ts";
 import { createRuntimePruningTransform } from "./runtime-pruner.ts";
@@ -74,10 +75,14 @@ export function createCssExtractorPluginCore(
 		);
 	}
 	const matchers = options.cssSources ?? ["css", "design"];
-	const sourceService = createCssSourceService();
-	const runtimePruner = createRuntimePruningTransform();
 	const virtualId = options.virtualId ?? "pandwind:css";
 	const className = options.engine?.className ?? options.className;
+	const sourceService = createCssSourceService({
+		rewriter: new StaticCssCallRewriter(preset, className, {
+			transformDynamicClassName: options.transformDynamicClassName === true,
+		}),
+	});
+	const runtimePruner = createRuntimePruningTransform();
 	const strategy: ClassNameStrategy | undefined = className;
 	// External-compiler modes (tailwind): the sheet stays empty. Sheet-backed
 	// strategies still get the generated stylesheet — with their class names.
