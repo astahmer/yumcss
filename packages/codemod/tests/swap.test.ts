@@ -512,7 +512,13 @@ describe("--tokenize: raw values -> authored $tokens", () => {
 		const result = runSwapRaw(
 			`import { css } from "./design.ts";\nconst card = css.class({ backgroundColor: "#3182ce" });`,
 			meta,
-			{ from: "css", to: "css.class", file: "t.tsx", metaDir: "examples/example/src", tokenize: true },
+			{
+				from: "css",
+				to: "css.class",
+				file: "t.tsx",
+				metaDir: "examples/example/src",
+				tokenize: true,
+			},
 		);
 		expect(result.converted).toBe(1);
 		expect(result.code).toContain('backgroundColor: "$blue-500"');
