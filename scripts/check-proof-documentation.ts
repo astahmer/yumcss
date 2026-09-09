@@ -14,6 +14,7 @@ const adapterReferenceReportPath = resolve(
 	repositoryRoot,
 	"plans/evidence/adapter-reference-proof.json",
 );
+const packageSurfacePath = resolve(repositoryRoot, "plans/evidence/package-surface.json");
 
 interface RealRepositoryReport {
 	readonly reports: readonly {
@@ -34,10 +35,15 @@ interface AdapterReferenceReport {
 	}[];
 }
 
+interface PackageSurfaceReport {
+	readonly records: readonly { readonly exportPaths: readonly string[] }[];
+}
+
 const readJson = <T>(path: string): T => JSON.parse(readFileSync(path, "utf8")) as T;
 
 const realRepository = readJson<RealRepositoryReport>(realRepositoryReportPath);
 const adapterReference = readJson<AdapterReferenceReport>(adapterReferenceReportPath);
+const packageSurface = readJson<PackageSurfaceReport>(packageSurfacePath);
 const limitations = readFileSync(limitationsPath, "utf8");
 
 const dimensions = realRepository.reports.flatMap((report) =>
@@ -63,6 +69,10 @@ const expectedAdapterReference = {
 	),
 	valid: adapterReference.references.filter((reference) => reference.migration.valid).length,
 };
+const expectedSurfaceExports = packageSurface.records.reduce(
+	(total, record) => total + record.exportPaths.length,
+	0,
+);
 
 const realRepositoryMatch = limitations.match(
 	/real-repository report contains (\d+) reports, with (\d+) passed proof dimensions,\s*(\d+) pending dimensions, and (\d+) pipeline-unpaired references/,
@@ -70,6 +80,7 @@ const realRepositoryMatch = limitations.match(
 const adapterReferenceMatch = limitations.match(
 	/adapter\s+reference proof has (\d+) small probes, (\d+) converted sites, (\d+) residuals, and\s*(\d+) fully valid migrations/,
 );
+const surfaceMatch = limitations.match(/exposes (\d+) exported paths across five packages/);
 
 const failures: string[] = [];
 if (realRepositoryMatch === null) {
@@ -102,6 +113,13 @@ if (adapterReferenceMatch === null) {
 		);
 	}
 }
+if (surfaceMatch === null) {
+	failures.push("current-limitations.md has no package-surface evidence summary");
+} else if (Number(surfaceMatch[1]) !== expectedSurfaceExports) {
+	failures.push(
+		`package-surface summary is stale: documented ${surfaceMatch[1]}, expected ${expectedSurfaceExports}`,
+	);
+}
 
 if (failures.length > 0) {
 	throw new Error(
@@ -115,6 +133,7 @@ console.log(
 			schema: "pandwind.proof-documentation-check/1",
 			realRepository: expectedRealRepository,
 			adapterReference: expectedAdapterReference,
+			surfaceExports: expectedSurfaceExports,
 		},
 		null,
 		2,
