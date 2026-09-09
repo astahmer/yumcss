@@ -1,5 +1,5 @@
 import { useState, type PropsWithChildren } from "react";
-import { css, untypedCss } from "../css";
+import { css, relaxedCss, untypedCss } from "../css";
 import { cx } from "../cx";
 import { tw } from "../tw";
 
@@ -28,6 +28,53 @@ function DynamicInputButton({ children, ...input }: PropsWithChildren<DynamicBut
 		<button type="button" className={props.className} style={props.style}>
 			{children}
 		</button>
+	);
+}
+
+/**
+ * Compiler-carrier examples. `transformDynamicClassName` is enabled in this
+ * example's Vite config, so the first host uses the concise className form and
+ * the compiler moves only `color` to css.vars(). The callable host below uses
+ * the same static/dynamic partition for a mixed JSX spread.
+ */
+function CompilerCarrierExamples({ accent }: { accent: string }) {
+	return (
+		<div
+			className={tw({
+				flex: "col",
+				gap: "2",
+				rounded: "md",
+				border: "1",
+				borderColor: "gray-200",
+				p: "3",
+			})}
+		>
+			<p className={tw({ textSize: "xs", textColor: "gray-600" })}>
+				Compiler carriers: static declarations become extracted classes; changing values stay
+				inline.
+			</p>
+			<button
+				type="button"
+				className={relaxedCss.class({
+					color: accent,
+					backgroundColor: "white",
+					padding: 8,
+					borderRadius: "md",
+				})}
+			>
+				opt-in dynamic className rewrite
+			</button>
+			<div
+				{...relaxedCss({
+					color: "white",
+					backgroundColor: accent,
+					padding: 8,
+					borderRadius: "md",
+				})}
+			>
+				mixed callable JSX spread
+			</div>
+		</div>
 	);
 }
 
@@ -150,6 +197,7 @@ export function DynamicApp() {
 				<DynamicInputButton background={accent} padding={`${padding}px ${padding * 2}px`}>
 					createCss() typed input group
 				</DynamicInputButton>
+				<CompilerCarrierExamples accent={accent} />
 			</div>
 
 			<button

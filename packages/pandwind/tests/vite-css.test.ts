@@ -1,6 +1,6 @@
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { dirname, join } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { expect, test } from "vitest";
 import { createTwAdapter } from "../src/tw/adapter.ts";
 import { createStyleXAdapter } from "../src/css/stylex-adapter.ts";
@@ -889,6 +889,27 @@ test("dynamic className rewriting leaves conflicting hosts untouched", () => {
 	}
 });
 
+test("the checked-in dynamic example exercises both compiler carrier rewrites", () => {
+	const appRoot = resolve(import.meta.dirname, "../../../examples/example");
+	const file = join(appRoot, "src/examples/dynamic-app.tsx");
+	const source = readFileSync(file, "utf8");
+	const plugin = pandwindCssVite(examplePreset, {
+		root: appRoot,
+		transformDynamicClassName: true,
+	});
+	const transformed = (plugin.transform as (input: string, id: string) => { code: string } | null)(
+		source,
+		file,
+	);
+
+	expect(transformed?.code).toContain("relaxedCss.props(relaxedCss.vars({ color: accent })");
+	expect(transformed?.code).toContain(
+		"relaxedCss.props(relaxedCss.vars({ backgroundColor: accent })",
+	);
+	expect(transformed?.code).not.toContain("className={relaxedCss.class");
+	expect(transformed?.code).not.toContain("{...relaxedCss({");
+});
+
 test("mixed literal/dynamic css calls in JSX hosts lower through vars carriers", () => {
 	const code = `
 		import { css } from "./design";
@@ -947,7 +968,9 @@ test("vars carriers preserve an aliased css binding", () => {
 	const result = inline().inline(code, "app.tsx", new Set(["uiCss"]));
 
 	expect(result.inlined).toBe(1);
-	expect(result.code).toContain('uiCss.props(uiCss.vars({ backgroundColor: tone }), "[color:red]")');
+	expect(result.code).toContain(
+		'uiCss.props(uiCss.vars({ backgroundColor: tone }), "[color:red]")',
+	);
 	expect(result.code).not.toContain("css.props(css.vars");
 });
 

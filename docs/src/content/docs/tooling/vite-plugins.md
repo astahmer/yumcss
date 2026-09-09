@@ -59,15 +59,40 @@ but this is opt-in because it changes a `className` attribute into a
 pandwindCssVite(examplePreset, { transformDynamicClassName: true });
 ```
 
-With the option enabled in the default or a sheet-backed class-name mode, a direct
-`className={css.class({ color: props.color, padding: 8 })}` is transformed to
-`{...css.props(css.vars({ color: props.color }), "<static-class>")}`. The static
-declarations are compiled at build time; only dynamic declarations use
-`css.vars()`. The same static/dynamic partition is used for mixed
-`{...css({ color: "red", backgroundColor: shade })}` host spreads. The first
-pass only handles scalar declarations on a simple host; spreads with ambiguous
-ordering, existing `style` props, conditions, and other unsupported shapes stay
-untouched.
+With the option enabled in the default or a sheet-backed class-name mode, this
+source:
+
+```tsx
+<button className={css.class({ color: props.color, padding: 8 })} />
+```
+
+becomes the equivalent host carrier:
+
+```tsx
+<button {...css.props(css.vars({ color: props.color }), "<static-class>")} />
+```
+
+The static declarations are compiled at build time; only dynamic declarations
+use `css.vars()`. A direct `className` rewrite is limited to a simple host with
+no existing `style` or JSX spread prop. Use a relaxed or untyped CSS binding if
+the raw dynamic value is intentionally outside a strict preset's authored type.
+
+The same static/dynamic partition also applies by default to mixed callable JSX
+spreads:
+
+```tsx
+<div {...css({ color: "red", backgroundColor: shade, padding: 8 })} />
+```
+
+becomes:
+
+```tsx
+<div {...css.props(css.vars({ backgroundColor: shade }), "<static-class>")} />
+```
+
+Both rewrites only split flat scalar declarations. Nested conditions, spreads,
+unsupported value expressions, and static/dynamic collisions keep the
+conservative runtime carrier instead of being partially reordered or dropped.
 
 ## Per-route CSS splitting (opt-in)
 

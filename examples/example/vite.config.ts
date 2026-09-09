@@ -7,5 +7,12 @@ import { pandwindCssVite } from "pandwind/vite";
 import { defineConfig } from "vite";
 
 export default defineConfig({
-	plugins: [pandwindCssVite(examplePreset), tailwindcss(), react(), DevTools(), pandwindDevtools()],
+	plugins: [
+		// The dynamic-app example demonstrates both compiler carrier rewrites.
+		pandwindCssVite(examplePreset, { transformDynamicClassName: true }),
+		tailwindcss(),
+		react(),
+		DevTools(),
+		pandwindDevtools(),
+	],
 });
