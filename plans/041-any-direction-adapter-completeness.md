@@ -413,7 +413,8 @@ diagnostic is a contract failure. Tailwind and UnoCSS arbitrary utility
 literals, named lookup maps, and standalone projections are parsed by their
 own adapters, while comment literals remain excluded.
 
-The remaining production-proof and semantic families are:
+The finite semantic gate covers the current IR families. The remaining
+production-proof and adapter-owned projection work is:
 
 - runtime interpolations, themes, and function-valued styles;
 - composition, recipes, and variant systems;
@@ -424,8 +425,9 @@ The remaining production-proof and semantic families are:
   ordering;
 - framework props/bindings across React, Preact, Vue, Svelte, Astro, Solid,
   React Native, and OpenTUI;
-- official project configuration, presets, plugins, generated CSS, and custom
-  token/shortcut/variant context;
+- project-specific presets, plugins, generated CSS, and custom
+  token/shortcut/variant context when the owning ecosystem has no safe official
+  loader or the loader cannot evaluate the project construct;
 - SSR, hydration, streaming/RSC, injection order, and dependency changes.
 
 The remaining skips are therefore not evidence that the HIR is missing. They
@@ -488,6 +490,14 @@ The canonical route outcome is consequently one of `static`, `target-native`,
 complete only when the outcome is explicit, the selected representation is
 validated, and the route report explains why a later representation was not
 selected.
+
+The finite semantic contract is now also executable. Three generic
+`StyleProgram` fixtures cover the 28 registered capability families and run
+against every target in both capability modes: 192 cases, with every case
+ending in validation or an explicit residual and no suite failures. This
+closes the old “semantic families are merely listed” gap. It does not claim
+that every adapter has installed browser/SSR evidence; that is a separate
+promotion dimension.
 
 ## Workstreams
 

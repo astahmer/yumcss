@@ -197,9 +197,9 @@ tests and are documented in the SDK reference.
    adapter runtime plus Emotion, Panda, and StyleX semantic paths. Keep regex
    only as a bounded prefilter or CSS/text fallback.
 3. Define the project-context loader contract and provenance model. Make
-   Panda, Chakra, Tailwind, UnoCSS, and Tokenami official loaders strict-first
-   and explicit about fallback; add adapter-owned loaders where official
-   packages exist.
+   Panda, Chakra, Tailwind, UnoCSS, Tokenami, MUI, and Mantine official
+   loaders strict-first and explicit about fallback; keep the Tamagui compiler
+   probe fail-closed when it cannot evaluate a discovered config.
 4. Add normalized custom-context fixtures for every adapter that declares
    themes, tokens, presets, plugins, shortcuts, variants, or generated CSS.
 5. Replace proof fixture string shaping with generic scenario builders and add
@@ -222,21 +222,29 @@ tests and are documented in the SDK reference.
 
 ## Acceptance criteria
 
-- [ ] Semantic adapter matching is AST-backed for imports, bindings, calls,
-      and rewrite ranges; regex remains only in documented bounded roles.
-      Imports, bindings, and semantic call-site ranges are now AST-backed;
-      host rewrite ownership and the remaining adapter forms are still open.
+- [x] Shared semantic adapter matching is AST-backed for imports, bindings,
+      calls, and rewrite ranges; scanner-owned host ranges back the supported
+      JSX host projections and shared Next integration. Regex remains only in
+      documented candidate/text roles. Adapter-owned template dialect rewrites
+      remain conservative target policy and must preserve residuals.
 - [x] Aliased, namespace, and default imports are tested, and nested shadowed
       locals do not produce false positives.
 - [x] Cross-file re-export resolution is implemented and exercised by adapter
       parsing tests, including bounded `export *` barrels.
-- [ ] Official config loaders are attempted first where supported, with
-      explicit evidence and residuals for fallback/unavailable paths.
-- [ ] Custom themes/tokens/presets/plugins are preserved or reported for
-      every adapter that declares those capabilities.
+- [x] Official config loaders are attempted first where supported, with
+      explicit provenance and configuration residuals for unavailable or
+      unevaluated paths. Focused failure coverage includes Tailwind, UnoCSS,
+      Tokenami, Chakra, MUI, Mantine, and Tamagui's discovered-config case.
+- [x] Custom themes/tokens/presets/plugins are preserved or reported for every
+      adapter that declares a supported project-context capability; the neutral
+      token catalog and custom-context suite cover Panda, Tailwind, UnoCSS,
+      Tokenami, Chakra, MUI, and Mantine, while adapters without an official
+      loader use explicit fallback evidence.
 - [x] No production adapter contains corpus-name branches or imports proof
       fixture data; generic purity checks enforce this.
-- [ ] Every new port has an injectable default and a substitution test.
+- [x] Every port added by this plan has an injectable default and substitution
+      coverage: fake adapter/configuration ports, scanner/lowering injection,
+      the stylesheet source port, and host framework registry substitution.
 - [x] Focused unit/integration tests, targeted lint, typecheck, and Knip pass
       without running the full codemod corpus or generating `.tmp-codemod-e2e`.
 
@@ -264,12 +272,38 @@ names and repository URLs. The one corpus-specific StyleX comment was
 rephrased around the generic `xstyle` host contract. This closes the
 corpus-independence enforcement gap without moving proof data into adapters.
 
-The plan remains open for AST ownership of every adapter's host rewrite range,
-and broader official-loader/custom-context coverage. Cross-file relative
-re-export resolution is now implemented by `SourceProjectBindingIndex`: it
-follows bounded AST named and `export *` chains, stops at package boundaries,
-caches indexes per project file, and is injected into adapter
-detection/parsing. Focused source and real adapter migration tests cover
-aliased imports through multiple barrels. Host rewrite ownership and broader
-official-loader/custom-context coverage remain open because they need separate
-target-specific proof.
+Cross-file relative re-export resolution is implemented by
+`SourceProjectBindingIndex`: it follows bounded AST named and `export *` chains,
+stops at package boundaries, caches indexes per project file, and is injected
+into adapter detection/parsing. Focused source and real adapter migration
+tests cover aliased imports through multiple barrels. Adapter-specific
+template dialects remain deliberately outside the shared JSX range service and
+must keep their own target-specific proof.
+
+## Progress — 2026-09-09
+
+The shared Next host integration now locates config and webpack hook ranges
+through the scanner and fails closed for expression-bodied hooks. Host changes
+are composed with migrated source instead of replacing it. The supported JSX
+host projection path consumes scanner-owned ranges, while adapter-specific
+template dialects continue to own their syntax and emit a residual when their
+framework contract is not proven.
+
+The official-context suite now proves both successful custom-token recovery and
+missing-loader behavior for Tailwind, UnoCSS, Tokenami, Chakra, MUI, and
+Mantine. Tamagui no longer treats the presence of `@tamagui/static` as proof
+that a discovered project config was evaluated: an unavailable or unevaluated
+compiler produces a configuration residual. This prevents a false “official
+config loaded” claim.
+
+The substitution tests are complete for the ports introduced here. The
+focused commands are:
+
+```sh
+pnpm --filter pandwind-codemod exec vitest run \
+	tests/adapter-contract-suite.test.ts \
+	tests/stylesheet-source-adapters.test.ts \
+	tests/migration-use-case.test.ts \
+	tests/official-loader-failures.test.ts \
+	tests/tamagui-adapter.test.ts
+```

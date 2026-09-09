@@ -1100,18 +1100,21 @@ contains an unchecked example. The remaining implementation boundaries are
 deliberate:
 
 - `plans/040-pivot-any-to-any-lowering.md` and
-  `plans/041-any-direction-adapter-completeness.md` remain open for semantic
-  lowerings and production browser/SSR/RSC proof beyond the registered static
-  subset. A residual matrix is safety evidence, not universal-compatibility
-  proof.
+  `plans/041-any-direction-adapter-completeness.md` have executable gates for
+  the current semantic families, target representations, route matrix, and
+  residual policy. Installed browser/SSR/RSC evidence remains a separate
+  promotion dimension for adapters without a real host proof; a residual matrix
+  is safety evidence, not universal-compatibility proof.
 - `plans/044-ast-config-and-project-context.md` is complete for shared AST
   imports, shadow scopes, semantic call-site ranges, bounded relative
-  re-export resolution, and the shared JSX host path. Adapter-specific host
-  syntax and broader official-loader/custom-context coverage remain bounded by
-  the adapter contracts.
-- `plans/024-panda-inbound-codemod.md` is complete for the automated product
-  scope; dependency-installed typecheck and visual acceptance belong to the
-  external pinned Panda host repository.
+  re-export resolution, scanner-owned supported JSX host ranges, strict-first
+  official loaders, custom-context evidence, and port substitution tests.
+  Adapter-specific template dialects remain target-owned and fail closed when
+  their framework contract is not proven.
+- `plans/024-panda-inbound-codemod.md` now also has an installed pinned-host
+  proof for Velite, website typechecking, Next production build, and
+  representative `/` and `/showcase` browser rendering. The proof is recorded
+  in `plans/evidence/panda-website-proof.md`.
 - `plans/021-multi-target-backends.md` keeps canvas and build-time Metro
   intentionally deferred until a concrete consumer requires them, and
   `plans/028-define-preset-web-notes.md` remains decision notes rather than an
@@ -1122,16 +1125,16 @@ deliberate:
 - `plans/054-token-usage-governance.md` is complete for the tooling ledger: versioned report, effective universe, strictness classification, exact suggestions, reachability, prune changesets, CLI/Inspector/lint/codemod consumption, and the governance bench. Studio-side paginated queries for very large catalogs and an approved write-mode removal command remain bounded follow-ups inside their owning plans, not open governance work.
 - `plans/065-proof-and-adoption-closure.md` is complete for ordinary-CI
   evidence checks, scanner-backed shared JSX host rewrites, official-loader
-  context fixtures, a multi-file installed-project proof, typed opt-in MCP host
+  context fixtures, multi-file installed-project proofs, typed opt-in MCP host
   seams, and consumer generated-artifact verification. Adapter-specific host
   syntax, broader frameworks, and arbitrary project execution remain bounded by
   their owning contracts.
 
-The remaining unchecked items in plans 040 and 041, plus adapter-specific
-portions of 044, are deliberate product limits or evidence requests owned by
-the relevant adapter. New work should first add a capability contract and
-proof to an owning plan rather than create a parallel architecture or duplicate
-an already-shipped plan.
+The remaining installed-proof items in plans 040 and 041 are explicit evidence
+requests owned by the relevant adapter; the current semantic and orchestration
+gates are complete. New work should first add a capability contract and proof
+to an owning plan rather than create a parallel architecture or duplicate an
+already-shipped plan.
 
 ## Expert target emission and generated files
 
@@ -1165,7 +1168,7 @@ assertions guarding the snapshots.
 
 Target emitters should preserve design-system vocabulary when that vocabulary
 is actually available. Official config loaders for Tailwind, UnoCSS, Chakra,
-Panda, Tokenami, Stitches, MUI, and Mantine normalize discovered custom values into the versioned
+Panda, Tokenami, MUI, and Mantine normalize discovered custom values into the versioned
 `AdapterTokenCatalog`. The target adapter owns the property mapping and native
 spelling: the Pandwind target can emit `$...` references, while object-oriented
 targets may emit their own token path or CSS-variable form. Class-oriented

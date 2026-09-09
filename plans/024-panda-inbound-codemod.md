@@ -1,9 +1,10 @@
 # Panda inbound codemod (website-grade migration) plan
 
-**Status: COMPLETE for the automated migration scope (2026-08-26).** Parser,
-token bridge, tier engine, pattern+JSX
-migration implemented; e2e run on ~/dev/panda/website at 94.8% css conversion,
-86/86 factory elements, zero silent drops (plans/024-baseline-report.md).**
+**Status: COMPLETE for the automated migration scope and installed host proof
+(2026-09-09).** Parser, token bridge, tier engine, and pattern+JSX migration
+are implemented; the pinned website proof records dependency-installed
+typechecking, production build, and representative browser rendering in
+`plans/evidence/panda-website-proof.md`.
 
 ## Context
 
@@ -141,9 +142,12 @@ src/
       important, CSS-var, textStyle, tier, pattern, JSX, and alias fixtures are
       covered by the codemod suite.
 - [x] The write path preflights generated and rewritten files before writing.
-- [ ] Full dependency-installed website typecheck and visual spot-check remain
-      host-repository acceptance work; the copied corpus has syntax-level and
-      canonical-CSS evidence, but no installed website dependencies.
+- [x] A disposable copy of the pinned website is migrated with installed
+      dependencies, typechecked, built, and spot-checked in a browser. The
+      exact commands, commit, proof-only host compatibility edits, and the
+      external-link prefetch boundary are recorded in
+      `plans/evidence/panda-website-proof.md`; this is representative host
+      acceptance rather than exhaustive route, RSC, or whole-site CSS parity.
 
 ## Open questions
 

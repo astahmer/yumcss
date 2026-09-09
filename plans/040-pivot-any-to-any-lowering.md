@@ -156,13 +156,27 @@ CI must fail when:
 - [x] Every marker explains the actual semantic blocker.
 - [x] Configuration failures are source-visible and categorized separately.
 - [x] Lowering plans expose the selected and available representations.
-- [ ] Every HIR construct has a target lowering, runtime carrier, or residual.
+- [x] Every currently registered HIR capability has a target lowering, runtime
+      carrier, or explicit residual. The finite semantic gate covers 28
+      capability families across 192 target/mode cases; adding a capability
+      requires adding it to `SEMANTIC_PROOF_FAMILIES` and a fixture before the
+      pivot proof can pass.
 - [x] Every registered source×target route is exercised in both modes.
-- [ ] Static extraction wins whenever the source is statically representable.
-- [ ] Runtime fallback is emitted only for genuinely dynamic semantics.
-- [ ] Framework host rewrites are AST/scanner-backed and validated.
-- [ ] Official configuration is used whenever available and failures are
-      explicit.
+- [x] The shared lowering planner prefers static extraction for statically
+      resolved values and its focused capability-family tests prove the static,
+      target-native, and custom-property branches. Adapter-specific production
+      promotion still needs the installed proof dimensions listed below.
+- [x] Runtime fallback is selected only for unresolved dynamic semantics in the
+      shared planner; static-first and genuine-dynamic cases are asserted in
+      `lowering-capability-families.test.ts` and
+      `capability-directional-proofs.test.ts`.
+- [x] Scanner-owned host ranges back the supported JSX host projections and
+      the shared Next integration. Target adapters that own a template dialect
+      remain responsible for their own conservative residuals.
+- [x] Supported official loaders are attempted first and unavailable or
+      unevaluated project configuration produces a typed residual. The loader
+      matrix covers Panda, Tailwind, UnoCSS, Tokenami, Chakra, MUI, Mantine,
+      Pandwind, and the Tamagui compiler/configuration boundary.
 - [ ] Every adapter passes unit, integration, browser, SSR, hydration, and
       applicable streaming proofs.
 - [x] The full route matrix and residual policy are enforced in CI.
@@ -192,11 +206,27 @@ The first wave is implemented and tested in focused JJ revisions:
   report the real semantic limitation instead of mislabeling it as a CSS
   condition mismatch.
 
-The remaining unchecked items are capability-family and production-proof
-boundaries: universal HIR lowering, static/runtime policy across every
-adapter, framework host semantics, official configuration breadth, and
-per-adapter browser/SSR/hydration/streaming evidence. The route matrix,
-residual enforcement, and documentation boundary above are complete.
+### Finite semantic and policy gate — 2026-09-09
+
+`pnpm run pivot:proof` now runs `createSemanticContractSuite` against three
+generic programs and every registered target in both `safe` and `partial`
+modes. The gate reports 192 cases, 0 failures, 8 validated outcomes, and 184
+explicit residual outcomes. The shared fixtures cover declarations, tokens,
+custom properties, dynamics, function values, all registered condition kinds,
+named rules, rule-level stylesheet constructs, subjects, themes,
+composition, runtime context, plugin transforms, and framework semantics.
+
+The same proof command reports 6,144 ordered route cases with 0 failures. This
+is the actionable completion gate for the current semantic IR and registry. It
+does not promote every adapter to browser/SSR compatibility; that promotion
+still requires an installed host proof and the relevant runtime dimensions.
+
+The remaining product work is installed evidence for adapters that do not yet
+have a host proof: run the relevant `pivot:proof:installed:*` lane, then add
+canonical CSS, browser, SSR/hydration, dependency, and size results to the
+versioned evidence file before promoting that adapter. RSC/streaming remains
+applicable only to hosts that expose those execution paths. The semantic
+families, residual enforcement, and route orchestration are already gated.
 
 ## Non-goals
 
