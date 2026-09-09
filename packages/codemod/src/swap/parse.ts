@@ -7,8 +7,10 @@
  *
  * - `tw({ key: value, hover: {...} })`  — resolved offline through the
  *   generated metadata: key -> utility class (same rules as tw/compile.ts),
- *   class -> {property, value} through the inverted bridge. Bridge misses
- *   become `unknown-value` residuals; the call site is left untouched.
+ *   class -> {property, value} through the inverted bridge. A bridge miss can
+ *   still resolve when the generated project token catalog proves that the
+ *   utility names one exact token; ambiguous or undocumented values remain
+ *   `unknown-value` residuals and the call site is left untouched.
  * - `css.class({...})` / `css({...})`    — flat camelCase literals with
  *   `_condition` nesting; values stay AS WRITTEN (the engine resolves
  *   preset tokens at runtime; no app-preset properties config is loaded).
@@ -334,6 +336,48 @@ function isVariantKey(meta: PandwindMeta, key: string): boolean {
 
 const COMPOUND_FLEX = new Set(["col", "row", "col-reverse", "row-reverse"]);
 
+interface ResolvedTokenUtility {
+	readonly prop: string;
+	readonly value: string | number;
+}
+
+/**
+ * Recover a source utility when the bridge selected a different alias for the
+ * same resolved value. The bridge intentionally stores one preferred utility
+ * per `(property, value)`, so an authored `bg-blue-600` can disappear when
+ * `bg-brand` resolves to the same color. The project token catalog can repair
+ * that narrow loss without guessing: the utility prefix must have one
+ * property rule and the suffix must name exactly one configured token.
+ */
+function resolveTokenUtility(
+	meta: PandwindMeta,
+	utilityClass: string,
+): ResolvedTokenUtility | undefined {
+	if (meta.tokens === undefined) return undefined;
+	const bases = [...meta.conflicts.entries()]
+		.filter(([base]) => utilityClass.startsWith(`${base}-`))
+		.toSorted(([left], [right]) => right.length - left.length);
+	for (const [base, rules] of bases) {
+		const suffix = utilityClass.slice(base.length + 1);
+		const properties = rules[suffix] ?? rules["*"];
+		if (properties === undefined || properties.length !== 1) continue;
+		const normalizedSuffix = normalizeTokenKey(`$${suffix}`).toLowerCase();
+		const matches: Array<string | number> = [];
+		for (const values of Object.values(meta.tokens)) {
+			for (const [key, value] of Object.entries(values)) {
+				if (
+					normalizeTokenKey(key.startsWith("$") ? key : `$${key}`).toLowerCase() ===
+						normalizedSuffix &&
+					(typeof value === "string" || typeof value === "number")
+				)
+					matches.push(value);
+			}
+		}
+		if (matches.length === 1) return { prop: camelProp(properties[0]!), value: matches[0]! };
+	}
+	return undefined;
+}
+
 function walkTwEntries(
 	meta: PandwindMeta,
 	obj: LiteralObject,
@@ -374,6 +418,11 @@ function walkTwEntries(
 		for (const cls of emitted) {
 			const bridgeHit = meta.bridgeInverse.get(cls);
 			if (bridgeHit === undefined) {
+				const tokenHit = resolveTokenUtility(meta, cls);
+				if (tokenHit !== undefined) {
+					ir.entries.push({ conditions, prop: tokenHit.prop, value: tokenHit.value });
+					continue;
+				}
 				// --engine: resolve through the real Tailwind engine when supplied.
 				const resolved = _missResolver?.(cls);
 				if (resolved !== undefined && resolved !== null && resolved.length > 0) {
