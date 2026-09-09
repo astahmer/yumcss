@@ -171,7 +171,14 @@
 			],
 			"owner": "tooling",
 			"maturity": "stable",
-			"dependencies": ["@tailwindcss/node", "cac", "oxc-parser", "postcss", "unplugin"],
+			"dependencies": [
+				"@tailwindcss/node",
+				"cac",
+				"magic-string",
+				"oxc-parser",
+				"postcss",
+				"unplugin"
+			],
 			"externalContract": true,
 			"evidence": [
 				"packages/codemod/package.json",
@@ -201,7 +208,17 @@
 		},
 		{
 			"packageName": "pandwind-analyze",
-			"exportPaths": [".", "./collect", "./governance", "./studio", "./mcp", "./mcp/http", "./package.json"],
+			"exportPaths": [
+				".",
+				"./collect",
+				"./collect/browser",
+				"./governance",
+				"./governance/browser",
+				"./studio",
+				"./mcp",
+				"./mcp/http",
+				"./package.json"
+			],
 			"owner": "tooling",
 			"maturity": "experimental",
 			"dependencies": [],

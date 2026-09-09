@@ -17,6 +17,11 @@ Adapters implement the versioned `pandwind.style-adapter/3` contract and are
 routed through the semantic style-program IR. Unsupported capabilities produce
 residual reports instead of silent partial rewrites.
 
+The published codemod keeps `magic-string` as a runtime dependency. Its
+`SourcePass` utility is used by the migration entrypoints to apply source-range
+edits without losing offsets or silently accepting overlapping rewrites; it is
+intentionally external to the codemod bundle.
+
 ## Tailwind project tooling
 
 The `tw` subcommand owns the project-aware Tailwind loader and generated
