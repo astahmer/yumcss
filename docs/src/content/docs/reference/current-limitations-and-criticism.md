@@ -66,6 +66,11 @@ adoption simplicity, real-world proof, and scope discipline.
   proof also migrates an imported second source module and aggregates its
   canonical evidence. That raises confidence in the covered lanes, but small
   React/Vite fixtures do not establish broad route coverage.
+- Goober and Emotion also have installed SSR/browser fixture reports in the
+  evidence matrix. They remain separate adapter fixtures because their reports
+  do not prove the route gate's full canonical-CSS, typecheck, build, and
+  dependency dimensions; counting them as full project routes would overstate
+  the evidence.
 - Those four proofs are now checked by one registry-owned gate. The read-only
   `pivot:proof:installed:routes` command validates every checked-in report, and
   `pivot:proof:installed:routes:run` reruns all four project lanes in CI. A
@@ -73,13 +78,16 @@ adoption simplicity, real-world proof, and scope discipline.
   than being treated as route coverage.
 - "The MCP surface is ahead of the underlying proof."
   `validate_migration` exposes typecheck, build, SSR, hydration, browser, and
-  bundle-size checks, but the default MCP server cannot execute those checks.
-  It returns `unavailable` unless a host injects an auditable validation port.
-  Every result now carries an execution-evidence label, so in-process adapter
-  output is visibly separate from fixture or host proof. `benchmark_project`
-  measures an explicitly labeled warm or cold in-process migration profile,
-  memory, source/artifact sizes, and reproducibility inputs; it is still not a
-  real project build benchmark unless a host port supplies that proof.
+  bundle-size checks. The default MCP server does not execute project commands,
+  but the local CLI's explicit `--host-checks` mode supplies a read-only Node
+  host that overlays a temporary project and runs recognized package scripts.
+  Framework-specific browser, SSR, and richer build runners still require an
+  injected host port. Every result now carries an execution-evidence label, so
+  in-process adapter output is visibly separate from fixture or host proof.
+  `benchmark_project` measures an explicitly labeled warm or cold in-process
+  migration profile, memory, source/artifact sizes, and reproducibility inputs;
+  it is still not a real project build benchmark unless a host port supplies
+  that proof.
 
 ## Things that are still weak today
 
@@ -113,7 +121,7 @@ describe evidence, not a promise that every construct in a route is lossless.
 | Panda -> Pandwind bounded fixture                                | experimental | installed CLI, official generated-system config, shorthand/token lowering, typecheck, build, SSR, hydration, browser pixels                                                    | recipes, plugins, themes, frameworks, and multi-file projects              |
 | UnoCSS -> Pandwind bounded fixture                               | experimental | installed CLI, official UnoCSS generator, custom token lowering, virtual stylesheet/Vite rewrite, typecheck, build, SSR, hydration, browser pixels                             | shortcuts, transformers, variants, frameworks, and multi-file projects     |
 | Playground                                                       | experimental | browser sandbox evaluation, StyleProgram extraction, runtime-sheet CSS inspection                                                                                              | real package/Vite fixture and framework host proof                         |
-| MCP and analyzer                                                 | experimental | typed tool/resource contracts, per-result execution evidence, explicit host-port unavailable states, reproducible in-process benchmark profiles, and Studio execution evidence | host integrations that execute and retain project evidence                 |
+| MCP and analyzer                                                 | experimental | typed tool/resource contracts, per-result execution evidence, an opt-in isolated Node package-script host, reproducible in-process benchmark profiles, and Studio execution evidence | richer framework/browser hosts and durable project evidence                 |
 | React Native/React Strict DOM/OpenTUI and other non-web backends | research     | contract and typing coverage                                                                                                                                                   | real consumers and backend-specific runtime proof                          |
 
 The catalog has seven named route policies plus an unavailable research policy
