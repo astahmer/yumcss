@@ -1,7 +1,4 @@
-import {
-	StyleRepresentationKind,
-	StyleMigrationOutcome,
-} from "./identifiers.ts";
+import { StyleRepresentationKind, StyleMigrationOutcome } from "./identifiers.ts";
 import type { StyleProgram } from "./semantic-ir.ts";
 import type {
 	AdapterHostFrameworkConversion,
@@ -32,7 +29,7 @@ export function derivedFileOutcomes(
 	}));
 }
 
-export function hasAdjacentSkipMarker(source: string, position: number, marker: string): boolean {
+function hasAdjacentSkipMarker(source: string, position: number, marker: string): boolean {
 	const prefix = source.slice(0, position);
 	const lineStart = prefix.lastIndexOf("\n") + 1;
 	if (prefix.slice(lineStart).includes(marker)) return true;
