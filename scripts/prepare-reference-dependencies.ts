@@ -1,6 +1,6 @@
 import { execFileSync } from "node:child_process";
 import { existsSync } from "node:fs";
-import { join } from "node:path";
+import { delimiter, join } from "node:path";
 import { createReferenceWorkspace } from "./reference-workspace.ts";
 import { resolveReferenceCheckoutId } from "./reference-repository-catalog.ts";
 
@@ -60,9 +60,21 @@ function run(
 	cwd: string,
 	options: PrepareReferenceDependenciesOptions,
 ): void {
+	const environment = { ...process.env };
+	// Reference package scripts must run under their own Node/tsx setup. When
+	// this helper is called through Nub, its preload is inherited by pnpm and
+	// changes CommonJS-oriented postbuild scripts such as Panda's __dirname use.
+	delete environment.NODE_OPTIONS;
+	delete environment.NODE_PATH;
+	if (environment.PATH !== undefined) {
+		environment.PATH = environment.PATH.split(delimiter)
+			.filter((entry) => !entry.includes("nub-node-shim-"))
+			.join(delimiter);
+	}
 	execFileSync(command, [...args], {
 		cwd,
 		stdio: options.log === false ? "ignore" : "inherit",
+		env: environment,
 	});
 }
 
