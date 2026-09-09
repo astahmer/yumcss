@@ -39,7 +39,7 @@ import {
 } from "./adapter-projections.ts";
 import { PortableStyleArtifact } from "./portable-artifact.ts";
 import { AdapterEvidence, type AdapterOfficialApiManifestOptions } from "./adapter-evidence.ts";
-import { AdapterDefinition } from "./adapter-definition.ts";
+import { CodemodAdapterKit } from "./adapter-definition.ts";
 import { AdapterParser } from "./adapter-parser.ts";
 import { AdapterRenderersImplementation } from "./adapter-renderers.ts";
 import { validateAdapterPrograms } from "./adapter-validation.ts";
@@ -213,12 +213,12 @@ export function defineCodemodAdapter(spec: CodemodAdapterSpec): StyleAdapter {
 		...(spec.lowerings === undefined ? {} : { lowerings: spec.lowerings }),
 		migration,
 		detect: (context) =>
-			spec.detect?.(context, () => AdapterDefinition.detectBy(spec.detectPatterns, context)) ??
-			AdapterDefinition.detectBy(spec.detectPatterns, context),
+			spec.detect?.(context, () => CodemodAdapterKit.detectBy(spec.detectPatterns, context)) ??
+			CodemodAdapterKit.detectBy(spec.detectPatterns, context),
 		loadConfig: (context) =>
 			AdapterEvidence.normalizeConfig(
 				spec.loadConfig?.(context) ??
-					AdapterDefinition.configFor(spec.id, spec.configFiles ?? [], context),
+					CodemodAdapterKit.configFor(spec.id, spec.configFiles ?? [], context),
 			),
 		...(spec.loadConfigAsync === undefined
 			? {}
