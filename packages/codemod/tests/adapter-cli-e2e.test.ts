@@ -148,7 +148,7 @@ describe("adapter migration e2e matrix", () => {
 				{ cwd: codemodRoot, encoding: "utf8" },
 			);
 			const preset = readFileSync(presetFile, "utf8");
-			expect(preset).toContain('"base": ""');
+			expect(preset).toMatch(/\bbase:\s*""/u);
 			expect(preset).toContain('"midnight": "[data-theme=midnight] &"');
 		} finally {
 			rmSync(directory, { recursive: true, force: true });
@@ -167,7 +167,10 @@ describe("adapter migration e2e matrix", () => {
 				dependencies: { next: "15.0.0", "styled-components": "6.0.0" },
 			}),
 		);
-		writeFileSync(join(directory, "next.config.mjs"), "const config = {};\nexport default config;\n");
+		writeFileSync(
+			join(directory, "next.config.mjs"),
+			"const config = {};\nexport default config;\n",
+		);
 		writeFileSync(
 			join(directory, "app/layout.tsx"),
 			"export default function Layout() { return <div />; }\n",
@@ -197,7 +200,7 @@ describe("adapter migration e2e matrix", () => {
 			);
 			expect(readFileSync(join(directory, "app/layout.tsx"), "utf8")).toContain(
 				'import "pandwind-css.css";',
-		);
+			);
 			expect(readFileSync(join(directory, "next.config.mjs"), "utf8")).toContain(
 				"pandwindWebpackCss",
 			);
