@@ -68,7 +68,8 @@
             packages = [
               nub
               pkgs.nodejs_24
-              pkgs.pnpm
+              # Corepack resolves the exact version declared by package.json.
+              pkgs.corepack_24
               pkgs.git
               pkgs.jq
               pkgs.nixfmt

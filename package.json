@@ -3,6 +3,8 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
+		"package-manager:check": "node scripts/check-pnpm-version.mjs",
+		"preinstall": "node scripts/check-pnpm-version.mjs",
 		"build": "pnpm -r --if-present build",
 		"dev": "pnpm --filter example run dev",
 		"typecheck": "pnpm --workspace-concurrency=1 --filter pandwind-analyze --filter pandwind-codemod --filter pandwind --filter pandwind-devtools --filter @pandwind/lint-plugin --filter example --filter inspector --filter playground --filter css-example --filter opentui-example --filter rn-example --filter showcase --filter pandwind-docs run typecheck",
@@ -83,5 +85,6 @@
 		"pngjs": "7.0.0",
 		"sass": "1.104.0",
 		"typescript": "7.0.2"
-	}
+	},
+	"packageManager": "pnpm@12.3.4"
 }

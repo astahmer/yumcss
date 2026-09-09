@@ -107,7 +107,9 @@ jobs:
 
       - uses: pnpm/action-setup@v4
         with:
-          version: 11.21.0
+          # This workflow is reusable from repositories that do not contain
+          # Pandwind's root package.json, so keep an explicit external pin.
+          version: 12.3.4
 
       - name: Measure HEAD and base
         env:

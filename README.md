@@ -79,7 +79,9 @@ they are not installed by a runtime-only `pandwind` consumer. The runtime
 package keeps only the optional packages needed by its own build and tests.
 
 For repository development only, enter the reproducible shell first. It provides
-the pinned Nub TypeScript runner, Node, pnpm, and the formatting utilities:
+the pinned Nub TypeScript runner, Node, pnpm 12.3.4, and the formatting
+utilities. The root `packageManager` field is the single pnpm version source for
+all workspace packages and apps:
 
 ```sh
 direnv allow       # automatic, after installing direnv
