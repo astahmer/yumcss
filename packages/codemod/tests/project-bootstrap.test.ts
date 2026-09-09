@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
 import { createPandwindProjectSupport } from "../src/swap/project-bootstrap.ts";
-import { CodemodAdapterId } from "../src/swap/identifiers.ts";
+import { CodemodAdapterId, SwapTargetId } from "../src/swap/identifiers.ts";
 
 const TAILWIND_CODEGEN_TEST_TIMEOUT_MS = 30_000;
 
@@ -314,7 +314,7 @@ describe("Pandwind project bootstrap", () => {
 		const support = await createPandwindProjectSupport({
 			root,
 			sourceAdapter: CodemodAdapterId.Panda,
-			targetAdapter: CodemodAdapterId.Pandwind,
+			targetAdapter: SwapTargetId.CssClass,
 			outputDirectory: "pandwind",
 			readFile: (file) => files.get(file),
 			listFiles: () => [...files.keys()],

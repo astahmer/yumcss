@@ -20,7 +20,7 @@ import type {
 import type { PandwindMeta } from "../meta.ts";
 import { loadMetaFromSources } from "../meta.ts";
 import { createBuiltinCodemodCatalog } from "./adapter-catalog.ts";
-import { CodemodAdapterId } from "./identifiers.ts";
+import { CodemodAdapterId, SwapTargetId } from "./identifiers.ts";
 import {
 	PANDWIND_NEXT_CSS_ID,
 	planPandwindNextIntegration,
@@ -57,6 +57,17 @@ const escapeRegExp = (value: string): string => value.replace(/[.*+?^${}()|[\]\\
 
 const projectFile = (directory: string, name: string): string =>
 	posixPath(join(directory.replaceAll("\\", "/"), name));
+
+const PANDWIND_PROJECT_TARGETS = [
+	CodemodAdapterId.Pandwind,
+	SwapTargetId.CssClass,
+	SwapTargetId.Tw,
+	SwapTargetId.Dss,
+	SwapTargetId.Design,
+] as const;
+
+const isPandwindProjectTarget = (target: string): boolean =>
+	PANDWIND_PROJECT_TARGETS.includes(target as (typeof PANDWIND_PROJECT_TARGETS)[number]);
 
 const scalarTokenValues = (config: AdapterProjectConfig): Set<string> =>
 	new Set(
@@ -717,7 +728,7 @@ export async function createPandwindProjectSupport(
 	const sourceConfig = await loadSourceConfig(request);
 	const directory = posixPath(request.outputDirectory).replace(/\/$/u, "");
 	const nextIntegration =
-		request.targetAdapter === CodemodAdapterId.Pandwind
+		isPandwindProjectTarget(request.targetAdapter)
 			? planPandwindNextIntegration({
 					projectRoot: request.root,
 					outputDirectory: directory,
