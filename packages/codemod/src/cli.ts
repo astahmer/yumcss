@@ -397,7 +397,7 @@ async function mainMigrate(argv: string[]): Promise<void> {
 		await projectMigration.run({
 			patterns: args.patterns,
 			filePaths,
-			meta: meta ?? createEmptyPandwindMeta(),
+			meta,
 			...(args.outDir === undefined ? {} : { outDir: args.outDir }),
 			...(args.force === undefined ? {} : { force: args.force }),
 			diff: args.diff,

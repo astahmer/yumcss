@@ -96,3 +96,16 @@ The promotion order minimizes new runner code:
 Each row has one bounded command, one pinned input, and one report path. This is
 enough to implement and review the work without treating a broad “run more
 proofs” statement as completion.
+
+## Already covered
+
+These are deliberately absent from the fixture-only list:
+
+- Panda now has the installed website proof in
+  `plans/evidence/panda-website-installed-proof.json`, including `/`,
+  `/showcase`, all 200 HTTP routes, 98 RSC streams, 98 settled browser routes,
+  typecheck/build, and CSS-size evidence.
+- StyleX already has the checked-in `stylex-docs` claim and the three-lane
+  `astryx-docsite` proof in `real-browser-ssr-proof-matrix.json`. Its remaining
+  work is broader route coverage only; it does not need another fixture-only
+  promotion row.
