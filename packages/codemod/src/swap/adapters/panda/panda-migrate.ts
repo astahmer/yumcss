@@ -17,7 +17,7 @@ import { SwapResidualKindTag } from "../../semantic-ir.ts";
 import { basename, dirname, join, relative } from "node:path";
 import type { PandwindMeta } from "../../../meta.ts";
 import { SourcePass } from "../../../source-pass-utils.ts";
-import { ensureImport } from "../../../shared.ts";
+import { planPandwindNextIntegration } from "../../host-integration.ts";
 import { CodemodAdapterId } from "../../identifiers.ts";
 import {
 	foldRecipeCall,
@@ -129,73 +129,16 @@ function integrateNextApp(
 	notes: string[],
 	fileSystem: PandaProjectFileSystem,
 ): void {
-	const configPath = ["next.config.mjs", "next.config.js", "next.config.ts"]
-		.map((name) => join(projectRoot, name))
-		.find((path) => fileSystem.exists(path));
-	if (configPath === undefined) return;
-
-	const config = fileSystem.read(configPath);
-	if (config === undefined) return;
-	const presetPath = `./${relative(dirname(configPath), join(outDir, "preset.ts")).replaceAll("\\", "/")}`;
-	const pluginImport = `import { pandwindWebpackCss } from "pandwind/unplugin";`;
-	const presetImport = `import { preset } from "${presetPath}";`;
-	let nextConfig = config;
-	if (!nextConfig.includes("pandwindWebpackCss")) {
-		nextConfig = ensureImport(nextConfig, pluginImport);
-		nextConfig = ensureImport(nextConfig, presetImport);
-		const plugin = `\t\tconfig.plugins.push(pandwindWebpackCss({ preset, root: process.cwd(), virtualId: "pandwind-css.css" }));`;
-		const webpackBody = `\twebpack(config) {\n${plugin}\n\t\treturn config;\n\t},\n`;
-		const existingWebpack = /webpack\s*\([^)]*\)\s*\{/;
-		if (existingWebpack.test(nextConfig)) {
-			const returnAt = nextConfig.indexOf("return config", nextConfig.search(existingWebpack));
-			if (returnAt !== -1) {
-				nextConfig = `${nextConfig.slice(0, returnAt)}${plugin}\n${nextConfig.slice(returnAt)}`;
-			}
-		} else {
-			// Find the config object's balanced closing brace, not the last nested
-			// object (for example `images: { ... }`). Add the missing property
-			// comma when the existing final property does not have one.
-			const configOpen = nextConfig.search(/(?:const|let|var)\s+config\s*=\s*\{/);
-			const configBlock =
-				configOpen === -1
-					? null
-					: SourcePass.matchBlock(nextConfig, nextConfig.indexOf("{", configOpen));
-			if (configBlock !== null) {
-				const close = configBlock.end - 1;
-				const prefix = nextConfig.slice(0, close).replace(/\s+$/, "");
-				const separator = prefix.endsWith(",") ? "\n" : ",\n";
-				nextConfig = `${prefix}${separator}${webpackBody}${nextConfig.slice(close)}`;
-			}
-		}
-	}
-	if (nextConfig.includes("pandwindWebpackCss")) {
-		nextConfig = ensureImport(nextConfig, pluginImport);
-		nextConfig = ensureImport(nextConfig, presetImport);
-	}
-	if (nextConfig !== config) {
-		notes.push(`registered pandwindWebpackCss in ${relative(projectRoot, configPath)}`);
-		if (write) fileSystem.write(configPath, nextConfig);
-	}
-
-	const layouts = [
-		join(projectRoot, "app", "layout.tsx"),
-		join(projectRoot, "app", "layout.ts"),
-		join(projectRoot, "src", "app", "layout.tsx"),
-		join(projectRoot, "src", "app", "layout.ts"),
-	].filter((path) => fileSystem.exists(path));
-	for (const layoutPath of layouts) {
-		const layout = fileSystem.read(layoutPath);
-		if (layout === undefined) continue;
-		// Webpack treats `scheme:` imports as URI schemes before resolver
-		// plugins run. A bare virtual id reaches unplugin on both Next and Vite.
-		const virtualImport = 'import "pandwind-css.css";';
-		const nextLayout = ensureImport(
-			layout.replaceAll('import "pandwind-css";\n', "").replaceAll('import "pandwind-css";', ""),
-			virtualImport,
-		);
-		if (nextLayout === layout) continue;
-		notes.push(`imported pandwind-css in ${relative(projectRoot, layoutPath)}`);
-		if (write) fileSystem.write(layoutPath, nextLayout);
+	const plan = planPandwindNextIntegration({
+		projectRoot,
+		outputDirectory: outDir,
+		fileSystem,
+		presetFile: "preset.ts",
+		presetBinding: "preset",
+	});
+	notes.push(...plan.notes);
+	if (write) {
+		for (const change of plan.fileChanges) fileSystem.write(change.path, change.content);
 	}
 }
 

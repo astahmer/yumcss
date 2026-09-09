@@ -1,6 +1,7 @@
 import { describe, expect, test } from "vitest";
 import { createPandwindProjectSupport } from "../src/swap/project-bootstrap.ts";
 import { CodemodAdapterId, SwapTargetId } from "../src/swap/identifiers.ts";
+import { planPandwindNextIntegration } from "../src/swap/host-integration.ts";
 
 const TAILWIND_CODEGEN_TEST_TIMEOUT_MS = 30_000;
 
@@ -343,5 +344,72 @@ describe("Pandwind project bootstrap", () => {
 			content:
 				'"use client";\n\nimport "pandwind-css.css";\nexport default function Layout() { return <html />; }\n',
 		});
+	});
+
+	test("finds wrapped config objects and webpack arrows through the AST", async () => {
+		const root = "/project";
+		const files = new Map<string, string>([
+			[
+				`${root}/next.config.ts`,
+				[
+					'import { defineConfig } from "next";',
+					"const options = { images: { remotePatterns: [] }, webpack: (config: any) => {",
+					"\tconfig.resolve = config.resolve;",
+					"\treturn config;",
+					"} };",
+					"export default defineConfig(options);",
+				].join("\n"),
+			],
+		]);
+		const support = await createPandwindProjectSupport({
+			root,
+			sourceAdapter: CodemodAdapterId.Panda,
+			targetAdapter: SwapTargetId.CssClass,
+			outputDirectory: "pandwind",
+			readFile: (file) => files.get(file),
+			listFiles: () => [...files.keys()],
+			packageJson: { dependencies: { next: "15.0.0" } },
+		});
+
+		const config = support.fileChanges.find((change) => change.path === "next.config.ts");
+		expect(config).toBeDefined();
+		expect(config?.content).toContain("config.plugins.push(");
+		expect(config?.content).toContain("return config;");
+		expect(config?.content.indexOf("config.plugins.push(")).toBeLessThan(
+			config?.content.indexOf("return config;") ?? 0,
+		);
+	});
+
+	test("fails closed for an expression-bodied webpack hook", async () => {
+		const root = "/project";
+		const files = new Map<string, string>([
+			[
+				`${root}/next.config.mjs`,
+				"export default { webpack: (config) => ({ ...config, plugins: [] }) };\n",
+			],
+		]);
+		const support = await createPandwindProjectSupport({
+			root,
+			sourceAdapter: CodemodAdapterId.Panda,
+			targetAdapter: SwapTargetId.CssClass,
+			outputDirectory: "pandwind",
+			readFile: (file) => files.get(file),
+			listFiles: () => [...files.keys()],
+			packageJson: { dependencies: { next: "15.0.0" } },
+		});
+
+		expect(support.fileChanges).toHaveLength(0);
+		const plan = planPandwindNextIntegration({
+			projectRoot: root,
+			outputDirectory: "pandwind",
+			fileSystem: {
+				read: (file) => files.get(file),
+				exists: (file) => files.has(file),
+			},
+			packageJson: { dependencies: { next: "15.0.0" } },
+		});
+		expect(plan.notes).toContain(
+			"could not safely add pandwindWebpackCss to next.config.mjs",
+		);
 	});
 });

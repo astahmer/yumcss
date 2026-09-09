@@ -1,5 +1,6 @@
 import { dirname, join, relative, resolve } from "node:path";
-import { SourcePass } from "../source-pass-utils.ts";
+import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
+import { NodeKind } from "pandwind/tw/literal";
 import { ensureImport } from "../shared.ts";
 
 /** The file-like virtual id used by Next/Webpack, where URI schemes are rejected. */
@@ -21,6 +22,10 @@ export interface PandwindNextIntegrationRequest {
 	readonly outputDirectory: string;
 	readonly fileSystem: HostProjectFileSystem;
 	readonly packageJson?: Readonly<Record<string, unknown>>;
+	/** Generated preset module relative to `outputDirectory`. */
+	readonly presetFile?: string;
+	/** Exported preset binding in the generated preset module. */
+	readonly presetBinding?: string;
 }
 
 export interface PandwindNextIntegrationPlan {
@@ -95,40 +100,135 @@ function generatedWebpackConfig(
 	].join("\n");
 }
 
-function appendConfigProperty(source: string, property: string): string | undefined {
-	const configDeclaration = /(?:const|let|var)\s+[A-Za-z_$][\w$]*\s*=\s*\{/u.exec(source);
-	const defaultObject = /export\s+default\s*\{/u.exec(source);
-	const match = configDeclaration ?? defaultObject;
-	if (match === null || match.index === undefined) return undefined;
-	const open = source.indexOf("{", match.index);
-	const block = SourcePass.matchBlock(source, open);
-	if (block === null) return undefined;
-	const close = block.end - 1;
+type ConfigAstNode = {
+	readonly type?: string;
+	readonly start?: number;
+	readonly end?: number;
+	readonly [key: string]: unknown;
+};
+
+const nodeRange = (node: ConfigAstNode | undefined): { start: number; end: number } | undefined =>
+	typeof node?.start === "number" && typeof node.end === "number"
+		? { start: node.start, end: node.end }
+		: undefined;
+
+const unwrapConfigExpression = (node: ConfigAstNode | undefined): ConfigAstNode | undefined => {
+	let current = node;
+	while (
+		current?.type === NodeKind.ParenthesizedExpression ||
+		current?.type === NodeKind.TSAsExpression ||
+		current?.type === NodeKind.TSSatisfiesExpression
+	) {
+		current = current.expression as ConfigAstNode | undefined;
+	}
+	return current;
+};
+
+const configPropertyName = (property: ConfigAstNode): string | undefined => {
+	const key = property.key as ConfigAstNode | undefined;
+	if (key?.type === NodeKind.Identifier && typeof key.name === "string") return key.name;
+	if (key?.type === NodeKind.Literal && typeof key.value === "string") return key.value;
+	return undefined;
+};
+
+/** Resolve a Next config object through top-level bindings without evaluating it. */
+function findNextConfigObject(source: string, file: string): ConfigAstNode | undefined {
+	let parsed: ConfigAstNode;
+	try {
+		parsed = SOURCE_SCANNER_SERVICE.parse({
+			file,
+			source,
+			language: file.endsWith(".ts") ? "typescript" : "javascript",
+		}).program as unknown as ConfigAstNode;
+	} catch {
+		return undefined;
+	}
+	const body = Array.isArray(parsed.body) ? (parsed.body as ConfigAstNode[]) : [];
+	const initializers = new Map<string, ConfigAstNode>();
+	for (const statement of body) {
+		if (statement.type !== NodeKind.VariableDeclaration) continue;
+		for (const declaration of (statement.declarations as ConfigAstNode[] | undefined) ?? []) {
+			const id = declaration.id as ConfigAstNode | undefined;
+			if (id?.type === NodeKind.Identifier && typeof id.name === "string") {
+				const init = unwrapConfigExpression(declaration.init as ConfigAstNode | undefined);
+				if (init !== undefined) initializers.set(id.name, init);
+			}
+		}
+	}
+
+	const resolve = (
+		node: ConfigAstNode | undefined,
+		visited: ReadonlySet<string> = new Set(),
+	): ConfigAstNode | undefined => {
+		const current = unwrapConfigExpression(node);
+		if (current === undefined) return undefined;
+		if (current.type === NodeKind.Identifier && typeof current.name === "string") {
+			if (visited.has(current.name)) return undefined;
+			return resolve(initializers.get(current.name), new Set(visited).add(current.name));
+		}
+		if (current.type === NodeKind.CallExpression) {
+			const argumentsList = (current.arguments as ConfigAstNode[] | undefined) ?? [];
+			return resolve(argumentsList[0]);
+		}
+		return current.type === NodeKind.ObjectExpression ? current : undefined;
+	};
+
+	for (const statement of body) {
+		if (statement.type !== NodeKind.ExportDefaultDeclaration) continue;
+		const config = resolve(statement.declaration as ConfigAstNode | undefined);
+		if (config !== undefined) return config;
+	}
+	return resolve(initializers.get("config")) ??
+		body
+			.filter((statement) => statement.type === NodeKind.VariableDeclaration)
+			.flatMap((statement) => (statement.declarations as ConfigAstNode[] | undefined) ?? [])
+			.map((declaration) => resolve(declaration.init as ConfigAstNode | undefined))
+			.find((config): config is ConfigAstNode => config !== undefined);
+}
+
+function appendConfigProperty(
+	source: string,
+	configObject: ConfigAstNode,
+	property: string,
+): string | undefined {
+	const range = nodeRange(configObject);
+	if (range === undefined) return undefined;
+	const close = range.end - 1;
 	const prefix = source.slice(0, close).replace(/\s+$/u, "");
 	const separator = prefix.endsWith(",") || prefix.endsWith("{") ? "\n" : ",\n";
 	return `${prefix}${separator}${property}\n${source.slice(close)}`;
 }
 
-function addWebpackPlugin(source: string, webpackBody: string): string | undefined {
-	const existingWebpack = /webpack\s*(?:\([^)]*\)|:\s*(?:\([^)]*\)|[A-Za-z_$][\w$]*)\s*=>)\s*\{/u;
-	const match = existingWebpack.exec(source);
-	if (match?.index !== undefined) {
-		const open = source.indexOf("{", match.index);
-		const block = SourcePass.matchBlock(source, open);
-		if (block === null) return undefined;
-		const body = block.body;
-		if (body.includes("pandwindWebpackCss")) return source;
-		const returnIndex = body.search(/\breturn\b/u);
-		const insertion = returnIndex === -1 ? body.length : returnIndex;
-		const before = body.slice(0, insertion).replace(/\s*$/u, "");
-		const after = body.slice(insertion);
+function addWebpackPlugin(source: string, webpackBody: string, file: string): string | undefined {
+	if (source.includes("pandwindWebpackCss")) return source;
+	const configObject = findNextConfigObject(source, file);
+	if (configObject === undefined) return undefined;
+	const properties = (configObject.properties as ConfigAstNode[] | undefined) ?? [];
+	const webpackProperty = properties.find((property) => configPropertyName(property) === "webpack");
+	if (webpackProperty !== undefined) {
+		const webpackValue = unwrapConfigExpression(webpackProperty.value as ConfigAstNode | undefined);
+		const body = webpackValue?.body as ConfigAstNode | undefined;
+		const bodyRange = nodeRange(body);
+		if (
+			(webpackValue?.type !== NodeKind.FunctionExpression &&
+				webpackValue?.type !== NodeKind.ArrowFunctionExpression) ||
+			body?.type !== NodeKind.BlockStatement ||
+			bodyRange === undefined
+		)
+			return undefined;
+		const statements = (body.body as ConfigAstNode[] | undefined) ?? [];
+		const returnStatement = statements.find((statement) => statement.type === NodeKind.ReturnStatement);
+		const insertion = returnStatement?.start ?? bodyRange.end - 1;
+		const bodyStart = bodyRange.start + 1;
+		const before = source.slice(bodyStart, insertion).replace(/\s*$/u, "");
+		const after = source.slice(insertion).replace(/^\s*/u, "");
 		const separator = before === "" || before.endsWith("\n") ? "" : "\n";
-		const nextBody = `${before}${separator}${webpackBody}\n${after.replace(/^\s*/u, "")}`;
-		return `${source.slice(0, open + 1)}${nextBody}${source.slice(block.end - 1)}`;
+		const nextBody = `${before}${separator}${webpackBody}\n${after}`;
+		return `${source.slice(0, bodyStart)}${nextBody}${source.slice(bodyRange.end - 1)}`;
 	}
 
 	const property = `\twebpack(config) {\n${webpackBody}\n\t\treturn config;\n\t},`;
-	return appendConfigProperty(source, property);
+	return appendConfigProperty(source, configObject, property);
 }
 
 function layoutPaths(projectRoot: string, fileSystem: HostProjectFileSystem): readonly string[] {
@@ -148,16 +248,18 @@ export function planPandwindNextIntegration(
 	if (next === undefined) return { enabled: false, fileChanges: [], notes: [] };
 
 	const outputDirectory = resolve(request.projectRoot, request.outputDirectory);
+	const presetFile = request.presetFile ?? "preset.mjs";
+	const presetBinding = request.presetBinding ?? "pandwindPreset";
 	const presetSpecifier = `./${relative(
 		dirname(next.path),
-		join(outputDirectory, "preset.mjs"),
+		join(outputDirectory, presetFile),
 	).replaceAll("\\", "/")}`;
 	const normalizedPresetSpecifier = presetSpecifier.startsWith(".")
 		? presetSpecifier
 		: `./${presetSpecifier}`;
 	const pluginImport = 'import { pandwindWebpackCss } from "pandwind/unplugin";';
-	const presetImport = `import { pandwindPreset } from "${normalizedPresetSpecifier}";`;
-	const plugin = `pandwindWebpackCss({ preset: pandwindPreset, root: process.cwd(), virtualId: "${PANDWIND_NEXT_CSS_ID}" })`;
+	const presetImport = `import { ${presetBinding} } from "${normalizedPresetSpecifier}";`;
+	const plugin = `pandwindWebpackCss({ preset: ${presetBinding}, root: process.cwd(), virtualId: "${PANDWIND_NEXT_CSS_ID}" })`;
 	const webpackBody = `\t\tconfig.plugins.push(\n\t\t\t${plugin}\n\t\t);`;
 
 	let config = next.source;
@@ -165,7 +267,7 @@ export function planPandwindNextIntegration(
 		config = generatedWebpackConfig(plugin, pluginImport, presetImport);
 	} else {
 		if (!config.includes("pandwindWebpackCss")) {
-			const withWebpack = addWebpackPlugin(config, webpackBody);
+			const withWebpack = addWebpackPlugin(config, webpackBody, next.path);
 			if (withWebpack === undefined) {
 				return {
 					enabled: false,
