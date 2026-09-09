@@ -148,36 +148,53 @@ export const createStylesheet = (
 			const propertySeparator = key.lastIndexOf("__");
 			const property = propertySeparator === -1 ? key : key.slice(propertySeparator + 2);
 			const normalizedValue = normalizeCssValue(property, style[key]! as string | number);
-			const pairId = pairs.concat(orderedKey, normalizedValue);
-			if (cache.has(pairId)) continue;
-
-			const atomic = decoder.decode(preset.conditions, pairId);
-			const tokenGroup = tokenMaps.groupByProp.get(atomic.prop!);
-			const tokenNames = tokenMaps.tokensByProp.get(atomic.prop!);
-			if (tokenNames?.has(normalizedValue)) {
-				// `tokenNames` contains every accepted spelling, including aliases
-				// such as `brand` for a preset key `$brand`. Track the canonical
-				// preset path so used-token emission keeps the variable declaration
-				// for whichever spelling the caller authored.
-				const tokenPath = tokenMaps.flatTokens.get(
-					`${tokenGroup ?? atomic.prop!}.${normalizedValue}`,
-				)?.path;
-				if (tokenPath !== undefined && !usedTokenPaths.has(tokenPath)) {
-					usedTokenPaths.add(tokenPath);
-					tokensCache = undefined;
-				}
-			}
-			const value = resolveTokenValue(tokenMaps, atomic.prop!, normalizedValue);
-
-			const css = serializer.serialize([dashCase(atomic.prop!), value].join(":"), {
-				...atomic.conditions,
-				className: `.${classNameFor(orderedKey, normalizedValue)}`,
-			});
-
-			cache.set(pairId, { id: pairId, css, priority: atomic.priority });
-			localCache.set(pairId, { id: pairId, css, priority: atomic.priority });
+			processNormalizedStyle(orderedKey, normalizedValue, localCache);
 		}
 
+		return localCache;
+	};
+
+	const processNormalizedStyle = (
+		orderedKey: string,
+		normalizedValue: string,
+		localCache: Map<string, Rule>,
+	): void => {
+		const pairId = pairs.concat(orderedKey, normalizedValue);
+		if (cache.has(pairId)) return;
+
+		const atomic = decoder.decode(preset.conditions, pairId);
+		const tokenGroup = tokenMaps.groupByProp.get(atomic.prop!);
+		const tokenNames = tokenMaps.tokensByProp.get(atomic.prop!);
+		if (tokenNames?.has(normalizedValue)) {
+			// `tokenNames` contains every accepted spelling, including aliases
+			// such as `brand` for a preset key `$brand`. Track the canonical
+			// preset path so used-token emission keeps the variable declaration
+			// for whichever spelling the caller authored.
+			const tokenPath = tokenMaps.flatTokens.get(
+				`${tokenGroup ?? atomic.prop!}.${normalizedValue}`,
+			)?.path;
+			if (tokenPath !== undefined && !usedTokenPaths.has(tokenPath)) {
+				usedTokenPaths.add(tokenPath);
+				tokensCache = undefined;
+			}
+		}
+		const value = resolveTokenValue(tokenMaps, atomic.prop!, normalizedValue);
+
+		const css = serializer.serialize([dashCase(atomic.prop!), value].join(":"), {
+			...atomic.conditions,
+			className: `.${classNameFor(orderedKey, normalizedValue)}`,
+		});
+
+		const rule = { id: pairId, css, priority: atomic.priority };
+		cache.set(pairId, rule);
+		localCache.set(pairId, rule);
+	};
+
+	const processPreparedStyles = (styles: readonly { key: string; value: string }[]) => {
+		const localCache = new Map<string, Rule>();
+		for (const { key, value } of styles) {
+			processNormalizedStyle(key, value, localCache);
+		}
 		return localCache;
 	};
 
@@ -295,6 +312,7 @@ export const createStylesheet = (
 	return {
 		cache,
 		process: processStyles,
+		processPrepared: processPreparedStyles,
 		processVarKey,
 		gen,
 		generate,

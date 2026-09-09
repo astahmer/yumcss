@@ -32,6 +32,8 @@ import type {
 	TypedStyleObject,
 } from "../types/typings.ts";
 
+type RuntimeDeclaration = { key: string; value: string };
+
 export interface RuntimeCssOptions extends CreateCssOptions {
 	/** Reuse a sheet across multiple css instances. */
 	readonly sheet?: RuntimeSheet;
@@ -83,7 +85,7 @@ function runtimeOptions(preset: CssConfigReturn, options: RuntimeCssOptions): Ru
 	const { sheet: _sheet, sheetOptions: _sheetOptions, ...cssOptions } = options;
 	const stylesheet = createStylesheet(preset, cssOptions);
 	let tokensSynced = false;
-	let pendingStyles: StyleObject[] = [];
+	let pendingStyles: RuntimeDeclaration[] = [];
 	const pendingStyleIds = new Set<string>();
 	const sync = (rules: readonly RuntimeRule[] = []): void => {
 		if (!tokensSynced) {
@@ -96,7 +98,7 @@ function runtimeOptions(preset: CssConfigReturn, options: RuntimeCssOptions): Ru
 		if (pendingStyles.length === 0) return;
 		const styles = pendingStyles;
 		pendingStyles = [];
-		const added = stylesheet.process(styles);
+		const added = stylesheet.processPrepared(styles);
 		sync(Array.from(added.values()));
 	};
 	const syncVars = (keys: readonly string[]): void => {
@@ -116,7 +118,7 @@ function runtimeOptions(preset: CssConfigReturn, options: RuntimeCssOptions): Ru
 			const id = `${key}\u0000${value}`;
 			if (!pendingStyleIds.has(id)) {
 				pendingStyleIds.add(id);
-				pendingStyles.push({ [key]: value } as StyleObject);
+				pendingStyles.push({ key, value });
 			}
 			return authoredStrategy?.toClassName(key, value) ?? null;
 		},
