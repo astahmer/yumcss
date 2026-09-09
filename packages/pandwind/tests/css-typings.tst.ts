@@ -1,5 +1,5 @@
 import { expect, test } from "tstyche";
-import { createCss } from "../src/css/create-css.ts";
+import { createCss, type AtomicStyleProps } from "../src/css/index.ts";
 import { definePreset, type AnyCssConfig } from "../src/preset/index.ts";
 import { examplePreset } from "@pandwind/example-preset";
 
@@ -35,6 +35,26 @@ test("createCss rejects properties and token values outside the preset", () => {
 test("the untyped convenience form remains available", () => {
 	const loose = createCss();
 	expect(loose({ arbitraryProperty: "value" })).type.toBe<Compiled>();
+});
+
+test("AtomicStyleProps preserves the selected CssFn style vocabulary", () => {
+	const loose = createCss();
+	const typed = createCss(examplePreset);
+
+	const openStyles: AtomicStyleProps<typeof loose> = { arbitraryProperty: "value" };
+	const typedStyles: Pick<
+		AtomicStyleProps<typeof typed>,
+		"backgroundColor" | "borderRadius" | "padding"
+	> = {
+		backgroundColor: "$blue-500",
+		borderRadius: "lg",
+		padding: 4,
+	};
+
+	expect(openStyles).type.toBe<AtomicStyleProps<typeof loose>>();
+	expect(typedStyles).type.toBe<
+		Pick<AtomicStyleProps<typeof typed>, "backgroundColor" | "borderRadius" | "padding">
+	>();
 });
 
 test("an open preset config keeps arbitrary CSS properties typed", () => {

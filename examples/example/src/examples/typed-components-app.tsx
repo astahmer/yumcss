@@ -1,16 +1,18 @@
 import type { CSSProperties, PropsWithChildren } from "react";
+import type { AtomicStyleProps } from "pandwind/css";
 import { css } from "../css";
 import { cx } from "../cx";
 import { tw } from "../tw";
-
-type AtomicStyleProps = Parameters<typeof css.class>[0];
 
 /**
  * A component can expose a deliberate style contract instead of forwarding
  * the entire preset vocabulary. Consumers get token-aware values for these
  * three properties only, plus normal host escape hatches.
  */
-type PanelStyleProps = Pick<AtomicStyleProps, "backgroundColor" | "borderRadius" | "padding">;
+type PanelStyleProps = Pick<
+	AtomicStyleProps<typeof css>,
+	"backgroundColor" | "borderRadius" | "padding"
+>;
 
 type PanelProps = PropsWithChildren<
 	PanelStyleProps & {

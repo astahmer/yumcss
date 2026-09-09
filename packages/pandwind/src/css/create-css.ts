@@ -125,3 +125,13 @@ export interface CssFn<TStyles extends StyleObject = StyleObject> {
 	/** Mark a named runtime input for a dynamic `group` definition. */
 	input: (name: string) => never;
 }
+
+/**
+ * The style-object type accepted by a `createCss` instance's `class` method.
+ *
+ * Pass a `CssFn` instance to retain its preset-specific token and condition
+ * types; omit the type argument for the open-ended `createCss()` form.
+ */
+export type AtomicStyleProps<
+	TCss extends Pick<CssFn<never>, "class"> = Pick<CssFn<StyleObject>, "class">,
+> = Parameters<TCss["class"]>[0];
