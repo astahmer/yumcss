@@ -63,7 +63,7 @@ test("css group", () => {
 		),
 	).toMatchInlineSnapshot(`
     {
-      "className": "color__$red-700 _hover__color__$red-800 _hover__display__block borderRadius__2xl display__flex margin__10px backgroundColor__$bg _hover__backgroundColor__$bgHover &:hover__backgroundColor__$red-500",
+      "className": "color__$red-700 _hover__color__$red-800 _hover__display__block borderRadius__2xl display__flex margin__10px backgroundColor__var(--bg) _hover__backgroundColor__var(--bgHover) &:hover__backgroundColor__$red-500",
       "style": {
         "--bg": "blue",
         "--bgHover": "",

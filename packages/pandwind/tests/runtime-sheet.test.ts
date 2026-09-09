@@ -104,6 +104,24 @@ describe("runtime CSS-in-JS sheet", () => {
 		expect(sheet.css()).toContain(".pw-color");
 	});
 
+	test("dynamic groups bind input values through runtime custom properties", () => {
+		const sheet = createRuntimeSheet({ autoMount: false });
+		const css = createRuntimeCss(examplePreset, { sheet });
+		const groups = css.group({
+			button: {
+				$input: { background: {} as string },
+				backgroundColor: css.input("background"),
+				color: "$white",
+			},
+		});
+
+		const props = css.props(groups.button({ background: "#0284c7" }));
+
+		expect(props.style).toEqual({ "--background": "#0284c7" });
+		expect(sheet.css()).toContain("background-color:var(--background)");
+		expect(props.className).toBeDefined();
+	});
+
 	test("design css shares the preset-bound runtime path", () => {
 		const sheet = createRuntimeSheet({ autoMount: false });
 		const css = createRuntimeDesignCss(examplePreset, { sheet });

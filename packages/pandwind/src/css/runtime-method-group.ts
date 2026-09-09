@@ -28,7 +28,7 @@ export const attachGroup: RuntimeCssAttachment = (css, context) => {
 				compiled[key] = context.backend.declare(
 					key,
 					typeof value === "string" && value.startsWith("input>$")
-						? `$${value.slice("input>$".length)}`
+						? `var(${cssVar(value.slice("input>$".length))})`
 						: value,
 				);
 			}

@@ -132,20 +132,20 @@ test("css with dynamic styles", () => {
 	});
 
 	expect(styles.buttonColor({ bg: "blue", fontSize: 10 })).toMatchInlineSnapshot(`
-      {
-        "compiled": {
-          "_hover__backgroundColor": "_hover__backgroundColor__$bgHover",
-          "backgroundColor": "backgroundColor__$bg",
-          "display": "display__flex",
-          "fontSize": "fontSize__$fontSize",
-        },
-        "style": {
-          "--bg": "blue",
-          "--fontSize": 10,
-        },
-        Symbol(dynamic): true,
-      }
-    `);
+		{
+		  "compiled": {
+		    "_hover__backgroundColor": "_hover__backgroundColor__var(--bgHover)",
+		    "backgroundColor": "backgroundColor__var(--bg)",
+		    "display": "display__flex",
+		    "fontSize": "fontSize__var(--fontSize)",
+		  },
+		  "style": {
+		    "--bg": "blue",
+		    "--fontSize": 10,
+		  },
+		  Symbol(dynamic): true,
+		}
+	`);
 
 	expect(
 		css.props(
@@ -154,12 +154,12 @@ test("css with dynamic styles", () => {
 			styles.buttonColor({ bg: "blue", fontSize: 10 }),
 		),
 	).toMatchInlineSnapshot(`
-    {
-      "className": "display__flex padding__4px borderRadius__2xl fontSize__$fontSize backgroundColor__$bg _hover__backgroundColor__$bgHover",
-      "style": {
-        "--bg": "blue",
-        "--fontSize": 10,
-      },
-    }
-  `);
+		{
+		  "className": "display__flex padding__4px borderRadius__2xl fontSize__var(--fontSize) backgroundColor__var(--bg) _hover__backgroundColor__var(--bgHover)",
+		  "style": {
+		    "--bg": "blue",
+		    "--fontSize": 10,
+		  },
+		}
+	`);
 });
