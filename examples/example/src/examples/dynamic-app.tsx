@@ -3,12 +3,14 @@ import { css, runtimeCss, untypedCss } from "../css";
 import { cx } from "../cx";
 import { tw } from "../tw";
 
+type DynamicButtonInput = {
+	background: string;
+	padding: string;
+};
+
 const dynamicButtonGroup = runtimeCss.group({
 	button: {
-		$input: {
-			background: {} as string,
-			padding: {} as string,
-		},
+		$input: {} as DynamicButtonInput,
 		display: "block",
 		backgroundColor: runtimeCss.input("background"),
 		color: "$white",
@@ -16,8 +18,6 @@ const dynamicButtonGroup = runtimeCss.group({
 		borderRadius: "md",
 	},
 });
-
-type DynamicButtonInput = Parameters<typeof dynamicButtonGroup.button>[0];
 
 function DynamicInputButton({ children, ...input }: PropsWithChildren<DynamicButtonInput>) {
 	const props = runtimeCss.props(dynamicButtonGroup.button(input));

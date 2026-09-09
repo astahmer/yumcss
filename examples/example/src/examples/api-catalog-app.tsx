@@ -2,10 +2,12 @@ import { tw } from "../tw";
 
 const apiCatalog = [
 	["tw()", "typed utility objects", "Tailwind-shaped class strings with variants and conflicts"],
+	["createCss()", "CSS factory", "binds a preset to typed atomic style methods"],
 	["css() / css.class()", "typed atomic CSS", "declaration maps or one class string from a preset"],
 	["css.vars()", "runtime values", "classes plus inherited inline custom properties"],
 	["css.props()", "host props", "normalizes classes and styles for JSX spreading"],
 	["css.group() / input()", "reusable runtime styles", "typed input contracts for dynamic groups"],
+	["createRuntimeCss()", "runtime sheet", "registers dynamic classes and SSR-safe styles"],
 	["css.raw()", "escape hatch", "plain style objects for an inline-style host"],
 	["cx()", "composition", "composes Pandwind, Tailwind, and caller class strings"],
 	["createDesignCss()", "design vocabulary", "$frame, $layout, $text modules over the same engine"],
