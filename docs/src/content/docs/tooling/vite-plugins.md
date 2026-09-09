@@ -51,6 +51,20 @@ plugins: [pandwindCssVite(examplePreset)];
 import "pandwind:css";
 ```
 
+Dynamic `css.class()` values can also be rewritten at the JSX host boundary,
+but this is opt-in because it changes a `className` attribute into a
+`className`/`style` props spread:
+
+```ts
+pandwindCssVite(examplePreset, { transformDynamicClassName: true });
+```
+
+With the option enabled in the default or a sheet-backed class-name mode, a direct
+`className={css.class({ color: props.color, padding: 8 })}` is transformed to
+`{...css.props(css.vars({ color: props.color }), css.class({ padding: 8 }))}`.
+The first pass only handles scalar declarations on a simple host; spreads,
+existing `style` props, conditions, and other ambiguous shapes stay untouched.
+
 ## Per-route CSS splitting (opt-in)
 
 ```ts

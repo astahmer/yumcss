@@ -161,17 +161,18 @@ runtime expression/custom property or keep an explicit residual.
 
 `pandwindCssVite` options:
 
-| Option                | Purpose                                      |
-| --------------------- | -------------------------------------------- |
-| `cssSources`          | CSS/design imports to scan                   |
-| `include` / `exclude` | Files included or skipped                    |
-| `root`                | Scan root; defaults to the current directory |
-| `virtualId`           | Virtual CSS module id                        |
-| `className`           | Tailwind or named class strategy             |
-| `engine`              | Shared engine context                        |
-| `splitByRoute`        | Route-specific CSS buckets                   |
-| `inlineCritical`      | Inline route CSS into built HTML             |
-| `debug`               | Add development provenance information       |
+| Option                      | Purpose                                                   |
+| --------------------------- | --------------------------------------------------------- |
+| `cssSources`                | CSS/design imports to scan                                |
+| `include` / `exclude`       | Files included or skipped                                 |
+| `root`                      | Scan root; defaults to the current directory              |
+| `virtualId`                 | Virtual CSS module id                                     |
+| `className`                 | Tailwind or named class strategy                          |
+| `engine`                    | Shared engine context                                     |
+| `splitByRoute`              | Route-specific CSS buckets                                |
+| `inlineCritical`            | Inline route CSS into built HTML                          |
+| `debug`                     | Add development provenance information                    |
+| `transformDynamicClassName` | Rewrite simple dynamic `className={css.class(...)}` hosts |
 
 The same extraction core is available through the generic unplugin entry
 point. Keep the Vite wrapper thin and use the core when integrating another

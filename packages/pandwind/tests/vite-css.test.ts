@@ -830,6 +830,64 @@ test("dynamic css calls keep the runtime fallback", () => {
 	expect(result.code).toBe(code);
 });
 
+test("dynamic className rewriting is opt-in and host-aware", () => {
+	const code = `
+		import { css } from "./design";
+		const color = getColor();
+		export const App = () => <button className={css.class({ color: color, padding: 8 })} />;
+	`;
+	const unchanged = extract().inline(code, "app.tsx", new Set(["css"]));
+	expect(unchanged.inlined).toBe(0);
+	expect(unchanged.code).toBe(code);
+
+	const dir = makeProject({
+		"src/app.tsx": code,
+	});
+	try {
+		const plugin = pandwindCssVite(examplePreset, {
+			root: dir,
+			transformDynamicClassName: true,
+		});
+		const transformed = (
+			plugin.transform as (source: string, id: string) => { code: string } | null
+		)(readFileSync(join(dir, "src/app.tsx"), "utf8"), join(dir, "src/app.tsx"));
+		const generated = loadGenerated(plugin);
+
+		expect(transformed?.code).toContain(
+			"<button {...css.props(css.vars({ color: color }), css.class({ padding: 8 }))} />",
+		);
+		expect(transformed?.code).not.toContain("className={css.class");
+		expect(generated).toContain("padding:8");
+		expect(generated).toContain("color: var(--pw-c-color)");
+	} finally {
+		rmSync(dir, { recursive: true, force: true });
+	}
+});
+
+test("dynamic className rewriting leaves conflicting hosts untouched", () => {
+	const code = `
+		import { css } from "./design";
+		const color = getColor();
+		const style = getStyle();
+		export const App = () => <button style={style} className={css.class({ color: color })} />;
+	`;
+	const dir = makeProject({ "src/app.tsx": code });
+	try {
+		const plugin = pandwindCssVite(examplePreset, {
+			root: dir,
+			transformDynamicClassName: true,
+		});
+		const transformed = (
+			plugin.transform as (source: string, id: string) => { code: string } | null
+		)(code, join(dir, "src/app.tsx"));
+
+		expect(transformed?.code).toContain("className={css.class({ color: color })}");
+		expect(transformed?.code).not.toContain("css.props(css.vars");
+	} finally {
+		rmSync(dir, { recursive: true, force: true });
+	}
+});
+
 test("mixed literal/dynamic css calls in JSX hosts lower through vars carriers", () => {
 	const code = `
 		import { css } from "./design";
