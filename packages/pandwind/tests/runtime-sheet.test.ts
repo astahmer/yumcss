@@ -167,10 +167,17 @@ test("the DOM sink uses CSSOM insertion when the host exposes a stylesheet", () 
 
 	sheet.register([{ id: "z", css: ".z{color:red}", priority: 1 }]);
 	sheet.register([{ id: "a", css: ".a{color:blue}", priority: 1 }]);
+	sheet.setTokens(":root{--token:red}");
+	sheet.register([{ id: "b", css: ".b{color:green}", priority: 1 }]);
 
-	expect(textWrites).toBe(1);
-	expect(cssRules).toEqual([".a{color:blue}", ".z{color:red}"]);
-	expect(sheet.css()).toBe(".a{color:blue}\n.z{color:red}");
+	expect(textWrites).toBe(2);
+	expect(cssRules).toEqual([
+		":root{--token:red}",
+		".a{color:blue}",
+		".b{color:green}",
+		".z{color:red}",
+	]);
+	expect(sheet.css()).toBe(":root{--token:red}\n.a{color:blue}\n.b{color:green}\n.z{color:red}");
 });
 
 describe("runtime CSS-in-JS sheet", () => {

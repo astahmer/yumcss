@@ -32,6 +32,8 @@ export class DomStyleElementSink implements RuntimeStyleElementSink {
 	mount(css: string): boolean {
 		if (this.element !== undefined) {
 			this.element.textContent = css;
+			this.ruleOffset = undefined;
+			this.ruleCount = 0;
 			return true;
 		}
 		const document = this.document();
