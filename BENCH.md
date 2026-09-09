@@ -1,6 +1,6 @@
 # Runtime benchmarks — measured, not guessed
 
-Last measured: **2026-09-02** for the historical optimization replay and
+Last measured: **2026-09-10** for the `createRuntimeCss()` comparison, **2026-09-02** for the historical optimization replay and
 **2026-09-01** for the runtime hot-path pass, **2026-08-23** for `cx()` (v3
 whole-input cache — see the section below), **2026-08-22** for the competitor
 table. Local macOS (arm64),
@@ -166,6 +166,38 @@ The earlier runtime-sheet cache remains part of the same pass:
 These optimizations preserve the static-first delivery path: literal calls are
 still erased by the Vite compiler, so the runtime bundle is only paid for
 dynamic or unsupported calls.
+
+## `createRuntimeCss()` versus Emotion — 2026-09-10
+
+The runtime-sheet pass was compared with `@emotion/css` 11.13.5 in the same
+Node v24.19.0 process on the same macOS arm64 machine. Pandwind used
+`createRuntimeCss(examplePreset, { sheet: createRuntimeSheet({ autoMount: false }) })`,
+which is the lazy/SSR mode: registrations update the in-memory sheet, and the
+complete CSS string is requested once after the timed calls. Emotion was run
+without a DOM as well, so this isolates style resolution, hashing, caching, and
+sheet bookkeeping rather than measuring browser style insertion.
+
+The seven-property repeated case is the closest comparison to the corpus above:
+
+| case                                                 |       pandwind |  `@emotion/css` | reading                                                              |
+| ---------------------------------------------------- | -------------: | --------------: | -------------------------------------------------------------------- |
+| repeated seven-property `runtimeCss.class()`         |  ~171K ops/sec |  ~1.01M ops/sec | Emotion is about 6× faster for this repeated call shape.             |
+| fresh unique one-property `runtimeCss.class()` rules |  ~271K ops/sec |   ~369K ops/sec | The lazy Pandwind sheet is in the same order of magnitude.           |
+| repeated one-property `runtimeCss.vars()`            | ~0.96M ops/sec | ~3.04M ops/sec* | Pandwind keeps one stable class and moves the changing value inline. |
+
+`*` The `vars()` row is a semantic comparison rather than an identical
+operation: Emotion's call creates or looks up a CSS class, while Pandwind's
+`vars()` deliberately avoids a class per value and emits an inline custom
+property. Browser-mounted mode also includes DOM stylesheet writes and should
+be benchmarked separately for a specific host.
+
+This is why `createRuntimeCss()` is not the default application path. A normal
+Vite application should use `createCss()` with extraction; literal calls are
+removed from the browser hot path. Use `css.vars()` / `css.input()` for values
+that change at runtime, and use `createRuntimeCss()` when a runtime-only or SSR
+host must own the sheet. Arbitrary runtime-created class vocabularies remain
+valid, but they pay the target library's runtime resolution cost and grow the
+sheet by design.
 
 The package-level runtime throughput record lives in
 [`packages/pandwind/tests/snapshots/runtime-benchmark.json.snap`](./packages/pandwind/tests/snapshots/runtime-benchmark.json.snap)
