@@ -263,6 +263,8 @@ describe("loadThemeBlock package-specifier resolution", () => {
 				resolve(import.meta.dirname, "../../../examples/example"),
 			);
 			expect(themeBlock).toContain("--color");
+			expect(themeBlock).toContain('\n\n[data-theme="forest"]');
+			expect(themeBlock).not.toContain("\\n\\n[data-theme");
 		} finally {
 			rmSync(strayManifest, { force: true });
 		}

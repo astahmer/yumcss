@@ -133,7 +133,7 @@ export async function loadThemeBlock(modulePath: string, base: string): Promise<
 		conditions ? createConditionResolver(conditions) : undefined,
 	);
 	const scopeCss = buildThemeScopes(resolveThemes(module));
-	if (scopeCss !== "") themeBlock = themeBlock === "" ? scopeCss : `${themeBlock}\\n\\n${scopeCss}`;
+	if (scopeCss !== "") themeBlock = themeBlock === "" ? scopeCss : `${themeBlock}\n\n${scopeCss}`;
 	const components = resolveComponents(module);
 	if (components !== undefined) {
 		const { flatVars } = splitTokens(

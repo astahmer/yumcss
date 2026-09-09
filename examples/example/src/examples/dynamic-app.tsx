@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type PropsWithChildren } from "react";
 import { css, runtimeCss, untypedCss } from "../css";
 import { cx } from "../cx";
 import { tw } from "../tw";
@@ -16,6 +16,17 @@ const dynamicButtonGroup = runtimeCss.group({
 		borderRadius: "md",
 	},
 });
+
+type DynamicButtonInput = Parameters<typeof dynamicButtonGroup.button>[0];
+
+function DynamicInputButton({ children, ...input }: PropsWithChildren<DynamicButtonInput>) {
+	const props = runtimeCss.props(dynamicButtonGroup.button(input));
+	return (
+		<button type="button" className={props.className} style={props.style}>
+			{children}
+		</button>
+	);
+}
 
 type Tone = "blue" | "red";
 type Density = "compact" | "roomy";
@@ -48,12 +59,6 @@ export function DynamicApp() {
 		transition: "colors",
 	});
 	const accentProps = css.props(css.vars({ color: accent }));
-	const runtimeButtonProps = runtimeCss.props(
-		dynamicButtonGroup.button({
-			background: accent,
-			padding: `${padding}px ${padding * 2}px`,
-		}),
-	);
 
 	return (
 		<section
@@ -138,13 +143,9 @@ export function DynamicApp() {
 				<p className={cx(tw({ textSize: "sm" }), accentProps.className)} style={accentProps.style}>
 					css.vars() keeps the selected color in an inline custom property.
 				</p>
-				<button
-					type="button"
-					className={runtimeButtonProps.className}
-					style={runtimeButtonProps.style}
-				>
-					createRuntimeCss() input group
-				</button>
+				<DynamicInputButton background={accent} padding={`${padding}px ${padding * 2}px`}>
+					createRuntimeCss() typed input group
+				</DynamicInputButton>
 			</div>
 
 			<button

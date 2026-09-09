@@ -42,6 +42,7 @@
 	--color-red-800: #822727;
 	--color-red-900: #63171b;
 	--color-white: #ffffff;
+	--color-brand: #2b6cb0;
 	--color-error: #e53e3e;
 	--color-success: #60a3bc;
 	--text-2xl: 1.5rem;
@@ -86,4 +87,17 @@
 /* Condition-bound token overrides */
 .dark {
 	--color-surface: #111827;
+}
+
+[data-theme="forest"] {
+	--color-brand: #166534;
+	--color-surface: #f0fdf4;
+}
+[data-theme="ocean"] {
+	--color-brand: #0369a1;
+	--color-surface: #f0f9ff;
+}
+[data-theme="sunset"] {
+	--color-brand: #c2410c;
+	--color-surface: #fff7ed;
 }

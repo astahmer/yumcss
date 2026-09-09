@@ -106,6 +106,7 @@ const tokens = defineTokens({
 
 const semanticTokens = defineTokens({
 	colors: {
+		brand: tokens.colors["$blue-600"],
 		success: tokens.colors["$green-500"],
 		error: tokens.colors["$red-500"],
 	},
@@ -197,6 +198,27 @@ export const examplePreset = definePreset(theme, {
 		fontSize: true,
 	},
 });
+
+/**
+ * Codegen-only theme scopes used by the basic example. The utility classes do
+ * not change when the data-theme attribute changes; only these variables do.
+ */
+export const exampleThemeScopes = {
+	themes: {
+		ocean: {
+			"--color-brand": "#0369a1",
+			"--color-surface": "#f0f9ff",
+		},
+		forest: {
+			"--color-brand": "#166534",
+			"--color-surface": "#f0fdf4",
+		},
+		sunset: {
+			"--color-brand": "#c2410c",
+			"--color-surface": "#fff7ed",
+		},
+	},
+} as const;
 // examplePreset.;
 
 export type ExamplePreset = typeof examplePreset;
