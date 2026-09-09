@@ -12,7 +12,7 @@ describe("package installer", () => {
 		const result = await installer.install({
 			root: "/project",
 			packageJson: {
-				packageManager: "pnpm@11.0.0",
+				packageManager: "pnpm@12.3.4",
 				dependencies: { pandwind: "workspace:*" },
 			},
 			dependencies: [
