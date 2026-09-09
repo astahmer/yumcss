@@ -78,6 +78,12 @@ export interface RuntimeRuleStore {
 export interface RuntimeOrderingPolicy {
 	/** Deterministic for an unchanged rule map; the sheet memoizes this result. */
 	order(rules: ReadonlyMap<string, RuntimeRule>): RuntimeRule[];
+	/**
+	 * Insert rules into an already ordered list when the store only gained new
+	 * IDs. Policies that cannot preserve this invariant may omit the method;
+	 * the sheet falls back to `order`.
+	 */
+	insert?(ordered: readonly RuntimeRule[], next: readonly RuntimeRule[]): RuntimeRule[];
 }
 
 export interface RuntimeRuleCanonicalizer {

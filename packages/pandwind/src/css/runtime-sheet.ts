@@ -75,8 +75,24 @@ export function createRuntimeSheet(
 		else if (mounted) render();
 	};
 	const register = (rules: readonly RuntimeRule[]): void => {
+		const canInsert =
+			orderedGeneration === generation &&
+			ordering.insert !== undefined &&
+			rules.every((rule, index) => {
+				if (store.rules.has(rule.id)) return false;
+				for (let previous = 0; previous < index; previous++) {
+					if (rules[previous]!.id === rule.id) return false;
+				}
+				return true;
+			});
 		if (store.register(rules)) {
-			invalidate();
+			if (canInsert) {
+				generation++;
+				ordered = ordering.insert!(ordered, rules);
+				orderedGeneration = generation;
+			} else {
+				invalidate();
+			}
 			refresh();
 		}
 	};

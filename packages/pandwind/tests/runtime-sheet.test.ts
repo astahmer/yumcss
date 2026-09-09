@@ -83,6 +83,22 @@ test("lazy sheets defer serialization until they are read or mounted", () => {
 	expect(orderCalls).toBe(1);
 });
 
+test("priority sheets insert new rules without changing deterministic order", () => {
+	const sheet = createRuntimeSheet({ autoMount: false });
+
+	sheet.register([{ id: "z", css: ".z{color:red}", priority: 1 }]);
+	expect(sheet.css()).toBe(".z{color:red}");
+
+	sheet.register([{ id: "a", css: ".a{color:blue}", priority: 1 }]);
+	expect(sheet.css()).toBe(".a{color:blue}\n.z{color:red}");
+
+	sheet.register([{ id: "root", css: ".root{display:block}", priority: 0 }]);
+	expect(sheet.css()).toBe(".root{display:block}\n.a{color:blue}\n.z{color:red}");
+
+	sheet.register([{ id: "a", css: ".a{color:green}", priority: 1 }]);
+	expect(sheet.css()).toBe(".root{display:block}\n.a{color:green}\n.z{color:red}");
+});
+
 describe("runtime CSS-in-JS sheet", () => {
 	test("collects preset-bound css() rules for SSR without a DOM", () => {
 		const sheet = createRuntimeSheet({ autoMount: false });
