@@ -105,7 +105,10 @@ export function prepareReferenceDependencies(
 		if (!existsSync(join(referenceRoot, "package.json")))
 			throw new Error(`reference workspace is not prepared: ${referenceRoot}`);
 		run("pnpm", ["install", "--frozen-lockfile", "--ignore-scripts"], referenceRoot, options);
-		run("pnpm", ["--filter", entry.buildFilter, "build-fast"], referenceRoot, options);
+		// The installed-project proofs run the reference's TypeScript checker. The
+		// fast Panda build intentionally skips declarations, so it cannot be used
+		// to prepare a typecheckable reference workspace.
+		run("pnpm", ["--filter", entry.buildFilter, "build"], referenceRoot, options);
 		results.push(
 			`${entry.reference}: installed the workspace lockfile and built ${entry.buildFilter}`,
 		);

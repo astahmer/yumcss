@@ -41,6 +41,7 @@
 		"pivot:proof:installed": "nub scripts/promote-goober-fixture.ts",
 		"pivot:proof:installed:emotion": "nub scripts/promote-emotion-reference.ts",
 		"pivot:proof:installed:panda": "nub --conditions pandwind scripts/promote-panda-fixture.ts",
+		"pivot:proof:installed:panda:website": "nub --conditions pandwind scripts/promote-panda-website.ts",
 		"pivot:proof:installed:unocss": "nub --conditions pandwind scripts/promote-unocss-fixture.ts",
 		"pivot:proof:installed:styled-components": "nub --conditions pandwind scripts/promote-styled-components-fixture.ts",
 		"pivot:proof:installed:tailwind": "nub --conditions pandwind scripts/promote-tailwind-fixture.ts",

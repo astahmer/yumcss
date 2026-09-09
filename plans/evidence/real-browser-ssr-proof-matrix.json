@@ -1,6 +1,6 @@
 {
 	"schema": "pandwind.real-browser-ssr-proof-matrix/1",
-	"generatedAt": "2026-08-29",
+	"generatedAt": "2026-09-09",
 	"purpose": "Checked-in acceptance boundary for real documentation migrations. Adapter fixtures do not promote an adapter into this matrix.",
 	"claims": [
 		{
@@ -86,6 +86,27 @@
 				"migratedBytes": 623777,
 				"notLarger": true,
 				"note": "Reference styled-components style nodes are moved to head for comparison; CSS is preserved."
+			}
+		},
+		{
+			"id": "panda-website",
+			"sourceAdapter": "panda",
+			"referenceCommit": "8a71bff3dc805e247be70d120cf485c8f14f104b",
+			"report": "plans/evidence/panda-website-installed-proof.json",
+			"server": { "checked": true, "routes": 200, "failures": 0 },
+			"browser": {
+				"checked": true,
+				"routes": 98,
+				"equivalent": true,
+				"errors": 0,
+				"hydrationRoutes": 98
+			},
+			"css": {
+				"metric": "next-static-css",
+				"baselineBytes": 88977,
+				"migratedBytes": 82798,
+				"notLarger": true,
+				"note": "The route also records 98 non-empty RSC streams. Five typed migration residuals remain visible in the report."
 			}
 		},
 		{

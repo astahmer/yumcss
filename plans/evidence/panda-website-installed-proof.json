@@ -1,0 +1,136 @@
+{
+	"schema": "pandwind.panda-website-proof/1",
+	"reference": {
+		"repository": "https://github.com/chakra-ui/panda",
+		"commit": "8a71bff3dc805e247be70d120cf485c8f14f104b"
+	},
+	"route": {
+		"from": "panda",
+		"to": "pandwind"
+	},
+	"fixture": {
+		"isolated": true,
+		"sourceProject": "panda/website",
+		"routeCount": 200
+	},
+	"dependencies": {
+		"referenceInstalled": true,
+		"targetNodeModule": true,
+		"targetPackage": ""
+	},
+	"migration": {
+		"filesScanned": 159,
+		"filesChanged": 87,
+		"cssCallsConverted": 154,
+		"cssCallsFlagged": 0,
+		"factoryElementsConverted": 86,
+		"factoryElementsFlagged": 0,
+		"residualsByKind": {
+			"dynamic": 3,
+			"unknown-value": 2
+		},
+		"converted": 240,
+		"residuals": 5,
+		"generatedFiles": [
+			"src/pandwind/css.ts",
+			"src/pandwind/internal.ts",
+			"src/pandwind/jsx/index.tsx",
+			"src/pandwind/patterns/center.ts",
+			"src/pandwind/patterns/circle.ts",
+			"src/pandwind/patterns/flex.ts",
+			"src/pandwind/patterns/grid.ts",
+			"src/pandwind/patterns/hstack.ts",
+			"src/pandwind/patterns/index.ts",
+			"src/pandwind/patterns/square.ts",
+			"src/pandwind/patterns/stack.ts",
+			"src/pandwind/patterns/vstack.ts",
+			"src/pandwind/patterns/wrap.ts",
+			"src/pandwind/preset.ts",
+			"src/pandwind/recipes/buttonRecipe.ts",
+			"src/pandwind/recipes/buttonRecipe_button.ts",
+			"src/pandwind/recipes/calloutRecipe.ts",
+			"src/pandwind/recipes/cardRecipe.ts",
+			"src/pandwind/recipes/codeTabsRecipe.ts",
+			"src/pandwind/recipes/colorTokenValue_color-grid.ts",
+			"src/pandwind/recipes/index.ts",
+			"src/pandwind/recipes/linkStyles_route-switch.ts",
+			"src/pandwind/recipes/listStyles_list.ts",
+			"src/pandwind/recipes/navbarRecipe.ts",
+			"src/pandwind/recipes/nextraTabsRecipe.ts",
+			"src/pandwind/recipes/recipe_feature-marquee.section.ts",
+			"src/pandwind/recipes/styles_bleed.ts",
+			"src/pandwind/recipes/styles_code.ts",
+			"src/pandwind/recipes/styles_heading.ts",
+			"src/pandwind/recipes/tocRecipe_toc.ts",
+			"src/pandwind/token.ts",
+			"src/pandwind/virtual.d.ts"
+		],
+		"targetUsesPandwind": true,
+		"remainingPandaImports": 0
+	},
+	"checks": {
+		"sourceTypecheck": true,
+		"targetTypecheck": true,
+		"sourceBuild": true,
+		"targetBuild": true,
+		"ssrRoutes": 200,
+		"hydrationRoutes": 98,
+		"rscRoutes": 98
+	},
+	"next": {
+		"schema": "pandwind.next-installed-proof/1",
+		"http": {
+			"checked": true,
+			"routeCount": 200,
+			"sourceFailures": [],
+			"targetFailures": [],
+			"routeSetEqual": true
+		},
+		"rsc": {
+			"checked": true,
+			"routeCount": 98,
+			"sourceFailures": [],
+			"targetFailures": [],
+			"streamedRoutes": 98
+		},
+		"browser": {
+			"checked": true,
+			"routeCount": 98,
+			"equivalent": true,
+			"failures": [],
+			"pageErrors": [],
+			"consoleErrors": [],
+			"ignoredConsoleErrors": [
+				{
+					"path": "source:/",
+					"reason": "Access to fetch at 'https://pandamastery.com/?_rsc=3lb4g' (redirected from 'http://127.0.0.1:49717/learn?_rsc=3lb4g') from origin 'http://127.0.0.1:49717' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: Redirect is not allowed for a preflight request."
+				},
+				{
+					"path": "source:/",
+					"reason": "Failed to load resource: net::ERR_FAILED"
+				},
+				{
+					"path": "source:/",
+					"reason": "Failed to fetch RSC payload for http://127.0.0.1:49717/learn. Falling back to browser navigation. TypeError: Failed to fetch\n    at y (http://127.0.0.1:49717/_next/static/chunks/123-e88f118f8d9d6731.js:1:133092)\n    at _ (http://127.0.0.1:49717/_next/static/chunks/123-e88f118f8d9d6731.js:1:131962)\n    at http://127.0.0.1:49717/_next/static/chunks/123-e88f118f8d9d6731.js:1:10534\n    at Object.o [as task] (http://127.0.0.1:49717/_next/static/chunks/123-e88f118f8d9d6731.js:1:55402)\n    at c.s (http://127.0.0.1:49717/_next/static/chunks/123-e88f118f8d9d6731.js:1:56107)\n    at c.enqueue (http://127.0.0.1:49717/_next/static/chunks/123-e88f118f8d9d6731.js:1:55532)\n    at s (http://127.0.0.1:49717/_next/static/chunks/123-e88f118f8d9d6731.js:1:10497)\n    at i (http://127.0.0.1:49717/_next/static/chunks/123-e88f118f8d9d6731.js:1:10013)\n    at l (http://127.0.0.1:49717/_next/static/chunks/123-e88f118f8d9d6731.js:1:72750)\n    at Object.prefetch (http://127.0.0.1:49717/_next/static/chunks/123-e88f118f8d9d6731.js:1:130093)"
+				},
+				{
+					"path": "target:/",
+					"reason": "Access to fetch at 'https://pandamastery.com/?_rsc=3lb4g' (redirected from 'http://127.0.0.1:49728/learn?_rsc=3lb4g') from origin 'http://127.0.0.1:49728' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: Redirect is not allowed for a preflight request."
+				},
+				{
+					"path": "target:/",
+					"reason": "Failed to load resource: net::ERR_FAILED"
+				},
+				{
+					"path": "target:/",
+					"reason": "Failed to fetch RSC payload for http://127.0.0.1:49728/learn. Falling back to browser navigation. TypeError: Failed to fetch\n    at y (http://127.0.0.1:49728/_next/static/chunks/197-df23a9e9588e92dd.js:1:17799)\n    at _ (http://127.0.0.1:49728/_next/static/chunks/197-df23a9e9588e92dd.js:1:16669)\n    at http://127.0.0.1:49728/_next/static/chunks/197-df23a9e9588e92dd.js:1:58412\n    at Object.o [as task] (http://127.0.0.1:49728/_next/static/chunks/197-df23a9e9588e92dd.js:1:102047)\n    at c.s (http://127.0.0.1:49728/_next/static/chunks/197-df23a9e9588e92dd.js:1:102752)\n    at c.enqueue (http://127.0.0.1:49728/_next/static/chunks/197-df23a9e9588e92dd.js:1:102177)\n    at s (http://127.0.0.1:49728/_next/static/chunks/197-df23a9e9588e92dd.js:1:58375)\n    at i (http://127.0.0.1:49728/_next/static/chunks/197-df23a9e9588e92dd.js:1:57891)\n    at l (http://127.0.0.1:49728/_next/static/chunks/197-df23a9e9588e92dd.js:1:52564)\n    at Object.prefetch (http://127.0.0.1:49728/_next/static/chunks/197-df23a9e9588e92dd.js:1:8826)"
+				}
+			]
+		}
+	},
+	"css": {
+		"sourceBytes": 88977,
+		"targetBytes": 82798,
+		"targetNotLarger": true
+	}
+}
