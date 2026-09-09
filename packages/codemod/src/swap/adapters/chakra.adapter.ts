@@ -7,11 +7,7 @@ import {
 	type SemanticConditionKind,
 } from "../semantic-ir.ts";
 import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
-import type {
-	AdapterConfigContext,
-	AdapterParseContext,
-	AdapterTokenPolicy,
-} from "../adapter-contract.ts";
+import type { AdapterConfigContext, AdapterParseContext } from "../adapter-contract.ts";
 import type { StyleProgram, StyleValue } from "../semantic-ir.ts";
 import { BuiltinHostFramework } from "../host-adapters.ts";
 import { AdapterEvidence } from "../adapter-evidence.ts";
@@ -24,7 +20,7 @@ import type { ProjectModuleLoader } from "../project-module-loader.ts";
 import { joinDocumentPath } from "../../path-utils.ts";
 import { SourcePass } from "../../source-pass-utils.ts";
 import type { JsxStyleHostMatch, JsxStylePropSelector } from "../jsx-style-host.ts";
-import { TokenCatalog } from "../tokens.ts";
+import { createTokenPolicy, TokenCatalog } from "../tokens.ts";
 
 const styleProps = [
 	"css",
@@ -384,15 +380,7 @@ function chakraTokenGroup(property: string): string | undefined {
 	return undefined;
 }
 
-const CHAKRA_TOKEN_POLICY: AdapterTokenPolicy = {
-	schema: "pandwind.adapter-token-policy/1",
-	preserve: (program, context) =>
-		TokenCatalog.fromContract(context.config.tokenCatalog)?.preserveProgram(
-			program,
-			chakraTokenGroup,
-			(match) => match.ref,
-		) ?? program,
-};
+const CHAKRA_TOKEN_POLICY = createTokenPolicy(chakraTokenGroup, (match) => match.ref);
 
 function hasConfigToken(config: unknown, group: string, token: string): boolean {
 	if (typeof config !== "object" || config === null) return false;

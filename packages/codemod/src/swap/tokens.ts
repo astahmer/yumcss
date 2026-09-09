@@ -10,7 +10,13 @@ import { StyleValueKindTag } from "./semantic-ir.ts";
  */
 
 import type { AnyTokens } from "pandwind/types/typings";
-import { ADAPTER_TOKEN_CATALOG_SCHEMA, type AdapterTokenCatalog } from "./adapter-contract.ts";
+import {
+	ADAPTER_TOKEN_CATALOG_SCHEMA,
+	ADAPTER_TOKEN_POLICY_SCHEMA,
+	type AdapterEmitContext,
+	type AdapterTokenCatalog,
+	type AdapterTokenPolicy,
+} from "./adapter-contract.ts";
 import type { StyleProgram } from "./semantic-ir.ts";
 
 /** How emitted token references are qualified. */
@@ -61,6 +67,28 @@ export type TokenReferenceFormatter = (
 	property: string,
 	existingAuthored?: string,
 ) => string;
+
+/**
+ * Build the shared target-token policy used by ecosystem adapters.
+ *
+ * Group selection and target spelling remain adapter-owned. Catalog lookup,
+ * exact matching, and preservation of unresolved values stay in one neutral
+ * implementation so each adapter cannot accidentally grow a subtly different
+ * token policy.
+ */
+export function createTokenPolicy(
+	groupForProperty: TokenGroupForProperty,
+	formatReference: TokenReferenceFormatter = (match) => match.authored,
+	resolveCatalog: (context: AdapterEmitContext) => TokenCatalog | undefined = (context) =>
+		TokenCatalog.fromContract(context.config.tokenCatalog),
+): AdapterTokenPolicy {
+	return {
+		schema: ADAPTER_TOKEN_POLICY_SCHEMA,
+		preserve: (program, context) =>
+			resolveCatalog(context)?.preserveProgram(program, groupForProperty, formatReference) ??
+			program,
+	};
+}
 
 /** Normalize a legacy `$blue-500` key to a dot-delimited ref. */
 export function normalizeTokenKey(key: string): string {

@@ -4,11 +4,7 @@ import {
 	StyleValueKindTag,
 } from "../semantic-ir.ts";
 import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
-import type {
-	AdapterConfigContext,
-	AdapterProjectConfig,
-	AdapterTokenPolicy,
-} from "../adapter-contract.ts";
+import type { AdapterConfigContext, AdapterProjectConfig } from "../adapter-contract.ts";
 import {
 	BuiltinHostFramework,
 	canConvertStaticVueSfc,
@@ -24,7 +20,7 @@ import {
 import { SourcePass } from "../../source-pass-utils.ts";
 import { literalValueToPlain, parseObjectLiteral } from "../parse.ts";
 import type { StyleProgram, StyleValue } from "../semantic-ir.ts";
-import { TokenCatalog } from "../tokens.ts";
+import { createTokenPolicy, TokenCatalog } from "../tokens.ts";
 
 function stitchesTheme(source: string): TokenCatalog | undefined {
 	for (const match of source.matchAll(/\bcreateStitches\s*\(/g)) {
@@ -97,15 +93,10 @@ const stitchesTokenGroup = (property: string): string | undefined => {
 	return undefined;
 };
 
-const STITCHES_TOKEN_POLICY: AdapterTokenPolicy = {
-	schema: "pandwind.adapter-token-policy/1",
-	preserve: (program, context) =>
-		TokenCatalog.fromContract(context.config.tokenCatalog)?.preserveProgram(
-			program,
-			stitchesTokenGroup,
-			(match) => `$${match.group}$${match.ref.replaceAll(".", "$")}`,
-		) ?? program,
-};
+const STITCHES_TOKEN_POLICY = createTokenPolicy(
+	stitchesTokenGroup,
+	(match) => `$${match.group}$${match.ref.replaceAll(".", "$")}`,
+);
 
 function stitchesConfig(context: AdapterConfigContext): AdapterProjectConfig {
 	const tokenCatalog = stitchesTheme(context.source)?.contract;

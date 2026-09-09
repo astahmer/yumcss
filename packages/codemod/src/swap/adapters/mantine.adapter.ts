@@ -6,11 +6,11 @@ import {
 } from "../semantic-ir.ts";
 import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
 import type { StyleProgram, StyleValue } from "../semantic-ir.ts";
-import type { AdapterConfigContext, AdapterTokenPolicy } from "../adapter-contract.ts";
+import type { AdapterConfigContext } from "../adapter-contract.ts";
 import { AdapterEvidence } from "../adapter-evidence.ts";
 import type { ProjectModuleLoader } from "../project-module-loader.ts";
 import { joinDocumentPath } from "../../path-utils.ts";
-import { TokenCatalog } from "../tokens.ts";
+import { createTokenPolicy, TokenCatalog } from "../tokens.ts";
 import { BuiltinHostFramework } from "../host-adapters.ts";
 import { StyleProgramAnalysis } from "../style-program-analysis.ts";
 import {
@@ -30,29 +30,21 @@ const mantineTokenGroup = (property: string): string | undefined => {
 	return undefined;
 };
 
-const MANTINE_TOKEN_POLICY: AdapterTokenPolicy = {
-	schema: "pandwind.adapter-token-policy/1",
-	preserve: (program, context) =>
-		TokenCatalog.fromContract(context.config.tokenCatalog)?.preserveProgram(
-			program,
-			mantineTokenGroup,
-			(match, property) => {
-				const namespace =
-					property === "color" || property.endsWith("Color")
-						? "color"
-						: property === "fontSize"
-							? "font-size"
-							: property === "lineHeight"
-								? "line-height"
-								: property === "borderRadius"
-									? "radius"
-									: property === "boxShadow"
-										? "shadow"
-										: "spacing";
-				return `var(--mantine-${namespace}-${match.ref.replaceAll(".", "-")})`;
-			},
-		) ?? program,
-};
+const MANTINE_TOKEN_POLICY = createTokenPolicy(mantineTokenGroup, (match, property) => {
+	const namespace =
+		property === "color" || property.endsWith("Color")
+			? "color"
+			: property === "fontSize"
+				? "font-size"
+				: property === "lineHeight"
+					? "line-height"
+					: property === "borderRadius"
+						? "radius"
+						: property === "boxShadow"
+							? "shadow"
+							: "spacing";
+	return `var(--mantine-${namespace}-${match.ref.replaceAll(".", "-")})`;
+});
 
 function hasScalarDynamicProgram(program: StyleProgram): boolean {
 	return StyleProgramAnalysis.hasScalarDynamic(program);

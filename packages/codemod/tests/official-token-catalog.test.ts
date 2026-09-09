@@ -13,7 +13,8 @@ import {
 	createStyleAdapterRegistry,
 	runAdapterMigrationAsync,
 } from "../src/swap/index.ts";
-import { TokenCatalog } from "../src/swap/tokens.ts";
+import { createTokenPolicy, TokenCatalog } from "../src/swap/tokens.ts";
+import type { AdapterEmitContext } from "../src/swap/adapter-contract.ts";
 import type { ProjectModuleLoader } from "../src/swap/project-module-loader.ts";
 import type { StyleAdapter } from "../src/swap/adapter-contract.ts";
 import { styleProgramFromRules } from "../src/swap/semantic-ir.ts";
@@ -69,6 +70,31 @@ describe("official custom-token loaders", () => {
 			}
 		`);
 		expect(catalog?.findUnique(["radii"], "2px")).toBeUndefined();
+	});
+
+	test("uses one neutral token policy for exact target recovery", () => {
+		const policy = createTokenPolicy(
+			(property) => (property === "color" ? "colors" : undefined),
+			(match) => `theme.${match.ref}`,
+		);
+		const result = policy.preserve(literalProgram, {
+			file: "src/App.tsx",
+			mode: "safe",
+			index: 0,
+			config: {
+				adapter: "test",
+				files: [],
+				values: {},
+				tokenCatalog: TokenCatalog.fromGroups({ colors: { brand: "#123456" } })!.contract,
+			},
+		} satisfies AdapterEmitContext);
+
+		expect(result.declarations[0]?.value).toMatchObject({
+			kind: "token",
+			ref: "brand",
+			authored: "theme.brand",
+			resolved: "#123456",
+		});
 	});
 
 	test("loads Chakra custom tokens from the official merged system config", async () => {

@@ -6,11 +6,7 @@ import {
 	type SemanticConditionKind,
 } from "../semantic-ir.ts";
 import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
-import type {
-	AdapterConfigContext,
-	AdapterProjectConfig,
-	AdapterTokenPolicy,
-} from "../adapter-contract.ts";
+import type { AdapterConfigContext, AdapterProjectConfig } from "../adapter-contract.ts";
 import type { StyleProgram, StyleValue } from "../semantic-ir.ts";
 import {
 	CodemodAdapterId,
@@ -19,7 +15,7 @@ import {
 	StyleHostRepresentationKind,
 	StyleNamedRuleStrategy,
 } from "../identifiers.ts";
-import { TokenCatalog } from "../tokens.ts";
+import { createTokenPolicy, TokenCatalog } from "../tokens.ts";
 import type { ProjectModuleLoader } from "../project-module-loader.ts";
 import { joinDocumentPath } from "../../path-utils.ts";
 import type { PandaTheme } from "./panda/theme.ts";
@@ -68,15 +64,7 @@ const pandaTokenGroup = (property: string): string | undefined => {
 	return undefined;
 };
 
-const PANDA_TOKEN_POLICY: AdapterTokenPolicy = {
-	schema: "pandwind.adapter-token-policy/1",
-	preserve: (program, context) =>
-		TokenCatalog.fromContract(context.config.tokenCatalog)?.preserveProgram(
-			program,
-			pandaTokenGroup,
-			(match) => match.ref,
-		) ?? program,
-};
+const PANDA_TOKEN_POLICY = createTokenPolicy(pandaTokenGroup, (match) => match.ref);
 
 function pandaSourceValue(
 	value: StyleValue,

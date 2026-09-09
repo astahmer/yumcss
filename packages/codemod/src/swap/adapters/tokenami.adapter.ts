@@ -5,7 +5,6 @@ import {
 } from "../external-adapters.ts";
 import type {
 	AdapterConfigContext,
-	AdapterTokenPolicy,
 	AdapterProjectConfig,
 	AdapterParseContext,
 } from "../adapter-contract.ts";
@@ -27,7 +26,7 @@ import {
 import { AdapterEvidence } from "../adapter-evidence.ts";
 import type { ProjectModuleLoader } from "../project-module-loader.ts";
 import { joinDocumentPath } from "../../path-utils.ts";
-import { TokenCatalog } from "../tokens.ts";
+import { createTokenPolicy, TokenCatalog } from "../tokens.ts";
 
 function camelCase(property: string): string {
 	return property.replace(/-([a-z])/g, (_match, letter: string) => letter.toUpperCase());
@@ -107,15 +106,10 @@ function tokenamiTokenGroup(property: string): string | undefined {
 	return undefined;
 }
 
-const TOKENAMI_TOKEN_POLICY: AdapterTokenPolicy = {
-	schema: "pandwind.adapter-token-policy/1",
-	preserve: (program, context) =>
-		TokenCatalog.fromContract(context.config.tokenCatalog)?.preserveProgram(
-			program,
-			tokenamiTokenGroup,
-			(match) => `$${match.group}.${match.ref}`,
-		) ?? program,
-};
+const TOKENAMI_TOKEN_POLICY = createTokenPolicy(
+	tokenamiTokenGroup,
+	(match) => `$${match.group}.${match.ref}`,
+);
 
 async function officialTokenamiConfig(
 	context: AdapterConfigContext,

@@ -1,11 +1,7 @@
 import { CodemodCallPatternFormTag } from "../identifiers.ts";
 import { StyleProgramResidualKindTag, StyleValueKindTag } from "../semantic-ir.ts";
 import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
-import type {
-	AdapterConfigContext,
-	AdapterHostRewriteResult,
-	AdapterTokenPolicy,
-} from "../adapter-contract.ts";
+import type { AdapterConfigContext, AdapterHostRewriteResult } from "../adapter-contract.ts";
 import type { StyleProgram, StyleValue } from "../semantic-ir.ts";
 import {
 	BuiltinHostFramework,
@@ -27,7 +23,7 @@ import { StyleProgramAnalysis } from "../style-program-analysis.ts";
 import { AdapterEvidence } from "../adapter-evidence.ts";
 import type { ProjectModuleLoader } from "../project-module-loader.ts";
 import { joinDocumentPath } from "../../path-utils.ts";
-import { TokenCatalog } from "../tokens.ts";
+import { createTokenPolicy, TokenCatalog } from "../tokens.ts";
 
 const muiTokenGroup = (property: string): string | undefined => {
 	if (property === "color" || property.endsWith("Color")) return "colors";
@@ -43,15 +39,7 @@ const muiTokenGroup = (property: string): string | undefined => {
 	return undefined;
 };
 
-const MUI_TOKEN_POLICY: AdapterTokenPolicy = {
-	schema: "pandwind.adapter-token-policy/1",
-	preserve: (program, context) =>
-		TokenCatalog.fromContract(context.config.tokenCatalog)?.preserveProgram(
-			program,
-			muiTokenGroup,
-			(match) => match.ref,
-		) ?? program,
-};
+const MUI_TOKEN_POLICY = createTokenPolicy(muiTokenGroup, (match) => match.ref);
 
 // These are documented MUI source spellings, not a project vocabulary. The
 // official theme loader below supplies project-specific values and overrides
