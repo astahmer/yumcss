@@ -83,7 +83,7 @@ function runtimeOptions(preset: CssConfigReturn, options: RuntimeCssOptions): Ru
 	const { sheet: _sheet, sheetOptions: _sheetOptions, ...cssOptions } = options;
 	const stylesheet = createStylesheet(preset, cssOptions);
 	let tokensSynced = false;
-	let pendingRules: RuntimeRule[] = [];
+	let pendingStyles: StyleObject[] = [];
 	const syncedVarIds = new Set<string>();
 	const sync = (rules: readonly RuntimeRule[] = []): void => {
 		if (!tokensSynced) {
@@ -93,10 +93,11 @@ function runtimeOptions(preset: CssConfigReturn, options: RuntimeCssOptions): Ru
 		if (rules.length > 0) sheet.register(rules);
 	};
 	const flush = (): void => {
-		if (pendingRules.length === 0) return;
-		const rules = pendingRules;
-		pendingRules = [];
-		sync(rules);
+		if (pendingStyles.length === 0) return;
+		const styles = pendingStyles;
+		pendingStyles = [];
+		const added = stylesheet.process(styles);
+		sync(Array.from(added.values()));
 	};
 	const syncVars = (): void => {
 		flush();
@@ -112,8 +113,7 @@ function runtimeOptions(preset: CssConfigReturn, options: RuntimeCssOptions): Ru
 		name: authoredStrategy?.name ?? "runtime",
 		sheetBacked: authoredStrategy?.sheetBacked,
 		toClassName: (key, value) => {
-			const added = stylesheet.process([{ [key]: value } as StyleObject]);
-			pendingRules.push(...added.values());
+			pendingStyles.push({ [key]: value } as StyleObject);
 			return authoredStrategy?.toClassName(key, value) ?? null;
 		},
 	};
