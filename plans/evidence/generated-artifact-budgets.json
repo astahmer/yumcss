@@ -4,7 +4,7 @@
 	"apps": [
 		{
 			"id": "example",
-			"root": "apps/example",
+			"root": "examples/example",
 			"manifest": "src/pandwind.generated.json",
 			"artifacts": {
 				"src/types.d.ts": { "ownership": "editor", "maxRawBytes": 160000, "maxGzipBytes": 12000 },

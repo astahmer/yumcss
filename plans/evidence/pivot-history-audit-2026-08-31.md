@@ -51,7 +51,7 @@ recreated by `pnpm references:prepare`.
 - `.prettierignore` was replaced by the repository's Oxfmt/Oxlint policy.
 - `apps/playground/src/pandwind.interop.json` is generated output and is
   intentionally removed from source history after codegen runs.
-- `examples/shadcn-ui-docs-migration/README.md` and the StyleX example's
+- `examples/migrations/shadcn-ui-docs-migration/README.md` and the StyleX example's
   `Dial.tsx` were later removed as superseded generated/example artifacts;
   their migration reports and reproducible scripts remain available.
 

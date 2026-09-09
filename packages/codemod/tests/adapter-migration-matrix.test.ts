@@ -399,7 +399,7 @@ describe("composed cross-ecosystem routes", () => {
 		expect(result.code).not.toContain("theme.colors.foreground");
 	});
 
-	const appDir = resolve(import.meta.dirname, "../../../apps/example/src");
+	const appDir = resolve(import.meta.dirname, "../../../examples/example/src");
 	const meta = loadMetaFromSources({
 		typesDtsPath: resolve(appDir, "types.d.ts"),
 		twTsPath: resolve(appDir, "tw.ts"),
@@ -420,7 +420,7 @@ describe("composed cross-ecosystem routes", () => {
 			from: "css",
 			to: "tailwind",
 			file: "Card.tsx",
-			metaDir: "apps/example/src",
+			metaDir: "examples/example/src",
 			capabilityMode: "partial",
 		});
 		expect(chakra.residuals).toEqual([]);
@@ -438,7 +438,7 @@ describe("composed cross-ecosystem routes", () => {
 				from: "tw",
 				to: "css.class",
 				file: "Card.tsx",
-				metaDir: "apps/example/src",
+				metaDir: "examples/example/src",
 			},
 		);
 		const chakra = migrateTo(pandwindSource.code, pandwind, CodemodAdapterId.ChakraUi, "Card.tsx");

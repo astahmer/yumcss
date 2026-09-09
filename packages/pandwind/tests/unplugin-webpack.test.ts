@@ -16,7 +16,7 @@ import { pandwindWebpack, pandwindWebpackCss } from "../src/unplugin.ts";
 import { createCssExtractorPluginCore } from "../src/vite/css-core.ts";
 
 const packageRoot = resolve(import.meta.dirname, "..");
-const exampleTwModule = resolve(packageRoot, "../../apps/example/src/tw.ts");
+const exampleTwModule = resolve(packageRoot, "../../examples/example/src/tw.ts");
 
 function writeJsTwModule(dir: string): string {
 	let source = readFileSync(exampleTwModule, "utf8");

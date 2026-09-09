@@ -210,7 +210,7 @@ function runReferenceProof(): void {
 		process.env.PANDWIND_PROOF_OUTPUT ??
 		join(tmpdir(), "pandwind-pivot-proof", "real-repository-migrations-v2.json");
 	const env = { ...process.env, PANDWIND_PROOF_OUTPUT: output };
-	execFileSync("nub", ["run", "references:prepare"], { cwd: root, stdio: "inherit" });
+	execFileSync("pnpm", ["run", "references:prepare"], { cwd: root, stdio: "inherit" });
 	execFileSync("nub", ["scripts/audit-real-repository-pins.ts"], {
 		cwd: root,
 		stdio: "inherit",

@@ -102,5 +102,5 @@ pnpm exec pandwind-analyze [globs...] [--tw <generated-tw.ts>] [--json] [--root 
 - `--github-annotations` — emit GitHub annotations.
 - Default patterns when none given: `src/**/*.{ts,tsx}`.
 
-The studio (`nub run inspect`) renders these same reports read-only — extend the
+The studio (`pnpm run inspect`) renders these same reports read-only — extend the
 CLI, not the app.

@@ -27,7 +27,7 @@ mode stays separate (external compiler). No engine behavior changes.
    ./tw, ./cx subpaths + types conditions; decide whether codegen entry ships
    under ./codegen and wire it).
 2. Root README quickstart: fresh-app setup (install -> preset -> codegen ->
-   vite plugins) mirroring apps/example.
+   vite plugins) mirroring examples/example.
 3. CHANGELOG.md capturing the 2026-08-22/23 waves (concise, grouped).
 
 ## D. Plan 007 item B — semantic tokens probe (+ impl if clean)
@@ -84,7 +84,7 @@ vzlnuuvp 78d9347epwpsrnpm 0e961d45 "feat(analyze): pandwind analyze — fold-cov
   ./src; flags --tw <generated tw.ts>, --json, --root.
 - Cross-check test asserts classified eliminated counts equal the real
   passes' inlined counts on a mixed module (full/partial/runtime).
-- Root wiring: `pnpm analyze` runs against apps/example with the generated
+- Root wiring: `pnpm analyze` runs against examples/example with the generated
   tw.ts. Verified live: example's 8 tw() calls report 8/8 inlined.
 - Known limitation: cross-module importedConstants are not resolved by the
   CLI yet (same-module constants are) — needs the ModuleConstRegistry from

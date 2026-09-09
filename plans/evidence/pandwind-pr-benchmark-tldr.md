@@ -184,7 +184,7 @@ have a separate size row because it wraps the CSS engine and shares its
 runtime/extraction machinery.
 
 There is also a current gate issue that must be fixed before treating the
-size record as a clean release result: `nub run --filter pandwind test:size`
+size record as a clean release result: `pnpm --filter pandwind run test:size`
 currently measures `tw()` at **2,678 minified bytes**, above its **2,400-byte
 budget**. This report does not refresh the snapshot or alter runtime code.
 

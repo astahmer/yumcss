@@ -33,14 +33,14 @@ import { createTw } from "pandwind/tw";
 import { extractTwConfig } from "pandwind/vite/inline";
 import { rulesForClass, TW_ENTRY } from "./helpers/tailwind-proof.ts";
 
-const APP_DIR = resolve(import.meta.dirname, "../../../apps/example");
+const APP_DIR = resolve(import.meta.dirname, "../../../examples/example");
 
 /** The committed generated config — the exact artifact the app runs on. */
 function loadTwConfig(): NonNullable<ReturnType<typeof extractTwConfig>> {
 	const source = readFileSync(resolve(APP_DIR, "src/tw.ts"), "utf8");
 	const config = extractTwConfig(source);
 	if (config === undefined)
-		throw new Error("could not extract tw config from apps/example/src/tw.ts");
+		throw new Error("could not extract tw config from examples/example/src/tw.ts");
 	return config;
 }
 

@@ -31,7 +31,7 @@ import type { CxInput } from "../src/cx/index.ts";
 import { extractTwConfig } from "../src/vite/inline.ts";
 
 const twSource = readFileSync(
-	resolve(import.meta.dirname, "../../../apps/example/src/tw.ts"),
+	resolve(import.meta.dirname, "../../../examples/example/src/tw.ts"),
 	"utf8",
 );
 const real = extractTwConfig(twSource)!;

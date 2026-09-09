@@ -25,7 +25,7 @@ nub scripts/run-migration-proof.ts run effect-docs tw \
 	--output-root /tmp/pandwind-effect-tw
 cd /tmp/pandwind-effect-tw
 pnpm install --no-frozen-lockfile
-nub exec vp run build
+pnpm exec vp run build
 ```
 
 The baseline is built from the read-only clone without migration. Compare the

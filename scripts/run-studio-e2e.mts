@@ -10,7 +10,7 @@ import { createStudioWorkspace } from "../packages/analyze/src/studio/workspace.
 const root = resolve("packages/analyze/tests/fixtures/studio");
 // The e2e suite drives the real built studio app so the browser contract is
 // the production DOM, not a test-only page.
-execSync("nub run build:ui", { cwd: resolve("packages/analyze"), stdio: "inherit" });
+execSync("pnpm run build:ui", { cwd: resolve("packages/analyze"), stdio: "inherit" });
 const ui = createInMemoryStudioUiProvider(
 	await readFile(resolve("packages/analyze/dist/studio-ui/index.html"), "utf8"),
 );

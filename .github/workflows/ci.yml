@@ -30,37 +30,37 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build publishable packages
-        run: nub run --filter pandwind --filter pandwind-codemod --filter pandwind-analyze --filter pandwind-devtools --filter @pandwind/lint-plugin build
+        run: pnpm --filter pandwind --filter pandwind-codemod --filter pandwind-analyze --filter pandwind-devtools --filter @pandwind/lint-plugin run build
 
       # The runtime-size regression gate (three layers: hard budgets,
       # tolerance guard, exact snapshot) runs inside `pandwind test`.
       - name: Test (includes runtime-size gate)
-        run: nub run --filter pandwind test
+        run: pnpm --filter pandwind run test
 
       - name: Codemod, analyzer, and DevTools tests
-        run: nub run --filter pandwind-codemod test && nub run --filter pandwind-analyze test && nub run --filter pandwind-devtools test
+        run: pnpm --filter pandwind-codemod run test && pnpm --filter pandwind-analyze run test && pnpm --filter pandwind-devtools run test
 
       - name: Type tests (tstyche)
-        run: nub run --filter pandwind test:types
+        run: pnpm --filter pandwind run test:types
 
       - name: Typecheck
-        run: nub run typecheck
+        run: pnpm run typecheck
 
       - name: Lint (oxlint)
-        run: nub run lint
+        run: pnpm run lint
 
       - name: Format check (oxfmt)
-        run: nub run format
+        run: pnpm run format
 
       - name: Generated artifact freshness
-        run: nub run generated:check
+        run: pnpm run generated:check
 
       - name: Production ownership and pivot gates
         run: >-
-          nub run knip:production &&
-          nub run generated:budget &&
-          nub run pivot:proof &&
-          nub run pivot:proof:installed:routes
+          pnpm run knip:production &&
+          pnpm run generated:budget &&
+          pnpm run pivot:proof &&
+          pnpm run pivot:proof:installed:routes
 
   # Preview tarballs for every PR (pkg.pr.new) — installable without merging.
   # Preview the same built package shape that will be published; failures are
@@ -80,5 +80,5 @@ jobs:
         with:
           node-version: 24
       - run: pnpm install --frozen-lockfile
-      - run: nub run --filter pandwind --filter pandwind-codemod --filter pandwind-analyze --filter pandwind-devtools --filter @pandwind/lint-plugin build
+      - run: pnpm --filter pandwind --filter pandwind-codemod --filter pandwind-analyze --filter pandwind-devtools --filter @pandwind/lint-plugin run build
       - run: npx pkg-pr-new publish './packages/pandwind' './packages/codemod' './packages/analyze' './packages/devtools' './packages/lint-plugin'

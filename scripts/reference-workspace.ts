@@ -20,7 +20,7 @@ export interface ReferenceAvailability {
 	readonly id: string;
 	readonly path: string;
 	readonly status: ReferenceAvailabilityStatus;
-	readonly prepareCommand: "nub run references:prepare";
+	readonly prepareCommand: "pnpm run references:prepare";
 }
 
 export function createReferenceWorkspace(root?: string): ReferenceWorkspace {
@@ -47,6 +47,6 @@ export function inspectReferenceAvailability(
 		status: existsSync(path)
 			? REFERENCE_AVAILABILITY.Available
 			: REFERENCE_AVAILABILITY.Unavailable,
-		prepareCommand: "nub run references:prepare",
+		prepareCommand: "pnpm run references:prepare",
 	};
 }

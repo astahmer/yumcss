@@ -26,7 +26,7 @@ import { findCxImports, inlineCxCalls } from "../src/vite/cx-inline.ts";
 import { createInlineTwPluginCore, pandwindVite } from "../src/vite/index.ts";
 
 const twSource = readFileSync(
-	resolve(import.meta.dirname, "../../../apps/example/src/tw.ts"),
+	resolve(import.meta.dirname, "../../../examples/example/src/tw.ts"),
 	"utf8",
 );
 const config = extractTwConfig(twSource)!;
@@ -232,7 +232,7 @@ describe("pandwindVite end-to-end transform", () => {
 	const plugin = pandwindVite();
 	const resolver = {
 		resolve: async () => ({
-			id: resolve(import.meta.dirname, "../../../apps/example/src/tw.ts"),
+			id: resolve(import.meta.dirname, "../../../examples/example/src/tw.ts"),
 		}),
 	};
 
@@ -710,7 +710,7 @@ describe("pandwindVite end-to-end with css folding", () => {
 	});
 	const resolver = {
 		resolve: async () => ({
-			id: resolve(import.meta.dirname, "../../../apps/example/src/tw.ts"),
+			id: resolve(import.meta.dirname, "../../../examples/example/src/tw.ts"),
 		}),
 	};
 

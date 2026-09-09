@@ -12,7 +12,7 @@
 #       with:
 #         base-ref: main
 #         working-directory: .
-#         app-dir: apps/example
+#         app-dir: examples/example
 #       secrets:
 #         github-token: ${{ secrets.GITHUB_TOKEN }}
 #
@@ -35,7 +35,7 @@ on:
       app-dir:
         description: App dir containing src/ with the generated tw.ts
         type: string
-        default: apps/example
+        default: examples/example
       patterns:
         description: Analyze file globs (relative to app-dir)
         type: string
@@ -64,7 +64,7 @@ on:
       app-dir:
         description: App dir containing src/ with the generated tw.ts
         type: string
-        default: apps/example
+        default: examples/example
       patterns:
         description: Analyze file globs (relative to app-dir)
         type: string

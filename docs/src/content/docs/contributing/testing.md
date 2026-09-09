@@ -15,17 +15,17 @@ compiler, adapter, backend, or generated artifact.
 From the repository root:
 
 ```sh
-nub run test:all
-nub run test:coverage
-nub run typecheck
-nub run lint
-nub run format
-nub run knip
-nub run pivot:proof
-nub run pivot:proof:adapter-output
-nub run pivot:proof:chakra
-nub run test:e2e:playground
-nub run --filter pandwind-codemod test:e2e
+pnpm run test:all
+pnpm run test:coverage
+pnpm run typecheck
+pnpm run lint
+pnpm run format
+pnpm run knip
+pnpm run pivot:proof
+pnpm run pivot:proof:adapter-output
+pnpm run pivot:proof:chakra
+pnpm run test:e2e:playground
+pnpm --filter pandwind-codemod run test:e2e
 ```
 
 `test:all` runs every workspace test serially. Serial execution is deliberate:
@@ -42,7 +42,7 @@ artifacts and are ignored by Git.
 
 ### Pivot proof matrix
 
-`nub run pivot:proof` is the deterministic offline gate for the migration pivot.
+`pnpm run pivot:proof` is the deterministic offline gate for the migration pivot.
 It runs every registered adapter's contract fixture, requires direct and pinned
 real-repository evidence for every source adapter, checks per-adapter
 capabilities, and validates every promoted browser/SSR/CSS-size claim. The
@@ -53,9 +53,9 @@ The adapter-reference proof adds an actual Chromium check for every pinned
 file-level corpus entry that can run without an upstream application build:
 
 ```sh
-nub run references:prepare
-nub run references:deps
-nub run pivot:proof:adapters
+pnpm run references:prepare
+pnpm run references:deps
+pnpm run pivot:proof:adapters
 ```
 
 `references:deps` installs only the explicitly pinned official packages needed
@@ -81,7 +81,7 @@ The full reference run is intentionally separate because it downloads pinned
 public repositories and can take substantially longer:
 
 ```sh
-nub run pivot:proof:references
+pnpm run pivot:proof:references
 ```
 
 That command materializes `${PANDWIND_REFERENCE_ROOT:-~/.references}`, verifies
@@ -98,7 +98,7 @@ turning a source-only result into a production claim.
 
 ### Executable adapter output proof
 
-`nub run pivot:proof:adapter-output` is the local and CI gate for the generated
+`pnpm run pivot:proof:adapter-output` is the local and CI gate for the generated
 module itself. It installs the pinned runtime packages selected by each
 generated import, links the local Pandwind package, and runs strict TypeScript
 resolution in a disposable project. An added import with no pin fails the run,
@@ -106,8 +106,8 @@ so a fabricated target path cannot hide behind an ambient declaration. Filters
 keep debugging fast:
 
 ```sh
-nub run pivot:proof:adapter-output -- --adapter chakra-ui
-nub run pivot:proof:adapter-output -- --id compiled-vite-example --keep /tmp/pw-proof
+pnpm run pivot:proof:adapter-output -- --adapter chakra-ui
+pnpm run pivot:proof:adapter-output -- --id compiled-vite-example --keep /tmp/pw-proof
 ```
 
 Explicit source residuals remain visible and are accepted when the preserved
@@ -116,15 +116,15 @@ their published-package baseline diagnostics separately because those tests
 reach private internals that the package declarations do not expose. The
 generated adapter imports and ordinary application fixtures remain strict.
 
-`nub run pivot:proof:chakra` is a focused regression guard for target-side
+`pnpm run pivot:proof:chakra` is a focused regression guard for target-side
 carrier syntax. It migrates a real style source to Chakra, asserts that styles
 land on Chakra's documented `css` prop, and typechecks the result against the
 published `@chakra-ui/react` package. Use `--keep <directory>` when inspecting
 the generated file after a failure. The pivot-proof workflow runs both checks
 on every push to `main`, as well as on its scheduled and manual runs.
 
-`nub run references:check` audits already-materialized checkouts and exits
-non-zero if any pinned commit drifts or is unavailable. `nub run knip:production`
+`pnpm run references:check` audits already-materialized checkouts and exits
+non-zero if any pinned commit drifts or is unavailable. `pnpm run knip:production`
 is the ownership gate for public subpaths and dynamic entry points.
 
 ## What each layer covers
@@ -139,10 +139,10 @@ analyzer packages have analogous unit/fixture suites.
 Run a focused package or file while developing:
 
 ```sh
-nub run --filter pandwind test
-nub run --filter pandwind-codemod test
-nub run --filter pandwind-analyze test
-nub exec --cwd packages/pandwind vitest run tests/css-output.test.ts
+pnpm --filter pandwind run test
+pnpm --filter pandwind-codemod run test
+pnpm --filter pandwind-analyze run test
+pnpm --dir packages/pandwind exec vitest run tests/css-output.test.ts
 ```
 
 ### Integration tests
@@ -174,7 +174,7 @@ files, parses the same migration results in-process, and checks that
 source-preserving skips carry typed residual markers. Run it alone with:
 
 ```sh
-nub run --filter pandwind-codemod test:e2e
+pnpm --filter pandwind-codemod run test:e2e
 ```
 
 The same file keeps one real CLI boundary test for argument parsing, file
@@ -201,7 +201,7 @@ The recursive test command includes:
 - inspector/playground host applications.
 
 When changing a host adapter or backend, run the matching example directly as
-well as `nub run test:all`.
+well as `pnpm run test:all`.
 
 The Playwright-BDD migration lab adds browser coverage for every registered
 source and target selector. Its feature scenarios prove that the browser

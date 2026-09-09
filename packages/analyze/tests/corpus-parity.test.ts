@@ -19,7 +19,7 @@ import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
 import { analyzeSource } from "../src/analyze.ts";
 
-const _app = resolve(import.meta.dirname, "../../../apps/example");
+const _app = resolve(import.meta.dirname, "../../../examples/example");
 const config = { conflicts: undefined, compose: undefined } as never;
 const corpusDir = resolve(import.meta.dirname, "fixtures/coverage-corpus");
 

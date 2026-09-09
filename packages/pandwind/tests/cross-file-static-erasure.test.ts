@@ -4,7 +4,7 @@ import { join, resolve } from "node:path";
 import { afterEach, describe, expect, test } from "vitest";
 import { createInlineTwPluginCore } from "../src/vite/index.ts";
 
-const exampleTw = resolve(import.meta.dirname, "../../../apps/example/src/tw.ts");
+const exampleTw = resolve(import.meta.dirname, "../../../examples/example/src/tw.ts");
 const temporaryDirectories: string[] = [];
 
 afterEach(() => {

@@ -63,7 +63,7 @@ Packages PR, tag the new version. Nothing else.
 From research.md — before scoping a custom extension:
 
 - [ ] Install "Atomic CSS Devtools" from the Chrome Web Store.
-- [ ] Open apps/example dev build; confirm it resolves hashed/named atom
+- [ ] Open examples/example dev build; confirm it resolves hashed/named atom
       classes to declarations.
 - [ ] Check whether any origin/source-file info is shown (expected: no).
 - [ ] If insufficient AND the sourceMappingURL spike (plans/014 §4a) shows

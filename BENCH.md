@@ -178,7 +178,7 @@ runtime change with:
 
 ```sh
 cd packages/pandwind
-nub run test:benchmarks -u
+pnpm run test:benchmarks -u
 ```
 
 The historical replay remains a manual evidence tool; it is intentionally not
@@ -293,7 +293,7 @@ Measurement notes from the 2026-08-22 rig:
 - `stylex.create()` is compiled ahead of time with `@stylexjs/babel-plugin`
   (`dev: false`) so only `props()` runs at benchmark time;
 - pandwind's generated conflict map is extracted once from
-  `apps/example/src/tw.ts` into JSON before bundling so the bench bundle has
+  `examples/example/src/tw.ts` into JSON before bundling so the bench bundle has
   no parser dependency;
 - measure load average before trusting absolute numbers — this rig is
   single-machine evidence, not CI-grade.
@@ -301,8 +301,8 @@ Measurement notes from the 2026-08-22 rig:
 For pandwind itself, `packages/pandwind/tests/runtime-size.test.ts` is the
 repo-owned size gate, `packages/pandwind/cx-bench.mts` is the repo-owned
 cx microbench (`nub ../../packages/pandwind/cx-bench.mts` from
-`apps/example`, so the generated config in `apps/example/src/tw.ts`
+`examples/example`, so the generated config in `examples/example/src/tw.ts`
 resolves), and the benchmark entries import the published `pandwind/*`
-subpaths plus the generated config in `apps/example/src/tw.ts`. The only
+subpaths plus the generated config in `examples/example/src/tw.ts`. The only
 source-addressed imports in the perf-history harness are intentional: each
 run loads the exact historical worktree revision being measured.

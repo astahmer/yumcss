@@ -28,8 +28,8 @@ const apps: readonly GeneratedApp[] = [
 	{
 		name: "example",
 		filter: "example",
-		root: resolve(repositoryRoot, "apps/example"),
-		source: resolve(repositoryRoot, "apps/example/src/tailwind.css"),
+		root: resolve(repositoryRoot, "examples/example"),
+		source: resolve(repositoryRoot, "examples/example/src/tailwind.css"),
 		tokens: "@pandwind/example-preset",
 		formatFiles: ["bridge.ts", "pandwind-theme.css", "pandwind.interop.json"],
 	},
@@ -78,14 +78,14 @@ const normalizeInterop = (content: string): string => {
 const comparableContent = (path: string, content: string): string =>
 	path.endsWith("pandwind.interop.json") ? normalizeInterop(content) : content;
 
-const refreshCommand = (app: GeneratedApp): string => `nub run --filter ${app.filter} tw:generate`;
+const refreshCommand = (app: GeneratedApp): string => `pnpm --filter ${app.filter} run tw:generate`;
 
 const checkApp = (app: GeneratedApp): void => {
 	const temporaryRoot = mkdtempSync(join(tmpdir(), `pandwind-${app.name}-generated-`));
 	const temporarySourceRoot = join(temporaryRoot, "src");
 	try {
 		run(
-			"nub",
+			"pnpm",
 			[
 				"exec",
 				"pandwind-codemod",
@@ -107,7 +107,7 @@ const checkApp = (app: GeneratedApp): void => {
 		const formatTargets = app.formatFiles
 			.map((file) => join(temporarySourceRoot, file))
 			.filter((path) => existsSync(path));
-		run("nub", ["exec", "oxfmt", ...formatTargets], app.root);
+		run("pnpm", ["exec", "oxfmt", ...formatTargets], app.root);
 		const manifest = buildGeneratedArtifactManifest({
 			inputs: [{ path: relative(app.root, app.source), content: readFileSync(app.source, "utf8") }],
 			artifacts: [

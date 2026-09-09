@@ -21,7 +21,7 @@ and the root export carries only the recommended lane:
 
 `cx()` (`pandwind/cx`) merges across all three; presets live in `pandwind/preset`.
 
-> 📚 **Documentation site**: [`docs/`](./docs) — a Starlight site (`nub run
+> 📚 **Documentation site**: [`docs/`](./docs) — a Starlight site (`pnpm run
 --filter pandwind-docs dev`) with guides for every API, the build-time
 > tooling, the non-web backends and the compatibility proofs. Agent skills:
 > [`skills/pandwind`](./skills/pandwind/SKILL.md) and
@@ -84,7 +84,7 @@ the pinned Nub TypeScript runner, Node, pnpm, and the formatting utilities:
 ```sh
 direnv allow       # automatic, after installing direnv
 # or: nix develop
-nub install --frozen-lockfile
+pnpm install --frozen-lockfile
 ```
 
 > See [PUBLISHING.md](./PUBLISHING.md) for changesets, provenance, and the
@@ -205,12 +205,12 @@ agent ever ships.
 "$color-brand" } }` and codegen emits `.pwc-button { --color-primary:
 … }` scope classes — every existing utility restyles per component, and
   theme scopes compose naturally (`[data-theme]` × `.pwc-*`).
-- **`nub run playground`** — live in-browser editor: type `tw()` / `css()` /
+- **`pnpm run playground`** — live in-browser editor: type `tw()` / `css()` /
   `cx()` expressions and see the merged class string, fold verdict
   (full/partial/runtime) and conflict-merge visualization instantly.
   Per-example routes, URL-hash sharing, Monaco + Shiki. Styled with
   pandwind itself.
-- **`nub run inspect`** — pandwind studio: a local read-only dashboard over the
+- **`pnpm run inspect`** — pandwind studio: a local read-only dashboard over the
   analyze machinery. Coverage tab (fold elimination, CSS budget, dead
   candidates, missing-css warnings with editor links) + Design-system tab
   (theme vars, typed utility unions, bridge map, preset tokens). Extend the
@@ -645,19 +645,19 @@ packages/pandwind/        the library: css engine, tw codegen/runtime, vite plug
   src/tw/                 tw() runtime, oxc scanner, type/codegen
   src/vite/               pandwindVite() tw inliner + pandwindCssVite() extractor
   tests/                  vitest + tstyche suites
-apps/example/             Vite + React app: Pandwind atomic and design CSS surfaces
+examples/example/             Vite + React app: Pandwind atomic and design CSS surfaces
 ```
 
 ## Commands
 
 ```sh
 pnpm install
-nub run --filter example dev       # dev server (runs codegen + scan first)
-nub run test                       # vitest + tstyche
-nub run typecheck
-nub run --filter example tw:generate # regenerate types.d.ts + tw.ts (+ bridge)
-nub run --filter example tw:scan   # regenerate the safelist via pandwind-codemod tw scan
-nub run --filter example build     # production build (tw() inlined, css() extracted)
+pnpm --filter example run dev       # dev server (runs codegen + scan first)
+pnpm run test                       # vitest + tstyche
+pnpm run typecheck
+pnpm --filter example run tw:generate # regenerate types.d.ts + tw.ts (+ bridge)
+pnpm --filter example run tw:scan   # regenerate the safelist via pandwind-codemod tw scan
+pnpm --filter example run build     # production build (tw() inlined, css() extracted)
 ```
 
 ## Multi-bundler support (unplugin)

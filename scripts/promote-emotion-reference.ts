@@ -51,7 +51,7 @@ interface EmotionProofReport {
 
 function pinnedSource(): string {
 	if (!existsSync(join(referenceRoot, ".git")))
-		throw new Error("Emotion reference is missing; run nub run references:prepare first");
+		throw new Error("Emotion reference is missing; run pnpm run references:prepare first");
 	const actual = execFileSync("git", ["-C", referenceRoot, "rev-parse", "HEAD"], {
 		encoding: "utf8",
 	}).trim();

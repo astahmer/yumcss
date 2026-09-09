@@ -45,7 +45,7 @@ const stub = (id: string) => ({
 	}),
 });
 
-const exampleRoot = resolve(import.meta.dirname, "../../../apps/example/src");
+const exampleRoot = resolve(import.meta.dirname, "../../../examples/example/src");
 const exampleMeta = loadMetaFromSources({
 	typesDtsPath: resolve(exampleRoot, "types.d.ts"),
 	twTsPath: resolve(exampleRoot, "tw.ts"),

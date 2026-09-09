@@ -264,8 +264,8 @@ not a new consumer-facing runtime API.
       users to understand the codemod, MCP, or non-web backend architecture.
 - [x] Documentation no longer presents experimental breadth as stable support.
 
-Evidence: `nub run --filter pandwind test`, `nub run typecheck`, the package
-pack/import smoke, `nub run generated:check`, and `nub run surface:check` pass.
+Evidence: `pnpm --filter pandwind run test`, `pnpm run typecheck`, the package
+pack/import smoke, `pnpm run generated:check`, and `pnpm run surface:check` pass.
 The Basic mode guide is the short primary path; the current limitations page
 now labels runtime, codegen, codemod, Playground, MCP, and non-web maturity.
 

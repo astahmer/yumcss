@@ -5,7 +5,7 @@ import { gather } from "./gather.ts";
 
 const ROOT = resolve(import.meta.dirname, "../../../..");
 
-describe("gather (integration over apps/example)", { timeout: 60_000 }, () => {
+describe("gather (integration over examples/example)", { timeout: 60_000 }, () => {
 	test("returns a fully-populated studio payload", async () => {
 		const data = await gather(ROOT);
 		expect(data.meta.root).toBe(ROOT);

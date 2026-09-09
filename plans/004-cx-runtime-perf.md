@@ -55,7 +55,7 @@ Work only inside your workspace dir. Split/describe logical revisions. Never tou
 
 **Correctness evidence**: interleaved differential fuzzing against the
 previous implementation — 2.4M+ randomized calls across 6 seeds (real
-generated conflict maps from `apps/example/src/tw.ts`, live-growing atom
+generated conflict maps from `examples/example/src/tw.ts`, live-growing atom
 registry, unicode whitespace, arbitrary values, opacity modifiers, nested
 arrays, compiled maps, opaque-only instance). Zero mismatches. One real bug
 was caught by fuzzing during development (mid-string unicode fallback used to

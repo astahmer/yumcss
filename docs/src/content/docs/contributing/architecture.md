@@ -388,7 +388,7 @@ selectors emitted by the official engine.
 | Design vocabulary      | module adapter registry                                                                                                                      | `design/resolve.ts`                                                                                                                                                                                                                                                                                                                   |
 | Analyze/reporting      | source analysis, residual policy, candidate scanning, artifact compilation, budget metrics, artifact inspection, workspace, and report ports | `analyze/analysis-service.ts`, `analyze/css-residual-collector.ts`, `analyze/css-budget-*.ts`, `analyze/css-artifact-inspection.ts`, `analyze/analysis-report.ts`                                                                                                                                                                     |
 | Utility bridge         | Tailwind compilation, selector filtering, value resolution, and bridge emission                                                              | `packages/codemod/src/tw/bridge.ts`, `packages/codemod/src/tw/bridge-generator.ts`                                                                                                                                                                                                                                                    |
-| Real repository proof  | pinned reference materialization, source migration lanes, SSR/browser checks, route failures, and CSS-size accounting                        | `scripts/run-migration-proof.ts`, `scripts/migration-proof-catalog.ts`, `scripts/verify-chakra-docs.ts`, `examples/chakra-ui-docs-migration/README.md`                                                                                                                                                                                |
+| Real repository proof  | pinned reference materialization, source migration lanes, SSR/browser checks, route failures, and CSS-size accounting                        | `scripts/run-migration-proof.ts`, `scripts/migration-proof-catalog.ts`, `scripts/verify-chakra-docs.ts`, `examples/migrations/chakra-ui-docs-migration/README.md`                                                                                                                                                                                |
 | Runtime specialization | static-call rewriting, usage-aware factory pruning, factory-elision safety, virtual runtime modules, and runtime-size regression proof       | `vite/css-call-rewriter.ts`, `vite/runtime-pruner.ts`, `vite/css-core.ts`, `tests/runtime-size.test.ts`                                                                                                                                                                                                                               |
 
 Generated-project metadata is a versioned artifact, `pandwind.interop.json`.
@@ -915,7 +915,7 @@ differential runner checks canonical CSS, independent runtime-sheet output,
 browser states, SSR/hydration, streaming chunks, dependencies, and residuals.
 The `AdapterCoverageGate` consumes evidence from those independent runners and
 reports contract, real-repository, browser, and capability coverage per
-adapter. `nub run pivot:proof` composes that gate with the checked-in promotion
+adapter. `pnpm run pivot:proof` composes that gate with the checked-in promotion
 matrix; the scheduled full-proof workflow supplies the pinned repository
 evidence without importing upstream source into the workspace.
 
@@ -927,7 +927,7 @@ modes for happy, edge, and malformed inputs; the CLI e2e suite additionally
 proves the real binary's argument, discovery, write, and extension boundary.
 A route is accepted only when it converts or preserves the source with a typed
 residual. Run the public-boundary proof with
-`nub run --filter pandwind-codemod test:e2e`; the normal coverage gate runs the
+`pnpm --filter pandwind-codemod run test:e2e`; the normal coverage gate runs the
 same route corpus in-process.
 
 The playground uses this same registry-backed runner in `safe` mode. Its Vue
@@ -982,7 +982,7 @@ syntax-fixture corpus is 650 directional files (3,250 tests) plus 650
 round-trip files (2,600 tests). Context cases provide a virtual project root and adapter-owned config
 files, use blue and amber token values, and exercise native token spellings
 where the ecosystem has them. Run this isolated proof with
-`nub exec --cwd packages/codemod vitest --config
+`pnpm --dir packages/codemod exec vitest --config
 vitest.route-matrix.config.ts run -u`; it does not invoke the slower CLI suite.
 
 Named-style targets must emit syntax that their own source adapter can parse
@@ -1026,7 +1026,7 @@ about what it proves. Its `promotion` object reports canonical CSS,
 browser-state, SSR/hydration, streaming, dependency, and CSS-size dimensions
 separately. Source-static entries are useful adapter evidence, but pending
 dimensions keep them out of full promotion until a repository-specific build
-runner executes them. `nub run pivot:proof:installed` is the reproducible
+runner executes them. `pnpm run pivot:proof:installed` is the reproducible
 installed-adapter runner: it installs the pinned Goober package in a disposable
 project, migrates the corresponding real-repository fixture, compares SSR CSS,
 and exercises base/hover states in Chromium. Its report is promoted only when
@@ -1043,7 +1043,7 @@ the source and target through the adapter registry, validates the semantic
 program, and compares it in Chromium. It reports `adapter-program` evidence
 separately from an installed application promotion. Official ecosystem
 configuration is loaded through the adapter's `ProjectModuleLoader`; reference
-projects receive only explicit, pinned packages via `nub run references:deps`.
+projects receive only explicit, pinned packages via `pnpm run references:deps`.
 This keeps project presets, CSS theme variables, and generated utilities in the
 official-loader path without vendoring or silently substituting Pandwind's
 fallback resolver.
@@ -1272,7 +1272,7 @@ those exact imports into generated code. They are a generated artifact
 contract, not authoring APIs, and their evidence is the pruner test rather
 than a public usage example.
 
-Generated Tailwind artifacts are checked with `nub run generated:check`. The
+Generated Tailwind artifacts are checked with `pnpm run generated:check`. The
 check regenerates `tw.ts`, `types.d.ts`, `bridge.ts`, the theme, and interop
 metadata in a temporary directory, formats the source artifacts with the
 repository formatter, normalizes only machine-local artifact paths, and

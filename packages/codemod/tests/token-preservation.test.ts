@@ -10,7 +10,7 @@ import {
 import { TokenReferenceFormat } from "../src/swap/tokens.ts";
 
 const catalog = createBuiltinCodemodCatalog();
-const exampleSource = resolve(import.meta.dirname, "../../../apps/example/src");
+const exampleSource = resolve(import.meta.dirname, "../../../examples/example/src");
 const exampleMeta = loadMetaFromSources({
 	typesDtsPath: resolve(exampleSource, "types.d.ts"),
 	twTsPath: resolve(exampleSource, "tw.ts"),

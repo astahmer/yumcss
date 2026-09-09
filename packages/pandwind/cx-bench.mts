@@ -7,7 +7,7 @@ import { resolve } from "node:path";
 import { createCx } from "./src/cx/index.ts";
 import { extractTwConfig } from "./src/vite/inline.ts";
 
-const app = resolve(import.meta.dirname, "../../apps/example");
+const app = resolve(import.meta.dirname, "../../examples/example");
 const twSource = readFileSync(resolve(app, "src/tw.ts"), "utf8");
 const meta = extractTwConfig(twSource)!;
 

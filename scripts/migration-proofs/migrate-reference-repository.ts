@@ -122,7 +122,7 @@ export async function runReferenceRepositoryMigration(
 	const checkout = references.path(reference.clone);
 	if (!existsSync(join(checkout, ".git")))
 		throw new Error(
-			`pinned checkout is missing: run nub run references:prepare (${reference.clone})`,
+			`pinned checkout is missing: run pnpm run references:prepare (${reference.clone})`,
 		);
 	const actual = execFileSync("git", ["-C", checkout, "rev-parse", "HEAD"], {
 		encoding: "utf8",

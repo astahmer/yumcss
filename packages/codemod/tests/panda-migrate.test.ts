@@ -32,8 +32,8 @@ import type { PandwindMeta } from "../src/meta.ts";
 let meta: PandwindMeta;
 try {
 	meta = loadMetaFromSources({
-		typesDtsPath: "../../apps/example/src/types.d.ts",
-		twTsPath: "../../apps/example/src/tw.ts",
+		typesDtsPath: "../../examples/example/src/types.d.ts",
+		twTsPath: "../../examples/example/src/tw.ts",
 		tokens: examplePreset.tokens,
 	});
 } catch {
@@ -153,8 +153,8 @@ describe("factory elements", () => {
 		const src = `<panda.div px="4" className="foo" onClick={go}>x</panda.div>`;
 		const el = scanFactoryElements(src, () => false)[0]!;
 		const loadedMeta = loadMetaFromSources({
-			typesDtsPath: "../../apps/example/src/types.d.ts",
-			twTsPath: "../../apps/example/src/tw.ts",
+			typesDtsPath: "../../examples/example/src/types.d.ts",
+			twTsPath: "../../examples/example/src/tw.ts",
 			tokens: examplePreset.tokens,
 		});
 		const edits = factoryEdits(el, src, loadedMeta, {

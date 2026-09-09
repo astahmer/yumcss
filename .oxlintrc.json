@@ -28,9 +28,9 @@
 		"pandwind-extraction/no-raw-ast-identities": "error"
 	},
 	"ignorePatterns": [
-		"**/apps/example/src/types.d.ts",
-		"**/apps/example/src/pandwind.safelist.ts",
-		"**/apps/example/src/tw.ts",
+		"**/examples/example/src/types.d.ts",
+		"**/examples/example/src/pandwind.safelist.ts",
+		"**/examples/example/src/tw.ts",
 		"**/dist/**",
 		"**/docs/.astro/**",
 		"**/docs/node_modules/**",

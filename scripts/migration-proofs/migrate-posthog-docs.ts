@@ -52,7 +52,7 @@ export interface PostHogDocsMigrationReport {
 
 const repositoryRoot = resolve(import.meta.dirname, "../..");
 const defaultReferenceRoot = createReferenceWorkspace().path("posthog-com");
-const metadataRoot = resolve(repositoryRoot, "apps/example/src");
+const metadataRoot = resolve(repositoryRoot, "examples/example/src");
 
 async function sourceFiles(root: string): Promise<string[]> {
 	const files: string[] = [];

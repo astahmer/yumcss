@@ -7,7 +7,7 @@
 			"id": "tailwindcss-docs",
 			"sourceAdapter": "tailwind",
 			"referenceCommit": "bd868a314bd05ca78acd047e3da289274dd6ccd7",
-			"report": "examples/tailwindcss-docs-migration/reports/tw.json",
+			"report": "examples/migrations/tailwindcss-docs-migration/reports/tw.json",
 			"server": { "checked": true, "routes": 338, "failures": 0 },
 			"browser": { "checked": true, "routes": 90, "equivalent": true, "errors": 0 },
 			"css": {
@@ -21,7 +21,7 @@
 			"id": "stylex-docs",
 			"sourceAdapter": "stylex",
 			"referenceCommit": "5f7acaa4b332e2cf8352e95e5bc83efd70904fd4",
-			"report": "examples/stylex-docs-migration/reports/browser-matrix.json",
+			"report": "examples/migrations/stylex-docs-migration/reports/browser-matrix.json",
 			"server": { "checked": true, "routes": 4, "failures": 0 },
 			"browser": { "checked": true, "routes": 4, "equivalent": true, "errors": 0 },
 			"css": {
@@ -36,7 +36,7 @@
 			"id": "chakra-ui-docs",
 			"sourceAdapter": "chakra-ui",
 			"referenceCommit": "7aca83e44de50f501d8274a55c331cb8fb06e4fa",
-			"report": "examples/chakra-ui-docs-migration/reports/css-class.json",
+			"report": "examples/migrations/chakra-ui-docs-migration/reports/css-class.json",
 			"server": { "checked": true, "routes": 261, "failures": 0 },
 			"browser": { "checked": true, "routes": 2, "equivalent": true, "errors": 0 },
 			"css": {
@@ -50,7 +50,7 @@
 			"id": "shadcn-v4-docs",
 			"sourceAdapter": "tailwind",
 			"referenceCommit": "683a5a9b370acdb7785a0529434e6a3b8c7e0441",
-			"report": "examples/shadcn-ui-docs-migration/reports/browser-parity-final.json",
+			"report": "examples/migrations/shadcn-ui-docs-migration/reports/browser-parity-final.json",
 			"server": { "checked": true, "routes": 730, "failures": 0 },
 			"browser": {
 				"checked": true,
@@ -124,7 +124,7 @@
 			"id": "astryx-docsite",
 			"sourceAdapter": "stylex",
 			"referenceCommit": "8359f1a3601766e3a96ae0805e9487ac3dc17754",
-			"report": "examples/astryx-docs-migration/README.md",
+			"report": "examples/migrations/astryx-docs-migration/README.md",
 			"lanes": ["static-css", "runtime-css", "design-dss"],
 			"server": { "checked": true, "builds": 3, "failures": 0 },
 			"browser": {

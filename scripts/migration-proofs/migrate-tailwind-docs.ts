@@ -142,7 +142,7 @@ async function generatedMetadata(referenceRoot: string): Promise<GeneratedMetada
 			);
 		}
 		await symlink(
-			join(repositoryRoot, "apps/example/node_modules/tailwindcss"),
+			join(repositoryRoot, "examples/example/node_modules/tailwindcss"),
 			join(tempRoot, "node_modules/tailwindcss"),
 			"dir",
 		);

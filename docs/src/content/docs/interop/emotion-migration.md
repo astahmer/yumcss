@@ -59,7 +59,7 @@ Build the candidate app:
 
 ```sh
 cd /tmp/pandwind-emotion-site-candidate/site
-nub run build
+pnpm run build
 ```
 
 Run the route, CSS-size, screenshot, and hydration proof:

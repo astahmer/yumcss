@@ -132,7 +132,7 @@
 		"**/tests/fixtures/**/*",
 		"**/src/types.d.ts",
 		"**/src/bridge.ts",
-		"apps/example/src/tw.ts",
+		"examples/example/src/tw.ts",
 		"apps/playground/src/tw.ts",
 		"**/src/generated/**",
 		"**/*.bench.{ts,mts}"

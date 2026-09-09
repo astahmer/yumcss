@@ -4,7 +4,7 @@ import { resolve } from "node:path";
 import { loadMetaFromSources } from "../src/meta.ts";
 import { SWAP_REGISTRY, runSwap, SwapSourceId } from "../src/swap/index.ts";
 
-const appDir = resolve(import.meta.dirname, "../../../apps/example/src");
+const appDir = resolve(import.meta.dirname, "../../../examples/example/src");
 const meta = loadMetaFromSources({
 	typesDtsPath: resolve(appDir, "types.d.ts"),
 	twTsPath: resolve(appDir, "tw.ts"),
@@ -41,7 +41,7 @@ function migrate(source: string, from: SwapSourceId, to: string) {
 		from,
 		to: to as never,
 		file: "SwapMatrix.tsx",
-		metaDir: "apps/example/src",
+		metaDir: "examples/example/src",
 		capabilityMode: "partial",
 	});
 }

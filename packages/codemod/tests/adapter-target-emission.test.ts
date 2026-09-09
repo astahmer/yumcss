@@ -17,8 +17,8 @@ import { NODE_PROJECT_MODULE_LOADER } from "../src/swap/project-module-loader.ts
 
 const catalog = createBuiltinCodemodCatalog();
 const nodeCatalog = createBuiltinCodemodCatalog(NODE_PROJECT_MODULE_LOADER);
-const exampleRoot = resolve(import.meta.dirname, "../../../apps/example");
-const exampleSourceDir = resolve(import.meta.dirname, "../../../apps/example/src");
+const exampleRoot = resolve(import.meta.dirname, "../../../examples/example");
+const exampleSourceDir = resolve(import.meta.dirname, "../../../examples/example/src");
 const exampleFiles = [
 	resolve(exampleSourceDir, "tailwind.css"),
 	resolve(exampleSourceDir, "pandwind-theme.css"),

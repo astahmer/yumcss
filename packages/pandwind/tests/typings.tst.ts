@@ -6,8 +6,8 @@
  * keys and the open-ended value escape hatch.
  */
 import { expect, test } from "tstyche";
-import { tw } from "../../../apps/example/src/tw.ts";
-import type { WindVariants } from "../../../apps/example/src/types.d.ts";
+import { tw } from "../../../examples/example/src/tw.ts";
+import type { WindVariants } from "../../../examples/example/src/types.d.ts";
 
 test("tw() always returns a class string", () => {
 	expect(tw({ rounded: "xl" })).type.toBe<string>();

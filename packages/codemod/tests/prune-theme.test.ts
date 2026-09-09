@@ -7,7 +7,7 @@ import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
 import { filterBridgeByUsedVars, themeBlockBody, usedBridgeVars } from "../src/tw/prune-theme.ts";
 
-const APP = resolve(import.meta.dirname, "../../../apps/example");
+const APP = resolve(import.meta.dirname, "../../../examples/example");
 
 const BRIDGE = `@theme {
 	--color-surface: #101014;

@@ -6,11 +6,11 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { __unstable__loadDesignSystem } from "@tailwindcss/node";
 import { describe, expect, test } from "vitest";
-import { tw } from "../../../apps/example/src/tw.ts";
+import { tw } from "../../../examples/example/src/tw.ts";
 import { collectTwClasses } from "../src/tw/collect.ts";
 import { createSourceWorkspace } from "../src/source-workspace.ts";
 
-const app = resolve(import.meta.dirname, "../../../apps/example");
+const app = resolve(import.meta.dirname, "../../../examples/example");
 const safelistEntries = (): Array<string> =>
 	[
 		...readFileSync(resolve(app, "src/pandwind.safelist.css"), "utf8").matchAll(

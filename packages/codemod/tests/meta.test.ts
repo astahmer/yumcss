@@ -3,7 +3,7 @@ import { resolve, join } from "node:path";
 import { describe, expect, test } from "vitest";
 import { loadMetaFromSources, loadMetaFromSourcesAsync } from "../src/meta.ts";
 
-const appDir = resolve(import.meta.dirname, "../../../apps/example/src");
+const appDir = resolve(import.meta.dirname, "../../../examples/example/src");
 const sourceOptions = {
 	typesDtsPath: resolve(appDir, "types.d.ts"),
 	twTsPath: resolve(appDir, "tw.ts"),

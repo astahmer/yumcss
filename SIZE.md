@@ -4,7 +4,7 @@ Numbers below are quoted from the committed record-of-truth snapshot
 `packages/pandwind/tests/snapshots/runtime-size.json.snap` (esbuild `bundle +
 minify`, gzip level 6; last refreshed 2026-08-23, local macOS arm64, Node
 v24.19.0). Re-run the commands in `tests/runtime-size.test.ts` and
-`apps/example` to refresh after dependency or engine changes.
+`examples/example` to refresh after dependency or engine changes.
 
 ## The short version
 
@@ -110,7 +110,7 @@ must keep the numbers where they are.
 
 ## Real CSS output (example app)
 
-`apps/example` builds three pages (`tw()` only, `css()` atomic only,
+`examples/example` builds three pages (`tw()` only, `css()` atomic only,
 `css()` design-vocabulary only) plus Tailwind v4's preflight and a safelist.
 Vite build output, 2026-08-15:
 

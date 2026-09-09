@@ -47,7 +47,7 @@ export interface EffectDocsMigrationReport {
 const repositoryRoot = resolve(import.meta.dirname, "../..");
 const defaultReferenceRoot = createReferenceWorkspace().path("effect-ts-website");
 const expectedReferenceCommit = "366419b44eb2bd353cbe3d3e41fa4e8c735e63ee";
-const metadataRoot = resolve(repositoryRoot, "apps/example/src");
+const metadataRoot = resolve(repositoryRoot, "examples/example/src");
 
 async function sourceFiles(root: string): Promise<string[]> {
 	const files: string[] = [];

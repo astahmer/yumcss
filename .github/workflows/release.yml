@@ -41,7 +41,7 @@ jobs:
         with:
           title: "chore: version packages"
           commit: "chore: version packages"
-          version: nub run changeset:version
+          version: pnpm run changeset:version
 
   # Tagging v* publishes everything (after re-running pack smoke tests).
   publish:
@@ -63,8 +63,8 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - name: typecheck + tests
         run: |
-          nub run typecheck
-          nub run test
+          pnpm run typecheck
+          pnpm run test
       - name: publish (provenance via OIDC)
         run: bash scripts/release/publish-all.sh
         env:

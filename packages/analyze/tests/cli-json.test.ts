@@ -9,7 +9,7 @@ import { afterAll, describe, expect, test } from "vitest";
 import { ANALYZE_JSON_SCHEMA, collectFiles, runCli } from "../src/cli.ts";
 
 const root = resolve(import.meta.dirname, "tmp-json");
-const twPath = resolve(import.meta.dirname, "../../../apps/example/src/tw.ts");
+const twPath = resolve(import.meta.dirname, "../../../examples/example/src/tw.ts");
 
 afterAll(() => {
 	rmSync(root, { recursive: true, force: true });

@@ -3,7 +3,7 @@ import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
 import { generateDesignSystem } from "../src/tw/generate-types.ts";
 
-const app = resolve(import.meta.dirname, "../../../apps/example");
+const app = resolve(import.meta.dirname, "../../../examples/example");
 const css = readFileSync(resolve(app, "src/tailwind.css"), "utf8");
 
 describe("typegen determinism", () => {

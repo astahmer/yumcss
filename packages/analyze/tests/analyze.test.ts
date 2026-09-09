@@ -16,7 +16,7 @@ import {
 } from "../src/analyze.ts";
 import { inlineCxCalls } from "pandwind/vite/cx-inline";
 
-const app = resolve(import.meta.dirname, "../../../apps/example");
+const app = resolve(import.meta.dirname, "../../../examples/example");
 const config = loadTwConfig(resolve(app, "src/tw.ts"));
 
 describe("analyzeSource — per-call classification", () => {

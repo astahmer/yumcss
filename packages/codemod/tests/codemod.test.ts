@@ -21,7 +21,7 @@ import {
 	SwapSourceId,
 } from "../src/swap/index.ts";
 
-const appDir = resolve(import.meta.dirname, "../../../apps/example/src");
+const appDir = resolve(import.meta.dirname, "../../../examples/example/src");
 const meta = loadMetaFromSources({
 	typesDtsPath: resolve(appDir, "types.d.ts"),
 	twTsPath: resolve(appDir, "tw.ts"),

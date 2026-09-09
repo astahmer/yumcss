@@ -34,23 +34,23 @@ jobs:
       - name: Run pinned reference corpus and offline gate
         env:
           PANDWIND_PROOF_OUTPUT: ${{ runner.temp }}/pandwind-pivot-proof/real-repository-migrations-v2.json
-        run: nub run pivot:proof:references
+        run: pnpm run pivot:proof:references
 
       - name: Run pinned adapter browser proof
         env:
           PANDWIND_ADAPTER_REFERENCE_PROOF_OUTPUT: ${{ runner.temp }}/pandwind-pivot-proof/adapter-reference-proof.json
-        run: nub run references:deps && nub run pivot:proof:adapters
+        run: pnpm run references:deps && pnpm run pivot:proof:adapters
 
       - name: Typecheck generated adapter output against real packages
         env:
           PANDWIND_ADAPTER_EXECUTABLE_PROOF_OUTPUT: ${{ runner.temp }}/pandwind-pivot-proof/adapter-executable-proof.json
-        run: nub run pivot:proof:adapter-output
+        run: pnpm run pivot:proof:adapter-output
 
       - name: Verify Chakra target output against published types
-        run: nub run pivot:proof:chakra
+        run: pnpm run pivot:proof:chakra
 
       - name: Run installed promotion proofs
-        run: nub run pivot:proof:installed && nub run pivot:proof:installed:emotion && nub run pivot:proof:installed:routes:run
+        run: pnpm run pivot:proof:installed && pnpm run pivot:proof:installed:emotion && pnpm run pivot:proof:installed:routes:run
 
       - name: Upload source-only proof report
         uses: actions/upload-artifact@v4

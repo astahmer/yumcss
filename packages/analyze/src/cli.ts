@@ -4,7 +4,7 @@
  * eliminates for the given files.
  *
  * Usage:
- *   nub run analyze [globs...] [--tw <generated-tw.ts>] [--json] [--root <dir>]
+ *   pnpm run analyze [globs...] [--tw <generated-tw.ts>] [--json] [--root <dir>]
  *
  * Defaults: globs = all .ts/.tsx under ./src, tw = "./src/tw.ts", root = cwd.
  */

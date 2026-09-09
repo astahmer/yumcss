@@ -2,7 +2,7 @@
 
 This fixture is a reproducible migration of the StyleX documentation app at
 commit `5f7acaa4b332e2cf8352e95e5bc83efd70904fd4`. The upstream checkout is
-downloaded by `nub run references:prepare` into
+downloaded by `pnpm run references:prepare` into
 `${PANDWIND_REFERENCE_ROOT:-~/.references}/stylex`; Pandwind versions only
 the migration runner and proof reports.
 
@@ -21,7 +21,7 @@ The migration is deliberately expressed as lanes over the same
 Run one lane and print its proof report:
 
 ```sh
-nub run references:prepare
+pnpm run references:prepare
 
 nub scripts/run-migration-proof.ts run stylex-docs runtime-css
 nub scripts/run-migration-proof.ts run stylex-docs atomic-css
@@ -35,7 +35,7 @@ migrated lane on port `4310`, then run:
 node scripts/verify-stylex-docs-browser.mjs \
   http://127.0.0.1:4311 \
   http://127.0.0.1:4310 \
-  examples/stylex-docs-migration/reports/browser-matrix.json
+  examples/migrations/stylex-docs-migration/reports/browser-matrix.json
 ```
 
 The verifier compares the home page, representative docs pages, and the

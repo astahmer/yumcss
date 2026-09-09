@@ -87,7 +87,7 @@ function makeMode(strategy: (typeof MODES)[number]["strategy"]) {
 	const sheet = createStylesheet(examplePreset, { className: strategy });
 
 	const twSource = readFileSync(
-		resolve(import.meta.dirname, "../../../apps/example/src/tw.ts"),
+		resolve(import.meta.dirname, "../../../examples/example/src/tw.ts"),
 		"utf8",
 	);
 	const real = extractTwConfig(twSource)!;

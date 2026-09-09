@@ -69,14 +69,14 @@
 		"registry": "https://registry.npmjs.org/"
 	},
 	"scripts": {
-		"build:ui": "nub exec vite build",
-		"build": "nub exec tsdown && nub run build:ui",
+		"build:ui": "pnpm exec vite build",
+		"build": "pnpm exec tsdown && pnpm run build:ui",
 		"typecheck": "tsc --noEmit",
 		"test": "vitest run",
 		"test:coverage": "vitest run --coverage",
 		"cli": "node dist/cli.js",
 		"studio": "node dist/studio/cli.js",
-		"corpus": "nub run cli \"analyze/tests/fixtures/coverage-corpus/*.ts\" --tw ../apps/example/src/tw.ts --root .."
+		"corpus": "pnpm run cli \"analyze/tests/fixtures/coverage-corpus/*.ts\" --tw ../../examples/example/src/tw.ts --root ../.."
 	},
 	"dependencies": {
 		"@hono/node-server": "2.1.1",

@@ -30,7 +30,7 @@ import {
 import { generateDesignSystem } from "../src/tw/generate-types.ts";
 import { resolvePresetConditions, resolveTokenGroups } from "../src/tw/codegen-theme-input.ts";
 
-const app = resolve(import.meta.dirname, "../../../apps/example");
+const app = resolve(import.meta.dirname, "../../../examples/example");
 const srcDir = resolve(app, "src");
 const css = readFileSync(resolve(srcDir, "tailwind.css"), "utf8");
 
@@ -260,7 +260,7 @@ describe("loadThemeBlock package-specifier resolution", () => {
 			// irrelevant because resolution goes through createRequire(base).
 			const themeBlock = await built.loadThemeBlock(
 				"@pandwind/example-preset",
-				resolve(import.meta.dirname, "../../../apps/example"),
+				resolve(import.meta.dirname, "../../../examples/example"),
 			);
 			expect(themeBlock).toContain("--color");
 		} finally {

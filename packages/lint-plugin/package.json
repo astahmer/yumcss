@@ -28,7 +28,7 @@
 		"registry": "https://registry.npmjs.org/"
 	},
 	"scripts": {
-		"build": "nub exec tsdown",
+		"build": "pnpm exec tsdown",
 		"typecheck": "tsc --noEmit",
 		"test": "vitest run"
 	},

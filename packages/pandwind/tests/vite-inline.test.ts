@@ -5,7 +5,7 @@ import { extractTwConfig, inlineTwCalls } from "../src/vite/inline.ts";
 import { createTw } from "../src/tw/runtime.ts";
 
 const twSource = readFileSync(
-	resolve(import.meta.dirname, "../../../apps/example/src/tw.ts"),
+	resolve(import.meta.dirname, "../../../examples/example/src/tw.ts"),
 	"utf8",
 );
 const config = extractTwConfig(twSource);

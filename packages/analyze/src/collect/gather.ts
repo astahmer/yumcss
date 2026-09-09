@@ -31,13 +31,13 @@ import {
 } from "../governance/index.ts";
 import type { CollectPayload, ThemeVar, TokenSection } from "./types.ts";
 
-const DEFAULT_APP = "apps/example";
+const DEFAULT_APP = "examples/example";
 
 /**
  * Build the full studio payload for the given repo root (default: this repo).
  *
  * Override target via env vars to point the studio at an external project:
- *   INSPECTOR_ROOT=/path/to/other-repo INSPECTOR_APP=packages/geos nub run dev
+ *   INSPECTOR_ROOT=/path/to/other-repo INSPECTOR_APP=packages/geos pnpm run dev
  * `INSPECTOR_APP` is resolved as `<root>/<app>/src`. Artifacts specific to the
  * pandwind dogfood app (examplePreset tokens, bridge.ts, pandwind-theme.css)
  * are optional and degrade to empty when the target app doesn't have them.

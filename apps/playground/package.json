@@ -5,13 +5,13 @@
 	"scripts": {
 		"editor:types": "nub --node scripts/generate-editor-types.ts",
 		"editor:types:check": "nub --node scripts/generate-editor-types.ts --check",
-		"predev": "nub run editor:types && nub run tw:generate",
+		"predev": "pnpm run editor:types && pnpm run tw:generate",
 		"dev": "vite",
-		"prebuild": "nub run editor:types && nub run tw:generate",
+		"prebuild": "pnpm run editor:types && pnpm run tw:generate",
 		"build": "tsc --noEmit && vite build",
-		"typecheck": "nub run editor:types:check && tsc --noEmit",
+		"typecheck": "pnpm run editor:types:check && tsc --noEmit",
 		"test": "vitest run --config vitest.config.ts",
-		"tw:generate": "nub exec --node pandwind-codemod tw generate ./src/tailwind.css ./src --tokens @pandwind/example-preset --preset-import @pandwind/example-preset --preset-export examplePreset --bridge && nub exec oxfmt ./src/types.d.ts ./src/tw.ts ./src/bridge.ts ./src/pandwind-theme.css && nub exec --node pandwind-codemod tw manifest ./src ./src/tailwind.css"
+		"tw:generate": "pnpm exec pandwind-codemod tw generate ./src/tailwind.css ./src --tokens @pandwind/example-preset --preset-import @pandwind/example-preset --preset-export examplePreset --bridge && pnpm exec oxfmt ./src/types.d.ts ./src/tw.ts ./src/bridge.ts ./src/pandwind-theme.css && pnpm exec pandwind-codemod tw manifest ./src ./src/tailwind.css"
 	},
 	"dependencies": {
 		"@ark-ui/react": "5.39.0",

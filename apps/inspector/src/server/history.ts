@@ -9,7 +9,7 @@ import type { StudioPayload } from "../types.ts";
 import type { HistoryEntry } from "../lib/history-diff.ts";
 
 /**
- * Root = the inspector package directory (= vite's cwd: `nub run inspect` runs
+ * Root = the inspector package directory (= vite's cwd: `pnpm run inspect` runs
  * with cwd = apps/inspector, never assume the monorepo root).
  */
 const HISTORY_DIR = (root: string): string => join(root, ".studio-history");

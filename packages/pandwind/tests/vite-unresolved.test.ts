@@ -12,7 +12,7 @@ import { inlineCxCalls } from "../src/vite/cx-inline.ts";
 import { collectUnresolvedTokens, tokenHasCss } from "../src/vite/unresolved.ts";
 
 const twSource = readFileSync(
-	resolve(import.meta.dirname, "../../../apps/example/src/tw.ts"),
+	resolve(import.meta.dirname, "../../../examples/example/src/tw.ts"),
 	"utf8",
 ) as string;
 const config = extractTwConfig(twSource)!;

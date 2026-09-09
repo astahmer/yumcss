@@ -8,7 +8,7 @@
  * unrepresentables) keep conversions lossless — the original stays plus a
  * skip marker, never a silent partial rewrite.
  *
- * Metadata comes from the real generated outputs in apps/example/src, and
+ * Metadata comes from the real generated outputs in examples/example/src, and
  * asserted values are pinned against its bridge (e.g. #3182ce -> bg-blue-500).
  */
 import { execFileSync } from "node:child_process";
@@ -20,7 +20,7 @@ import { loadMetaFromSources } from "../src/meta.ts";
 import { runSwap, SWAP_TARGETS, TokenReferenceFormat } from "../src/swap/index.ts";
 import { examplePreset } from "@pandwind/example-preset";
 
-const appDir = resolve(import.meta.dirname, "../../../apps/example/src");
+const appDir = resolve(import.meta.dirname, "../../../examples/example/src");
 const meta = loadMetaFromSources({
 	typesDtsPath: resolve(appDir, "types.d.ts"),
 	twTsPath: resolve(appDir, "tw.ts"),
@@ -39,7 +39,7 @@ const swap = (
 		from,
 		to,
 		file,
-		metaDir: "apps/example/src",
+		metaDir: "examples/example/src",
 	});
 
 describe("swap tw -> css.class", () => {
@@ -109,7 +109,7 @@ describe("swap css.class -> tw", () => {
 			from: "css",
 			to: "tw",
 			file: "Card.tsx",
-			metaDir: "apps/example/src",
+			metaDir: "examples/example/src",
 			capabilityMode: "safe",
 		});
 		expect(result.converted).toBe(0);
@@ -243,7 +243,7 @@ describe("swap CLI end-to-end", () => {
 				"--from=auto",
 				"--to=tw",
 				`--root=${dir}`,
-				`--meta=${resolve(repoRoot, "apps/example/src")}`,
+				`--meta=${resolve(repoRoot, "examples/example/src")}`,
 				"--no-install",
 				file,
 			],
@@ -303,7 +303,7 @@ const swapTo = (
 		from: "auto",
 		to,
 		file: "test.tsx",
-		metaDir: "apps/example/src",
+		metaDir: "examples/example/src",
 	});
 
 describe("outbound: tailwind classes", () => {
@@ -373,7 +373,7 @@ describe("token references + single-line output", () => {
 			from: "auto",
 			to: "panda",
 			file: "t.tsx",
-			metaDir: "apps/example/src",
+			metaDir: "examples/example/src",
 			tokenReferenceFormat: TokenReferenceFormat.DotDelimited,
 		});
 		expect(result.code).toContain('backgroundColor: "blue.500"');
@@ -392,7 +392,7 @@ describe("token references + single-line output", () => {
 			from: "auto",
 			to: "panda",
 			file: "t.tsx",
-			metaDir: "apps/example/src",
+			metaDir: "examples/example/src",
 			tokenRefs: "group",
 			tokenReferenceFormat: TokenReferenceFormat.DotDelimited,
 		});
@@ -404,7 +404,7 @@ describe("token references + single-line output", () => {
 			from: "auto",
 			to: "panda",
 			file: "t.tsx",
-			metaDir: "apps/example/src",
+			metaDir: "examples/example/src",
 			tokenRefs: "off",
 		});
 		expect(result.code).toContain('backgroundColor: "$blue-500"');
@@ -479,7 +479,7 @@ describe("--engine: bridge-miss resolution", () => {
 			from: "auto",
 			to: "css.class",
 			file: "t.tsx",
-			metaDir: "apps/example/src",
+			metaDir: "examples/example/src",
 			engineResolver: staticMissResolver({
 				"bg-sky-600": [{ prop: "background-color", value: "#0284c7" }],
 			}),
@@ -512,7 +512,7 @@ describe("--tokenize: raw values -> authored $tokens", () => {
 		const result = runSwapRaw(
 			`import { css } from "./design.ts";\nconst card = css.class({ backgroundColor: "#3182ce" });`,
 			meta,
-			{ from: "css", to: "css.class", file: "t.tsx", metaDir: "apps/example/src", tokenize: true },
+			{ from: "css", to: "css.class", file: "t.tsx", metaDir: "examples/example/src", tokenize: true },
 		);
 		expect(result.converted).toBe(1);
 		expect(result.code).toContain('backgroundColor: "$blue-500"');
@@ -526,7 +526,7 @@ describe("--tokenize + governance suggestions (plans/054)", () => {
 			from: "css",
 			to: "css.class",
 			file: "t.tsx",
-			metaDir: "apps/example/src",
+			metaDir: "examples/example/src",
 			tokenize: true,
 			// Only backgroundColor has a verified exact-match suggestion; color
 			// shares the same raw value but no evidence — stays literal.
@@ -554,7 +554,7 @@ describe("--tokenize + governance suggestions (plans/054)", () => {
 			from: "css",
 			to: "css.class",
 			file: "t.tsx",
-			metaDir: "apps/example/src",
+			metaDir: "examples/example/src",
 			tokenize: true,
 			suggestions: [
 				{
@@ -579,7 +579,7 @@ describe("--sort: canonical property order", () => {
 		const result = runSwapRaw(
 			`${WITH_CSS}const c = css.class({ $text: { color: "$gray-900" }, $frame: { corners: "$md", fill: "$blue-500" } });`,
 			meta,
-			{ from: "auto", to: "css.class", file: "t.tsx", metaDir: "apps/example/src", sort: true },
+			{ from: "auto", to: "css.class", file: "t.tsx", metaDir: "examples/example/src", sort: true },
 		);
 		const call = result.code.slice(result.code.indexOf("css.class"));
 		expect(call.indexOf("borderRadius")).toBeLessThan(call.indexOf("backgroundColor"));
@@ -604,7 +604,7 @@ describe("--dedup: repeated identical literals hoist to a constant", () => {
 			from: "auto",
 			to: "tw",
 			file: "t.tsx",
-			metaDir: "apps/example/src",
+			metaDir: "examples/example/src",
 			dedup: true,
 		});
 		expect(result.code).toContain("pwStyle1");
@@ -678,7 +678,7 @@ describe("full swap matrix (9 pairs)", () => {
 						from,
 						to,
 						file: "t.tsx",
-						metaDir: "apps/example/src",
+						metaDir: "examples/example/src",
 					},
 				);
 				// Every pair converts at least one call site; nothing silently dropped.
@@ -705,7 +705,7 @@ test("CLI spawn e2e: --to=panda emits token refs + styled-system import", () => 
 			"--from=auto",
 			"--to=panda",
 			`--root=${dir}`,
-			`--meta=${resolve(repoRoot, "apps/example/src")}`,
+			`--meta=${resolve(repoRoot, "examples/example/src")}`,
 			"--no-install",
 			file,
 		],

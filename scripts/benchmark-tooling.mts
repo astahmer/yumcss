@@ -41,7 +41,7 @@ type Repository = {
 };
 
 const ROOT = resolve(import.meta.dirname, "..");
-const EXAMPLE_TW = resolve(ROOT, "apps/example/src/tw.ts");
+const EXAMPLE_TW = resolve(ROOT, "examples/example/src/tw.ts");
 
 function option(name: string, fallback: number): number {
 	const index = process.argv.indexOf(name);

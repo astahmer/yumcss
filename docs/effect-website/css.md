@@ -21,7 +21,7 @@ nub scripts/run-migration-proof.ts run effect-docs css \
 	--output-root /tmp/pandwind-effect-css
 cd /tmp/pandwind-effect-css
 pnpm install --no-frozen-lockfile
-nub exec vp run build
+pnpm exec vp run build
 ```
 
 Run the four-way verifier shown in the [`tw` proof](./tw.md). In the verified

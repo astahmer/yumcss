@@ -8,7 +8,7 @@ import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
 import { analyzeSource, formatReport, loadTwConfig, summarize } from "../src/analyze.ts";
 
-const app = resolve(import.meta.dirname, "../../../apps/example");
+const app = resolve(import.meta.dirname, "../../../examples/example");
 const config = loadTwConfig(resolve(app, "src/tw.ts"));
 
 describe("missing-css warnings", () => {

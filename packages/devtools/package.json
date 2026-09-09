@@ -48,7 +48,7 @@
 		"registry": "https://registry.npmjs.org/"
 	},
 	"scripts": {
-		"build": "nub exec tsdown && nub exec vite build",
+		"build": "pnpm exec tsdown && pnpm exec vite build",
 		"typecheck": "tsc --noEmit",
 		"test": "vitest run --config vitest.config.ts"
 	},

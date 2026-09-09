@@ -116,7 +116,7 @@ describe("sheet-backed contract", () => {
 describe("cx() merging survives the mode switch", () => {
 	const css = createDesignCss(examplePreset, { className: strategy });
 	const real = extractTwConfig(
-		readFileSync(resolve(import.meta.dirname, "../../../apps/example/src/tw.ts"), "utf8"),
+		readFileSync(resolve(import.meta.dirname, "../../../examples/example/src/tw.ts"), "utf8"),
 	)!;
 	const cx = createCx({
 		css,

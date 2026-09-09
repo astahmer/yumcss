@@ -9,7 +9,7 @@ Last measured: 2026-09-01 for the Pandwind runtime hot-path and size contract;
 competitor rows below retain their 2026-08-27 reference measurement. The
 environment was local macOS (arm64), Node v24.19.0, esbuild 0.28.2. All
 numbers come from real builds (esbuild `bundle + minify`, gzip level 6). Re-run
-`packages/pandwind/tests/runtime-size.test.ts` and `apps/example` to refresh
+`packages/pandwind/tests/runtime-size.test.ts` and `examples/example` to refresh
 after dependency or engine changes.
 
 ## The short version
@@ -64,7 +64,7 @@ rerun as part of that optimization revision.
 
 ## No silent regressions: the runtime size gate
 
-The numbers above are a _contract_, enforced on every `nub run test` run by
+The numbers above are a _contract_, enforced on every `pnpm run test` run by
 `tests/runtime-size.test.ts`. Three layers:
 
 1. **Hard budgets** (`tests/runtime-budget.json`) — ceilings checked first,
@@ -72,7 +72,7 @@ The numbers above are a _contract_, enforced on every `nub run test` run by
 2. **Regression guard** — current sizes compared against the committed
    snapshot with a small tolerance (1%, floored at 16 min / 8 gz bytes).
 3. **Exact snapshot** — record of truth, updated only via
-   `nub run test:size -u`, reserved for deliberate growth.
+   `pnpm run test:size -u`, reserved for deliberate growth.
 
 ## Real CSS output (example app)
 

@@ -60,7 +60,7 @@ async function main() {
 		// The link is outside the tarball and is never part of the published files.
 		const workspaceNodeModules = [
 			resolve(pkgDir, "../../node_modules"),
-			resolve(pkgDir, "../../apps/example/node_modules"),
+			resolve(pkgDir, "../../examples/example/node_modules"),
 		].find((candidate) => statMaybe(join(candidate, "react")));
 		if (statMaybe(workspaceNodeModules)) {
 			symlinkSync(workspaceNodeModules, join(extracted, "node_modules"), "dir");

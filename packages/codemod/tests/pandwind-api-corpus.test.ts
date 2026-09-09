@@ -3,7 +3,7 @@ import { loadMetaFromSources } from "../src/meta.ts";
 import { runSwap, SWAP_TARGETS } from "../src/swap/index.ts";
 import { examplePreset } from "@pandwind/example-preset";
 
-const appDir = new URL("../../../apps/example/src/", import.meta.url).pathname;
+const appDir = new URL("../../../examples/example/src/", import.meta.url).pathname;
 const meta = loadMetaFromSources({
 	typesDtsPath: `${appDir}/types.d.ts`,
 	twTsPath: `${appDir}/tw.ts`,
@@ -16,7 +16,7 @@ const run = (source: string, from: "tw" | "css" | "design", to: string) =>
 		from,
 		to: to as never,
 		file: "api-corpus.tsx",
-		metaDir: "apps/example/src",
+		metaDir: "examples/example/src",
 	});
 
 describe("Pandwind public API migration corpus", () => {

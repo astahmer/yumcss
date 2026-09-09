@@ -43,7 +43,7 @@ description: Migrate an app onto pandwind using packages/codemod. Use when conve
   `panda`; comma-separated), off by default; run before the `--to` pass.
 - `--diff` — print exact diffs; `--write` — apply (without it, dry-run).
 - `--report` — migration-completeness report after the pass.
-- `--meta=<dir>` — codegen output dir (default: `apps/example/src`, resolved
+- `--meta=<dir>` — codegen output dir (default: `examples/example/src`, resolved
   by ascending to the workspace root).
 - `--skip-marker=<text>` — override the opt-out marker
   (default `pandwind:migrate-skip`).

@@ -2,7 +2,7 @@ import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
 import { collectTwClasses, createTwClassCollector } from "../src/tw/collect.ts";
 
-const app = resolve(import.meta.dirname, "../../../apps/example");
+const app = resolve(import.meta.dirname, "../../../examples/example");
 
 describe("tw scanner", () => {
 	test("collects exactly the classes a tw() call emits", async () => {
@@ -26,7 +26,7 @@ describe("tw scanner", () => {
 		try {
 			const dynamicSource = join(root, "dynamic.tsx");
 			const body = [
-				'import { tw } from "../../../apps/example/src/tw";',
+				'import { tw } from "../../../examples/example/src/tw";',
 				'export const a = tw({ bg: active ? "sky-600" : "gray-900" });',
 				'export const b = tw({ p: SPACING === "4" ? "4" : "8" });',
 			].join("\n");
@@ -49,7 +49,7 @@ describe("tw scanner", () => {
 		try {
 			const cxSource = join(root, "cx-dynamic.tsx");
 			const body = [
-				'import { cx } from "../../../apps/example/src/tw";',
+				'import { cx } from "../../../examples/example/src/tw";',
 				"const tone = pickTone();",
 				'export const a = cx(tone === "light" ? "bg-sky-600" : "bg-gray-900");',
 				'export const b = cx(flags && { underline: true, "font-bold": true });',
@@ -96,7 +96,7 @@ describe("tw scanner", () => {
 			try {
 				const source = join(root, "gates.tsx");
 				const body = [
-					'import { tw, cx } from "../../../apps/example/src/tw";',
+					'import { tw, cx } from "../../../examples/example/src/tw";',
 					"const size = pickSize();",
 					"const color = pickColor();",
 					'export const a = tw({ p: size === "1" ? "4" : "bananas" });',

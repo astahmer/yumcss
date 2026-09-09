@@ -47,7 +47,7 @@ nub scripts/verify-posthog-docs.mjs \
   http://127.0.0.1:4352 \
   http://127.0.0.1:4353 \
   http://127.0.0.1:4354 \
-  examples/posthog-com-migration/reports/browser-parity.json
+  examples/migrations/posthog-com-migration/reports/browser-parity.json
 ```
 
 The verifier derives routes from the baseline's generated HTML instead of

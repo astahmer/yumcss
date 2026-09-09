@@ -5,7 +5,7 @@ import { describe, expect, test } from "vitest";
 import { createDesignSystemCodegen, generateDesignSystem } from "../src/tw/generate-types.ts";
 import { UTILITY_SUBKEYS } from "pandwind/tw/compile";
 
-const app = resolve(import.meta.dirname, "../../../apps/example");
+const app = resolve(import.meta.dirname, "../../../examples/example");
 const css = readFileSync(resolve(app, "src/tailwind.css"), "utf8");
 
 describe("typegen", () => {

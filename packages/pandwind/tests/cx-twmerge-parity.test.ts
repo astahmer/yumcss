@@ -20,7 +20,7 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
 const twSource = readFileSync(
-	resolve(import.meta.dirname, "../../../apps/example/src/tw.ts"),
+	resolve(import.meta.dirname, "../../../examples/example/src/tw.ts"),
 	"utf8",
 );
 const real = extractTwConfig(twSource)!;

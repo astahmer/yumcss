@@ -181,18 +181,18 @@ delete the marker just to make a report green.
 
 ## Reproducible proof
 
-Run `nub run references:prepare` to materialize the pinned read-only repositories
+Run `pnpm run references:prepare` to materialize the pinned read-only repositories
 used by the real migration corpus. Then run the relevant adapter fixtures and
 the complete workspace matrix:
 
 ```sh
-nub run references:prepare
-nub run --filter pandwind-codemod test
-nub run test:all
-nub run knip
+pnpm run references:prepare
+pnpm --filter pandwind-codemod run test
+pnpm run test:all
+pnpm run knip
 
 # Installed browser/SSR promotion for the pinned Goober corpus entry
-nub run pivot:proof:installed
+pnpm run pivot:proof:installed
 ```
 
 The checked-in reports record repository URL, commit, source path, adapter

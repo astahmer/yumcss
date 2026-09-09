@@ -52,5 +52,5 @@ Every capability promotion must preserve:
 - actionable diagnostics for skipped or unsupported constructs.
 
 The pivot completion wave is implemented. Publishing is gated by
-`nub run release:check` and `nub run release:smoke`; actual registry publication
+`pnpm run release:check` and `pnpm run release:smoke`; actual registry publication
 remains an operator action requiring credentials and a release changeset.

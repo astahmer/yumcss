@@ -9,7 +9,7 @@ import { describe, expect, test } from "vitest";
 import { analyzeSource, formatReport, loadTwConfig, summarize } from "../src/analyze.ts";
 import { collectAnnotations } from "../src/github-annotations.ts";
 
-const app = resolve(import.meta.dirname, "../../../apps/example");
+const app = resolve(import.meta.dirname, "../../../examples/example");
 const config = loadTwConfig(resolve(app, "src/tw.ts"));
 
 describe("off-design-system arbitrary values", () => {

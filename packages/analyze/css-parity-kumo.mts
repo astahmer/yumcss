@@ -107,7 +107,7 @@ const collect = (): { before: Set<string>; after: Set<string> } => {
 async function compileSheet(classes: Array<string>): Promise<{ set: Set<string>; built: string }> {
 	const sheet = `@import "tailwindcss";\n${readFileSync("/tmp/kumo-meta/theme.css", "utf8")}\n`;
 	const compiled = await compile(sheet, {
-		base: "/Users/astahmer/dev/pandwind/apps/example", // resolves the tailwindcss import
+		base: "/Users/astahmer/dev/pandwind/examples/example", // resolves the tailwindcss import
 		onDependency: () => {},
 	});
 	const built = compiled.build(classes);

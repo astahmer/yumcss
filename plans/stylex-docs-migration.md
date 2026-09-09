@@ -41,10 +41,10 @@ not equivalence proof.
 The pinned clone was built from a clean `dist/` four times: the original
 StyleX app and the `runtime-css`, `atomic-css`, and `design-dss` Pandwind lanes
 all completed production build plus four-page static generation. The results
-are recorded in `examples/stylex-docs-migration/reports/build-matrix.json`.
+are recorded in `examples/migrations/stylex-docs-migration/reports/build-matrix.json`.
 
 The browser proof is complete. The committed matrix in
-`examples/stylex-docs-migration/reports/browser-matrix.json` compares the
+`examples/migrations/stylex-docs-migration/reports/browser-matrix.json` compares the
 clean reference server with the final migrated runtime lane across `/`,
 `/docs/learn/`, `/docs/api/`, and `/playground` for each of the three lanes.
 All route geometries match, the playground preview renders, and every

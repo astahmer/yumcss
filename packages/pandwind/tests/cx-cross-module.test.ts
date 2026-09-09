@@ -30,7 +30,7 @@ import type { ConstantScope } from "../src/vite/cx-inline.ts";
 import { extractTwConfig } from "../src/vite/inline.ts";
 
 const twSource = readFileSync(
-	resolve(import.meta.dirname, "../../../apps/example/src/tw.ts"),
+	resolve(import.meta.dirname, "../../../examples/example/src/tw.ts"),
 	"utf8",
 );
 const config = extractTwConfig(twSource)!;
@@ -254,7 +254,7 @@ afterAll(() => {
 
 describe("real plugin transform: cross-module folding + HMR invalidation", () => {
 	const dir = mkdtempSync(join(tmpdir(), "pandwind-xmod-vite-"));
-	const exampleSrc = resolve(import.meta.dirname, "../../../apps/example/src");
+	const exampleSrc = resolve(import.meta.dirname, "../../../examples/example/src");
 
 	writeFileSync(
 		join(dir, "constants.ts"),

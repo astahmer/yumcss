@@ -18,7 +18,7 @@ import { pandwindRollup, pandwindUnpluginCss } from "../src/unplugin.ts";
 import { RollupOutputKind } from "./helpers/rollup-output-kind.ts";
 
 const pkgRoot = resolve(import.meta.dirname, "..");
-const exampleTwModule = resolve(pkgRoot, "../../apps/example/src/tw.ts");
+const exampleTwModule = resolve(pkgRoot, "../../examples/example/src/tw.ts");
 
 /**
  * The generated tw module is TypeScript (rollup parses JS only), so derive a

@@ -377,7 +377,7 @@ async function mainMigrate(argv: string[]): Promise<void> {
 		await runAdapterRoute(args, filePaths, root, meta, project, packageJson);
 		return;
 	}
-	const metaDirRelative = args.metaDir !== "" ? args.metaDir : "apps/example/src";
+	const metaDirRelative = args.metaDir !== "" ? args.metaDir : "examples/example/src";
 	const metaDir = resolve(root, metaDirRelative);
 
 	let meta: PandwindMeta;

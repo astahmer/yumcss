@@ -1,0 +1,33 @@
+{
+	"name": "example",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"predev": "pnpm run tw:generate && pnpm run tw:scan",
+		"dev": "vite",
+		"prebuild": "pnpm run tw:generate && pnpm run tw:scan",
+		"build": "tsc -b && vite build",
+		"typecheck": "tsc --noEmit",
+		"tw:generate": "pnpm exec pandwind-codemod tw generate ./src/tailwind.css ./src --tokens @pandwind/example-preset --preset-import @pandwind/example-preset --preset-export examplePreset --bridge && pnpm exec oxfmt ./src/bridge.ts ./src/pandwind-theme.css ./src/pandwind.interop.json && pnpm exec pandwind-codemod tw manifest ./src ./src/tailwind.css",
+		"tw:prune": "pnpm exec pandwind-codemod tw prune ./src/pandwind-theme.css ./src/tw.ts ./src",
+		"tw:scan": "pnpm exec pandwind-codemod tw scan ./src/tw.ts ./src ./src/pandwind.safelist.css"
+	},
+	"dependencies": {
+		"@pandwind/example-preset": "workspace:*",
+		"pandwind": "workspace:*",
+		"react": "19.2.8",
+		"react-dom": "19.2.8"
+	},
+	"devDependencies": {
+		"@tailwindcss/vite": "4.3.3",
+		"@types/react": "19.2.18",
+		"@types/react-dom": "19.2.7",
+		"@vitejs/devtools": "0.7.2",
+		"@vitejs/plugin-react-swc": "4.3.3",
+		"pandwind-codemod": "workspace:*",
+		"pandwind-devtools": "workspace:*",
+		"tailwindcss": "4.3.3",
+		"typescript": "7.0.2",
+		"vite": "8.2.2"
+	}
+}
