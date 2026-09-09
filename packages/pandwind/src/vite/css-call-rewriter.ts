@@ -67,6 +67,30 @@ export class StaticCssCallRewriter implements CssCallRewriter {
 		this.varKeys.clear();
 		if (names.size === 0) return { code, inlined: 0, varKeys: [] };
 		const engine = createCss({ className: this.className });
+		const compileStaticArguments = (
+			propertySets: readonly (readonly PropertyNode[])[],
+		): string | null => {
+			const styles: StyleObject[] = [];
+			for (const properties of propertySets) {
+				const literal: Record<string, unknown> = {};
+				for (const property of properties) {
+					const name = stylePropertyName(property);
+					const value = evalLiteral(property.value as never);
+					if (name === undefined || value === undefined) return null;
+					literal[name] = value;
+				}
+				try {
+					styles.push(resolveDesignStyle(literal, this.preset.tokens));
+				} catch {
+					return null;
+				}
+			}
+			try {
+				return engine.class(...styles);
+			} catch {
+				return null;
+			}
+		};
 		const edits: Array<{ start: number; end: number; text: string }> = [];
 		walkWithParent(
 			SOURCE_SCANNER_SERVICE.parse({
@@ -104,7 +128,12 @@ export class StaticCssCallRewriter implements CssCallRewriter {
 						? directClassNameHost(parent, ancestors)
 						: undefined;
 				if (classNameHost !== undefined) {
-					const carrier = dynamicClassNameCarrier(code, call, carrierName!);
+					const carrier = dynamicClassNameCarrier(
+						code,
+						call,
+						carrierName!,
+						compileStaticArguments,
+					);
 					if (carrier !== undefined) {
 						edits.push({
 							start: classNameHost.attribute.start!,
@@ -291,21 +320,22 @@ const renderStyleObject = (code: string, properties: readonly PropertyNode[]): s
 /**
  * Build the props carrier for a direct className binding. The generated
  * `css.vars()` call contains only dynamic declarations; static declarations
- * remain on the ordinary class lane and keep their extracted atomic rules.
+ * are compiled to one class string and keep their extracted atomic rules.
  */
 const dynamicClassNameCarrier = (
 	code: string,
 	call: CallNode,
 	carrierName: string,
+	compileStatic: (
+		propertySets: readonly (readonly PropertyNode[])[],
+	) => string | null,
 ): { readonly text: string; readonly varKeys: readonly string[] } | undefined => {
 	const splits = call.arguments.map((argument) => splitStyleArgument(code, argument));
 	if (splits.some((split): split is undefined => split === undefined)) return undefined;
 	const resolved = splits as SplitStyleArgument[];
-	const staticArguments = resolved
-		.map(({ staticProperties }) =>
-			staticProperties.length === 0 ? undefined : renderStyleObject(code, staticProperties),
-		)
-		.filter((value): value is string => value !== undefined);
+	const staticPropertySets = resolved
+		.map(({ staticProperties }) => staticProperties)
+		.filter((properties) => properties.length > 0);
 	const dynamicArguments = resolved
 		.map(({ dynamicProperties }) =>
 			dynamicProperties.length === 0 ? undefined : renderStyleObject(code, dynamicProperties),
@@ -324,12 +354,15 @@ const dynamicClassNameCarrier = (
 		),
 	);
 	if ([...staticNames].some((name) => dynamicNames.has(name))) return undefined;
+	const staticClass =
+		staticPropertySets.length === 0 ? undefined : compileStatic(staticPropertySets);
+	if (staticPropertySets.length > 0 && staticClass === null) return undefined;
 
 	const inputs = [
 		`${carrierName}.vars(${dynamicArguments.join(", ")})`,
-		...(staticArguments.length === 0
+		...(staticClass === undefined || staticClass === ""
 			? []
-			: [`${carrierName}.class(${staticArguments.join(", ")})`]),
+			: [JSON.stringify(staticClass)]),
 	];
 	return {
 		text: `${carrierName}.props(${inputs.join(", ")})`,

@@ -854,9 +854,10 @@ test("dynamic className rewriting is opt-in and host-aware", () => {
 		const generated = loadGenerated(plugin);
 
 		expect(transformed?.code).toContain(
-			"<button {...css.props(css.vars({ color: color }), css.class({ padding: 8 }))} />",
+			'<button {...css.props(css.vars({ color: color }), "qko5uj")} />',
 		);
 		expect(transformed?.code).not.toContain("className={css.class");
+		expect(transformed?.code).not.toContain("css.class({ padding: 8 })");
 		expect(generated).toContain("padding:8");
 		expect(generated).toContain("color: var(--pw-c-color)");
 	} finally {
