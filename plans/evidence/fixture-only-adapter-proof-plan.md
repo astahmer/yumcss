@@ -97,6 +97,38 @@ Each row has one bounded command, one pinned input, and one report path. This is
 enough to implement and review the work without treating a broad “run more
 proofs” statement as completion.
 
+## Verified prerequisites
+
+The source commits and paths in the table are already registered in
+`packages/codemod/src/swap/real-repository-corpus.ts`. Prepare them with the
+existing reference workflow before implementing a runner:
+
+```text
+pnpm run references:prepare -- <catalog-id>
+pnpm run references:deps
+```
+
+Use these exact catalog ids when preparing the rows:
+
+- `vanilla-extract`, `stitches`, `linaria`, `mantine`, `mui`, `jss`, `fela`,
+  `aphrodite`, `style9`, `treat`, `compiled`, `solid-styled`, `vue-styled`,
+  `tokenami`, and `unocss` resolve to the checkout names used in the table.
+- `next-yak-benchmark-realistic-button` resolves to the existing
+  `css-in-js-bench` checkout at commit
+  `3dee1bc32e651ace01c5e4d9306c541337d0c1ce`; there is no separate
+  `next-yak` repository checkout to prepare.
+- React Native has no suitable upstream application in the corpus. Its proof
+  is intentionally a checked-in local fixture with `react-native-web` and
+  Metro, so it must not be blocked on an external repository.
+
+UnoCSS already has a complete installed-project fixture at
+`plans/evidence/unocss-installed-proof.json` and passes
+`pnpm run pivot:proof:installed:routes`. The remaining UnoCSS task is the
+upstream `unocss/examples/next` promotion in the table, which upgrades the
+evidence from a generated fixture to a pinned real project. StyleX is already
+represented by the `stylex-docs` and `astryx-docsite` claims below; its open
+item is route breadth, not a missing typecheck/build/browser proof.
+
 ## Already covered
 
 These are deliberately absent from the fixture-only list:
