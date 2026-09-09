@@ -32,6 +32,11 @@ export interface RuntimeSheetPorts {
 	readonly sink?: import("./runtime-sheet-contracts.ts").RuntimeStyleElementSink;
 }
 
+interface RuntimeRuleBatch {
+	readonly rules: readonly RuntimeRule[];
+	readonly previousCount: number;
+}
+
 export function createRuntimeSheet(
 	options: RuntimeSheetOptions = {},
 	ports: RuntimeSheetPorts = {},
@@ -73,7 +78,18 @@ export function createRuntimeSheet(
 		return rendered;
 	};
 	const render = (): void => sink.update(css());
-	const refresh = (): void => {
+	const refresh = (batch?: RuntimeRuleBatch): void => {
+		if (batch !== undefined && mounted && sink.insert !== undefined) {
+			const additions = batch.rules
+				.map((rule) => ({ rule, index: ordered.findIndex((current) => current.id === rule.id) }))
+				.toSorted((left, right) => left.index - right.index);
+			let existingRuleCount = batch.previousCount;
+			for (const { rule, index } of additions) {
+				if (!sink.insert(rule, index, existingRuleCount)) break;
+				existingRuleCount++;
+			}
+			if (existingRuleCount === batch.previousCount + additions.length) return;
+		}
 		if (autoMount) mounted = sink.mount(css());
 		else if (mounted) render();
 	};
@@ -90,13 +106,15 @@ export function createRuntimeSheet(
 			});
 		if (store.register(rules)) {
 			if (canInsert) {
+				const previousCount = ordered.length;
 				generation++;
 				ordered = ordering.insert!(ordered, rules);
 				orderedGeneration = generation;
+				refresh({ rules, previousCount });
 			} else {
 				invalidate();
+				refresh();
 			}
-			refresh();
 		}
 	};
 	const setTokens = (value: string): void => {

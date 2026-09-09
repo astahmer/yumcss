@@ -1,13 +1,24 @@
 import type {
 	RuntimeDocument,
+	RuntimeRule,
 	RuntimeSheetOptions,
 	RuntimeStyleElement,
 	RuntimeStyleElementSink,
 } from "./runtime-sheet-contracts.ts";
 
+type StyleSheetWithRules = {
+	readonly cssRules?: { readonly length: number };
+	insertRule(rule: string, index: number): number;
+};
+type RuntimeElementWithSheet = RuntimeStyleElement & {
+	readonly sheet?: StyleSheetWithRules | null;
+};
+
 export class DomStyleElementSink implements RuntimeStyleElementSink {
 	private element: RuntimeStyleElement | undefined;
 	private readonly options: RuntimeSheetOptions;
+	private ruleOffset: number | undefined;
+	private ruleCount = 0;
 
 	constructor(options: RuntimeSheetOptions) {
 		this.options = options;
@@ -35,14 +46,44 @@ export class DomStyleElementSink implements RuntimeStyleElementSink {
 			document.head.appendChild(this.element);
 		}
 		this.element.textContent = css;
+		this.ruleOffset = undefined;
+		this.ruleCount = 0;
 		return true;
 	}
 
 	update(css: string): void {
-		if (this.element !== undefined) this.element.textContent = css;
+		if (this.element !== undefined) {
+			this.element.textContent = css;
+			this.ruleOffset = undefined;
+			this.ruleCount = 0;
+		}
+	}
+
+	insert(rule: RuntimeRule, index: number, existingRuleCount: number): boolean {
+		const sheet = (this.element as RuntimeElementWithSheet | undefined)?.sheet;
+		const cssRules = sheet?.cssRules;
+		if (sheet === undefined || sheet === null || cssRules === undefined) return false;
+		if (this.ruleOffset === undefined) {
+			const offset = cssRules.length - existingRuleCount;
+			if (offset < 0) return false;
+			this.ruleOffset = offset;
+			this.ruleCount = existingRuleCount;
+		}
+		if (this.ruleCount !== existingRuleCount) return false;
+		try {
+			sheet.insertRule(rule.css, this.ruleOffset + index);
+			this.ruleCount++;
+			return true;
+		} catch {
+			this.ruleOffset = undefined;
+			this.ruleCount = 0;
+			return false;
+		}
 	}
 	unmount(): void {
 		this.element?.remove();
 		this.element = undefined;
+		this.ruleOffset = undefined;
+		this.ruleCount = 0;
 	}
 }

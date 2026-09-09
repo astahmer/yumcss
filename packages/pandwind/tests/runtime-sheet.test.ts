@@ -99,6 +99,80 @@ test("priority sheets insert new rules without changing deterministic order", ()
 	expect(sheet.css()).toBe(".root{display:block}\n.a{color:green}\n.z{color:red}");
 });
 
+test("mounted sheets can insert newly ordered rules without a full update", () => {
+	const inserted: Array<{ id: string; index: number; existingRuleCount: number }> = [];
+	let updates = 0;
+	const sheet = createRuntimeSheet(
+		{ autoMount: false },
+		{
+			sink: {
+				mount: () => true,
+				update: () => {
+					updates++;
+				},
+				insert: (rule, index, existingRuleCount) => {
+					inserted.push({ id: rule.id, index, existingRuleCount });
+					return true;
+				},
+				unmount: () => undefined,
+			},
+		},
+	);
+
+	sheet.mount();
+	sheet.register([
+		{ id: "z", css: ".z{color:red}", priority: 1 },
+		{ id: "a", css: ".a{color:blue}", priority: 1 },
+	]);
+
+	expect(inserted).toEqual([
+		{ id: "a", index: 0, existingRuleCount: 0 },
+		{ id: "z", index: 1, existingRuleCount: 1 },
+	]);
+	expect(updates).toBe(0);
+});
+
+test("the DOM sink uses CSSOM insertion when the host exposes a stylesheet", () => {
+	const cssRules: string[] = [];
+	let textWrites = 0;
+	let textContent = "";
+	const style = {
+		tagName: "STYLE",
+		textContent: "",
+		sheet: {
+			cssRules,
+			insertRule: (rule: string, index: number) => {
+				cssRules.splice(index, 0, rule);
+				return index;
+			},
+		},
+		setAttribute: () => undefined,
+		nonce: undefined as string | undefined,
+		remove: () => undefined,
+	};
+	Object.defineProperty(style, "textContent", {
+		get: () => textContent,
+		set: (value: string) => {
+			textWrites++;
+			textContent = value;
+			cssRules.splice(0, cssRules.length, ...(value === "" ? [] : value.split("\n")));
+		},
+	});
+	const document = {
+		querySelector: () => null,
+		createElement: () => style,
+		head: { appendChild: () => undefined },
+	};
+	const sheet = createRuntimeSheet({ document });
+
+	sheet.register([{ id: "z", css: ".z{color:red}", priority: 1 }]);
+	sheet.register([{ id: "a", css: ".a{color:blue}", priority: 1 }]);
+
+	expect(textWrites).toBe(1);
+	expect(cssRules).toEqual([".a{color:blue}", ".z{color:red}"]);
+	expect(sheet.css()).toBe(".a{color:blue}\n.z{color:red}");
+});
+
 describe("runtime CSS-in-JS sheet", () => {
 	test("collects preset-bound css() rules for SSR without a DOM", () => {
 		const sheet = createRuntimeSheet({ autoMount: false });

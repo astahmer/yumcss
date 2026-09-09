@@ -97,5 +97,7 @@ export interface RuntimeRuleSerializer {
 export interface RuntimeStyleElementSink {
 	mount(css: string): boolean;
 	update(css: string): void;
+	/** Insert one newly ordered rule without rebuilding the whole style text. */
+	insert?(rule: RuntimeRule, index: number, existingRuleCount: number): boolean;
 	unmount(): void;
 }
