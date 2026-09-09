@@ -408,8 +408,6 @@ describe("Pandwind project bootstrap", () => {
 			},
 			packageJson: { dependencies: { next: "15.0.0" } },
 		});
-		expect(plan.notes).toContain(
-			"could not safely add pandwindWebpackCss to next.config.mjs",
-		);
+		expect(plan.notes).toContain("could not safely add pandwindWebpackCss to next.config.mjs");
 	});
 });

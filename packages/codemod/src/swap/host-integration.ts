@@ -178,12 +178,14 @@ function findNextConfigObject(source: string, file: string): ConfigAstNode | und
 		const config = resolve(statement.declaration as ConfigAstNode | undefined);
 		if (config !== undefined) return config;
 	}
-	return resolve(initializers.get("config")) ??
+	return (
+		resolve(initializers.get("config")) ??
 		body
 			.filter((statement) => statement.type === NodeKind.VariableDeclaration)
 			.flatMap((statement) => (statement.declarations as ConfigAstNode[] | undefined) ?? [])
 			.map((declaration) => resolve(declaration.init as ConfigAstNode | undefined))
-			.find((config): config is ConfigAstNode => config !== undefined);
+			.find((config): config is ConfigAstNode => config !== undefined)
+	);
 }
 
 function appendConfigProperty(
@@ -217,7 +219,9 @@ function addWebpackPlugin(source: string, webpackBody: string, file: string): st
 		)
 			return undefined;
 		const statements = (body.body as ConfigAstNode[] | undefined) ?? [];
-		const returnStatement = statements.find((statement) => statement.type === NodeKind.ReturnStatement);
+		const returnStatement = statements.find(
+			(statement) => statement.type === NodeKind.ReturnStatement,
+		);
 		const insertion = returnStatement?.start ?? bodyRange.end - 1;
 		const bodyStart = bodyRange.start + 1;
 		const before = source.slice(bodyStart, insertion).replace(/\s*$/u, "");

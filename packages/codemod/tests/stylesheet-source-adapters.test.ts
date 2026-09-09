@@ -106,6 +106,28 @@ describe("stylesheet source adapters", () => {
 		`);
 	});
 
+	test("accepts a replacement stylesheet source port", () => {
+		let parses = 0;
+		const parsed = parseStylesheetPrograms(
+			".card { color: red; }",
+			{
+				file: "styles.css",
+				source: "",
+				config: { adapter: CodemodAdapterId.AuthoredCss, files: [], values: {} },
+			},
+			{
+				parse: () => {
+					parses++;
+					return { nodes: [], residuals: [] };
+				},
+			},
+		);
+
+		expect(parses).toBe(1);
+		expect(parsed.matches).toEqual([]);
+		expect(parsed.residuals).toEqual([]);
+	});
+
 	test("retains layers, supports, nesting, keyframes, and font faces as rule-level IR", () => {
 		const parsed = parseStylesheetPrograms(
 			[

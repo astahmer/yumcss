@@ -43,6 +43,33 @@ describe("adapter contract suite", () => {
 		expect(report.adapters[0]).toMatchObject({ fixture: true, matched: true, parsed: 1 });
 	});
 
+	test("accepts an adapter with a substituted configuration port", () => {
+		const catalog = createBuiltinCodemodCatalog();
+		const emotion = catalog.registry.get(CodemodAdapterId.Emotion)!;
+		const adapter = {
+			...emotion,
+			loadConfig: (context: Parameters<typeof emotion.loadConfig>[0]) => ({
+				adapter: emotion.id,
+				root: context.root,
+				files: ["injected.config"],
+				values: { injectedConfigPort: true },
+				configuration: [],
+			}),
+		};
+		const registry = createStyleAdapterRegistry([adapter]);
+		const report = createAdapterContractSuite().run(registry, [
+			fixture(
+				CodemodAdapterId.Emotion,
+				'import { css } from "@emotion/css"; css({ color: "red" });',
+			),
+		]);
+
+		expect(adapter.loadConfig({ file: "Card.tsx", source: "" }).values.injectedConfigPort).toBe(
+			true,
+		);
+		expect(report.failed).toBe(0);
+	});
+
 	test("requires every built-in adapter to pass a representative parse contract", () => {
 		const registry = createBuiltinCodemodCatalog().registry;
 		const report = createAdapterContractSuite().run(registry, adapterContractFixtures);
