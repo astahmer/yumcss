@@ -4,7 +4,9 @@ export default defineConfig({
 	entry: [
 		"src/cli.ts",
 		"src/collect/index.ts",
+		"src/collect/browser.ts",
 		"src/governance/index.ts",
+		"src/governance/browser.ts",
 		"src/studio/index.ts",
 		"src/studio/cli.ts",
 		"src/mcp/server.ts",

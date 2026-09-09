@@ -23,7 +23,11 @@ import { createCx } from "../src/cx/index.ts";
 import type { CxInput } from "../src/cx/index.ts";
 import { extractTwConfig, inlineTwCalls } from "../src/vite/inline.ts";
 import { findCxImports, inlineCxCalls } from "../src/vite/cx-inline.ts";
-import { createInlineTwPluginCore, pandwindVite } from "../src/vite/index.ts";
+import {
+	createInlineTwPluginCore,
+	createPandwindEngineContext,
+	pandwindVite,
+} from "../src/vite/index.ts";
 
 const twSource = readFileSync(
 	resolve(import.meta.dirname, "../../../examples/example/src/tw.ts"),
@@ -487,10 +491,7 @@ import { createStylesheet } from "../src/css/create-stylesheet.ts";
 import { escapeIdentifier } from "../src/css/hash.ts";
 import { PostCssNodeKind } from "./helpers/postcss-node-kind.ts";
 import { parse, type Root } from "postcss";
-import {
-	createPandwindEngineContext,
-	type PandwindEngineContext,
-} from "../src/vite/engine-context.ts";
+import type { PandwindEngineContext } from "../src/vite/engine-context.ts";
 
 /** A REAL runtime engine + cx pair, exactly what an app would wire up. */
 const designCss = createDesignCss(examplePreset);
@@ -735,8 +736,32 @@ describe("pandwindVite end-to-end with css folding", () => {
 			'export const cls = cx(css.class({ color: "$blue-500" }), flag && "py-4");',
 		].join("\n");
 		const result = await plugin.transform.call(resolver, source, "/src/app.ts");
-		// flag is dynamic -> whole call stays for the runtime.
-		expect(result).toBeNull();
+		const expectedAtom = createPandwindEngineContext({ preset: examplePreset }).foldLiteralStyle({
+			color: "$blue-500",
+		});
+		// The conditional remains runtime, while the static CSS atom is merged
+		// into each branch ahead of time.
+		expect(result).not.toBeNull();
+		expect(result!.code).toContain(JSON.stringify(`${expectedAtom} py-4`));
+		expect(result!.code).toContain(JSON.stringify(expectedAtom));
+	});
+});
+
+describe("pandwindVite CSS-only cx folding", () => {
+	test("folds css atoms without a generated tw module", async () => {
+		const plugin = pandwindVite({ css: { preset: examplePreset } });
+		const engine = createPandwindEngineContext({ preset: examplePreset });
+		const source = [
+			'import { cx } from "./cx";',
+			'import { css } from "./design";',
+			'const red = css.class({ color: "$red-500" });',
+			'const blue = css.class({ color: "$blue-500" });',
+			"export const cls = cx(red, blue);",
+		].join("\n");
+		const result = await plugin.transform.call({ resolve: () => null }, source, "/src/app.ts");
+		expect(result).not.toBeNull();
+		expect(result!.code).not.toContain("cx(");
+		expect(result!.code).toContain(JSON.stringify(engine.foldLiteralStyle({ color: "$blue-500" })));
 	});
 });
 

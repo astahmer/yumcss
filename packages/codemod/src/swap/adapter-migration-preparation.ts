@@ -1,4 +1,4 @@
-import { NODE_PROJECT_MODULE_LOADER, type ProjectModuleLoader } from "./project-module-loader.ts";
+import type { ProjectModuleLoader } from "./project-module-loader.ts";
 import { MigrationDiagnostics } from "./migration-diagnostics.ts";
 import type {
 	AdapterConfigContext,
@@ -120,7 +120,14 @@ function configurationResiduals(
 	);
 }
 
-function withProjectLoaderFallback(fallback: ProjectModuleLoader): ProjectModuleLoader {
+async function withProjectLoaderFallback(
+	fallback: ProjectModuleLoader,
+): Promise<ProjectModuleLoader> {
+	// Keep the Node loader out of the synchronous/browser migration graph. The
+	// async path is the only path that consults project-installed packages.
+	const { NODE_PROJECT_MODULE_LOADER } = await import(
+		/* @vite-ignore */ "./project-module-loader.js"
+	);
 	return {
 		async importPackage<T>(packageName: string, root: string): Promise<T | undefined> {
 			return (
@@ -188,7 +195,7 @@ export async function prepareMigrationAsync(
 		(await ports.resolveAdapterRegistry?.(
 			options.moduleLoader === undefined
 				? undefined
-				: withProjectLoaderFallback(options.moduleLoader),
+				: await withProjectLoaderFallback(options.moduleLoader),
 		)) ??
 		ports.adapterRegistry;
 	const route = (options.registry ?? adapterRegistry).resolveRoute(options.from, options.to);

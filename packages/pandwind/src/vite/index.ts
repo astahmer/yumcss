@@ -283,11 +283,34 @@ export function createInlineTwPluginCore(options: PandwindViteOptions = {}): Inl
 			}
 
 			const imports = findTwImports(code, id, isTwSource);
+			const cxImports = findCxImports(code, id, isCxSource, imports.program);
 			if (imports.localNames.size === 0 && imports.sources.length === 0) {
-				// A cx import without a tw import can't be folded safely: the
-				// generated conflict/compose metadata is what makes build-time
-				// output provably identical to the runtime merge.
-				const result = runtimePruner.transform(code, id);
+				// CSS atoms carry their own property metadata through the fold
+				// engine, so a CSS-only cx() call does not need generated tw
+				// conflict metadata. Keep the ordinary no-metadata guard for
+				// plain class strings, but let the existing cx compiler handle
+				// css()/css.class() when the CSS lane is configured.
+				if (cssFold === undefined || cxImports.localNames.size === 0) {
+					const result = runtimePruner.transform(code, id);
+					remember(cacheKey, result);
+					return result;
+				}
+				const cssNames = cssSourceService.findCssImports(code, id, cssFold.cssSources);
+				if (cssNames.size === 0) {
+					const result = runtimePruner.transform(code, id);
+					remember(cacheKey, result);
+					return result;
+				}
+				const cssOnly = inlineCxCalls(code, id, { variants: {} }, cxImports.localNames, {
+					fold: { cssNames, engine: cssFold.engine },
+					parsedProgram: cxImports.program,
+					onUnresolved: OnUnresolvedTag.Off,
+				});
+				const optimized = runtimePruner.transform(cssOnly.code, id);
+				const result =
+					cssOnly.inlined === 0 && optimized === null
+						? null
+						: { code: optimized?.code ?? cssOnly.code, map: null };
 				remember(cacheKey, result);
 				return result;
 			}
@@ -317,7 +340,7 @@ export function createInlineTwPluginCore(options: PandwindViteOptions = {}): Inl
 			// participate as plain string arguments to cx(). With css folding
 			// configured, literal css()/css.class() atoms compile through the
 			// shared engine context and merge via its registry.
-			const cxImports = findCxImports(
+			const cxImportsAfterTw = findCxImports(
 				working,
 				id,
 				isCxSource,
@@ -325,7 +348,7 @@ export function createInlineTwPluginCore(options: PandwindViteOptions = {}): Inl
 			);
 			let inlined = result.inlined;
 			let cxUnresolved: UnresolvedToken[] = [];
-			if (cxImports.localNames.size > 0) {
+			if (cxImportsAfterTw.localNames.size > 0) {
 				let cxOptions: Parameters<typeof inlineCxCalls>[4] = {
 					importedConstants,
 					onUnresolved: unresolvedMode,
@@ -341,7 +364,7 @@ export function createInlineTwPluginCore(options: PandwindViteOptions = {}): Inl
 				}
 				const cxResult = inlineCxCalls(working, id, config, cxImports.localNames, {
 					...cxOptions,
-					parsedProgram: cxImports.program,
+					parsedProgram: cxImportsAfterTw.program,
 				});
 				working = cxResult.code;
 				inlined += cxResult.inlined;

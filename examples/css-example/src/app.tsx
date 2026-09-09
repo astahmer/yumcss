@@ -1,6 +1,5 @@
-import { type CssFn } from "pandwind/css";
-import { createCx } from "pandwind/cx";
 import { cardBClass } from "./card-b.ts";
+import { cx } from "./cx.ts";
 import { cvaButton } from "./cva.ts";
 import { dcss } from "./design.ts";
 
@@ -9,8 +8,6 @@ import { dcss } from "./design.ts";
  * the design engine's atom registry to know which properties each dropped
  * class would have set.
  */
-const cx = createCx({ css: dcss as unknown as CssFn<never> });
-
 // Module constants so the build-time extractor sees literal call sites; the
 // cx() below still exercises the runtime conflict-resolution path.
 const cardCLose = dcss.class({ $frame: { fill: "$red-500" } });

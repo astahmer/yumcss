@@ -42,20 +42,24 @@ export class StaticCssCallRewriter implements CssCallRewriter {
 				const call = node as CallNode;
 				const callee = call.callee;
 				let kind: "map" | "class" | "group" | undefined;
+				let carrierName: string | undefined;
 				if (
 					callee?.type === NodeKind.Identifier &&
 					names.has((callee as { name?: string }).name ?? "")
-				)
+				) {
 					kind = "map";
-				else if (callee?.type === NodeKind.MemberExpression) {
+					carrierName = (callee as { name?: string }).name;
+				} else if (callee?.type === NodeKind.MemberExpression) {
 					const object = (callee as { object?: OxcNode | null }).object;
 					const member = (callee as { property?: { name?: string } | null }).property?.name;
 					if (
 						object?.type === NodeKind.Identifier &&
 						names.has((object as { name?: string }).name ?? "") &&
 						(member === "class" || member === "group")
-					)
+					) {
 						kind = member as "class" | "group";
+						carrierName = (object as { name?: string }).name;
+					}
 				}
 				if (kind === undefined || call.arguments.length === 0) return;
 				const objectArguments = call.arguments.filter(
@@ -77,11 +81,11 @@ export class StaticCssCallRewriter implements CssCallRewriter {
 						parent?.type === NodeKind.JSXExpressionContainer ||
 						parent?.type === NodeKind.JSXSpreadAttribute ||
 						ancestors.at(-2)?.type === NodeKind.JSXExpressionContainer;
-					if (isJsxPosition) {
+					if (isJsxPosition && carrierName !== undefined) {
 						const ranges = call.arguments.map(
 							(argument) => argument as { start?: number; end?: number },
 						);
-						const carrier = `css.props(css.vars(${ranges
+						const carrier = `${carrierName}.props(${carrierName}.vars(${ranges
 							.map((range) => code.slice(range.start!, range.end!))
 							.join(", ")}))`;
 						edits.push({ start: call.start, end: call.end, text: carrier });

@@ -201,7 +201,7 @@ async function loadTreeModules(dir) {
 	const inlineModule = await import(
 		pathToFileURL(rel(dir, "packages", "pandwind", "src", "vite", "inline.ts")).href
 	);
-	const twSourcePath = rel(dir, "apps", "example", "src", "tw.ts");
+	const twSourcePath = rel(dir, "examples", "example", "src", "tw.ts");
 	const config = inlineModule.extractTwConfig(readFileSync(twSourcePath, "utf8"));
 	if (!config) throw new Error(`extractTwConfig returned nothing for ${dir}`);
 	return { inlineCxCalls: cxModule.inlineCxCalls, config };

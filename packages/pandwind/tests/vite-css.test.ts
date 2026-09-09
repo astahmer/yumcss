@@ -778,6 +778,19 @@ test("mixed literal/dynamic css calls in JSX hosts lower through vars carriers",
 	expect(result.code).toContain("<>");
 });
 
+test("vars carriers preserve an aliased css binding", () => {
+	const code = `
+		import { css as uiCss } from "./design";
+		const tone = getTone();
+		export const App = () => <div {...uiCss({ color: "red", backgroundColor: tone })} />;
+	`;
+	const result = inline().inline(code, "app.tsx", new Set(["uiCss"]));
+
+	expect(result.inlined).toBe(1);
+	expect(result.code).toContain('uiCss.props(uiCss.vars({ color: "red", backgroundColor: tone }))');
+	expect(result.code).not.toContain("css.props(css.vars");
+});
+
 test("vars carriers are gated to JSX host positions", () => {
 	const code = `
 		import { css } from "./design";

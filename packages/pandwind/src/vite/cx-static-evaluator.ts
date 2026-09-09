@@ -150,12 +150,12 @@ const risky = (program: OxcNode, name: string, own: ReadonlySet<OxcNode>): boole
 	return false;
 };
 
-export function collectModuleConstants(program: OxcNode): ConstantScope {
+export function collectModuleConstants(program: OxcNode, fold?: CxFoldContext): ConstantScope {
 	// Resolve in source order so `const B = A + "-x"` can use an earlier A.
 	// Forward references, cycles, shadowing, and writes remain dynamic.
 	const scope: ConstantScope = new Map();
 	for (const [name, candidate] of topLevelCandidates(program)) {
-		const value = evalStaticCx(candidate.init, undefined, scope);
+		const value = evalStaticCx(candidate.init, fold, scope);
 		if (value === NOT_STATIC || risky(program, name, new Set([candidate.decl]))) continue;
 		scope.set(name, {
 			value,

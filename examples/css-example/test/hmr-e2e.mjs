@@ -30,6 +30,8 @@ const browserRoot = new URL("../node_modules/", import.meta.url);
 const requireFromExample = createRequire(browserRoot);
 const chromium = requireFromExample("playwright-core").chromium;
 const pandwindPackageRoot = new URL("../../../packages/pandwind/", import.meta.url).pathname;
+const examplePresetRoot = new URL("../../../examples/pandwind-example-preset/", import.meta.url)
+	.pathname;
 const reactRoot = dirname(requireFromExample.resolve("react"));
 const reactDomRoot = dirname(requireFromExample.resolve("react-dom"));
 
@@ -86,6 +88,8 @@ let browser;
 try {
 	mkdirSync(join(root, "node_modules"), { recursive: true });
 	symlinkSync(pandwindPackageRoot, join(root, "node_modules/pandwind"), "dir");
+	mkdirSync(join(root, "node_modules/@pandwind"), { recursive: true });
+	symlinkSync(examplePresetRoot, join(root, "node_modules/@pandwind/example-preset"), "dir");
 	writeFixture("$blue-500");
 	server = await createServer({
 		root,
@@ -100,7 +104,7 @@ try {
 			host: "127.0.0.1",
 			port: 0,
 			strictPort: false,
-			fs: { allow: [root, pandwindPackageRoot, reactRoot, reactDomRoot] },
+			fs: { allow: [root, pandwindPackageRoot, examplePresetRoot, reactRoot, reactDomRoot] },
 		},
 	});
 	await server.listen();

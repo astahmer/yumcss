@@ -251,6 +251,16 @@ export const styles = StyleSheet.create({
 	[CodemodAdapterId.Bamboo]: `import { css } from "styled-system/css";
 
 const card = css({ color: "red", padding: "1rem" });`,
+	[CodemodAdapterId.ReactStrictDom]: `import { css, html } from "react-strict-dom";
+
+const styles = css.create({
+	card: {
+		color: "red",
+		padding: "1rem",
+	},
+});
+
+export const Card = () => <html.div style={styles.card} />;`,
 	[CodemodAdapterId.Style9]: `import style9 from "style9";
 
 const styles = style9.create({

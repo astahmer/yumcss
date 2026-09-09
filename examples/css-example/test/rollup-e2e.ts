@@ -41,6 +41,17 @@ const authoredCssPlugin: Plugin = {
 	},
 };
 
+/** Rollup needs a host CSS plugin to consume Pandwind's virtual stylesheet. */
+const virtualCssHostPlugin = (virtualId: string): Plugin => ({
+	name: "rollup-e2e-virtual-css-host",
+	resolveId(source) {
+		return source === virtualId ? `\0${virtualId}.css` : null;
+	},
+	load(id) {
+		return id === `\0${virtualId}.css` ? "export default undefined;" : null;
+	},
+});
+
 const contentType = (path: string): string => {
 	if (extname(path) === ".html") return "text/html; charset=utf-8";
 	if (extname(path) === ".js") return "text/javascript; charset=utf-8";
@@ -109,16 +120,22 @@ let browser: Awaited<ReturnType<typeof chromium.launch>> | undefined;
 let serverUrl = "";
 try {
 	const cssPlugin = pandwindRollupCss({ preset: examplePreset, root: project });
+	const virtualId = cssPlugin.resolveId("pandwind:css");
+	if (typeof virtualId !== "string") throw new Error("Rollup CSS virtual module did not resolve");
 	const bundle = await rollup({
 		input: join(source, "entry.ts"),
-		plugins: [cssPlugin, authoredCssPlugin, nodeResolve({ extensions: [".js", ".ts"] }), tsPlugin],
+		plugins: [
+			virtualCssHostPlugin("pandwind:css"),
+			cssPlugin,
+			authoredCssPlugin,
+			nodeResolve({ extensions: [".js", ".ts"] }),
+			tsPlugin,
+		],
 	});
 	const output = await bundle.generate({ format: "es" });
 	const app = output.output.find(isOutputChunk);
 	if (app === undefined) throw new Error("Rollup emitted no application chunk");
 	writeFileSync(join(project, "app.js"), app.code);
-	const virtualId = cssPlugin.resolveId("pandwind:css");
-	if (typeof virtualId !== "string") throw new Error("Rollup CSS virtual module did not resolve");
 	const generated = cssPlugin.load(virtualId);
 	if (typeof generated !== "string") throw new Error("Rollup CSS virtual module did not load");
 	writeFileSync(

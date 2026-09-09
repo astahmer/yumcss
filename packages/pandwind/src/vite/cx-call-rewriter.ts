@@ -23,7 +23,7 @@ import { NodeKind } from "../ast-node-kind.ts";
 
 /** Rewrites only provably equivalent cx() calls; all other calls stay runtime. */
 export interface CxCompilerPorts {
-	readonly collectConstants: (program: OxcNode) => ConstantScope;
+	readonly collectConstants: (program: OxcNode, fold?: CxFoldContext) => ConstantScope;
 	readonly evaluate: (
 		node: Expression | undefined,
 		fold?: CxFoldContext,
@@ -224,7 +224,7 @@ export class CxCallRewriter {
 				? new Map<string, KnownConstant>()
 				: this.ports.mergeConstants(
 						program,
-						this.ports.collectConstants(program),
+						this.ports.collectConstants(program, fold),
 						options.importedConstants,
 					);
 		const evaluate = createCx({

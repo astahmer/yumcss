@@ -9,7 +9,7 @@ import {
 	resolveChain,
 	splitTokenValue,
 	type ThemeVarCategory,
-} from "pandwind-analyze/collect";
+} from "pandwind-analyze/collect/browser";
 import type { StudioPayload, ThemeVar, TokenSection, TokenGraph, TokenTier } from "./types.ts";
 import {
 	authoredTokenSpelling,
@@ -18,7 +18,7 @@ import {
 	type RemovalSafety,
 	type TokenPolicySnapshot,
 	type UnusedTokenCandidate,
-} from "pandwind-analyze/governance";
+} from "pandwind-analyze/governance/browser";
 
 type Tab = "design" | "stats" | "history" | "graph" | "usage" | "governance";
 
