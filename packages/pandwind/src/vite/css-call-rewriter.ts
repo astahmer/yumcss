@@ -128,7 +128,7 @@ export class StaticCssCallRewriter implements CssCallRewriter {
 						? directClassNameHost(parent, ancestors)
 						: undefined;
 				if (classNameHost !== undefined) {
-					const carrier = dynamicClassNameCarrier(
+					const carrier = dynamicHostCarrier(
 						code,
 						call,
 						carrierName!,
@@ -157,20 +157,32 @@ export class StaticCssCallRewriter implements CssCallRewriter {
 					// The carrier's host-prop result shape ({style, className}) is
 					// only equivalent to the css() call result when spread onto a
 					// JSX host. Plain code positions keep the runtime fallback.
-					// The runtime carrier re-derives the static subset itself, so
+					// The carrier keeps static declarations on the class lane, so
 					// vars atoms never collide with stylesheet rules for the same keys.
 					const isJsxPosition = parent?.type === NodeKind.JSXSpreadAttribute;
 					if (isJsxPosition && carrierName !== undefined) {
+						const carrier = dynamicHostCarrier(
+							code,
+							call,
+							carrierName,
+							compileStaticArguments,
+						);
+						if (carrier !== undefined) {
+							edits.push({ start: call.start, end: call.end, text: carrier.text });
+							for (const key of carrier.varKeys) this.varKeys.add(key);
+							return;
+						}
+						// Preserve the existing conservative rewrite when the static/dynamic
+						// partition is ambiguous or cannot be compiled independently.
 						const ranges = call.arguments.map(
 							(argument) => argument as { start?: number; end?: number },
 						);
-						const carrier = `${carrierName}.props(${carrierName}.vars(${ranges
+						const fallback = `${carrierName}.props(${carrierName}.vars(${ranges
 							.map((range) => code.slice(range.start!, range.end!))
 							.join(", ")}))`;
-						edits.push({ start: call.start, end: call.end, text: carrier });
+						edits.push({ start: call.start, end: call.end, text: fallback });
 						for (const argument of call.arguments)
 							collectFlatVarKeys(argument as OxcNode, "", this.varKeys);
-						return;
 					}
 				}
 				if (kind === "group") {
@@ -317,12 +329,30 @@ const splitStyleArgument = (code: string, argument: unknown): SplitStyleArgument
 const renderStyleObject = (code: string, properties: readonly PropertyNode[]): string =>
 	`{ ${properties.map((property) => code.slice(property.start!, property.end!)).join(", ")} }`;
 
+/** Flattened var-toggle key path (condition segments first), same shape the scanner reports. */
+const collectFlatVarKeys = (node: OxcNode | undefined, prefix: string, out: Set<string>): void => {
+	if (node?.type !== NodeKind.ObjectExpression) return;
+	for (const property of (node as { properties?: unknown[] }).properties ?? []) {
+		const entry = property as {
+			type?: string;
+			key?: { name?: string; value?: string };
+			value?: OxcNode;
+		};
+		if (entry?.type === NodeKind.SpreadElement) continue;
+		const key = entry?.key?.name ?? (entry?.key as { value?: string } | undefined)?.value;
+		if (typeof key !== "string") continue;
+		const full = prefix === "" ? key : `${prefix}__${key}`;
+		if (entry.value?.type === NodeKind.ObjectExpression) collectFlatVarKeys(entry.value, full, out);
+		else out.add(full);
+	}
+};
+
 /**
- * Build the props carrier for a direct className binding. The generated
- * `css.vars()` call contains only dynamic declarations; static declarations
- * are compiled to one class string and keep their extracted atomic rules.
+ * Build the props carrier for a JSX host binding. The generated `css.vars()`
+ * call contains only dynamic declarations; static declarations are compiled
+ * to one class string and keep their extracted atomic rules.
  */
-const dynamicClassNameCarrier = (
+const dynamicHostCarrier = (
 	code: string,
 	call: CallNode,
 	carrierName: string,
@@ -381,24 +411,6 @@ const hasLiteralProperty = (node: OxcNode): boolean =>
 		if (entry?.type !== NodeKind.Property || entry.value?.type !== NodeKind.Literal) return false;
 		return typeof (entry.key?.name ?? entry.key?.value?.value) === "string";
 	});
-
-/** Flattened var-toggle key path (condition segments first), same shape the scanner reports. */
-const collectFlatVarKeys = (node: OxcNode | undefined, prefix: string, out: Set<string>): void => {
-	if (node?.type !== NodeKind.ObjectExpression) return;
-	for (const property of (node as { properties?: unknown[] }).properties ?? []) {
-		const entry = property as {
-			type?: string;
-			key?: { name?: string; value?: string };
-			value?: OxcNode;
-		};
-		if (entry?.type === NodeKind.SpreadElement) continue;
-		const key = entry?.key?.name ?? (entry?.key as { value?: string } | undefined)?.value;
-		if (typeof key !== "string") continue;
-		const full = prefix === "" ? key : `${prefix}__${key}`;
-		if (entry.value?.type === NodeKind.ObjectExpression) collectFlatVarKeys(entry.value, full, out);
-		else out.add(full);
-	}
-};
 
 const literalGroup = (argument: unknown): Record<string, StyleObject> | undefined => {
 	const value = evalLiteral(argument as never);

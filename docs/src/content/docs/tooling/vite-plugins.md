@@ -61,9 +61,13 @@ pandwindCssVite(examplePreset, { transformDynamicClassName: true });
 
 With the option enabled in the default or a sheet-backed class-name mode, a direct
 `className={css.class({ color: props.color, padding: 8 })}` is transformed to
-`{...css.props(css.vars({ color: props.color }), css.class({ padding: 8 }))}`.
-The first pass only handles scalar declarations on a simple host; spreads,
-existing `style` props, conditions, and other ambiguous shapes stay untouched.
+`{...css.props(css.vars({ color: props.color }), "<static-class>")}`. The static
+declarations are compiled at build time; only dynamic declarations use
+`css.vars()`. The same static/dynamic partition is used for mixed
+`{...css({ color: "red", backgroundColor: shade })}` host spreads. The first
+pass only handles scalar declarations on a simple host; spreads with ambiguous
+ordering, existing `style` props, conditions, and other unsupported shapes stay
+untouched.
 
 ## Per-route CSS splitting (opt-in)
 
