@@ -1,13 +1,7 @@
 import type { AtomRegistry } from "../css/atoms.ts";
 import type { ClassNameStrategy } from "../css/class-name-strategy.ts";
 import { createHashFn } from "../css/hash.ts";
-import {
-	STYLE_BACKEND_SCHEMA,
-	type BackendCapabilityContract,
-	type StyleBackend,
-	StyleBackendId,
-} from "./types.ts";
-import type { StyleBackendFactory } from "./registry.ts";
+import type { StyleBackend } from "./types.ts";
 import { normalizeCssValue } from "../css/value-normalization.ts";
 
 export interface CssBackendOptions {
@@ -25,22 +19,6 @@ const canonicalStyleKey = (key: string): string => {
 		.filter((part) => part !== "")
 		.toSorted()
 		.join("__");
-};
-
-const CSS_BACKEND_CAPABILITIES: BackendCapabilityContract = {
-	schema: "pandwind.style-backend-capabilities/1",
-	artifact: "stylesheet",
-	unsupported: "throw",
-	features: {
-		declarations: "exact",
-		conditions: "exact",
-		"dynamic-values": "exact",
-		"runtime-conditions": "unsupported",
-		"unit-conversion": "exact",
-		serialization: "exact",
-		"stable-identity": "exact",
-		ssr: "exact",
-	},
 };
 
 /**
@@ -99,10 +77,3 @@ export function createCssBackend(options: CssBackendOptions = {}): StyleBackend 
 
 	return { name: "css", atoms, declare };
 }
-
-export const CSS_BACKEND: StyleBackendFactory<CssBackendOptions, string> = {
-	schema: STYLE_BACKEND_SCHEMA,
-	id: StyleBackendId.Css,
-	capabilities: CSS_BACKEND_CAPABILITIES,
-	create: createCssBackend,
-};

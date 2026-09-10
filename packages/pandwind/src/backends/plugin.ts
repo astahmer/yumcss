@@ -1,4 +1,4 @@
-import { CSS_BACKEND } from "./css.ts";
+import { CSS_BACKEND } from "./css-registry.ts";
 import { OBJECT_BACKEND } from "./object-engine.ts";
 import { OPENTUI_BACKEND } from "./opentui.ts";
 import { REACT_NATIVE_BACKEND } from "./react-native.ts";
