@@ -12,7 +12,12 @@ export interface RuntimeRule {
 	readonly priority: number;
 }
 
-/** Runtime-safe typed identities shared by the browser and Node entrypoints. */
+/**
+ * Runtime-safe typed identities shared by the browser and Node entrypoints.
+ *
+ * @category runtime
+ * @since 0.1.0
+ */
 export const RuntimeSemanticRuleKindTag = {
 	Style: "style",
 	Global: "global",
@@ -22,6 +27,8 @@ export const RuntimeSemanticRuleKindTag = {
 	Supports: "supports",
 	Property: "property",
 } as const;
+
+/** The supported semantic runtime rule kinds. */
 export type RuntimeSemanticRuleKind =
 	(typeof RuntimeSemanticRuleKindTag)[keyof typeof RuntimeSemanticRuleKindTag];
 
@@ -68,6 +75,7 @@ export interface RuntimeSheetSnapshot {
 	readonly rules: RuntimeRule[];
 }
 
+/** Minimal style-element contract used by the default runtime sink. */
 export interface RuntimeStyleElement {
 	readonly tagName?: string;
 	textContent: string;
@@ -76,13 +84,19 @@ export interface RuntimeStyleElement {
 	remove(): void;
 }
 
+/** Minimal document contract required for runtime sheet mounting. */
 export interface RuntimeDocument {
 	querySelector(selector: string): RuntimeStyleElement | null;
 	createElement(name: string): RuntimeStyleElement;
 	head: { appendChild(element: RuntimeStyleElement): void };
 }
 
-/** Options controlling a runtime sheet's identity and DOM mounting behavior. */
+/**
+ * Options controlling a runtime sheet's identity and DOM mounting behavior.
+ *
+ * @category runtime
+ * @since 0.1.0
+ */
 export interface RuntimeSheetOptions {
 	readonly id?: string;
 	readonly autoMount?: boolean;
@@ -90,12 +104,14 @@ export interface RuntimeSheetOptions {
 	readonly nonce?: string;
 }
 
+/** Replaceable deduplicating store for flat runtime rules. */
 export interface RuntimeRuleStore {
 	readonly rules: ReadonlyMap<string, RuntimeRule>;
 	register(rules: readonly RuntimeRule[]): boolean;
 	replace(snapshot: readonly RuntimeRule[]): void;
 }
 
+/** Replaceable cascade-ordering policy for flat runtime rules. */
 export interface RuntimeOrderingPolicy {
 	/** Deterministic for an unchanged rule map; the sheet memoizes this result. */
 	order(rules: ReadonlyMap<string, RuntimeRule>): RuntimeRule[];
@@ -107,14 +123,17 @@ export interface RuntimeOrderingPolicy {
 	insert?(ordered: readonly RuntimeRule[], next: readonly RuntimeRule[]): RuntimeRule[];
 }
 
+/** Converts semantic rules into canonical flat rules. */
 export interface RuntimeRuleCanonicalizer {
 	canonicalize(rule: RuntimeSemanticRule): RuntimeRule;
 }
 
+/** Serializes a semantic rule into CSS text. */
 export interface RuntimeRuleSerializer {
 	serialize(rule: RuntimeSemanticRule): string;
 }
 
+/** Mount/update boundary for a runtime sheet's generated CSS. */
 export interface RuntimeStyleElementSink {
 	mount(css: string): boolean;
 	update(css: string): void;

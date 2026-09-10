@@ -4,6 +4,16 @@ import type { StyleObject } from "../types/typings.ts";
 import { resolveDesignStyle } from "./resolve.ts";
 import type { DesignPreset, DesignStyleObject } from "./types.ts";
 
+/**
+ * The `pandwind/design` entrypoint exposes the intent-oriented CSS factory and
+ * its preset-aware style types.
+ *
+ * Use `pandwind/css` when ordinary CSS property names are the better fit.
+ *
+ * @category design system
+ * @since 0.1.0
+ */
+
 type Maybe<T> = T | undefined | null | false;
 
 /**
@@ -37,6 +47,7 @@ type Maybe<T> = T | undefined | null | false;
  * @param preset - The preset that defines the design token vocabulary.
  * @param options - CSS backend options such as a class-name strategy.
  * @returns A preset-aware {@link CssFn} over {@link DesignStyleObject} values.
+ * @see {@link createCss} for ordinary CSS property objects.
  * @category factories
  * @since 0.1.0
  */

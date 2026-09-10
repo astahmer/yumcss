@@ -1,3 +1,14 @@
+/**
+ * Built-in color tokens used by the standard Pandwind preset.
+ *
+ * The keys include their `$` prefix because that is the authored token
+ * spelling accepted by strict `createCss(pandwindPreset)` styles. Applications
+ * can import this data when composing a smaller preset or define their own
+ * token groups with {@link defineTokens}.
+ *
+ * @category tokens
+ * @since 0.1.0
+ */
 export const colors = {
 	transparent: "transparent",
 	current: "currentColor",
@@ -185,4 +196,5 @@ export const colors = {
 	"telegram.900": "#003F5E",
 };
 
+/** The inferred type of the built-in {@link colors} catalog. */
 export type Colors = typeof colors;

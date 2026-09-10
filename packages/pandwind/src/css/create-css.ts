@@ -85,11 +85,13 @@ const ALL_RUNTIME_METHODS = [
  *
  * @typeParam TPreset - The preset whose properties, tokens, and conditions
  *   become the style object's type.
- * @param preset - A preset returned by {@link definePreset}, or CSS backend
- *   options when using the open-ended overload.
- * @param options - Backend options used with a preset.
+ * @param preset - A preset returned by {@link definePreset}.
+ * @param options - Backend options used with a preset; the open-ended
+ *   overload accepts these options as its sole argument.
  * @returns A callable CSS compiler with class, variable, raw, props, and group
  *   projections.
+ * @see {@link createDesignCss} for the intent-oriented `$frame`/`$layout`/`$text` lane.
+ * @see {@link createStylesheet} for pure CSS generation from the same preset.
  * @category factories
  * @since 0.1.0
  */
@@ -137,6 +139,10 @@ type PropsInput =
  * methods are explicit projections for class strings, dynamic values, host
  * props, reusable groups, and raw style objects; keeping them on one typed
  * value lets compiler and runtime implementations share the same API.
+ *
+ * @typeParam TStyles - The style-object vocabulary accepted by this function.
+ * @category styling
+ * @since 0.1.0
  */
 export interface CssFn<TStyles extends StyleObject = StyleObject> {
 	/**
@@ -145,6 +151,9 @@ export interface CssFn<TStyles extends StyleObject = StyleObject> {
 	 *
 	 * @example
 	 * ```ts
+	 * import { createCss } from "pandwind/css";
+	 *
+	 * const css = createCss();
 	 * const declarations = css({ display: "flex", padding: 8 });
 	 * // { display: "...", padding: "..." }
 	 * ```
@@ -156,6 +165,9 @@ export interface CssFn<TStyles extends StyleObject = StyleObject> {
 	 *
 	 * @example
 	 * ```ts
+	 * import { createCss } from "pandwind/css";
+	 *
+	 * const css = createCss();
 	 * const className = css.class(
 	 *   { color: "slategray", padding: 8 },
 	 *   { padding: 12 },
@@ -172,6 +184,9 @@ export interface CssFn<TStyles extends StyleObject = StyleObject> {
 	 *
 	 * @example Runtime value carried through a host style
 	 * ```ts
+	 * import { createCss } from "pandwind/css";
+	 *
+	 * const css = createCss();
 	 * const tone = "oklch(70% 0.15 250)";
 	 * const output = css.vars({ color: tone });
 	 * const props = css.props(output);
@@ -188,6 +203,9 @@ export interface CssFn<TStyles extends StyleObject = StyleObject> {
 	 *
 	 * @example
 	 * ```ts
+	 * import { createCss } from "pandwind/css";
+	 *
+	 * const css = createCss();
 	 * const style = css.raw({ color: "red" }, { padding: 8 });
 	 * // { color: "red", padding: 8 }
 	 * ```
@@ -202,6 +220,9 @@ export interface CssFn<TStyles extends StyleObject = StyleObject> {
 	 *
 	 * @example
 	 * ```ts
+	 * import { createCss } from "pandwind/css";
+	 *
+	 * const css = createCss();
 	 * const props = css.props(css.class({ display: "flex" }), "rounded");
 	 * // <button {...props}>Save</button>
 	 * ```
@@ -217,6 +238,9 @@ export interface CssFn<TStyles extends StyleObject = StyleObject> {
 	 *
 	 * @example Reusable static and parameterized styles
 	 * ```ts
+	 * import { createCss } from "pandwind/css";
+	 *
+	 * const css = createCss();
 	 * const styles = css.group({
 	 *   card: { borderRadius: 8, padding: 16 },
 	 *   gap: (value: number) => ({ gap: value }),
@@ -252,6 +276,9 @@ export interface CssFn<TStyles extends StyleObject = StyleObject> {
 	 *
 	 * @example
 	 * ```ts
+	 * import { createCss } from "pandwind/css";
+	 *
+	 * const css = createCss();
 	 * const banners = css.group({
 	 *   banner: {
 	 *     $input: {} as { color: string },

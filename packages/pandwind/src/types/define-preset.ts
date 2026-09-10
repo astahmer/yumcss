@@ -91,6 +91,8 @@ export const defineTheme = <TTheme extends DefinePresetOptions>(theme: TTheme) =
  * @param theme - Values produced by {@link defineTheme}.
  * @param preset - Conditions, strictness, and property-to-token mappings.
  * @returns A preset carrying both runtime metadata and inferred token types.
+ * @see {@link defineTokens} for the raw token layer.
+ * @see {@link createCss} for consuming the resulting preset.
  * @category presets
  * @since 0.1.0
  */

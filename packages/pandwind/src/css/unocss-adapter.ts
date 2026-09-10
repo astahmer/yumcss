@@ -30,7 +30,12 @@ import type { ClassNameStrategy } from "./class-name-strategy.ts";
 import { dashCase } from "./hash.ts";
 import type { AnyConditions, CssConfigReturn } from "../types/typings.ts";
 
-/** Options resolved from an UnoCSS preset and variant configuration. */
+/**
+ * Options resolved from an UnoCSS preset and variant configuration.
+ *
+ * @category adapters
+ * @since 0.1.0
+ */
 export interface UnoCssAdapterOptions {
 	/**
 	 * Resolved variant conditions from the user's UnoCSS config. Keys arrive

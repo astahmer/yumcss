@@ -52,17 +52,17 @@ source/config/build semantics and run Pandwind adapters against selected files.
 
 These read-only clones informed the playground's live-preview and collapsed-inspector design.
 
-| Name | URL | Path | Why |
-| --- | --- | --- | --- |
-| panda | https://github.com/chakra-ui/panda.git | /Users/astahmer/.references/panda | Compare Panda's playground/example-preview composition, token layers, and generated runtime behavior. |
-| tailwindcss-playground | https://github.com/tailwindlabs/tailwindcss-playground.git | /Users/astahmer/.references/tailwindcss-playground | Compare Tailwind Play's editor/preview split and responsive preview affordances. |
+| Name                   | URL                                                        | Path                                               | Why                                                                                                   |
+| ---------------------- | ---------------------------------------------------------- | -------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| panda                  | https://github.com/chakra-ui/panda.git                     | /Users/astahmer/.references/panda                  | Compare Panda's playground/example-preview composition, token layers, and generated runtime behavior. |
+| tailwindcss-playground | https://github.com/tailwindlabs/tailwindcss-playground.git | /Users/astahmer/.references/tailwindcss-playground | Compare Tailwind Play's editor/preview split and responsive preview affordances.                      |
 
 ## API documentation references
 
 These read-only clones informed Pandwind's source-level JSDoc structure and
 type-checked examples.
 
-| Name | URL | Path | Why |
-| --- | --- | --- | --- |
-| effect | https://github.com/Effect-TS/effect | /Users/astahmer/.references/effect | Study per-export `@category`, `@since`, cross-links, and runnable `@example` conventions, including the project's doctest workflow. |
-| kysely | https://github.com/kysely-org/kysely | /Users/astahmer/.references/kysely | Study narrative API descriptions, multiple JSDoc examples, type-parameter documentation, and generated SQL/behavior explanations. |
+| Name   | URL                                  | Path                               | Why                                                                                                                                 |
+| ------ | ------------------------------------ | ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| effect | https://github.com/Effect-TS/effect  | /Users/astahmer/.references/effect | Study per-export `@category`, `@since`, cross-links, and runnable `@example` conventions, including the project's doctest workflow. |
+| kysely | https://github.com/kysely-org/kysely | /Users/astahmer/.references/kysely | Study narrative API descriptions, multiple JSDoc examples, type-parameter documentation, and generated SQL/behavior explanations.   |

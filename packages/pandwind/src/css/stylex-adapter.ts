@@ -2,7 +2,12 @@ import murmurHash from "../lib/murmur-hash2.ts";
 import type { ClassNameStrategy } from "./class-name-strategy.ts";
 import { dashCase } from "./hash.ts";
 
-/** Options controlling StyleX-compatible class identities. */
+/**
+ * Options controlling StyleX-compatible class identities.
+ *
+ * @category adapters
+ * @since 0.1.0
+ */
 export interface StyleXAdapterOptions {
 	/** StyleX's default class prefix is `x`. */
 	readonly classNamePrefix?: string;

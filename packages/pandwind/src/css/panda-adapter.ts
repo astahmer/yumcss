@@ -29,7 +29,12 @@ import type { ClassNameStrategy } from "./class-name-strategy.ts";
 import { dashCase } from "./hash.ts";
 import type { AnyConditions } from "../types/typings.ts";
 
-/** Options resolved from a Panda project configuration. */
+/**
+ * Options resolved from a Panda project configuration.
+ *
+ * @category adapters
+ * @since 0.1.0
+ */
 export interface PandaAdapterOptions {
 	/**
 	 * Shorthand map from the user's Panda config (generated classNameByProp

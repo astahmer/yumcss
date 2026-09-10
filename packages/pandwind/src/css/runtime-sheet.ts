@@ -201,4 +201,5 @@ export function createRuntimeSheet(
 	};
 }
 
+/** The live sheet returned by {@link createRuntimeSheet}. */
 export type RuntimeSheet = ReturnType<typeof createRuntimeSheet>;

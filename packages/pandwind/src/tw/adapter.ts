@@ -42,7 +42,12 @@ import type { TwVariantsMeta } from "./compile.ts";
  */
 export type UtilityBridge = Record<string, Record<string, string>>;
 
-/** Configuration emitted by `pandwind-codemod tw generate`. */
+/**
+ * Configuration emitted by `pandwind-codemod tw generate`.
+ *
+ * @category adapters
+ * @since 0.1.0
+ */
 export interface TwAdapterOptions {
 	/** Variant metadata from the generated `tw.ts` (join separators). */
 	variants: TwVariantsMeta;

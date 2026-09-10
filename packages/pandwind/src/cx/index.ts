@@ -421,6 +421,12 @@ const signatureFromTwClass = (
  * Create the app's `cx` merge function, bound to the same generated tw
  * metadata and css engine the rest of the app uses.
  */
+/**
+ * Callable class merger returned by {@link createCx}.
+ *
+ * @category composition
+ * @since 0.1.0
+ */
 export interface CxFn {
 	/**
 	 * Merge class strings, compiled CSS maps, variable carriers, nested arrays,
@@ -431,6 +437,12 @@ export interface CxFn {
 	 *
 	 * @example Conditional composition
 	 * ```ts
+	 * import { createCss } from "pandwind/css";
+	 * import { createCx } from "pandwind/cx";
+	 *
+	 * const css = createCss();
+	 * const cx = createCx({ css });
+	 * const isPrimary = true;
 	 * const className = cx(
 	 *   "inline-flex",
 	 *   isPrimary && "bg-blue-500",
@@ -447,6 +459,12 @@ export interface CxFn {
 	 *
 	 * @example
 	 * ```ts
+	 * import { createCss } from "pandwind/css";
+	 * import { createCx } from "pandwind/cx";
+	 *
+	 * const css = createCss();
+	 * const cx = createCx({ css });
+	 * const runtimeColor = "tomato";
 	 * const className = cx.vars(
 	 *   css.vars({ color: runtimeColor }),
 	 *   "font-medium",
@@ -473,6 +491,7 @@ export interface CxFn {
  *
  * const css = createCss();
  * const cx = createCx({ css });
+ * const disabled = false;
  *
  * const buttonClass = cx(
  *   "inline-flex",
@@ -483,6 +502,7 @@ export interface CxFn {
  *
  * @param options - Generated utility metadata and an optional CSS registry.
  * @returns A callable merger with a variable-preserving `.vars` projection.
+ * @see {@link createCss} for the CSS atom registry passed through `options.css`.
  * @category composition
  * @since 0.1.0
  */
