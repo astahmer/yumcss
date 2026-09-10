@@ -19,19 +19,19 @@ with ceilings in
 
 ## The short version
 
-| entry                                      |      min |     gzip |
-| ------------------------------------------ | -------: | -------: |
-| `createCss()` fallback runtime             |  6.78 KB |  2.97 KB |
-| `createRuntimeCss()` + runtime sheet       | 28.76 KB | 10.87 KB |
-| `tw()` runtime                             |  2.71 KB |  1.27 KB |
-| `cx()` runtime                             | 12.71 KB |  5.31 KB |
-| all three direct runtime entries           | 15.31 KB |  6.24 KB |
-| stylesheet generator (**build-time only**) | 18.66 KB |  7.08 KB |
+| entry                                      |      min |    gzip |
+| ------------------------------------------ | -------: | ------: |
+| `createCss()` fallback runtime             |  6.78 KB | 2.97 KB |
+| `createRuntimeCss()` + runtime sheet       | 20.91 KB | 8.42 KB |
+| `tw()` runtime                             |  2.71 KB | 1.27 KB |
+| `cx()` runtime                             | 12.71 KB | 5.31 KB |
+| all three direct runtime entries           | 15.31 KB | 6.25 KB |
+| stylesheet generator (**build-time only**) | 12.71 KB | 5.41 KB |
 
 The combined runtime is effectively at the supplied Emotion reference
-(15.3 KB min / 6.25 KB gzip): Pandwind is 7 minified bytes larger and 6
-gzip bytes smaller in these measurements. The old 10.51 KB / 4.38 KB row
-was an obsolete pre-feature snapshot and is intentionally no longer quoted.
+(15.3 KB min / 6.25 KB gzip): both round to 15.31 KB min / 6.25 KB gzip in
+this record. The old 10.51 KB / 4.38 KB row was an obsolete pre-feature
+snapshot and is intentionally no longer quoted.
 
 The runtime-sheet row uses the minimal preset fixture. A real application
 preset also contributes its own token and condition data; that data is
@@ -46,6 +46,7 @@ free. The same size gate checks these tree-shaken entry points:
 | --------------------------------------- | -------: | ------: |
 | `pandwind/css` — css() only             |  6.78 KB | 2.97 KB |
 | `pandwind/tw` — tw() only               |  2.71 KB | 1.27 KB |
+| `pandwind/cx` — cx() plain strings      |  6.03 KB | 2.67 KB |
 | `pandwind/cx` — cx() with atom registry | 12.71 KB | 5.31 KB |
 | root barrel, css only                   |  6.78 KB | 2.97 KB |
 | root barrel, tw only                    |  2.71 KB | 1.27 KB |
@@ -71,7 +72,7 @@ Pandwind row includes `css()` + `tw()` + cross-engine `cx()`.
 
 | runtime                                    |      min |    gzip | what ships                              |
 | ------------------------------------------ | -------: | ------: | --------------------------------------- |
-| pandwind `css()` + `tw()` + `cx()`         | 15.31 KB | 6.24 KB | current combined runtime                |
+| pandwind `css()` + `tw()` + `cx()`         | 15.31 KB | 6.25 KB | current combined runtime                |
 | `@stylexjs/stylex` 0.19.0                  |  4.06 KB | 1.74 KB | runtime only (compile happens in babel) |
 | `@pandacss/core` 1.12.0 generated `css()`  |  13.4 KB | 5.31 KB | panda runtime engine + tokens           |
 | `@emotion/css` 11.13.5                     |  15.3 KB | 6.25 KB | emotion core (chakra's engine)          |

@@ -69,18 +69,19 @@ The canonical byte table is [the size reference](/reference/size/); the
 exact record is the committed `runtime-size.json.snap` and the hard
 ceilings are in `runtime-budget.json`.
 
-| entry                        | minified |   gzip |
-| ---------------------------- | -------: | -----: |
-| `createCss()` fallback       |    6,777 |  2,974 |
-| `tw()`                       |    2,711 |  1,266 |
-| `cx()`                       |   12,705 |  5,310 |
-| all direct runtime entries   |   15,307 |  6,244 |
-| `createRuntimeCss()` + sheet |   28,762 | 10,870 |
+| entry                        | minified |  gzip |
+| ---------------------------- | -------: | ----: |
+| `createCss()` fallback       |    6,781 | 2,974 |
+| `tw()`                       |    2,711 | 1,266 |
+| `cx()` plain strings         |    6,031 | 2,671 |
+| `cx()`                       |   12,709 | 5,309 |
+| all direct runtime entries   |   15,311 | 6,245 |
+| `createRuntimeCss()` + sheet |   20,907 | 8,423 |
 
 The combined runtime is effectively at the supplied Emotion reference:
-Pandwind is 7 minified bytes larger and 6 gzip bytes smaller than the
-15.3 KB / 6.25 KB reference. The root `SIZE.md` no longer duplicates these
-numbers.
+both round to 15.31 KB min / 6.25 KB gzip against the supplied 15.3 KB /
+6.25 KB reference. The root `SIZE.md` is only a pointer and no longer
+duplicates these numbers.
 
 ## Historical runtime hot-path pass — 2026-09-01
 

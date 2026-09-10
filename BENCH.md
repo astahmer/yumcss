@@ -174,19 +174,19 @@ The canonical table is [the reference size page](docs/src/content/docs/reference
 the exact record is the committed `runtime-size.json.snap` and the hard
 ceilings are in `runtime-budget.json`. The current primary entries are:
 
-| entry                        | minified |   gzip |
-| ---------------------------- | -------: | -----: |
-| `createCss()` fallback       |    6,777 |  2,974 |
-| `tw()`                       |    2,711 |  1,266 |
-| `cx()`                       |   12,705 |  5,310 |
-| all direct runtime entries   |   15,307 |  6,244 |
-| `createRuntimeCss()` + sheet |   28,762 | 10,870 |
+| entry                        | minified |  gzip |
+| ---------------------------- | -------: | ----: |
+| `createCss()` fallback       |    6,781 | 2,974 |
+| `tw()`                       |    2,711 | 1,266 |
+| `cx()`                       |   12,709 | 5,309 |
+| all direct runtime entries   |   15,311 | 6,245 |
+| `createRuntimeCss()` + sheet |   20,907 | 8,423 |
 
-The combined runtime is 7 minified bytes above and 6 gzip bytes below the
-supplied `@emotion/css` 11.13.5 reference (15.3 KB / 6.25 KB). The size
-compaction shares one dash-case helper across the runtime and removes unused
-merge-state storage while retaining the direct class, variable, and LRU
-performance work.
+The combined runtime rounds to the supplied `@emotion/css` 11.13.5 reference
+(15.3 KB / 6.25 KB). The size compaction shares one dash-case helper across
+the runtime, removes unused merge-state storage, and gives the runtime sheet
+its own lean stylesheet/token path while retaining the direct class, variable,
+and LRU performance work.
 
 ## `createRuntimeCss()` versus Emotion — 2026-09-10
 
@@ -213,9 +213,9 @@ new-rule registration remained part of the measured work:
 | fresh unique one-property `runtimeCss.class()` rules | ~0.29M ops/sec |  ~0.61M ops/sec | Emotion is about 2.1× faster while registering new rules.   |
 | repeated one-property `runtimeCss.vars()`            | ~3.41M ops/sec | ~3.02M ops/sec* | Pandwind is about 1.1× faster for this stable carrier path. |
 
-The repo-owned `createRuntimeCss()` size fixture is **28,762 bytes minified /
-10,870 gzip** with a minimal preset; the ordinary `createCss()` entry is
-**6,777 / 2,974** in the same guard. A real application preset contributes
+The repo-owned `createRuntimeCss()` size fixture is **20,907 bytes minified /
+8,423 gzip** with a minimal preset; the ordinary `createCss()` entry is
+**6,781 / 2,974** in the same guard. A real application preset contributes
 its own token and condition data, so that application-specific payload is not
 part of this library baseline. The direct class projection and variable
 registration fast paths remain covered by separate reviewed budgets in

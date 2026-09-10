@@ -4,8 +4,8 @@
 		"gz": 3100
 	},
 	"css, runtime sheet": {
-		"min": 29500,
-		"gz": 11250
+		"min": 22000,
+		"gz": 8800
 	},
 	"css, all static calls": {
 		"min": 100,
