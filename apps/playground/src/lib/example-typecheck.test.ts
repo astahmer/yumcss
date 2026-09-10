@@ -14,11 +14,11 @@ const examplePresetSource = join(repositoryRoot, "examples/pandwind-example-pres
 const exampleDirectory = (examplePath: string, api: string): string =>
 	examplePath.slice(1).replaceAll("/", "-") + "-" + api;
 
-function typecheckCoreExamples(): string {
+function typecheckExamples(): string {
 	const temporaryRoot = mkdtempSync(join(repositoryRoot, ".tmp-playground-examples-"));
 	try {
 		const sourceFiles: string[] = [];
-		for (const example of EXAMPLES.filter((entry) => entry.group === "core")) {
+		for (const example of EXAMPLES) {
 			for (const variant of example.variants) {
 				const directory = join(temporaryRoot, exampleDirectory(example.path, variant.api));
 				mkdirSync(directory, { recursive: true });
@@ -81,7 +81,7 @@ function typecheckCoreExamples(): string {
 }
 
 describe("playground example catalog typechecks", () => {
-	it("keeps every core example valid against the generated public declarations", () => {
-		expect(typecheckCoreExamples()).toBe("");
+	it("keeps every example valid against the generated public declarations", () => {
+		expect(typecheckExamples()).toBe("");
 	});
 });

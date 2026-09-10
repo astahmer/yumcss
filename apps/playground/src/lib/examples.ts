@@ -303,8 +303,11 @@ const variants = {
 
 const pick = (
 	selection = {
-		size: "lg" as keyof typeof variants.size,
-		tone: "brand" as keyof typeof variants.tone,
+		size: "lg",
+		tone: "brand",
+	} as {
+		size: keyof typeof variants.size;
+		tone: keyof typeof variants.tone;
 	},
 ) =>
 	cx(variants.base, variants.size[selection.size], variants.tone[selection.tone]);
@@ -389,6 +392,7 @@ tw({
 			TW_IMPORT +
 				`
 
+// @ts-expect-error tw() accepts typed style objects, not class-name strings.
 tw("bg-red-500 text-lg")`,
 		),
 	},
@@ -417,11 +421,13 @@ tw({ sm: "p-4" })`,
 			PlaygroundApi.Css,
 			"Example.tsx",
 			`import { createCss } from "pandwind/css";
+import { examplePreset } from "@pandwind/example-preset";
 
-const css = createCss();
+const css = createCss(examplePreset);
 
 css.class({
 	display: "flex",
+	// @ts-expect-error animation is outside examplePreset.properties.
 	animation: "pulse 2s infinite",
 })`,
 		),

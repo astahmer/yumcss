@@ -132,7 +132,6 @@ export function ResizableSplitter(props: {
 }) {
 	const panelSignature = props.panels.map((panel) => panel.id).join("\u0000");
 	const [collapsedPanelIds, setCollapsedPanelIds] = useState<ReadonlySet<string>>(() => new Set());
-	const previousPanelSizes = useRef(new Map<string, number>());
 	const previousPanelSignature = useRef(panelSignature);
 
 	const splitter = useSplitter({
@@ -148,66 +147,21 @@ export function ResizableSplitter(props: {
 	useEffect(() => {
 		if (previousPanelSignature.current === panelSignature) return;
 		previousPanelSignature.current = panelSignature;
-		previousPanelSizes.current.clear();
 		setCollapsedPanelIds(new Set());
 		splitter.resetSizes();
 	}, [panelSignature]);
 	const togglePanel = (panelId: string): void => {
-		const panelIndex = props.panels.findIndex((panel) => panel.id === panelId);
-		const panel = props.panels[panelIndex];
+		const panel = props.panels.find((candidate) => candidate.id === panelId);
 		if (panel === undefined || panel.collapsible !== true) return;
-		const currentSizes = splitter.getSizes();
 		const currentCollapsed = collapsedPanelIds.has(panelId);
-		const collapsedSize = panel.collapsedSize ?? DEFAULT_COLLAPSED_SIZE;
-		const rootId = splitter.getRootProps().id;
-		const root = typeof rootId === "string" ? document.getElementById(rootId) : null;
-		const rootLength =
-			props.orientation === "vertical"
-				? root?.getBoundingClientRect().height
-				: root?.getBoundingClientRect().width;
-		const collapsedPercent =
-			typeof collapsedSize === "number"
-				? collapsedSize
-				: collapsedSize.trim().endsWith("%")
-					? Number.parseFloat(collapsedSize)
-					: rootLength === undefined || rootLength === 0
-						? 0
-						: (Number.parseFloat(collapsedSize) / rootLength) * 100;
-		const nextSizes = [...currentSizes];
-		const nextCollapsed = new Set(collapsedPanelIds);
-
-		if (currentCollapsed) {
-			nextCollapsed.delete(panelId);
-			const restoredSize =
-				previousPanelSizes.current.get(panelId) ?? initialPanelSizes(props.panels)[panelIndex]!;
-			const amount = Math.max(0, restoredSize - currentSizes[panelIndex]!);
-			nextSizes[panelIndex] = restoredSize;
-			let remaining = amount;
-			for (const donorIndex of props.panels
-				.map((candidate, index) => ({ candidate, index }))
-				.filter(
-					({ candidate, index }) => index !== panelIndex && !collapsedPanelIds.has(candidate.id),
-				)
-				.toSorted((left, right) => currentSizes[right.index]! - currentSizes[left.index]!)
-				.map(({ index }) => index)) {
-				if (remaining <= 0) break;
-				const reduction = Math.min(currentSizes[donorIndex]!, remaining);
-				nextSizes[donorIndex] = currentSizes[donorIndex]! - reduction;
-				remaining -= reduction;
-			}
-		} else {
-			previousPanelSizes.current.set(panelId, currentSizes[panelIndex]!);
-			nextCollapsed.add(panelId);
-			const freed = Math.max(0, currentSizes[panelIndex]! - collapsedPercent);
-			nextSizes[panelIndex] = collapsedPercent;
-			const receiverIndex = props.panels.findIndex(
-				(candidate, index) => index !== panelIndex && !collapsedPanelIds.has(candidate.id),
-			);
-			if (receiverIndex !== -1) nextSizes[receiverIndex] = currentSizes[receiverIndex]! + freed;
-		}
-
-		setCollapsedPanelIds(nextCollapsed);
-		splitter.setSizes(nextSizes);
+		if (currentCollapsed) splitter.expandPanel(panelId);
+		else splitter.collapsePanel(panelId);
+		setCollapsedPanelIds((current) => {
+			const next = new Set(current);
+			if (currentCollapsed) next.delete(panelId);
+			else next.add(panelId);
+			return next;
+		});
 	};
 	return (
 		<Splitter.RootProvider
@@ -216,22 +170,7 @@ export function ResizableSplitter(props: {
 		>
 			{props.panels.map((panel, index) => (
 				<Fragment key={panel.id}>
-					<Splitter.Panel
-						id={panel.id}
-						className={SPLITTER_PANEL}
-						style={
-							panel.collapsible === true && collapsedPanelIds.has(panel.id)
-								? {
-										flexGrow: 0,
-										flexShrink: 0,
-										flexBasis:
-											typeof (panel.collapsedSize ?? DEFAULT_COLLAPSED_SIZE) === "number"
-												? `${panel.collapsedSize ?? 0}%`
-												: (panel.collapsedSize ?? DEFAULT_COLLAPSED_SIZE),
-									}
-								: undefined
-						}
-					>
+					<Splitter.Panel id={panel.id} className={SPLITTER_PANEL}>
 						<RESIZABLE_SPLITTER_CONTROLS.Provider
 							value={
 								panel.collapsible === true

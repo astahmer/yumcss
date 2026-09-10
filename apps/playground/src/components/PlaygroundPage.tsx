@@ -492,7 +492,7 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 							role="tab"
 							aria-selected={index === activeTab}
 							onClick={() => setActiveTab(index)}
-							className={`${uiCss.class({ border: "0", borderRadius: "6px", backgroundColor: "transparent", padding: "4px 10px", fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", fontSize: "12px", lineHeight: "20px", transition: "color 120ms, background-color 120ms" })} ${index === activeTab ? uiCss.class({ backgroundColor: "var(--pw-control-selected)", color: "var(--pw-text-strong)" }) : uiCss.class({ backgroundColor: "transparent", color: "var(--pw-text-muted)", "&:hover": { backgroundColor: "var(--pw-control-hover)", color: "var(--pw-text)" } })}`}
+							className={`${uiCss.class({ border: "0", borderRadius: "6px", backgroundColor: "var(--pw-control)", padding: "4px 10px", fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", fontSize: "12px", lineHeight: "20px", transition: "color 120ms, background-color 120ms" })} ${index === activeTab ? uiCss.class({ backgroundColor: "var(--pw-control-selected)", color: "var(--pw-text-strong)" }) : uiCss.class({ color: "var(--pw-text-soft)", "&:hover": { backgroundColor: "var(--pw-control-hover)", color: "var(--pw-text-strong)" } })}`}
 						>
 							{file.name}
 						</button>
