@@ -14,42 +14,17 @@
  * Delimiter-packed strings keep the browser entry compact without changing
  * the complete property catalog used by cascade and merge conformance.
  */
-const prioritySet = (value: string): Set<string> => new Set(value.split("|"));
-
-const longHandPhysical = prioritySet(
-	"border-top-color|border-top-style|border-top-width|border-bottom-color|border-bottom-style|border-bottom-width|" +
-		"border-left-color|border-left-style|border-left-width|border-right-color|border-right-style|border-right-width|" +
-		"border-top-left-radius|border-top-right-radius|border-bottom-left-radius|border-bottom-right-radius|height|width|" +
-		"max-height|max-width|min-height|min-width|margin-top|margin-bottom|" +
-		"margin-left|margin-right|overscroll-behavior-y|overscroll-behavior-x|padding-top|padding-bottom|" +
-		"padding-left|padding-right|overflow-y|overflow-x|top|bottom|" +
-		"left|right|scroll-margin-top|scroll-margin-bottom|scroll-margin-left|scroll-margin-right|" +
-		"scroll-padding-top|scroll-padding-bottom|scroll-padding-left|scroll-padding-right",
-);
-
-const shorthandsOfLonghands = prioritySet(
-	"animation-range|scroll-timeline|view-timeline|background-position|border-color|border-style|" +
-		"border-width|border-block-start|border-top|border-block-end|border-bottom|border-inline-color|" +
-		"border-inline-style|border-inline-width|border-inline-start|border-left|border-inline-end|border-right|" +
-		"border-image|border-radius|caret|outline|grid-gap|gap|" +
-		"place-content|place-items|place-self|margin-block|margin-inline|overscroll-behavior|" +
-		"padding-block|padding-inline|columns|column-rule|contain-intrinsic-size|container|" +
-		"flex|flex-flow|font-variant|grid-template-areas|grid-row|grid-column|" +
-		"list-style|mask|mask-border|offset|overflow|inset-block|" +
-		"inset-inline|scroll-margin-block|scroll-margin-inline|scroll-padding-block|scroll-padding-inline|scroll-snap-type|" +
-		"text-decoration|text-emphasis|transition",
-);
-
-const shorthandsOfShorthands = prioritySet(
-	"animation|background|border|border-block|border-inline|margin|" +
-		"padding|font|grid|grid-template|grid-area|all|" +
-		"inset|scroll-margin|scroll-padding",
-);
+// Only the exceptional precedence bands need data. All other normal CSS
+// properties intentionally use the 3000 fallback, so a logical-longhand
+// catalog would add bytes without changing the result.
+const LONG_HAND_PHYSICAL =
+	/^(?:border-(?:top|bottom|left|right)-(?:color|style|width)|border-(?:top|bottom)-(?:left|right)-radius|(?:max-|min-)?(?:height|width)|(?:margin|padding|scroll-(?:margin|padding))-(?:top|bottom|left|right)|overscroll-behavior-[xy]|overflow-[xy]|(?:top|bottom|left|right))$/;
+const SHORTHANDS_OF_LONGHANDS =
+	/^(?:animation-range|scroll-timeline|view-timeline|background-position|border-(?:color|style|width|block-start|top|block-end|bottom|inline-color|inline-style|inline-width|inline-start|left|inline-end|right|image|radius)|caret|outline|grid-gap|gap|place-(?:content|items|self)|margin-(?:block|inline)|overscroll-behavior|padding-(?:block|inline)|columns|column-rule|contain-intrinsic-size|container|flex(?:-flow)?|font-variant|grid-template-areas|grid-(?:row|column)|list-style|mask(?:-border)?|offset|overflow|inset-(?:block|inline)|scroll-(?:margin|padding)-(?:block|inline)|scroll-snap-type|text-(?:decoration|emphasis)|transition)$/;
+const SHORTHANDS_OF_SHORTHANDS =
+	/^(?:animation|background|border(?:-(?:block|inline))?|margin|padding|font|grid(?:-template)?|grid-area|all|inset|scroll-(?:margin|padding))$/;
 
 type PseudoClassPriorities = {
-	":is": 40;
-	":where": 40;
-	":not": 40;
 	":has": 45;
 	":dir": 50;
 	":lang": 51;
@@ -103,9 +78,6 @@ type PseudoClassPriorities = {
 };
 
 const PSEUDO_CLASS_PRIORITIES: PseudoClassPriorities = {
-	":is": 40,
-	":where": 40,
-	":not": 40,
 	":has": 45,
 	":dir": 50,
 	":lang": 51,
@@ -165,18 +137,6 @@ const PSEUDO_CLASS_PRIORITIES: PseudoClassPriorities = {
 	":active": 170,
 };
 
-type AtRulePriorities = {
-	"@supports": 30;
-	"@media": 200;
-	"@container": 300;
-};
-
-const AT_RULE_PRIORITIES: AtRulePriorities = {
-	"@supports": 30,
-	"@media": 200,
-	"@container": 300,
-};
-
 const PSEUDO_ELEMENT_PRIORITY: number = 5000;
 
 export function getPropertyPriority(key: string): number {
@@ -192,15 +152,15 @@ export function getPropertyPriority(key: string): number {
 	}
 
 	if (property.startsWith("@supports")) {
-		return AT_RULE_PRIORITIES["@supports"];
+		return 30;
 	}
 
 	if (property.startsWith("@media")) {
-		return AT_RULE_PRIORITIES["@media"];
+		return 200;
 	}
 
 	if (property.startsWith("@container")) {
-		return AT_RULE_PRIORITIES["@container"];
+		return 300;
 	}
 
 	if (property.startsWith("::")) {
@@ -216,13 +176,13 @@ export function getPropertyPriority(key: string): number {
 		return PSEUDO_CLASS_PRIORITIES[prop as keyof PseudoClassPriorities] ?? 40;
 	}
 
-	if (longHandPhysical.has(property)) {
+	if (LONG_HAND_PHYSICAL.test(property)) {
 		return 4000;
 	}
-	if (shorthandsOfLonghands.has(property)) {
+	if (SHORTHANDS_OF_LONGHANDS.test(property)) {
 		return 2000;
 	}
-	if (shorthandsOfShorthands.has(property)) {
+	if (SHORTHANDS_OF_SHORTHANDS.test(property)) {
 		return 1000;
 	}
 	return 3000;

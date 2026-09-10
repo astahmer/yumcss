@@ -4,8 +4,8 @@
     "gz": 2974
   },
   "css, runtime sheet": {
-    "min": 23581,
-    "gz": 9352
+    "min": 22814,
+    "gz": 9204
   },
   "css, all static calls": {
     "min": 81,
@@ -44,8 +44,8 @@
     "gz": 6245
   },
   "stylesheet generator (build-time only)": {
-    "min": 13474,
-    "gz": 5565
+    "min": 12709,
+    "gz": 5413
   },
   "root barrel, css only": {
     "min": 6781,
