@@ -5,6 +5,7 @@ import {
 	createRuntimeDesignCss,
 	createRuntimeSheet,
 } from "../src/css/runtime.ts";
+import { createStylesheet } from "../src/css/create-stylesheet.ts";
 import { examplePreset } from "@pandwind/example-preset";
 import type {
 	RuntimeDeclaration,
@@ -190,6 +191,25 @@ describe("runtime CSS-in-JS sheet", () => {
 		expect(className).toMatch(/^[a-z0-9]+$/);
 		expect(sheet.css()).toContain("color:#3182ce");
 		expect(sheet.snapshot().rules).toHaveLength(1);
+	});
+
+	test("runtime lowering stays byte-identical to the full stylesheet path", () => {
+		const styles = {
+			color: "$blue-500",
+			padding: 4,
+			_hover: { color: "$red-500" },
+		};
+		const full = createStylesheet(examplePreset);
+		full.process([styles]);
+		const sheet = createRuntimeSheet({ autoMount: false });
+		const runtime = createRuntimeCss(examplePreset, { sheet });
+
+		runtime.class(styles);
+
+		expect(sheet.snapshot()).toEqual({
+			tokens: full.gen.tokens(),
+			rules: full.gen.atomicEntries(),
+		});
 	});
 
 	test("deduplicates repeated declarations and preserves generated ordering", () => {

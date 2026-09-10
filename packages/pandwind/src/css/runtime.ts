@@ -4,7 +4,7 @@
  * Kept separate from `pandwind/css` so applications using only extracted
  * atoms do not pay for the stylesheet compiler in their browser bundle.
  */
-import { createStylesheet } from "./create-stylesheet.ts";
+import { createRuntimeStylesheet } from "./runtime-stylesheet.ts";
 import { createCss, type CreateCssOptions, type CssFn } from "./create-css.ts";
 import {
 	createRuntimeSheet,
@@ -84,7 +84,7 @@ function runtimeSheetFor(options: RuntimeCssOptions): RuntimeSheet {
 function runtimeOptions(preset: CssConfigReturn, options: RuntimeCssOptions): RuntimeBinding {
 	const sheet = runtimeSheetFor(options);
 	const { sheet: _sheet, sheetOptions: _sheetOptions, ...cssOptions } = options;
-	const stylesheet = createStylesheet(preset, cssOptions);
+	const stylesheet = createRuntimeStylesheet(preset, cssOptions);
 	let tokensSynced = false;
 	let pendingStyles: RuntimeDeclaration[] = [];
 	const pendingStyleIds = new Set<string>();
