@@ -1,5 +1,15 @@
-import { Fragment, type ReactNode } from "react";
+import {
+	createContext,
+	Fragment,
+	useContext,
+	useEffect,
+	useId,
+	useRef,
+	useState,
+	type ReactNode,
+} from "react";
 import { Splitter } from "@ark-ui/react/splitter";
+import { useSplitter } from "@ark-ui/react";
 import { css as uiCss } from "../ui-css.ts";
 
 const SPLITTER_ROOT_HORIZONTAL = uiCss.class({
@@ -52,14 +62,14 @@ const SPLITTER_TRIGGER_HORIZONTAL = uiCss.class({
 		width: "3px",
 		height: "36px",
 		borderRadius: "9999px",
-		backgroundColor: "rgba(255,255,255,0.12)",
+		backgroundColor: "var(--pw-border-strong)",
 		content: '""',
 		transform: "translateY(-50%)",
 		transition: "background-color 120ms, height 120ms",
 	},
 	"&:hover::after, &:focus-visible::after": {
 		height: "52px",
-		backgroundColor: "rgba(251,146,60,0.75)",
+		backgroundColor: "var(--pw-accent)",
 	},
 });
 const SPLITTER_TRIGGER_VERTICAL = uiCss.class({
@@ -80,14 +90,14 @@ const SPLITTER_TRIGGER_VERTICAL = uiCss.class({
 		width: "36px",
 		height: "3px",
 		borderRadius: "9999px",
-		backgroundColor: "rgba(255,255,255,0.12)",
+		backgroundColor: "var(--pw-border-strong)",
 		content: '""',
 		transform: "translateX(-50%)",
 		transition: "background-color 120ms, width 120ms",
 	},
 	"&:hover::after, &:focus-visible::after": {
 		width: "52px",
-		backgroundColor: "rgba(251,146,60,0.75)",
+		backgroundColor: "var(--pw-accent)",
 	},
 });
 
@@ -95,9 +105,24 @@ export interface ResizableSplitterPanel {
 	id: string;
 	content: ReactNode;
 	initialSize?: number;
-	minSize?: number;
 	maxSize?: number;
+	collapsible?: boolean;
+	collapsedSize?: number | string;
 }
+
+interface ResizableSplitterControls {
+	collapsed: boolean;
+	toggle: () => void;
+}
+
+const RESIZABLE_SPLITTER_CONTROLS = createContext<ResizableSplitterControls | null>(null);
+const DEFAULT_COLLAPSED_SIZE = "36px";
+
+const initialPanelSizes = (panels: readonly ResizableSplitterPanel[]): number[] => {
+	const sizes = panels.map((panel) => panel.initialSize ?? 100 / Math.max(panels.length, 1));
+	const total = sizes.reduce((sum, size) => sum + size, 0);
+	return total === 0 ? sizes : sizes.map((size) => (size / total) * 100);
+};
 
 /** Ark-backed split layout used for the playground's inspectable panes. */
 export function ResizableSplitter(props: {
@@ -105,20 +130,120 @@ export function ResizableSplitter(props: {
 	panels: readonly ResizableSplitterPanel[];
 	className?: string;
 }) {
-	const sizes = props.panels.map(
-		(panel) => panel.initialSize ?? 100 / Math.max(props.panels.length, 1),
-	);
+	const panelSignature = props.panels.map((panel) => panel.id).join("\u0000");
+	const [collapsedPanelIds, setCollapsedPanelIds] = useState<ReadonlySet<string>>(() => new Set());
+	const previousPanelSizes = useRef(new Map<string, number>());
+	const previousPanelSignature = useRef(panelSignature);
+
+	const splitter = useSplitter({
+		orientation: props.orientation,
+		panels: props.panels.map(({ id, maxSize, collapsible, collapsedSize }) => ({
+			id,
+			maxSize,
+			collapsible,
+			collapsedSize: collapsedSize ?? DEFAULT_COLLAPSED_SIZE,
+		})),
+		defaultSize: initialPanelSizes(props.panels),
+	});
+	useEffect(() => {
+		if (previousPanelSignature.current === panelSignature) return;
+		previousPanelSignature.current = panelSignature;
+		previousPanelSizes.current.clear();
+		setCollapsedPanelIds(new Set());
+		splitter.resetSizes();
+	}, [panelSignature]);
+	const togglePanel = (panelId: string): void => {
+		const panelIndex = props.panels.findIndex((panel) => panel.id === panelId);
+		const panel = props.panels[panelIndex];
+		if (panel === undefined || panel.collapsible !== true) return;
+		const currentSizes = splitter.getSizes();
+		const currentCollapsed = collapsedPanelIds.has(panelId);
+		const collapsedSize = panel.collapsedSize ?? DEFAULT_COLLAPSED_SIZE;
+		const rootId = splitter.getRootProps().id;
+		const root = typeof rootId === "string" ? document.getElementById(rootId) : null;
+		const rootLength =
+			props.orientation === "vertical"
+				? root?.getBoundingClientRect().height
+				: root?.getBoundingClientRect().width;
+		const collapsedPercent =
+			typeof collapsedSize === "number"
+				? collapsedSize
+				: collapsedSize.trim().endsWith("%")
+					? Number.parseFloat(collapsedSize)
+					: rootLength === undefined || rootLength === 0
+						? 0
+						: (Number.parseFloat(collapsedSize) / rootLength) * 100;
+		const nextSizes = [...currentSizes];
+		const nextCollapsed = new Set(collapsedPanelIds);
+
+		if (currentCollapsed) {
+			nextCollapsed.delete(panelId);
+			const restoredSize =
+				previousPanelSizes.current.get(panelId) ?? initialPanelSizes(props.panels)[panelIndex]!;
+			const amount = Math.max(0, restoredSize - currentSizes[panelIndex]!);
+			nextSizes[panelIndex] = restoredSize;
+			let remaining = amount;
+			for (const donorIndex of props.panels
+				.map((candidate, index) => ({ candidate, index }))
+				.filter(
+					({ candidate, index }) => index !== panelIndex && !collapsedPanelIds.has(candidate.id),
+				)
+				.toSorted((left, right) => currentSizes[right.index]! - currentSizes[left.index]!)
+				.map(({ index }) => index)) {
+				if (remaining <= 0) break;
+				const reduction = Math.min(currentSizes[donorIndex]!, remaining);
+				nextSizes[donorIndex] = currentSizes[donorIndex]! - reduction;
+				remaining -= reduction;
+			}
+		} else {
+			previousPanelSizes.current.set(panelId, currentSizes[panelIndex]!);
+			nextCollapsed.add(panelId);
+			const freed = Math.max(0, currentSizes[panelIndex]! - collapsedPercent);
+			nextSizes[panelIndex] = collapsedPercent;
+			const receiverIndex = props.panels.findIndex(
+				(candidate, index) => index !== panelIndex && !collapsedPanelIds.has(candidate.id),
+			);
+			if (receiverIndex !== -1) nextSizes[receiverIndex] = currentSizes[receiverIndex]! + freed;
+		}
+
+		setCollapsedPanelIds(nextCollapsed);
+		splitter.setSizes(nextSizes);
+	};
 	return (
-		<Splitter.Root
-			orientation={props.orientation}
-			panels={props.panels.map(({ id, minSize, maxSize }) => ({ id, minSize, maxSize }))}
-			defaultSize={sizes}
+		<Splitter.RootProvider
+			value={splitter}
 			className={`${props.orientation === "horizontal" ? SPLITTER_ROOT_HORIZONTAL : SPLITTER_ROOT_VERTICAL} ${props.className ?? ""}`}
 		>
 			{props.panels.map((panel, index) => (
 				<Fragment key={panel.id}>
-					<Splitter.Panel id={panel.id} className={SPLITTER_PANEL}>
-						<div className={SPLITTER_PANEL_CONTENT}>{panel.content}</div>
+					<Splitter.Panel
+						id={panel.id}
+						className={SPLITTER_PANEL}
+						style={
+							panel.collapsible === true && collapsedPanelIds.has(panel.id)
+								? {
+										flexGrow: 0,
+										flexShrink: 0,
+										flexBasis:
+											typeof (panel.collapsedSize ?? DEFAULT_COLLAPSED_SIZE) === "number"
+												? `${panel.collapsedSize ?? 0}%`
+												: (panel.collapsedSize ?? DEFAULT_COLLAPSED_SIZE),
+									}
+								: undefined
+						}
+					>
+						<RESIZABLE_SPLITTER_CONTROLS.Provider
+							value={
+								panel.collapsible === true
+									? {
+											collapsed: collapsedPanelIds.has(panel.id),
+											toggle: () => togglePanel(panel.id),
+										}
+									: null
+							}
+						>
+							<div className={SPLITTER_PANEL_CONTENT}>{panel.content}</div>
+						</RESIZABLE_SPLITTER_CONTROLS.Provider>
 					</Splitter.Panel>
 					{index < props.panels.length - 1 ? (
 						<Splitter.ResizeTrigger
@@ -133,9 +258,28 @@ export function ResizableSplitter(props: {
 					) : null}
 				</Fragment>
 			))}
-		</Splitter.Root>
+		</Splitter.RootProvider>
 	);
 }
+
+const PANE_TOGGLE = uiCss.class({
+	display: "flex",
+	minWidth: "0px",
+	alignItems: "center",
+	gap: "7px",
+	border: "0",
+	backgroundColor: "transparent",
+	padding: "0",
+	fontSize: "11px",
+	fontWeight: "500",
+	textTransform: "uppercase",
+	letterSpacing: "0.09em",
+	color: "var(--pw-text-muted)",
+	textAlign: "left",
+	"&:hover": { color: "var(--pw-text-strong)" },
+	"&:focus-visible": { outline: "1px solid var(--pw-accent)", outlineOffset: "3px" },
+});
+const PANE_TOGGLE_ICON = uiCss.class({ color: "var(--pw-text-faint)", fontSize: "12px" });
 
 /** Shared pane chrome: hairline border, flat surface, small-caps header. */
 export function Pane(props: {
@@ -143,38 +287,71 @@ export function Pane(props: {
 	right?: ReactNode;
 	children: ReactNode;
 	className?: string;
+	collapsible?: boolean;
 }) {
+	const splitterControls = useContext(RESIZABLE_SPLITTER_CONTROLS);
+	const [open, setOpen] = useState(true);
+	const collapsible = props.collapsible === true || splitterControls !== null;
+	const collapsed = splitterControls?.collapsed ?? (collapsible && !open);
+	const contentId = useId();
+	const toggle = () => {
+		if (splitterControls !== null) splitterControls.toggle();
+		else setOpen((current) => !current);
+	};
 	return (
 		<section
-			className={`${uiCss.class({ display: "flex", minHeight: "0px", flexDirection: "column", overflow: "hidden", border: "1px solid rgba(255,255,255,0.07)", borderRadius: "8px", backgroundColor: "#0e0e11" })} ${props.className ?? ""}`}
+			className={`${uiCss.class({ display: "flex", minHeight: "0px", flexDirection: "column", overflow: "hidden", border: "1px solid var(--pw-border)", borderRadius: "8px", backgroundColor: "var(--pw-surface)" })} ${props.className ?? ""}`}
 		>
 			<header
 				className={uiCss.class({
 					display: "flex",
+					minWidth: "0px",
 					height: "36px",
 					flexShrink: "0",
 					alignItems: "center",
 					justifyContent: "space-between",
-					borderBottom: "1px solid rgba(255,255,255,0.07)",
+					gap: "8px",
+					borderBottom: "1px solid var(--pw-border)",
 					paddingLeft: "12px",
 					paddingRight: "8px",
 				})}
 			>
-				<h2
-					className={uiCss.class({
-						margin: "0",
-						fontSize: "11px",
-						fontWeight: "500",
-						textTransform: "uppercase",
-						letterSpacing: "0.09em",
-						color: "#71717a",
-					})}
-				>
-					{props.label}
-				</h2>
+				{collapsible ? (
+					<button
+						type="button"
+						className={PANE_TOGGLE}
+						aria-expanded={!collapsed}
+						aria-controls={contentId}
+						onClick={toggle}
+					>
+						<span aria-hidden="true" className={PANE_TOGGLE_ICON}>
+							{collapsed ? "▸" : "▾"}
+						</span>
+						<span>{props.label}</span>
+					</button>
+				) : (
+					<h2
+						className={uiCss.class({
+							minWidth: "0px",
+							margin: "0",
+							overflow: "hidden",
+							fontSize: "11px",
+							fontWeight: "500",
+							textTransform: "uppercase",
+							letterSpacing: "0.09em",
+							color: "var(--pw-text-muted)",
+						})}
+					>
+						{props.label}
+					</h2>
+				)}
 				{props.right}
 			</header>
-			<div className={uiCss.class({ minHeight: "0px", flex: "1 1 0%", overflow: "auto" })}>
+			<div
+				id={contentId}
+				hidden={collapsed}
+				className={uiCss.class({ minHeight: "0px", flex: "1 1 0%", overflow: "auto" })}
+			>
 				{props.children}
 			</div>
 		</section>
@@ -186,14 +363,14 @@ export function Kbd(props: { children: ReactNode }) {
 	return (
 		<kbd
 			className={uiCss.class({
-				border: "1px solid rgba(255,255,255,0.1)",
+				border: "1px solid var(--pw-border-strong)",
 				borderRadius: "4px",
-				backgroundColor: "rgba(255,255,255,0.04)",
+				backgroundColor: "var(--pw-control-hover)",
 				padding: "2px 6px",
 				fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
 				fontSize: "10px",
 				lineHeight: "1",
-				color: "#a1a1aa",
+				color: "var(--pw-text-soft)",
 			})}
 		>
 			{props.children}
@@ -213,7 +390,7 @@ export function GhostButton(props: {
 			type="button"
 			title={props.title}
 			onClick={props.onClick}
-			className={`${uiCss.class({ flexShrink: "0", borderRadius: "4px", padding: "4px 8px", fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", fontSize: "11px", lineHeight: "1", transition: "color 120ms, background-color 120ms", "&:focus-visible": { outline: "1px solid rgba(251,146,60,0.6)" } })} ${props.active === true ? uiCss.class({ color: "#bef264" }) : uiCss.class({ color: "#a1a1aa", "&:hover": { backgroundColor: "rgba(255,255,255,0.06)", color: "#e4e4e7" } })}`}
+			className={`${uiCss.class({ flexShrink: "0", borderRadius: "4px", padding: "4px 8px", fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", fontSize: "11px", lineHeight: "1", transition: "color 120ms, background-color 120ms", "&:focus-visible": { outline: "1px solid var(--pw-accent)" } })} ${props.active === true ? uiCss.class({ color: "var(--pw-success)" }) : uiCss.class({ color: "var(--pw-text-soft)", "&:hover": { backgroundColor: "var(--pw-control-hover)", color: "var(--pw-text-strong)" } })}`}
 		>
 			{props.children}
 		</button>

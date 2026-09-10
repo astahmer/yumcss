@@ -4,6 +4,7 @@ import { CodemodAdapterId } from "pandwind-codemod/swap/browser";
 import { EditorPane } from "./EditorPane.tsx";
 import { GhostButton, Kbd, Pane, ResizableSplitter, type ResizableSplitterPanel } from "./ui.tsx";
 import { css as uiCss } from "../ui-css.ts";
+import { useTheme } from "../theme.tsx";
 import {
 	MIGRATION_LAB,
 	type MigrationLabScenario,
@@ -25,29 +26,29 @@ function endpointById(
 
 const EXPECTATION_STYLE: Record<NonNullable<MigrationLabScenario["expectation"]>, string> = {
 	converted: uiCss.class({
-		borderColor: "rgba(52,211,153,0.3)",
-		backgroundColor: "rgba(52,211,153,0.1)",
-		color: "#6ee7b7",
+		borderColor: "var(--pw-border-strong)",
+		backgroundColor: "var(--pw-control-hover)",
+		color: "var(--pw-success)",
 	}),
 	runtime: uiCss.class({
-		borderColor: "rgba(56,189,248,0.3)",
-		backgroundColor: "rgba(56,189,248,0.1)",
-		color: "#7dd3fc",
+		borderColor: "var(--pw-border-strong)",
+		backgroundColor: "var(--pw-control-hover)",
+		color: "var(--pw-info)",
 	}),
 	residual: uiCss.class({
-		borderColor: "rgba(251,191,36,0.3)",
-		backgroundColor: "rgba(251,191,36,0.1)",
-		color: "#fcd34d",
+		borderColor: "var(--pw-border-strong)",
+		backgroundColor: "var(--pw-control-hover)",
+		color: "var(--pw-warning)",
 	}),
 	identity: uiCss.class({
-		borderColor: "rgba(161,161,170,0.3)",
-		backgroundColor: "rgba(161,161,170,0.1)",
-		color: "#d4d4d8",
+		borderColor: "var(--pw-border-strong)",
+		backgroundColor: "var(--pw-control-hover)",
+		color: "var(--pw-text)",
 	}),
 	context: uiCss.class({
-		borderColor: "rgba(167,139,250,0.3)",
-		backgroundColor: "rgba(167,139,250,0.1)",
-		color: "#c4b5fd",
+		borderColor: "var(--pw-border-strong)",
+		backgroundColor: "var(--pw-accent-soft)",
+		color: "var(--pw-accent-text)",
 	}),
 };
 
@@ -71,7 +72,7 @@ function ScenarioChips(props: {
 					key={scenario.key}
 					type="button"
 					onClick={() => props.onSelect(scenario)}
-					className={`${uiCss.class({ display: "flex", alignItems: "center", gap: "6px", border: "1px solid", borderRadius: "9999px", padding: "4px 10px", fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", fontSize: "11px", transition: "color 120ms, background-color 120ms, border-color 120ms" })} ${scenario.key === props.activeKey ? uiCss.class({ borderColor: "rgba(251,146,60,0.5)", backgroundColor: "rgba(251,146,60,0.1)", color: "#fed7aa" }) : uiCss.class({ borderColor: "rgba(255,255,255,0.1)", backgroundColor: "#16161b", color: "#a1a1aa", "&:hover": { borderColor: "rgba(255,255,255,0.25)", color: "#e4e4e7" } })}`}
+					className={`${uiCss.class({ display: "flex", alignItems: "center", gap: "6px", border: "1px solid", borderRadius: "9999px", padding: "4px 10px", fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", fontSize: "11px", transition: "color 120ms, background-color 120ms, border-color 120ms" })} ${scenario.key === props.activeKey ? uiCss.class({ borderColor: "var(--pw-accent)", backgroundColor: "var(--pw-accent-soft)", color: "var(--pw-accent-text)" }) : uiCss.class({ borderColor: "var(--pw-border-strong)", backgroundColor: "var(--pw-control)", color: "var(--pw-text-soft)", "&:hover": { borderColor: "var(--pw-border-hover)", color: "var(--pw-text-strong)" } })}`}
 				>
 					<span>{scenario.name}</span>
 					{scenario.expectation === undefined ? null : (
@@ -109,7 +110,7 @@ function SelectField(props: {
 					fontSize: "10px",
 					textTransform: "uppercase",
 					letterSpacing: "0.1em",
-					color: "#52525b",
+					color: "var(--pw-text-faint)",
 				})}
 			>
 				{props.label}
@@ -121,19 +122,19 @@ function SelectField(props: {
 				className={uiCss.class({
 					height: "36px",
 					minWidth: "0px",
-					border: "1px solid rgba(255,255,255,0.1)",
+					border: "1px solid var(--pw-border-strong)",
 					borderRadius: "6px",
-					backgroundColor: "#16161b",
+					backgroundColor: "var(--pw-control)",
 					padding: "0 10px",
 					fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
 					fontSize: "12px",
-					color: "#e4e4e7",
+					color: "var(--pw-text-strong)",
 					outline: "none",
 					transition: "border-color 120ms",
-					"&:hover": { borderColor: "rgba(255,255,255,0.2)" },
+					"&:hover": { borderColor: "var(--pw-border-hover)" },
 					"&:focus": {
-						borderColor: "rgba(251,146,60,0.6)",
-						boxShadow: "0 0 0 1px rgba(251,146,60,0.3)",
+						borderColor: "var(--pw-accent)",
+						boxShadow: "0 0 0 1px var(--pw-accent-soft)",
 					},
 				})}
 			>
@@ -190,10 +191,14 @@ const HIGHLIGHTED_CODE = uiCss.class({
 });
 
 function CodeBlock(props: { code: string }) {
+	const { mode } = useTheme();
 	const [html, setHtml] = useState("");
 	useEffect(() => {
 		let active = true;
-		void codeToHtml(props.code, { lang: "tsx", theme: "vesper" })
+		void codeToHtml(props.code, {
+			lang: "tsx",
+			theme: mode === "light" ? "github-light" : "vesper",
+		})
 			.then((value) => {
 				if (active) setHtml(value);
 			})
@@ -203,7 +208,7 @@ function CodeBlock(props: { code: string }) {
 		return () => {
 			active = false;
 		};
-	}, [props.code]);
+	}, [mode, props.code]);
 	return html === "" ? (
 		<pre className={PLAIN_CODE}>
 			<code>{props.code}</code>
@@ -238,35 +243,39 @@ function Summary(props: { result: MigrationLabResult }) {
 				gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
 				gap: "1px",
 				overflow: "hidden",
-				border: "1px solid rgba(255,255,255,0.07)",
+				border: "1px solid var(--pw-border)",
 				borderRadius: "6px",
-				backgroundColor: "rgba(255,255,255,0.07)",
+				backgroundColor: "var(--pw-control-hover)",
 				"@media (min-width: 640px)": { gridTemplateColumns: "repeat(4, minmax(0, 1fr))" },
 			})}
 		>
 			{(
 				[
-					["converted", result.converted, uiCss.class({ color: "#6ee7b7" })],
+					["converted", result.converted, uiCss.class({ color: "var(--pw-success)" })],
 					[
 						"skipped",
 						result.skipped,
 						result.skipped === 0
-							? uiCss.class({ color: "#d4d4d8" })
-							: uiCss.class({ color: "#fcd34d" }),
+							? uiCss.class({ color: "var(--pw-text)" })
+							: uiCss.class({ color: "var(--pw-warning)" }),
 					],
 					[
 						"residuals",
 						residualCount,
 						residualCount === 0
-							? uiCss.class({ color: "#6ee7b7" })
-							: uiCss.class({ color: "#fcd34d" }),
+							? uiCss.class({ color: "var(--pw-success)" })
+							: uiCss.class({ color: "var(--pw-warning)" }),
 					],
-					["changed", result.changed ? "yes" : "no", uiCss.class({ color: "#fdba74" })],
+					[
+						"changed",
+						result.changed ? "yes" : "no",
+						uiCss.class({ color: "var(--pw-accent-text)" }),
+					],
 				] as const
 			).map(([label, value, color]) => (
 				<div
 					key={label}
-					className={uiCss.class({ backgroundColor: "#0e0e11", padding: "8px 12px" })}
+					className={uiCss.class({ backgroundColor: "var(--pw-surface)", padding: "8px 12px" })}
 				>
 					<div
 						className={uiCss.class({
@@ -274,7 +283,7 @@ function Summary(props: { result: MigrationLabResult }) {
 							fontSize: "10px",
 							textTransform: "uppercase",
 							letterSpacing: "0.1em",
-							color: "#52525b",
+							color: "var(--pw-text-faint)",
 						})}
 					>
 						{label}
@@ -303,30 +312,30 @@ function ProofBoundary(props: {
 				padding: "10px 12px",
 				fontSize: "11px",
 				lineHeight: "16px",
-				color: "#a1a1aa",
+				color: "var(--pw-text-soft)",
 			})}
 		>
 			<div className={uiCss.class({ display: "flex", flexWrap: "wrap", gap: "6px" })}>
 				<span
 					className={uiCss.class({
-						border: "1px solid rgba(56,189,248,0.25)",
+						border: "1px solid var(--pw-border-strong)",
 						borderRadius: "4px",
 						padding: "2px 6px",
 						fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
 						fontSize: "10px",
-						color: "#7dd3fc",
+						color: "var(--pw-info)",
 					})}
 				>
 					lane: {props.execution.lane}
 				</span>
 				<span
 					className={uiCss.class({
-						border: "1px solid rgba(251,191,36,0.25)",
+						border: "1px solid var(--pw-border-strong)",
 						borderRadius: "4px",
 						padding: "2px 6px",
 						fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
 						fontSize: "10px",
-						color: "#fcd34d",
+						color: "var(--pw-warning)",
 					})}
 				>
 					{route === undefined ? "route: unregistered" : `route: ${route.maturity}`}
@@ -334,25 +343,27 @@ function ProofBoundary(props: {
 				{route === undefined ? null : (
 					<span
 						className={uiCss.class({
-							border: "1px solid rgba(161,161,170,0.2)",
+							border: "1px solid var(--pw-border)",
 							borderRadius: "4px",
 							padding: "2px 6px",
 							fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
 							fontSize: "10px",
-							color: "#a1a1aa",
+							color: "var(--pw-text-soft)",
 						})}
 					>
 						proof: {route.execution}
 					</span>
 				)}
 			</div>
-			<p className={uiCss.class({ margin: "0", color: "#d4d4d8" })}>{props.execution.note}</p>
-			<p className={uiCss.class({ margin: "0", color: "#71717a" })}>
+			<p className={uiCss.class({ margin: "0", color: "var(--pw-text)" })}>
+				{props.execution.note}
+			</p>
+			<p className={uiCss.class({ margin: "0", color: "var(--pw-text-muted)" })}>
 				verified: {props.execution.verified.join(", ")}; unavailable:{" "}
 				{props.execution.unavailable.join(", ")}
 			</p>
 			{route === undefined ? null : (
-				<p className={uiCss.class({ margin: "0", color: "#71717a" })}>{route.note}</p>
+				<p className={uiCss.class({ margin: "0", color: "var(--pw-text-muted)" })}>{route.note}</p>
 			)}
 		</div>
 	);
@@ -366,28 +377,26 @@ function Residuals(props: { result: MigrationLabResult }) {
 					margin: "0",
 					padding: "8px 12px",
 					fontSize: "12px",
-					color: "rgba(110,231,183,0.8)",
+					color: "var(--pw-success)",
 				})}
 			>
 				No residuals. Every matched site was converted.
 			</p>
 		);
 	return (
-		<div
-			className={uiCss.class({ "& > * + *": { borderTop: "1px solid rgba(255,255,255,0.05)" } })}
-		>
+		<div className={uiCss.class({ "& > * + *": { borderTop: "1px solid var(--pw-border)" } })}>
 			{props.result.residuals.map((residual, index) => (
 				<div key={`${residual.kind}:${index}`} className={uiCss.class({ padding: "10px 12px" })}>
 					<div className={uiCss.class({ display: "flex", alignItems: "baseline", gap: "8px" })}>
 						<span
 							className={uiCss.class({
-								border: "1px solid rgba(245,158,11,0.2)",
+								border: "1px solid var(--pw-border-strong)",
 								borderRadius: "4px",
-								backgroundColor: "rgba(245,158,11,0.06)",
+								backgroundColor: "var(--pw-control-hover)",
 								padding: "2px 6px",
 								fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
 								fontSize: "10px",
-								color: "#fcd34d",
+								color: "var(--pw-warning)",
 							})}
 						>
 							{residual.kind}
@@ -399,7 +408,7 @@ function Residuals(props: { result: MigrationLabResult }) {
 								textOverflow: "ellipsis",
 								whiteSpace: "nowrap",
 								fontSize: "11px",
-								color: "#a1a1aa",
+								color: "var(--pw-text-soft)",
 							})}
 						>
 							{residual.text}
@@ -410,7 +419,7 @@ function Residuals(props: { result: MigrationLabResult }) {
 							margin: "4px 0 0",
 							fontSize: "12px",
 							lineHeight: "20px",
-							color: "#52525b",
+							color: "var(--pw-text-faint)",
 						})}
 					>
 						{residual.hint ?? "The adapter reported a residual without additional guidance."}
@@ -429,16 +438,14 @@ function Validation(props: { result: MigrationLabResult }) {
 					margin: "0",
 					padding: "8px 12px",
 					fontSize: "12px",
-					color: "#52525b",
+					color: "var(--pw-text-faint)",
 				})}
 			>
 				No matched program was available to validate.
 			</p>
 		);
 	return (
-		<div
-			className={uiCss.class({ "& > * + *": { borderTop: "1px solid rgba(255,255,255,0.05)" } })}
-		>
+		<div className={uiCss.class({ "& > * + *": { borderTop: "1px solid var(--pw-border)" } })}>
 			{props.result.validations.map((validation, index) => (
 				<div
 					key={index}
@@ -455,17 +462,23 @@ function Validation(props: { result: MigrationLabResult }) {
 							className={uiCss.class({
 								fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
 								fontSize: "11px",
-								color: "#a1a1aa",
+								color: "var(--pw-text-soft)",
 							})}
 						>
 							program {index + 1}
 						</div>
-						<div className={uiCss.class({ marginTop: "2px", fontSize: "12px", color: "#52525b" })}>
+						<div
+							className={uiCss.class({
+								marginTop: "2px",
+								fontSize: "12px",
+								color: "var(--pw-text-faint)",
+							})}
+						>
 							{validation.lossiness}
 						</div>
 					</div>
 					<span
-						className={`${uiCss.class({ border: "1px solid", borderRadius: "4px", padding: "2px 6px", fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", fontSize: "10px" })} ${validation.valid ? uiCss.class({ borderColor: "rgba(52,211,153,0.25)", backgroundColor: "rgba(16,185,129,0.1)", color: "#6ee7b7" }) : uiCss.class({ borderColor: "rgba(245,158,11,0.25)", backgroundColor: "rgba(245,158,11,0.1)", color: "#fcd34d" })}`}
+						className={`${uiCss.class({ border: "1px solid", borderRadius: "4px", padding: "2px 6px", fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", fontSize: "10px" })} ${validation.valid ? uiCss.class({ borderColor: "var(--pw-border-strong)", backgroundColor: "var(--pw-control-hover)", color: "var(--pw-success)" }) : uiCss.class({ borderColor: "var(--pw-border-strong)", backgroundColor: "var(--pw-control-hover)", color: "var(--pw-warning)" })}`}
 					>
 						{validation.valid ? "canonical match" : "review"}
 					</span>
@@ -483,16 +496,14 @@ function Outcomes(props: { result: MigrationLabResult }) {
 					margin: "0",
 					padding: "8px 12px",
 					fontSize: "12px",
-					color: "#52525b",
+					color: "var(--pw-text-faint)",
 				})}
 			>
 				No matched style program.
 			</p>
 		);
 	return (
-		<div
-			className={uiCss.class({ "& > * + *": { borderTop: "1px solid rgba(255,255,255,0.05)" } })}
-		>
+		<div className={uiCss.class({ "& > * + *": { borderTop: "1px solid var(--pw-border)" } })}>
 			{props.result.outcomes.map((outcome) => (
 				<div
 					key={`${outcome.sourceStart}:${outcome.sourceText}`}
@@ -501,13 +512,13 @@ function Outcomes(props: { result: MigrationLabResult }) {
 					<div className={uiCss.class({ display: "flex", alignItems: "baseline", gap: "8px" })}>
 						<span
 							className={uiCss.class({
-								border: "1px solid rgba(14,165,233,0.2)",
+								border: "1px solid var(--pw-border-strong)",
 								borderRadius: "4px",
-								backgroundColor: "rgba(14,165,233,0.06)",
+								backgroundColor: "var(--pw-control-hover)",
 								padding: "2px 6px",
 								fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
 								fontSize: "10px",
-								color: "#7dd3fc",
+								color: "var(--pw-info)",
 							})}
 						>
 							{outcome.outcome}
@@ -516,7 +527,7 @@ function Outcomes(props: { result: MigrationLabResult }) {
 							className={uiCss.class({
 								fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
 								fontSize: "10px",
-								color: "#52525b",
+								color: "var(--pw-text-faint)",
 							})}
 						>
 							{outcome.representation}
@@ -528,7 +539,7 @@ function Outcomes(props: { result: MigrationLabResult }) {
 								margin: "4px 0 0",
 								fontSize: "12px",
 								lineHeight: "20px",
-								color: "#52525b",
+								color: "var(--pw-text-faint)",
 							})}
 						>
 							{outcome.detail}
@@ -551,7 +562,7 @@ function CapabilityReport(props: { result: MigrationLabResult }) {
 					margin: "0",
 					padding: "8px 12px",
 					fontSize: "12px",
-					color: "rgba(110,231,183,0.8)",
+					color: "var(--pw-success)",
 				})}
 			>
 				The target contract accepts the semantic program or a registered lowering; any remaining
@@ -559,9 +570,7 @@ function CapabilityReport(props: { result: MigrationLabResult }) {
 			</p>
 		);
 	return (
-		<div
-			className={uiCss.class({ "& > * + *": { borderTop: "1px solid rgba(255,255,255,0.05)" } })}
-		>
+		<div className={uiCss.class({ "& > * + *": { borderTop: "1px solid var(--pw-border)" } })}>
 			{blockers.map((blocker, index) => (
 				<div
 					key={`${blocker.adapter}:${blocker.capability}:${index}`}
@@ -570,13 +579,13 @@ function CapabilityReport(props: { result: MigrationLabResult }) {
 					<div className={uiCss.class({ display: "flex", alignItems: "baseline", gap: "8px" })}>
 						<span
 							className={uiCss.class({
-								border: "1px solid rgba(245,158,11,0.2)",
+								border: "1px solid var(--pw-border-strong)",
 								borderRadius: "4px",
-								backgroundColor: "rgba(245,158,11,0.06)",
+								backgroundColor: "var(--pw-control-hover)",
 								padding: "2px 6px",
 								fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
 								fontSize: "10px",
-								color: "#fcd34d",
+								color: "var(--pw-warning)",
 							})}
 						>
 							{blocker.capability}
@@ -585,7 +594,7 @@ function CapabilityReport(props: { result: MigrationLabResult }) {
 							className={uiCss.class({
 								fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
 								fontSize: "10px",
-								color: "#52525b",
+								color: "var(--pw-text-faint)",
 							})}
 						>
 							{blocker.level}
@@ -596,7 +605,7 @@ function CapabilityReport(props: { result: MigrationLabResult }) {
 							margin: "4px 0 0",
 							fontSize: "12px",
 							lineHeight: "20px",
-							color: "#52525b",
+							color: "var(--pw-text-faint)",
 						})}
 					>
 						{blocker.detail}
@@ -616,13 +625,13 @@ function Contract(props: { endpoint: MigrationLabEndpoint }) {
 				<span
 					key={capability}
 					className={uiCss.class({
-						border: "1px solid rgba(255,255,255,0.08)",
+						border: "1px solid var(--pw-border)",
 						borderRadius: "4px",
-						backgroundColor: "rgba(255,255,255,0.03)",
+						backgroundColor: "var(--pw-control-hover)",
 						padding: "2px 6px",
 						fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
 						fontSize: "10.5px",
-						color: "#71717a",
+						color: "var(--pw-text-muted)",
 					})}
 				>
 					{capability}
@@ -639,7 +648,7 @@ function ResultPane(props: {
 	const formattedCode = useFormattedCode(props.result.ok ? props.result.code : "");
 	if (!props.result.ok)
 		return (
-			<Pane label="Migration error" className={uiCss.class({ borderColor: "rgba(239,68,68,0.2)" })}>
+			<Pane label="Migration error" className={uiCss.class({ borderColor: "var(--pw-danger)" })}>
 				<pre
 					className={uiCss.class({
 						margin: "0",
@@ -648,7 +657,7 @@ function ResultPane(props: {
 						fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
 						fontSize: "12px",
 						lineHeight: "20px",
-						color: "rgba(252,165,165,0.9)",
+						color: "var(--pw-danger)",
 					})}
 				>
 					{props.result.message}
@@ -659,7 +668,7 @@ function ResultPane(props: {
 		{
 			id: "proof-boundary",
 			initialSize: 16,
-			minSize: 11,
+			collapsible: true,
 			content: (
 				<Pane label="Proof boundary">
 					<ProofBoundary execution={props.result.execution} routeProof={props.result.routeProof} />
@@ -669,7 +678,7 @@ function ResultPane(props: {
 		{
 			id: "migration-output",
 			initialSize: 30,
-			minSize: 15,
+			collapsible: true,
 			content: (
 				<Pane
 					label={`Output · ${props.target.label}`}
@@ -683,17 +692,17 @@ function ResultPane(props: {
 		{
 			id: "migration-summary",
 			initialSize: 13,
-			minSize: 9,
+			collapsible: true,
 			content: (
-				<div className={uiCss.class({ height: "100%", overflow: "auto" })}>
+				<Pane label="Summary" className={uiCss.class({ height: "100%" })}>
 					<Summary result={props.result} />
-				</div>
+				</Pane>
 			),
 		},
 		{
 			id: "target-capability",
 			initialSize: 14,
-			minSize: 9,
+			collapsible: true,
 			content: (
 				<Pane label="Target capability decision">
 					<CapabilityReport result={props.result} />
@@ -703,7 +712,7 @@ function ResultPane(props: {
 		{
 			id: "negotiated-outcome",
 			initialSize: 14,
-			minSize: 9,
+			collapsible: true,
 			content: (
 				<Pane label="Negotiated outcome">
 					<Outcomes result={props.result} />
@@ -713,7 +722,7 @@ function ResultPane(props: {
 		{
 			id: "residual-report",
 			initialSize: 16,
-			minSize: 9,
+			collapsible: true,
 			content: (
 				<Pane label="Residual report">
 					<Residuals result={props.result} />
@@ -723,7 +732,7 @@ function ResultPane(props: {
 		{
 			id: "canonical-validation",
 			initialSize: 8,
-			minSize: 7,
+			collapsible: true,
 			content: (
 				<Pane label="Canonical validation">
 					<Validation result={props.result} />
@@ -733,7 +742,7 @@ function ResultPane(props: {
 		{
 			id: "target-contract",
 			initialSize: 8,
-			minSize: 7,
+			collapsible: true,
 			content: (
 				<Pane label={`Target contract · ${props.target.label}`}>
 					<Contract endpoint={props.target} />
@@ -818,8 +827,8 @@ export function MigrationLabPage() {
 									width: "6px",
 									height: "6px",
 									borderRadius: "9999px",
-									backgroundColor: "#fb923c",
-									boxShadow: "0 0 12px #e8955c",
+									backgroundColor: "var(--pw-accent)",
+									boxShadow: "0 0 12px var(--pw-accent)",
 								})}
 							/>
 							<h1
@@ -827,7 +836,7 @@ export function MigrationLabPage() {
 									margin: "0",
 									fontSize: "13px",
 									fontWeight: "500",
-									color: "#e4e4e7",
+									color: "var(--pw-text-strong)",
 								})}
 							>
 								Migration lab
@@ -839,7 +848,7 @@ export function MigrationLabPage() {
 								margin: "4px 0 0",
 								fontSize: "12px",
 								lineHeight: "20px",
-								color: "#52525b",
+								color: "var(--pw-text-faint)",
 							})}
 						>
 							Route a real source adapter through Pandwind&apos;s migration contract and inspect the
@@ -852,7 +861,7 @@ export function MigrationLabPage() {
 							alignItems: "center",
 							gap: "6px",
 							fontSize: "11px",
-							color: "#52525b",
+							color: "var(--pw-text-faint)",
 							"@media (min-width: 640px)": { display: "flex" },
 						})}
 					>
@@ -867,9 +876,9 @@ export function MigrationLabPage() {
 						marginTop: "12px",
 						flexDirection: "column",
 						gap: "8px",
-						border: "1px solid rgba(255,255,255,0.07)",
+						border: "1px solid var(--pw-border)",
 						borderRadius: "8px",
-						backgroundColor: "#0e0e11",
+						backgroundColor: "var(--pw-surface)",
 						padding: "12px",
 						"@media (min-width: 640px)": { flexDirection: "row", alignItems: "flex-end" },
 					})}
@@ -894,7 +903,7 @@ export function MigrationLabPage() {
 								paddingBottom: "8px",
 								fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
 								fontSize: "12px",
-								color: "#3f3f46",
+								color: "var(--pw-text-disabled)",
 								"@media (min-width: 640px)": { display: "block" },
 							})}
 						>
@@ -915,7 +924,7 @@ export function MigrationLabPage() {
 								fontSize: "10px",
 								textTransform: "uppercase",
 								letterSpacing: "0.1em",
-								color: "#52525b",
+								color: "var(--pw-text-faint)",
 							})}
 						>
 							documented scenarios
@@ -931,7 +940,7 @@ export function MigrationLabPage() {
 									paddingBottom: "2px",
 									fontSize: "11px",
 									lineHeight: "16px",
-									color: "#52525b",
+									color: "var(--pw-text-faint)",
 								})}
 							>
 								no cataloged scenarios — paste any source to try this adapter
@@ -953,7 +962,7 @@ export function MigrationLabPage() {
 								paddingBottom: "2px",
 								fontSize: "11px",
 								lineHeight: "16px",
-								color: "#52525b",
+								color: "var(--pw-text-faint)",
 							})}
 						>
 							{sourceEndpoint.dependencies.length > 0
@@ -976,7 +985,6 @@ export function MigrationLabPage() {
 					{
 						id: "source-editor",
 						initialSize: 50,
-						minSize: 25,
 						content: (
 							<EditorPane
 								code={source}
@@ -989,7 +997,6 @@ export function MigrationLabPage() {
 					{
 						id: "migration-result",
 						initialSize: 50,
-						minSize: 25,
 						content: <ResultPane result={result} target={targetEndpoint} />,
 					},
 				]}

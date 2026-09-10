@@ -9,6 +9,7 @@ import {
 	type ExampleFile,
 	type ExampleVariant,
 } from "../lib/examples.ts";
+import type { EditorTypeLibrary } from "../lib/editor-types.ts";
 import { evalPlayground, evalSiblingModule, type EvalInput } from "../lib/eval-playground.ts";
 import { resolveDesignStyle } from "pandwind/design/resolve";
 import { examplePreset } from "@pandwind/example-preset";
@@ -25,8 +26,8 @@ import { GhostButton, ResizableSplitter } from "./ui.tsx";
 import { css as uiCss } from "../ui-css.ts";
 
 const COMPACT_PLAYGROUND_QUERY = "(max-width: 900px)";
-const PLAYGROUND_SPLITTER = uiCss.class({ flex: "1 1 0%", minHeight: "18rem" });
-const COMPACT_PLAYGROUND_SPLITTER = uiCss.class({ flex: "1 1 0%", minHeight: "24rem" });
+const PLAYGROUND_SPLITTER = uiCss.class({ flex: "1 1 0%" });
+const COMPACT_PLAYGROUND_SPLITTER = uiCss.class({ flex: "1 1 0%" });
 
 function useCompactPlayground(): boolean {
 	const [compact, setCompact] = useState(
@@ -264,6 +265,12 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 	const dirty = files.some(
 		(code, index) => code.trim() !== (activeVariant.files[index]?.code ?? "").trim(),
 	);
+	const editorFileLibraries: readonly EditorTypeLibrary[] = activeVariant.files
+		.map((file, index) => ({
+			filePath: `file:///pandwind/playground/${file.name}`,
+			content: files[index] ?? file.code,
+		}))
+		.filter((_, index) => index !== activeTab);
 	const reset = useCallback(() => {
 		window.clearTimeout(debounceRef.current);
 		const restored = activeVariant.files.map((file) => file.code);
@@ -314,7 +321,7 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 								margin: "0",
 								fontSize: "13px",
 								fontWeight: "500",
-								color: "#e4e4e7",
+								color: "var(--pw-text-strong)",
 							})}
 						>
 							{props.def.title}
@@ -327,7 +334,7 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 										fontSize: "10px",
 										textTransform: "uppercase",
 										letterSpacing: "0.08em",
-										color: "#52525b",
+										color: "var(--pw-text-faint)",
 									})}
 								>
 									API
@@ -338,15 +345,15 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 									onChange={(event) => selectApi(event.target.value as ExampleVariant["api"])}
 									className={uiCss.class({
 										height: "24px",
-										border: "1px solid rgba(255,255,255,0.1)",
+										border: "1px solid var(--pw-border-strong)",
 										borderRadius: "5px",
-										backgroundColor: "#16161b",
+										backgroundColor: "var(--pw-control)",
 										padding: "0 6px",
 										fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
 										fontSize: "11px",
-										color: "#a1a1aa",
+										color: "var(--pw-text-soft)",
 										outline: "none",
-										"&:focus": { borderColor: "rgba(251,146,60,0.6)", color: "#f4f4f5" },
+										"&:focus": { borderColor: "var(--pw-accent)", color: "var(--pw-text-strong)" },
 									})}
 								>
 									{props.def.variants.map((variant) => (
@@ -365,7 +372,7 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 										fontSize: "10px",
 										textTransform: "uppercase",
 										letterSpacing: "0.08em",
-										color: "#52525b",
+										color: "var(--pw-text-faint)",
 									})}
 								>
 									ADAPTER
@@ -377,15 +384,15 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 									className={uiCss.class({
 										height: "24px",
 										maxWidth: "220px",
-										border: "1px solid rgba(255,255,255,0.1)",
+										border: "1px solid var(--pw-border-strong)",
 										borderRadius: "5px",
-										backgroundColor: "#16161b",
+										backgroundColor: "var(--pw-control)",
 										padding: "0 6px",
 										fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
 										fontSize: "11px",
-										color: "#a1a1aa",
+										color: "var(--pw-text-soft)",
 										outline: "none",
-										"&:focus": { borderColor: "rgba(251,146,60,0.6)", color: "#f4f4f5" },
+										"&:focus": { borderColor: "var(--pw-accent)", color: "var(--pw-text-strong)" },
 									})}
 								>
 									{CLASS_NAME_ADAPTERS.map((adapter) => (
@@ -402,7 +409,7 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 							display: "none",
 							margin: "0",
 							fontSize: "12px",
-							color: "#52525b",
+							color: "var(--pw-text-faint)",
 							"@media (min-width: 768px)": { display: "block" },
 						})}
 					>
@@ -413,7 +420,7 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 							className={uiCss.class({
 								fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
 								fontSize: "10px",
-								color: "#52525b",
+								color: "var(--pw-text-faint)",
 							})}
 						>
 							tw() uses its generated Tailwind bridge
@@ -423,7 +430,7 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 							className={uiCss.class({
 								fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
 								fontSize: "10px",
-								color: "#52525b",
+								color: "var(--pw-text-faint)",
 							})}
 						>
 							{activeClassNameAdapter.description}
@@ -455,7 +462,7 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 							role="tab"
 							aria-selected={index === activeTab}
 							onClick={() => setActiveTab(index)}
-							className={`${uiCss.class({ border: "0", borderRadius: "6px", padding: "4px 10px", fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", fontSize: "12px", lineHeight: "20px", transition: "color 120ms, background-color 120ms" })} ${index === activeTab ? uiCss.class({ backgroundColor: "rgba(255,255,255,0.07)", color: "#f4f4f5" }) : uiCss.class({ color: "#71717a", "&:hover": { color: "#d4d4d8" } })}`}
+							className={`${uiCss.class({ border: "0", borderRadius: "6px", backgroundColor: "transparent", padding: "4px 10px", fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", fontSize: "12px", lineHeight: "20px", transition: "color 120ms, background-color 120ms" })} ${index === activeTab ? uiCss.class({ backgroundColor: "var(--pw-control-selected)", color: "var(--pw-text-strong)" }) : uiCss.class({ backgroundColor: "transparent", color: "var(--pw-text-muted)", "&:hover": { backgroundColor: "var(--pw-control-hover)", color: "var(--pw-text)" } })}`}
 						>
 							{file.name}
 						</button>
@@ -469,7 +476,6 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 					{
 						id: "editor",
 						initialSize: 50,
-						minSize: 25,
 						content: (
 							<EditorPane
 								code={files[activeTab] ?? ""}
@@ -479,6 +485,7 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 									"file:///pandwind/playground/" +
 									(activeVariant.files[activeTab]?.name ?? "Example.tsx")
 								}
+								fileLibraries={editorFileLibraries}
 								className={uiCss.class({ height: "100%", minHeight: "0px" })}
 							/>
 						),
@@ -486,7 +493,6 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 					{
 						id: "output",
 						initialSize: 50,
-						minSize: 25,
 						content: <ResultsPane result={result} />,
 					},
 				]}
@@ -517,8 +523,11 @@ function makeInput(
 	moduleBindings?: EvalInput["moduleBindings"],
 	strategy: ClassNameStrategy | null = null,
 ): EvalInput {
-	const createPlaygroundCss = (...args: Array<unknown>) =>
-		createRuntimeCss(examplePreset, runtimeOptions(strategy, args[0]));
+	const createPlaygroundCss = (presetOrOptions: unknown = {}, options: unknown = {}) =>
+		createRuntimeCss(
+			examplePreset,
+			runtimeOptions(strategy, presetOrOptions === examplePreset ? options : presetOrOptions),
+		);
 	return {
 		code,
 		tw: tw as unknown as (...args: Array<unknown>) => unknown,

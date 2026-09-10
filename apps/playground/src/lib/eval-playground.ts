@@ -813,7 +813,17 @@ function buildSandbox(
 					isDesignFactory);
 			if (isRuntimeFactory) {
 				sandbox[imp.local] = (...args: Array<unknown>) => {
-					const optionArgument = isCssFactory ? args[0] : args[1];
+					const firstArgument =
+						args[0] !== null && typeof args[0] === "object"
+							? (args[0] as Record<string, unknown>)
+							: undefined;
+					const isPresetArgument =
+						isCssFactory &&
+						firstArgument !== undefined &&
+						"conditions" in firstArgument &&
+						"properties" in firstArgument &&
+						"strict" in firstArgument;
+					const optionArgument = isCssFactory ? (isPresetArgument ? args[1] : args[0]) : args[1];
 					const authoredOptions =
 						optionArgument !== null && typeof optionArgument === "object"
 							? (optionArgument as Record<string, unknown>)
@@ -830,13 +840,14 @@ function buildSandbox(
 									...authoredOptions,
 									className: input.classNameStrategy ?? undefined,
 								};
+					const runtimeOptions = {
+						...effectiveOptions,
+						sheetOptions: { ...authoredSheetOptions, autoMount: false },
+					};
 					const factoryArgs = isCssFactory
-						? [
-								{
-									...effectiveOptions,
-									sheetOptions: { ...authoredSheetOptions, autoMount: false },
-								},
-							]
+						? isPresetArgument
+							? [args[0], runtimeOptions]
+							: [runtimeOptions]
 						: [
 								args[0],
 								{

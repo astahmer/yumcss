@@ -9,6 +9,7 @@ import type {
 	PlaygroundStyleMapping,
 } from "../lib/eval-playground.ts";
 import { css as uiCss } from "../ui-css.ts";
+import { useTheme } from "../theme.tsx";
 
 function CopyButton(props: { text: string; title?: string }) {
 	const [copied, setCopied] = useState(false);
@@ -30,10 +31,14 @@ function CopyButton(props: { text: string; title?: string }) {
 
 /** Shiki-highlighted read-only snippet, background stripped to match the pane. */
 function Snippet(props: { code: string; lang: string }) {
+	const { mode } = useTheme();
 	const [html, setHtml] = useState("");
 	useEffect(() => {
 		let cancelled = false;
-		codeToHtml(props.code, { lang: props.lang, theme: "vesper" })
+		codeToHtml(props.code, {
+			lang: props.lang,
+			theme: mode === "light" ? "github-light" : "vesper",
+		})
 			.then((out) => {
 				if (!cancelled) setHtml(out);
 			})
@@ -43,7 +48,7 @@ function Snippet(props: { code: string; lang: string }) {
 		return () => {
 			cancelled = true;
 		};
-	}, [props.code, props.lang]);
+	}, [mode, props.code, props.lang]);
 	const snippet = uiCss.class({
 		margin: "0",
 		backgroundColor: "transparent",
@@ -75,30 +80,30 @@ function Snippet(props: { code: string; lang: string }) {
 
 const FOLD_CHIP: Record<string, string> = {
 	full: uiCss.class({
-		borderColor: "rgba(52,211,153,0.25)",
-		backgroundColor: "rgba(16,185,129,0.1)",
-		color: "#6ee7b7",
+		borderColor: "var(--pw-border-strong)",
+		backgroundColor: "var(--pw-control-hover)",
+		color: "var(--pw-success)",
 	}),
 	partial: uiCss.class({
-		borderColor: "rgba(251,191,36,0.25)",
-		backgroundColor: "rgba(245,158,11,0.1)",
-		color: "#fcd34d",
+		borderColor: "var(--pw-border-strong)",
+		backgroundColor: "var(--pw-control-hover)",
+		color: "var(--pw-warning)",
 	}),
 	runtime: uiCss.class({
-		borderColor: "rgba(251,146,60,0.25)",
-		backgroundColor: "rgba(249,115,22,0.1)",
-		color: "#fdba74",
+		borderColor: "var(--pw-border-strong)",
+		backgroundColor: "var(--pw-accent-soft)",
+		color: "var(--pw-accent-text)",
 	}),
 };
 
-const MAPPING_STATUS_ACTIVE = uiCss.class({ color: "rgba(52,211,153,0.9)" });
-const MAPPING_STATUS_DROPPED = uiCss.class({ color: "rgba(248,113,113,0.75)" });
+const MAPPING_STATUS_ACTIVE = uiCss.class({ color: "var(--pw-success)" });
+const MAPPING_STATUS_DROPPED = uiCss.class({ color: "var(--pw-danger)" });
 const MAPPING_CLASS_ACTIVE = uiCss.class({
 	minWidth: "0px",
 	overflowWrap: "anywhere",
 	fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
 	fontSize: "11.5px",
-	color: "rgba(253,186,116,0.9)",
+	color: "var(--pw-accent-text)",
 	textDecoration: "none",
 });
 const MAPPING_CLASS_DROPPED = uiCss.class({
@@ -106,7 +111,7 @@ const MAPPING_CLASS_DROPPED = uiCss.class({
 	overflowWrap: "anywhere",
 	fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
 	fontSize: "11.5px",
-	color: "#71717a",
+	color: "var(--pw-text-muted)",
 	textDecoration: "line-through",
 });
 
@@ -116,7 +121,7 @@ function FoldSection(props: { fold: string; note: string }) {
 			label="Build-time fold"
 			right={
 				<span
-					className={`${uiCss.class({ marginRight: "4px", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "4px", padding: "2px 6px", fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", fontSize: "10px", lineHeight: "1" })} ${FOLD_CHIP[props.fold] ?? uiCss.class({ color: "#a1a1aa" })}`}
+					className={`${uiCss.class({ marginRight: "4px", border: "1px solid var(--pw-border-strong)", borderRadius: "4px", padding: "2px 6px", fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", fontSize: "10px", lineHeight: "1" })} ${FOLD_CHIP[props.fold] ?? uiCss.class({ color: "var(--pw-text-soft)" })}`}
 				>
 					{props.fold}
 				</span>
@@ -127,7 +132,7 @@ function FoldSection(props: { fold: string; note: string }) {
 					margin: "0",
 					padding: "8px 12px",
 					fontSize: "12px",
-					color: "#71717a",
+					color: "var(--pw-text-muted)",
 				})}
 			>
 				{props.note}
@@ -146,7 +151,7 @@ function EvidenceList(props: { label: string; values: readonly string[]; tone: s
 				gap: "6px",
 			})}
 		>
-			<span className={uiCss.class({ color: "#71717a" })}>{props.label}</span>
+			<span className={uiCss.class({ color: "var(--pw-text-muted)" })}>{props.label}</span>
 			{props.values.map((value) => (
 				<span
 					key={value}
@@ -175,12 +180,12 @@ function ExecutionEvidenceSection(props: { evidence: PlaygroundExecutionEvidence
 				<span
 					className={uiCss.class({
 						marginRight: "4px",
-						border: "1px solid rgba(56,189,248,0.25)",
+						border: "1px solid var(--pw-border-strong)",
 						borderRadius: "4px",
 						padding: "2px 6px",
 						fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
 						fontSize: "10px",
-						color: "#7dd3fc",
+						color: "var(--pw-info)",
 					})}
 				>
 					{props.evidence.lane}
@@ -194,12 +199,22 @@ function ExecutionEvidenceSection(props: { evidence: PlaygroundExecutionEvidence
 					padding: "10px 12px",
 					fontSize: "11px",
 					lineHeight: "16px",
-					color: "#a1a1aa",
+					color: "var(--pw-text-soft)",
 				})}
 			>
-				<p className={uiCss.class({ margin: "0", color: "#d4d4d8" })}>{props.evidence.note}</p>
-				<EvidenceList label="verified" values={props.evidence.verified} tone="#6ee7b7" />
-				<EvidenceList label="unavailable" values={props.evidence.unavailable} tone="#fcd34d" />
+				<p className={uiCss.class({ margin: "0", color: "var(--pw-text)" })}>
+					{props.evidence.note}
+				</p>
+				<EvidenceList
+					label="verified"
+					values={props.evidence.verified}
+					tone={"var(--pw-success)"}
+				/>
+				<EvidenceList
+					label="unavailable"
+					values={props.evidence.unavailable}
+					tone={"var(--pw-warning)"}
+				/>
 			</div>
 		</Pane>
 	);
@@ -208,7 +223,7 @@ function ExecutionEvidenceSection(props: { evidence: PlaygroundExecutionEvidence
 function TokenPill(props: { token: string; killed: boolean }) {
 	return (
 		<span
-			className={`${uiCss.class({ borderRadius: "4px", border: "1px solid", padding: "2px 6px", fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", fontSize: "11.5px", lineHeight: "16px" })} ${props.killed ? uiCss.class({ borderColor: "rgba(248,113,113,0.2)", backgroundColor: "rgba(239,68,68,0.07)", color: "rgba(252,165,165,0.8)", textDecoration: "line-through", textDecorationColor: "rgba(248,113,113,0.5)" }) : uiCss.class({ borderColor: "rgba(52,211,153,0.2)", backgroundColor: "rgba(16,185,129,0.07)", color: "#6ee7b7" })}`}
+			className={`${uiCss.class({ borderRadius: "4px", border: "1px solid", padding: "2px 6px", fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", fontSize: "11.5px", lineHeight: "16px" })} ${props.killed ? uiCss.class({ borderColor: "var(--pw-border-strong)", backgroundColor: "var(--pw-control-hover)", color: "var(--pw-danger)", textDecoration: "line-through", textDecorationColor: "var(--pw-danger)" }) : uiCss.class({ borderColor: "var(--pw-border-strong)", backgroundColor: "var(--pw-control-hover)", color: "var(--pw-success)" })}`}
 		>
 			{props.token}
 		</span>
@@ -225,7 +240,7 @@ function TokensSection(props: { survived: string[]; killed: string[] }) {
 						margin: "0",
 						padding: "8px 12px",
 						fontSize: "12px",
-						color: "#52525b",
+						color: "var(--pw-text-faint)",
 					})}
 				>
 					no class tokens produced
@@ -242,16 +257,16 @@ function TokensSection(props: { survived: string[]; killed: string[] }) {
 						marginRight: "4px",
 						fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
 						fontSize: "10.5px",
-						color: "#52525b",
+						color: "var(--pw-text-faint)",
 					})}
 				>
-					<span className={uiCss.class({ color: "rgba(52,211,153,0.9)" })}>
+					<span className={uiCss.class({ color: "var(--pw-success)" })}>
 						{survived.length} kept
 					</span>
 					{killed.length > 0 && (
 						<>
 							{" · "}
-							<span className={uiCss.class({ color: "rgba(248,113,113,0.9)" })}>
+							<span className={uiCss.class({ color: "var(--pw-danger)" })}>
 								{killed.length} dropped
 							</span>
 						</>
@@ -283,9 +298,7 @@ function TokensSection(props: { survived: string[]; killed: string[] }) {
 function AtomsSection(props: { atoms: Array<{ cls: string; decls: Record<string, string> }> }) {
 	return (
 		<Pane label="css() atoms">
-			<div
-				className={uiCss.class({ "& > * + *": { borderTop: "1px solid rgba(255,255,255,0.05)" } })}
-			>
+			<div className={uiCss.class({ "& > * + *": { borderTop: "1px solid var(--pw-border)" } })}>
 				{props.atoms.map((atom) => (
 					<div
 						key={atom.cls}
@@ -302,7 +315,7 @@ function AtomsSection(props: { atoms: Array<{ cls: string; decls: Record<string,
 								flexShrink: "0",
 								fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
 								fontSize: "11.5px",
-								color: "rgba(253,186,116,0.9)",
+								color: "var(--pw-accent-text)",
 							})}
 						>
 							.{atom.cls}
@@ -315,7 +328,7 @@ function AtomsSection(props: { atoms: Array<{ cls: string; decls: Record<string,
 								whiteSpace: "nowrap",
 								fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
 								fontSize: "11.5px",
-								color: "#71717a",
+								color: "var(--pw-text-muted)",
 							})}
 						>
 							{Object.entries(atom.decls)
@@ -340,7 +353,7 @@ function StyleMappingsSection(props: { mappings: PlaygroundStyleMapping[] }) {
 						marginRight: "4px",
 						fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
 						fontSize: "10.5px",
-						color: "#71717a",
+						color: "var(--pw-text-muted)",
 					})}
 				>
 					{props.mappings.length} {props.mappings.length === 1 ? "declaration" : "declarations"}
@@ -349,7 +362,7 @@ function StyleMappingsSection(props: { mappings: PlaygroundStyleMapping[] }) {
 		>
 			<div
 				className={uiCss.class({
-					"& > * + *": { borderTop: "1px solid rgba(255,255,255,0.05)" },
+					"& > * + *": { borderTop: "1px solid var(--pw-border)" },
 				})}
 			>
 				{props.mappings.map((mapping, index) => (
@@ -377,9 +390,11 @@ function StyleMappingsSection(props: { mappings: PlaygroundStyleMapping[] }) {
 								fontSize: "11.5px",
 							})}
 						>
-							<span className={uiCss.class({ color: "#fbbf24" })}>{mapping.property}</span>
-							<span className={uiCss.class({ color: "#d4d4d8" })}>: {mapping.value}</span>
-							<span className={uiCss.class({ color: "#a1a1aa" })}>
+							<span className={uiCss.class({ color: "var(--pw-warning)" })}>
+								{mapping.property}
+							</span>
+							<span className={uiCss.class({ color: "var(--pw-text)" })}>: {mapping.value}</span>
+							<span className={uiCss.class({ color: "var(--pw-text-soft)" })}>
 								{mapping.conditions.length === 0 ? "base" : mapping.conditions.join(" / ")}
 							</span>
 							<span className={mapping.active ? MAPPING_STATUS_ACTIVE : MAPPING_STATUS_DROPPED}>
@@ -409,7 +424,7 @@ function SheetSection(props: { sheets: PlaygroundSheetResult[] }) {
 								marginRight: "4px",
 								fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
 								fontSize: "10.5px",
-								color: "#71717a",
+								color: "var(--pw-text-muted)",
 							})}
 						>
 							{sheet.strategy} · {sheet.rules.length} {sheet.rules.length === 1 ? "rule" : "rules"}
@@ -499,8 +514,8 @@ const IR_DETAIL = uiCss.class({
 	minWidth: "0px",
 	minHeight: "0px",
 	overflow: "auto",
-	borderLeft: "1px solid rgba(255,255,255,0.06)",
-	"@media (max-width: 760px)": { borderTop: "1px solid rgba(255,255,255,0.06)", borderLeft: "0" },
+	borderLeft: "1px solid var(--pw-border)",
+	"@media (max-width: 760px)": { borderTop: "1px solid var(--pw-border)", borderLeft: "0" },
 });
 const IR_ROW = uiCss.class({
 	display: "flex",
@@ -520,8 +535,8 @@ const IR_DISCLOSURE = uiCss.class({
 	padding: "0",
 	fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
 	fontSize: "11px",
-	color: "#71717a",
-	"&:hover": { color: "#f4f4f5" },
+	color: "var(--pw-text-muted)",
+	"&:hover": { color: "var(--pw-text-strong)" },
 });
 const IR_NODE = uiCss.class({
 	display: "flex",
@@ -537,12 +552,12 @@ const IR_NODE = uiCss.class({
 	textAlign: "left",
 	fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
 	fontSize: "11px",
-	color: "#a1a1aa",
-	"&:hover": { backgroundColor: "rgba(255,255,255,0.05)", color: "#e4e4e7" },
+	color: "var(--pw-text-soft)",
+	"&:hover": { backgroundColor: "var(--pw-control-hover)", color: "var(--pw-text-strong)" },
 });
 const IR_NODE_SELECTED = uiCss.class({
-	backgroundColor: "rgba(251,146,60,0.12)",
-	color: "#fed7aa",
+	backgroundColor: "var(--pw-accent-soft)",
+	color: "var(--pw-accent-text)",
 });
 const IR_NODE_LABEL = uiCss.class({
 	minWidth: "0px",
@@ -555,14 +570,14 @@ const IR_NODE_SUMMARY = uiCss.class({
 	overflow: "hidden",
 	textOverflow: "ellipsis",
 	whiteSpace: "nowrap",
-	color: "#52525b",
+	color: "var(--pw-text-faint)",
 });
 const IR_DETAIL_HEADER = uiCss.class({
 	display: "flex",
 	minWidth: "0px",
 	flexDirection: "column",
 	gap: "4px",
-	borderBottom: "1px solid rgba(255,255,255,0.06)",
+	borderBottom: "1px solid var(--pw-border)",
 	padding: "10px 12px",
 });
 const IR_DETAIL_KICKER = uiCss.class({
@@ -570,7 +585,7 @@ const IR_DETAIL_KICKER = uiCss.class({
 	fontSize: "9px",
 	textTransform: "uppercase",
 	letterSpacing: "0.1em",
-	color: "#52525b",
+	color: "var(--pw-text-faint)",
 });
 const IR_DETAIL_PATH = uiCss.class({
 	overflow: "hidden",
@@ -578,16 +593,16 @@ const IR_DETAIL_PATH = uiCss.class({
 	whiteSpace: "nowrap",
 	fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
 	fontSize: "11px",
-	color: "#fed7aa",
+	color: "var(--pw-accent-text)",
 });
-const IR_RAW = uiCss.class({ flexShrink: "0", borderTop: "1px solid rgba(255,255,255,0.06)" });
+const IR_RAW = uiCss.class({ flexShrink: "0", borderTop: "1px solid var(--pw-border)" });
 const IR_RAW_SUMMARY = uiCss.class({
 	cursor: "pointer",
 	padding: "9px 12px",
 	fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
 	fontSize: "10.5px",
-	color: "#71717a",
-	"&:hover": { color: "#e4e4e7" },
+	color: "var(--pw-text-muted)",
+	"&:hover": { color: "var(--pw-text-strong)" },
 });
 
 function StyleProgramTreeNode(props: {
@@ -674,7 +689,7 @@ function StyleProgramSection(props: { programs: StyleProgram[] }) {
 						marginRight: "4px",
 						fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
 						fontSize: "10.5px",
-						color: "#71717a",
+						color: "var(--pw-text-muted)",
 					})}
 				>
 					{props.programs.length} {props.programs.length === 1 ? "program" : "programs"}
@@ -716,14 +731,15 @@ function ErrorSection(props: { error: string }) {
 	return (
 		<Pane
 			label="Error"
-			className={uiCss.class({ borderColor: "rgba(239,68,68,0.2)" })}
+			collapsible
+			className={uiCss.class({ borderColor: "var(--pw-danger)" })}
 			right={
 				<span
 					className={uiCss.class({
 						marginRight: "4px",
 						fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
 						fontSize: "10.5px",
-						color: "rgba(248,113,113,0.7)",
+						color: "var(--pw-danger)",
 					})}
 				>
 					eval failed
@@ -738,7 +754,7 @@ function ErrorSection(props: { error: string }) {
 					fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
 					fontSize: "12px",
 					lineHeight: "20px",
-					color: "rgba(252,165,165,0.9)",
+					color: "var(--pw-danger)",
 				})}
 			>
 				{props.error}
@@ -769,13 +785,13 @@ export function ResultsPane(props: { result: PlaygroundResult }) {
 		{
 			id: "execution-evidence",
 			initialSize: 16,
-			minSize: 10,
+			collapsible: true,
 			content: <ExecutionEvidenceSection evidence={r.execution} />,
 		},
 		{
 			id: "class-string",
 			initialSize: 14,
-			minSize: 8,
+			collapsible: true,
 			content: (
 				<Pane
 					label="Class string"
@@ -789,13 +805,13 @@ export function ResultsPane(props: { result: PlaygroundResult }) {
 		{
 			id: "build-time-fold",
 			initialSize: 11,
-			minSize: 7,
+			collapsible: true,
 			content: <FoldSection fold={r.fold} note={r.foldNote} />,
 		},
 		{
 			id: "tokens",
 			initialSize: 13,
-			minSize: 7,
+			collapsible: true,
 			content: <TokensSection survived={r.survived} killed={r.killed} />,
 		},
 	];
@@ -803,7 +819,7 @@ export function ResultsPane(props: { result: PlaygroundResult }) {
 		panels.push({
 			id: "css-atoms",
 			initialSize: 15,
-			minSize: 8,
+			collapsible: true,
 			content: <AtomsSection atoms={r.atomDeclarations} />,
 		});
 	}
@@ -811,7 +827,7 @@ export function ResultsPane(props: { result: PlaygroundResult }) {
 		panels.push({
 			id: "declarations-to-classes",
 			initialSize: 18,
-			minSize: 8,
+			collapsible: true,
 			content: <StyleMappingsSection mappings={r.styleMappings} />,
 		});
 	}
@@ -819,7 +835,7 @@ export function ResultsPane(props: { result: PlaygroundResult }) {
 		panels.push({
 			id: `generated-css-${index + 1}`,
 			initialSize: 10,
-			minSize: 8,
+			collapsible: true,
 			content: <SheetSection sheets={[sheet]} />,
 		});
 	}
@@ -827,7 +843,7 @@ export function ResultsPane(props: { result: PlaygroundResult }) {
 		panels.push({
 			id: "styleprogram-ir",
 			initialSize: 20,
-			minSize: 8,
+			collapsible: true,
 			content: <StyleProgramSection programs={r.programs} />,
 		});
 	}

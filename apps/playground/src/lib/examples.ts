@@ -101,14 +101,15 @@ buttons.primary`,
 					"Example.tsx",
 					`import { createCss } from "pandwind/css";
 import { createCx } from "pandwind/cx";
+import { examplePreset } from "@pandwind/example-preset";
 
-const css = createCss();
+const css = createCss(examplePreset);
 const cx = createCx({ css });
 
 const buttons = {
-	primary: css.class({ backgroundColor: "$blue-500", color: "$gray-50", borderRadius: "8px", padding: "16px" }),
-	danger: css.class({ backgroundColor: "$red-500", color: "$gray-50", borderRadius: "8px", padding: "16px" }),
-	large: css.class({ padding: "16px", fontSize: "1.125rem" }),
+	primary: css.class({ backgroundColor: "$blue-500", color: "$gray-50", borderRadius: "lg", padding: 16 }),
+	danger: css.class({ backgroundColor: "$red-500", color: "$gray-50", borderRadius: "lg", padding: 16 }),
+	large: css.class({ padding: 16, fontSize: "lg" }),
 };
 
 cx(buttons.primary, "px-4")`,
@@ -150,7 +151,7 @@ import { createCss } from "pandwind/css";
 
 const css = createCss();
 
-function alert(tone) {
+const alert = (tone = "danger" as string) => {
 	return tw({
 		bgColor: tone === "danger" ? "red-500" : "blue-500",
 		p: "4",
@@ -205,7 +206,7 @@ cx(
 		title: "Token layers",
 		blurb: "raw, semantic, and component tokens in one call",
 		group: "core",
-		note: "brandTone is a raw token imported from another file, success is a semantic alias, button.padding is a component token. Each resolves to a concrete value; anything the generated bridge cannot map falls back to an arbitrary property instead of being dropped.",
+		note: "brandTone is a raw token imported from another file, success is a semantic alias, and the numeric padding uses a spacing value from the preset. Each resolves to a concrete value because this example binds createCss(examplePreset).",
 		variants: [
 			{
 				api: PlaygroundApi.Css,
@@ -214,20 +215,21 @@ cx(
 					{
 						name: "Example.tsx",
 						code: `import { createCss } from "pandwind/css";
+import { examplePreset } from "@pandwind/example-preset";
 import { brandTone } from "./brand.ts";
 
-const css = createCss();
+const css = createCss(examplePreset);
 
 css.class({
 	backgroundColor: brandTone,
 	color: "success",
-	padding: "button.padding",
+	padding: 20,
 	_dark: { color: "$gray-200" },
 })`,
 					},
 					{
 						name: "brand.ts",
-						code: 'export const brandTone = "$brand-500";',
+						code: 'export const brandTone = "$blue-500";',
 					},
 				],
 			},
@@ -252,7 +254,7 @@ import { brandTokens } from "./brand.ts";
 
 const brand = definePreset(
 	defineTheme({ config: {} as Record<string, never>, tokens: { colors: brandTokens.colors } }),
-	{ strict: true, conditions: { _hover: "&:hover" } },
+	{ strict: true, conditions: { _hover: "&:hover" }, properties: { $all: true } },
 );
 
 const dcss = createDesignCss(brand);
@@ -273,27 +275,39 @@ export const brandTokens = defineTokens({
 	},
 	{
 		path: "/variants",
-		title: "Variants & recipes",
-		blurb: "cva-style variant maps and computed accessors",
+		title: "Variants with cx()",
+		blurb: "external variant maps over statically generated classes",
 		group: "core",
-		note: "Variant selection is plain object composition — pick a branch, hand the merged style to css.class()/tw(). Computed keys ([accessor]) work too because the value is what gets compiled, not the key spelling.",
+		note: "Pandwind does not ship a recipe API: each css.class() call stays statically authored, while cx() composes the selected class strings at runtime. This is the extractable CVA-style pattern.",
 		variants: oneVariant(
 			PlaygroundApi.Css,
 			"Example.tsx",
 			`import { createCss } from "pandwind/css";
+import { createCx } from "pandwind/cx";
+import { examplePreset } from "@pandwind/example-preset";
 
-const css = createCss();
+const css = createCss(examplePreset);
+const cx = createCx({ css });
 
 const variants = {
-	size: { sm: { padding: "8px" }, lg: { padding: "16px" } },
-	tone: { brand: { backgroundColor: "$blue-500" }, danger: { backgroundColor: "$red-500" } },
-};
+	base: css.class({ borderRadius: "lg" }),
+	size: {
+		sm: css.class({ padding: 8 }),
+		lg: css.class({ padding: 16 }),
+	},
+	tone: {
+		brand: css.class({ backgroundColor: "$blue-500" }),
+		danger: css.class({ backgroundColor: "$red-500" }),
+	},
+} as const;
 
-const pick = (selection) =>
-	css.class({
-		...variants.size[selection.size],
-		...variants.tone[selection.tone],
-	});
+const pick = (
+	selection = {
+		size: "lg" as keyof typeof variants.size,
+		tone: "brand" as keyof typeof variants.tone,
+	},
+) =>
+	cx(variants.base, variants.size[selection.size], variants.tone[selection.tone]);
 
 pick({ size: "lg", tone: "brand" })`,
 		),
@@ -308,14 +322,15 @@ pick({ size: "lg", tone: "brand" })`,
 			PlaygroundApi.Css,
 			"Example.tsx",
 			`import { createCss } from "pandwind/css";
+import { examplePreset } from "@pandwind/example-preset";
 
-const css = createCss();
+const css = createCss(examplePreset);
 
 const styles = css.group({
-	card: { backgroundColor: "$blue-500", borderRadius: "8px" },
+	card: { backgroundColor: "$blue-500", borderRadius: "lg" },
 	muted: { color: "$gray-500" },
 	banner: {
-		$input: { tone: {} as "blue" | "red" },
+		$input: {} as { tone: "blue" | "red" },
 		backgroundColor: css.input("tone"),
 	},
 });

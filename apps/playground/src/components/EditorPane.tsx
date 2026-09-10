@@ -1,6 +1,11 @@
 import MonacoEditor, { type Monaco } from "@monaco-editor/react";
-import { EDITOR_TYPE_LIBRARIES, PANDWIND_EDITOR_MODULE_PATHS } from "../lib/editor-types.ts";
+import {
+	EDITOR_TYPE_LIBRARIES,
+	PANDWIND_EDITOR_MODULE_PATHS,
+	type EditorTypeLibrary,
+} from "../lib/editor-types.ts";
 import { css as uiCss } from "../ui-css.ts";
+import { useTheme } from "../theme.tsx";
 import { Kbd, Pane } from "./ui.tsx";
 
 /**
@@ -35,10 +40,42 @@ function defineTheme(monaco: Monaco): void {
 			"scrollbarSlider.hoverBackground": "#33333D80",
 		},
 	});
+	monaco.editor.defineTheme("pandwind-light", {
+		base: "vs",
+		inherit: true,
+		rules: [
+			{ token: "", foreground: "334155" },
+			{ token: "comment", foreground: "8491A3", fontStyle: "italic" },
+			{ token: "keyword", foreground: "9A4B2F" },
+			{ token: "string", foreground: "3B704F" },
+			{ token: "number", foreground: "8A5C13" },
+			{ token: "type", foreground: "40516A" },
+			{ token: "delimiter", foreground: "64748B" },
+		],
+		colors: {
+			"editor.background": "#F8FAFC",
+			"editor.foreground": "#334155",
+			"editorLineNumber.foreground": "#A8B3C1",
+			"editorLineNumber.activeForeground": "#64748B",
+			"editor.selectionBackground": "#DDE7F0",
+			"editor.lineHighlightBackground": "#EEF2F6",
+			"editorCursor.foreground": "#B45F3E",
+			"editorIndentGuide.background1": "#E2E8F0",
+			"editorBracketMatch.background": "#E4ECF3",
+			"editorBracketMatch.border": "#A8B3C1",
+			"scrollbarSlider.background": "#CBD5E180",
+			"scrollbarSlider.hoverBackground": "#94A3B880",
+		},
+	});
 }
 
+const installedEditorLibraries = new Map<
+	string,
+	{ content: string; dispose: { dispose: () => void } }
+>();
+
 /** Give migration snippets the same generated vocabulary as the real app. */
-function configureTypeScript(monaco: Monaco): void {
+function configureTypeScript(monaco: Monaco, fileLibraries: readonly EditorTypeLibrary[]): void {
 	const typescript = monaco.languages.typescript;
 	const defaults = typescript.typescriptDefaults;
 	defaults.setCompilerOptions({
@@ -47,7 +84,8 @@ function configureTypeScript(monaco: Monaco): void {
 		checkJs: false,
 		jsx: typescript.JsxEmit.ReactJSX,
 		module: typescript.ModuleKind.ESNext,
-		moduleResolution: typescript.ModuleResolutionKind.NodeJs,
+		moduleResolution: typescript.ModuleResolutionKind.Bundler,
+		allowImportingTsExtensions: true,
 		baseUrl: "file:///pandwind/playground",
 		paths: Object.fromEntries(
 			Object.entries(PANDWIND_EDITOR_MODULE_PATHS).map(([specifier, path]) => [specifier, [path]]),
@@ -60,8 +98,22 @@ function configureTypeScript(monaco: Monaco): void {
 		noSemanticValidation: false,
 		noSyntaxValidation: false,
 	});
-	for (const library of EDITOR_TYPE_LIBRARIES) {
-		defaults.addExtraLib(library.content, library.filePath);
+	const libraries = [...EDITOR_TYPE_LIBRARIES, ...fileLibraries];
+	const desiredPaths = new Set(libraries.map((library) => library.filePath));
+	for (const [filePath, installed] of installedEditorLibraries) {
+		if (!desiredPaths.has(filePath)) {
+			installed.dispose.dispose();
+			installedEditorLibraries.delete(filePath);
+		}
+	}
+	for (const library of libraries) {
+		const installed = installedEditorLibraries.get(library.filePath);
+		if (installed?.content === library.content) continue;
+		installed?.dispose.dispose();
+		installedEditorLibraries.set(library.filePath, {
+			content: library.content,
+			dispose: defaults.addExtraLib(library.content, library.filePath),
+		});
 	}
 }
 
@@ -81,7 +133,7 @@ function EditorBooting() {
 					width: "6px",
 					height: "6px",
 					borderRadius: "9999px",
-					backgroundColor: "#52525b",
+					backgroundColor: "var(--pw-text-faint)",
 					animation: "pulse 1.5s ease-in-out infinite",
 				})}
 			/>
@@ -94,8 +146,10 @@ export function EditorPane(props: {
 	onChange: (next: string) => void;
 	onRun: () => void;
 	filePath?: string;
+	fileLibraries?: readonly EditorTypeLibrary[];
 	className?: string;
 }) {
+	const { mode } = useTheme();
 	return (
 		<Pane
 			label="Editor"
@@ -108,7 +162,7 @@ export function EditorPane(props: {
 						gap: "6px",
 						paddingRight: "4px",
 						fontSize: "11px",
-						color: "#52525b",
+						color: "var(--pw-text-faint)",
 					})}
 				>
 					<Kbd>⌘</Kbd>
@@ -127,14 +181,15 @@ export function EditorPane(props: {
 		>
 			<div aria-label="Code editor" className={uiCss.class({ height: "100%", minHeight: "0px" })}>
 				<MonacoEditor
+					key={props.filePath}
 					loading={<EditorBooting />}
 					height="100%"
 					defaultLanguage="typescript"
-					theme="pandwind"
+					theme={mode === "light" ? "pandwind-light" : "pandwind"}
 					path={props.filePath ?? "file:///pandwind/playground/Example.tsx"}
 					beforeMount={(monaco) => {
 						defineTheme(monaco);
-						configureTypeScript(monaco);
+						configureTypeScript(monaco, props.fileLibraries ?? []);
 					}}
 					value={props.code}
 					onChange={(value) => props.onChange(value ?? "")}

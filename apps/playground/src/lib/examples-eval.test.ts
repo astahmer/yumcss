@@ -78,4 +78,18 @@ describe("example catalog evaluates end to end", () => {
 			}
 		}
 	});
+
+	it("keeps the variants example extractable and runtime-backed", () => {
+		const variant = EXAMPLES.find((example) => example.path === "/variants")?.variants[0];
+		expect(variant).toBeDefined();
+		if (variant === undefined) return;
+
+		const result = evalPlayground(makeInput(variant.files[0]!.code));
+		expect(result.ok).toBe(true);
+		if (!result.ok) return;
+
+		expect(result.sheets.some((sheet) => sheet.rules.length > 0)).toBe(true);
+		expect(result.programs).not.toHaveLength(0);
+		expect(result.programs.every((program) => program.residuals.length === 0)).toBe(true);
+	});
 });

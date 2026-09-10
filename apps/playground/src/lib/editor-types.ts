@@ -59,6 +59,55 @@ const installedEditorModules = new Set(
 /** These are browser-only shims only for migration packages absent from the workspace graph. */
 const migrationShimModules = [
 	[
+		"@pandwind/example-preset",
+		String.raw`declare module "@pandwind/example-preset" {
+  // This is a playground-only shim; the real preset is loaded by the browser evaluator.
+  type PlaygroundConfig = {
+    backgroundColor: string;
+    borderRadius: string;
+    color: string;
+    display: string;
+    fontSize: string;
+    padding: string | number;
+  };
+  type PlaygroundProperties = {
+    backgroundColor: true;
+    borderRadius: true;
+    color: true;
+    display: true;
+    fontSize: true;
+    padding: true;
+    $all: true;
+  };
+  type PlaygroundPreset = {
+    conditions: {
+      _active: string;
+      _dark: string;
+      _disabled: string;
+      _focus: string;
+      _hover: string;
+      _light: string;
+      _supportHover: string[];
+      lg: string;
+      lgDown: string;
+      lgToXl: string;
+      md: string;
+      mdDown: string;
+      mdToLarge: string;
+      sm: string;
+      smDown: string;
+      smToMedium: string;
+      xl: string;
+    };
+    properties: PlaygroundProperties;
+    strict: false;
+    _config: PlaygroundConfig;
+    tokens: Record<string, Record<string, string>>;
+  };
+  export const examplePreset: PlaygroundPreset;
+}`,
+	],
+	[
 		"@pandacss/dev",
 		String.raw`declare module "@pandacss/dev" { export function css(style: PlaygroundStyleObject): string; }`,
 	],
@@ -201,6 +250,7 @@ const globalEditorDeclarations = String.raw`
 declare const tw: (styles: WindVariants) => string;
 declare const css: import("pandwind/css").CssFn;
 declare const cx: import("pandwind").CxFn;
+declare const props: { active: boolean; tone: string };
 declare const renderer: {
   renderRule(rule: (...args: readonly unknown[]) => PlaygroundStyleObject): string;
 };

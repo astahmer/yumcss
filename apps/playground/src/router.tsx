@@ -14,6 +14,7 @@ import { EXAMPLES } from "./lib/examples.ts";
 import { PlaygroundPage } from "./components/PlaygroundPage.tsx";
 import { MigrationLabPage } from "./components/MigrationLabPage.tsx";
 import { css as uiCss } from "./ui-css.ts";
+import { ThemeProvider, useTheme } from "./theme.tsx";
 
 const GROUP_LABEL = { core: "Scenarios", limits: "Limits" } as const;
 const DEFAULT_ROUTE = "/basics" as const;
@@ -56,23 +57,26 @@ const HEADER_LINK = uiCss.class({
 	transition: "color 120ms, background-color 120ms",
 });
 const HEADER_LINK_ACTIVE = uiCss.class({
-	backgroundColor: "rgba(255,255,255,0.08)",
-	color: "#f4f4f5",
+	backgroundColor: "var(--pw-control-selected)",
+	color: "var(--pw-text-strong)",
 });
-const HEADER_LINK_IDLE = uiCss.class({ color: "#71717a", "&:hover": { color: "#e4e4e7" } });
+const HEADER_LINK_IDLE = uiCss.class({
+	color: "var(--pw-text-muted)",
+	"&:hover": { color: "var(--pw-text-strong)" },
+});
 const SCENARIO_CONTROL = uiCss.class({
 	display: "flex",
 	minWidth: "0px",
 	maxWidth: "22rem",
 	height: "30px",
 	alignItems: "center",
-	border: "1px solid rgba(255,255,255,0.1)",
+	border: "1px solid var(--pw-border-strong)",
 	borderRadius: "6px",
-	backgroundColor: "#16161b",
+	backgroundColor: "var(--pw-control)",
 	transition: "border-color 120ms, box-shadow 120ms",
 	"&:focus-within": {
-		borderColor: "rgba(251,146,60,0.6)",
-		boxShadow: "0 0 0 1px rgba(251,146,60,0.3)",
+		borderColor: "var(--pw-accent)",
+		boxShadow: "0 0 0 1px var(--pw-accent-soft)",
 	},
 });
 const SCENARIO_INPUT = uiCss.class({
@@ -84,7 +88,7 @@ const SCENARIO_INPUT = uiCss.class({
 	padding: "0 0 0 9px",
 	fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
 	fontSize: "11px",
-	color: "#d4d4d8",
+	color: "var(--pw-text)",
 });
 const SCENARIO_TRIGGER = uiCss.class({
 	flexShrink: "0",
@@ -93,17 +97,17 @@ const SCENARIO_TRIGGER = uiCss.class({
 	padding: "0 8px",
 	fontSize: "15px",
 	lineHeight: "1",
-	color: "#a1a1aa",
-	"&:hover": { color: "#f4f4f5" },
+	color: "var(--pw-text-soft)",
+	"&:hover": { color: "var(--pw-text-strong)" },
 });
 const SCENARIO_CONTENT = uiCss.class({
 	minWidth: "14rem",
 	maxHeight: "24rem",
 	overflow: "auto",
-	border: "1px solid rgba(255,255,255,0.1)",
+	border: "1px solid var(--pw-border-strong)",
 	borderRadius: "7px",
-	backgroundColor: "#16161b",
-	boxShadow: "0 16px 40px rgba(0,0,0,0.4)",
+	backgroundColor: "var(--pw-surface-raised)",
+	boxShadow: "0 16px 40px var(--pw-shadow)",
 	padding: "5px",
 	zIndex: "20",
 });
@@ -113,7 +117,7 @@ const SCENARIO_GROUP_LABEL = uiCss.class({
 	fontSize: "9px",
 	textTransform: "uppercase",
 	letterSpacing: "0.1em",
-	color: "#52525b",
+	color: "var(--pw-text-faint)",
 });
 const SCENARIO_ITEM = uiCss.class({
 	display: "flex",
@@ -123,12 +127,36 @@ const SCENARIO_ITEM = uiCss.class({
 	padding: "7px 8px",
 	fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
 	fontSize: "11px",
-	color: "#a1a1aa",
+	color: "var(--pw-text-soft)",
 	outline: "none",
-	"&[data-highlighted]": { backgroundColor: "rgba(251,146,60,0.12)", color: "#fed7aa" },
-	"&[data-state=checked]": { color: "#f4f4f5" },
+	"&[data-highlighted]": {
+		backgroundColor: "var(--pw-accent-soft)",
+		color: "var(--pw-accent-text)",
+	},
+	"&[data-state=checked]": { color: "var(--pw-text-strong)" },
 });
-const SCENARIO_EMPTY = uiCss.class({ padding: "10px 8px", fontSize: "11px", color: "#71717a" });
+const SCENARIO_EMPTY = uiCss.class({
+	padding: "10px 8px",
+	fontSize: "11px",
+	color: "var(--pw-text-muted)",
+});
+const THEME_TOGGLE = uiCss.class({
+	flexShrink: "0",
+	border: "1px solid var(--pw-border-strong)",
+	borderRadius: "5px",
+	backgroundColor: "var(--pw-control)",
+	padding: "5px 8px",
+	fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+	fontSize: "10px",
+	color: "var(--pw-text-soft)",
+	transition: "color 120ms, border-color 120ms, background-color 120ms",
+	"&:hover": {
+		borderColor: "var(--pw-border-hover)",
+		backgroundColor: "var(--pw-control-hover)",
+		color: "var(--pw-text-strong)",
+	},
+	"&:focus-visible": { outline: "1px solid var(--pw-accent)", outlineOffset: "2px" },
+});
 
 function ScenarioPicker() {
 	const navigate = useNavigate();
@@ -167,7 +195,7 @@ function ScenarioPicker() {
 					fontSize: "10px",
 					textTransform: "uppercase",
 					letterSpacing: "0.1em",
-					color: "#52525b",
+					color: "var(--pw-text-faint)",
 				})}
 			>
 				scenario
@@ -226,7 +254,8 @@ function MigrationLabLink() {
 	);
 }
 
-function Shell() {
+function ShellFrame() {
+	const { mode, toggle } = useTheme();
 	return (
 		<div
 			className={uiCss.class({
@@ -234,8 +263,8 @@ function Shell() {
 				flexDirection: "column",
 				height: "100%",
 				minHeight: "0px",
-				backgroundColor: "#09090b",
-				color: "#d4d4d8",
+				backgroundColor: "var(--pw-page)",
+				color: "var(--pw-text)",
 				WebkitFontSmoothing: "antialiased",
 			})}
 		>
@@ -246,8 +275,8 @@ function Shell() {
 					flexShrink: "0",
 					alignItems: "center",
 					gap: "24px",
-					borderBottom: "1px solid rgba(255,255,255,0.07)",
-					backgroundColor: "#09090b",
+					borderBottom: "1px solid var(--pw-border)",
+					backgroundColor: "var(--pw-page)",
 					paddingLeft: "16px",
 					paddingRight: "20px",
 				})}
@@ -258,17 +287,19 @@ function Shell() {
 							fontSize: "13px",
 							fontWeight: "600",
 							letterSpacing: "-0.025em",
-							color: "#f4f4f5",
+							color: "var(--pw-text-strong)",
 						})}
 					>
 						pandwind
 					</span>
-					<span className={uiCss.class({ fontSize: "13px", color: "#52525b" })}>/</span>
+					<span className={uiCss.class({ fontSize: "13px", color: "var(--pw-text-faint)" })}>
+						/
+					</span>
 					<span
 						className={uiCss.class({
 							fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
 							fontSize: "12px",
-							color: "rgba(253,186,116,0.9)",
+							color: "var(--pw-accent-text)",
 						})}
 					>
 						playground
@@ -276,6 +307,14 @@ function Shell() {
 				</div>
 				<MigrationLabLink />
 				<ScenarioPicker />
+				<button
+					type="button"
+					className={THEME_TOGGLE}
+					onClick={toggle}
+					aria-label={mode === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+				>
+					{mode === "dark" ? "light" : "dark"}
+				</button>
 				<div
 					className={uiCss.class({
 						display: "none",
@@ -284,21 +323,21 @@ function Shell() {
 						alignItems: "center",
 						gap: "6px",
 						fontSize: "11px",
-						color: "#52525b",
+						color: "var(--pw-text-faint)",
 						"@media (min-width: 640px)": { display: "flex" },
 					})}
 				>
 					<span>run</span>
 					<kbd
 						className={uiCss.class({
-							border: "1px solid rgba(255,255,255,0.1)",
+							border: "1px solid var(--pw-border-strong)",
 							borderRadius: "4px",
-							backgroundColor: "rgba(255,255,255,0.04)",
+							backgroundColor: "var(--pw-control-hover)",
 							padding: "2px 6px",
 							fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
 							fontSize: "10px",
 							lineHeight: "1",
-							color: "#a1a1aa",
+							color: "var(--pw-text-soft)",
 						})}
 					>
 						⌘ ↵
@@ -309,6 +348,14 @@ function Shell() {
 				<Outlet />
 			</main>
 		</div>
+	);
+}
+
+function Shell() {
+	return (
+		<ThemeProvider>
+			<ShellFrame />
+		</ThemeProvider>
 	);
 }
 
