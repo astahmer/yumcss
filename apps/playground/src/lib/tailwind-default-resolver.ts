@@ -8,7 +8,17 @@ import {
 
 export interface PlaygroundTailwindResolver extends TailwindUtilityResolver {
 	readonly ready: Promise<void>;
+	readonly css: (token: string) => string | undefined;
 }
+
+const resolveThemeVariables = (
+	value: string,
+	system: Awaited<ReturnType<typeof __unstable__loadDesignSystem>>,
+): string =>
+	value.replace(
+		/var\(\s*(--[-\w]+)\s*\)/gu,
+		(match: string, name: string) => system.resolveThemeValue(name) ?? match,
+	);
 
 function resolveDefaultThemeVariables(
 	declarations: readonly StyleDeclaration[],
@@ -17,10 +27,7 @@ function resolveDefaultThemeVariables(
 	return declarations.map((declaration) => {
 		if (declaration.value.kind !== "literal" || typeof declaration.value.value !== "string")
 			return declaration;
-		const value = declaration.value.value.replace(
-			/var\(\s*(--[-\w]+)\s*\)/gu,
-			(match: string, name: string) => system.resolveThemeValue(name) ?? match,
-		);
+		const value = resolveThemeVariables(declaration.value.value, system);
 		return value === declaration.value.value
 			? declaration
 			: { ...declaration, value: { ...declaration.value, value } };
@@ -51,6 +58,11 @@ export function createPlaygroundTailwindResolver(): PlaygroundTailwindResolver {
 			return declarations === undefined
 				? undefined
 				: resolveDefaultThemeVariables(declarations, system);
+		},
+		css(token) {
+			if (system === undefined) return undefined;
+			const css = system.candidatesToCss([token])[0];
+			return css === null || css === undefined ? undefined : resolveThemeVariables(css, system);
 		},
 	};
 }

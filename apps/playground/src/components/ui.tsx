@@ -108,6 +108,7 @@ export interface ResizableSplitterPanel {
 	maxSize?: number;
 	collapsible?: boolean;
 	collapsedSize?: number | string;
+	initiallyCollapsed?: boolean;
 }
 
 interface ResizableSplitterControls {
@@ -131,8 +132,13 @@ export function ResizableSplitter(props: {
 	className?: string;
 }) {
 	const panelSignature = props.panels.map((panel) => panel.id).join("\u0000");
-	const [collapsedPanelIds, setCollapsedPanelIds] = useState<ReadonlySet<string>>(() => new Set());
-	const previousPanelSignature = useRef(panelSignature);
+	const initialCollapsedPanelIds = () =>
+		new Set(
+			props.panels.filter((panel) => panel.initiallyCollapsed === true).map((panel) => panel.id),
+		);
+	const [collapsedPanelIds, setCollapsedPanelIds] =
+		useState<ReadonlySet<string>>(initialCollapsedPanelIds);
+	const previousPanelSignature = useRef<string | undefined>(undefined);
 
 	const splitter = useSplitter({
 		orientation: props.orientation,
@@ -147,8 +153,19 @@ export function ResizableSplitter(props: {
 	useEffect(() => {
 		if (previousPanelSignature.current === panelSignature) return;
 		previousPanelSignature.current = panelSignature;
-		setCollapsedPanelIds(new Set());
-		splitter.resetSizes();
+		const nextCollapsedPanelIds = initialCollapsedPanelIds();
+		setCollapsedPanelIds(nextCollapsedPanelIds);
+		let collapseFrame = 0;
+		const resetFrame = requestAnimationFrame(() => {
+			splitter.resetSizes();
+			collapseFrame = requestAnimationFrame(() => {
+				for (const panelId of nextCollapsedPanelIds) splitter.collapsePanel(panelId);
+			});
+		});
+		return () => {
+			cancelAnimationFrame(resetFrame);
+			if (collapseFrame !== 0) cancelAnimationFrame(collapseFrame);
+		};
 	}, [panelSignature]);
 	const togglePanel = (panelId: string): void => {
 		const panel = props.panels.find((candidate) => candidate.id === panelId);

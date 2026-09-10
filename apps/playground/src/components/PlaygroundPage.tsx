@@ -10,7 +10,12 @@ import {
 	type ExampleVariant,
 } from "../lib/examples.ts";
 import type { EditorTypeLibrary } from "../lib/editor-types.ts";
-import { evalPlayground, evalSiblingModule, type EvalInput } from "../lib/eval-playground.ts";
+import {
+	evalPlayground,
+	evalSiblingModule,
+	type EvalInput,
+	type PlaygroundResult,
+} from "../lib/eval-playground.ts";
 import { resolveDesignStyle } from "pandwind/design/resolve";
 import { examplePreset } from "@pandwind/example-preset";
 import { SANDBOX_MODULES } from "../lib/sandbox-modules.ts";
@@ -45,7 +50,7 @@ function useCompactPlayground(): boolean {
 }
 
 /** Component-like dynamics available inside evaluated code as `props`. */
-const SANDBOX_PROPS = { active: true, tone: "red-600" };
+const SANDBOX_PROPS = { active: true, tone: "#ffffff" };
 
 function encodeCode(code: string): string {
 	return btoa(String.fromCharCode(...new TextEncoder().encode(code)));
@@ -132,14 +137,8 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 		return activeVariant.files.map((file) => file.code);
 	});
 	const [activeTab, setActiveTab] = useState(0);
-	const [result, setResult] = useState(() =>
-		evalPlayground(
-			makeInput(
-				files[0]!,
-				evalSiblings(files, activeVariant, classNameStrategy),
-				classNameStrategy,
-			),
-		),
+	const [evaluation, setEvaluation] = useState<PlaygroundEvaluation>(() =>
+		evaluatePlayground(files, activeVariant, classNameStrategy),
 	);
 	useEffect(() => {
 		let cancelled = false;
@@ -150,7 +149,7 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 			})
 			.catch((error: unknown) => {
 				if (!cancelled) {
-					setResult({ ok: false, error: error instanceof Error ? error.message : String(error) });
+					setEvaluation(failedEvaluation(error));
 				}
 			});
 		return () => {
@@ -160,33 +159,17 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 	useEffect(() => {
 		if (activeClassNameAdapter.loadStrategy !== undefined && classNameStrategy === null) return;
 		try {
-			setResult(
-				evalPlayground(
-					makeInput(
-						files[0]!,
-						evalSiblings(files, activeVariant, classNameStrategy),
-						classNameStrategy,
-					),
-				),
-			);
+			setEvaluation(evaluatePlayground(files, activeVariant, classNameStrategy));
 		} catch (error) {
-			setResult({ ok: false, error: error instanceof Error ? error.message : String(error) });
+			setEvaluation(failedEvaluation(error));
 		}
 	}, [activeClassNameAdapter, activeVariant, classNameStrategy]);
 	const run = useCallback(
 		(sources: readonly string[]) => {
 			try {
-				setResult(
-					evalPlayground(
-						makeInput(
-							sources[0]!,
-							evalSiblings(sources, activeVariant, classNameStrategy),
-							classNameStrategy,
-						),
-					),
-				);
+				setEvaluation(evaluatePlayground(sources, activeVariant, classNameStrategy));
 			} catch (error) {
-				setResult({ ok: false, error: error instanceof Error ? error.message : String(error) });
+				setEvaluation(failedEvaluation(error));
 			}
 			const hash =
 				sources[0]!.trim() === activeVariant.files[0]!.code.trim()
@@ -209,15 +192,7 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 			setApi(nextVariant.api);
 			setFiles(nextFiles);
 			setActiveTab(0);
-			setResult(
-				evalPlayground(
-					makeInput(
-						nextFiles[0]!,
-						evalSiblings(nextFiles, nextVariant, classNameStrategy),
-						classNameStrategy,
-					),
-				),
-			);
+			setEvaluation(evaluatePlayground(nextFiles, nextVariant, classNameStrategy));
 			history.replaceState(
 				null,
 				"",
@@ -248,14 +223,10 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 			void resolveClassNameStrategy(nextAdapter)
 				.then((strategy) => {
 					setClassNameStrategy(strategy);
-					setResult(
-						evalPlayground(
-							makeInput(nextFiles[0]!, evalSiblings(nextFiles, nextVariant, strategy), strategy),
-						),
-					);
+					setEvaluation(evaluatePlayground(nextFiles, nextVariant, strategy));
 				})
 				.catch((error: unknown) => {
-					setResult({ ok: false, error: error instanceof Error ? error.message : String(error) });
+					setEvaluation(failedEvaluation(error));
 				});
 		};
 		window.addEventListener("popstate", syncVariant);
@@ -523,7 +494,13 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 					{
 						id: "output",
 						initialSize: 50,
-						content: <ResultsPane result={result} />,
+						content: (
+							<ResultsPane
+								result={evaluation.result}
+								previewResult={evaluation.previewResult}
+								preview={props.def.preview}
+							/>
+						),
 					},
 				]}
 			/>
@@ -580,4 +557,35 @@ function makeInput(
 			return out;
 		},
 	};
+}
+
+interface PlaygroundEvaluation {
+	result: PlaygroundResult;
+	previewResult: PlaygroundResult;
+}
+
+function failedEvaluation(error: unknown): PlaygroundEvaluation {
+	const result: PlaygroundResult = {
+		ok: false,
+		error: error instanceof Error ? error.message : String(error),
+	};
+	return { result, previewResult: result };
+}
+
+function evaluatePlayground(
+	sources: readonly string[],
+	variant: ExampleVariant,
+	strategy: ClassNameStrategy | null,
+): PlaygroundEvaluation {
+	const result = evalPlayground(
+		makeInput(sources[0]!, evalSiblings(sources, variant, strategy), strategy),
+	);
+	if (!result.ok || result.sheets.length > 0 || strategy === null) {
+		return { result, previewResult: result };
+	}
+
+	const previewResult = evalPlayground(
+		makeInput(sources[0]!, evalSiblings(sources, variant, null), null),
+	);
+	return { result, previewResult };
 }

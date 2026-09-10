@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import { codeToHtml } from "shiki";
 import type { StyleProgram } from "pandwind-codemod/swap/semantic-ir";
 import { GhostButton, Pane, ResizableSplitter, type ResizableSplitterPanel } from "./ui.tsx";
@@ -8,6 +8,8 @@ import type {
 	PlaygroundSheetResult,
 	PlaygroundStyleMapping,
 } from "../lib/eval-playground.ts";
+import { PlaygroundPreviewKind, type ExamplePreview } from "../lib/examples.ts";
+import type { PlaygroundTailwindResolver } from "../lib/tailwind-default-resolver.ts";
 import { css as uiCss } from "../ui-css.ts";
 import { useTheme } from "../theme.tsx";
 
@@ -214,6 +216,203 @@ function ExecutionEvidenceSection(props: { evidence: PlaygroundExecutionEvidence
 					label="unavailable"
 					values={props.evidence.unavailable}
 					tone={"var(--pw-warning)"}
+				/>
+			</div>
+		</Pane>
+	);
+}
+
+type SuccessfulPlaygroundResult = Extract<PlaygroundResult, { ok: true }>;
+
+const PREVIEW_STAGE = uiCss.class({
+	display: "grid",
+	height: "100%",
+	minHeight: "0px",
+	placeItems: "center",
+	backgroundColor: "var(--pw-code-surface)",
+	padding: "18px",
+});
+const PREVIEW_FRAME = uiCss.class({
+	display: "grid",
+	maxWidth: "min(100%, 30rem)",
+	gap: "8px",
+	justifyItems: "center",
+	textAlign: "center",
+});
+const PREVIEW_DESCRIPTION = uiCss.class({
+	maxWidth: "28rem",
+	fontSize: "11px",
+	lineHeight: "16px",
+	opacity: "0.72",
+	color: "currentColor",
+});
+const PREVIEW_BUTTON_RESET = uiCss.class({
+	border: "0",
+	backgroundColor: "transparent",
+	font: "inherit",
+});
+const PREVIEW_COPY = uiCss.class({
+	display: "grid",
+	gap: "4px",
+	justifyItems: "center",
+});
+
+let tailwindPreviewResolverPromise: Promise<PlaygroundTailwindResolver> | undefined;
+
+const getTailwindPreviewResolver = (): Promise<PlaygroundTailwindResolver> => {
+	tailwindPreviewResolverPromise ??= import("../lib/tailwind-default-resolver.ts").then(
+		({ createPlaygroundTailwindResolver }) => createPlaygroundTailwindResolver(),
+	);
+	return tailwindPreviewResolverPromise;
+};
+
+const previewClassName = (result: SuccessfulPlaygroundResult): string =>
+	result.propsOutput?.className ??
+	result.varsOutput?.class ??
+	(result.output || Object.values(result.decls ?? {}).join(" "));
+
+const previewDeclarations = (result: SuccessfulPlaygroundResult): Record<string, string> => {
+	const declarations: Record<string, string> = {};
+	for (const atom of result.atomDeclarations) {
+		if (!result.survived.includes(atom.cls)) continue;
+		Object.assign(declarations, atom.decls);
+	}
+	return declarations;
+};
+
+const tailwindDeclarations = (
+	className: string,
+	resolver: PlaygroundTailwindResolver,
+): Record<string, string> => {
+	const declarations: Record<string, string> = {};
+	for (const token of className.split(/\s+/u).filter(Boolean)) {
+		for (const declaration of resolver.resolve(token) ?? []) {
+			if (declaration.conditions.length > 0 || declaration.value.kind !== "literal") continue;
+			declarations[declaration.property] = String(declaration.value.value);
+		}
+	}
+	return declarations;
+};
+
+const tailwindCss = (className: string, resolver: PlaygroundTailwindResolver): string =>
+	className
+		.split(/\s+/u)
+		.filter(Boolean)
+		.map((token) => resolver.css(token))
+		.filter((css): css is string => css !== undefined)
+		.join("\n");
+
+interface TailwindPreview {
+	style: Record<string, string>;
+	css: string;
+}
+
+const previewStyle = (
+	result: SuccessfulPlaygroundResult,
+	tailwindStyle: Record<string, string>,
+): CSSProperties => ({
+	...tailwindStyle,
+	...previewDeclarations(result),
+	...result.runtimeStyle,
+	...result.varsOutput?.style,
+	...result.propsOutput?.style,
+});
+
+function useTailwindPreview(className: string): TailwindPreview {
+	const [preview, setPreview] = useState<TailwindPreview>({ style: {}, css: "" });
+	useEffect(() => {
+		if (className === "") {
+			setPreview({ style: {}, css: "" });
+			return;
+		}
+		let cancelled = false;
+		void getTailwindPreviewResolver()
+			.then(async (resolver) => {
+				await resolver.ready;
+				if (!cancelled) {
+					setPreview({
+						style: tailwindDeclarations(className, resolver),
+						css: tailwindCss(className, resolver),
+					});
+				}
+			})
+			.catch(() => {
+				if (!cancelled) setPreview({ style: {}, css: "" });
+			});
+		return () => {
+			cancelled = true;
+		};
+	}, [className]);
+	return preview;
+}
+
+function PreviewSpecimen(props: {
+	preview: ExamplePreview;
+	result: SuccessfulPlaygroundResult;
+	tailwindStyle: Record<string, string>;
+}) {
+	const isButton = props.preview.kind === PlaygroundPreviewKind.Button;
+	const className =
+		`${isButton ? PREVIEW_BUTTON_RESET : ""} ${previewClassName(props.result)}`.trim();
+	const PreviewElement = isButton ? "button" : "div";
+	return (
+		<div className={PREVIEW_FRAME}>
+			<PreviewElement
+				className={className}
+				style={previewStyle(props.result, props.tailwindStyle)}
+				data-preview-kind={props.preview.kind}
+				role={props.preview.kind === PlaygroundPreviewKind.Alert ? "alert" : undefined}
+				type={isButton ? "button" : undefined}
+			>
+				<span className={PREVIEW_COPY}>
+					<strong>{props.preview.label}</strong>
+					<span className={PREVIEW_DESCRIPTION}>{props.preview.description}</span>
+				</span>
+			</PreviewElement>
+			<span className={uiCss.class({ fontSize: "10px", color: "var(--pw-text-faint)" })}>
+				{props.preview.kind} specimen · hover it to exercise state styles
+			</span>
+		</div>
+	);
+}
+
+function LivePreviewSection(props: {
+	preview: ExamplePreview;
+	result: SuccessfulPlaygroundResult;
+}) {
+	const generatedCss = props.result.sheets.map((sheet) => sheet.css).join("\n");
+	const className = previewClassName(props.result);
+	const tailwindPreview = useTailwindPreview(className);
+	return (
+		<Pane
+			label="Live preview"
+			right={
+				<span
+					className={uiCss.class({
+						marginRight: "4px",
+						border: "1px solid var(--pw-border-strong)",
+						borderRadius: "4px",
+						padding: "2px 6px",
+						fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+						fontSize: "10px",
+						color: "var(--pw-success)",
+					})}
+				>
+					rendered
+				</span>
+			}
+			className={uiCss.class({ height: "100%" })}
+		>
+			{(generatedCss !== "" || tailwindPreview.css !== "") && (
+				<style data-playground-preview>
+					{[generatedCss, tailwindPreview.css].filter(Boolean).join("\n")}
+				</style>
+			)}
+			<div className={PREVIEW_STAGE}>
+				<PreviewSpecimen
+					preview={props.preview}
+					result={props.result}
+					tailwindStyle={tailwindPreview.style}
 				/>
 			</div>
 		</Pane>
@@ -763,7 +962,11 @@ function ErrorSection(props: { error: string }) {
 	);
 }
 
-export function ResultsPane(props: { result: PlaygroundResult }) {
+export function ResultsPane(props: {
+	result: PlaygroundResult;
+	previewResult: PlaygroundResult;
+	preview: ExamplePreview;
+}) {
 	const r = props.result;
 	if (!r.ok) {
 		return (
@@ -781,11 +984,19 @@ export function ResultsPane(props: { result: PlaygroundResult }) {
 			</div>
 		);
 	}
+	const previewResult = props.previewResult.ok ? props.previewResult : r;
 	const panels: ResizableSplitterPanel[] = [
 		{
-			id: "execution-evidence",
-			initialSize: 16,
+			id: "live-preview",
+			initialSize: 38,
 			collapsible: true,
+			content: <LivePreviewSection preview={props.preview} result={previewResult} />,
+		},
+		{
+			id: "execution-evidence",
+			initialSize: 12,
+			collapsible: true,
+			initiallyCollapsed: true,
 			content: <ExecutionEvidenceSection evidence={r.execution} />,
 		},
 		{
@@ -806,12 +1017,14 @@ export function ResultsPane(props: { result: PlaygroundResult }) {
 			id: "build-time-fold",
 			initialSize: 11,
 			collapsible: true,
+			initiallyCollapsed: true,
 			content: <FoldSection fold={r.fold} note={r.foldNote} />,
 		},
 		{
 			id: "tokens",
 			initialSize: 13,
 			collapsible: true,
+			initiallyCollapsed: true,
 			content: <TokensSection survived={r.survived} killed={r.killed} />,
 		},
 	];
@@ -820,6 +1033,7 @@ export function ResultsPane(props: { result: PlaygroundResult }) {
 			id: "css-atoms",
 			initialSize: 15,
 			collapsible: true,
+			initiallyCollapsed: true,
 			content: <AtomsSection atoms={r.atomDeclarations} />,
 		});
 	}
@@ -828,6 +1042,7 @@ export function ResultsPane(props: { result: PlaygroundResult }) {
 			id: "declarations-to-classes",
 			initialSize: 18,
 			collapsible: true,
+			initiallyCollapsed: true,
 			content: <StyleMappingsSection mappings={r.styleMappings} />,
 		});
 	}
@@ -836,6 +1051,7 @@ export function ResultsPane(props: { result: PlaygroundResult }) {
 			id: `generated-css-${index + 1}`,
 			initialSize: 10,
 			collapsible: true,
+			initiallyCollapsed: true,
 			content: <SheetSection sheets={[sheet]} />,
 		});
 	}
@@ -844,6 +1060,7 @@ export function ResultsPane(props: { result: PlaygroundResult }) {
 			id: "styleprogram-ir",
 			initialSize: 20,
 			collapsible: true,
+			initiallyCollapsed: true,
 			content: <StyleProgramSection programs={r.programs} />,
 		});
 	}

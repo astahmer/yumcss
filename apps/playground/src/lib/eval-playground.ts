@@ -82,6 +82,8 @@ interface PlaygroundSuccess {
 	varsOutput?: { class: string; style: Record<string, string> };
 	/** Resolved React-style host props from a css.props() result. */
 	propsOutput?: { className?: string; style?: Record<string, string> };
+	/** Inline host styles produced by css.vars() / css.props() inside a composed expression. */
+	runtimeStyle?: Record<string, string>;
 	/** Every class token fed in through any call (deduped). */
 	tokensIn: string[];
 	/** Tokens present in the final output. */
@@ -576,6 +578,13 @@ interface RuntimeCssInstance {
 const isStyleRecord = (value: unknown): value is Record<string, unknown> =>
 	value !== null && typeof value === "object" && !Array.isArray(value);
 
+const hostStyleFromResult = (result: unknown): Record<string, string> => {
+	if (!isStyleRecord(result) || !isStyleRecord(result.style)) return {};
+	const style: Record<string, string> = {};
+	for (const [property, value] of Object.entries(result.style)) style[property] = String(value);
+	return style;
+};
+
 const isCompilableStyleInput = (value: unknown): value is Record<string, unknown> => {
 	if (!isStyleRecord(value)) return false;
 	if (value["$$css"] === true || "compiled" in value || "className" in value) return false;
@@ -676,6 +685,7 @@ function instrumentRuntimeCss(
 	instance: unknown,
 	onStyleMappings: (mappings: PlaygroundStyleMapping[]) => void,
 	resolveStyle?: (style: Record<string, unknown>) => Record<string, string>,
+	onRuntimeStyle?: (style: Record<string, string>) => void,
 ): unknown {
 	if (typeof instance !== "function") return instance;
 	const callable = instance as (...args: Array<unknown>) => unknown;
@@ -692,6 +702,7 @@ function instrumentRuntimeCss(
 		}
 		instrumented[key] = (...args: Array<unknown>) => {
 			const result = value(...args);
+			if (key === "vars" || key === "props") onRuntimeStyle?.(hostStyleFromResult(result));
 			const styleArgs = args.filter(isCompilableStyleInput);
 			if (
 				(key === "class" || key === "vars" || key === "props") &&
@@ -776,6 +787,7 @@ function buildSandbox(
 	cx: (...inputs: Array<never>) => string,
 	onRuntimeCss?: (instance: RuntimeCssInstance) => void,
 	onStyleMappings?: (mappings: PlaygroundStyleMapping[]) => void,
+	onRuntimeStyle?: (style: Record<string, string>) => void,
 ): Record<string, unknown> {
 	const sandbox: Record<string, unknown> = {
 		tw,
@@ -864,6 +876,7 @@ function buildSandbox(
 							onStyleMappings?.(mappings);
 						},
 						input.resolveCss,
+						onRuntimeStyle,
 					);
 					if (
 						instrumented !== null &&
@@ -969,6 +982,7 @@ function runOnce(input: EvalInput, mode: EvalMode): PlaygroundResult {
 	const atomDeclarations: Array<{ cls: string; decls: Record<string, string> }> = [];
 	const runtimeInstances: RuntimeCssInstance[] = [];
 	const styleMappings: PlaygroundStyleMapping[] = [];
+	const runtimeStyle: Record<string, string> = {};
 	/**
 	 * Instrumented css() binding. The wrapper exposes the SAME surface as the
 	 * real css() (callable plus every namespaced method the instance carries:
@@ -984,6 +998,9 @@ function runOnce(input: EvalInput, mode: EvalMode): PlaygroundResult {
 			if (typeof fn !== "function")
 				throw new Error(`css.${method} is not available in the sandbox`);
 			const result = fn(...(args as never[]));
+			if (method === "vars" || method === "props") {
+				Object.assign(runtimeStyle, hostStyleFromResult(result));
+			}
 			recordTokens(result);
 			const styleArgs = args.filter(isCompilableStyleInput);
 			const compiled =
@@ -1047,6 +1064,9 @@ function runOnce(input: EvalInput, mode: EvalMode): PlaygroundResult {
 		},
 		(mappings) => {
 			styleMappings.push(...mappings);
+		},
+		(style) => {
+			Object.assign(runtimeStyle, style);
 		},
 	);
 	let captured: { value?: unknown } = {};
@@ -1151,5 +1171,6 @@ function runOnce(input: EvalInput, mode: EvalMode): PlaygroundResult {
 	if (decls !== undefined) success.decls = decls;
 	if (varsOutput !== undefined) success.varsOutput = varsOutput;
 	if (propsOutput !== undefined) success.propsOutput = propsOutput;
+	if (Object.keys(runtimeStyle).length > 0) success.runtimeStyle = runtimeStyle;
 	return success;
 }

@@ -92,4 +92,38 @@ describe("example catalog evaluates end to end", () => {
 		expect(result.programs).not.toHaveLength(0);
 		expect(result.programs.every((program) => program.residuals.length === 0)).toBe(true);
 	});
+
+	it("connects each entry to a rendered preview and resolves component tokens", () => {
+		expect(EXAMPLES.every((example) => example.preview.label.length > 0)).toBe(true);
+		expect(EXAMPLES.every((example) => example.preview.description.length > 0)).toBe(true);
+
+		const variant = EXAMPLES.find((example) => example.path === "/tokens")?.variants[0];
+		expect(variant).toBeDefined();
+		if (variant === undefined) return;
+
+		const result = evalPlayground(makeInput(variant.files[0]!.code, siblingBindings(variant)));
+		expect(result.ok).toBe(true);
+		if (!result.ok) return;
+
+		expect(
+			result.styleMappings.some(
+				(mapping) => mapping.property === "padding" && mapping.value === "button.padding",
+			),
+		).toBe(true);
+		expect(result.sheets.some((sheet) => sheet.css.includes("padding:20px"))).toBe(true);
+	});
+
+	it("keeps composed runtime host styles available to the preview", () => {
+		const variant = EXAMPLES.find((example) => example.path === "/dynamic")?.variants[0];
+		expect(variant).toBeDefined();
+		if (variant === undefined) return;
+
+		const result = evalPlayground(makeInput(variant.files[0]!.code));
+		expect(result.ok).toBe(true);
+		if (!result.ok) return;
+
+		expect(result.runtimeStyle).toMatchObject({
+			"--pw-c-color": "red-600",
+		});
+	});
 });

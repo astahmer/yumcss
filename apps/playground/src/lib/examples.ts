@@ -13,6 +13,23 @@ export const PlaygroundApi = {
 
 export type PlaygroundApi = (typeof PlaygroundApi)[keyof typeof PlaygroundApi];
 
+export const PlaygroundPreviewKind = {
+	Button: "button",
+	Card: "card",
+	Alert: "alert",
+	Text: "text",
+	Badge: "badge",
+} as const;
+
+export type PlaygroundPreviewKind =
+	(typeof PlaygroundPreviewKind)[keyof typeof PlaygroundPreviewKind];
+
+export interface ExamplePreview {
+	kind: PlaygroundPreviewKind;
+	label: string;
+	description: string;
+}
+
 export interface ExampleVariant {
 	/** The Pandwind API demonstrated by this variant. */
 	api: PlaygroundApi;
@@ -39,6 +56,8 @@ export interface ExampleDef {
 	 * documented limit — rendered above the editor.
 	 */
 	note?: string;
+	/** The semantic specimen used to show the evaluated result in the preview. */
+	preview: ExamplePreview;
 	/** One or more API-specific implementations of the same scenario. */
 	variants: readonly ExampleVariant[];
 }
@@ -62,6 +81,12 @@ function oneVariant(
 	];
 }
 
+const makePreview = (
+	kind: PlaygroundPreviewKind,
+	label: string,
+	description: string,
+): ExamplePreview => ({ kind, label, description });
+
 const TW_IMPORT = [
 	'import { tw } from "pandwind";',
 	'import { createCx } from "pandwind/cx";',
@@ -76,6 +101,11 @@ export const EXAMPLES: readonly ExampleDef[] = [
 		blurb: "the same styling intent expressed through each Pandwind API",
 		group: "core",
 		note: `Select an API to see the same button styles expressed through typed tw(), declaration-first css(), or design-system dss(). The APIs share one preset, while each lane keeps its own class-name strategy.`,
+		preview: makePreview(
+			"button",
+			"Primary action",
+			"The selected API output is applied to this button specimen.",
+		),
 		variants: [
 			{
 				api: PlaygroundApi.Tw,
@@ -141,15 +171,21 @@ buttons.primary`,
 		title: "Dynamic styling",
 		blurb: "runtime values: partial folds, css.vars, and css.props",
 		group: "core",
-		note: "The ternary branches are static strings, so the build folds the static halves and keeps only the runtime choice (partial). The css.vars() / css.props() calls carry dynamic values as inline custom properties instead of inventing classes.",
+		note: "The ternary branches are static strings, so the build folds the static halves and keeps only the runtime choice (partial). The css.vars() / css.props(css.vars()) calls carry dynamic values as inline custom properties instead of inventing classes.",
+		preview: makePreview(
+			"alert",
+			"Dynamic alert",
+			"The runtime color is carried through the host style instead of a generated class.",
+		),
 		variants: oneVariant(
 			PlaygroundApi.Tw,
 			TW_IMPORT +
 				`
 
 import { createCss } from "pandwind/css";
+import { examplePreset } from "@pandwind/example-preset";
 
-const css = createCss();
+const css = createCss(examplePreset);
 
 const alert = (tone = "danger" as string) => {
 	return tw({
@@ -158,10 +194,13 @@ const alert = (tone = "danger" as string) => {
 	});
 }
 
+const dynamicProps = css.props(
+	css.vars({ color: props.tone }),
+);
+
 cx(
 	alert("danger"),
-	css.vars({ backgroundColor: "props.tone" }).class,
-	css.props({ color: "props.tone", padding: "16px" }).className,
+	dynamicProps.className,
 )`,
 		),
 	},
@@ -171,6 +210,11 @@ cx(
 		blurb: "breakpoint and media variants as plain object nesting",
 		group: "core",
 		note: "Breakpoint keys come from your preset conditions (sm, md, lg, smDown, ...); they join with the generated variant metadata — no variant string concatenation in user code.",
+		preview: makePreview(
+			"card",
+			"Responsive surface",
+			"Resize the browser to see the generated breakpoint rules change this surface.",
+		),
 		variants: oneVariant(
 			PlaygroundApi.Tw,
 			TW_IMPORT +
@@ -190,6 +234,11 @@ tw({
 		blurb: "cx() keeps the last declaration and reports what died",
 		group: "core",
 		note: "cx() merges through the generated conflict map: the second background-color kills the first. The panel shows exactly which input tokens were removed instead of silently shipping dead classes.",
+		preview: makePreview(
+			"button",
+			"Merged action",
+			"The final background is the declaration that survived cx() conflict resolution.",
+		),
 		variants: oneVariant(
 			PlaygroundApi.Tw,
 			TW_IMPORT +
@@ -203,10 +252,15 @@ cx(
 	},
 	{
 		path: "/tokens",
-		title: "Token layers",
-		blurb: "raw, semantic, and component tokens in one call",
+		title: "Raw, semantic & component tokens",
+		blurb: "three token layers resolved by one typed preset",
 		group: "core",
-		note: "brandTone is a raw token imported from another file, success is a semantic alias, and the numeric padding uses a spacing value from the preset. Each resolves to a concrete value because this example binds createCss(examplePreset).",
+		note: "The background uses an imported raw color token, the text uses the semantic success token, and padding uses the component-scoped button.padding token. All three are checked against the same createCss(examplePreset) contract.",
+		preview: makePreview(
+			"card",
+			"Token contract",
+			"Raw, semantic, and component values resolve into one rendered card.",
+		),
 		variants: [
 			{
 				api: PlaygroundApi.Css,
@@ -223,13 +277,13 @@ const css = createCss(examplePreset);
 css.class({
 	backgroundColor: brandTone,
 	color: "success",
-	padding: 20,
+	padding: "button.padding",
 	_dark: { color: "$gray-200" },
 })`,
 					},
 					{
 						name: "brand.ts",
-						code: 'export const brandTone = "$blue-500";',
+						code: 'export const brandTone = "$gray-900";',
 					},
 				],
 			},
@@ -241,6 +295,11 @@ css.class({
 		blurb: "define your own theme, tokens, and conditions",
 		group: "core",
 		note: "A brand preset is data: defineTokens + definePreset. The native css() lane emits hashed atoms from the preset; choose the Tailwind adapter to lower the same declarations through the generated bridge.",
+		preview: makePreview(
+			"button",
+			"Brand action",
+			"This button uses the custom brand preset and its generated condition.",
+		),
 		variants: [
 			{
 				api: PlaygroundApi.Dss,
@@ -279,6 +338,11 @@ export const brandTokens = defineTokens({
 		blurb: "external variant maps over statically generated classes",
 		group: "core",
 		note: "Pandwind does not ship a recipe API: each css.class() call stays statically authored, while cx() composes the selected class strings at runtime. This is the extractable CVA-style pattern.",
+		preview: makePreview(
+			"button",
+			"Variant button",
+			"The selected size and tone are composed from separately generated classes.",
+		),
 		variants: oneVariant(
 			PlaygroundApi.Css,
 			"Example.tsx",
@@ -321,6 +385,11 @@ pick({ size: "lg", tone: "brand" })`,
 		blurb: "css.group maps, dynamic groups, and host props",
 		group: "core",
 		note: "Static group entries compile once; entries with $input return a function that carries runtime values as inline custom properties. css.props() projects everything onto React-ready host props.",
+		preview: makePreview(
+			"card",
+			"Grouped card",
+			"The group result supplies both the static card styles and its runtime input.",
+		),
 		variants: oneVariant(
 			PlaygroundApi.Css,
 			"Example.tsx",
@@ -347,6 +416,11 @@ css.props(styles.card, styles.muted, styles.banner({ tone: "blue" }))`,
 		blurb: "what the vite pass eliminates before your app ships",
 		group: "core",
 		note: "Module constants, template literals, and static ternary branches all fold at build time; values only known at runtime survive as runtime folds. The panel reports which of the three happened.",
+		preview: makePreview(
+			"text",
+			"Folded label",
+			"This text is styled by the class string that the build-time fold can precompute.",
+		),
 		variants: oneVariant(
 			PlaygroundApi.Tw,
 			"Example.tsx",
@@ -364,9 +438,14 @@ cx(
 	{
 		path: "/tw-compat",
 		title: "tw() compat",
-		blurb: "Tailwind-style nested variants: sm:, group-hover:, dark:",
+		blurb: "Tailwind-style nested variants: sm: and group-hover:",
 		group: "core",
-		note: "tw() understands Tailwind's compositional prefixes — responsive sm:, group-hover:, and nested _hover/_dark pairs join through the generated variant metadata.",
+		note: "tw() understands Tailwind's compositional prefixes — responsive sm: and group-hover: join through the generated variant metadata and remain visible in the preview stylesheet.",
+		preview: makePreview(
+			"button",
+			"Compatibility action",
+			"Responsive and group variants stay attached to the same live specimen.",
+		),
 		variants: oneVariant(
 			PlaygroundApi.Tw,
 			"Example.tsx",
@@ -386,6 +465,11 @@ tw({
 		blurb: "tw() is not a string concatenation API — this is the honest failure",
 		group: "limits",
 		note: "tw() compiles typed style objects, not class-name strings. Passing a string treats every character as a utility name and emits per-character metadata tokens. Keep static class strings out of tw(); use cx() with plain strings when you already have classes.",
+		preview: makePreview(
+			"badge",
+			"Rejected class string",
+			"This limit example intentionally has no useful generated style.",
+		),
 		variants: oneVariant(
 			PlaygroundApi.Tw,
 			"Example.tsx",
@@ -402,6 +486,11 @@ tw("bg-red-500 text-lg")`,
 		blurb: "variant keys must nest objects, not strings",
 		group: "limits",
 		note: 'sm: "p-4" hands the variant machinery a string where a style object belongs, so it emits sm-p-4— a token with no generated CSS. The valid form is sm: { p: "4" } (see Responsive).',
+		preview: makePreview(
+			"badge",
+			"Invalid variant shape",
+			"The emitted token is visible, but it has no matching rule to apply.",
+		),
 		variants: oneVariant(
 			PlaygroundApi.Tw,
 			"Example.tsx",
@@ -417,6 +506,11 @@ tw({ sm: "p-4" })`,
 		blurb: "declarations outside the preset survive as metadata, not CSS",
 		group: "limits",
 		note: "animation is not in this preset's property allowlist, so the engine emits a metadata token instead of guessing CSS that would never be generated. Widen the preset's properties config (or add the value to the bridge) to make it a real utility.",
+		preview: makePreview(
+			"card",
+			"Residual declaration",
+			"The supported display style applies; animation remains intentionally residual.",
+		),
 		variants: oneVariant(
 			PlaygroundApi.Css,
 			"Example.tsx",

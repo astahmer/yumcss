@@ -24,4 +24,15 @@ describe("playground Tailwind defaults", () => {
 		expect(result.code).toContain("0.25rem");
 		expect(result.code).not.toContain("var(--");
 	});
+
+	test("returns resolved candidate CSS for variant previews", async () => {
+		const resolver = createPlaygroundTailwindResolver();
+		await resolver.ready;
+
+		const css = resolver.css("sm:p-4");
+
+		expect(css).toContain("@media");
+		expect(css).toContain("padding");
+		expect(css).not.toContain("var(--");
+	});
 });

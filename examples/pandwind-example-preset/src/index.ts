@@ -186,7 +186,10 @@ export const examplePreset = definePreset(theme, {
 		backgroundColor: tokens.colors,
 		borderColor: tokens.colors,
 		borderRadius: tokens.radii,
-		padding: tokens.spacing,
+		padding: {
+			...tokens.spacing,
+			...semanticTokens.spacing,
+		},
 		marginTop: {
 			// $strictness: "inherits",
 			$tokens: "spacing",
