@@ -140,16 +140,35 @@ const SCENARIO_EMPTY = uiCss.class({
 	fontSize: "11px",
 	color: "var(--pw-text-muted)",
 });
-const THEME_TOGGLE = uiCss.class({
+const COLOR_MODE_SWITCHER = uiCss.class({
+	display: "flex",
+	flexShrink: "0",
+	alignItems: "center",
+	gap: "4px",
+});
+const COLOR_MODE_LABEL = uiCss.class({
+	marginRight: "2px",
+	fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+	fontSize: "9px",
+	textTransform: "uppercase",
+	letterSpacing: "0.08em",
+	color: "var(--pw-text-faint)",
+});
+const COLOR_MODE_OPTION = uiCss.class({
 	flexShrink: "0",
 	border: "1px solid var(--pw-border-strong)",
-	borderRadius: "5px",
+	borderRadius: "4px",
 	backgroundColor: "var(--pw-control)",
-	padding: "5px 8px",
+	padding: "4px 7px",
 	fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
 	fontSize: "10px",
 	color: "var(--pw-text-soft)",
 	transition: "color 120ms, border-color 120ms, background-color 120ms",
+	"&[aria-pressed=true]": {
+		borderColor: "var(--pw-accent)",
+		backgroundColor: "var(--pw-accent-soft)",
+		color: "var(--pw-accent-text)",
+	},
 	"&:hover": {
 		borderColor: "var(--pw-border-hover)",
 		backgroundColor: "var(--pw-control-hover)",
@@ -255,7 +274,7 @@ function MigrationLabLink() {
 }
 
 function ShellFrame() {
-	const { mode, toggle } = useTheme();
+	const { mode, setMode } = useTheme();
 	return (
 		<div
 			className={uiCss.class({
@@ -307,14 +326,20 @@ function ShellFrame() {
 				</div>
 				<MigrationLabLink />
 				<ScenarioPicker />
-				<button
-					type="button"
-					className={THEME_TOGGLE}
-					onClick={toggle}
-					aria-label={mode === "dark" ? "Switch to light mode" : "Switch to dark mode"}
-				>
-					{mode === "dark" ? "light" : "dark"}
-				</button>
+				<div role="group" aria-label="Color mode" className={COLOR_MODE_SWITCHER}>
+					<span className={COLOR_MODE_LABEL}>mode</span>
+					{(["light", "dark"] as const).map((option) => (
+						<button
+							key={option}
+							type="button"
+							className={COLOR_MODE_OPTION}
+							aria-pressed={mode === option}
+							onClick={() => setMode(option)}
+						>
+							{option}
+						</button>
+					))}
+				</div>
 				<div
 					className={uiCss.class({
 						display: "none",

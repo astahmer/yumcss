@@ -4,7 +4,7 @@ export type ThemeMode = "dark" | "light";
 
 interface ThemeContextValue {
 	mode: ThemeMode;
-	toggle: () => void;
+	setMode: (mode: ThemeMode) => void;
 }
 
 const THEME_STORAGE_KEY = "pandwind-playground-theme";
@@ -32,13 +32,7 @@ export function ThemeProvider(props: { children: ReactNode }) {
 		}
 	}, [mode]);
 
-	return (
-		<ThemeContext.Provider
-			value={{ mode, toggle: () => setMode((current) => (current === "dark" ? "light" : "dark")) }}
-		>
-			{props.children}
-		</ThemeContext.Provider>
-	);
+	return <ThemeContext.Provider value={{ mode, setMode }}>{props.children}</ThemeContext.Provider>;
 }
 
 export const useTheme = (): ThemeContextValue => {
