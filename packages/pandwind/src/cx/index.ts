@@ -742,7 +742,7 @@ export function createCx(options: CxOptions = {}): CxFn {
 			if (resultCache.size >= RESULT_CACHE_CAP) {
 				// Evict oldest (insertion order = least-recently-used, since hits re-insert).
 				const oldest = resultCache.keys().next().value;
-			if (oldest !== undefined) resultCache.delete(oldest);
+				if (oldest !== undefined) resultCache.delete(oldest);
 			}
 			resultCache.set(cacheKey, out);
 		}

@@ -65,7 +65,7 @@ the load caveat above applies.
   resolving css() atoms through the registry and merging across engines.
   Both engines memoize repeated identical inputs the same way.
 - **pandwind `css()`/`tw()` trade per-call speed for a much smaller shipped
-runtime** ([canonical size reference](docs/src/content/docs/reference/size.md)) — and for literal calls the vite plugins
+  runtime** ([canonical size reference](docs/src/content/docs/reference/size.md)) — and for literal calls the vite plugins
   hoist the entire cost to build time, making the per-call number irrelevant
   in real apps.
 - Every value here is **one call, cold-ish**: no memoization of the input
@@ -174,13 +174,13 @@ The canonical table is [the reference size page](docs/src/content/docs/reference
 the exact record is the committed `runtime-size.json.snap` and the hard
 ceilings are in `runtime-budget.json`. The current primary entries are:
 
-| entry                          | minified | gzip |
-| ------------------------------ | -------: | ---: |
-| `createCss()` fallback         |    6,777 | 2,974 |
-| `tw()`                          |    2,711 | 1,266 |
-| `cx()`                          |   12,705 | 5,310 |
-| all direct runtime entries     |   15,307 | 6,244 |
-| `createRuntimeCss()` + sheet   |   28,762 | 10,870 |
+| entry                        | minified |   gzip |
+| ---------------------------- | -------: | -----: |
+| `createCss()` fallback       |    6,777 |  2,974 |
+| `tw()`                       |    2,711 |  1,266 |
+| `cx()`                       |   12,705 |  5,310 |
+| all direct runtime entries   |   15,307 |  6,244 |
+| `createRuntimeCss()` + sheet |   28,762 | 10,870 |
 
 The combined runtime is 7 minified bytes above and 6 gzip bytes below the
 supplied `@emotion/css` 11.13.5 reference (15.3 KB / 6.25 KB). The size
@@ -207,11 +207,11 @@ incremental ordering. Each row warmed up first and then used five timed
 samples; the fresh-rule case created a fresh runtime/sheet per sample so
 new-rule registration remained part of the measured work:
 
-| case                                                 | pandwind        | `@emotion/css` | reading                                                               |
-| ---------------------------------------------------- | --------------: | -------------: | --------------------------------------------------------------------- |
-| repeated seven-property `runtimeCss.class()`         | ~3.32M ops/sec  | ~1.10M ops/sec | Pandwind is about 3× faster for this repeated call shape.              |
-| fresh unique one-property `runtimeCss.class()` rules | ~0.29M ops/sec  | ~0.61M ops/sec | Emotion is about 2.1× faster while registering new rules.               |
-| repeated one-property `runtimeCss.vars()`            | ~3.41M ops/sec  | ~3.02M ops/sec* | Pandwind is about 1.1× faster for this stable carrier path.            |
+| case                                                 |       pandwind |  `@emotion/css` | reading                                                     |
+| ---------------------------------------------------- | -------------: | --------------: | ----------------------------------------------------------- |
+| repeated seven-property `runtimeCss.class()`         | ~3.32M ops/sec |  ~1.10M ops/sec | Pandwind is about 3× faster for this repeated call shape.   |
+| fresh unique one-property `runtimeCss.class()` rules | ~0.29M ops/sec |  ~0.61M ops/sec | Emotion is about 2.1× faster while registering new rules.   |
+| repeated one-property `runtimeCss.vars()`            | ~3.41M ops/sec | ~3.02M ops/sec* | Pandwind is about 1.1× faster for this stable carrier path. |
 
 The repo-owned `createRuntimeCss()` size fixture is **28,762 bytes minified /
 10,870 gzip** with a minimal preset; the ordinary `createCss()` entry is

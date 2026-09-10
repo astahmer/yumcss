@@ -42,23 +42,23 @@ application-specific and is not mixed into the library baseline.
 Each engine has its own subpath export, and the root barrel is side-effect
 free. The same size gate checks these tree-shaken entry points:
 
-| fixture / import                         |      min |     gzip |
-| ---------------------------------------- | -------: | -------: |
-| `pandwind/css` — css() only              |  6.78 KB |  2.97 KB |
-| `pandwind/tw` — tw() only                |  2.71 KB |  1.27 KB |
-| `pandwind/cx` — cx() with atom registry  | 12.71 KB |  5.31 KB |
-| root barrel, css only                    |  6.78 KB |  2.97 KB |
-| root barrel, tw only                     |  2.71 KB |  1.27 KB |
-| root barrel, cx only                     | 12.71 KB |  5.31 KB |
+| fixture / import                        |      min |    gzip |
+| --------------------------------------- | -------: | ------: |
+| `pandwind/css` — css() only             |  6.78 KB | 2.97 KB |
+| `pandwind/tw` — tw() only               |  2.71 KB | 1.27 KB |
+| `pandwind/cx` — cx() with atom registry | 12.71 KB | 5.31 KB |
+| root barrel, css only                   |  6.78 KB | 2.97 KB |
+| root barrel, tw only                    |  2.71 KB | 1.27 KB |
+| root barrel, cx only                    | 12.71 KB | 5.31 KB |
 
 Compiler-pruned and static fixtures are smaller still:
 
-| fixture                                  |      min |     gzip |
-| ---------------------------------------- | -------: | -------: |
-| all static `css()` calls                 |    81 B   |    98 B   |
-| compiler-pruned `css()` call             |  4.53 KB |  2.02 KB |
-| compiler-pruned `css.class()` call       |  4.59 KB |  2.05 KB |
-| compiler-pruned `css.vars()` call        |  6.21 KB |  2.71 KB |
+| fixture                            |     min |    gzip |
+| ---------------------------------- | ------: | ------: |
+| all static `css()` calls           |    81 B |    98 B |
+| compiler-pruned `css()` call       | 4.53 KB | 2.02 KB |
+| compiler-pruned `css.class()` call | 4.59 KB | 2.05 KB |
+| compiler-pruned `css.vars()` call  | 6.21 KB | 2.71 KB |
 
 Literal calls are erased by the Vite compiler; these fallback numbers are
 the cost paid by dynamic or unsupported calls.
@@ -77,7 +77,7 @@ Pandwind row includes `css()` + `tw()` + cross-engine `cx()`.
 | `@emotion/css` 11.13.5                     |  15.3 KB | 6.25 KB | emotion core (chakra's engine)          |
 | `@chakra-ui/react` 3.36.1 (react external) |  30.1 KB | 12.5 KB | chakra + emotion it pulls in            |
 | `tailwind-merge` 3.6.0                     |  27.0 KB | 8.47 KB | merge function alone                    |
-| `tokenami`                                 |        0 |     ~0   | compile-time only, nothing ships        |
+| `tokenami`                                 |        0 |      ~0 | compile-time only, nothing ships        |
 
 Alternative-library values are the supplied reference run, not a release
 budget. Re-run that external rig before making a new ecosystem comparison;
