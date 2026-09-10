@@ -9,15 +9,27 @@ import {
 	useRouterState,
 } from "@tanstack/react-router";
 import { Combobox, createListCollection } from "@ark-ui/react";
-import { useEffect, useMemo, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { EXAMPLES } from "./lib/examples.ts";
 import { PlaygroundPage } from "./components/PlaygroundPage.tsx";
-import { MigrationLabPage } from "./components/MigrationLabPage.tsx";
 import { css as uiCss } from "./ui-css.ts";
 import { ThemeProvider, useTheme } from "./theme.tsx";
 
+const MigrationLabPage = lazy(() =>
+	import("./components/MigrationLabPage.tsx").then(({ MigrationLabPage: page }) => ({
+		default: page,
+	})),
+);
+
 const GROUP_LABEL = { core: "Scenarios", limits: "Limits" } as const;
 const DEFAULT_ROUTE = "/basics" as const;
+const ROUTE_LOADING = uiCss.class({
+	display: "grid",
+	height: "100%",
+	placeItems: "center",
+	fontSize: "12px",
+	color: "var(--pw-text-muted)",
+});
 
 const NAV_GROUPS = (Object.keys(GROUP_LABEL) as Array<keyof typeof GROUP_LABEL>).map((group) => ({
 	group,
@@ -370,7 +382,9 @@ function ShellFrame() {
 				</div>
 			</header>
 			<main className={uiCss.class({ minHeight: "0px", flex: "1 1 0%" })}>
-				<Outlet />
+				<Suspense fallback={<div className={ROUTE_LOADING}>loading migration lab…</div>}>
+					<Outlet />
+				</Suspense>
 			</main>
 		</div>
 	);
