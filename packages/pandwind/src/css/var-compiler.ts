@@ -1,6 +1,7 @@
 import { createHashFn, dashCase } from "./hash.ts";
 import type { FlatStyles } from "../lib/utils.ts";
 import { normalizeCssValue } from "./value-normalization.ts";
+import { VARS_ATOMS } from "./vars-carrier.ts";
 
 /**
  * Var-inline compiler for dynamic values.
@@ -12,7 +13,7 @@ import { normalizeCssValue } from "./value-normalization.ts";
  * not a CSS-injection path: no dynamic value is serialized into generated
  * CSS.
  */
-export const VARS_ATOMS = Symbol("pandwind.vars.atoms");
+export { VARS_ATOMS };
 
 export interface VarAtom {
 	readonly cls: string;

@@ -20,7 +20,8 @@ export type {
 	RuntimeStyleElementSink,
 } from "./runtime-sheet-contracts.ts";
 export { RuntimeSemanticRuleKindTag } from "./runtime-sheet-contracts.ts";
-import { VARS_ATOMS, type VarAtom } from "./var-compiler.ts";
+import type { VarAtom } from "./var-compiler.ts";
+import { VARS_ATOMS } from "./vars-carrier.ts";
 import type { ClassNameStrategy } from "./class-name-strategy.ts";
 import { createDesignCss, type DesignPreset, type DesignStyleObject } from "../design/index.ts";
 import type {

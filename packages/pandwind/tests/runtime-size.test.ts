@@ -137,6 +137,7 @@ test("runtime entries stay stylex-sized", async () => {
 		"css, compiler-pruned class": await bundleAfterRuntimePruning("runtime-css-pruned-class.ts"),
 		"css, compiler-pruned vars": await bundleAfterRuntimePruning("runtime-css-pruned-vars.ts"),
 		tw: bundle("runtime-tw.ts"),
+		"cx, plain": bundle("runtime-cx-plain.ts"),
 		cx: bundle("runtime-cx.ts"),
 		"all (css+tw+cx)": bundle("runtime-all.ts"),
 		"stylesheet generator (build-time only)": bundle("size-stylesheet.ts"),

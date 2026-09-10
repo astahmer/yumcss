@@ -27,62 +27,6 @@ const longHandPhysical = prioritySet(
 		"scroll-padding-top|scroll-padding-bottom|scroll-padding-left|scroll-padding-right",
 );
 
-const longHandLogical = prioritySet(
-	"background-blend-mode|isolation|mix-blend-mode|animation-composition|animation-delay|animation-direction|" +
-		"animation-duration|animation-fill-mode|animation-iteration-count|animation-name|animation-play-state|animation-range-end|" +
-		"animation-range-start|animation-timing-function|animation-timeline|scroll-timeline-axis|scroll-timeline-name|timeline-scope|" +
-		"view-timeline-axis|view-timeline-inset|view-timeline-name|background-attachment|background-clip|background-color|" +
-		"background-image|background-origin|background-repeat|background-size|background-position-x|background-position-y|" +
-		"border-block-color|border-block-style|border-block-width|border-block-start-color|border-block-start-style|border-block-start-width|" +
-		"border-block-end-color|border-block-end-style|border-block-end-width|border-inline-start-color|border-inline-start-style|border-inline-start-width|" +
-		"border-inline-end-color|border-inline-end-style|border-inline-end-width|border-image-outset|border-image-repeat|border-image-slice|" +
-		"border-image-source|border-image-width|border-start-end-radius|border-start-start-radius|border-end-end-radius|border-end-start-radius|" +
-		"box-shadow|accent-color|appearance|aspect-ratio|caret-color|caret-shape|" +
-		"cursor|ime-mode|input-security|outline-color|outline-offset|outline-style|" +
-		"outline-width|pointer-events|resize|text-overflow|user-select|grid-row-gap|" +
-		"row-gap|grid-column-gap|column-gap|align-content|justify-content|align-items|" +
-		"justify-items|align-self|justify-self|box-sizing|block-size|inline-size|" +
-		"max-block-size|max-inline-size|min-block-size|min-inline-size|margin-block-start|margin-block-end|" +
-		"margin-inline-start|margin-inline-end|margin-trim|overscroll-behavior-block|overscroll-behavior-inline|padding-block-start|" +
-		"padding-block-end|padding-inline-start|padding-inline-end|visibility|color|color-scheme|" +
-		"forced-color-adjust|opacity|print-color-adjust|column-count|column-width|column-fill|" +
-		"column-span|column-rule-color|column-rule-style|column-rule-width|contain|contain-intrinsic-block-size|" +
-		"contain-intrinsic-width|contain-intrinsic-height|contain-intrinsic-inline-size|container-name|container-type|content-visibility|" +
-		"counter-increment|counter-reset|counter-set|display|flex-basis|flex-grow|" +
-		"flex-shrink|flex-direction|flex-wrap|order|font-family|font-size|" +
-		"font-stretch|font-style|font-weight|line-height|font-variant-alternates|font-variant-caps|" +
-		"font-variant-east-asian|font-variant-emoji|font-variant-ligatures|font-variant-numeric|font-variant-position|font-feature-settings|" +
-		"font-kerning|font-language-override|font-optical-sizing|font-palette|font-variation-settings|font-size-adjust|" +
-		"font-smooth|font-synthesis-position|font-synthesis-small-caps|font-synthesis-style|font-synthesis-weight|line-height-step|" +
-		"box-decoration-break|break-after|break-before|break-inside|orphans|widows|" +
-		"content|quotes|grid-auto-flow|grid-auto-rows|grid-auto-columns|grid-template-columns|" +
-		"grid-template-rows|grid-row-start|grid-row-end|grid-column-start|grid-column-end|align-tracks|" +
-		"justify-tracks|masonry-auto-flow|image-orientation|image-rendering|image-resolution|object-fit|" +
-		"object-position|initial-letter|initial-letter-align|list-style-image|list-style-position|list-style-type|" +
-		"clip|clip-path|mask-clip|mask-composite|mask-image|mask-mode|" +
-		"mask-origin|mask-position|mask-repeat|mask-size|mask-type|mask-border-mode|" +
-		"mask-border-outset|mask-border-repeat|mask-border-slice|mask-border-source|mask-border-width|text-rendering|" +
-		"offset-anchor|offset-distance|offset-path|offset-position|offset-rotate|-webkit-box-orient|" +
-		"-webkit-line-clamp|overflow-block|overflow-inline|overflow-clip-margin|scroll-gutter|scroll-behavior|" +
-		"page|page-break-after|page-break-before|page-break-inside|inset-block-start|inset-block-end|" +
-		"inset-inline-start|inset-inline-end|clear|float|position|z-index|" +
-		"ruby-align|ruby-merge|ruby-position|overflow-anchor|scroll-margin-block-start|scroll-margin-block-end|" +
-		"scroll-margin-inline-start|scroll-margin-inline-end|scroll-padding-block-start|scroll-padding-block-end|scroll-padding-inline-start|scroll-padding-inline-end|" +
-		"scroll-snap-align|scroll-snap-stop|scrollbar-color|scrollbar-width|shape-image-threshold|shape-margin|" +
-		"shape-outside|azimuth|border-collapse|border-spacing|caption-side|empty-cells|" +
-		"table-layout|vertical-align|text-decoration-color|text-decoration-line|text-decoration-skip|text-decoration-skip-ink|" +
-		"text-decoration-style|text-decoration-thickness|text-emphasis-color|text-emphasis-position|text-emphasis-style|text-shadow|" +
-		"text-underline-offset|text-underline-position|hanging-punctuation|hyphenate-character|hyphenate-limit-chars|hyphens|" +
-		"letter-spacing|line-break|overflow-wrap|paint-order|tab-size|text-align|" +
-		"text-align-last|text-indent|text-justify|text-size-adjust|text-transform|text-wrap|" +
-		"white-space|white-space-collapse|word-break|word-spacing|word-wrap|backface-visibility|" +
-		"perspective|perspective-origin|rotate|scale|transform|transform-box|" +
-		"transform-origin|transform-style|translate|transition-delay|transition-duration|transition-property|" +
-		"transition-timing-function|view-transition-name|will-change|direction|text-combine-upright|text-orientation|" +
-		"unicode-bidi|writing-mode|backdrop-filter|filter|math-depth|math-shift|" +
-		"math-style|touch-action",
-);
-
 const shorthandsOfLonghands = prioritySet(
 	"animation-range|scroll-timeline|view-timeline|background-position|border-color|border-style|" +
 		"border-width|border-block-start|border-top|border-block-end|border-bottom|border-inline-color|" +
@@ -274,9 +218,6 @@ export function getPropertyPriority(key: string): number {
 
 	if (longHandPhysical.has(property)) {
 		return 4000;
-	}
-	if (longHandLogical.has(property)) {
-		return 3000;
 	}
 	if (shorthandsOfLonghands.has(property)) {
 		return 2000;

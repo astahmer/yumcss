@@ -1,5 +1,6 @@
 import type { StyleObject } from "../types/typings.ts";
-import { createVarCompiler, VARS_ATOMS, type VarAtom, type VarsOutput } from "./var-compiler.ts";
+import { createVarCompiler, type VarAtom, type VarsOutput } from "./var-compiler.ts";
+import { VARS_ATOMS } from "./vars-carrier.ts";
 import type { RuntimeCssAttachment } from "./runtime-base.ts";
 
 /** Attach the dynamic-value projection that emits classes plus custom properties. */
