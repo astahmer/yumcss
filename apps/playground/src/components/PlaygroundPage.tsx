@@ -18,6 +18,7 @@ import {
 	CLASS_NAME_ADAPTERS,
 	ClassNameAdapterId,
 	classNameAdapterById,
+	resolveClassNameStrategy,
 	type ClassNameAdapterDefinition,
 } from "../lib/class-name-adapters.ts";
 import { EditorPane } from "./EditorPane.tsx";
@@ -66,7 +67,7 @@ function decodeCode(encoded: string): string | null {
 function evalSiblings(
 	sources: readonly string[],
 	variant: ExampleVariant,
-	adapter: ClassNameAdapterDefinition,
+	strategy: ClassNameStrategy | null,
 ): EvalInput["moduleBindings"] {
 	if (variant.files.length <= 1) return undefined;
 	const bindings: Record<string, Record<string, unknown>> = {};
@@ -74,7 +75,7 @@ function evalSiblings(
 		const file: ExampleFile = variant.files[index]!;
 		try {
 			bindings["./" + file.name] = evalSiblingModule(
-				makeInput(sources[index] ?? file.code, undefined, adapter.strategy ?? null),
+				makeInput(sources[index] ?? file.code, undefined, strategy),
 			);
 		} catch (error) {
 			throw new Error(file.name + ": " + (error instanceof Error ? error.message : String(error)), {
@@ -117,6 +118,9 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 	const activeVariant = props.def.variants.find((variant) => variant.api === api) ?? initialVariant;
 	const [classNameAdapterId, setClassNameAdapterId] = useState(initialAdapter.id);
 	const activeClassNameAdapter = classNameAdapterById(classNameAdapterId);
+	const [classNameStrategy, setClassNameStrategy] = useState<ClassNameStrategy | null>(
+		initialAdapter.strategy ?? null,
+	);
 	const [files, setFiles] = useState<readonly string[]>(() => {
 		const hash = window.location.hash.slice(1);
 		if (hash !== "") {
@@ -132,11 +136,43 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 		evalPlayground(
 			makeInput(
 				files[0]!,
-				evalSiblings(files, activeVariant, activeClassNameAdapter),
-				activeClassNameAdapter.strategy ?? null,
+				evalSiblings(files, activeVariant, classNameStrategy),
+				classNameStrategy,
 			),
 		),
 	);
+	useEffect(() => {
+		let cancelled = false;
+		setClassNameStrategy(activeClassNameAdapter.strategy ?? null);
+		void resolveClassNameStrategy(activeClassNameAdapter)
+			.then((strategy) => {
+				if (!cancelled) setClassNameStrategy(strategy);
+			})
+			.catch((error: unknown) => {
+				if (!cancelled) {
+					setResult({ ok: false, error: error instanceof Error ? error.message : String(error) });
+				}
+			});
+		return () => {
+			cancelled = true;
+		};
+	}, [activeClassNameAdapter]);
+	useEffect(() => {
+		if (activeClassNameAdapter.loadStrategy !== undefined && classNameStrategy === null) return;
+		try {
+			setResult(
+				evalPlayground(
+					makeInput(
+						files[0]!,
+						evalSiblings(files, activeVariant, classNameStrategy),
+						classNameStrategy,
+					),
+				),
+			);
+		} catch (error) {
+			setResult({ ok: false, error: error instanceof Error ? error.message : String(error) });
+		}
+	}, [activeClassNameAdapter, activeVariant, classNameStrategy]);
 	const run = useCallback(
 		(sources: readonly string[]) => {
 			try {
@@ -144,8 +180,8 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 					evalPlayground(
 						makeInput(
 							sources[0]!,
-							evalSiblings(sources, activeVariant, activeClassNameAdapter),
-							activeClassNameAdapter.strategy ?? null,
+							evalSiblings(sources, activeVariant, classNameStrategy),
+							classNameStrategy,
 						),
 					),
 				);
@@ -162,7 +198,7 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 				variantUrl(props.def, activeVariant.api, hash, activeClassNameAdapter.id),
 			);
 		},
-		[activeClassNameAdapter, activeVariant, props.def],
+		[activeClassNameAdapter, activeVariant, classNameStrategy, props.def],
 	);
 
 	const selectApi = useCallback(
@@ -177,8 +213,8 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 				evalPlayground(
 					makeInput(
 						nextFiles[0]!,
-						evalSiblings(nextFiles, nextVariant, activeClassNameAdapter),
-						activeClassNameAdapter.strategy ?? null,
+						evalSiblings(nextFiles, nextVariant, classNameStrategy),
+						classNameStrategy,
 					),
 				),
 			);
@@ -188,25 +224,16 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 				variantUrl(props.def, nextVariant.api, "", activeClassNameAdapter.id),
 			);
 		},
-		[activeClassNameAdapter, props.def],
+		[activeClassNameAdapter, classNameStrategy, props.def],
 	);
 
 	const selectClassNameAdapter = useCallback(
 		(nextId: string) => {
 			const nextAdapter = classNameAdapterById(nextId);
 			setClassNameAdapterId(nextAdapter.id);
-			setResult(
-				evalPlayground(
-					makeInput(
-						files[0]!,
-						evalSiblings(files, activeVariant, nextAdapter),
-						nextAdapter.strategy ?? null,
-					),
-				),
-			);
 			history.replaceState(null, "", variantUrl(props.def, activeVariant.api, "", nextAdapter.id));
 		},
-		[activeVariant, files, props.def],
+		[activeVariant, props.def],
 	);
 
 	useEffect(() => {
@@ -218,15 +245,18 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 			setClassNameAdapterId(nextAdapter.id);
 			setFiles(nextFiles);
 			setActiveTab(0);
-			setResult(
-				evalPlayground(
-					makeInput(
-						nextFiles[0]!,
-						evalSiblings(nextFiles, nextVariant, nextAdapter),
-						nextAdapter.strategy ?? null,
-					),
-				),
-			);
+			void resolveClassNameStrategy(nextAdapter)
+				.then((strategy) => {
+					setClassNameStrategy(strategy);
+					setResult(
+						evalPlayground(
+							makeInput(nextFiles[0]!, evalSiblings(nextFiles, nextVariant, strategy), strategy),
+						),
+					);
+				})
+				.catch((error: unknown) => {
+					setResult({ ok: false, error: error instanceof Error ? error.message : String(error) });
+				});
 		};
 		window.addEventListener("popstate", syncVariant);
 		return () => window.removeEventListener("popstate", syncVariant);
