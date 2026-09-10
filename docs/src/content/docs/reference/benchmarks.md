@@ -116,6 +116,26 @@ compiler.
 Literal calls remain statically erased by the Vite compiler, so these runtime
 costs apply to dynamic or unsupported calls only.
 
+## Opt-in generated runtime selections
+
+The `pandwind-codemod runtime generate` command lets non-Vite consumers choose
+the `createCss` attachments they actually use. The current generated-module
+record is:
+
+| selection       | minified |  gzip |
+| --------------- | -------: | ----: |
+| callable core   |    3,894 | 1,755 |
+| `class`         |    3,949 | 1,776 |
+| `vars`          |    5,496 | 2,428 |
+| `class,vars`    |    5,550 | 2,450 |
+| all attachments |    6,691 | 2,914 |
+
+The `class,vars` module therefore removes **1,141 minified bytes / 464 gzip
+bytes** from the generated all-method module. This is a bundle-size saving;
+the callable core and selected attachment implementations are unchanged, so
+the optimization does not add runtime dispatch or dynamic loading. The exact
+record is part of the Pandwind runtime-size snapshot.
+
 ## Re-running
 
 The repo-owned evidence is split by cost center: `packages/pandwind/tests/runtime-size.test.ts`

@@ -61,6 +61,24 @@ Compiler-pruned and static fixtures are smaller still:
 | compiler-pruned `css.class()` call | 4.00 KB | 1.82 KB |
 | compiler-pruned `css.vars()` call  | 5.55 KB | 2.47 KB |
 
+The opt-in `pandwind-codemod runtime generate` path has the same callable
+core, but can omit attachments that an application never uses:
+
+| generated selection |     min |    gzip |
+| ------------------- | ------: | ------: |
+| callable core       | 3.89 KB | 1.76 KB |
+| `class`             | 3.95 KB | 1.78 KB |
+| `vars`              | 5.50 KB | 2.43 KB |
+| `class,vars`        | 5.55 KB | 2.45 KB |
+| all attachments     | 6.69 KB | 2.91 KB |
+
+For the common `class,vars` selection, that is approximately **1.14 KB min /
+464 B gzip** less than the generated all-method runtime (17% / 16%), with no
+alternate runtime implementation or per-call dispatch layer. The generated
+module is statically imported and retains only the selected typed methods;
+`group` automatically adds its required `vars` attachment. These figures are
+enforced by the generated rows in `packages/pandwind/tests/runtime-size.test.ts`.
+
 Literal calls are erased by the Vite compiler; these fallback numbers are
 the cost paid by dynamic or unsupported calls.
 

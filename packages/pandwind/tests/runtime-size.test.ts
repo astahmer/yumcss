@@ -28,6 +28,7 @@ import { buildSync } from "esbuild";
 import { expect, test } from "vitest";
 import { examplePreset } from "@pandwind/example-preset";
 import { createCssExtractionService } from "../src/vite/css-extract.ts";
+import { renderCssRuntimeModule } from "../src/css/runtime-codegen.ts";
 import { createRuntimePruningTransform } from "../src/vite/runtime-pruner.ts";
 
 const ROOT = resolve(import.meta.dirname, "..");
@@ -110,6 +111,25 @@ const bundleAfterRuntimePruning = async (fixture: string): Promise<{ min: number
 	return { min: code.length, gz: gzipSync(code).byteLength };
 };
 
+const bundleGeneratedRuntime = (methods: readonly string[]): { min: number; gz: number } => {
+	const result = buildSync({
+		stdin: {
+			contents: renderCssRuntimeModule(methods, { typed: true }),
+			loader: "ts",
+			resolveDir: ROOT,
+			sourcefile: "pandwind-runtime.ts",
+		},
+		bundle: true,
+		minify: true,
+		format: "esm",
+		platform: "browser",
+		write: false,
+		logLevel: "silent",
+	});
+	const code = result.outputFiles[0]!.text;
+	return { min: code.length, gz: gzipSync(code).byteLength };
+};
+
 /**
  * True when running `vitest run -u` / `--update`.
  *
@@ -136,6 +156,18 @@ test("runtime entries stay stylex-sized", async () => {
 		"css, compiler-pruned call": await bundleAfterRuntimePruning("runtime-css-pruned-call.ts"),
 		"css, compiler-pruned class": await bundleAfterRuntimePruning("runtime-css-pruned-class.ts"),
 		"css, compiler-pruned vars": await bundleAfterRuntimePruning("runtime-css-pruned-vars.ts"),
+		"css, generated call": bundleGeneratedRuntime([]),
+		"css, generated class": bundleGeneratedRuntime(["class"]),
+		"css, generated vars": bundleGeneratedRuntime(["vars"]),
+		"css, generated class+vars": bundleGeneratedRuntime(["class", "vars"]),
+		"css, generated all": bundleGeneratedRuntime([
+			"class",
+			"vars",
+			"raw",
+			"props",
+			"group",
+			"input",
+		]),
 		tw: bundle("runtime-tw.ts"),
 		"cx, plain": bundle("runtime-cx-plain.ts"),
 		cx: bundle("runtime-cx.ts"),
@@ -176,6 +208,14 @@ test("runtime entries stay stylex-sized", async () => {
 			sizes.css.gz,
 		);
 	}
+	expect(
+		sizes["css, generated class+vars"].gz,
+		"generated class+vars runtime must be smaller than generated all",
+	).toBeLessThan(sizes["css, generated all"].gz);
+	expect(
+		sizes["css, generated class+vars"].min,
+		"generated class+vars runtime must be smaller than generated all",
+	).toBeLessThan(sizes["css, generated all"].min);
 
 	// 2. Regression guard vs the committed baseline (noise-tolerant).
 	if (!updatingSnapshots()) {

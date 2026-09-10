@@ -27,6 +27,26 @@
     "min": 5550,
     "gz": 2467
   },
+  "css, generated call": {
+    "min": 3894,
+    "gz": 1755
+  },
+  "css, generated class": {
+    "min": 3949,
+    "gz": 1776
+  },
+  "css, generated vars": {
+    "min": 5496,
+    "gz": 2428
+  },
+  "css, generated class+vars": {
+    "min": 5550,
+    "gz": 2450
+  },
+  "css, generated all": {
+    "min": 6691,
+    "gz": 2914
+  },
   "tw": {
     "min": 2711,
     "gz": 1266
