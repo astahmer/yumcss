@@ -18,6 +18,7 @@
 		"@monaco-editor/react": "4.7.0",
 		"@pandwind/example-preset": "workspace:*",
 		"@tanstack/react-router": "1.170.32",
+		"csstype": "3.2.3",
 		"oxc-parser": "0.148.0",
 		"pandwind": "workspace:*",
 		"pandwind-codemod": "workspace:*",

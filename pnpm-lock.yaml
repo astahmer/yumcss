@@ -233,6 +233,9 @@ importers:
       '@tanstack/react-router':
         specifier: 1.170.32
         version: 1.170.32(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      csstype:
+        specifier: 3.2.3
+        version: 3.2.3
       oxc-parser:
         specifier: 0.148.0
         version: 0.148.0

@@ -75,7 +75,7 @@ export const EXAMPLES: readonly ExampleDef[] = [
 		title: "Basics",
 		blurb: "the same styling intent expressed through each Pandwind API",
 		group: "core",
-		note: `Select an API to see the same button styles expressed through typed tw(), declaration-first css(), or design-system dss(). The output classes stay aligned because all three APIs use the same preset and bridge.`,
+		note: `Select an API to see the same button styles expressed through typed tw(), declaration-first css(), or design-system dss(). The APIs share one preset, while each lane keeps its own class-name strategy.`,
 		variants: [
 			{
 				api: PlaygroundApi.Tw,
@@ -240,7 +240,7 @@ css.class({
 		title: "Design presets",
 		blurb: "define your own theme, tokens, and conditions",
 		group: "core",
-		note: "A brand preset is data: defineTokens + definePreset. Without a generated bridge the engine falls back to arbitrary properties ([background-color:#4c51bf]) — run pandwind-codemod tw generate to produce the bridge and these become bg-brand-500 utilities.",
+		note: "A brand preset is data: defineTokens + definePreset. The native css() lane emits hashed atoms from the preset; choose the Tailwind adapter to lower the same declarations through the generated bridge.",
 		variants: [
 			{
 				api: PlaygroundApi.Dss,

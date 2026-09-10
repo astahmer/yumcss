@@ -24,7 +24,7 @@ export default defineConfig({
 	plugins: [
 		tailwindDefaultCssPlugin,
 		pandwindCssVite(examplePreset, {
-			cssSources: ["css", "design", "ui-css"],
+			cssSources: ["css", "ui-css"],
 		}),
 		react(),
 	],
