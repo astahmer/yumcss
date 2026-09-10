@@ -15,11 +15,22 @@ import { VARS_ATOMS } from "./vars-carrier.ts";
  */
 export { VARS_ATOMS };
 
+/** One structural class and the flattened style keys it activates. */
 export interface VarAtom {
 	readonly cls: string;
 	readonly keys: string[];
 }
 
+/**
+ * Host-ready output from `css.vars` or `cx.vars`.
+ *
+ * The public fields are safe to spread onto a host element. The symbol-keyed
+ * metadata is private coordination between the compiler, `cx`, and runtime
+ * stylesheet; consumers should not need to inspect it.
+ *
+ * @category styling
+ * @since 0.1.0
+ */
 export interface VarsOutput {
 	readonly class: string;
 	readonly style: Record<string, string>;
@@ -27,6 +38,7 @@ export interface VarsOutput {
 }
 
 const runtimeValue = normalizeCssValue;
+/** Replaceable encoder for dynamic CSS values and their structural carriers. */
 export interface VarCompiler {
 	classFor(key: string): string;
 	escapeClass(cls: string): string;
@@ -117,5 +129,14 @@ class DefaultVarCompiler implements VarCompiler {
 	}
 }
 
+/**
+ * Create the default variable carrier compiler.
+ *
+ * @param conditionNames - Condition names that should be treated as semantic
+ *   paths when deriving custom-property fallbacks.
+ * @returns A compiler used by `css.vars` and runtime stylesheet generation.
+ * @category styling
+ * @since 0.1.0
+ */
 export const createVarCompiler = (conditionNames?: Iterable<string>): VarCompiler =>
 	new DefaultVarCompiler(conditionNames);

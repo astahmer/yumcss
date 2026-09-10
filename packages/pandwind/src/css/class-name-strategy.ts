@@ -26,6 +26,9 @@
  *   Strategies backed by an external compiler (Tailwind) leave it unset:
  *   their classes need no entry in any generated sheet, so nothing is
  *   registered and the stylesheet stays byte-identical to no-strategy use.
+ *
+ * @category adapters
+ * @since 0.1.0
  */
 
 export interface ClassNameStrategy {
@@ -37,5 +40,27 @@ export interface ClassNameStrategy {
 	 * module contract above.
 	 */
 	readonly sheetBacked?: boolean;
+	/**
+	 * Convert one flattened declaration into a class name.
+	 *
+	 * Return `null` when the strategy cannot represent a declaration and the
+	 * atomic fallback should own it. A strategy that returns a class must also
+	 * ensure that another compiler owns the corresponding CSS, unless
+	 * `sheetBacked` is true.
+	 *
+	 * @example A minimal named strategy
+	 * ```ts
+	 * import type { ClassNameStrategy } from "pandwind/css";
+	 *
+	 * const strategy: ClassNameStrategy = {
+	 *   name: "property-value",
+	 *   toClassName: (key, value) => `app-${key}-${value}`,
+	 * };
+	 * ```
+	 *
+	 * @param key - A flattened property/condition path such as `_hover__color`.
+	 * @param value - The normalized declaration value.
+	 * @returns A host-safe class name, or `null` for the atomic fallback.
+	 */
 	toClassName(key: string, value: string): string | null;
 }

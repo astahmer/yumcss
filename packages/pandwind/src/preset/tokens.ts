@@ -228,6 +228,15 @@ const sizes = {
 	...percentsRecord,
 } as const;
 
+/**
+ * The built-in token catalog used by {@link pandwindPreset}.
+ *
+ * These are raw values and remain useful as input data when an application
+ * wants to compose a derived preset rather than use the built-in one as-is.
+ *
+ * @category tokens
+ * @since 0.1.0
+ */
 export const tokens = {
 	colors,
 	space,
@@ -243,4 +252,5 @@ export const tokens = {
 	aligns,
 } as const;
 
+/** The inferred type of the built-in {@link tokens} catalog. */
 export type Tokens = typeof tokens;

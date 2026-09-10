@@ -1,13 +1,35 @@
 import type { AnySelector } from "./selectors.d.ts";
 
+/** A value accepted in a Pandwind style object, including nested conditions. */
 export type StyleValue = string | number | null | StyleObject | readonly StyleValue[] | undefined;
 
+/**
+ * The open structural shape used by the runtime CSS compiler.
+ *
+ * Preset-aware factories expose a narrower version of this shape through
+ * {@link TypedStyleObject}; use this type when a style is intentionally
+ * assembled at runtime or comes from another styling system.
+ *
+ * @example A runtime style object
+ * ```ts
+ * import type { StyleObject } from "pandwind/types/typings";
+ *
+ * const style: StyleObject = {
+ *   color: "var(--runtime-color)",
+ *   _hover: { opacity: 0.8 },
+ * };
+ * ```
+ *
+ * @category styling
+ * @since 0.1.0
+ */
 export interface StyleObject extends Record<string, StyleValue> {}
 
 /* -----------------------------------------------------------------------------
  * properties config
  * -----------------------------------------------------------------------------*/
 
+/** A CSS property configuration supplied by the project's type vocabulary. */
 export interface AnyCssConfig {
 	[key: string]: any;
 }
@@ -71,6 +93,18 @@ type PropConfigValues<
 	Value extends CssValuesOf<TConfig, TName>,
 > = Value | true;
 
+/**
+ * Maps CSS properties to their allowed values or token maps in a preset.
+ *
+ * A property can be `true` when the CSS config should supply its values, or a
+ * record when strict mode should expose a named token vocabulary for it.
+ * `$all: true` opts into the complete configured CSS property set.
+ *
+ * @typeParam TConfig - The CSS property configuration.
+ * @typeParam TTokens - The token groups available to the preset.
+ * @category presets
+ * @since 0.1.0
+ */
 export type AnyPresetProperties<TConfig, TTokens> = {
 	[PropName in keyof TConfig]?: PropConfigValues<
 		TConfig,
@@ -84,8 +118,10 @@ export type AnyPresetProperties<TConfig, TTokens> = {
 	$all?: true;
 };
 
+/** Condition names mapped to selectors, at-rules, or ordered selector lists. */
 export type AnyConditions = Record<string, string | string[]>;
 
+/** A statically resolved token entry produced by stylesheet analysis. */
 export interface SimpleToken {
 	path: string;
 	name: string;
@@ -93,26 +129,46 @@ export interface SimpleToken {
 	hash: string;
 }
 
+/** A token whose value changes under one or more preset conditions. */
 export interface SemanticToken<TConds = string> extends Omit<SimpleToken, "value"> {
 	group: string;
 	cssVar: string;
 	value: string | Record<string, TConds>;
 }
 
+/** Either a raw token or a condition-aware semantic token. */
 export type Token<TConds = string> = SimpleToken | SemanticToken<TConds>;
 
+/** A serialized token declaration and its cascade priority. */
 export interface TokenDeclaration {
 	declaration: string;
 	priority: number;
 }
 
+/** The authored raw-token shape accepted by {@link defineTokens}. */
 export type AnySimpleTokens = Record<string, Record<string, string>>;
+
+/** The authored condition-aware token shape accepted by {@link defineSemanticTokens}. */
 export type AnySemanticTokens<TConds extends string> = Record<
 	string,
 	Record<string, Partial<Record<TConds, string>>>
 >;
+/** The normalized token shape carried by a compiled preset. */
 export type AnyTokens = Record<string, Record<string, Token["value"]>>;
 
+/**
+ * Runtime behavior and typing metadata consumed by Pandwind CSS factories.
+ *
+ * Most applications create this value with {@link definePreset} rather than
+ * writing the structural type directly.
+ *
+ * @typeParam TConfig - The project's CSS property configuration.
+ * @typeParam TTokens - The preset token groups.
+ * @typeParam TConditions - The condition names and selectors.
+ * @typeParam TProps - The property-to-token vocabulary.
+ * @category presets
+ * @since 0.1.0
+ */
 export interface CssPreset<
 	TConfig extends AnyCssConfig = AnyCssConfig,
 	TTokens extends AnyTokens = AnyTokens,
@@ -124,6 +180,7 @@ export interface CssPreset<
 	strict: boolean;
 }
 
+/** The values portion passed to {@link definePreset}. */
 export interface DefinePresetOptions<
 	TConfig extends AnyCssConfig = AnyCssConfig,
 	TTokens extends AnyTokens = AnyTokens,
@@ -132,6 +189,7 @@ export interface DefinePresetOptions<
 	tokens: TTokens;
 }
 
+/** A theme after it has been combined with preset behavior. */
 export interface CssConfigReturn<
 	TTheme extends DefinePresetOptions = DefinePresetOptions,
 > extends CssPreset<TTheme["config"]> {
@@ -191,6 +249,33 @@ type InitialCssTypesValues<TConfig, TAll, PropName extends keyof TConfig> = TAll
 
 declare const ErrorSymbol: unique symbol;
 
+/**
+ * A preset-aware style object accepted by `createCss(preset)`.
+ *
+ * Property names and token names are derived from the preset. Condition keys
+ * can be nested to any depth, and selector keys such as `&` remain available
+ * through the shared style-object surface.
+ *
+ * @example Token and condition checking follows the preset
+ * ```ts
+ * import { createCss } from "pandwind/css";
+ * import { examplePreset } from "@pandwind/example-preset";
+ *
+ * const css = createCss(examplePreset);
+ *
+ * css.class({
+ *   backgroundColor: "$blue-500",
+ *   _hover: { backgroundColor: "$blue-600" },
+ * });
+ * ```
+ *
+ * @typeParam TConfig - The CSS property configuration.
+ * @typeParam TTokens - The preset token groups.
+ * @typeParam TPreset - The complete preset metadata.
+ * @typeParam TConds - The condition keys accepted by nested styles.
+ * @category styling
+ * @since 0.1.0
+ */
 export type TypedStyleObject<
 	TConfig extends AnyCssConfig,
 	TTokens extends AnyTokens,

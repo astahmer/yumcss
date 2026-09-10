@@ -206,6 +206,16 @@ interface TextProps<TTokens extends AnyTokens> {
 	highlight?: HighlightValue<TTokens>;
 }
 
+/**
+ * The preset contract required by {@link createDesignCss}.
+ *
+ * A design preset uses the same token and condition metadata as the atomic CSS
+ * lane; the design resolver translates `$frame`, `$layout`, and `$text` into
+ * ordinary CSS declarations before atom generation.
+ *
+ * @category design system
+ * @since 0.1.0
+ */
 export type DesignPreset = CssConfigReturn<DefinePresetOptions<AnyCssConfig, AnyTokens>>;
 
 /**
@@ -213,6 +223,22 @@ export type DesignPreset = CssConfigReturn<DefinePresetOptions<AnyCssConfig, Any
  * and recursively inside any condition or selector block. Raw CSS props are
  * not allowed at the top level — they live under `$raw` (the escape hatch),
  * which keeps "wrong is a type error" enforceable via excess-property checks.
+ *
+ * @example
+ * ```ts
+ * import type { DesignStyleObject } from "pandwind/design";
+ * import { examplePreset } from "@pandwind/example-preset";
+ *
+ * const style: DesignStyleObject<typeof examplePreset> = {
+ *   $frame: { fill: "$blue-500", pad: [8, 16] },
+ *   $text: { color: "$gray-50", weight: "semibold" },
+ *   _hover: { $frame: { fill: "$blue-600" } },
+ * };
+ * ```
+ *
+ * @typeParam TPreset - The preset supplying tokens and condition keys.
+ * @category design system
+ * @since 0.1.0
  */
 export type DesignStyleObject<TPreset extends DesignPreset> = {
 	/** The box: w, h, corners, fill, border, pad, overflow, z, opacity ... */

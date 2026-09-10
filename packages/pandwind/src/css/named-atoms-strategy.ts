@@ -27,6 +27,28 @@ import { pairs } from "../lib/utils.ts";
 import type { ClassNameStrategy } from "./class-name-strategy.ts";
 import { escapeIdentifier } from "./hash.ts";
 
+/**
+ * Create a sheet-backed strategy with readable declaration-derived classes.
+ *
+ * This is useful when inspecting markup or debugging generated CSS matters
+ * more than the shortest opaque class names. Pandwind still owns the
+ * stylesheet, so the strategy remains compatible with `cx` and
+ * `createStylesheet`.
+ *
+ * @example
+ * ```ts
+ * import { createCss, createNamedAtomsStrategy } from "pandwind/css";
+ *
+ * const css = createCss({ className: createNamedAtomsStrategy("app") });
+ * const className = css.class({ color: "tomato" });
+ * // a readable `app-color-tomato`-style class
+ * ```
+ *
+ * @param prefix - Prefix used for generated class names.
+ * @returns A sheet-backed class-name strategy.
+ * @category adapters
+ * @since 0.1.0
+ */
 export const createNamedAtomsStrategy = (prefix = "pw"): ClassNameStrategy => {
 	return {
 		name: "named-atoms",

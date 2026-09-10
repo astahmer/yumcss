@@ -35,6 +35,16 @@ import type {
 
 type RuntimeDeclaration = { key: string; value: string };
 
+/**
+ * Options for the runtime CSS lane, which owns a live stylesheet in addition
+ * to the normal `CssFn` projections.
+ *
+ * Supply a `sheet` when server and client code must share or hydrate one
+ * explicit sheet. Otherwise the runtime creates or reuses its default sheet.
+ *
+ * @category runtime
+ * @since 0.1.0
+ */
 export interface RuntimeCssOptions extends CreateCssOptions {
 	/** Reuse a sheet across multiple css instances. */
 	readonly sheet?: RuntimeSheet;
@@ -42,12 +52,17 @@ export interface RuntimeCssOptions extends CreateCssOptions {
 	readonly sheetOptions?: RuntimeSheetOptions;
 }
 
-/** Complete runtime CSS surface, including its attached stylesheet.
+/**
+ * Complete runtime CSS surface, including its attached stylesheet.
  *
  * Runtime styles may contain values and properties discovered from another
  * styling system, so keep the preset-aware overload while also exposing the
  * neutral `StyleObject` overload used by migration output. The compile-time
  * `createCss(preset)` surface remains strict and token-aware.
+ *
+ * @typeParam TStyles - The style-object type accepted by the callable surface.
+ * @category runtime
+ * @since 0.1.0
  */
 export type RuntimeCssFn<TStyles extends StyleObject = StyleObject> = CssFn<TStyles> &
 	CssFn<StyleObject> & {
@@ -191,7 +206,33 @@ function withRuntimeFlush(css: CssFn<StyleObject>, runtime: RuntimeBinding): Css
 	return flushed;
 }
 
-/** Create the full runtime CSS-in-JS engine for a preset. */
+/**
+ * Create the full runtime CSS-in-JS engine for a preset.
+ *
+ * Unlike `createCss`, this lane registers discovered rules in a live
+ * {@link RuntimeSheet}. It is the right boundary for browser runtime styles,
+ * SSR/hydration, and migration output that cannot be fully extracted ahead of
+ * time.
+ *
+ * @example Runtime CSS with an explicit sheet
+ * ```ts
+ * import { createRuntimeCss, createRuntimeSheet } from "pandwind/css/runtime";
+ * import { examplePreset } from "@pandwind/example-preset";
+ *
+ * const sheet = createRuntimeSheet({ autoMount: false });
+ * const css = createRuntimeCss(examplePreset, { sheet });
+ * const className = css.class({ color: "$blue-500" });
+ *
+ * const emittedCss = sheet.css();
+ * ```
+ *
+ * @typeParam TPreset - The preset supplying property, token, and condition types.
+ * @param preset - The typed preset used to resolve runtime tokens.
+ * @param options - Runtime sheet and CSS backend options.
+ * @returns A preset-aware CSS function with a live `sheet` property.
+ * @category runtime
+ * @since 0.1.0
+ */
 export function createRuntimeCss<
 	TPreset extends CssConfigReturn<DefinePresetOptions<AnyCssConfig, AnyTokens>>,
 >(
@@ -209,7 +250,29 @@ export function createRuntimeCss<
 	>;
 }
 
-/** Design-vocabulary equivalent of {@link createRuntimeCss}. */
+/**
+ * Create the runtime equivalent of {@link createDesignCss}.
+ *
+ * The returned function resolves `$frame`, `$layout`, and `$text` values and
+ * registers the resulting rules in its live sheet.
+ *
+ * @example
+ * ```ts
+ * import { createRuntimeDesignCss, createRuntimeSheet } from "pandwind/css/runtime";
+ * import { examplePreset } from "@pandwind/example-preset";
+ *
+ * const sheet = createRuntimeSheet({ autoMount: false });
+ * const dcss = createRuntimeDesignCss(examplePreset, { sheet });
+ * dcss.class({ $frame: { fill: "$blue-500", pad: 16 } });
+ * ```
+ *
+ * @typeParam TPreset - The design-compatible preset.
+ * @param preset - The typed preset used by the design resolver.
+ * @param options - Runtime sheet and CSS backend options.
+ * @returns A design-vocabulary runtime CSS function.
+ * @category runtime
+ * @since 0.1.0
+ */
 export function createRuntimeDesignCss<TPreset extends DesignPreset>(
 	preset: TPreset,
 	options: RuntimeCssOptions = {},

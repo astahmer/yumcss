@@ -33,6 +33,18 @@ export type {
 	TwVariantsMeta,
 } from "./compile.ts";
 
+/**
+ * Generated Tailwind vocabulary and merge metadata consumed by
+ * {@link createTw}.
+ *
+ * These values are produced from the real project configuration by
+ * `pandwind-codemod tw generate`; hand-written partial maps are useful for
+ * tests and small experiments, but they are not a substitute for the
+ * generated project contract.
+ *
+ * @category tailwind
+ * @since 0.1.0
+ */
 export interface TwOptions {
 	variants?: TwVariantsMeta;
 	/** Generated conflict map enabling last-wins merging (see `compile.ts`). */
@@ -58,6 +70,35 @@ export interface TwOptions {
 
 /**
  * Create a typed `tw` function bound to a generated design-system type.
+ *
+ * `createTw` only creates the class-string function. It does not create a CSS
+ * preset and therefore does not accept Pandwind token references such as
+ * `$blue-500`; use `createCss(preset)` or `createDesignCss(preset)` for those
+ * APIs.
+ *
+ * @example Bind generated utility types
+ * ```ts
+ * import { createTw } from "pandwind/tw";
+ * import type { WindVariants } from "./tw.generated";
+ *
+ * const tw = createTw<WindVariants>({
+ *   variants,
+ *   conflicts,
+ *   compose,
+ * });
+ *
+ * const className = tw({
+ *   bg: "sky-600",
+ *   sm: { py: "12" },
+ * });
+ * // "bg-sky-600 sm:py-12"
+ * ```
+ *
+ * @typeParam T - The generated style-object type for the project.
+ * @param options - Generated variants, conflicts, and composition metadata.
+ * @returns A typed function that turns utility objects into class strings.
+ * @category tailwind
+ * @since 0.1.0
  */
 export function createTw<T>(options: TwOptions = {}): (styles: T) => string {
 	const variants = options.variants ?? {};
@@ -73,6 +114,18 @@ export function createTw<T>(options: TwOptions = {}): (styles: T) => string {
 
 /**
  * Untyped convenience `tw` — useful before codegen or for throwaway styles.
+ *
+ * @example
+ * ```ts
+ * import { tw } from "pandwind";
+ *
+ * const className = tw({ display: "flex", gap: "4" });
+ * ```
+ *
+ * @param styles - A utility-shaped style object.
+ * @returns The corresponding class string.
+ * @category tailwind
+ * @since 0.1.0
  */
 export function tw(styles: TwNestedStyles): string {
 	return compileStyles(styles, {});

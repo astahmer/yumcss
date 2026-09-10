@@ -30,9 +30,19 @@ import { createTokenResolver } from "../css/tokens.ts";
 import type { AnyConditions, CssConfigReturn } from "../types/typings.ts";
 import type { TwVariantsMeta } from "./compile.ts";
 
-/** Generated `(property, resolved value) -> utility` lookup for Tailwind mode. */
+/**
+ * Generated `(property, resolved value) -> utility` lookup for Tailwind mode.
+ *
+ * The map is generated from the active Tailwind project rather than inferred
+ * by Pandwind, so custom utilities and aliases keep their real project
+ * semantics.
+ *
+ * @category adapters
+ * @since 0.1.0
+ */
 export type UtilityBridge = Record<string, Record<string, string>>;
 
+/** Configuration emitted by `pandwind-codemod tw generate`. */
 export interface TwAdapterOptions {
 	/** Variant metadata from the generated `tw.ts` (join separators). */
 	variants: TwVariantsMeta;
@@ -62,6 +72,27 @@ function arbitraryValue(value: string): string {
 /**
  * Build the engine's pluggable class strategy. Pass the result as
  * `createCss(preset, { className })` / `createDesignCss(preset, { className })`.
+ *
+ * @example Reuse Tailwind's generated class vocabulary for `css`
+ * ```ts
+ * import { createCss } from "pandwind/css";
+ * import { createTwAdapter } from "pandwind/tw";
+ *
+ * const adapter = createTwAdapter({
+ *   variants: {},
+ *   bridge: {
+ *     "background-color": { "#3182ce": "bg-blue-500" },
+ *   },
+ * });
+ *
+ * const css = createCss({ className: adapter });
+ * css.class({ backgroundColor: "#3182ce" }); // "bg-blue-500"
+ * ```
+ *
+ * @param options - Generated utility, variant, and optional preset metadata.
+ * @returns A class-name strategy suitable for `createCss` or `createDesignCss`.
+ * @category adapters
+ * @since 0.1.0
  */
 export function createTwAdapter(options: TwAdapterOptions): ClassNameStrategy {
 	const { variants, bridge } = options;

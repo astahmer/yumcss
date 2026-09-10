@@ -16,7 +16,19 @@
 
 import { dashCase } from "../lib/utils.ts";
 
+/** A scalar or finite list value accepted by the pure `tw` compiler. */
 export type TwValue = string | boolean | number | Array<string | number | boolean>;
+
+/**
+ * A Panda-like utility object with recursively nested variant keys.
+ *
+ * Generated project types normally narrow this open shape before it reaches
+ * application code; the broad type is kept public for compiler adapters and
+ * migration tooling.
+ *
+ * @category tailwind
+ * @since 0.1.0
+ */
 export interface TwNestedStyles extends Record<string, TwValue | TwNestedStyles> {}
 
 /**
@@ -25,6 +37,9 @@ export interface TwNestedStyles extends Record<string, TwValue | TwNestedStyles>
  * `join` is the separator between a variant and its argument/child when
  * stacked: `group` + `hover` -> `group-hover` (`"-"`), `@` + `md` -> `@md`
  * (`""`), everything else defaults to `":"` (`sm` + `py` -> `sm:py-12`).
+ *
+ * @category tailwind
+ * @since 0.1.0
  */
 export interface TwVariantsMeta {
 	[name: string]: { join?: ":" | "-" | "" };
@@ -37,6 +52,9 @@ export interface TwVariantsMeta {
  *
  * `"*"` is the per-utility fallback for values without an explicit entry
  * (arbitrary values, opacity-modified colors, future theme values).
+ *
+ * @category tailwind
+ * @since 0.1.0
  */
 export interface TwConflictsMeta {
 	[utility: string]: Record<string, string[]>;
@@ -47,6 +65,9 @@ export interface TwConflictsMeta {
  * `scale-x` + `scale-y` both set `scale`, `translate-x` + `translate-y` both
  * set `translate`, `blur` + `brightness` both set `filter`. They must never
  * merge across keys — only same-utility values conflict (last axis wins).
+ *
+ * @category tailwind
+ * @since 0.1.0
  */
 export type TwComposeMeta = readonly string[];
 
@@ -55,6 +76,9 @@ export type TwComposeMeta = readonly string[];
  * see `codegen-conflicts.ts`). Only exact provenance-backed matches are
  * present: compilation may remap a raw value to its token spelling without
  * changing the emitted CSS.
+ *
+ * @category tailwind
+ * @since 0.1.0
  */
 export interface TwValueTokensMeta {
 	[utility: string]: Readonly<Record<string, string>>;
@@ -304,6 +328,10 @@ function push(
  * @param conflicts optional generated conflict map enabling last-wins merging
  * @param compose optional generated list of composing utility keys
  * @param valueTokens optional raw-value to token spelling catalog for dynamic remap
+ * @returns A space-separated class string in source order after any verified
+ *   conflict resolution.
+ * @category tailwind
+ * @since 0.1.0
  */
 export function compileStyles(
 	styles: TwNestedStyles,

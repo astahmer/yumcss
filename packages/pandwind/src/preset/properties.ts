@@ -1,6 +1,16 @@
 import { defineProperties } from "../types/define-preset.ts";
 import { tokens } from "./tokens.ts";
 
+/**
+ * The default CSS property-to-token vocabulary used by
+ * {@link pandwindPreset}.
+ *
+ * This is data, not a hidden runtime registry. It can be inspected, composed,
+ * or replaced when an application defines a narrower preset.
+ *
+ * @category presets
+ * @since 0.1.0
+ */
 export const presetProperties = defineProperties({
 	boxShadow: tokens.shadows,
 	textShadow: tokens.shadows,
@@ -126,4 +136,5 @@ export const presetProperties = defineProperties({
 	listStyleType: true,
 });
 
+/** The inferred property-vocabulary type of {@link presetProperties}. */
 export type PresetProperties = typeof presetProperties;

@@ -30,6 +30,7 @@ import type { ClassNameStrategy } from "./class-name-strategy.ts";
 import { dashCase } from "./hash.ts";
 import type { AnyConditions, CssConfigReturn } from "../types/typings.ts";
 
+/** Options resolved from an UnoCSS preset and variant configuration. */
 export interface UnoCssAdapterOptions {
 	/**
 	 * Resolved variant conditions from the user's UnoCSS config. Keys arrive
@@ -103,6 +104,29 @@ const arbitraryVariants = (selector: string | readonly string[]): string | null 
  * Build the engine's pluggable class strategy for UnoCSS output.
  * Pass the result as createCss(preset, { className }) /
  * createDesignCss(preset, { className }).
+ */
+/**
+ * Build an UnoCSS candidate strategy for the CSS lane.
+ *
+ * The adapter emits only the arbitrary-property and variant forms it can
+ * prove UnoCSS will match. Other declarations return `null` and use
+ * Pandwind's atomic fallback, so an unsupported candidate never becomes a
+ * class with missing CSS.
+ *
+ * @example Arbitrary-property candidates
+ * ```ts
+ * import { createCss } from "pandwind/css";
+ * import { createUnoCssAdapter } from "pandwind/css/unocss";
+ *
+ * const css = createCss({ className: createUnoCssAdapter() });
+ * css.class({ color: "red", width: "3.5rem" });
+ * // `[color:red] [width:3.5rem]`
+ * ```
+ *
+ * @param options - Resolved UnoCSS variants and optional preset conditions.
+ * @returns A conservative UnoCSS class-name strategy.
+ * @category adapters
+ * @since 0.1.0
  */
 export const createUnoCssAdapter = (options: UnoCssAdapterOptions = {}): ClassNameStrategy => {
 	const conditions = options.conditions;

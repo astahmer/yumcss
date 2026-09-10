@@ -24,6 +24,17 @@ export type {
 	RuntimeStyleElementSink,
 } from "./runtime-sheet-contracts.ts";
 
+/**
+ * Replaceable storage, ordering, serialization, and DOM-sink policies for a
+ * {@link RuntimeSheet}.
+ *
+ * The default composition is suitable for ordinary browser and SSR use. Pass
+ * explicit ports when an integration needs a custom sink or wants to inspect
+ * the same semantic rule stream without coupling itself to the DOM.
+ *
+ * @category runtime
+ * @since 0.1.0
+ */
 export interface RuntimeSheetPorts {
 	readonly store?: RuntimeRuleStore;
 	readonly ordering?: import("./runtime-sheet-contracts.ts").RuntimeOrderingPolicy;
@@ -37,6 +48,37 @@ interface RuntimeRuleBatch {
 	readonly previousCount: number;
 }
 
+/**
+ * Create a live, DOM-independent runtime stylesheet.
+ *
+ * A sheet stores deduplicated rules, keeps their cascade order deterministic,
+ * and can mount/update one style element when a document sink is available.
+ * `snapshot` and `hydrate` make the same rule state portable between an SSR
+ * producer and a browser consumer.
+ *
+ * @example SSR-friendly sheet lifecycle
+ * ```ts
+ * import { createRuntimeSheet } from "pandwind/css/runtime";
+ *
+ * const serverSheet = createRuntimeSheet({ id: "app", autoMount: false });
+ * serverSheet.setTokens(":root { --brand: #3182ce; }");
+ * serverSheet.register([
+ *   { id: "button", css: ".button { color: var(--brand); }", priority: 0 },
+ * ]);
+ *
+ * const snapshot = serverSheet.snapshot();
+ * const clientSheet = createRuntimeSheet({ id: "app", autoMount: false });
+ * clientSheet.hydrate(snapshot);
+ * const css = clientSheet.css();
+ * ```
+ *
+ * @param options - Identity, mounting, document, and CSP nonce options.
+ * @param ports - Optional replacement policies for the sheet internals.
+ * @returns A live sheet with registration, serialization, mounting, and
+ *   snapshot/hydration operations.
+ * @category runtime
+ * @since 0.1.0
+ */
 export function createRuntimeSheet(
 	options: RuntimeSheetOptions = {},
 	ports: RuntimeSheetPorts = {},

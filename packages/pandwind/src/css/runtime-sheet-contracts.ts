@@ -1,4 +1,11 @@
-/** Flat rule after semantic lowering and serialization. */
+/**
+ * Flat rule after semantic lowering and serialization.
+ *
+ * This is the compact fast path stored by {@link createRuntimeSheet}.
+ *
+ * @category runtime
+ * @since 0.1.0
+ */
 export interface RuntimeRule {
 	readonly id: string;
 	readonly css: string;
@@ -18,7 +25,12 @@ export const RuntimeSemanticRuleKindTag = {
 export type RuntimeSemanticRuleKind =
 	(typeof RuntimeSemanticRuleKindTag)[keyof typeof RuntimeSemanticRuleKindTag];
 
-/** A declaration accepted by the runtime semantic-rule serializer. */
+/**
+ * A declaration accepted by the runtime semantic-rule serializer.
+ *
+ * @category runtime
+ * @since 0.1.0
+ */
 export interface RuntimeDeclaration {
 	readonly property: string;
 	readonly value: string | number | boolean;
@@ -29,6 +41,9 @@ export interface RuntimeDeclaration {
  * `children` represents nested rule bodies; `conditions` preserves wrapper
  * order. Adapters may canonicalize this richer form into the flat
  * RuntimeRule fast path before it reaches the store.
+ *
+ * @category runtime
+ * @since 0.1.0
  */
 export interface RuntimeSemanticRule {
 	readonly id?: string;
@@ -42,7 +57,12 @@ export interface RuntimeSemanticRule {
 	readonly priority?: number;
 }
 
-/** Serializable boundary between an SSR producer and a browser consumer. */
+/**
+ * Serializable boundary between an SSR producer and a browser consumer.
+ *
+ * @category runtime
+ * @since 0.1.0
+ */
 export interface RuntimeSheetSnapshot {
 	readonly tokens: string;
 	readonly rules: RuntimeRule[];
@@ -62,6 +82,7 @@ export interface RuntimeDocument {
 	head: { appendChild(element: RuntimeStyleElement): void };
 }
 
+/** Options controlling a runtime sheet's identity and DOM mounting behavior. */
 export interface RuntimeSheetOptions {
 	readonly id?: string;
 	readonly autoMount?: boolean;

@@ -29,6 +29,7 @@ import type { ClassNameStrategy } from "./class-name-strategy.ts";
 import { dashCase } from "./hash.ts";
 import type { AnyConditions } from "../types/typings.ts";
 
+/** Options resolved from a Panda project configuration. */
 export interface PandaAdapterOptions {
 	/**
 	 * Shorthand map from the user's Panda config (generated classNameByProp
@@ -68,6 +69,32 @@ const hypenateProperty = (property: string): string => {
  * Build the engine's pluggable class strategy for Panda-shaped output.
  * Pass the result as createCss(preset, { className }) /
  * createDesignCss(preset, { className }).
+ */
+/**
+ * Build a class-name strategy compatible with Panda's non-hash output.
+ *
+ * The adapter consumes the project's resolved shorthand and condition maps;
+ * it does not guess Panda's vocabulary or silently emit a class for an
+ * unknown condition.
+ *
+ * @example Panda-shaped classes from the CSS lane
+ * ```ts
+ * import { createCss } from "pandwind/css";
+ * import { createPandaAdapter } from "pandwind/css/panda";
+ *
+ * const css = createCss({
+ *   className: createPandaAdapter({
+ *     propClasses: { backgroundColor: "bg" },
+ *   }),
+ * });
+ *
+ * css.class({ backgroundColor: "red.500" }); // "bg-red.500"
+ * ```
+ *
+ * @param options - Panda shorthand, prefix, and condition metadata.
+ * @returns A Panda-compatible class-name strategy.
+ * @category adapters
+ * @since 0.1.0
  */
 export const createPandaAdapter = (options: PandaAdapterOptions = {}): ClassNameStrategy => {
 	const propClasses = options.propClasses ?? {};

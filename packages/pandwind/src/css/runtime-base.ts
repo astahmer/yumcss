@@ -10,7 +10,16 @@ import type {
 import { createCssBackend, type CssBackendOptions } from "../backends/css.ts";
 import { ATOM_REGISTRY, type AtomRegistry } from "./atoms.ts";
 
-/** Backend options shared by the public factory and its runtime attachments. */
+/**
+ * Backend options shared by the public CSS factories.
+ *
+ * Most consumers only need `debug`, `hashFn`, or `className`; the full
+ * interface is exported so generated runtimes and adapters can preserve the
+ * same configuration contract as {@link createCss}.
+ *
+ * @category styling
+ * @since 0.1.0
+ */
 export interface CreateCssOptions extends CssBackendOptions {}
 
 type TypedPreset = CssConfigReturn<DefinePresetOptions<AnyCssConfig, AnyTokens>>;

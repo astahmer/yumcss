@@ -4,28 +4,42 @@ import type { StyleObject } from "../types/typings.ts";
 import { resolveDesignStyle } from "./resolve.ts";
 import type { DesignPreset, DesignStyleObject } from "./types.ts";
 
-/* ---------------------------------------------------------------------------
- * createDesignCss — the Figma-inspector surface on top of the atomic engine.
- *
- * Same `css()` shape as the engine (`css(...)`, `.class`, `.raw`, `.props`,
- * `.group`, `.input`), but the style object is the design vocabulary:
- * `$frame` / `$layout` / `$text` modules with ~30 Figma-style props, typed
- * against the preset tokens. Raw CSS props only under `$raw`.
- *
- * ```ts
- * const dcss = createDesignCss(examplePreset);
- *
- * dcss.class({
- *   $frame: { w: "20", corners: "lg", fill: "$blue-500", pad: [4, 8] },
- *   $layout: { flow: "stackY", gap: "16", align: "center" },
- *   $text: { size: "20", weight: "600", color: "$red-300" },
- *   _hover: { $text: { color: "$red-400" } },
- * });
- * ```
- * -------------------------------------------------------------------------*/
-
 type Maybe<T> = T | undefined | null | false;
 
+/**
+ * Create the design-system CSS function used by the `pandwind/design` lane.
+ *
+ * This factory has the same projections as {@link createCss}, but its style
+ * object is organized by intent: `$frame` describes the box, `$layout`
+ * describes its children, and `$text` describes typography. Raw CSS stays
+ * explicit under `$raw` so the top-level vocabulary remains constrained.
+ *
+ * The preset is required because it supplies both the token names and the
+ * conditions used by the design modules. Use `createCss` when you want the
+ * ordinary CSS property vocabulary instead.
+ *
+ * @example A design-vocabulary button
+ * ```ts
+ * import { createDesignCss } from "pandwind/design";
+ * import { examplePreset } from "@pandwind/example-preset";
+ *
+ * const dcss = createDesignCss(examplePreset);
+ *
+ * const className = dcss.class({
+ *   $frame: { corners: "lg", fill: "$blue-500", pad: [8, 16] },
+ *   $layout: { flow: "stackX", align: "center", gap: 8 },
+ *   $text: { color: "$gray-50", weight: "semibold" },
+ *   _hover: { $frame: { fill: "$blue-600" } },
+ * });
+ * ```
+ *
+ * @typeParam TPreset - A design-compatible preset carrying tokens and conditions.
+ * @param preset - The preset that defines the design token vocabulary.
+ * @param options - CSS backend options such as a class-name strategy.
+ * @returns A preset-aware {@link CssFn} over {@link DesignStyleObject} values.
+ * @category factories
+ * @since 0.1.0
+ */
 export const createDesignCss = <TPreset extends DesignPreset>(
 	preset: TPreset,
 	options: CreateCssOptions = {},

@@ -43,6 +43,28 @@ import { VARS_ATOMS } from "../css/vars-carrier.ts";
 import type { VarAtom, VarsOutput } from "../css/var-compiler.ts";
 import type { TwComposeMeta, TwConflictsMeta, TwVariantsMeta } from "../tw/compile.ts";
 
+/**
+ * Metadata and CSS registry used by {@link createCx} to resolve conflicts.
+ *
+ * The generated `tw` metadata is optional: without it, `cx` still combines
+ * strings, compiled CSS maps, and variable carriers, but opaque strings are
+ * preserved rather than guessed at. Pass the same `css` instance that created
+ * CSS atoms when those atoms should participate in last-wins merging.
+ *
+ * @example Sharing a CSS atom registry with `cx`
+ * ```ts
+ * import { createCss } from "pandwind/css";
+ * import { createCx } from "pandwind/cx";
+ *
+ * const css = createCss();
+ * const cx = createCx({ css });
+ *
+ * const className = cx("rounded", css.class({ color: "tomato" }), false);
+ * ```
+ *
+ * @category composition
+ * @since 0.1.0
+ */
 export interface CxOptions {
 	variants?: TwVariantsMeta;
 	conflicts?: TwConflictsMeta;
@@ -56,8 +78,16 @@ export interface CxOptions {
 }
 
 /**
- * A css() compiled map (`{ color: "1nmpgqu" }`), a class string, or a
- * `css.vars()` output (recognized via the VARS_ATOMS symbol carrier).
+ * A class string, compiled CSS map, or `css.vars()` carrier accepted by
+ * {@link createCx}.
+ *
+ * Falsey values are ignored so conditional class composition can stay inside
+ * one call. Unknown strings are kept verbatim; only metadata that was
+ * explicitly supplied to the `cx` instance can participate in conflict
+ * resolution.
+ *
+ * @category composition
+ * @since 0.1.0
  */
 export type CxInput = string | Record<string, string> | VarsOutput | false | null | undefined;
 
@@ -392,11 +422,70 @@ const signatureFromTwClass = (
  * metadata and css engine the rest of the app uses.
  */
 export interface CxFn {
+	/**
+	 * Merge class strings, compiled CSS maps, variable carriers, nested arrays,
+	 * and falsey conditional values.
+	 *
+	 * When generated conflict metadata is present, later declarations win within
+	 * the same variant scope. Otherwise inputs remain opaque and are preserved.
+	 *
+	 * @example Conditional composition
+	 * ```ts
+	 * const className = cx(
+	 *   "inline-flex",
+	 *   isPrimary && "bg-blue-500",
+	 *   css.class({ padding: 12 }),
+	 * );
+	 * ```
+	 */
 	(...inputs: Array<CxInput | CxInput[]>): string;
-	/** Merge for `css.vars()` outputs: classes + inline custom properties. */
+	/**
+	 * Merge `css.vars()` outputs while preserving their inline custom properties.
+	 *
+	 * Use this projection when the result is going directly to a host element;
+	 * the plain call intentionally returns only a class string.
+	 *
+	 * @example
+	 * ```ts
+	 * const className = cx.vars(
+	 *   css.vars({ color: runtimeColor }),
+	 *   "font-medium",
+	 * );
+	 * // className.class and className.style are ready for a host element.
+	 * ```
+	 */
 	vars: (...inputs: Array<CxInput | CxInput[]>) => VarsOutput;
 }
 
+/**
+ * Create a last-wins class composition function.
+ *
+ * `cx` is deliberately metadata-driven. It understands generated utility
+ * conflicts and CSS atoms registered by the supplied `css` instance, but it
+ * does not ship an ecosystem-specific vocabulary of its own. This keeps
+ * migration and generated-class lanes honest: unresolved strings remain in
+ * the result instead of being accidentally removed.
+ *
+ * @example Combining a CSS atom with conditional classes
+ * ```ts
+ * import { createCss } from "pandwind/css";
+ * import { createCx } from "pandwind/cx";
+ *
+ * const css = createCss();
+ * const cx = createCx({ css });
+ *
+ * const buttonClass = cx(
+ *   "inline-flex",
+ *   disabled && "opacity-50",
+ *   css.class({ padding: 12 }),
+ * );
+ * ```
+ *
+ * @param options - Generated utility metadata and an optional CSS registry.
+ * @returns A callable merger with a variable-preserving `.vars` projection.
+ * @category composition
+ * @since 0.1.0
+ */
 export function createCx(options: CxOptions = {}): CxFn {
 	const conflicts = options.conflicts;
 	const composeSet = options.compose === undefined ? undefined : new Set(options.compose);

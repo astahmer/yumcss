@@ -2,6 +2,7 @@ import murmurHash from "../lib/murmur-hash2.ts";
 import type { ClassNameStrategy } from "./class-name-strategy.ts";
 import { dashCase } from "./hash.ts";
 
+/** Options controlling StyleX-compatible class identities. */
 export interface StyleXAdapterOptions {
 	/** StyleX's default class prefix is `x`. */
 	readonly classNamePrefix?: string;
@@ -33,6 +34,30 @@ const modifierFor = (part: string, conditions: StyleXAdapterOptions["conditions"
  * it, semantic condition names still produce deterministic valid class names;
  * with it, selectors and at-rules participate in the same identity input as
  * StyleX. Custom conditions therefore work without another hardcoded catalog.
+ */
+/**
+ * Build a StyleX-shaped, sheet-backed class-name strategy.
+ *
+ * The hash identity follows StyleX's stable atomic formula, while the CSS
+ * remains owned by Pandwind. This is useful for matching an existing naming
+ * convention without shipping a second runtime.
+ *
+ * @example
+ * ```ts
+ * import { createCss } from "pandwind/css";
+ * import { createStyleXAdapter } from "pandwind/css/stylex";
+ *
+ * const css = createCss({
+ *   className: createStyleXAdapter({ debug: true, enableDebugClassNames: true }),
+ * });
+ *
+ * css.class({ color: "red" }); // `color-x...` in debug mode
+ * ```
+ *
+ * @param options - Prefix, debug, and resolved condition metadata.
+ * @returns A StyleX-compatible sheet-backed strategy.
+ * @category adapters
+ * @since 0.1.0
  */
 export const createStyleXAdapter = (options: StyleXAdapterOptions = {}): ClassNameStrategy => {
 	const prefix = options.classNamePrefix ?? "x";

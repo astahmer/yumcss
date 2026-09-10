@@ -1,3 +1,13 @@
+/**
+ * The default selector and media-condition vocabulary used by
+ * {@link pandwindPreset}.
+ *
+ * Copy or extend this map when defining an application preset; the keys are
+ * the nested condition names accepted by preset-aware style objects.
+ *
+ * @category presets
+ * @since 0.1.0
+ */
 export const presetConditions = {
 	//   base: {},
 	hover: "&:is(:hover, [data-hover])",
@@ -109,4 +119,5 @@ export const presetConditions = {
 	starting: "@starting-style",
 };
 
+/** The inferred condition-key type of {@link presetConditions}. */
 export type PresetConditions = typeof presetConditions;
