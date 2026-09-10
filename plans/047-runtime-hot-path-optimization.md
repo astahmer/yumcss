@@ -64,13 +64,13 @@ to measured throughput wins.
 - configured `tw` remains on the conflict-aware path (local sample ~316K
   calls/sec after the specialization);
 - no-config `cx` with three/four tokens: ~11.7M/~10.5M calls/sec;
-- current full CSS fallback: 6,538 min / 2,953 gzip;
-- current compiler-pruned CSS call: 3,931 min / 1,892 gzip;
-- current `tw`: 2,396 min / 1,141 gzip;
-- current all-engine runtime: 14,671 min / 6,054 gzip.
+- current full CSS fallback: 7,448 min / 3,212 gzip;
+- current compiler-pruned CSS call: 4,531 min / 2,022 gzip;
+- current `tw`: 2,727 min / 1,267 gzip;
+- current all-engine runtime: 16,218 min / 6,545 gzip.
 
 The all-engine size increase is intentional and bounded by the reviewed
-14,700-minified-byte budget; the `tw` specialization contributes only to the
+16,400-minified-byte budget; the `tw` specialization contributes only to the
 combined engine entry and keeps its standalone entry within budget. Static
 calls remain compiler-erased, so these optimizations primarily improve
 dynamic and unsupported semantic fallbacks. The remaining unbounded-looking
@@ -78,3 +78,28 @@ runtime collections are correctness state: emitted unique CSS atoms and
 their merge identities cannot be evicted while their class names remain in
 the document. Tooling caches are bounded or scoped to one project/plugin
 instance.
+
+## Follow-up measured outcome — 2026-09-10
+
+The runtime CSS comparison exposed a hot repeated-call gap in the earlier
+implementation. The follow-up keeps the public API unchanged and specializes
+the existing paths:
+
+- `css.class()` now projects flat declarations directly into the class string,
+  avoiding an intermediate declaration object and a second assembly pass;
+- one-property `css.vars()` values use a direct atom encoding path;
+- repeated variable calls skip sheet flushing and rule registration once their
+  atom keys are known.
+
+The post-change reference shapes measured approximately **3.32M ops/sec** for
+repeated seven-property `runtimeCss.class()`, **0.29M** for fresh unique
+one-property rules, and **3.41M** for repeated one-property `runtimeCss.vars()`.
+Against the supplied Emotion reference of **1.10M**, **0.61M**, and **3.02M**
+respectively, the repeated class and variable paths are ahead while the cold
+unique-rule path remains behind.
+
+The relevant work is split into focused JJ revisions: `sppsxmyooynk` for
+direct class projection, `zwwmrkpqqlmp` for single-variable encoding,
+`nmykxzuukskq` for repeated variable registration, and `uwqossyrmtyt` for
+the reviewed runtime-size budget update. The bundle increase is accepted as
+the explicit trade-off for the measured hot-path improvement.

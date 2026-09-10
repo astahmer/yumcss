@@ -169,8 +169,10 @@ dynamic or unsupported calls.
 
 ## `createRuntimeCss()` versus Emotion — 2026-09-10
 
-The runtime-sheet pass was compared with `@emotion/css` 11.13.5 in the same
-Node v24.19.0 process on the same macOS arm64 machine. Pandwind used
+The comparator figures below use `@emotion/css` 11.13.5 numbers from the
+reference run supplied for this comparison. Pandwind was remeasured after
+the runtime compiler changes in Node v24.19.0 on the same macOS arm64
+machine. Pandwind used
 `createRuntimeCss(examplePreset, { sheet: createRuntimeSheet({ autoMount: false }) })`,
 which is the lazy/SSR mode: registrations update the in-memory sheet, and the
 complete CSS string is requested once after the timed calls. Emotion was run
@@ -178,23 +180,30 @@ without a DOM as well, so this isolates style resolution, hashing, caching, and
 sheet bookkeeping rather than measuring browser style insertion.
 
 The seven-property repeated case is the closest comparison to the corpus above.
-This run used the optimized runtime path, including declaration memoization,
-the allocation-free class-string projection, batched sheet registration,
-incremental ordering, and CSSOM insertion when a mounted browser sheet is
-available. Each row warmed up first and then used five timed samples:
+This remeasurement used declaration memoization, the direct class-string
+projection, single-key variable encoding, batched sheet registration, and
+incremental ordering. Each row warmed up first and then used five timed
+samples; the fresh-rule case created a fresh runtime/sheet per sample so
+new-rule registration remained part of the measured work:
 
-| case                                                 |       pandwind |  `@emotion/css` | reading                                                                    |
-| ---------------------------------------------------- | -------------: | --------------: | -------------------------------------------------------------------------- |
-| repeated seven-property `runtimeCss.class()`         | ~1.61M ops/sec |  ~1.19M ops/sec | Pandwind is about 1.4× faster for this repeated call shape.                |
-| fresh unique one-property `runtimeCss.class()` rules | ~0.34M ops/sec |  ~0.35M ops/sec | The two implementations are within roughly 3% while registering new rules. |
-| repeated one-property `runtimeCss.vars()`            | ~2.10M ops/sec | ~3.02M ops/sec* | Emotion is about 1.4× faster for a fixed-value cache hit.                  |
+| case                                                 | pandwind        | `@emotion/css` | reading                                                               |
+| ---------------------------------------------------- | --------------: | -------------: | --------------------------------------------------------------------- |
+| repeated seven-property `runtimeCss.class()`         | ~3.32M ops/sec  | ~1.10M ops/sec | Pandwind is about 3× faster for this repeated call shape.              |
+| fresh unique one-property `runtimeCss.class()` rules | ~0.29M ops/sec  | ~0.61M ops/sec | Emotion is about 2.1× faster while registering new rules.               |
+| repeated one-property `runtimeCss.vars()`            | ~3.41M ops/sec  | ~3.02M ops/sec* | Pandwind is about 1.1× faster for this stable carrier path.            |
 
-The representative browser bundle for `createRuntimeCss()` is **28,895 bytes
-minified / 10,958 gzip** with an empty preset. The ordinary `createCss()` entry
-is **7,027 / 3,086** in the same guard. The runtime entry is intentionally
-larger because it carries the stylesheet compiler, rule ordering, and optional
-DOM sink; `packages/pandwind/tests/runtime-size.test.ts` protects both entries
-with separate budgets.
+The representative browser bundle for `createRuntimeCss()` is **29,434 bytes
+minified / 11,120 gzip** with an empty preset. The ordinary `createCss()` entry
+is **7,448 / 3,212** in the same guard. The direct class projection and
+variable-registration fast paths add a small, intentional amount of code to
+the runtime entry; `packages/pandwind/tests/runtime-size.test.ts` protects
+both entries with separate reviewed budgets.
+
+Repeated class and stable-variable calls no longer lose the comparison: the
+common paths avoid rebuilding intermediate declaration objects and avoid
+re-registering known variable atoms. Cold unique rules still favor Emotion,
+because each call must resolve, serialize, and register a new rule; that is a
+different optimization target from the hot repeated-call path.
 
 `*` The `vars()` row is a semantic comparison rather than an identical
 operation: Emotion's call creates or looks up a CSS class, while Pandwind's
@@ -353,3 +362,8 @@ resolves), and the benchmark entries import the published `pandwind/*`
 subpaths plus the generated config in `examples/example/src/tw.ts`. The only
 source-addressed imports in the perf-history harness are intentional: each
 run loads the exact historical worktree revision being measured.
+Repeated class and stable-variable calls no longer lose the comparison: the
+common paths avoid rebuilding intermediate declaration objects and avoid
+re-registering known variable atoms. Cold unique rules still favor Emotion,
+because each call must resolve, serialize, and register a new rule; that is a
+different optimization target from the hot repeated-call path.
