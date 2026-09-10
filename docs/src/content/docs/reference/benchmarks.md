@@ -5,7 +5,7 @@ sidebar:
   order: 3
 ---
 
-Last measured: **2026-09-01** for the runtime hot-path and runtime-size contracts and **2026-08-23**
+Last measured: **2026-09-10** for the runtime-size contract, **2026-08-23**
 for `cx()` v3 (whole-input cache), **2026-08-22**
 for the competitor table. Local macOS (arm64), Node v24.19.0. Interleaved
 rotated-order rounds, best-of-5-pass median sample. This is local-machine
@@ -63,9 +63,28 @@ equivalent):
 Warm `cx()` matches or beats tailwind-merge exactly where class strings grow
 — while additionally resolving css() atoms and merging across engines.
 
-## Runtime hot-path pass — 2026-09-01
+## Current runtime size record — 2026-09-10
 
-The current runtime keeps the optimizations deliberately narrow:
+The canonical byte table is [the size reference](/reference/size/); the
+exact record is the committed `runtime-size.json.snap` and the hard
+ceilings are in `runtime-budget.json`.
+
+| entry                         | minified | gzip |
+| ----------------------------- | -------: | ---: |
+| `createCss()` fallback        |    6,777 | 2,974 |
+| `tw()`                         |    2,711 | 1,266 |
+| `cx()`                         |   12,705 | 5,310 |
+| all direct runtime entries    |   15,307 | 6,244 |
+| `createRuntimeCss()` + sheet  |   28,762 | 10,870 |
+
+The combined runtime is effectively at the supplied Emotion reference:
+Pandwind is 7 minified bytes larger and 6 gzip bytes smaller than the
+15.3 KB / 6.25 KB reference. The root `SIZE.md` no longer duplicates these
+numbers.
+
+## Historical runtime hot-path pass — 2026-09-01
+
+At that historical checkpoint, the runtime kept the optimizations deliberately narrow:
 
 - no-config `createCx()` takes a fast path for two distinct whitespace-free
   class tokens. The cold unique-pair harness measured **10.2M ops/sec** in this
@@ -85,12 +104,13 @@ The current runtime keeps the optimizations deliberately narrow:
   arrays. The generated-config shape measured about 270K → 296K calls/sec
   (+10%).
 
-The intentional current size record is 6,538 min / 2,953 gzip for the full
+The intentional size record at that historical checkpoint was 6,538 min / 2,953 gzip for the full
 CSS fallback, 3,931 / 1,892 for a compiler-pruned CSS call, 2,319 / 1,103
 for `tw()`, 12,321 / 5,206 for `cx()`, and 14,594 / 6,008 for all engines.
-The CSS fallback is roughly 406 minified bytes larger than the previous
-snapshot because the measured dynamic CSS speedup is worth the modest size
-trade-off; literal calls are still erased by the compiler.
+The CSS fallback was roughly 406 minified bytes larger than the previous
+snapshot at that checkpoint because the measured dynamic CSS speedup was
+worth the modest size trade-off; literal calls are still erased by the
+compiler.
 
 Literal calls remain statically erased by the Vite compiler, so these runtime
 costs apply to dynamic or unsupported calls only.

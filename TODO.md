@@ -40,8 +40,8 @@
 - All deps pinned to exact latest versions (no `^`).
 - oxc-based parsing everywhere a scanner or static transform exists.
 - Real-vite integration tests (dev transform, HMR invalidation, build) with
-  post-plugin snapshots; runtime-size snapshot keeps the bundle lean
-  (~4.4 KB gz for css+tw+cx).
+  post-plugin snapshots; the runtime-size snapshot keeps the combined
+  fallback runtime at about 6.24 KB gz for css+tw+cx.
 - Tailwind-compatibility proof suite: every generated candidate compiles
   through real Tailwind and the committed conflict map predicts its emitted
   properties; `cx()` merges recompile to the survivors' rules only; `css()`
@@ -75,10 +75,10 @@
 - **Cross-engine CSS deduplication** — the built-in class strategies share the
   same declaration-level extraction and conflict tests. Extend the parity
   corpus when a new strategy introduces a different stylesheet owner.
-- **SIZE.md / BENCH.md freshness** — the runtime-size snapshot is the enforced
-  record of truth and the benchmark pages must be refreshed when the measured
-  runtime or competitor versions change. These numbers remain local evidence,
-  not published performance claims.
+- **Size evidence freshness** — the root `SIZE.md` points to the canonical
+  reference page; refresh the snapshot and benchmark docs when measured
+  runtime or competitor versions change. These remain local evidence, not
+  published performance claims.
 - **Safelist-free mode** — a custom Tailwind extractor that understands
   `tw()` objects, or first-class `@source inline` guidance; today the inliner
   already makes literal calls visible, and `pandwind-codemod tw scan` covers the rest.

@@ -56,7 +56,7 @@ to measured throughput wins.
 - runtime-size and type checks pass;
 - focused JJ revisions describe each independently reviewable optimization.
 
-## Measured outcome
+## Measured outcome at the 2026-09-01 checkpoint
 
 - representative CSS object: local hot-loop sample ~562K → ~715K calls/sec;
 - conflict-free nested `tw` object: local hot-loop sample ~887K → ~1.29M
@@ -64,20 +64,18 @@ to measured throughput wins.
 - configured `tw` remains on the conflict-aware path (local sample ~316K
   calls/sec after the specialization);
 - no-config `cx` with three/four tokens: ~11.7M/~10.5M calls/sec;
-- current full CSS fallback: 7,448 min / 3,212 gzip;
-- current compiler-pruned CSS call: 4,531 min / 2,022 gzip;
-- current `tw`: 2,727 min / 1,267 gzip;
-- current all-engine runtime: 16,218 min / 6,545 gzip.
+- full CSS fallback: 7,448 min / 3,212 gzip;
+- compiler-pruned CSS call: 4,531 min / 2,022 gzip;
+- `tw`: 2,727 min / 1,267 gzip;
+- all-engine runtime: 16,218 min / 6,545 gzip.
 
-The all-engine size increase is intentional and bounded by the reviewed
-16,400-minified-byte budget; the `tw` specialization contributes only to the
-combined engine entry and keeps its standalone entry within budget. Static
-calls remain compiler-erased, so these optimizations primarily improve
-dynamic and unsupported semantic fallbacks. The remaining unbounded-looking
-runtime collections are correctness state: emitted unique CSS atoms and
-their merge identities cannot be evicted while their class names remain in
-the document. Tooling caches are bounded or scoped to one project/plugin
-instance.
+At that checkpoint, the all-engine size increase was intentional and bounded
+by the reviewed 16,400-minified-byte budget. Static calls remained
+compiler-erased, so those optimizations primarily improved dynamic and
+unsupported semantic fallbacks. The remaining unbounded-looking runtime
+collections are correctness state: emitted unique CSS atoms and their merge
+identities cannot be evicted while their class names remain in the document.
+Tooling caches are bounded or scoped to one project/plugin instance.
 
 ## Follow-up measured outcome — 2026-09-10
 
@@ -103,3 +101,28 @@ direct class projection, `zwwmrkpqqlmp` for single-variable encoding,
 `nmykxzuukskq` for repeated variable registration, and `uwqossyrmtyt` for
 the reviewed runtime-size budget update. The bundle increase is accepted as
 the explicit trade-off for the measured hot-path improvement.
+
+The size compaction is split across JJ revisions `rymkuzqvzlqw` (backend
+registry metadata) and `rvkqutzkwktk` (runtime representation sharing and
+merge-state compaction).
+
+## Follow-up size compaction — 2026-09-10
+
+The later size audit found the root `SIZE.md` had drifted from the canonical
+reference page and the committed snapshot. The runtime compaction keeps the
+hot-path changes above and:
+
+- moves backend capability metadata out of the browser backend module;
+- shares one internal dash-case helper across CSS, Tailwind, `cx()`, and
+  null-reset normalization;
+- replaces the unitless-property `Set` with a compact lookup expression;
+- removes unused `cx()` output-plan storage and keeps cache generation state
+  in one place; and
+- compacts merge-state reset and lookup bookkeeping without changing the
+  public API or LRU policy.
+
+The current size snapshot is 6,777 / 2,974 for the CSS fallback, 2,711 /
+1,266 for `tw()`, 12,705 / 5,310 for `cx()`, and 15,307 / 6,244 for all
+three direct runtime entries (minified / gzip). The combined result is 7
+minified bytes above and 6 gzip bytes below the supplied Emotion reference.
+The root `SIZE.md` is now only a pointer to the canonical size page.

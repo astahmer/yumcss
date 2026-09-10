@@ -1,7 +1,8 @@
 # Runtime benchmarks — measured, not guessed
 
-Last measured: **2026-09-10** for the `createRuntimeCss()` comparison, **2026-09-02** for the historical optimization replay and
-**2026-09-01** for the runtime hot-path pass, **2026-08-23** for `cx()` (v3
+Last measured: **2026-09-10** for the runtime size record and
+`createRuntimeCss()` comparison, **2026-09-02** for the historical optimization replay,
+**2026-09-01** for the historical runtime hot-path pass, **2026-08-23** for `cx()` (v3
 whole-input cache — see the section below), **2026-08-22** for the competitor
 table. Local macOS (arm64),
 Node v24.19.0. Entries were bundled with esbuild (node platform, no minify —
@@ -64,7 +65,7 @@ the load caveat above applies.
   resolving css() atoms through the registry and merging across engines.
   Both engines memoize repeated identical inputs the same way.
 - **pandwind `css()`/`tw()` trade per-call speed for a much smaller shipped
-  runtime** ([SIZE.md](./SIZE.md)) — and for literal calls the vite plugins
+runtime** ([canonical size reference](docs/src/content/docs/reference/size.md)) — and for literal calls the vite plugins
   hoist the entire cost to build time, making the per-call number irrelevant
   in real apps.
 - Every value here is **one call, cold-ish**: no memoization of the input
@@ -113,9 +114,9 @@ regime. Size cost of the cache: cx entry +413 min / +185 gz bytes vs v2
 (intentional, inside the raised budgets in
 `packages/pandwind/tests/runtime-budget.json`).
 
-## Runtime hot-path pass — 2026-09-01
+## Historical runtime hot-path pass — 2026-09-01
 
-Five narrow optimizations were measured against the existing size gate:
+Five narrow optimizations were measured at that historical checkpoint against the size gate:
 
 - `createCx()` takes a no-config/no-atom fast path for two distinct,
   whitespace-free class tokens. The cold unique-pair harness measured
@@ -141,7 +142,7 @@ Five narrow optimizations were measured against the existing size gate:
   and a four-token call ~10.5M ops/sec; duplicates, whitespace, arrays, and
   configured/atom-backed calls retain the full merge path.
 
-The current size record after this pass is:
+The size record at that historical checkpoint was:
 
 | entry                    | minified |  gzip |
 | ------------------------ | -------: | ----: |
@@ -166,6 +167,26 @@ The earlier runtime-sheet cache remains part of the same pass:
 These optimizations preserve the static-first delivery path: literal calls are
 still erased by the Vite compiler, so the runtime bundle is only paid for
 dynamic or unsupported calls.
+
+## Current runtime size record — 2026-09-10
+
+The canonical table is [the reference size page](docs/src/content/docs/reference/size.md);
+the exact record is the committed `runtime-size.json.snap` and the hard
+ceilings are in `runtime-budget.json`. The current primary entries are:
+
+| entry                          | minified | gzip |
+| ------------------------------ | -------: | ---: |
+| `createCss()` fallback         |    6,777 | 2,974 |
+| `tw()`                          |    2,711 | 1,266 |
+| `cx()`                          |   12,705 | 5,310 |
+| all direct runtime entries     |   15,307 | 6,244 |
+| `createRuntimeCss()` + sheet   |   28,762 | 10,870 |
+
+The combined runtime is 7 minified bytes above and 6 gzip bytes below the
+supplied `@emotion/css` 11.13.5 reference (15.3 KB / 6.25 KB). The size
+compaction shares one dash-case helper across the runtime and removes unused
+merge-state storage while retaining the direct class, variable, and LRU
+performance work.
 
 ## `createRuntimeCss()` versus Emotion — 2026-09-10
 
@@ -192,12 +213,13 @@ new-rule registration remained part of the measured work:
 | fresh unique one-property `runtimeCss.class()` rules | ~0.29M ops/sec  | ~0.61M ops/sec | Emotion is about 2.1× faster while registering new rules.               |
 | repeated one-property `runtimeCss.vars()`            | ~3.41M ops/sec  | ~3.02M ops/sec* | Pandwind is about 1.1× faster for this stable carrier path.            |
 
-The representative browser bundle for `createRuntimeCss()` is **29,434 bytes
-minified / 11,120 gzip** with an empty preset. The ordinary `createCss()` entry
-is **7,448 / 3,212** in the same guard. The direct class projection and
-variable-registration fast paths add a small, intentional amount of code to
-the runtime entry; `packages/pandwind/tests/runtime-size.test.ts` protects
-both entries with separate reviewed budgets.
+The repo-owned `createRuntimeCss()` size fixture is **28,762 bytes minified /
+10,870 gzip** with a minimal preset; the ordinary `createCss()` entry is
+**6,777 / 2,974** in the same guard. A real application preset contributes
+its own token and condition data, so that application-specific payload is not
+part of this library baseline. The direct class projection and variable
+registration fast paths remain covered by separate reviewed budgets in
+`packages/pandwind/tests/runtime-size.test.ts`.
 
 Repeated class and stable-variable calls no longer lose the comparison: the
 common paths avoid rebuilding intermediate declaration objects and avoid

@@ -592,16 +592,15 @@ through real Tailwind.
 ## Runtime size
 
 The browser runtime is the three small modules above — no stylesheet
-generator, no PostCSS, no parser. Measured by `tests/runtime-size.test.ts`
-(esbuild, minified + gzip, against the committed record-of-truth snapshot
-`tests/snapshots/runtime-size.json.snap`): `css()` ≈ 1.5 KB gz, `tw()` ≈ 1.0
-KB gz, `cx()` ≈ 3.7 KB gz, all three together ≈ 4.4 KB gz. The build-time
-stylesheet generator adds ~20 KB gz (postcss-selector-parser) and is
-deliberately not exported from the runtime barrel. Real numbers for the runtime, the example build and the
-alternatives (stylex, panda, emotion/chakra, tailwind-merge, tokenami) live in
-[SIZE.md](./SIZE.md); per-call runtime benchmarks against those same
-alternatives live in [BENCH.md](./BENCH.md). Lowering the same design system
-to React Native / OpenTUI style objects lives in [BACKENDS.md](./BACKENDS.md).
+generator, no PostCSS, no parser. The current committed measurement is
+`createCss()` ≈ 2.97 KB gz, `tw()` ≈ 1.27 KB gz, `cx()` ≈ 5.31 KB gz, and
+the combined runtime ≈ 6.24 KB gz. The build-time stylesheet generator is
+≈ 7.08 KB gz and is deliberately not exported from the runtime barrel.
+The exact table, compiler-pruned entries, runtime-sheet size, and ecosystem
+comparison live in the [canonical size reference](./docs/src/content/docs/reference/size.md);
+per-call throughput and methodology live in [BENCH.md](./BENCH.md). Lowering
+the same design system to React Native / OpenTUI style objects lives in
+[BACKENDS.md](./BACKENDS.md).
 
 ## CI — analyze results on your PRs
 

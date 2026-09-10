@@ -5,80 +5,105 @@ sidebar:
   order: 2
 ---
 
-Last measured: 2026-09-01 for the Pandwind runtime hot-path and size contract;
-competitor rows below retain their 2026-08-27 reference measurement. The
-environment was local macOS (arm64), Node v24.19.0, esbuild 0.28.2. All
-numbers come from real builds (esbuild `bundle + minify`, gzip level 6). Re-run
-`packages/pandwind/tests/runtime-size.test.ts` and `examples/example` to refresh
-after dependency or engine changes.
+Last measured: **2026-09-10** for the Pandwind runtime byte record. The
+competitor rows retain the supplied reference measurements for the named
+versions. The environment was local macOS (arm64), Node v24.19.0, esbuild
+0.28.2. Pandwind numbers come from real browser-targeted esbuild bundles
+(bundle + minify, gzip level 6) and are rounded to two decimals here.
+
+This is the canonical size page. The root `SIZE.md` is only a pointer; the
+exact machine-readable record is
+[`runtime-size.json.snap`](https://github.com/astahmer/pandwind/blob/main/packages/pandwind/tests/snapshots/runtime-size.json.snap),
+with ceilings in
+[`runtime-budget.json`](https://github.com/astahmer/pandwind/blob/main/packages/pandwind/tests/runtime-budget.json).
 
 ## The short version
 
-| what                                       |      min |     gzip |
+| entry                                      |      min |     gzip |
 | ------------------------------------------ | -------: | -------: |
-| `css()` runtime                            |  6.54 KB |  2.95 KB |
-| `tw()` runtime                             |  2.32 KB |  1.10 KB |
-| `cx()` runtime                             | 12.32 KB |  5.21 KB |
-| all three together                         | 14.59 KB |  6.01 KB |
-| stylesheet generator (**build-time only**) | 83.27 KB | 20.78 KB |
+| `createCss()` fallback runtime             |  6.78 KB |  2.97 KB |
+| `createRuntimeCss()` + runtime sheet       | 28.76 KB | 10.87 KB |
+| `tw()` runtime                             |  2.71 KB |  1.27 KB |
+| `cx()` runtime                             | 12.71 KB |  5.31 KB |
+| all three direct runtime entries           | 15.31 KB |  6.24 KB |
+| stylesheet generator (**build-time only**) | 18.66 KB |  7.08 KB |
 
-The generator is deliberately not exported from any runtime barrel — there is
-a test asserting the shipped runtime stays under a third of its gzipped size.
-It never reaches the browser unless an app explicitly imports it.
+The combined runtime is effectively at the supplied Emotion reference
+(15.3 KB min / 6.25 KB gzip): Pandwind is 7 minified bytes larger and 6
+gzip bytes smaller in these measurements. The old 10.51 KB / 4.38 KB row
+was an obsolete pre-feature snapshot and is intentionally no longer quoted.
 
-## Pay-per-API: separate imports, tree-shaken barrel
+The runtime-sheet row uses the minimal preset fixture. A real application
+preset also contributes its own token and condition data; that data is
+application-specific and is not mixed into the library baseline.
 
-Each engine is its own subpath export (`pandwind/css`, `pandwind/tw`,
-`pandwind/cx`) and the root barrel is marked `"sideEffects": false`, so
-bundlers drop whichever engines you do not import:
+## Pay-per-API and compiler pruning
 
-| import                      |      min |    gzip |
-| --------------------------- | -------: | ------: |
-| `pandwind/css` — css() only |  6.54 KB | 2.95 KB |
-| `pandwind/tw` — tw() only   |  2.32 KB | 1.10 KB |
-| `pandwind/cx` — cx() only   | 12.32 KB | 5.21 KB |
-| `pandwind` root — tw + cx   | 14.59 KB | 6.01 KB |
+Each engine has its own subpath export, and the root barrel is side-effect
+free. The same size gate checks these tree-shaken entry points:
 
-- **The root lane is curated.** `pandwind` (root) exports ONLY `tw` + `cx`;
-  `css()` lives on `pandwind/css` and presets on `pandwind/preset`. Importing
-  from the root costs nothing over the direct subpath — the size gate still
-  tree-shakes each single-API bundle down to its engine.
-- **`cx()` is inherently the biggest single import** because it depends on
-  the css engine's atom registry. `tw()` and `css()` are fully independent.
+| fixture / import                         |      min |     gzip |
+| ---------------------------------------- | -------: | -------: |
+| `pandwind/css` — css() only              |  6.78 KB |  2.97 KB |
+| `pandwind/tw` — tw() only                |  2.71 KB |  1.27 KB |
+| `pandwind/cx` — cx() with atom registry  | 12.71 KB |  5.31 KB |
+| root barrel, css only                    |  6.78 KB |  2.97 KB |
+| root barrel, tw only                     |  2.71 KB |  1.27 KB |
+| root barrel, cx only                     | 12.71 KB |  5.31 KB |
 
-## Browser JS runtimes vs the alternatives
+Compiler-pruned and static fixtures are smaller still:
 
-The Pandwind rows use the September 1 hot-path build. Alternative-library
-rows are a historical comparison from the August 27 measurement and were not
-rerun as part of that optimization revision.
+| fixture                                  |      min |     gzip |
+| ---------------------------------------- | -------: | -------: |
+| all static `css()` calls                 |    81 B   |    98 B   |
+| compiler-pruned `css()` call             |  4.53 KB |  2.02 KB |
+| compiler-pruned `css.class()` call       |  4.59 KB |  2.05 KB |
+| compiler-pruned `css.vars()` call        |  6.21 KB |  2.71 KB |
+
+Literal calls are erased by the Vite compiler; these fallback numbers are
+the cost paid by dynamic or unsupported calls.
+
+## Browser runtimes versus alternatives
+
+The comparison below is directional, not an identical API contract: StyleX
+runs babel-compiled objects, Panda's row is generated `css()`, and the
+Pandwind row includes `css()` + `tw()` + cross-engine `cx()`.
 
 | runtime                                    |      min |    gzip | what ships                              |
 | ------------------------------------------ | -------: | ------: | --------------------------------------- |
-| pandwind `css()` + `tw()` + `cx()`         | 10.51 KB | 4.38 KB | everything                              |
+| pandwind `css()` + `tw()` + `cx()`         | 15.31 KB | 6.24 KB | current combined runtime                |
 | `@stylexjs/stylex` 0.19.0                  |  4.06 KB | 1.74 KB | runtime only (compile happens in babel) |
-| `@pandacss/core` 1.12.0 generated `css()`  |  13.4 KB | 5.31 KB | panda's runtime engine + tokens         |
+| `@pandacss/core` 1.12.0 generated `css()`  |  13.4 KB | 5.31 KB | panda runtime engine + tokens           |
 | `@emotion/css` 11.13.5                     |  15.3 KB | 6.25 KB | emotion core (chakra's engine)          |
 | `@chakra-ui/react` 3.36.1 (react external) |  30.1 KB | 12.5 KB | chakra + emotion it pulls in            |
-| `tailwind-merge` 3.6.0                     |  27.0 KB | 8.47 KB | the merge function alone                |
-| `tokenami`                                 |        0 |      ~0 | compile-time only, nothing ships        |
+| `tailwind-merge` 3.6.0                     |  27.0 KB | 8.47 KB | merge function alone                    |
+| `tokenami`                                 |        0 |     ~0   | compile-time only, nothing ships        |
 
-## No silent regressions: the runtime size gate
+Alternative-library values are the supplied reference run, not a release
+budget. Re-run that external rig before making a new ecosystem comparison;
+the Pandwind row above is the repo-owned snapshot.
 
-The numbers above are a _contract_, enforced on every `pnpm run test` run by
-`tests/runtime-size.test.ts`. Three layers:
+## No silent regressions
 
-1. **Hard budgets** (`tests/runtime-budget.json`) — ceilings checked first,
-   always applied even during snapshot updates.
-2. **Regression guard** — current sizes compared against the committed
-   snapshot with a small tolerance (1%, floored at 16 min / 8 gz bytes).
-3. **Exact snapshot** — record of truth, updated only via
-   `pnpm run test:size -u`, reserved for deliberate growth.
+`packages/pandwind/tests/runtime-size.test.ts` enforces three layers:
+
+1. **Hard budgets** in `tests/runtime-budget.json`, checked even with `-u`.
+2. **A noise-tolerant regression guard** against the committed snapshot.
+3. **The exact snapshot**, refreshed only after an intentional size change.
+
+Run the record from the repository root with:
+
+```sh
+pnpm --filter pandwind run test:size
+```
+
+Use `pnpm --filter pandwind run test:size -u` only after reviewing a
+deliberate bundle change.
 
 ## Real CSS output (example app)
 
-Vite build output: `index.css` 71.25 KB raw / 12.67 KB gzip (~60 KB utilities
-layer, ~3.7 KB preflight, ~2 KB theme variables); `index.js` 254.42 KB raw /
-76.58 KB gzip. The point of the [tailwind adapter](/interop/tailwind-adapter/)
-is that this stays _one_ set of rules: mixing `css()` and `tw()` cannot grow
-the stylesheet — tested against real Tailwind output in
-`tests/tw-adapter.test.ts`.
+The example app's separately measured Vite output remains **71.25 KB raw /
+12.67 KB gzip** for `index.css` and **254.42 KB raw / 76.58 KB gzip** for
+`index.js` (2026-08-15). Its utility layer, preflight, theme variables, and
+keyframe output are application fixtures rather than part of the library
+runtime size contract.
