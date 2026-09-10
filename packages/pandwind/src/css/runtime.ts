@@ -20,7 +20,7 @@ export type {
 	RuntimeStyleElementSink,
 } from "./runtime-sheet-contracts.ts";
 export { RuntimeSemanticRuleKindTag } from "./runtime-sheet-contracts.ts";
-import { VARS_ATOMS } from "./var-compiler.ts";
+import { VARS_ATOMS, type VarAtom } from "./var-compiler.ts";
 import type { ClassNameStrategy } from "./class-name-strategy.ts";
 import { createDesignCss, type DesignPreset, type DesignStyleObject } from "../design/index.ts";
 import type {
@@ -87,6 +87,7 @@ function runtimeOptions(preset: CssConfigReturn, options: RuntimeCssOptions): Ru
 	let tokensSynced = false;
 	let pendingStyles: RuntimeDeclaration[] = [];
 	const pendingStyleIds = new Set<string>();
+	const registeredVarKeys = new Set<string>();
 	const sync = (rules: readonly RuntimeRule[] = []): void => {
 		if (!tokensSynced) {
 			sheet.setTokens(stylesheet.gen.tokens());
@@ -101,12 +102,29 @@ function runtimeOptions(preset: CssConfigReturn, options: RuntimeCssOptions): Ru
 		const added = stylesheet.processPrepared(styles);
 		sync(Array.from(added.values()));
 	};
-	const syncVars = (keys: readonly string[]): void => {
+	const syncVars = (varAtoms: readonly VarAtom[]): void => {
+		let needsRegistration = false;
+		for (const atom of varAtoms) {
+			for (const key of atom.keys) {
+				if (!registeredVarKeys.has(key)) {
+					needsRegistration = true;
+					break;
+				}
+			}
+			if (needsRegistration) break;
+		}
+		// vars() does not enqueue atomic declarations. Once every structural
+		// key has its toggle rule, there is no sheet work left to flush.
+		if (!needsRegistration) return;
 		flush();
 		const newRules: RuntimeRule[] = [];
-		for (const key of keys) {
-			const rule = stylesheet.processVarKey(key);
-			if (rule !== undefined) newRules.push(rule);
+		for (const atom of varAtoms) {
+			for (const key of atom.keys) {
+				if (registeredVarKeys.has(key)) continue;
+				const rule = stylesheet.processVarKey(key);
+				registeredVarKeys.add(key);
+				if (rule !== undefined) newRules.push(rule);
+			}
 		}
 		if (newRules.length > 0) sync(newRules);
 	};
@@ -131,11 +149,7 @@ function runtimeOptions(preset: CssConfigReturn, options: RuntimeCssOptions): Ru
 			const vars = css.vars;
 			css.vars = (...styles) => {
 				const output = vars(...styles);
-				const keys: string[] = [];
-				for (const atom of output[VARS_ATOMS] ?? []) {
-					keys.push(...atom.keys);
-				}
-				syncVars(keys);
+				syncVars(output[VARS_ATOMS] ?? []);
 				return output;
 			};
 		},
