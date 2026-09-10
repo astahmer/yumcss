@@ -27,6 +27,48 @@ and the root export carries only the recommended lane:
 > [`skills/pandwind`](./skills/pandwind/SKILL.md) and
 > [`skills/pandwind-codemod`](./skills/pandwind-codemod/SKILL.md).
 
+## See it in action
+
+The repository ships a live playground, a design-system inspector, analyzer
+coverage views, and a migration Studio. These captures are from the running
+apps in this repository — the playground examples are evaluated in-browser,
+while the inspector and Studio read real project/analyzer data.
+
+<table>
+  <tr>
+    <td width="50%">
+      <img src="docs/assets/showcase/playground-variants-dark.png" alt="Pandwind playground showing typed variants, a live preview, and collapsed execution evidence" />
+    </td>
+    <td width="50%">
+      <img src="docs/assets/showcase/playground-tokens-light.png" alt="Pandwind playground in light mode showing raw, semantic, and component tokens" />
+    </td>
+  </tr>
+  <tr>
+    <td><strong>Playground — variants and live preview</strong><br />Edit typed code, see the rendered specimen, and expand only the evidence you need.</td>
+    <td><strong>Playground — light mode and token layers</strong><br />The same evaluator makes raw, semantic, and component token references visible in a real preview.</td>
+  </tr>
+  <tr>
+    <td>
+      <img src="docs/assets/showcase/inspector-design-system.png" alt="Pandwind Studio design-system inspector showing typed unions and token swatches" />
+    </td>
+    <td>
+      <img src="docs/assets/showcase/analyzer-coverage.png" alt="Pandwind analyzer coverage view showing eliminated calls, CSS budget, and missing CSS warnings" />
+    </td>
+  </tr>
+  <tr>
+    <td><strong>Inspector — design system</strong><br />Browse theme variables, typed utility unions, bridge mappings, and token swatches.</td>
+    <td><strong>Analyzer — coverage and CSS budget</strong><br />Measure build-time elimination, stylesheet shape, CSS size, and missing-CSS warnings.</td>
+  </tr>
+  <tr>
+    <td colspan="2">
+      <img src="docs/assets/showcase/studio-migration.png" alt="Pandwind Studio showing an Emotion source file migrated to the Pandwind css.class target" />
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2"><strong>Studio — migration evidence</strong><br />Inspect a source file, choose source and target adapters, and review the generated target code plus semantic and execution evidence.</td>
+  </tr>
+</table>
+
 ```tsx
 import { tw } from "./tw"; // generated from your tailwind.css
 
