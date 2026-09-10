@@ -4,7 +4,7 @@ import { createVarCompiler } from "./var-compiler.ts";
 import type { CreateCssOptions } from "./runtime-base.ts";
 import { createHashFn, dashCase, escapeIdentifier, hashCssVar } from "./hash.ts";
 import { getPropertyPriority } from "./property-priorities.ts";
-import { buildTokenMaps, resolveTokenValue } from "./tokens.ts";
+import { buildRuntimeTokenMaps, resolveRuntimeTokenValue } from "./runtime-token-maps.ts";
 import {
 	createConditionsBucket,
 	decodeAtomicPath,
@@ -61,7 +61,7 @@ export const createRuntimeStylesheet = (
 		return sort ? parts.sort() : parts;
 	};
 
-	const tokenMaps = buildTokenMaps(preset, debug);
+	const tokenMaps = buildRuntimeTokenMaps(preset, debug);
 	const cssVars = new Map<string, TokenDeclaration>();
 	const presetTokens = preset.tokens ?? {};
 	// Pre-compute the `:root` token declarations (the class-value maps live
@@ -133,7 +133,7 @@ export const createRuntimeStylesheet = (
 		if (cache.has(pairId)) return;
 
 		const atomic = decodeAtomicPath(preset.conditions, pairId);
-		const value = resolveTokenValue(tokenMaps, atomic.prop, normalizedValue);
+		const value = resolveRuntimeTokenValue(tokenMaps, atomic.prop, normalizedValue);
 		const css = genCSSRule([dashCase(atomic.prop), value].join(":"), {
 			...atomic.conditions,
 			className: `.${classNameFor(orderedKey, normalizedValue)}`,
