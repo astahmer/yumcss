@@ -124,6 +124,7 @@
 			"packageName": "pandwind",
 			"exportPaths": [
 				"./_runtime/css-base",
+				"./_runtime/css-codegen",
 				"./_runtime/css-class",
 				"./_runtime/css-vars",
 				"./_runtime/css-raw",
@@ -138,7 +139,9 @@
 			"evidence": [
 				"packages/pandwind/package.json",
 				"packages/pandwind/src/vite/runtime-pruner.ts",
-				"packages/pandwind/tests/runtime-pruner.test.ts"
+				"packages/pandwind/src/css/runtime-codegen.ts",
+				"packages/pandwind/tests/runtime-pruner.test.ts",
+				"packages/pandwind/tests/runtime-codegen.test.ts"
 			],
 			"note": "Private generated imports emitted by runtime pruning; removing them would break the generated artifact contract."
 		},
@@ -157,6 +160,7 @@
 			"exportPaths": [
 				".",
 				"./tw",
+				"./runtime",
 				"./diff",
 				"./swap",
 				"./swap/semantic-ir",
@@ -183,7 +187,9 @@
 			"evidence": [
 				"packages/codemod/package.json",
 				"packages/codemod/README.md",
-				"docs/src/content/docs/tooling/codemod.md"
+				"docs/src/content/docs/tooling/codemod.md",
+				"docs/src/content/docs/tooling/codegen.md",
+				"packages/codemod/tests/runtime-cli.test.ts"
 			],
 			"note": "The supported migration and virtual-bundler tooling contract."
 		},

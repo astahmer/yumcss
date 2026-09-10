@@ -1,6 +1,6 @@
 ---
 title: Codegen — commands & flags
-description: pandwind-codemod tw generate / scan / prune and the analyze CLI, with every flag.
+description: pandwind-codemod runtime and tw codegen commands, with every flag.
 sidebar:
   order: 1
 ---
@@ -41,6 +41,28 @@ Tailwind's own design system (`@tailwindcss/node`) and writes:
   union (capped, with counts), variant set, conflict families, compose list,
   theme scopes, semantic tokens, plus the verify commands an agent runs
   (`typecheck`, `analyze --json`, the missing-css gate).
+
+## `pandwind-codemod runtime generate` — specialized `createCss` for non-Vite builds
+
+```
+pnpm exec pandwind-codemod runtime generate [out-file] \
+  [--methods all|call|<method>[,<method>...]] [--check]
+```
+
+This writes a typed `createCss` module for static bundlers that do not perform
+Pandwind's Vite usage analysis. The default output is
+`src/pandwind-runtime.ts`, and the default `all` selection preserves the full
+`pandwind/css` behavior. Use `--methods call` for the callable core only, or
+select any comma-separated subset of `class`, `vars`, `raw`, `props`, `group`,
+and `input`. `group` automatically includes its `vars` dependency.
+
+The generated file keeps the normal preset-aware type inference but imports
+only the selected runtime attachments through Pandwind's private runtime
+entries. It is version-tied generated output: do not edit it by hand, and
+regenerate it after upgrading Pandwind. `--check` verifies that the file is
+present and byte-for-byte current without writing it; add that command to CI.
+Vite users already receive equivalent usage-aware virtual modules from
+`pandwindCssVite`, so this command is primarily for non-Vite/static builds.
 
 ## `pandwind-codemod tw scan` — safelist from real call sites
 

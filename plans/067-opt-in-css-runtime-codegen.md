@@ -1,6 +1,6 @@
 # Opt-in CSS runtime codegen
 
-Status: active
+Status: complete
 
 ## Goal
 
@@ -34,12 +34,12 @@ writing; the Pandwind package owns the attachment registry and renderer.
 
 ## Acceptance criteria
 
-- [ ] CLI parses and validates method selections deterministically.
-- [ ] `group` output includes `vars`, and every output includes the core.
-- [ ] Generated types expose only selected methods while preserving preset
+- [x] CLI parses and validates method selections deterministically.
+- [x] `group` output includes `vars`, and every output includes the core.
+- [x] Generated types expose only selected methods while preserving preset
       inference for the callable and selected projections.
-- [ ] `--check` reports missing or stale output without writing it.
-- [ ] Vite virtual modules use the same registry/renderer as file generation.
-- [ ] Tests cover call-only, single-method, dependency expansion, invalid
+- [x] `--check` reports missing or stale output without writing it.
+- [x] Vite virtual modules use the same registry/renderer as file generation.
+- [x] Tests cover call-only, single-method, dependency expansion, invalid
       selections, deterministic output, and check-mode failures.
-- [ ] Codegen docs and architecture ownership are updated.
+- [x] Codegen docs and architecture ownership are updated.

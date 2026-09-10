@@ -19,6 +19,7 @@ import type { TokenFormatId } from "./swap/token-format-contracts.ts";
 import { TokenFormatId as TokenFormat } from "./swap/token-format-contracts.ts";
 import { unifiedDiff } from "./diff.ts";
 import { createTwCli } from "./tw/cli.ts";
+import { createRuntimeCli } from "./runtime/cli.ts";
 import { configureMigrateCommand } from "./swap/cli-args.ts";
 import {
 	createPandwindProjectSupport,
@@ -909,6 +910,7 @@ const createCodemodCli = (): CAC => {
 	const tokens = cli.command("tokens <input>", "Convert token files between supported formats");
 	configureTokensCommand(tokens);
 	cli.command("tw [...args]", "Generate and inspect Pandwind Tailwind artifacts");
+	cli.command("runtime [...args]", "Generate a specialized Pandwind CSS runtime");
 	return cli;
 };
 
@@ -935,6 +937,17 @@ async function mainTokens(argv: string[]): Promise<void> {
 }
 
 async function main(argv = process.argv.slice(2)): Promise<void> {
+	if (argv[0] === "runtime") {
+		try {
+			await createRuntimeCli().run(argv.slice(1));
+		} catch (error) {
+			console.error(
+				`pandwind-codemod runtime: ${error instanceof Error ? error.message : String(error)}`,
+			);
+			process.exitCode = 1;
+		}
+		return;
+	}
 	if (argv[0] === "tw") {
 		try {
 			await createTwCli().run(argv.slice(1));

@@ -121,6 +121,12 @@
 			"import": "./dist/tw/index.js",
 			"default": "./dist/tw/index.js"
 		},
+		"./runtime": {
+			"pandwind": "./src/runtime/index.ts",
+			"types": "./dist/runtime/index.d.ts",
+			"import": "./dist/runtime/index.js",
+			"default": "./dist/runtime/index.js"
+		},
 		"./package.json": "./package.json"
 	},
 	"publishConfig": {

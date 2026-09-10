@@ -15,14 +15,7 @@ describe("CSS runtime codegen registry", () => {
 			CssRuntimeMethodTag.Input,
 		]);
 		expect(normalizeCssRuntimeMethods([])).toEqual([]);
-		expect(CSS_RUNTIME_METHODS).toEqual([
-			"class",
-			"vars",
-			"raw",
-			"props",
-			"group",
-			"input",
-		]);
+		expect(CSS_RUNTIME_METHODS).toEqual(["class", "vars", "raw", "props", "group", "input"]);
 	});
 
 	test("rejects unknown attachment names", () => {

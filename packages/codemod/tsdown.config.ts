@@ -3,6 +3,9 @@ import { defineConfig } from "tsdown";
 export default defineConfig({
 	entry: [
 		"src/cli.ts",
+		"src/runtime/index.ts",
+		"src/runtime/cli.ts",
+		"src/runtime/codegen.ts",
 		"src/tw/index.ts",
 		"src/tw/cli.ts",
 		"src/diff.ts",

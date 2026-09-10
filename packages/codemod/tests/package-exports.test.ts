@@ -2,6 +2,7 @@ import { describe, expect, test } from "vitest";
 
 const entries = [
 	"pandwind-codemod/tw",
+	"pandwind-codemod/runtime",
 	"pandwind-codemod/swap",
 	"pandwind-codemod/swap/identifiers",
 	"pandwind-codemod/swap/corpus",

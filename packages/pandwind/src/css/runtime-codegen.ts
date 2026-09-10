@@ -16,8 +16,7 @@ export const CssRuntimeMethodTag = {
 	Input: "input",
 } as const;
 
-export type CssRuntimeMethod =
-	(typeof CssRuntimeMethodTag)[keyof typeof CssRuntimeMethodTag];
+export type CssRuntimeMethod = (typeof CssRuntimeMethodTag)[keyof typeof CssRuntimeMethodTag];
 
 /** Stable registry order used for method ids, imports, and generated output. */
 export const CSS_RUNTIME_METHODS = [
@@ -41,9 +40,7 @@ const attachmentName = (method: CssRuntimeMethod): string =>
  * `group` needs `vars` to represent parameterized groups, so that dependency
  * is expanded here rather than being reimplemented by individual consumers.
  */
-export const normalizeCssRuntimeMethods = (
-	methods: readonly string[],
-): CssRuntimeMethod[] => {
+export const normalizeCssRuntimeMethods = (methods: readonly string[]): CssRuntimeMethod[] => {
 	const selected = new Set<CssRuntimeMethod>();
 	for (const method of methods) {
 		if (!isCssRuntimeMethod(method))
@@ -64,8 +61,7 @@ export interface RenderCssRuntimeModuleOptions {
 const renderRuntimeImports = (methods: readonly CssRuntimeMethod[]): string[] => [
 	'import { createCssRuntime } from "pandwind/_runtime/css-base";',
 	...methods.map(
-		(method) =>
-			`import { ${attachmentName(method)} } from "pandwind/_runtime/css-${method}";`,
+		(method) => `import { ${attachmentName(method)} } from "pandwind/_runtime/css-${method}";`,
 	),
 ];
 
@@ -73,7 +69,8 @@ const renderRuntimeFactory = (methods: readonly CssRuntimeMethod[]): string =>
 	`export const createCss = (presetOrOptions, options) => createCssRuntime(presetOrOptions, options, [${methods.map(attachmentName).join(", ")}]);`;
 
 const renderTypedRuntime = (methods: readonly CssRuntimeMethod[]): string[] => {
-	const methodType = methods.length === 0 ? "never" : methods.map((method) => `"${method}"`).join(" | ");
+	const methodType =
+		methods.length === 0 ? "never" : methods.map((method) => `"${method}"`).join(" | ");
 	return [
 		'import type { CssFn, CreateCssOptions } from "pandwind/css";',
 		'import type { AnyCssConfig, AnyTokens, CssConfigReturn, DefinePresetOptions, StyleObject, TypedStyleObject } from "pandwind/types/typings";',
@@ -85,14 +82,14 @@ const renderTypedRuntime = (methods: readonly CssRuntimeMethod[]): string[] => {
 		"export function createCss<TPreset extends TypedPreset>(",
 		"	preset: TPreset,",
 		"	options?: CreateCssOptions,",
-		"): GeneratedCssFn<TypedStyleObject<TPreset[\"_config\"], TPreset[\"tokens\"], TPreset>>;",
+		'): GeneratedCssFn<TypedStyleObject<TPreset["_config"], TPreset["tokens"], TPreset>>;',
 		"export function createCss(options?: CreateCssOptions): GeneratedCssFn<StyleObject>;",
 		"",
 		"export function createCss(",
 		"	presetOrOptions: CreateCssOptions | TypedPreset = {},",
 		"	options: CreateCssOptions = {},",
 		"): GeneratedCssFn<StyleObject> {",
-		"\treturn createCssRuntime(presetOrOptions, options, [ATTACHMENTS]) as GeneratedCssFn<StyleObject>;",
+		"\treturn createCssRuntime(presetOrOptions, options, [ATTACHMENTS]) as unknown as GeneratedCssFn<StyleObject>;",
 		"}",
 	];
 };
@@ -108,7 +105,7 @@ export const renderCssRuntimeModule = (
 		lines.push(
 			"",
 			...renderTypedRuntime(normalized).map((line) =>
-				line.replace("[ATTACHMENTS]", normalized.map(attachmentName).join(", ")),
+				line.replace("ATTACHMENTS", normalized.map(attachmentName).join(", ")),
 			),
 		);
 	} else {
