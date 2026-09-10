@@ -47,3 +47,12 @@ source/config/build semantics and run Pandwind adapters against selected files.
 | mantine                   | https://github.com/mantinedev/mantine                          | `8a284e2c2c53a9cb6f39f5dc389bf41b7a2073f8` | `apps/help.mantine.dev/src/components/MdxLayout/MdxLayout.tsx`                                             |
 | mui                       | https://github.com/mui/material-ui                             | `fc3a3a0a8b7c8f20274eca4758ea07a33e25c1b4` | `docs/data/material/components/box/BoxSx.tsx`                                                              |
 | mantine                   | https://github.com/mantinedev/mantine                          | `8a284e2c2c53a9cb6f39f5dc389bf41b7a2073f8` | `apps/mantine.dev/src/components/HomePage/HomePage.tsx`                                                    |
+
+## Playground UI references
+
+These read-only clones informed the playground's live-preview and collapsed-inspector design.
+
+| Name | URL | Path | Why |
+| --- | --- | --- | --- |
+| panda | https://github.com/chakra-ui/panda.git | /Users/astahmer/.references/panda | Compare Panda's playground/example-preview composition, token layers, and generated runtime behavior. |
+| tailwindcss-playground | https://github.com/tailwindlabs/tailwindcss-playground.git | /Users/astahmer/.references/tailwindcss-playground | Compare Tailwind Play's editor/preview split and responsive preview affordances. |
