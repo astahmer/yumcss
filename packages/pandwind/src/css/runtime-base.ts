@@ -1,4 +1,4 @@
-import { assign, type FlatStyles, flattenStyle } from "../lib/utils.ts";
+import { assign, dashCase, type FlatStyles, flattenStyle } from "../lib/utils.ts";
 import type {
 	AnyCssConfig,
 	AnyTokens,
@@ -76,7 +76,7 @@ export type RuntimeCssAttachment = (css: RuntimeCssFunction, context: RuntimeCss
  */
 const preserveNullResets = (value: unknown, property = ""): unknown => {
 	if (value === null) {
-		const cssProperty = property.replace(/[A-Z]/g, (character) => `-${character.toLowerCase()}`);
+		const cssProperty = dashCase(property);
 		return cssProperty.endsWith("-width") && cssProperty.includes("border-") ? 0 : "initial";
 	}
 	if (Array.isArray(value)) {

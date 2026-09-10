@@ -14,6 +14,8 @@
  * ```
  */
 
+import { dashCase } from "../lib/utils.ts";
+
 export type TwValue = string | boolean | number | Array<string | number | boolean>;
 export interface TwNestedStyles extends Record<string, TwValue | TwNestedStyles> {}
 
@@ -56,12 +58,6 @@ export type TwComposeMeta = readonly string[];
  */
 export interface TwValueTokensMeta {
 	[utility: string]: Readonly<Record<string, string>>;
-}
-
-const dashCaseRegex = /[A-Z]/g;
-
-function dashCase(key: string): string {
-	return key.replace(dashCaseRegex, (match) => `-${match.toLowerCase()}`);
 }
 
 /**

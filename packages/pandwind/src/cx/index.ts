@@ -152,9 +152,9 @@ const stripOpacityModifier = (value: string): string => {
  * `leading-*`; a later `leading-*` does not supersede `text-xs`). Scoped
  * per variant prefix at push time.
  */
-const KILLS_ALSO: ReadonlyMap<string, readonly string[]> = new Map([
-	["font-size", ["line-height"]],
-]);
+const KILLS_ALSO: Readonly<Record<string, readonly string[]>> = {
+	"font-size": ["line-height"],
+};
 
 /**
  * A token's compiled merge plan: signatures interned to small integers.
@@ -221,7 +221,7 @@ const parseUtility = (
 	}
 	const d = rest.indexOf("-");
 	if (d <= 0) return false;
-	const candidates = index.get(d === -1 ? rest : rest.slice(0, d));
+	const candidates = index.get(rest.slice(0, d));
 	if (candidates === undefined) return false;
 	for (let ci = 0; ci < candidates.length; ci++) {
 		const utility = candidates[ci]!;
@@ -409,7 +409,7 @@ export function createCx(options: CxOptions = {}): CxFn {
 	// Per-token memoization. `twSigs` maps a raw token to its compiled merge
 	// plan (or `null` = opaque); `atomSigs` maps a css atom's flattened
 	// registry key to its compiled plan. Both hold immutable objects shared
-	// with `outPlan`.
+	// with the output arrays.
 	const twSigs = new Map<string, CompiledSigs | null>();
 	const atomSigs = new Map<string, CompiledSigs>();
 	/** Signature-string interning: the push path only ever sees integers. */
@@ -432,7 +432,7 @@ export function createCx(options: CxOptions = {}): CxFn {
 		const prefix = raw[0]!.slice(0, scopeEnd + 1);
 		for (const sig of raw) {
 			all.push(idOf(sig));
-			const expansion = KILLS_ALSO.get(sig.slice(prefix.length));
+			const expansion = KILLS_ALSO[sig.slice(prefix.length)];
 			if (expansion !== undefined) {
 				for (const killed of expansion) all.push(idOf(`${prefix}${killed}`));
 			}
@@ -444,7 +444,6 @@ export function createCx(options: CxOptions = {}): CxFn {
 	// `outCls[i]` is blanked in place when a later token overrides the same
 	// signature, mirroring the previous `{ cls, sigs }` records.
 	const outCls: string[] = [];
-	const outPlan: Array<CompiledSigs | null> = [];
 	/**
 	 * Inline custom properties from `css.vars()` carriers, merged last-wins.
 	 * Always collected (only when carriers appear); surfaced by `cx.vars`,
@@ -472,7 +471,8 @@ export function createCx(options: CxOptions = {}): CxFn {
 	 * with a different size re-computes (the registry only grows, so a stale
 	 * entry could ONLY have missed atoms — never mis-resolved ones).
 	 */
-	const resultCache = new Map<string, { gen: number; out: string }>();
+	let resultCacheGeneration = 0;
+	const resultCache = new Map<string, string>();
 	/** The common two-class render path avoids even the result-cache key join. */
 	let argumentCacheGeneration = -1;
 	let argumentCacheA: string | undefined;
@@ -527,9 +527,8 @@ export function createCx(options: CxOptions = {}): CxFn {
 			if (opaque.has(cls)) return;
 			opaque.add(cls);
 			outCls.push(cls);
-			outPlan.push(null);
-			// Keep outLive index-aligned with outCls/outPlan (opaque entries
-			// are never referenced by owners, but positions must match).
+			// Keep outLive index-aligned with outCls (opaque entries are never
+			// referenced by owners, but positions must match).
 			outLive.push(0);
 			return;
 		}
@@ -559,7 +558,6 @@ export function createCx(options: CxOptions = {}): CxFn {
 		}
 		const index = outCls.length;
 		outCls.push(cls);
-		outPlan.push(plan);
 		outLive.push(plan.primaries);
 		for (let i = 0; i < plan.primaries; i++) {
 			ownSid.push(all[i]!);
@@ -656,6 +654,15 @@ export function createCx(options: CxOptions = {}): CxFn {
 		}
 	};
 
+	const reset = (): void => {
+		outCls.length = 0;
+		outLive.length = 0;
+		ownSid.length = 0;
+		ownIdx.length = 0;
+		opaque.clear();
+		for (const styleKey of Object.keys(outStyle)) delete outStyle[styleKey];
+	};
+
 	/**
 	 * Merge core shared by the string `cx` and the `cx.vars` companion.
 	 * Returns the merged class string; inline styles accumulate in outStyle.
@@ -706,7 +713,6 @@ export function createCx(options: CxOptions = {}): CxFn {
 		// arrays to flatten, no css-atom objects whose resolution depends on
 		// live registry state beyond the generation guard).
 		let cacheKey = "";
-		const gen = generation;
 		let allStrings = inputs.length > 0;
 		for (let i = 0; i < inputs.length; i++) {
 			if (typeof inputs[i] !== "string") {
@@ -715,34 +721,32 @@ export function createCx(options: CxOptions = {}): CxFn {
 			}
 		}
 		if (allStrings) {
+			if (resultCacheGeneration !== generation) {
+				resultCache.clear();
+				resultCacheGeneration = generation;
+			}
 			cacheKey = inputs.join("\u0000");
 			const cached = resultCache.get(cacheKey);
-			if (cached !== undefined && cached.gen === gen) {
+			if (cached !== undefined) {
 				// LRU touch: re-insert so the entry counts as recently used.
 				resultCache.delete(cacheKey);
 				resultCache.set(cacheKey, cached);
-				return cached.out;
+				return cached;
 			}
 		}
 
-		outCls.length = 0;
-		outPlan.length = 0;
-		outLive.length = 0;
-		ownSid.length = 0;
-		ownIdx.length = 0;
-		opaque.clear();
-		for (const styleKey of Object.keys(outStyle)) delete outStyle[styleKey];
+		reset();
 		const out = mergeInputs(inputs);
 
 		if (cacheKey !== "") {
 			if (resultCache.size >= RESULT_CACHE_CAP) {
 				// Evict oldest (insertion order = least-recently-used, since hits re-insert).
 				const oldest = resultCache.keys().next().value;
-				if (oldest !== undefined) resultCache.delete(oldest);
+			if (oldest !== undefined) resultCache.delete(oldest);
 			}
-			resultCache.set(cacheKey, { gen, out });
+			resultCache.set(cacheKey, out);
 		}
-		writeArgumentCache(inputs, gen, out);
+		writeArgumentCache(inputs, generation, out);
 		return out;
 	};
 
@@ -754,13 +758,7 @@ export function createCx(options: CxOptions = {}): CxFn {
 	 * (their styles are intentionally dropped; use `cx.vars` to keep them).
 	 */
 	cx.vars = (...inputs: Array<CxInput | CxInput[]>): VarsOutput => {
-		outCls.length = 0;
-		outPlan.length = 0;
-		outLive.length = 0;
-		ownSid.length = 0;
-		ownIdx.length = 0;
-		for (const styleKey of Object.keys(outStyle)) delete outStyle[styleKey];
-		opaque.clear();
+		reset();
 		const cls = mergeInputs(inputs);
 		return { class: cls, style: { ...outStyle } };
 	};
