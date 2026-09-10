@@ -207,7 +207,7 @@ export const defineConditions = <T extends AnyConditions>(cond: T) => cond;
  * @example
  * ```ts
  * import { defineProperties } from "pandwind/preset";
-
+ *
  * const properties = defineProperties({
  *   backgroundColor: { "$brand-500": "#2563eb" },
  *   padding: true,

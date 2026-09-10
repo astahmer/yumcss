@@ -8,6 +8,7 @@ import type { StandardProperties } from "csstype";
 import { createCss } from "../src/css/index.ts";
 import { createCx } from "../src/cx/index.ts";
 import { createDesignCss } from "../src/design/index.ts";
+import { createTw, type TwOptions } from "../src/tw/index.ts";
 import {
 	defineConditions,
 	definePreset,
@@ -28,6 +29,31 @@ test("createCss JSDoc examples use the preset for token references", () => {
 			_hover: { backgroundColor: "$blue-600" },
 		}),
 	).type.toBe<string>();
+});
+
+test("CssFn JSDoc examples cover groups and runtime inputs", () => {
+	const css = createCss();
+	const styles = css.group({
+		card: { borderRadius: 8, padding: 16 },
+		gap: (value: number) => ({ gap: value }),
+	});
+	const banners = css.group({
+		banner: {
+			$input: {} as { color: string },
+			color: css.input("color"),
+		},
+	});
+
+	expect(css.props(styles.card, styles.gap(12))).type.toBe<{
+		className: string | undefined;
+		style: Record<string, string> | undefined;
+		[key: string]: unknown;
+	}>();
+	expect(css.props(banners.banner({ color: "tomato" }))).type.toBe<{
+		className: string | undefined;
+		style: Record<string, string> | undefined;
+		[key: string]: unknown;
+	}>();
 });
 
 test("definePreset JSDoc example preserves a custom typed vocabulary", () => {
@@ -78,4 +104,15 @@ test("createCx JSDoc example composes CSS atoms and conditionals", () => {
 	expect(
 		cx("inline-flex", isPrimary && "bg-blue-500", css.class({ padding: 12 })),
 	).type.toBe<string>();
+});
+
+test("createTw JSDoc example accepts generated utility metadata", () => {
+	type WindVariants = {
+		bg?: string;
+		sm?: { py?: string };
+	};
+	const generated: TwOptions = {};
+	const tw = createTw<WindVariants>(generated);
+
+	expect(tw({ bg: "sky-600", sm: { py: "12" } })).type.toBe<string>();
 });

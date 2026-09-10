@@ -245,7 +245,7 @@ export interface CssFn<TStyles extends StyleObject = StyleObject> {
 	 *   card: { borderRadius: 8, padding: 16 },
 	 *   gap: (value: number) => ({ gap: value }),
 	 * });
-
+	 *
 	 * css.props(styles.card, styles.gap(12));
 	 * ```
 	 */
@@ -285,7 +285,7 @@ export interface CssFn<TStyles extends StyleObject = StyleObject> {
 	 *     color: css.input("color"),
 	 *   },
 	 * });
-
+	 *
 	 * css.props(banners.banner({ color: "tomato" }));
 	 * ```
 	 */

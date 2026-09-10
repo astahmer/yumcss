@@ -78,14 +78,11 @@ export interface TwOptions {
  *
  * @example Bind generated utility types
  * ```ts
- * import { createTw } from "pandwind/tw";
+ * import { createTw, type TwOptions } from "pandwind/tw";
  * import type { WindVariants } from "./tw.generated";
  *
- * const tw = createTw<WindVariants>({
- *   variants,
- *   conflicts,
- *   compose,
- * });
+ * declare const generated: TwOptions;
+ * const tw = createTw<WindVariants>(generated);
  *
  * const className = tw({
  *   bg: "sky-600",
