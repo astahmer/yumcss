@@ -39,6 +39,12 @@ describe("css.vars — encoding", () => {
 		expect(out.style).toEqual({ "--pw-c-color": "red" });
 	});
 
+	test("simple camelCase properties keep their normalized carrier", () => {
+		const out = css.vars({ backgroundColor: "#123456" });
+		expect(out.class).toBe("pw-background-color");
+		expect(out.style).toEqual({ "--pw-c-background-color": "#123456" });
+	});
+
 	test("nested conditions encode into the class and suffixed props", () => {
 		const out = css.vars({ _hover: { color: "blue" } });
 		expect(out.class).toBe("pw-hover:color");

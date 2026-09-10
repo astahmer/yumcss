@@ -66,6 +66,7 @@ class DefaultVarCompiler implements VarCompiler {
 	}
 
 	classFor(key: string): string {
+		if (!key.includes("__")) return `pw-${dashCase(key)}`;
 		const { conditions, prop } = this.splitKey(key);
 		return `pw-${conditions.length > 0 ? `${conditions.join(":")}:` : ""}${prop}`;
 	}
@@ -88,9 +89,21 @@ class DefaultVarCompiler implements VarCompiler {
 	}
 
 	encode(flat: FlatStyles): { atoms: Array<VarAtom>; style: Record<string, string> } {
+		const keys = Object.keys(flat);
+		const singleKey = keys[0];
+		if (keys.length === 1 && singleKey !== undefined && !singleKey.includes("__")) {
+			const raw = flat[singleKey];
+			if (raw === undefined || (typeof raw !== "string" && !Number.isFinite(raw)) || raw === "")
+				return { atoms: [], style: {} };
+			const prop = dashCase(singleKey);
+			return {
+				atoms: [{ cls: `pw-${prop}`, keys: [singleKey] }],
+				style: { [this.baseCustomProp(prop)]: runtimeValue(prop, raw) },
+			};
+		}
 		const atoms: Array<VarAtom> = [];
 		const style: Record<string, string> = {};
-		for (const key of Object.keys(flat).toSorted()) {
+		for (const key of keys.toSorted()) {
 			const raw = flat[key];
 			if (raw === undefined || (typeof raw !== "string" && !Number.isFinite(raw)) || raw === "")
 				continue;
