@@ -40,6 +40,7 @@ export default defineConfig({
 		"src/source-scanner.ts",
 		"src/source-workspace.ts",
 		"src/css/runtime-base.ts",
+		"src/css/runtime-codegen.ts",
 		"src/css/runtime-method-class.ts",
 		"src/css/runtime-method-vars.ts",
 		"src/css/runtime-method-raw.ts",

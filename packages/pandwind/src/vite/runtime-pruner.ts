@@ -1,19 +1,14 @@
 import { SOURCE_SCANNER_SERVICE } from "../source-scanner.ts";
 import { walkWithParent, type OxcNode } from "../tw/literal.ts";
 import { ImportKindTag, NodeKind } from "../ast-node-kind.ts";
+import {
+	CSS_RUNTIME_METHODS,
+	normalizeCssRuntimeMethods,
+	renderCssRuntimeModule,
+	type CssRuntimeMethod,
+} from "../css/runtime-codegen.ts";
 import { identifierName, memberName as genericMemberName } from "./ast-walk.ts";
 
-const CssRuntimeMethodTag = {
-	Class: "class",
-	Vars: "vars",
-	Raw: "raw",
-	Props: "props",
-	Group: "group",
-	Input: "input",
-} as const;
-type CssRuntimeMethodTag = (typeof CssRuntimeMethodTag)[keyof typeof CssRuntimeMethodTag];
-
-const ALL_METHODS = Object.values(CssRuntimeMethodTag);
 const VIRTUAL_PREFIX = "pandwind:runtime/css";
 const VIRTUAL_ID_PREFIX = `\0${VIRTUAL_PREFIX}?methods=`;
 const CSS_RUNTIME_SOURCES = /(?:^|\/)pandwind\/css(?:\/(?:index|create-css))?(?:\.[cm]?[jt]s)?$/;
@@ -59,7 +54,7 @@ interface RuntimeImport {
 }
 
 interface Usage {
-	readonly methods: Set<CssRuntimeMethodTag>;
+	readonly methods: Set<CssRuntimeMethod>;
 	readonly escaped: boolean;
 }
 
@@ -72,18 +67,18 @@ const isCreateCssImport = (specifier: ImportSpecifierNode, declaration: ImportNo
 
 const isCssRuntimeSource = (source: string): boolean => CSS_RUNTIME_SOURCES.test(source);
 
-const memberName = (node: OxcNode | null | undefined): CssRuntimeMethodTag | undefined => {
+const memberName = (node: OxcNode | null | undefined): CssRuntimeMethod | undefined => {
 	if (node?.type !== NodeKind.MemberExpression) return undefined;
 	const member = node as MemberNode;
 	if (member.computed === true) return undefined;
 	const name = genericMemberName(node);
-	return ALL_METHODS.includes(name as CssRuntimeMethodTag)
-		? (name as CssRuntimeMethodTag)
+	return CSS_RUNTIME_METHODS.includes(name as CssRuntimeMethod)
+		? (name as CssRuntimeMethod)
 		: undefined;
 };
 
 const usageFor = (program: OxcNode, local: string): Usage => {
-	const methods = new Set<CssRuntimeMethodTag>();
+	const methods = new Set<CssRuntimeMethod>();
 	let escaped = false;
 	const declarations = new Set<number>();
 
@@ -166,36 +161,25 @@ const collectImports = (program: OxcNode): RuntimeImport[] => {
 	return imports;
 };
 
-const methodsFor = (program: OxcNode, local: string): Set<CssRuntimeMethodTag> | undefined => {
+const methodsFor = (program: OxcNode, local: string): Set<CssRuntimeMethod> | undefined => {
 	const variables = findFactoryVariables(program, new Set([local]));
 	if (variables.size === 0) return undefined;
-	const methods = new Set<CssRuntimeMethodTag>();
+	const methods = new Set<CssRuntimeMethod>();
 	for (const variable of variables) {
 		const usage = usageFor(program, variable);
 		if (usage.escaped) return undefined;
 		for (const method of usage.methods) methods.add(method);
 	}
-	if (methods.has(CssRuntimeMethodTag.Group)) methods.add(CssRuntimeMethodTag.Vars);
-	return methods;
+	return new Set(normalizeCssRuntimeMethods([...methods]));
 };
 
-const virtualIdFor = (methods: ReadonlySet<CssRuntimeMethodTag>): string =>
-	`${VIRTUAL_PREFIX}?methods=${ALL_METHODS.filter((method) => methods.has(method)).join(",")}`;
+const virtualIdFor = (methods: ReadonlySet<CssRuntimeMethod>): string =>
+	`${VIRTUAL_PREFIX}?methods=${normalizeCssRuntimeMethods([...methods]).join(",")}`;
 
-const parseMethods = (id: string): CssRuntimeMethodTag[] => {
+const parseMethods = (id: string): CssRuntimeMethod[] => {
 	const raw = id.slice(`${VIRTUAL_ID_PREFIX}`.length).split(",");
-	return ALL_METHODS.filter((method) => raw.includes(method));
-};
-
-const runtimeModule = (methods: readonly CssRuntimeMethodTag[]): string => {
-	const imports = [
-		`import { createCssRuntime } from "pandwind/_runtime/css-base";`,
-		...methods.map(
-			(method) =>
-				`import { attach${method[0]!.toUpperCase()}${method.slice(1)} } from "pandwind/_runtime/css-${method}";`,
-		),
-	].join("\n");
-	return `${imports}\nexport const createCss = (presetOrOptions, options) => createCssRuntime(presetOrOptions, options, [${methods.map((method) => `attach${method[0]!.toUpperCase()}${method.slice(1)}`).join(", ")}]);\n`;
+	const selected = CSS_RUNTIME_METHODS.filter((method) => raw.includes(method));
+	return normalizeCssRuntimeMethods(selected);
 };
 
 export interface RuntimePruningTransform {
@@ -219,7 +203,7 @@ export const createRuntimePruningTransform = (): RuntimePruningTransform => {
 			const replacements = new Map<string, { start: number; end: number; text: string }>();
 			for (const runtimeImport of imports) {
 				const methods = methodsFor(program, runtimeImport.local);
-				if (methods === undefined || methods.size === ALL_METHODS.length) continue;
+				if (methods === undefined || methods.size === CSS_RUNTIME_METHODS.length) continue;
 				const replacement = {
 					start: runtimeImport.sourceStart,
 					end: runtimeImport.sourceEnd,
@@ -243,7 +227,7 @@ export const createRuntimePruningTransform = (): RuntimePruningTransform => {
 			const cached = runtimeModuleCache.get(id);
 			if (cached !== undefined) return cached;
 			if (runtimeModuleCache.size >= runtimeModuleCacheLimit) runtimeModuleCache.clear();
-			const module = runtimeModule(parseMethods(id));
+			const module = renderCssRuntimeModule(parseMethods(id));
 			runtimeModuleCache.set(id, module);
 			return module;
 		},

@@ -2,6 +2,7 @@ import { describe, expect, test } from "vitest";
 import { examplePreset } from "@pandwind/example-preset";
 import { createCssExtractorPluginCore } from "../src/vite/css-core.ts";
 import { createInlineTwPluginCore } from "../src/vite/index.ts";
+import { renderCssRuntimeModule } from "../src/css/runtime-codegen.ts";
 import { createRuntimePruningTransform } from "../src/vite/runtime-pruner.ts";
 
 const ID = "/project/src/styles.ts";
@@ -35,6 +36,7 @@ describe("runtime pruning", () => {
 		const virtual = pruner.resolveId("pandwind:runtime/css?methods=vars,group");
 		expect(virtual).not.toBeNull();
 		const loaded = pruner.load(virtual!);
+		expect(loaded).toBe(renderCssRuntimeModule(["vars", "group"]));
 		expect(loaded).toContain("pandwind/_runtime/css-base");
 		expect(loaded).toContain("pandwind/_runtime/css-vars");
 		expect(loaded).toContain("pandwind/_runtime/css-group");

@@ -243,6 +243,12 @@
 			"import": "./dist/css/runtime-base.js",
 			"default": "./dist/css/runtime-base.js"
 		},
+		"./_runtime/css-codegen": {
+			"pandwind": "./src/css/runtime-codegen.ts",
+			"types": "./dist/css/runtime-codegen.d.ts",
+			"import": "./dist/css/runtime-codegen.js",
+			"default": "./dist/css/runtime-codegen.js"
+		},
 		"./_runtime/css-class": {
 			"pandwind": "./src/css/runtime-method-class.ts",
 			"types": "./dist/css/runtime-method-class.d.ts",
