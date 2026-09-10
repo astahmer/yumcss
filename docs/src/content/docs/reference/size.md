@@ -56,9 +56,9 @@ Compiler-pruned and static fixtures are smaller still:
 | fixture                            |     min |    gzip |
 | ---------------------------------- | ------: | ------: |
 | all static `css()` calls           |    81 B |    98 B |
-| compiler-pruned `css()` call       | 4.53 KB | 2.02 KB |
-| compiler-pruned `css.class()` call | 4.59 KB | 2.05 KB |
-| compiler-pruned `css.vars()` call  | 6.21 KB | 2.71 KB |
+| compiler-pruned `css()` call       | 3.95 KB | 1.80 KB |
+| compiler-pruned `css.class()` call | 4.00 KB | 1.82 KB |
+| compiler-pruned `css.vars()` call  | 5.55 KB | 2.47 KB |
 
 Literal calls are erased by the Vite compiler; these fallback numbers are
 the cost paid by dynamic or unsupported calls.
