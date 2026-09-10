@@ -1,179 +1,217 @@
 ---
 title: Getting started
-description: Install pandwind, generate the typed runtime, wire the vite plugins, and use tw() / css() / cx().
+description: Choose a styling lane, get one working example running, and know where to go next.
 sidebar:
   order: 1
 ---
 
-pandwind ships compiled ESM and TypeScript declarations. Import public APIs
-through the package subpaths; published applications do not need the
-repository source tree or a special TypeScript runner.
+You do not need to understand the whole Pandwind repository to use it. Pick
+the path that matches your app today:
+
+| Your starting point                       | Read this first                                 |
+| ----------------------------------------- | ----------------------------------------------- |
+| You already use Tailwind                  | [Build your first app](/guides/basic/)          |
+| You want typed CSS objects                | [The `css()` API](/api/css/)                    |
+| You are designing a shared token system   | [Build a design system](/guides/design-system/) |
+| You are replacing another styling library | [Migration guide](/guides/migrations/)          |
+
+The rest of this page gives you the two smallest working setups.
+
+## The Tailwind path
+
+This path adds typed object syntax to a Tailwind project. Tailwind still owns
+the final stylesheet.
+
+### 1. Install
 
 ```sh
 pnpm add pandwind
+pnpm add -D tailwindcss @tailwindcss/vite pandwind-codemod
 ```
 
-The core runtime does not install Tailwind, PostCSS, the parser, or bundler
-integration packages. Those build subpaths use optional peers, so add only the
-packages required by the lane you choose:
+### 2. Create the stylesheet entry
+
+```css
+/* src/tailwind.css */
+@import "tailwindcss";
+```
+
+Import this file once from your application entry point.
+
+### 3. Generate the typed helper
 
 ```sh
-# `pandwind-codemod tw` codegen and Tailwind project loading
-pnpm add -D @tailwindcss/node postcss cac
-
-# source scanning
-pnpm add -D oxc-parser
-
-# Vite/unplugin integration
-pnpm add -D unplugin
+pnpm exec pandwind-codemod tw generate ./src/tailwind.css ./src
 ```
 
-There are three steps: define a preset, generate the Tailwind artifacts, add vite plugins, and use
-the APIs.
+The command reads the Tailwind design system and writes `src/tw.ts` plus its
+declarations. Those generated files are the source of autocomplete in your
+editor. Regenerate them when the Tailwind input or theme changes.
 
-If you want the shortest copy-paste path, start with [Basic mode](/guides/basic/).
-This page explains the moving parts; [Advanced mode](/guides/advanced/) covers
-the complete compiler, runtime, adapter, and backend surface.
-
-## 1. Preset
-
-Define your design system once in `src/preset.ts` — tokens, radii, and
-conditions. See the [design-system guide](/guides/design-system/) for a
-complete example using `defineTokens` / `defineTheme` / `definePreset`.
-
-## 2. Codegen
-
-Generate the typed `tw()` runtime and `@theme` bridge from your
-`tailwind.css`:
-
-```jsonc
-// package.json
-{
-	"scripts": {
-		"tw:generate": "pandwind-codemod tw generate ./src/tailwind.css ./src --tokens ./src/preset.ts --bridge",
-		"tw:scan": "pandwind-codemod tw scan ./src/tw.ts ./src ./src/pandwind.safelist.css",
-	},
-}
-```
-
-```sh
-pnpm run tw:generate && pnpm run tw:scan
-```
-
-This generates `src/types.d.ts`, `src/tw.ts`, `src/bridge.ts`, a safelist
-stylesheet (`@source inline` directives — import it from `tailwind.css`), and
-`src/pandwind-theme.css` (the token bridge — import it too). The `--tokens`
-flag feeds your preset's DTCG token groups in; drop it if you don't use tokens.
-
-`bridge.ts` is optional build-time and migration metadata. Pandwind does not
-import it automatically; it becomes a runtime dependency only when the
-application explicitly imports `twAdapter` as its Tailwind class strategy.
-
-## 3. Vite plugins
-
-Fold literal calls at build time:
+### 4. Add the Vite plugin
 
 ```ts
 // vite.config.ts
 import tailwindcss from "@tailwindcss/vite";
-import { pandwindVite } from "pandwind/vite";
+import react from "@vitejs/plugin-react-swc";
 import { defineConfig } from "vite";
+import { pandwindVite } from "pandwind/vite";
 
 export default defineConfig({
-	plugins: [pandwindVite(), tailwindcss()],
+	plugins: [pandwindVite(), tailwindcss(), react()],
 });
 ```
 
-This is enough for the `tw()` lane. For the `css()` or design lane, pass the
-same preset and engine to both plugins:
+`pandwindVite()` turns literal calls into the class strings Tailwind already
+knows how to compile. Your existing Tailwind workflow stays recognizable.
 
-```ts
-import { createPandwindEngineContext, pandwindCssVite, pandwindVite } from "pandwind/vite";
-import { examplePreset } from "@pandwind/example-preset";
-
-const engine = createPandwindEngineContext({ preset: examplePreset });
-
-export default defineConfig({
-	plugins: [
-		pandwindVite({ css: { preset: examplePreset, engine } }),
-		pandwindCssVite(examplePreset, { engine }),
-		tailwindcss(),
-	],
-});
-```
-
-The CSS plugin serves the extracted stylesheet through `pandwind:css`; import
-that virtual module once from your application entry point. See [the Vite
-plugin guide](/tooling/vite-plugins/) for route splitting and critical CSS.
-
-## 4. Use it
-
-Pick one lane — each is self-contained, and mixing them in a module graph is
-never required:
-
-- **tw()** (`pandwind/tw`) for typed Tailwind utilities
-- **css()** (`pandwind/css`) for atomic styles — or **design css()**
-  (`pandwind/design`, convention: `const dcss = createDesignCss(preset)`) for
-  the ~30-prop Figma vocabulary on the same engine
-- **cx()** (`pandwind/cx`) to merge both, last-wins
-
-Plain strings keep working everywhere.
-
-## Subpath exports
-
-The root export (`pandwind`) carries ONLY the recommended lane: `tw` + `cx`.
-Every other surface requires its explicit subpath, so choosing an API lane is
-a visible import decision:
-
-Runtime subpaths: `pandwind/css`, `pandwind/tw`, `pandwind/cx`,
-`pandwind/preset`, `pandwind/design`, `pandwind/vite`; generic bundler
-adapters under `pandwind/unplugin`; build-time Tailwind codegen under the
-`pandwind-codemod/tw` command and subpath;
-non-web backends
-`pandwind/react-native`, `pandwind/opentui`, plus the render-agnostic
-`pandwind/stack` and framework renderers under `pandwind/stack/{react,solid,vue,preact}`.
-
-### Stack components
-
-Use the renderer entry for the framework that owns your component tree:
+### 5. Use it
 
 ```tsx
-import { Stack } from "pandwind/stack/react";
+import { tw } from "./tw";
 
-export function Card() {
+export function Welcome() {
 	return (
-		<Stack direction="column" gap="4" padding="6">
-			Content
-		</Stack>
+		<main className={tw({ minH: "screen", bg: "gray-50", p: "8" })}>
+			<button className={tw({ rounded: "lg", bg: "blue-600", px: "4", py: "2", text: "white" })}>
+				Continue
+			</button>
+		</main>
 	);
 }
 ```
 
-Solid, Vue, and Preact use the same style props while preserving their native
-component conventions. Choose the matching entry for your framework:
+Run your normal command:
 
-Solid (uses `class` and reactive props):
-
-```tsx
-import { Stack } from "pandwind/stack/solid";
+```sh
+pnpm run dev
+pnpm run build
 ```
 
-Vue (uses `class`, attrs, and slots):
+TypeScript now catches invalid utility names and values. Start with the
+[basic guide](/guides/basic/) if you want the same setup as a complete small
+app.
 
-```tsx
-import { Stack } from "pandwind/stack/vue";
+### Dynamic class choices
+
+Static calls are visible to Tailwind through the Vite plugin. If a runtime
+choice can produce several utility classes, tell Tailwind about those
+candidates:
+
+```sh
+pnpm exec pandwind-codemod tw scan ./src/tw.ts ./src ./src/pandwind.safelist.css
 ```
 
-Preact (uses `className` and children):
+Then import the generated file:
 
-```tsx
-import { Stack } from "pandwind/stack/preact";
+```css
+@import "tailwindcss";
+@import "./pandwind.safelist.css";
 ```
 
-The neutral `pandwind/stack` entry contains only the `stackClasses` mapper and
-`StackProps` types. It has no framework dependency and is the input used by
-the static Stack fold. Svelte and Astro require native `.svelte`/`.astro`
-component adapters rather than a JavaScript component export and are not
-represented by these entries.
+The scanner is only needed when the possible class names are not present as
+literal source that Tailwind can see.
 
-See [Tooling → Codegen](/tooling/codegen/) for every command and flag.
+## The atomic CSS path
+
+Choose this path when you want typed CSS objects and an extracted atomic
+stylesheet without Tailwind.
+
+### 1. Install
+
+```sh
+pnpm add pandwind
+pnpm add -D unplugin
+```
+
+### 2. Create a preset
+
+`createCss(preset)` is the typed form. A preset defines the tokens and values
+your application is allowed to use. The [design-system guide](/guides/design-system/)
+has a complete preset; the shape is:
+
+```ts
+// src/preset.ts
+import type { StandardProperties } from "csstype";
+import { definePreset, defineTheme, defineTokens } from "pandwind/preset";
+
+const tokens = defineTokens({
+	colors: { $surface: "#ffffff", $ink: "#111827" },
+	spacing: { 4: "16px" },
+	radii: { lg: "12px" },
+});
+
+export const preset = definePreset(defineTheme({ config: {} as StandardProperties, tokens }), {
+	strict: true,
+	conditions: { base: "", _hover: "&:hover" },
+	properties: { $all: true },
+});
+```
+
+### 3. Configure extraction
+
+```ts
+// vite.config.ts
+import { defineConfig } from "vite";
+import { pandwindCssVite } from "pandwind/vite";
+import { preset } from "./src/preset";
+
+export default defineConfig({
+	plugins: [pandwindCssVite(preset)],
+});
+```
+
+Import the virtual stylesheet once from your application entry point:
+
+```ts
+import "pandwind:css";
+```
+
+### 4. Author a component
+
+```ts
+// src/styles.ts
+import { createCss } from "pandwind/css";
+import { preset } from "./preset";
+
+export const css = createCss(preset);
+```
+
+```tsx
+import { css } from "./styles";
+
+export function Card() {
+	return (
+		<article
+			className={css.class({
+				backgroundColor: "$surface",
+				color: "$ink",
+				padding: "4",
+				borderRadius: "lg",
+			})}
+		>
+			Your content
+		</article>
+	);
+}
+```
+
+Use `css.vars()` when a value is only known at runtime. Keep global rules,
+fonts, and keyframes in ordinary authored CSS; they are part of the web
+platform, not a missing Pandwind feature.
+
+## What should I read next?
+
+- [Build a design system](/guides/design-system/) when tokens or themes are
+  becoming shared product infrastructure.
+- [Build a component library](/guides/component-library/) when styles cross a
+  package boundary.
+- [Theming](/api/theming/) for light/dark and component scopes.
+- [Playground, inspector, and Studio](/tooling/analyze-and-studio/) to see
+  generated output instead of guessing.
+- [Migration guide](/guides/migrations/) when you are bringing an existing
+  codebase along.
+
+If a page starts with compiler terminology you do not recognize, skip it for
+now. The [API reference](/api/tw/) is designed for looking up a decision after
+you have chosen a lane, not as a prerequisite for using Pandwind.

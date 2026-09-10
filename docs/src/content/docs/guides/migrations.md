@@ -5,6 +5,10 @@ sidebar:
   order: 5
 ---
 
+You do not need to migrate an entire application in one step. Start with one
+representative component, preview the target code, and keep anything Pandwind
+cannot prove equivalent in the report for a human to decide.
+
 Pandwind is a pivot layer, not a promise that every source semantic can be
 rewritten blindly. A migration has two targets:
 

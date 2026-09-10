@@ -1,120 +1,161 @@
 ---
-title: Playground, studio & analyze
-description: Live playground, the inspect dashboard and the analyze machinery.
+title: Playground, inspector, and Studio
+description: Learn Pandwind by trying styles, inspecting a project, and previewing migrations.
 sidebar:
-  order: 5
+  order: 1
 ---
 
-## `pnpm run playground` — live editor
+These tools answer different questions. You do not need to run all of them to
+use Pandwind:
 
-A local in-browser editor: type `tw()` / `css()` / `cx()` expressions and see
-the merged class string, fold verdict (full/partial/runtime) and
-conflict-merge visualization instantly. Per-example routes, URL-hash sharing,
-Monaco + Shiki. Styled with pandwind itself.
+| You want to know…                             | Use…                 |
+| --------------------------------------------- | -------------------- |
+| “What does this style object do?”             | the **Playground**   |
+| “What did my project generate?”               | the **Inspector**    |
+| “How much work will this migration leave me?” | **Studio**           |
+| “Can CI check this on every pull request?”    | the **analyzer CLI** |
 
-The editor's Pandwind declarations are not copied API typings. The playground
-predev/prebuild hook runs `pnpm run editor:types`, which resolves the workspace
-package through `node_modules/pandwind`, emits its public declaration graph and
-the transitive declaration dependencies it references, and mounts that graph
-into Monaco's virtual filesystem. `pnpm run editor:types:check`
-regenerates into a temporary directory and fails if the checked-in graph is
-stale. This keeps `tw`, `css`, `cx`, design presets, and option contracts tied
-to the package exports; the small declarations for unavailable migration
-libraries are clearly isolated browser shims, not claims about their installed
-package APIs.
+## Playground: learn by changing code
 
-## Migration lab
-
-Open `/migrate` in the playground to exercise the same registry-backed
-migration use case used by the codemod. Choose any registered source adapter
-and target adapter, edit the in-memory source document, and inspect the
-rewritten code, target capabilities, canonical validation, dependencies, and
-structured residuals.
-
-The lab deliberately uses the browser entry point
-`pandwind-codemod/swap/browser`: it shares the adapter catalog and semantic
-migration pipeline with the CLI while excluding project filesystem access,
-Tailwind's Node engine, and project-module loading. This makes the playground
-a safe interactive preview, not a second migration implementation. Source
-adapters that need project configuration still report that limitation as a
-residual until a project-aware CLI migration supplies the configuration.
-
-## `pandwind-studio` — local codebase Studio
-
-Start a read-only Studio for an existing project:
+Start it from the repository root:
 
 ```sh
-pnpm exec pandwind-studio /path/to/project
+pnpm run playground
 ```
 
-Use `--no-open` when the URL should only be printed (for example in a test or
-remote shell):
+The Playground is a safe browser sandbox for `tw()`, `css()`, `cx()`, design
+`css()`, tokens, variants, dynamic values, and migrations. Choose a scenario,
+edit the example, and press run. The right side shows:
+
+- the live preview of the style you just wrote;
+- the class string or runtime values that were produced;
+- whether the call was folded at build time or remains dynamic; and
+- the generated declarations and CSS when you want to inspect the details.
+
+Collapsed panels are intentional. Start with the preview; open execution
+evidence only when you are debugging or learning how a result was produced.
+
+The Playground is not a replacement for your project's build. It uses a
+browser-safe evaluator and deliberately does not load your host project's
+filesystem, Tailwind Node pipeline, or framework plugins.
+
+## Inspector: understand a real project
 
 ```sh
-pnpm exec pandwind-studio . --no-open
+pnpm run inspect
 ```
 
-The command binds to localhost and prints a per-session URL containing a
-capability token. The browser never receives the project's module loader or
-filesystem implementation. Source edits are virtual overlays: **Apply edit**
-re-evaluates the overlay and does not write the project. Reopen the project to
-explicitly discard overlays and reload disk state.
+The Inspector reads the repository and presents the useful results without
+making you parse JSON:
 
-The static Studio view provides:
+- **Design system** — colors, typography, spacing, radii, theme variables,
+  typed utility unions, bridge mappings, and exportable token data.
+- **Stats** — how many style calls were eliminated at build time, how much CSS
+  was generated, where the stylesheet is large, and where CSS may be missing.
+- **Token graph** — aliases, references, cycles, and provenance.
+- **Usage** — which properties and tokens are used most often.
+- **Governance** — candidates for cleanup, with boundaries called out before
+  anything is removed.
+- **History** — compare saved inspector runs when history is enabled.
 
-- the shared source workspace and scanner, with supported documents and style
-  call sites;
-- registry-derived source/target adapter selectors, including the Pandwind
-  `css.class`, `dss`, and `tw` target dialects;
-- the rewritten target source, generated artifacts, byte metrics, semantic
-  `StyleProgram` evidence, canonical source/target CSS, and residuals;
-- discovered global and selector-scoped `@theme` variables, with the selected
-  theme scope carried through evaluation; and
-- a static component/style tree and an explicit host-preview state.
+The Inspector is read-only. It is a lens over analyzer results, not another
+compiler or a second source of truth.
 
-When a disk file changes underneath an unsaved Studio overlay, the overlay is
-kept and a conflict is shown. This fails closed: the Studio does not silently
-choose disk over the user's edit. A real host preview is an optional adapter;
-projects without one remain in static mode.
+## Analyzer: make the useful checks repeatable
 
-The Studio uses the same `StyleMigrationUseCase` and adapter registry as the
-codemod. It is therefore a feedback surface for the migration, not a second
-parser or a browser-side implementation of every ecosystem.
+The analyzer is the command-line version of the questions above. Run the
+repository example with:
 
-## `pnpm run inspect` — analyzer dashboard
+```sh
+pnpm run analyze
+```
 
-A local read-only dashboard over the [analyze](#analyze) machinery:
+For a consumer project, the published command can emit JSON for CI:
 
-- **Coverage tab** — fold elimination, CSS budget, dead candidates,
-  missing-css warnings, and class-to-rule drill-down with editor links.
-- **Design-system tab** — theme vars, typed utility unions, bridge map,
-  preset tokens, component scopes, and exportable DTCG/`@theme` artifacts.
-- **Graph tab** — token alias graph, cycles, and provenance.
-- **History and usage tabs** — persisted run snapshots/diffs and token/property
-  usage analytics when the local inspector server is enabled.
-- **Reports** — self-contained HTML/JSON/Markdown exports and CI-friendly
-  `--github-annotations` output from the analyzer.
+```sh
+pnpm exec pandwind-analyze \
+	--root . \
+	--tw src/tw.ts \
+	"src/**/*.{ts,tsx}"
+```
 
-CSS discovery follows authored `@import` edges transitively, including scoped
-package exports such as `@acme/theme/tailwind.css`. Reachable `@theme`
-variables are included in the design-system view; selector-scoped custom
-properties are retained as scope entries instead of being flattened into the
-root theme. The exported stylesheet preserves those selectors, so inspecting
-an external dark, brand, or component theme does not change its cascade.
+Use it to track:
 
-The repository also ships a reusable PR-comment workflow at
-`.github/workflows/analyze-comment.yml`. Consumers call it with
-`astahmer/pandwind/.github/workflows/analyze-comment.yml@main`, provide their
-`app-dir` and file `patterns`, and optionally pin `pandwind-version`. It runs
-the published analyzer against HEAD and the base checkout, then updates one
-marker-keyed comment with fold coverage, missing CSS, and CSS budget deltas.
+- static versus runtime style calls;
+- missing CSS candidates;
+- generated CSS size and rule shape;
+- authored CSS and theme imports;
+- token usage and cleanup candidates; and
+- migration or adapter coverage where configured.
 
-Extend the CLI, not the app, when adding metrics.
+The goal is not a wall of numbers. Use the human-readable output while
+developing and `--json` when a CI job or editor needs structured data.
 
-## Analyze
+## Studio: preview a migration
 
-The analysis machinery behind the studio lives in `packages/analyze`. It
-parses real sources, evaluates calls through the same engines, and reports
-coverage/budget facts — the same reports the missing-css gate and
-`analyze --json` agent commands rely on (see
-[codegen](/tooling/codegen/#agents-file)).
+Studio gives you a project-shaped, read-only migration workspace:
+
+```sh
+pnpm exec pandwind-studio /path/to/project --no-open
+```
+
+Open the printed localhost URL. Choose a source adapter and a Pandwind target,
+then inspect:
+
+1. the source file the tool found;
+2. the target code it would generate;
+3. canonical CSS and generated files;
+4. token/theme information; and
+5. diagnostics for behavior that needs a human decision.
+
+Edits in Studio are overlays in memory. **Apply edit** re-evaluates the
+overlay; it does not write the project. Use the CLI when you are ready to
+produce a real diff:
+
+```sh
+pnpm exec pandwind-codemod migrate \
+	--from=emotion \
+	--to=css.class \
+	--dry-run --diff --report \
+	"src/**/*.{js,jsx,ts,tsx}"
+```
+
+Review the report before removing the old library. A migration can preserve
+the visible style while still needing manual work for theme callbacks, slots,
+framework props, runtime interpolation, or SSR behavior.
+
+## What the labels mean
+
+The tools separate evidence that is easy to confuse:
+
+- **verified** means that the selected runtime or compiler check actually ran;
+- **runtime** means the value is only known while the application runs;
+- **unavailable** means this host or project did not provide that check; and
+- **residual** means the source was kept because the target behavior was not
+  proven equivalent.
+
+That honesty is the point. A green browser sandbox result is useful feedback,
+but it is not the same thing as a successful project build or SSR proof.
+
+## A practical workflow
+
+When learning:
+
+```text
+Playground → copy the style → typecheck your app → inspect generated CSS
+```
+
+When migrating:
+
+```text
+analyzer → Studio preview → codemod diff/report → typecheck/build/browser
+```
+
+When running CI:
+
+```text
+analyze --json → budget/missing-CSS gate → review residuals
+```
+
+For the detailed command flags, see [codegen](/tooling/codegen/),
+[Vite plugins](/tooling/vite-plugins/), and [codemods](/tooling/codemod/).

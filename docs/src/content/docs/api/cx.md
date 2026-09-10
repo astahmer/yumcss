@@ -1,22 +1,27 @@
 ---
 title: cx() — merge everything, last-wins
-description: Merge raw class strings, tw() output and css atoms into one className with generated conflict semantics.
+description: Combine Pandwind output, ordinary class strings, and conditional styles at component boundaries.
 sidebar:
   order: 4
 ---
+
+When a component gets a base style, a user override, and a conditional state,
+compose them at the edge of the component. cx() keeps the last matching
+declaration and preserves class strings it cannot understand.
 
 `createCx({ css, variants, conflicts, compose })` merges raw class strings,
 `tw()` output and css atoms into one className with the same conflict
 semantics as a single `tw()` call:
 
 ```ts
-import { createTw } from "pandwind/tw";
 import { createCss } from "pandwind/css";
 import { createCx } from "pandwind/cx";
 
-const tw = createTw<WindVariants>({ variants, conflicts, compose });
-const css = createCss();
-const cx = createCx({ css, variants, conflicts, compose });
+import { examplePreset } from "@pandwind/example-preset";
+import { __pandwindConfig, tw } from "./tw";
+
+const css = createCss(examplePreset);
+const cx = createCx({ css, ...__pandwindConfig });
 
 cx(tw({ bg: "red-500" }), "px-4", css.class({ color: "blue" }), "bg-blue-500");
 // "px-4 bg-blue-500 <color atom>" — bg-red-500 lost to bg-blue-500

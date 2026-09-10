@@ -1,6 +1,6 @@
 ---
 title: tw() — typed Tailwind classes
-description: A Panda-like object typed against your real Tailwind design system that returns a class string.
+description: Replace fragile Tailwind class strings with typed objects backed by the theme your project actually uses.
 sidebar:
   order: 1
 ---
@@ -20,7 +20,21 @@ tw({ rounded: "xl", bg: "white", p: "6", hover: { bg: "gray-50" } });
 // "rounded-xl bg-white p-6 hover:bg-gray-50"
 ```
 
-## How it works
+## The everyday loop
+
+1. Generate a helper from the Tailwind stylesheet your app already uses.
+2. Write an object and let the editor complete keys and values.
+3. Run the normal Vite build; literal calls become ordinary class strings.
+4. Scan only the genuinely dynamic class choices.
+
+```sh
+pnpm exec pandwind-codemod tw generate ./src/tailwind.css ./src
+```
+
+You own the generated helper and can inspect it like any other source file.
+Pandwind does not hide a second Tailwind theme behind it.
+
+## What gets generated
 
 - **`pandwind-codemod tw generate`** — loads your `tailwind.css` through Tailwind's own design
   system (`@tailwindcss/node`) and generates two files next to it:
@@ -61,7 +75,7 @@ tw({ rounded: "xl", bg: "white", p: "6", hover: { bg: "gray-50" } });
   scanner, unverified tokens surface through the plugin's `onUnresolved`
   lane instead of silently disappearing.
 
-## Agent-ready by construction
+## For CI and automation
 
 Run codegen with `--agents` and pandwind also emits `pandwind.agents.json`: a
 versioned machine-readable capability file — every utility key with its

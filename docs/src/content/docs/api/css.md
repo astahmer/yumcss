@@ -1,6 +1,6 @@
 ---
 title: css() — atomic CSS-in-JS
-description: The panda+stylex engine — hashed atomic classes, tokens, property-priority merging, variant conditions.
+description: Write typed CSS objects, extract atomic classes, and keep runtime values explicit.
 sidebar:
   order: 2
 ---
@@ -28,12 +28,32 @@ const css = createCss(
 );
 ```
 
-It is the "better stylex + panda" half of the repo: literal calls can be
-extracted at build time, while dynamic values can use inline custom properties
-or an explicit runtime sheet. See `packages/pandwind/tests/css-*.test.ts` for
-the behavior contract.
+This lane is for ordinary CSS properties with a small production path:
+literal calls can be extracted at build time, while dynamic values can use
+inline custom properties or an explicit runtime sheet. The
+[design-system guide](/guides/design-system/) shows how to share the preset
+across components.
 
-## The surface at a glance — return shapes
+## The everyday loop
+
+Create one preset for the application, bind one css function to it, and use
+css.class() for elements. Literal calls are extracted by the Vite plugin;
+runtime values use css.vars() and keep their changing data in inline custom
+properties.
+
+```ts
+const card = css.class({
+	backgroundColor: "$surface",
+	color: "$ink",
+	padding: "4",
+});
+```
+
+Most applications only need css.class(), css.vars(), and occasionally
+css.props(). The other return shapes are useful when building a component
+library or an integration.
+
+## Pick a return shape
 
 All seven methods take the same style object and compile the same atoms;
 they differ only in what they hand back:
@@ -46,7 +66,7 @@ they differ only in what they hand back:
 | `css.raw({ ... })`            | `{ color: "red" }` — plain style object, untouched                                  | escape hatch _out_ of the atomic pipeline: inline-`style` targets (React Native, opentui), or forcing a call to stay invisible to the vite extractor |
 | `css.props(...)`              | `{ className, style }` — spread onto an element                                     | combining compiled maps with `vars()` outputs in one shot                                                                                            |
 | `css.group({ btn: { ... } })` | named map of compiled outputs                                                       | pre-compiling a set of related styles behind one name                                                                                                |
-| `css.input(name)`             | `"input>$name"` marker                                                              | referencing a `$input` value inside a dynamic group; the Vite extractor emits its structural `var(...)` rule                                      |
+| `css.input(name)`             | `"input>$name"` marker                                                              | referencing a `$input` value inside a dynamic group; the Vite extractor emits its structural `var(...)` rule                                         |
 
 Notes that hold for all of them:
 
@@ -133,11 +153,11 @@ custom properties.
 const css = createCss(preset);
 
 const button = css.group({
-  button: {
-    $input: {} as { background: string },
-    backgroundColor: css.input("background"),
-    color: "$white",
-  },
+	button: {
+		$input: {} as { background: string },
+		backgroundColor: css.input("background"),
+		color: "$white",
+	},
 });
 
 declare const runtimeColor: string;

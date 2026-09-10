@@ -1,41 +1,107 @@
 ---
 title: pandwind
-description: Typed style objects that compile to real CSS — Tailwind classes or atomic CSS-in-JS.
+description: Typed styling for Tailwind teams, CSS-in-JS teams, and design-system authors.
 template: splash
 hero:
   title: pandwind
-  tagline: Panda-like typed style objects that compile to real CSS — via Tailwind classes (`tw()`) or an atomic CSS-in-JS engine (`css()`). Plain `className` strings and plain CSS keep working right next to both.
+  tagline: Write styles with autocomplete, keep the CSS tools you already use, and move known work to build time.
   actions:
     - text: Quick start
       link: ./getting-started/
       icon: right-arrow
-    - text: Why pandwind exists
-      link: ./why-pandwind/
+    - text: Build your first app
+      link: ./guides/basic/
       icon: external
 ---
 
-The core idea: **the compiler is the contract**. Wrong values are type errors,
-autocomplete comes from your actual design system, and nothing is generated at
-runtime that a build step could have done instead.
+Pandwind is for teams who want typed style objects without throwing away
+Tailwind, CSS, or the design-system conventions they already have. Start with
+one lane; add the others only when they solve a real problem.
+
+## Choose your starting point
+
+### I already use Tailwind
+
+Use [`tw()`](/api/tw/) to replace fragile class strings with an object whose
+keys and values come from your actual Tailwind project.
 
 ```tsx
-import { tw } from "./tw"; // generated from your tailwind.css
+import { tw } from "./tw";
 
-export function Card() {
-	return (
-		<div
-			className={tw({
-				rounded: "xl",
-				bg: "white",
-				p: "6",
-				shadow: "lg",
-				hover: { bg: "gray-50" },
-				sm: { p: "8" },
-				group: { hover: { opacity: "100" } },
-			})}
-		>
-			{/* "rounded-xl bg-white p-6 shadow-lg hover:bg-gray-50 sm:p-8 group-hover:opacity-100" */}
-		</div>
-	);
-}
+export const Card = () => (
+	<article
+		className={tw({
+			flex: "col",
+			gap: "4",
+			rounded: "xl",
+			bg: "white",
+			p: "6",
+			hover: { shadow: "lg" },
+		})}
+	>
+		Your content
+	</article>
+);
 ```
+
+### I want CSS objects
+
+Use [`css()`](/api/css/) to author atomic styles without making Tailwind the
+stylesheet engine. Create it from a preset so tokens and allowed values are
+part of the type contract.
+
+```ts
+import { createCss } from "pandwind/css";
+import { preset } from "./preset";
+
+const css = createCss(preset);
+const card = css.class({ backgroundColor: "$surface", padding: "4" });
+```
+
+### I am building a design system
+
+Use [`createDesignCss()`](/api/design-css/) when component styles should read
+like design intent: `$frame`, `$layout`, `$text`, semantic tokens, and explicit
+states.
+
+```ts
+import { createDesignCss } from "pandwind/design";
+import { preset } from "./preset";
+
+const dcss = createDesignCss(preset);
+
+const button = dcss.class({
+	$frame: { fill: "$brand", pad: "4", corners: "md" },
+	$text: { color: "$onBrand", weight: "semibold" },
+});
+```
+
+### I am moving from another library
+
+Start with the [migration guide](/guides/migrations/). Preview a diff, read the
+residuals, and validate the target before changing the source tree.
+
+## What Pandwind does for you
+
+- **Types come from your project.** Tailwind utilities, preset tokens, and
+  conditions are not copied into a second hand-maintained list.
+- **Known work moves to build time.** Literal calls can become ordinary class
+  strings or extracted atomic CSS.
+- **Runtime values stay honest.** Dynamic colors, globals, fonts, and framework
+  behavior use explicit escape hatches instead of pretending to be static.
+- **You can inspect the result.** The playground, analyzer, inspector, and
+  Studio show what was generated and what still needs attention.
+
+## Read next
+
+- [Getting started](/getting-started/) — the shortest explanation of the setup.
+- [Build your first app](/guides/basic/) — a complete Vite/Tailwind walkthrough.
+- [Build a design system](/guides/design-system/) — tokens, themes, and
+  component contracts.
+- [Playground, inspector, and Studio](/tooling/analyze-and-studio/) — learn by
+  seeing the output.
+- [Why pandwind exists](/why-pandwind/) — the trade-offs and deliberate limits.
+
+The API and reference sections are intentionally more detailed. Use them when
+you already know which decision you are making; you should not need to read
+the compiler architecture to render your first button.

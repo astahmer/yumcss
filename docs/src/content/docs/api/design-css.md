@@ -1,6 +1,6 @@
 ---
 title: Design css() — the Figma-inspector vocabulary
-description: createDesignCss — ~30 designer-vocabulary props ($frame / $layout / $text) instead of 500 CSS properties.
+description: Give components a small, typed vocabulary for frames, layout, and text instead of repeating low-level CSS properties.
 sidebar:
   order: 3
 ---
@@ -17,6 +17,7 @@ properties, behind one function.
 
 ```ts
 import { createDesignCss } from "pandwind/design";
+import { examplePreset } from "@pandwind/example-preset";
 
 const dcss = createDesignCss(examplePreset);
 

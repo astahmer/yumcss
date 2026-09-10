@@ -16,7 +16,7 @@ export default defineConfig({
 		starlight({
 			title: "pandwind",
 			description:
-				"Panda-like typed style objects that compile to real CSS — via Tailwind classes (tw()) or an atomic CSS-in-JS engine (css()).",
+				"Typed style objects that keep Tailwind and CSS familiar while moving known work to build time.",
 			favicon: "favicon.svg",
 			social: [
 				{
@@ -33,56 +33,50 @@ export default defineConfig({
 			sidebar: [
 				{
 					label: "Start here",
-					items: ["getting-started", "why-pandwind"],
+					items: ["getting-started", "guides/basic", "why-pandwind"],
 				},
 				{
-					label: "Contributing",
-					items: ["contributing/architecture", "contributing/testing"],
-				},
-				{
-					label: "Guides",
+					label: "Build with pandwind",
 					items: [
-						{ label: "Basic mode", items: ["guides/basic"] },
-						{ label: "Advanced mode", items: ["guides/advanced"] },
-						{ label: "Build a design system", items: ["guides/design-system"] },
-						{ label: "Build a component library", items: ["guides/component-library"] },
-						{ label: "Migrate from another library", items: ["guides/migrations"] },
+						"guides/design-system",
+						"guides/component-library",
+						"guides/migrations",
+						"guides/advanced",
 					],
 				},
 				{
-					// "Pick one lane": each entry point is a self-contained path.
-					label: "Pick your lane",
+					label: "Choose a styling API",
 					items: [
 						{
-							label: "Lane 1 — tw(): typed Tailwind classes",
+							label: "Tailwind objects — tw()",
 							items: ["api/tw"],
 						},
 						{
-							label: "Lane 2 — css(): atomic CSS-in-JS",
+							label: "Atomic CSS objects — css()",
 							items: ["api/css"],
 						},
 						{
-							label: "Lane 3 — design css(): Figma vocabulary",
+							label: "Design vocabulary — design css()",
 							items: ["api/design-css"],
 						},
 						{
-							label: "Shared across lanes",
+							label: "Shared tools — cx() and themes",
 							items: ["api/cx", "api/theming"],
 						},
 					],
 				},
 				{
-					label: "Build-time tooling",
+					label: "See and ship the result",
 					items: [
+						"tooling/analyze-and-studio",
 						"tooling/codegen",
 						"tooling/vite-plugins",
 						"tooling/multi-bundler",
 						"tooling/codemod",
-						"tooling/analyze-and-studio",
 					],
 				},
 				{
-					label: "Interop & proofs",
+					label: "Integrations and proofs",
 					items: [
 						"interop/tailwind-adapter",
 						"interop/css-in-js-adapters",
@@ -104,6 +98,10 @@ export default defineConfig({
 						"reference/benchmarks",
 						"reference/limitations",
 					],
+				},
+				{
+					label: "Contributing",
+					items: ["contributing/architecture", "contributing/testing"],
 				},
 			],
 		}),

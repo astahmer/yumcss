@@ -7,11 +7,15 @@ sidebar:
 
 ## Theme scopes
 
+Themes let the same component use different values without changing its
+class names. Put the values in your preset, then switch the active theme by
+changing one data-theme attribute on a parent element.
+
 Declare theme scopes on your tokens module:
 
 ```ts
 themes: {
-	dark: { "--color-surface": "#0b0b10" };
+	dark: { "--color-surface": "#0b0b10" },
 }
 ```
 
