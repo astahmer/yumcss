@@ -60,6 +60,7 @@ export interface RuntimeCssContext {
 	readonly backend: ReturnType<typeof createCssBackend>;
 	readonly atoms: AtomRegistry;
 	readonly compileStyles: (...styles: Array<StyleObject>) => CompiledStyles;
+	readonly compileClass: (...styles: Array<StyleObject>) => string;
 	readonly flatten: (style: StyleObject) => FlatStyles;
 	readonly assign: (...styles: Array<StyleObject>) => StyleObject;
 }
@@ -166,12 +167,30 @@ export function createCssRuntime(
 		Object.defineProperty(compiled, "$$css", { value: true, enumerable: false });
 		return compiled;
 	};
+	const compileClass = (...styles: Array<StyleObject>): string => {
+		if (styles.length === 1 && isFlatStyle(styles[0]!)) {
+			let className = "";
+			for (const key in styles[0]) {
+				if (className) className += " ";
+				className += backend.declare(key, styles[0]![key]! as string);
+			}
+			return className;
+		}
+		const compiled = compileStyles(...styles);
+		let className = "";
+		for (const key in compiled) {
+			if (className) className += " ";
+			className += compiled[key]!;
+		}
+		return className;
+	};
 
 	const context: RuntimeCssContext = {
 		backendOptions,
 		backend,
 		atoms,
 		compileStyles,
+		compileClass,
 		flatten: flattenStyle,
 		assign: assign as (...styles: Array<StyleObject>) => StyleObject,
 	};

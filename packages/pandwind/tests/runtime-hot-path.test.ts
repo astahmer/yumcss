@@ -22,6 +22,15 @@ describe("runtime hot paths", () => {
 		});
 	});
 
+	test("class projection preserves flat and nested declaration order", () => {
+		const css = createCss({ debug: true });
+
+		expect(css.class({ color: "red", padding: 4 })).toBe("color__red padding__4px");
+		expect(css.class({ _hover: { color: "red" } }, { color: "blue" })).toBe(
+			"_hover__color__red color__blue",
+		);
+	});
+
 	test("null resets still normalize only the changed branches", () => {
 		const css = createCss({ debug: true });
 
