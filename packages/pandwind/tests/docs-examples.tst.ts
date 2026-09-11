@@ -150,6 +150,15 @@ test("preset docs keep semantic and component token refs as strings", () => {
 	const semanticTokens = defineSemanticTokens(conditions, {
 		semantic: {
 			"bg.surface": { base: rawTokens.colors["$surface"], _dark: "#111827" },
+			"bg.inverse": { base: "#111827", _dark: rawTokens.colors["$surface"] },
+		},
+	});
+	const componentTokens = defineSemanticTokens(conditions, {
+		component: {
+			"component.card.backgroundByMode": {
+				base: "semantic.bg.surface",
+				_dark: "semantic.bg.inverse",
+			},
 		},
 	});
 	const tokens = {
@@ -157,6 +166,7 @@ test("preset docs keep semantic and component token refs as strings", () => {
 		semantic: semanticTokens.semantic,
 		component: {
 			"component.card.background": "semantic.bg.surface",
+			...componentTokens.component,
 		},
 	};
 	const preset = definePreset(defineTheme({ config: {} as StandardProperties, tokens }), {
@@ -167,9 +177,9 @@ test("preset docs keep semantic and component token refs as strings", () => {
 		},
 	});
 
-	expect(
-		createCss(preset).class({ backgroundColor: "component.card.background" }),
-	).type.toBe<string>();
+	const css = createCss(preset);
+	expect(css.class({ backgroundColor: "component.card.background" })).type.toBe<string>();
+	expect(css.class({ backgroundColor: "component.card.backgroundByMode" })).type.toBe<string>();
 });
 
 test("createDesignCss JSDoc example uses the design modules", () => {

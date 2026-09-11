@@ -130,13 +130,15 @@ const resolveTokenTarget = (
  * Resolve a token group's value when it aliases another preset token.
  *
  * A component token can therefore stay as a build-time string reference:
- * `component.card.bg: "semantic.bg.primary"`. The emitted component variable
- * points at the semantic variable, so theme conditions continue to resolve
- * through CSS without importing a JavaScript token map into the component.
+ * `component.card.bg: "semantic.bg.primary"`, or use a condition-aware
+ * object whose values reference different semantic paths. The emitted
+ * component variable points at the selected semantic variable, so theme
+ * conditions continue to resolve through CSS without importing a JavaScript
+ * token map into the component.
  */
 export function resolveTokenAliasValue(maps: TokenMaps, tokenPath: string, value: string): string {
 	const token = maps.flatTokens.get(tokenPath);
-	if (token === undefined || token.value !== value) return value;
+	if (token === undefined) return value;
 
 	const target = resolveTokenTarget(maps, value, new Set([tokenPath]));
 	return target === undefined ? value : (tokenCssVar(target) ?? value);

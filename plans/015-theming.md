@@ -121,11 +121,13 @@ via condition-bound authoring rather than deferred.
 
 The native preset lane now has a separate third-layer contract from the
 codegen component-scope model above. A `component` token group may contain
-string aliases such as `component.card.bg: "semantic.bg.primary"`. A typed
-`createCss(preset)`/`createDesignCss(preset)` call accepts those component
-paths directly, and the compiler emits the component variable as a reference
-to the semantic variable. Theme switching therefore rebinds the semantic
-value without changing JSX, props, or component styles.
+string aliases such as `component.card.bg: "semantic.bg.primary"`, or
+condition-aware aliases such as `{ base: "semantic.bg.muted", _dark: "semantic.bg.primary" }`.
+A typed `createCss(preset)`/`createDesignCss(preset)`
+call accepts those component paths directly, and the compiler emits the
+component variable as a reference to the selected semantic variable. Theme
+switching therefore rebinds the semantic value or the component's semantic
+role without changing JSX, props, or component styles.
 
 These are intentionally separate authoring patterns:
 

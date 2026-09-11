@@ -198,8 +198,8 @@ token call remains valid.
 ## Theme values and semantic/component layers
 
 Conditions belong to the preset, while condition-aware semantic values belong
-to the theme. A component token can then point at a semantic token by string
-reference:
+to the theme. A component token can point at one semantic token by string
+reference, or choose different semantic tokens for different conditions:
 
 ```ts
 import { defineSemanticTokens } from "pandwind/preset";
@@ -213,6 +213,16 @@ const conditions = {
 const semantic = defineSemanticTokens(conditions, {
 	colors: {
 		surface: { base: tokens.colors["$surface"], _dark: "#111827" },
+		inverseSurface: { base: "#111827", _dark: tokens.colors["$surface"] },
+	},
+});
+
+const component = defineSemanticTokens(conditions, {
+	component: {
+		"component.card.interactiveBackground": {
+			base: "semantic.surface",
+			_dark: "semantic.inverseSurface",
+		},
 	},
 });
 
@@ -221,14 +231,18 @@ const themedTokens = {
 	semantic: semantic.colors,
 	component: {
 		"component.card.background": "semantic.surface",
+		...component.component,
 	},
 };
 ```
 
-The component can bind `backgroundColor` to `component` and write
-`"component.card.background"`. It does not choose a light or dark literal in
-JavaScript. The active theme scope changes the semantic value instead. See
-[Theming](/api/theming/) for the full component-contract example.
+The component can bind `backgroundColor` to `component` and write either
+`"component.card.background"` or
+`"component.card.interactiveBackground"`. The latter remains one stable
+component contract while its base and dark scopes refer to different semantic
+roles. The component does not choose a light or dark literal in JavaScript;
+the active theme scope changes the component variable's semantic reference.
+See [Theming](/api/theming/) for the full component-contract example.
 
 ## Keep the examples honest
 

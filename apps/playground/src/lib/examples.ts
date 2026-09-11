@@ -535,11 +535,11 @@ export const tokenPreset = definePreset(
 		title: "Component token contracts",
 		blurb: "raw values → semantic roles → string component contracts",
 		group: "core",
-		note: "This is the design-system pattern: raw values feed semantic roles, then component.* refs form a third layer above them. The refs stay as strings in the component, so themes can change semantic values without changing JSX, props, or component code.",
+		note: "This is the design-system pattern: raw values feed semantic roles, then component.* refs form a third layer above them. Stable component roles point to one semantic token; state roles can select different semantic tokens per theme while the component keeps the same string ref.",
 		preview: makePreview(
 			"card",
 			"Component contract",
-			"The component stays unchanged while its component.* refs follow semantic theme values.",
+			"Stable roles and theme-conditional roles both resolve through the component token layer.",
 		),
 		variants: [
 			{
@@ -572,7 +572,7 @@ const EmptyState = () => (
 	>
 		<strong>String-based component contract</strong>
 		<div>
-			emptyBg resolves to semantic.bg.muted; errorText resolves to semantic.fg.error. Toggle the theme or hover to rebind the contract.
+			Stable geometry aliases keep one semantic target; emptyBg uses semantic.bg.muted in light mode and semantic.bg.primary in dark mode. Toggle the theme or hover to rebind the contract.
 		</div>
 	</article>
 );
@@ -601,8 +601,10 @@ const rawTokens = defineTokens({
 	shadows: { card: "0 12px 24px rgb(17 24 39 / 0.16)" },
 });
 
+const themeConditions = { base: "", _dark: '[data-theme="dark"] &' };
+
 const semanticTokens = defineSemanticTokens(
-	{ _dark: '[data-theme="dark"] &' },
+	themeConditions,
 	{
 		semantic: {
 			"bg.primary": { base: rawTokens.colors["$blue-600"], _dark: rawTokens.colors["$blue-700"] },
@@ -621,19 +623,40 @@ const semanticTokens = defineSemanticTokens(
 	},
 );
 
-const tokens = {
-	colors: rawTokens.colors,
-	semantic: semanticTokens.semantic,
+const directComponentTokens = defineTokens({
 	component: {
 		"component.card.borderWidth": "semantic.border.width.default",
 		"component.card.border": "semantic.border.default",
 		"component.card.radius": "semantic.radius.card",
 		"component.card.shadow": "semantic.shadow.card",
 		"component.card.padding": "semantic.space.card.padding",
-		"component.state.emptyBg": "semantic.bg.muted",
 		"component.state.errorText": "semantic.fg.error",
-		"component.state.hoverBg": "semantic.bg.primary",
-		"component.state.hoverText": "semantic.fg.on-primary",
+	},
+});
+
+const conditionalComponentTokens = defineSemanticTokens(themeConditions, {
+	component: {
+		"component.state.emptyBg": {
+			base: "semantic.bg.muted",
+			_dark: "semantic.bg.primary",
+		},
+		"component.state.hoverBg": {
+			base: "semantic.bg.primary",
+			_dark: "semantic.bg.muted",
+		},
+		"component.state.hoverText": {
+			base: "semantic.fg.on-primary",
+			_dark: "semantic.fg.error",
+		},
+	},
+});
+
+const tokens = {
+	colors: rawTokens.colors,
+	semantic: semanticTokens.semantic,
+	component: {
+		...directComponentTokens.component,
+		...conditionalComponentTokens.component,
 	},
 };
 
@@ -641,7 +664,7 @@ export const tokenPreset = definePreset(
 	defineTheme({ config: {} as Record<string, unknown>, tokens }),
 	{
 		strict: true,
-		conditions: { _hover: "&:hover", _dark: '[data-theme="dark"] &' },
+		conditions: { ...themeConditions, _hover: "&:hover" },
 		properties: {
 			borderStyle: true,
 			borderWidth: { $tokens: "component" },

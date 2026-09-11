@@ -57,8 +57,10 @@ const rawTokens = defineTokens({
 	shadows: { card: "0 12px 24px rgb(0 0 0 / 0.16)" },
 });
 
+const themeConditions = { base: "", _dark: '[data-theme="dark"] &' };
+
 const semanticTokens = defineSemanticTokens(
-	{ base: "", _dark: '[data-theme="dark"] &' },
+	themeConditions,
 	{
 		semantic: {
 			"bg.muted": { base: rawTokens.colors["$gray-200"], _dark: rawTokens.colors["$gray-700"] },
@@ -78,19 +80,40 @@ const semanticTokens = defineSemanticTokens(
 	},
 );
 
-const tokens = {
-	...rawTokens,
-	semantic: semanticTokens.semantic,
+const directComponentTokens = defineTokens({
 	component: {
 		"component.card.borderWidth": "semantic.border.width.default",
 		"component.card.border": "semantic.border.default",
 		"component.card.radius": "semantic.radius.card",
 		"component.card.shadow": "semantic.shadow.card",
 		"component.card.padding": "semantic.space.card.padding",
-		"component.state.emptyBg": "semantic.bg.muted",
 		"component.state.errorText": "semantic.fg.error",
-		"component.state.hoverBg": "semantic.bg.muted",
-		"component.state.hoverText": "semantic.fg.error",
+	},
+});
+
+const conditionalComponentTokens = defineSemanticTokens(themeConditions, {
+	component: {
+		"component.state.emptyBg": {
+			base: "semantic.bg.muted",
+			_dark: "semantic.bg.primary",
+		},
+		"component.state.hoverBg": {
+			base: "semantic.bg.primary",
+			_dark: "semantic.bg.muted",
+		},
+		"component.state.hoverText": {
+			base: "semantic.fg.on-primary",
+			_dark: "semantic.fg.error",
+		},
+	},
+});
+
+const tokens = {
+	...rawTokens,
+	semantic: semanticTokens.semantic,
+	component: {
+		...directComponentTokens.component,
+		...conditionalComponentTokens.component,
 	},
 };
 
@@ -98,7 +121,7 @@ export const preset = definePreset(
 	defineTheme({ config: {} as StandardProperties, tokens }),
 	{
 		strict: true,
-		conditions: { _dark: '[data-theme="dark"] &' },
+		conditions: themeConditions,
 		properties: {
 			borderStyle: true,
 			borderWidth: { $tokens: "component" },
@@ -144,11 +167,14 @@ const EmptyState = ({ title }: { title: string }) => (
 ```
 
 The component owns no raw color and does not choose between semantic roles at
-runtime. `component.state.emptyBg` points to `semantic.bg.muted`; the active
-theme decides what that semantic role means. Switching `data-theme` changes
-the resolved CSS variable without changing the component, its props, or its
-class name. The string refs are checked because each property is bound to the
-preset's `component` token group.
+runtime. A component token may be a single string alias, such as
+`component.card.radius`, or a condition map. Here `component.state.emptyBg`
+uses `semantic.bg.muted` in the base scope and `semantic.bg.primary` in the
+dark scope; `component.state.hoverBg` makes the opposite choice. Pandwind
+emits one component variable with condition-scoped aliases to the semantic
+variables. Switching `data-theme` changes those references without changing
+the component, its props, or its class name. The string refs are checked
+because each property is bound to the preset's `component` token group.
 
 If a particular component benefits from JavaScript composition, a typed
 identifier map is also valid:

@@ -157,7 +157,10 @@ export interface TokenDeclaration {
 /** The authored raw-token shape accepted by {@link defineTokens}. */
 export type AnySimpleTokens = Record<string, Record<string, string>>;
 
-/** The authored condition-aware token shape accepted by {@link defineSemanticTokens}. */
+/**
+ * The authored condition-aware semantic or component-alias shape accepted by
+ * {@link defineSemanticTokens}.
+ */
 export type AnySemanticTokens<TConds extends string> = Record<
 	string,
 	Record<string, Partial<Record<TConds, string>>>

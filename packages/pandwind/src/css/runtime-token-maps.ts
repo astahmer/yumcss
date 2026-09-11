@@ -97,7 +97,7 @@ export function resolveRuntimeTokenAliasValue(
 	value: string,
 ): string {
 	const token = maps.flatTokens.get(tokenPath);
-	if (token === undefined || token.value !== value) return value;
+	if (token === undefined) return value;
 
 	const target = resolveRuntimeTokenTarget(maps, value, new Set([tokenPath]));
 	return target === undefined ? value : (target.cssVar ?? value);

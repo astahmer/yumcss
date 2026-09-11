@@ -180,7 +180,8 @@ export const defineTokens = <T extends AnySimpleTokens>(tokens: T) => tokens;
 /**
  * Declare token values selected by preset conditions such as `_dark`.
  *
- * Use this for semantic values that change with a theme context. The
+ * Use this for semantic values that change with a theme context and for
+ * component aliases that select different semantic roles per condition. The
  * condition keys must be present in the condition map passed as the first
  * argument; unlike a raw token, the value is intentionally not flattened
  * into one static string.
@@ -189,7 +190,10 @@ export const defineTokens = <T extends AnySimpleTokens>(tokens: T) => tokens;
  *
  * Use this for semantic roles whose value changes with a theme scope, media
  * query, or another preset condition. Components keep the same token path;
- * the active condition changes the emitted variable value.
+ * the active condition changes the emitted variable value. The same shape
+ * lets a component token choose `semantic.surface` in the base scope and
+ * `semantic.inverseSurface` in a dark scope without putting that branch in
+ * component JavaScript.
  *
  * **Example** (A semantic color with a dark-mode value)
  *

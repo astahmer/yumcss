@@ -14,16 +14,22 @@ const rawTokens = defineTokens({
 	colors: {
 		"$blue-600": "#2b6cb0",
 		"$blue-700": "#2c5282",
+		"$gray-200": "#e5e7eb",
+		"$gray-700": "#374151",
 	},
 });
 
 const semanticTokens = defineSemanticTokens(
-	{ _dark: ".dark &" },
+	{ base: "", _dark: ".dark &" },
 	{
 		semantic: {
 			"bg.primary": {
 				base: rawTokens.colors["$blue-600"],
 				_dark: rawTokens.colors["$blue-700"],
+			},
+			"bg.muted": {
+				base: rawTokens.colors["$gray-200"],
+				_dark: rawTokens.colors["$gray-700"],
 			},
 		},
 	},
@@ -37,12 +43,16 @@ const preset = definePreset(
 			semantic: semanticTokens.semantic,
 			component: {
 				"component.card.bg": "semantic.bg.primary",
+				"component.card.themedBg": {
+					base: "semantic.bg.primary",
+					_dark: "semantic.bg.muted",
+				},
 			},
 		},
 	}),
 	{
 		strict: true,
-		conditions: { _dark: ".dark &" },
+		conditions: { base: "", _dark: ".dark &" },
 		properties: {
 			backgroundColor: { $tokens: "component" },
 		},
@@ -62,6 +72,17 @@ describe("preset token aliases", () => {
 		expect(output).toContain("#2c5282");
 	});
 
+	test("conditional component token refs switch between semantic variables", () => {
+		const css = createCss(preset);
+		const sheet = createStylesheet(preset, { debug: true });
+		const output = sheet.generate([css.raw({ backgroundColor: "component.card.themedBg" })]);
+
+		expect(output).toMatch(/component.*var\(--semantic.*primary/u);
+		expect(output).toMatch(/component.*var\(--semantic.*muted/u);
+		expect(output).not.toContain("semantic.bg.primary");
+		expect(output).not.toContain("semantic.bg.muted");
+	});
+
 	test("runtime sheets resolve component refs through active semantic themes", () => {
 		const css = createRuntimeCss(preset, { sheetOptions: { autoMount: false } });
 		css.class({ backgroundColor: "component.card.bg" });
@@ -71,5 +92,19 @@ describe("preset token aliases", () => {
 		expect(output).toContain("background-color:var(");
 		expect(output).toContain("#2b6cb0");
 		expect(output).toContain("#2c5282");
+	});
+
+	test("runtime sheets resolve conditional component aliases", () => {
+		const css = createRuntimeCss(preset, {
+			debug: true,
+			sheetOptions: { autoMount: false },
+		});
+		css.class({ backgroundColor: "component.card.themedBg" });
+		const output = css.sheet.css();
+
+		expect(output).toMatch(/component.*var\(--semantic.*primary/u);
+		expect(output).toMatch(/component.*var\(--semantic.*muted/u);
+		expect(output).not.toContain("semantic.bg.primary");
+		expect(output).not.toContain("semantic.bg.muted");
 	});
 });
