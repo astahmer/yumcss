@@ -90,6 +90,31 @@ describe("evalPlayground", () => {
 		}
 	});
 
+	test("keeps structural group wrappers separate from styled hosts", () => {
+		const result = run(
+			[
+				'const Button = () => <div className="group"><button className={tw({ bgColor: "blue-500", group: { hover: { textColor: "red-500" } } })}>Hover me</button></div>;',
+				"<Button />",
+			].join("\n"),
+		);
+		expect(result.ok).toBe(true);
+		if (result.ok) {
+			expect(result.output).toContain("bg-blue-500");
+			expect(result.output).toContain("group-hover:text-red-500");
+			expect(result.output).not.toBe("group");
+			expect(result.rendered).toMatchObject({
+				type: "div",
+				props: { className: "group" },
+				children: [
+					{
+						type: "button",
+						props: { className: expect.stringContaining("bg-blue-500") },
+					},
+				],
+			});
+		}
+	});
+
 	test("full-overlap conflicts kill the earlier token", () => {
 		const result = run(`cx(tw({ bgColor: "red-500" }), "bg-blue-600")`);
 		expect(result.ok).toBe(true);

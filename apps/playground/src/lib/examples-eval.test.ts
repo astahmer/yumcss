@@ -133,4 +133,27 @@ describe("example catalog evaluates end to end", () => {
 			},
 		});
 	});
+
+	it("keeps tw compatibility hover classes on the rendered button", () => {
+		const variant = EXAMPLES.find((example) => example.path === "/tw-compat")?.variants[0];
+		expect(variant).toBeDefined();
+		if (variant === undefined) return;
+
+		const result = evalPlayground(makeInput(variant.files[0]!.code));
+		expect(result.ok).toBe(true);
+		if (!result.ok) return;
+
+		expect(result.output).toContain("bg-blue-500");
+		expect(result.output).toContain("group-hover:text-red-500");
+		expect(result.rendered).toMatchObject({
+			type: "div",
+			props: { className: "group" },
+			children: [
+				{
+					type: "button",
+					props: { className: expect.stringContaining("group-hover:text-red-500") },
+				},
+			],
+		});
+	});
 });

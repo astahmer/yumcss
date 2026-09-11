@@ -277,22 +277,26 @@ const createPlaygroundJsx = (
 	return { type, props: hostProps, children };
 };
 
-const findPlaygroundStyledHost = (node: PlaygroundNode): PlaygroundHostNode | undefined => {
+const findPlaygroundStyledHost = (
+	node: PlaygroundNode,
+	styledClasses: ReadonlySet<string>,
+): PlaygroundHostNode | undefined => {
 	if (Array.isArray(node)) {
 		for (const child of node) {
-			const styled = findPlaygroundStyledHost(child);
+			const styled = findPlaygroundStyledHost(child, styledClasses);
 			if (styled !== undefined) return styled;
 		}
 		return undefined;
 	}
 	if (!isPlaygroundHostNode(node)) return undefined;
-	if (
-		typeof node.props.className === "string" ||
-		(node.props.style !== null && typeof node.props.style === "object")
-	)
-		return node;
+	const className = node.props.className;
+	const hasGeneratedClass =
+		typeof className === "string" &&
+		splitClasses(className).some((token) => styledClasses.has(token));
+	const hasInlineStyle = node.props.style !== null && typeof node.props.style === "object";
+	if (hasGeneratedClass || hasInlineStyle) return node;
 	for (const child of node.children) {
-		const styled = findPlaygroundStyledHost(child);
+		const styled = findPlaygroundStyledHost(child, styledClasses);
 		if (styled !== undefined) return styled;
 	}
 	return undefined;
@@ -1356,7 +1360,11 @@ function runOnce(input: EvalInput, mode: EvalMode): PlaygroundResult {
 	let propsOutput: { className?: string; style?: Record<string, string> } | undefined;
 	if (rawValue !== null && typeof rawValue === "object" && isPlaygroundNode(rawValue)) {
 		rendered = rawValue;
-		const styledHost = findPlaygroundStyledHost(rawValue);
+		const styledClasses = new Set([
+			...inputs,
+			...styleMappings.map((mapping) => mapping.className),
+		]);
+		const styledHost = findPlaygroundStyledHost(rawValue, styledClasses);
 		if (styledHost !== undefined) {
 			const className = styledHost.props.className;
 			const style = styledHost.props.style;

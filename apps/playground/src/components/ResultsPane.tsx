@@ -281,6 +281,8 @@ const previewClassName = (result: SuccessfulPlaygroundResult): string =>
 	result.varsOutput?.class ??
 	(result.output || Object.values(result.decls ?? {}).join(" "));
 
+const previewClassTokens = (className: string): string[] => className.split(/\s+/u).filter(Boolean);
+
 const previewDeclarations = (result: SuccessfulPlaygroundResult): Record<string, string> => {
 	const declarations: Record<string, string> = {};
 	for (const atom of result.atomDeclarations) {
@@ -359,13 +361,18 @@ function useTailwindPreview(className: string): TailwindPreview {
 const withPreviewStyle = (
 	node: PlaygroundNode,
 	style: CSSProperties,
+	styledClasses: ReadonlySet<string>,
 	applied = false,
 ): PlaygroundNode => {
-	if (Array.isArray(node)) return node.map((child) => withPreviewStyle(child, style, applied));
+	if (Array.isArray(node))
+		return node.map((child) => withPreviewStyle(child, style, styledClasses, applied));
 	if (!isPreviewHostNode(node)) return node;
-	const hasStyleTarget =
-		typeof node.props.className === "string" ||
-		(node.props.style !== null && typeof node.props.style === "object");
+	const className = node.props.className;
+	const hasGeneratedClass =
+		typeof className === "string" &&
+		previewClassTokens(className).some((token) => styledClasses.has(token));
+	const hasInlineStyle = node.props.style !== null && typeof node.props.style === "object";
+	const hasStyleTarget = hasGeneratedClass || hasInlineStyle;
 	const applyHere = !applied && hasStyleTarget;
 	const existingStyle =
 		node.props.style !== null && typeof node.props.style === "object"
@@ -375,7 +382,9 @@ const withPreviewStyle = (
 	return {
 		...node,
 		props,
-		children: node.children.map((child) => withPreviewStyle(child, style, applied || applyHere)),
+		children: node.children.map((child) =>
+			withPreviewStyle(child, style, styledClasses, applied || applyHere),
+		),
 	};
 };
 
@@ -415,15 +424,25 @@ function PreviewSpecimen(props: {
 	const isButton = props.preview.kind === PlaygroundPreviewKind.Button;
 	const className = previewClassName(props.result);
 	const style = previewStyle(props.result, props.tailwindStyle);
+	const styledClasses = new Set([
+		...props.result.survived,
+		...props.result.styleMappings.map((mapping) => mapping.className),
+	]);
 	const rendered =
 		props.result.rendered === undefined
 			? undefined
-			: renderPlaygroundNode(withPreviewStyle(props.result.rendered, style));
+			: renderPlaygroundNode(withPreviewStyle(props.result.rendered, style, styledClasses));
 	const fallbackClassName = `${isButton ? PREVIEW_BUTTON_RESET : ""} ${className}`.trim();
 	const PreviewElement = isButton ? "button" : "div";
+	const fallbackNeedsGroup = previewClassTokens(className).some((token) =>
+		token.startsWith("group-hover:"),
+	);
 	return (
 		<div className={PREVIEW_FRAME}>
-			<div data-preview-kind={props.preview.kind}>
+			<div
+				data-preview-kind={props.preview.kind}
+				className={fallbackNeedsGroup ? "group" : undefined}
+			>
 				{rendered ?? (
 					<PreviewElement
 						className={fallbackClassName}
