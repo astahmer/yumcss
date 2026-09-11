@@ -2,14 +2,15 @@
 title: css() — atomic CSS-in-JS
 description: Write typed CSS objects, extract atomic classes, and keep runtime values explicit.
 sidebar:
-  order: 2
+  order: 1
 ---
 
-> **Lane 2 of 3 — when to use this:** you want runtime-compiled atomic CSS
-> with design tokens and priority merging, without going through Tailwind.
-> Pick [tw()](/api/tw/) instead for typed Tailwind classes; pick
-> [design css()](/api/design-css/) if you want the ~30-prop Figma vocabulary
-> on top of this same engine. This page is the engine underneath both.
+> **Primary styling lane — when to use this:** you want typed CSS objects,
+> atomic extraction, design tokens, and priority merging. This is the default
+> starting point for new Pandwind code. Use [tw()](/api/tw/) when Tailwind
+> already owns your stylesheet or you specifically want its utility ecosystem;
+> use [design css()](/api/design-css/) for the ~30-prop Figma vocabulary on top
+> of this same engine.
 
 `createCss(preset)` returns the preferred typed `css()` that flattens a style
 object into hashed atomic classes, with design tokens, property-priority
@@ -25,15 +26,18 @@ const tokens = defineTokens({
 	spacing: { 4: "1rem" },
 });
 
-const preset = definePreset({ config: {} as StandardProperties, tokens }, {
-	strict: true,
-	conditions: { _hover: "&:hover" },
-	properties: {
-		$all: true,
-		backgroundColor: { $tokens: "colors" },
-		padding: { $tokens: "spacing" },
+const preset = definePreset(
+	{ config: {} as StandardProperties, tokens },
+	{
+		strict: true,
+		conditions: { _hover: "&:hover" },
+		properties: {
+			$all: true,
+			backgroundColor: { $tokens: "colors" },
+			padding: { $tokens: "spacing" },
+		},
 	},
-});
+);
 
 const css = createCss(preset);
 const className = css.class({ backgroundColor: "$brand-500", padding: 4 });
@@ -287,7 +291,7 @@ silently missing.
 
 ## Design css() — the Figma-inspector vocabulary
 
-`dcss = createDesignCss(preset)` (the `dcss` name keeps design-lane instances
+`const dss = createDesignCss(preset)` (the `dss` name keeps design-lane instances
 distinct from engine `css()` instances) returns the same `css()` surface, but
 the style object uses the vocabulary designers already think in — borrowed from
 the inspector panels of Figma, Framer and Sketch: ~30 props instead of ~500 CSS

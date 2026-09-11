@@ -10,18 +10,19 @@ object is the vocabulary designers already think in — borrowed from the
 inspector panels of Figma, Framer and Sketch: ~30 props instead of ~500 CSS
 properties, behind one function.
 
-> **Lane 3 of 3 — when to use this:** you want styling that reads as design
-> intent (`$frame`, `$text`, `fill: "$blue-500"`) with strict tokens and a
-> hard `$raw` escape hatch. Pick [tw()](/api/tw/) for Tailwind utilities or
-> [engine css()](/api/css/) for raw-property atomic styles.
+> **Design vocabulary lane — when to use this:** you want styling that reads
+> as design intent (`$frame`, `$text`, `fill: "$blue-500"`) with strict tokens
+> and a hard `$raw` escape hatch. Start with [engine css()](/api/css/) for
+> ordinary CSS-property authoring, or pick [tw()](/api/tw/) when Tailwind
+> already owns the stylesheet.
 
 ```ts
 import { createDesignCss } from "pandwind/design";
 import { examplePreset } from "@pandwind/example-preset";
 
-const dcss = createDesignCss(examplePreset);
+const dss = createDesignCss(examplePreset);
 
-dcss.class({
+dss.class({
 	$frame: { w: "20", h: 40, corners: "lg", fill: "$blue-500", pad: [4, 8] },
 	$layout: { flow: "stackY", gap: 16, align: "center" },
 	$text: { size: "xl", weight: "semibold", color: "$red-300" },

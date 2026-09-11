@@ -6,9 +6,9 @@ sidebar:
 ---
 
 A Pandwind design system has one source of truth: tokens and semantic rules
-are defined once, then consumed by `tw()`, `css()`, design `css()`, codegen,
-and migration adapters. Keep the vocabulary small enough to teach and strict
-enough to prevent accidental values.
+are defined once, then consumed directly by `css()` and design `css()`, and
+optionally by `tw()` through a generated Tailwind bridge. Keep the vocabulary
+small enough to teach and strict enough to prevent accidental values.
 
 ## 1. Organize the package
 
@@ -111,7 +111,7 @@ to every property. Bind the properties that should accept tokens explicitly;
 the [preset typing guide](/api/presets/) explains the strictness matrix and
 the raw-value escape options.
 
-## 4. Generate the Tailwind bridge
+## 4. Optionally generate a Tailwind bridge
 
 ```json
 {
@@ -127,9 +127,10 @@ pnpm run tw:generate
 pnpm run tw:scan
 ```
 
-The bridge lets the same semantic style code lower to Tailwind. You can use
-the exact preset with `createCss` or `createDesignCss` for an atomic or design
-lane without creating a second token source.
+Only add this bridge when the application already uses Tailwind or needs its
+utility ecosystem. It lets the same semantic style code lower to Tailwind.
+The primary `createCss` and `createDesignCss` lanes use the exact preset
+directly, without creating a second token source.
 
 ## 5. Add themes and semantic tokens
 
@@ -145,23 +146,20 @@ const semanticConditions = {
 	_highContrast: "@media (prefers-contrast: more)",
 };
 
-const semanticTokens = defineSemanticTokens(
-	semanticConditions,
-	{
-		semantic: {
-			"bg.muted": { base: tokens.colors.$canvas, _dark: tokens.colors.$ink },
-			"fg.error": { base: "#b91c1c", _dark: "#fca5a5" },
-			"border.default": { base: tokens.colors.$muted, _dark: tokens.colors.$muted },
-			"border.width.default": { base: "1px", _dark: "1px" },
-			"radius.card": { base: tokens.radii.md, _dark: tokens.radii.md },
-			"shadow.card": {
-				base: "0 12px 24px rgb(17 24 39 / 0.16)",
-				_dark: "0 12px 24px rgb(0 0 0 / 0.32)",
-			},
-			"space.card.padding": { base: tokens.spacing[4], _dark: tokens.spacing[4] },
+const semanticTokens = defineSemanticTokens(semanticConditions, {
+	semantic: {
+		"bg.muted": { base: tokens.colors.$canvas, _dark: tokens.colors.$ink },
+		"fg.error": { base: "#b91c1c", _dark: "#fca5a5" },
+		"border.default": { base: tokens.colors.$muted, _dark: tokens.colors.$muted },
+		"border.width.default": { base: "1px", _dark: "1px" },
+		"radius.card": { base: tokens.radii.md, _dark: tokens.radii.md },
+		"shadow.card": {
+			base: "0 12px 24px rgb(17 24 39 / 0.16)",
+			_dark: "0 12px 24px rgb(0 0 0 / 0.32)",
 		},
+		"space.card.padding": { base: tokens.spacing[4], _dark: tokens.spacing[4] },
 	},
-);
+});
 
 export const preset = definePreset(
 	{

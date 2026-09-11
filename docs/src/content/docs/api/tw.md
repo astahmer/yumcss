@@ -2,18 +2,19 @@
 title: tw() — typed Tailwind classes
 description: Replace fragile Tailwind class strings with typed objects backed by the theme your project actually uses.
 sidebar:
-  order: 1
+  order: 2
 ---
 
 `tw()` takes a Panda-like object, types it against your real Tailwind design
 system, and returns a class string. Tailwind stays the single CSS engine: no
 PostCSS config or runtime CSS injection.
 
-> **Lane 1 of 3 — when to use this:** you already run Tailwind (or want its
-> ecosystem) and want typed, merge-safe utility objects instead of raw class
-> strings. Pick [engine css()](/api/css/) for atomic CSS-in-JS without
-> Tailwind, or [design css()](/api/design-css/) for the Figma-inspector
-> vocabulary.
+> **Tailwind compatibility lane — when to use this:** Tailwind already owns
+> your stylesheet, or you specifically want its utility vocabulary, plugins,
+> and scanning ecosystem. For new Pandwind code, start with
+> [engine css()](/api/css/). If you want Tailwind class output while keeping
+> CSS-property authoring, use the [Tailwind class-name strategy](/interop/tailwind-adapter/)
+> instead.
 
 ```ts
 tw({ rounded: "xl", bg: "white", p: "6", hover: { bg: "gray-50" } });

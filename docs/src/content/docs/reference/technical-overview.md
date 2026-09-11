@@ -14,9 +14,9 @@ the ownership boundaries where policy currently lives.
 
 ```text
 application code
-  ├─ tw(style intent) ────────┐
-  ├─ css(style object) ───────┼─> semantic style program
-  ├─ design css(vocabulary) ──┘       │
+  ├─ css(style object) ───────┐
+  ├─ design css(vocabulary) ──┼─> semantic style program
+  ├─ tw(style intent) ────────┘       │
   └─ cx(class/style inputs)            ├─ Tailwind class backend
                                       ├─ extracted CSS backend
                                       ├─ React Native object backend
@@ -36,18 +36,34 @@ silently changing the result.
 
 ## API and artifact matrix
 
-| Entry point                | Input                                                | Primary execution                          | Output                             | Best for                               |
-| -------------------------- | ---------------------------------------------------- | ------------------------------------------ | ---------------------------------- | -------------------------------------- |
-| `tw()`                     | Typed utility object                                 | Static fold, Tailwind scan                 | Class string                       | Utility-first CSS with minimal runtime |
-| `css()`                    | CSS/property object                                  | Atomic declaration lowering                | Class/declaration map              | CSS-in-JS and extracted atoms          |
-| `createDesignCss()`        | `$frame`/`$layout`/`$text` object                    | Design vocabulary resolution, then `css()` | Class/declaration map              | A constrained design-system language   |
-| `cx()`                     | Strings, arrays, conditional values, foldable styles | Conflict-aware merge                       | Class string                       | Composition across all lanes           |
-| `pandwindVite()`           | Source modules                                       | Scan, fold `tw`/`cx`, optional CSS folding | Transformed modules                | Build-time elimination                 |
-| `pandwindCssVite()`        | Source modules plus preset                           | Scan, extract, canonicalize, serve         | Virtual CSS sheet                  | Atomic CSS extraction                  |
-| `pandwind-codemod migrate` | Source ecosystem                                     | Adapter + semantic IR + target lowering    | Rewritten source and report        | Migration between style systems        |
-| `pandwind-analyze`         | Source/generated artifacts                           | Shared scan/classify/inspect               | Coverage, residual, budget reports | Adoption and regression control        |
+| Entry point                | Input                                                | Primary execution                          | Output                             | Best for                             |
+| -------------------------- | ---------------------------------------------------- | ------------------------------------------ | ---------------------------------- | ------------------------------------ |
+| `css()`                    | CSS/property object                                  | Atomic declaration lowering                | Class/declaration map              | CSS-in-JS and extracted atoms        |
+| `createDesignCss()`        | `$frame`/`$layout`/`$text` object                    | Design vocabulary resolution, then `css()` | Class/declaration map              | A constrained design-system language |
+| `tw()`                     | Typed utility object                                 | Static fold, Tailwind scan                 | Class string                       | Existing Tailwind utility projects   |
+| `cx()`                     | Strings, arrays, conditional values, foldable styles | Conflict-aware merge                       | Class string                       | Composition across all lanes         |
+| `pandwindVite()`           | Source modules                                       | Scan, fold `tw`/`cx`, optional CSS folding | Transformed modules                | Build-time elimination               |
+| `pandwindCssVite()`        | Source modules plus preset                           | Scan, extract, canonicalize, serve         | Virtual CSS sheet                  | Atomic CSS extraction                |
+| `pandwind-codemod migrate` | Source ecosystem                                     | Adapter + semantic IR + target lowering    | Rewritten source and report        | Migration between style systems      |
+| `pandwind-analyze`         | Source/generated artifacts                           | Shared scan/classify/inspect               | Coverage, residual, budget reports | Adoption and regression control      |
 
 ## The runtime lanes
+
+### `css()`
+
+```text
+createCss(preset)
+  → createCssBackend()
+  → normalize class-name strategy
+  → resolve/flatten declarations
+  → register canonical atoms
+  → return css(), .class(), .vars(), .props(), .group(), .input()
+```
+
+`css()` is the default CSS-in-JS lane. `pandwindCssVite()` scans the same
+source shape and emits the static portion into a deduplicated stylesheet.
+`css.vars()` carries dynamic values as inline custom properties plus a stable
+class, so value changes do not create unbounded rules.
 
 ### `tw()`
 
@@ -61,25 +77,10 @@ tw(style object)
 ```
 
 The generated runtime is produced by the codegen pipeline, not hand-written by
-the application. Literal calls can be folded by `pandwindVite()`. Dynamic
-values stay on the runtime path and must be discoverable by `pandwind-codemod tw scan` or a
-safelist.
-
-### `css()`
-
-```text
-createCss(preset)
-  → createCssBackend()
-  → normalize class-name strategy
-  → resolve/flatten declarations
-  → register canonical atoms
-  → return css(), .class(), .vars(), .props(), .group(), .input()
-```
-
-`css()` is the runtime-capable CSS-in-JS lane. `pandwindCssVite()` scans the
-same source shape and emits the static portion into a deduplicated stylesheet.
-`css.vars()` carries dynamic values as inline custom properties plus a stable
-class, so value changes do not create unbounded rules.
+the application. Use this compatibility lane when Tailwind already owns the
+stylesheet or its ecosystem is the reason for the integration. Literal calls
+can be folded by `pandwindVite()`. Dynamic values stay on the runtime path and
+must be discoverable by `pandwind-codemod tw scan` or a safelist.
 
 ### Design `css()`
 
@@ -114,7 +115,7 @@ unknown helpers, spreads, and non-literal values retain runtime behavior.
 
 ### Bounded dynamic values
 
-`tw()`, `css`/`css.class`/`css.group`, `dcss`, and `cx()` share one
+`tw()`, `css`/`css.class`/`css.group`, `dss`, and `cx()` share one
 static-first policy for values that are not provably literal:
 
 ```text

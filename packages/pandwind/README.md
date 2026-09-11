@@ -15,10 +15,14 @@ Then choose the smallest API that matches the job:
 
 | You want to…                              | Use                     |
 | ----------------------------------------- | ----------------------- |
-| keep Tailwind and add autocomplete        | generated tw()          |
 | write CSS objects and extract atomic CSS  | createCss(preset)       |
 | give components a small design vocabulary | createDesignCss(preset) |
+| keep Tailwind and add autocomplete        | generated tw()          |
 | combine styles from several sources       | cx()                    |
+
+Start with `createCss(preset)` for new Pandwind code. The generated `tw()`
+helper is the compatibility lane for applications that already use Tailwind
+or specifically want its utility ecosystem.
 
 The [repository README](../../README.md) has the five-minute setup. The
 [documentation directory](../../docs/) has the complete guides and API
@@ -52,7 +56,8 @@ keyframes, and global selectors in authored CSS.
 
 ## Learn more
 
-- [Build your first app](../../docs/src/content/docs/guides/basic.md)
+- [Getting started](../../docs/src/content/docs/getting-started.md)
+- [Build your first Tailwind app](../../docs/src/content/docs/guides/basic.md)
 - [The css() API](../../docs/src/content/docs/api/css.md)
 - [Design-system styles](../../docs/src/content/docs/api/design-css.md)
 - [Runtime and SSR boundaries](../../docs/src/content/docs/guides/component-library.md)

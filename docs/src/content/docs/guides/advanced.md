@@ -7,7 +7,7 @@ sidebar:
 
 Open this page when you are integrating Pandwind into a component library,
 custom build, migration service, or non-DOM renderer. For a normal web app,
-start with [Build your first app](/guides/basic/) instead.
+start with the [typed `css()` API](/api/css/) instead.
 
 Advanced mode is for teams building a design system, component library,
 compiler integration, migration pipeline, or non-DOM renderer. The central

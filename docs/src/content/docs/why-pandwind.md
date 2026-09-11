@@ -89,7 +89,9 @@ If that trade is not useful for your project, ordinary CSS is a good answer.
 
 ## Where to go next
 
-- [Build your first app](/guides/basic/) for the shortest working path.
+- [Getting started](/getting-started/) for the primary CSS path, or
+  [Build your first Tailwind app](/guides/basic/) when Tailwind already owns
+  your stylesheet.
 - [Build a design system](/guides/design-system/) for tokens and themes.
 - [Playground, inspector, and Studio](/tooling/analyze-and-studio/) to see
   what each tool actually does.

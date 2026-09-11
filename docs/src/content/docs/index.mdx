@@ -1,6 +1,6 @@
 ---
 title: pandwind
-description: Typed styling for Tailwind teams, CSS-in-JS teams, and design-system authors.
+description: Typed CSS objects for application styles, design systems, and Tailwind integrations.
 template: splash
 hero:
   title: pandwind
@@ -9,21 +9,56 @@ hero:
     - text: Quick start
       link: ./getting-started/
       icon: right-arrow
-    - text: Build your first app
+    - text: Build your first Tailwind app
       link: ./guides/basic/
       icon: external
 ---
 
-Pandwind is for teams who want typed style objects without throwing away
-Tailwind, CSS, or the design-system conventions they already have. Start with
-one lane; add the others only when they solve a real problem.
+Pandwind is for teams who want typed style objects without throwing away CSS,
+their design-system conventions, or an existing Tailwind workflow. For new
+Pandwind code, start with `createCss`; add the other lanes only when they solve
+a real problem.
 
 ## Choose your starting point
+
+### I want typed CSS objects
+
+Use [`css()`](/api/css/) as the default Pandwind API. It authors ordinary CSS
+properties as typed objects and extracts static calls into atomic CSS without
+making Tailwind the stylesheet engine.
+
+```ts
+import { createCss } from "pandwind/css";
+import { pandwindPreset } from "pandwind/preset";
+
+const css = createCss(pandwindPreset);
+const card = css.class({ display: "flex", flexDirection: "column", gap: "4", padding: "6" });
+```
+
+### I am building a design system
+
+Use [`createDesignCss()`](/api/design-css/) when component styles should read
+like design intent: `$frame`, `$layout`, `$text`, semantic tokens, and explicit
+states.
+
+```ts
+import { createDesignCss } from "pandwind/design";
+import { preset } from "./preset";
+
+const dss = createDesignCss(preset);
+
+const button = dss.class({
+	$frame: { fill: "$brand", pad: "4", corners: "md" },
+	$text: { color: "$onBrand", weight: "semibold" },
+});
+```
 
 ### I already use Tailwind
 
 Use [`tw()`](/api/tw/) to replace fragile class strings with an object whose
-keys and values come from your actual Tailwind project.
+keys and values come from your actual Tailwind project. This is the Tailwind
+compatibility lane: Tailwind remains the stylesheet engine, while Pandwind
+provides generated types, conflict handling, and build-time folding.
 
 ```tsx
 import { tw } from "./tw";
@@ -44,19 +79,8 @@ export const Card = () => (
 );
 ```
 
-### I want CSS objects
-
-Use [`css()`](/api/css/) to author atomic styles without making Tailwind the
-stylesheet engine. Create it from a preset so tokens and allowed values are
-part of the type contract.
-
-```ts
-import { createCss } from "pandwind/css";
-import { preset } from "./preset";
-
-const css = createCss(preset);
-const card = css.class({ backgroundColor: "$surface", padding: "4" });
-```
+If you want Tailwind class output while keeping the `css()` property API, use
+the [`ClassNameStrategy` adapter](/interop/tailwind-adapter/) instead.
 
 ### I am building a design system
 
@@ -68,9 +92,9 @@ states.
 import { createDesignCss } from "pandwind/design";
 import { preset } from "./preset";
 
-const dcss = createDesignCss(preset);
+const dss = createDesignCss(preset);
 
-const button = dcss.class({
+const button = dss.class({
 	$frame: { fill: "$brand", pad: "4", corners: "md" },
 	$text: { color: "$onBrand", weight: "semibold" },
 });
@@ -95,7 +119,7 @@ residuals, and validate the target before changing the source tree.
 ## Read next
 
 - [Getting started](/getting-started/) — the shortest explanation of the setup.
-- [Build your first app](/guides/basic/) — a complete Vite/Tailwind walkthrough.
+- [Build your first Tailwind app](/guides/basic/) — a complete compatibility walkthrough for existing Tailwind apps.
 - [Build a design system](/guides/design-system/) — tokens, themes, and
   component contracts.
 - [Playground, inspector, and Studio](/tooling/analyze-and-studio/) — learn by

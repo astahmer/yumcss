@@ -1,14 +1,16 @@
 ---
-title: Build your first app
-description: A small, copy-pasteable Vite and Tailwind app with typed Pandwind styles.
+title: Build your first Tailwind app
+description: A small, copy-pasteable Vite and Tailwind app with typed Pandwind utility styles.
 sidebar:
   order: 1
 ---
 
-This is the recommended first walkthrough. You will install Pandwind in a
-small Vite app, generate a typed `tw()` helper, and render one styled button.
-React is used for the component example, but the generated helper is not tied
-to React.
+This is the Tailwind compatibility walkthrough. Use it when Tailwind already
+owns your stylesheet or when you specifically want its utility ecosystem. For
+new Pandwind code, start with the [typed `css()` API](/api/css/) instead. This
+page installs Pandwind in a small Vite app, generates a typed `tw()` helper,
+and renders one styled button. React is used for the component example, but
+the generated helper is not tied to React.
 
 ## What you will have at the end
 

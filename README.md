@@ -11,13 +11,13 @@ needs something special.
 
 ## Start here
 
-| If you…                            | Start with                                                       | Why                                                                                                     |
-| ---------------------------------- | ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
-| already use Tailwind               | [`tw()`](./docs/src/content/docs/api/tw.md)                      | Keep Tailwind's ecosystem, but get autocomplete and typed values instead of stringly-typed class names. |
-| want CSS objects and atomic output | [`css()`](./docs/src/content/docs/api/css.md)                    | Write styles as objects and let Pandwind extract deterministic atomic CSS.                              |
-| are building a design system       | [`createDesignCss()`](./docs/src/content/docs/api/design-css.md) | Give components a small vocabulary such as `$frame`, `$layout`, and `$text`.                            |
-| need to combine existing styles    | [`cx()`](./docs/src/content/docs/api/cx.md)                      | Merge Pandwind output, ordinary class strings, and styles from other libraries.                         |
-| are moving from another library    | [Migration guide](./docs/src/content/docs/guides/migrations.md)  | Preview a conversion, inspect what cannot be translated, then apply it deliberately.                    |
+| If you…                                  | Start with                                                       | Why                                                                                          |
+| ---------------------------------------- | ---------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| want typed CSS objects and atomic output | [`css()`](./docs/src/content/docs/api/css.md)                    | This is the default Pandwind API for new code: CSS objects in, deterministic atomic CSS out. |
+| are building a design system             | [`createDesignCss()`](./docs/src/content/docs/api/design-css.md) | Give components a small vocabulary such as `$frame`, `$layout`, and `$text`.                 |
+| already use Tailwind                     | [`tw()`](./docs/src/content/docs/api/tw.md)                      | Keep Tailwind's ecosystem while replacing fragile class strings with generated types.        |
+| need to combine existing styles          | [`cx()`](./docs/src/content/docs/api/cx.md)                      | Merge Pandwind output, ordinary class strings, and styles from other libraries.              |
+| are moving from another library          | [Migration guide](./docs/src/content/docs/guides/migrations.md)  | Preview a conversion, inspect what cannot be translated, then apply it deliberately.         |
 
 ## See it in action
 
@@ -60,10 +60,75 @@ apps, not mock marketing screens.
   </tr>
 </table>
 
-## A working Tailwind setup in five minutes
+## A working CSS setup in five minutes
 
-This is the shortest path for an existing or new Vite app. If you do not use
-Tailwind, skip to [the `css()` lane](#the-css-lane).
+For a new Pandwind project, start with `createCss(preset)`. It is the primary
+authoring API: you write ordinary CSS properties as typed objects and Pandwind
+extracts the static part into atomic CSS.
+
+### 1. Install the runtime and build tools
+
+```sh
+pnpm add pandwind
+pnpm add -D unplugin
+```
+
+### 2. Let Vite extract static styles
+
+```ts
+// vite.config.ts
+import react from "@vitejs/plugin-react-swc";
+import { defineConfig } from "vite";
+import { pandwindCssVite } from "pandwind/vite";
+import { pandwindPreset } from "pandwind/preset";
+
+export default defineConfig({
+	plugins: [pandwindCssVite(pandwindPreset), react()],
+});
+```
+
+Import the generated stylesheet once from your application entry point:
+
+```ts
+import "pandwind:css";
+```
+
+### 3. Author typed CSS objects
+
+```ts
+// src/styles.ts
+import { createCss } from "pandwind/css";
+import { pandwindPreset } from "pandwind/preset";
+
+export const css = createCss(pandwindPreset);
+```
+
+```tsx
+import { css } from "./styles";
+
+export function Card() {
+	return (
+		<article
+			className={css.class({ display: "flex", flexDirection: "column", gap: "4", padding: "6" })}
+		>
+			Your content
+		</article>
+	);
+}
+```
+
+Use `definePreset` when the application needs its own token vocabulary and
+property contract. The [design-system guide](./docs/src/content/docs/guides/design-system.md)
+builds that contract step by step.
+
+## If you already use Tailwind: typed utility objects
+
+Use this path when Tailwind already owns your stylesheet or when you
+specifically want its utility vocabulary, plugins, and scanning ecosystem.
+It is an integration lane, not the default Pandwind API. If you want Tailwind
+class output while keeping CSS-object authoring, use the
+[Tailwind class-name strategy](./docs/src/content/docs/interop/tailwind-adapter.md)
+with `createCss` instead.
 
 ### 1. Install the runtime and build tools
 
@@ -150,32 +215,14 @@ Then import the generated safelist from `src/tailwind.css`:
 The [basic guide](./docs/src/content/docs/guides/basic.md) explains when this
 extra step is needed and how to handle runtime values.
 
-## The three styling lanes
-
-### The `tw()` lane
-
-Use `tw()` when Tailwind is already part of your application or your team
-wants its utility ecosystem. Pandwind generates the types from your actual
-Tailwind theme, so this stays aligned with the project instead of a separate
-hand-written list of allowed classes.
-
-```ts
-tw({
-	textColor: "gray-900",
-	p: "4",
-	dark: { textColor: "white", bg: "gray-900" },
-	md: { p: "6" },
-});
-```
-
-Read [the `tw()` guide](./docs/src/content/docs/api/tw.md) for variants,
-dynamic values, token bridges, and conflict handling.
+## The styling lanes
 
 ### The `css()` lane
 
-Use `css()` when you want CSS objects and atomic extraction without making
-Tailwind the stylesheet engine. Create the function from a preset so your
-tokens and allowed values are part of the type contract:
+`createCss(preset)` is the primary Pandwind API. Use it for typed CSS objects,
+atomic extraction, and runtime values without making Tailwind the stylesheet
+engine. Create the function from a preset so your tokens and allowed values are
+part of the type contract:
 
 ```ts
 import { createCss } from "pandwind/css";
@@ -203,9 +250,9 @@ specification rather than a list of CSS properties:
 import { createDesignCss } from "pandwind/design";
 import { preset } from "./preset";
 
-const dcss = createDesignCss(preset);
+const dss = createDesignCss(preset);
 
-const button = dcss.class({
+const button = dss.class({
 	$frame: { fill: "$brand", pad: "4", corners: "md" },
 	$text: { color: "$onBrand", weight: "semibold" },
 	_hover: { $frame: { fill: "$brandStrong" } },
@@ -214,6 +261,27 @@ const button = dcss.class({
 
 This is the same engine with a smaller, intent-focused vocabulary. It does
 not create a second token system or a second stylesheet pipeline.
+
+### The `tw()` lane
+
+Use `tw()` when Tailwind already owns your stylesheet or when you specifically
+want Tailwind's utility vocabulary, plugins, and scanning ecosystem. Pandwind
+generates the types from your actual Tailwind theme, so this stays aligned with
+the project instead of a separate hand-written list of allowed classes.
+
+```ts
+tw({
+	textColor: "gray-900",
+	p: "4",
+	dark: { textColor: "white", bg: "gray-900" },
+	md: { p: "6" },
+});
+```
+
+If you want Tailwind class output but prefer the `css()` property API, use
+`createTwAdapter` as the `className` strategy for `createCss` instead. Read
+[the `tw()` guide](./docs/src/content/docs/api/tw.md) for the generated helper,
+variants, dynamic values, and conflict handling.
 
 ### The `cx()` lane
 
@@ -239,9 +307,10 @@ the build.
 
 ## Build a design system once
 
-Keep tokens, themes, and conditions in one preset. Both the Tailwind and
-atomic lanes can consume it, and component code can use semantic names instead
-of repeating raw colors and spacing values.
+Keep tokens, themes, and conditions in one preset. The CSS and design lanes
+consume it directly; a Tailwind bridge can expose the same values to `tw()`
+when an application needs Tailwind's ecosystem. Component code can use
+semantic names instead of repeating raw colors and spacing values.
 
 ```ts
 // src/preset.ts
@@ -259,11 +328,14 @@ const tokens = defineTokens({
 	radii: { md: "8px", lg: "12px" },
 });
 
-export const preset = definePreset({ config: {} as StandardProperties, tokens }, {
-	strict: true,
-	conditions: { base: "", _hover: "&:hover", _dark: ".dark &" },
-	properties: { $all: true },
-});
+export const preset = definePreset(
+	{ config: {} as StandardProperties, tokens },
+	{
+		strict: true,
+		conditions: { base: "", _hover: "&:hover", _dark: ".dark &" },
+		properties: { $all: true },
+	},
+);
 ```
 
 The [design-system guide](./docs/src/content/docs/guides/design-system.md)
@@ -277,10 +349,11 @@ variants directly from `csstype`; Pandwind does not replace its CSS grammar.
 
 ## When you need more than the happy path
 
-- **Dynamic Tailwind values:** use `tw:scan` or an explicit safelist so the
-  generated stylesheet contains the possible classes.
 - **Dynamic CSS values:** use `css.vars()` and pass its `class` and `style`
   together to the element.
+- **Dynamic Tailwind values:** if you use the Tailwind compatibility lane, use
+  `tw:scan` or an explicit safelist so its generated stylesheet contains the
+  possible classes.
 - **Globals, fonts, keyframes, and complex selectors:** keep them in an
   authored `.css` file. Pandwind can consume and analyze that stylesheet; it
   does not try to hide browser-wide behavior inside a component API.
@@ -307,8 +380,9 @@ shows the safe preview workflow.
 
 Pandwind is static-first, not magic:
 
-- literal `tw()` calls can become plain class strings at build time;
 - literal `css()` calls can become extracted atomic CSS;
+- literal `tw()` calls can become plain class strings at build time when the
+  Tailwind compatibility lane is selected;
 - dynamic values stay dynamic and use an explicit runtime or CSS-variable
   path; and
 - the runtime package does not require Tailwind for the atomic CSS lane.
@@ -321,16 +395,16 @@ for measured boundaries.
 
 ## Documentation map
 
-- [Build your first app](./docs/src/content/docs/guides/basic.md) — a complete
-  Vite/Tailwind path.
+- [Build your first Tailwind app](./docs/src/content/docs/guides/basic.md) — a
+  complete compatibility path for existing Tailwind apps.
 - [Build a design system](./docs/src/content/docs/guides/design-system.md) —
   tokens, themes, and component contracts.
 - [Build a component library](./docs/src/content/docs/guides/component-library.md) —
   packaging, SSR, and consumer boundaries.
 - [Migrate from another library](./docs/src/content/docs/guides/migrations.md) —
   preview, review, validate, and apply.
-- [API reference](./docs/src/content/docs/api/tw.md) — focused pages for each
-  lane.
+- [API reference](./docs/src/content/docs/api/css.md) — the primary `css()` API
+  plus the design, Tailwind, and composition lanes.
 - [Tooling](./docs/src/content/docs/tooling/analyze-and-studio.md) —
   playground, analyzer, inspector, Studio, codegen, and Vite.
 - [Reference](./docs/src/content/docs/reference/limitations.md) — technical

@@ -5,18 +5,20 @@ sidebar:
   order: 1
 ---
 
-`createTwAdapter({ preset, variants, bridge })` turns `css()` into a
-Tailwind-class emitter instead of a hashed-atom emitter:
+`createTwAdapter({ preset, variants, bridge })` lets the primary `css()` API
+emit Tailwind classes instead of hashed atoms:
 
 ```ts
+import { createCss } from "pandwind/css";
 import { createTwAdapter } from "pandwind/tw";
 import { examplePreset } from "@pandwind/example-preset";
 import { bridge, variants } from "./bridge"; // optional artifact from `pandwind-codemod tw generate --bridge`
+import { tw } from "./tw";
 
 const twAdapter = createTwAdapter({ preset: examplePreset, variants, bridge });
-const dcss = createDesignCss(examplePreset, { className: twAdapter });
+const css = createCss(examplePreset, { className: twAdapter });
 
-dcss.class({ $text: { color: "$blue-500" } }); // "text-blue-500"
+css.class({ color: "$blue-500" }); // "text-blue-500"
 tw({ text: "blue-500" }); // "text-blue-500"
 ```
 
@@ -55,12 +57,12 @@ The bundled second mode is `createNamedAtomsStrategy()` — readable classes
 than minimal bytes:
 
 ```ts
-import { createNamedAtomsStrategy } from "pandwind/css";
+import { createCss, createNamedAtomsStrategy } from "pandwind/css";
 
-const dcss = createDesignCss(examplePreset, {
+const css = createCss(examplePreset, {
 	className: createNamedAtomsStrategy(),
 });
-dcss.class({ $text: { color: "red" } }); // "pw-color-red" (rule in the generated sheet)
+css.class({ color: "$red-500" }); // "pw-color-$red-500" (rule in the generated sheet)
 ```
 
 Switching modes is a one-option change; call sites never move.
