@@ -19,3 +19,10 @@ Feature: Playground editor typings
       | /component-tokens  | Component token contracts |
       | /variants          | Variants                   |
       | /groups            | Groups                     |
+
+  Scenario: an inspector section has enough room to show its content
+    Given I open the playground route "/variants"
+    When I expand the "Generated CSS" inspector panel
+    Then the "Generated CSS" inspector panel has room for content
+    When I collapse the "Generated CSS" inspector panel
+    Then the "Generated CSS" inspector panel is collapsed

@@ -38,6 +38,37 @@ Then("the editor has syntax highlighting", async ({ page }) => {
 	).toBeVisible();
 });
 
+When("I expand the {string} inspector panel", async ({ page }, label: string) => {
+	const pane = page.locator(`[data-pane="${label}"]`);
+	await expect
+		.poll(() => pane.evaluate((element) => element.getBoundingClientRect().height))
+		.toBeLessThan(70);
+	await pane.getByRole("button", { name: label, exact: true }).click();
+});
+
+When("I collapse the {string} inspector panel", async ({ page }, label: string) => {
+	const pane = page.locator(`[data-pane="${label}"]`);
+	await pane.getByRole("button", { name: label, exact: true }).click();
+});
+
+Then("the {string} inspector panel has room for content", async ({ page }, label: string) => {
+	const pane = page.locator(`[data-pane="${label}"]`);
+	const content = pane.locator(":scope > div").last();
+	await expect(content).toBeVisible();
+	await expect
+		.poll(() => content.evaluate((element) => element.getBoundingClientRect().height))
+		.toBeGreaterThan(80);
+});
+
+Then("the {string} inspector panel is collapsed", async ({ page }, label: string) => {
+	const pane = page.locator(`[data-pane="${label}"]`);
+	await expect(pane.getByRole("button", { name: label, exact: true })).toHaveAttribute(
+		"aria-expanded",
+		"false",
+	);
+	await expect(pane.locator(":scope > div").last()).toBeHidden();
+});
+
 Then("the {string} selector has value {string}", async ({ page }, label: string, value: string) => {
 	await expect(page.getByRole("combobox", { name: label })).toHaveValue(value);
 });

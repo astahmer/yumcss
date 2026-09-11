@@ -105,6 +105,7 @@ export interface ResizableSplitterPanel {
 	id: string;
 	content: ReactNode;
 	initialSize?: number;
+	minExpandedSize?: number;
 	maxSize?: number;
 	collapsible?: boolean;
 	collapsedSize?: number | string;
@@ -123,6 +124,25 @@ const initialPanelSizes = (panels: readonly ResizableSplitterPanel[]): number[] 
 	const sizes = panels.map((panel) => panel.initialSize ?? 100 / Math.max(panels.length, 1));
 	const total = sizes.reduce((sum, size) => sum + size, 0);
 	return total === 0 ? sizes : sizes.map((size) => (size / total) * 100);
+};
+
+const adjustPanelSizes = (props: {
+	sizes: readonly number[];
+	targetIndex: number;
+	delta: number;
+	donorIndices: readonly number[];
+}): number[] | undefined => {
+	const donorSize = props.donorIndices.reduce(
+		(total, index) => total + (props.sizes[index] ?? 0),
+		0,
+	);
+	if (props.delta === 0 || donorSize <= 0) return undefined;
+	const donorIndexSet = new Set(props.donorIndices);
+	return props.sizes.map((size, index) => {
+		if (index === props.targetIndex) return size + props.delta;
+		if (!donorIndexSet.has(index)) return size;
+		return size - props.delta * (size / donorSize);
+	});
 };
 
 /** Ark-backed split layout used for the playground's inspectable panes. */
@@ -171,8 +191,42 @@ export function ResizableSplitter(props: {
 		const panel = props.panels.find((candidate) => candidate.id === panelId);
 		if (panel === undefined || panel.collapsible !== true) return;
 		const currentCollapsed = collapsedPanelIds.has(panelId);
-		if (currentCollapsed) splitter.expandPanel(panelId);
-		else splitter.collapsePanel(panelId);
+		const targetIndex = props.panels.findIndex((candidate) => candidate.id === panelId);
+		if (targetIndex === -1) return;
+		if (panel.minExpandedSize === undefined) {
+			if (currentCollapsed) splitter.expandPanel(panelId);
+			else splitter.collapsePanel(panelId);
+		} else if (currentCollapsed) {
+			const sizes = splitter.getSizes();
+			const currentSize = sizes[targetIndex] ?? 0;
+			const expandedSize = Math.max(currentSize, panel.minExpandedSize);
+			const donorIndices = props.panels.flatMap((candidate, index) =>
+				index !== targetIndex && !collapsedPanelIds.has(candidate.id) ? [index] : [],
+			);
+			const nextSizes = adjustPanelSizes({
+				sizes,
+				targetIndex,
+				delta: expandedSize - currentSize,
+				donorIndices,
+			});
+			if (nextSizes === undefined) return;
+			splitter.setSizes(nextSizes);
+		} else {
+			const sizes = splitter.getSizes();
+			const currentSize = sizes[targetIndex] ?? 0;
+			splitter.collapsePanel(panelId);
+			const collapsedSize = splitter.getPanelSize(panelId);
+			const donorIndices = props.panels.flatMap((candidate, index) =>
+				index !== targetIndex && !collapsedPanelIds.has(candidate.id) ? [index] : [],
+			);
+			const nextSizes = adjustPanelSizes({
+				sizes,
+				targetIndex,
+				delta: collapsedSize - currentSize,
+				donorIndices,
+			});
+			if (nextSizes !== undefined) splitter.setSizes(nextSizes);
+		}
 		setCollapsedPanelIds((current) => {
 			const next = new Set(current);
 			if (currentCollapsed) next.delete(panelId);
@@ -241,6 +295,7 @@ const PANE_TOGGLE = uiCss.class({
 	},
 });
 const PANE_TOGGLE_ICON = uiCss.class({ color: "textFaint", fontSize: "12px" });
+const PANE_IN_SPLITTER = uiCss.class({ height: "100%", flex: "1 1 0%" });
 
 /** Shared pane chrome: hairline border, flat surface, small-caps header. */
 export function Pane(props: {
@@ -261,7 +316,8 @@ export function Pane(props: {
 	};
 	return (
 		<section
-			className={`${uiCss.class({ display: "flex", minHeight: "0px", flexDirection: "column", overflow: "hidden", border: "hairline", borderRadius: "8px", backgroundColor: "surface" })} ${props.className ?? ""}`}
+			data-pane={props.label}
+			className={`${uiCss.class({ display: "flex", minHeight: "0px", flexDirection: "column", overflow: "hidden", border: "hairline", borderRadius: "8px", backgroundColor: "surface" })} ${splitterControls === null ? "" : PANE_IN_SPLITTER} ${props.className ?? ""}`}
 		>
 			<header
 				className={uiCss.class({

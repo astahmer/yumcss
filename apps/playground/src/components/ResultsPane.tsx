@@ -1245,6 +1245,7 @@ export function ResultsPane(props: {
 		{
 			id: "execution-evidence",
 			initialSize: 12,
+			minExpandedSize: 16,
 			collapsible: true,
 			initiallyCollapsed: true,
 			content: <ExecutionEvidenceSection evidence={r.execution} />,
@@ -1266,6 +1267,7 @@ export function ResultsPane(props: {
 		{
 			id: "build-time-fold",
 			initialSize: 11,
+			minExpandedSize: 14,
 			collapsible: true,
 			initiallyCollapsed: true,
 			content: <FoldSection fold={r.fold} note={r.foldNote} />,
@@ -1273,6 +1275,7 @@ export function ResultsPane(props: {
 		{
 			id: "tokens",
 			initialSize: 13,
+			minExpandedSize: 16,
 			collapsible: true,
 			initiallyCollapsed: true,
 			content: <TokensSection survived={r.survived} killed={r.killed} />,
@@ -1282,6 +1285,7 @@ export function ResultsPane(props: {
 		panels.push({
 			id: "css-atoms",
 			initialSize: 15,
+			minExpandedSize: 20,
 			collapsible: true,
 			initiallyCollapsed: true,
 			content: <AtomsSection atoms={r.atomDeclarations} />,
@@ -1291,6 +1295,7 @@ export function ResultsPane(props: {
 		panels.push({
 			id: "declarations-to-classes",
 			initialSize: 18,
+			minExpandedSize: 24,
 			collapsible: true,
 			initiallyCollapsed: true,
 			content: <StyleMappingsSection mappings={r.styleMappings} />,
@@ -1300,6 +1305,7 @@ export function ResultsPane(props: {
 		panels.push({
 			id: `generated-css-${index + 1}`,
 			initialSize: 10,
+			minExpandedSize: 28,
 			collapsible: true,
 			initiallyCollapsed: true,
 			content: <SheetSection sheets={[sheet]} />,
@@ -1309,6 +1315,7 @@ export function ResultsPane(props: {
 		panels.push({
 			id: "styleprogram-ir",
 			initialSize: 20,
+			minExpandedSize: 32,
 			collapsible: true,
 			initiallyCollapsed: true,
 			content: <StyleProgramSection programs={r.programs} />,
