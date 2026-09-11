@@ -1,10 +1,9 @@
 /**
  * Flat rule after semantic lowering and serialization.
  *
- * This is the compact fast path stored by {@link createRuntimeSheet}.
- *
- * @category runtime
- * @since 0.1.0
+ * `RuntimeSheet` stores this compact form after a semantic rule has been
+ * converted to CSS. Applications normally encounter it through
+ * `createRuntimeSheet` from `pandwind/css/runtime`.
  */
 export interface RuntimeRule {
 	readonly id: string;
@@ -14,9 +13,6 @@ export interface RuntimeRule {
 
 /**
  * Runtime-safe typed identities shared by the browser and Node entrypoints.
- *
- * @category runtime
- * @since 0.1.0
  */
 export const RuntimeSemanticRuleKindTag = {
 	Style: "style",
@@ -34,9 +30,6 @@ export type RuntimeSemanticRuleKind =
 
 /**
  * A declaration accepted by the runtime semantic-rule serializer.
- *
- * @category runtime
- * @since 0.1.0
  */
 export interface RuntimeDeclaration {
 	readonly property: string;
@@ -48,9 +41,6 @@ export interface RuntimeDeclaration {
  * `children` represents nested rule bodies; `conditions` preserves wrapper
  * order. Adapters may canonicalize this richer form into the flat
  * RuntimeRule fast path before it reaches the store.
- *
- * @category runtime
- * @since 0.1.0
  */
 export interface RuntimeSemanticRule {
 	readonly id?: string;
@@ -66,9 +56,6 @@ export interface RuntimeSemanticRule {
 
 /**
  * Serializable boundary between an SSR producer and a browser consumer.
- *
- * @category runtime
- * @since 0.1.0
  */
 export interface RuntimeSheetSnapshot {
 	readonly tokens: string;
@@ -93,9 +80,6 @@ export interface RuntimeDocument {
 
 /**
  * Options controlling a runtime sheet's identity and DOM mounting behavior.
- *
- * @category runtime
- * @since 0.1.0
  */
 export interface RuntimeSheetOptions {
 	readonly id?: string;
