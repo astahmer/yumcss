@@ -283,6 +283,31 @@ const PREVIEW_INTERACTION_CONTROL = uiCss.class({
 	fontSize: "10px",
 	color: "textStrong",
 });
+const PREVIEW_CONTROLS = uiCss.class({
+	display: "flex",
+	maxWidth: "40rem",
+	alignItems: "center",
+	justifyContent: "center",
+	gap: "6px 10px",
+	flexWrap: "wrap",
+	border: "strong",
+	borderRadius: "6px",
+	backgroundColor: "control",
+	padding: "6px 8px",
+	fontSize: "11px",
+	lineHeight: "16px",
+	color: "textSoft",
+});
+const PREVIEW_CONTROL_LABEL = uiCss.class({
+	display: "inline-flex",
+	alignItems: "center",
+	gap: "5px",
+});
+const PREVIEW_CONTROL_DESCRIPTION = uiCss.class({
+	width: "100%",
+	maxWidth: "36rem",
+	color: "textMuted",
+});
 const PREVIEW_BUTTON_RESET = uiCss.class({
 	border: "0",
 	backgroundColor: "transparent",
@@ -486,6 +511,8 @@ function PreviewSpecimen(props: {
 	preview: ExamplePreview;
 	result: SuccessfulPlaygroundResult;
 	tailwindStyle: Record<string, string>;
+	previewControlValues: Readonly<Record<string, string>>;
+	onPreviewControlChange: (id: string, value: string) => void;
 }) {
 	const { mode } = useTheme();
 	const previewTargetRef = useRef<HTMLDivElement>(null);
@@ -532,7 +559,7 @@ function PreviewSpecimen(props: {
 			if (value !== "") next[property] = value;
 		}
 		setComputedStyle(next);
-	}, [mode, props.result, props.tailwindStyle]);
+	}, [interactionValue, mode, props.previewControlValues, props.result, props.tailwindStyle]);
 	const explanationStyle = { ...authoredStyle, ...computedStyle };
 	const styledClasses = new Set([
 		...props.result.survived,
@@ -624,6 +651,34 @@ function PreviewSpecimen(props: {
 					<span>{interaction.description}</span>
 				</label>
 			)}
+			{props.preview.controls !== undefined && props.preview.controls.length > 0 && (
+				<div className={PREVIEW_CONTROLS} data-preview-controls>
+					{props.preview.controls.map((control) => {
+						const value = props.previewControlValues[control.id] ?? control.initialValue;
+						return (
+							<label key={control.id} className={PREVIEW_CONTROL_LABEL}>
+								<span>{control.label}</span>
+								<select
+									className={PREVIEW_INTERACTION_CONTROL}
+									aria-label={control.label}
+									data-preview-control={control.id}
+									value={value}
+									onChange={(event) => props.onPreviewControlChange(control.id, event.target.value)}
+								>
+									{control.options.map((option) => (
+										<option key={option.value} value={option.value}>
+											{option.label}
+										</option>
+									))}
+								</select>
+							</label>
+						);
+					})}
+					<span className={PREVIEW_CONTROL_DESCRIPTION} data-preview-control-description>
+						{props.preview.controls.map((control) => control.description).join(" ")}
+					</span>
+				</div>
+			)}
 			{explanation !== undefined && (
 				<span className={uiCss.class({ fontSize: "10px", color: "textFaint" })}>{explanation}</span>
 			)}
@@ -634,6 +689,8 @@ function PreviewSpecimen(props: {
 function LivePreviewSection(props: {
 	preview: ExamplePreview;
 	result: SuccessfulPlaygroundResult;
+	previewControlValues: Readonly<Record<string, string>>;
+	onPreviewControlChange: (id: string, value: string) => void;
 }) {
 	const generatedCss = props.result.sheets.map((sheet) => sheet.css).join("\n");
 	const className = previewClassName(props.result);
@@ -668,6 +725,8 @@ function LivePreviewSection(props: {
 					preview={props.preview}
 					result={props.result}
 					tailwindStyle={tailwindPreview.style}
+					previewControlValues={props.previewControlValues}
+					onPreviewControlChange={props.onPreviewControlChange}
 				/>
 			</div>
 		</Pane>
@@ -1215,6 +1274,8 @@ export function ResultsPane(props: {
 	result: PlaygroundResult;
 	previewResult: PlaygroundResult;
 	preview: ExamplePreview;
+	previewControlValues: Readonly<Record<string, string>>;
+	onPreviewControlChange: (id: string, value: string) => void;
 }) {
 	const r = props.result;
 	if (!r.ok) {
@@ -1240,7 +1301,14 @@ export function ResultsPane(props: {
 			id: "live-preview",
 			initialSize: 38,
 			collapsible: true,
-			content: <LivePreviewSection preview={props.preview} result={previewResult} />,
+			content: (
+				<LivePreviewSection
+					preview={props.preview}
+					result={previewResult}
+					previewControlValues={props.previewControlValues}
+					onPreviewControlChange={props.onPreviewControlChange}
+				/>
+			),
 		},
 		{
 			id: "execution-evidence",

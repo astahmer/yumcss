@@ -8,6 +8,7 @@ import { createCss } from "pandwind/css";
 import { resolveDesignStyle } from "pandwind/design/resolve";
 import { examplePreset } from "@pandwind/example-preset";
 import { SANDBOX_MODULES } from "./sandbox-modules.ts";
+import { applyPreviewControls } from "./preview-controls.ts";
 
 function makeInput(code: string, moduleBindings?: EvalInput["moduleBindings"]): EvalInput {
 	return {
@@ -100,6 +101,61 @@ describe("example catalog evaluates end to end", () => {
 		expect(result.sheets.some((sheet) => sheet.rules.length > 0)).toBe(true);
 		expect(result.programs).not.toHaveLength(0);
 		expect(result.programs.every((program) => program.residuals.length === 0)).toBe(true);
+	});
+
+	it("evaluates every selected combination in the variants preview", () => {
+		const example = EXAMPLES.find((candidate) => candidate.path === "/variants");
+		const variant = example?.variants[0];
+		expect(example?.preview.controls).toHaveLength(2);
+		expect(variant).toBeDefined();
+		if (example === undefined || variant === undefined) return;
+
+		for (const size of ["sm", "lg"] as const) {
+			for (const tone of ["brand", "danger"] as const) {
+				const source = applyPreviewControls(variant.files[0]!.code, example.preview.controls, {
+					size,
+					tone,
+				});
+				const result = evalPlayground(makeInput(source));
+				expect(result.ok, `${size}/${tone}`).toBe(true);
+				if (!result.ok) continue;
+				expect(result.rendered, `${size}/${tone}`).toMatchObject({
+					type: "button",
+					props: { className: result.output },
+				});
+				expect(
+					result.styleMappings.some(
+						(mapping) =>
+							mapping.active &&
+							mapping.property === "backgroundColor" &&
+							mapping.value.includes(tone === "danger" ? "red" : "blue"),
+					),
+				).toBe(true);
+				expect(
+					result.styleMappings.some(
+						(mapping) =>
+							mapping.active &&
+							mapping.property === "padding" &&
+							mapping.value === (size === "sm" ? "8" : "16"),
+					),
+				).toBe(true);
+			}
+		}
+	});
+
+	it("keeps every preview control valid across all API lanes", () => {
+		for (const example of EXAMPLES) {
+			const controls = example.preview.controls;
+			if (controls === undefined || controls.length === 0) continue;
+			const values = Object.fromEntries(
+				controls.map((control) => [control.id, control.options.at(-1)!.value]),
+			);
+			for (const variant of example.variants) {
+				const source = applyPreviewControls(variant.files[0]!.code, controls, values);
+				const result = evalPlayground(makeInput(source, siblingBindings(variant)));
+				expect(result.ok, labelFor(example, variant)).toBe(true);
+			}
+		}
 	});
 
 	it("makes the static-folding example actually fold its component styles", () => {
@@ -306,24 +362,20 @@ describe("example catalog evaluates end to end", () => {
 	it("makes dynamic group inputs interactive in the preview", () => {
 		const example = EXAMPLES.find((candidate) => candidate.path === "/groups");
 		const variant = example?.variants[0];
-		expect(example?.preview.interaction).toEqual({
-			type: "select",
-			label: "Runtime tone",
-			cssVariable: "--tone",
-			initialValue: "blue",
-			options: [
-				{ label: "blue", value: "blue" },
-				{ label: "red", value: "red" },
-			],
-			description: 'Switching this value updates css.input("tone") without changing classes.',
-		});
+		expect(example?.preview.controls).toMatchObject([
+			{ id: "tone", prop: "tone", initialValue: "blue" },
+		]);
 		expect(variant).toBeDefined();
 		if (variant === undefined) return;
 
-		const result = evalPlayground(makeInput(variant.files[0]!.code));
+		const source = applyPreviewControls(variant.files[0]!.code, example?.preview.controls, {
+			tone: "red",
+		});
+		const result = evalPlayground(makeInput(source));
 		expect(result.ok).toBe(true);
 		if (!result.ok) return;
 
-		expect(result.runtimeStyle).toMatchObject({ "--tone": "blue" });
+		expect(result.runtimeStyle).toMatchObject({ "--tone": "red" });
+		expect(result.rendered).toMatchObject({ props: { style: { "--tone": "red" } } });
 	});
 });

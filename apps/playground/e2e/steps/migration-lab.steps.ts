@@ -18,6 +18,13 @@ When("I choose {string} from {string}", async ({ page }, option: string, label: 
 	await page.getByRole("combobox", { name: label }).selectOption({ label: option });
 });
 
+When(
+	"I choose {string} from preview control {string}",
+	async ({ page }, option: string, controlId: string) => {
+		await page.locator(`[data-preview-control="${controlId}"]`).selectOption(option);
+	},
+);
+
 When("I click the {string} button", async ({ page }, name: string) => {
 	await page.getByRole("button", { name, exact: true }).click();
 });
@@ -117,3 +124,12 @@ Then("the component-token preview uses background {string}", async ({ page }, co
 	await expect(preview).toHaveCSS("background-color", color);
 	await expect(page.locator("body")).toContainText(`card uses component.state.emptyBg (${color})`);
 });
+
+Then(
+	"the variant preview button uses background {string} and padding {string}",
+	async ({ page }, background: string, padding: string) => {
+		const preview = page.locator('[data-preview-kind="button"] > button');
+		await expect(preview).toHaveCSS("background-color", background);
+		await expect(preview).toHaveCSS("padding", padding);
+	},
+);

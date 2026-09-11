@@ -46,11 +46,30 @@ export type ExamplePreviewInteraction =
 			unit: "px";
 	  });
 
+export interface ExamplePreviewControlOption {
+	label: string;
+	value: string;
+	/** Optional source literal for non-string props, such as `true`. */
+	sourceValue?: string;
+}
+
+export interface ExamplePreviewControl {
+	type: "select";
+	id: string;
+	/** JSX prop on the element exported by default from the entry file. */
+	prop: string;
+	label: string;
+	initialValue: string;
+	options: readonly ExamplePreviewControlOption[];
+	description: string;
+}
+
 export interface ExamplePreview {
 	kind: PlaygroundPreviewKind;
 	label: string;
 	description: string;
 	interaction?: ExamplePreviewInteraction;
+	controls?: readonly ExamplePreviewControl[];
 }
 
 export interface ExampleVariant {
@@ -109,10 +128,31 @@ const makePreview = (
 	label: string,
 	description: string,
 	interaction?: ExamplePreviewInteraction,
-): ExamplePreview =>
-	interaction === undefined
-		? { kind, label, description }
-		: { kind, label, description, interaction };
+	controls?: readonly ExamplePreviewControl[],
+): ExamplePreview => ({
+	kind,
+	label,
+	description,
+	...(interaction === undefined ? {} : { interaction }),
+	...(controls === undefined ? {} : { controls }),
+});
+
+const makeSelectControl = (
+	id: string,
+	prop: string,
+	label: string,
+	initialValue: string,
+	values: readonly string[],
+	description: string,
+): ExamplePreviewControl => ({
+	type: "select",
+	id,
+	prop,
+	label,
+	initialValue,
+	options: values.map((value) => ({ label: value, value })),
+	description,
+});
 
 const TW_IMPORT = 'import { tw } from "pandwind";';
 
@@ -134,6 +174,25 @@ export const EXAMPLES: readonly ExampleDef[] = [
 			"button",
 			"Primary action",
 			"Compare the generated output for the same primary action in each API lane.",
+			undefined,
+			[
+				makeSelectControl(
+					"tone",
+					"tone",
+					"Tone",
+					"primary",
+					["primary", "danger"],
+					"Passes the selected tone into the same Button component in every API lane.",
+				),
+				makeSelectControl(
+					"size",
+					"size",
+					"Size",
+					"lg",
+					["sm", "lg"],
+					"Changes the padding and text-size branch selected by the component prop.",
+				),
+			],
 		),
 		variants: [
 			{
@@ -240,6 +299,16 @@ export default <Button tone="primary" size="lg" />`,
 				initialValue: "#fef08a",
 				description: "Change this value to update css.props() without creating a class.",
 			},
+			[
+				makeSelectControl(
+					"tone",
+					"tone",
+					"Tone",
+					"danger",
+					["danger", "info"],
+					"Changes the static background branch while the text color still travels through css.props().",
+				),
+			],
 		),
 		variants: oneVariant(
 			PlaygroundApi.Tw,
@@ -389,6 +458,17 @@ export default <Card title="Container-aware card" />`,
 			"button",
 			"Merged action",
 			"The final background is the declaration that survived cx() conflict resolution.",
+			undefined,
+			[
+				makeSelectControl(
+					"tone",
+					"tone",
+					"Tone",
+					"primary",
+					["primary", "muted"],
+					"The first declaration changes with this prop; the later blue-600 declaration still wins the conflict.",
+				),
+			],
 		),
 		variants: oneVariant(
 			PlaygroundApi.Tw,
@@ -692,6 +772,22 @@ export const tokenPreset = definePreset(
 			"button",
 			"Brand action",
 			"Base uses brand-500; hover uses brand-600 from the preset's _hover condition.",
+			undefined,
+			[
+				{
+					type: "select",
+					id: "active",
+					prop: "active",
+					label: "State",
+					initialValue: "true",
+					options: [
+						{ label: "active", value: "true", sourceValue: "true" },
+						{ label: "inactive", value: "false", sourceValue: "false" },
+					],
+					description:
+						"Passes a boolean prop so the rendered component and aria-pressed state change together.",
+				},
+			],
 		),
 		variants: [
 			{
@@ -725,7 +821,7 @@ const Button = (props: ButtonProps) => (
 	</button>
 );
 
-export default <Button active />`,
+export default <Button active={true} />`,
 					},
 					{
 						name: "brand.ts",
@@ -748,7 +844,26 @@ export const brandTokens = defineTokens({
 		preview: makePreview(
 			"button",
 			"Variant button",
-			"This render selects size=lg and tone=brand, then cx() merges those generated classes.",
+			"Choose a size and tone to see cx() compose the corresponding generated classes.",
+			undefined,
+			[
+				makeSelectControl(
+					"size",
+					"size",
+					"Size",
+					"lg",
+					["sm", "lg"],
+					"Selects one statically generated padding class from the size map.",
+				),
+				makeSelectControl(
+					"tone",
+					"tone",
+					"Tone",
+					"brand",
+					["brand", "danger"],
+					"Selects one generated background class before cx() composes the final string.",
+				),
+			],
 		),
 		variants: oneVariant(
 			PlaygroundApi.Css,
@@ -796,17 +911,17 @@ export default <Button size="lg" tone="brand" />`,
 			"card",
 			"Grouped card",
 			'Select a tone to update css.input("tone") on the banner without changing its class.',
-			{
-				type: "select",
-				label: "Runtime tone",
-				cssVariable: "--tone",
-				initialValue: "blue",
-				options: [
-					{ label: "blue", value: "blue" },
-					{ label: "red", value: "red" },
-				],
-				description: 'Switching this value updates css.input("tone") without changing classes.',
-			},
+			undefined,
+			[
+				makeSelectControl(
+					"tone",
+					"tone",
+					"Tone",
+					"blue",
+					["blue", "red"],
+					'Passes the prop into styles.banner() so css.input("tone") changes the host variable.',
+				),
+			],
 		),
 		variants: oneVariant(
 			PlaygroundApi.Css,

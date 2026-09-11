@@ -9,6 +9,7 @@ import {
 	type ExampleFile,
 	type ExampleVariant,
 } from "../lib/examples.ts";
+import { applyPreviewControls, initialPreviewControlValues } from "../lib/preview-controls.ts";
 import type { EditorTypeLibrary } from "../lib/editor-types.ts";
 import {
 	evalPlayground,
@@ -134,9 +135,21 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 		return activeVariant.files.map((file) => file.code);
 	});
 	const [activeTab, setActiveTab] = useState(0);
-	const [evaluation, setEvaluation] = useState<PlaygroundEvaluation>(() =>
-		evaluatePlayground(files, activeVariant, classNameStrategy),
+	const [previewControlValues, setPreviewControlValues] = useState(() =>
+		initialPreviewControlValues(props.def.preview.controls),
 	);
+	const [evaluation, setEvaluation] = useState<PlaygroundEvaluation>(() =>
+		evaluatePlayground(
+			files,
+			activeVariant,
+			classNameStrategy,
+			props.def.preview.controls,
+			previewControlValues,
+		),
+	);
+	useEffect(() => {
+		setPreviewControlValues(initialPreviewControlValues(props.def.preview.controls));
+	}, [props.def.path]);
 	useEffect(() => {
 		let cancelled = false;
 		setClassNameStrategy(activeClassNameAdapter.strategy ?? null);
@@ -156,15 +169,31 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 	useEffect(() => {
 		if (activeClassNameAdapter.loadStrategy !== undefined && classNameStrategy === null) return;
 		try {
-			setEvaluation(evaluatePlayground(files, activeVariant, classNameStrategy));
+			setEvaluation(
+				evaluatePlayground(
+					files,
+					activeVariant,
+					classNameStrategy,
+					props.def.preview.controls,
+					previewControlValues,
+				),
+			);
 		} catch (error) {
 			setEvaluation(failedEvaluation(error));
 		}
-	}, [activeClassNameAdapter, activeVariant, classNameStrategy]);
+	}, [activeClassNameAdapter, activeVariant, classNameStrategy, previewControlValues, props.def]);
 	const run = useCallback(
 		(sources: readonly string[]) => {
 			try {
-				setEvaluation(evaluatePlayground(sources, activeVariant, classNameStrategy));
+				setEvaluation(
+					evaluatePlayground(
+						sources,
+						activeVariant,
+						classNameStrategy,
+						props.def.preview.controls,
+						previewControlValues,
+					),
+				);
 			} catch (error) {
 				setEvaluation(failedEvaluation(error));
 			}
@@ -178,7 +207,7 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 				variantUrl(props.def, activeVariant.api, hash, activeClassNameAdapter.id),
 			);
 		},
-		[activeClassNameAdapter, activeVariant, classNameStrategy, props.def],
+		[activeClassNameAdapter, activeVariant, classNameStrategy, previewControlValues, props.def],
 	);
 
 	const selectApi = useCallback(
@@ -189,14 +218,22 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 			setApi(nextVariant.api);
 			setFiles(nextFiles);
 			setActiveTab(0);
-			setEvaluation(evaluatePlayground(nextFiles, nextVariant, classNameStrategy));
+			setEvaluation(
+				evaluatePlayground(
+					nextFiles,
+					nextVariant,
+					classNameStrategy,
+					props.def.preview.controls,
+					previewControlValues,
+				),
+			);
 			history.replaceState(
 				null,
 				"",
 				variantUrl(props.def, nextVariant.api, "", activeClassNameAdapter.id),
 			);
 		},
-		[activeClassNameAdapter, classNameStrategy, props.def],
+		[activeClassNameAdapter, classNameStrategy, previewControlValues, props.def],
 	);
 
 	const selectClassNameAdapter = useCallback(
@@ -220,7 +257,15 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 			void resolveClassNameStrategy(nextAdapter)
 				.then((strategy) => {
 					setClassNameStrategy(strategy);
-					setEvaluation(evaluatePlayground(nextFiles, nextVariant, strategy));
+					setEvaluation(
+						evaluatePlayground(
+							nextFiles,
+							nextVariant,
+							strategy,
+							props.def.preview.controls,
+							previewControlValues,
+						),
+					);
 				})
 				.catch((error: unknown) => {
 					setEvaluation(failedEvaluation(error));
@@ -228,7 +273,7 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 		};
 		window.addEventListener("popstate", syncVariant);
 		return () => window.removeEventListener("popstate", syncVariant);
-	}, [props.def]);
+	}, [previewControlValues, props.def]);
 
 	// Live evaluation: re-run shortly after every edit; ⌘↵ runs immediately.
 	// The debounced run reads the latest state through the setter so edits on
@@ -275,6 +320,11 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 		setFiles(restored);
 		run(restored);
 	}, [activeVariant, run]);
+	const onPreviewControlChange = useCallback((id: string, value: string) => {
+		setPreviewControlValues((current) =>
+			current[id] === value ? current : { ...current, [id]: value },
+		);
+	}, []);
 
 	return (
 		<div
@@ -496,6 +546,8 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 								result={evaluation.result}
 								previewResult={evaluation.previewResult}
 								preview={props.def.preview}
+								previewControlValues={previewControlValues}
+								onPreviewControlChange={onPreviewControlChange}
 							/>
 						),
 					},
@@ -572,16 +624,19 @@ function evaluatePlayground(
 	sources: readonly string[],
 	variant: ExampleVariant,
 	strategy: ClassNameStrategy | null,
+	controls: ExampleDef["preview"]["controls"],
+	controlValues: Readonly<Record<string, string>>,
 ): PlaygroundEvaluation {
+	const previewSource = applyPreviewControls(sources[0]!, controls, controlValues);
 	const result = evalPlayground(
-		makeInput(sources[0]!, evalSiblings(sources, variant, strategy), strategy),
+		makeInput(previewSource, evalSiblings(sources, variant, strategy), strategy),
 	);
 	if (!result.ok || result.sheets.length > 0 || strategy === null) {
 		return { result, previewResult: result };
 	}
 
 	const previewResult = evalPlayground(
-		makeInput(sources[0]!, evalSiblings(sources, variant, null), null),
+		makeInput(previewSource, evalSiblings(sources, variant, null), null),
 	);
 	return { result, previewResult };
 }
