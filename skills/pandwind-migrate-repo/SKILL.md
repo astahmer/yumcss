@@ -11,17 +11,21 @@ description: Migrate a real repository from Tailwind, Panda, StyleX, styled-comp
    output directory, and pin the source commit before changing anything.
 2. Identify the framework, package manager, build commands, SSR/RSC mode,
    styling packages, theme sources, generated files, and all entry points.
-3. Generate Pandwind metadata first: preset, `tailwind.css`, `tw.ts`,
-   `types.d.ts`, `bridge.ts`, and the scanner output. Treat generated files as
-   outputs, never hand-edit them.
-4. Run a dry audit with `--to=keep`, then run codemod passes with `--diff`.
-   Review every edit before using `--write`; reruns must be idempotent.
+3. Choose the target lane. For Tailwind or metadata-dependent routes, generate
+   the typed artifacts and scanner output. For native `css()` or design `css()`
+   routes, prepare the typed preset/theme contract instead; do not generate
+   Tailwind files just to satisfy a checklist. Treat every generated file as an
+   output, never hand-edit it.
+4. Run a dry route preview with `--dry-run --diff --report`. Review every edit
+   and residual before removing `--dry-run`; reruns must be idempotent.
 5. Migrate merge helpers, static class strings, and static CSS-in-JS calls
-   before dynamic code. Prefer `tw()`/`css.class()` and `cx()` for static code.
+   before dynamic code. Prefer `tw()`, `css.class()`, design `css()`, and
+   `cx()` according to the selected target contract.
 6. Lower safe dynamic declarations to static classes plus `css.vars()`. Keep
    runtime CSS only for semantics that cannot safely be represented statically.
 7. Typecheck, lint, test, build, and run the browser/SSR proof matrix before
-   claiming success. Read [REFERENCE.md](REFERENCE.md) for the full workflow.
+   claiming success. Read [reference.md](references/reference.md) for the full
+   workflow and [examples.md](references/examples.md) for route templates.
 
 ## Non-negotiable rules
 
@@ -41,10 +45,11 @@ description: Migrate a real repository from Tailwind, Panda, StyleX, styled-comp
 
 ## Definition of done
 
-A migration is done only when the source builds and runs, the target has zero
-unexpected residuals, every intentional fallback is explained, all claimed
-routes/states pass browser and server validation, output CSS is equal or
-smaller (or the delta is explicitly accepted), and the migration can be
-repeated from the pinned source commit.
+A migration is done only when the source builds and runs, generated metadata is
+fresh for the selected lane, the target has zero unexpected residuals, every
+intentional fallback is explained, all claimed routes/states pass browser and
+server validation, output CSS is equal or smaller (or the delta is explicitly
+accepted), and the migration can be repeated from the pinned source commit.
 
-See [REFERENCE.md](REFERENCE.md) and [EXAMPLES.md](EXAMPLES.md).
+See [reference.md](references/reference.md) and
+[examples.md](references/examples.md).

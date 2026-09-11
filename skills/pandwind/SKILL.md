@@ -1,22 +1,31 @@
 ---
 name: pandwind
-description: Work with pandwind styling in this repository. Use when writing or changing tw(), css(), createDesignCss or cx() calls, regenerating typed codegen output, wiring the vite plugins, fixing missing-CSS/safelist issues, or choosing between Tailwind classes and atomic styles.
+description: Work with Pandwind's typed styling APIs in this repository. Use when writing or changing tw(), css(), createDesignCss, presets, themes, tokens, or cx() calls, regenerating codegen artifacts, wiring Vite plugins, fixing missing CSS or safelist issues, or choosing between utility, atomic, and design-system styles.
 ---
 
 # pandwind
 
 ## Rules
 
-- Never hand-edit generated files: `types.d.ts`, `tw.ts`, `bridge.ts`, the
-  safelist (`pandwind.safelist.css`) and `pandwind-theme.css`. They are
-  outputs of codegen. Change the preset / `tailwind.css` / call sites, then
+- Never hand-edit generated files: `types.d.ts`, `tw.ts`, the optional
+  `bridge.ts`, `pandwind.interop.json`, `pandwind.generated.json`,
+  `pandwind.agents.json`, the safelist (`pandwind.safelist.css`), and
+  `pandwind-theme.css`. They are outputs of codegen or editor tooling. Change
+  the preset, `tailwind.css`, source token contract, or call sites, then
   regenerate.
 - The compiler is the contract: if a value doesn't autocomplete or fails the
   typecheck, it is not part of the design system. Do not silence the error
   with `as any` or string casts — extend the preset instead.
-- Run codegen + scan after changing the preset, `tailwind.css`, or adding
-  `tw()` calls with values not seen before:
-  `pnpm tw:generate && pnpm tw:scan`.
+- Keep property configuration and token references in the typed source
+  contract. Use `definePreset`, `defineTheme`, `defineTokens`, and
+  `defineSemanticTokens` with `createCss` or `createDesignCss`; fix the
+  contract instead of weakening a call site with a cast.
+- Run the consuming package's generation script after changing a Tailwind
+  preset, `tailwind.css`, or generated `tw()` surface. In this repository,
+  `examples/example` uses `pnpm run tw:generate && pnpm run tw:scan`, while
+  `apps/playground` uses `pnpm run editor:types && pnpm run tw:generate`.
+  `tw:scan` is for dynamically discoverable Tailwind candidates; native
+  `css()` and design `css()` lanes do not need Tailwind scanning.
 - Prefer static, literal arguments. Literal `tw()`/`css()`/`cx()` calls fold
   at build time via the vite plugins. Dynamic values keep the runtime but
   must be covered by the scan/safelist.
@@ -43,16 +52,18 @@ description: Work with pandwind styling in this repository. Use when writing or 
 
 ## Standard flow
 
-1. Locate the preset module and generated files (look for `preset`,
-   `tailwind.css`, `tw.ts`, `bridge.ts`).
+1. Locate the source contract and decide whether the module uses native
+   `css()`/design styles or the Tailwind-compatible `tw()` lane. Look for the
+   preset, `tailwind.css`, package scripts, and generated artifacts.
 2. Make style changes through the typed APIs; keep plain `className` strings
-   working alongside.
-3. Regenerate if the design system changed; re-run the scanner if new literal
-   classes appeared.
-4. Typecheck. Wrong utility values must surface as TypeScript errors — that
-   is the feature, not friction.
-5. If CSS is missing at runtime for a dynamically-composed class, fix it with
-   the safelist/`@source inline`, not by duplicating styles.
+   working alongside them where the host still owns those classes.
+3. Regenerate only the affected generated lane. Re-run the scanner when new
+   dynamic Tailwind candidates need to become discoverable.
+4. Typecheck. Wrong utility values must surface as TypeScript errors — that is
+   the feature, not friction.
+5. If CSS is missing at runtime for a dynamically composed Tailwind class, fix
+   the scanner/safelist or `@source inline` input, not the generated files and
+   not by duplicating styles.
 
 ## Generated-file facts
 
@@ -60,18 +71,26 @@ description: Work with pandwind styling in this repository. Use when writing or 
   modifiers, recursive variant nesting, `(string & {})` escape hatch.
 - `tw.ts` — the typed `tw` instance wired with variants, the conflict map and
   composing utilities; marked `@__PURE__`.
-- `bridge.ts` + `createTwAdapter({ preset, variants, bridge })` — makes
-  `css()` emit real Tailwind classes so both APIs compile to one stylesheet.
+- `bridge.ts` — an optional generated Tailwind compatibility artifact. It is
+  build-time metadata unless the application explicitly selects its
+  `twAdapter` for a design/CSS output strategy.
 - `pandwind-theme.css` — DTCG tokens bridged into a Tailwind v4 `@theme`
   block; import from `tailwind.css`.
-- `--agents` on codegen additionally emits `pandwind.agents.json`: the
-  machine-readable capability file (utility unions, conflict families,
-  verify commands). Read it before inventing class names.
+- `pandwind.interop.json` — the versioned metadata artifact consumed by
+  migration and build tooling when a generated bridge exists.
+- `pandwind.generated.json` — freshness manifest for generated inputs and
+  outputs, used by `tw verify`.
+- `pandwind.agents.json` — optional machine-readable capability file with
+  utility unions, conflict families, and verify commands. Read it before
+  inventing class names.
+- `pandwind.safelist.css` — scanner output for Tailwind candidates that cannot
+  be discovered from static source alone.
 
 ## Useful docs
 
 - `docs/src/content/docs/getting-started.md`
 - `docs/src/content/docs/api/tw.md`
 - `docs/src/content/docs/api/css.md` / `api/design-css.md` / `api/cx.md`
+- `docs/src/content/docs/api/presets.md` / `api/theming.md`
 - `docs/src/content/docs/tooling/codegen.md`
 - `docs/src/content/docs/tooling/vite-plugins.md`
