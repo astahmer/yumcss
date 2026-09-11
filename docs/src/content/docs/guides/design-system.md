@@ -143,28 +143,47 @@ If a target library has a theme API, an adapter should map these references to
 that API. If it does not, lower them to custom properties or leave a
 machine-readable residual; never substitute a guessed literal.
 
-## 6. Add component scopes
+## 6. Bind component token contracts
 
-Use stable recipes or component-level style functions as the contract between
-the system and its consumers. Keep component variants close to the component,
-but keep tokens and conditions in the shared preset.
+Use a small map of token references as the contract between the design system
+and its consumers. The component binds those references directly; it does not
+choose raw colors with runtime ternaries.
 
 ```ts
+// src/design-system/component-tokens.ts
+export const componentTokens = {
+	button: {
+		background: "$brand",
+		foreground: "$onBrand",
+		padding: "8",
+		radius: "md",
+	},
+} as const;
+```
+
+```ts
+// src/design-system/styles.ts
 import { createDesignCss } from "pandwind/design";
 import { preset } from "./preset";
+import { componentTokens } from "./component-tokens";
 
 export const dcss = createDesignCss(preset);
 
-export const buttonClass = (tone: "brand" | "quiet") =>
-	dcss.class({
-		$frame: { pad: "8", corners: "md", fill: tone === "brand" ? "$brand" : "$canvas" },
-		$text: { color: tone === "brand" ? "$onBrand" : "$ink", weight: "600" },
-		_hover: { $frame: { fill: "$ink" } },
-	});
+export const buttonClass = dcss.class({
+	$frame: {
+		pad: componentTokens.button.padding,
+		corners: componentTokens.button.radius,
+		fill: componentTokens.button.background,
+	},
+	$text: { color: componentTokens.button.foreground, weight: "600" },
+	_hover: { $frame: { fill: "$brand" } },
+});
 ```
 
-Document each variant and its accessibility behavior. Prefer explicit
-composition over hidden selector coupling.
+The preset can change the semantic meaning of `$brand` and `$onBrand` for a
+theme without changing `buttonClass` or the component. If a component has
+multiple visual contracts, author them as separate named token maps or a
+static variant table; keep the token choice visible and type checked.
 
 ## 7. Enforce the contract
 

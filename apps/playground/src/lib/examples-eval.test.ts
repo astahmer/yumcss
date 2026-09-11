@@ -99,7 +99,7 @@ describe("example catalog evaluates end to end", () => {
 		expect(result.programs.every((program) => program.residuals.length === 0)).toBe(true);
 	});
 
-	it("executes the raw-semantic-component token example through its local preset", () => {
+	it("binds component token refs directly to the rendered component", () => {
 		expect(EXAMPLES.every((example) => example.preview.label.length > 0)).toBe(true);
 		expect(EXAMPLES.every((example) => example.preview.description.length > 0)).toBe(true);
 
@@ -111,9 +111,23 @@ describe("example catalog evaluates end to end", () => {
 		expect(result.ok).toBe(true);
 		if (!result.ok) return;
 
+		expect(variant.files[0]!.code).toContain("backgroundColor: componentTokens.card.bg");
+		expect(variant.files[0]!.code).toContain("backgroundColor: componentTokens.card.hoverBg");
+		expect(variant.files[0]!.code).not.toContain("props.tone");
+		expect(variant.files[0]!.code).not.toContain(" ? ");
 		expect(
 			result.styleMappings.some(
-				(mapping) => mapping.property === "padding" && mapping.value === "button.padding",
+				(mapping) => mapping.property === "backgroundColor" && mapping.value === "bg.primary",
+			),
+		).toBe(true);
+		expect(
+			result.styleMappings.some(
+				(mapping) => mapping.property === "color" && mapping.value === "fg.on-primary",
+			),
+		).toBe(true);
+		expect(
+			result.styleMappings.some(
+				(mapping) => mapping.property === "padding" && mapping.value === "card.padding",
 			),
 		).toBe(true);
 		expect(result.sheets.some((sheet) => sheet.css.includes("padding:20px"))).toBe(true);
@@ -126,20 +140,72 @@ describe("example catalog evaluates end to end", () => {
 		const variant = EXAMPLES.find((example) => example.path === "/dynamic")?.variants[0];
 		expect(variant).toBeDefined();
 		if (variant === undefined) return;
+		const preview = EXAMPLES.find((example) => example.path === "/dynamic")?.preview;
+		expect(preview?.interaction).toEqual({
+			type: "color",
+			label: "Runtime text color",
+			cssVariable: "--pw-c-color",
+			initialValue: "#fef08a",
+			description: "Change this value to update css.props() without creating a class.",
+		});
 
 		const result = evalPlayground(makeInput(variant.files[0]!.code));
 		expect(result.ok).toBe(true);
 		if (!result.ok) return;
 
 		expect(result.runtimeStyle).toMatchObject({
-			"--pw-c-color": "red-600",
+			"--pw-c-color": "#fef08a",
 		});
 		expect(result.rendered).toMatchObject({
 			type: "div",
 			props: {
 				role: "alert",
-				style: { "--pw-c-color": "red-600" },
+				style: { "--pw-c-color": "#fef08a" },
 			},
+		});
+	});
+
+	it("makes viewport and container breakpoints visible in their specimens", () => {
+		const responsive = EXAMPLES.find((example) => example.path === "/responsive");
+		const responsiveVariant = responsive?.variants[0];
+		expect(responsiveVariant).toBeDefined();
+		if (responsiveVariant === undefined) return;
+
+		const responsiveResult = evalPlayground(makeInput(responsiveVariant.files[0]!.code));
+		expect(responsiveResult.ok).toBe(true);
+		if (!responsiveResult.ok) return;
+		expect(responsiveResult.output).toContain("sm:bg-amber-500");
+		expect(responsiveResult.output).toContain("md:bg-blue-500");
+		expect(responsiveResult.output).toContain("lg:bg-violet-500");
+
+		const container = EXAMPLES.find((example) => example.path === "/container-queries");
+		const containerVariant = container?.variants[0];
+		expect(container?.preview.interaction).toMatchObject({
+			type: "range",
+			label: "Container width",
+			property: "width",
+			initialValue: "360",
+			min: 240,
+			max: 560,
+			unit: "px",
+		});
+		expect(containerVariant).toBeDefined();
+		if (containerVariant === undefined) return;
+
+		const containerResult = evalPlayground(makeInput(containerVariant.files[0]!.code));
+		expect(containerResult.ok).toBe(true);
+		if (!containerResult.ok) return;
+		expect(containerResult.rendered).toMatchObject({
+			type: "section",
+			props: { className: expect.stringContaining("@container") },
+			children: [
+				{
+					type: "article",
+					props: {
+						className: expect.stringContaining("@md:bg-blue-500"),
+					},
+				},
+			],
 		});
 	});
 
@@ -164,5 +230,29 @@ describe("example catalog evaluates end to end", () => {
 				},
 			],
 		});
+	});
+
+	it("makes dynamic group inputs interactive in the preview", () => {
+		const example = EXAMPLES.find((candidate) => candidate.path === "/groups");
+		const variant = example?.variants[0];
+		expect(example?.preview.interaction).toEqual({
+			type: "select",
+			label: "Runtime tone",
+			cssVariable: "--tone",
+			initialValue: "blue",
+			options: [
+				{ label: "blue", value: "blue" },
+				{ label: "red", value: "red" },
+			],
+			description: 'Switching this value updates css.input("tone") without changing classes.',
+		});
+		expect(variant).toBeDefined();
+		if (variant === undefined) return;
+
+		const result = evalPlayground(makeInput(variant.files[0]!.code));
+		expect(result.ok).toBe(true);
+		if (!result.ok) return;
+
+		expect(result.runtimeStyle).toMatchObject({ "--tone": "blue" });
 	});
 });

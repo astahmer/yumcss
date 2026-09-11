@@ -40,16 +40,19 @@ export const dcss = createDesignCss(preset);
 import type { ComponentPropsWithoutRef } from "react";
 import { cx } from "pandwind/cx";
 import { dcss } from "./styles";
+import { componentTokens } from "@acme/ui/tokens";
 
-type ButtonProps = ComponentPropsWithoutRef<"button"> & {
-	tone?: "brand" | "quiet";
-};
+type ButtonProps = ComponentPropsWithoutRef<"button">;
 
-export function Button({ tone = "brand", className, ...props }: ButtonProps) {
+export function Button({ className, ...props }: ButtonProps) {
 	const styles = dcss.class({
-		$frame: { pad: "8", corners: "md", fill: tone === "brand" ? "$brand" : "$canvas" },
-		$text: { color: tone === "brand" ? "$onBrand" : "$ink", weight: "600" },
-		_hover: { $frame: { fill: "$ink" } },
+		$frame: {
+			pad: componentTokens.button.padding,
+			corners: componentTokens.button.radius,
+			fill: componentTokens.button.background,
+		},
+		$text: { color: componentTokens.button.foreground, weight: "600" },
+		_hover: { $frame: { fill: "$brand" } },
 		_focusVisible: { outline: "2px solid $brand", outlineOffset: "2px" },
 	});
 

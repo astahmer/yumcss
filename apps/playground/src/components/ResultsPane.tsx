@@ -3,6 +3,7 @@ import {
 	Fragment,
 	useEffect,
 	useMemo,
+	useRef,
 	useState,
 	type CSSProperties,
 	type ReactNode,
@@ -20,6 +21,7 @@ import type {
 } from "../lib/eval-playground.ts";
 import { PlaygroundPreviewKind, type ExamplePreview } from "../lib/examples.ts";
 import type { PlaygroundTailwindResolver } from "../lib/tailwind-default-resolver.ts";
+import { explainPreview } from "../lib/preview-explanation.ts";
 import { css as uiCss } from "../ui-css.ts";
 import { useTheme } from "../theme.tsx";
 import type { PlaygroundColorToken } from "../ui-theme.ts";
@@ -239,7 +241,7 @@ const PREVIEW_STAGE = uiCss.class({
 });
 const PREVIEW_FRAME = uiCss.class({
 	display: "grid",
-	maxWidth: "min(100%, 30rem)",
+	maxWidth: "min(100%, 40rem)",
 	gap: "8px",
 	justifyItems: "center",
 	textAlign: "center",
@@ -251,6 +253,36 @@ const PREVIEW_DESCRIPTION = uiCss.class({
 	opacity: "0.72",
 	color: "currentColor",
 });
+const PREVIEW_INTERACTION = uiCss.class({
+	display: "flex",
+	maxWidth: "40rem",
+	alignItems: "center",
+	justifyContent: "center",
+	gap: "6px",
+	flexWrap: "wrap",
+	border: "strong",
+	borderRadius: "6px",
+	backgroundColor: "control",
+	padding: "5px 8px",
+	fontSize: "11px",
+	lineHeight: "16px",
+	color: "textSoft",
+});
+const PREVIEW_INTERACTION_VALUE = uiCss.class({
+	fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+	fontSize: "10px",
+	color: "textStrong",
+});
+const PREVIEW_INTERACTION_CONTROL = uiCss.class({
+	height: "22px",
+	border: "strong",
+	borderRadius: "4px",
+	backgroundColor: "control",
+	padding: "0 4px",
+	fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+	fontSize: "10px",
+	color: "textStrong",
+});
 const PREVIEW_BUTTON_RESET = uiCss.class({
 	border: "0",
 	backgroundColor: "transparent",
@@ -261,6 +293,20 @@ const PREVIEW_COPY = uiCss.class({
 	gap: "4px",
 	justifyItems: "center",
 });
+const PREVIEW_COMPUTED_PROPERTIES = [
+	"background-color",
+	"color",
+	"border-color",
+	"outline-color",
+	"fill",
+	"stroke",
+	"padding",
+	"border-radius",
+	"font-size",
+	"display",
+	"gap",
+	"margin",
+] as const;
 
 let tailwindPreviewResolverPromise: Promise<PlaygroundTailwindResolver> | undefined;
 
@@ -277,6 +323,26 @@ const previewClassName = (result: SuccessfulPlaygroundResult): string =>
 	(result.output || Object.values(result.decls ?? {}).join(" "));
 
 const previewClassTokens = (className: string): string[] => className.split(/\s+/u).filter(Boolean);
+
+const previewClassNames = (result: SuccessfulPlaygroundResult): string => {
+	const classNames = new Set(previewClassTokens(previewClassName(result)));
+	const collect = (node: PlaygroundNode | undefined): void => {
+		if (node === undefined || node === null || typeof node === "boolean") return;
+		if (Array.isArray(node)) {
+			for (const child of node) collect(child);
+			return;
+		}
+		if (typeof node === "string" || typeof node === "number") return;
+		if (!("props" in node)) return;
+		const className = node.props.className;
+		if (typeof className === "string") {
+			for (const token of previewClassTokens(className)) classNames.add(token);
+		}
+		for (const child of node.children) collect(child);
+	};
+	collect(result.rendered);
+	return [...classNames].join(" ");
+};
 
 const previewDeclarations = (result: SuccessfulPlaygroundResult): Record<string, string> => {
 	const declarations: Record<string, string> = {};
@@ -325,10 +391,10 @@ const previewStyle = (
 	...result.propsOutput?.style,
 });
 
-function useTailwindPreview(className: string): TailwindPreview {
+function useTailwindPreview(rootClassName: string, renderedClassNames: string): TailwindPreview {
 	const [preview, setPreview] = useState<TailwindPreview>({ style: {}, css: "" });
 	useEffect(() => {
-		if (className === "") {
+		if (rootClassName === "" && renderedClassNames === "") {
 			setPreview({ style: {}, css: "" });
 			return;
 		}
@@ -338,8 +404,8 @@ function useTailwindPreview(className: string): TailwindPreview {
 				await resolver.ready;
 				if (!cancelled) {
 					setPreview({
-						style: tailwindDeclarations(className, resolver),
-						css: tailwindCss(className, resolver),
+						style: tailwindDeclarations(rootClassName, resolver),
+						css: tailwindCss(renderedClassNames, resolver),
 					});
 				}
 			})
@@ -349,7 +415,7 @@ function useTailwindPreview(className: string): TailwindPreview {
 		return () => {
 			cancelled = true;
 		};
-	}, [className]);
+	}, [renderedClassNames, rootClassName]);
 	return preview;
 }
 
@@ -358,9 +424,12 @@ const withPreviewStyle = (
 	style: CSSProperties,
 	styledClasses: ReadonlySet<string>,
 	applied = false,
+	styleOverrides: CSSProperties = {},
 ): PlaygroundNode => {
 	if (Array.isArray(node))
-		return node.map((child) => withPreviewStyle(child, style, styledClasses, applied));
+		return node.map((child) =>
+			withPreviewStyle(child, style, styledClasses, applied, styleOverrides),
+		);
 	if (!isPreviewHostNode(node)) return node;
 	const className = node.props.className;
 	const hasGeneratedClass =
@@ -373,12 +442,14 @@ const withPreviewStyle = (
 		node.props.style !== null && typeof node.props.style === "object"
 			? (node.props.style as Record<string, unknown>)
 			: {};
-	const props = applyHere ? { ...node.props, style: { ...style, ...existingStyle } } : node.props;
+	const props = applyHere
+		? { ...node.props, style: { ...style, ...existingStyle, ...styleOverrides } }
+		: node.props;
 	return {
 		...node,
 		props,
 		children: node.children.map((child) =>
-			withPreviewStyle(child, style, styledClasses, applied || applyHere),
+			withPreviewStyle(child, style, styledClasses, applied || applyHere, styleOverrides),
 		),
 	};
 };
@@ -416,17 +487,67 @@ function PreviewSpecimen(props: {
 	result: SuccessfulPlaygroundResult;
 	tailwindStyle: Record<string, string>;
 }) {
+	const { mode } = useTheme();
+	const previewTargetRef = useRef<HTMLDivElement>(null);
+	const [computedStyle, setComputedStyle] = useState<Record<string, string>>({});
+	const interaction = props.preview.interaction;
+	const [interactionValue, setInteractionValue] = useState(() => interaction?.initialValue ?? "");
+	useEffect(() => {
+		setInteractionValue(interaction?.initialValue ?? "");
+	}, [interaction]);
 	const isButton = props.preview.kind === PlaygroundPreviewKind.Button;
 	const className = previewClassName(props.result);
-	const style = previewStyle(props.result, props.tailwindStyle);
+	const interactionStyle =
+		interaction === undefined
+			? {}
+			: interaction.type === "range"
+				? { [interaction.property]: `${interactionValue}${interaction.unit}` }
+				: { [interaction.cssVariable]: interactionValue };
+	const style = {
+		...(props.result.rendered === undefined
+			? previewStyle(props.result, props.tailwindStyle)
+			: {
+					...props.result.runtimeStyle,
+					...props.result.varsOutput?.style,
+					...props.result.propsOutput?.style,
+				}),
+		...interactionStyle,
+	};
+	const authoredStyle: Record<string, string> = {};
+	for (const [property, value] of Object.entries(style)) {
+		if (typeof value === "string" || typeof value === "number") {
+			authoredStyle[property] = String(value);
+		}
+	}
+	useEffect(() => {
+		const target = previewTargetRef.current?.firstElementChild;
+		if (target === null || target === undefined) {
+			setComputedStyle({});
+			return;
+		}
+		const resolved = window.getComputedStyle(target);
+		const next: Record<string, string> = {};
+		for (const property of PREVIEW_COMPUTED_PROPERTIES) {
+			const value = resolved.getPropertyValue(property);
+			if (value !== "") next[property] = value;
+		}
+		setComputedStyle(next);
+	}, [mode, props.result, props.tailwindStyle]);
+	const explanationStyle = { ...authoredStyle, ...computedStyle };
 	const styledClasses = new Set([
 		...props.result.survived,
 		...props.result.styleMappings.map((mapping) => mapping.className),
 	]);
+	const explanationResult =
+		interaction === undefined
+			? props.result
+			: { ...props.result, runtimeStyle: { ...props.result.runtimeStyle, ...interactionStyle } };
 	const rendered =
 		props.result.rendered === undefined
 			? undefined
-			: renderPlaygroundNode(withPreviewStyle(props.result.rendered, style, styledClasses));
+			: renderPlaygroundNode(
+					withPreviewStyle(props.result.rendered, style, styledClasses, false, interactionStyle),
+				);
 	const fallbackClassName = `${isButton ? PREVIEW_BUTTON_RESET : ""} ${className}`.trim();
 	const PreviewElement = isButton ? "button" : "div";
 	const fallbackNeedsGroup = previewClassTokens(className).some((token) =>
@@ -435,6 +556,7 @@ function PreviewSpecimen(props: {
 	return (
 		<div className={PREVIEW_FRAME}>
 			<div
+				ref={previewTargetRef}
 				data-preview-kind={props.preview.kind}
 				className={fallbackNeedsGroup ? "group" : undefined}
 			>
@@ -452,10 +574,57 @@ function PreviewSpecimen(props: {
 					</PreviewElement>
 				)}
 			</div>
+			{interaction !== undefined && (
+				<label className={PREVIEW_INTERACTION}>
+					<span>{interaction.label}</span>
+					{interaction.type === "color" ? (
+						<input
+							className={PREVIEW_INTERACTION_CONTROL}
+							type="color"
+							aria-label={interaction.label}
+							value={interactionValue}
+							onChange={(event) => setInteractionValue(event.target.value)}
+						/>
+					) : interaction.type === "select" ? (
+						<select
+							className={PREVIEW_INTERACTION_CONTROL}
+							aria-label={interaction.label}
+							value={interactionValue}
+							onChange={(event) => setInteractionValue(event.target.value)}
+						>
+							{interaction.options.map((option) => (
+								<option key={option.value} value={option.value}>
+									{option.label}
+								</option>
+							))}
+						</select>
+					) : (
+						<input
+							className={PREVIEW_INTERACTION_CONTROL}
+							type="range"
+							aria-label={interaction.label}
+							min={interaction.min}
+							max={interaction.max}
+							step={interaction.step}
+							value={interactionValue}
+							onChange={(event) => setInteractionValue(event.target.value)}
+						/>
+					)}
+					<output className={PREVIEW_INTERACTION_VALUE} aria-live="polite">
+						{interaction.type === "range"
+							? `${interactionValue}${interaction.unit}`
+							: interactionValue}
+					</output>
+					<span>{interaction.description}</span>
+				</label>
+			)}
 			<span className={uiCss.class({ fontSize: "10px", color: "textFaint" })}>
-				{props.result.rendered === undefined
-					? `${props.preview.kind} fallback · hover it to exercise state styles`
-					: `${props.preview.kind} component · rendered from the example`}
+				{explainPreview({
+					kind: props.preview.kind,
+					result: explanationResult,
+					style: explanationStyle,
+					description: props.preview.description,
+				})}
 			</span>
 		</div>
 	);
@@ -467,7 +636,7 @@ function LivePreviewSection(props: {
 }) {
 	const generatedCss = props.result.sheets.map((sheet) => sheet.css).join("\n");
 	const className = previewClassName(props.result);
-	const tailwindPreview = useTailwindPreview(className);
+	const tailwindPreview = useTailwindPreview(className, previewClassNames(props.result));
 	return (
 		<Pane
 			label="Live preview"
@@ -1064,6 +1233,7 @@ export function ResultsPane(props: {
 		);
 	}
 	const previewResult = props.previewResult.ok ? props.previewResult : r;
+	const classString = previewClassNames(r);
 	const panels: ResizableSplitterPanel[] = [
 		{
 			id: "live-preview",
@@ -1086,9 +1256,9 @@ export function ResultsPane(props: {
 				<Pane
 					label="Class string"
 					className={uiCss.class({ height: "100%" })}
-					right={<CopyButton text={r.output} />}
+					right={<CopyButton text={classString} />}
 				>
-					<Snippet code={r.output} lang="css" />
+					<Snippet code={classString} lang="css" />
 				</Pane>
 			),
 		},

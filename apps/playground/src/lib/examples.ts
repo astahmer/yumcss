@@ -24,10 +24,33 @@ export const PlaygroundPreviewKind = {
 export type PlaygroundPreviewKind =
 	(typeof PlaygroundPreviewKind)[keyof typeof PlaygroundPreviewKind];
 
+interface ExamplePreviewInteractionBase {
+	label: string;
+	initialValue: string;
+	description: string;
+}
+
+export type ExamplePreviewInteraction =
+	| (ExamplePreviewInteractionBase & { type: "color"; cssVariable: string })
+	| (ExamplePreviewInteractionBase & {
+			type: "select";
+			cssVariable: string;
+			options: readonly { label: string; value: string }[];
+	  })
+	| (ExamplePreviewInteractionBase & {
+			type: "range";
+			property: "width";
+			min: number;
+			max: number;
+			step: number;
+			unit: "px";
+	  });
+
 export interface ExamplePreview {
 	kind: PlaygroundPreviewKind;
 	label: string;
 	description: string;
+	interaction?: ExamplePreviewInteraction;
 }
 
 export interface ExampleVariant {
@@ -85,7 +108,11 @@ const makePreview = (
 	kind: PlaygroundPreviewKind,
 	label: string,
 	description: string,
-): ExamplePreview => ({ kind, label, description });
+	interaction?: ExamplePreviewInteraction,
+): ExamplePreview =>
+	interaction === undefined
+		? { kind, label, description }
+		: { kind, label, description, interaction };
 
 const TW_IMPORT = [
 	'import { tw } from "pandwind";',
@@ -209,6 +236,13 @@ export default <Button tone="primary" size="lg" />`,
 			"alert",
 			"Dynamic alert",
 			"The runtime color is carried through the host style instead of a generated class.",
+			{
+				type: "color",
+				label: "Runtime text color",
+				cssVariable: "--pw-c-color",
+				initialValue: "#fef08a",
+				description: "Change this value to update css.props() without creating a class.",
+			},
 		),
 		variants: oneVariant(
 			PlaygroundApi.Tw,
@@ -237,12 +271,12 @@ const Alert = (props: AlertProps) => {
 			role="alert"
 		>
 			<strong>{props.tone === "danger" ? "Dynamic alert" : "Informational alert"}</strong>
-			<span>The runtime color is carried through the host style.</span>
+			<div>The runtime color is carried through the host style.</div>
 		</div>
 	);
 };
 
-export default <Alert tone="danger" color="red-600" />`,
+export default <Alert tone="danger" color="#fef08a" />`,
 		),
 	},
 	{
@@ -254,7 +288,7 @@ export default <Alert tone="danger" color="red-600" />`,
 		preview: makePreview(
 			"card",
 			"Responsive surface",
-			"Resize the browser to see the generated breakpoint rules change this surface.",
+			"The surface changes from red to amber, blue, and violet as the viewport crosses sm, md, and lg.",
 		),
 		variants: oneVariant(
 			PlaygroundApi.Tw,
@@ -264,19 +298,88 @@ export default <Alert tone="danger" color="red-600" />`,
 type CardProps = { title: string };
 
 const Card = (props: CardProps) => (
-	<article
-		className={tw({
-			p: "4",
-			sm: { p: "6" },
-			lg: { p: "8" },
-			lgDown: { display: "flex" },
-		})}
-	>
-		<strong>{props.title}</strong>
-	</article>
+					<article
+						className={tw({
+							display: "grid",
+							gap: "2",
+							p: "4",
+							border: "2",
+							borderColor: "red-300",
+							borderRadius: "lg",
+							bgColor: "red-500",
+							textColor: "white",
+							sm: { bgColor: "amber-500", borderColor: "amber-300" },
+							md: { bgColor: "blue-500", borderColor: "blue-300" },
+							lg: { bgColor: "violet-500", borderColor: "violet-300" },
+						})}
+					>
+						<strong>{props.title}</strong>
+						<div>Viewport width selects the active background token.</div>
+					</article>
 );
 
 export default <Card title="Responsive surface" />`,
+		),
+	},
+	{
+		path: "/container-queries",
+		title: "Container queries",
+		blurb: "component styles respond to their own container, not the viewport",
+		group: "core",
+		note: "The outer panel is marked with @container. Use the width control to cross the @md and @lg thresholds without resizing the browser window.",
+		preview: makePreview(
+			"card",
+			"Container-aware card",
+			"The inner panel changes color when its own container crosses @md and @lg.",
+			{
+				type: "range",
+				label: "Container width",
+				property: "width",
+				initialValue: "360",
+				min: 240,
+				max: 560,
+				step: 8,
+				unit: "px",
+				description: "@md starts at 448px; @lg starts at 512px.",
+			},
+		),
+		variants: oneVariant(
+			PlaygroundApi.Tw,
+			TW_IMPORT +
+				`
+
+type CardProps = { title: string };
+
+const Card = (props: CardProps) => (
+	<section
+		className={tw({
+			"@container": true,
+			p: "2",
+			border: "2",
+			borderColor: "gray-500",
+			borderRadius: "lg",
+			bgColor: "gray-800",
+		})}
+	>
+		<article
+			className={tw({
+				display: "grid",
+				gap: "2",
+				p: "4",
+				borderRadius: "lg",
+				bgColor: "red-500",
+				textColor: "white",
+				"@md": { bgColor: "blue-500" },
+				"@lg": { bgColor: "emerald-500" },
+			})}
+		>
+			<strong>{props.title}</strong>
+			<div>Resize the container, not the viewport.</div>
+		</article>
+	</section>
+);
+
+export default <Card title="Container-aware card" />`,
 		),
 	},
 	{
@@ -316,14 +419,14 @@ export default <Action tone="primary" />`,
 	},
 	{
 		path: "/tokens",
-		title: "Token layers: raw → semantic → component",
+		title: "Raw, semantic & component tokens",
 		blurb: "raw values become semantic roles and component contracts",
 		group: "core",
-		note: "Open tokens.ts to see the complete chain: defineTokens() owns raw values, defineSemanticTokens() owns theme-aware roles, and the button contract owns component-sized tokens. Example.tsx consumes only semantic and component names, never raw hex values.",
+		note: "Open tokens.ts to see the complete chain: raw values feed theme-aware semantic roles, then the component contract binds those roles directly to the rendered card. The component never branches on a tone prop or owns a color value.",
 		preview: makePreview(
 			"card",
 			"Token contract",
-			"The component consumes semantic roles and button-scoped tokens; hover and dark mode keep the same classes.",
+			"component.card.bg points to semantic bg.primary; the theme changes the resolved color without changing this component.",
 		),
 		variants: [
 			{
@@ -333,31 +436,29 @@ export default <Action tone="primary" />`,
 					{
 						name: "Example.tsx",
 						code: `import { createCss } from "pandwind/css";
-import { buttonTokens, tokenPreset } from "./tokens.ts";
+import { componentTokens, tokenPreset } from "./tokens.ts";
 
 const css = createCss(tokenPreset);
 
-type CardProps = { tone: "brand" | "quiet" };
-
-const TokenCard = (props: CardProps) => (
+const TokenCard = () => (
 	<article
 		className={css.class({
-			backgroundColor: props.tone === "brand" ? "brand" : "surface",
-			color: props.tone === "brand" ? "onBrand" : "content",
-			padding: buttonTokens.padding,
-			borderRadius: buttonTokens.radius,
+			backgroundColor: componentTokens.card.bg,
+			color: componentTokens.card.fg,
+			padding: componentTokens.card.padding,
+			borderRadius: componentTokens.card.radius,
 			_hover: {
-				backgroundColor: props.tone === "brand" ? "surface" : "brand",
-				color: props.tone === "brand" ? "content" : "onBrand",
+				backgroundColor: componentTokens.card.hoverBg,
+				color: componentTokens.card.hoverFg,
 			},
 		})}
 	>
-		<strong>{props.tone === "brand" ? "Semantic brand card" : "Quiet card"}</strong>
-		<span>Raw hex values stay in tokens.ts; this component uses roles and button tokens.</span>
+		<strong>Component token card</strong>
+		<div>bg.primary and fg.on-primary come from the component contract; the active theme supplies their values.</div>
 	</article>
 );
 
-export default <TokenCard tone="brand" />`,
+export default <TokenCard />`,
 					},
 					{
 						name: "tokens.ts",
@@ -366,6 +467,8 @@ export default <TokenCard tone="brand" />`,
 const rawTokens = defineTokens({
 	colors: {
 		"$gray-50": "#f9fafb",
+		"$gray-200": "#e5e7eb",
+		"$gray-700": "#374151",
 		"$gray-900": "#111827",
 		"$blue-600": "#2b6cb0",
 		"$blue-700": "#2c5282",
@@ -379,47 +482,47 @@ const semanticTokens = defineSemanticTokens(
 	{ _dark: '[data-theme="dark"] &' },
 	{
 		colors: {
-			surface: { base: rawTokens.colors["$gray-50"], _dark: rawTokens.colors["$gray-900"] },
-			content: { base: rawTokens.colors["$gray-900"], _dark: rawTokens.colors["$gray-50"] },
-			brand: { base: rawTokens.colors["$blue-600"], _dark: rawTokens.colors["$blue-700"] },
-			onBrand: { base: rawTokens.colors["$white"], _dark: rawTokens.colors["$white"] },
+			"bg.primary": { base: rawTokens.colors["$blue-600"], _dark: rawTokens.colors["$blue-700"] },
+			"bg.muted": { base: rawTokens.colors["$gray-200"], _dark: rawTokens.colors["$gray-700"] },
+			"fg.on-primary": { base: rawTokens.colors["$white"], _dark: rawTokens.colors["$white"] },
+			"fg.primary": { base: rawTokens.colors["$gray-900"], _dark: rawTokens.colors["$gray-50"] },
 		},
 	},
 );
 
-const componentTokens = defineTokens({
-	spacing: { "button.padding": rawTokens.spacing["20"] },
-	radii: { "button.radius": rawTokens.radii.md },
+const componentValues = defineTokens({
+	spacing: { "card.padding": rawTokens.spacing["20"] },
+	radii: { "card.radius": rawTokens.radii.md },
 });
 
 const tokens = {
 	colors: rawTokens.colors,
 	semantic: semanticTokens.colors,
 	spacing: rawTokens.spacing,
-	radii: { ...rawTokens.radii, ...componentTokens.radii },
+	radii: { ...rawTokens.radii, ...componentValues.radii },
 };
 
-export const buttonTokens = {
-	padding: "button.padding",
-	radius: "button.radius",
-} as const;
-
-// Codegen consumes this scope as .pwc-button and rebinds semantic variables.
-export const designSystem = {
-	tokens,
-	components: { button: { primary: "$color-brand", "text.muted": "$color-content" } },
+export const componentTokens = {
+	card: {
+		bg: "bg.primary",
+		fg: "fg.on-primary",
+		hoverBg: "bg.muted",
+		hoverFg: "fg.primary",
+		padding: "card.padding",
+		radius: "card.radius",
+	},
 } as const;
 
 export const tokenPreset = definePreset(
-	defineTheme({ config: {} as Record<string, unknown>, tokens: designSystem.tokens }),
+	defineTheme({ config: {} as Record<string, unknown>, tokens }),
 	{
 		strict: true,
 		conditions: { _hover: "&:hover", _dark: '[data-theme="dark"] &' },
 		properties: {
 			backgroundColor: { $tokens: "semantic" },
 			color: { $tokens: "semantic" },
-			padding: componentTokens.spacing,
-			borderRadius: componentTokens.radii,
+			padding: componentValues.spacing,
+			borderRadius: componentValues.radii,
 		},
 	},
 );`,
@@ -542,6 +645,17 @@ export default <Button size="lg" tone="brand" />`,
 			"card",
 			"Grouped card",
 			"The group result supplies both the static card styles and its runtime input.",
+			{
+				type: "select",
+				label: "Runtime tone",
+				cssVariable: "--tone",
+				initialValue: "blue",
+				options: [
+					{ label: "blue", value: "blue" },
+					{ label: "red", value: "red" },
+				],
+				description: 'Switching this value updates css.input("tone") without changing classes.',
+			},
 		),
 		variants: oneVariant(
 			PlaygroundApi.Css,
@@ -565,10 +679,10 @@ type CardProps = { tone: "blue" | "red" };
 const Card = (props: CardProps) => {
 	const hostProps = css.props(styles.card, styles.muted, styles.banner({ tone: props.tone }));
 	return (
-		<article {...hostProps}>
-			<strong>Grouped card</strong>
-			<span>{props.tone} runtime input</span>
-		</article>
+			<article {...hostProps}>
+				<strong>Grouped card</strong>
+				<div>runtime input</div>
+			</article>
 	);
 };
 
