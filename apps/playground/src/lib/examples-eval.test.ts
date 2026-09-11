@@ -1,6 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { EXAMPLES, PlaygroundApi } from "./examples.ts";
-import { evalPlayground, evalSiblingModule, type EvalInput } from "./eval-playground.ts";
+import {
+	evalPlayground,
+	evalSiblingModule,
+	type EvalInput,
+	type PlaygroundHostNode,
+	type PlaygroundNode,
+} from "./eval-playground.ts";
 import { tw } from "../tw.ts";
 import { css as designCss } from "../css.ts";
 import { cx } from "../cx.ts";
@@ -27,6 +33,13 @@ function makeInput(code: string, moduleBindings?: EvalInput["moduleBindings"]): 
 		},
 	};
 }
+
+const isHostNode = (value: PlaygroundNode | undefined): value is PlaygroundHostNode =>
+	value !== undefined &&
+	value !== null &&
+	typeof value === "object" &&
+	!Array.isArray(value) &&
+	"children" in value;
 
 function siblingBindings(
 	variant: (typeof EXAMPLES)[number]["variants"][number],
@@ -382,10 +395,12 @@ describe("example catalog evaluates end to end", () => {
 		expect(result.sheets.some((sheet) => sheet.css.includes("@property --progress"))).toBe(true);
 		expect(result.runtimeStyle).toEqual(expect.objectContaining({ "--progress": "24" }));
 		expect(result.sheets.some((sheet) => sheet.css.includes("var(--progress)"))).toBe(true);
-		expect(result.rendered).toMatchObject({ type: "article" });
-		const strong = result.rendered.children.find(
-			(child) => typeof child === "object" && child !== null && child.type === "strong",
-		);
+		const rendered = result.rendered;
+		expect(rendered).toMatchObject({ type: "article" });
+		if (!isHostNode(rendered)) {
+			throw new Error("Expected the progress preview to render an article host node.");
+		}
+		const strong = rendered.children.find((child) => isHostNode(child) && child.type === "strong");
 		expect(strong).toMatchObject({ type: "strong", children: ["Progress is", 24, "%"] });
 	});
 
