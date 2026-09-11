@@ -71,6 +71,25 @@ describe("evalPlayground", () => {
 		}
 	});
 
+	test("evaluates typed JSX components with explicit props", () => {
+		const result = run(
+			[
+				'type AlertProps = { tone: "red-500" | "blue-500" };',
+				'const Alert = (props: AlertProps) => <div className={tw({ bgColor: props.tone, p: "4" })}>{props.tone}</div>;',
+				'<Alert tone="red-500" />',
+			].join("\n"),
+		);
+		expect(result.ok).toBe(true);
+		if (result.ok) {
+			expect(result.rendered).toMatchObject({
+				type: "div",
+				props: { className: expect.stringContaining("bg-red-500") },
+				children: ["red-500"],
+			});
+			expect(result.output).toContain("bg-red-500");
+		}
+	});
+
 	test("full-overlap conflicts kill the earlier token", () => {
 		const result = run(`cx(tw({ bgColor: "red-500" }), "bg-blue-600")`);
 		expect(result.ok).toBe(true);

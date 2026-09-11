@@ -115,13 +115,23 @@ export const EXAMPLES: readonly ExampleDef[] = [
 					TW_IMPORT +
 						`
 
-const buttons = {
-	primary: tw({ bgColor: "blue-500", textColor: "white", rounded: "lg" }),
-	danger: tw({ bgColor: "red-500", textColor: "white" }),
-	large: tw({ p: "4", textSize: "lg" }),
-};
+type ButtonProps = { tone: "primary" | "danger"; size: "sm" | "lg" };
 
-buttons.primary`,
+const Button = (props: ButtonProps) => (
+	<button
+		className={tw({
+			bgColor: props.tone === "danger" ? "red-500" : "blue-500",
+			textColor: "white",
+			rounded: "lg",
+			p: props.size === "lg" ? "4" : "2",
+			textSize: props.size === "lg" ? "lg" : "base",
+		})}
+	>
+		{props.tone === "danger" ? "Delete" : "Continue"}
+	</button>
+);
+
+<Button tone="primary" size="lg" />`,
 				),
 			},
 			{
@@ -136,13 +146,25 @@ import { examplePreset } from "@pandwind/example-preset";
 const css = createCss(examplePreset);
 const cx = createCx({ css });
 
-const buttons = {
-	primary: css.class({ backgroundColor: "$blue-500", color: "$gray-50", borderRadius: "lg", padding: 16 }),
-	danger: css.class({ backgroundColor: "$red-500", color: "$gray-50", borderRadius: "lg", padding: 16 }),
-	large: css.class({ padding: 16, fontSize: "lg" }),
-};
+type ButtonProps = { tone: "primary" | "danger"; size: "sm" | "lg" };
 
-cx(buttons.primary, "px-4")`,
+const Button = (props: ButtonProps) => (
+	<button
+		className={cx(
+			css.class({
+				backgroundColor: props.tone === "danger" ? "$red-500" : "$blue-500",
+				color: "$gray-50",
+				borderRadius: "lg",
+				padding: props.size === "lg" ? 16 : 8,
+			}),
+			"px-4",
+		)}
+	>
+		{props.tone === "danger" ? "Delete" : "Continue"}
+	</button>
+);
+
+<Button tone="primary" size="lg" />`,
 				),
 			},
 			{
@@ -155,13 +177,24 @@ import { examplePreset } from "@pandwind/example-preset";
 
 const dcss = createDesignCss(examplePreset);
 
-const buttons = {
-	primary: dcss.class({ $frame: { fill: "$blue-500", corners: "lg", pad: [4, 4] }, $text: { color: "$gray-50" } }),
-	danger: dcss.class({ $frame: { fill: "$red-500", corners: "lg", pad: [4, 4] }, $text: { color: "$gray-50" } }),
-	large: dcss.class({ $frame: { pad: [4, 4] }, $text: { size: "lg" } }),
-};
+type ButtonProps = { tone: "primary" | "danger"; size: "sm" | "lg" };
 
-buttons.primary`,
+const Button = (props: ButtonProps) => (
+	<button
+		className={dcss.class({
+			$frame: {
+				fill: props.tone === "danger" ? "$red-500" : "$blue-500",
+				corners: "lg",
+				pad: props.size === "lg" ? [4, 4] : [2, 2],
+			},
+			$text: { color: "$gray-50", size: props.size === "lg" ? "lg" : "base" },
+		})}
+	>
+		{props.tone === "danger" ? "Delete" : "Continue"}
+	</button>
+);
+
+<Button tone="primary" size="lg" />`,
 				),
 			},
 		],
@@ -187,21 +220,29 @@ import { examplePreset } from "@pandwind/example-preset";
 
 const css = createCss(examplePreset);
 
-const alert = (tone = "danger" as string) => {
-	return tw({
-		bgColor: tone === "danger" ? "red-500" : "blue-500",
-		p: "4",
-	});
-}
+type AlertProps = { tone: "danger" | "info"; color: string };
 
-const dynamicProps = css.props(
-	css.vars({ color: props.tone }),
-);
+const Alert = (props: AlertProps) => {
+	const dynamicProps = css.props(css.vars({ color: props.color }));
+	return (
+		<div
+			{...dynamicProps}
+			className={cx(
+				tw({
+					bgColor: props.tone === "danger" ? "red-500" : "blue-500",
+					p: "4",
+				}),
+				dynamicProps.className,
+			)}
+			role="alert"
+		>
+			<strong>{props.tone === "danger" ? "Dynamic alert" : "Informational alert"}</strong>
+			<span>The runtime color is carried through the host style.</span>
+		</div>
+	);
+};
 
-cx(
-	alert("danger"),
-	dynamicProps.className,
-)`,
+<Alert tone="danger" color="red-600" />`,
 		),
 	},
 	{
@@ -220,12 +261,22 @@ cx(
 			TW_IMPORT +
 				`
 
-tw({
-	p: "4",
-	sm: { p: "6" },
-	lg: { p: "8" },
-	lgDown: { display: "flex" },
-})`,
+type CardProps = { title: string };
+
+const Card = (props: CardProps) => (
+	<article
+		className={tw({
+			p: "4",
+			sm: { p: "6" },
+			lg: { p: "8" },
+			lgDown: { display: "flex" },
+		})}
+	>
+		<strong>{props.title}</strong>
+	</article>
+);
+
+<Card title="Responsive surface" />`,
 		),
 	},
 	{
@@ -244,10 +295,23 @@ tw({
 			TW_IMPORT +
 				`
 
-cx(
-	tw({ bgColor: "blue-500", p: "4" }),
-	tw({ bgColor: "blue-600" }),
-)`,
+type ActionProps = { tone: "primary" | "muted" };
+
+const Action = (props: ActionProps) => (
+	<button
+		className={cx(
+			tw({
+				bgColor: props.tone === "primary" ? "blue-500" : "gray-500",
+				p: "4",
+			}),
+			tw({ bgColor: "blue-600" }),
+		)}
+	>
+		{props.tone === "primary" ? "Merged action" : "Muted action"}
+	</button>
+);
+
+<Action tone="primary" />`,
 		),
 	},
 	{
@@ -274,12 +338,23 @@ import { brandTone } from "./brand.ts";
 
 const css = createCss(examplePreset);
 
-css.class({
-	backgroundColor: brandTone,
-	color: "success",
-	padding: "button.padding",
-	_dark: { color: "$gray-200" },
-})`,
+type CardProps = { muted: boolean };
+
+const Card = (props: CardProps) => (
+	<article
+		className={css.class({
+			backgroundColor: brandTone,
+			color: props.muted ? "$gray-500" : "success",
+			padding: "button.padding",
+			_dark: { color: "$gray-200" },
+		})}
+	>
+		<strong>{props.muted ? "Muted card" : "Token contract"}</strong>
+		<span>Raw, semantic, and component tokens share one preset.</span>
+	</article>
+);
+
+<Card muted={false} />`,
 					},
 					{
 						name: "brand.ts",
@@ -318,7 +393,21 @@ const brand = definePreset(
 
 const dcss = createDesignCss(brand);
 
-dcss.class({ $frame: { fill: "$brand-500" }, _hover: { $frame: { fill: "$brand-500" } } })`,
+type ButtonProps = { active: boolean };
+
+const Button = (props: ButtonProps) => (
+	<button
+		className={dcss.class({
+			$frame: { fill: "$brand-500", corners: "lg", pad: [4, 4] },
+			_hover: { $frame: { fill: "$brand-500" } },
+		})}
+		aria-pressed={props.active}
+	>
+		{props.active ? "Active brand action" : "Brand action"}
+	</button>
+);
+
+<Button active />`,
 					},
 					{
 						name: "brand.ts",
@@ -365,18 +454,18 @@ const variants = {
 	},
 } as const;
 
-const pick = (
-	selection = {
-		size: "lg",
-		tone: "brand",
-	} as {
-		size: keyof typeof variants.size;
-		tone: keyof typeof variants.tone;
-	},
-) =>
-	cx(variants.base, variants.size[selection.size], variants.tone[selection.tone]);
+type ButtonProps = {
+	size: keyof typeof variants.size;
+	tone: keyof typeof variants.tone;
+};
 
-pick({ size: "lg", tone: "brand" })`,
+const Button = (props: ButtonProps) => (
+	<button className={cx(variants.base, variants.size[props.size], variants.tone[props.tone])}>
+		{props.tone === "danger" ? "Danger button" : "Brand button"}
+	</button>
+);
+
+<Button size="lg" tone="brand" />`,
 		),
 	},
 	{
@@ -407,7 +496,19 @@ const styles = css.group({
 	},
 });
 
-css.props(styles.card, styles.muted, styles.banner({ tone: "blue" }))`,
+type CardProps = { tone: "blue" | "red" };
+
+const Card = (props: CardProps) => {
+	const hostProps = css.props(styles.card, styles.muted, styles.banner({ tone: props.tone }));
+	return (
+		<article {...hostProps}>
+			<strong>Grouped card</strong>
+			<span>{props.tone} runtime input</span>
+		</article>
+	);
+};
+
+<Card tone="blue" />`,
 		),
 	},
 	{
@@ -427,12 +528,17 @@ css.props(styles.card, styles.muted, styles.banner({ tone: "blue" }))`,
 			TW_IMPORT +
 				`
 
-const SIZE = "4";
+const SIZE = "4" as const;
 
-cx(
-	tw({ p: SIZE }),
-	tw({ textSize: "lg" }),
-)`,
+type LabelProps = { size: "2" | "4" };
+
+const Label = (props: LabelProps) => (
+	<span className={cx(tw({ p: props.size }), tw({ textSize: "lg" }))}>
+		Folded label
+	</span>
+);
+
+<Label size={SIZE} />`,
 		),
 	},
 	{
@@ -452,11 +558,23 @@ cx(
 			TW_IMPORT +
 				`
 
-tw({
-	bgColor: "blue-500",
-	sm: { p: "4" },
-	group: { hover: { textColor: "red-500" } },
-})`,
+type ButtonProps = { label: string };
+
+const Button = (props: ButtonProps) => (
+	<div className="group">
+		<button
+			className={tw({
+				bgColor: "blue-500",
+				sm: { p: "4" },
+				group: { hover: { textColor: "red-500" } },
+			})}
+		>
+			{props.label}
+		</button>
+	</div>
+);
+
+<Button label="Compatibility action" />`,
 		),
 	},
 	{
@@ -476,8 +594,13 @@ tw({
 			TW_IMPORT +
 				`
 
-// @ts-expect-error tw() accepts typed style objects, not class-name strings.
-tw("bg-red-500 text-lg")`,
+const InvalidButton = () => {
+	// @ts-expect-error tw() accepts typed style objects, not class-name strings.
+	const className = tw("bg-red-500 text-lg");
+	return <button className={className}>Rejected class string</button>;
+};
+
+<InvalidButton />`,
 		),
 	},
 	{
@@ -497,7 +620,12 @@ tw("bg-red-500 text-lg")`,
 			TW_IMPORT +
 				`
 
-tw({ sm: "p-4" })`,
+const InvalidVariant = () => {
+	const className = tw({ sm: "p-4" });
+	return <span className={className}>Invalid variant shape</span>;
+};
+
+<InvalidVariant />`,
 		),
 	},
 	{
@@ -519,11 +647,16 @@ import { examplePreset } from "@pandwind/example-preset";
 
 const css = createCss(examplePreset);
 
-css.class({
-	display: "flex",
-	// @ts-expect-error animation is outside examplePreset.properties.
-	animation: "pulse 2s infinite",
-})`,
+const ResidualCard = () => {
+	const className = css.class({
+		display: "flex",
+		// @ts-expect-error animation is outside examplePreset.properties.
+		animation: "pulse 2s infinite",
+	});
+	return <div className={className}>Residual declaration</div>;
+};
+
+<ResidualCard />`,
 		),
 	},
 ];

@@ -19,6 +19,285 @@ import { collectModuleConstants } from "pandwind/vite/cx-inline";
 import type { ConstantScope } from "pandwind/vite/cx-inline";
 import { NodeKind, ImportKindTag } from "pandwind/tw/literal";
 
+export interface PlaygroundHostNode {
+	readonly type: string;
+	readonly props: Readonly<Record<string, unknown>>;
+	readonly children: readonly PlaygroundNode[];
+}
+
+export type PlaygroundNode =
+	| null
+	| boolean
+	| number
+	| string
+	| PlaygroundHostNode
+	| readonly PlaygroundNode[];
+
+type PlaygroundAstNode = {
+	type?: string;
+	start?: number;
+	end?: number;
+	[key: string]: unknown;
+};
+
+const astNode = (value: unknown): PlaygroundAstNode | undefined =>
+	value !== null && typeof value === "object" ? (value as PlaygroundAstNode) : undefined;
+
+const astSlice = (source: string, node: unknown): string => {
+	const value = astNode(node);
+	if (value?.start === undefined || value.end === undefined) return "";
+	return source.slice(value.start, value.end);
+};
+
+const jsxNameExpression = (source: string, node: unknown): string => {
+	const value = astNode(node);
+	if (value?.type === "JSXIdentifier") {
+		const name = typeof value.name === "string" ? value.name : astSlice(source, node);
+		return /^[a-z]/u.test(name) || name.includes("-")
+			? JSON.stringify(name)
+			: astSlice(source, node);
+	}
+	return astSlice(source, node);
+};
+
+const jsxExpression = (source: string, node: unknown): string => {
+	const value = astNode(node);
+	if (value?.type === "JSXExpressionContainer") {
+		const expression = astNode(value.expression);
+		if (expression?.type === "JSXEmptyExpression") return "undefined";
+		if (expression?.type === "JSXElement" || expression?.type === "JSXFragment")
+			return renderPlaygroundJsx(expression, source);
+		return astSlice(source, expression);
+	}
+	if (value?.type === "JSXElement" || value?.type === "JSXFragment")
+		return renderPlaygroundJsx(value, source);
+	return astSlice(source, node);
+};
+
+const renderPlaygroundJsx = (node: PlaygroundAstNode, source: string): string => {
+	if (node.type === "JSXFragment") {
+		const children = ((node.children as unknown[]) ?? [])
+			.map((child) => renderPlaygroundJsxChild(child, source))
+			.filter((child): child is string => child !== undefined);
+		return `__pw.jsx(__pw.Fragment, {}, ${children.join(", ")})`;
+	}
+	const opening = astNode(node.openingElement);
+	const name = jsxNameExpression(source, opening?.name);
+	const attributes = ((opening?.attributes as unknown[]) ?? []).map((attribute) => {
+		const value = astNode(attribute);
+		if (value?.type === "JSXSpreadAttribute") {
+			return `...(${astSlice(source, value.argument)})`;
+		}
+		const attributeName = astNode(value?.name);
+		const key = JSON.stringify(
+			typeof attributeName?.name === "string" ? attributeName.name : astSlice(source, value?.name),
+		);
+		return `${key}: ${value?.value === null || value?.value === undefined ? "true" : jsxExpression(source, value.value)}`;
+	});
+	const props = `{${attributes.join(", ")}}`;
+	const children = ((node.children as unknown[]) ?? [])
+		.map((child) => renderPlaygroundJsxChild(child, source))
+		.filter((child): child is string => child !== undefined);
+	const childArguments = children.length === 0 ? "" : `, ${children.join(", ")}`;
+	return `__pw.jsx(${name}, ${props}${childArguments})`;
+};
+
+const renderPlaygroundJsxChild = (child: unknown, source: string): string | undefined => {
+	const value = astNode(child);
+	if (value?.type === "JSXText") {
+		const text = typeof value.value === "string" ? value.value.replace(/\s+/gu, " ").trim() : "";
+		return text === "" ? undefined : JSON.stringify(text);
+	}
+	if (value?.type === "JSXExpressionContainer") {
+		const expression = astNode(value.expression);
+		if (expression?.type === "JSXEmptyExpression") return undefined;
+	}
+	if (value?.type === "JSXSpreadChild") return `...(${astSlice(source, value.expression)})`;
+	if (value?.type === "JSXElement" || value?.type === "JSXFragment")
+		return renderPlaygroundJsx(value, source);
+	if (value?.type === "JSXExpressionContainer") return jsxExpression(source, value);
+	return astSlice(source, child);
+};
+
+const transformPlaygroundJsx = (source: string): string => {
+	const parsed = parseSync("playground.tsx", source, { sourceType: "module", lang: "tsx" });
+	const replacements: Array<[number, number, string]> = [];
+	const walk = (node: unknown): void => {
+		if (Array.isArray(node)) {
+			for (const item of node) walk(item);
+			return;
+		}
+		const value = astNode(node);
+		if (value === undefined) return;
+		if (value.type === "JSXElement" || value.type === "JSXFragment") {
+			if (value.start !== undefined && value.end !== undefined)
+				replacements.push([value.start, value.end, renderPlaygroundJsx(value, source)]);
+			return;
+		}
+		for (const child of Object.values(value)) {
+			if (child !== null && typeof child === "object") walk(child);
+		}
+	};
+	walk(parsed.program);
+	let output = source;
+	for (const [start, end, replacement] of replacements.toSorted(
+		(left, right) => right[0] - left[0],
+	))
+		output = output.slice(0, start) + replacement + output.slice(end);
+	return output;
+};
+
+const stripPlaygroundTypes = (source: string): string => {
+	const parsed = parseSync("playground.ts", source, { sourceType: "module", lang: "ts" });
+	const edits: Array<[number, number, string]> = [];
+	const addEdit = (start: unknown, end: unknown, replacement = ""): void => {
+		if (typeof start === "number" && typeof end === "number" && end > start)
+			edits.push([start, end, replacement]);
+	};
+	const walk = (node: unknown): void => {
+		if (Array.isArray(node)) {
+			for (const item of node) walk(item);
+			return;
+		}
+		const value = astNode(node);
+		if (value === undefined) return;
+		if (
+			value.type === "TSTypeAliasDeclaration" ||
+			value.type === "TSInterfaceDeclaration" ||
+			value.type === "TSEnumDeclaration" ||
+			value.type === "TSModuleDeclaration" ||
+			value.type === "TSDeclareFunction" ||
+			value.type === "TSImportEqualsDeclaration"
+		) {
+			addEdit(value.start, value.end);
+			return;
+		}
+		if (value.type === "TSTypeAnnotation") {
+			addEdit(value.start, value.end);
+			return;
+		}
+		if (
+			value.type === "TSTypeParameterDeclaration" ||
+			value.type === "TSTypeParameterInstantiation"
+		) {
+			addEdit(value.start, value.end);
+			return;
+		}
+		if (value.type === NodeKind.TSAsExpression || value.type === NodeKind.TSSatisfiesExpression) {
+			const expression = astNode(value.expression);
+			addEdit(expression?.end, value.end);
+		}
+		if (value.type === "TSNonNullExpression" || value.type === "TSInstantiationExpression") {
+			const expression = astNode(value.expression);
+			addEdit(expression?.end, value.end);
+		}
+		for (const child of Object.values(value)) {
+			if (child !== null && typeof child === "object") walk(child);
+		}
+	};
+	walk(parsed.program);
+	const selected: Array<[number, number, string]> = [];
+	for (const edit of edits.toSorted((left, right) => left[0] - right[0] || right[1] - left[1])) {
+		if (selected.some(([start, end]) => start <= edit[0] && end >= edit[1])) continue;
+		selected.push(edit);
+	}
+	let output = source;
+	for (const [start, end, replacement] of selected.toSorted((left, right) => right[0] - left[0]))
+		output = output.slice(0, start) + replacement + output.slice(end);
+	return output;
+};
+
+const PLAYGROUND_FRAGMENT = Symbol("playground-fragment");
+
+const isPlaygroundHostNode = (value: unknown): value is PlaygroundHostNode => {
+	if (value === null || typeof value !== "object" || Array.isArray(value)) return false;
+	const candidate = value as Partial<PlaygroundHostNode>;
+	return (
+		typeof candidate.type === "string" &&
+		candidate.props !== null &&
+		typeof candidate.props === "object" &&
+		Array.isArray(candidate.children)
+	);
+};
+
+const isPlaygroundNode = (value: unknown): value is PlaygroundNode => {
+	if (
+		value === null ||
+		typeof value === "boolean" ||
+		typeof value === "number" ||
+		typeof value === "string"
+	)
+		return true;
+	if (Array.isArray(value)) return value.every(isPlaygroundNode);
+	return isPlaygroundHostNode(value);
+};
+
+const collectPlaygroundChildren = (values: readonly unknown[]): PlaygroundNode[] => {
+	const children: PlaygroundNode[] = [];
+	const collect = (value: unknown): void => {
+		if (value === null || typeof value === "boolean") return;
+		if (Array.isArray(value)) {
+			for (const item of value) collect(item);
+			return;
+		}
+		if (isPlaygroundNode(value)) {
+			children.push(value);
+			return;
+		}
+		throw new Error("playground JSX children must be renderable values");
+	};
+	for (const value of values) collect(value);
+	return children;
+};
+
+const createPlaygroundJsx = (
+	type: unknown,
+	props: unknown,
+	...childValues: readonly unknown[]
+): PlaygroundNode => {
+	const children = collectPlaygroundChildren(childValues);
+	if (type === PLAYGROUND_FRAGMENT) return children;
+	if (typeof type === "function") {
+		const componentProps: Record<string, unknown> =
+			props !== null && typeof props === "object" && !Array.isArray(props)
+				? { ...(props as Record<string, unknown>) }
+				: {};
+		componentProps.children =
+			children.length === 0 ? undefined : children.length === 1 ? children[0] : children;
+		const result = (type as (componentProps: Record<string, unknown>) => unknown)(componentProps);
+		return result === undefined ? null : isPlaygroundNode(result) ? result : null;
+	}
+	if (typeof type !== "string")
+		throw new Error("playground JSX can only render host elements or components");
+	const hostProps: Record<string, unknown> =
+		props !== null && typeof props === "object" && !Array.isArray(props)
+			? { ...(props as Record<string, unknown>) }
+			: {};
+	delete hostProps.children;
+	return { type, props: hostProps, children };
+};
+
+const findPlaygroundStyledHost = (node: PlaygroundNode): PlaygroundHostNode | undefined => {
+	if (Array.isArray(node)) {
+		for (const child of node) {
+			const styled = findPlaygroundStyledHost(child);
+			if (styled !== undefined) return styled;
+		}
+		return undefined;
+	}
+	if (!isPlaygroundHostNode(node)) return undefined;
+	if (
+		typeof node.props.className === "string" ||
+		(node.props.style !== null && typeof node.props.style === "object")
+	)
+		return node;
+	for (const child of node.children) {
+		const styled = findPlaygroundStyledHost(child);
+		if (styled !== undefined) return styled;
+	}
+	return undefined;
+};
+
 export interface PlaygroundSheetResult {
 	/** Adapter identity supplied to the runtime CSS factory. */
 	strategy: string;
@@ -73,6 +352,8 @@ interface PlaygroundSuccess {
 	ok: true;
 	/** The merged class string produced by the runtime. */
 	output: string;
+	/** React host tree returned by the example's component expression. */
+	rendered?: PlaygroundNode;
 	/**
 	 * Declaration map when the final expression returned one (plain css() /
 	 * css.raw()); the class-string pane is replaced by a declarations pane.
@@ -131,9 +412,8 @@ interface Prepared {
 /**
  * Parse the full module once and classify every top-level statement:
  * imports are collected (never executed), export markers are unwrapped, and
- * the last top-level expression statement is located as the result. Type-only
- * suffixes ("as const", "satisfies X") keep their expression and drop the
- * annotation span, so typed example source still runs untransformed.
+ * the last top-level expression statement is located as the result. JSX and
+ * TypeScript syntax are lowered separately before the resulting source runs.
  */
 function stripModule(code: string): Omit<Prepared, "body" | "consts" | "exprText"> {
 	const parsed = parseSync("module-syntax.tsx", code, { sourceType: "module", lang: "tsx" });
@@ -157,26 +437,6 @@ function stripModule(code: string): Omit<Prepared, "body" | "consts" | "exprText
 	const exportNames: Array<string> = [];
 	const cuts: Array<[number, number]> = [];
 	const unwraps: Array<[number, number]> = [];
-	// Type-only suffixes ("as const", "satisfies X") keep their expression
-	// and drop the annotation span, so typed example source still runs
-	// untransformed inside new Function.
-	const walk = (node: unknown): void => {
-		if (Array.isArray(node)) {
-			for (const item of node) walk(item);
-			return;
-		}
-		if (node === null || typeof node !== "object") return;
-		const n = node as { type?: string; end?: number; expression?: { end?: number } };
-		if (n.type === NodeKind.TSAsExpression || n.type === NodeKind.TSSatisfiesExpression) {
-			const inner = n.expression;
-			if (typeof inner?.end === "number" && typeof n.end === "number")
-				cuts.push([inner.end, n.end]);
-		}
-		for (const value of Object.values(node as Record<string, unknown>)) {
-			if (value !== null && typeof value === "object") walk(value);
-		}
-	};
-	walk(parsed.program);
 	for (const statement of statements) {
 		if (statement.type === NodeKind.ImportDeclaration) {
 			if (statement.importKind === ImportKindTag.Type) {
@@ -236,8 +496,8 @@ type EvalMode = "entry" | "module";
 
 function prepare(code: string, mode: EvalMode): Prepared {
 	const base = stripModule(code);
-	const evalCode = base.evalCode;
-	const parsed = parseSync("playground.tsx", evalCode, { sourceType: "module", lang: "tsx" });
+	const evalCode = stripPlaygroundTypes(transformPlaygroundJsx(base.evalCode));
+	const parsed = parseSync("playground.ts", evalCode, { sourceType: "module", lang: "ts" });
 	const program = parsed.program as unknown as {
 		body?: Array<{ type: string; start: number; end: number }>;
 	};
@@ -554,7 +814,7 @@ export interface EvalInput {
 	 * presetApi, ./brand.ts -> evaluated sibling tab) land here by specifier.
 	 */
 	moduleBindings?: Readonly<Record<string, Readonly<Record<string, unknown>>>>;
-	/** Available inside evaluated code as `props` (component-like dynamics). */
+	/** Optional explicit sandbox binding used by evaluator regression tests. */
 	props?: Record<string, unknown>;
 	/**
 	 * Resolves a css() literal style object into final declarations
@@ -723,11 +983,12 @@ export function evalPlayground(input: EvalInput): PlaygroundResult {
 }
 
 /** Builtins the sandbox injects; a module-local declaration shadows them. */
-const SANDBOX_BUILTINS = ["tw", "css", "cx", "createCx", "props", "createCss"];
+const SANDBOX_BUILTINS = ["tw", "css", "cx", "createCx", "createCss"] as const;
 
-function sandboxNames(prepared: Prepared): string[] {
+function sandboxNames(prepared: Prepared, input?: EvalInput): string[] {
 	return dedupe([
 		...SANDBOX_BUILTINS.filter((name) => !prepared.declaredNames.includes(name)),
+		...(input?.props !== undefined && !prepared.declaredNames.includes("props") ? ["props"] : []),
 		...prepared.imports.map((imp) => imp.local),
 	]);
 }
@@ -742,7 +1003,7 @@ export function evalSiblingModule(input: EvalInput): Record<string, unknown> {
 	if (code === "") throw new Error("nothing to evaluate");
 	const prepared = prepare(code, "module");
 	const sandbox = buildSandbox(input, prepared, input.tw, input.css, input.cx);
-	const names = sandboxNames(prepared);
+	const names = sandboxNames(prepared, input);
 	const fn = new Function(
 		"__pw",
 		`"use strict";\nconst { ${names.join(", ")} } = __pw;\n${prepared.body}`,
@@ -770,7 +1031,6 @@ function pandwindBuiltins(input: EvalInput): Record<string, unknown> {
 		cx: input.cx,
 		createCx: () => input.cx,
 		createCss: input.createCss,
-		props: input.props,
 	};
 }
 
@@ -794,17 +1054,21 @@ function buildSandbox(
 		css,
 		cx,
 		createCx: () => cx,
-		props: input.props ?? {},
 		createCss: input.createCss,
+		jsx: createPlaygroundJsx,
+		Fragment: PLAYGROUND_FRAGMENT,
 	};
 	const instrumentedBuiltins: Record<string, unknown> = {
 		tw,
 		css,
 		cx,
 		createCx: () => cx,
-		props: input.props,
 		createCss: input.createCss,
 	};
+	if (input.props !== undefined) {
+		sandbox.props = input.props;
+		instrumentedBuiltins.props = input.props;
+	}
 	for (const imp of prepared.imports) {
 		const bindings = input.moduleBindings?.[imp.source];
 		if (bindings !== undefined) {
@@ -928,7 +1192,9 @@ function buildSandbox(
 			local === "cx" ||
 			local === "createCx" ||
 			local === "props" ||
-			local === "createCss"
+			local === "createCss" ||
+			local === "jsx" ||
+			local === "Fragment"
 		)
 			continue;
 		if (value === undefined) {
@@ -1072,7 +1338,7 @@ function runOnce(input: EvalInput, mode: EvalMode): PlaygroundResult {
 	let captured: { value?: unknown } = {};
 	// One destructured scope for every module: builtins filtered by local
 	// shadows plus import bindings, so an example's own `const css` wins.
-	const names = sandboxNames(prepared);
+	const names = sandboxNames(prepared, input);
 	const fn = new Function(
 		"__pw",
 		`"use strict";\nconst { ${names.join(", ")} } = __pw;\n${prepared.body}`,
@@ -1080,13 +1346,30 @@ function runOnce(input: EvalInput, mode: EvalMode): PlaygroundResult {
 	captured = (fn(sandbox) ?? {}) as { value?: unknown };
 
 	// The final expression may be a class string, a declaration map (plain
-	// css() / css.raw()), or a { class, style } pair from css.vars().
+	// css() / css.raw()), a { class, style } pair from css.vars(), or a
+	// component tree produced by the playground JSX runtime.
 	const rawValue = captured.value;
 	let output: string | undefined;
+	let rendered: PlaygroundNode | undefined;
 	let decls: Record<string, string> | undefined;
 	let varsOutput: { class: string; style: Record<string, string> } | undefined;
 	let propsOutput: { className?: string; style?: Record<string, string> } | undefined;
-	if (typeof rawValue === "string") {
+	if (rawValue !== null && typeof rawValue === "object" && isPlaygroundNode(rawValue)) {
+		rendered = rawValue;
+		const styledHost = findPlaygroundStyledHost(rawValue);
+		if (styledHost !== undefined) {
+			const className = styledHost.props.className;
+			const style = styledHost.props.style;
+			propsOutput = {
+				className: typeof className === "string" ? className : undefined,
+				style:
+					style !== null && typeof style === "object"
+						? Object.fromEntries(Object.entries(style).map(([key, value]) => [key, String(value)]))
+						: undefined,
+			};
+			output = typeof className === "string" ? className : "";
+		}
+	} else if (typeof rawValue === "string") {
 		output = rawValue;
 	} else if (rawValue !== null && typeof rawValue === "object") {
 		const candidate = rawValue as Record<string, unknown>;
@@ -1112,7 +1395,7 @@ function runOnce(input: EvalInput, mode: EvalMode): PlaygroundResult {
 			for (const [key, value] of Object.entries(candidate)) decls[key] = String(value);
 		}
 	}
-	if (output === undefined && decls === undefined) {
+	if (output === undefined && decls === undefined && rendered === undefined) {
 		return {
 			ok: false,
 			error: "the final expression did not produce a class string or declaration object",
@@ -1169,6 +1452,7 @@ function runOnce(input: EvalInput, mode: EvalMode): PlaygroundResult {
 		programs: styleProgramsFromExpression(prepared.evalCode),
 	};
 	if (decls !== undefined) success.decls = decls;
+	if (rendered !== undefined) success.rendered = rendered;
 	if (varsOutput !== undefined) success.varsOutput = varsOutput;
 	if (propsOutput !== undefined) success.propsOutput = propsOutput;
 	if (Object.keys(runtimeStyle).length > 0) success.runtimeStyle = runtimeStyle;

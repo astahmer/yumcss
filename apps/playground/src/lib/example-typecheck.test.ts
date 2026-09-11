@@ -29,9 +29,12 @@ function typecheckExamples(): string {
 				}
 			}
 		}
-		const globalFile = join(temporaryRoot, "playground-globals.d.ts");
-		writeFileSync(globalFile, "declare const props: { active: boolean; tone: string };\n", "utf8");
-
+		const jsxFile = join(temporaryRoot, "playground-jsx.d.ts");
+		writeFileSync(
+			jsxFile,
+			"declare namespace JSX { interface Element {} interface IntrinsicElements { [elementName: string]: Record<string, unknown> } }\n",
+			"utf8",
+		);
 		const paths = Object.fromEntries(
 			Object.entries(PANDWIND_EDITOR_MODULE_PATHS).map(([specifier, modulePath]) => [
 				specifier,
@@ -46,7 +49,7 @@ function typecheckExamples(): string {
 				{
 					compilerOptions: {
 						allowImportingTsExtensions: true,
-						jsx: "react-jsx",
+						jsx: "preserve",
 						lib: ["ES2022", "DOM"],
 						module: "ESNext",
 						moduleResolution: "Bundler",
@@ -57,7 +60,7 @@ function typecheckExamples(): string {
 						target: "ES2022",
 						types: [],
 					},
-					files: [...sourceFiles, globalFile],
+					files: [...sourceFiles, jsxFile],
 				},
 				undefined,
 				2,

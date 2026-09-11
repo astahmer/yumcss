@@ -1,9 +1,19 @@
-import { useEffect, useMemo, useState, type CSSProperties } from "react";
+import {
+	createElement,
+	Fragment,
+	useEffect,
+	useMemo,
+	useState,
+	type CSSProperties,
+	type ReactNode,
+} from "react";
 import { codeToHtml } from "shiki";
 import type { StyleProgram } from "pandwind-codemod/swap/semantic-ir";
 import { GhostButton, Pane, ResizableSplitter, type ResizableSplitterPanel } from "./ui.tsx";
 import type {
 	PlaygroundExecutionEvidence,
+	PlaygroundHostNode,
+	PlaygroundNode,
 	PlaygroundResult,
 	PlaygroundSheetResult,
 	PlaygroundStyleMapping,
@@ -346,31 +356,92 @@ function useTailwindPreview(className: string): TailwindPreview {
 	return preview;
 }
 
+const withPreviewStyle = (
+	node: PlaygroundNode,
+	style: CSSProperties,
+	applied = false,
+): PlaygroundNode => {
+	if (Array.isArray(node)) return node.map((child) => withPreviewStyle(child, style, applied));
+	if (!isPreviewHostNode(node)) return node;
+	const hasStyleTarget =
+		typeof node.props.className === "string" ||
+		(node.props.style !== null && typeof node.props.style === "object");
+	const applyHere = !applied && hasStyleTarget;
+	const existingStyle =
+		node.props.style !== null && typeof node.props.style === "object"
+			? (node.props.style as Record<string, unknown>)
+			: {};
+	const props = applyHere ? { ...node.props, style: { ...style, ...existingStyle } } : node.props;
+	return {
+		...node,
+		props,
+		children: node.children.map((child) => withPreviewStyle(child, style, applied || applyHere)),
+	};
+};
+
+const isPreviewHostNode = (node: PlaygroundNode): node is PlaygroundHostNode =>
+	node !== null && typeof node === "object" && !Array.isArray(node);
+
+const renderPlaygroundNode = (node: PlaygroundNode, key?: string): ReactNode => {
+	if (node === null || typeof node === "boolean") return null;
+	if (typeof node === "string" || typeof node === "number") return node;
+	if (Array.isArray(node)) {
+		return createElement(
+			Fragment,
+			key === undefined ? null : { key },
+			...node.map((child, index) => renderPlaygroundNode(child, `${key ?? "child"}-${index}`)),
+		);
+	}
+	if (!isPreviewHostNode(node)) return null;
+	const hostProps: Record<string, unknown> = {};
+	for (const [name, value] of Object.entries(node.props)) {
+		if (name !== "children" && typeof value !== "function") hostProps[name] = value;
+	}
+	if (key !== undefined) hostProps.key = key;
+	return createElement(
+		node.type,
+		hostProps,
+		...node.children.map((child, index) =>
+			renderPlaygroundNode(child, `${key ?? "child"}-${index}`),
+		),
+	);
+};
+
 function PreviewSpecimen(props: {
 	preview: ExamplePreview;
 	result: SuccessfulPlaygroundResult;
 	tailwindStyle: Record<string, string>;
 }) {
 	const isButton = props.preview.kind === PlaygroundPreviewKind.Button;
-	const className =
-		`${isButton ? PREVIEW_BUTTON_RESET : ""} ${previewClassName(props.result)}`.trim();
+	const className = previewClassName(props.result);
+	const style = previewStyle(props.result, props.tailwindStyle);
+	const rendered =
+		props.result.rendered === undefined
+			? undefined
+			: renderPlaygroundNode(withPreviewStyle(props.result.rendered, style));
+	const fallbackClassName = `${isButton ? PREVIEW_BUTTON_RESET : ""} ${className}`.trim();
 	const PreviewElement = isButton ? "button" : "div";
 	return (
 		<div className={PREVIEW_FRAME}>
-			<PreviewElement
-				className={className}
-				style={previewStyle(props.result, props.tailwindStyle)}
-				data-preview-kind={props.preview.kind}
-				role={props.preview.kind === PlaygroundPreviewKind.Alert ? "alert" : undefined}
-				type={isButton ? "button" : undefined}
-			>
-				<span className={PREVIEW_COPY}>
-					<strong>{props.preview.label}</strong>
-					<span className={PREVIEW_DESCRIPTION}>{props.preview.description}</span>
-				</span>
-			</PreviewElement>
+			<div data-preview-kind={props.preview.kind}>
+				{rendered ?? (
+					<PreviewElement
+						className={fallbackClassName}
+						style={style}
+						role={props.preview.kind === PlaygroundPreviewKind.Alert ? "alert" : undefined}
+						type={isButton ? "button" : undefined}
+					>
+						<span className={PREVIEW_COPY}>
+							<strong>{props.preview.label}</strong>
+							<span className={PREVIEW_DESCRIPTION}>{props.preview.description}</span>
+						</span>
+					</PreviewElement>
+				)}
+			</div>
 			<span className={uiCss.class({ fontSize: "10px", color: "var(--pw-text-faint)" })}>
-				{props.preview.kind} specimen · hover it to exercise state styles
+				{props.result.rendered === undefined
+					? `${props.preview.kind} fallback · hover it to exercise state styles`
+					: `${props.preview.kind} component · rendered from the example`}
 			</span>
 		</div>
 	);
@@ -398,7 +469,7 @@ function LivePreviewSection(props: {
 						color: "var(--pw-success)",
 					})}
 				>
-					rendered
+					{props.result.rendered === undefined ? "fallback" : "rendered"}
 				</span>
 			}
 			className={uiCss.class({ height: "100%" })}

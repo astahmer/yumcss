@@ -18,7 +18,6 @@ function makeInput(code: string, moduleBindings?: EvalInput["moduleBindings"]): 
 		createCss: createCss as unknown as (...args: Array<unknown>) => unknown,
 		moduleBindings:
 			moduleBindings === undefined ? SANDBOX_MODULES : { ...SANDBOX_MODULES, ...moduleBindings },
-		props: { active: true, tone: "red-600" },
 		resolveCss: (style: Record<string, unknown>) => {
 			const resolved = resolveDesignStyle(style, examplePreset.tokens);
 			const out: Record<string, string> = {};
@@ -61,6 +60,7 @@ describe("example catalog evaluates end to end", () => {
 				const label = def.path + " / " + variant.api + " (" + variant.files[0]!.name + ")";
 				const outcome = result.ok ? "ok" : "error: " + result.error;
 				expect(outcome, label).toBe("ok");
+				if (result.ok) expect(result.rendered, label).toBeDefined();
 			}
 		}
 	});
@@ -124,6 +124,13 @@ describe("example catalog evaluates end to end", () => {
 
 		expect(result.runtimeStyle).toMatchObject({
 			"--pw-c-color": "red-600",
+		});
+		expect(result.rendered).toMatchObject({
+			type: "div",
+			props: {
+				role: "alert",
+				style: { "--pw-c-color": "red-600" },
+			},
 		});
 	});
 });

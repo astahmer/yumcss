@@ -250,7 +250,6 @@ const globalEditorDeclarations = String.raw`
 declare const tw: (styles: WindVariants) => string;
 declare const css: import("pandwind/css").CssFn;
 declare const cx: import("pandwind").CxFn;
-declare const props: { active: boolean; tone: string };
 declare const renderer: {
   renderRule(rule: (...args: readonly unknown[]) => PlaygroundStyleObject): string;
 };

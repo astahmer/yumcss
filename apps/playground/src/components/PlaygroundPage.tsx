@@ -49,9 +49,6 @@ function useCompactPlayground(): boolean {
 	return compact;
 }
 
-/** Component-like dynamics available inside evaluated code as `props`. */
-const SANDBOX_PROPS = { active: true, tone: "#ffffff" };
-
 function encodeCode(code: string): string {
 	return btoa(String.fromCharCode(...new TextEncoder().encode(code)));
 }
@@ -547,7 +544,6 @@ function makeInput(
 		classNameStrategy: strategy,
 		moduleBindings:
 			moduleBindings === undefined ? SANDBOX_MODULES : { ...SANDBOX_MODULES, ...moduleBindings },
-		props: SANDBOX_PROPS,
 		resolveCss: (style: Record<string, unknown>) => {
 			const resolved = resolveDesignStyle(style, examplePreset.tokens);
 			const out: Record<string, string> = {};
