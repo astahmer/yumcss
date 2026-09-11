@@ -639,7 +639,7 @@ export default <TokenCard />`,
 					},
 					{
 						name: "tokens.ts",
-						code: `import { definePreset, defineSemanticTokens, defineTheme, defineTokens } from "pandwind/preset";
+						code: `import { definePreset, defineSemanticTokens, defineTokens } from "pandwind/preset";
 
 const rawTokens = defineTokens({
 	colors: {
@@ -691,7 +691,7 @@ export const componentTokens = {
 } as const;
 
 export const tokenPreset = definePreset(
-	defineTheme({ config: {} as Record<string, unknown>, tokens }),
+	{ config: {} as Record<string, unknown>, tokens },
 	{
 		strict: true,
 		conditions: { _hover: "&:hover", _dark: '[data-theme="dark"] &' },
@@ -759,7 +759,7 @@ export default <EmptyState />`,
 					},
 					{
 						name: "tokens.ts",
-						code: `import { definePreset, defineSemanticTokens, defineTheme, defineTokens } from "pandwind/preset";
+						code: `import { definePreset, defineSemanticTokens, defineTokens } from "pandwind/preset";
 
 const rawTokens = defineTokens({
 	colors: {
@@ -839,7 +839,7 @@ const tokens = {
 };
 
 export const tokenPreset = definePreset(
-	defineTheme({ config: {} as Record<string, unknown>, tokens }),
+	{ config: {} as Record<string, unknown>, tokens },
 	{
 		strict: true,
 		conditions: { ...themeConditions, _hover: "&:hover" },
@@ -895,11 +895,11 @@ export const tokenPreset = definePreset(
 					{
 						name: "Example.tsx",
 						code: `import { createDesignCss } from "pandwind/design";
-import { definePreset, defineTheme } from "pandwind/preset";
+import { definePreset } from "pandwind/preset";
 import { brandTokens } from "./brand.ts";
 
 const brand = definePreset(
-	defineTheme({ config: {} as Record<string, never>, tokens: { colors: brandTokens.colors } }),
+	{ config: {} as Record<string, never>, tokens: { colors: brandTokens.colors } },
 	{ strict: true, conditions: { _hover: "&:hover" }, properties: { $all: true } },
 );
 
