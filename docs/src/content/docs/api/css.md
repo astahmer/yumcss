@@ -19,30 +19,22 @@ merging, variant conditions and a `$input` escape hatch for dynamic values.
 ```ts
 import type { StandardProperties } from "csstype";
 import { createCss } from "pandwind/css";
-import {
-	definePreset,
-	defineProperties,
-	defineTheme,
-	defineTokens,
-} from "pandwind/preset";
+import { definePreset, defineProperties, defineTheme, defineTokens } from "pandwind/preset";
 
 const tokens = defineTokens({
 	colors: { "$brand-500": "#2563eb" },
 	spacing: { 4: "1rem" },
 });
 
-const preset = definePreset(
-	defineTheme({ config: {} as StandardProperties, tokens }),
-	{
-		strict: true,
-		conditions: { _hover: "&:hover" },
-		properties: defineProperties({
-			$all: true,
-			backgroundColor: { $tokens: "colors" },
-			padding: { $tokens: "spacing" },
-		}),
-	},
-);
+const preset = definePreset(defineTheme({ config: {} as StandardProperties, tokens }), {
+	strict: true,
+	conditions: { _hover: "&:hover" },
+	properties: defineProperties({
+		$all: true,
+		backgroundColor: { $tokens: "colors" },
+		padding: { $tokens: "spacing" },
+	}),
+});
 
 const css = createCss(preset);
 const className = css.class({ backgroundColor: "$brand-500", padding: 4 });
@@ -147,11 +139,11 @@ Pandwind has two deliberately different at-rule lanes. Use a typed style
 condition when the rule belongs to an element; use authored CSS or the
 explicit runtime sheet when it changes the stylesheet itself:
 
-| Need | Use | What happens |
-| --- | --- | --- |
-| Viewport, container, or feature conditions on a component | `@media`, `@container`, or `@supports` in a style object | The condition is emitted around the component's extracted atomic rule. |
-| Browser-global registration and definitions | Authored CSS | The host CSS toolchain owns `@property`, `@font-face`, `@keyframes`, `@layer`, resets, and global selectors. |
-| A rule is created at runtime or collected during SSR | `createRuntimeCss()` plus `sheet.registerSemanticRules()` | The runtime sheet serializes an explicit semantic rule and can mount, snapshot, or hydrate it. |
+| Need                                                      | Use                                                       | What happens                                                                                                 |
+| --------------------------------------------------------- | --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| Viewport, container, or feature conditions on a component | `@media`, `@container`, or `@supports` in a style object  | The condition is emitted around the component's extracted atomic rule.                                       |
+| Browser-global registration and definitions               | Authored CSS                                              | The host CSS toolchain owns `@property`, `@font-face`, `@keyframes`, `@layer`, resets, and global selectors. |
+| A rule is created at runtime or collected during SSR      | `createRuntimeCss()` plus `sheet.registerSemanticRules()` | The runtime sheet serializes an explicit semantic rule and can mount, snapshot, or hydrate it.               |
 
 For example, `@container` is a normal typed condition on a local class:
 

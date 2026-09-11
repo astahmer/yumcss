@@ -64,11 +64,7 @@ type ProgressProps = { value: number };
 const Progress = (props: ProgressProps) => {
 	const fill = css.props(styles.fill({ progress: props.value }));
 	return (
-		<div
-			className={`progress-fill ${fill.className}`}
-			style={fill.style}
-			role="progressbar"
-		/>
+		<div className={`progress-fill ${fill.className}`} style={fill.style} role="progressbar" />
 	);
 };
 ```
