@@ -162,4 +162,7 @@ test("css with dynamic styles", () => {
 		  },
 		}
 	`);
+
+	const projected = css.props(styles.buttonColor({ bg: "blue", fontSize: 10 }));
+	expect(typeof projected.style?.hasOwnProperty).toBe("function");
 });

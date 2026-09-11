@@ -171,6 +171,27 @@ describe("example catalog evaluates end to end", () => {
 		}
 	});
 
+	it("gives every live specimen an obvious visual style", () => {
+		for (const example of EXAMPLES) {
+			for (const variant of example.variants) {
+				const result = evalPlayground(makeInput(variant.files[0]!.code, siblingBindings(variant)));
+				expect(result.ok, labelFor(example, variant)).toBe(true);
+				if (!result.ok) continue;
+
+				const authoredProperties = result.styleMappings
+					.filter((mapping) => mapping.active)
+					.map((mapping) => mapping.property)
+					.join(" ");
+				const emittedCss = result.sheets.map((sheet) => sheet.css).join(" ");
+				const classString = result.output;
+				expect(
+					`${authoredProperties} ${emittedCss} ${classString}`,
+					labelFor(example, variant),
+				).toMatch(/bg(?:Color|-)|background(?:Color|-color)|border|boxShadow|box-shadow/u);
+			}
+		}
+	});
+
 	it("makes the static-folding example actually fold its component styles", () => {
 		const variant = EXAMPLES.find((example) => example.path === "/folding")?.variants[0];
 		expect(variant).toBeDefined();
@@ -184,6 +205,8 @@ describe("example catalog evaluates end to end", () => {
 		expect(result.foldNote).toContain("rendered style calls");
 		expect(result.output).toContain("p-4");
 		expect(result.output).toContain("text-lg");
+		expect(result.output).toContain("bg-blue-500");
+		expect(result.output).toContain("border-2");
 		expect(result.rendered).toMatchObject({ type: "span", children: ["Folded label (size 4)"] });
 	});
 
@@ -220,7 +243,6 @@ describe("example catalog evaluates end to end", () => {
 		expect(activeResult.ok).toBe(true);
 		expect(inactiveResult.ok).toBe(true);
 		if (!activeResult.ok || !inactiveResult.ok) return;
-
 		expect(activeResult.output).not.toBe(inactiveResult.output);
 		expect(activeResult.rendered).toMatchObject({
 			props: { "aria-pressed": true },
@@ -386,14 +408,14 @@ describe("example catalog evaluates end to end", () => {
 		if (example === undefined || variant === undefined) return;
 
 		const source = applyPreviewControls(variant.files[0]!.code, example.preview.controls, {
-			value: "24",
+			value: "24%",
 		});
 		const result = evalPlayground(makeInput(source));
 		expect(result.ok).toBe(true);
 		if (!result.ok) return;
 
 		expect(result.sheets.some((sheet) => sheet.css.includes("@property --progress"))).toBe(true);
-		expect(result.runtimeStyle).toEqual(expect.objectContaining({ "--progress": "24" }));
+		expect(result.runtimeStyle).toEqual(expect.objectContaining({ "--progress": "24%" }));
 		expect(result.sheets.some((sheet) => sheet.css.includes("var(--progress)"))).toBe(true);
 		const rendered = result.rendered;
 		expect(rendered).toMatchObject({ type: "article" });
@@ -401,7 +423,7 @@ describe("example catalog evaluates end to end", () => {
 			throw new Error("Expected the progress preview to render an article host node.");
 		}
 		const strong = rendered.children.find((child) => isHostNode(child) && child.type === "strong");
-		expect(strong).toMatchObject({ type: "strong", children: ["Progress is", 24, "%"] });
+		expect(strong).toMatchObject({ type: "strong", children: ["Progress is", "24%"] });
 	});
 
 	it("keeps tw compatibility hover classes on the rendered button", () => {

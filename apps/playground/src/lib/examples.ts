@@ -457,7 +457,7 @@ export default <Card title="Container-aware card" />`,
 		preview: makePreview(
 			"card",
 			"Registered progress meter",
-			"The bar reads --progress; choose a value to see the runtime custom property change without generating a new class.",
+			"The bar reads --progress; choose a percentage to update the runtime custom property without generating a new class.",
 			undefined,
 			[
 				{
@@ -465,14 +465,14 @@ export default <Card title="Container-aware card" />`,
 					id: "value",
 					prop: "value",
 					label: "Progress",
-					initialValue: "72",
+					initialValue: "72%",
 					options: [
-						{ label: "24%", value: "24", sourceValue: "24" },
-						{ label: "72%", value: "72", sourceValue: "72" },
-						{ label: "100%", value: "100", sourceValue: "100" },
+						{ label: "24%", value: "24%", sourceValue: '"24%"' },
+						{ label: "72%", value: "72%", sourceValue: '"72%"' },
+						{ label: "100%", value: "100%", sourceValue: '"100%"' },
 					],
 					description:
-						'Changes the css.input("progress") value; @property declares --progress as a non-inherited number with a zero initial value.',
+						'Changes the css.input("progress") value; @property declares --progress as a non-inherited percentage with a zero initial value.',
 				},
 			],
 		),
@@ -485,7 +485,7 @@ const css = createRuntimeCss(examplePreset);
 
 const meterStyles = css.group({
 	progress: {
-		$input: {} as { progress: number },
+		$input: {} as { progress: string },
 		width: css.input("progress"),
 		height: "100%",
 		backgroundColor: "$blue-500",
@@ -498,14 +498,14 @@ css.sheet.registerSemanticRules([
 		kind: "property",
 		name: "--progress",
 		declarations: [
-			{ property: "syntax", value: "<number>" },
+			{ property: "syntax", value: "<percentage>" },
 			{ property: "inherits", value: false },
-			{ property: "initial-value", value: 0 },
+			{ property: "initial-value", value: "0%" },
 		],
 	},
 ]);
 
-type MeterProps = { value: number };
+	type MeterProps = { value: string };
 
 const Meter = (props: MeterProps) => {
 	const progress = css.props(meterStyles.progress({ progress: props.value }));
@@ -521,7 +521,7 @@ const Meter = (props: MeterProps) => {
 				color: "$white",
 			})}
 		>
-			<strong>Progress is {props.value}%</strong>
+			<strong>Progress is {props.value}</strong>
 			<div
 				className={css.class({
 					height: "12px",
@@ -533,7 +533,7 @@ const Meter = (props: MeterProps) => {
 				<div
 					{...progress}
 					role="progressbar"
-					aria-valuenow={props.value}
+					aria-valuenow={Number.parseFloat(props.value)}
 					aria-valuemin={0}
 					aria-valuemax={100}
 				/>
@@ -543,7 +543,7 @@ const Meter = (props: MeterProps) => {
 	);
 };
 
-export default <Meter value={72} />`,
+export default <Meter value="72%" />`,
 		),
 	},
 	{
@@ -1078,7 +1078,17 @@ export default <Card tone="blue" />`,
 
 const SIZE = "4" as const;
 const LABEL = \`Folded label (size \${SIZE})\`;
-const className = cx(tw({ p: SIZE === "4" ? "4" : "2" }), tw({ textSize: "lg" }));
+const className = cx(
+	tw({
+		bgColor: "blue-500",
+		textColor: "white",
+		border: "2",
+		borderColor: "blue-300",
+		rounded: "lg",
+		p: SIZE === "4" ? "4" : "2",
+		textSize: "lg",
+	}),
+);
 
 const Label = () => <span className={className}>{LABEL}</span>;
 
@@ -1130,7 +1140,7 @@ export default <Button label="Compatibility action" />`,
 		preview: makePreview(
 			"badge",
 			"Rejected class string",
-			"No CSS is generated because tw() receives a class string instead of a style object.",
+			"The red frame is valid; the nested label has no generated CSS because tw() received a class string.",
 		),
 		variants: oneVariant(
 			PlaygroundApi.Tw,
@@ -1141,7 +1151,19 @@ export default <Button label="Compatibility action" />`,
 const InvalidButton = () => {
 	// @ts-expect-error tw() accepts typed style objects, not class-name strings.
 	const className = tw("bg-red-500 text-lg");
-	return <button className={className}>Rejected class string</button>;
+	const frameClassName = tw({
+		bgColor: "red-950",
+		textColor: "red-100",
+		border: "2",
+		borderColor: "red-400",
+		rounded: "lg",
+		p: "4",
+	});
+	return (
+		<div className={frameClassName}>
+			<button className={className}>Rejected class string</button>
+		</div>
+	);
 };
 
 export default <InvalidButton />`,
@@ -1156,7 +1178,7 @@ export default <InvalidButton />`,
 		preview: makePreview(
 			"badge",
 			"Invalid variant shape",
-			"The emitted token is visible, but it has no matching rule to apply.",
+			"The red frame is valid; the nested token has no matching rule because the variant value is a string.",
 		),
 		variants: oneVariant(
 			PlaygroundApi.Tw,
@@ -1166,7 +1188,19 @@ export default <InvalidButton />`,
 
 const InvalidVariant = () => {
 	const className = tw({ sm: "p-4" });
-	return <span className={className}>Invalid variant shape</span>;
+	const frameClassName = tw({
+		bgColor: "red-950",
+		textColor: "red-100",
+		border: "2",
+		borderColor: "red-400",
+		rounded: "lg",
+		p: "4",
+	});
+	return (
+		<div className={frameClassName}>
+			<span className={className}>Invalid variant shape</span>
+		</div>
+	);
 };
 
 export default <InvalidVariant />`,
@@ -1194,6 +1228,13 @@ const css = createCss(examplePreset);
 const ResidualCard = () => {
 	const className = css.class({
 		display: "flex",
+		backgroundColor: "$gray-800",
+		color: "$red-100",
+		borderStyle: "solid",
+		borderWidth: 2,
+		borderColor: "$red-400",
+		borderRadius: "lg",
+		padding: 16,
 		// @ts-expect-error animation is outside examplePreset.properties.
 		animation: "pulse 2s infinite",
 	});

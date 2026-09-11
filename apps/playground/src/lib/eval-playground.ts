@@ -302,6 +302,23 @@ const findPlaygroundStyledHost = (
 	return undefined;
 };
 
+const findPlaygroundClassHost = (node: PlaygroundNode): PlaygroundHostNode | undefined => {
+	if (Array.isArray(node)) {
+		for (const child of node) {
+			const host = findPlaygroundClassHost(child);
+			if (host !== undefined) return host;
+		}
+		return undefined;
+	}
+	if (!isPlaygroundHostNode(node)) return undefined;
+	if (typeof node.props.className === "string" && node.props.className.trim() !== "") return node;
+	for (const child of node.children) {
+		const host = findPlaygroundClassHost(child);
+		if (host !== undefined) return host;
+	}
+	return undefined;
+};
+
 export interface PlaygroundSheetResult {
 	/** Adapter identity supplied to the runtime CSS factory. */
 	strategy: string;
@@ -1435,7 +1452,8 @@ function runOnce(input: EvalInput, mode: EvalMode): PlaygroundResult {
 			...inputs,
 			...styleMappings.map((mapping) => mapping.className),
 		]);
-		const styledHost = findPlaygroundStyledHost(entryValue, styledClasses);
+		const styledHost =
+			findPlaygroundStyledHost(entryValue, styledClasses) ?? findPlaygroundClassHost(entryValue);
 		if (styledHost !== undefined) {
 			const className = styledHost.props.className;
 			const style = styledHost.props.style;

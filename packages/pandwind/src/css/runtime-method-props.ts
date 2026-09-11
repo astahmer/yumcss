@@ -80,7 +80,7 @@ export const attachProps: RuntimeCssAttachment = (css) => {
 				)
 			: [];
 		return {
-			style: styles.length ? assign(...styles) : undefined,
+			style: styles.length ? Object.assign({}, assign(...styles)) : undefined,
 			className:
 				compiledClassNames.length || classNames.length
 					? [...classNames, ...compiledClassNames].join(" ")
