@@ -109,6 +109,39 @@ export function buildTokenMaps(
 	return { tokensByProp, groupByProp, flatTokens, tokensByGroup };
 }
 
+const tokenCssVar = (token: Token): string | undefined =>
+	"cssVar" in token ? token.cssVar : undefined;
+
+const resolveTokenTarget = (
+	maps: TokenMaps,
+	tokenPath: string,
+	seen: ReadonlySet<string> = new Set(),
+): Token | undefined => {
+	const token = maps.flatTokens.get(tokenPath);
+	if (token === undefined || seen.has(tokenPath)) return undefined;
+	if (typeof token.value !== "string") return token;
+
+	const next = maps.flatTokens.get(token.value);
+	if (next === undefined) return token;
+	return resolveTokenTarget(maps, next.path, new Set([...seen, tokenPath]));
+};
+
+/**
+ * Resolve a token group's value when it aliases another preset token.
+ *
+ * A component token can therefore stay as a build-time string reference:
+ * `component.card.bg: "semantic.bg.primary"`. The emitted component variable
+ * points at the semantic variable, so theme conditions continue to resolve
+ * through CSS without importing a JavaScript token map into the component.
+ */
+export function resolveTokenAliasValue(maps: TokenMaps, tokenPath: string, value: string): string {
+	const token = maps.flatTokens.get(tokenPath);
+	if (token === undefined || token.value !== value) return value;
+
+	const target = resolveTokenTarget(maps, value, new Set([tokenPath]));
+	return target === undefined ? value : (tokenCssVar(target) ?? value);
+}
+
 /**
  * Resolve a written value to its concrete CSS value for `prop`.
  * Unknown values pass through unchanged — raw CSS values are always legal.

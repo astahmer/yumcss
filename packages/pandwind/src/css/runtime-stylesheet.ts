@@ -4,7 +4,11 @@ import { createVarCompiler } from "./var-compiler.ts";
 import type { CreateCssOptions } from "./runtime-base.ts";
 import { createHashFn, dashCase, escapeIdentifier, hashCssVar } from "./hash.ts";
 import { getPropertyPriority } from "./property-priorities.ts";
-import { buildRuntimeTokenMaps, resolveRuntimeTokenValue } from "./runtime-token-maps.ts";
+import {
+	buildRuntimeTokenMaps,
+	resolveRuntimeTokenAliasValue,
+	resolveRuntimeTokenValue,
+} from "./runtime-token-maps.ts";
 import {
 	createConditionsBucket,
 	decodeAtomicPath,
@@ -76,7 +80,11 @@ export const createRuntimeStylesheet = (
 
 			if (typeof tokenValue === "object") {
 				for (const condition in tokenValue) {
-					const value = tokenValue[condition] as string;
+					const value = resolveRuntimeTokenAliasValue(
+						tokenMaps,
+						tokenPath,
+						tokenValue[condition] as string,
+					);
 					const resolved = preset.conditions[condition];
 					const resolvedList = (Array.isArray(resolved) ? resolved : [resolved]).filter(
 						(part): part is string => Boolean(part),
@@ -104,7 +112,10 @@ export const createRuntimeStylesheet = (
 
 			cssVars.set(tokenPath, {
 				declaration: genCSSRule(
-					cssVar.declaration(cssVarHash, tokenValue),
+					cssVar.declaration(
+						cssVarHash,
+						resolveRuntimeTokenAliasValue(tokenMaps, tokenPath, tokenValue),
+					),
 					Object.assign(createConditionsBucket(), { parentSelectors: [":root "] }),
 				),
 				priority: getPropertyPriority(tokenName),

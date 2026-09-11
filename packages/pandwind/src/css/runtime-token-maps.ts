@@ -77,6 +77,32 @@ export function buildRuntimeTokenMaps(preset: CssConfigReturn, debug: boolean): 
 	return { tokensByProp, groupByProp, flatTokens };
 }
 
+const resolveRuntimeTokenTarget = (
+	maps: RuntimeTokenMaps,
+	tokenPath: string,
+	seen: ReadonlySet<string> = new Set(),
+): RuntimeToken | undefined => {
+	const token = maps.flatTokens.get(tokenPath);
+	if (token === undefined || seen.has(tokenPath)) return undefined;
+	if (typeof token.value !== "string") return token;
+
+	const next = maps.flatTokens.get(token.value);
+	if (next === undefined) return token;
+	return resolveRuntimeTokenTarget(maps, token.value, new Set([...seen, tokenPath]));
+};
+
+export function resolveRuntimeTokenAliasValue(
+	maps: RuntimeTokenMaps,
+	tokenPath: string,
+	value: string,
+): string {
+	const token = maps.flatTokens.get(tokenPath);
+	if (token === undefined || token.value !== value) return value;
+
+	const target = resolveRuntimeTokenTarget(maps, value, new Set([tokenPath]));
+	return target === undefined ? value : (target.cssVar ?? value);
+}
+
 /** Resolve a runtime-authored token while leaving raw CSS values untouched. */
 export function resolveRuntimeTokenValue(
 	maps: RuntimeTokenMaps,

@@ -4,7 +4,7 @@ import { createVarCompiler } from "./var-compiler.ts";
 import type { CreateCssOptions } from "./create-css.ts";
 import { createHashFn, dashCase, escapeIdentifier, hashCssVar } from "./hash.ts";
 import { getPropertyPriority } from "./property-priorities.ts";
-import { buildTokenMaps, resolveTokenValue } from "./tokens.ts";
+import { buildTokenMaps, resolveTokenAliasValue, resolveTokenValue } from "./tokens.ts";
 import { isSelfSelector } from "./stylesheet-lowering.ts";
 import {
 	defaultAtomicPathDecoder,
@@ -133,7 +133,11 @@ export const createStylesheet = (
 
 			if (typeof tokenValue === "object") {
 				for (const condition in tokenValue) {
-					const value = tokenValue[condition] as string;
+					const value = resolveTokenAliasValue(
+						tokenMaps,
+						tokenPath,
+						tokenValue[condition] as string,
+					);
 
 					const resolved = preset.conditions[condition];
 					// if (typeof resolved == null) {
@@ -166,7 +170,7 @@ export const createStylesheet = (
 
 			cssVars.set(tokenPath, {
 				declaration: serializer.serialize(
-					cssVar.declaration(cssVarHash, tokenValue),
+					cssVar.declaration(cssVarHash, resolveTokenAliasValue(tokenMaps, tokenPath, tokenValue)),
 					Object.assign(conditionPolicy.create(), {
 						parentSelectors: [":root "],
 					}),
