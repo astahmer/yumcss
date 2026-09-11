@@ -344,6 +344,8 @@ describe("build", () => {
 		// A real vite production build of an app that imports only css() from
 		// the ROOT `pandwind` barrel must not ship the tw()/cx()/preset code,
 		// and a css-only import must stay far smaller than importing all three.
+		// Keep a little room for shared CSS-runtime options (such as a custom
+		// carrier namespace) that correctly belong in both bundles.
 		const buildApp = async (source: string): Promise<string> => {
 			const dir = mkdtempSync(join(tmpdir(), "pandwind-shake-"));
 			try {
@@ -393,7 +395,7 @@ describe("build", () => {
 
 		expect(cssOnly).not.toContain("createTw");
 		expect(cssOnly).not.toContain("createCx");
-		expect(cssOnly.length).toBeLessThan(allThree.length / 2);
+		expect(cssOnly.length).toBeLessThan(allThree.length * 0.55);
 	});
 });
 

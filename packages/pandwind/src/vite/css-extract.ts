@@ -99,7 +99,11 @@ export function createCssExtractionService(
 		options.artifacts ??
 		new DesignCssArtifactExtractor(scanner, options.preset, [new PandwindPatternAdapter(scanner)]);
 	const diagnostics = options.diagnostics ?? new CssDiagnosticScanner();
-	const rewriter = options.rewriter ?? new StaticCssCallRewriter(options.preset, options.className);
+	const rewriter =
+		options.rewriter ??
+		new StaticCssCallRewriter(options.preset, options.className, {
+			namespace: options.namespace,
+		});
 	return new ComposedCssExtractionService(scanner, artifacts, diagnostics, rewriter);
 }
 

@@ -127,4 +127,6 @@ export type CssExtractorOptions = {
 	readonly matchers: readonly (string | RegExp)[];
 	readonly preset: CssPreset;
 	readonly className?: ClassNameStrategy;
+	/** Namespace used by generated dynamic-value carriers. */
+	readonly namespace?: string;
 };

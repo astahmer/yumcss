@@ -39,9 +39,11 @@ export const createRuntimeStylesheet = (
 	options: CreateCssOptions = {},
 ) => {
 	const conditionNames = Object.keys(preset.conditions);
+	const namespace = options.namespace ?? "pw";
 	const varCompiler = createVarCompiler(
 		conditionNames,
 		conditionNames.filter((name) => isEmptyCondition(name, preset.conditions)),
+		namespace,
 	);
 	const hashFn = options.hashFn ?? createHashFn(Boolean(options.debug));
 	const debug = Boolean(options.debug);
@@ -197,9 +199,9 @@ export const createRuntimeStylesheet = (
 		// The canonical key always stores conditions before the property.
 		const prop = dashCase(propPart);
 		const condParts = orderedConditions.map(varConditionPart);
-		let declaration = `var(--pw-c-${prop})`;
+		let declaration = `var(--${namespace}-c-${prop})`;
 		for (let i = 1; i <= condParts.length; i++) {
-			declaration = `var(--pw-c-${prop}_${condParts.slice(0, i).join("_")}, ${declaration})`;
+			declaration = `var(--${namespace}-c-${prop}_${condParts.slice(0, i).join("_")}, ${declaration})`;
 		}
 		const atomic = decodeAtomicPath(preset.conditions, pairs.concat(orderedKey, "\u0000"));
 		const css = genCSSRule(`${prop}: ${declaration}`, {

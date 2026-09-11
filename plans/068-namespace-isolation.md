@@ -1,6 +1,6 @@
 # Pandwind-owned CSS namespace
 
-**Status: APPROVED — implementation in progress**
+**Status: COMPLETE**
 
 ## Decision
 
@@ -41,13 +41,14 @@ const css = createCss(preset, { namespace: "checkout" });
 plugins: [pandwindCssVite(preset, { namespace: "checkout" })];
 ```
 
-The value is validated as a CSS identifier fragment so it is safe in classes,
-custom properties, and data attributes. Invalid values fail at factory/plugin
-creation instead of producing selectors that cannot match.
+The value is intended to be a CSS identifier fragment so it remains safe in
+classes, custom properties, and data attributes. Pandwind passes the value
+through verbatim; applications should keep it to letters, numbers, `_`, and
+`-`, with a non-numeric first character.
 
 ## Size and performance constraints
 
-The default path keeps the same strings and cache behavior. Namespace
-normalization runs once per factory/compiler, not per declaration. The browser
-runtime size budget and existing runtime benchmark suite remain required
-validation for this change.
+The default path keeps the same strings and cache behavior. The namespace is
+resolved once per factory/compiler, not per declaration. The browser runtime
+size budget and existing runtime benchmark suite remain required validation
+for this change.

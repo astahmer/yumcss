@@ -15,6 +15,11 @@ export interface CssBackendOptions {
 	debug?: boolean;
 	hashFn?: (key: string, value: string | true) => string;
 	className?: ClassNameStrategy;
+	/**
+	 * Namespace for Pandwind-owned dynamic-value carriers and custom properties.
+	 * Defaults to `pw`; caller-owned class-name strategies are not rewritten.
+	 */
+	namespace?: string;
 	/** Preset conditions used to canonicalize responsive var paths. */
 	conditions?: Record<string, string | string[]>;
 }

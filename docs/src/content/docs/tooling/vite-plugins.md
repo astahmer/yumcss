@@ -99,6 +99,20 @@ import { sandboxPreset } from "./sandbox-preset";
 export const css = createCss(sandboxPreset);
 ```
 
+If the CSS factory uses a custom namespace for dynamic carriers, repeat it on
+the extractor. The build-time rules must use the same carrier names as the
+runtime factory:
+
+```ts
+const css = createCss(appPreset, { namespace: "checkout" });
+
+plugins: [pandwindCssVite(appPreset, { namespace: "checkout" })];
+```
+
+The default namespace is `pw`. The option only changes Pandwind-owned
+`css.vars()` carriers and critical-style marker attributes; custom
+`ClassNameStrategy` output remains untouched.
+
 Load every generated sheet from the application entry:
 
 ```ts

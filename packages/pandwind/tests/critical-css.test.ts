@@ -68,6 +68,18 @@ describe("renderCriticalHtml", () => {
 		}
 	});
 
+	test("uses the configured namespace for the marker attribute", () => {
+		const out = renderCriticalHtml({
+			html: "<html><head></head><body></body></html>",
+			routeName: "checkout",
+			css: ".a{}",
+			namespace: "app",
+		});
+
+		expect(out).toMatchObject({ ok: true });
+		if (out.ok) expect(out.html).toContain('<style data-app-critical="checkout">.a{}</style>');
+	});
+
 	test("idempotent: already-injected documents are skipped", () => {
 		const once = renderCriticalHtml({
 			html: "<html><head></head></html>",

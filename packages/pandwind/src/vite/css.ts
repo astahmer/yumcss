@@ -78,6 +78,11 @@ export interface PandwindCssViteOptions {
 	/** Prepend a dev-only origin manifest comment to the generated sheet. */
 	debug?: boolean;
 	/**
+	 * Namespace for Pandwind-owned dynamic-value carriers and critical markers.
+	 * Keep this equal to the namespace passed to the CSS factory in app code.
+	 */
+	namespace?: string;
+	/**
 	 * Opt-in JSX rewrite for mixed `className={css.class({ ... })}` calls.
 	 * Scalar dynamic declarations move to `css.vars()` and literal
 	 * declarations stay in `css.class()`, with the host changed to a

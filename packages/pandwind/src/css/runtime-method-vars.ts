@@ -10,6 +10,7 @@ export const attachVars: RuntimeCssAttachment = (css, context) => {
 	const compiler = createVarCompiler(
 		conditionNames,
 		conditionNames?.filter((name) => !conditions?.[name]),
+		context.backendOptions.namespace,
 	);
 	css.vars = (...styles: Array<StyleObject>): VarsOutput => {
 		const flat = context.flatten(context.assign(...styles));

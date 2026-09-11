@@ -230,6 +230,15 @@ test("createDesignCss compiles to hashed atomic classes", () => {
 	`);
 });
 
+test("design CSS forwards the dynamic-carrier namespace", () => {
+	const dss = createDesignCss(examplePreset, { namespace: "checkout" });
+
+	expect(dss.vars({ $frame: { fill: "$blue-500" } })).toMatchObject({
+		class: "checkout-background-color",
+		style: { "--checkout-c-background-color": "#3182ce" },
+	});
+});
+
 test("design class strings match the generated stylesheet", () => {
 	const dss = createDesignCss(examplePreset, { debug: true });
 	const sheet = createStylesheet(examplePreset, { debug: true });

@@ -172,6 +172,7 @@ runtime expression/custom property or keep an explicit residual.
 | `root`                      | Scan root; defaults to the current directory              |
 | `virtualId`                 | Virtual CSS module id                                     |
 | `className`                 | Tailwind or named class strategy                          |
+| `namespace`                 | Pandwind-owned dynamic carriers and critical markers      |
 | `engine`                    | Shared engine context                                     |
 | `splitByRoute`              | Route-specific CSS buckets                                |
 | `inlineCritical`            | Inline route CSS into built HTML                          |

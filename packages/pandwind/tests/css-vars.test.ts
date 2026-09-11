@@ -33,6 +33,30 @@ const examplePreset = {
 } as never;
 
 describe("css.vars — encoding", () => {
+	test("uses an explicit namespace for carriers and custom properties", () => {
+		const namespaced = createCss({ namespace: "checkout" });
+		const out = namespaced.vars({ color: "red", _hover: { color: "blue" } });
+
+		expect(out.class).toBe("checkout-hover:color checkout-color");
+		expect(out.style).toEqual({
+			"--checkout-c-color": "red",
+			"--checkout-c-color_hover": "blue",
+		});
+	});
+
+	test("does not rewrite caller-owned class-name strategies", () => {
+		const css = createCss({
+			namespace: "checkout",
+			className: {
+				name: "owned",
+				toClassName: (key) => `owned-${key}`,
+			},
+		});
+
+		expect(css.class({ color: "red" })).toBe("owned-color");
+		expect(css.vars({ color: "red" }).class).toBe("checkout-color");
+	});
+
 	test("base value becomes a class + one custom property", () => {
 		const out = css.vars({ color: "red" });
 		expect(out.class).toBe("pw-color");
@@ -142,6 +166,15 @@ describe("sheet generation", () => {
 		const cssText = sheet.gen.varRules();
 		expect(cssText).toContain(".pw-hover\\:color:hover");
 		expect(cssText).toContain("color: var(--pw-c-color_hover, var(--pw-c-color))");
+	});
+
+	test("stylesheet var rules use the same explicit namespace", () => {
+		const sheet = createStylesheet(examplePreset as never, { namespace: "checkout" });
+		sheet.processVarKey("_hover__color");
+		const cssText = sheet.gen.varRules();
+
+		expect(cssText).toContain(".checkout-hover\\:color:hover");
+		expect(cssText).toContain("color: var(--checkout-c-color_hover, var(--checkout-c-color))");
 	});
 
 	test("_dark resolves through the preset condition (.dark &)", () => {

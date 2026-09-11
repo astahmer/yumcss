@@ -59,10 +59,16 @@ export const varConditionPart = (part: string): string => {
 class DefaultVarCompiler implements VarCompiler {
 	private readonly conditions: ReadonlySet<string>;
 	private readonly emptyConditions: ReadonlySet<string>;
+	private readonly prefix: string;
 
-	constructor(conditionNames: Iterable<string> = [], emptyConditionNames: Iterable<string> = []) {
+	constructor(
+		conditionNames: Iterable<string> = [],
+		emptyConditionNames: Iterable<string> = [],
+		namespace?: string,
+	) {
 		this.conditions = new Set(conditionNames);
 		this.emptyConditions = new Set(emptyConditionNames);
+		this.prefix = `${namespace ?? "pw"}-`;
 	}
 
 	private splitKey(key: string): { conditions: string[]; prop: string; canonical: string } {
@@ -90,13 +96,13 @@ class DefaultVarCompiler implements VarCompiler {
 	}
 
 	classFor(key: string): string {
-		if (!key.includes("__")) return `pw-${dashCase(key)}`;
+		if (!key.includes("__")) return `${this.prefix}${dashCase(key)}`;
 		const { conditions, prop } = this.splitKey(key);
-		return `pw-${conditions.length > 0 ? `${conditions.join(":")}:` : ""}${prop}`;
+		return `${this.prefix}${conditions.length > 0 ? `${conditions.join(":")}:` : ""}${prop}`;
 	}
 
 	private baseCustomProp(prop: string): string {
-		return `--pw-c-${prop}`;
+		return `--${this.prefix}c-${prop}`;
 	}
 
 	private customPropFor(prop: string, conditions: string[]): string {
@@ -105,7 +111,7 @@ class DefaultVarCompiler implements VarCompiler {
 		// therefore inherit instead of producing an invalid declaration.
 		return conditions.length === 0
 			? this.baseCustomProp(prop)
-			: `--pw-c-${prop}_${conditions.join("_")}`;
+			: `--${this.prefix}c-${prop}_${conditions.join("_")}`;
 	}
 
 	escapeClass(cls: string): string {
@@ -120,7 +126,7 @@ class DefaultVarCompiler implements VarCompiler {
 			if (!isSafeCssValue(raw) || raw === "") return { atoms: [], style: {} };
 			const prop = dashCase(singleKey);
 			return {
-				atoms: [{ cls: `pw-${prop}`, keys: [singleKey] }],
+				atoms: [{ cls: `${this.prefix}${prop}`, keys: [singleKey] }],
 				style: { [this.baseCustomProp(prop)]: runtimeValue(prop, raw) },
 			};
 		}
@@ -143,6 +149,8 @@ class DefaultVarCompiler implements VarCompiler {
  *
  * @param conditionNames - Condition names that should be treated as semantic
  *   paths when deriving custom-property fallbacks.
+ * @param namespace - Prefix for Pandwind-owned carrier classes and custom
+ *   properties. Defaults to `pw`.
  * @returns A compiler used by `css.vars` and runtime stylesheet generation.
  * @category styling
  * @since 0.1.0
@@ -150,4 +158,5 @@ class DefaultVarCompiler implements VarCompiler {
 export const createVarCompiler = (
 	conditionNames?: Iterable<string>,
 	emptyConditionNames?: Iterable<string>,
-): VarCompiler => new DefaultVarCompiler(conditionNames, emptyConditionNames);
+	namespace?: string,
+): VarCompiler => new DefaultVarCompiler(conditionNames, emptyConditionNames, namespace);

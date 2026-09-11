@@ -17,6 +17,8 @@ interface CallNode extends OxcNode {
 
 export interface StaticCssCallRewriterOptions {
 	readonly transformDynamicClassName?: boolean;
+	/** Namespace used by generated `css.vars()` carriers. */
+	readonly namespace?: string;
 }
 
 interface PropertyNode extends OxcNode {
@@ -48,6 +50,7 @@ export class StaticCssCallRewriter implements CssCallRewriter {
 	private readonly preset: CssPreset;
 	private readonly className: ClassNameStrategy | undefined;
 	private readonly transformDynamicClassName: boolean;
+	private readonly namespace: string | undefined;
 	/** Var toggle keys introduced by carriers this rewriter emitted. */
 	private readonly varKeys = new Set<string>();
 
@@ -61,12 +64,13 @@ export class StaticCssCallRewriter implements CssCallRewriter {
 		this.transformDynamicClassName =
 			options.transformDynamicClassName === true &&
 			(className === undefined || className.sheetBacked === true);
+		this.namespace = options.namespace;
 	}
 
 	inline(code: string, id: string, names: ReadonlySet<string>): InlineCssResult {
 		this.varKeys.clear();
 		if (names.size === 0) return { code, inlined: 0, varKeys: [] };
-		const engine = createCss({ className: this.className });
+		const engine = createCss({ className: this.className, namespace: this.namespace });
 		const compileStaticArguments = (
 			propertySets: readonly (readonly PropertyNode[])[],
 		): string | null => {
@@ -128,12 +132,7 @@ export class StaticCssCallRewriter implements CssCallRewriter {
 						? directClassNameHost(parent, ancestors)
 						: undefined;
 				if (classNameHost !== undefined) {
-					const carrier = dynamicHostCarrier(
-						code,
-						call,
-						carrierName!,
-						compileStaticArguments,
-					);
+					const carrier = dynamicHostCarrier(code, call, carrierName!, compileStaticArguments);
 					if (carrier !== undefined) {
 						edits.push({
 							start: classNameHost.attribute.start!,
@@ -161,12 +160,7 @@ export class StaticCssCallRewriter implements CssCallRewriter {
 					// vars atoms never collide with stylesheet rules for the same keys.
 					const isJsxPosition = parent?.type === NodeKind.JSXSpreadAttribute;
 					if (isJsxPosition && carrierName !== undefined) {
-						const carrier = dynamicHostCarrier(
-							code,
-							call,
-							carrierName,
-							compileStaticArguments,
-						);
+						const carrier = dynamicHostCarrier(code, call, carrierName, compileStaticArguments);
 						if (carrier !== undefined) {
 							edits.push({ start: call.start, end: call.end, text: carrier.text });
 							for (const key of carrier.varKeys) this.varKeys.add(key);
@@ -356,9 +350,7 @@ const dynamicHostCarrier = (
 	code: string,
 	call: CallNode,
 	carrierName: string,
-	compileStatic: (
-		propertySets: readonly (readonly PropertyNode[])[],
-	) => string | null,
+	compileStatic: (propertySets: readonly (readonly PropertyNode[])[]) => string | null,
 ): { readonly text: string; readonly varKeys: readonly string[] } | undefined => {
 	const splits = call.arguments.map((argument) => splitStyleArgument(code, argument));
 	if (splits.some((split): split is undefined => split === undefined)) return undefined;
@@ -390,9 +382,7 @@ const dynamicHostCarrier = (
 
 	const inputs = [
 		`${carrierName}.vars(${dynamicArguments.join(", ")})`,
-		...(staticClass === undefined || staticClass === ""
-			? []
-			: [JSON.stringify(staticClass)]),
+		...(staticClass === undefined || staticClass === "" ? [] : [JSON.stringify(staticClass)]),
 	];
 	return {
 		text: `${carrierName}.props(${inputs.join(", ")})`,

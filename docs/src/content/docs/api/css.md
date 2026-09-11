@@ -136,6 +136,35 @@ back from the most
 specific condition to the base custom property, so transitions and other
 browser CSS can consume the same property normally.
 
+### Isolating multiple Pandwind instances
+
+Dynamic carriers use a small Pandwind-owned namespace. The default is `pw`:
+
+```ts
+const css = createCss(preset, { namespace: "checkout" });
+const output = css.vars({ color: runtimeColor });
+
+// output.class: "checkout-color"
+// output.style: { "--checkout-c-color": runtimeColor }
+```
+
+Use this when multiple independently configured Pandwind instances share a
+document, such as a microfrontend host. Keep the value a CSS identifier
+fragment (`checkout`, `billing-v2`, and similar). The option only controls
+Pandwind-owned dynamic carriers; hashed atomic classes and names returned by a
+custom `ClassNameStrategy` remain under their existing contracts.
+
+When using static extraction, pass the same namespace to
+`pandwindCssVite` (or `pandwindUnpluginCss`) so its var rules and critical
+markers match the factory:
+
+```ts
+const css = createCss(preset, { namespace: "checkout" });
+
+// vite.config.ts
+pandwindCssVite(preset, { namespace: "checkout" });
+```
+
 ### At-rules: local conditions versus global CSS
 
 Pandwind has two deliberately different at-rule lanes. Use a typed style

@@ -304,6 +304,22 @@ describe("runtime CSS-in-JS sheet", () => {
 		expect(sheet.css()).toContain(".pw-padding");
 	});
 
+	test("runtime CSS keeps namespaced carriers aligned with its sheet", () => {
+		const sheet = createRuntimeSheet({ autoMount: false });
+		const css = createRuntimeCss(examplePreset, { sheet, namespace: "checkout" });
+
+		const output = css.vars({ color: "red", _hover: { color: "blue" } });
+
+		expect(output).toMatchObject({
+			class: "checkout-hover:color checkout-color",
+			style: {
+				"--checkout-c-color": "red",
+				"--checkout-c-color_hover": "blue",
+			},
+		});
+		expect(sheet.css()).toContain("color: var(--checkout-c-color_hover, var(--checkout-c-color))");
+	});
+
 	test("createCss and createRuntimeCss share input output; only runtime adds a sheet", () => {
 		const css = createCss(examplePreset);
 		const sheet = createRuntimeSheet({ autoMount: false });

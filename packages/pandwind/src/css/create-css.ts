@@ -88,8 +88,9 @@ const ALL_RUNTIME_METHODS = [
  * @typeParam TPreset - The preset whose properties, tokens, and conditions
  *   become the style object's type.
  * @param preset - A preset returned by {@link definePreset}.
- * @param options - Backend options used with a preset; the open-ended
- *   overload accepts these options as its sole argument.
+ * @param options - Backend options used with a preset. Set `namespace` when
+ *   dynamic carriers must be isolated from another Pandwind instance; the
+ *   open-ended overload accepts these options as its sole argument.
  * @returns A callable CSS compiler with class, variable, raw, props, and group
  *   projections.
  * @see {@link createDesignCss} for the intent-oriented `$frame`/`$layout`/`$text` lane.

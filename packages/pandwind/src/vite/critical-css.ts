@@ -7,8 +7,6 @@
  * HTML from disk and delegates here; unit tests call it directly.
  */
 
-const CRITICAL_MARKER_ATTR = "data-pw-critical";
-
 const DEFAULT_CAP_BYTES = 64 * 1024;
 
 export interface RenderCriticalOptions {
@@ -20,6 +18,8 @@ export interface RenderCriticalOptions {
 	css: string;
 	/** Maximum injected bytes; over-cap routes are skipped with a comment. */
 	capBytes?: number;
+	/** Namespace used for the Pandwind-owned marker attribute. */
+	namespace?: string;
 }
 
 export type RenderCriticalResult =
@@ -27,16 +27,17 @@ export type RenderCriticalResult =
 	| { ok: false; reason: string };
 
 /**
- * Inject `<style data-pw-critical="<route>">…</style>` after `<head>`.
+ * Inject `<style data-<namespace>-critical="<route>">…</style>` after `<head>`.
  * Idempotent (marker-checked) and cap-guarded. Never throws on malformed
  * HTML — returns a skip reason instead, leaving the file untouched.
  */
 export function renderCriticalHtml(options: RenderCriticalOptions): RenderCriticalResult {
 	const { html, routeName, css } = options;
 	const capBytes = options.capBytes ?? DEFAULT_CAP_BYTES;
+	const markerAttribute = `data-${options.namespace ?? "pw"}-critical`;
 
 	if (css.trim() === "") return { ok: false, reason: "no critical css produced" };
-	if (html.includes(`${CRITICAL_MARKER_ATTR}="${routeName}"`)) {
+	if (html.includes(`${markerAttribute}="${routeName}"`)) {
 		return { ok: false, reason: "already injected" };
 	}
 	const headMatch = /<head[^>]*>/i.exec(html);
@@ -50,7 +51,7 @@ export function renderCriticalHtml(options: RenderCriticalOptions): RenderCritic
 		};
 	}
 
-	const tag = `<style ${CRITICAL_MARKER_ATTR}="${routeName}">${css}</style>\n`;
+	const tag = `<style ${markerAttribute}="${routeName}">${css}</style>\n`;
 	return {
 		ok: true,
 		bytes,

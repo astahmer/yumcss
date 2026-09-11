@@ -46,7 +46,8 @@ type Maybe<T> = T | undefined | null | false;
  *
  * @typeParam TPreset - A design-compatible preset carrying tokens and conditions.
  * @param preset - The preset that defines the design token vocabulary.
- * @param options - CSS backend options such as a class-name strategy.
+ * @param options - CSS backend options such as a class-name strategy or
+ *   dynamic-carrier namespace.
  * @returns A preset-aware {@link CssFn} over {@link DesignStyleObject} values.
  * @see {@link createCss} for ordinary CSS property objects.
  * @category factories

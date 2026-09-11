@@ -73,7 +73,8 @@ export interface StylesheetPolicies {
  * ```
  *
  * @param preset - The token, property, and condition metadata to compile.
- * @param options - Hashing and class-name strategy options.
+ * @param options - Hashing, class-name strategy, and dynamic-carrier namespace
+ *   options. Match the namespace used by the corresponding CSS factory.
  * @param policies - Optional replaceable stylesheet policies.
  * @returns A pure compiler with `process`, `generate`, and inspectable rule
  *   generators.
@@ -87,9 +88,11 @@ export const createStylesheet = (
 ) => {
 	const cache = new Map<string, Rule>();
 	const conditionNames = Object.keys(preset.conditions);
+	const namespace = options.namespace ?? "pw";
 	const varCompiler = createVarCompiler(
 		conditionNames,
 		conditionNames.filter((name) => isEmptyCondition(name, preset.conditions)),
+		namespace,
 	);
 	const conditionPolicy = policies.conditions ?? defaultConditionPolicy;
 	const ordering = policies.ordering ?? createStylesheetOrderingPolicy();
@@ -292,9 +295,9 @@ export const createStylesheet = (
 		// The canonical key always stores conditions before the property.
 		const prop = dashCase(propPart);
 		const condParts = orderedConditions.map(varConditionPart);
-		let declaration = `var(--pw-c-${prop})`;
+		let declaration = `var(--${namespace}-c-${prop})`;
 		for (let i = 1; i <= condParts.length; i++) {
-			declaration = `var(--pw-c-${prop}_${condParts.slice(0, i).join("_")}, ${declaration})`;
+			declaration = `var(--${namespace}-c-${prop}_${condParts.slice(0, i).join("_")}, ${declaration})`;
 		}
 		const atomic = decoder.decode(preset.conditions, pairs.concat(orderedKey, "\u0000"));
 		const css = serializer.serialize(`${prop}: ${declaration}`, {

@@ -863,6 +863,7 @@ test("dynamic className rewriting is opt-in and host-aware", () => {
 		const plugin = pandwindCssVite(examplePreset, {
 			root: dir,
 			transformDynamicClassName: true,
+			namespace: "checkout",
 		});
 		const transformed = (
 			plugin.transform as (source: string, id: string) => { code: string } | null
@@ -875,7 +876,7 @@ test("dynamic className rewriting is opt-in and host-aware", () => {
 		expect(transformed?.code).not.toContain("className={css.class");
 		expect(transformed?.code).not.toContain("css.class({ padding: 8 })");
 		expect(generated).toContain("padding:8");
-		expect(generated).toContain("color: var(--pw-c-color)");
+		expect(generated).toContain("color: var(--checkout-c-color)");
 	} finally {
 		rmSync(dir, { recursive: true, force: true });
 	}

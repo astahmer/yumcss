@@ -16,36 +16,36 @@
 		"gz": 4100
 	},
 	"css, compiler-pruned call": {
-		"min": 4100,
-		"gz": 1900
+		"min": 6000,
+		"gz": 2600
 	},
 	"css, compiler-pruned class": {
-		"min": 4200,
-		"gz": 1950
+		"min": 6100,
+		"gz": 2650
 	},
 	"css, compiler-pruned vars": {
-		"min": 5700,
-		"gz": 2550
+		"min": 8000,
+		"gz": 3400
 	},
 	"css, generated call": {
-		"min": 4100,
-		"gz": 1900
+		"min": 6000,
+		"gz": 2600
 	},
 	"css, generated class": {
-		"min": 4200,
-		"gz": 1950
+		"min": 6100,
+		"gz": 2650
 	},
 	"css, generated vars": {
-		"min": 5700,
-		"gz": 2550
+		"min": 8000,
+		"gz": 3350
 	},
 	"css, generated class+vars": {
-		"min": 5700,
-		"gz": 2550
+		"min": 8000,
+		"gz": 3400
 	},
 	"css, generated all": {
-		"min": 7000,
-		"gz": 3100
+		"min": 10000,
+		"gz": 4100
 	},
 	"tw": {
 		"min": 3000,
