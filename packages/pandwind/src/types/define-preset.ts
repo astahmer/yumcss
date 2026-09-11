@@ -81,12 +81,16 @@ export const defineTheme = <TTheme extends DefinePresetOptions>(theme: TTheme) =
  * `$strictness: "inherits"` to one mapped property when a strict preset needs
  * both token names and that property's raw config values.
  *
+ * `defineTheme` is optional when the theme object is consumed only by this
+ * call. Pass `{ config, tokens }` directly in that case; keep `defineTheme`
+ * for a named, exported, or independently composed theme.
+ *
  * **Example** (A small, typed CSS preset)
  *
  * ```ts
  * import type { StandardProperties } from "csstype";
  * import { createCss } from "pandwind/css";
- * import { definePreset, defineTheme, defineTokens } from "pandwind/preset";
+ * import { definePreset, defineTokens } from "pandwind/preset";
  *
  * const tokens = defineTokens({
  *   colors: { "$brand-500": "#2563eb", "$surface": "#ffffff" },
@@ -94,7 +98,7 @@ export const defineTheme = <TTheme extends DefinePresetOptions>(theme: TTheme) =
  * });
  *
  * const preset = definePreset(
- *   defineTheme({ config: {} as StandardProperties, tokens }),
+ *   { config: {} as StandardProperties, tokens },
  *   {
  *     strict: true,
  *     conditions: { _hover: "&:hover" },
@@ -118,7 +122,7 @@ export const defineTheme = <TTheme extends DefinePresetOptions>(theme: TTheme) =
  * @typeParam TConfig - The CSS property configuration shape.
  * @typeParam TTokens - The token groups and literal token names.
  * @typeParam TPreset - The resulting preset behavior shape.
- * @param theme - Values produced by {@link defineTheme}.
+ * @param theme - Theme-shaped values, optionally produced by {@link defineTheme}.
  * @param preset - Conditions, strictness, and property-to-token mappings.
  * @returns A preset carrying both runtime metadata and inferred token types.
  * @see {@link defineTokens} for the raw token layer.

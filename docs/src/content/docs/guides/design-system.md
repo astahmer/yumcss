@@ -160,10 +160,10 @@ const semanticTokens = defineSemanticTokens(
 );
 
 export const preset = definePreset(
-	defineTheme({
+	{
 		...theme,
 		tokens: { ...tokens, semantic: semanticTokens.semantic },
-	}),
+	},
 	{
 		strict: true,
 		conditions: semanticConditions,
@@ -202,7 +202,7 @@ const themedTokens = {
 };
 
 export const componentPreset = definePreset(
-	defineTheme({ config: {} as StandardProperties, tokens: themedTokens }),
+	{ config: {} as StandardProperties, tokens: themedTokens },
 	{
 		strict: true,
 		conditions: { base: "", _dark: '[data-theme="dark"] &' },

@@ -246,7 +246,7 @@ of repeating raw colors and spacing values.
 ```ts
 // src/preset.ts
 import type { StandardProperties } from "csstype";
-import { definePreset, defineTheme, defineTokens } from "pandwind/preset";
+import { definePreset, defineTokens } from "pandwind/preset";
 
 const tokens = defineTokens({
 	colors: {
@@ -260,7 +260,7 @@ const tokens = defineTokens({
 	radii: { md: "8px", lg: "12px" },
 });
 
-export const preset = definePreset(defineTheme({ config: {} as StandardProperties, tokens }), {
+export const preset = definePreset({ config: {} as StandardProperties, tokens }, {
 	strict: true,
 	conditions: { base: "", _hover: "&:hover", _dark: ".dark &" },
 	properties: { $all: true },

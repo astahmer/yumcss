@@ -25,6 +25,11 @@ The preset is the boundary between an open-ended CSS function and a design
 system. A bare `createCss()` still accepts runtime CSS values, but it cannot
 know which token names or conditions belong to your application.
 
+Use `defineTheme` when a theme is named, exported, or composed independently.
+When the theme is only passed to one `definePreset` call, inline the
+`{ config, tokens }` object. Both forms are equivalent at runtime; the direct
+form keeps a small preset easy to read.
+
 ## A complete typed preset
 
 This is a small preset with all standard CSS properties available, while the
@@ -36,7 +41,6 @@ import { createCss } from "pandwind/css";
 import {
 	definePreset,
 	defineProperties,
-	defineTheme,
 	defineTokens,
 } from "pandwind/preset";
 
@@ -58,7 +62,7 @@ const properties = defineProperties({
 });
 
 const preset = definePreset(
-	defineTheme({ config: {} as StandardProperties, tokens }),
+	{ config: {} as StandardProperties, tokens },
 	{
 		strict: true,
 		conditions: {

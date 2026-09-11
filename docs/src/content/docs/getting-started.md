@@ -133,7 +133,7 @@ has a complete preset; the shape is:
 ```ts
 // src/preset.ts
 import type { StandardProperties } from "csstype";
-import { definePreset, defineTheme, defineTokens } from "pandwind/preset";
+import { definePreset, defineTokens } from "pandwind/preset";
 
 const tokens = defineTokens({
 	colors: { $surface: "#ffffff", $ink: "#111827" },
@@ -141,7 +141,7 @@ const tokens = defineTokens({
 	radii: { lg: "12px" },
 });
 
-export const preset = definePreset(defineTheme({ config: {} as StandardProperties, tokens }), {
+export const preset = definePreset({ config: {} as StandardProperties, tokens }, {
 	strict: true,
 	conditions: { base: "", _hover: "&:hover" },
 	properties: { $all: true },

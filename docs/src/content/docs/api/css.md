@@ -19,21 +19,21 @@ merging, variant conditions and a `$input` escape hatch for dynamic values.
 ```ts
 import type { StandardProperties } from "csstype";
 import { createCss } from "pandwind/css";
-import { definePreset, defineProperties, defineTheme, defineTokens } from "pandwind/preset";
+import { definePreset, defineTokens } from "pandwind/preset";
 
 const tokens = defineTokens({
 	colors: { "$brand-500": "#2563eb" },
 	spacing: { 4: "1rem" },
 });
 
-const preset = definePreset(defineTheme({ config: {} as StandardProperties, tokens }), {
+const preset = definePreset({ config: {} as StandardProperties, tokens }, {
 	strict: true,
 	conditions: { _hover: "&:hover" },
-	properties: defineProperties({
+	properties: {
 		$all: true,
 		backgroundColor: { $tokens: "colors" },
 		padding: { $tokens: "spacing" },
-	}),
+	},
 });
 
 const css = createCss(preset);

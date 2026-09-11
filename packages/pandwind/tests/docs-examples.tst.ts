@@ -14,7 +14,6 @@ import {
 	definePreset,
 	defineProperties,
 	defineSemanticTokens,
-	defineTheme,
 	defineTokens,
 } from "../src/preset/index.ts";
 import { examplePreset } from "@pandwind/example-preset";
@@ -72,10 +71,10 @@ test("definePreset JSDoc example preserves a custom typed vocabulary", () => {
 		padding: tokens.spacing,
 	});
 	const preset = definePreset(
-		defineTheme({
+		{
 			config: {} as StandardProperties,
 			tokens,
-		}),
+		},
 		{ strict: true, conditions, properties },
 	);
 	const css = createCss(preset);
@@ -90,15 +89,18 @@ test("preset docs cover strict, inherited, and open property bindings", () => {
 	});
 	const config = {} as Pick<StandardProperties, "color" | "padding">;
 
-	const strictPreset = definePreset(defineTheme({ config, tokens }), {
-		strict: true,
-		conditions: {},
-		properties: {
-			$all: true,
-			color: { $tokens: "colors" },
-			padding: { $tokens: "spacing" },
+	const strictPreset = definePreset(
+		{ config, tokens },
+		{
+			strict: true,
+			conditions: {},
+			properties: {
+				$all: true,
+				color: { $tokens: "colors" },
+				padding: { $tokens: "spacing" },
+			},
 		},
-	});
+	);
 	const strictCss = createCss(strictPreset);
 	expect(strictPreset.strict).type.toBe<true>();
 	expect(strictPreset.properties.color).type.toBe<{ $tokens: "colors" }>();
@@ -111,15 +113,18 @@ test("preset docs cover strict, inherited, and open property bindings", () => {
 		}),
 	).type.toBe<string>();
 
-	const inheritedPreset = definePreset(defineTheme({ config, tokens }), {
-		strict: true,
-		conditions: {},
-		properties: {
-			$all: true,
-			color: { $tokens: "colors", $strictness: "inherits" },
-			padding: { $tokens: "spacing" },
+	const inheritedPreset = definePreset(
+		{ config, tokens },
+		{
+			strict: true,
+			conditions: {},
+			properties: {
+				$all: true,
+				color: { $tokens: "colors", $strictness: "inherits" },
+				padding: { $tokens: "spacing" },
+			},
 		},
-	});
+	);
 	const inheritedCss = createCss(inheritedPreset);
 	expect(
 		inheritedCss.class({
@@ -128,15 +133,18 @@ test("preset docs cover strict, inherited, and open property bindings", () => {
 		}),
 	).type.toBe<string>();
 
-	const openPreset = definePreset(defineTheme({ config, tokens }), {
-		strict: false,
-		conditions: {},
-		properties: {
-			$all: true,
-			color: { $tokens: "colors" },
-			padding: { $tokens: "spacing" },
+	const openPreset = definePreset(
+		{ config, tokens },
+		{
+			strict: false,
+			conditions: {},
+			properties: {
+				$all: true,
+				color: { $tokens: "colors" },
+				padding: { $tokens: "spacing" },
+			},
 		},
-	});
+	);
 	const openCss = createCss(openPreset);
 	expect(openCss.class({ color: "var(--brand)", padding: 4 })).type.toBe<string>();
 });
@@ -169,13 +177,16 @@ test("preset docs keep semantic and component token refs as strings", () => {
 			...componentTokens.component,
 		},
 	};
-	const preset = definePreset(defineTheme({ config: {} as StandardProperties, tokens }), {
-		strict: true,
-		conditions,
-		properties: {
-			backgroundColor: { $tokens: "component" },
+	const preset = definePreset(
+		{ config: {} as StandardProperties, tokens },
+		{
+			strict: true,
+			conditions,
+			properties: {
+				backgroundColor: { $tokens: "component" },
+			},
 		},
-	});
+	);
 
 	const css = createCss(preset);
 	expect(css.class({ backgroundColor: "component.card.background" })).type.toBe<string>();
