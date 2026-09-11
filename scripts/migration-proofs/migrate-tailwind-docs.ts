@@ -209,13 +209,13 @@ function createLane(id: TailwindDocsLane): LaneAdapter {
 						? { twModule: "src/pandwind/tw", cxModule: "src/pandwind/cx" }
 						: id === TailwindDocsLane.CssClass
 							? { cssModule: "src/pandwind/css" }
-							: { dssModule: "src/pandwind/dcss" },
+							: { dssModule: "src/pandwind/dss" },
 			});
 		},
 	};
 }
 
-function runtimeStyleSheetSource(binding: "css" | "dcss"): string {
+function runtimeStyleSheetSource(binding: "css" | "dss"): string {
 	return `"use client";
 
 import { useRef } from "react";
@@ -257,9 +257,9 @@ function laneSupportFiles(
 			'import type { CssFn } from "pandwind/css";\nimport { createRuntimeCss } from "pandwind/css/runtime";\nimport { pandwindPreset } from "pandwind/preset";\n\nexport const css = createRuntimeCss(pandwindPreset) as unknown as CssFn & { sheet: { css(): string } };\n';
 		support["src/pandwind/style-sheet.tsx"] = runtimeStyleSheetSource("css");
 	} else {
-		support["src/pandwind/dcss.ts"] =
-			'import type { CssFn } from "pandwind/css";\nimport { createRuntimeDesignCss } from "pandwind/css/runtime";\nimport { pandwindPreset } from "pandwind/preset";\n\nexport const dcss = createRuntimeDesignCss(pandwindPreset) as unknown as CssFn & { sheet: { css(): string } };\n';
-		support["src/pandwind/style-sheet.tsx"] = runtimeStyleSheetSource("dcss");
+		support["src/pandwind/dss.ts"] =
+			'import type { CssFn } from "pandwind/css";\nimport { createRuntimeDesignCss } from "pandwind/css/runtime";\nimport { pandwindPreset } from "pandwind/preset";\n\nexport const dss = createRuntimeDesignCss(pandwindPreset) as unknown as CssFn & { sheet: { css(): string } };\n';
+		support["src/pandwind/style-sheet.tsx"] = runtimeStyleSheetSource("dss");
 	}
 	return support;
 }

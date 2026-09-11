@@ -30,7 +30,7 @@ import { PostCssNodeKind } from "./helpers/postcss-node-kind.ts";
 const strategy = createNamedAtomsStrategy();
 
 /** Default-mode engine — the control group. */
-const hashed = createDesignCss(examplePreset);
+const hashedDss = createDesignCss(examplePreset);
 
 function stylesheet(styles: Array<Record<string, unknown>>): Root {
 	const sheet = createStylesheet(examplePreset, { className: strategy });
@@ -46,14 +46,14 @@ function rulesFor(root: Root, className: string): Rule[] {
 
 describe("mode switch via config", () => {
 	test("default mode still emits opaque hashes", () => {
-		const out = hashed({ $text: { color: "$red-500" } }) as Record<string, string>;
+		const out = hashedDss({ $text: { color: "$red-500" } }) as Record<string, string>;
 		const atom = Object.values(out)[0]!;
 		expect(atom.startsWith("pw-")).toBe(false);
 	});
 
 	test("named-atoms mode emits readable classes for identical calls", () => {
-		const css = createDesignCss(examplePreset, { className: strategy });
-		const out = css({ $text: { color: "$red-500" } }) as Record<string, string>;
+		const dss = createDesignCss(examplePreset, { className: strategy });
+		const out = dss({ $text: { color: "$red-500" } }) as Record<string, string>;
 		const atom = Object.values(out)[0]!;
 		expect(atom.startsWith("pw-")).toBe(true);
 	});
@@ -61,25 +61,25 @@ describe("mode switch via config", () => {
 
 describe("sheet-backed contract", () => {
 	test("runtime class has a matching stylesheet rule", () => {
-		const css = createDesignCss(examplePreset, { className: strategy });
-		const out = css({ $text: { color: "$red-500" } }) as Record<string, string>;
+		const dss = createDesignCss(examplePreset, { className: strategy });
+		const out = dss({ $text: { color: "$red-500" } }) as Record<string, string>;
 		const atom = Object.values(out)[0]!;
 
-		const root = stylesheet([css.raw({ $text: { color: "$red-500" } }) as never]);
+		const root = stylesheet([dss.raw({ $text: { color: "$red-500" } }) as never]);
 		const rules = rulesFor(root, atom);
 		expect(rules.length).toBe(1);
 		expect(rules[0]!.toString()).toContain(`.${atom}`);
 	});
 
 	test("token values resolve in the declaration and the emitted name", () => {
-		const css = createDesignCss(examplePreset, { className: strategy });
-		const out = css({ $text: { color: "$blue-500" } }) as Record<string, string>;
+		const dss = createDesignCss(examplePreset, { className: strategy });
+		const out = dss({ $text: { color: "$blue-500" } }) as Record<string, string>;
 		const atom = Object.values(out)[0]!;
 		// The design layer resolves tokens before registration, so the name
 		// carries the concrete value (`#` escaped as `\#` in CSS identifiers).
 		expect(atom).toContain("3182ce");
 
-		const root = stylesheet([css.raw({ $text: { color: "$blue-500" } }) as never]);
+		const root = stylesheet([dss.raw({ $text: { color: "$blue-500" } }) as never]);
 		const rules = rulesFor(root, atom);
 		expect(rules.length).toBe(1);
 		expect(rules[0]!.toString()).toContain("#3182ce");
@@ -102,11 +102,11 @@ describe("sheet-backed contract", () => {
 	});
 
 	test("design-layer hover conditions keep their rule", () => {
-		const css = createDesignCss(examplePreset, { className: strategy });
-		const out = css({ _hover: { $text: { color: "$red-500" } } }) as Record<string, string>;
+		const dss = createDesignCss(examplePreset, { className: strategy });
+		const out = dss({ _hover: { $text: { color: "$red-500" } } }) as Record<string, string>;
 		const atom = Object.values(out)[0]!;
 
-		const root = stylesheet([css.raw({ _hover: { $text: { color: "$red-500" } } }) as never]);
+		const root = stylesheet([dss.raw({ _hover: { $text: { color: "$red-500" } } }) as never]);
 		const rules = rulesFor(root, atom);
 		expect(rules.length).toBe(1);
 		expect(rules[0]!.selector).toContain(":hover");
@@ -114,27 +114,27 @@ describe("sheet-backed contract", () => {
 });
 
 describe("cx() merging survives the mode switch", () => {
-	const css = createDesignCss(examplePreset, { className: strategy });
+	const dss = createDesignCss(examplePreset, { className: strategy });
 	const real = extractTwConfig(
 		readFileSync(resolve(import.meta.dirname, "../../../examples/example/src/tw.ts"), "utf8"),
 	)!;
 	const cx = createCx({
-		css,
+		css: dss,
 		variants: real.variants,
 		conflicts: real.conflicts,
 		compose: real.compose,
 	});
 
 	test("named atoms join the registry", () => {
-		const registry = (css as never as { [ATOM_REGISTRY]?: Map<string, string> })[ATOM_REGISTRY]!;
-		const out = css({ $text: { color: "$red-500" } }) as Record<string, string>;
+		const registry = (dss as never as { [ATOM_REGISTRY]?: Map<string, string> })[ATOM_REGISTRY]!;
+		const out = dss({ $text: { color: "$red-500" } }) as Record<string, string>;
 		const atom = Object.values(out)[0]!;
 		expect(registry.get(atom)).toBe("color");
 	});
 
 	test("later tw class wins over an earlier named atom on the same property", () => {
 		// cx must consult the SAME engine instance the atom came from.
-		const atom = Object.values(css({ $text: { color: "$red-500" } }) as Record<string, string>)[0]!;
+		const atom = Object.values(dss({ $text: { color: "$red-500" } }) as Record<string, string>)[0]!;
 		expect(cx(atom, "text-blue-500")).toBe("text-blue-500");
 		expect(cx("text-blue-500", atom)).toBe(atom);
 	});

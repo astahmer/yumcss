@@ -15,7 +15,7 @@ const twSource = readFileSync(
 const real = extractTwConfig(twSource)!;
 
 const css = createCss();
-const designCss = createDesignCss(examplePreset);
+const dss = createDesignCss(examplePreset);
 
 const cx = createCx({
 	css,
@@ -25,7 +25,7 @@ const cx = createCx({
 });
 
 const designCx = createCx({
-	css: designCss,
+	css: dss,
 	variants: real.variants,
 	conflicts: real.conflicts,
 	compose: real.compose,
@@ -106,7 +106,7 @@ describe("cross-system merging (tw + css)", () => {
 	});
 
 	test("design layer tokens merge against tw utilities", () => {
-		const designColor = designCss.class({ $text: { color: "$gray-900" } });
+		const designColor = dss.class({ $text: { color: "$gray-900" } });
 		expect(designCx("text-gray-900", designColor)).toBe(designColor);
 		expect(designCx(designColor, "text-gray-900")).toBe("text-gray-900");
 	});

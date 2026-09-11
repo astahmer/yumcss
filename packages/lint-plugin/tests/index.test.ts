@@ -160,19 +160,19 @@ cx(...items);`,
 			`import * as cssApi from "pandwind/css";
 import { createDesignCss as makeDesign } from "pandwind/design";
 const css = cssApi.createCss();
-const dcss = makeDesign(preset);
+const dss = makeDesign(preset);
 css({ $raw: { color: "green" } });
-dcss({ $raw: { color: "yellow" } });
+dss({ $raw: { color: "yellow" } });
 css.class({ $raw: { color: "red" } });
-dcss.class({ $raw: { color: "blue" } });`,
+dss.class({ $raw: { color: "blue" } });`,
 		);
 
 		expect(reports).toHaveLength(4);
 		expect(reports.map(({ data }) => data.name)).toEqual([
 			"css",
-			"dcss",
+			"dss",
 			"css.class",
-			"dcss.class",
+			"dss.class",
 		]);
 		expect(reports).toMatchInlineSnapshot(`
 			[
@@ -185,7 +185,7 @@ dcss.class({ $raw: { color: "blue" } });`,
 			  },
 			  {
 			    "data": {
-			      "name": "dcss",
+			      "name": "dss",
 			    },
 			    "message": "pandwind: $raw in {{name}}() escapes the design system — model the value as a token or extend the preset",
 			    "nodeType": "Property",
@@ -199,7 +199,7 @@ dcss.class({ $raw: { color: "blue" } });`,
 			  },
 			  {
 			    "data": {
-			      "name": "dcss.class",
+			      "name": "dss.class",
 			    },
 			    "message": "pandwind: $raw in {{name}}() escapes the design system — model the value as a token or extend the preset",
 			    "nodeType": "Property",
@@ -337,8 +337,8 @@ const isTyped = (node) => node.type === NodeKind.CallExpression;`,
 
 	test("uses an explicit token policy instead of a hardcoded scale vocabulary", () => {
 		const code = `import { createDesignCss } from "pandwind/design";
-const dcss = createDesignCss(preset);
-dcss.class({ $frame: { gap: "space-4", align: "center" } });`;
+const dss = createDesignCss(preset);
+dss.class({ $frame: { gap: "space-4", align: "center" } });`;
 		const withoutPolicy = runRule("design-tokens-only", code);
 		const withPolicy = runRule("design-tokens-only", code, [
 			{ allowedPrefixes: ["$"], allowedValues: ["center", "space-4"] },
@@ -351,8 +351,8 @@ dcss.class({ $frame: { gap: "space-4", align: "center" } });`;
 		const strictReports = runRule(
 			"design-tokens-only",
 			`import { createDesignCss } from "pandwind/design";
-const dcss = createDesignCss(preset);
-dcss.class({ $frame: { gap: "space-5" } });`,
+const dss = createDesignCss(preset);
+dss.class({ $frame: { gap: "space-5" } });`,
 			[{ allowedPrefixes: ["$"], allowedValues: ["space-4"] }],
 		);
 		expect(strictReports).toHaveLength(1);
@@ -386,8 +386,8 @@ dcss.class({ $frame: { gap: "space-5" } });`,
 		const ok = runRule(
 			"design-tokens-only",
 			`import { createDesignCss } from "pandwind/design";
-const dcss = createDesignCss(preset);
-dcss.class({
+const dss = createDesignCss(preset);
+dss.class({
   $frame: { padding: "$space.4", padding2: "4px", radius: "$radius.sm" },
   $text: { color: "red-500", weight: "bold" },
 });`,
@@ -397,8 +397,8 @@ dcss.class({
 
 		// unresolved policy is report-only/fail-open
 		const badCode = `import { createDesignCss } from "pandwind/design";
-const dcss = createDesignCss(preset);
-dcss.class({
+const dss = createDesignCss(preset);
+dss.class({
   $frame: { padding: "13px" },
   $text: { color: "chartreuse" },
 });`;

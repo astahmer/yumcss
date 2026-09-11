@@ -2,7 +2,7 @@ import type { PropsWithChildren } from "react";
 import { useState } from "react";
 import { createCx } from "pandwind/cx";
 import { css, relaxedCss, runtimeCss, untypedCss } from "../css";
-import { css as designCss } from "../design";
+import { dss } from "../design";
 import { tw } from "../tw";
 
 type RuntimeButtonInput = {
@@ -53,13 +53,13 @@ const relaxedStyle = relaxedCss.raw({
 	color: "rebeccapurple",
 	padding: "12px",
 });
-const catalogCx = createCx({ css: designCss });
+const catalogCx = createCx({ css: dss });
 const composedClassName = catalogCx(
-	designCss.class({ $text: { color: "$blue-600", weight: "semibold" } }),
+	dss.class({ $text: { color: "$blue-600", weight: "semibold" } }),
 	tw({ rounded: "md", p: "2" }),
 	"caller-class",
 );
-const designClassName = designCss.class({
+const designClassName = dss.class({
 	$frame: { fill: "$blue-50", pad: 2, corners: "md" },
 	$text: { color: "$blue-700", size: "sm" },
 });
@@ -263,7 +263,7 @@ export function ApiCatalogApp() {
 
 				<ApiCard
 					name="createCx() / cx()"
-					call={`cx(designCss.class({ ... }), tw({ ... }), "caller-class")`}
+	call={`cx(dss.class({ ... }), tw({ ... }), "caller-class")`}
 					detail="composition merges design atoms, utility strings, and caller classes"
 				>
 					<div className={composedClassName}>{composedClassName}</div>
@@ -271,7 +271,7 @@ export function ApiCatalogApp() {
 
 				<ApiCard
 					name="createDesignCss()"
-					call={`designCss.class({ $frame: { fill: "$blue-50" }, $text: { size: "sm" } })`}
+					call={`dss.class({ $frame: { fill: "$blue-50" }, $text: { size: "sm" } })`}
 					detail="the design vocabulary resolves through the same preset-bound engine"
 				>
 					<div className={designClassName}>$frame and $text are live design modules.</div>

@@ -42,7 +42,7 @@ const sourceCatalogFile = `${appRootName}/pandwind-source.txt`;
 export enum ShadcnV4MigrationLane {
 	Tw = "tw",
 	Css = "css",
-	Dcss = "dcss",
+	Dss = "dss",
 }
 
 export interface ShadcnV4MigrationOptions {
@@ -339,7 +339,7 @@ export class ShadcnV4Migration {
 	static readonly lanes: readonly ShadcnV4MigrationLane[] = [
 		ShadcnV4MigrationLane.Tw,
 		ShadcnV4MigrationLane.Css,
-		ShadcnV4MigrationLane.Dcss,
+		ShadcnV4MigrationLane.Dss,
 	];
 
 	static async run(

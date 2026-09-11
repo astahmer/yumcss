@@ -262,8 +262,8 @@ export function createRuntimeCss<
  * import { examplePreset } from "@pandwind/example-preset";
  *
  * const sheet = createRuntimeSheet({ autoMount: false });
- * const dcss = createRuntimeDesignCss(examplePreset, { sheet });
- * dcss.class({ $frame: { fill: "$blue-500", pad: 16 } });
+ * const dss = createRuntimeDesignCss(examplePreset, { sheet });
+ * dss.class({ $frame: { fill: "$blue-500", pad: 16 } });
  * ```
  *
  * @typeParam TPreset - The design-compatible preset.
@@ -278,9 +278,9 @@ export function createRuntimeDesignCss<TPreset extends DesignPreset>(
 	options: RuntimeCssOptions = {},
 ): RuntimeCssFn<DesignStyleObject<TPreset>> {
 	const runtime = runtimeOptions(preset, options);
-	const css = createDesignCss(preset, runtime.cssOptions) as CssFn<DesignStyleObject<TPreset>>;
-	runtime.registerVars(css as unknown as CssFn<StyleObject>);
-	const flushed = withRuntimeFlush(css as unknown as CssFn<StyleObject>, runtime);
+	const dss = createDesignCss(preset, runtime.cssOptions) as CssFn<DesignStyleObject<TPreset>>;
+	runtime.registerVars(dss as unknown as CssFn<StyleObject>);
+	const flushed = withRuntimeFlush(dss as unknown as CssFn<StyleObject>, runtime);
 	return Object.assign(flushed, { sheet: runtime.sheet }) as RuntimeCssFn<
 		DesignStyleObject<TPreset>
 	>;

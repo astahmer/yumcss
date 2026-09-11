@@ -310,11 +310,11 @@ pnpm add pandwind
 pnpm exec pandwind-codemod migrate --from=panda --to=pandwind-css '<site>/{src,app,theme}/**/*.{ts,tsx}' --out=pandwind
 ```
 
-- `css({...})` → `css.class({...})` — shorthands expanded, `_hover`/`_dark`/
+- `css({...})` → `dss.class({...})` — shorthands expanded, `_hover`/`_dark`/
   breakpoint scopes preserved, per-property responsive objects fanned out,
   textStyles expanded; semantic tokens map to authored `$refs` (offline theme
   ingestion from the host's panda.config, CSS-var fallback otherwise).
-- `<panda.div px="4">` → `<div className={css.class({ paddingX: "4" })}>`
+- `<panda.div px="4">` → `<div className={dss.class({ paddingX: "4" })}>`
   (opening + closing tags; non-literal props are flagged, never guessed).
 - cva/sva/defineRecipe → tier-1 modules under `<out>/recipes/` with identical
   export names: variants stay data + a generated resolver; single-use local

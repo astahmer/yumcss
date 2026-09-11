@@ -1,7 +1,7 @@
-import { css } from "./design";
+import { dss } from "./design";
 
 /**
- * Same card, authored with the design css() vocabulary — reads like the
+ * Same card, authored with the design dss() vocabulary — reads like the
  * Figma inspector, and every value is a token or a constrained option.
  * These literal calls are extracted by `pandwindCssVite` into the generated
  * stylesheet, so nothing is accumulated at runtime.
@@ -9,7 +9,7 @@ import { css } from "./design";
 export function DesignApp() {
 	return (
 		<section
-			className={css.class({
+			className={dss.class({
 				$frame: {
 					w: "100%",
 					pad: [6, 8],
@@ -22,14 +22,14 @@ export function DesignApp() {
 				$text: { color: "$gray-900" },
 			})}
 		>
-			<h1 className={css.class({ $text: { size: "3xl", weight: "bold" } })}>design css()</h1>
-			<p className={css.class({ $text: { size: "sm", color: "$gray-600" } })}>
+			<h1 className={dss.class({ $text: { size: "3xl", weight: "bold" } })}>design dss()</h1>
+			<p className={dss.class({ $text: { size: "sm", color: "$gray-600" } })}>
 				$frame / $layout / $text — the box, its children and its type. Wrong values are type errors;
 				the compiler is the contract.
 			</p>
 			<button
 				type="button"
-				className={css.class({
+				className={dss.class({
 					$frame: {
 						pad: [2, 4],
 						corners: "md",
@@ -43,10 +43,10 @@ export function DesignApp() {
 			>
 				Design button
 			</button>
-			<div className={css.class({ $layout: { flow: "stackX", gap: 2 } })}>
-				<span className={css.class({ $text: { size: "xs", color: "$gray-500" } })}>hover it:</span>
+			<div className={dss.class({ $layout: { flow: "stackX", gap: 2 } })}>
+				<span className={dss.class({ $text: { size: "xs", color: "$gray-500" } })}>hover it:</span>
 				<span
-					className={css.class({
+					className={dss.class({
 						$text: { size: "xs", color: "$gray-700" },
 						_hover: { $text: { color: "$blue-500" } },
 					})}

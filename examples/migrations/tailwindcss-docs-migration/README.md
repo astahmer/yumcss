@@ -13,7 +13,7 @@ The runner uses the same generated Tailwind design system for every lane:
 - `css-class`: statically bridgeable classes become `css.class({...})` calls;
   unsupported classes remain literal so the result is lossless.
 - `design-dss`: the same declarations become `$raw`-compatible design CSS
-  calls through `dcss.class({...})`.
+  calls through `dss.class({...})`.
 
 Run a lane against the pinned reference:
 

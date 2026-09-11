@@ -8,7 +8,7 @@ import {
 	type PlaygroundNode,
 } from "./eval-playground.ts";
 import { tw } from "../tw.ts";
-import { css as designCss } from "../css.ts";
+import { dss } from "../css.ts";
 import { cx } from "../cx.ts";
 import { createCss } from "pandwind/css";
 import { resolveDesignStyle } from "pandwind/design/resolve";
@@ -20,7 +20,7 @@ function makeInput(code: string, moduleBindings?: EvalInput["moduleBindings"]): 
 	return {
 		code,
 		tw: tw as unknown as (...args: Array<unknown>) => unknown,
-		css: designCss as unknown as ((...args: Array<unknown>) => unknown) & Record<string, unknown>,
+		css: dss as unknown as ((...args: Array<unknown>) => unknown) & Record<string, unknown>,
 		cx: cx as unknown as (...inputs: Array<never>) => string,
 		createCss: createCss as unknown as (...args: Array<unknown>) => unknown,
 		moduleBindings:

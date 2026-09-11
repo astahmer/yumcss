@@ -99,8 +99,8 @@ describe("rn shorthand expansion", () => {
 
 describe("pandwind/react-native surface", () => {
 	test("design vocabulary resolves tokens and lowers to RN style objects", () => {
-		const css = createDesignCss(examplePreset);
-		const card = css({
+		const dss = createDesignCss(examplePreset);
+		const card = dss({
 			$frame: { fill: "$blue-500", corners: "lg", pad: [4, 8] },
 		});
 		expect(card).toEqual({
@@ -115,35 +115,35 @@ describe("pandwind/react-native surface", () => {
 
 	test("_dark participates via the resolver; other conditions throw", () => {
 		let dark = false;
-		const css = createDesignCss(examplePreset, { conditions: { dark: () => dark } });
+		const dss = createDesignCss(examplePreset, { conditions: { dark: () => dark } });
 		// Inline literals stay contextually typed (token-key checked).
 		dark = false;
 		expect(
-			css({ $frame: { fill: "$gray-100" }, _dark: { $frame: { fill: "$gray-800" } } }),
+			dss({ $frame: { fill: "$gray-100" }, _dark: { $frame: { fill: "$gray-800" } } }),
 		).toEqual({
 			backgroundColor: "#f3f4f6",
 		});
 		dark = true;
 		expect(
-			css({ $frame: { fill: "$gray-100" }, _dark: { $frame: { fill: "$gray-800" } } }),
+			dss({ $frame: { fill: "$gray-100" }, _dark: { $frame: { fill: "$gray-800" } } }),
 		).toEqual({
 			backgroundColor: "#1f2937",
 		});
 
-		const strict = createDesignCss(examplePreset);
+		const strictDss = createDesignCss(examplePreset);
 		expect(() =>
-			strict({ $frame: { fill: "$gray-100" }, _hover: { $frame: { fill: "$gray-800" } } }),
+			strictDss({ $frame: { fill: "$gray-100" }, _hover: { $frame: { fill: "$gray-800" } } }),
 		).toThrow(/"_hover" is not supported/);
 	});
 
 	test("identical styles resolve to the same reference; cx merges last-wins", () => {
-		const css = createDesignCss(examplePreset);
-		const base = css({ $frame: { fill: "$gray-100" } });
-		expect(css({ $frame: { fill: "$gray-100" } })).toBe(base);
+		const dss = createDesignCss(examplePreset);
+		const base = dss({ $frame: { fill: "$gray-100" } });
+		expect(dss({ $frame: { fill: "$gray-100" } })).toBe(base);
 
 		const cx = createCx();
-		const merged = cx(base, css({ $text: { color: "$red-500" } }));
+		const merged = cx(base, dss({ $text: { color: "$red-500" } }));
 		expect(merged).toEqual({ backgroundColor: "#f3f4f6", color: "#E53E3E" });
-		expect(cx(base, css({ $text: { color: "$red-500" } }))).toBe(merged);
+		expect(cx(base, dss({ $text: { color: "$red-500" } }))).toBe(merged);
 	});
 });

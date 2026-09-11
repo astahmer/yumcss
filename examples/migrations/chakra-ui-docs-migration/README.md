@@ -8,7 +8,7 @@ The same Chakra source adapter is routed through two target dialects:
 
 - `css-class`: Chakra style props become `css.class(...)` calls backed by a
   Pandwind runtime sheet.
-- `design-css`: the same declarations become `dcss.class(...)` calls backed by
+- `design-css`: the same declarations become `dss.class(...)` calls backed by
   `createRuntimeDesignCss(...)`.
 
 Run a lane and optionally materialize a buildable disposable worktree:
@@ -17,7 +17,7 @@ Run a lane and optionally materialize a buildable disposable worktree:
 nub scripts/run-migration-proof.ts run chakra-docs css-class \
 	--output-root /tmp/pandwind-chakra-css
 nub scripts/run-migration-proof.ts run chakra-docs design-css \
-	--output-root /tmp/pandwind-chakra-dcss
+	--output-root /tmp/pandwind-chakra-dss
 ```
 
 The runner scans the full `apps/www` source tree, preserves non-style Chakra

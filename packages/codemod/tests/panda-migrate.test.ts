@@ -282,7 +282,7 @@ describe("supporting migration primitives", () => {
 			cssImport: "../css",
 			aliasSpecifierFor: (subpath) => `@/pandwind/${subpath}`,
 		});
-		expect(jsx).toContain('import { css, cx } from "../css";');
+		expect(jsx).toContain('import { dss, cx } from "../css";');
 		expect(jsx).toContain('import("react").ElementType');
 		expect(jsx).toContain("splitStyleProps(rest)");
 		expect(jsx).toContain('className, children, as = "div", ...rest');
@@ -301,7 +301,7 @@ describe("supporting migration primitives", () => {
 			residuals: [],
 		};
 		const folded = foldRecipeCall(recipe, { tone: "accent" }, meta);
-		expect(folded?.text).toContain("css.class");
+		expect(folded?.text).toContain("dss.class");
 		expect(folded?.text).toContain("padding");
 	});
 });
@@ -372,12 +372,12 @@ describe("runPandaMigration", () => {
 		expect(app).toContain("@/pandwind/css");
 		expect(app).toContain("@/pandwind/recipes");
 		expect(app).not.toContain("styled-system");
-		expect(app).toContain("<div className={css.class(");
+		expect(app).toContain("<div className={dss.class(");
 		expect(app).toContain("</div>");
 		// The fixture only declares the custom `fg` token, so the unknown Panda
 		// default path remains an authored dotted value until target metadata
 		// proves a matching Pandwind token.
-		expect(app).toContain('css.class({ backgroundColor: "gray.100"');
+		expect(app).toContain('dss.class({ backgroundColor: "gray.100"');
 
 		// recipe module emitted with identical public name
 		const barrel = readFileSync(join(dir, "src", "pandwind", "recipes", "index.ts"), "utf8");
@@ -389,7 +389,7 @@ describe("runPandaMigration", () => {
 		expect(badgeModule).toContain('"tone"');
 		expect(badgeModule).toContain("export function badge");
 
-		// bootstrap exists and binds css/cx
+		// bootstrap exists and binds dss/cx
 		const bootstrap = readFileSync(join(dir, "src", "pandwind", "css.ts"), "utf8");
 		expect(bootstrap).toContain("createDesignCss");
 		expect(bootstrap).toContain("createCx");
@@ -425,7 +425,7 @@ describe("runPandaMigration", () => {
 		const output = readFileSync(join(dir, "src", "examples.tsx"), "utf8");
 		expect(output).toContain('import { css } from "./styled-system/css";');
 		expect(output).toContain('const className = css({ color: "red" });');
-		expect(output).toContain('export const App = () => css.class({ color: "blue" });');
+		expect(output).toContain('export const App = () => dss.class({ color: "blue" });');
 	});
 
 	it("removes a local recipe call including its closing parenthesis", async () => {
@@ -449,7 +449,7 @@ describe("runPandaMigration", () => {
 		});
 		const output = readFileSync(join(dir, "src", "local.tsx"), "utf8");
 		expect(output).not.toMatch(/^\s*\)\s*$/m);
-		expect(output).toContain("css.class");
+		expect(output).toContain("dss.class");
 	});
 
 	it("inserts generated imports after a client directive", async () => {

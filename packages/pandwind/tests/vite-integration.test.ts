@@ -54,7 +54,7 @@ const DESIGN_SOURCE = `
 import { createDesignCss } from "pandwind/design";
 import { examplePreset } from "@pandwind/example-preset";
 
-export const css = createDesignCss(examplePreset);
+export const dss = createDesignCss(examplePreset);
 `;
 
 const CX_SOURCE = `
@@ -71,7 +71,7 @@ export const cx = /* @__PURE__ */ createCx({
 
 const APP_SOURCE = `
 import { tw } from "./tw";
-import { css } from "./design";
+import { dss } from "./design";
 import { cx } from "./cx";
 import "pandwind:css";
 
@@ -82,14 +82,14 @@ export const mainClasses = tw({
 	sm: { p: "6" },
 });
 export const headingClasses = tw({ text: "gray-900" });
-export const buttonClasses = css.class({
+export const buttonClasses = dss.class({
 	$frame: { fill: "$blue-500", corners: "md" },
 	$layout: { flow: "stackX", gap: "2" },
 	$text: { color: "$white", size: "sm" },
 });
 // Mixed tw-string + css-atom merge call: folds entirely at build time
 // (plan 007 item A) — the atom's rule lands in the generated stylesheet.
-export const mixedClasses = cx("px-2", css.class({ color: "#0BC5EA" }));
+export const mixedClasses = cx("px-2", dss.class({ color: "#0BC5EA" }));
 // Consumed at the edge (like a render function would), so the bundler keeps
 // the inlined class strings in the entry chunk.
 console.log(mainClasses, headingClasses, buttonClasses, mixedClasses);

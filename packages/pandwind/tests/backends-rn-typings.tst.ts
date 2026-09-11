@@ -10,10 +10,10 @@ import { expect, test } from "tstyche";
 import { createCx, createDesignCss } from "../src/rn.ts";
 import { examplePreset } from "@pandwind/example-preset";
 
-const css = createDesignCss(examplePreset);
+const dss = createDesignCss(examplePreset);
 
-test("design css() accepts the three modules with token values", () => {
-	expect(css).type.toBeCallableWith({
+test("design dss() accepts the three modules with token values", () => {
+	expect(dss).type.toBeCallableWith({
 		$frame: {
 			fill: "$blue-500",
 			corners: "lg",
@@ -26,21 +26,21 @@ test("design css() accepts the three modules with token values", () => {
 
 test("unknown tokens are a type error", () => {
 	// @ts-expect-error is not assignable to type
-	css({ $frame: { fill: "$not-a-token" } });
+	dss({ $frame: { fill: "$not-a-token" } });
 });
 
 test("unknown module props are a type error", () => {
 	// @ts-expect-error may only specify known properties
-	css({ $frame: { nope: 1 } });
+	dss({ $frame: { nope: 1 } });
 });
 
 test("unknown module keys are a type error", () => {
 	// @ts-expect-error may only specify known properties
-	css({ $bogus: { w: 10 } });
+	dss({ $bogus: { w: 10 } });
 });
 
 test("conditions stay recursively typed (_dark nests modules)", () => {
-	expect(css).type.toBeCallableWith({ _dark: { $frame: { fill: "$gray-900" } } });
+	expect(dss).type.toBeCallableWith({ _dark: { $frame: { fill: "$gray-900" } } });
 });
 
 test("surface options accept condition resolver maps", () => {
@@ -51,11 +51,11 @@ test("surface options accept condition resolver maps", () => {
 });
 
 test("the resolved artifact is a plain structurally-typed style object", () => {
-	expect(css({ $frame: { fill: "$gray-100" } })).type.toBeAssignableTo<Record<string, unknown>>();
+	expect(dss({ $frame: { fill: "$gray-100" } })).type.toBeAssignableTo<Record<string, unknown>>();
 });
 
 test("cx merges style objects, arrays and falsy skips", () => {
 	const cx = createCx();
-	const card = css({ $frame: { fill: "$gray-100" } });
+	const card = dss({ $frame: { fill: "$gray-100" } });
 	expect(cx(card, [card], undefined, null, false)).type.toBeAssignableTo<Record<string, unknown>>();
 });

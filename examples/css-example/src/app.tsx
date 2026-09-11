@@ -1,7 +1,7 @@
 import { cardBClass } from "./card-b.ts";
 import { cx } from "./cx.ts";
 import { cvaButton } from "./cva.ts";
-import { dcss } from "./design.ts";
+import { dss } from "./design.ts";
 
 /**
  * cx merges class strings and resolves atom conflicts (later wins): it reads
@@ -10,8 +10,8 @@ import { dcss } from "./design.ts";
  */
 // Module constants so the build-time extractor sees literal call sites; the
 // cx() below still exercises the runtime conflict-resolution path.
-const cardCLose = dcss.class({ $frame: { fill: "$red-500" } });
-const cardCWin = dcss.class({ $frame: { fill: "$gray-800" } });
+const cardCLose = dss.class({ $frame: { fill: "$red-500" } });
+const cardCWin = dss.class({ $frame: { fill: "$gray-800" } });
 const cvaButtonClass = cvaButton({ size: "lg" });
 const composeClasses = (base: string, extra: string) => cx(base, extra);
 
@@ -23,7 +23,7 @@ export function App() {
 			<section
 				data-testid="card-a"
 				data-style-id="shared-card"
-				className={dcss.class({
+				className={dss.class({
 					$frame: { fill: "$blue-500", corners: "lg", pad: [4, 8] },
 				})}
 			>
@@ -42,7 +42,7 @@ export function App() {
 			<section
 				data-testid="card-d"
 				data-style-id="shared-card"
-				className={dcss.class({
+				className={dss.class({
 					$frame: { fill: "$blue-500", corners: "lg", pad: [4, 8] },
 				})}
 			>
@@ -50,7 +50,7 @@ export function App() {
 			</section>
 			<button
 				data-testid="cva-button"
-				className={composeClasses(cvaButtonClass, dcss.class({ $text: { weight: "bold" } }))}
+				className={composeClasses(cvaButtonClass, dss.class({ $text: { weight: "bold" } }))}
 			>
 				CVA selects Pandwind classes
 			</button>

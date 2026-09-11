@@ -1,4 +1,4 @@
-import { css } from "./design";
+import { dss } from "./design";
 import { cx } from "./cx";
 import { CARD_BASE, MUTED_TEXT } from "./styles/constants";
 
@@ -14,7 +14,7 @@ export function DogfoodApp() {
 
 	return (
 		<section
-			className={css.class({
+			className={dss.class({
 				$frame: { fill: "$gray-50", corners: "lg", pad: 16 },
 				$text: { align: "left" },
 			})}
@@ -22,15 +22,15 @@ export function DogfoodApp() {
 			<div
 				className={cx(
 					CARD_BASE,
-					css.class({ $text: { color: "$green-500", weight: "semibold" }, $frame: { pad: 24 } }),
+					dss.class({ $text: { color: "$green-500", weight: "semibold" }, $frame: { pad: 24 } }),
 					emphasized
-						? css.class({
+						? dss.class({
 								$raw: { outline: "2px solid rgba(14,165,233,0.4)", outlineOffset: "2px" },
 							})
 						: undefined,
 				)}
 			>
-				<h1 className={css.class({ $text: { size: "2xl", color: "$gray-900" } })}>dogfooding</h1>
+				<h1 className={dss.class({ $text: { size: "2xl", color: "$gray-900" } })}>dogfooding</h1>
 				<p className={MUTED_TEXT}>
 					This card is authored entirely through Pandwind design atoms, token references, and a
 					single mixed <code>cx()</code> call.

@@ -329,9 +329,9 @@ describe("runtime CSS-in-JS sheet", () => {
 
 	test("design css shares the preset-bound runtime path", () => {
 		const sheet = createRuntimeSheet({ autoMount: false });
-		const css = createRuntimeDesignCss(examplePreset, { sheet });
+		const dss = createRuntimeDesignCss(examplePreset, { sheet });
 
-		css.class({ $text: { color: "$blue-500" } });
+		dss.class({ $text: { color: "$blue-500" } });
 
 		expect(sheet.snapshot().rules).toHaveLength(1);
 	});

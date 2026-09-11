@@ -8,10 +8,10 @@ import { expect, test } from "tstyche";
 import { createCx, createDesignCss } from "../src/opentui.ts";
 import { examplePreset } from "@pandwind/example-preset";
 
-const css = createDesignCss(examplePreset);
+const dss = createDesignCss(examplePreset);
 
-test("design css() accepts the three modules with token values", () => {
-	expect(css).type.toBeCallableWith({
+test("design dss() accepts the three modules with token values", () => {
+	expect(dss).type.toBeCallableWith({
 		$frame: {
 			fill: "$green-500",
 			corners: "md",
@@ -24,16 +24,16 @@ test("design css() accepts the three modules with token values", () => {
 
 test("unknown tokens are a type error", () => {
 	// @ts-expect-error is not assignable to type
-	css({ $frame: { fill: "$nope" } });
+	dss({ $frame: { fill: "$nope" } });
 });
 
 test("unknown module props are a type error", () => {
 	// @ts-expect-error may only specify known properties
-	css({ $frame: { shadow: "big" } });
+	dss({ $frame: { shadow: "big" } });
 });
 
 test("conditions stay recursively typed (_dark nests modules)", () => {
-	expect(css).type.toBeCallableWith({ _dark: { $frame: { fill: "$gray-800" } } });
+	expect(dss).type.toBeCallableWith({ _dark: { $frame: { fill: "$gray-800" } } });
 });
 
 test("surface options accept cellSize and condition resolver maps", () => {
@@ -44,11 +44,11 @@ test("surface options accept cellSize and condition resolver maps", () => {
 });
 
 test("the resolved artifact is a plain structurally-typed style object", () => {
-	expect(css({ $frame: { fill: "$gray-100" } })).type.toBeAssignableTo<Record<string, unknown>>();
+	expect(dss({ $frame: { fill: "$gray-100" } })).type.toBeAssignableTo<Record<string, unknown>>();
 });
 
 test("cx merges style objects, arrays and falsy skips", () => {
 	const cx = createCx();
-	const box = css({ $frame: { fill: "$gray-100" } });
+	const box = dss({ $frame: { fill: "$gray-100" } });
 	expect(cx(box, [box], undefined, null, false)).type.toBeAssignableTo<Record<string, unknown>>();
 });

@@ -1,5 +1,5 @@
 /**
- * Type-level contract of the design `css()` surface — the Figma-inspector
+ * Type-level contract of the design `dss()` surface — the Figma-inspector
  * modules. Pins the public typings: token values, constrained options,
  * recursive conditions, the `$raw` escape hatch and the "wrong is a type
  * error" rules.
@@ -9,12 +9,12 @@ import { createDesignCss } from "../src/design/index.ts";
 import type { DesignStyleObject } from "../src/design/types.ts";
 import { examplePreset } from "@pandwind/example-preset";
 
-const css = createDesignCss(examplePreset);
+const dss = createDesignCss(examplePreset);
 type Compiled = Record<string, string>;
 
-test("design css() accepts the three modules with token values", () => {
+test("design dss() accepts the three modules with token values", () => {
 	expect(
-		css({
+		dss({
 			$frame: {
 				w: "20",
 				h: 40,
@@ -44,7 +44,7 @@ test("design css() accepts the three modules with token values", () => {
 
 test("conditions nest modules to arbitrary depth", () => {
 	expect(
-		css({
+		dss({
 			$frame: { w: "20" },
 			_hover: { $frame: { fill: "$blue-600" } },
 			sm: { $text: { size: "2xl" } },
@@ -55,7 +55,7 @@ test("conditions nest modules to arbitrary depth", () => {
 
 test("values come from the design tokens, with raw escapes for lengths", () => {
 	expect(
-		css({
+		dss({
 			$frame: {
 				fill: "success",
 				corners: [8, "lg", 12, "full"],
@@ -68,28 +68,28 @@ test("values come from the design tokens, with raw escapes for lengths", () => {
 
 test("off-system colors and typo'd options are type errors", () => {
 	expect(
-		css({
+		dss({
 			// @ts-expect-error is not assignable
 			$frame: { fill: "not-a-color" },
 		}),
 	).type.toBe<Compiled>();
 
 	expect(
-		css({
+		dss({
 			// @ts-expect-error is not assignable
 			$frame: { overflow: "clipp" },
 		}),
 	).type.toBe<Compiled>();
 
 	expect(
-		css({
+		dss({
 			// @ts-expect-error is not assignable
 			$layout: { flow: "stackz" },
 		}),
 	).type.toBe<Compiled>();
 
 	expect(
-		css({
+		dss({
 			$text: {
 				color: "$blue-500",
 				// @ts-expect-error is not assignable
@@ -101,14 +101,14 @@ test("off-system colors and typo'd options are type errors", () => {
 
 test("unknown module props and raw top-level props are type errors", () => {
 	expect(
-		css({
+		dss({
 			// @ts-expect-error may only specify known properties
 			$frame: { borderRadius: "lg" },
 		}),
 	).type.toBe<Compiled>();
 
 	expect(
-		css({
+		dss({
 			// @ts-expect-error may only specify known properties
 			color: "$red-500",
 		}),
@@ -117,7 +117,7 @@ test("unknown module props and raw top-level props are type errors", () => {
 
 test("$raw is the escape hatch for everything else", () => {
 	expect(
-		css({
+		dss({
 			$raw: {
 				color: "$red-500",
 				_hover: { backgroundColor: "$blue-500" },
@@ -128,7 +128,7 @@ test("$raw is the escape hatch for everything else", () => {
 });
 
 test("DesignStyleObject is the exported parameter type", () => {
-	const fn = css as (styles: DesignStyleObject<typeof examplePreset>) => Compiled;
+	const fn = dss as (styles: DesignStyleObject<typeof examplePreset>) => Compiled;
 	expect(fn).type.toBeCallableWith({ $frame: { w: "20" } });
 	expect(fn).type.toBeCallableWith({ $layout: { flow: "grid", cols: 3 } });
 });

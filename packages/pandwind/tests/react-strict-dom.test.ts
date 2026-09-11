@@ -23,8 +23,8 @@ describe("pandwind/react-strict-dom web surface", () => {
 	});
 
 	test("preserves Pandwind design tokens in the RSD style carrier", () => {
-		const css = createDesignCss(examplePreset);
-		const style = css({ $frame: { fill: "$blue-500", pad: 4 } });
+		const dss = createDesignCss(examplePreset);
+		const style = dss({ $frame: { fill: "$blue-500", pad: 4 } });
 
 		expect(style.$$css).toBe(true);
 		expect(style.backgroundColor).toMatch(/^x/);
@@ -32,8 +32,8 @@ describe("pandwind/react-strict-dom web surface", () => {
 	});
 
 	test("uses the preset condition selectors for design style identities", () => {
-		const css = createDesignCss(examplePreset);
-		const style = css({ _hover: { $frame: { fill: "$blue-500" } } });
+		const dss = createDesignCss(examplePreset);
+		const style = dss({ _hover: { $frame: { fill: "$blue-500" } } });
 		const resolved = resolveDesignStyle(
 			{ _hover: { $frame: { fill: "$blue-500" } } },
 			examplePreset.tokens,

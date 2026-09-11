@@ -1,16 +1,16 @@
 import { cva } from "class-variance-authority";
-import { dcss } from "./design.ts";
+import { dss } from "./design.ts";
 
 /**
  * CVA selects strings that Pandwind has already generated. It does not need
- * to know about tokens or CSS extraction; the statically-authored dcss calls
+ * to know about tokens or CSS extraction; the statically-authored dss calls
  * remain visible to pandwindCssVite.
  */
-export const cvaButton = cva(dcss.class({ $frame: { corners: "lg" } }), {
+export const cvaButton = cva(dss.class({ $frame: { corners: "lg" } }), {
 	variants: {
 		size: {
-			sm: dcss.class({ $frame: { pad: [8, 12] } }),
-			lg: dcss.class({ $frame: { pad: [12, 20] } }),
+			sm: dss.class({ $frame: { pad: [8, 12] } }),
+			lg: dss.class({ $frame: { pad: [12, 20] } }),
 		},
 	},
 	defaultVariants: { size: "sm" },

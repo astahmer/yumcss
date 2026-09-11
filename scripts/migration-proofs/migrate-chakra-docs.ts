@@ -73,7 +73,7 @@ function runtimeImports(file: string, lane: ChakraDocsLane): string {
 		return [
 			'import { createRuntimeDesignCss } from "pandwind/css/runtime";',
 			`import { pandwindPreset } from "${preset}";`,
-			"const dcss = createRuntimeDesignCss(pandwindPreset);",
+			"const dss = createRuntimeDesignCss(pandwindPreset);",
 		].join("\n");
 	}
 	return [
@@ -106,9 +106,9 @@ function bindRuntimeApi(code: string, file: string, lane: ChakraDocsLane): strin
 			.replaceAll("createRuntimeCss(pandwindPreset)", "createRuntimeDesignCss(pandwindPreset)")
 			.replaceAll(
 				"const css = createRuntimeDesignCss(pandwindPreset)",
-				"const dcss = createRuntimeDesignCss(pandwindPreset)",
+				"const dss = createRuntimeDesignCss(pandwindPreset)",
 			)
-			.replace(/\bcss\.(?:class|vars|props|group)\s*\(/g, (call) => `dcss${call.slice(3)}`);
+			.replace(/\bcss\.(?:class|vars|props|group)\s*\(/g, (call) => `dss${call.slice(3)}`);
 	}
 	if (!file.endsWith(".mdx")) return generated;
 	const frontmatterStart = generated.indexOf("---\n");
@@ -121,7 +121,7 @@ function bindRuntimeApi(code: string, file: string, lane: ChakraDocsLane): strin
 }
 
 function bindMdxRuntime(source: string, lane: ChakraDocsLane): string {
-	const binding = lane === ChakraDocsLane.DesignCss ? "dcss" : "css";
+	const binding = lane === ChakraDocsLane.DesignCss ? "dss" : "css";
 	const ownBinding = new RegExp(`(?:const|let|var)\\s+${binding}\\s*=`).test(source);
 	const withImport = ownBinding
 		? source
@@ -200,8 +200,8 @@ export function PandwindStyleSheet() {
 `;
 }
 
-function runtimeBinding(binding: "css" | "dcss"): string {
-	const factory = binding === "dcss" ? "createRuntimeDesignCss" : "createRuntimeCss";
+function runtimeBinding(binding: "css" | "dss"): string {
+	const factory = binding === "dss" ? "createRuntimeDesignCss" : "createRuntimeCss";
 	return `import { ${factory} } from "pandwind/css/runtime";
 import { pandwindPreset } from "./preset";
 
@@ -279,7 +279,7 @@ async function materialize(
 		[`${pandwindSupportRoot}/preset.ts`, runtimePreset()],
 		[`${pandwindSupportRoot}/style-sheet.tsx`, runtimeSheet(lane)],
 		[`${pandwindSupportRoot}/css.ts`, runtimeBinding("css")],
-		[`${pandwindSupportRoot}/dcss.ts`, runtimeBinding("dcss")],
+		[`${pandwindSupportRoot}/dss.ts`, runtimeBinding("dss")],
 	]);
 	for (const [file, code] of support) {
 		const target = join(outputRoot, file);

@@ -103,7 +103,7 @@ async function transformLane(
 				? { twModule: "proof/pandwind/tw", cxModule: "proof/pandwind/cx" }
 				: lane === PostHogDocsLane.CssClass
 					? { cssModule: "proof/pandwind/css" }
-					: { dssModule: "proof/pandwind/dcss" },
+					: { dssModule: "proof/pandwind/dss" },
 	});
 }
 
@@ -136,8 +136,8 @@ function supportFiles(lane: PostHogDocsLane): Record<string, string> {
 			'import { createCss } from "pandwind/css";\nimport { examplePreset } from "@pandwind/example-preset";\nimport { twAdapter } from "./bridge";\n\nexport const css = createCss(examplePreset, { className: twAdapter });\n';
 	}
 	if (lane === PostHogDocsLane.DesignCss) {
-		base["proof/pandwind/dcss.ts"] =
-			'import { createDesignCss } from "pandwind/design";\nimport type { CssFn } from "pandwind/css";\nimport { examplePreset } from "@pandwind/example-preset";\nimport { twAdapter } from "./bridge";\n\nexport const dcss = createDesignCss(examplePreset, { className: twAdapter }) as unknown as CssFn;\n';
+		base["proof/pandwind/dss.ts"] =
+			'import { createDesignCss } from "pandwind/design";\nimport type { CssFn } from "pandwind/css";\nimport { examplePreset } from "@pandwind/example-preset";\nimport { twAdapter } from "./bridge";\n\nexport const dss = createDesignCss(examplePreset, { className: twAdapter }) as unknown as CssFn;\n';
 	}
 	return base;
 }

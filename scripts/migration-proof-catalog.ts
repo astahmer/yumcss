@@ -181,7 +181,7 @@ const shadcn: MigrationProofScenario = {
 	id: MIGRATION_PROOF_SCENARIO.ShadcnV4,
 	label: "shadcn/ui v4",
 	references: () => ["shadcn-ui"],
-	lanes: [ShadcnV4MigrationLane.Tw, ShadcnV4MigrationLane.Css, ShadcnV4MigrationLane.Dcss],
+	lanes: [ShadcnV4MigrationLane.Tw, ShadcnV4MigrationLane.Css, ShadcnV4MigrationLane.Dss],
 	resolveSourceRoot: (workspace) => workspace.path("shadcn-ui"),
 	run: (lane, context) =>
 		ShadcnV4Migration.run(

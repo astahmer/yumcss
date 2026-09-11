@@ -223,10 +223,10 @@ test("preset docs keep semantic and component token refs as strings", () => {
 });
 
 test("createDesignCss JSDoc example uses the design modules", () => {
-	const dcss = createDesignCss(examplePreset);
+	const dss = createDesignCss(examplePreset);
 
 	expect(
-		dcss.class({
+		dss.class({
 			$frame: { corners: "lg", fill: "$blue-500", pad: [8, 16] },
 			$layout: { flow: "stackX", align: "center", gap: 8 },
 			$text: { color: "$gray-50", weight: "semibold" },

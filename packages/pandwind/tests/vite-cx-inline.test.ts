@@ -494,11 +494,11 @@ import { parse, type Root } from "postcss";
 import type { PandwindEngineContext } from "../src/vite/engine-context.ts";
 
 /** A REAL runtime engine + cx pair, exactly what an app would wire up. */
-const designCss = createDesignCss(examplePreset);
+const dss = createDesignCss(examplePreset);
 const runtimeCxWithCss = createCx({
 	conflicts: config.conflicts,
 	compose: config.compose,
-	css: designCss as never,
+	css: dss as never,
 });
 
 function makeFold(engine?: PandwindEngineContext) {
@@ -554,9 +554,9 @@ describe("css() folding is differentially equivalent to the runtime", () => {
 	 * createCx bound to it.
 	 */
 	function runtimeFromLiterals(
-		run: (design: typeof designCss) => Parameters<typeof runtimeCxWithCss>,
+		run: (design: typeof dss) => Parameters<typeof runtimeCxWithCss>,
 	): string {
-		return runtimeCxWithCss(...run(designCss));
+		return runtimeCxWithCss(...run(dss));
 	}
 
 	test("bare css() map folds to the same merge result", () => {

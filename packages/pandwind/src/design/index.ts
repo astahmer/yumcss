@@ -33,9 +33,9 @@ type Maybe<T> = T | undefined | null | false;
  * import { createDesignCss } from "pandwind/design";
  * import { examplePreset } from "@pandwind/example-preset";
  *
- * const dcss = createDesignCss(examplePreset);
+ * const dss = createDesignCss(examplePreset);
  *
- * const className = dcss.class({
+ * const className = dss.class({
  *   $frame: { corners: "lg", fill: "$blue-500", pad: [8, 16] },
  *   $layout: { flow: "stackX", align: "center", gap: 8 },
  *   $text: { color: "$gray-50", weight: "semibold" },
@@ -61,18 +61,18 @@ export const createDesignCss = <TPreset extends DesignPreset>(
 	const resolve = (style: Design): StyleObject =>
 		resolveDesignStyle(style as unknown as Record<string, unknown>, preset.tokens);
 
-	const css = (...styles: Array<Maybe<Design>>) =>
+	const dss = (...styles: Array<Maybe<Design>>) =>
 		engine(...(styles.filter(Boolean) as Array<Design>).map(resolve));
 
-	css.class = (...styles: Array<Maybe<Design>>) =>
+	dss.class = (...styles: Array<Maybe<Design>>) =>
 		engine.class(...(styles.filter(Boolean) as Array<Design>).map(resolve));
 
-	css.raw = (...styles: Array<Maybe<Design>>) =>
+	dss.raw = (...styles: Array<Maybe<Design>>) =>
 		engine.raw(...(styles.filter(Boolean) as Array<Design>).map(resolve));
 
 	// Dynamic values ride inline custom properties; design-layer tokens are
 	// resolved first so the inline value is concrete.
-	css.vars = (...styles: Array<Maybe<Design>>) => {
+	dss.vars = (...styles: Array<Maybe<Design>>) => {
 		const resolvedStyles: StyleObject = {};
 		for (const style of styles) {
 			if (!style) continue;
@@ -81,10 +81,10 @@ export const createDesignCss = <TPreset extends DesignPreset>(
 		return engine.vars(resolvedStyles as never);
 	};
 
-	css.props = engine.props;
-	css.input = engine.input;
+	dss.props = engine.props;
+	dss.input = engine.input;
 
-	css.group = ((groups: Record<string, Maybe<Design> | ((...args: any[]) => Design)>) => {
+	dss.group = ((groups: Record<string, Maybe<Design> | ((...args: any[]) => Design)>) => {
 		const resolved: Record<string, StyleObject | ((...args: any[]) => StyleObject)> = {};
 		for (const key of Object.keys(groups)) {
 			const value = groups[key];
@@ -98,11 +98,11 @@ export const createDesignCss = <TPreset extends DesignPreset>(
 	}) as never;
 
 	// Share the inner engine's atom registry so cx can resolve design atoms.
-	(css as CssFn & { [ATOM_REGISTRY]?: AtomRegistry })[ATOM_REGISTRY] = (
+	(dss as CssFn & { [ATOM_REGISTRY]?: AtomRegistry })[ATOM_REGISTRY] = (
 		engine as CssFn & { [ATOM_REGISTRY]?: AtomRegistry }
 	)[ATOM_REGISTRY];
 
-	return css as CssFn<Design>;
+	return dss as CssFn<Design>;
 };
 
 export type { DesignPreset, DesignStyleObject } from "./types.ts";

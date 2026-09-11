@@ -15,7 +15,7 @@ the host application owns the final bundler and rendering environment.
 packages/ui/
   src/
     preset.ts              # re-export or compose the system preset
-    styles.ts              # dcss/css façade
+    styles.ts              # dss/css façade
     Button.tsx
     Card.tsx
     index.ts
@@ -30,7 +30,7 @@ Keep the public entry point small:
 import { createDesignCss } from "pandwind/design";
 import { preset } from "./preset";
 
-export const dcss = createDesignCss(preset);
+export const dss = createDesignCss(preset);
 ```
 
 ## Build a component contract
@@ -39,12 +39,12 @@ export const dcss = createDesignCss(preset);
 // src/Button.tsx
 import type { ComponentPropsWithoutRef } from "react";
 import { cx } from "pandwind/cx";
-import { dcss } from "./styles";
+import { dss } from "./styles";
 
 type ButtonProps = ComponentPropsWithoutRef<"button">;
 
 export function Button({ className, ...props }: ButtonProps) {
-	const styles = dcss.class({
+	const styles = dss.class({
 		$frame: {
 			pad: "component.button.padding",
 			corners: "component.button.radius",
@@ -119,7 +119,7 @@ the core component contract.
 - test streaming/RSC boundaries if the library is used by a React server app;
 - test dark-mode, responsive, focus, and dynamic-value states in a browser.
 
-For runtime values, prefer `dcss.vars()`/`css.vars()` and pass the returned
+For runtime values, prefer `dss.vars()`/`css.vars()` and pass the returned
 `style` and `class` together. This keeps dynamic values out of the generated
 stylesheet without pretending they are static.
 

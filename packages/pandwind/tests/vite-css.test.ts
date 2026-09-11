@@ -247,7 +247,7 @@ test("findCssImports accepts named carriers and ignores factories and type impor
 	const code = `
 		import { createCss as makeCss, untypedCss } from "./css";
 		import type { CssFn } from "./css";
-		import { createDesignCss, dcss as design } from "./design";
+		import { createDesignCss, dss as design } from "./design";
 	`;
 
 	expect(scan(["css", "design"]).findImports(code, "app.tsx")).toEqual(
@@ -666,7 +666,7 @@ test("pandwindCssVite extracts carriers exported under non-css names", () => {
 
 test("pandwindCssVite generates the stylesheet from scanned files", () => {
 	const dir = makeProject({
-		"src/design.ts": "export const css = (x: unknown) => x; // module that imports stay valid",
+		"src/design.ts": "export const dss = (x: unknown) => x; // module that imports stay valid",
 		"src/app.tsx": `
 			import { css } from "./design";
 			export const styles = css({ $frame: { w: "20", fill: "$blue-500" } });
@@ -676,7 +676,7 @@ test("pandwindCssVite generates the stylesheet from scanned files", () => {
 			css.class({ $layout: { flow: "stackY", gap: "16" } });
 		`,
 		"src/aliased-design.ts": `
-			import { dcss as design } from "./design";
+			import { dss as design } from "./design";
 			design.class({ $frame: { corners: "lg" } });
 		`,
 		"node_modules/pkg/index.ts": `
@@ -1206,7 +1206,7 @@ test("finite combinations beyond the cap stay conservative", () => {
 	}
 });
 
-test("dcss finite dynamic tokens register candidates through the design resolver", () => {
+test("dss finite dynamic tokens register candidates through the design resolver", () => {
 	const dir = makeProject({
 		"src/design.ts": "export const css = (x: unknown) => x;",
 		"src/app.ts": `
@@ -1220,7 +1220,7 @@ test("dcss finite dynamic tokens register candidates through the design resolver
 		const plugin = pandwindCssVite(examplePreset, { root: dir });
 		const generated = loadGenerated(plugin);
 		// Design tokens resolve through the preset catalog exactly like the
-		// static dcss path -> both branch rules exist with concrete colors.
+		// static dss path -> both branch rules exist with concrete colors.
 		expect(generated).toContain("color:#FC8181");
 		expect(generated).toContain("color:#2b6cb0");
 	} finally {
@@ -1228,7 +1228,7 @@ test("dcss finite dynamic tokens register candidates through the design resolver
 	}
 });
 
-test("dcss literal values outside the token catalog resolve identically at runtime", () => {
+test("dss literal values outside the token catalog resolve identically at runtime", () => {
 	const dir = makeProject({
 		"src/design.ts": "export const css = (x: unknown) => x;",
 		"src/app.ts": `

@@ -217,8 +217,8 @@ describe("real-Tailwind proof — generator output end to end", () => {
 describe("design layer passthrough", () => {
 	test("createDesignCss exposes .vars resolving $tokens first", async () => {
 		const { examplePreset: preset } = await import("@pandwind/example-preset");
-		const design = createDesignCss(preset as never);
-		const out = design.vars({ $text: { color: "$blue-500" } } as never);
+		const dss = createDesignCss(preset as never);
+		const out = dss.vars({ $text: { color: "$blue-500" } } as never);
 		expect(out.class).toContain("pw-color");
 		expect(Object.values(out.style)).toContain("#3182ce");
 	});

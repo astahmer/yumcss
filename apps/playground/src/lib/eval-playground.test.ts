@@ -4,7 +4,7 @@
  */
 import { describe, expect, test } from "vitest";
 import { cx } from "../cx.ts";
-import { css } from "../css.ts";
+import { dss } from "../css.ts";
 import { resolveDesignStyle } from "pandwind/design/resolve";
 import { examplePreset } from "@pandwind/example-preset";
 import { createNamedAtomsStrategy } from "pandwind/css";
@@ -30,7 +30,7 @@ const run = (
 	evalPlayground({
 		code,
 		tw: tw as EvalInput["tw"],
-		css: css as unknown as EvalInput["css"],
+		css: dss as unknown as EvalInput["css"],
 		cx: cx as EvalInput["cx"],
 		props,
 		moduleBindings,
@@ -430,7 +430,7 @@ describe("evalSiblingModule", () => {
 				'export default <Alert tone="blue-500" />',
 			].join("\n"),
 			tw: tw as EvalInput["tw"],
-			css: css as unknown as EvalInput["css"],
+			css: dss as unknown as EvalInput["css"],
 			cx: cx as EvalInput["cx"],
 		});
 		expect(exports.default).toMatchObject({
@@ -443,7 +443,7 @@ describe("evalSiblingModule", () => {
 		const exports = evalSiblingModule({
 			code: ['export const tone = "red-500" as const;', 'export const label = "brand";'].join("\n"),
 			tw: tw as EvalInput["tw"],
-			css: css as unknown as EvalInput["css"],
+			css: dss as unknown as EvalInput["css"],
 			cx: cx as EvalInput["cx"],
 		});
 		expect(exports).toEqual({ tone: "red-500", label: "brand" });
@@ -453,7 +453,7 @@ describe("evalSiblingModule", () => {
 		const exports = evalSiblingModule({
 			code: 'const internal = "not exported";',
 			tw: tw as EvalInput["tw"],
-			css: css as unknown as EvalInput["css"],
+			css: dss as unknown as EvalInput["css"],
 			cx: cx as EvalInput["cx"],
 		});
 		expect(exports).toEqual({});

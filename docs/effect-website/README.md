@@ -12,7 +12,7 @@ the reference HEAD before reporting results.
 | ------------------- | ------------- | ---------------------------------- |
 | Tailwind-compatible | `tw({...})`   | [`tw.md`](./tw.md)                 |
 | Static CSS          | `css({...})`  | [`css.md`](./css.md)               |
-| Design CSS          | `dcss({...})` | [`design-css.md`](./design-css.md) |
+| Design CSS          | `dss({...})` | [`design-css.md`](./design-css.md) |
 
 Each lane is generated from the same pinned source and disposable copy. The
 runner uses the shared source scanner, preserves unsupported source tokens as

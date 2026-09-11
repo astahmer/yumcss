@@ -1,6 +1,6 @@
-# Effect website: `dcss` migration proof
+# Effect website: `dss` migration proof
 
-This record covers the static design-language `dcss({...})` lane for the
+This record covers the static design-language `dss({...})` lane for the
 pinned Effect website corpus. `$raw` carries the same proven declarations into
 the design façade, while the bridge remains the single target class adapter.
 

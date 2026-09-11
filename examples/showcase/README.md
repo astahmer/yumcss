@@ -5,7 +5,7 @@ once**, and three runtimes render it:
 
 | target | file                 | lowering                                                                 | runtime          |
 | ------ | -------------------- | ------------------------------------------------------------------------ | ---------------- |
-| web    | `src/web/App.tsx`    | `createDesignCss(examplePreset)` → resolved declarations via `css.raw()` | vite             |
+| web    | `src/web/App.tsx`    | `createDesignCss(examplePreset)` → resolved declarations via `dss.raw()` | vite             |
 | native | `src/native/App.tsx` | `pandwind/react-native` → RN StyleSheet objects                          | react-native-web |
 | tui    | `src/tui/app.tsx`    | `pandwind/opentui` → terminal style objects                              | bun + @opentui   |
 

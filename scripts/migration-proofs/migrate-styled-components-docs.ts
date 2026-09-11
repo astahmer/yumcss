@@ -193,7 +193,7 @@ function withRuntimeImports(source: string, lane: StyledComponentsDocsLane): str
 		!needsStyledCssFallback
 	)
 		return source;
-	const runtimeBinding = lane === StyledComponentsDocsLane.DesignCss ? "dcss" : "css";
+	const runtimeBinding = lane === StyledComponentsDocsLane.DesignCss ? "dss" : "css";
 	const runtimeAlias = keepsSourceCss ? "__pandwindCss" : runtimeBinding;
 	const runtimeSource = normalizedSource
 		.replaceAll('from "pandwind/runtime"', 'from "@/pandwind/runtime"')
@@ -290,10 +290,10 @@ class StyledComponentsLaneAdapter implements LaneAdapter {
 		return {
 			...result,
 			code: runtimeCode
-				.replaceAll("__pandwindCss", "dcss")
-				.replace(/\bcss\.(class|vars|group|props|raw|input|sheet)\b/g, "dcss.$1")
-				.replaceAll("css(", "dcss(")
-				.replaceAll("createCx({ css })", "createCx({ css: dcss })"),
+				.replaceAll("__pandwindCss", "dss")
+				.replace(/\bcss\.(class|vars|group|props|raw|input|sheet)\b/g, "dss.$1")
+				.replaceAll("css(", "dss(")
+				.replaceAll("createCx({ css })", "createCx({ css: dss })"),
 			staticCallSites,
 			runtimeFallbackCallSites,
 		};
@@ -452,7 +452,7 @@ async function readPinnedReleaseFixture(referenceRoot: string): Promise<readonly
 function runtimeModule(lane: StyledComponentsDocsLane): string {
 	const factory =
 		lane === StyledComponentsDocsLane.DesignCss ? "createRuntimeDesignCss" : "createRuntimeCss";
-	const binding = lane === StyledComponentsDocsLane.DesignCss ? "dcss" : "css";
+	const binding = lane === StyledComponentsDocsLane.DesignCss ? "dss" : "css";
 	return `import { ${factory}, createRuntimeSheet } from "pandwind/css/runtime";
 import { pandwindPreset } from "./preset";
 

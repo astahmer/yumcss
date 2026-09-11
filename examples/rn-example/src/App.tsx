@@ -13,10 +13,10 @@ import { examplePreset } from "@pandwind/example-preset";
  * re-render, which is the runtime-only condition story of plan 021.
  * -------------------------------------------------------------------------*/
 
-/** Live dark state read by the resolver at dcss() call time (render time). */
+/** Live dark state read by the resolver at dss() call time (render time). */
 let isDark = false;
 
-const dcss = createDesignCss(examplePreset, {
+const dss = createDesignCss(examplePreset, {
 	conditions: { dark: () => isDark },
 });
 const cx = createCx();
@@ -26,12 +26,12 @@ export function App() {
 	isDark = dark;
 
 	// Shorthand expansion must produce distinct top/side paddings.
-	const header = dcss({
+	const header = dss({
 		$frame: { fill: "$blue-500", corners: "lg", pad: [4, 8] },
 	});
 
 	// Runtime condition resolution: fill flips with the toggle.
-	const body = dcss({
+	const body = dss({
 		$frame: { fill: "$gray-100" },
 		_dark: { $frame: { fill: "$gray-900" } },
 	});
@@ -39,8 +39,8 @@ export function App() {
 	// cx merge: conflicting backgroundColors — the later style wins (#3182ce).
 	// Module constants keep the build-time extractor happy; the cx call itself
 	// still exercises the runtime merge path.
-	const mergeBase = dcss({ $frame: { fill: "$gray-100", pad: 2 } });
-	const mergeOverlay = dcss({ $frame: { fill: "$blue-500" } });
+	const mergeBase = dss({ $frame: { fill: "$gray-100", pad: 2 } });
+	const mergeOverlay = dss({ $frame: { fill: "$blue-500" } });
 	const merged = cx(mergeBase, mergeOverlay);
 
 	return (

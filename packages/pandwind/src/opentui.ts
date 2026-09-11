@@ -7,11 +7,11 @@
  * import { createDesignCss, createCx } from "pandwind/opentui";
  * import { examplePreset } from "./pandwind.preset.ts";
  *
- * const dcss = createDesignCss(examplePreset, { isDark: () => scheme === "dark" });
+ * const dss = createDesignCss(examplePreset, { isDark: () => scheme === "dark" });
  * const cx = createCx();
  *
  * const styles = {
- *   panel: css({
+ *   panel: dss({
  *     $frame: { fill: "$surface", corners: "lg", pad: [1, 2] },
  *     _dark: { $frame: { fill: "$surface-dark" } },
  *   }),

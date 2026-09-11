@@ -1,7 +1,7 @@
-import { css } from "../design";
+import { dss } from "../design";
 
 /** Shared design atoms used by the cross-module composition demo. */
-export const CARD_BASE = css.class({
+export const CARD_BASE = dss.class({
 	$frame: {
 		w: "28rem",
 		corners: "xl",
@@ -11,7 +11,7 @@ export const CARD_BASE = css.class({
 	$raw: { marginInline: "auto", boxShadow: "0 1px 2px rgba(0,0,0,0.05)" },
 });
 
-export const MUTED_TEXT = css.class({
+export const MUTED_TEXT = dss.class({
 	$text: { size: "sm", spacing: { line: "24px" }, color: "$gray-600" },
 	_dark: { $text: { color: "$gray-300" } },
 });

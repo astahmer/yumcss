@@ -6,4 +6,4 @@ import { examplePreset } from "@pandwind/example-preset";
  * ($frame / $layout / $text) against the example preset tokens. Literal
  * calls are extracted by `pandwindCssVite` into the app's atomic stylesheet.
  */
-export const css = createDesignCss(examplePreset);
+export const dss = createDesignCss(examplePreset);

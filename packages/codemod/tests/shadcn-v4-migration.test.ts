@@ -27,7 +27,7 @@ describe("shadcn/ui v4 migration corpus", () => {
 		expect(ShadcnV4Migration.lanes).toEqual([
 			ShadcnV4MigrationLane.Tw,
 			ShadcnV4MigrationLane.Css,
-			ShadcnV4MigrationLane.Dcss,
+			ShadcnV4MigrationLane.Dss,
 		]);
 	});
 });

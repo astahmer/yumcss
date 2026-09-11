@@ -7,11 +7,11 @@
  * import { createDesignCss, createCx } from "pandwind/react-native";
  * import { examplePreset } from "./pandwind.preset.ts";
  *
- * const dcss = createDesignCss(examplePreset, { isDark: () => scheme === "dark" });
+ * const dss = createDesignCss(examplePreset, { isDark: () => scheme === "dark" });
  * const cx = createCx();
  *
  * const styles = {
- *   card: css({
+ *   card: dss({
  *     $frame: { fill: "$surface", corners: "lg", pad: [4, 8] },
  *     _dark: { $frame: { fill: "$surface-dark" } },
  *   }),

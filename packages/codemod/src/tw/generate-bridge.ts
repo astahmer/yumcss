@@ -16,7 +16,7 @@
  * it. When it is selected, app code and the Vite plugin can share one instance:
  *
  *   import { twAdapter } from "./bridge";
- *   export const dcss = createDesignCss(examplePreset, { className: twAdapter });
+ *   export const dss = createDesignCss(examplePreset, { className: twAdapter });
  *   // vite.config.ts
  *   plugins: [pandwindCssVite(examplePreset, { className: twAdapter }), ...]
  */

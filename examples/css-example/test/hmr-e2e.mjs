@@ -56,7 +56,7 @@ const writeFixture = (color) => {
 		[
 			'import { createDesignCss } from "pandwind/design";',
 			'import { examplePreset } from "@pandwind/example-preset";',
-			"export const css = createDesignCss(examplePreset);",
+		"export const dss = createDesignCss(examplePreset);",
 		].join("\n"),
 	);
 	writeFileSync(

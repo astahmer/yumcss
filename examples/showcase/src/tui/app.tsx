@@ -12,17 +12,17 @@ export interface AppProps {
 }
 
 export function App({ dark = false }: AppProps) {
-	const css = createDesignCss(examplePreset, { conditions: { dark: () => dark } });
+	const dss = createDesignCss(examplePreset, { conditions: { dark: () => dark } });
 
 	return (
-		<box style={{ ...css({ $frame: { pad: 2 } }), width: 46, height: 12 }}>
-			<box data-name="header" style={css(header)}>
+		<box style={{ ...dss({ $frame: { pad: 2 } }), width: 46, height: 12 }}>
+			<box data-name="header" style={dss(header)}>
 				<text>tui header</text>
 			</box>
-			<box data-name="status" style={css(status)}>
+			<box data-name="status" style={dss(status)}>
 				<text>tui status</text>
 			</box>
-			<box data-name="body" style={css(body)}>
+			<box data-name="body" style={dss(body)}>
 				<text>tui body</text>
 			</box>
 		</box>

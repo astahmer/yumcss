@@ -40,15 +40,15 @@ const THEME_ENTRY = `
 }
 `;
 
-const css = createDesignCss(examplePreset);
+const dss = createDesignCss(examplePreset);
 const sheet = createStylesheet(examplePreset);
 
 /** Resolved (property → value) map for one css() style object. */
 function cssDeclarations(style: Record<string, unknown>): Map<string, string> {
-	const atoms = css(style as never) as Record<string, string>;
+	const atoms = dss(style as never) as Record<string, string>;
 	// The stylesheet engine works on the resolved raw style (design modules
 	// like $text are translated to concrete properties/values first).
-	sheet.process([css.raw(style as never) as never]);
+	sheet.process([dss.raw(style as never) as never]);
 	const root = parse(sheet.gen.atomic());
 	const resolved = new Map<string, string>();
 
@@ -144,7 +144,7 @@ describe("css() and tw() emit the same resolved declarations", () => {
 		expect(cssProps.get("_hover__color|color")).toBe(twProps.get("hover:text-blue-400|color"));
 
 		const root = parse(sheet.gen.atomic());
-		const hoverAtoms = css({ _hover: { color: "$blue-400" } } as never) as Record<string, string>;
+		const hoverAtoms = dss({ _hover: { color: "$blue-400" } } as never) as Record<string, string>;
 		const hoverAtom = hoverAtoms._hover__color!;
 		const cssSelector = rulesForClass(root, hoverAtom)[0]!.selector;
 		const { root: twRoot } = await compileClasses(THEME_ENTRY, ["hover:text-blue-400"]);

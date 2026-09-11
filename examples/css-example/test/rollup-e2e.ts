@@ -87,7 +87,7 @@ writeFileSync(
 	[
 		'import { createDesignCss } from "pandwind/design";',
 		'import { examplePreset } from "@pandwind/example-preset";',
-		"export const dcss = createDesignCss(examplePreset);",
+		"export const dss = createDesignCss(examplePreset);",
 	].join("\n"),
 );
 writeFileSync(
@@ -99,10 +99,10 @@ writeFileSync(
 	join(source, "entry.ts"),
 	[
 		'import "./globals.css";',
-		'import { dcss } from "./design.ts";',
-		'const staticClass = dcss.class({ $frame: { fill: "$blue-500" } });',
-		'const duplicateClass = dcss.class({ $frame: { fill: "$blue-500" } });',
-		'const dynamic = dcss.vars({ color: "#2563eb", _hover: { color: "#dc2626" } });',
+		'import { dss } from "./design.ts";',
+		'const staticClass = dss.class({ $frame: { fill: "$blue-500" } });',
+		'const duplicateClass = dss.class({ $frame: { fill: "$blue-500" } });',
+		'const dynamic = dss.vars({ color: "#2563eb", _hover: { color: "#dc2626" } });',
 		'document.querySelector("#static")!.className = staticClass;',
 		'document.querySelector("#duplicate")!.className = duplicateClass;',
 		'const target = document.querySelector("#dynamic")!;',

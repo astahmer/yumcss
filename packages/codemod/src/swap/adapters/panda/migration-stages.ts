@@ -38,7 +38,7 @@ export function emitPandaStyle(
 		tokenRefs: "bare",
 		sort: true,
 		tokenReferenceFormat,
-	}).text;
+	}).text.replaceAll("css.class", "dss.class");
 }
 
 export function rewritePandaSource(

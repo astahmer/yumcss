@@ -52,7 +52,7 @@ async function setUp() {
 	const config = extractTwConfig(twTs)!;
 	const adapter = createTwAdapter({ preset: examplePreset, variants: config.variants, bridge });
 	const css = createCss({ className: adapter });
-	const design = createDesignCss(examplePreset, { className: adapter });
+	const dss = createDesignCss(examplePreset, { className: adapter });
 	const cx = createCx({
 		css,
 		variants: config.variants,
@@ -61,7 +61,7 @@ async function setUp() {
 	});
 	const tw = (styles: Parameters<typeof compileStyles>[0]) =>
 		compileStyles(styles, config.variants, config.conflicts, config.compose);
-	return { bridge, config, adapter, css, design, cx, tw };
+	return { bridge, config, adapter, css, dss, cx, tw };
 }
 
 describe("the tailwind adapter", () => {
@@ -92,13 +92,13 @@ describe("the tailwind adapter", () => {
 		expect(s.tw({ flex: true })).toBe("flex");
 	});
 
-	test("design css() surfaces map to the same utilities", async () => {
+	test("design dss() surfaces map to the same utilities", async () => {
 		const s = await setUp();
-		expect(s.design.class({ $text: { color: "$blue-500" } })).toBe("text-blue-500");
-		expect(s.design.class({ $frame: { corners: "xl", fill: "$blue-600" } })).toBe(
+		expect(s.dss.class({ $text: { color: "$blue-500" } })).toBe("text-blue-500");
+		expect(s.dss.class({ $frame: { corners: "xl", fill: "$blue-600" } })).toBe(
 			"rounded-xl bg-blue-600",
 		);
-		expect(s.design.class({ $text: { size: "sm", color: "$gray-900" } })).toBe(
+		expect(s.dss.class({ $text: { size: "sm", color: "$gray-900" } })).toBe(
 			"text-gray-900 text-sm",
 		);
 	});

@@ -91,7 +91,7 @@ keep its vocabulary and token resolution:
 import { createDesignCss } from "pandwind/react-strict-dom";
 import { examplePreset } from "@pandwind/example-preset";
 
-const css = createDesignCss(examplePreset);
+const dss = createDesignCss(examplePreset);
 const card = css({ $frame: { fill: "$blue-500", pad: 4 } });
 ```
 

@@ -82,24 +82,6 @@ export const Card = () => (
 If you want Tailwind class output while keeping the `css()` property API, use
 the [`ClassNameStrategy` adapter](/interop/tailwind-adapter/) instead.
 
-### I am building a design system
-
-Use [`createDesignCss()`](/api/design-css/) when component styles should read
-like design intent: `$frame`, `$layout`, `$text`, semantic tokens, and explicit
-states.
-
-```ts
-import { createDesignCss } from "pandwind/design";
-import { preset } from "./preset";
-
-const dss = createDesignCss(preset);
-
-const button = dss.class({
-	$frame: { fill: "$brand", pad: "4", corners: "md" },
-	$text: { color: "$onBrand", weight: "semibold" },
-});
-```
-
 ### I am moving from another library
 
 Start with the [migration guide](/guides/migrations/). Preview a diff, read the

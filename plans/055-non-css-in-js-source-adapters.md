@@ -42,7 +42,7 @@ The work must follow the existing pivot architecture:
 - AST or stylesheet-parser ownership for semantic rewrites;
 - `StyleProgram` for semantic rules and the flat `SwapIR` fast path for simple
   declarations;
-- target-owned output for `css.class`, `tw`, `dcss`, authored CSS, and other
+- target-owned output for `css.class`, `tw`, `dss`, authored CSS, and other
   registered targets; and
 - typed lossiness/residual reporting whenever a transformation cannot be
   proven equivalent.
@@ -113,7 +113,7 @@ flowchart LR
   CONTEXT --> PARSE[owned parser and semantic extractor]
   PARSE --> IR[StyleProgram or SwapIR]
   IR --> LOWER[target lowering policy]
-  LOWER --> WEB[css.class / tw / dcss]
+  LOWER --> WEB[css.class / tw / dss]
   LOWER --> CSS[authored CSS target]
   LOWER --> ART[generated files and imports]
   IR --> REPORT[residuals, provenance, lossiness]
@@ -364,7 +364,7 @@ erDiagram
    extraction, token/theme/variant normalization, and host-aware rewrites.
 8. Expand Vanilla Extract loading and lowering around custom themes, contracts,
    sprinkles, recipes, generated artifacts, and wrappers.
-9. Add target-specific emission for `css.class`, `tw`, `dcss`, and authored
+9. Add target-specific emission for `css.class`, `tw`, `dss`, and authored
    CSS, including reusable multi-file artifacts and deterministic deduplication.
 10. Add inline-snapshot and assertion suites for every route in both directions
     and round trips. Cover aliases, custom config, themes, composition,

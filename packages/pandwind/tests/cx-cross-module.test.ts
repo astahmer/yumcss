@@ -177,9 +177,9 @@ describe("inlineCxCalls folds through importedConstants", () => {
 		const { createDesignCss } = await import("../src/design/index.ts");
 		const { createCx } = await import("../src/cx/index.ts");
 		const { examplePreset } = await import("@pandwind/example-preset");
-		const designCss = createDesignCss(examplePreset);
+		const dss = createDesignCss(examplePreset);
 		const real = createCx({
-			css: designCss as never,
+			css: dss as never,
 			variants: config.variants,
 			conflicts: config.conflicts,
 			compose: config.compose,

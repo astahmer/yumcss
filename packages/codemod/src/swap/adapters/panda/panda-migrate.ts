@@ -10,7 +10,7 @@ import { SwapResidualKindTag } from "../../semantic-ir.ts";
  * 3. tier decision per variant definition: ONE call site folds inline,
  *    shared definitions re-emit as dedicated modules with identical export
  *    names under `<alias>/<outDir>/{recipes,patterns,jsx}/`;
- * 4. rewrite call sites: css({...}) -> css.class({...}), `<panda.x …>` ->
+ * 4. rewrite call sites: css({...}) -> dss.class({...}), `<panda.x …>` ->
  *    `<x className={…}>`, styled-system import specifiers -> emitted
  *    modules; anything non-literal keeps a skip marker (never half-converted).
  */
@@ -675,8 +675,8 @@ export function factoryEdits(
 			.join(", ")} }`,
 	];
 	const classExpr = existingClassExpr
-		? `cx(css.class(${classCallArgs}), ${existingClassExpr})`
-		: `css.class(${classCallArgs})`;
+		? `cx(dss.class(${classCallArgs}), ${existingClassExpr})`
+		: `dss.class(${classCallArgs})`;
 
 	const edits: Array<{ start: number; end: number; text: string }> = [];
 	// strip every non-DOM attribute span inside the opening tag
@@ -815,7 +815,7 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 			: def.name;
 		recipeModuleNames.set(`${def.file.path}#${def.start}`, moduleName);
 		emittedRecipeDefs.push(def);
-		const cssImport = `import { css, cx } from "${cssImportFor(1)}";`;
+		const cssImport = `import { dss, cx } from "${cssImportFor(1)}";`;
 		let content = renderRecipeModule(exportName, ir, meta, {
 			cssImport,
 			tokenReferenceFormat,
@@ -879,7 +879,7 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 				addExtra(site.file.path, {
 					start: site.start,
 					end: site.end,
-					text: folded.text.replace("css.class(", `cx(css.class(`).replace(/\)$/, "))"),
+					text: folded.text.replace("dss.class(", `cx(dss.class(`).replace(/\)$/, "))"),
 				});
 				tier0Folded.push(def.name);
 				continue;
@@ -1049,7 +1049,7 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 		const mask = SourcePass.computeExcludedRanges(file.source, file.path);
 		const masked = (start: number): boolean => mask.isExcluded(start);
 
-		// css({...}) -> css.class({...}) / marker
+		// css({...}) -> dss.class({...}) / marker
 		for (const call of parsePandaCalls(file.source, masked, {
 			theme,
 			tokenReferenceFormat,
@@ -1173,8 +1173,9 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 		// Files may use the global panda `css()` binding without importing it
 		// directly (for example via the JSX factory). Ensure every converted
 		// call has a real migrated binding.
-		if (/\bcss\.class\s*\(/.test(next) && !hasCssBinding(next)) {
-			const importText = `import { css } from "${aliasSpecifier(aliasInfo, outDirName, "css")}";\n`;
+		next = renamePandaCssImport(next, aliasSpecifier(aliasInfo, outDirName, "css"));
+		if (/\bdss\.class\s*\(/.test(next) && !hasDssBinding(next)) {
+			const importText = `import { dss } from "${aliasSpecifier(aliasInfo, outDirName, "css")}";\n`;
 			const insertion = importInsertionOffset(next);
 			next = next.slice(0, insertion) + importText + next.slice(insertion);
 		}
@@ -1232,10 +1233,23 @@ function isActualImportSpecifier(source: string, offset: number): boolean {
 	return !inTemplate;
 }
 
-function hasCssBinding(source: string): boolean {
+function hasDssBinding(source: string): boolean {
 	return (
-		/import\s*\{[^}]*\bcss(?:\s+as\s+\w+)?\b[^}]*\}\s*from\s*["'][^"']+["']/.test(source) ||
-		/(?:const|let|var|function)\s+css\b/.test(source)
+		/import\s*\{[^}]*\bdss(?:\s+as\s+\w+)?\b[^}]*\}\s*from\s*["'][^"']+["']/.test(source) ||
+		/(?:const|let|var|function)\s+dss\b/.test(source)
+	);
+}
+
+function renamePandaCssImport(source: string, importPath: string): string {
+	const escapedPath = importPath.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+	const importPattern = new RegExp(
+		`(import\\s*\\{)([^}]*\\bcss\\b[^}]*)(\\}\\s*from\\s*["']${escapedPath}["'])`,
+		"g",
+	);
+	return source.replace(
+		importPattern,
+		(_match, opening: string, specifiers: string, closing: string) =>
+			`${opening}${specifiers.replace(/\bcss\b/g, "dss")}${closing}`,
 	);
 }
 

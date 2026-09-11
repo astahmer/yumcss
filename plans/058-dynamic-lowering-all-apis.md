@@ -13,7 +13,7 @@ same discipline is missing for the other frozen APIs. Today:
   dynamic position has a FINITE value set (ternary, union-typed const, array
   member) is skipped entirely even though every possible output is knowable
   at build time.
-- `dcss()` (design CSS) — literal styles resolve statically; any dynamic
+- `dss()` (design CSS) — literal styles resolve statically; any dynamic
   member skips the call. No finite discovery, no carrier.
 - `cx()` — dynamic args are runtime class selection (different semantics:
   no values to lower, but candidate UNION registration for the scanner lane
@@ -46,7 +46,7 @@ dynamic + unbounded      -> runtime fallback + explicit coverage diagnostic
       literal+dynamic, const-scope composition, group entries, unbounded
       function call stays conservative. (Constant-array index remains an
       evaluator limitation, recorded as T5/T6 follow-up.)
-- [x] T3 - Finite discovery for `dcss()`: dcss already flows through the
+- [x] T3 - Finite discovery for `dss()`: dss already flows through the
       same `DesignCssArtifactExtractor` as css/class/group, so candidate
       registration works via `resolveDesignStyle` + the preset token
       catalog. Verified with fixtures: token ternaries resolve to concrete
@@ -91,7 +91,7 @@ dynamic + unbounded      -> runtime fallback + explicit coverage diagnostic
 
 ## Definition of done
 
-Every frozen API (`tw`, `css`, `css.class`, `css.group`, `dcss`, `cx`)
+Every frozen API (`tw`, `css`, `css.class`, `css.group`, `dss`, `cx`)
 handles bounded dynamic values build-time-first: finite sets register all
 possible outputs, static subsets fold, only genuinely unbounded values hit
 the runtime, and every unregistered/unresolvable value produces an explicit

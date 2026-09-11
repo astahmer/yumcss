@@ -21,12 +21,12 @@ export interface AppProps {
 }
 
 export function App({ dark = false }: AppProps) {
-	const dcss = createDesignCss(examplePreset, { conditions: { dark: () => dark } });
+	const dss = createDesignCss(examplePreset, { conditions: { dark: () => dark } });
 
 	return (
 		<box
 			style={{
-				...dcss({ $frame: { fill: "$blue-500", corners: "lg", pad: [4, 8] } }),
+				...dss({ $frame: { fill: "$blue-500", corners: "lg", pad: [4, 8] } }),
 				width: 46,
 				flexDirection: "column",
 				gap: 1,
@@ -39,7 +39,7 @@ export function App({ dark = false }: AppProps) {
 					// NOTE: token refs must ride the design MODULES ($frame.fill) on
 					// object backends — raw top-level props pass through unresolved
 					// (token resolution is the web engine's job there).
-					...dcss({ $frame: { fill: "$gray-100" }, _dark: { $frame: { fill: "$gray-800" } } }),
+					...dss({ $frame: { fill: "$gray-100" }, _dark: { $frame: { fill: "$gray-800" } } }),
 					flexDirection: "column",
 					gap: 1,
 				}}
@@ -47,7 +47,7 @@ export function App({ dark = false }: AppProps) {
 				<text>status: {dark ? "dark theme active" : "light theme active"}</text>
 			</box>
 
-			<box style={{ ...dcss({ $frame: { border: { width: 1, color: "$blue-500" } } }), gap: 1 }}>
+			<box style={{ ...dss({ $frame: { border: { width: 1, color: "$blue-500" } } }), gap: 1 }}>
 				<text>bordered section (border shorthand)</text>
 			</box>
 

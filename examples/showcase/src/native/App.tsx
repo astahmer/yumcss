@@ -14,7 +14,7 @@ import { body, header, status } from "../shared-styles.ts";
 
 let isDark = false;
 
-const css = createDesignCss(examplePreset, {
+const dss = createDesignCss(examplePreset, {
 	conditions: { dark: () => isDark },
 });
 
@@ -24,13 +24,13 @@ export function ShowcaseNative() {
 
 	return (
 		<View testID="native-root" style={{ flexDirection: "row", gap: 12 }}>
-			<View testID="native-header" style={css(header)}>
+			<View testID="native-header" style={dss(header)}>
 				<Text>native header</Text>
 			</View>
-			<View testID="native-status" style={css(status)}>
+			<View testID="native-status" style={dss(status)}>
 				<Text>native status</Text>
 			</View>
-			<View testID="native-body" style={css(body)}>
+			<View testID="native-body" style={dss(body)}>
 				<Text>native body</Text>
 			</View>
 			<View testID="native-dark-toggle">

@@ -258,13 +258,13 @@ export default <Button tone="primary" size="lg" />`,
 					`import { createDesignCss } from "pandwind/design";
 import { examplePreset } from "@pandwind/example-preset";
 
-const dcss = createDesignCss(examplePreset);
+const dss = createDesignCss(examplePreset);
 
 type ButtonProps = { tone: "primary" | "danger"; size: "sm" | "lg" };
 
 const Button = (props: ButtonProps) => (
 	<button
-		className={dcss.class({
+		className={dss.class({
 			$frame: {
 				fill: props.tone === "danger" ? "$red-500" : "$blue-500",
 				corners: "lg",
@@ -903,13 +903,13 @@ const brand = definePreset(
 	{ strict: true, conditions: { _hover: "&:hover" }, properties: { $all: true } },
 );
 
-const dcss = createDesignCss(brand);
+const dss = createDesignCss(brand);
 
 type ButtonProps = { active: boolean };
 
 const Button = (props: ButtonProps) => (
 					<button
-						className={dcss.class({
+						className={dss.class({
 							$frame: {
 								fill: props.active ? "$brand-600" : "$brand-500",
 								corners: "lg",

@@ -214,10 +214,10 @@ test("$raw is passed through verbatim and falsey styles are dropped", () => {
 });
 
 test("createDesignCss compiles to hashed atomic classes", () => {
-	const css = createDesignCss(examplePreset, { debug: true });
+	const dss = createDesignCss(examplePreset, { debug: true });
 
 	expect(
-		css({
+		dss({
 			$frame: { w: "20", fill: "$blue-500" },
 			_hover: { $text: { color: "$red-300" } },
 		}),
@@ -231,10 +231,10 @@ test("createDesignCss compiles to hashed atomic classes", () => {
 });
 
 test("design class strings match the generated stylesheet", () => {
-	const css = createDesignCss(examplePreset, { debug: true });
+	const dss = createDesignCss(examplePreset, { debug: true });
 	const sheet = createStylesheet(examplePreset, { debug: true });
 
-	const styles = css.raw({
+	const styles = dss.raw({
 		$frame: { w: "20", fill: "$blue-500", corners: "lg" },
 		$text: { color: "$red-300" },
 		_hover: { $frame: { fill: "$blue-600" } },
@@ -271,28 +271,28 @@ test("design class strings match the generated stylesheet", () => {
 	`);
 });
 
-test("design css().class and css().props compose", () => {
-	const css = createDesignCss(examplePreset, { debug: true });
+test("design dss.class and dss.props compose", () => {
+	const dss = createDesignCss(examplePreset, { debug: true });
 
 	expect(
-		css.class({
+		dss.class({
 			$frame: { pad: "8", corners: "md" },
 			$text: { weight: "bold" },
 		}),
 	).toBe("borderRadius__0.375rem padding__8px fontWeight__700");
 
 	expect(
-		css.props(css({ $frame: { fill: "$blue-500" } }), css({ $text: { color: "$red-300" } })),
+		dss.props(dss({ $frame: { fill: "$blue-500" } }), dss({ $text: { color: "$red-300" } })),
 	).toEqual({
 		className: "backgroundColor__#3182ce color__#FC8181",
 		style: undefined,
 	});
 });
 
-test("design css().group resolves modules per slot", () => {
-	const css = createDesignCss(examplePreset, { debug: true });
+test("design dss.group resolves modules per slot", () => {
+	const dss = createDesignCss(examplePreset, { debug: true });
 
-	const group = css.group({
+	const group = dss.group({
 		header: { $frame: { w: "20" } },
 		body: { $text: { color: "$green-500" } },
 	});
@@ -309,13 +309,13 @@ test("design css().group resolves modules per slot", () => {
   `);
 });
 
-test("design css().group resolves function-valued slots at invocation time", () => {
-	const css = createDesignCss(examplePreset, { debug: true });
-	const group = css.group({
+test("design dss.group resolves function-valued slots at invocation time", () => {
+	const dss = createDesignCss(examplePreset, { debug: true });
+	const group = dss.group({
 		item: ((padding: number) => ({ $raw: { padding: `${padding}px` } })) as any,
 	});
 
-	expect(css.props((group.item as any)(8))).toEqual({
+	expect(dss.props((group.item as any)(8))).toEqual({
 		className: "pw-padding",
 		style: { "--pw-c-padding": "8px" },
 	});

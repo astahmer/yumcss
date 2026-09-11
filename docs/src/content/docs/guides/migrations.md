@@ -76,8 +76,8 @@ pnpm exec pandwind-codemod migrate \
 // before
 css({ color: "blue.500", _hover: { color: "blue.600" } });
 
-// after (illustrative target)
-css.class({ color: "$blue-500", _hover: { color: "$blue-600" } });
+// after (illustrative target; the generated design-system binding is `dss`)
+dss.class({ color: "$blue-500", _hover: { color: "$blue-600" } });
 ```
 
 Run token migration first when Panda tokens are the source of truth. Recipes,

@@ -19,9 +19,10 @@ src/
     preset.ts
     conditions.ts
     index.ts
-  tw.ts                 # generated typed runtime binding
+  styles.ts             # primary createCss/createDesignCss bindings
+  tw.ts                 # optional generated Tailwind runtime binding
   bridge.ts             # optional generated Tailwind class strategy
-  tailwind.css
+  tailwind.css          # optional Tailwind input
 ```
 
 Export the preset from a stable module. Applications, component packages,
