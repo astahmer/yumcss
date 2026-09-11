@@ -23,8 +23,13 @@ export const attachGroup: RuntimeCssAttachment = (css, context) => {
 		if ("$input" in styles) {
 			const { $input: _input, ...rest } = styles as DynamicStyles;
 			const flat = context.flatten(rest);
-			const compiled: Record<string, string> = {};
+			const compiled = Object.create(null) as Record<string, string>;
 			for (const [key, value] of Object.entries(flat)) {
+				if (
+					typeof value !== "string" &&
+					(typeof value !== "number" || !Number.isFinite(value))
+				)
+					continue;
 				compiled[key] = context.backend.declare(
 					key,
 					typeof value === "string" && value.startsWith("input>$")

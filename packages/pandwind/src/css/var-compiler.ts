@@ -51,16 +51,18 @@ const isVarSelectorPart = (part: string): boolean =>
 	part.startsWith("@") || /[&>+~:[\],.#*\s]/.test(part);
 
 /** Stable, CSS-identifier-safe suffix for named and selector conditions. */
-const varConditionPart = (part: string): string => {
+export const varConditionPart = (part: string): string => {
 	if (part.startsWith("_")) return part.slice(1);
 	return /^[A-Za-z_][\w-]*$/.test(part) ? part : `selector-${selectorHash("selector", part)}`;
 };
 
 class DefaultVarCompiler implements VarCompiler {
 	private readonly conditions: ReadonlySet<string>;
+	private readonly emptyConditions: ReadonlySet<string>;
 
-	constructor(conditionNames: Iterable<string> = []) {
+	constructor(conditionNames: Iterable<string> = [], emptyConditionNames: Iterable<string> = []) {
 		this.conditions = new Set(conditionNames);
+		this.emptyConditions = new Set(emptyConditionNames);
 	}
 
 	private splitKey(key: string): { conditions: string[]; prop: string } {
@@ -74,7 +76,10 @@ class DefaultVarCompiler implements VarCompiler {
 		const rawConditions = propertyFirst ? parts.slice(1) : parts.slice(0, -1);
 		return {
 			prop: dashCase(rawProp),
-			conditions: rawConditions.map(varConditionPart).toSorted(),
+			conditions: rawConditions
+				.filter((condition) => !this.emptyConditions.has(condition))
+				.map(varConditionPart)
+				.toSorted(),
 		};
 	}
 
@@ -138,5 +143,7 @@ class DefaultVarCompiler implements VarCompiler {
  * @category styling
  * @since 0.1.0
  */
-export const createVarCompiler = (conditionNames?: Iterable<string>): VarCompiler =>
-	new DefaultVarCompiler(conditionNames);
+export const createVarCompiler = (
+	conditionNames?: Iterable<string>,
+	emptyConditionNames?: Iterable<string>,
+): VarCompiler => new DefaultVarCompiler(conditionNames, emptyConditionNames);

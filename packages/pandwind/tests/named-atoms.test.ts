@@ -21,6 +21,7 @@ import { ATOM_REGISTRY } from "../src/css/atoms.ts";
 import { createCss } from "../src/css/create-css.ts";
 import { createNamedAtomsStrategy } from "../src/css/named-atoms-strategy.ts";
 import { createStylesheet } from "../src/css/create-stylesheet.ts";
+import { escapeIdentifier } from "../src/css/hash.ts";
 import { createCx } from "../src/cx/index.ts";
 import { createDesignCss } from "../src/design/index.ts";
 import { examplePreset } from "@pandwind/example-preset";
@@ -39,9 +40,10 @@ function stylesheet(styles: Array<Record<string, unknown>>): Root {
 }
 
 function rulesFor(root: Root, className: string): Rule[] {
+	const selectorClass = escapeIdentifier(className);
 	return root.nodes
 		.filter((node): node is Rule => node.type === PostCssNodeKind.Rule)
-		.filter((rule) => rule.selector.split(",").some((s) => s.trim().includes(className)));
+		.filter((rule) => rule.selector.split(",").some((s) => s.trim().includes(selectorClass)));
 }
 
 describe("mode switch via config", () => {
@@ -68,7 +70,7 @@ describe("sheet-backed contract", () => {
 		const root = stylesheet([dss.raw({ $text: { color: "$red-500" } }) as never]);
 		const rules = rulesFor(root, atom);
 		expect(rules.length).toBe(1);
-		expect(rules[0]!.toString()).toContain(`.${atom}`);
+		expect(rules[0]!.toString()).toContain(`.${escapeIdentifier(atom)}`);
 	});
 
 	test("token values resolve in the declaration and the emitted name", () => {
@@ -140,9 +142,9 @@ describe("cx() merging survives the mode switch", () => {
 	});
 });
 
-test("plain engine (createCss) supports the strategy too", () => {
+	test("plain engine (createCss) supports the strategy too", () => {
 	const css = createCss({ className: strategy });
 	expect(css.class({ color: "red", backgroundColor: "$blue-500" })).toBe(
-		"pw-color-red pw-backgroundColor-\\$blue-500",
+		"pw-color-red pw-backgroundColor-$blue-500",
 	);
 });

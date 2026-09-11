@@ -115,7 +115,7 @@ const preserveNullResets = (value: unknown, property = ""): unknown => {
 };
 
 const normalizeStyleInput = (style: StyleObject): StyleObject => {
-	for (const key in style) {
+	for (const key of Object.keys(style)) {
 		const value = style[key];
 		if (value == null || typeof value === "object") return preserveNullResets(style) as StyleObject;
 	}
@@ -123,14 +123,17 @@ const normalizeStyleInput = (style: StyleObject): StyleObject => {
 };
 
 const isFlatStyle = (style: StyleObject): boolean => {
-	for (const key in style) {
+	for (const key of Object.keys(style)) {
 		const value = style[key];
 		if (value == null || typeof value === "object") return false;
 	}
 	return true;
 };
 
-const isPreset = (value: CreateCssOptions | TypedPreset): value is TypedPreset =>
+const isCssValue = (value: unknown): value is string | number =>
+	typeof value === "string" || Number.isFinite(value);
+
+	const isPreset = (value: CreateCssOptions | TypedPreset): value is TypedPreset =>
 	typeof value === "object" &&
 	value !== null &&
 	"conditions" in value &&
@@ -156,9 +159,10 @@ export function createCssRuntime(
 
 	const compileStyles = (...styles: Array<StyleObject>): CompiledStyles => {
 		if (styles.length === 1 && isFlatStyle(styles[0]!)) {
-			const compiled = {} as CompiledStyles;
-			for (const key in styles[0]) {
-				compiled[key] = backend.declare(key, styles[0]![key]! as string);
+			const compiled = Object.create(null) as CompiledStyles;
+			for (const key of Object.keys(styles[0]!)) {
+				const value = styles[0]![key];
+				if (isCssValue(value)) compiled[key] = backend.declare(key, value);
 			}
 			Object.defineProperty(compiled, "$$css", { value: true, enumerable: false });
 			return compiled;
@@ -167,27 +171,31 @@ export function createCssRuntime(
 		if (styles.length === 1) {
 			source = normalizeStyleInput(styles[0]!);
 		} else {
-			source = {};
-			for (const style of styles) Object.assign(source, normalizeStyleInput(style));
+			source = assign(...styles.map(normalizeStyleInput));
 		}
 		const flat = flattenStyle(source);
-		const compiled = {} as CompiledStyles;
-		for (const key in flat) compiled[key] = backend.declare(key, flat[key]!);
+		const compiled = Object.create(null) as CompiledStyles;
+		for (const key of Object.keys(flat)) {
+			const value = flat[key];
+			if (isCssValue(value)) compiled[key] = backend.declare(key, value);
+		}
 		Object.defineProperty(compiled, "$$css", { value: true, enumerable: false });
 		return compiled;
 	};
 	const compileClass = (...styles: Array<StyleObject>): string => {
 		if (styles.length === 1 && isFlatStyle(styles[0]!)) {
 			let className = "";
-			for (const key in styles[0]) {
+			for (const key of Object.keys(styles[0])) {
+				const value = styles[0][key];
+				if (!isCssValue(value)) continue;
 				if (className) className += " ";
-				className += backend.declare(key, styles[0]![key]! as string);
+				className += backend.declare(key, value);
 			}
 			return className;
 		}
 		const compiled = compileStyles(...styles);
 		let className = "";
-		for (const key in compiled) {
+		for (const key of Object.keys(compiled)) {
 			if (className) className += " ";
 			className += compiled[key]!;
 		}

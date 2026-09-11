@@ -25,7 +25,7 @@
  */
 import { pairs } from "../lib/utils.ts";
 import type { ClassNameStrategy } from "./class-name-strategy.ts";
-import { escapeIdentifier } from "./hash.ts";
+import { createHashFn } from "./hash.ts";
 
 /**
  * Create a sheet-backed strategy with readable declaration-derived classes.
@@ -50,12 +50,14 @@ import { escapeIdentifier } from "./hash.ts";
  * @since 0.1.0
  */
 export const createNamedAtomsStrategy = (prefix = "pw"): ClassNameStrategy => {
+	const fallbackHash = createHashFn(false);
 	return {
 		name: "named-atoms",
 		sheetBacked: true,
 		toClassName(key, value) {
 			const canonicalKey = pairs.join(pairs.split(key).toSorted());
-			return escapeIdentifier(`${prefix}-${canonicalKey}-${value}`);
+			const readable = `${prefix}-${canonicalKey}-${value}`;
+			return /\s/.test(readable) ? `${prefix}-${fallbackHash(canonicalKey, value)}` : readable;
 		},
 	};
 };

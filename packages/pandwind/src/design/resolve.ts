@@ -1,4 +1,5 @@
 import type { AnyTokens, StyleObject } from "../types/typings.ts";
+import { assign } from "../lib/utils.ts";
 import {
 	createTokenLookup,
 	isDesignModuleKey,
@@ -84,13 +85,16 @@ const resolveDesignStyleWithRegistry = (
 	registry: DesignModuleRegistry,
 ): StyleObject => {
 	const out: StyleObject = {};
+	const merge = (value: StyleObject): void => {
+		Object.assign(out, assign(out, value));
+	};
 
 	for (const [key, value] of Object.entries(style)) {
 		if (value === undefined || value === null || value === false) continue;
 
 		// Raw CSS: passed through verbatim, the engine resolves its tokens.
 		if (key === "$raw") {
-			Object.assign(out, value as StyleObject);
+			merge(value as StyleObject);
 			continue;
 		}
 
@@ -101,7 +105,7 @@ const resolveDesignStyleWithRegistry = (
 		}
 
 		if (isModuleKey(key)) {
-			Object.assign(out, registry.resolve(key, value as Record<string, unknown>, tokens));
+			merge(registry.resolve(key, value as Record<string, unknown>, tokens));
 			continue;
 		}
 

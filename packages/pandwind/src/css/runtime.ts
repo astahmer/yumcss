@@ -82,22 +82,26 @@ interface RuntimeBinding {
 // symbol also joins duplicate runtime copies emitted by split bundles.
 const sharedSheetsKey = Symbol.for("pandwind.runtime.default-sheet");
 type RuntimeGlobal = typeof globalThis & {
-	[sharedSheetsKey]?: RuntimeSheet;
+	[sharedSheetsKey]?: WeakMap<object, RuntimeSheet>;
 };
 
-function runtimeSheetFor(options: RuntimeCssOptions): RuntimeSheet {
+function runtimeSheetFor(preset: CssConfigReturn, options: RuntimeCssOptions): RuntimeSheet {
 	if (options.sheet !== undefined) return options.sheet;
 	if (options.sheetOptions !== undefined) return createRuntimeSheet(options.sheetOptions);
+	if (options.className !== undefined || options.debug !== undefined || options.hashFn !== undefined)
+		return createRuntimeSheet();
 	const globalObject = globalThis as RuntimeGlobal;
-	const existing = globalObject[sharedSheetsKey];
+	const sheets = globalObject[sharedSheetsKey] ?? new WeakMap<object, RuntimeSheet>();
+	globalObject[sharedSheetsKey] = sheets;
+	const existing = sheets.get(preset);
 	if (existing !== undefined) return existing;
 	const sheet = createRuntimeSheet();
-	globalObject[sharedSheetsKey] = sheet;
+	sheets.set(preset, sheet);
 	return sheet;
 }
 
 function runtimeOptions(preset: CssConfigReturn, options: RuntimeCssOptions): RuntimeBinding {
-	const sheet = runtimeSheetFor(options);
+	const sheet = runtimeSheetFor(preset, options);
 	const { sheet: _sheet, sheetOptions: _sheetOptions, ...cssOptions } = options;
 	const stylesheet = createRuntimeStylesheet(preset, cssOptions);
 	let tokensSynced = false;
@@ -149,12 +153,15 @@ function runtimeOptions(preset: CssConfigReturn, options: RuntimeCssOptions): Ru
 		name: authoredStrategy?.name ?? "runtime",
 		sheetBacked: authoredStrategy?.sheetBacked,
 		toClassName: (key, value) => {
+			const custom = authoredStrategy?.toClassName(key, value);
+			if (custom !== null && custom !== undefined && authoredStrategy?.sheetBacked !== true)
+				return custom;
 			const id = `${key}\u0000${value}`;
 			if (!pendingStyleIds.has(id)) {
 				pendingStyleIds.add(id);
 				pendingStyles.push({ key, value });
 			}
-			return authoredStrategy?.toClassName(key, value) ?? null;
+			return custom ?? null;
 		},
 	};
 	return {

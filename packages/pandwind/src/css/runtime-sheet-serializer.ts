@@ -21,9 +21,48 @@ const declarations = (items: readonly RuntimeDeclaration[] = []): string =>
 	items.map((item) => `${dashCase(item.property)}:${declarationValue(item.value)}`).join(";");
 
 const condition = (value: string): string =>
-	/^@(media|container|supports)\b/.test(value) || value.startsWith(":") || value.startsWith("&")
+	value.startsWith("@") || value.startsWith(":") || value.startsWith("&")
 		? value
 		: `&:${value}`;
+
+const splitSelectorList = (value: string): string[] => {
+	const selectors: string[] = [];
+	let start = 0;
+	let depth = 0;
+	let quote = "";
+	for (let index = 0; index < value.length; index++) {
+		const character = value[index]!;
+		if (quote !== "") {
+			if (character === quote && value[index - 1] !== "\\") quote = "";
+			continue;
+		}
+		if (character === "\"" || character === "'") {
+			quote = character;
+			continue;
+		}
+		if (character === "(" || character === "[") depth++;
+		else if (character === ")" || character === "]") depth--;
+		else if (character === "," && depth === 0) {
+			selectors.push(value.slice(start, index).trim());
+			start = index + 1;
+		}
+	}
+	selectors.push(value.slice(start).trim());
+	return selectors.filter(Boolean);
+};
+
+const applySelectorCondition = (base: string, conditionValue: string): string =>
+	splitSelectorList(base)
+		.flatMap((baseSelector) =>
+			splitSelectorList(conditionValue).map((item) => {
+				if (item.includes("&")) return item.replaceAll("&", baseSelector);
+				if (item.startsWith(":") || item.startsWith("[")) return `${baseSelector}${item}`;
+				if (item.startsWith(">") || item.startsWith("+") || item.startsWith("~"))
+					return `${baseSelector}${item}`;
+				return `${baseSelector}:${item}`;
+			}),
+		)
+		.join(", ");
 
 const selector = (
 	value: string,
@@ -34,9 +73,8 @@ const selector = (
 	for (const item of conditions) {
 		// Preserve authored condition order for nested wrappers; selector
 		// conditions compose onto the selector in the same order instead.
-		if (/^@(media|container|supports)\b/.test(item)) wrappers.push(item);
-		else if (item.startsWith("&")) result = item.replaceAll("&", result);
-		else result += item.startsWith(":") ? item : `:${item}`;
+		if (item.startsWith("@")) wrappers.push(item);
+		else result = applySelectorCondition(result, item);
 	}
 	return { selector: result, wrappers };
 };

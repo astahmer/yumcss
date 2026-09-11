@@ -1,0 +1,1 @@
+{"kind":"cut","id":"pc_5zymphol13ke","ts":"2026-09-11T19:53:57.493Z","agent":"unknown","text":"The runtime-size inspection command was easy to run from the wrong package cwd because the test lives under packages/pandwind; a repo-root helper or clearer script output would prevent this.","tags":["workflow"],"severity":"minor"}

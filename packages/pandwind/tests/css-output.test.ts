@@ -90,8 +90,7 @@ test("css gen simple prop", () => {
 	});
 
 	expect(sheet.generate([styles])).toMatchInlineSnapshot(`
-		"
-		.border__1px\\ solid\\ red{border:1px solid red}
+		".h2y00p{border:1px solid red}
 		.backgroundColor__blue\\.300{background-color:blue.300}
 		.caretColor__blue{caret-color:blue}
 		.color__blue\\.300{color:#0000ff}
@@ -107,14 +106,13 @@ test("css gen simple prop", () => {
 		@media (min-width: 768px){._hover__fontSize__md__lg:hover{font-size:lg}}
 		.\\&\\[data-attr\\=\\'test\\'\\]__color__green[data-attr='test']{color:green}
 		.\\&\\[data-attr\\=\\'test\\'\\]___disabled__color__purple[data-attr='test']:disabled, .\\&\\[data-attr\\=\\'test\\'\\]___disabled__color__purple[data-attr='test'][aria-disabled=true]{color:purple}
-		.target .\\&\\[data-attr\\=\\'test\\'\\]__\\.target\\ \\&___disabled__color__cyan[data-attr='test']:disabled, .target .\\&\\[data-attr\\=\\'test\\'\\]__\\.target\\ \\&___disabled__color__cyan[data-attr='test'][aria-disabled=true]{color:cyan}
-		.target .\\&\\[data-attr\\=\\'test\\'\\]__\\.target\\ \\&___active___disabled__color__orange[data-attr='test']:active, .target .\\&\\[data-attr\\=\\'test\\'\\]__\\.target\\ \\&___active___disabled__color__orange[data-attr='test'][data-active=true],.target .\\&\\[data-attr\\=\\'test\\'\\]__\\.target\\ \\&___active___disabled__color__orange[data-attr='test']:disabled, .target .\\&\\[data-attr\\=\\'test\\'\\]__\\.target\\ \\&___active___disabled__color__orange[data-attr='test'][aria-disabled=true]{color:orange}
-		@media (min-width: 1280px){.target .\\&\\[data-attr\\=\\'test\\'\\]__\\.target\\ \\&___disabled__color__xl__pink[data-attr='test']:disabled, .target .\\&\\[data-attr\\=\\'test\\'\\]__\\.target\\ \\&___disabled__color__xl__pink[data-attr='test'][aria-disabled=true]{color:pink}}"
+		.target .bx2erf[data-attr='test']:disabled, .target .bx2erf[data-attr='test'][aria-disabled=true]{color:cyan}
+		.target .\\31 jr1onx[data-attr='test']:active, .target .\\31 jr1onx[data-attr='test'][data-active=true],.target .\\31 jr1onx[data-attr='test']:disabled, .target .\\31 jr1onx[data-attr='test'][aria-disabled=true]{color:orange}
+		@media (min-width: 1280px){.target .mzg6ce[data-attr='test']:disabled, .target .mzg6ce[data-attr='test'][aria-disabled=true]{color:pink}}"
 	`);
 
 	expect(createStylesheet(preset, { debug: false }).generate([styles])).toMatchInlineSnapshot(`
-		"
-		.\\31 an2x2b{border:1px solid red}
+		".\\31 an2x2b{border:1px solid red}
 		.\\31 i3nmbr{background-color:blue.300}
 		.\\31 trwkxl{caret-color:blue}
 		.o3b2cm{color:#0000ff}

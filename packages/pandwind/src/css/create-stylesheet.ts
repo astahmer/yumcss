@@ -1,10 +1,15 @@
 import { assign, type FlatStyles, flattenStyle, pairs } from "../lib/utils.ts";
 import type { CssConfigReturn, StyleObject, TokenDeclaration } from "../types/typings.ts";
-import { createVarCompiler } from "./var-compiler.ts";
+import { createVarCompiler, varConditionPart } from "./var-compiler.ts";
 import type { CreateCssOptions } from "./create-css.ts";
 import { createHashFn, dashCase, escapeIdentifier, hashCssVar } from "./hash.ts";
 import { getPropertyPriority } from "./property-priorities.ts";
-import { buildTokenMaps, resolveTokenAliasValue, resolveTokenValue } from "./tokens.ts";
+import {
+	buildTokenMaps,
+	resolveTokenAliasValue,
+	resolveTokenValue,
+	tokenDependencyPaths,
+} from "./tokens.ts";
 import { isSelfSelector } from "./stylesheet-lowering.ts";
 import {
 	defaultAtomicPathDecoder,
@@ -80,7 +85,11 @@ export const createStylesheet = (
 	policies: StylesheetPolicies = {},
 ) => {
 	const cache = new Map<string, Rule>();
-	const varCompiler = createVarCompiler(Object.keys(preset.conditions));
+	const conditionNames = Object.keys(preset.conditions);
+	const varCompiler = createVarCompiler(
+		conditionNames,
+		conditionNames.filter((name) => !preset.conditions[name]),
+	);
 	const conditionPolicy = policies.conditions ?? defaultConditionPolicy;
 	const ordering = policies.ordering ?? createStylesheetOrderingPolicy();
 	const serializer = policies.serializer ?? defaultRuleSerializer;
@@ -99,7 +108,7 @@ export const createStylesheet = (
 			const named = sheetStrategy.toClassName(orderedKey, rawValue);
 			if (named !== null) return named;
 		}
-		return escapeIdentifier(hashFn(orderedKey, rawValue));
+		return hashFn(orderedKey, rawValue);
 	};
 
 	const emptyCondition = Object.keys(preset.conditions).find((key) => !preset.conditions[key]);
@@ -124,25 +133,24 @@ export const createStylesheet = (
 	const presetTokens = preset.tokens ?? {};
 	// Pre-compute the `:root` token declarations (the class-value maps live
 	// in the shared `buildTokenMaps`).
-	for (const group in presetTokens) {
-		for (const tokenName in presetTokens[group]) {
+	for (const group of Object.keys(presetTokens)) {
+		for (const tokenName of Object.keys(presetTokens[group]!)) {
 			const tokenValue = presetTokens[group][tokenName];
 			if (tokenValue === undefined) continue;
 			const cssVarHash = hashCssVar(pairs.join([group, tokenName]), debug);
 			const tokenPath = `${group}.${tokenName}`;
 
 			if (typeof tokenValue === "object") {
-				for (const condition in tokenValue) {
+				for (const condition of Object.keys(tokenValue)) {
+					if (condition !== "base" && !Object.hasOwn(preset.conditions, condition))
+						throw new Error(`Unknown condition '${condition}' in token '${tokenPath}'`);
 					const value = resolveTokenAliasValue(
 						tokenMaps,
 						tokenPath,
 						tokenValue[condition] as string,
 					);
 
-					const resolved = preset.conditions[condition];
-					// if (typeof resolved == null) {
-					// 	throw new Error(`Unknown condition '${condition}' used in token '${tokenName}'`);
-					// }
+					const resolved = condition === "base" ? "" : preset.conditions[condition]!;
 
 					const resolvedList = (Array.isArray(resolved) ? resolved : [resolved]).filter(
 						(part): part is string => Boolean(part),
@@ -182,14 +190,21 @@ export const createStylesheet = (
 
 	const processFlatStyles = (style: FlatStyles) => {
 		const localCache = new Map<string, Rule>();
-		for (const key in style) {
+		for (const key of Object.keys(style)) {
+			const rawValue = style[key];
+			if (
+				(typeof rawValue !== "string" && typeof rawValue !== "number") ||
+				(typeof rawValue === "number" && !Number.isFinite(rawValue))
+			)
+				continue;
 			// By sorting the atomic path, we ensure different atomic paths leading to the same CSS
 			// will always have the same hash
 			// ex: `css({ _hover: { color: "red" } })` === `css({ color: { _hover: "red" }  })`
 			const orderedKey = pairs.join(pathParts(key, false, true));
-			const propertySeparator = key.lastIndexOf("__");
-			const property = propertySeparator === -1 ? key : key.slice(propertySeparator + 2);
-			const normalizedValue = normalizeCssValue(property, style[key]! as string | number);
+			const propertySeparator = orderedKey.lastIndexOf("__");
+			const property =
+				propertySeparator === -1 ? orderedKey : orderedKey.slice(propertySeparator + 2);
+			const normalizedValue = normalizeCssValue(property, rawValue);
 			processNormalizedStyle(orderedKey, normalizedValue, localCache);
 		}
 
@@ -215,16 +230,19 @@ export const createStylesheet = (
 			const tokenPath = tokenMaps.flatTokens.get(
 				`${tokenGroup ?? atomic.prop!}.${normalizedValue}`,
 			)?.path;
-			if (tokenPath !== undefined && !usedTokenPaths.has(tokenPath)) {
-				usedTokenPaths.add(tokenPath);
-				tokensCache = undefined;
+			if (tokenPath !== undefined) {
+				for (const dependency of tokenDependencyPaths(tokenMaps, tokenPath)) {
+					if (usedTokenPaths.has(dependency)) continue;
+					usedTokenPaths.add(dependency);
+					tokensCache = undefined;
+				}
 			}
 		}
 		const value = resolveTokenValue(tokenMaps, atomic.prop!, normalizedValue);
 
 		const css = serializer.serialize([dashCase(atomic.prop!), value].join(":"), {
 			...atomic.conditions,
-			className: `.${classNameFor(orderedKey, normalizedValue)}`,
+			className: `.${escapeIdentifier(classNameFor(orderedKey, normalizedValue))}`,
 		});
 
 		const rule = { id: pairId, css, priority: atomic.priority };
@@ -259,7 +277,9 @@ export const createStylesheet = (
 		const first = rawParts[0]!;
 		const last = rawParts[rawParts.length - 1]!;
 		const isCondition = (part: string): boolean =>
-			part.startsWith("_") || preset.conditions[part] !== undefined;
+			part.startsWith("_") ||
+			Object.hasOwn(preset.conditions, part) ||
+			/[&>+~:[\],.#*\s]/.test(part);
 		const propertyFirst = rawParts.length > 1 && !isCondition(first) && isCondition(last);
 		const propPart = propertyFirst ? first : last;
 		const conditionParts = propertyFirst ? rawParts.slice(1) : rawParts.slice(0, -1);
@@ -271,9 +291,7 @@ export const createStylesheet = (
 		if (orderedKey === "" || varCache.has(orderedKey)) return;
 		// The canonical key always stores conditions before the property.
 		const prop = dashCase(propPart);
-		const condParts = orderedConditions.map((part) =>
-			part.startsWith("_") ? part.slice(1) : part,
-		);
+		const condParts = orderedConditions.map(varConditionPart);
 		let declaration = `var(--pw-c-${prop})`;
 		for (let i = 1; i <= condParts.length; i++) {
 			declaration = `var(--pw-c-${prop}_${condParts.slice(0, i).join("_")}, ${declaration})`;
@@ -348,7 +366,7 @@ export const createStylesheet = (
 		const tokensCss = gen.tokens();
 		const atomicCss = gen.atomic();
 
-		return [tokensCss, atomicCss].join("\n");
+		return [tokensCss, atomicCss].filter(Boolean).join("\n");
 	};
 
 	return {

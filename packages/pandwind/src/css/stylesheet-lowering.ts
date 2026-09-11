@@ -36,15 +36,7 @@ const scopedClassName = (className: string, selectors: readonly string[]): strin
 const isParentSelector = (condition: string): boolean =>
 	condition.charCodeAt(condition.length - 1) === 38;
 const isAtRule = (condition: string): boolean => condition.charCodeAt(0) === 64;
-const isSelectorList = (selector: string): boolean => {
-	let parentheses = 0;
-	for (const character of selector) {
-		if (character === "(") parentheses++;
-		else if (character === ")") parentheses--;
-		else if (character === "," && parentheses === 0) return true;
-	}
-	return false;
-};
+const isSelectorList = (selector: string): boolean => splitSelectorList(selector).length > 1;
 
 export const parseCondition = (
 	selector: string,
@@ -99,15 +91,26 @@ export function decodeAtomicPath(
 	atomicPath: string,
 ): DecodedAtomicPath {
 	const conditions = createConditionsBucket();
-	const parts = pairs.split(atomicPath);
+	const identitySeparator = atomicPath.indexOf("\u0000");
+	const hasPairDelimiter =
+		identitySeparator >= 2 && atomicPath.slice(identitySeparator - 2, identitySeparator) === "__";
+	const encodedPath =
+		identitySeparator === -1
+			? atomicPath
+			: atomicPath.slice(0, identitySeparator - (hasPairDelimiter ? 2 : 0));
+	const parts = pairs.split(encodedPath);
+	if (identitySeparator !== -1) parts.push("");
+	const encodedValue =
+		identitySeparator === -1 ? undefined : atomicPath.slice(identitySeparator + 1);
 	if (parts.length === 2) {
-		const [prop, value] = parts.slice(-2);
+		const [prop] = parts.slice(-2);
+		const value = encodedValue ?? atomicPath.slice(atomicPath.indexOf("__") + 2);
 		return { prop: prop!, value: value!, priority: getPropertyPriority(prop!), conditions };
 	}
-	const value = parts.at(-1)!;
+	const value = encodedValue ?? parts.at(-1)!;
 	let prop: string | undefined;
 	const conds = parts.slice(0, -1).reduce((acc, part) => {
-		const resolved = presetConditions[part] ?? part;
+		const resolved = Object.hasOwn(presetConditions, part) ? presetConditions[part]! : part;
 		const resolvedList = Array.isArray(resolved) ? resolved : [resolved];
 		for (const selector of resolvedList) {
 			const invalid = parseCondition(selector, conditions);

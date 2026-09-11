@@ -554,12 +554,13 @@ export function createCx(options: CxOptions = {}): CxFn {
 	// `outCls[i]` is blanked in place when a later token overrides the same
 	// signature, mirroring the previous `{ cls, sigs }` records.
 	const outCls: string[] = [];
+	const outAtomKeys: Array<readonly string[] | undefined> = [];
 	/**
 	 * Inline custom properties from `css.vars()` carriers, merged last-wins.
 	 * Always collected (only when carriers appear); surfaced by `cx.vars`,
 	 * ignored by the plain string `cx`.
 	 */
-	const outStyle: Record<string, string> = {};
+	const outStyle = Object.create(null) as Record<string, string>;
 	/** Live (not-yet-overridden) signature count per outCls entry. */
 	const outLive: number[] = [];
 	/**
@@ -631,8 +632,8 @@ export function createCx(options: CxOptions = {}): CxFn {
 	const resolveAtomSigs = (key: string): CompiledSigs =>
 		cachedCompile(atomSigs, key, () => compileSigs(signatureFromCssKey(key)))!;
 
-	const push = (cls: string, plan: CompiledSigs | null) => {
-		if (cls === "") return;
+	const push = (cls: string, plan: CompiledSigs | null, atomKeys?: readonly string[]) => {
+		if (typeof cls !== "string" || cls === "") return;
 		if (plan === null) {
 			if (opaque.has(cls)) return;
 			opaque.add(cls);
@@ -640,6 +641,7 @@ export function createCx(options: CxOptions = {}): CxFn {
 			// Keep outLive index-aligned with outCls (opaque entries are never
 			// referenced by owners, but positions must match).
 			outLive.push(0);
+			outAtomKeys.push(undefined);
 			return;
 		}
 		// Partial survival (tailwind-merge parity): a later token matching
@@ -669,6 +671,7 @@ export function createCx(options: CxOptions = {}): CxFn {
 		const index = outCls.length;
 		outCls.push(cls);
 		outLive.push(plan.primaries);
+		outAtomKeys.push(atomKeys);
 		for (let i = 0; i < plan.primaries; i++) {
 			ownSid.push(all[i]!);
 			ownIdx.push(index);
@@ -734,18 +737,32 @@ export function createCx(options: CxOptions = {}): CxFn {
 	};
 
 	const pushVarCarrier = (input: VarsOutput): void => {
-		if (input.style !== undefined) Object.assign(outStyle, input.style);
+		if (input.style !== undefined && typeof input.style === "object")
+			Object.assign(outStyle, input.style);
 		const carrierAtoms = (input as { [VARS_ATOMS]?: Array<VarAtom> })[VARS_ATOMS];
 		if (carrierAtoms === undefined) {
-			// Unknown carrier shape — keep the class verbatim.
-			push(input.class ?? "", null);
+			// Serialized carriers lose the private atom metadata. Tokenize their
+			// class string so a configured cx instance can still merge it safely.
+			pushString(typeof input.class === "string" ? input.class : "");
 			return;
 		}
 		for (const atom of carrierAtoms) {
 			for (const key of atom.keys) {
-				push(atom.cls, resolveAtomSigs(key));
+				push(atom.cls, resolveAtomSigs(key), atom.keys);
 			}
 		}
+	};
+
+	const isVarsCarrier = (input: object): input is VarsOutput => {
+		if (VARS_ATOMS in input) return true;
+		const candidate = input as { class?: unknown; style?: unknown };
+		return (
+			typeof candidate.class === "string" &&
+			"class" in input &&
+			"style" in input &&
+			typeof candidate.style === "object" &&
+			candidate.style !== null
+		);
 	};
 
 	const pushInput = (input: CxInput) => {
@@ -754,7 +771,7 @@ export function createCx(options: CxOptions = {}): CxFn {
 			return;
 		}
 		if (typeof input === "object" && input !== null) {
-			if (VARS_ATOMS in input) {
+			if (isVarsCarrier(input)) {
 				pushVarCarrier(input as VarsOutput);
 				return;
 			}
@@ -766,6 +783,7 @@ export function createCx(options: CxOptions = {}): CxFn {
 
 	const reset = (): void => {
 		outCls.length = 0;
+		outAtomKeys.length = 0;
 		outLive.length = 0;
 		ownSid.length = 0;
 		ownIdx.length = 0;
@@ -825,7 +843,7 @@ export function createCx(options: CxOptions = {}): CxFn {
 		let cacheKey = "";
 		let allStrings = inputs.length > 0;
 		for (let i = 0; i < inputs.length; i++) {
-			if (typeof inputs[i] !== "string") {
+			if (typeof inputs[i] !== "string" || inputs[i].includes("\u0000")) {
 				allStrings = false;
 				break;
 			}
@@ -870,7 +888,19 @@ export function createCx(options: CxOptions = {}): CxFn {
 	cx.vars = (...inputs: Array<CxInput | CxInput[]>): VarsOutput => {
 		reset();
 		const cls = mergeInputs(inputs);
-		return { class: cls, style: { ...outStyle } };
+		const output: VarsOutput = { class: cls, style: { ...outStyle } };
+		const atoms: VarAtom[] = [];
+		for (let index = 0; index < outCls.length; index++) {
+			const atomKeys = outAtomKeys[index];
+			const atomClass = outCls[index];
+			if (atomKeys !== undefined && atomClass !== undefined && atomClass !== "") {
+				atoms.push({ cls: atomClass, keys: [...atomKeys] });
+			}
+		}
+		if (atoms.length > 0) {
+			Object.defineProperty(output, VARS_ATOMS, { value: atoms, enumerable: false });
+		}
+		return output;
 	};
 
 	return cx;

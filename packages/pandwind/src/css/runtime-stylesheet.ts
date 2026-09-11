@@ -1,6 +1,6 @@
 import { pairs } from "../lib/utils.ts";
 import type { CssConfigReturn, TokenDeclaration } from "../types/typings.ts";
-import { createVarCompiler } from "./var-compiler.ts";
+import { createVarCompiler, varConditionPart } from "./var-compiler.ts";
 import type { CreateCssOptions } from "./runtime-base.ts";
 import { createHashFn, dashCase, escapeIdentifier, hashCssVar } from "./hash.ts";
 import { getPropertyPriority } from "./property-priorities.ts";
@@ -36,7 +36,11 @@ export const createRuntimeStylesheet = (
 	preset: CssConfigReturn,
 	options: CreateCssOptions = {},
 ) => {
-	const varCompiler = createVarCompiler(Object.keys(preset.conditions));
+	const conditionNames = Object.keys(preset.conditions);
+	const varCompiler = createVarCompiler(
+		conditionNames,
+		conditionNames.filter((name) => !preset.conditions[name]),
+	);
 	const hashFn = options.hashFn ?? createHashFn(Boolean(options.debug));
 	const debug = Boolean(options.debug);
 
@@ -49,7 +53,7 @@ export const createRuntimeStylesheet = (
 			const named = sheetStrategy.toClassName(orderedKey, rawValue);
 			if (named !== null) return named;
 		}
-		return escapeIdentifier(hashFn(orderedKey, rawValue));
+		return hashFn(orderedKey, rawValue);
 	};
 
 	const emptyCondition = Object.keys(preset.conditions).find((key) => !preset.conditions[key]);
@@ -71,21 +75,23 @@ export const createRuntimeStylesheet = (
 	// Pre-compute the `:root` token declarations (the class-value maps live
 	// in the shared `buildTokenMaps`). Runtime sheets always emit the complete
 	// token prelude, so no used-token tracking is needed here.
-	for (const group in presetTokens) {
-		for (const tokenName in presetTokens[group]) {
+	for (const group of Object.keys(presetTokens)) {
+		for (const tokenName of Object.keys(presetTokens[group]!)) {
 			const tokenValue = presetTokens[group][tokenName];
 			if (tokenValue === undefined) continue;
 			const cssVarHash = hashCssVar(pairs.join([group, tokenName]), debug);
 			const tokenPath = `${group}.${tokenName}`;
 
 			if (typeof tokenValue === "object") {
-				for (const condition in tokenValue) {
+				for (const condition of Object.keys(tokenValue)) {
+					if (condition !== "base" && !Object.hasOwn(preset.conditions, condition))
+						throw new Error(`Unknown condition '${condition}' in token '${tokenPath}'`);
 					const value = resolveRuntimeTokenAliasValue(
 						tokenMaps,
 						tokenPath,
 						tokenValue[condition] as string,
 					);
-					const resolved = preset.conditions[condition];
+					const resolved = condition === "base" ? "" : preset.conditions[condition]!;
 					const resolvedList = (Array.isArray(resolved) ? resolved : [resolved]).filter(
 						(part): part is string => Boolean(part),
 					);
@@ -147,7 +153,7 @@ export const createRuntimeStylesheet = (
 		const value = resolveRuntimeTokenValue(tokenMaps, atomic.prop, normalizedValue);
 		const css = genCSSRule([dashCase(atomic.prop), value].join(":"), {
 			...atomic.conditions,
-			className: `.${classNameFor(orderedKey, normalizedValue)}`,
+			className: `.${escapeIdentifier(classNameFor(orderedKey, normalizedValue))}`,
 		});
 		const rule = { id: pairId, css, priority: atomic.priority };
 		cache.set(pairId, rule);
@@ -166,7 +172,9 @@ export const createRuntimeStylesheet = (
 		const first = rawParts[0]!;
 		const last = rawParts[rawParts.length - 1]!;
 		const isCondition = (part: string): boolean =>
-			part.startsWith("_") || preset.conditions[part] !== undefined;
+			part.startsWith("_") ||
+			Object.hasOwn(preset.conditions, part) ||
+			/[&>+~:[\],.#*\s]/.test(part);
 		const propertyFirst = rawParts.length > 1 && !isCondition(first) && isCondition(last);
 		const propPart = propertyFirst ? first : last;
 		const conditionParts = propertyFirst ? rawParts.slice(1) : rawParts.slice(0, -1);
@@ -179,9 +187,7 @@ export const createRuntimeStylesheet = (
 
 		// The canonical key always stores conditions before the property.
 		const prop = dashCase(propPart);
-		const condParts = orderedConditions.map((part) =>
-			part.startsWith("_") ? part.slice(1) : part,
-		);
+		const condParts = orderedConditions.map(varConditionPart);
 		let declaration = `var(--pw-c-${prop})`;
 		for (let i = 1; i <= condParts.length; i++) {
 			declaration = `var(--pw-c-${prop}_${condParts.slice(0, i).join("_")}, ${declaration})`;

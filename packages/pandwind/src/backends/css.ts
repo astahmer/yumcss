@@ -62,15 +62,15 @@ export function createCssBackend(options: CssBackendOptions = {}): StyleBackend 
 				// Sheet-backed strategies compile through this engine's own
 				// stylesheet, so their classes join the atom registry — that is
 				// what keeps cx() merging and the generated rules working.
-				if (sheetBacked && !atoms.has(custom)) atoms.set(custom, key);
+				if (sheetBacked && !atoms.has(custom)) atoms.set(custom, orderedKey);
 				values.set(rawValue, custom);
 				return custom;
 			}
 		}
 		const atom = hashFn(orderedKey, rawValue);
-		// Keep the written key for cx()'s property-signature parser; only the
-		// class identity uses the canonical key shared with the stylesheet.
-		if (!atoms.has(atom)) atoms.set(atom, key);
+		// Keep the canonical key so cx() sees the same condition/property order
+		// as the stylesheet for inverted nesting (`color: { _hover: ... }`).
+		if (!atoms.has(atom)) atoms.set(atom, orderedKey);
 		values.set(rawValue, atom);
 		return atom;
 	};

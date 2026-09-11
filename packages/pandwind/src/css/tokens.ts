@@ -39,11 +39,12 @@ export function buildTokenMaps(
 	const groupByProp = new Map<string, string>();
 
 	const presetTokens = preset.tokens ?? {};
-	for (const group in presetTokens) {
+	const presetProperties = preset.properties ?? {};
+	for (const group of Object.keys(presetTokens)) {
 		const tokenList = new Set<string>();
 		tokensByGroup.set(group, tokenList);
 
-		for (const tokenName in presetTokens[group]) {
+		for (const tokenName of Object.keys(presetTokens[group]!)) {
 			const tokenValue = presetTokens[group][tokenName];
 			if (tokenValue === undefined) continue;
 			const hash = pairs.join([group, tokenName]);
@@ -65,15 +66,15 @@ export function buildTokenMaps(
 		}
 	}
 
-	for (const prop in preset.properties) {
-		if (typeof preset.properties[prop] !== "object") continue;
+	for (const prop of Object.keys(presetProperties)) {
+		if (typeof presetProperties[prop] !== "object") continue;
 
-		for (const token in preset.properties[prop]) {
+		for (const token of Object.keys(presetProperties[prop]!)) {
 			if (token === "$strictness") continue;
 
 			// Add every token of that group to the list of tokens for that prop
 			if (token === "$tokens") {
-				const group = preset.properties[prop].$tokens!;
+				const group = presetProperties[prop]!.$tokens!;
 				const groupTokens = tokensByGroup.get(group);
 				if (!groupTokens) continue;
 
@@ -99,7 +100,7 @@ export function buildTokenMaps(
 			const simpleToken: SimpleToken = {
 				path: tokenPath,
 				name: token,
-				value: preset.properties[prop][token],
+				value: presetProperties[prop]![token],
 				hash: pairs.join([prop, token]),
 			};
 			for (const alias of tokenNameAliases(token)) flatTokens.set(`${prop}.${alias}`, simpleToken);
@@ -124,6 +125,30 @@ const resolveTokenTarget = (
 	const next = maps.flatTokens.get(token.value);
 	if (next === undefined) return token;
 	return resolveTokenTarget(maps, next.path, new Set([...seen, tokenPath]));
+};
+
+/**
+ * Collect the preset token paths needed to emit one authored token. Conditional
+ * aliases can point at more than one semantic role, so following only the
+ * final target is not enough for the `tokens: "used"` stylesheet mode.
+ */
+export const tokenDependencyPaths = (
+	maps: TokenMaps,
+	tokenPath: string,
+	paths: Set<string> = new Set(),
+	visiting: Set<string> = new Set(),
+): Set<string> => {
+	const token = maps.flatTokens.get(tokenPath);
+	if (token === undefined || paths.has(token.path) || visiting.has(token.path)) return paths;
+	paths.add(token.path);
+	visiting.add(token.path);
+	const values = typeof token.value === "string" ? [token.value] : Object.values(token.value);
+	for (const value of values) {
+		const target = maps.flatTokens.get(value);
+		if (target !== undefined) tokenDependencyPaths(maps, target.path, paths, visiting);
+	}
+	visiting.delete(token.path);
+	return paths;
 };
 
 /**

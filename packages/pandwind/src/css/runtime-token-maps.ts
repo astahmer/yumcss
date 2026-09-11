@@ -28,10 +28,11 @@ export function buildRuntimeTokenMaps(preset: CssConfigReturn, debug: boolean): 
 	const tokensByGroup = new Map<string, Set<string>>();
 
 	const presetTokens = preset.tokens ?? {};
-	for (const group in presetTokens) {
+	const presetProperties = preset.properties ?? {};
+	for (const group of Object.keys(presetTokens)) {
 		const groupTokens = new Set<string>();
 		tokensByGroup.set(group, groupTokens);
-		for (const tokenName in presetTokens[group]) {
+		for (const tokenName of Object.keys(presetTokens[group]!)) {
 			const tokenValue = presetTokens[group][tokenName];
 			if (tokenValue === undefined) continue;
 			const token: RuntimeToken = {
@@ -45,11 +46,11 @@ export function buildRuntimeTokenMaps(preset: CssConfigReturn, debug: boolean): 
 		}
 	}
 
-	for (const prop in preset.properties) {
-		const property = preset.properties[prop];
+	for (const prop of Object.keys(presetProperties)) {
+		const property = presetProperties[prop];
 		if (typeof property !== "object") continue;
 
-		for (const token in property) {
+		for (const token of Object.keys(property)) {
 			if (token === "$strictness") continue;
 			if (token === "$tokens") {
 				const group = property.$tokens!;

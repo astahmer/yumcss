@@ -24,6 +24,13 @@ interface PropsReturn {
 	[key: string]: unknown;
 }
 
+const isVarsOutput = (value: object): value is VarsOutput =>
+	"class" in value &&
+	typeof value.class === "string" &&
+	"style" in value &&
+	typeof value.style === "object" &&
+	value.style !== null;
+
 /** Attach the host-prop projection that combines classes and inline variables. */
 export const attachProps: RuntimeCssAttachment = (css) => {
 	css.props = (...props: Array<PropsInput>): PropsReturn => {
@@ -41,15 +48,15 @@ export const attachProps: RuntimeCssAttachment = (css) => {
 				classNames.push(current);
 				return;
 			}
-			if ("class" in current && "style" in current) {
-				const vars = current as VarsOutput;
-				if (vars.class) classNames.push(vars.class);
-				if (vars.style) styles.push(vars.style);
-				return;
-			}
+			if (typeof current !== "object") return;
 			if (DYNAMIC in current) {
 				compiled.push(current.compiled);
 				styles.push(current.style);
+				return;
+			}
+			if (isVarsOutput(current)) {
+				if (current.class) classNames.push(current.class);
+				if (current.style) styles.push(current.style);
 				return;
 			}
 			compiled.push(current as CompiledStyles);

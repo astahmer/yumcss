@@ -1,5 +1,6 @@
 import { type CreateCssOptions, type CssFn, createCss } from "../css/create-css.ts";
 import { ATOM_REGISTRY, type AtomRegistry } from "../css/atoms.ts";
+import { assign } from "../lib/utils.ts";
 import type { StyleObject } from "../types/typings.ts";
 import { resolveDesignStyle } from "./resolve.ts";
 import type { DesignPreset, DesignStyleObject } from "./types.ts";
@@ -73,11 +74,9 @@ export const createDesignCss = <TPreset extends DesignPreset>(
 	// Dynamic values ride inline custom properties; design-layer tokens are
 	// resolved first so the inline value is concrete.
 	dss.vars = (...styles: Array<Maybe<Design>>) => {
-		const resolvedStyles: StyleObject = {};
-		for (const style of styles) {
-			if (!style) continue;
-			Object.assign(resolvedStyles, resolve(style));
-		}
+		const resolvedStyles = assign(
+			...(styles.filter(Boolean) as Array<Design>).map(resolve),
+		) as StyleObject;
 		return engine.vars(resolvedStyles as never);
 	};
 
