@@ -319,7 +319,7 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 								margin: "0",
 								fontSize: "13px",
 								fontWeight: "500",
-								color: "var(--pw-text-strong)",
+								color: "textStrong",
 							})}
 						>
 							{props.def.title}
@@ -332,7 +332,7 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 										fontSize: "10px",
 										textTransform: "uppercase",
 										letterSpacing: "0.08em",
-										color: "var(--pw-text-faint)",
+										color: "textFaint",
 									})}
 								>
 									API
@@ -343,15 +343,15 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 									onChange={(event) => selectApi(event.target.value as ExampleVariant["api"])}
 									className={uiCss.class({
 										height: "24px",
-										border: "1px solid var(--pw-border-strong)",
+										border: "strong",
 										borderRadius: "5px",
-										backgroundColor: "var(--pw-control)",
+										backgroundColor: "control",
 										padding: "0 6px",
 										fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
 										fontSize: "11px",
-										color: "var(--pw-text-soft)",
+										color: "textSoft",
 										outline: "none",
-										"&:focus": { borderColor: "var(--pw-accent)", color: "var(--pw-text-strong)" },
+										"&:focus": { borderColor: "accent", color: "textStrong" },
 									})}
 								>
 									{props.def.variants.map((variant) => (
@@ -370,7 +370,7 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 										fontSize: "10px",
 										textTransform: "uppercase",
 										letterSpacing: "0.08em",
-										color: "var(--pw-text-faint)",
+										color: "textFaint",
 									})}
 								>
 									ADAPTER
@@ -382,15 +382,15 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 									className={uiCss.class({
 										height: "24px",
 										maxWidth: "220px",
-										border: "1px solid var(--pw-border-strong)",
+										border: "strong",
 										borderRadius: "5px",
-										backgroundColor: "var(--pw-control)",
+										backgroundColor: "control",
 										padding: "0 6px",
 										fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
 										fontSize: "11px",
-										color: "var(--pw-text-soft)",
+										color: "textSoft",
 										outline: "none",
-										"&:focus": { borderColor: "var(--pw-accent)", color: "var(--pw-text-strong)" },
+										"&:focus": { borderColor: "accent", color: "textStrong" },
 									})}
 								>
 									{CLASS_NAME_ADAPTERS.map((adapter) => (
@@ -407,7 +407,7 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 							display: "none",
 							margin: "0",
 							fontSize: "12px",
-							color: "var(--pw-text-faint)",
+							color: "textFaint",
 							"@media (min-width: 768px)": { display: "block" },
 						})}
 					>
@@ -418,7 +418,7 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 							className={uiCss.class({
 								fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
 								fontSize: "10px",
-								color: "var(--pw-text-faint)",
+								color: "textFaint",
 							})}
 						>
 							tw() uses its generated Tailwind bridge
@@ -428,7 +428,7 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 							className={uiCss.class({
 								fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
 								fontSize: "10px",
-								color: "var(--pw-text-faint)",
+								color: "textFaint",
 							})}
 						>
 							{activeClassNameAdapter.description}
@@ -460,7 +460,7 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 							role="tab"
 							aria-selected={index === activeTab}
 							onClick={() => setActiveTab(index)}
-							className={`${uiCss.class({ border: "0", borderRadius: "6px", backgroundColor: "var(--pw-control)", padding: "4px 10px", fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", fontSize: "12px", lineHeight: "20px", transition: "color 120ms, background-color 120ms" })} ${index === activeTab ? uiCss.class({ backgroundColor: "var(--pw-control-selected)", color: "var(--pw-text-strong)" }) : uiCss.class({ color: "var(--pw-text-soft)", "&:hover": { backgroundColor: "var(--pw-control-hover)", color: "var(--pw-text-strong)" } })}`}
+							className={`${uiCss.class({ border: "0", borderRadius: "6px", backgroundColor: "control", padding: "4px 10px", fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", fontSize: "12px", lineHeight: "20px", transition: "color 120ms, background-color 120ms" })} ${index === activeTab ? uiCss.class({ backgroundColor: "controlSelected", color: "textStrong" }) : uiCss.class({ color: "textSoft", "&:hover": { backgroundColor: "controlHover", color: "textStrong" } })}`}
 						>
 							{file.name}
 						</button>

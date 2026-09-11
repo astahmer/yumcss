@@ -35,7 +35,7 @@ export interface ExampleVariant {
 	api: PlaygroundApi;
 	/** Label shown in the API selector. */
 	label: string;
-	/** One or more files; the first is evaluated, the rest are tabs. */
+	/** One or more files; the first exports the rendered preview by default. */
 	files: readonly ExampleFile[];
 }
 
@@ -131,7 +131,7 @@ const Button = (props: ButtonProps) => (
 	</button>
 );
 
-<Button tone="primary" size="lg" />`,
+export default <Button tone="primary" size="lg" />`,
 				),
 			},
 			{
@@ -164,7 +164,7 @@ const Button = (props: ButtonProps) => (
 	</button>
 );
 
-<Button tone="primary" size="lg" />`,
+export default <Button tone="primary" size="lg" />`,
 				),
 			},
 			{
@@ -194,7 +194,7 @@ const Button = (props: ButtonProps) => (
 	</button>
 );
 
-<Button tone="primary" size="lg" />`,
+export default <Button tone="primary" size="lg" />`,
 				),
 			},
 		],
@@ -242,7 +242,7 @@ const Alert = (props: AlertProps) => {
 	);
 };
 
-<Alert tone="danger" color="red-600" />`,
+export default <Alert tone="danger" color="red-600" />`,
 		),
 	},
 	{
@@ -276,7 +276,7 @@ const Card = (props: CardProps) => (
 	</article>
 );
 
-<Card title="Responsive surface" />`,
+export default <Card title="Responsive surface" />`,
 		),
 	},
 	{
@@ -311,7 +311,7 @@ const Action = (props: ActionProps) => (
 	</button>
 );
 
-<Action tone="primary" />`,
+export default <Action tone="primary" />`,
 		),
 	},
 	{
@@ -357,7 +357,7 @@ const TokenCard = (props: CardProps) => (
 	</article>
 );
 
-<TokenCard tone="brand" />`,
+export default <TokenCard tone="brand" />`,
 					},
 					{
 						name: "tokens.ts",
@@ -471,7 +471,7 @@ const Button = (props: ButtonProps) => (
 	</button>
 );
 
-<Button active />`,
+export default <Button active />`,
 					},
 					{
 						name: "brand.ts",
@@ -529,7 +529,7 @@ const Button = (props: ButtonProps) => (
 	</button>
 );
 
-<Button size="lg" tone="brand" />`,
+export default <Button size="lg" tone="brand" />`,
 		),
 	},
 	{
@@ -572,7 +572,7 @@ const Card = (props: CardProps) => {
 	);
 };
 
-<Card tone="blue" />`,
+export default <Card tone="blue" />`,
 		),
 	},
 	{
@@ -602,7 +602,7 @@ const Label = (props: LabelProps) => (
 	</span>
 );
 
-<Label size={SIZE} />`,
+export default <Label size={SIZE} />`,
 		),
 	},
 	{
@@ -638,7 +638,7 @@ const Button = (props: ButtonProps) => (
 	</div>
 );
 
-<Button label="Compatibility action" />`,
+export default <Button label="Compatibility action" />`,
 		),
 	},
 	{
@@ -664,7 +664,7 @@ const InvalidButton = () => {
 	return <button className={className}>Rejected class string</button>;
 };
 
-<InvalidButton />`,
+export default <InvalidButton />`,
 		),
 	},
 	{
@@ -689,7 +689,7 @@ const InvalidVariant = () => {
 	return <span className={className}>Invalid variant shape</span>;
 };
 
-<InvalidVariant />`,
+export default <InvalidVariant />`,
 		),
 	},
 	{
@@ -720,7 +720,7 @@ const ResidualCard = () => {
 	return <div className={className}>Residual declaration</div>;
 };
 
-<ResidualCard />`,
+export default <ResidualCard />`,
 		),
 	},
 ];

@@ -28,7 +28,7 @@ const ROUTE_LOADING = uiCss.class({
 	height: "100%",
 	placeItems: "center",
 	fontSize: "12px",
-	color: "var(--pw-text-muted)",
+	color: "textMuted",
 });
 
 const NAV_GROUPS = (Object.keys(GROUP_LABEL) as Array<keyof typeof GROUP_LABEL>).map((group) => ({
@@ -69,12 +69,12 @@ const HEADER_LINK = uiCss.class({
 	transition: "color 120ms, background-color 120ms",
 });
 const HEADER_LINK_ACTIVE = uiCss.class({
-	backgroundColor: "var(--pw-control-selected)",
-	color: "var(--pw-text-strong)",
+	backgroundColor: "controlSelected",
+	color: "textStrong",
 });
 const HEADER_LINK_IDLE = uiCss.class({
-	color: "var(--pw-text-muted)",
-	"&:hover": { color: "var(--pw-text-strong)" },
+	color: "textMuted",
+	"&:hover": { color: "textStrong" },
 });
 const SCENARIO_CONTROL = uiCss.class({
 	display: "flex",
@@ -82,13 +82,13 @@ const SCENARIO_CONTROL = uiCss.class({
 	maxWidth: "22rem",
 	height: "30px",
 	alignItems: "center",
-	border: "1px solid var(--pw-border-strong)",
+	border: "strong",
 	borderRadius: "6px",
-	backgroundColor: "var(--pw-control)",
+	backgroundColor: "control",
 	transition: "border-color 120ms, box-shadow 120ms",
 	"&:focus-within": {
-		borderColor: "var(--pw-accent)",
-		boxShadow: "0 0 0 1px var(--pw-accent-soft)",
+		borderColor: "accent",
+		boxShadow: "focus",
 	},
 });
 const SCENARIO_INPUT = uiCss.class({
@@ -100,7 +100,7 @@ const SCENARIO_INPUT = uiCss.class({
 	padding: "0 0 0 9px",
 	fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
 	fontSize: "11px",
-	color: "var(--pw-text)",
+	color: "text",
 });
 const SCENARIO_TRIGGER = uiCss.class({
 	flexShrink: "0",
@@ -109,17 +109,17 @@ const SCENARIO_TRIGGER = uiCss.class({
 	padding: "0 8px",
 	fontSize: "15px",
 	lineHeight: "1",
-	color: "var(--pw-text-soft)",
-	"&:hover": { color: "var(--pw-text-strong)" },
+	color: "textSoft",
+	"&:hover": { color: "textStrong" },
 });
 const SCENARIO_CONTENT = uiCss.class({
 	minWidth: "14rem",
 	maxHeight: "24rem",
 	overflow: "auto",
-	border: "1px solid var(--pw-border-strong)",
+	border: "strong",
 	borderRadius: "7px",
-	backgroundColor: "var(--pw-surface-raised)",
-	boxShadow: "0 16px 40px var(--pw-shadow)",
+	backgroundColor: "surfaceRaised",
+	boxShadow: "menu",
 	padding: "5px",
 	zIndex: "20",
 });
@@ -129,7 +129,7 @@ const SCENARIO_GROUP_LABEL = uiCss.class({
 	fontSize: "9px",
 	textTransform: "uppercase",
 	letterSpacing: "0.1em",
-	color: "var(--pw-text-faint)",
+	color: "textFaint",
 });
 const SCENARIO_ITEM = uiCss.class({
 	display: "flex",
@@ -139,18 +139,18 @@ const SCENARIO_ITEM = uiCss.class({
 	padding: "7px 8px",
 	fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
 	fontSize: "11px",
-	color: "var(--pw-text-soft)",
+	color: "textSoft",
 	outline: "none",
 	"&[data-highlighted]": {
-		backgroundColor: "var(--pw-accent-soft)",
-		color: "var(--pw-accent-text)",
+		backgroundColor: "accentSoft",
+		color: "accentText",
 	},
-	"&[data-state=checked]": { color: "var(--pw-text-strong)" },
+	"&[data-state=checked]": { color: "textStrong" },
 });
 const SCENARIO_EMPTY = uiCss.class({
 	padding: "10px 8px",
 	fontSize: "11px",
-	color: "var(--pw-text-muted)",
+	color: "textMuted",
 });
 const COLOR_MODE_SWITCHER = uiCss.class({
 	display: "flex",
@@ -164,29 +164,34 @@ const COLOR_MODE_LABEL = uiCss.class({
 	fontSize: "9px",
 	textTransform: "uppercase",
 	letterSpacing: "0.08em",
-	color: "var(--pw-text-faint)",
+	color: "textFaint",
 });
 const COLOR_MODE_OPTION = uiCss.class({
 	flexShrink: "0",
-	border: "1px solid var(--pw-border-strong)",
+	border: "strong",
 	borderRadius: "4px",
-	backgroundColor: "var(--pw-control)",
+	backgroundColor: "control",
 	padding: "4px 7px",
 	fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
 	fontSize: "10px",
-	color: "var(--pw-text-soft)",
+	color: "textSoft",
 	transition: "color 120ms, border-color 120ms, background-color 120ms",
 	"&[aria-pressed=true]": {
-		borderColor: "var(--pw-accent)",
-		backgroundColor: "var(--pw-accent-soft)",
-		color: "var(--pw-accent-text)",
+		borderColor: "accent",
+		backgroundColor: "accentSoft",
+		color: "accentText",
 	},
 	"&:hover": {
-		borderColor: "var(--pw-border-hover)",
-		backgroundColor: "var(--pw-control-hover)",
-		color: "var(--pw-text-strong)",
+		borderColor: "borderHover",
+		backgroundColor: "controlHover",
+		color: "textStrong",
 	},
-	"&:focus-visible": { outline: "1px solid var(--pw-accent)", outlineOffset: "2px" },
+	"&:focus-visible": {
+		outlineColor: "accent",
+		outlineStyle: "solid",
+		outlineWidth: "1px",
+		outlineOffset: "2px",
+	},
 });
 
 function ScenarioPicker() {
@@ -226,7 +231,7 @@ function ScenarioPicker() {
 					fontSize: "10px",
 					textTransform: "uppercase",
 					letterSpacing: "0.1em",
-					color: "var(--pw-text-faint)",
+					color: "textFaint",
 				})}
 			>
 				scenario
@@ -294,8 +299,8 @@ function ShellFrame() {
 				flexDirection: "column",
 				height: "100%",
 				minHeight: "0px",
-				backgroundColor: "var(--pw-page)",
-				color: "var(--pw-text)",
+				backgroundColor: "page",
+				color: "text",
 				WebkitFontSmoothing: "antialiased",
 			})}
 		>
@@ -306,8 +311,8 @@ function ShellFrame() {
 					flexShrink: "0",
 					alignItems: "center",
 					gap: "24px",
-					borderBottom: "1px solid var(--pw-border)",
-					backgroundColor: "var(--pw-page)",
+					borderBottom: "hairline",
+					backgroundColor: "page",
 					paddingLeft: "16px",
 					paddingRight: "20px",
 				})}
@@ -318,19 +323,17 @@ function ShellFrame() {
 							fontSize: "13px",
 							fontWeight: "600",
 							letterSpacing: "-0.025em",
-							color: "var(--pw-text-strong)",
+							color: "textStrong",
 						})}
 					>
 						pandwind
 					</span>
-					<span className={uiCss.class({ fontSize: "13px", color: "var(--pw-text-faint)" })}>
-						/
-					</span>
+					<span className={uiCss.class({ fontSize: "13px", color: "textFaint" })}>/</span>
 					<span
 						className={uiCss.class({
 							fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
 							fontSize: "12px",
-							color: "var(--pw-accent-text)",
+							color: "accentText",
 						})}
 					>
 						playground
@@ -360,21 +363,21 @@ function ShellFrame() {
 						alignItems: "center",
 						gap: "6px",
 						fontSize: "11px",
-						color: "var(--pw-text-faint)",
+						color: "textFaint",
 						"@media (min-width: 640px)": { display: "flex" },
 					})}
 				>
 					<span>run</span>
 					<kbd
 						className={uiCss.class({
-							border: "1px solid var(--pw-border-strong)",
+							border: "strong",
 							borderRadius: "4px",
-							backgroundColor: "var(--pw-control-hover)",
+							backgroundColor: "controlHover",
 							padding: "2px 6px",
 							fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
 							fontSize: "10px",
 							lineHeight: "1",
-							color: "var(--pw-text-soft)",
+							color: "textSoft",
 						})}
 					>
 						⌘ ↵

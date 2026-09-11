@@ -221,8 +221,8 @@ const migrationShimModules = [
 const migrationExampleModules = [
 	String.raw`
 type PlaygroundStyleObject = import("pandwind/types/typings").StyleObject;
-type PlaygroundComponent<Props extends Record<string, unknown> = Record<string, unknown>> =
-  (props?: Props) => JSX.Element;
+type PlaygroundComponent<Props extends object = Record<string, unknown>> =
+	(props?: Props) => JSX.Element;
 
 declare module "react/jsx-runtime" {
   export function jsx(type: unknown, props: unknown): JSX.Element;
@@ -256,14 +256,14 @@ declare const renderer: {
 
 declare namespace JSX {
   interface Element {}
-  type ElementType = string | ((props?: Record<string, unknown>) => Element);
+  type ElementType = string | ((props: any) => Element);
   interface ElementClass {}
   interface IntrinsicElements { [elementName: string]: Record<string, unknown>; }
 }
 declare namespace React {
   namespace JSX {
     interface Element {}
-    type ElementType = string | ((props?: Record<string, unknown>) => Element);
+    type ElementType = string | ((props: any) => Element);
     interface IntrinsicElements { [elementName: string]: Record<string, unknown>; }
   }
 }

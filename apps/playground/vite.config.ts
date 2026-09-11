@@ -5,6 +5,7 @@ import { examplePreset } from "@pandwind/example-preset";
 import { pandwindCssVite } from "pandwind/vite";
 import { defineConfig } from "vite";
 import { tailwindDefaultCssPlugin } from "./tailwind-default-css-plugin.ts";
+import { playgroundPreset } from "./src/ui-theme.ts";
 
 /** Cross-origin isolation: required by oxc-parser's SharedArrayBuffer workers. */
 const ISOLATION_HEADERS = {
@@ -23,8 +24,10 @@ const wasiBindingDir = dirname(
 export default defineConfig({
 	plugins: [
 		tailwindDefaultCssPlugin,
-		pandwindCssVite(examplePreset, {
-			cssSources: ["css", "ui-css"],
+		pandwindCssVite(examplePreset, { cssSources: ["css"] }),
+		pandwindCssVite(playgroundPreset, {
+			cssSources: ["ui-css"],
+			virtualId: "pandwind:ui-css",
 		}),
 		react(),
 	],

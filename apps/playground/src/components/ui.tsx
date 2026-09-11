@@ -62,14 +62,14 @@ const SPLITTER_TRIGGER_HORIZONTAL = uiCss.class({
 		width: "3px",
 		height: "36px",
 		borderRadius: "9999px",
-		backgroundColor: "var(--pw-border-strong)",
+		backgroundColor: "borderStrong",
 		content: '""',
 		transform: "translateY(-50%)",
 		transition: "background-color 120ms, height 120ms",
 	},
 	"&:hover::after, &:focus-visible::after": {
 		height: "52px",
-		backgroundColor: "var(--pw-accent)",
+		backgroundColor: "accent",
 	},
 });
 const SPLITTER_TRIGGER_VERTICAL = uiCss.class({
@@ -90,14 +90,14 @@ const SPLITTER_TRIGGER_VERTICAL = uiCss.class({
 		width: "36px",
 		height: "3px",
 		borderRadius: "9999px",
-		backgroundColor: "var(--pw-border-strong)",
+		backgroundColor: "borderStrong",
 		content: '""',
 		transform: "translateX(-50%)",
 		transition: "background-color 120ms, width 120ms",
 	},
 	"&:hover::after, &:focus-visible::after": {
 		width: "52px",
-		backgroundColor: "var(--pw-accent)",
+		backgroundColor: "accent",
 	},
 });
 
@@ -230,12 +230,17 @@ const PANE_TOGGLE = uiCss.class({
 	fontWeight: "500",
 	textTransform: "uppercase",
 	letterSpacing: "0.09em",
-	color: "var(--pw-text-muted)",
+	color: "textMuted",
 	textAlign: "left",
-	"&:hover": { color: "var(--pw-text-strong)" },
-	"&:focus-visible": { outline: "1px solid var(--pw-accent)", outlineOffset: "3px" },
+	"&:hover": { color: "textStrong" },
+	"&:focus-visible": {
+		outlineColor: "accent",
+		outlineStyle: "solid",
+		outlineWidth: "1px",
+		outlineOffset: "3px",
+	},
 });
-const PANE_TOGGLE_ICON = uiCss.class({ color: "var(--pw-text-faint)", fontSize: "12px" });
+const PANE_TOGGLE_ICON = uiCss.class({ color: "textFaint", fontSize: "12px" });
 
 /** Shared pane chrome: hairline border, flat surface, small-caps header. */
 export function Pane(props: {
@@ -256,7 +261,7 @@ export function Pane(props: {
 	};
 	return (
 		<section
-			className={`${uiCss.class({ display: "flex", minHeight: "0px", flexDirection: "column", overflow: "hidden", border: "1px solid var(--pw-border)", borderRadius: "8px", backgroundColor: "var(--pw-surface)" })} ${props.className ?? ""}`}
+			className={`${uiCss.class({ display: "flex", minHeight: "0px", flexDirection: "column", overflow: "hidden", border: "hairline", borderRadius: "8px", backgroundColor: "surface" })} ${props.className ?? ""}`}
 		>
 			<header
 				className={uiCss.class({
@@ -267,7 +272,7 @@ export function Pane(props: {
 					alignItems: "center",
 					justifyContent: "space-between",
 					gap: "8px",
-					borderBottom: "1px solid var(--pw-border)",
+					borderBottom: "hairline",
 					paddingLeft: "12px",
 					paddingRight: "8px",
 				})}
@@ -295,7 +300,7 @@ export function Pane(props: {
 							fontWeight: "500",
 							textTransform: "uppercase",
 							letterSpacing: "0.09em",
-							color: "var(--pw-text-muted)",
+							color: "textMuted",
 						})}
 					>
 						{props.label}
@@ -319,14 +324,14 @@ export function Kbd(props: { children: ReactNode }) {
 	return (
 		<kbd
 			className={uiCss.class({
-				border: "1px solid var(--pw-border-strong)",
+				border: "strong",
 				borderRadius: "4px",
-				backgroundColor: "var(--pw-control-hover)",
+				backgroundColor: "controlHover",
 				padding: "2px 6px",
 				fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
 				fontSize: "10px",
 				lineHeight: "1",
-				color: "var(--pw-text-soft)",
+				color: "textSoft",
 			})}
 		>
 			{props.children}
@@ -346,7 +351,7 @@ export function GhostButton(props: {
 			type="button"
 			title={props.title}
 			onClick={props.onClick}
-			className={`${uiCss.class({ flexShrink: "0", borderRadius: "4px", padding: "4px 8px", fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", fontSize: "11px", lineHeight: "1", transition: "color 120ms, background-color 120ms", "&:focus-visible": { outline: "1px solid var(--pw-accent)" } })} ${props.active === true ? uiCss.class({ color: "var(--pw-success)" }) : uiCss.class({ color: "var(--pw-text-soft)", "&:hover": { backgroundColor: "var(--pw-control-hover)", color: "var(--pw-text-strong)" } })}`}
+			className={`${uiCss.class({ flexShrink: "0", borderRadius: "4px", padding: "4px 8px", fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", fontSize: "11px", lineHeight: "1", transition: "color 120ms, background-color 120ms", "&:focus-visible": { outlineColor: "accent", outlineStyle: "solid", outlineWidth: "1px" } })} ${props.active === true ? uiCss.class({ color: "success" }) : uiCss.class({ color: "textSoft", "&:hover": { backgroundColor: "controlHover", color: "textStrong" } })}`}
 		>
 			{props.children}
 		</button>

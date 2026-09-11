@@ -76,7 +76,7 @@ describe("evalPlayground", () => {
 			[
 				'type AlertProps = { tone: "red-500" | "blue-500" };',
 				'const Alert = (props: AlertProps) => <div className={tw({ bgColor: props.tone, p: "4" })}>{props.tone}</div>;',
-				'<Alert tone="red-500" />',
+				'export default <Alert tone="red-500" />',
 			].join("\n"),
 		);
 		expect(result.ok).toBe(true);
@@ -87,6 +87,25 @@ describe("evalPlayground", () => {
 				children: ["red-500"],
 			});
 			expect(result.output).toContain("bg-red-500");
+		}
+	});
+
+	test("renders a default exported component with evaluator props", () => {
+		const result = run(
+			[
+				'type AlertProps = { tone: "red-500" | "blue-500" };',
+				"const Alert = (props: AlertProps) => <div className={tw({ bgColor: props.tone })}>{props.tone}</div>;",
+				"export default Alert",
+			].join("\n"),
+			{ tone: "blue-500" },
+		);
+		expect(result.ok).toBe(true);
+		if (result.ok) {
+			expect(result.rendered).toMatchObject({
+				type: "div",
+				props: { className: expect.stringContaining("bg-blue-500") },
+				children: ["blue-500"],
+			});
 		}
 	});
 
@@ -403,6 +422,23 @@ describe("evalPlayground", () => {
 });
 
 describe("evalSiblingModule", () => {
+	test("returns a default exported rendered component", () => {
+		const exports = evalSiblingModule({
+			code: [
+				'type AlertProps = { tone: "red-500" | "blue-500" };',
+				"const Alert = (props: AlertProps) => <div className={tw({ bgColor: props.tone })}>{props.tone}</div>;",
+				'export default <Alert tone="blue-500" />',
+			].join("\n"),
+			tw: tw as EvalInput["tw"],
+			css: css as unknown as EvalInput["css"],
+			cx: cx as EvalInput["cx"],
+		});
+		expect(exports.default).toMatchObject({
+			type: "div",
+			props: { className: expect.stringContaining("bg-blue-500") },
+		});
+	});
+
 	test("returns every exported binding from a sibling tab", () => {
 		const exports = evalSiblingModule({
 			code: ['export const tone = "red-500" as const;', 'export const label = "brand";'].join("\n"),

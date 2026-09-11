@@ -2,6 +2,7 @@
 
 /** Virtual CSS module served by `pandwindCssVite`. */
 declare module "pandwind:css" {}
+declare module "pandwind:ui-css" {}
 
 declare module "virtual:pandwind-tailwind-default-css" {
 	const css: string;

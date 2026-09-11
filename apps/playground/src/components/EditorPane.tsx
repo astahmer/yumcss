@@ -133,7 +133,7 @@ function EditorBooting() {
 					width: "6px",
 					height: "6px",
 					borderRadius: "9999px",
-					backgroundColor: "var(--pw-text-faint)",
+					backgroundColor: "textFaint",
 					animation: "pulse 1.5s ease-in-out infinite",
 				})}
 			/>
@@ -162,7 +162,7 @@ export function EditorPane(props: {
 						gap: "6px",
 						paddingRight: "4px",
 						fontSize: "11px",
-						color: "var(--pw-text-faint)",
+						color: "textFaint",
 					})}
 				>
 					<Kbd>⌘</Kbd>

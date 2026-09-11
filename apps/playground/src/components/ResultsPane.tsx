@@ -22,6 +22,7 @@ import { PlaygroundPreviewKind, type ExamplePreview } from "../lib/examples.ts";
 import type { PlaygroundTailwindResolver } from "../lib/tailwind-default-resolver.ts";
 import { css as uiCss } from "../ui-css.ts";
 import { useTheme } from "../theme.tsx";
+import type { PlaygroundColorToken } from "../ui-theme.ts";
 
 function CopyButton(props: { text: string; title?: string }) {
 	const [copied, setCopied] = useState(false);
@@ -92,30 +93,30 @@ function Snippet(props: { code: string; lang: string }) {
 
 const FOLD_CHIP: Record<string, string> = {
 	full: uiCss.class({
-		borderColor: "var(--pw-border-strong)",
-		backgroundColor: "var(--pw-control-hover)",
-		color: "var(--pw-success)",
+		borderColor: "borderStrong",
+		backgroundColor: "controlHover",
+		color: "success",
 	}),
 	partial: uiCss.class({
-		borderColor: "var(--pw-border-strong)",
-		backgroundColor: "var(--pw-control-hover)",
-		color: "var(--pw-warning)",
+		borderColor: "borderStrong",
+		backgroundColor: "controlHover",
+		color: "warning",
 	}),
 	runtime: uiCss.class({
-		borderColor: "var(--pw-border-strong)",
-		backgroundColor: "var(--pw-accent-soft)",
-		color: "var(--pw-accent-text)",
+		borderColor: "borderStrong",
+		backgroundColor: "accentSoft",
+		color: "accentText",
 	}),
 };
 
-const MAPPING_STATUS_ACTIVE = uiCss.class({ color: "var(--pw-success)" });
-const MAPPING_STATUS_DROPPED = uiCss.class({ color: "var(--pw-danger)" });
+const MAPPING_STATUS_ACTIVE = uiCss.class({ color: "success" });
+const MAPPING_STATUS_DROPPED = uiCss.class({ color: "danger" });
 const MAPPING_CLASS_ACTIVE = uiCss.class({
 	minWidth: "0px",
 	overflowWrap: "anywhere",
 	fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
 	fontSize: "11.5px",
-	color: "var(--pw-accent-text)",
+	color: "accentText",
 	textDecoration: "none",
 });
 const MAPPING_CLASS_DROPPED = uiCss.class({
@@ -123,7 +124,7 @@ const MAPPING_CLASS_DROPPED = uiCss.class({
 	overflowWrap: "anywhere",
 	fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
 	fontSize: "11.5px",
-	color: "var(--pw-text-muted)",
+	color: "textMuted",
 	textDecoration: "line-through",
 });
 
@@ -133,7 +134,7 @@ function FoldSection(props: { fold: string; note: string }) {
 			label="Build-time fold"
 			right={
 				<span
-					className={`${uiCss.class({ marginRight: "4px", border: "1px solid var(--pw-border-strong)", borderRadius: "4px", padding: "2px 6px", fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", fontSize: "10px", lineHeight: "1" })} ${FOLD_CHIP[props.fold] ?? uiCss.class({ color: "var(--pw-text-soft)" })}`}
+					className={`${uiCss.class({ marginRight: "4px", border: "strong", borderRadius: "4px", padding: "2px 6px", fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", fontSize: "10px", lineHeight: "1" })} ${FOLD_CHIP[props.fold] ?? uiCss.class({ color: "textSoft" })}`}
 				>
 					{props.fold}
 				</span>
@@ -144,7 +145,7 @@ function FoldSection(props: { fold: string; note: string }) {
 					margin: "0",
 					padding: "8px 12px",
 					fontSize: "12px",
-					color: "var(--pw-text-muted)",
+					color: "textMuted",
 				})}
 			>
 				{props.note}
@@ -153,7 +154,11 @@ function FoldSection(props: { fold: string; note: string }) {
 	);
 }
 
-function EvidenceList(props: { label: string; values: readonly string[]; tone: string }) {
+function EvidenceList(props: {
+	label: string;
+	values: readonly string[];
+	tone: PlaygroundColorToken;
+}) {
 	return (
 		<div
 			className={uiCss.class({
@@ -163,7 +168,7 @@ function EvidenceList(props: { label: string; values: readonly string[]; tone: s
 				gap: "6px",
 			})}
 		>
-			<span className={uiCss.class({ color: "var(--pw-text-muted)" })}>{props.label}</span>
+			<span className={uiCss.class({ color: "textMuted" })}>{props.label}</span>
 			{props.values.map((value) => (
 				<span
 					key={value}
@@ -192,12 +197,12 @@ function ExecutionEvidenceSection(props: { evidence: PlaygroundExecutionEvidence
 				<span
 					className={uiCss.class({
 						marginRight: "4px",
-						border: "1px solid var(--pw-border-strong)",
+						border: "strong",
 						borderRadius: "4px",
 						padding: "2px 6px",
 						fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
 						fontSize: "10px",
-						color: "var(--pw-info)",
+						color: "info",
 					})}
 				>
 					{props.evidence.lane}
@@ -211,22 +216,12 @@ function ExecutionEvidenceSection(props: { evidence: PlaygroundExecutionEvidence
 					padding: "10px 12px",
 					fontSize: "11px",
 					lineHeight: "16px",
-					color: "var(--pw-text-soft)",
+					color: "textSoft",
 				})}
 			>
-				<p className={uiCss.class({ margin: "0", color: "var(--pw-text)" })}>
-					{props.evidence.note}
-				</p>
-				<EvidenceList
-					label="verified"
-					values={props.evidence.verified}
-					tone={"var(--pw-success)"}
-				/>
-				<EvidenceList
-					label="unavailable"
-					values={props.evidence.unavailable}
-					tone={"var(--pw-warning)"}
-				/>
+				<p className={uiCss.class({ margin: "0", color: "text" })}>{props.evidence.note}</p>
+				<EvidenceList label="verified" values={props.evidence.verified} tone={"success"} />
+				<EvidenceList label="unavailable" values={props.evidence.unavailable} tone={"warning"} />
 			</div>
 		</Pane>
 	);
@@ -239,7 +234,7 @@ const PREVIEW_STAGE = uiCss.class({
 	height: "100%",
 	minHeight: "0px",
 	placeItems: "center",
-	backgroundColor: "var(--pw-code-surface)",
+	backgroundColor: "codeSurface",
 	padding: "18px",
 });
 const PREVIEW_FRAME = uiCss.class({
@@ -457,7 +452,7 @@ function PreviewSpecimen(props: {
 					</PreviewElement>
 				)}
 			</div>
-			<span className={uiCss.class({ fontSize: "10px", color: "var(--pw-text-faint)" })}>
+			<span className={uiCss.class({ fontSize: "10px", color: "textFaint" })}>
 				{props.result.rendered === undefined
 					? `${props.preview.kind} fallback · hover it to exercise state styles`
 					: `${props.preview.kind} component · rendered from the example`}
@@ -480,12 +475,12 @@ function LivePreviewSection(props: {
 				<span
 					className={uiCss.class({
 						marginRight: "4px",
-						border: "1px solid var(--pw-border-strong)",
+						border: "strong",
 						borderRadius: "4px",
 						padding: "2px 6px",
 						fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
 						fontSize: "10px",
-						color: "var(--pw-success)",
+						color: "success",
 					})}
 				>
 					{props.result.rendered === undefined ? "fallback" : "rendered"}
@@ -512,7 +507,7 @@ function LivePreviewSection(props: {
 function TokenPill(props: { token: string; killed: boolean }) {
 	return (
 		<span
-			className={`${uiCss.class({ borderRadius: "4px", border: "1px solid", padding: "2px 6px", fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", fontSize: "11.5px", lineHeight: "16px" })} ${props.killed ? uiCss.class({ borderColor: "var(--pw-border-strong)", backgroundColor: "var(--pw-control-hover)", color: "var(--pw-danger)", textDecoration: "line-through", textDecorationColor: "var(--pw-danger)" }) : uiCss.class({ borderColor: "var(--pw-border-strong)", backgroundColor: "var(--pw-control-hover)", color: "var(--pw-success)" })}`}
+			className={`${uiCss.class({ borderRadius: "4px", border: "1px solid", padding: "2px 6px", fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", fontSize: "11.5px", lineHeight: "16px" })} ${props.killed ? uiCss.class({ borderColor: "borderStrong", backgroundColor: "controlHover", color: "danger", textDecoration: "line-through", textDecorationColor: "danger" }) : uiCss.class({ borderColor: "borderStrong", backgroundColor: "controlHover", color: "success" })}`}
 		>
 			{props.token}
 		</span>
@@ -529,7 +524,7 @@ function TokensSection(props: { survived: string[]; killed: string[] }) {
 						margin: "0",
 						padding: "8px 12px",
 						fontSize: "12px",
-						color: "var(--pw-text-faint)",
+						color: "textFaint",
 					})}
 				>
 					no class tokens produced
@@ -546,18 +541,14 @@ function TokensSection(props: { survived: string[]; killed: string[] }) {
 						marginRight: "4px",
 						fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
 						fontSize: "10.5px",
-						color: "var(--pw-text-faint)",
+						color: "textFaint",
 					})}
 				>
-					<span className={uiCss.class({ color: "var(--pw-success)" })}>
-						{survived.length} kept
-					</span>
+					<span className={uiCss.class({ color: "success" })}>{survived.length} kept</span>
 					{killed.length > 0 && (
 						<>
 							{" · "}
-							<span className={uiCss.class({ color: "var(--pw-danger)" })}>
-								{killed.length} dropped
-							</span>
+							<span className={uiCss.class({ color: "danger" })}>{killed.length} dropped</span>
 						</>
 					)}
 				</span>
@@ -587,7 +578,7 @@ function TokensSection(props: { survived: string[]; killed: string[] }) {
 function AtomsSection(props: { atoms: Array<{ cls: string; decls: Record<string, string> }> }) {
 	return (
 		<Pane label="css() atoms">
-			<div className={uiCss.class({ "& > * + *": { borderTop: "1px solid var(--pw-border)" } })}>
+			<div className={uiCss.class({ "& > * + *": { borderTop: "hairline" } })}>
 				{props.atoms.map((atom) => (
 					<div
 						key={atom.cls}
@@ -604,7 +595,7 @@ function AtomsSection(props: { atoms: Array<{ cls: string; decls: Record<string,
 								flexShrink: "0",
 								fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
 								fontSize: "11.5px",
-								color: "var(--pw-accent-text)",
+								color: "accentText",
 							})}
 						>
 							.{atom.cls}
@@ -617,7 +608,7 @@ function AtomsSection(props: { atoms: Array<{ cls: string; decls: Record<string,
 								whiteSpace: "nowrap",
 								fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
 								fontSize: "11.5px",
-								color: "var(--pw-text-muted)",
+								color: "textMuted",
 							})}
 						>
 							{Object.entries(atom.decls)
@@ -642,7 +633,7 @@ function StyleMappingsSection(props: { mappings: PlaygroundStyleMapping[] }) {
 						marginRight: "4px",
 						fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
 						fontSize: "10.5px",
-						color: "var(--pw-text-muted)",
+						color: "textMuted",
 					})}
 				>
 					{props.mappings.length} {props.mappings.length === 1 ? "declaration" : "declarations"}
@@ -651,7 +642,7 @@ function StyleMappingsSection(props: { mappings: PlaygroundStyleMapping[] }) {
 		>
 			<div
 				className={uiCss.class({
-					"& > * + *": { borderTop: "1px solid var(--pw-border)" },
+					"& > * + *": { borderTop: "hairline" },
 				})}
 			>
 				{props.mappings.map((mapping, index) => (
@@ -679,11 +670,9 @@ function StyleMappingsSection(props: { mappings: PlaygroundStyleMapping[] }) {
 								fontSize: "11.5px",
 							})}
 						>
-							<span className={uiCss.class({ color: "var(--pw-warning)" })}>
-								{mapping.property}
-							</span>
-							<span className={uiCss.class({ color: "var(--pw-text)" })}>: {mapping.value}</span>
-							<span className={uiCss.class({ color: "var(--pw-text-soft)" })}>
+							<span className={uiCss.class({ color: "warning" })}>{mapping.property}</span>
+							<span className={uiCss.class({ color: "text" })}>: {mapping.value}</span>
+							<span className={uiCss.class({ color: "textSoft" })}>
 								{mapping.conditions.length === 0 ? "base" : mapping.conditions.join(" / ")}
 							</span>
 							<span className={mapping.active ? MAPPING_STATUS_ACTIVE : MAPPING_STATUS_DROPPED}>
@@ -713,7 +702,7 @@ function SheetSection(props: { sheets: PlaygroundSheetResult[] }) {
 								marginRight: "4px",
 								fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
 								fontSize: "10.5px",
-								color: "var(--pw-text-muted)",
+								color: "textMuted",
 							})}
 						>
 							{sheet.strategy} · {sheet.rules.length} {sheet.rules.length === 1 ? "rule" : "rules"}
@@ -803,8 +792,8 @@ const IR_DETAIL = uiCss.class({
 	minWidth: "0px",
 	minHeight: "0px",
 	overflow: "auto",
-	borderLeft: "1px solid var(--pw-border)",
-	"@media (max-width: 760px)": { borderTop: "1px solid var(--pw-border)", borderLeft: "0" },
+	borderLeft: "hairline",
+	"@media (max-width: 760px)": { borderTop: "hairline", borderLeft: "0" },
 });
 const IR_ROW = uiCss.class({
 	display: "flex",
@@ -824,8 +813,8 @@ const IR_DISCLOSURE = uiCss.class({
 	padding: "0",
 	fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
 	fontSize: "11px",
-	color: "var(--pw-text-muted)",
-	"&:hover": { color: "var(--pw-text-strong)" },
+	color: "textMuted",
+	"&:hover": { color: "textStrong" },
 });
 const IR_NODE = uiCss.class({
 	display: "flex",
@@ -841,12 +830,12 @@ const IR_NODE = uiCss.class({
 	textAlign: "left",
 	fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
 	fontSize: "11px",
-	color: "var(--pw-text-soft)",
-	"&:hover": { backgroundColor: "var(--pw-control-hover)", color: "var(--pw-text-strong)" },
+	color: "textSoft",
+	"&:hover": { backgroundColor: "controlHover", color: "textStrong" },
 });
 const IR_NODE_SELECTED = uiCss.class({
-	backgroundColor: "var(--pw-accent-soft)",
-	color: "var(--pw-accent-text)",
+	backgroundColor: "accentSoft",
+	color: "accentText",
 });
 const IR_NODE_LABEL = uiCss.class({
 	minWidth: "0px",
@@ -859,14 +848,14 @@ const IR_NODE_SUMMARY = uiCss.class({
 	overflow: "hidden",
 	textOverflow: "ellipsis",
 	whiteSpace: "nowrap",
-	color: "var(--pw-text-faint)",
+	color: "textFaint",
 });
 const IR_DETAIL_HEADER = uiCss.class({
 	display: "flex",
 	minWidth: "0px",
 	flexDirection: "column",
 	gap: "4px",
-	borderBottom: "1px solid var(--pw-border)",
+	borderBottom: "hairline",
 	padding: "10px 12px",
 });
 const IR_DETAIL_KICKER = uiCss.class({
@@ -874,7 +863,7 @@ const IR_DETAIL_KICKER = uiCss.class({
 	fontSize: "9px",
 	textTransform: "uppercase",
 	letterSpacing: "0.1em",
-	color: "var(--pw-text-faint)",
+	color: "textFaint",
 });
 const IR_DETAIL_PATH = uiCss.class({
 	overflow: "hidden",
@@ -882,16 +871,16 @@ const IR_DETAIL_PATH = uiCss.class({
 	whiteSpace: "nowrap",
 	fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
 	fontSize: "11px",
-	color: "var(--pw-accent-text)",
+	color: "accentText",
 });
-const IR_RAW = uiCss.class({ flexShrink: "0", borderTop: "1px solid var(--pw-border)" });
+const IR_RAW = uiCss.class({ flexShrink: "0", borderTop: "hairline" });
 const IR_RAW_SUMMARY = uiCss.class({
 	cursor: "pointer",
 	padding: "9px 12px",
 	fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
 	fontSize: "10.5px",
-	color: "var(--pw-text-muted)",
-	"&:hover": { color: "var(--pw-text-strong)" },
+	color: "textMuted",
+	"&:hover": { color: "textStrong" },
 });
 
 function StyleProgramTreeNode(props: {
@@ -978,7 +967,7 @@ function StyleProgramSection(props: { programs: StyleProgram[] }) {
 						marginRight: "4px",
 						fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
 						fontSize: "10.5px",
-						color: "var(--pw-text-muted)",
+						color: "textMuted",
 					})}
 				>
 					{props.programs.length} {props.programs.length === 1 ? "program" : "programs"}
@@ -1021,14 +1010,14 @@ function ErrorSection(props: { error: string }) {
 		<Pane
 			label="Error"
 			collapsible
-			className={uiCss.class({ borderColor: "var(--pw-danger)" })}
+			className={uiCss.class({ borderColor: "danger" })}
 			right={
 				<span
 					className={uiCss.class({
 						marginRight: "4px",
 						fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
 						fontSize: "10.5px",
-						color: "var(--pw-danger)",
+						color: "danger",
 					})}
 				>
 					eval failed
@@ -1043,7 +1032,7 @@ function ErrorSection(props: { error: string }) {
 					fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
 					fontSize: "12px",
 					lineHeight: "20px",
-					color: "var(--pw-danger)",
+					color: "danger",
 				})}
 			>
 				{props.error}

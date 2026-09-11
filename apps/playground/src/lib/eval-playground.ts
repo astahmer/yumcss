@@ -401,12 +401,14 @@ interface Prepared {
 	body: string;
 	consts: ConstantScope;
 	exprText: string;
-	/** Rewritten module source (imports removed, export markers unwrapped). */
+	/** Rewritten module source with imports and export syntax lowered. */
 	evalCode: string;
 	/** Value imports collected from the stripped file. */
 	imports: Array<{ local: string; source: string; imported?: string }>;
 	/** Module-level names this file exports (sandbox export surface). */
 	exportNames: Array<string>;
+	/** Local binding that represents this module's default export, when present. */
+	defaultExportName?: string;
 	/** Span of the final expression statement, if present. */
 	lastExpr?: { start: number; end: number };
 	/** Module-level names the file declares itself (they shadow builtins). */
@@ -415,9 +417,9 @@ interface Prepared {
 
 /**
  * Parse the full module once and classify every top-level statement:
- * imports are collected (never executed), export markers are unwrapped, and
- * the last top-level expression statement is located as the result. JSX and
- * TypeScript syntax are lowered separately before the resulting source runs.
+ * imports are collected (never executed), exports are lowered to local
+ * bindings, and the entry default export becomes the result when present.
+ * JSX and TypeScript syntax are lowered separately before the source runs.
  */
 function stripModule(code: string): Omit<Prepared, "body" | "consts" | "exprText"> {
 	const parsed = parseSync("module-syntax.tsx", code, { sourceType: "module", lang: "tsx" });
@@ -441,6 +443,9 @@ function stripModule(code: string): Omit<Prepared, "body" | "consts" | "exprText
 	const exportNames: Array<string> = [];
 	const cuts: Array<[number, number]> = [];
 	const unwraps: Array<[number, number]> = [];
+	const replacements: Array<[number, number, string]> = [];
+	let defaultExportName: string | undefined;
+	const syntheticDefaultExportName = "__pw_default_export";
 	for (const statement of statements) {
 		if (statement.type === NodeKind.ImportDeclaration) {
 			if (statement.importKind === ImportKindTag.Type) {
@@ -458,11 +463,30 @@ function stripModule(code: string): Omit<Prepared, "body" | "consts" | "exprText
 				else imports.push({ local, source });
 			}
 			cuts.push([statement.start, statement.end]);
-		} else if (
-			statement.type === NodeKind.TSExportAssignment ||
-			statement.type === NodeKind.ExportDefaultDeclaration
-		) {
+		} else if (statement.type === NodeKind.TSExportAssignment) {
 			cuts.push([statement.start, statement.end]);
+		} else if (statement.type === NodeKind.ExportDefaultDeclaration) {
+			const declaration = astNode(statement.declaration);
+			const declarationStart = declaration?.start;
+			const declarationId = astNode(declaration?.id);
+			if (
+				(declaration?.type === NodeKind.FunctionDeclaration ||
+					declaration?.type === NodeKind.ClassDeclaration) &&
+				typeof declarationId?.name === "string" &&
+				declarationStart !== undefined
+			) {
+				unwraps.push([statement.start, declarationStart]);
+				defaultExportName = declarationId.name;
+			} else if (declarationStart !== undefined) {
+				replacements.push([
+					statement.start,
+					declarationStart,
+					`const ${syntheticDefaultExportName} = `,
+				]);
+				defaultExportName = syntheticDefaultExportName;
+			} else {
+				cuts.push([statement.start, statement.end]);
+			}
 		} else if (statement.type === NodeKind.ExportNamedDeclaration) {
 			const inner = statement.declaration;
 			if (inner === undefined) cuts.push([statement.start, statement.end]);
@@ -484,18 +508,19 @@ function stripModule(code: string): Omit<Prepared, "body" | "consts" | "exprText
 	const edits: Array<[number, number, string]> = [
 		...cuts.map(([start, end]): [number, number, string] => [start, end, ""]),
 		...unwraps.map(([start, end]): [number, number, string] => [start, end, ""]),
+		...replacements,
 	].toSorted((left, right) => right[0] - left[0]);
 	let evalCode = code;
-	for (const [start, end] of edits) evalCode = evalCode.slice(0, start) + evalCode.slice(end);
-	return { evalCode, imports, exportNames, declaredNames: [] };
+	for (const [start, end, replacement] of edits)
+		evalCode = evalCode.slice(0, start) + replacement + evalCode.slice(end);
+	return { evalCode, imports, exportNames, defaultExportName, declaredNames: [] };
 }
 
 /**
- * Parse the module, strip imports/export markers, locate the final top-level
- * expression, and collect module constants for the fold classifier.
+ * Parse the module, lower imports/exports, locate the final top-level
+ * expression when there is no default export, and collect module constants.
  */
-/** Evaluation modes: the entry tab wraps its final expression as the
- * result; sibling tabs run whole and hand back their exported bindings. */
+/** Entry tabs return their default export; sibling tabs return export bindings. */
 type EvalMode = "entry" | "module";
 
 function prepare(code: string, mode: EvalMode): Prepared {
@@ -535,11 +560,17 @@ function prepare(code: string, mode: EvalMode): Prepared {
 	if (mode === "module") {
 		// Sibling-tab mode: run the stripped file and return every exported
 		// binding so the entry tab can import them as a real module.
+		const exports = [
+			...base.exportNames.map((name) => `${name}: ${name}`),
+			...(base.defaultExportName === undefined ? [] : [`default: ${base.defaultExportName}`]),
+		];
+		body = evalCode + `\nreturn { ${exports.join(", ")} };`;
+	} else if (base.defaultExportName !== undefined) {
+		exprText = base.defaultExportName;
 		body =
-			base.exportNames.length === 0
-				? evalCode + "\nreturn {};"
-				: evalCode +
-					`\nreturn { ${base.exportNames.map((name) => `${name}: ${name}`).join(", ")} };`;
+			"const __pwExports = {};\n" +
+			evalCode +
+			`\n__pwExports.value = ${base.defaultExportName};\nreturn __pwExports;`;
 	} else if (lastExpr === undefined) {
 		body = evalCode + '\n;throw new Error("add a final expression — nothing to output");';
 	} else {
@@ -562,6 +593,7 @@ function prepare(code: string, mode: EvalMode): Prepared {
 		evalCode,
 		imports: base.imports,
 		exportNames: base.exportNames,
+		defaultExportName: base.defaultExportName,
 	};
 }
 
@@ -1349,22 +1381,26 @@ function runOnce(input: EvalInput, mode: EvalMode): PlaygroundResult {
 	);
 	captured = (fn(sandbox) ?? {}) as { value?: unknown };
 
-	// The final expression may be a class string, a declaration map (plain
+	// The entry value may be a class string, a declaration map (plain
 	// css() / css.raw()), a { class, style } pair from css.vars(), or a
 	// component tree produced by the playground JSX runtime.
 	const rawValue = captured.value;
+	const entryValue =
+		prepared.defaultExportName !== undefined && typeof rawValue === "function"
+			? createPlaygroundJsx(rawValue, input.props ?? {})
+			: rawValue;
 	let output: string | undefined;
 	let rendered: PlaygroundNode | undefined;
 	let decls: Record<string, string> | undefined;
 	let varsOutput: { class: string; style: Record<string, string> } | undefined;
 	let propsOutput: { className?: string; style?: Record<string, string> } | undefined;
-	if (rawValue !== null && typeof rawValue === "object" && isPlaygroundNode(rawValue)) {
-		rendered = rawValue;
+	if (entryValue !== null && typeof entryValue === "object" && isPlaygroundNode(entryValue)) {
+		rendered = entryValue;
 		const styledClasses = new Set([
 			...inputs,
 			...styleMappings.map((mapping) => mapping.className),
 		]);
-		const styledHost = findPlaygroundStyledHost(rawValue, styledClasses);
+		const styledHost = findPlaygroundStyledHost(entryValue, styledClasses);
 		if (styledHost !== undefined) {
 			const className = styledHost.props.className;
 			const style = styledHost.props.style;
@@ -1377,10 +1413,10 @@ function runOnce(input: EvalInput, mode: EvalMode): PlaygroundResult {
 			};
 			output = typeof className === "string" ? className : "";
 		}
-	} else if (typeof rawValue === "string") {
-		output = rawValue;
-	} else if (rawValue !== null && typeof rawValue === "object") {
-		const candidate = rawValue as Record<string, unknown>;
+	} else if (typeof entryValue === "string") {
+		output = entryValue;
+	} else if (entryValue !== null && typeof entryValue === "object") {
+		const candidate = entryValue as Record<string, unknown>;
 		if (
 			typeof candidate.class === "string" &&
 			candidate.style !== null &&
@@ -1406,7 +1442,8 @@ function runOnce(input: EvalInput, mode: EvalMode): PlaygroundResult {
 	if (output === undefined && decls === undefined && rendered === undefined) {
 		return {
 			ok: false,
-			error: "the final expression did not produce a class string or declaration object",
+			error:
+				"the entry value did not produce a renderable component, class string, or declaration object",
 		};
 	}
 

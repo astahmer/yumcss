@@ -32,7 +32,7 @@ function typecheckExamples(): string {
 		const jsxFile = join(temporaryRoot, "playground-jsx.d.ts");
 		writeFileSync(
 			jsxFile,
-			"declare namespace JSX { interface Element {} interface IntrinsicElements { [elementName: string]: Record<string, unknown> } }\n",
+			"declare namespace JSX { interface Element {} type ElementType = string | ((props: any) => Element); interface IntrinsicElements { [elementName: string]: Record<string, unknown> } }\n",
 			"utf8",
 		);
 		const paths = Object.fromEntries(

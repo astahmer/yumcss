@@ -39,6 +39,11 @@ function siblingBindings(
 	return bindings;
 }
 
+const labelFor = (
+	def: (typeof EXAMPLES)[number],
+	variant: (typeof EXAMPLES)[number]["variants"][number],
+): string => def.path + " / " + variant.api + " (" + variant.files[0]!.name + ")";
+
 describe("example catalog evaluates end to end", () => {
 	it("groups the own APIs under one conceptual Basics scenario", () => {
 		const basics = EXAMPLES.find((example) => example.path === "/basics");
@@ -56,8 +61,9 @@ describe("example catalog evaluates end to end", () => {
 	it("every entry tab produces a playground result", () => {
 		for (const def of EXAMPLES) {
 			for (const variant of def.variants) {
+				const label = labelFor(def, variant);
+				expect(variant.files[0]?.code, label).toMatch(/export default/u);
 				const result = evalPlayground(makeInput(variant.files[0]!.code, siblingBindings(variant)));
-				const label = def.path + " / " + variant.api + " (" + variant.files[0]!.name + ")";
 				const outcome = result.ok ? "ok" : "error: " + result.error;
 				expect(outcome, label).toBe("ok");
 				if (result.ok) expect(result.rendered, label).toBeDefined();
