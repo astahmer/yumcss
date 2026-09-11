@@ -1,0 +1,6 @@
+interface:
+  display_name: "Pandwind codemod"
+  short_description: "Migrate styling code with Pandwind safely"
+  default_prompt: "Use $pandwind-codemod to preview and apply a safe styling migration."
+policy:
+  allow_implicit_invocation: true

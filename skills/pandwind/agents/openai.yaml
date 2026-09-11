@@ -1,0 +1,6 @@
+interface:
+  display_name: "Pandwind styling"
+  short_description: "Author and debug typed Pandwind styles"
+  default_prompt: "Use $pandwind to author or debug a typed Pandwind styling change."
+policy:
+  allow_implicit_invocation: true
