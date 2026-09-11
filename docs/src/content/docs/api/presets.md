@@ -310,6 +310,10 @@ roles. The component does not choose a light or dark literal in JavaScript;
 the active theme scope changes the component variable's semantic reference.
 See [Theming](/api/theming/) for the full component-contract example.
 
+Here the empty `base` condition is needed because `defineSemanticTokens` uses
+`base` as a typed default branch. An ordinary preset condition map does not
+need a `base: ""` entry: top-level styles already use the base scope.
+
 ## Keep the examples honest
 
 Static docs code blocks are syntax-highlighted by Starlight's built-in

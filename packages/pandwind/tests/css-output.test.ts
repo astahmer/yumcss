@@ -137,7 +137,7 @@ test("css gen simple prop", () => {
 test("keeps vendor-prefixed line clamp unitless", () => {
 	const preset = definePreset(
 		{ config: {} as StandardLonghandProperties, tokens: {} },
-		{ strict: true, properties: { $all: true }, conditions: { base: "" } },
+		{ strict: true, properties: { $all: true }, conditions: {} },
 	);
 	const css = createCss<typeof preset>({ debug: true });
 	const output = createStylesheet(preset, { debug: true }).generate([

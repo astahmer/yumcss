@@ -116,7 +116,6 @@ describe("css with custom tailwind hashFn", () => {
 				paddingTop: { $tokens: "spacing" },
 			},
 			conditions: {
-				base: "",
 				hover: "&:hover",
 				dark: "@media (prefers-color-scheme: dark)",
 				md: "@media (min-width: 640px)",

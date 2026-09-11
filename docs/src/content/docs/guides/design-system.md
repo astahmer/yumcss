@@ -208,7 +208,7 @@ export const componentPreset = definePreset(
 	{ config: {} as StandardProperties, tokens: themedTokens },
 	{
 		strict: true,
-		conditions: { base: "", _dark: '[data-theme="dark"] &' },
+		conditions: { _dark: '[data-theme="dark"] &' },
 		properties: {
 			borderWidth: { $tokens: "component" },
 			borderColor: { $tokens: "component" },

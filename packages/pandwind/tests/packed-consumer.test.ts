@@ -82,7 +82,7 @@ describe("packed Pandwind consumer", () => {
 			]);
 			const preset = definePreset(
 				{ config: {}, tokens: {} },
-				{ strict: false, properties: { $all: true }, conditions: { base: "" } },
+				{ strict: false, properties: { $all: true }, conditions: {} },
 			);
 
 			await build({

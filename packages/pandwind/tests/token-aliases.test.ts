@@ -47,7 +47,7 @@ const preset = definePreset(
 	},
 	{
 		strict: true,
-		conditions: { base: "", _dark: ".dark &" },
+		conditions: { _dark: ".dark &" },
 		properties: {
 			backgroundColor: { $tokens: "component" },
 		},
@@ -105,7 +105,7 @@ describe("preset token aliases", () => {
 
 	test("cyclic token aliases fail instead of emitting token paths as CSS", () => {
 		const cyclic = {
-			conditions: { base: "" },
+			conditions: {},
 			properties: { backgroundColor: { $tokens: "component" } },
 			strict: true,
 			tokens: {
@@ -124,7 +124,7 @@ describe("preset token aliases", () => {
 
 	test("colliding canonical token aliases fail instead of silently choosing one", () => {
 		const colliding = {
-			conditions: { base: "" },
+			conditions: {},
 			properties: { color: { $tokens: "colors" } },
 			strict: true,
 			tokens: {
@@ -149,7 +149,7 @@ describe("preset token aliases", () => {
 				index === depth - 1 ? "#3182ce" : `component.chain.${index + 1}`;
 		}
 		const deepPreset = {
-			conditions: { base: "" },
+			conditions: {},
 			properties: { backgroundColor: { $tokens: "component" } },
 			strict: true,
 			tokens: { component },

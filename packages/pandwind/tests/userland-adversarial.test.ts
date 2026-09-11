@@ -84,7 +84,7 @@ describe("userland adversarial contracts", () => {
 
 	test("prepared stylesheet inputs canonicalize inverted paths", () => {
 		const preset = {
-			conditions: { base: "", _hover: "&:hover" },
+			conditions: { _hover: "&:hover" },
 		} as never;
 		const sheet = createStylesheet(preset);
 
@@ -661,7 +661,7 @@ describe("userland adversarial contracts", () => {
 
 	test("unknown semantic token conditions fail instead of becoming root values", () => {
 		const preset = {
-			conditions: { base: "" },
+			conditions: {},
 			properties: { $all: true },
 			strict: true,
 			tokens: {
@@ -789,7 +789,7 @@ describe("userland adversarial contracts", () => {
 			},
 			{
 				strict: true,
-				conditions: { base: "" },
+				conditions: {},
 				properties: { color: { $tokens: "colors" } },
 			},
 		);
@@ -800,7 +800,7 @@ describe("userland adversarial contracts", () => {
 			},
 			{
 				strict: true,
-				conditions: { base: "" },
+				conditions: {},
 				properties: { color: { $tokens: "colors" } },
 			},
 		);

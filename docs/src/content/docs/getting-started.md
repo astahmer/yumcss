@@ -51,7 +51,7 @@ export const preset = definePreset(
 	{ config: {} as StandardProperties, tokens },
 	{
 		strict: true,
-		conditions: { base: "", _hover: "&:hover" },
+		conditions: { _hover: "&:hover" },
 		properties: { $all: true },
 	},
 );
