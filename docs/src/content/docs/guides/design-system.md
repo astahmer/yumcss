@@ -73,8 +73,12 @@ underlying hex or pixel value in component code.
 
 ```ts
 // src/design-system/preset.ts
-import type { StandardProperties } from "csstype";
-import { definePreset, defineProperties, defineTheme } from "pandwind/preset";
+import {
+	definePreset,
+	defineProperties,
+	defineTheme,
+	type StandardProperties,
+} from "pandwind/preset";
 import { tokens } from "./tokens";
 
 const theme = defineTheme({

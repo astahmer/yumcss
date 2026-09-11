@@ -9,6 +9,14 @@
  * @since 0.1.0
  */
 export * from "../types/define-preset.ts";
+/**
+ * Modern standard CSS property and value types for bring-your-own CSS
+ * configuration contracts.
+ *
+ * Import the type from `pandwind/preset` for the common web case. Import
+ * specialized `csstype` variants directly when a project needs them.
+ */
+export type { StandardProperties } from "csstype";
 export * from "./colors.ts";
 export * from "./conditions.ts";
 export * from "./preset.ts";

@@ -4,7 +4,6 @@
  * part of the runtime test bundle.
  */
 import { expect, test } from "tstyche";
-import type { StandardProperties } from "csstype";
 import { createCss } from "../src/css/index.ts";
 import { createCx } from "../src/cx/index.ts";
 import { createDesignCss } from "../src/design/index.ts";
@@ -15,6 +14,7 @@ import {
 	defineProperties,
 	defineSemanticTokens,
 	defineTokens,
+	type StandardProperties,
 } from "../src/preset/index.ts";
 import { examplePreset } from "@pandwind/example-preset";
 
@@ -80,6 +80,35 @@ test("definePreset JSDoc example preserves a custom typed vocabulary", () => {
 	const css = createCss(preset);
 
 	expect(css.class({ backgroundColor: "$brand-500", padding: 4 })).type.toBe<string>();
+});
+
+test("BYOT docs example narrows the CSS contract with Pick", () => {
+	type CardProperties = Pick<StandardProperties, "backgroundColor" | "color" | "padding">;
+	const tokens = defineTokens({
+		colors: { "$brand-500": "#2563eb" },
+		spacing: { 4: "1rem" },
+	});
+	const preset = definePreset(
+		{ config: {} as CardProperties, tokens },
+		{
+			strict: true,
+			conditions: {},
+			properties: {
+				backgroundColor: { $tokens: "colors", $strictness: "inherits" },
+				color: { $tokens: "colors", $strictness: "inherits" },
+				padding: { $tokens: "spacing", $strictness: "inherits" },
+			},
+		},
+	);
+	const css = createCss(preset);
+
+	expect(
+		css.class({
+			backgroundColor: "$brand-500",
+			color: "var(--runtime-ink)",
+			padding: 4,
+		}),
+	).type.toBe<string>();
 });
 
 test("preset docs cover strict, inherited, and open property bindings", () => {

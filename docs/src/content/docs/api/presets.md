@@ -10,6 +10,10 @@ It does not create a second styling API: it describes the values that
 `createCss(preset)`, `createDesignCss(preset)`, and the stylesheet compiler are
 allowed to resolve.
 
+Pandwind uses a bring-your-own-types (BYOT) boundary for CSS properties. It
+does not maintain a second CSS value grammar: `config` is a type witness
+supplied by the application or design-system package.
+
 ## The mental model
 
 Keep the four responsibilities separate:
@@ -36,12 +40,12 @@ This is a small preset with all standard CSS properties available, while the
 three properties used by the design system also accept named token references.
 
 ```ts
-import type { StandardProperties } from "csstype";
 import { createCss } from "pandwind/css";
 import {
 	definePreset,
 	defineProperties,
 	defineTokens,
+	type StandardProperties,
 } from "pandwind/preset";
 
 const tokens = defineTokens({
@@ -86,6 +90,64 @@ css.class({
 The `$tokens` entries bind a CSS property to a token group. The
 `$strictness: "inherits"` entries deliberately allow both that token group
 and the raw value type from `StandardProperties`.
+
+## Bring your own CSS type
+
+For the usual web case, `pandwind/preset` re-exports `csstype`'s
+`StandardProperties`, so a preset can use the same CSS property names and
+value types without a second package import:
+
+```ts
+import { createCss } from "pandwind/css";
+import {
+	definePreset,
+	defineTokens,
+	type StandardProperties,
+} from "pandwind/preset";
+
+type CardProperties = Pick<StandardProperties, "backgroundColor" | "color" | "padding">;
+
+const tokens = defineTokens({
+	colors: { "$brand-500": "#2563eb" },
+	spacing: { 4: "1rem" },
+});
+
+const cardPreset = definePreset(
+	{ config: {} as CardProperties, tokens },
+	{
+		strict: true,
+		conditions: {},
+		properties: {
+			backgroundColor: { $tokens: "colors", $strictness: "inherits" },
+			color: { $tokens: "colors", $strictness: "inherits" },
+			padding: { $tokens: "spacing", $strictness: "inherits" },
+		},
+	},
+);
+
+const css = createCss(cardPreset);
+css.class({
+	backgroundColor: "$brand-500",
+	color: "var(--runtime-ink)",
+	padding: 4,
+});
+```
+
+`Pick` makes the package boundary explicit: this component contract exposes
+three CSS properties, while the values still come from the real CSS type. Use
+`StandardProperties` directly when the preset should expose the modern web
+surface. For a custom or third-party property vocabulary, compose your own
+type instead:
+
+```ts
+type AppProperties = StandardProperties & Record<`--${string}`, string>;
+```
+
+That custom-property extension describes the host values your application
+owns; it does not turn runtime values into tokens. For specialized `csstype`
+variants such as hyphenated, SVG, vendor, or custom generic forms, import the
+variant directly from `csstype`. Pandwind's BYOT boundary accepts those types
+without converting them into a Pandwind-specific CSS grammar.
 
 ## What belongs in `config`?
 

@@ -245,8 +245,7 @@ of repeating raw colors and spacing values.
 
 ```ts
 // src/preset.ts
-import type { StandardProperties } from "csstype";
-import { definePreset, defineTokens } from "pandwind/preset";
+import { definePreset, defineTokens, type StandardProperties } from "pandwind/preset";
 
 const tokens = defineTokens({
 	colors: {
@@ -270,6 +269,11 @@ export const preset = definePreset({ config: {} as StandardProperties, tokens },
 The [design-system guide](./docs/src/content/docs/guides/design-system.md)
 covers semantic tokens, light/dark themes, component scopes, and how to keep
 the preset shared by codegen, Vite, and the migration tools.
+
+The `config` type is intentionally bring-your-own. Use the re-exported
+`StandardProperties` for ordinary web CSS, or narrow it with `Pick<...>` when a
+component package should expose only a small typed surface. Import specialized
+variants directly from `csstype`; Pandwind does not replace its CSS grammar.
 
 ## When you need more than the happy path
 

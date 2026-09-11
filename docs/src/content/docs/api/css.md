@@ -17,9 +17,8 @@ merging, variant conditions and a `$input` escape hatch for dynamic values.
 `createCss()` remains available as an intentionally loose convenience form.
 
 ```ts
-import type { StandardProperties } from "csstype";
 import { createCss } from "pandwind/css";
-import { definePreset, defineTokens } from "pandwind/preset";
+import { definePreset, defineTokens, type StandardProperties } from "pandwind/preset";
 
 const tokens = defineTokens({
 	colors: { "$brand-500": "#2563eb" },

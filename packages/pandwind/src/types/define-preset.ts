@@ -34,8 +34,7 @@ export * from "./typings.ts";
  * **Example** (Defining the value side of a preset)
  *
  * ```ts
- * import type { StandardProperties } from "csstype";
- * import { defineTheme, defineTokens } from "pandwind/preset";
+ * import { defineTheme, defineTokens, type StandardProperties } from "pandwind/preset";
  *
  * const tokens = defineTokens({
  *   colors: { "$brand-500": "#2563eb" },
@@ -88,9 +87,8 @@ export const defineTheme = <TTheme extends DefinePresetOptions>(theme: TTheme) =
  * **Example** (A small, typed CSS preset)
  *
  * ```ts
- * import type { StandardProperties } from "csstype";
  * import { createCss } from "pandwind/css";
- * import { definePreset, defineTokens } from "pandwind/preset";
+ * import { definePreset, defineTokens, type StandardProperties } from "pandwind/preset";
  *
  * const tokens = defineTokens({
  *   colors: { "$brand-500": "#2563eb", "$surface": "#ffffff" },

@@ -37,11 +37,11 @@ stable contract without importing a JavaScript token map:
 
 ```ts
 // tokens.ts — the design-system package
-import type { StandardProperties } from "csstype";
 import {
 	definePreset,
 	defineSemanticTokens,
 	defineTokens,
+	type StandardProperties,
 } from "pandwind/preset";
 
 const rawTokens = defineTokens({

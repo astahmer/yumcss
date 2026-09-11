@@ -132,8 +132,7 @@ has a complete preset; the shape is:
 
 ```ts
 // src/preset.ts
-import type { StandardProperties } from "csstype";
-import { definePreset, defineTokens } from "pandwind/preset";
+import { definePreset, defineTokens, type StandardProperties } from "pandwind/preset";
 
 const tokens = defineTokens({
 	colors: { $surface: "#ffffff", $ink: "#111827" },
