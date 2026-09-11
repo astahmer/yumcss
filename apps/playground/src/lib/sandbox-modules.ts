@@ -4,13 +4,23 @@ import { createCx } from "pandwind/cx";
 import { definePreset, defineSemanticTokens, defineTheme, defineTokens } from "pandwind/preset";
 import { examplePreset } from "@pandwind/example-preset";
 
-// The playground has a real preset available, so bare createCss() can still
-// show the same generated sheet while explicit createCss(examplePreset) keeps
-// the public factory signature honest in authored examples.
+const isPreset = (value: unknown): value is typeof examplePreset =>
+	value !== null &&
+	typeof value === "object" &&
+	"conditions" in value &&
+	"properties" in value &&
+	"strict" in value;
+
+// The playground has a real preset available for bare createCss(), while an
+// authored createCss(preset) must run against that exact preset to keep token
+// examples honest.
 const createPlaygroundCss = (
 	presetOrOptions: typeof examplePreset | Parameters<typeof createRuntimeCss>[1] = {},
 	options: Parameters<typeof createRuntimeCss>[1] = {},
-) => createRuntimeCss(examplePreset, presetOrOptions === examplePreset ? options : presetOrOptions);
+) =>
+	isPreset(presetOrOptions)
+		? createRuntimeCss(presetOrOptions, options)
+		: createRuntimeCss(examplePreset, presetOrOptions);
 
 /**
  * Real pandwind subpath modules the sandbox resolves import statements

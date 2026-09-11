@@ -93,7 +93,7 @@ describe("example catalog evaluates end to end", () => {
 		expect(result.programs.every((program) => program.residuals.length === 0)).toBe(true);
 	});
 
-	it("connects each entry to a rendered preview and resolves component tokens", () => {
+	it("executes the raw-semantic-component token example through its local preset", () => {
 		expect(EXAMPLES.every((example) => example.preview.label.length > 0)).toBe(true);
 		expect(EXAMPLES.every((example) => example.preview.description.length > 0)).toBe(true);
 
@@ -111,6 +111,9 @@ describe("example catalog evaluates end to end", () => {
 			),
 		).toBe(true);
 		expect(result.sheets.some((sheet) => sheet.css.includes("padding:20px"))).toBe(true);
+		expect(result.sheets.some((sheet) => sheet.css.includes("#2b6cb0"))).toBe(true);
+		expect(result.sheets.some((sheet) => sheet.css.includes("#2c5282"))).toBe(true);
+		expect(result.sheets.some((sheet) => sheet.css.includes("#f9fafb"))).toBe(true);
 	});
 
 	it("keeps composed runtime host styles available to the preview", () => {

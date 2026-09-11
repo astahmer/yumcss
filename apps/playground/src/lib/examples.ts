@@ -316,14 +316,14 @@ const Action = (props: ActionProps) => (
 	},
 	{
 		path: "/tokens",
-		title: "Raw, semantic & component tokens",
-		blurb: "three token layers resolved by one typed preset",
+		title: "Token layers: raw → semantic → component",
+		blurb: "raw values become semantic roles and component contracts",
 		group: "core",
-		note: "The background uses an imported raw color token, the text uses the semantic success token, and padding uses the component-scoped button.padding token. All three are checked against the same createCss(examplePreset) contract.",
+		note: "Open tokens.ts to see the complete chain: defineTokens() owns raw values, defineSemanticTokens() owns theme-aware roles, and the button contract owns component-sized tokens. Example.tsx consumes only semantic and component names, never raw hex values.",
 		preview: makePreview(
 			"card",
 			"Token contract",
-			"Raw, semantic, and component values resolve into one rendered card.",
+			"The component consumes semantic roles and button-scoped tokens; hover and dark mode keep the same classes.",
 		),
 		variants: [
 			{
@@ -333,32 +333,96 @@ const Action = (props: ActionProps) => (
 					{
 						name: "Example.tsx",
 						code: `import { createCss } from "pandwind/css";
-import { examplePreset } from "@pandwind/example-preset";
-import { brandTone } from "./brand.ts";
+import { buttonTokens, tokenPreset } from "./tokens.ts";
 
-const css = createCss(examplePreset);
+const css = createCss(tokenPreset);
 
-type CardProps = { muted: boolean };
+type CardProps = { tone: "brand" | "quiet" };
 
-const Card = (props: CardProps) => (
+const TokenCard = (props: CardProps) => (
 	<article
 		className={css.class({
-			backgroundColor: brandTone,
-			color: props.muted ? "$gray-500" : "success",
-			padding: "button.padding",
-			_dark: { color: "$gray-200" },
+			backgroundColor: props.tone === "brand" ? "brand" : "surface",
+			color: props.tone === "brand" ? "onBrand" : "content",
+			padding: buttonTokens.padding,
+			borderRadius: buttonTokens.radius,
+			_hover: {
+				backgroundColor: props.tone === "brand" ? "surface" : "brand",
+				color: props.tone === "brand" ? "content" : "onBrand",
+			},
 		})}
 	>
-		<strong>{props.muted ? "Muted card" : "Token contract"}</strong>
-		<span>Raw, semantic, and component tokens share one preset.</span>
+		<strong>{props.tone === "brand" ? "Semantic brand card" : "Quiet card"}</strong>
+		<span>Raw hex values stay in tokens.ts; this component uses roles and button tokens.</span>
 	</article>
 );
 
-<Card muted={false} />`,
+<TokenCard tone="brand" />`,
 					},
 					{
-						name: "brand.ts",
-						code: 'export const brandTone = "$gray-900";',
+						name: "tokens.ts",
+						code: `import { definePreset, defineSemanticTokens, defineTheme, defineTokens } from "pandwind/preset";
+
+const rawTokens = defineTokens({
+	colors: {
+		"$gray-50": "#f9fafb",
+		"$gray-900": "#111827",
+		"$blue-600": "#2b6cb0",
+		"$blue-700": "#2c5282",
+		"$white": "#ffffff",
+	},
+	spacing: { "20": "20px" },
+	radii: { md: "0.375rem" },
+});
+
+const semanticTokens = defineSemanticTokens(
+	{ _dark: '[data-theme="dark"] &' },
+	{
+		colors: {
+			surface: { base: rawTokens.colors["$gray-50"], _dark: rawTokens.colors["$gray-900"] },
+			content: { base: rawTokens.colors["$gray-900"], _dark: rawTokens.colors["$gray-50"] },
+			brand: { base: rawTokens.colors["$blue-600"], _dark: rawTokens.colors["$blue-700"] },
+			onBrand: { base: rawTokens.colors["$white"], _dark: rawTokens.colors["$white"] },
+		},
+	},
+);
+
+const componentTokens = defineTokens({
+	spacing: { "button.padding": rawTokens.spacing["20"] },
+	radii: { "button.radius": rawTokens.radii.md },
+});
+
+const tokens = {
+	colors: rawTokens.colors,
+	semantic: semanticTokens.colors,
+	spacing: rawTokens.spacing,
+	radii: { ...rawTokens.radii, ...componentTokens.radii },
+};
+
+export const buttonTokens = {
+	padding: "button.padding",
+	radius: "button.radius",
+} as const;
+
+// Codegen consumes this scope as .pwc-button and rebinds semantic variables.
+export const designSystem = {
+	tokens,
+	components: { button: { primary: "$color-brand", "text.muted": "$color-content" } },
+} as const;
+
+export const tokenPreset = definePreset(
+	defineTheme({ config: {} as Record<string, unknown>, tokens: designSystem.tokens }),
+	{
+		strict: true,
+		conditions: { _hover: "&:hover", _dark: '[data-theme="dark"] &' },
+		properties: {
+			backgroundColor: { $tokens: "semantic" },
+			color: { $tokens: "semantic" },
+			padding: componentTokens.spacing,
+			borderRadius: componentTokens.radii,
+		},
+	},
+);`,
 					},
 				],
 			},
