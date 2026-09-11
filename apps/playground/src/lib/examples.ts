@@ -1,7 +1,7 @@
 export interface ExampleFile {
 	/** Tab label; mirrors the filename the example would live in. */
 	name: string;
-	/** Full file content, imports included — pasteable into a real project. */
+	/** Valid TypeScript/TSX module content; the entry file's default export is rendered. */
 	code: string;
 }
 

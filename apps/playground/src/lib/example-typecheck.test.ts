@@ -32,15 +32,38 @@ function typecheckExamples(): string {
 		const jsxFile = join(temporaryRoot, "playground-jsx.d.ts");
 		writeFileSync(
 			jsxFile,
-			"declare namespace JSX { interface Element {} type ElementType = string | ((props: any) => Element); interface IntrinsicElements { [elementName: string]: Record<string, unknown> } }\n",
+			[
+				'import type * as React from "react";',
+				'declare module "react/jsx-runtime" {',
+				"  export function jsx(type: React.JSX.ElementType, props: unknown, key?: React.Key): React.JSX.Element;",
+				"  export function jsxs(type: React.JSX.ElementType, props: unknown, key?: React.Key): React.JSX.Element;",
+				"  export const Fragment: React.JSXElementConstructor<{ children?: React.ReactNode }>;",
+				"}",
+				'declare module "react/jsx-dev-runtime" {',
+				"  export function jsxDEV(type: React.JSX.ElementType, props: unknown, key: React.Key | undefined, isStaticChildren: boolean, source: unknown, self: unknown): React.JSX.Element;",
+				"  export const Fragment: React.JSXElementConstructor<{ children?: React.ReactNode }>;",
+				"}",
+				"declare namespace JSX {",
+				"  type Element = React.JSX.Element;",
+				"  type ElementType = React.JSX.ElementType;",
+				"  interface ElementClass extends React.JSX.ElementClass {}",
+				"  interface IntrinsicElements extends React.JSX.IntrinsicElements {}",
+				"}",
+			].join("\n") + "\n",
 			"utf8",
 		);
+		const reactTypes = join(generatedSourceRoot, "generated/dependencies/react/index.d.ts");
+		const csstypeTypes = join(generatedSourceRoot, "generated/dependencies/csstype/index.d.ts");
 		const paths = Object.fromEntries(
 			Object.entries(PANDWIND_EDITOR_MODULE_PATHS).map(([specifier, modulePath]) => [
 				specifier,
 				[join(generatedSourceRoot, modulePath)],
 			]),
 		);
+		paths.react = [reactTypes];
+		paths.csstype = [csstypeTypes];
+		paths["react/jsx-runtime"] = [jsxFile];
+		paths["react/jsx-dev-runtime"] = [jsxFile];
 		paths["@pandwind/example-preset"] = [examplePresetSource];
 		const configFile = join(temporaryRoot, "tsconfig.json");
 		writeFileSync(
@@ -49,7 +72,7 @@ function typecheckExamples(): string {
 				{
 					compilerOptions: {
 						allowImportingTsExtensions: true,
-						jsx: "preserve",
+						jsx: "react-jsx",
 						lib: ["ES2022", "DOM"],
 						module: "ESNext",
 						moduleResolution: "Bundler",
@@ -60,7 +83,7 @@ function typecheckExamples(): string {
 						target: "ES2022",
 						types: [],
 					},
-					files: [...sourceFiles, jsxFile],
+					files: [...sourceFiles, reactTypes, csstypeTypes, jsxFile],
 				},
 				undefined,
 				2,

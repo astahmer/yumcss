@@ -8,9 +8,13 @@ Feature: Playground editor typings
     And the editor has no TypeScript error markers
 
     Examples:
-      | route             | heading          |
-      | /                 | Basics           |
-      | /conflicts        | Conflicts        |
-      | /semantic-tokens  | Semantic tokens  |
-      | /responsive       | Responsive       |
-      | /atoms            | css() atoms      |
+      | route              | heading                    |
+      | /                  | Basics                     |
+      | /dynamic           | Dynamic styling            |
+      | /responsive        | Responsive                 |
+      | /container-queries | Container queries          |
+      | /conflicts         | Conflicts                  |
+      | /token-bindings    | Named token bindings       |
+      | /component-tokens  | Component token contracts |
+      | /variants          | Variants                   |
+      | /groups            | Groups                     |

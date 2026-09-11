@@ -222,12 +222,24 @@ const migrationExampleModules = [
 	String.raw`
 type PlaygroundStyleObject = import("pandwind/types/typings").StyleObject;
 type PlaygroundComponent<Props extends object = Record<string, unknown>> =
-	(props?: Props) => JSX.Element;
+	(props: Props) => React.JSX.Element;
 
 declare module "react/jsx-runtime" {
-  export function jsx(type: unknown, props: unknown): JSX.Element;
-  export function jsxs(type: unknown, props: unknown): JSX.Element;
-  export const Fragment: unknown;
+  export function jsx(type: React.JSX.ElementType, props: unknown, key?: React.Key): React.JSX.Element;
+  export function jsxs(type: React.JSX.ElementType, props: unknown, key?: React.Key): React.JSX.Element;
+  export const Fragment: React.JSXElementConstructor<{ children?: React.ReactNode }>;
+}
+
+declare module "react/jsx-dev-runtime" {
+  export function jsxDEV(
+    type: React.JSX.ElementType,
+    props: unknown,
+    key: React.Key | undefined,
+    isStaticChildren: boolean,
+    source: unknown,
+    self: unknown,
+  ): React.JSX.Element;
+  export const Fragment: React.JSXElementConstructor<{ children?: React.ReactNode }>;
 }
 
 interface PlaygroundStyledFactory {
@@ -255,17 +267,10 @@ declare const renderer: {
 };
 
 declare namespace JSX {
-  interface Element {}
-  type ElementType = string | ((props: any) => Element);
-  interface ElementClass {}
-  interface IntrinsicElements { [elementName: string]: Record<string, unknown>; }
-}
-declare namespace React {
-  namespace JSX {
-    interface Element {}
-    type ElementType = string | ((props: any) => Element);
-    interface IntrinsicElements { [elementName: string]: Record<string, unknown>; }
-  }
+  type Element = React.JSX.Element;
+  type ElementType = React.JSX.ElementType;
+  interface ElementClass extends React.JSX.ElementClass {}
+  interface IntrinsicElements extends React.JSX.IntrinsicElements {}
 }
 `;
 

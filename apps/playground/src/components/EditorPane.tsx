@@ -150,6 +150,7 @@ export function EditorPane(props: {
 	className?: string;
 }) {
 	const { mode } = useTheme();
+	const filePath = props.filePath ?? "file:///pandwind/playground/Example.tsx";
 	return (
 		<Pane
 			label="Editor"
@@ -181,12 +182,12 @@ export function EditorPane(props: {
 		>
 			<div aria-label="Code editor" className={uiCss.class({ height: "100%", minHeight: "0px" })}>
 				<MonacoEditor
-					key={props.filePath}
+					key={filePath}
 					loading={<EditorBooting />}
 					height="100%"
-					defaultLanguage="typescript"
+					defaultLanguage={filePath.endsWith(".tsx") ? "typescriptreact" : "typescript"}
 					theme={mode === "light" ? "pandwind-light" : "pandwind"}
-					path={props.filePath ?? "file:///pandwind/playground/Example.tsx"}
+					path={filePath}
 					beforeMount={(monaco) => {
 						defineTheme(monaco);
 						configureTypeScript(monaco, props.fileLibraries ?? []);
