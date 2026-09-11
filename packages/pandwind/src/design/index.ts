@@ -84,7 +84,10 @@ export const createDesignCss = <TPreset extends DesignPreset>(
 	dss.input = engine.input;
 
 	dss.group = ((groups: Record<string, Maybe<Design> | ((...args: any[]) => Design)>) => {
-		const resolved: Record<string, StyleObject | ((...args: any[]) => StyleObject)> = {};
+		const resolved = Object.create(null) as Record<
+			string,
+			StyleObject | ((...args: any[]) => StyleObject)
+		>;
 		for (const key of Object.keys(groups)) {
 			const value = groups[key];
 			if (typeof value === "function") {

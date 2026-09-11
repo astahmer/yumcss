@@ -20,20 +20,33 @@ export function createObjectCss<TStyles extends StyleObject = StyleObject>(
 }
 
 export interface ObjectCxFn {
-	(
-		...inputs: Array<
-			TargetStyle | undefined | null | false | Array<TargetStyle | undefined | null | false>
-		>
-	): TargetStyle;
+	(...inputs: Array<ObjectCxInput>): TargetStyle;
 }
+
+type ObjectCxInput = TargetStyle | undefined | null | false | readonly ObjectCxInput[];
 
 export function createObjectCx(backend: ObjectBackend): ObjectCxFn {
 	return (...inputs) => {
 		const flat: Array<TargetStyle> = [];
-		for (const input of inputs) {
+		type Frame = { readonly value: readonly ObjectCxInput[]; index: number };
+		const active = new WeakSet<object>();
+		const stack: Frame[] = [{ value: inputs, index: 0 }];
+		active.add(inputs);
+		while (stack.length > 0) {
+			const frame = stack.at(-1)!;
+			const input = frame.value[frame.index++];
+			if (input === undefined && frame.index > frame.value.length) {
+				stack.pop();
+				active.delete(frame.value);
+				continue;
+			}
 			if (Array.isArray(input)) {
-				for (const nested of input) if (nested) flat.push(nested);
-			} else if (input) flat.push(input);
+				if (active.has(input)) continue;
+				active.add(input);
+				stack.push({ value: input, index: 0 });
+				continue;
+			}
+			if (input && typeof input === "object") flat.push(input as TargetStyle);
 		}
 		return backend.merge(...flat);
 	};

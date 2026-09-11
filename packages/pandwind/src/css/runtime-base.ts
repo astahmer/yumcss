@@ -1,4 +1,4 @@
-import { assign, dashCase, type FlatStyles, flattenStyle } from "../lib/utils.ts";
+import { assign, isSafePathPart, type FlatStyles, flattenStyle } from "../lib/utils.ts";
 import type {
 	AnyCssConfig,
 	AnyTokens,
@@ -9,6 +9,7 @@ import type {
 } from "../types/typings.ts";
 import { createCssBackend, type CssBackendOptions } from "../backends/css.ts";
 import { ATOM_REGISTRY, type AtomRegistry } from "./atoms.ts";
+import { isSafeCssValue } from "./value-normalization.ts";
 
 /**
  * Backend options shared by the public CSS factories.
@@ -77,63 +78,26 @@ export interface RuntimeCssContext {
 /** One independently replaceable method installation for the CSS runtime. */
 export type RuntimeCssAttachment = (css: RuntimeCssFunction, context: RuntimeCssContext) => void;
 
-/**
- * Replace Chakra/Panda-style null resets without copying ordinary style
- * objects. Most runtime calls contain no nulls, so clone only the branch that
- * actually changes; this keeps the common path allocation-light and preserves
- * the input object for callers that reuse style constants.
- */
-const preserveNullResets = (value: unknown, property = ""): unknown => {
-	if (value === null) {
-		const cssProperty = dashCase(property);
-		return cssProperty.endsWith("-width") && cssProperty.includes("border-") ? 0 : "initial";
-	}
-	if (Array.isArray(value)) {
-		let copy: unknown[] | undefined;
-		for (let index = 0; index < value.length; index++) {
-			const item = value[index];
-			const normalized = preserveNullResets(item, property);
-			if (normalized !== item) {
-				copy ??= value.slice(0, index);
-				copy[index] = normalized;
-			} else if (copy !== undefined) {
-				copy[index] = item;
-			}
-		}
-		return copy ?? value;
-	}
-	if (typeof value !== "object" || value === undefined) return value;
-	let copy: Record<string, unknown> | undefined;
-	for (const [key, child] of Object.entries(value)) {
-		const normalized = preserveNullResets(child, key);
-		if (normalized !== child) {
-			copy ??= { ...(value as Record<string, unknown>) };
-			copy[key] = normalized;
-		}
-	}
-	return copy ?? value;
-};
+const isStyleObject = (value: unknown): value is StyleObject =>
+	typeof value === "object" && value !== null && !Array.isArray(value);
 
-const normalizeStyleInput = (style: StyleObject): StyleObject => {
-	for (const key of Object.keys(style)) {
-		const value = style[key];
-		if (value == null || typeof value === "object") return preserveNullResets(style) as StyleObject;
-	}
+const emptyStyle = Object.create(null) as StyleObject;
+
+const normalizeStyleInput = (style: unknown): StyleObject => {
+	if (!isStyleObject(style)) return emptyStyle;
 	return style;
 };
 
-const isFlatStyle = (style: StyleObject): boolean => {
+const isFlatStyle = (style: unknown): style is StyleObject => {
+	if (!isStyleObject(style)) return false;
 	for (const key of Object.keys(style)) {
 		const value = style[key];
-		if (value == null || typeof value === "object") return false;
+		if (!isSafePathPart(key) || value == null || typeof value === "object") return false;
 	}
 	return true;
 };
 
-const isCssValue = (value: unknown): value is string | number =>
-	typeof value === "string" || Number.isFinite(value);
-
-	const isPreset = (value: CreateCssOptions | TypedPreset): value is TypedPreset =>
+const isPreset = (value: CreateCssOptions | TypedPreset): value is TypedPreset =>
 	typeof value === "object" &&
 	value !== null &&
 	"conditions" in value &&
@@ -158,36 +122,36 @@ export function createCssRuntime(
 	const atoms = backend.atoms;
 
 	const compileStyles = (...styles: Array<StyleObject>): CompiledStyles => {
-		if (styles.length === 1 && isFlatStyle(styles[0]!)) {
+		if (styles.length === 1 && isFlatStyle(styles[0])) {
 			const compiled = Object.create(null) as CompiledStyles;
-			for (const key of Object.keys(styles[0]!)) {
-				const value = styles[0]![key];
-				if (isCssValue(value)) compiled[key] = backend.declare(key, value);
+			for (const key of Object.keys(styles[0])) {
+				const value = styles[0][key];
+				if (isSafeCssValue(value)) compiled[key] = backend.declare(key, value);
 			}
 			Object.defineProperty(compiled, "$$css", { value: true, enumerable: false });
 			return compiled;
 		}
 		let source: StyleObject;
 		if (styles.length === 1) {
-			source = normalizeStyleInput(styles[0]!);
+			source = normalizeStyleInput(styles[0]);
 		} else {
 			source = assign(...styles.map(normalizeStyleInput));
 		}
-		const flat = flattenStyle(source);
+		const flat = flattenStyle(source, true);
 		const compiled = Object.create(null) as CompiledStyles;
 		for (const key of Object.keys(flat)) {
 			const value = flat[key];
-			if (isCssValue(value)) compiled[key] = backend.declare(key, value);
+			if (isSafeCssValue(value)) compiled[key] = backend.declare(key, value);
 		}
 		Object.defineProperty(compiled, "$$css", { value: true, enumerable: false });
 		return compiled;
 	};
 	const compileClass = (...styles: Array<StyleObject>): string => {
-		if (styles.length === 1 && isFlatStyle(styles[0]!)) {
+		if (styles.length === 1 && isFlatStyle(styles[0])) {
 			let className = "";
 			for (const key of Object.keys(styles[0])) {
 				const value = styles[0][key];
-				if (!isCssValue(value)) continue;
+				if (!isSafeCssValue(value)) continue;
 				if (className) className += " ";
 				className += backend.declare(key, value);
 			}
@@ -208,7 +172,7 @@ export function createCssRuntime(
 		atoms,
 		compileStyles,
 		compileClass,
-		flatten: flattenStyle,
+		flatten: (style) => flattenStyle(style, true),
 		assign: assign as (...styles: Array<StyleObject>) => StyleObject,
 	};
 	const css = ((...styles: Array<StyleObject>) => compileStyles(...styles)) as RuntimeCssFunction;

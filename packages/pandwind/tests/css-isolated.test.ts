@@ -108,9 +108,9 @@ test("css fn prop in known at rule", () => {
 	).toMatchInlineSnapshot(
 		`
 		{
-		  "class": "yu75ve",
+		  "class": "i4ah8r",
 		  "css": {
-		    "sm__color": "yu75ve",
+		    "sm__color": "i4ah8r",
 		  },
 		}
 	`,

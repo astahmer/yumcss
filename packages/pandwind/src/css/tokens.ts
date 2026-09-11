@@ -36,6 +36,14 @@ export function buildTokenMaps(
 	const tokensByProp = new Map<string, Set<string>>();
 	const flatTokens = new Map<string, Token>();
 	const tokensByGroup = new Map<string, Set<string>>();
+	const setFlatToken = (key: string, token: Token): void => {
+		const existing = flatTokens.get(key);
+		if (existing !== undefined && existing.path !== token.path)
+			throw new Error(
+				`Ambiguous token alias '${key}' maps to '${existing.path}' and '${token.path}'`,
+			);
+		flatTokens.set(key, token);
+	};
 	const groupByProp = new Map<string, string>();
 
 	const presetTokens = preset.tokens ?? {};
@@ -45,7 +53,7 @@ export function buildTokenMaps(
 		tokensByGroup.set(group, tokenList);
 
 		for (const tokenName of Object.keys(presetTokens[group]!)) {
-			const tokenValue = presetTokens[group][tokenName];
+			const tokenValue = presetTokens[group]![tokenName];
 			if (tokenValue === undefined) continue;
 			const hash = pairs.join([group, tokenName]);
 			const cssVarHash = hashCssVar(pairs.join([group, tokenName]), debug);
@@ -61,7 +69,7 @@ export function buildTokenMaps(
 			};
 			for (const alias of tokenNameAliases(tokenName)) {
 				tokenList.add(alias);
-				flatTokens.set(`${group}.${alias}`, token);
+				setFlatToken(`${group}.${alias}`, token);
 			}
 		}
 	}
@@ -103,7 +111,7 @@ export function buildTokenMaps(
 				value: presetProperties[prop]![token],
 				hash: pairs.join([prop, token]),
 			};
-			for (const alias of tokenNameAliases(token)) flatTokens.set(`${prop}.${alias}`, simpleToken);
+			for (const alias of tokenNameAliases(token)) setFlatToken(`${prop}.${alias}`, simpleToken);
 		}
 	}
 
@@ -118,13 +126,17 @@ const resolveTokenTarget = (
 	tokenPath: string,
 	seen: ReadonlySet<string> = new Set(),
 ): Token | undefined => {
-	const token = maps.flatTokens.get(tokenPath);
-	if (token === undefined || seen.has(tokenPath)) return undefined;
-	if (typeof token.value !== "string") return token;
-
-	const next = maps.flatTokens.get(token.value);
-	if (next === undefined) return token;
-	return resolveTokenTarget(maps, next.path, new Set([...seen, tokenPath]));
+	const visited = new Set(seen);
+	let currentPath = tokenPath;
+	while (true) {
+		const token = maps.flatTokens.get(currentPath);
+		if (token === undefined) return undefined;
+		if (visited.has(token.path)) throw new Error(`Cyclic token reference '${token.path}'`);
+		visited.add(token.path);
+		if (typeof token.value !== "string") return token;
+		if (!maps.flatTokens.has(token.value)) return token;
+		currentPath = token.value;
+	}
 };
 
 /**
@@ -138,16 +150,20 @@ export const tokenDependencyPaths = (
 	paths: Set<string> = new Set(),
 	visiting: Set<string> = new Set(),
 ): Set<string> => {
-	const token = maps.flatTokens.get(tokenPath);
-	if (token === undefined || paths.has(token.path) || visiting.has(token.path)) return paths;
-	paths.add(token.path);
-	visiting.add(token.path);
-	const values = typeof token.value === "string" ? [token.value] : Object.values(token.value);
-	for (const value of values) {
-		const target = maps.flatTokens.get(value);
-		if (target !== undefined) tokenDependencyPaths(maps, target.path, paths, visiting);
+	const stack = [tokenPath];
+	while (stack.length > 0) {
+		const currentPath = stack.pop()!;
+		const token = maps.flatTokens.get(currentPath);
+		if (token === undefined || paths.has(token.path) || visiting.has(token.path)) continue;
+		paths.add(token.path);
+		visiting.add(token.path);
+		const values = typeof token.value === "string" ? [token.value] : Object.values(token.value);
+		for (const value of values) {
+			const target = maps.flatTokens.get(value);
+			if (target !== undefined && !paths.has(target.path)) stack.push(target.path);
+		}
+		visiting.delete(token.path);
 	}
-	visiting.delete(token.path);
 	return paths;
 };
 

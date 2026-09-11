@@ -89,7 +89,14 @@ export interface CxOptions {
  * @category composition
  * @since 0.1.0
  */
-export type CxInput = string | Record<string, string> | VarsOutput | false | null | undefined;
+export type CxInput =
+	| string
+	| Record<string, string>
+	| VarsOutput
+	| readonly CxInput[]
+	| false
+	| null
+	| undefined;
 
 /** Re-exported for consumers threading vars outputs through custom helpers. */
 export type { VarsOutput, VarAtom };
@@ -633,7 +640,7 @@ export function createCx(options: CxOptions = {}): CxFn {
 		cachedCompile(atomSigs, key, () => compileSigs(signatureFromCssKey(key)))!;
 
 	const push = (cls: string, plan: CompiledSigs | null, atomKeys?: readonly string[]) => {
-		if (typeof cls !== "string" || cls === "") return;
+		if (typeof cls !== "string" || cls === "" || cls.includes("\u0000")) return;
 		if (plan === null) {
 			if (opaque.has(cls)) return;
 			opaque.add(cls);
@@ -685,6 +692,7 @@ export function createCx(options: CxOptions = {}): CxFn {
 	 * spec-equivalent regex so output stays byte-identical.
 	 */
 	const pushString = (input: string): void => {
+		if (input.includes("\u0000")) return;
 		// Single-pass fused walk: tokens are pushed as they are cut; the first
 		// non-ASCII char aborts to the spec-equivalent regex split (re-walking
 		// from the start — non-ASCII inputs are rare enough that the extra
@@ -737,16 +745,27 @@ export function createCx(options: CxOptions = {}): CxFn {
 	};
 
 	const pushVarCarrier = (input: VarsOutput): void => {
-		if (input.style !== undefined && typeof input.style === "object")
-			Object.assign(outStyle, input.style);
+		if (input.style !== undefined && typeof input.style === "object") {
+			for (const [property, value] of Object.entries(input.style)) {
+				if (typeof value === "string") outStyle[property] = value;
+			}
+		}
 		const carrierAtoms = (input as { [VARS_ATOMS]?: Array<VarAtom> })[VARS_ATOMS];
-		if (carrierAtoms === undefined) {
+		if (!Array.isArray(carrierAtoms)) {
 			// Serialized carriers lose the private atom metadata. Tokenize their
 			// class string so a configured cx instance can still merge it safely.
 			pushString(typeof input.class === "string" ? input.class : "");
 			return;
 		}
 		for (const atom of carrierAtoms) {
+			if (
+				typeof atom?.cls !== "string" ||
+				atom.cls.length === 0 ||
+				/[\s\u0000]/.test(atom.cls) ||
+				!Array.isArray(atom.keys) ||
+				!atom.keys.every((key) => typeof key === "string" && key.length > 0)
+			)
+				continue;
 			for (const key of atom.keys) {
 				push(atom.cls, resolveAtomSigs(key), atom.keys);
 			}
@@ -754,30 +773,51 @@ export function createCx(options: CxOptions = {}): CxFn {
 	};
 
 	const isVarsCarrier = (input: object): input is VarsOutput => {
-		if (VARS_ATOMS in input) return true;
+		if (Object.hasOwn(input, VARS_ATOMS)) return true;
 		const candidate = input as { class?: unknown; style?: unknown };
 		return (
 			typeof candidate.class === "string" &&
-			"class" in input &&
-			"style" in input &&
+			Object.hasOwn(input, "class") &&
+			Object.hasOwn(input, "style") &&
 			typeof candidate.style === "object" &&
 			candidate.style !== null
 		);
 	};
 
-	const pushInput = (input: CxInput) => {
+	const pushScalar = (input: Exclude<CxInput, readonly CxInput[]>): void => {
 		if (typeof input === "string") {
 			pushString(input);
 			return;
 		}
-		if (typeof input === "object" && input !== null) {
-			if (isVarsCarrier(input)) {
-				pushVarCarrier(input as VarsOutput);
-				return;
+		if (typeof input !== "object" || input === null) return;
+		if (isVarsCarrier(input)) {
+			pushVarCarrier(input as VarsOutput);
+			return;
+		}
+		for (const [key, atom] of Object.entries(input)) {
+			if (typeof atom !== "string" || key.length === 0 || key.includes("\u0000")) continue;
+			push(atom, resolveAtomSigs(key));
+		}
+	};
+
+	const pushInput = (input: CxInput): void => {
+		if (!Array.isArray(input)) {
+			pushScalar(input as Exclude<CxInput, readonly CxInput[]>);
+			return;
+		}
+		const stack: CxInput[] = [input];
+		const active = new WeakSet<object>();
+		while (stack.length > 0) {
+			const nested = stack.pop();
+			if (Array.isArray(nested)) {
+				if (active.has(nested)) continue;
+				active.add(nested);
+				for (let index = nested.length - 1; index >= 0; index--) {
+					stack.push(nested[index]!);
+				}
+				continue;
 			}
-			for (const [key, atom] of Object.entries(input)) {
-				push(atom, resolveAtomSigs(key));
-			}
+			pushScalar(nested as Exclude<CxInput, readonly CxInput[]>);
 		}
 	};
 
@@ -797,11 +837,7 @@ export function createCx(options: CxOptions = {}): CxFn {
 	 */
 	const mergeInputs = (inputs: Array<CxInput | CxInput[]>): string => {
 		for (const input of inputs) {
-			if (Array.isArray(input)) {
-				for (const nested of input) pushInput(nested);
-			} else {
-				pushInput(input);
-			}
+			pushInput(input);
 		}
 		parts.length = 0;
 		for (let i = 0; i < outCls.length; i++) {
@@ -815,7 +851,8 @@ export function createCx(options: CxOptions = {}): CxFn {
 		let out = "";
 		for (let index = 0; index < inputs.length; index++) {
 			const input = inputs[index];
-			if (typeof input !== "string" || input.length === 0 || /\s/.test(input)) return undefined;
+			if (typeof input !== "string" || input.length === 0 || /[\s\u0000]/.test(input))
+				return undefined;
 			for (let previous = 0; previous < index; previous++) {
 				if (inputs[previous] === input) return undefined;
 			}
@@ -843,7 +880,8 @@ export function createCx(options: CxOptions = {}): CxFn {
 		let cacheKey = "";
 		let allStrings = inputs.length > 0;
 		for (let i = 0; i < inputs.length; i++) {
-			if (typeof inputs[i] !== "string" || inputs[i].includes("\u0000")) {
+			const input = inputs[i];
+			if (typeof input !== "string" || input.includes("\u0000")) {
 				allStrings = false;
 				break;
 			}

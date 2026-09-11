@@ -1,4 +1,5 @@
 import { pairs } from "../lib/utils.ts";
+import { canonicalStyleKey, cssPropertyFromKey, isEmptyCondition } from "../backends/css.ts";
 import type { CssConfigReturn, TokenDeclaration } from "../types/typings.ts";
 import { createVarCompiler, varConditionPart } from "./var-compiler.ts";
 import type { CreateCssOptions } from "./runtime-base.ts";
@@ -9,6 +10,7 @@ import {
 	resolveRuntimeTokenAliasValue,
 	resolveRuntimeTokenValue,
 } from "./runtime-token-maps.ts";
+import { isSafeCssValue, normalizeCssValue } from "./value-normalization.ts";
 import {
 	createConditionsBucket,
 	decodeAtomicPath,
@@ -39,7 +41,7 @@ export const createRuntimeStylesheet = (
 	const conditionNames = Object.keys(preset.conditions);
 	const varCompiler = createVarCompiler(
 		conditionNames,
-		conditionNames.filter((name) => !preset.conditions[name]),
+		conditionNames.filter((name) => isEmptyCondition(name, preset.conditions)),
 	);
 	const hashFn = options.hashFn ?? createHashFn(Boolean(options.debug));
 	const debug = Boolean(options.debug);
@@ -51,16 +53,15 @@ export const createRuntimeStylesheet = (
 	const classNameFor = (orderedKey: string, rawValue: string): string => {
 		if (sheetStrategy?.sheetBacked === true) {
 			const named = sheetStrategy.toClassName(orderedKey, rawValue);
-			if (named !== null) return named;
+			if (typeof named === "string" && named.length > 0 && !/[\s\u0000]/.test(named)) return named;
 		}
 		return hashFn(orderedKey, rawValue);
 	};
 
-	const emptyCondition = Object.keys(preset.conditions).find((key) => !preset.conditions[key]);
 	const pathParts = (key: string, omitEmptyParts: boolean, sort: boolean): string[] => {
 		const parts: string[] = [];
 		for (const part of pairs.split(key)) {
-			if (part === emptyCondition || (omitEmptyParts && part === "")) continue;
+			if (isEmptyCondition(part, preset.conditions) || (omitEmptyParts && part === "")) continue;
 			parts.push(part);
 		}
 		// `parts` is private scratch allocated by this call; sorting in place
@@ -77,7 +78,7 @@ export const createRuntimeStylesheet = (
 	// token prelude, so no used-token tracking is needed here.
 	for (const group of Object.keys(presetTokens)) {
 		for (const tokenName of Object.keys(presetTokens[group]!)) {
-			const tokenValue = presetTokens[group][tokenName];
+			const tokenValue = presetTokens[group]![tokenName];
 			if (tokenValue === undefined) continue;
 			const cssVarHash = hashCssVar(pairs.join([group, tokenName]), debug);
 			const tokenPath = `${group}.${tokenName}`;
@@ -146,6 +147,7 @@ export const createRuntimeStylesheet = (
 		normalizedValue: string,
 		localCache: Map<string, Rule>,
 	): void => {
+		if (orderedKey === "" || !isSafeCssValue(normalizedValue)) return;
 		const pairId = pairs.concat(orderedKey, normalizedValue);
 		if (cache.has(pairId)) return;
 
@@ -162,12 +164,19 @@ export const createRuntimeStylesheet = (
 
 	const processPrepared = (styles: readonly { key: string; value: string }[]) => {
 		const localCache = new Map<string, Rule>();
-		for (const { key, value } of styles) processNormalizedStyle(key, value, localCache);
+		for (const { key, value } of styles) {
+			if (typeof key !== "string" || key.length === 0 || key.includes("\u0000")) continue;
+			if (!isSafeCssValue(value)) continue;
+			const orderedKey = canonicalStyleKey(key, preset.conditions);
+			const property = cssPropertyFromKey(orderedKey, preset.conditions);
+			processNormalizedStyle(orderedKey, normalizeCssValue(property, value), localCache);
+		}
 		return localCache;
 	};
 
 	const varCache = new Map<string, Rule>();
 	const processVarKey = (flatKey: string): Rule | undefined => {
+		if (typeof flatKey !== "string" || flatKey.length === 0 || flatKey.includes("\u0000")) return;
 		const rawParts = pathParts(flatKey, true, false);
 		const first = rawParts[0]!;
 		const last = rawParts[rawParts.length - 1]!;

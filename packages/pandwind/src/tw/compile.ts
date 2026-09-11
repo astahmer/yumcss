@@ -174,19 +174,24 @@ function visit(
 		prefix: string;
 		parentName: string | undefined;
 	}> = [{ styles, keys: Object.keys(styles), index: 0, prefix, parentName }];
+	const active = new WeakSet<object>();
+	active.add(styles);
 	while (frames.length > 0) {
 		const frame = frames.at(-1)!;
 		const key = frame.keys[frame.index++];
 		if (key === undefined) {
 			frames.pop();
+			active.delete(frame.styles);
 			continue;
 		}
 		const value = frame.styles[key]!;
 		if (isNestedStyles(value)) {
+			if (active.has(value)) continue;
 			// A nested object is a variant stack. The child is joined to the
 			// parent with the parent's join separator (e.g. `group` -> `-`).
 			const join = frame.parentName === undefined ? ":" : (variants[frame.parentName]?.join ?? ":");
 			const dashed = dashCase(key);
+			active.add(value);
 			frames.push({
 				styles: value,
 				keys: Object.keys(value),
@@ -340,6 +345,7 @@ export function compileStyles(
 	compose?: TwComposeMeta | ReadonlySet<string>,
 	valueTokens?: TwValueTokensMeta,
 ): string {
+	if (!isNestedStyles(styles)) return "";
 	if (conflicts === undefined) {
 		const classes: string[] = [];
 		visit(styles, variants, conflicts, undefined, classes, undefined, "", undefined, valueTokens);

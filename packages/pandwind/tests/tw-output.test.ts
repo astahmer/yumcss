@@ -200,7 +200,7 @@ describe("css with custom tailwind hashFn", () => {
 			:root {--eiqbvd: 2px;}
 			:root {--fz3vmc: #0284C7;}
 			.mh21yw{color:var(--fz3vmc)}
-			.\\31 rj13sn:hover{color:var(--\\31 pk9ax3)}"
+			.\\31 pflwkk:hover{color:var(--\\31 pk9ax3)}"
 		`);
 	});
 

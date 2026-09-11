@@ -84,39 +84,63 @@ const resolveDesignStyleWithRegistry = (
 	tokens: AnyTokens | undefined,
 	registry: DesignModuleRegistry,
 ): StyleObject => {
-	const out: StyleObject = {};
-	const merge = (value: StyleObject): void => {
-		Object.assign(out, assign(out, value));
+	if (!isPlainObject(style)) return Object.create(null) as StyleObject;
+	const root = Object.create(null) as StyleObject;
+	type Frame = {
+		style: Record<string, unknown>;
+		output: StyleObject;
+		keys: string[];
+		index: number;
 	};
-
-	for (const [key, value] of Object.entries(style)) {
+	const active = new WeakSet<object>();
+	const stack: Frame[] = [{ style, output: root, keys: Object.keys(style), index: 0 }];
+	active.add(style);
+	while (stack.length > 0) {
+		const frame = stack.at(-1)!;
+		const key = frame.keys[frame.index++];
+		if (key === undefined) {
+			stack.pop();
+			active.delete(frame.style);
+			continue;
+		}
+		const value = frame.style[key];
 		if (value === undefined || value === null || value === false) continue;
 
 		// Raw CSS: passed through verbatim, the engine resolves its tokens.
 		if (key === "$raw") {
-			merge(value as StyleObject);
+			if (isPlainObject(value))
+				Object.assign(frame.output, assign(frame.output as Record<string, unknown>, value));
 			continue;
 		}
 
 		// Dynamic input: the engine's transform owns this key.
 		if (key === "$input") {
-			out[key] = value as string;
+			frame.output[key] = value as string;
 			continue;
 		}
 
 		if (isModuleKey(key)) {
-			merge(registry.resolve(key, value as Record<string, unknown>, tokens));
+			if (isPlainObject(value))
+				Object.assign(
+					frame.output,
+					assign(frame.output as Record<string, unknown>, registry.resolve(key, value, tokens)),
+				);
 			continue;
 		}
 
 		// Conditions, selectors and raw value-objects (`color: { _hover: "red" }`)
 		// all recurse; plain values pass through untouched.
-		out[key] = isPlainObject(value)
-			? resolveDesignStyleWithRegistry(value, tokens, registry)
-			: (value as string);
+		if (!isPlainObject(value)) {
+			frame.output[key] = value as string;
+			continue;
+		}
+		const nested = Object.create(null) as StyleObject;
+		frame.output[key] = nested;
+		if (active.has(value)) continue;
+		active.add(value);
+		stack.push({ style: value, output: nested, keys: Object.keys(value), index: 0 });
 	}
-
-	return out;
+	return root;
 };
 
 const BUILTIN_DESIGN_MODULES: readonly DesignModuleAdapter[] = [

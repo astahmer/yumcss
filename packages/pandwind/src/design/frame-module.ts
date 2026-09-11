@@ -17,20 +17,28 @@ const OVERFLOW: Record<string, string> = {
 	scroll: "scroll",
 	"scroll-hidden": "auto",
 };
+const BORDER_STYLES = new Set(["solid", "dashed", "dotted", "double", "none"]);
 
 const toOverflow = (value: unknown): string => {
 	if (Array.isArray(value)) {
-		return `${OVERFLOW[value[0] as string] ?? value[0]} ${
-			OVERFLOW[value[1] as string] ?? value[1]
-		}`;
+		if (value.length !== 2 || value.some((item) => typeof item !== "string")) return "";
+		const first = OVERFLOW[value[0]!];
+		const second = OVERFLOW[value[1]!];
+		return first === undefined || second === undefined ? "" : `${first} ${second}`;
 	}
-	return OVERFLOW[value as string] ?? String(value);
+	return typeof value === "string" ? (OVERFLOW[value] ?? "") : "";
 };
 
-const toSpacingList = (
-	value: string | number | Array<string | number>,
-	toSize: (item: string | number) => string,
-): string => (Array.isArray(value) ? value.map(toSize).join(" ") : toSize(value));
+const toSpacingList = (value: unknown, toSize: (item: string | number) => string): string => {
+	if (Array.isArray(value)) {
+		if (!value.every((item) => typeof item === "string" || Number.isFinite(item))) return "";
+		const sizes = value.map((item) => toSize(item as string | number));
+		return sizes.every((item) => item !== "") ? sizes.join(" ") : "";
+	}
+	return typeof value === "string" || (typeof value === "number" && Number.isFinite(value))
+		? toSize(value)
+		: "";
+};
 
 const toBorder = (
 	value: unknown,
@@ -38,14 +46,31 @@ const toBorder = (
 	toSize: (item: string | number) => string,
 ): string => {
 	if (typeof value === "string") {
-		return `1px solid ${token("colors", value)}`;
+		const color = token("colors", value);
+		return color === "" ? "" : `1px solid ${color}`;
 	}
+	if (typeof value !== "object" || value === null || Array.isArray(value)) return "";
 	const border = value as {
-		color: string;
-		width?: number | string;
-		style?: string;
+		color?: unknown;
+		width?: unknown;
+		style?: unknown;
 	};
-	return `${toSize(border.width ?? 1)} ${border.style ?? "solid"} ${token("colors", border.color)}`;
+	if (typeof border.color !== "string") return "";
+	if (
+		border.width !== undefined &&
+		typeof border.width !== "string" &&
+		typeof border.width !== "number"
+	)
+		return "";
+	if (
+		border.style !== undefined &&
+		(typeof border.style !== "string" || !BORDER_STYLES.has(border.style))
+	)
+		return "";
+	const width = toSize((border.width ?? 1) as string | number);
+	const color = token("colors", border.color);
+	if (width === "" || color === "") return "";
+	return `${width} ${border.style ?? "solid"} ${color}`;
 };
 
 const resolveFrame = (props: Record<string, unknown>, token: TokenLookup): StyleObject => {
@@ -60,15 +85,22 @@ const resolveFrame = (props: Record<string, unknown>, token: TokenLookup): Style
 	}
 	if (props.fill !== undefined) {
 		if (Array.isArray(props.fill)) {
-			out.background = `linear-gradient(135deg, ${(props.fill as string[])
-				.map((color) => token("colors", color))
-				.join(", ")})`;
-		} else {
-			out.backgroundColor = token("colors", props.fill as string);
+			if (
+				props.fill.length > 0 &&
+				props.fill.every((color) => typeof color === "string" && color.length > 0)
+			) {
+				const colors = (props.fill as string[]).map((color) => token("colors", color));
+				if (colors.every((color) => color !== ""))
+					out.background = `linear-gradient(135deg, ${colors.join(", ")})`;
+			}
+		} else if (typeof props.fill === "string") {
+			const color = token("colors", props.fill);
+			if (color !== "") out.backgroundColor = color;
 		}
 	}
 	if (props.border !== undefined) out.border = toBorder(props.border, token, toSize);
-	if (props.blurBg !== undefined) out.backdropFilter = `blur(${props.blurBg}px)`;
+	if (typeof props.blurBg === "number" && Number.isFinite(props.blurBg) && props.blurBg >= 0)
+		out.backdropFilter = `blur(${props.blurBg}px)`;
 	if (props.pad !== undefined) {
 		out.padding = toSpacingList(props.pad as never, toSize);
 	}
@@ -79,8 +111,13 @@ const resolveFrame = (props: Record<string, unknown>, token: TokenLookup): Style
 		out.paddingBlock = toSize(props.padY as string | number);
 	}
 	if (props.overflow !== undefined) out.overflow = toOverflow(props.overflow);
-	if (props.z !== undefined) out.zIndex = String(props.z);
-	if (props.opacity !== undefined) {
+	if (typeof props.z === "number" && Number.isFinite(props.z)) out.zIndex = String(props.z);
+	if (
+		typeof props.opacity === "number" &&
+		Number.isFinite(props.opacity) &&
+		props.opacity >= 0 &&
+		props.opacity <= 100
+	) {
 		out.opacity = String((props.opacity as number) / 100);
 	}
 

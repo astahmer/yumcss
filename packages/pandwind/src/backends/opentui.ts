@@ -120,11 +120,14 @@ export interface OpentuiBackendOptions extends Omit<
 }
 
 export function createOpentuiBackend(options: OpentuiBackendOptions = {}): ObjectBackend {
+	const cellSize = options.cellSize ?? 4;
+	if (!Number.isFinite(cellSize) || cellSize <= 0)
+		throw new Error("pandwind/opentui: cellSize must be a positive finite number");
 	return createObjectBackend({
 		...options,
 		name: options.name ?? "opentui",
 		capabilities: OPENTUI_BACKEND_CAPABILITIES,
-		convert: makeConvert(options.cellSize ?? 4),
+		convert: makeConvert(cellSize),
 	});
 }
 

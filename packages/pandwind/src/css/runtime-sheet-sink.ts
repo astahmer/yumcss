@@ -14,6 +14,12 @@ type RuntimeElementWithSheet = RuntimeStyleElement & {
 	readonly sheet?: StyleSheetWithRules | null;
 };
 
+const escapeAttributeSelector = (value: string): string =>
+	value.replace(/[\u0000-\u001f\u007f"\\]/g, (character) => {
+		const code = character.charCodeAt(0).toString(16);
+		return `\\${code} `;
+	});
+
 export class DomStyleElementSink implements RuntimeStyleElementSink {
 	private element: RuntimeStyleElement | undefined;
 	private readonly options: RuntimeSheetOptions;
@@ -39,7 +45,9 @@ export class DomStyleElementSink implements RuntimeStyleElementSink {
 		const document = this.document();
 		if (document === undefined) return false;
 		const id = this.options.id ?? "pandwind";
-		const existing = document.querySelector(`style[data-pandwind-sheet="${id}"]`);
+		const existing = document.querySelector(
+			`style[data-pandwind-sheet="${escapeAttributeSelector(id)}"]`,
+		);
 		if (existing?.tagName === "STYLE") this.element = existing;
 		else {
 			this.element = document.createElement("style");

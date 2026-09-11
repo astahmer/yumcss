@@ -8,6 +8,8 @@ import {
 	type RuntimeCssAttachment,
 } from "./runtime-base.ts";
 import type { VarsOutput } from "./var-compiler.ts";
+import { isSafeCssValue, normalizeCssValue } from "./value-normalization.ts";
+import { cssPropertyFromKey } from "../backends/css.ts";
 
 type GroupValue =
 	| StyleObject
@@ -15,32 +17,49 @@ type GroupValue =
 	| string
 	| ((...args: any[]) => StyleObject);
 
+const INPUT_NAME = /^[-_A-Za-z][-_A-Za-z0-9]*$/;
+
 /** Attach reusable static and dynamic group definitions to the CSS runtime. */
 export const attachGroup: RuntimeCssAttachment = (css, context) => {
 	const vars = css.vars as ((...styles: Array<StyleObject>) => VarsOutput) | undefined;
+	const conditions = context.backendOptions.conditions ?? {};
+	const propertyForInput = (key: string): string => cssPropertyFromKey(key, conditions);
 	const transform = (styles: StyleObject | DynamicStyles | string) => {
 		if (typeof styles === "string") return styles;
-		if ("$input" in styles) {
+		if (typeof styles !== "object" || styles === null) return context.compileStyles({});
+		if (Object.hasOwn(styles, "$input")) {
 			const { $input: _input, ...rest } = styles as DynamicStyles;
 			const flat = context.flatten(rest);
 			const compiled = Object.create(null) as Record<string, string>;
+			const inputProperties = new Map<string, string | undefined>();
 			for (const [key, value] of Object.entries(flat)) {
-				if (
-					typeof value !== "string" &&
-					(typeof value !== "number" || !Number.isFinite(value))
-				)
-					continue;
+				if (!isSafeCssValue(value)) continue;
+				const inputName =
+					typeof value === "string" && value.startsWith("input>$")
+						? value.slice("input>$".length)
+						: undefined;
+				if (inputName !== undefined && !INPUT_NAME.test(inputName)) continue;
+				if (inputName !== undefined) {
+					const property = propertyForInput(key);
+					if (!inputProperties.has(inputName)) inputProperties.set(inputName, property);
+					else if (inputProperties.get(inputName) !== property)
+						inputProperties.set(inputName, undefined);
+				}
 				compiled[key] = context.backend.declare(
 					key,
-					typeof value === "string" && value.startsWith("input>$")
-						? `var(${cssVar(value.slice("input>$".length))})`
-						: value,
+					inputName === undefined ? value : `var(${cssVar(inputName)})`,
 				);
 			}
 			return (input: AnyInput): DynamicReturn => ({
 				[DYNAMIC]: true,
 				style: Object.fromEntries(
-					Object.entries(input).map(([key, value]) => [cssVar(key), value]),
+					input !== null && typeof input === "object" && !Array.isArray(input)
+						? Object.entries(input).flatMap(([key, value]) => {
+								if (!inputProperties.has(key) || !isSafeCssValue(value)) return [];
+								const property = inputProperties.get(key);
+								return [[cssVar(key), normalizeCssValue(property ?? "--runtime", value)]];
+							})
+						: [],
 				) as Record<string, string>,
 				compiled,
 			});
@@ -49,7 +68,8 @@ export const attachGroup: RuntimeCssAttachment = (css, context) => {
 	};
 
 	css.group = <TGroup extends Record<string, GroupValue>>(groups: TGroup) => {
-		const merged: Record<string, unknown> = {};
+		const merged = Object.create(null) as Record<string, unknown>;
+		if (groups === null || typeof groups !== "object" || Array.isArray(groups)) return merged;
 		for (const [name, groupStyles] of Object.entries(groups)) {
 			if (typeof groupStyles === "function") {
 				if (vars === undefined) throw new Error("css.group function values require css.vars");

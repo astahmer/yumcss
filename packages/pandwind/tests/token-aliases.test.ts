@@ -102,4 +102,66 @@ describe("preset token aliases", () => {
 		expect(output).not.toContain("semantic.bg.primary");
 		expect(output).not.toContain("semantic.bg.muted");
 	});
+
+	test("cyclic token aliases fail instead of emitting token paths as CSS", () => {
+		const cyclic = {
+			conditions: { base: "" },
+			properties: { backgroundColor: { $tokens: "component" } },
+			strict: true,
+			tokens: {
+				component: {
+					"card.a": "component.card.b",
+					"card.b": "component.card.a",
+				},
+			},
+		} as never;
+
+		expect(() => createStylesheet(cyclic)).toThrow(/Cyclic token reference/);
+		expect(() => createRuntimeCss(cyclic, { sheetOptions: { autoMount: false } })).toThrow(
+			/Cyclic token reference/,
+		);
+	});
+
+	test("colliding canonical token aliases fail instead of silently choosing one", () => {
+		const colliding = {
+			conditions: { base: "" },
+			properties: { color: { $tokens: "colors" } },
+			strict: true,
+			tokens: {
+				colors: {
+					"$brand-primary": "#111111",
+					"brand.primary": "#222222",
+				},
+			},
+		} as never;
+
+		expect(() => createStylesheet(colliding)).toThrow(/Ambiguous token alias/);
+		expect(() => createRuntimeCss(colliding, { sheetOptions: { autoMount: false } })).toThrow(
+			/Ambiguous token alias/,
+		);
+	});
+
+	test("deep token alias chains resolve without consuming the JS call stack", () => {
+		const depth = 4_000;
+		const component: Record<string, string> = {};
+		for (let index = 0; index < depth; index++) {
+			component[`chain.${index}`] =
+				index === depth - 1 ? "#3182ce" : `component.chain.${index + 1}`;
+		}
+		const deepPreset = {
+			conditions: { base: "" },
+			properties: { backgroundColor: { $tokens: "component" } },
+			strict: true,
+			tokens: { component },
+		} as never;
+
+		expect(() =>
+			createStylesheet(deepPreset).generate([{ backgroundColor: "chain.0" }]),
+		).not.toThrow();
+		expect(() =>
+			createRuntimeCss(deepPreset, { sheetOptions: { autoMount: false } }).class({
+				backgroundColor: "chain.0",
+			}),
+		).not.toThrow();
+	});
 });

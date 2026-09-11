@@ -1,5 +1,6 @@
 import { createHashFn } from "../css/hash.ts";
 import { assign, flattenStyle, type FlatStyles } from "../lib/utils.ts";
+import { isSafeCssValue } from "../css/value-normalization.ts";
 import type { StyleObject } from "../types/typings.ts";
 import {
 	STYLE_BACKEND_SCHEMA,
@@ -54,7 +55,7 @@ export function createObjectBackend(options: ObjectBackendOptions): ObjectBacken
 	const diagnose = (key: string, value: string) =>
 		splitKey(key).conditions.flatMap((condition) => {
 			const name = condition.replace(/^_/, "");
-			return name in resolvers
+			return Object.hasOwn(resolvers, name) && typeof resolvers[name] === "function"
 				? []
 				: [
 						{
@@ -73,12 +74,22 @@ export function createObjectBackend(options: ObjectBackendOptions): ObjectBacken
 	};
 
 	const register = (style: TargetStyle): TargetStyle => {
-		const entries = Object.entries(style)
-			.map(
-				([prop, value]) => `${prop}=${typeof value === "string" ? value : JSON.stringify(value)}`,
-			)
-			.toSorted();
-		const hash = hashFn(entries.join("\u0000"), String(entries.length));
+		const entries: string[] = [];
+		for (const [prop, value] of Object.entries(style)) {
+			if (typeof value === "string") {
+				entries.push(`${prop}=${value}`);
+				continue;
+			}
+			let serialized: string | undefined;
+			try {
+				serialized = JSON.stringify(value);
+			} catch {
+				return style;
+			}
+			if (serialized === undefined) return style;
+			entries.push(`${prop}=${serialized}`);
+		}
+		const hash = hashFn(entries.toSorted().join("\u0000"), String(entries.length));
 		const registered = registry.get(hash);
 		if (registered !== undefined) return registered;
 		registry.set(hash, style);
@@ -94,12 +105,13 @@ export function createObjectBackend(options: ObjectBackendOptions): ObjectBacken
 		const flat = flattenStyle(assign(style)) as FlatStyles;
 		const out: TargetStyle = {};
 		for (const [key, raw] of Object.entries(flat)) {
+			if (!isSafeCssValue(raw)) continue;
 			const { conditions, prop } = splitKey(key);
 			let applicable = true;
 			for (const condition of conditions) {
 				const name = condition.replace(/^_/, "");
-				const applies = resolvers[name];
-				if (applies === undefined) {
+				const applies = Object.hasOwn(resolvers, name) ? resolvers[name] : undefined;
+				if (typeof applies !== "function") {
 					check(key, String(raw));
 					continue;
 				}

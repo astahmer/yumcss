@@ -50,6 +50,20 @@ describe("tw() never crashes and only emits class strings", () => {
 		});
 	}
 
+	test("cyclic nested variants terminate without emitting a partial loop", () => {
+		const cyclic: Record<string, unknown> = {};
+		cyclic.hover = cyclic;
+
+		expect(() => tw(cyclic as TwNestedStyles)).not.toThrow();
+		expect(tw(cyclic as TwNestedStyles)).toBe("");
+	});
+	test("malformed root tw inputs fail closed", () => {
+		expect(() => tw(null as never)).not.toThrow();
+		expect(() => tw([] as never)).not.toThrow();
+		expect(tw(null as never)).toBe("");
+		expect(tw([] as never)).toBe("");
+	});
+
 	test("every emitted class compiles through real Tailwind", async () => {
 		const classes = tw({
 			bg: "red-500",

@@ -98,17 +98,17 @@ test("css gen simple prop", () => {
 		._hover__caretColor__red:hover{caret-color:red}
 		._hover__fontSize__md:hover{font-size:md}
 		@media (prefers-color-scheme: dark){._dark__fontSize__2xl{font-size:2xl}}
-		@media (min-width: 640px){.backgroundColor__sm__red{background-color:red}}
-		@media (min-width: 640px){.color__sm__yellow{color:yellow}}
-		@media (min-width: 640px){.fontSize__sm__sm{font-size:sm}}
+		@media (min-width: 640px){.sm__backgroundColor__red{background-color:red}}
+		@media (min-width: 640px){.sm__color__yellow{color:yellow}}
+		@media (min-width: 640px){.sm__fontSize__sm{font-size:sm}}
 		._focus___hover__fontSize__xl:focus:hover{font-size:xl}
-		@media (min-width: 640px){._hover__backgroundColor__sm__green:hover{background-color:green}}
-		@media (min-width: 768px){._hover__fontSize__md__lg:hover{font-size:lg}}
+		@media (min-width: 640px){._hover__sm__backgroundColor__green:hover{background-color:green}}
+		@media (min-width: 768px){._hover__md__fontSize__lg:hover{font-size:lg}}
 		.\\&\\[data-attr\\=\\'test\\'\\]__color__green[data-attr='test']{color:green}
 		.\\&\\[data-attr\\=\\'test\\'\\]___disabled__color__purple[data-attr='test']:disabled, .\\&\\[data-attr\\=\\'test\\'\\]___disabled__color__purple[data-attr='test'][aria-disabled=true]{color:purple}
 		.target .bx2erf[data-attr='test']:disabled, .target .bx2erf[data-attr='test'][aria-disabled=true]{color:cyan}
 		.target .\\31 jr1onx[data-attr='test']:active, .target .\\31 jr1onx[data-attr='test'][data-active=true],.target .\\31 jr1onx[data-attr='test']:disabled, .target .\\31 jr1onx[data-attr='test'][aria-disabled=true]{color:orange}
-		@media (min-width: 1280px){.target .mzg6ce[data-attr='test']:disabled, .target .mzg6ce[data-attr='test'][aria-disabled=true]{color:pink}}"
+		@media (min-width: 1280px){.target .vt3lu0[data-attr='test']:disabled, .target .vt3lu0[data-attr='test'][aria-disabled=true]{color:pink}}"
 	`);
 
 	expect(createStylesheet(preset, { debug: false }).generate([styles])).toMatchInlineSnapshot(`
@@ -120,17 +120,17 @@ test("css gen simple prop", () => {
 		.todh53:hover{caret-color:red}
 		.\\31 5jkarc:hover{font-size:md}
 		@media (prefers-color-scheme: dark){.\\31 h7ra8l{font-size:2xl}}
-		@media (min-width: 640px){.\\31 u09me2{background-color:red}}
-		@media (min-width: 640px){.\\39 y7qdf{color:yellow}}
-		@media (min-width: 640px){.d7l77k{font-size:sm}}
+		@media (min-width: 640px){.zb2oii{background-color:red}}
+		@media (min-width: 640px){.l6sm6j{color:yellow}}
+		@media (min-width: 640px){.\\31 cl6mth{font-size:sm}}
 		.\\31 8j82hb:focus:hover{font-size:xl}
-		@media (min-width: 640px){.lk2n4:hover{background-color:green}}
-		@media (min-width: 768px){.\\31 dw8wnh:hover{font-size:lg}}
+		@media (min-width: 640px){.\\31 hbrls5:hover{background-color:green}}
+		@media (min-width: 768px){.\\31 06nztq:hover{font-size:lg}}
 		.dfl2kn[data-attr='test']{color:green}
 		.\\31 my53z8[data-attr='test']:disabled, .\\31 my53z8[data-attr='test'][aria-disabled=true]{color:purple}
 		.target .\\31 ubbxbh[data-attr='test']:disabled, .target .\\31 ubbxbh[data-attr='test'][aria-disabled=true]{color:cyan}
 		.target .\\31 ujpm8g[data-attr='test']:active, .target .\\31 ujpm8g[data-attr='test'][data-active=true],.target .\\31 ujpm8g[data-attr='test']:disabled, .target .\\31 ujpm8g[data-attr='test'][aria-disabled=true]{color:orange}
-		@media (min-width: 1280px){.target .y9ze62[data-attr='test']:disabled, .target .y9ze62[data-attr='test'][aria-disabled=true]{color:pink}}"
+		@media (min-width: 1280px){.target .\\35 zgdlv[data-attr='test']:disabled, .target .\\35 zgdlv[data-attr='test'][aria-disabled=true]{color:pink}}"
 	`);
 });
 

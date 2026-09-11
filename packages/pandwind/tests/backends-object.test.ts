@@ -12,6 +12,8 @@
  */
 import { describe, expect, test } from "vitest";
 import { createObjectBackend } from "../src/backends/object.ts";
+import { createObjectCx } from "../src/backends/object-surface.ts";
+import { createOpentuiBackend } from "../src/backends/opentui.ts";
 
 describe("object backend", () => {
 	test("resolve lowers flat declarations through convert (default pass-through)", () => {
@@ -49,6 +51,19 @@ describe("object backend", () => {
 		);
 	});
 
+	test("condition lookup ignores inherited and non-function resolvers", () => {
+		const inherited = Object.create({ hover: () => true }) as Record<string, () => boolean>;
+		inherited.focus = "not-a-resolver" as never;
+		const backend = createObjectBackend({ name: "test", conditions: inherited });
+
+		expect(() => backend.resolve({ _hover: { color: "red" } })).toThrow(
+			/condition "_hover" is not supported by this target/,
+		);
+		expect(() => backend.resolve({ _focus: { color: "red" } })).toThrow(
+			/condition "_focus" is not supported by this target/,
+		);
+	});
+
 	test("convert may expand one IR declaration into several target props", () => {
 		const backend = createObjectBackend({
 			name: "test",
@@ -66,6 +81,14 @@ describe("object backend", () => {
 		expect(backend.resolve({ color: "blue" })).not.toBe(first);
 	});
 
+	test("object targets ignore unsupported primitive declarations", () => {
+		const backend = createObjectBackend({ name: "test" });
+
+		expect(
+			backend.resolve({ display: false, visibility: true, content: Symbol("bad") } as never),
+		).toEqual({});
+	});
+
 	test("merge is later-wins over already-resolved styles, and registered", () => {
 		const backend = createObjectBackend({ name: "test" });
 		const base = backend.resolve({ color: "red", padding: 4 } as never);
@@ -74,5 +97,33 @@ describe("object backend", () => {
 		// The skeleton stringifies IR values on the way through declare/resolve.
 		expect(merged).toEqual({ color: "blue", padding: "4" });
 		expect(backend.merge(base, patch)).toBe(merged);
+	});
+
+	test("object cx flattens deeply nested and cyclic input arrays", () => {
+		const backend = createObjectBackend({ name: "test" });
+		const cx = createObjectCx(backend);
+		const base = backend.resolve({ color: "red" });
+		const patch = backend.resolve({ padding: 4 });
+		const nested: unknown[] = [base, [undefined, [patch]]];
+		nested.push(nested);
+
+		expect(cx(nested as never)).toEqual({ color: "red", padding: "4" });
+	});
+
+	test("object backends do not throw when target values cannot be serialized", () => {
+		const cyclic: Record<string, unknown> = {};
+		cyclic.self = cyclic;
+		const backend = createObjectBackend({
+			name: "test",
+			convert: () => ({ value: cyclic }),
+		});
+
+		expect(() => backend.resolve({ color: "red" })).not.toThrow();
+		expect(backend.resolve({ color: "red" })).toEqual({ value: cyclic });
+	});
+
+	test("OpenTUI rejects invalid cell sizes before lowering values", () => {
+		expect(() => createOpentuiBackend({ cellSize: 0 })).toThrow(/positive finite/);
+		expect(() => createOpentuiBackend({ cellSize: Number.NaN })).toThrow(/positive finite/);
 	});
 });

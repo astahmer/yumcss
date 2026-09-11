@@ -2,6 +2,7 @@
 import { DomStyleElementSink } from "./runtime-sheet-sink.ts";
 import { PriorityOrderingPolicy, RuntimeRuleStore } from "./runtime-sheet-policies.ts";
 import { SemanticRuleCanonicalizer, SemanticRuleSerializer } from "./runtime-sheet-serializer.ts";
+import { RuntimeSemanticRuleKindTag } from "./runtime-sheet-contracts.ts";
 import type {
 	RuntimeRule,
 	RuntimeSemanticRule,
@@ -47,6 +48,96 @@ interface RuntimeRuleBatch {
 	readonly rules: readonly RuntimeRule[];
 	readonly previousCount: number;
 }
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+	typeof value === "object" && value !== null;
+
+const isSafeText = (value: unknown): value is string =>
+	typeof value === "string" && value.length > 0 && !value.includes("\u0000");
+
+const isSafeString = (value: unknown): value is string =>
+	typeof value === "string" && !value.includes("\u0000");
+
+const isNonEmptyString = (value: unknown): value is string =>
+	typeof value === "string" && value.length > 0;
+
+const isRuntimeRule = (value: unknown): value is RuntimeRule =>
+	isRecord(value) &&
+	isNonEmptyString(value.id) &&
+	isSafeText(value.css) &&
+	Number.isFinite(value.priority);
+
+const isRuntimeSemanticRule = (value: unknown): value is RuntimeSemanticRule => {
+	if (!isRecord(value)) return false;
+	type Pending = { readonly value: Record<string, unknown>; readonly exit: boolean };
+	const active = new WeakSet<object>();
+	const pending: Pending[] = [{ value, exit: false }];
+	while (pending.length > 0) {
+		const entry = pending.pop()!;
+		if (entry.exit) {
+			active.delete(entry.value);
+			continue;
+		}
+		const current = entry.value;
+		if (active.has(current)) return false;
+		active.add(current);
+		pending.push({ value: current, exit: true });
+		const kind = current.kind;
+		if (
+			kind !== RuntimeSemanticRuleKindTag.Style &&
+			kind !== RuntimeSemanticRuleKindTag.Global &&
+			kind !== RuntimeSemanticRuleKindTag.Keyframes &&
+			kind !== RuntimeSemanticRuleKindTag.FontFace &&
+			kind !== RuntimeSemanticRuleKindTag.Layer &&
+			kind !== RuntimeSemanticRuleKindTag.Supports &&
+			kind !== RuntimeSemanticRuleKindTag.Property
+		)
+			return false;
+		for (const key of ["id", "selector", "name", "layer"]) {
+			if (current[key] !== undefined && !isSafeText(current[key])) return false;
+		}
+		if (current.priority !== undefined && !Number.isFinite(current.priority)) return false;
+		if (current.conditions !== undefined) {
+			if (!Array.isArray(current.conditions) || !current.conditions.every(isSafeText)) return false;
+		}
+		if (current.declarations !== undefined) {
+			if (
+				!Array.isArray(current.declarations) ||
+				!current.declarations.every(
+					(item) =>
+						isRecord(item) &&
+						isSafeText(item.property) &&
+						(isSafeText(item.value) ||
+							typeof item.value === "boolean" ||
+							(typeof item.value === "number" && Number.isFinite(item.value))),
+				)
+			)
+				return false;
+		}
+		if (current.children !== undefined) {
+			if (!Array.isArray(current.children)) return false;
+			for (let index = current.children.length - 1; index >= 0; index--) {
+				const child = current.children[index];
+				if (!isRecord(child)) return false;
+				pending.push({ value: child, exit: false });
+			}
+		}
+		if (
+			(kind === RuntimeSemanticRuleKindTag.Keyframes ||
+				kind === RuntimeSemanticRuleKindTag.Supports ||
+				kind === RuntimeSemanticRuleKindTag.Property) &&
+			typeof current.name !== "string"
+		)
+			return false;
+		if (
+			kind === RuntimeSemanticRuleKindTag.Layer &&
+			current.layer === undefined &&
+			current.name === undefined
+		)
+			return false;
+	}
+	return true;
+};
 
 /**
  * Create a live, DOM-independent runtime stylesheet.
@@ -136,23 +227,26 @@ export function createRuntimeSheet(
 		else if (mounted) render();
 	};
 	const register = (rules: readonly RuntimeRule[]): void => {
+		if (!Array.isArray(rules)) return;
+		const validRules = rules.filter(isRuntimeRule);
+		if (validRules.length === 0) return;
 		const canInsert =
 			orderedGeneration === generation &&
 			ordering.insert !== undefined &&
-			rules.every((rule, index) => {
+			validRules.every((rule, index) => {
 				if (store.rules.has(rule.id)) return false;
 				for (let previous = 0; previous < index; previous++) {
-					if (rules[previous]!.id === rule.id) return false;
+					if (validRules[previous]!.id === rule.id) return false;
 				}
 				return true;
 			});
-		if (store.register(rules)) {
+		if (store.register(validRules)) {
 			if (canInsert) {
 				const previousCount = ordered.length;
 				generation++;
-				ordered = ordering.insert!(ordered, rules);
+				ordered = ordering.insert!(ordered, validRules);
 				orderedGeneration = generation;
-				refresh({ rules, previousCount });
+				refresh({ rules: validRules, previousCount });
 			} else {
 				invalidate();
 				refresh();
@@ -160,6 +254,7 @@ export function createRuntimeSheet(
 		}
 	};
 	const setTokens = (value: string): void => {
+		if (!isSafeString(value)) return;
 		if (tokens === value) return;
 		tokens = value;
 		invalidate();
@@ -167,14 +262,17 @@ export function createRuntimeSheet(
 	};
 	const snapshot = (): RuntimeSheetSnapshot => ({ tokens, rules: orderedRules().slice() });
 	const hydrate = (value: RuntimeSheetSnapshot): void => {
+		if (!isRecord(value) || !isSafeString(value.tokens) || !Array.isArray(value.rules)) return;
 		tokens = value.tokens;
-		store.replace(value.rules);
+		store.replace(value.rules.filter(isRuntimeRule));
 		invalidate();
 		refresh();
 	};
 	const registerSemanticRules = (rules: readonly RuntimeSemanticRule[]): void => {
+		if (!Array.isArray(rules)) return;
 		register(
 			rules
+				.filter(isRuntimeSemanticRule)
 				.filter((rule) => (rule.declarations?.length ?? 0) > 0 || (rule.children?.length ?? 0) > 0)
 				.map((rule, index) =>
 					canonicalizer.canonicalize({ ...rule, priority: rule.priority ?? index }),

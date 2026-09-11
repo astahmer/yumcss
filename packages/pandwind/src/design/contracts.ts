@@ -29,13 +29,29 @@ export const isDesignModuleKey = (key: string): key is DesignModuleKey =>
 export const createTokenLookup =
 	(tokens: AnyTokens | undefined): TokenLookup =>
 	(group, value) => {
-		if (typeof value === "number") return String(value);
+		if (typeof value === "number") return Number.isFinite(value) ? String(value) : "";
 		const groupTokens = tokens?.[group];
-		if (groupTokens?.[value] !== undefined) return String(groupTokens[value]);
+		if (groupTokens !== undefined && Object.hasOwn(groupTokens, value)) {
+			const tokenValue = groupTokens[value];
+			return typeof tokenValue === "string" ||
+				(typeof tokenValue === "number" && Number.isFinite(tokenValue))
+				? String(tokenValue)
+				: "";
+		}
 		const canonical = canonicalTokenName(value);
-		if (groupTokens?.[canonical] !== undefined) return String(groupTokens[canonical]);
+		if (groupTokens !== undefined && Object.hasOwn(groupTokens, canonical)) {
+			const tokenValue = groupTokens[canonical];
+			return typeof tokenValue === "string" ||
+				(typeof tokenValue === "number" && Number.isFinite(tokenValue))
+				? String(tokenValue)
+				: "";
+		}
 		for (const [name, tokenValue] of Object.entries(groupTokens ?? {})) {
-			if (canonicalTokenName(name) === canonical) return String(tokenValue);
+			if (canonicalTokenName(name) !== canonical) continue;
+			return typeof tokenValue === "string" ||
+				(typeof tokenValue === "number" && Number.isFinite(tokenValue))
+				? String(tokenValue)
+				: "";
 		}
 		return value;
 	};

@@ -26,21 +26,21 @@ const resolveLayout = (props: Record<string, unknown>, token: TokenLookup): Styl
 	if (flow === "grid") {
 		out.display = "grid";
 		out.gridAutoFlow = "row";
-		if (props.cols !== undefined) {
+		if (typeof props.cols === "number" && Number.isInteger(props.cols) && props.cols > 0) {
 			out.gridTemplateColumns = `repeat(${props.cols}, minmax(0, 1fr))`;
 		}
-		if (props.rows !== undefined) {
+		if (typeof props.rows === "number" && Number.isInteger(props.rows) && props.rows > 0) {
 			out.gridTemplateRows = `repeat(${props.rows}, minmax(0, 1fr))`;
 		}
 	} else if (flow === "stackX" || flow === "stackY") {
 		out.display = "flex";
 		out.flexDirection = flow === "stackX" ? "row" : "column";
-		if (props.wrap !== undefined) {
+		if (typeof props.wrap === "boolean") {
 			out.flexWrap = props.wrap ? "wrap" : "nowrap";
 		}
 	}
 
-	if (props.align !== undefined && flow !== "grid") {
+	if (typeof props.align === "string" && flow !== "grid") {
 		const isCenter = props.align === "center";
 		const [yPart, xPart] = isCenter
 			? (["center", "center"] as const)

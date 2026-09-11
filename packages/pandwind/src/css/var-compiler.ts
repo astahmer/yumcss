@@ -1,6 +1,6 @@
 import { createHashFn, dashCase } from "./hash.ts";
-import type { FlatStyles } from "../lib/utils.ts";
-import { normalizeCssValue } from "./value-normalization.ts";
+import { pairs, type FlatStyles } from "../lib/utils.ts";
+import { isSafeCssValue, normalizeCssValue } from "./value-normalization.ts";
 import { VARS_ATOMS } from "./vars-carrier.ts";
 
 /**
@@ -65,7 +65,7 @@ class DefaultVarCompiler implements VarCompiler {
 		this.emptyConditions = new Set(emptyConditionNames);
 	}
 
-	private splitKey(key: string): { conditions: string[]; prop: string } {
+	private splitKey(key: string): { conditions: string[]; prop: string; canonical: string } {
 		const parts = key.split("__").filter((part) => part !== "");
 		const first = parts[0]!;
 		const last = parts[parts.length - 1]!;
@@ -76,6 +76,12 @@ class DefaultVarCompiler implements VarCompiler {
 		const rawConditions = propertyFirst ? parts.slice(1) : parts.slice(0, -1);
 		return {
 			prop: dashCase(rawProp),
+			canonical: pairs.join(
+				rawConditions
+					.filter((condition) => !this.emptyConditions.has(condition))
+					.toSorted()
+					.concat(rawProp),
+			),
 			conditions: rawConditions
 				.filter((condition) => !this.emptyConditions.has(condition))
 				.map(varConditionPart)
@@ -111,8 +117,7 @@ class DefaultVarCompiler implements VarCompiler {
 		const singleKey = keys[0];
 		if (keys.length === 1 && singleKey !== undefined && !singleKey.includes("__")) {
 			const raw = flat[singleKey];
-			if (raw === undefined || (typeof raw !== "string" && !Number.isFinite(raw)) || raw === "")
-				return { atoms: [], style: {} };
+			if (!isSafeCssValue(raw) || raw === "") return { atoms: [], style: {} };
 			const prop = dashCase(singleKey);
 			return {
 				atoms: [{ cls: `pw-${prop}`, keys: [singleKey] }],
@@ -123,11 +128,10 @@ class DefaultVarCompiler implements VarCompiler {
 		const style: Record<string, string> = {};
 		for (const key of keys.toSorted()) {
 			const raw = flat[key];
-			if (raw === undefined || (typeof raw !== "string" && !Number.isFinite(raw)) || raw === "")
-				continue;
-			const { conditions, prop } = this.splitKey(key);
+			if (!isSafeCssValue(raw) || raw === "") continue;
+			const { canonical, conditions, prop } = this.splitKey(key);
 			if (!prop) continue;
-			atoms.push({ cls: this.classFor(key), keys: [key] });
+			atoms.push({ cls: this.classFor(key), keys: [canonical] });
 			style[this.customPropFor(prop, conditions)] = runtimeValue(prop, raw);
 		}
 		return { atoms, style };

@@ -21,9 +21,7 @@ const declarations = (items: readonly RuntimeDeclaration[] = []): string =>
 	items.map((item) => `${dashCase(item.property)}:${declarationValue(item.value)}`).join(";");
 
 const condition = (value: string): string =>
-	value.startsWith("@") || value.startsWith(":") || value.startsWith("&")
-		? value
-		: `&:${value}`;
+	value.startsWith("@") || value.startsWith(":") || value.startsWith("&") ? value : `&:${value}`;
 
 const splitSelectorList = (value: string): string[] => {
 	const selectors: string[] = [];
@@ -36,7 +34,7 @@ const splitSelectorList = (value: string): string[] => {
 			if (character === quote && value[index - 1] !== "\\") quote = "";
 			continue;
 		}
-		if (character === "\"" || character === "'") {
+		if (character === '"' || character === "'") {
 			quote = character;
 			continue;
 		}
@@ -51,11 +49,34 @@ const splitSelectorList = (value: string): string[] => {
 	return selectors.filter(Boolean);
 };
 
+const replaceParentSelector = (value: string, base: string): string => {
+	let output = "";
+	let quote = "";
+	let attributeDepth = 0;
+	for (let index = 0; index < value.length; index++) {
+		const character = value[index]!;
+		if (quote !== "") {
+			output += character;
+			if (character === quote && value[index - 1] !== "\\") quote = "";
+			continue;
+		}
+		if (character === '"' || character === "'") {
+			quote = character;
+			output += character;
+			continue;
+		}
+		if (character === "[") attributeDepth++;
+		else if (character === "]" && attributeDepth > 0) attributeDepth--;
+		output += character === "&" && attributeDepth === 0 ? base : character;
+	}
+	return output;
+};
+
 const applySelectorCondition = (base: string, conditionValue: string): string =>
 	splitSelectorList(base)
 		.flatMap((baseSelector) =>
 			splitSelectorList(conditionValue).map((item) => {
-				if (item.includes("&")) return item.replaceAll("&", baseSelector);
+				if (item.includes("&")) return replaceParentSelector(item, baseSelector);
 				if (item.startsWith(":") || item.startsWith("[")) return `${baseSelector}${item}`;
 				if (item.startsWith(">") || item.startsWith("+") || item.startsWith("~"))
 					return `${baseSelector}${item}`;
@@ -87,15 +108,20 @@ export class SemanticRuleSerializer implements RuntimeRuleSerializer {
 			index: number;
 		};
 		const frames: Frame[] = [{ rule, parts: [declarations(rule.declarations)], index: 0 }];
+		const activeRules = new WeakSet<object>();
+		activeRules.add(rule);
 		let output = "";
 		while (frames.length > 0) {
 			const frame = frames.at(-1)!;
 			const child = frame.rule.children?.[frame.index++];
 			if (child !== undefined) {
+				if (activeRules.has(child)) throw new Error("Cyclic runtime semantic rule tree");
+				activeRules.add(child);
 				frames.push({ rule: child, parts: [declarations(child.declarations)], index: 0 });
 				continue;
 			}
 			frames.pop();
+			activeRules.delete(frame.rule);
 			const body = frame.parts.join("");
 			const serialized = this.serializeRule(frame.rule, body);
 			const parent = frames.at(-1);
@@ -154,12 +180,11 @@ export class SemanticRuleCanonicalizer {
 	}
 
 	canonicalize(rule: RuntimeSemanticRule) {
-		// Priority affects ordering, not identity. Excluding it keeps a rule's
-		// deduplication key stable when an ordering policy changes.
-		const { priority: _priority, ...identity } = rule;
+		// Priority affects ordering, not the emitted rule identity.
+		const css = this.serializer.serialize(rule);
 		return {
-			id: rule.id ?? `semantic-${hash(JSON.stringify(identity))}`,
-			css: this.serializer.serialize(rule),
+			id: rule.id ?? `semantic-${hash(css)}`,
+			css,
 			priority: rule.priority ?? 0,
 		};
 	}

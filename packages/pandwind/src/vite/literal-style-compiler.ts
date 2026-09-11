@@ -59,7 +59,11 @@ class PandwindLiteralStyleCompiler implements LiteralStyleCompiler {
 			let name: string | undefined;
 			if (this.className !== undefined) {
 				try {
-					name = this.className.toClassName(orderedKey, value) ?? undefined;
+					const custom = this.className.toClassName(orderedKey, value);
+					name =
+						typeof custom === "string" && custom.length > 0 && !/[\s\u0000]/.test(custom)
+							? custom
+							: undefined;
 				} catch {
 					return null;
 				}

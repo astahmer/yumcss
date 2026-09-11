@@ -4,6 +4,13 @@ import { createHashFn } from "../css/hash.ts";
 import type { StyleBackend } from "./types.ts";
 import { normalizeCssValue } from "../css/value-normalization.ts";
 
+type CssBackend = Omit<StyleBackend, "declare"> & {
+	/** Atom registry shared with the stylesheet generator and cx. */
+	readonly atoms: AtomRegistry;
+	/** CSS accepts numeric JS values before property-aware normalization. */
+	declare(key: string, value: string | number): string;
+};
+
 export interface CssBackendOptions {
 	debug?: boolean;
 	hashFn?: (key: string, value: string | true) => string;
@@ -12,13 +19,51 @@ export interface CssBackendOptions {
 	conditions?: Record<string, string | string[]>;
 }
 
-const canonicalStyleKey = (key: string): string => {
+const isConditionPathPart = (
+	part: string,
+	conditions: Record<string, string | string[]>,
+): boolean =>
+	part.startsWith("_") || Object.hasOwn(conditions, part) || /[&>+~:[\],.#*\s]/.test(part);
+
+export const isEmptyCondition = (
+	part: string,
+	conditions: Record<string, string | string[]>,
+): boolean => {
+	const value = conditions[part];
+	return value === "" || (Array.isArray(value) && value.every((item) => item === ""));
+};
+
+/** Find the CSS property in a canonical condition/property path. */
+export const cssPropertyFromKey = (
+	key: string,
+	conditions: Record<string, string | string[]> = {},
+): string => {
 	if (!key.includes("__")) return key;
-	return key
-		.split("__")
-		.filter((part) => part !== "")
-		.toSorted()
-		.join("__");
+	const parts = key.split("__");
+	for (let index = parts.length - 1; index >= 0; index--) {
+		const part = parts[index]!;
+		if (!isConditionPathPart(part, conditions)) return part;
+	}
+	return parts.at(-1) ?? "";
+};
+
+/** Canonicalize a flattened path with condition segments before its property. */
+export const canonicalStyleKey = (
+	key: string,
+	conditions: Record<string, string | string[]> = {},
+): string => {
+	if (!key.includes("__")) return key;
+	const parts = key.split("__").filter((part) => part !== "");
+	if (parts.length < 2) return parts[0] ?? "";
+	const property = cssPropertyFromKey(key, conditions);
+	const propertyIndex = parts.lastIndexOf(property);
+	if (propertyIndex < 0) return parts.toSorted().join("__");
+	const conditionParts = parts
+		.filter((_part, index) => index !== propertyIndex)
+		.filter((part) => !isEmptyCondition(part, conditions))
+		.sort();
+	conditionParts.push(property);
+	return conditionParts.join("__");
 };
 
 /**
@@ -30,21 +75,16 @@ const canonicalStyleKey = (key: string): string => {
  * chain (custom class or null) followed by the hashed atomic fallback —
  * so outputs stay byte-identical with pre-extraction builds.
  */
-export function createCssBackend(options: CssBackendOptions = {}): StyleBackend & {
-	/** Atom registry shared with the stylesheet generator and cx. */
-	atoms: AtomRegistry;
-} {
+export function createCssBackend(options: CssBackendOptions = {}): CssBackend {
 	const hashFn = options.hashFn ?? createHashFn(options.debug ?? false);
 	const strategy: ClassNameStrategy | undefined = options.className;
 	const sheetBacked = strategy?.sheetBacked === true;
 	const atoms: AtomRegistry = new Map();
 	const declarations = new Map<string, Map<string, string>>();
 
-	const declare = (key: string, value: string): string => {
-		const orderedKey = canonicalStyleKey(key);
-		const propertySeparator = orderedKey.lastIndexOf("__");
-		const property =
-			propertySeparator === -1 ? orderedKey : orderedKey.slice(propertySeparator + 2);
+	const declare = (key: string, value: string | number): string => {
+		const orderedKey = canonicalStyleKey(key, options.conditions);
+		const property = cssPropertyFromKey(orderedKey, options.conditions);
 		const rawValue = normalizeCssValue(property, value);
 		let values = declarations.get(orderedKey);
 		if (values === undefined) {
@@ -58,7 +98,7 @@ export function createCssBackend(options: CssBackendOptions = {}): StyleBackend 
 		// (`{ color: { _hover: value } }`) cannot produce an atom with no rule.
 		if (strategy !== undefined) {
 			const custom = strategy.toClassName(orderedKey, rawValue);
-			if (custom !== null) {
+			if (typeof custom === "string" && custom.length > 0 && !/[\s\u0000]/.test(custom)) {
 				// Sheet-backed strategies compile through this engine's own
 				// stylesheet, so their classes join the atom registry — that is
 				// what keeps cx() merging and the generated rules working.

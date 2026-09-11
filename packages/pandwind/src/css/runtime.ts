@@ -88,7 +88,11 @@ type RuntimeGlobal = typeof globalThis & {
 function runtimeSheetFor(preset: CssConfigReturn, options: RuntimeCssOptions): RuntimeSheet {
 	if (options.sheet !== undefined) return options.sheet;
 	if (options.sheetOptions !== undefined) return createRuntimeSheet(options.sheetOptions);
-	if (options.className !== undefined || options.debug !== undefined || options.hashFn !== undefined)
+	if (
+		options.className !== undefined ||
+		options.debug !== undefined ||
+		options.hashFn !== undefined
+	)
 		return createRuntimeSheet();
 	const globalObject = globalThis as RuntimeGlobal;
 	const sheets = globalObject[sharedSheetsKey] ?? new WeakMap<object, RuntimeSheet>();
@@ -154,14 +158,19 @@ function runtimeOptions(preset: CssConfigReturn, options: RuntimeCssOptions): Ru
 		sheetBacked: authoredStrategy?.sheetBacked,
 		toClassName: (key, value) => {
 			const custom = authoredStrategy?.toClassName(key, value);
-			if (custom !== null && custom !== undefined && authoredStrategy?.sheetBacked !== true)
+			if (
+				typeof custom === "string" &&
+				custom.length > 0 &&
+				!/[\s\u0000]/.test(custom) &&
+				authoredStrategy?.sheetBacked !== true
+			)
 				return custom;
 			const id = `${key}\u0000${value}`;
 			if (!pendingStyleIds.has(id)) {
 				pendingStyleIds.add(id);
 				pendingStyles.push({ key, value });
 			}
-			return custom ?? null;
+			return null;
 		},
 	};
 	return {

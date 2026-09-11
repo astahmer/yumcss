@@ -98,6 +98,20 @@ describe("iterative Oxc traversal", () => {
 		expect((css.match(/@layer /g) ?? []).length).toBe(depth);
 	});
 
+	test("rejects cyclic runtime semantic rules instead of looping forever", () => {
+		const children: RuntimeSemanticRule[] = [];
+		const cyclic: RuntimeSemanticRule = {
+			kind: RuntimeSemanticRuleKindTag.Layer,
+			name: "cycle",
+			children,
+		};
+		children.push(cyclic);
+
+		expect(() => new SemanticRuleSerializer().serialize(cyclic)).toThrow(
+			/Cyclic runtime semantic rule tree/,
+		);
+	});
+
 	test("resolves a deep CSS-variable chain iteratively and stops cycles", () => {
 		const depth = 12_000;
 		const variables = new Map<string, string>();

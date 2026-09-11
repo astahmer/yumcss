@@ -26,6 +26,12 @@ export function buildRuntimeTokenMaps(preset: CssConfigReturn, debug: boolean): 
 	const groupByProp = new Map<string, string>();
 	const flatTokens = new Map<string, RuntimeToken>();
 	const tokensByGroup = new Map<string, Set<string>>();
+	const setFlatToken = (key: string, token: RuntimeToken): void => {
+		if (flatTokens.has(key)) {
+			throw new Error(`Ambiguous token alias '${key}'`);
+		}
+		flatTokens.set(key, token);
+	};
 
 	const presetTokens = preset.tokens ?? {};
 	const presetProperties = preset.properties ?? {};
@@ -33,7 +39,7 @@ export function buildRuntimeTokenMaps(preset: CssConfigReturn, debug: boolean): 
 		const groupTokens = new Set<string>();
 		tokensByGroup.set(group, groupTokens);
 		for (const tokenName of Object.keys(presetTokens[group]!)) {
-			const tokenValue = presetTokens[group][tokenName];
+			const tokenValue = presetTokens[group]![tokenName];
 			if (tokenValue === undefined) continue;
 			const token: RuntimeToken = {
 				value: tokenValue,
@@ -41,7 +47,7 @@ export function buildRuntimeTokenMaps(preset: CssConfigReturn, debug: boolean): 
 			};
 			for (const alias of tokenNameAliases(tokenName)) {
 				groupTokens.add(alias);
-				flatTokens.set(`${group}.${alias}`, token);
+				setFlatToken(`${group}.${alias}`, token);
 			}
 		}
 	}
@@ -69,7 +75,7 @@ export function buildRuntimeTokenMaps(preset: CssConfigReturn, debug: boolean): 
 			const tokenValue = property[token];
 			if (typeof tokenValue === "string") {
 				for (const alias of tokenNameAliases(token)) {
-					flatTokens.set(`${prop}.${alias}`, { value: tokenValue });
+					setFlatToken(`${prop}.${alias}`, { value: tokenValue });
 				}
 			}
 		}
@@ -83,13 +89,17 @@ const resolveRuntimeTokenTarget = (
 	tokenPath: string,
 	seen: ReadonlySet<string> = new Set(),
 ): RuntimeToken | undefined => {
-	const token = maps.flatTokens.get(tokenPath);
-	if (token === undefined || seen.has(tokenPath)) return undefined;
-	if (typeof token.value !== "string") return token;
-
-	const next = maps.flatTokens.get(token.value);
-	if (next === undefined) return token;
-	return resolveRuntimeTokenTarget(maps, token.value, new Set([...seen, tokenPath]));
+	const visited = new Set(seen);
+	let currentPath = tokenPath;
+	while (true) {
+		const token = maps.flatTokens.get(currentPath);
+		if (token === undefined) return undefined;
+		if (visited.has(currentPath)) throw new Error(`Cyclic token reference '${currentPath}'`);
+		visited.add(currentPath);
+		if (typeof token.value !== "string") return token;
+		if (!maps.flatTokens.has(token.value)) return token;
+		currentPath = token.value;
+	}
 };
 
 export function resolveRuntimeTokenAliasValue(

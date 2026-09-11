@@ -185,9 +185,9 @@ test("css gen prop in known at rule", () => {
 	).toMatchInlineSnapshot(
 		`
     Map {
-      "color__sm__$red-800" => {
-        "css": "@media (min-width: 640px){.yu75ve{color:#822727}}",
-        "id": "color__sm__$red-800",
+      "sm__color__$red-800" => {
+        "css": "@media (min-width: 640px){.i4ah8r{color:#822727}}",
+        "id": "sm__color__$red-800",
         "priority": 3200,
       },
     }

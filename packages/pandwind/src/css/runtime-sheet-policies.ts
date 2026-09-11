@@ -26,21 +26,52 @@ export class PriorityOrderingPolicy implements RuntimeOrderingPolicy {
 }
 
 export class RuntimeRuleStore {
-	readonly rules = new Map<string, RuntimeRule>();
+	private readonly values = new Map<string, RuntimeRule>();
+
+	get rules(): ReadonlyMap<string, RuntimeRule> {
+		return this.values;
+	}
 
 	register(next: readonly RuntimeRule[]): boolean {
+		if (!Array.isArray(next)) return false;
 		let changed = false;
 		for (const rule of next) {
-			const previous = this.rules.get(rule.id);
-			if (previous?.css === rule.css && previous.priority === rule.priority) continue;
-			this.rules.set(rule.id, rule);
+			if (
+				typeof rule?.id !== "string" ||
+				rule.id.length === 0 ||
+				typeof rule.css !== "string" ||
+				rule.css.length === 0 ||
+				rule.css.includes("\u0000") ||
+				!Number.isFinite(rule.priority)
+			)
+				continue;
+			const previous = this.values.get(rule.id);
+			if (
+				previous !== undefined &&
+				previous.css === rule.css &&
+				previous.priority === rule.priority
+			)
+				continue;
+			this.values.set(rule.id, rule);
 			changed = true;
 		}
 		return changed;
 	}
 
 	replace(next: readonly RuntimeRule[]): void {
-		this.rules.clear();
-		for (const rule of next) this.rules.set(rule.id, rule);
+		this.values.clear();
+		if (!Array.isArray(next)) return;
+		for (const rule of next) {
+			if (
+				typeof rule?.id !== "string" ||
+				rule.id.length === 0 ||
+				typeof rule.css !== "string" ||
+				rule.css.length === 0 ||
+				rule.css.includes("\u0000") ||
+				!Number.isFinite(rule.priority)
+			)
+				continue;
+			this.values.set(rule.id, rule);
+		}
 	}
 }

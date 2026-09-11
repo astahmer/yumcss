@@ -2,6 +2,7 @@ import { assign, type FlatStyles, flattenStyle, pairs } from "../lib/utils.ts";
 import type { CssConfigReturn, StyleObject, TokenDeclaration } from "../types/typings.ts";
 import { createVarCompiler, varConditionPart } from "./var-compiler.ts";
 import type { CreateCssOptions } from "./create-css.ts";
+import { canonicalStyleKey, cssPropertyFromKey, isEmptyCondition } from "../backends/css.ts";
 import { createHashFn, dashCase, escapeIdentifier, hashCssVar } from "./hash.ts";
 import { getPropertyPriority } from "./property-priorities.ts";
 import {
@@ -21,7 +22,7 @@ import {
 	type RuleSerializerPolicy,
 	type StylesheetOrderingPolicy,
 } from "./stylesheet-policies.ts";
-import { normalizeCssValue } from "./value-normalization.ts";
+import { isSafeCssValue, normalizeCssValue } from "./value-normalization.ts";
 
 export { decodeAtomicPath } from "./stylesheet-lowering.ts";
 export { getPropertyPriority } from "./property-priorities.ts";
@@ -88,7 +89,7 @@ export const createStylesheet = (
 	const conditionNames = Object.keys(preset.conditions);
 	const varCompiler = createVarCompiler(
 		conditionNames,
-		conditionNames.filter((name) => !preset.conditions[name]),
+		conditionNames.filter((name) => isEmptyCondition(name, preset.conditions)),
 	);
 	const conditionPolicy = policies.conditions ?? defaultConditionPolicy;
 	const ordering = policies.ordering ?? createStylesheetOrderingPolicy();
@@ -106,16 +107,15 @@ export const createStylesheet = (
 	const classNameFor = (orderedKey: string, rawValue: string): string => {
 		if (sheetStrategy?.sheetBacked === true) {
 			const named = sheetStrategy.toClassName(orderedKey, rawValue);
-			if (named !== null) return named;
+			if (typeof named === "string" && named.length > 0 && !/[\s\u0000]/.test(named)) return named;
 		}
 		return hashFn(orderedKey, rawValue);
 	};
 
-	const emptyCondition = Object.keys(preset.conditions).find((key) => !preset.conditions[key]);
 	const pathParts = (key: string, omitEmptyParts: boolean, sort: boolean): string[] => {
 		const parts: string[] = [];
 		for (const part of pairs.split(key)) {
-			if (part === emptyCondition || (omitEmptyParts && part === "")) continue;
+			if (isEmptyCondition(part, preset.conditions) || (omitEmptyParts && part === "")) continue;
 			parts.push(part);
 		}
 		// `parts` is private scratch allocated by this call; sorting in place
@@ -135,7 +135,7 @@ export const createStylesheet = (
 	// in the shared `buildTokenMaps`).
 	for (const group of Object.keys(presetTokens)) {
 		for (const tokenName of Object.keys(presetTokens[group]!)) {
-			const tokenValue = presetTokens[group][tokenName];
+			const tokenValue = presetTokens[group]![tokenName];
 			if (tokenValue === undefined) continue;
 			const cssVarHash = hashCssVar(pairs.join([group, tokenName]), debug);
 			const tokenPath = `${group}.${tokenName}`;
@@ -192,18 +192,12 @@ export const createStylesheet = (
 		const localCache = new Map<string, Rule>();
 		for (const key of Object.keys(style)) {
 			const rawValue = style[key];
-			if (
-				(typeof rawValue !== "string" && typeof rawValue !== "number") ||
-				(typeof rawValue === "number" && !Number.isFinite(rawValue))
-			)
-				continue;
+			if (!isSafeCssValue(rawValue)) continue;
 			// By sorting the atomic path, we ensure different atomic paths leading to the same CSS
 			// will always have the same hash
 			// ex: `css({ _hover: { color: "red" } })` === `css({ color: { _hover: "red" }  })`
-			const orderedKey = pairs.join(pathParts(key, false, true));
-			const propertySeparator = orderedKey.lastIndexOf("__");
-			const property =
-				propertySeparator === -1 ? orderedKey : orderedKey.slice(propertySeparator + 2);
+			const orderedKey = canonicalStyleKey(key, preset.conditions);
+			const property = cssPropertyFromKey(orderedKey, preset.conditions);
 			const normalizedValue = normalizeCssValue(property, rawValue);
 			processNormalizedStyle(orderedKey, normalizedValue, localCache);
 		}
@@ -216,6 +210,7 @@ export const createStylesheet = (
 		normalizedValue: string,
 		localCache: Map<string, Rule>,
 	): void => {
+		if (orderedKey === "" || !isSafeCssValue(normalizedValue)) return;
 		const pairId = pairs.concat(orderedKey, normalizedValue);
 		if (cache.has(pairId)) return;
 
@@ -253,7 +248,11 @@ export const createStylesheet = (
 	const processPreparedStyles = (styles: readonly { key: string; value: string }[]) => {
 		const localCache = new Map<string, Rule>();
 		for (const { key, value } of styles) {
-			processNormalizedStyle(key, value, localCache);
+			if (typeof key !== "string" || key.length === 0 || key.includes("\u0000")) continue;
+			if (!isSafeCssValue(value)) continue;
+			const orderedKey = canonicalStyleKey(key, preset.conditions);
+			const property = cssPropertyFromKey(orderedKey, preset.conditions);
+			processNormalizedStyle(orderedKey, normalizeCssValue(property, value), localCache);
 		}
 		return localCache;
 	};
@@ -273,6 +272,7 @@ export const createStylesheet = (
 	 */
 	const varCache = new Map<string, Rule>();
 	const processVarKey = (flatKey: string): Rule | undefined => {
+		if (typeof flatKey !== "string" || flatKey.length === 0 || flatKey.includes("\u0000")) return;
 		const rawParts = pathParts(flatKey, true, false);
 		const first = rawParts[0]!;
 		const last = rawParts[rawParts.length - 1]!;
