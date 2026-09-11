@@ -413,12 +413,19 @@ describe("runtime CSS-in-JS sheet", () => {
 				],
 				priority: 3,
 			},
+			{
+				kind: "style",
+				selector: ".card",
+				conditions: ["@container (min-width: 28rem)"],
+				declarations: [{ property: "padding", value: "2rem" }],
+				priority: 4,
+			},
 		]);
 
 		expect(server.css()).toBe(
-			"body{margin:0}\n@keyframes fade{from{opacity:0}to{opacity:1}}\n@supports (display: grid){.grid{display:grid}}",
+			"body{margin:0}\n@keyframes fade{from{opacity:0}to{opacity:1}}\n@supports (display: grid){.grid{display:grid}}\n@container (min-width: 28rem){.card{padding:2rem}}",
 		);
-		expect(new Set(server.snapshot().rules.map((rule) => rule.id)).size).toBe(3);
+		expect(new Set(server.snapshot().rules.map((rule) => rule.id)).size).toBe(4);
 
 		const client = createRuntimeSheet({ autoMount: false });
 		client.hydrate(server.snapshot());
@@ -476,12 +483,15 @@ describe("runtime CSS-in-JS sheet", () => {
 				declarations: [
 					{ property: "syntax", value: "<number>" },
 					{ property: "inherits", value: false },
+					{ property: "initial-value", value: 0 },
 				],
 			},
 		]);
 		expect(sheet.css()).toContain("@font-face{font-family:Inter;src:url(inter.woff2)}");
 		expect(sheet.css()).toContain("@layer components{.card:hover{color:red}}");
-		expect(sheet.css()).toContain("@property --brand-hue{syntax:<number>;inherits:false}");
+		expect(sheet.css()).toContain(
+			"@property --brand-hue{syntax:<number>;inherits:false;initial-value:0}",
+		);
 	});
 
 	test("serializes semantic camelCase declarations as valid CSS properties", () => {

@@ -16,6 +16,16 @@ test("createCss binds ordinary properties and preset token values", () => {
 	).type.toBe<Compiled>();
 });
 
+test("createCss accepts explicit container-query conditions", () => {
+	expect(
+		css({
+			"@container (min-width: 28rem)": {
+				backgroundColor: "$blue-500",
+			},
+		}),
+	).type.toBe<Compiled>();
+});
+
 test("createCss rejects properties and token values outside the preset", () => {
 	expect(
 		css({

@@ -141,6 +141,22 @@ test("diagnoseCssSources reports unsupported constructs and missed extraction", 
 	`);
 });
 
+test("diagnoseCssSources keeps authored @property rules in the explicit CSS lane", () => {
+	const code = `
+		import { css } from "./design";
+		css.property({ name: "--progress", syntax: "<number>" });
+	`;
+	const diagnostics = extract().diagnose(code, "src/progress.tsx", new Set(["css"]));
+
+	expect(diagnostics).toMatchObject([
+		{
+			kind: "unsupported-construct",
+			message: "Authored @property rules are not extracted yet.",
+			suggestion: expect.stringContaining("authored CSS"),
+		},
+	]);
+});
+
 test("diagnoseCssSources reports dynamic React Strict DOM web entries", () => {
 	const code = `
 		import { createCss } from "pandwind/react-strict-dom";

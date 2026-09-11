@@ -366,6 +366,29 @@ describe("example catalog evaluates end to end", () => {
 		});
 	});
 
+	it("renders the runtime @property example and keeps progress dynamic", () => {
+		const example = EXAMPLES.find((candidate) => candidate.path === "/runtime-at-rules");
+		const variant = example?.variants[0];
+		expect(variant).toBeDefined();
+		if (example === undefined || variant === undefined) return;
+
+		const source = applyPreviewControls(variant.files[0]!.code, example.preview.controls, {
+			value: "24",
+		});
+		const result = evalPlayground(makeInput(source));
+		expect(result.ok).toBe(true);
+		if (!result.ok) return;
+
+		expect(result.sheets.some((sheet) => sheet.css.includes("@property --progress"))).toBe(true);
+		expect(result.runtimeStyle).toEqual(expect.objectContaining({ "--progress": "24" }));
+		expect(result.sheets.some((sheet) => sheet.css.includes("var(--progress)"))).toBe(true);
+		expect(result.rendered).toMatchObject({ type: "article" });
+		const strong = result.rendered.children.find(
+			(child) => typeof child === "object" && child !== null && child.type === "strong",
+		);
+		expect(strong).toMatchObject({ type: "strong", children: ["Progress is", 24, "%"] });
+	});
+
 	it("keeps tw compatibility hover classes on the rendered button", () => {
 		const variant = EXAMPLES.find((example) => example.path === "/tw-compat")?.variants[0];
 		expect(variant).toBeDefined();

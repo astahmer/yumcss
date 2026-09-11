@@ -220,6 +220,23 @@ test("css gen prop in unknown at rule", () => {
 	);
 });
 
+test("css gen prop in a container at rule", () => {
+	const sheet = createStylesheet(examplePreset, { debug: false });
+	const css = createCss<typeof examplePreset>({ debug: false });
+	const rules = sheet.process([
+		css.raw({
+			"@container (min-width: 28rem)": {
+				color: "$red-800",
+			},
+		}),
+	]);
+	const rule = rules.values().next().value;
+
+	expect(rule?.css).toContain("@container (min-width: 28rem){");
+	expect(rule?.css).toContain("{color:#822727}");
+	expect(rule?.priority).toBe(3300);
+});
+
 test("css gen prop in unknown at rule in pseudo selector", () => {
 	const sheet = createStylesheet(examplePreset, { debug: false });
 	const css = createCss<typeof examplePreset>({ debug: false });

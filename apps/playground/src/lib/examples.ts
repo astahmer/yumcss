@@ -449,6 +449,104 @@ export default <Card title="Container-aware card" />`,
 		),
 	},
 	{
+		path: "/runtime-at-rules",
+		title: "Runtime at-rules",
+		blurb: "register global CSS rules beside runtime custom-property values",
+		group: "core",
+		note: "@property is global CSS, so register it once on the runtime sheet. The typed css.group() keeps the progress class stable while css.input() carries the changing value.",
+		preview: makePreview(
+			"card",
+			"Registered progress meter",
+			"The bar reads --progress; choose a value to see the runtime custom property change without generating a new class.",
+			undefined,
+			[
+				{
+					type: "select",
+					id: "value",
+					prop: "value",
+					label: "Progress",
+					initialValue: "72",
+					options: [
+						{ label: "24%", value: "24", sourceValue: "24" },
+						{ label: "72%", value: "72", sourceValue: "72" },
+						{ label: "100%", value: "100", sourceValue: "100" },
+					],
+					description:
+						'Changes the css.input("progress") value; @property declares --progress as a non-inherited number with a zero initial value.',
+				},
+			],
+		),
+		variants: oneVariant(
+			PlaygroundApi.Css,
+			`import { createRuntimeCss } from "pandwind/css/runtime";
+import { examplePreset } from "@pandwind/example-preset";
+
+const css = createRuntimeCss(examplePreset);
+
+const meterStyles = css.group({
+	progress: {
+		$input: {} as { progress: number },
+		width: css.input("progress"),
+		height: "100%",
+		backgroundColor: "$blue-500",
+		transition: "width 180ms ease",
+	},
+});
+
+css.sheet.registerSemanticRules([
+	{
+		kind: "property",
+		name: "--progress",
+		declarations: [
+			{ property: "syntax", value: "<number>" },
+			{ property: "inherits", value: false },
+			{ property: "initial-value", value: 0 },
+		],
+	},
+]);
+
+type MeterProps = { value: number };
+
+const Meter = (props: MeterProps) => {
+	const progress = css.props(meterStyles.progress({ progress: props.value }));
+
+	return (
+		<article
+			className={css.class({
+				display: "grid",
+				gap: "8px",
+				padding: "16px",
+				borderRadius: "lg",
+				backgroundColor: "$gray-900",
+				color: "$white",
+			})}
+		>
+			<strong>Progress is {props.value}%</strong>
+			<div
+				className={css.class({
+					height: "12px",
+					borderRadius: "lg",
+					backgroundColor: "$gray-700",
+					overflow: "hidden",
+				})}
+			>
+				<div
+					{...progress}
+					role="progressbar"
+					aria-valuenow={props.value}
+					aria-valuemin={0}
+					aria-valuemax={100}
+				/>
+			</div>
+			<span>--progress is registered globally with @property and supplied through a typed runtime input.</span>
+		</article>
+	);
+};
+
+export default <Meter value={72} />`,
+		),
+	},
+	{
 		path: "/conflicts",
 		title: "Conflicts",
 		blurb: "cx() keeps the last declaration and reports what died",
