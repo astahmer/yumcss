@@ -602,9 +602,9 @@ function prepare(code: string, mode: EvalMode): Prepared {
  * - every literal/resolvable node -> FULL (the vite pass eliminates it),
  * - one dynamic conditional with resolvable branches -> PARTIAL,
  * - anything referencing unknown runtime values -> RUNTIME.
- * Calls to tw/css/cx are transparent (their arguments are what matters).
+ * Calls to the style helpers are transparent (their arguments are what matters).
  */
-const FOLD_CALL_NAMES = new Set(["cx", "tw", "css"]);
+const FOLD_CALL_NAMES = new Set(["cx", "tw", "css", "class", "group", "raw", "vars", "props"]);
 
 function isStaticNode(node: unknown, consts: ConstantScope): boolean {
 	const n = node as { type?: string; name?: string } | null;
@@ -646,10 +646,7 @@ function isStaticNode(node: unknown, consts: ConstantScope): boolean {
 		}
 		case NodeKind.CallExpression: {
 			const call = n as { callee?: { type?: string; name?: string }; arguments?: Array<unknown> };
-			if (
-				call.callee?.type === NodeKind.Identifier &&
-				FOLD_CALL_NAMES.has(call.callee.name ?? "")
-			) {
+			if (FOLD_CALL_NAMES.has(staticCallName(call.callee) ?? "")) {
 				return (call.arguments ?? []).every((arg) => isStaticNode(arg, consts));
 			}
 			return false;
@@ -740,10 +737,7 @@ function classifyFold(
 			}
 			case NodeKind.CallExpression: {
 				const call = n as { callee?: { type?: string; name?: string }; arguments?: Array<unknown> };
-				if (
-					call.callee?.type === NodeKind.Identifier &&
-					FOLD_CALL_NAMES.has(call.callee.name ?? "")
-				) {
+				if (FOLD_CALL_NAMES.has(staticCallName(call.callee) ?? "")) {
 					sawFoldCall = true;
 					for (const arg of call.arguments ?? []) visit(arg);
 					return;
@@ -760,6 +754,47 @@ function classifyFold(
 		return { fold: "partial", note: "dynamic conditional kept — static branches folded" };
 	}
 	return { fold: "runtime", note: "contains values only known at runtime" };
+}
+
+function classifySourceFold(
+	source: string,
+	consts: ConstantScope,
+): { fold: "full" | "partial" | "runtime"; note: string } | undefined {
+	try {
+		const parsed = parseSync("fold-source.tsx", source, { sourceType: "module", lang: "tsx" });
+		const results: Array<{ fold: "full" | "partial" | "runtime"; note: string }> = [];
+		const visit = (node: unknown): void => {
+			if (Array.isArray(node)) {
+				for (const value of node) visit(value);
+				return;
+			}
+			if (node === null || typeof node !== "object") return;
+			const current = node as { type?: string; start?: number; end?: number; callee?: unknown };
+			if (
+				current.type === NodeKind.CallExpression &&
+				FOLD_CALL_NAMES.has(staticCallName(current.callee) ?? "") &&
+				typeof current.start === "number" &&
+				typeof current.end === "number"
+			) {
+				results.push(classifyFold(source.slice(current.start, current.end), consts));
+			}
+			for (const value of Object.values(node as Record<string, unknown>)) visit(value);
+		};
+		visit(parsed.program);
+		if (results.length === 0) return undefined;
+		if (results.some((result) => result.fold === "runtime")) {
+			return {
+				fold: "runtime",
+				note: "a rendered style call contains values only known at runtime",
+			};
+		}
+		if (results.some((result) => result.fold === "partial")) {
+			return { fold: "partial", note: "dynamic conditionals remain; their static branches fold" };
+		}
+		return { fold: "full", note: "rendered style calls are fully eliminated at build time" };
+	} catch {
+		return undefined;
+	}
 }
 
 const STYLE_CALL_NAMES = new Set(["tw", "css", "class", "raw", "vars", "props"]);
@@ -1451,7 +1486,9 @@ function runOnce(input: EvalInput, mode: EvalMode): PlaygroundResult {
 	const survived = splitClasses(finalClass);
 	const uniqueIn = dedupe(inputs);
 	const killed = dedupe(uniqueIn.filter((token) => !survived.includes(token)));
-	const foldInfo = classifyFold(exprText, prepared.consts);
+	const foldInfo =
+		classifySourceFold(prepared.evalCode, prepared.consts) ??
+		classifyFold(exprText, prepared.consts);
 	const sheets = runtimeInstances
 		.filter((instance) => instance.sheetBacked)
 		.map((instance) => {

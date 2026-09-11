@@ -114,8 +114,10 @@ const makePreview = (
 		? { kind, label, description }
 		: { kind, label, description, interaction };
 
-const TW_IMPORT = [
-	'import { tw } from "pandwind";',
+const TW_IMPORT = 'import { tw } from "pandwind";';
+
+const TW_CX_IMPORT = [
+	TW_IMPORT,
 	'import { createCx } from "pandwind/cx";',
 	"",
 	"const cx = createCx();",
@@ -131,7 +133,7 @@ export const EXAMPLES: readonly ExampleDef[] = [
 		preview: makePreview(
 			"button",
 			"Primary action",
-			"The selected API output is applied to this button specimen.",
+			"Compare the generated output for the same primary action in each API lane.",
 		),
 		variants: [
 			{
@@ -167,25 +169,20 @@ export default <Button tone="primary" size="lg" />`,
 				files: oneFile(
 					"Example.tsx",
 					`import { createCss } from "pandwind/css";
-import { createCx } from "pandwind/cx";
 import { examplePreset } from "@pandwind/example-preset";
 
 const css = createCss(examplePreset);
-const cx = createCx({ css });
 
 type ButtonProps = { tone: "primary" | "danger"; size: "sm" | "lg" };
 
 const Button = (props: ButtonProps) => (
 	<button
-		className={cx(
-			css.class({
-				backgroundColor: props.tone === "danger" ? "$red-500" : "$blue-500",
-				color: "$gray-50",
-				borderRadius: "lg",
-				padding: props.size === "lg" ? 16 : 8,
-			}),
-			"px-4",
-		)}
+		className={css.class({
+			backgroundColor: props.tone === "danger" ? "$red-500" : "$blue-500",
+			color: "$gray-50",
+			borderRadius: "lg",
+			padding: props.size === "lg" ? 16 : 8,
+		})}
 	>
 		{props.tone === "danger" ? "Delete" : "Continue"}
 	</button>
@@ -231,7 +228,7 @@ export default <Button tone="primary" size="lg" />`,
 		title: "Dynamic styling",
 		blurb: "runtime values: partial folds, css.vars, and css.props",
 		group: "core",
-		note: "The ternary branches are static strings, so the build folds the static halves and keeps only the runtime choice (partial). The css.vars() / css.props(css.vars()) calls carry dynamic values as inline custom properties instead of inventing classes.",
+		note: "The tone ternary is partially foldable because both branches are known, while the color prop remains runtime. css.vars() / css.props(css.vars()) carry that value as an inline custom property instead of inventing a class.",
 		preview: makePreview(
 			"alert",
 			"Dynamic alert",
@@ -246,7 +243,7 @@ export default <Button tone="primary" size="lg" />`,
 		),
 		variants: oneVariant(
 			PlaygroundApi.Tw,
-			TW_IMPORT +
+			TW_CX_IMPORT +
 				`
 
 import { createCss } from "pandwind/css";
@@ -288,7 +285,7 @@ export default <Alert tone="danger" color="#fef08a" />`,
 		preview: makePreview(
 			"card",
 			"Responsive surface",
-			"The surface changes from red to amber, blue, and violet as the viewport crosses sm, md, and lg.",
+			"Resize the viewport to watch the surface switch from red to amber, blue, then violet.",
 		),
 		variants: oneVariant(
 			PlaygroundApi.Tw,
@@ -298,24 +295,24 @@ export default <Alert tone="danger" color="#fef08a" />`,
 type CardProps = { title: string };
 
 const Card = (props: CardProps) => (
-					<article
-						className={tw({
-							display: "grid",
-							gap: "2",
-							p: "4",
-							border: "2",
-							borderColor: "red-300",
-							borderRadius: "lg",
-							bgColor: "red-500",
-							textColor: "white",
-							sm: { bgColor: "amber-500", borderColor: "amber-300" },
-							md: { bgColor: "blue-500", borderColor: "blue-300" },
-							lg: { bgColor: "violet-500", borderColor: "violet-300" },
-						})}
-					>
-						<strong>{props.title}</strong>
-						<div>Viewport width selects the active background token.</div>
-					</article>
+	<article
+		className={tw({
+			display: "grid",
+			gap: "2",
+			p: "4",
+			border: "2",
+			borderColor: "red-300",
+			borderRadius: "lg",
+			bgColor: "red-500",
+			textColor: "white",
+			sm: { bgColor: "amber-500", borderColor: "amber-300" },
+			md: { bgColor: "blue-500", borderColor: "blue-300" },
+			lg: { bgColor: "violet-500", borderColor: "violet-300" },
+		})}
+	>
+		<strong>{props.title}</strong>
+		<div>Viewport width selects the active background token.</div>
+	</article>
 );
 
 export default <Card title="Responsive surface" />`,
@@ -395,7 +392,7 @@ export default <Card title="Container-aware card" />`,
 		),
 		variants: oneVariant(
 			PlaygroundApi.Tw,
-			TW_IMPORT +
+			TW_CX_IMPORT +
 				`
 
 type ActionProps = { tone: "primary" | "muted" };
@@ -443,18 +440,20 @@ const css = createCss(tokenPreset);
 const TokenCard = () => (
 	<article
 		className={css.class({
-							backgroundColor: componentTokens.card.bg,
-							color: componentTokens.card.fg,
-							padding: componentTokens.card.padding,
-							borderRadius: componentTokens.card.radius,
-							_hover: {
-								backgroundColor: componentTokens.card.hoverBg,
-								color: componentTokens.card.hoverFg,
-							},
+			backgroundColor: componentTokens.card.bg,
+			color: componentTokens.card.fg,
+			padding: componentTokens.card.padding,
+			borderRadius: componentTokens.card.radius,
+			_hover: {
+				backgroundColor: componentTokens.card.hoverBg,
+				color: componentTokens.card.hoverFg,
+			},
 		})}
 	>
 		<strong>Named token binding</strong>
-		<div>componentTokens.card.bg and componentTokens.card.fg bind this component to theme-aware semantic roles.</div>
+		<div>
+			componentTokens.card.bg and componentTokens.card.fg bind this component to theme-aware semantic roles.
+		</div>
 	</article>
 );
 
@@ -534,13 +533,13 @@ export const tokenPreset = definePreset(
 	{
 		path: "/component-tokens",
 		title: "Component token contracts",
-		blurb: "string refs bind components to semantic roles",
+		blurb: "raw values → semantic roles → string component contracts",
 		group: "core",
-		note: "This is the design-system pattern: component.* refs stay as strings in the component, while tokens.ts maps them to semantic tokens. Themes can change those semantic values without changing JSX, props, or component code.",
+		note: "This is the design-system pattern: raw values feed semantic roles, then component.* refs form a third layer above them. The refs stay as strings in the component, so themes can change semantic values without changing JSX, props, or component code.",
 		preview: makePreview(
 			"card",
 			"Component contract",
-			"component.state.emptyBg resolves through semantic bg.muted; switching themes changes that semantic value without changing the component.",
+			"The component stays unchanged while its component.* refs follow semantic theme values.",
 		),
 		variants: [
 			{
@@ -572,7 +571,9 @@ const EmptyState = () => (
 		})}
 	>
 		<strong>String-based component contract</strong>
-		<div>emptyBg resolves to semantic.bg.muted; errorText resolves to semantic.fg.error. Toggle the theme or hover to rebind the contract.</div>
+		<div>
+			emptyBg resolves to semantic.bg.muted; errorText resolves to semantic.fg.error. Toggle the theme or hover to rebind the contract.
+		</div>
 	</article>
 );
 
@@ -663,11 +664,11 @@ export const tokenPreset = definePreset(
 		title: "Design presets",
 		blurb: "define your own theme, tokens, and conditions",
 		group: "core",
-		note: "A brand preset is data: defineTokens + definePreset. The native css() lane emits hashed atoms from the preset; choose the Tailwind adapter to lower the same declarations through the generated bridge.",
+		note: "The preset owns both brand colors and the _hover condition. createDesignCss(brand) turns the $frame declarations into hashed classes; hover the button to see the preset's second color take effect.",
 		preview: makePreview(
 			"button",
 			"Brand action",
-			"This button uses the custom brand preset and its generated condition.",
+			"Base uses brand-500; hover uses brand-600 from the preset's _hover condition.",
 		),
 		variants: [
 			{
@@ -693,7 +694,7 @@ const Button = (props: ButtonProps) => (
 	<button
 		className={dcss.class({
 			$frame: { fill: "$brand-500", corners: "lg", pad: [4, 4] },
-			_hover: { $frame: { fill: "$brand-500" } },
+			_hover: { $frame: { fill: "$brand-600" } },
 		})}
 		aria-pressed={props.active}
 	>
@@ -708,7 +709,7 @@ export default <Button active />`,
 						code: `import { defineTokens } from "pandwind/preset";
 
 export const brandTokens = defineTokens({
-	colors: { "$brand-500": "#4c51bf" },
+	colors: { "$brand-500": "#4c51bf", "$brand-600": "#3730a3" },
 });`,
 					},
 				],
@@ -724,7 +725,7 @@ export const brandTokens = defineTokens({
 		preview: makePreview(
 			"button",
 			"Variant button",
-			"The selected size and tone are composed from separately generated classes.",
+			"This render selects size=lg and tone=brand, then cx() merges those generated classes.",
 		),
 		variants: oneVariant(
 			PlaygroundApi.Css,
@@ -771,7 +772,7 @@ export default <Button size="lg" tone="brand" />`,
 		preview: makePreview(
 			"card",
 			"Grouped card",
-			"The group result supplies both the static card styles and its runtime input.",
+			'Select a tone to update css.input("tone") on the banner without changing its class.',
 			{
 				type: "select",
 				label: "Runtime tone",
@@ -806,10 +807,10 @@ type CardProps = { tone: "blue" | "red" };
 const Card = (props: CardProps) => {
 	const hostProps = css.props(styles.card, styles.muted, styles.banner({ tone: props.tone }));
 	return (
-			<article {...hostProps}>
-				<strong>Grouped card</strong>
-				<div>runtime input</div>
-			</article>
+		<article {...hostProps}>
+			<strong>Grouped card</strong>
+			<div>runtime input</div>
+		</article>
 	);
 };
 
@@ -821,7 +822,7 @@ export default <Card tone="blue" />`,
 		title: "Static folding",
 		blurb: "what the vite pass eliminates before your app ships",
 		group: "core",
-		note: "Module constants, template literals, and static ternary branches all fold at build time; values only known at runtime survive as runtime folds. The panel reports which of the three happened.",
+		note: "The className is assembled from module constants, a template literal, and a static ternary. The build can precompute those calls before the component ships; the fold panel shows the result.",
 		preview: makePreview(
 			"text",
 			"Folded label",
@@ -830,20 +831,16 @@ export default <Card tone="blue" />`,
 		variants: oneVariant(
 			PlaygroundApi.Tw,
 			"Example.tsx",
-			TW_IMPORT +
+			TW_CX_IMPORT +
 				`
 
 const SIZE = "4" as const;
+const LABEL = \`Folded label (size \${SIZE})\`;
+const className = cx(tw({ p: SIZE === "4" ? "4" : "2" }), tw({ textSize: "lg" }));
 
-type LabelProps = { size: "2" | "4" };
+const Label = () => <span className={className}>{LABEL}</span>;
 
-const Label = (props: LabelProps) => (
-	<span className={cx(tw({ p: props.size }), tw({ textSize: "lg" }))}>
-		Folded label
-	</span>
-);
-
-export default <Label size={SIZE} />`,
+export default <Label />`,
 		),
 	},
 	{
@@ -851,11 +848,11 @@ export default <Label size={SIZE} />`,
 		title: "tw() compat",
 		blurb: "Tailwind-style nested variants: sm: and group-hover:",
 		group: "core",
-		note: "tw() understands Tailwind's compositional prefixes — responsive sm: and group-hover: join through the generated variant metadata and remain visible in the preview stylesheet.",
+		note: "tw() keeps Tailwind-style prefixes in the generated class: resize the viewport to activate sm:p-4, then hover the button to activate group-hover:text-red-500.",
 		preview: makePreview(
 			"button",
 			"Compatibility action",
-			"Responsive and group variants stay attached to the same live specimen.",
+			"Resize for larger padding; hover the group to turn the button text red.",
 		),
 		variants: oneVariant(
 			PlaygroundApi.Tw,

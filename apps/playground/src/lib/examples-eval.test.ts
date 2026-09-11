@@ -56,6 +56,9 @@ describe("example catalog evaluates end to end", () => {
 		expect(EXAMPLES.map((example) => example.path)).not.toContain("/basics-tw");
 		expect(EXAMPLES.map((example) => example.path)).not.toContain("/basics-css");
 		expect(EXAMPLES.map((example) => example.path)).not.toContain("/basics-dss");
+		const cssVariant = basics?.variants.find((variant) => variant.api === PlaygroundApi.Css);
+		expect(cssVariant?.files[0]?.code).not.toContain("createCx");
+		expect(cssVariant?.files[0]?.code).not.toContain('"px-4"');
 	});
 
 	it("every entry tab produces a playground result", () => {
@@ -97,6 +100,37 @@ describe("example catalog evaluates end to end", () => {
 		expect(result.sheets.some((sheet) => sheet.rules.length > 0)).toBe(true);
 		expect(result.programs).not.toHaveLength(0);
 		expect(result.programs.every((program) => program.residuals.length === 0)).toBe(true);
+	});
+
+	it("makes the static-folding example actually fold its component styles", () => {
+		const variant = EXAMPLES.find((example) => example.path === "/folding")?.variants[0];
+		expect(variant).toBeDefined();
+		if (variant === undefined) return;
+
+		const result = evalPlayground(makeInput(variant.files[0]!.code));
+		expect(result.ok).toBe(true);
+		if (!result.ok) return;
+
+		expect(result.fold).toBe("full");
+		expect(result.foldNote).toContain("rendered style calls");
+		expect(result.output).toContain("p-4");
+		expect(result.output).toContain("text-lg");
+		expect(result.rendered).toMatchObject({ type: "span", children: ["Folded label (size 4)"] });
+	});
+
+	it("makes the design preset condition visually distinct", () => {
+		const variant = EXAMPLES.find((example) => example.path === "/design-preset")?.variants[0];
+		expect(variant).toBeDefined();
+		if (variant === undefined) return;
+
+		const result = evalPlayground(makeInput(variant.files[0]!.code, siblingBindings(variant)));
+		expect(result.ok).toBe(true);
+		if (!result.ok) return;
+
+		expect(variant.files[0]!.code).toContain("$brand-600");
+		expect(result.sheets.some((sheet) => sheet.css.includes("#4c51bf"))).toBe(true);
+		expect(result.sheets.some((sheet) => sheet.css.includes("#3730a3"))).toBe(true);
+		expect(result.sheets.some((sheet) => sheet.css.includes(":hover"))).toBe(true);
 	});
 
 	it("keeps named token bindings separate from string component refs", () => {
@@ -150,6 +184,10 @@ describe("example catalog evaluates end to end", () => {
 		expect(source).toContain('borderWidth: "component.card.borderWidth"');
 		expect(source).toContain('boxShadow: "component.card.shadow"');
 		expect(source).not.toContain("componentTokens");
+		const tokenSource = variant.files[1]?.code ?? "";
+		expect(tokenSource).toContain("const rawTokens = defineTokens");
+		expect(tokenSource).toContain("const semanticTokens = defineSemanticTokens");
+		expect(tokenSource).toContain('"component.card.borderWidth": "semantic.border.width.default"');
 		expect(result.styleMappings.map((mapping) => mapping.value)).toEqual(
 			expect.arrayContaining([
 				"component.card.borderWidth",
