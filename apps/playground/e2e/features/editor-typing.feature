@@ -6,6 +6,7 @@ Feature: Playground editor typings
     Given I open the playground route "<route>"
     Then the page heading is "<heading>"
     And the editor has no TypeScript error markers
+    And the editor has syntax highlighting
 
     Examples:
       | route              | heading                    |

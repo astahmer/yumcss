@@ -32,6 +32,12 @@ Then("the editor has no TypeScript error markers", async ({ page }) => {
 	await expect(page.locator(".monaco-editor .squiggly-error")).toHaveCount(0);
 });
 
+Then("the editor has syntax highlighting", async ({ page }) => {
+	await expect(
+		page.locator('.monaco-editor .view-line span[class^="mtk"]:not(.mtk1)').first(),
+	).toBeVisible();
+});
+
 Then("the {string} selector has value {string}", async ({ page }, label: string, value: string) => {
 	await expect(page.getByRole("combobox", { name: label })).toHaveValue(value);
 });

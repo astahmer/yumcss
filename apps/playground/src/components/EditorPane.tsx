@@ -151,6 +151,8 @@ export function EditorPane(props: {
 }) {
 	const { mode } = useTheme();
 	const filePath = props.filePath ?? "file:///pandwind/playground/Example.tsx";
+	// Monaco's TSX tokenizer currently falls back to default tokens; the .tsx URI still drives TSX diagnostics.
+	const language = "typescript";
 	return (
 		<Pane
 			label="Editor"
@@ -185,7 +187,7 @@ export function EditorPane(props: {
 					key={filePath}
 					loading={<EditorBooting />}
 					height="100%"
-					defaultLanguage={filePath.endsWith(".tsx") ? "typescriptreact" : "typescript"}
+					language={language}
 					theme={mode === "light" ? "pandwind-light" : "pandwind"}
 					path={filePath}
 					beforeMount={(monaco) => {
