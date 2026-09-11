@@ -83,6 +83,95 @@ test("definePreset JSDoc example preserves a custom typed vocabulary", () => {
 	expect(css.class({ backgroundColor: "$brand-500", padding: 4 })).type.toBe<string>();
 });
 
+test("preset docs cover strict, inherited, and open property bindings", () => {
+	const tokens = defineTokens({
+		colors: { "$brand-500": "#2563eb" },
+		spacing: { 4: "1rem" },
+	});
+	const config = {} as Pick<StandardProperties, "color" | "padding">;
+
+	const strictPreset = definePreset(defineTheme({ config, tokens }), {
+		strict: true,
+		conditions: {},
+		properties: {
+			$all: true,
+			color: { $tokens: "colors" },
+			padding: { $tokens: "spacing" },
+		},
+	});
+	const strictCss = createCss(strictPreset);
+	expect(strictPreset.strict).type.toBe<true>();
+	expect(strictPreset.properties.color).type.toBe<{ $tokens: "colors" }>();
+	expect(strictPreset.tokens.colors).type.toBe<{ "$brand-500": string }>();
+	expect(strictCss.class({ color: "$brand-500", padding: 4 })).type.toBe<string>();
+	expect(
+		strictCss.class({
+			// @ts-expect-error not assignable
+			color: "$not-a-token",
+		}),
+	).type.toBe<string>();
+
+	const inheritedPreset = definePreset(defineTheme({ config, tokens }), {
+		strict: true,
+		conditions: {},
+		properties: {
+			$all: true,
+			color: { $tokens: "colors", $strictness: "inherits" },
+			padding: { $tokens: "spacing" },
+		},
+	});
+	const inheritedCss = createCss(inheritedPreset);
+	expect(
+		inheritedCss.class({
+			color: "var(--brand)",
+			padding: 4,
+		}),
+	).type.toBe<string>();
+
+	const openPreset = definePreset(defineTheme({ config, tokens }), {
+		strict: false,
+		conditions: {},
+		properties: {
+			$all: true,
+			color: { $tokens: "colors" },
+			padding: { $tokens: "spacing" },
+		},
+	});
+	const openCss = createCss(openPreset);
+	expect(openCss.class({ color: "var(--brand)", padding: 4 })).type.toBe<string>();
+});
+
+test("preset docs keep semantic and component token refs as strings", () => {
+	const rawTokens = defineTokens({
+		colors: { $surface: "#ffffff" },
+		spacing: { 4: "1rem" },
+	});
+	const conditions = defineConditions({ base: "", _dark: ".dark &" });
+	const semanticTokens = defineSemanticTokens(conditions, {
+		semantic: {
+			"bg.surface": { base: rawTokens.colors["$surface"], _dark: "#111827" },
+		},
+	});
+	const tokens = {
+		...rawTokens,
+		semantic: semanticTokens.semantic,
+		component: {
+			"component.card.background": "semantic.bg.surface",
+		},
+	};
+	const preset = definePreset(defineTheme({ config: {} as StandardProperties, tokens }), {
+		strict: true,
+		conditions,
+		properties: {
+			backgroundColor: { $tokens: "component" },
+		},
+	});
+
+	expect(
+		createCss(preset).class({ backgroundColor: "component.card.background" }),
+	).type.toBe<string>();
+});
+
 test("createDesignCss JSDoc example uses the design modules", () => {
 	const dcss = createDesignCss(examplePreset);
 

@@ -17,15 +17,35 @@ merging, variant conditions and a `$input` escape hatch for dynamic values.
 `createCss()` remains available as an intentionally loose convenience form.
 
 ```ts
+import type { StandardProperties } from "csstype";
 import { createCss } from "pandwind/css";
-import { definePreset, defineTokens } from "pandwind/preset";
+import {
+	definePreset,
+	defineProperties,
+	defineTheme,
+	defineTokens,
+} from "pandwind/preset";
 
-const css = createCss(
-	definePreset(
-		{ config: {} as StandardProperties, tokens: defineTokens({}) },
-		{ strict: true, conditions: { base: "" }, properties: { $all: true } },
-	),
+const tokens = defineTokens({
+	colors: { "$brand-500": "#2563eb" },
+	spacing: { 4: "1rem" },
+});
+
+const preset = definePreset(
+	defineTheme({ config: {} as StandardProperties, tokens }),
+	{
+		strict: true,
+		conditions: { _hover: "&:hover" },
+		properties: defineProperties({
+			$all: true,
+			backgroundColor: { $tokens: "colors" },
+			padding: { $tokens: "spacing" },
+		}),
+	},
 );
+
+const css = createCss(preset);
+const className = css.class({ backgroundColor: "$brand-500", padding: 4 });
 ```
 
 This lane is for ordinary CSS properties with a small production path:

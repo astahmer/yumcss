@@ -58,7 +58,7 @@ const rawTokens = defineTokens({
 });
 
 const semanticTokens = defineSemanticTokens(
-	{ _dark: '[data-theme="dark"] &' },
+	{ base: "", _dark: '[data-theme="dark"] &' },
 	{
 		semantic: {
 			"bg.muted": { base: rawTokens.colors["$gray-200"], _dark: rawTokens.colors["$gray-700"] },
@@ -123,7 +123,7 @@ const css = createCss(preset);
 
 const EmptyState = ({ title }: { title: string }) => (
 	<section
-	className={css.class({
+		className={css.class({
 			borderStyle: "solid",
 			borderWidth: "component.card.borderWidth",
 			borderColor: "component.card.border",

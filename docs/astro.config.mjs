@@ -60,6 +60,10 @@ export default defineConfig({
 							items: ["api/design-css"],
 						},
 						{
+							label: "Preset contracts — definePreset()",
+							items: ["api/presets"],
+						},
+						{
 							label: "Shared tools — cx() and themes",
 							items: ["api/cx", "api/theming"],
 						},

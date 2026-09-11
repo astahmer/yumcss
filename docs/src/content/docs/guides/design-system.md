@@ -74,12 +74,19 @@ underlying hex or pixel value in component code.
 ```ts
 // src/design-system/preset.ts
 import type { StandardProperties } from "csstype";
-import { definePreset, defineTheme } from "pandwind/preset";
+import { definePreset, defineProperties, defineTheme } from "pandwind/preset";
 import { tokens } from "./tokens";
 
 const theme = defineTheme({
 	config: {} as StandardProperties,
 	tokens,
+});
+
+const properties = defineProperties({
+	$all: true,
+	backgroundColor: { $tokens: "colors", $strictness: "inherits" },
+	color: { $tokens: "colors", $strictness: "inherits" },
+	padding: { $tokens: "spacing", $strictness: "inherits" },
 });
 
 export const preset = definePreset(theme, {
@@ -90,14 +97,15 @@ export const preset = definePreset(theme, {
 		_dark: ".dark &",
 		sm: "@media (min-width: 640px)",
 	},
-	properties: { $all: true },
+	properties,
 });
 ```
 
-`strict: true` makes the typed surface reject unknown values. `$all: true` is
-a useful starting point for a general CSS preset; a mature system can narrow
-the property map and expose only approved aliases. Keep arbitrary values in
-an explicit `$raw`/escape lane so they are visible to review and analysis.
+`strict: true` makes mapped properties use their token vocabulary. `$all: true`
+adds the remaining CSS property names, but it does not bind every token group
+to every property. Bind the properties that should accept tokens explicitly;
+the [preset typing guide](/api/presets/) explains the strictness matrix and
+the raw-value escape options.
 
 ## 4. Generate the Tailwind bridge
 
@@ -125,9 +133,16 @@ Put light/dark behavior in conditions and semantic tokens rather than
 duplicating component styles:
 
 ```ts
+import { defineSemanticTokens } from "pandwind/preset";
+
+const semanticConditions = {
+	base: "",
+	_dark: ".dark &",
+	_highContrast: "@media (prefers-contrast: more)",
+};
 
 const semanticTokens = defineSemanticTokens(
-	{ _dark: ".dark &" },
+	semanticConditions,
 	{
 		semantic: {
 			"bg.muted": { base: tokens.colors.$canvas, _dark: tokens.colors.$ink },
@@ -150,13 +165,10 @@ export const preset = definePreset(
 		tokens: { ...tokens, semantic: semanticTokens.semantic },
 	}),
 	{
-	strict: true,
-	conditions: {
-		_dark: ".dark &",
-		_highContrast: "@media (prefers-contrast: more)",
+		strict: true,
+		conditions: semanticConditions,
+		properties,
 	},
-	properties: { $all: true },
-},
 );
 ```
 
@@ -189,11 +201,11 @@ const themedTokens = {
 	},
 };
 
-export const preset = definePreset(
+export const componentPreset = definePreset(
 	defineTheme({ config: {} as StandardProperties, tokens: themedTokens }),
 	{
 		strict: true,
-		conditions: { _dark: '[data-theme="dark"] &' },
+		conditions: { base: "", _dark: '[data-theme="dark"] &' },
 		properties: {
 			borderWidth: { $tokens: "component" },
 			borderColor: { $tokens: "component" },
@@ -210,9 +222,9 @@ export const preset = definePreset(
 ```tsx
 // src/components/EmptyState.tsx
 import { createCss } from "pandwind/css";
-import { preset } from "./preset";
+import { componentPreset } from "./preset";
 
-const css = createCss(preset);
+const css = createCss(componentPreset);
 
 export const EmptyState = ({ title }: { title: string }) => (
 	<section

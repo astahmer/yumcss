@@ -18,7 +18,21 @@ export * from "./typings.ts";
  * but naming this boundary makes the relationship between tokens and the
  * final preset explicit in application code.
  *
- * @example Defining the value side of a preset
+ * **When to use**
+ *
+ * Use this when a design-system package is defining tokens before it chooses
+ * the conditions and property bindings that make those tokens available to a
+ * CSS factory.
+ *
+ * **Details**
+ *
+ * `config` is a compile-time type witness. The common `{} as
+ * StandardProperties` form does not populate a runtime object; it tells
+ * TypeScript which CSS properties and raw values the eventual preset may
+ * expose.
+ *
+ * **Example** (Defining the value side of a preset)
+ *
  * ```ts
  * import type { StandardProperties } from "csstype";
  * import { defineTheme, defineTokens } from "pandwind/preset";
@@ -52,7 +66,23 @@ export const defineTheme = <TTheme extends DefinePresetOptions>(theme: TTheme) =
  * open-ended escape hatch for raw CSS values, but it cannot know your token
  * vocabulary.
  *
- * @example A small, typed CSS preset
+ * **When to use**
+ *
+ * Use this once per design-system vocabulary, then pass the same preset to
+ * every CSS factory and build-time stylesheet entry point that consumes it.
+ *
+ * **Details**
+ *
+ * `properties: true` uses the corresponding value type from `config`. A
+ * property map with `$tokens` binds that property to a named token group.
+ * `$all: true` adds all configured property names, but does not bind token
+ * groups automatically. With `strict: true`, mapped properties accept their
+ * token names; `strict: false` also admits their raw config values. Add
+ * `$strictness: "inherits"` to one mapped property when a strict preset needs
+ * both token names and that property's raw config values.
+ *
+ * **Example** (A small, typed CSS preset)
+ *
  * ```ts
  * import type { StandardProperties } from "csstype";
  * import { createCss } from "pandwind/css";
@@ -69,9 +99,9 @@ export const defineTheme = <TTheme extends DefinePresetOptions>(theme: TTheme) =
  *     strict: true,
  *     conditions: { _hover: "&:hover" },
  *     properties: {
- *       backgroundColor: tokens.colors,
- *       color: tokens.colors,
- *       padding: tokens.spacing,
+ *       $all: true,
+ *       backgroundColor: { $tokens: "colors", $strictness: "inherits" },
+ *       padding: { $tokens: "spacing" },
  *     },
  *   },
  * );
@@ -118,7 +148,14 @@ export function definePreset<
  * useful for a component tier: `component.card.bg` can point to
  * `semantic.bg.primary`, while themes rebind only the semantic token.
  *
- * @example Raw tokens used by a preset
+ * **When to use**
+ *
+ * Use this for the raw values and string references that form the base token
+ * graph. Keep semantic and component roles in separate groups so components
+ * can reference stable roles instead of raw colors or spacing values.
+ *
+ * **Example** (Raw and component token references)
+ *
  * ```ts
  * import { defineTokens } from "pandwind/preset";
  *
@@ -148,14 +185,21 @@ export const defineTokens = <T extends AnySimpleTokens>(tokens: T) => tokens;
  * argument; unlike a raw token, the value is intentionally not flattened
  * into one static string.
  *
- * @example A semantic color with a dark-mode value
+ * **When to use**
+ *
+ * Use this for semantic roles whose value changes with a theme scope, media
+ * query, or another preset condition. Components keep the same token path;
+ * the active condition changes the emitted variable value.
+ *
+ * **Example** (A semantic color with a dark-mode value)
+ *
  * ```ts
  * import { defineSemanticTokens } from "pandwind/preset";
  *
- * const conditions = { _dark: ".dark &" };
+ * const conditions = { base: "", _dark: ".dark &" };
  * const semanticTokens = defineSemanticTokens(conditions, {
  *   colors: {
- *     surface: { _dark: "#111827" },
+ *     surface: { base: "#ffffff", _dark: "#111827" },
  *   },
  * });
  * ```
@@ -183,7 +227,8 @@ export const defineSemanticTokens = <
  * nested keys accepted by `css`, while their values control the generated
  * stylesheet.
  *
- * @example
+ * **Example** (Declaring reusable conditions)
+ *
  * ```ts
  * import { defineConditions } from "pandwind/preset";
  *
@@ -206,15 +251,22 @@ export const defineConditions = <T extends AnyConditions>(cond: T) => cond;
  *
  * `true` leaves a property open to the CSS config. A token map makes the
  * property's accepted values come from that map, which is what enables
- * strict token references in `createCss(preset)`.
+ * strict token references in `createCss(preset)`. Use `$tokens` when the
+ * property should refer to a token group without copying the group's values
+ * into the property declaration. Use `$strictness: "inherits"` to add the
+ * raw config values back to one mapped property in an otherwise strict
+ * preset. `$all: true` adds configured property names but does not create
+ * token bindings.
  *
- * @example
+ * **Example** (Binding selected properties to token groups)
+ *
  * ```ts
  * import { defineProperties } from "pandwind/preset";
  *
  * const properties = defineProperties({
- *   backgroundColor: { "$brand-500": "#2563eb" },
- *   padding: true,
+ *   $all: true,
+ *   backgroundColor: { $tokens: "colors", $strictness: "inherits" },
+ *   padding: { $tokens: "spacing" },
  * });
  * ```
  *

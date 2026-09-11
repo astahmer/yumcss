@@ -10,7 +10,8 @@ export type StyleValue = string | number | null | StyleObject | readonly StyleVa
  * {@link TypedStyleObject}; use this type when a style is intentionally
  * assembled at runtime or comes from another styling system.
  *
- * @example A runtime style object
+ * **Example** (A runtime style object)
+ *
  * ```ts
  * import type { StyleObject } from "pandwind/types/typings";
  *
@@ -97,8 +98,16 @@ type PropConfigValues<
  * Maps CSS properties to their allowed values or token maps in a preset.
  *
  * A property can be `true` when the CSS config should supply its values, or a
- * record when strict mode should expose a named token vocabulary for it.
- * `$all: true` opts into the complete configured CSS property set.
+ * record when it should expose a named token vocabulary. `$tokens` points at a
+ * token group in the theme without duplicating that group's values. A literal
+ * record such as `{ "$brand-500": "#2563eb" }` is also a valid per-property
+ * token map.
+ *
+ * `$all: true` opts into the complete configured CSS property set. It adds
+ * property names only; it does not make every token group valid for every
+ * property. In a strict preset, mapped properties accept token names unless
+ * `$strictness: "inherits"` is present. An inherited property accepts both
+ * its token names and the raw value from `TConfig`.
  *
  * @typeParam TConfig - The CSS property configuration.
  * @typeParam TTokens - The token groups available to the preset.
@@ -175,8 +184,11 @@ export interface CssPreset<
 	TConditions extends AnyConditions = AnyConditions,
 	TProps extends AnyPresetProperties<TConfig, TTokens> = AnyPresetProperties<TConfig, TTokens>,
 > {
+	/** Condition names mapped to selectors or at-rules. */
 	conditions: TConditions;
+	/** CSS properties and the token groups allowed for each property. */
 	properties: TProps;
+	/** Whether mapped properties default to token-only values. */
 	strict: boolean;
 }
 
@@ -201,20 +213,25 @@ export interface CssConfigReturn<
  * `css({ ... })` typings
  * -----------------------------------------------------------------------------*/
 
+type AuthoredValueName = string | number;
+
+type ExplicitTokenNames<Value> = Extract<
+	Exclude<keyof Value, "$strictness" | "$tokens">,
+	AuthoredValueName
+>;
+
 type InferPropValues<TTokens, Value> = Value extends {
 	$tokens: infer TTokenName;
 }
 	? TTokenName extends keyof TTokens
-		? keyof TTokens[TTokenName] | Exclude<keyof Value, "$strictness" | "$tokens">
-		: Exclude<keyof Value, "$strictness" | "$tokens">
-	: Exclude<keyof Value, "$strictness" | "$tokens">;
+		? Extract<keyof TTokens[TTokenName], AuthoredValueName> | ExplicitTokenNames<Value>
+		: ExplicitTokenNames<Value>
+	: ExplicitTokenNames<Value>;
 
 type StrictValue<TConfig, TTokens, TName extends keyof TConfig, Value> = Value extends {
-	$strictness: infer TStrictness;
+	$strictness: "inherits";
 }
-	? TStrictness extends "inherits"
-		? MaybeColorOpacity<TName, InferPropValues<TTokens, Value>> | TConfig[TName]
-		: MaybeColorOpacity<TName, InferPropValues<TTokens, Value>>
+	? MaybeColorOpacity<TName, InferPropValues<TTokens, Value>> | TConfig[TName]
 	: MaybeColorOpacity<TName, InferPropValues<TTokens, Value>>;
 
 type PropValue<TConfig, TTokens, TName extends keyof TConfig, Value, Strict> =
@@ -225,11 +242,9 @@ type PropValue<TConfig, TTokens, TName extends keyof TConfig, Value, Strict> =
 				: InferPropValues<TTokens, Value> | TConfig[TName])
 	| null;
 
-type ConditionalValue<V, TConds extends string> =
-	| V
-	| {
-			[K in TConds]?: ConditionalValue<V, TConds>;
-	  };
+type ConditionalValue<V, TConds extends string> = [TConds] extends [never]
+	? V
+	: V | { [K in TConds]?: ConditionalValue<V, TConds> };
 
 type Nested<TStyle, TConds extends string> = TStyle & {
 	[K in AnySelector]?: Nested<TStyle, TConds>;
@@ -256,7 +271,8 @@ declare const ErrorSymbol: unique symbol;
  * can be nested to any depth, and selector keys such as `&` remain available
  * through the shared style-object surface.
  *
- * @example Token and condition checking follows the preset
+ * **Example** (Token and condition checking follows the preset)
+ *
  * ```ts
  * import { createCss } from "pandwind/css";
  * import { examplePreset } from "@pandwind/example-preset";

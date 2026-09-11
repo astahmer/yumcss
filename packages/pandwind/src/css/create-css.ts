@@ -60,7 +60,8 @@ const ALL_RUNTIME_METHODS = [
  * overload is reserved for generated runtimes that already own this metadata;
  * application code should pass the preset value explicitly.
  *
- * @example Raw values with the open-ended form
+ * **Example** (Raw values with the open-ended form)
+ *
  * ```ts
  * import { createCss } from "pandwind/css";
  *
@@ -71,7 +72,8 @@ const ALL_RUNTIME_METHODS = [
  * });
  * ```
  *
- * @example Preset tokens and conditions
+ * **Example** (Preset tokens and conditions)
+ *
  * ```ts
  * import { createCss } from "pandwind/css";
  * import { examplePreset } from "@pandwind/example-preset";
@@ -149,7 +151,8 @@ export interface CssFn<TStyles extends StyleObject = StyleObject> {
 	 * Compile style objects to the atomic declaration map consumed by the CSS
 	 * engine. Use `.class` when the host only needs a class string.
 	 *
-	 * @example
+	 * **Example** (Getting declaration classes)
+	 *
 	 * ```ts
 	 * import { createCss } from "pandwind/css";
 	 *
@@ -163,7 +166,8 @@ export interface CssFn<TStyles extends StyleObject = StyleObject> {
 	 * Compile style objects and return their atom classes as one class string.
 	 * Later style objects win when they declare the same property.
 	 *
-	 * @example
+	 * **Example** (Merging styles into one class string)
+	 *
 	 * ```ts
 	 * import { createCss } from "pandwind/css";
 	 *
@@ -182,7 +186,8 @@ export interface CssFn<TStyles extends StyleObject = StyleObject> {
 	 * The returned carrier is consumed by `.props` or `cx.vars`; it is not a
 	 * replacement for `.class` when all values are static.
 	 *
-	 * @example Runtime value carried through a host style
+	 * **Example** (Carrying a runtime value through host props)
+	 *
 	 * ```ts
 	 * import { createCss } from "pandwind/css";
 	 *
@@ -201,7 +206,8 @@ export interface CssFn<TStyles extends StyleObject = StyleObject> {
 	 * This is the escape hatch for stylesheet consumers, adapter bridges, and
 	 * code that needs the resolved style object before class generation.
 	 *
-	 * @example
+	 * **Example** (Returning an uncompiled style object)
+	 *
 	 * ```ts
 	 * import { createCss } from "pandwind/css";
 	 *
@@ -218,7 +224,8 @@ export interface CssFn<TStyles extends StyleObject = StyleObject> {
 	 * The result is shaped for spreading onto a host element. Static inputs are
 	 * represented by `className`; dynamic carriers also provide `style`.
 	 *
-	 * @example
+	 * **Example** (Spreading compiled styles onto an element)
+	 *
 	 * ```ts
 	 * import { createCss } from "pandwind/css";
 	 *
@@ -236,7 +243,8 @@ export interface CssFn<TStyles extends StyleObject = StyleObject> {
 	 * arguments and returns a variable carrier, while an entry containing
 	 * `css.input(name)` is evaluated against a runtime input object.
 	 *
-	 * @example Reusable static and parameterized styles
+	 * **Example** (Reusable static and parameterized styles)
+	 *
 	 * ```ts
 	 * import { createCss } from "pandwind/css";
 	 *
@@ -274,7 +282,8 @@ export interface CssFn<TStyles extends StyleObject = StyleObject> {
 	 * its structural class stable while carrying the supplied value through a
 	 * custom property.
 	 *
-	 * @example
+	 * **Example** (Declaring a runtime input)
+	 *
 	 * ```ts
 	 * import { createCss } from "pandwind/css";
 	 *
@@ -298,7 +307,8 @@ export interface CssFn<TStyles extends StyleObject = StyleObject> {
  * Pass a `CssFn` instance to retain its preset-specific token and condition
  * types; omit the type argument for the open-ended `createCss()` form.
  *
- * @example Extract the parameter type from a configured CSS function
+ * **Example** (Extracting the parameter type from a configured CSS function)
+ *
  * ```ts
  * import { createCss, type AtomicStyleProps } from "pandwind/css";
  * import { examplePreset } from "@pandwind/example-preset";
