@@ -31,34 +31,111 @@ theme-file list.
 
 ## Component token contracts
 
-Component tokens should be references, not another place to put raw colors.
-Bind the references directly to the component's styles:
+Component tokens are a third layer above raw and semantic tokens. They are
+string references owned by the design system, so a component can bind a
+stable contract without importing a JavaScript token map:
+
+```ts
+// tokens.ts — the design-system package
+import type { StandardProperties } from "csstype";
+import {
+	definePreset,
+	defineSemanticTokens,
+	defineTheme,
+	defineTokens,
+} from "pandwind/preset";
+
+const rawTokens = defineTokens({
+	colors: {
+		"$gray-200": "#e5e7eb",
+		"$gray-700": "#374151",
+		"$red-500": "#dc2626",
+	},
+	spacing: { 4: "1rem" },
+	radii: { md: "0.5rem" },
+	borders: { thin: "1px" },
+	shadows: { card: "0 12px 24px rgb(0 0 0 / 0.16)" },
+});
+
+const semanticTokens = defineSemanticTokens(
+	{ _dark: '[data-theme="dark"] &' },
+	{
+		semantic: {
+			"bg.muted": { base: rawTokens.colors["$gray-200"], _dark: rawTokens.colors["$gray-700"] },
+			"fg.error": { base: rawTokens.colors["$red-500"], _dark: "#fca5a5" },
+			"border.default": {
+				base: rawTokens.colors["$gray-200"],
+				_dark: rawTokens.colors["$gray-700"],
+			},
+			"border.width.default": { base: rawTokens.borders.thin, _dark: rawTokens.borders.thin },
+			"radius.card": { base: rawTokens.radii.md, _dark: rawTokens.radii.md },
+			"shadow.card": {
+				base: rawTokens.shadows.card,
+				_dark: "0 12px 24px rgb(0 0 0 / 0.32)",
+			},
+			"space.card.padding": { base: rawTokens.spacing[4], _dark: rawTokens.spacing[4] },
+		},
+	},
+);
+
+const tokens = {
+	...rawTokens,
+	semantic: semanticTokens.semantic,
+	component: {
+		"component.card.borderWidth": "semantic.border.width.default",
+		"component.card.border": "semantic.border.default",
+		"component.card.radius": "semantic.radius.card",
+		"component.card.shadow": "semantic.shadow.card",
+		"component.card.padding": "semantic.space.card.padding",
+		"component.state.emptyBg": "semantic.bg.muted",
+		"component.state.errorText": "semantic.fg.error",
+		"component.state.hoverBg": "semantic.bg.muted",
+		"component.state.hoverText": "semantic.fg.error",
+	},
+};
+
+export const preset = definePreset(
+	defineTheme({ config: {} as StandardProperties, tokens }),
+	{
+		strict: true,
+		conditions: { _dark: '[data-theme="dark"] &' },
+		properties: {
+			borderStyle: true,
+			borderWidth: { $tokens: "component" },
+			borderColor: { $tokens: "component" },
+			borderRadius: { $tokens: "component" },
+			backgroundColor: { $tokens: "component" },
+			color: { $tokens: "component" },
+			boxShadow: { $tokens: "component" },
+			padding: { $tokens: "component" },
+		},
+	},
+);
+```
+
+The component uses those paths directly:
 
 ```tsx
 import { createCss } from "pandwind/css";
-import { preset } from "./preset";
-// This module belongs to the design-system package, not the component.
+import { preset } from "./tokens";
 
 const css = createCss(preset);
 
-const componentTokens = {
-	emptyState: {
-		border: "border.default",
-		background: "bg.muted",
-		foreground: "fg.error",
-		padding: "card.padding",
-		radius: "card.radius",
-	},
-} as const;
-
 const EmptyState = ({ title }: { title: string }) => (
 	<section
-		className={css.class({
-			borderColor: componentTokens.emptyState.border,
-			backgroundColor: componentTokens.emptyState.background,
-			color: componentTokens.emptyState.foreground,
-			padding: componentTokens.emptyState.padding,
-			borderRadius: componentTokens.emptyState.radius,
+	className={css.class({
+			borderStyle: "solid",
+			borderWidth: "component.card.borderWidth",
+			borderColor: "component.card.border",
+			borderRadius: "component.card.radius",
+			backgroundColor: "component.state.emptyBg",
+			color: "component.state.errorText",
+			boxShadow: "component.card.shadow",
+			padding: "component.card.padding",
+			_hover: {
+				backgroundColor: "component.state.hoverBg",
+				color: "component.state.hoverText",
+			},
 		})}
 	>
 		{title}
@@ -66,16 +143,24 @@ const EmptyState = ({ title }: { title: string }) => (
 );
 ```
 
-The component owns the contract (`emptyState.background`), while the preset
-owns what `bg.muted` means in each theme. Switching `data-theme` changes the
-resolved value without changing the component, its props, or its class name.
-There is no runtime color ternary here: a component token is a typed reference
-that is checked when it is bound to the preset-aware `css` function.
+The component owns no raw color and does not choose between semantic roles at
+runtime. `component.state.emptyBg` points to `semantic.bg.muted`; the active
+theme decides what that semantic role means. Switching `data-theme` changes
+the resolved CSS variable without changing the component, its props, or its
+class name. The string refs are checked because each property is bound to the
+preset's `component` token group.
 
-The names above are illustrative aliases. Your preset must expose the matching
-semantic/component values for each property. Keep the reference map in the
-design-system package so product components consume the contract instead of
-repeating token paths.
+If a particular component benefits from JavaScript composition, a typed
+identifier map is also valid:
+
+```ts
+const namedRefs = { background: "component.state.emptyBg" } as const;
+css.class({ backgroundColor: namedRefs.background });
+```
+
+That is a separate convenience pattern. The component-token contract itself is
+the string layer above semantic tokens, which keeps the component from paying
+for an imported contract object.
 
 ## Codegen component scopes
 

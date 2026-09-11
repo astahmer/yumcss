@@ -99,11 +99,11 @@ describe("example catalog evaluates end to end", () => {
 		expect(result.programs.every((program) => program.residuals.length === 0)).toBe(true);
 	});
 
-	it("binds component token refs directly to the rendered component", () => {
+	it("keeps named token bindings separate from string component refs", () => {
 		expect(EXAMPLES.every((example) => example.preview.label.length > 0)).toBe(true);
 		expect(EXAMPLES.every((example) => example.preview.description.length > 0)).toBe(true);
 
-		const variant = EXAMPLES.find((example) => example.path === "/tokens")?.variants[0];
+		const variant = EXAMPLES.find((example) => example.path === "/token-bindings")?.variants[0];
 		expect(variant).toBeDefined();
 		if (variant === undefined) return;
 
@@ -134,6 +134,36 @@ describe("example catalog evaluates end to end", () => {
 		expect(result.sheets.some((sheet) => sheet.css.includes("#2b6cb0"))).toBe(true);
 		expect(result.sheets.some((sheet) => sheet.css.includes("#2c5282"))).toBe(true);
 		expect(result.sheets.some((sheet) => sheet.css.includes("#f9fafb"))).toBe(true);
+	});
+
+	it("resolves string component refs through the semantic token layer", () => {
+		const variant = EXAMPLES.find((example) => example.path === "/component-tokens")?.variants[0];
+		expect(variant).toBeDefined();
+		if (variant === undefined) return;
+
+		const source = variant.files[0]!.code;
+		const result = evalPlayground(makeInput(source, siblingBindings(variant)));
+		expect(result.ok).toBe(true);
+		if (!result.ok) return;
+
+		expect(source).toContain('backgroundColor: "component.state.emptyBg"');
+		expect(source).toContain('borderWidth: "component.card.borderWidth"');
+		expect(source).toContain('boxShadow: "component.card.shadow"');
+		expect(source).not.toContain("componentTokens");
+		expect(result.styleMappings.map((mapping) => mapping.value)).toEqual(
+			expect.arrayContaining([
+				"component.card.borderWidth",
+				"component.card.border",
+				"component.card.radius",
+				"component.state.emptyBg",
+				"component.state.errorText",
+				"component.card.shadow",
+				"component.card.padding",
+			]),
+		);
+		expect(result.sheets.some((sheet) => sheet.css.includes("semantic.bg.muted"))).toBe(false);
+		expect(result.sheets.some((sheet) => sheet.css.includes("#e5e7eb"))).toBe(true);
+		expect(result.sheets.some((sheet) => sheet.css.includes("#374151"))).toBe(true);
 	});
 
 	it("keeps composed runtime host styles available to the preview", () => {

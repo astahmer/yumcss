@@ -114,6 +114,9 @@ export function definePreset<
  * Token values are deliberately plain strings. Pandwind does not require a
  * runtime token object in the browser; the values are consumed by the
  * stylesheet/runtime compiler and their names become part of the CSS API.
+ * A value may also reference another token path in the same preset. This is
+ * useful for a component tier: `component.card.bg` can point to
+ * `semantic.bg.primary`, while themes rebind only the semantic token.
  *
  * @example Raw tokens used by a preset
  * ```ts
@@ -125,6 +128,7 @@ export function definePreset<
  *     "$gray-50": "#f9fafb",
  *   },
  *   spacing: { 4: "1rem", 6: "1.5rem" },
+ *   component: { "component.card.bg": "semantic.bg.primary" },
  * });
  * ```
  *

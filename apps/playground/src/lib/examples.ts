@@ -418,15 +418,15 @@ export default <Action tone="primary" />`,
 		),
 	},
 	{
-		path: "/tokens",
-		title: "Raw, semantic & component tokens",
-		blurb: "raw values become semantic roles and component contracts",
+		path: "/token-bindings",
+		title: "Named token bindings",
+		blurb: "typed JavaScript refs over semantic tokens",
 		group: "core",
-		note: "Open tokens.ts to see the complete chain: raw values feed theme-aware semantic roles, then the component contract binds those roles directly to the rendered card. The component never branches on a tone prop or owns a color value.",
+		note: "This is the optional identifier pattern: componentTokens.card.* keeps a typed contract in JavaScript before css.class() consumes it. It is useful when a component needs JS composition; the Component token contracts example below keeps the refs as strings in the component instead.",
 		preview: makePreview(
 			"card",
-			"Token contract",
-			"component.card.bg points to semantic bg.primary; the theme changes the resolved color without changing this component.",
+			"Named token binding",
+			"componentTokens.card.bg is a typed JavaScript binding; the active theme still supplies the semantic value.",
 		),
 		variants: [
 			{
@@ -443,18 +443,18 @@ const css = createCss(tokenPreset);
 const TokenCard = () => (
 	<article
 		className={css.class({
-			backgroundColor: componentTokens.card.bg,
-			color: componentTokens.card.fg,
-			padding: componentTokens.card.padding,
-			borderRadius: componentTokens.card.radius,
-			_hover: {
-				backgroundColor: componentTokens.card.hoverBg,
-				color: componentTokens.card.hoverFg,
-			},
+							backgroundColor: componentTokens.card.bg,
+							color: componentTokens.card.fg,
+							padding: componentTokens.card.padding,
+							borderRadius: componentTokens.card.radius,
+							_hover: {
+								backgroundColor: componentTokens.card.hoverBg,
+								color: componentTokens.card.hoverFg,
+							},
 		})}
 	>
-		<strong>Component token card</strong>
-		<div>bg.primary and fg.on-primary come from the component contract; the active theme supplies their values.</div>
+		<strong>Named token binding</strong>
+		<div>componentTokens.card.bg and componentTokens.card.fg bind this component to theme-aware semantic roles.</div>
 	</article>
 );
 
@@ -523,6 +523,133 @@ export const tokenPreset = definePreset(
 			color: { $tokens: "semantic" },
 			padding: componentValues.spacing,
 			borderRadius: componentValues.radii,
+		},
+	},
+);`,
+					},
+				],
+			},
+		],
+	},
+	{
+		path: "/component-tokens",
+		title: "Component token contracts",
+		blurb: "string refs bind components to semantic roles",
+		group: "core",
+		note: "This is the design-system pattern: component.* refs stay as strings in the component, while tokens.ts maps them to semantic tokens. Themes can change those semantic values without changing JSX, props, or component code.",
+		preview: makePreview(
+			"card",
+			"Component contract",
+			"component.state.emptyBg resolves through semantic bg.muted; switching themes changes that semantic value without changing the component.",
+		),
+		variants: [
+			{
+				api: PlaygroundApi.Css,
+				label: "css()",
+				files: [
+					{
+						name: "Example.tsx",
+						code: `import { createCss } from "pandwind/css";
+import { tokenPreset } from "./tokens.ts";
+
+const css = createCss(tokenPreset);
+
+const EmptyState = () => (
+	<article
+		className={css.class({
+			borderStyle: "solid",
+			borderWidth: "component.card.borderWidth",
+			borderColor: "component.card.border",
+			borderRadius: "component.card.radius",
+			backgroundColor: "component.state.emptyBg",
+			color: "component.state.errorText",
+			boxShadow: "component.card.shadow",
+			padding: "component.card.padding",
+			_hover: {
+				backgroundColor: "component.state.hoverBg",
+				color: "component.state.hoverText",
+			},
+		})}
+	>
+		<strong>String-based component contract</strong>
+		<div>emptyBg resolves to semantic.bg.muted; errorText resolves to semantic.fg.error. Toggle the theme or hover to rebind the contract.</div>
+	</article>
+);
+
+export default <EmptyState />`,
+					},
+					{
+						name: "tokens.ts",
+						code: `import { definePreset, defineSemanticTokens, defineTheme, defineTokens } from "pandwind/preset";
+
+const rawTokens = defineTokens({
+	colors: {
+		"$blue-600": "#2b6cb0",
+		"$blue-700": "#2c5282",
+		"$gray-50": "#f9fafb",
+		"$gray-200": "#e5e7eb",
+		"$gray-700": "#374151",
+		"$gray-900": "#111827",
+		"$red-300": "#fca5a5",
+		"$red-500": "#e53e3e",
+		"$white": "#ffffff",
+	},
+	spacing: { "16": "16px" },
+	radii: { md: "0.375rem" },
+	borders: { thin: "1px" },
+	shadows: { card: "0 12px 24px rgb(17 24 39 / 0.16)" },
+});
+
+const semanticTokens = defineSemanticTokens(
+	{ _dark: '[data-theme="dark"] &' },
+	{
+		semantic: {
+			"bg.primary": { base: rawTokens.colors["$blue-600"], _dark: rawTokens.colors["$blue-700"] },
+			"bg.muted": { base: rawTokens.colors["$gray-200"], _dark: rawTokens.colors["$gray-700"] },
+			"fg.error": { base: rawTokens.colors["$red-500"], _dark: rawTokens.colors["$red-300"] },
+			"fg.on-primary": { base: rawTokens.colors["$white"], _dark: rawTokens.colors["$white"] },
+			"border.default": { base: rawTokens.colors["$gray-200"], _dark: rawTokens.colors["$gray-700"] },
+			"border.width.default": { base: rawTokens.borders.thin, _dark: rawTokens.borders.thin },
+			"radius.card": { base: rawTokens.radii.md, _dark: rawTokens.radii.md },
+			"shadow.card": {
+				base: rawTokens.shadows.card,
+				_dark: "0 12px 24px rgb(0 0 0 / 0.32)",
+			},
+			"space.card.padding": { base: rawTokens.spacing["16"], _dark: rawTokens.spacing["16"] },
+		},
+	},
+);
+
+const tokens = {
+	colors: rawTokens.colors,
+	semantic: semanticTokens.semantic,
+	component: {
+		"component.card.borderWidth": "semantic.border.width.default",
+		"component.card.border": "semantic.border.default",
+		"component.card.radius": "semantic.radius.card",
+		"component.card.shadow": "semantic.shadow.card",
+		"component.card.padding": "semantic.space.card.padding",
+		"component.state.emptyBg": "semantic.bg.muted",
+		"component.state.errorText": "semantic.fg.error",
+		"component.state.hoverBg": "semantic.bg.primary",
+		"component.state.hoverText": "semantic.fg.on-primary",
+	},
+};
+
+export const tokenPreset = definePreset(
+	defineTheme({ config: {} as Record<string, unknown>, tokens }),
+	{
+		strict: true,
+		conditions: { _hover: "&:hover", _dark: '[data-theme="dark"] &' },
+		properties: {
+			borderStyle: true,
+			borderWidth: { $tokens: "component" },
+			borderColor: { $tokens: "component" },
+			borderRadius: { $tokens: "component" },
+			backgroundColor: { $tokens: "component" },
+			color: { $tokens: "component" },
+			boxShadow: { $tokens: "component" },
+			padding: { $tokens: "component" },
 		},
 	},
 );`,

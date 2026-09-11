@@ -40,19 +40,18 @@ export const dcss = createDesignCss(preset);
 import type { ComponentPropsWithoutRef } from "react";
 import { cx } from "pandwind/cx";
 import { dcss } from "./styles";
-import { componentTokens } from "@acme/ui/tokens";
 
 type ButtonProps = ComponentPropsWithoutRef<"button">;
 
 export function Button({ className, ...props }: ButtonProps) {
 	const styles = dcss.class({
 		$frame: {
-			pad: componentTokens.button.padding,
-			corners: componentTokens.button.radius,
-			fill: componentTokens.button.background,
+			pad: "component.button.padding",
+			corners: "component.button.radius",
+			fill: "component.button.bg",
 		},
-		$text: { color: componentTokens.button.foreground, weight: "600" },
-		_hover: { $frame: { fill: "$brand" } },
+		$text: { color: "component.button.fg", weight: "600" },
+		_hover: { $frame: { fill: "component.button.hoverBg" } },
 		_focusVisible: { outline: "2px solid $brand", outlineOffset: "2px" },
 	});
 
@@ -62,7 +61,10 @@ export function Button({ className, ...props }: ButtonProps) {
 
 `cx()` is the composition boundary. Accept a caller's `className` when
 interoperating with an existing application, and keep the component's
-semantic styles deterministic.
+semantic styles deterministic. The `component.*` values are string refs from
+the preset's third token layer; the component does not import a JavaScript
+token map or branch on a runtime color. A theme can remap `component.button.bg`
+through a different semantic role without changing `Button`.
 
 ## Configure the consumer build
 

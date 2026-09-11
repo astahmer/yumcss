@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, useContext, useLayoutEffect, useState, type ReactNode } from "react";
 
 export type ThemeMode = "dark" | "light";
 
@@ -23,7 +23,7 @@ const readInitialTheme = (): ThemeMode => {
 export function ThemeProvider(props: { children: ReactNode }) {
 	const [mode, setMode] = useState<ThemeMode>(readInitialTheme);
 
-	useEffect(() => {
+	useLayoutEffect(() => {
 		document.documentElement.dataset.theme = mode;
 		try {
 			window.localStorage.setItem(THEME_STORAGE_KEY, mode);

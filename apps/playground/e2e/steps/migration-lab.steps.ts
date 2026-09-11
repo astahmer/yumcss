@@ -74,3 +74,9 @@ Then("the code editor contains {string}", async ({ page }, text: string) => {
 Then("the page contains the text {string}", async ({ page }, text: string) => {
 	await expect(page.getByText(text, { exact: true })).toBeVisible();
 });
+
+Then("the component-token preview uses background {string}", async ({ page }, color: string) => {
+	const preview = page.locator('[data-preview-kind="card"] > article');
+	await expect(preview).toHaveCSS("background-color", color);
+	await expect(page.locator("body")).toContainText(`card uses component.state.emptyBg (${color})`);
+});

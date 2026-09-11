@@ -116,3 +116,21 @@ Design notes vs the earlier sketch: the "explicit opt-in class" open
 question resolved to the generated `.pwc-<name>` class (namespaced, no
 user-selector injection); variant support (`button.bg_hover`) IS included
 via condition-bound authoring rather than deferred.
+
+### Native preset component-token contracts (2026-09-11)
+
+The native preset lane now has a separate third-layer contract from the
+codegen component-scope model above. A `component` token group may contain
+string aliases such as `component.card.bg: "semantic.bg.primary"`. A typed
+`createCss(preset)`/`createDesignCss(preset)` call accepts those component
+paths directly, and the compiler emits the component variable as a reference
+to the semantic variable. Theme switching therefore rebinds the semantic
+value without changing JSX, props, or component styles.
+
+These are intentionally separate authoring patterns:
+
+- native component-token refs are the canonical no-runtime-map contract;
+- `components` exports remain build-time `.pwc-*` scope overrides for the
+  Tailwind bridge; and
+- an imported JavaScript identifier map is an optional composition helper,
+  not the component-token layer itself.

@@ -125,14 +125,39 @@ Put light/dark behavior in conditions and semantic tokens rather than
 duplicating component styles:
 
 ```ts
-export const preset = definePreset(theme, {
+
+const semanticTokens = defineSemanticTokens(
+	{ _dark: ".dark &" },
+	{
+		semantic: {
+			"bg.muted": { base: tokens.colors.$canvas, _dark: tokens.colors.$ink },
+			"fg.error": { base: "#b91c1c", _dark: "#fca5a5" },
+			"border.default": { base: tokens.colors.$muted, _dark: tokens.colors.$muted },
+			"border.width.default": { base: "1px", _dark: "1px" },
+			"radius.card": { base: tokens.radii.md, _dark: tokens.radii.md },
+			"shadow.card": {
+				base: "0 12px 24px rgb(17 24 39 / 0.16)",
+				_dark: "0 12px 24px rgb(0 0 0 / 0.32)",
+			},
+			"space.card.padding": { base: tokens.spacing[4], _dark: tokens.spacing[4] },
+		},
+	},
+);
+
+export const preset = definePreset(
+	defineTheme({
+		...theme,
+		tokens: { ...tokens, semantic: semanticTokens.semantic },
+	}),
+	{
 	strict: true,
 	conditions: {
 		_dark: ".dark &",
 		_highContrast: "@media (prefers-contrast: more)",
 	},
 	properties: { $all: true },
-});
+},
+);
 ```
 
 ```tsx
@@ -145,45 +170,74 @@ machine-readable residual; never substitute a guessed literal.
 
 ## 6. Bind component token contracts
 
-Use a small map of token references as the contract between the design system
-and its consumers. The component binds those references directly; it does not
-choose raw colors with runtime ternaries.
+Add a third token layer for component contracts. The values are string refs to
+semantic tokens, not new raw values and not runtime ternaries:
 
 ```ts
-// src/design-system/component-tokens.ts
-export const componentTokens = {
-	button: {
-		background: "$brand",
-		foreground: "$onBrand",
-		padding: "8",
-		radius: "md",
+// src/design-system/tokens.ts
+const themedTokens = {
+	...tokens,
+	semantic: semanticTokens.semantic,
+	component: {
+		"component.card.borderWidth": "semantic.border.width.default",
+		"component.card.border": "semantic.border.default",
+		"component.card.radius": "semantic.radius.card",
+		"component.card.shadow": "semantic.shadow.card",
+		"component.card.padding": "semantic.space.card.padding",
+		"component.state.emptyBg": "semantic.bg.muted",
+		"component.state.errorText": "semantic.fg.error",
 	},
-} as const;
+};
+
+export const preset = definePreset(
+	defineTheme({ config: {} as StandardProperties, tokens: themedTokens }),
+	{
+		strict: true,
+		conditions: { _dark: '[data-theme="dark"] &' },
+		properties: {
+			borderWidth: { $tokens: "component" },
+			borderColor: { $tokens: "component" },
+			borderRadius: { $tokens: "component" },
+			backgroundColor: { $tokens: "component" },
+			color: { $tokens: "component" },
+			boxShadow: { $tokens: "component" },
+			padding: { $tokens: "component" },
+		},
+	},
+);
 ```
 
-```ts
-// src/design-system/styles.ts
-import { createDesignCss } from "pandwind/design";
+```tsx
+// src/components/EmptyState.tsx
+import { createCss } from "pandwind/css";
 import { preset } from "./preset";
-import { componentTokens } from "./component-tokens";
 
-export const dcss = createDesignCss(preset);
+const css = createCss(preset);
 
-export const buttonClass = dcss.class({
-	$frame: {
-		pad: componentTokens.button.padding,
-		corners: componentTokens.button.radius,
-		fill: componentTokens.button.background,
-	},
-	$text: { color: componentTokens.button.foreground, weight: "600" },
-	_hover: { $frame: { fill: "$brand" } },
-});
+export const EmptyState = ({ title }: { title: string }) => (
+	<section
+		className={css.class({
+			borderWidth: "component.card.borderWidth",
+			borderColor: "component.card.border",
+			borderRadius: "component.card.radius",
+			backgroundColor: "component.state.emptyBg",
+			color: "component.state.errorText",
+			boxShadow: "component.card.shadow",
+			padding: "component.card.padding",
+		})}
+	>
+		{title}
+	</section>
+);
 ```
 
-The preset can change the semantic meaning of `$brand` and `$onBrand` for a
-theme without changing `buttonClass` or the component. If a component has
-multiple visual contracts, author them as separate named token maps or a
-static variant table; keep the token choice visible and type checked.
+The preset can change the semantic meaning of `bg.muted` or `fg.error` for a
+theme without changing `EmptyState`, its props, or its class name. The
+component pays for the string refs it authored; it does not import a
+JavaScript component-token object. If a component has multiple visual
+contracts, add separate component token paths rather than branching on raw
+colors. A typed identifier map is still useful when JS composition is the
+point, but it is an optional pattern—not the component-token layer itself.
 
 ## 7. Enforce the contract
 
