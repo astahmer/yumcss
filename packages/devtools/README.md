@@ -1,5 +1,20 @@
 # pandwind-devtools
 
+Use the DevTools dock when you are asking “why did this style produce this
+CSS?” It keeps the answer next to the running Vite app: source transforms,
+tokens, generated rules, diagnostics, and migration previews.
+
+It is development-only and read-only. Add it to a Vite config:
+
+```ts
+import { DevTools } from "@vitejs/devtools";
+import { pandwindDevtools } from "pandwind-devtools";
+
+export default {
+	plugins: [DevTools(), pandwindDevtools()],
+};
+```
+
 `pandwind-devtools` adds one Vite DevTools dock for inspecting the evidence produced by Pandwind's existing compiler, scanner, analyzer, and migration services.
 
 Install the Vite DevTools host and add both plugins to a development Vite config:

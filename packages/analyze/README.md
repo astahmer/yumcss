@@ -4,6 +4,28 @@ Build-time CSS usage, provenance, coverage, and budget analysis for pandwind
 projects. The CLI emits human-readable reports and versioned JSON suitable
 for CI and editor tooling.
 
+## Use it when you have a question
+
+- **Did the build fold my style calls?** Run the analyzer on your source files.
+- **Did a dynamic value leave CSS behind?** Ask for CSS provenance and
+  diagnostics.
+- **Did the stylesheet grow past its budget?** Add a CSS ceiling for CI.
+- **Do I need to inspect a project without changing it?** Use the playground,
+  inspector, or read-only MCP server.
+
+The shortest useful command is:
+
+```sh
+pnpm exec pandwind-analyze src --tw src/tw.ts
+```
+
+Add --json for a machine-readable report, --css for generated CSS
+measurements, or --governance for token-usage checks. The analyzer reads
+the project and reports what it found; it does not rewrite your source files.
+
+For a visual explanation of the reports, start with the
+[playground, inspector, and Studio guide](../../docs/src/content/docs/tooling/analyze-and-studio.md).
+
 ## MCP tooling
 
 The existing `pandwind-analyze` CLI also exposes an MCP server over stdio using

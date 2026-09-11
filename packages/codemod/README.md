@@ -1,5 +1,45 @@
 # pandwind-codemod
 
+Move to Pandwind in a reviewable way, or generate the typed files your
+Tailwind project needs.
+
+## The shortest path
+
+Preview a migration before writing anything:
+
+```sh
+pnpm exec pandwind-codemod migrate \
+	--from styled-components \
+	--to pandwind-css \
+	--dry-run --diff --report \
+	"src/**/*.tsx"
+```
+
+The command shows converted code and residuals for behavior it could not prove
+safe. Remove --dry-run only after reviewing the diff. Use the same workflow
+for Tailwind, Panda, Emotion, vanilla-extract, and the other registered
+adapters.
+
+If you already use Tailwind, generate the typed helper instead:
+
+```sh
+pnpm exec pandwind-codemod tw generate ./src/tailwind.css ./src
+```
+
+That creates a project-owned tw.ts; it is runtime code only when your
+application imports it. The main [migration guide](../../docs/src/content/docs/guides/migrations.md)
+explains how to choose a route and handle dynamic behavior.
+
+## What the tool promises
+
+- it loads project configuration when an official loader is available;
+- it preserves unsupported or ambiguous code as an explicit residual;
+- it can preview, report, and validate before it writes; and
+- it keeps generated support files separate from application code.
+
+The sections below are the detailed reference for adapter authors, CI
+budgets, virtual bundler migrations, and token-format conversion.
+
 The migration pivot is also available as the `pandwind-codemod/swap` entry
 point. Third-party packages can export one `StyleAdapter`, a
 `StyleAdapterPlugin`, or `{ adapters }` and register/discover it through

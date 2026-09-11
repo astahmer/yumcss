@@ -1,5 +1,25 @@
 # @pandwind/lint-plugin
 
+Use this when you want CI or editor diagnostics for style code that should be
+folded at build time. It catches common static-extraction mistakes without
+pretending to know your project's tokens or framework configuration.
+
+Start with warnings during adoption:
+
+```json
+{
+	"jsPlugins": ["./packages/lint-plugin/dist/index.js"],
+	"rules": {
+		"pandwind-extraction/no-spreads": "warn",
+		"pandwind-extraction/no-dynamic-values": "warn"
+	}
+}
+```
+
+Read the rule table below when you are ready to make specific boundaries
+errors. The plugin is intentionally conservative: dynamic values that use a
+documented Pandwind escape hatch stay valid.
+
 Oxlint JavaScript plugin for Pandwind's static-extraction discipline. It
 recognizes the real Pandwind package boundaries, including aliased and
 namespace imports:
