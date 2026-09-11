@@ -141,12 +141,66 @@ back from the most
 specific condition to the base custom property, so transitions and other
 browser CSS can consume the same property normally.
 
-The general lane does not author global rules, keyframes, `@font-face`, cascade
-layers, `@supports`, or `@property` definitions. Keep those browser-global
-primitives in an explicit CSS entry imported by the app or package. See
-[Authored CSS on the web](/reference/authored-css/) for the pattern and the
-token-variable bridge. `analyze` and the inspector record those explicit CSS
-imports, but do not scan arbitrary CSS and infer a Pandwind API from it.
+### At-rules: local conditions versus global CSS
+
+Pandwind has two deliberately different at-rule lanes. Use a typed style
+condition when the rule belongs to an element; use authored CSS or the
+explicit runtime sheet when it changes the stylesheet itself:
+
+| Need | Use | What happens |
+| --- | --- | --- |
+| Viewport, container, or feature conditions on a component | `@media`, `@container`, or `@supports` in a style object | The condition is emitted around the component's extracted atomic rule. |
+| Browser-global registration and definitions | Authored CSS | The host CSS toolchain owns `@property`, `@font-face`, `@keyframes`, `@layer`, resets, and global selectors. |
+| A rule is created at runtime or collected during SSR | `createRuntimeCss()` plus `sheet.registerSemanticRules()` | The runtime sheet serializes an explicit semantic rule and can mount, snapshot, or hydrate it. |
+
+For example, `@container` is a normal typed condition on a local class:
+
+```ts
+const card = css.class({
+	"@container (min-width: 28rem)": {
+		backgroundColor: "$blue-500",
+	},
+});
+```
+
+The Tailwind-compatible lane uses the same engine with container variants:
+
+```ts
+const card = tw({
+	"@container": true,
+	"@md": { backgroundColor: "blue-500" },
+});
+```
+
+`@property` is a stylesheet-global registration, so it is not a declaration
+inside `css.class()`. For the uncommon case where that registration must be
+created by a runtime or SSR integration, the runtime semantic-rule path is
+explicit:
+
+```ts
+import { createRuntimeCss } from "pandwind/css/runtime";
+
+const css = createRuntimeCss(preset);
+
+css.sheet.registerSemanticRules([
+	{
+		kind: "property",
+		name: "--progress",
+		declarations: [
+			{ property: "syntax", value: "<number>" },
+			{ property: "inherits", value: false },
+			{ property: "initial-value", value: 0 },
+		],
+	},
+]);
+```
+
+This is an explicit runtime-sheet feature and therefore has a runtime cost.
+For a normal application, keep the registration in an authored CSS entry and
+use a typed `css.group()`/`css.input()` style for the changing value. See
+[Authored CSS on the web](/reference/authored-css/) for that split and the
+complete support boundary. `analyze` and the inspector record explicit CSS
+imports, but do not scan arbitrary CSS and infer a Pandwind API from them.
 
 Pandwind does not provide a recipe API. If you need variant selection, use an
 external CVA-style package with the class strings returned by `css()` and

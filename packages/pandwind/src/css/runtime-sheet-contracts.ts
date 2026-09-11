@@ -38,9 +38,30 @@ export interface RuntimeDeclaration {
 
 /**
  * DOM-independent rule IR for runtime CSS, SSR, hydration, and devtools.
- * `children` represents nested rule bodies; `conditions` preserves wrapper
- * order. Adapters may canonicalize this richer form into the flat
- * RuntimeRule fast path before it reaches the store.
+ * `kind` selects the serialized rule shape: `style` and `global` emit
+ * selectors, `keyframes`, `font-face`, `layer`, and `supports` emit their
+ * corresponding browser at-rules, and `property` emits an `@property`
+ * registration. `children` represents nested rule bodies; `conditions`
+ * preserves wrapper order. Adapters may canonicalize this richer form into
+ * the flat RuntimeRule fast path before it reaches the store.
+ *
+ * @example Register a typed custom property during SSR
+ * ```ts
+ * import { createRuntimeSheet } from "pandwind/css/runtime";
+ *
+ * const sheet = createRuntimeSheet({ autoMount: false });
+ * sheet.registerSemanticRules([
+ *   {
+ *     kind: "property",
+ *     name: "--progress",
+ *     declarations: [
+ *       { property: "syntax", value: "<number>" },
+ *       { property: "inherits", value: false },
+ *       { property: "initial-value", value: 0 },
+ *     ],
+ *   },
+ * ]);
+ * ```
  */
 export interface RuntimeSemanticRule {
 	readonly id?: string;

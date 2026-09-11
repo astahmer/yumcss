@@ -25,6 +25,60 @@ Use this lane for things that are not element-local atomic declarations:
 - complex selectors or vendor-specific CSS that should remain recognizable as
   CSS.
 
+### Registering a typed custom property
+
+`@property` describes a browser-global custom property: its syntax, inheritance
+behavior, and initial value. Keep that registration in the authored CSS lane:
+
+```css
+@property --progress {
+	syntax: "<number>";
+	inherits: false;
+	initial-value: 0;
+}
+
+.progress-fill {
+	width: calc(var(--progress) * 1%);
+	transition: width 180ms ease;
+}
+```
+
+The component can still keep the changing value and its type in TypeScript.
+`css.input()` emits the structural `var(--progress)` rule, while
+`css.props()` carries the current number as an inline custom property:
+
+```tsx
+import { createCss } from "pandwind/css";
+import { examplePreset } from "@pandwind/example-preset";
+
+const css = createCss(examplePreset);
+const styles = css.group({
+	fill: {
+		$input: {} as { progress: number },
+		width: css.input("progress"),
+	},
+});
+
+type ProgressProps = { value: number };
+
+const Progress = (props: ProgressProps) => {
+	const fill = css.props(styles.fill({ progress: props.value }));
+	return (
+		<div
+			className={`progress-fill ${fill.className}`}
+			style={fill.style}
+			role="progressbar"
+		/>
+	);
+};
+```
+
+The registration stays global and recognizable CSS; the component value stays
+typed and runtime-only. If the registration itself must be emitted during SSR
+or created dynamically, use
+`RuntimeSheet.registerSemanticRules([{ kind: "property", ... }])` instead. That advanced path is documented in the
+[`css()` at-rule section](/api/css/#at-rules-local-conditions-versus-global-css).
+
 The Pandwind lane remains responsible for typed, local atomic styles:
 
 ```tsx

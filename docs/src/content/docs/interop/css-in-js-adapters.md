@@ -300,8 +300,10 @@ SSR runner; run `pnpm run pivot:proof:installed` to reproduce it.
 ## Runtime and host boundary
 
 The runtime side uses `RuntimeSemanticRule` for ordered style, global, keyframe,
-font-face, layer, supports, and custom-property rules. A `RuntimeSheet` can
-collect CSS during SSR, hydrate it in a browser, and mount one deduplicated
-`<style>` element. React, Preact, Solid, Vue, Svelte, and Astro bindings are
+font-face, layer, supports, and `@property` rules. A `RuntimeSheet` can collect
+CSS during SSR, hydrate it in a browser, and mount one deduplicated `<style>`
+element. React, Preact, Solid, Vue, Svelte, and Astro bindings are
 renderer-neutral host adapters, so migration output does not force a framework
-dependency into the semantic core.
+dependency into the semantic core. `@media`, `@container`, and `@supports`
+conditions on local styles remain ordinary typed style conditions; the semantic
+rule path is for explicit stylesheet-level rules.
