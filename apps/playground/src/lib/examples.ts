@@ -767,11 +767,11 @@ export const tokenPreset = definePreset(
 		title: "Design presets",
 		blurb: "define your own theme, tokens, and conditions",
 		group: "core",
-		note: "The preset owns both brand colors and the _hover condition. createDesignCss(brand) turns the $frame declarations into hashed classes; hover the button to see the preset's second color take effect.",
+		note: "The active prop chooses the base brand shade: active uses brand-600 and inactive uses brand-500. Hover reverses those shades through the preset's _hover condition, so both the prop and the condition have a visible effect.",
 		preview: makePreview(
 			"button",
 			"Brand action",
-			"Base uses brand-500; hover uses brand-600 from the preset's _hover condition.",
+			"Toggle State to switch the base shade; hover the button to see the preset's _hover condition reverse it.",
 			undefined,
 			[
 				{
@@ -785,7 +785,7 @@ export const tokenPreset = definePreset(
 						{ label: "inactive", value: "false", sourceValue: "false" },
 					],
 					description:
-						"Passes a boolean prop so the rendered component and aria-pressed state change together.",
+						"Switches the base fill between brand-600 (active) and brand-500 (inactive); hover reverses the two shades.",
 				},
 			],
 		),
@@ -810,10 +810,16 @@ const dcss = createDesignCss(brand);
 type ButtonProps = { active: boolean };
 
 const Button = (props: ButtonProps) => (
-	<button
-		className={dcss.class({
-			$frame: { fill: "$brand-500", corners: "lg", pad: [4, 4] },
-			_hover: { $frame: { fill: "$brand-600" } },
+					<button
+						className={dcss.class({
+							$frame: {
+								fill: props.active ? "$brand-600" : "$brand-500",
+								corners: "lg",
+								pad: [4, 4],
+							},
+							_hover: {
+								$frame: { fill: props.active ? "$brand-500" : "$brand-600" },
+							},
 		})}
 		aria-pressed={props.active}
 	>

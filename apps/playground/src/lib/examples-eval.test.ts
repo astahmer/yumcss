@@ -189,6 +189,36 @@ describe("example catalog evaluates end to end", () => {
 		expect(result.sheets.some((sheet) => sheet.css.includes(":hover"))).toBe(true);
 	});
 
+	it("makes the design preset active state change the generated style", () => {
+		const example = EXAMPLES.find((candidate) => candidate.path === "/design-preset");
+		const variant = example?.variants[0];
+		expect(variant).toBeDefined();
+		if (example === undefined || variant === undefined) return;
+
+		const activeSource = applyPreviewControls(variant.files[0]!.code, example.preview.controls, {
+			active: "true",
+		});
+		const inactiveSource = applyPreviewControls(variant.files[0]!.code, example.preview.controls, {
+			active: "false",
+		});
+		const activeResult = evalPlayground(makeInput(activeSource, siblingBindings(variant)));
+		const inactiveResult = evalPlayground(makeInput(inactiveSource, siblingBindings(variant)));
+
+		expect(activeResult.ok).toBe(true);
+		expect(inactiveResult.ok).toBe(true);
+		if (!activeResult.ok || !inactiveResult.ok) return;
+
+		expect(activeResult.output).not.toBe(inactiveResult.output);
+		expect(activeResult.rendered).toMatchObject({
+			props: { "aria-pressed": true },
+			children: ["Active brand action"],
+		});
+		expect(inactiveResult.rendered).toMatchObject({
+			props: { "aria-pressed": false },
+			children: ["Brand action"],
+		});
+	});
+
 	it("keeps named token bindings separate from string component refs", () => {
 		expect(EXAMPLES.every((example) => example.preview.label.length > 0)).toBe(true);
 		expect(EXAMPLES.every((example) => example.preview.description.length > 0)).toBe(true);
