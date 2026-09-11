@@ -120,6 +120,15 @@ interface ResizableSplitterControls {
 const RESIZABLE_SPLITTER_CONTROLS = createContext<ResizableSplitterControls | null>(null);
 const DEFAULT_COLLAPSED_SIZE = "36px";
 
+const collapsedPanelStyle = (panel: ResizableSplitterPanel) => {
+	const size = panel.collapsedSize ?? DEFAULT_COLLAPSED_SIZE;
+	return {
+		flexGrow: 0,
+		flexShrink: 0,
+		flexBasis: typeof size === "number" ? `${size}%` : size,
+	};
+};
+
 const initialPanelSizes = (panels: readonly ResizableSplitterPanel[]): number[] => {
 	const sizes = panels.map((panel) => panel.initialSize ?? 100 / Math.max(panels.length, 1));
 	const total = sizes.reduce((sum, size) => sum + size, 0);
@@ -173,19 +182,9 @@ export function ResizableSplitter(props: {
 	useEffect(() => {
 		if (previousPanelSignature.current === panelSignature) return;
 		previousPanelSignature.current = panelSignature;
-		const nextCollapsedPanelIds = initialCollapsedPanelIds();
-		setCollapsedPanelIds(nextCollapsedPanelIds);
-		let collapseFrame = 0;
-		const resetFrame = requestAnimationFrame(() => {
-			splitter.resetSizes();
-			collapseFrame = requestAnimationFrame(() => {
-				for (const panelId of nextCollapsedPanelIds) splitter.collapsePanel(panelId);
-			});
-		});
-		return () => {
-			cancelAnimationFrame(resetFrame);
-			if (collapseFrame !== 0) cancelAnimationFrame(collapseFrame);
-		};
+		setCollapsedPanelIds(initialCollapsedPanelIds());
+		const resetFrame = requestAnimationFrame(() => splitter.resetSizes());
+		return () => cancelAnimationFrame(resetFrame);
 	}, [panelSignature]);
 	const togglePanel = (panelId: string): void => {
 		const panel = props.panels.find((candidate) => candidate.id === panelId);
@@ -241,7 +240,11 @@ export function ResizableSplitter(props: {
 		>
 			{props.panels.map((panel, index) => (
 				<Fragment key={panel.id}>
-					<Splitter.Panel id={panel.id} className={SPLITTER_PANEL}>
+					<Splitter.Panel
+						id={panel.id}
+						className={SPLITTER_PANEL}
+						style={collapsedPanelIds.has(panel.id) ? collapsedPanelStyle(panel) : undefined}
+					>
 						<RESIZABLE_SPLITTER_CONTROLS.Provider
 							value={
 								panel.collapsible === true
