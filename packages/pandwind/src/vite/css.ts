@@ -47,6 +47,8 @@ export interface PandwindCssViteOptions {
 	/**
 	 * Import sources that point at the css() module. Defaults to any source
 	 * whose basename is `css` or `design` (`./css`, `./design.ts`, ...).
+	 * Use disjoint matchers when configuring multiple extractor instances so
+	 * each preset owns a separate source lane.
 	 */
 	cssSources?: Array<string | RegExp>;
 	/** Files to skip, as regexes matched against the module id. */
@@ -84,7 +86,10 @@ export interface PandwindCssViteOptions {
 	transformDynamicClassName?: boolean;
 	/** Directory scanned for css() calls. Defaults to process.cwd(). */
 	root?: string;
-	/** The virtual module id the generated CSS is served under. */
+	/**
+	 * The virtual module id the generated CSS is served under. Use a unique id
+	 * for every extractor instance in one Vite config.
+	 */
 	virtualId?: string;
 	/**
 	 * Tailwind mode: when a class-name strategy (the `createTwAdapter`

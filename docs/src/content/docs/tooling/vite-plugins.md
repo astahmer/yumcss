@@ -51,6 +51,69 @@ plugins: [pandwindCssVite(examplePreset)];
 import "pandwind:css";
 ```
 
+### Multiple presets or source lanes
+
+Most applications need one `pandwindCssVite()` instance. Use more than one
+when different source modules belong to different presets—for example, an
+application shell with its own theme alongside a sandbox or component library
+with a separate design system.
+
+Give each instance a disjoint `cssSources` matcher, and give every additional
+instance a unique `virtualId`:
+
+```ts
+// vite.config.ts
+import { defineConfig } from "vite";
+import { pandwindCssVite } from "pandwind/vite";
+import { appPreset } from "./src/app-preset";
+import { sandboxPreset } from "./src/sandbox-preset";
+
+export default defineConfig({
+	plugins: [
+		pandwindCssVite(appPreset, {
+			cssSources: ["css"],
+		}),
+		pandwindCssVite(sandboxPreset, {
+			cssSources: ["sandbox-css"],
+			virtualId: "pandwind:sandbox-css",
+		}),
+	],
+});
+```
+
+The source modules must use the same presets as their extractor instances:
+
+```ts
+// src/css.ts
+import { createCss } from "pandwind/css";
+import { appPreset } from "./app-preset";
+
+export const css = createCss(appPreset);
+```
+
+```ts
+// src/sandbox-css.ts
+import { createCss } from "pandwind/css";
+import { sandboxPreset } from "./sandbox-preset";
+
+export const css = createCss(sandboxPreset);
+```
+
+Load every generated sheet from the application entry:
+
+```ts
+// main.tsx
+import "pandwind:css";
+import "pandwind:sandbox-css";
+```
+
+`cssSources` matches the import source used for the CSS factory, not a
+filesystem glob. Keep those matchers separate; if two instances claim the
+same source, both presets may try to extract it. Each instance also has its
+own token resolution, class-name strategy, route-splitting configuration, and
+virtual stylesheet. This pattern is useful for isolated design-system
+boundaries, not for ordinary components that can share one preset.
+
 Dynamic `css.class()` values can also be rewritten at the JSX host boundary,
 but this is opt-in because it changes a `className` attribute into a
 `className`/`style` props spread:
