@@ -553,6 +553,12 @@ function PreviewSpecimen(props: {
 	const fallbackNeedsGroup = previewClassTokens(className).some((token) =>
 		token.startsWith("group-hover:"),
 	);
+	const explanation = explainPreview({
+		kind: props.preview.kind,
+		result: explanationResult,
+		style: explanationStyle,
+		description: props.preview.description,
+	});
 	return (
 		<div className={PREVIEW_FRAME}>
 			<div
@@ -618,14 +624,9 @@ function PreviewSpecimen(props: {
 					<span>{interaction.description}</span>
 				</label>
 			)}
-			<span className={uiCss.class({ fontSize: "10px", color: "textFaint" })}>
-				{explainPreview({
-					kind: props.preview.kind,
-					result: explanationResult,
-					style: explanationStyle,
-					description: props.preview.description,
-				})}
-			</span>
+			{explanation !== undefined && (
+				<span className={uiCss.class({ fontSize: "10px", color: "textFaint" })}>{explanation}</span>
+			)}
 		</div>
 	);
 }

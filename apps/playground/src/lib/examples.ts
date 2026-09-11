@@ -891,7 +891,7 @@ export default <Button label="Compatibility action" />`,
 		preview: makePreview(
 			"badge",
 			"Rejected class string",
-			"This limit example intentionally has no useful generated style.",
+			"No CSS is generated because tw() receives a class string instead of a style object.",
 		),
 		variants: oneVariant(
 			PlaygroundApi.Tw,

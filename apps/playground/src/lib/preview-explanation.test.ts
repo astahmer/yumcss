@@ -34,7 +34,7 @@ describe("explainPreview", () => {
 				description: "The selected action is rendered here.",
 			}),
 		).toBe(
-			"button uses blue-600 (#2563eb) for its background color because the later blue-600 declaration overrides blue-500.",
+			"button uses blue-600 (#2563eb) for its background color; the later declaration kept blue-600 over blue-500.",
 		);
 	});
 
@@ -62,7 +62,7 @@ describe("explainPreview", () => {
 				description: "The selected card is rendered here.",
 			}),
 		).toBe(
-			"card uses blue-500 (#3b82f6) for its background color because the blue-500 declaration survived conflict resolution while red-500 was dropped.",
+			"card uses blue-500 (#3b82f6) for its background color; conflict resolution kept blue-500 and dropped red-500.",
 		);
 	});
 
@@ -79,7 +79,7 @@ describe("explainPreview", () => {
 				description: "The runtime value is kept on the host.",
 			}),
 		).toBe(
-			"alert uses red-600 for its runtime color because the runtime style supplies --pw-c-color.",
+			"alert uses runtime value red-600 through --pw-c-color on the host style, so changing it updates the rendered style without generating a class.",
 		);
 	});
 
@@ -98,7 +98,7 @@ describe("explainPreview", () => {
 				description: "The runtime value is kept on the host.",
 			}),
 		).toBe(
-			"alert uses red-500 (#ef4444) for its background color because the red-500 declaration sets the background color; runtime color #fef08a is carried through the host style.",
+			"alert uses red-500 (#ef4444) for its background color; runtime value #fef08a is carried through --pw-c-color on the host style, so changing it updates the rendered style without generating a class.",
 		);
 	});
 
@@ -116,9 +116,21 @@ describe("explainPreview", () => {
 				style: { padding: "16px" },
 				description: "Resize the card.",
 			}),
-		).toBe(
-			"card uses 4 (16px) for its padding because the 4 declaration sets the padding; responsive variants sm are also generated.",
-		);
+		).toBe("card uses 4 (16px) for its padding; responsive overrides: sm → 6.");
+	});
+
+	it("omits tautological explanations for ordinary static declarations", () => {
+		expect(
+			explainPreview({
+				kind: "button",
+				result: {
+					styleMappings: [mapping({ className: "p-4", property: "p", value: "4" })],
+					killed: [],
+				},
+				style: { padding: "16px" },
+				description: "The button is styled with a static class.",
+			}),
+		).toBeUndefined();
 	});
 
 	it("uses the example description when no style declaration exists", () => {
@@ -129,7 +141,7 @@ describe("explainPreview", () => {
 				style: {},
 				description: "The invalid token has no matching rule.",
 			}),
-		).toBe("badge has no generated style declaration. The invalid token has no matching rule.");
+		).toBe("The invalid token has no matching rule.");
 	});
 
 	it("does not present a malformed variant token as rendered CSS", () => {
@@ -143,9 +155,7 @@ describe("explainPreview", () => {
 				style: {},
 				description: "The emitted token is visible, but it has no matching rule to apply.",
 			}),
-		).toBe(
-			"badge has no generated style declaration. The emitted token is visible, but it has no matching rule to apply.",
-		);
+		).toBe("The emitted token is visible, but it has no matching rule to apply.");
 	});
 
 	it("recognizes generated sheet rules when group instrumentation has no mapping", () => {
@@ -160,9 +170,7 @@ describe("explainPreview", () => {
 				style: {},
 				description: "Static group styles and runtime input are combined.",
 			}),
-		).toBe(
-			"card uses generated stylesheet rules. Static group styles and runtime input are combined.",
-		);
+		).toBe("card uses a generated stylesheet. Static group styles and runtime input are combined.");
 	});
 
 	it("labels token references and state conditions separately", () => {
@@ -187,7 +195,7 @@ describe("explainPreview", () => {
 				description: "The card follows the theme.",
 			}),
 		).toBe(
-			"card uses bg.primary (#2563eb) for its background color because the token ref bg.primary declaration sets the background color; state variants hover are also generated.",
+			"card uses bg.primary (#2563eb) for its background color; state overrides: hover → bg.muted; the active preset resolves this reference to the current theme value.",
 		);
 	});
 });

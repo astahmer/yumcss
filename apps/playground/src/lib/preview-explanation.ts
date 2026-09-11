@@ -5,7 +5,6 @@ interface PreviewExplanationResult {
 	styleMappings: readonly PlaygroundStyleMapping[];
 	killed: readonly string[];
 	runtimeStyle?: Readonly<Record<string, string>>;
-	fold?: "full" | "partial" | "runtime";
 	sheets?: readonly { rules: readonly unknown[] }[];
 }
 
@@ -84,9 +83,12 @@ const displayValue = (
 	return `${mapping.value} (${resolved})`;
 };
 
+const isTokenReference = (value: string): boolean =>
+	/^[A-Za-z_$][\w$-]*(?:\.[A-Za-z_$][\w$-]*)+$/u.test(value);
+
 const declarationLabel = (mapping: PlaygroundStyleMapping): string => {
 	if (mapping.value === "") return mapping.className;
-	return mapping.value.includes(".") ? `token ref ${mapping.value}` : mapping.value;
+	return isTokenReference(mapping.value) ? `token ref ${mapping.value}` : mapping.value;
 };
 
 const findLastActive = (mappings: readonly PlaygroundStyleMapping[]): number => {
@@ -96,11 +98,11 @@ const findLastActive = (mappings: readonly PlaygroundStyleMapping[]): number => 
 	return -1;
 };
 
-const runtimeColor = (
+const runtimeEntry = (
 	runtimeStyle: Readonly<Record<string, string>> | undefined,
 ): [string, string] | undefined => {
 	for (const [property, value] of Object.entries(runtimeStyle ?? {})) {
-		if (/color|fill|stroke/u.test(property)) return [property, value];
+		if (property.startsWith("--") || /color|fill|stroke/u.test(property)) return [property, value];
 	}
 	return undefined;
 };
@@ -115,13 +117,6 @@ const VISIBLE_PROPERTY_ORDER = [
 	"gap",
 	"margin",
 ] as const;
-
-const foldExplanation = (fold: PreviewExplanationResult["fold"]): string | undefined => {
-	if (fold === "full") return "the build-time fold precomputes this style";
-	if (fold === "partial") return "static pieces fold while runtime choices remain";
-	if (fold === "runtime") return "some values are only known at runtime";
-	return undefined;
-};
 
 const isStateCondition = (condition: string): boolean =>
 	condition.startsWith("_") || /(?:hover|focus|active|disabled|visited|group)/u.test(condition);
@@ -142,7 +137,13 @@ const hasRenderedStyle = (
 	);
 };
 
-export const explainPreview = (input: PreviewExplanationInput): string => {
+const variantLabel = (mapping: PlaygroundStyleMapping): string =>
+	`${mapping.conditions.map(conditionLabel).join(":")} → ${isTokenReference(mapping.value) ? mapping.value : declarationLabel(mapping)}`;
+
+const variantClause = (label: string, mappings: readonly PlaygroundStyleMapping[]): string =>
+	`${label}: ${[...new Set(mappings.map(variantLabel))].join(", ")}`;
+
+export const explainPreview = (input: PreviewExplanationInput): string | undefined => {
 	const baseMappings = input.result.styleMappings.filter(
 		(mapping) => mapping.conditions.length === 0 && hasRenderedStyle(mapping, input.style),
 	);
@@ -164,7 +165,7 @@ export const explainPreview = (input: PreviewExplanationInput): string => {
 
 	if (activeIndex >= 0) {
 		const mapping = candidates[activeIndex];
-		if (mapping === undefined) return `${input.kind} preview has no color declaration.`;
+		if (mapping === undefined) return undefined;
 		const property = toCssProperty(mapping.property);
 		const previous = candidates.slice(0, activeIndex);
 		const dropped = previous.filter((candidate) => !candidate.active);
@@ -173,7 +174,7 @@ export const explainPreview = (input: PreviewExplanationInput): string => {
 		const label = isColorProperty(mapping.property)
 			? colorPropertyLabel(mapping.property)
 			: propertyLabel(mapping.property);
-		let reason = `the ${declarationLabel(mapping)} declaration sets the ${label}`;
+		const details: string[] = [];
 		if (dropped.length > 0) {
 			const droppedValues = dropped.map(declarationLabel).join(", ");
 			const conflictLabel = dropped.some((candidate) =>
@@ -181,10 +182,14 @@ export const explainPreview = (input: PreviewExplanationInput): string => {
 			)
 				? "conflict resolution"
 				: "the generated style program";
-			reason = `the ${declarationLabel(mapping)} declaration survived ${conflictLabel} while ${droppedValues} was dropped`;
+			details.push(
+				`${conflictLabel} kept ${declarationLabel(mapping)} and dropped ${droppedValues}`,
+			);
 		} else if (surviving.length > 0) {
 			const survivingValues = surviving.map(declarationLabel).join(", ");
-			reason = `the later ${declarationLabel(mapping)} declaration overrides ${survivingValues}`;
+			details.push(
+				`the later declaration kept ${declarationLabel(mapping)} over ${survivingValues}`,
+			);
 		}
 		const conditions = input.result.styleMappings
 			.filter(
@@ -198,32 +203,41 @@ export const explainPreview = (input: PreviewExplanationInput): string => {
 		const responsiveVariants = [
 			...new Set(conditions.filter((condition) => !isStateCondition(condition))),
 		];
-		if (stateVariants.length > 0)
-			reason += `; state variants ${stateVariants.join(", ")} are also generated`;
+		const conditionalMappings = input.result.styleMappings.filter(
+			(candidate) =>
+				candidate.active &&
+				candidate.conditions.length > 0 &&
+				toCssProperty(candidate.property) === property,
+		);
+		const stateMappings = conditionalMappings.filter((candidate) =>
+			candidate.conditions.some(isStateCondition),
+		);
+		const responsiveMappings = conditionalMappings.filter(
+			(candidate) => !candidate.conditions.some(isStateCondition),
+		);
+		if (stateVariants.length > 0) details.push(variantClause("state overrides", stateMappings));
 		if (responsiveVariants.length > 0)
-			reason += `; responsive variants ${responsiveVariants.join(", ")} are also generated`;
-		if (
-			!isColorProperty(mapping.property) &&
-			stateVariants.length === 0 &&
-			responsiveVariants.length === 0
-		) {
-			const fold = foldExplanation(input.result.fold);
-			if (fold !== undefined) reason += `; ${fold}`;
+			details.push(variantClause("responsive overrides", responsiveMappings));
+		if (isTokenReference(mapping.value))
+			details.push("the active preset resolves this reference to the current theme value");
+		const runtime = runtimeEntry(input.result.runtimeStyle);
+		if (runtime !== undefined) {
+			details.push(
+				`runtime value ${runtime[1]} is carried through ${runtime[0]} on the host style, so changing it updates the rendered style without generating a class`,
+			);
 		}
-		const runtime = runtimeColor(input.result.runtimeStyle);
-		if (runtime !== undefined)
-			reason += `; runtime color ${runtime[1]} is carried through the host style`;
-		return `${input.kind} uses ${value} for its ${label} because ${reason}.`;
+		if (details.length === 0) return undefined;
+		return `${input.kind} uses ${value} for its ${label}; ${details.join("; ")}.`;
 	}
 
-	const runtime = runtimeColor(input.result.runtimeStyle);
+	const runtime = runtimeEntry(input.result.runtimeStyle);
 	if (runtime !== undefined) {
-		const [property, value] = runtime;
-		return `${input.kind} uses ${value} for its ${colorPropertyLabel(property)} because the runtime style supplies ${property}.`;
+		return `${input.kind} uses runtime value ${runtime[1]} through ${runtime[0]} on the host style, so changing it updates the rendered style without generating a class.`;
 	}
 
 	if (input.result.sheets?.some((sheet) => sheet.rules.length > 0))
-		return `${input.kind} uses generated stylesheet rules. ${input.description}`;
+		return `${input.kind} uses a generated stylesheet. ${input.description}`;
 
-	return `${input.kind} has no generated style declaration. ${input.description}`;
+	const description = input.description.trim();
+	return description === "" ? undefined : description;
 };
