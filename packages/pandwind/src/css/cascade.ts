@@ -14,9 +14,8 @@ export const addSpecificityLevel = (css: string, level: number): string => {
 	const firstOpening = css.indexOf("{");
 	if (css.startsWith("@") && firstOpening === css.lastIndexOf("{")) return css;
 	const marker = SPECIFICITY_MARKER.repeat(level);
-	const insertionPoint = css.includes("::") ? css.indexOf("::") : css.lastIndexOf("{");
-	if (insertionPoint < 0) return css;
-	return `${css.slice(0, insertionPoint)}${marker}${css.slice(insertionPoint)}`;
+	const target = css.includes("::") ? "::" : "{";
+	return css.replace(target, `${marker}${target}`);
 };
 
 /** Decorate a complete rule set with stable StyleX-like priority bands. */

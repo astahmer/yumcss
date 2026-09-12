@@ -3,6 +3,7 @@ import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { expect, test } from "vitest";
 import { createTwAdapter } from "../src/tw/adapter.ts";
+import { createCss } from "../src/css/create-css.ts";
 import { createStyleXAdapter } from "../src/css/stylex-adapter.ts";
 import { cssShorthands } from "../src/css/shorthands.ts";
 import { examplePreset } from "@pandwind/example-preset";
@@ -586,6 +587,36 @@ test("pandwindCssVite applies explicit property aliases to folded CSS", () => {
 
 		expect(transformed?.code).not.toContain("css.class(");
 		expect(loadGenerated(plugin)).toContain("background:blue");
+	} finally {
+		rmSync(dir, { recursive: true, force: true });
+	}
+});
+
+test("pandwindCssVite folds responsive CSS calls with preset conditions", () => {
+	const dir = makeProject({
+		"src/app.ts": [
+			'import { css } from "./design";',
+			'export const menu = css.class({ position: { sm: "fixed", md: "absolute" }, top: { sm: "0", md: "100%" } });',
+		].join("\n"),
+		"src/design.ts": "export const css = { class: (styles: unknown) => styles };",
+	});
+	try {
+		const plugin = pandwindCssVite(examplePreset, { root: dir });
+		const source = readFileSync(join(dir, "src/app.ts"), "utf8");
+		const transformed = (
+			plugin.transform as (code: string, id: string) => { code: string } | null
+		).call(null, source, join(dir, "src/app.ts"));
+		const expectedClasses = createCss({ conditions: examplePreset.conditions }).class({
+			position: { sm: "fixed", md: "absolute" },
+			top: { sm: "0", md: "100%" },
+		});
+
+		expect(transformed?.code).toContain(`const menu = ${JSON.stringify(expectedClasses)}`);
+		const generated = loadGenerated(plugin);
+		expect(generated).toContain("position:fixed");
+		expect(generated).toContain("position:absolute");
+		expect(generated).toContain("top:0");
+		expect(generated).toContain("top:100%");
 	} finally {
 		rmSync(dir, { recursive: true, force: true });
 	}

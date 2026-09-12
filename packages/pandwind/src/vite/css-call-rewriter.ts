@@ -75,6 +75,7 @@ export class StaticCssCallRewriter implements CssCallRewriter {
 		this.varKeys.clear();
 		if (names.size === 0) return { code, inlined: 0, varKeys: [] };
 		const engine = createCss({
+			conditions: this.preset.conditions,
 			className: this.className,
 			namespace: this.namespace,
 			propertyAliases: this.propertyAliases,
