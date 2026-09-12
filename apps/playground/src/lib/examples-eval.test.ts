@@ -59,7 +59,9 @@ function siblingBindings(
 	const bindings: Record<string, Record<string, unknown>> = {};
 	for (let index = 1; index < variant.files.length; index++) {
 		const file = variant.files[index]!;
-		bindings["./" + file.name] = evalSiblingModule(makeInput(file.code, undefined, classNameStrategy));
+		bindings["./" + file.name] = evalSiblingModule(
+			makeInput(file.code, undefined, classNameStrategy),
+		);
 	}
 	return bindings;
 }
@@ -221,17 +223,16 @@ describe("example catalog evaluates end to end", () => {
 					if (variant.api === PlaygroundApi.Tw) continue;
 					const label = `${labelFor(example, variant)} / ${strategyName}`;
 					const result = evalPlayground(
-						makeInput(
-							variant.files[0]!.code,
-							siblingBindings(variant, strategy),
-							strategy,
-						),
+						makeInput(variant.files[0]!.code, siblingBindings(variant, strategy), strategy),
 					);
 					expect(result.ok, label).toBe(true);
 					if (!result.ok) continue;
 
 					const generatedCss = result.sheets.map((sheet) => sheet.css).join("\n");
-					expect(result.sheets.some((sheet) => sheet.rules.length > 0), label).toBe(true);
+					expect(
+						result.sheets.some((sheet) => sheet.rules.length > 0),
+						label,
+					).toBe(true);
 					for (const mapping of result.styleMappings.filter((entry) => entry.active)) {
 						expect(generatedCss, `${label}: ${mapping.className}`).toContain(
 							`.${escapeCssIdentifier(mapping.className)}`,

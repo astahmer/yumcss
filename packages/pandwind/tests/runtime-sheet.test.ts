@@ -197,10 +197,7 @@ describe("runtime CSS-in-JS sheet", () => {
 	});
 
 	test("returns the same classes that sheet-backed strategies emit", () => {
-		for (const strategy of [
-			createNamedAtomsStrategy("runtime"),
-			createStyleXAdapter(),
-		]) {
+		for (const strategy of [createNamedAtomsStrategy("runtime"), createStyleXAdapter()]) {
 			const sheet = createRuntimeSheet({ autoMount: false });
 			const css = createRuntimeCss(examplePreset, { sheet, className: strategy });
 			const className = css.class({ color: "red", _hover: { color: "blue" } });
