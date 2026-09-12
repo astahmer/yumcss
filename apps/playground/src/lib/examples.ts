@@ -236,11 +236,12 @@ type ButtonProps = { tone: "primary" | "danger"; size: "sm" | "lg" };
 
 const Button = (props: ButtonProps) => (
 	<button
-		className={css.class({
-			backgroundColor: props.tone === "danger" ? "$red-500" : "$blue-500",
-			color: "$gray-50",
-			borderRadius: "lg",
-			padding: props.size === "lg" ? 16 : 8,
+							className={css.class({
+								backgroundColor: props.tone === "danger" ? "$red-500" : "$blue-500",
+								color: "$white",
+								borderRadius: "lg",
+								padding: props.size === "lg" ? 16 : 8,
+								fontSize: props.size === "lg" ? "1.125rem" : "1rem",
 		})}
 	>
 		{props.tone === "danger" ? "Delete" : "Continue"}
@@ -266,11 +267,11 @@ const Button = (props: ButtonProps) => (
 	<button
 		className={dss.class({
 			$frame: {
-				fill: props.tone === "danger" ? "$red-500" : "$blue-500",
-				corners: "lg",
-				pad: props.size === "lg" ? [4, 4] : [2, 2],
-			},
-			$text: { color: "$gray-50", size: props.size === "lg" ? "lg" : "base" },
+								fill: props.tone === "danger" ? "$red-500" : "$blue-500",
+								corners: "lg",
+								pad: props.size === "lg" ? "16" : "8",
+							},
+							$text: { color: "$white", size: props.size === "lg" ? "lg" : "base" },
 		})}
 	>
 		{props.tone === "danger" ? "Delete" : "Continue"}

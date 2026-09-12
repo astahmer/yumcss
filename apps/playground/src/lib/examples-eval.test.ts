@@ -99,6 +99,67 @@ describe("example catalog evaluates end to end", () => {
 		expect(cssVariant?.files[0]?.code).not.toContain('"px-4"');
 	});
 
+	it("keeps every Basics API lane visually equivalent", () => {
+		const basics = EXAMPLES.find((example) => example.path === "/basics");
+		expect(basics).toBeDefined();
+		if (basics === undefined) return;
+
+		for (const tone of ["primary", "danger"] as const) {
+			for (const size of ["sm", "lg"] as const) {
+				const sourceValues = { tone, size };
+				const expectedBackground = tone === "danger" ? "#E53E3E" : "#3182ce";
+				const expectedPadding = size === "lg" ? "16px" : "8px";
+				const expectedFontSize = size === "lg" ? "1.125rem" : "1rem";
+				const expectedDeclarations = [
+					`background-color:${expectedBackground}`,
+					"border-radius:0.5rem",
+					"color:#ffffff",
+					`font-size:${expectedFontSize}`,
+					`padding:${expectedPadding}`,
+				];
+
+				for (const variant of basics.variants) {
+					const source = applyPreviewControls(
+						variant.files[0]!.code,
+						basics.preview.controls ?? [],
+						sourceValues,
+					);
+					const result = evalPlayground(makeInput(source, siblingBindings(variant)));
+					const label = `${variant.api}/${tone}/${size}`;
+					expect(result.ok, label).toBe(true);
+					if (!result.ok) continue;
+
+					expect(result.rendered, label).toMatchObject({
+						type: "button",
+						children: [tone === "danger" ? "Delete" : "Continue"],
+					});
+					if (variant.api === PlaygroundApi.Tw) {
+						expect(result.output, label).toBe(
+							[
+								`bg-${tone === "danger" ? "red-500" : "blue-500"}`,
+								"text-white",
+								"rounded-lg",
+								`p-${size === "lg" ? "4" : "2"}`,
+								`text-${size === "lg" ? "lg" : "base"}`,
+							].join(" "),
+						);
+						continue;
+					}
+
+					const declarations = result.sheets
+						.flatMap((sheet) =>
+							sheet.rules.map((rule) => {
+								const start = rule.css.indexOf("{");
+								return rule.css.slice(start + 1, -1);
+							}),
+						)
+						.sort();
+					expect(declarations, label).toEqual(expectedDeclarations);
+				}
+			}
+		}
+	});
+
 	it("every entry tab produces a playground result", () => {
 		for (const def of EXAMPLES) {
 			for (const variant of def.variants) {
