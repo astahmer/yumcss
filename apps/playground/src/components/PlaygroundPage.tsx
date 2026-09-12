@@ -24,7 +24,6 @@ import {
 	CLASS_NAME_ADAPTERS,
 	ClassNameAdapterId,
 	classNameAdapterById,
-	resolveClassNameStrategy,
 	type ClassNameAdapterDefinition,
 } from "../lib/class-name-adapters.ts";
 import { EditorPane } from "./EditorPane.tsx";
@@ -121,9 +120,7 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 	const activeVariant = props.def.variants.find((variant) => variant.api === api) ?? initialVariant;
 	const [classNameAdapterId, setClassNameAdapterId] = useState(initialAdapter.id);
 	const activeClassNameAdapter = classNameAdapterById(classNameAdapterId);
-	const [classNameStrategy, setClassNameStrategy] = useState<ClassNameStrategy | null>(
-		initialAdapter.strategy ?? null,
-	);
+	const classNameStrategy = activeClassNameAdapter.strategy ?? null;
 	const [files, setFiles] = useState<readonly string[]>(() => {
 		const hash = window.location.hash.slice(1);
 		if (hash !== "") {
@@ -151,23 +148,6 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 		setPreviewControlValues(initialPreviewControlValues(props.def.preview.controls));
 	}, [props.def.path]);
 	useEffect(() => {
-		let cancelled = false;
-		setClassNameStrategy(activeClassNameAdapter.strategy ?? null);
-		void resolveClassNameStrategy(activeClassNameAdapter)
-			.then((strategy) => {
-				if (!cancelled) setClassNameStrategy(strategy);
-			})
-			.catch((error: unknown) => {
-				if (!cancelled) {
-					setEvaluation(failedEvaluation(error));
-				}
-			});
-		return () => {
-			cancelled = true;
-		};
-	}, [activeClassNameAdapter]);
-	useEffect(() => {
-		if (activeClassNameAdapter.loadStrategy !== undefined && classNameStrategy === null) return;
 		try {
 			setEvaluation(
 				evaluatePlayground(
@@ -254,22 +234,6 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 			setClassNameAdapterId(nextAdapter.id);
 			setFiles(nextFiles);
 			setActiveTab(0);
-			void resolveClassNameStrategy(nextAdapter)
-				.then((strategy) => {
-					setClassNameStrategy(strategy);
-					setEvaluation(
-						evaluatePlayground(
-							nextFiles,
-							nextVariant,
-							strategy,
-							props.def.preview.controls,
-							previewControlValues,
-						),
-					);
-				})
-				.catch((error: unknown) => {
-					setEvaluation(failedEvaluation(error));
-				});
 		};
 		window.addEventListener("popstate", syncVariant);
 		return () => window.removeEventListener("popstate", syncVariant);

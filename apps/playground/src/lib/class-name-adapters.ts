@@ -6,6 +6,7 @@ import {
 	type ClassNameStrategy,
 } from "pandwind/css";
 import { examplePreset } from "@pandwind/example-preset";
+import { twAdapter } from "../bridge.ts";
 
 /** Runtime-selectable class-name strategies shown by the own-API playground. */
 export const ClassNameAdapterId = {
@@ -25,17 +26,12 @@ export interface ClassNameAdapterDefinition {
 	description: string;
 	/** `undefined` selects Pandwind's normal hashed atomic output. */
 	strategy: ClassNameStrategy | undefined;
-	loadStrategy?: () => Promise<ClassNameStrategy>;
 }
 
-const strategies: Readonly<
-	Record<
-		Exclude<ClassNameAdapterId, typeof ClassNameAdapterId.Tailwind>,
-		ClassNameStrategy | undefined
-	>
-> = {
+const strategies: Readonly<Record<ClassNameAdapterId, ClassNameStrategy | undefined>> = {
 	[ClassNameAdapterId.Atomic]: undefined,
 	[ClassNameAdapterId.NamedAtoms]: createNamedAtomsStrategy(),
+	[ClassNameAdapterId.Tailwind]: twAdapter,
 	[ClassNameAdapterId.UnoCSS]: createUnoCssAdapter({ preset: examplePreset }),
 	[ClassNameAdapterId.Panda]: createPandaAdapter({ conditions: examplePreset.conditions }),
 	[ClassNameAdapterId.StyleX]: createStyleXAdapter({ conditions: examplePreset.conditions }),
@@ -58,8 +54,7 @@ export const CLASS_NAME_ADAPTERS: readonly ClassNameAdapterDefinition[] = [
 		id: ClassNameAdapterId.Tailwind,
 		label: "Tailwind CSS",
 		description: "Tailwind utility candidates for Tailwind's compiler",
-		strategy: undefined,
-		loadStrategy: async () => (await import("../bridge.ts")).twAdapter,
+		strategy: strategies[ClassNameAdapterId.Tailwind],
 	},
 	{
 		id: ClassNameAdapterId.UnoCSS,
@@ -87,5 +82,4 @@ export function classNameAdapterById(id: string | null | undefined): ClassNameAd
 
 export const resolveClassNameStrategy = async (
 	adapter: ClassNameAdapterDefinition,
-): Promise<ClassNameStrategy | null> =>
-	(adapter.loadStrategy === undefined ? adapter.strategy : await adapter.loadStrategy()) ?? null;
+): Promise<ClassNameStrategy | null> => adapter.strategy ?? null;
