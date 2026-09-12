@@ -236,7 +236,7 @@ explicit runtime sheet when it changes the stylesheet itself:
 | Need                                                      | Use                                                       | What happens                                                                                                 |
 | --------------------------------------------------------- | --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
 | Viewport, container, or feature conditions on a component | `@media`, `@container`, or `@supports` in a style object  | The condition is emitted around the component's extracted atomic rule.                                       |
-| Browser-global registration and definitions               | Authored CSS                                              | The host CSS toolchain owns `@property`, `@font-face`, `@keyframes`, `@layer`, resets, and global selectors. |
+| Browser-global registration and definitions               | Authored CSS                                              | The host CSS toolchain owns `@property`, `@font-face`, `@keyframes`, resets, and global selectors; `cascade: "layers"` is the opt-in wrapper for Pandwind-generated rules. |
 | A rule is created at runtime or collected during SSR      | `createRuntimeCss()` plus `sheet.registerSemanticRules()` | The runtime sheet serializes an explicit semantic rule and can mount, snapshot, or hydrate it.               |
 
 For example, `@container` is a normal typed condition on a local class:

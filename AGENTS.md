@@ -2,6 +2,14 @@
 
 For every decision, ask what the best expert in that field would do and why they would reject your current choice; if you can name that reason, don't make the choice. Optimize for what that expert would judge correct, never for what satisfies the stated constraints most cheaply. Every trade-off you take must be stated to the user, never absorbed.
 
+## Measured bundle growth
+
+Bundle budgets are regression guards, not a ban on all growth. A small,
+intentional increase is acceptable when a correctness fix or worthwhile
+feature justifies it. Measure before and after, keep the default path lean or
+opt-in when practical, update the relevant size evidence, and state the
+trade-off in the revision and user-facing summary.
+
 ## API surface policy (read before proposing features)
 
 The **user-facing API is deliberately frozen**: `tw()` / `css()` / `cx()` /

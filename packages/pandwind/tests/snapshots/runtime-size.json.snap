@@ -4,8 +4,8 @@
     "gz": 3919
   },
   "css, runtime sheet": {
-    "min": 27624,
-    "gz": 10504
+    "min": 28209,
+    "gz": 10722
   },
   "css, all static calls": {
     "min": 81,
@@ -13,7 +13,7 @@
   },
   "css, dynamic fallback": {
     "min": 9746,
-    "gz": 3919
+    "gz": 3918
   },
   "css, compiler-pruned call": {
     "min": 5391,
@@ -64,8 +64,8 @@
     "gz": 7453
   },
   "stylesheet generator (build-time only)": {
-    "min": 16489,
-    "gz": 6619
+    "min": 17091,
+    "gz": 6861
   },
   "root barrel, css only": {
     "min": 9765,
@@ -73,7 +73,7 @@
   },
   "css, optional shorthands": {
     "min": 10485,
-    "gz": 4237
+    "gz": 4235
   },
   "root barrel, tw only": {
     "min": 2800,
