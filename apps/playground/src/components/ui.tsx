@@ -55,6 +55,7 @@ const SPLITTER_TRIGGER_HORIZONTAL = uiCss.class({
 	backgroundColor: "transparent",
 	padding: "0",
 	touchAction: "none",
+	"&[data-disabled]": { cursor: "default", opacity: 0.45 },
 	"&::after": {
 		position: "absolute",
 		top: "50%",
@@ -83,6 +84,7 @@ const SPLITTER_TRIGGER_VERTICAL = uiCss.class({
 	backgroundColor: "transparent",
 	padding: "0",
 	touchAction: "none",
+	"&[data-disabled]": { cursor: "default", opacity: 0.45 },
 	"&::after": {
 		position: "absolute",
 		top: "3px",
@@ -135,6 +137,23 @@ const initialPanelSizes = (panels: readonly ResizableSplitterPanel[]): number[] 
 	return total === 0 ? sizes : sizes.map((size) => (size / total) * 100);
 };
 
+const panelSizesFromLayout = (props: {
+	root: HTMLDivElement;
+	orientation: "horizontal" | "vertical";
+	panelCount: number;
+}): number[] | undefined => {
+	const panelSizes = [...props.root.children]
+		.filter((child) => child.getAttribute("data-part") === "panel")
+		.map((child) => {
+			const size =
+				child.getBoundingClientRect()[props.orientation === "horizontal" ? "width" : "height"];
+			return size;
+		});
+	if (panelSizes.length !== props.panelCount) return undefined;
+	const total = panelSizes.reduce((sum, size) => sum + size, 0);
+	return total === 0 ? undefined : panelSizes.map((size) => (size / total) * 100);
+};
+
 const adjustPanelSizes = (props: {
 	sizes: readonly number[];
 	targetIndex: number;
@@ -168,6 +187,8 @@ export function ResizableSplitter(props: {
 	const [collapsedPanelIds, setCollapsedPanelIds] =
 		useState<ReadonlySet<string>>(initialCollapsedPanelIds);
 	const previousPanelSignature = useRef<string | undefined>(undefined);
+	const panelSizeBeforeCollapse = useRef(new Map<string, number>());
+	const splitterRootRef = useRef<HTMLDivElement>(null);
 
 	const splitter = useSplitter({
 		orientation: props.orientation,
@@ -179,12 +200,33 @@ export function ResizableSplitter(props: {
 		})),
 		defaultSize: initialPanelSizes(props.panels),
 	});
+	const syncLayout = () => {
+		const root = splitterRootRef.current;
+		if (root === null) return;
+		const sizes = panelSizesFromLayout({
+			root,
+			orientation: props.orientation,
+			panelCount: props.panels.length,
+		});
+		if (sizes === undefined) return;
+		splitter.setSizes(sizes);
+		previousPanelSignature.current = panelSignature;
+	};
 	useEffect(() => {
 		if (previousPanelSignature.current === panelSignature) return;
-		previousPanelSignature.current = panelSignature;
-		setCollapsedPanelIds(initialCollapsedPanelIds());
-		const resetFrame = requestAnimationFrame(() => splitter.resetSizes());
-		return () => cancelAnimationFrame(resetFrame);
+		const nextCollapsedPanelIds = initialCollapsedPanelIds();
+		setCollapsedPanelIds(nextCollapsedPanelIds);
+		let layoutFrame = requestAnimationFrame(syncLayout);
+		const observer = new ResizeObserver(() => {
+			cancelAnimationFrame(layoutFrame);
+			layoutFrame = requestAnimationFrame(syncLayout);
+		});
+		const root = splitterRootRef.current;
+		if (root !== null) observer.observe(root);
+		return () => {
+			cancelAnimationFrame(layoutFrame);
+			observer.disconnect();
+		};
 	}, [panelSignature]);
 	const togglePanel = (panelId: string): void => {
 		const panel = props.panels.find((candidate) => candidate.id === panelId);
@@ -192,13 +234,16 @@ export function ResizableSplitter(props: {
 		const currentCollapsed = collapsedPanelIds.has(panelId);
 		const targetIndex = props.panels.findIndex((candidate) => candidate.id === panelId);
 		if (targetIndex === -1) return;
-		if (panel.minExpandedSize === undefined) {
-			if (currentCollapsed) splitter.expandPanel(panelId);
-			else splitter.collapsePanel(panelId);
-		} else if (currentCollapsed) {
-			const sizes = splitter.getSizes();
-			const currentSize = sizes[targetIndex] ?? 0;
-			const expandedSize = Math.max(currentSize, panel.minExpandedSize);
+		const sizes = splitter.getSizes();
+		const currentSize = sizes[targetIndex] ?? 0;
+		if (currentCollapsed) {
+			const rememberedSize = panelSizeBeforeCollapse.current.get(panelId);
+			const defaultExpandedSize = initialPanelSizes(props.panels)[targetIndex] ?? currentSize;
+			const expandedSize = Math.max(
+				currentSize,
+				panel.minExpandedSize ?? 0,
+				rememberedSize ?? defaultExpandedSize,
+			);
 			const donorIndices = props.panels.flatMap((candidate, index) =>
 				index !== targetIndex && !collapsedPanelIds.has(candidate.id) ? [index] : [],
 			);
@@ -210,21 +255,9 @@ export function ResizableSplitter(props: {
 			});
 			if (nextSizes === undefined) return;
 			splitter.setSizes(nextSizes);
+			panelSizeBeforeCollapse.current.delete(panelId);
 		} else {
-			const sizes = splitter.getSizes();
-			const currentSize = sizes[targetIndex] ?? 0;
-			splitter.collapsePanel(panelId);
-			const collapsedSize = splitter.getPanelSize(panelId);
-			const donorIndices = props.panels.flatMap((candidate, index) =>
-				index !== targetIndex && !collapsedPanelIds.has(candidate.id) ? [index] : [],
-			);
-			const nextSizes = adjustPanelSizes({
-				sizes,
-				targetIndex,
-				delta: collapsedSize - currentSize,
-				donorIndices,
-			});
-			if (nextSizes !== undefined) splitter.setSizes(nextSizes);
+			panelSizeBeforeCollapse.current.set(panelId, currentSize);
 		}
 		setCollapsedPanelIds((current) => {
 			const next = new Set(current);
@@ -232,45 +265,55 @@ export function ResizableSplitter(props: {
 			else next.add(panelId);
 			return next;
 		});
+		requestAnimationFrame(syncLayout);
 	};
 	return (
 		<Splitter.RootProvider
 			value={splitter}
+			ref={splitterRootRef}
 			className={`${props.orientation === "horizontal" ? SPLITTER_ROOT_HORIZONTAL : SPLITTER_ROOT_VERTICAL} ${props.className ?? ""}`}
 		>
-			{props.panels.map((panel, index) => (
-				<Fragment key={panel.id}>
-					<Splitter.Panel
-						id={panel.id}
-						className={SPLITTER_PANEL}
-						style={collapsedPanelIds.has(panel.id) ? collapsedPanelStyle(panel) : undefined}
-					>
-						<RESIZABLE_SPLITTER_CONTROLS.Provider
-							value={
-								panel.collapsible === true
-									? {
-											collapsed: collapsedPanelIds.has(panel.id),
-											toggle: () => togglePanel(panel.id),
-										}
-									: null
-							}
+			{props.panels.map((panel, index) => {
+				const nextPanel = props.panels[index + 1];
+				const resizeDisabled =
+					nextPanel === undefined ||
+					collapsedPanelIds.has(panel.id) ||
+					(nextPanel !== undefined && collapsedPanelIds.has(nextPanel.id));
+				return (
+					<Fragment key={panel.id}>
+						<Splitter.Panel
+							id={panel.id}
+							className={SPLITTER_PANEL}
+							style={collapsedPanelIds.has(panel.id) ? collapsedPanelStyle(panel) : undefined}
 						>
-							<div className={SPLITTER_PANEL_CONTENT}>{panel.content}</div>
-						</RESIZABLE_SPLITTER_CONTROLS.Provider>
-					</Splitter.Panel>
-					{index < props.panels.length - 1 ? (
-						<Splitter.ResizeTrigger
-							id={`${panel.id}:${props.panels[index + 1]!.id}`}
-							className={
-								props.orientation === "horizontal"
-									? SPLITTER_TRIGGER_HORIZONTAL
-									: SPLITTER_TRIGGER_VERTICAL
-							}
-							aria-label={`Resize ${panel.id} and ${props.panels[index + 1]!.id}`}
-						/>
-					) : null}
-				</Fragment>
-			))}
+							<RESIZABLE_SPLITTER_CONTROLS.Provider
+								value={
+									panel.collapsible === true
+										? {
+												collapsed: collapsedPanelIds.has(panel.id),
+												toggle: () => togglePanel(panel.id),
+											}
+										: null
+								}
+							>
+								<div className={SPLITTER_PANEL_CONTENT}>{panel.content}</div>
+							</RESIZABLE_SPLITTER_CONTROLS.Provider>
+						</Splitter.Panel>
+						{nextPanel !== undefined ? (
+							<Splitter.ResizeTrigger
+								id={`${panel.id}:${nextPanel.id}`}
+								disabled={resizeDisabled}
+								className={
+									props.orientation === "horizontal"
+										? SPLITTER_TRIGGER_HORIZONTAL
+										: SPLITTER_TRIGGER_VERTICAL
+								}
+								aria-label={`Resize ${panel.id} and ${nextPanel.id}`}
+							/>
+						) : null}
+					</Fragment>
+				);
+			})}
 		</Splitter.RootProvider>
 	);
 }
