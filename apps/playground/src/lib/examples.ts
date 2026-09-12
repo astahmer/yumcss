@@ -1230,9 +1230,6 @@ const ResidualCard = () => {
 		display: "flex",
 		backgroundColor: "$gray-800",
 		color: "$red-100",
-		borderStyle: "solid",
-		borderWidth: 2,
-		borderColor: "$red-400",
 		borderRadius: "lg",
 		padding: 16,
 		// @ts-expect-error animation is outside examplePreset.properties.
