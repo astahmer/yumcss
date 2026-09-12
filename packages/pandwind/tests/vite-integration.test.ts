@@ -351,20 +351,21 @@ export const className = css.class({ backgroundColor: "$green-500" });
 		const virtualId = (await hmrServer.pluginContainer.resolveId("pandwind:css", undefined))!.id;
 
 		try {
-			await hmrServer.ssrLoadModule(presetFile);
+			await hmrServer.ssrLoadModule("/src/preset.ts");
 			const before = await hmrServer.transformRequest(virtualId);
 			expect(before?.code).toContain("#60A3BC");
 
-			writeFileSync(
-				presetFile,
-				files["src/preset.ts"]!.replace("#60A3BC", "#FF00AA"),
-			);
-			hmrServer.moduleGraph.invalidateAll();
-			await cssPlugin.handleHotUpdate({
+			writeFileSync(presetFile, files["src/preset.ts"]!.replace("#60A3BC", "#FF00AA"));
+			const updatedModules = await cssPlugin.handleHotUpdate({
 				file: presetFile,
 				modules: [],
 				server: hmrServer,
 			});
+			const virtualModule = hmrServer.moduleGraph.getModuleById(virtualId);
+			expect(updatedModules).toContain(virtualModule);
+			if (virtualModule !== undefined) {
+				hmrServer.moduleGraph.invalidateModule(virtualModule, new Set(), Date.now(), true);
+			}
 
 			const after = await hmrServer.transformRequest(virtualId);
 			expect(after?.code).toContain("#FF00AA");

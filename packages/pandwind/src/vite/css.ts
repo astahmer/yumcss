@@ -38,7 +38,8 @@ import type {
 	CssConfigReturn,
 	DefinePresetOptions,
 } from "../types/typings.ts";
-import { resolve } from "node:path";
+import { realpathSync } from "node:fs";
+import { relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { HmrContext, ModuleNode, ViteDevServer } from "vite";
 import { createCssExtractorPluginCore } from "./css-core.ts";
@@ -140,8 +141,7 @@ export interface PandwindCssViteOptions {
 
 export type CssExtractorPreset = CssConfigReturn<DefinePresetOptions<AnyCssConfig, AnyTokens>>;
 
-type CssHmrContext = Pick<HmrContext, "file"> &
-	Partial<Pick<HmrContext, "modules" | "server">>;
+type CssHmrContext = Pick<HmrContext, "file"> & Partial<Pick<HmrContext, "modules" | "server">>;
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
 	typeof value === "object" && value !== null;
@@ -158,7 +158,14 @@ const isCssExtractorPreset = (value: unknown): value is CssExtractorPreset => {
 
 const withoutQuery = (value: string): string => value.split(/[?#]/u, 1)[0]!;
 
-const normalizeFilePath = (value: string): string => resolve(withoutQuery(value));
+const normalizeFilePath = (value: string): string => {
+	const file = resolve(withoutQuery(value));
+	try {
+		return realpathSync.native(file);
+	} catch {
+		return file;
+	}
+};
 
 const moduleContainsFile = (module: ModuleNode, file: string): boolean =>
 	module.file !== null && normalizeFilePath(module.file) === file;
@@ -187,18 +194,28 @@ const presetModuleIsAffected = (
 };
 
 const resolvePresetModule = (module: string, root: string): string =>
-	module.startsWith("file://") ? fileURLToPath(module) : resolve(root, module);
+	normalizeFilePath(module.startsWith("file://") ? fileURLToPath(module) : resolve(root, module));
+
+const toViteModuleUrl = (file: string, root: string): string => {
+	const relativePath = relative(root, file).replaceAll("\\", "/");
+	if (relativePath !== "" && !relativePath.startsWith("../")) return `/${relativePath}`;
+	return `/@fs/${file.replaceAll("\\", "/")}`;
+};
 
 const loadPreset = async ({
 	server,
 	presetModule,
 	presetExport,
+	root,
 }: {
 	server: ViteDevServer;
 	presetModule: string;
 	presetExport: string;
+	root: string;
 }): Promise<CssExtractorPreset> => {
-	const namespace = await server.ssrLoadModule(presetModule, { fixStacktrace: true });
+	const namespace = await server.ssrLoadModule(toViteModuleUrl(presetModule, root), {
+		fixStacktrace: true,
+	});
 	const candidate: unknown = namespace[presetExport];
 	if (!isCssExtractorPreset(candidate)) {
 		throw new Error(
@@ -225,7 +242,7 @@ export function pandwindCssVite(preset: CssExtractorPreset, options: PandwindCss
 
 	const reloadPreset = async (server: ViteDevServer): Promise<void> => {
 		if (presetModule === undefined) return;
-		const nextPreset = await loadPreset({ server, presetModule, presetExport });
+		const nextPreset = await loadPreset({ server, presetModule, presetExport, root });
 		if (options.engine !== undefined && nextPreset !== options.engine.preset) {
 			throw new Error(
 				"pandwindCssVite: presetModule HMR cannot reload a preset shared through " +
@@ -261,6 +278,7 @@ export function pandwindCssVite(preset: CssExtractorPreset, options: PandwindCss
 				ctx.server !== undefined &&
 				presetModuleIsAffected(ctx.file, presetModule, ctx.server)
 			) {
+				ctx.server.moduleGraph.onFileChange(normalizeFilePath(ctx.file));
 				await reloadPreset(ctx.server);
 			}
 			core.invalidate(ctx.file);
