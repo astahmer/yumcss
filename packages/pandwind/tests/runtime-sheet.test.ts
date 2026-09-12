@@ -6,6 +6,9 @@ import {
 	createRuntimeSheet,
 } from "../src/css/runtime.ts";
 import { createStylesheet } from "../src/css/create-stylesheet.ts";
+import { createNamedAtomsStrategy } from "../src/css/named-atoms-strategy.ts";
+import { createStyleXAdapter } from "../src/css/stylex-adapter.ts";
+import { escapeIdentifier } from "../src/css/hash.ts";
 import { examplePreset } from "@pandwind/example-preset";
 import type {
 	RuntimeDeclaration,
@@ -191,6 +194,22 @@ describe("runtime CSS-in-JS sheet", () => {
 		expect(className).toMatch(/^[a-z0-9]+$/);
 		expect(sheet.css()).toContain("color:#3182ce");
 		expect(sheet.snapshot().rules).toHaveLength(1);
+	});
+
+	test("returns the same classes that sheet-backed strategies emit", () => {
+		for (const strategy of [
+			createNamedAtomsStrategy("runtime"),
+			createStyleXAdapter(),
+		]) {
+			const sheet = createRuntimeSheet({ autoMount: false });
+			const css = createRuntimeCss(examplePreset, { sheet, className: strategy });
+			const className = css.class({ color: "red", _hover: { color: "blue" } });
+
+			expect(className.split(" ")).toHaveLength(2);
+			for (const classToken of className.split(" ")) {
+				expect(sheet.css()).toContain(`.${escapeIdentifier(classToken)}`);
+			}
+		}
 	});
 
 	test("runtime lowering stays byte-identical to the full stylesheet path", () => {

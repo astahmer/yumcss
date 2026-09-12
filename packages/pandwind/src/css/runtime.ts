@@ -158,19 +158,15 @@ function runtimeOptions(preset: CssConfigReturn, options: RuntimeCssOptions): Ru
 		sheetBacked: authoredStrategy?.sheetBacked,
 		toClassName: (key, value) => {
 			const custom = authoredStrategy?.toClassName(key, value);
-			if (
-				typeof custom === "string" &&
-				custom.length > 0 &&
-				!/[\s\u0000]/.test(custom) &&
-				authoredStrategy?.sheetBacked !== true
-			)
-				return custom;
+			const hasCustomClass =
+			typeof custom === "string" && custom.length > 0 && !/[\s\u0000]/.test(custom);
+			if (hasCustomClass && authoredStrategy?.sheetBacked !== true) return custom;
 			const id = `${key}\u0000${value}`;
 			if (!pendingStyleIds.has(id)) {
 				pendingStyleIds.add(id);
 				pendingStyles.push({ key, value });
 			}
-			return null;
+			return hasCustomClass ? custom : null;
 		},
 	};
 	return {
