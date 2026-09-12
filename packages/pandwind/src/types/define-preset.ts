@@ -10,29 +10,9 @@ import type {
 export * from "./typings.ts";
 
 /**
- * Preserve a theme object's literal types before it is combined with preset
- * behavior.
+ * Preserve literal token and CSS config types for a preset theme.
  *
- * A theme owns values: tokens and the CSS configuration they are allowed to
- * describe. `defineTheme` is intentionally a zero-cost identity function,
- * but naming this boundary makes the relationship between tokens and the
- * final preset explicit in application code.
- *
- * **When to use**
- *
- * Use this when a design-system package is defining tokens before it chooses
- * the conditions and property bindings that make those tokens available to a
- * CSS factory.
- *
- * **Details**
- *
- * `config` is a compile-time type witness. The common `{} as
- * StandardProperties` form does not populate a runtime object; it tells
- * TypeScript which CSS properties and raw values the eventual preset may
- * expose.
- *
- * **Example** (Defining the value side of a preset)
- *
+ * @example
  * ```ts
  * import { defineTheme, defineTokens, type StandardProperties } from "pandwind/preset";
  *
@@ -47,8 +27,8 @@ export * from "./typings.ts";
  * });
  * ```
  *
- * @typeParam TTheme - The inferred theme shape, including literal token names.
- * @param theme - The token and CSS configuration values to preserve.
+ * @typeParam TTheme - Inferred theme shape, including literal token names.
+ * @param theme - Theme values to preserve.
  * @returns The same object, with its literal types intact.
  * @category presets
  * @since 0.1.0
@@ -56,71 +36,39 @@ export * from "./typings.ts";
 export const defineTheme = <TTheme extends DefinePresetOptions>(theme: TTheme) => theme;
 
 /**
- * Combine a theme's values with the behavior that makes them available to
- * `createCss`, `createDesignCss`, and the stylesheet compiler.
+ * Combine theme values with the condition and property metadata used by CSS factories.
  *
- * The preset is the type boundary for token references. Pass the returned
- * value to a CSS factory when you want property names, token names, and
- * conditions to be checked by TypeScript. A bare `createCss()` remains the
- * open-ended escape hatch for raw CSS values, but it cannot know your token
- * vocabulary.
+ * `strict: true` exposes mapped token names; `$strictness: "inherits"` also
+ * allows the property's raw CSS values.
  *
- * **When to use**
- *
- * Use this once per design-system vocabulary, then pass the same preset to
- * every CSS factory and build-time stylesheet entry point that consumes it.
- *
- * **Details**
- *
- * `properties: true` uses the corresponding value type from `config`. A
- * property map with `$tokens` binds that property to a named token group.
- * `$all: true` adds all configured property names, but does not bind token
- * groups automatically. With `strict: true`, mapped properties accept their
- * token names; `strict: false` also admits their raw config values. Add
- * `$strictness: "inherits"` to one mapped property when a strict preset needs
- * both token names and that property's raw config values.
- *
- * `defineTheme` is optional when the theme object is consumed only by this
- * call. Pass `{ config, tokens }` directly in that case; keep `defineTheme`
- * for a named, exported, or independently composed theme.
- *
- * **Example** (A small, typed CSS preset)
- *
+ * @example
  * ```ts
  * import { createCss } from "pandwind/css";
- * import { definePreset, defineTokens, type StandardProperties } from "pandwind/preset";
- *
- * const tokens = defineTokens({
- *   colors: { "$brand-500": "#2563eb", "$surface": "#ffffff" },
- *   spacing: { 4: "1rem" },
- * });
+ * import { definePreset, type StandardProperties } from "pandwind/preset";
  *
  * const preset = definePreset(
- *   { config: {} as StandardProperties, tokens },
+ *   {
+ *     config: {} as StandardProperties,
+ *     tokens: { colors: { "$brand-500": "#2563eb" } },
+ *   },
  *   {
  *     strict: true,
- *     conditions: { _hover: "&:hover" },
+ *     conditions: {},
  *     properties: {
- *       $all: true,
- *       backgroundColor: { $tokens: "colors", $strictness: "inherits" },
- *       padding: { $tokens: "spacing" },
+ *       backgroundColor: { $tokens: "colors" },
  *     },
  *   },
  * );
  *
  * const css = createCss(preset);
- * const className = css.class({
- *   backgroundColor: "$brand-500",
- *   padding: 4,
- *   _hover: { backgroundColor: "$surface" },
- * });
+ * css.class({ backgroundColor: "$brand-500" });
  * ```
  *
- * @typeParam TTheme - The theme value shape.
- * @typeParam TConfig - The CSS property configuration shape.
- * @typeParam TTokens - The token groups and literal token names.
- * @typeParam TPreset - The resulting preset behavior shape.
- * @param theme - Theme-shaped values, optionally produced by {@link defineTheme}.
+ * @typeParam TTheme - Theme value shape.
+ * @typeParam TConfig - CSS property configuration shape.
+ * @typeParam TTokens - Token groups and literal token names.
+ * @typeParam TPreset - Resulting preset shape.
+ * @param theme - Values, optionally produced by {@link defineTheme}.
  * @param preset - Conditions, strictness, and property-to-token mappings.
  * @returns A preset carrying both runtime metadata and inferred token types.
  * @see {@link defineTokens} for the raw token layer.
@@ -141,23 +89,11 @@ export function definePreset<
 }
 
 /**
- * Declare raw token values while preserving their names for a typed preset.
+ * Preserve literal names in a raw token map.
  *
- * Token values are deliberately plain strings. Pandwind does not require a
- * runtime token object in the browser; the values are consumed by the
- * stylesheet/runtime compiler and their names become part of the CSS API.
- * A value may also reference another token path in the same preset. This is
- * useful for a component tier: `component.card.bg` can point to
- * `semantic.bg.primary`, while themes rebind only the semantic token.
+ * Values may be CSS values or references to another token path.
  *
- * **When to use**
- *
- * Use this for the raw values and string references that form the base token
- * graph. Keep semantic and component roles in separate groups so components
- * can reference stable roles instead of raw colors or spacing values.
- *
- * **Example** (Raw and component token references)
- *
+ * @example
  * ```ts
  * import { defineTokens } from "pandwind/preset";
  *
@@ -180,25 +116,9 @@ export function definePreset<
 export const defineTokens = <T extends AnySimpleTokens>(tokens: T) => tokens;
 
 /**
- * Declare token values selected by preset conditions such as `_dark`.
+ * Define token values that change under preset conditions such as `_dark`.
  *
- * Use this for semantic values that change with a theme context and for
- * component aliases that select different semantic roles per condition. The
- * condition keys must be present in the condition map passed as the first
- * argument; unlike a raw token, the value is intentionally not flattened
- * into one static string.
- *
- * **When to use**
- *
- * Use this for semantic roles whose value changes with a theme scope, media
- * query, or another preset condition. Components keep the same token path;
- * the active condition changes the emitted variable value. The same shape
- * lets a component token choose `semantic.surface` in the base scope and
- * `semantic.inverseSurface` in a dark scope without putting that branch in
- * component JavaScript.
- *
- * **Example** (A semantic color with a dark-mode value)
- *
+ * @example
  * ```ts
  * import { defineSemanticTokens } from "pandwind/preset";
  *
@@ -212,7 +132,7 @@ export const defineTokens = <T extends AnySimpleTokens>(tokens: T) => tokens;
  *
  * @typeParam TConditions - The condition map used by the token values.
  * @typeParam TTokens - The inferred semantic token groups and names.
- * @param _conditions - The condition names and selectors available to the tokens.
+ * @param _conditions - Conditions available to the token values.
  * @param tokens - Token values keyed by those conditions.
  * @returns The same semantic token object, with literal keys preserved.
  * @category tokens
@@ -229,12 +149,7 @@ export const defineSemanticTokens = <
 /**
  * Preserve a condition map as typed preset metadata.
  *
- * Conditions are written as selectors or at-rules. Their keys become the
- * nested keys accepted by `css`, while their values control the generated
- * stylesheet.
- *
- * **Example** (Declaring reusable conditions)
- *
+ * @example
  * ```ts
  * import { defineConditions } from "pandwind/preset";
  *
@@ -255,17 +170,10 @@ export const defineConditions = <T extends AnyConditions>(cond: T) => cond;
 /**
  * Preserve the property-to-token vocabulary used by a preset.
  *
- * `true` leaves a property open to the CSS config. A token map makes the
- * property's accepted values come from that map, which is what enables
- * strict token references in `createCss(preset)`. Use `$tokens` when the
- * property should refer to a token group without copying the group's values
- * into the property declaration. Use `$strictness: "inherits"` to add the
- * raw config values back to one mapped property in an otherwise strict
- * preset. `$all: true` adds configured property names but does not create
- * token bindings.
+ * Use `$tokens` for a token group, `$all` for all configured properties, and
+ * `$strictness: "inherits"` when a mapped property also accepts raw CSS values.
  *
- * **Example** (Binding selected properties to token groups)
- *
+ * @example
  * ```ts
  * import { defineProperties } from "pandwind/preset";
  *

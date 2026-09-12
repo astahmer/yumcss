@@ -44,14 +44,9 @@ import type { VarAtom, VarsOutput } from "../css/var-compiler.ts";
 import type { TwComposeMeta, TwConflictsMeta, TwVariantsMeta } from "../tw/compile.ts";
 
 /**
- * Metadata and CSS registry used by {@link createCx} to resolve conflicts.
+ * Metadata used by {@link createCx} to resolve utility and CSS-atom conflicts.
  *
- * The generated `tw` metadata is optional: without it, `cx` still combines
- * strings, compiled CSS maps, and variable carriers, but opaque strings are
- * preserved rather than guessed at. Pass the same `css` instance that created
- * CSS atoms when those atoms should participate in last-wins merging.
- *
- * @example Sharing a CSS atom registry with `cx`
+ * @example
  * ```ts
  * import { createCss } from "pandwind/css";
  * import { createCx } from "pandwind/cx";
@@ -59,7 +54,7 @@ import type { TwComposeMeta, TwConflictsMeta, TwVariantsMeta } from "../tw/compi
  * const css = createCss();
  * const cx = createCx({ css });
  *
- * const className = cx("rounded", css.class({ color: "tomato" }), false);
+ * cx("rounded", css.class({ color: "tomato" }));
  * ```
  *
  * @category composition
@@ -78,13 +73,7 @@ export interface CxOptions {
 }
 
 /**
- * A class string, compiled CSS map, or `css.vars()` carrier accepted by
- * {@link createCx}.
- *
- * Falsey values are ignored so conditional class composition can stay inside
- * one call. Unknown strings are kept verbatim; only metadata that was
- * explicitly supplied to the `cx` instance can participate in conflict
- * resolution.
+ * Input accepted by {@link createCx}; falsey values are ignored.
  *
  * @category composition
  * @since 0.1.0
@@ -425,10 +414,6 @@ const signatureFromTwClass = (
 };
 
 /**
- * Create the app's `cx` merge function, bound to the same generated tw
- * metadata and css engine the rest of the app uses.
- */
-/**
  * Callable class merger returned by {@link createCx}.
  *
  * @category composition
@@ -436,13 +421,9 @@ const signatureFromTwClass = (
  */
 export interface CxFn {
 	/**
-	 * Merge class strings, compiled CSS maps, variable carriers, nested arrays,
-	 * and falsey conditional values.
+	 * Merge class strings, compiled maps, variable carriers, arrays, and falsey values.
 	 *
-	 * When generated conflict metadata is present, later declarations win within
-	 * the same variant scope. Otherwise inputs remain opaque and are preserved.
-	 *
-	 * @example Conditional composition
+	 * @example
 	 * ```ts
 	 * import { createCss } from "pandwind/css";
 	 * import { createCx } from "pandwind/cx";
@@ -459,10 +440,7 @@ export interface CxFn {
 	 */
 	(...inputs: Array<CxInput | CxInput[]>): string;
 	/**
-	 * Merge `css.vars()` outputs while preserving their inline custom properties.
-	 *
-	 * Use this projection when the result is going directly to a host element;
-	 * the plain call intentionally returns only a class string.
+	 * Merge `css.vars()` outputs and preserve their inline custom properties.
 	 *
 	 * @example
 	 * ```ts
@@ -476,22 +454,15 @@ export interface CxFn {
 	 *   css.vars({ color: runtimeColor }),
 	 *   "font-medium",
 	 * );
-	 * // className.class and className.style are ready for a host element.
 	 * ```
 	 */
 	vars: (...inputs: Array<CxInput | CxInput[]>) => VarsOutput;
 }
 
 /**
- * Create a last-wins class composition function.
+ * Create a metadata-aware, last-wins class composition function.
  *
- * `cx` is deliberately metadata-driven. It understands generated utility
- * conflicts and CSS atoms registered by the supplied `css` instance, but it
- * does not ship an ecosystem-specific vocabulary of its own. This keeps
- * migration and generated-class lanes honest: unresolved strings remain in
- * the result instead of being accidentally removed.
- *
- * @example Combining a CSS atom with conditional classes
+ * @example
  * ```ts
  * import { createCss } from "pandwind/css";
  * import { createCx } from "pandwind/cx";
@@ -508,8 +479,7 @@ export interface CxFn {
  * ```
  *
  * @param options - Generated utility metadata and an optional CSS registry.
- * @returns A callable merger with a variable-preserving `.vars` projection.
- * @see {@link createCss} for the CSS atom registry passed through `options.css`.
+ * @returns A callable merger with a `.vars` projection.
  * @category composition
  * @since 0.1.0
  */

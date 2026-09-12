@@ -4,14 +4,9 @@ import type { AnySelector } from "./selectors.d.ts";
 export type StyleValue = string | number | null | StyleObject | readonly StyleValue[] | undefined;
 
 /**
- * The open structural shape used by the runtime CSS compiler.
+ * Open style shape used by runtime and migration APIs.
  *
- * Preset-aware factories expose a narrower version of this shape through
- * {@link TypedStyleObject}; use this type when a style is intentionally
- * assembled at runtime or comes from another styling system.
- *
- * **Example** (A runtime style object)
- *
+ * @example
  * ```ts
  * import type { StyleObject } from "pandwind/types/typings";
  *
@@ -95,19 +90,10 @@ type PropConfigValues<
 > = Value | true;
 
 /**
- * Maps CSS properties to their allowed values or token maps in a preset.
+ * Maps CSS properties to raw values or named token groups in a preset.
  *
- * A property can be `true` when the CSS config should supply its values, or a
- * record when it should expose a named token vocabulary. `$tokens` points at a
- * token group in the theme without duplicating that group's values. A literal
- * record such as `{ "$brand-500": "#2563eb" }` is also a valid per-property
- * token map.
- *
- * `$all: true` opts into the complete configured CSS property set. It adds
- * property names only; it does not make every token group valid for every
- * property. In a strict preset, mapped properties accept token names unless
- * `$strictness: "inherits"` is present. An inherited property accepts both
- * its token names and the raw value from `TConfig`.
+ * `true` uses the CSS config; `$tokens` binds a token group; `$all` includes
+ * all configured properties; `$strictness: "inherits"` also allows raw values.
  *
  * @typeParam TConfig - The CSS property configuration.
  * @typeParam TTokens - The token groups available to the preset.
@@ -157,10 +143,7 @@ export interface TokenDeclaration {
 /** The authored raw-token shape accepted by {@link defineTokens}. */
 export type AnySimpleTokens = Record<string, Record<string, string>>;
 
-/**
- * The authored condition-aware semantic or component-alias shape accepted by
- * {@link defineSemanticTokens}.
- */
+/** Condition-aware token shape accepted by {@link defineSemanticTokens}. */
 export type AnySemanticTokens<TConds extends string> = Record<
 	string,
 	Record<string, Partial<Record<TConds, string>>>
@@ -168,11 +151,7 @@ export type AnySemanticTokens<TConds extends string> = Record<
 /** The normalized token shape carried by a compiled preset. */
 export type AnyTokens = Record<string, Record<string, Token["value"]>>;
 
-/**
- * Runtime behavior and typing metadata consumed by Pandwind CSS factories.
- *
- * Most applications create this value with {@link definePreset} rather than
- * writing the structural type directly.
+/** Runtime and typing metadata consumed by Pandwind CSS factories.
  *
  * @typeParam TConfig - The project's CSS property configuration.
  * @typeParam TTokens - The preset token groups.
@@ -195,7 +174,7 @@ export interface CssPreset<
 	strict: boolean;
 }
 
-/** The values portion passed to {@link definePreset}. */
+/** Values portion passed to {@link definePreset}. */
 export interface DefinePresetOptions<
 	TConfig extends AnyCssConfig = AnyCssConfig,
 	TTokens extends AnyTokens = AnyTokens,
@@ -204,7 +183,7 @@ export interface DefinePresetOptions<
 	tokens: TTokens;
 }
 
-/** A theme after it has been combined with preset behavior. */
+/** Theme values combined with preset behavior. */
 export interface CssConfigReturn<
 	TTheme extends DefinePresetOptions = DefinePresetOptions,
 > extends CssPreset<TTheme["config"]> {
@@ -268,14 +247,9 @@ type InitialCssTypesValues<TConfig, TAll, PropName extends keyof TConfig> = TAll
 declare const ErrorSymbol: unique symbol;
 
 /**
- * A preset-aware style object accepted by `createCss(preset)`.
+ * Preset-aware style object accepted by `createCss(preset)`.
  *
- * Property names and token names are derived from the preset. Condition keys
- * can be nested to any depth, and selector keys such as `&` remain available
- * through the shared style-object surface.
- *
- * **Example** (Token and condition checking follows the preset)
- *
+ * @example
  * ```ts
  * import { createCss } from "pandwind/css";
  * import { examplePreset } from "@pandwind/example-preset";

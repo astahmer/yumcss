@@ -4,12 +4,7 @@ import { presetConditions } from "./conditions.ts";
 import { presetProperties } from "./properties.ts";
 
 /**
- * The built-in property and condition preset for the standard Pandwind CSS
- * vocabulary.
- *
- * Use this when you want the library's default CSS properties and conditions
- * without authoring an application-specific token theme. For a strict design
- * system, define a smaller preset with {@link definePreset} instead.
+ * Built-in property and condition preset for standard Pandwind CSS.
  *
  * @example
  * ```ts

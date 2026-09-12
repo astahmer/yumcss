@@ -1,8 +1,4 @@
-/**
- * The public examples in the API JSDoc are intentionally mirrored here.
- * tstyche keeps the examples honest without making documentation comments
- * part of the runtime test bundle.
- */
+/** Type-checks the examples in the public API JSDoc. */
 import { expect, test } from "tstyche";
 import { createCss } from "../src/css/index.ts";
 import { createCx } from "../src/cx/index.ts";

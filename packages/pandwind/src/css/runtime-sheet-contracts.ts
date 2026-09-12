@@ -1,19 +1,11 @@
-/**
- * Flat rule after semantic lowering and serialization.
- *
- * `RuntimeSheet` stores this compact form after a semantic rule has been
- * converted to CSS. Applications normally encounter it through
- * `createRuntimeSheet` from `pandwind/css/runtime`.
- */
+/** Flat rule emitted by runtime stylesheet lowering. */
 export interface RuntimeRule {
 	readonly id: string;
 	readonly css: string;
 	readonly priority: number;
 }
 
-/**
- * Runtime-safe typed identities shared by the browser and Node entrypoints.
- */
+/** Runtime rule kinds shared by browser and Node entrypoints. */
 export const RuntimeSemanticRuleKindTag = {
 	Style: "style",
 	Global: "global",
@@ -28,9 +20,7 @@ export const RuntimeSemanticRuleKindTag = {
 export type RuntimeSemanticRuleKind =
 	(typeof RuntimeSemanticRuleKindTag)[keyof typeof RuntimeSemanticRuleKindTag];
 
-/**
- * A declaration accepted by the runtime semantic-rule serializer.
- */
+/** Declaration accepted by the runtime semantic-rule serializer. */
 export interface RuntimeDeclaration {
 	readonly property: string;
 	readonly value: string | number | boolean;
@@ -75,9 +65,7 @@ export interface RuntimeSemanticRule {
 	readonly priority?: number;
 }
 
-/**
- * Serializable boundary between an SSR producer and a browser consumer.
- */
+/** Serializable runtime sheet state for SSR and hydration. */
 export interface RuntimeSheetSnapshot {
 	readonly tokens: string;
 	readonly rules: RuntimeRule[];
@@ -99,9 +87,7 @@ export interface RuntimeDocument {
 	head: { appendChild(element: RuntimeStyleElement): void };
 }
 
-/**
- * Options controlling a runtime sheet's identity and DOM mounting behavior.
- */
+/** Options for runtime sheet identity and DOM mounting. */
 export interface RuntimeSheetOptions {
 	readonly id?: string;
 	readonly autoMount?: boolean;

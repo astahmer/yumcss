@@ -34,11 +34,7 @@ const cssVar = {
 };
 
 /**
- * Replaceable policies for deterministic stylesheet generation.
- *
- * Leave these unset for the normal Pandwind CSS dialect. Custom policies are
- * useful to adapters and tooling that need a different condition parser,
- * ordering rule, serializer, or token-emission strategy.
+ * Replaceable policies for stylesheet generation.
  *
  * @category stylesheet
  * @since 0.1.0
@@ -55,11 +51,7 @@ export interface StylesheetPolicies {
 /**
  * Create a pure stylesheet compiler for a preset.
  *
- * The returned compiler is independent from the DOM. Feed it raw style
- * objects, inspect its generated token/atomic entries, or call `generate` to
- * produce a complete CSS string for SSR, extraction, or a build plugin.
- *
- * @example Generate CSS from the same preset used by `createCss`
+ * @example
  * ```ts
  * import { createCss } from "pandwind/css";
  * import { createStylesheet } from "pandwind/css/create-stylesheet";
@@ -73,11 +65,9 @@ export interface StylesheetPolicies {
  * ```
  *
  * @param preset - The token, property, and condition metadata to compile.
- * @param options - Hashing, class-name strategy, and dynamic-carrier namespace
- *   options. Match the namespace used by the corresponding CSS factory.
+ * @param options - CSS backend options.
  * @param policies - Optional replaceable stylesheet policies.
- * @returns A pure compiler with `process`, `generate`, and inspectable rule
- *   generators.
+ * @returns A pure stylesheet compiler.
  * @category stylesheet
  * @since 0.1.0
  */

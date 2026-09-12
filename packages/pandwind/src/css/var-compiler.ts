@@ -21,12 +21,7 @@ export interface VarAtom {
 	readonly keys: string[];
 }
 
-/**
- * Host-ready output from `css.vars` or `cx.vars`.
- *
- * The public fields are safe to spread onto a host element. The symbol-keyed
- * metadata is private coordination between the compiler, `cx`, and runtime
- * stylesheet; consumers should not need to inspect it.
+/** Host-ready output from `css.vars` or `cx.vars`.
  *
  * @category styling
  * @since 0.1.0
@@ -145,12 +140,12 @@ class DefaultVarCompiler implements VarCompiler {
 }
 
 /**
- * Create the default variable carrier compiler.
+ * Create the variable carrier compiler.
  *
  * @param conditionNames - Condition names that should be treated as semantic
  *   paths when deriving custom-property fallbacks.
- * @param namespace - Prefix for Pandwind-owned carrier classes and custom
- *   properties. Defaults to `pw`.
+ * @param emptyConditionNames - Conditions that use the base carrier.
+ * @param namespace - Prefix for carrier classes and custom properties.
  * @returns A compiler used by `css.vars` and runtime stylesheet generation.
  * @category styling
  * @since 0.1.0

@@ -106,26 +106,15 @@ const arbitraryVariants = (selector: string | readonly string[]): string | null 
 };
 
 /**
- * Build the engine's pluggable class strategy for UnoCSS output.
- * Pass the result as createCss(preset, { className }) /
- * createDesignCss(preset, { className }).
- */
-/**
  * Build an UnoCSS candidate strategy for the CSS lane.
  *
- * The adapter emits only the arbitrary-property and variant forms it can
- * prove UnoCSS will match. Other declarations return `null` and use
- * Pandwind's atomic fallback, so an unsupported candidate never becomes a
- * class with missing CSS.
- *
- * @example Arbitrary-property candidates
+ * @example
  * ```ts
  * import { createCss } from "pandwind/css";
  * import { createUnoCssAdapter } from "pandwind/css/unocss";
  *
  * const css = createCss({ className: createUnoCssAdapter() });
  * css.class({ color: "red", width: "3.5rem" });
- * // `[color:red] [width:3.5rem]`
  * ```
  *
  * @param options - Resolved UnoCSS variants and optional preset conditions.

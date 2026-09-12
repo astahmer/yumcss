@@ -1,8 +1,4 @@
-/**
- * Atomic CSS-in-JS factories, class-name strategies, and stylesheet adapters.
- *
- * The main `pandwind` entrypoint intentionally does not re-export this lane;
- * import from `pandwind/css` when an application wants declaration-first CSS.
+/** Atomic CSS factories and adapters exported by `pandwind/css`.
  *
  * @category styling
  * @since 0.1.0

@@ -1,12 +1,7 @@
 import { defineProperties } from "../types/define-preset.ts";
 import { tokens } from "./tokens.ts";
 
-/**
- * The default CSS property-to-token vocabulary used by
- * {@link pandwindPreset}.
- *
- * This is data, not a hidden runtime registry. It can be inspected, composed,
- * or replaced when an application defines a narrower preset.
+/** Default CSS property-to-token map used by {@link pandwindPreset}.
  *
  * @category presets
  * @since 0.1.0

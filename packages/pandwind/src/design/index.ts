@@ -6,10 +6,7 @@ import { resolveDesignStyle } from "./resolve.ts";
 import type { DesignPreset, DesignStyleObject } from "./types.ts";
 
 /**
- * The `pandwind/design` entrypoint exposes the intent-oriented CSS factory and
- * its preset-aware style types.
- *
- * Use `pandwind/css` when ordinary CSS property names are the better fit.
+ * Intent-oriented CSS factory and style types for `pandwind/design`.
  *
  * @category design system
  * @since 0.1.0
@@ -18,18 +15,9 @@ import type { DesignPreset, DesignStyleObject } from "./types.ts";
 type Maybe<T> = T | undefined | null | false;
 
 /**
- * Create the design-system CSS function used by the `pandwind/design` lane.
+ * Create a preset-aware CSS function with `$frame`, `$layout`, and `$text` modules.
  *
- * This factory has the same projections as {@link createCss}, but its style
- * object is organized by intent: `$frame` describes the box, `$layout`
- * describes its children, and `$text` describes typography. Raw CSS stays
- * explicit under `$raw` so the top-level vocabulary remains constrained.
- *
- * The preset is required because it supplies both the token names and the
- * conditions used by the design modules. Use `createCss` when you want the
- * ordinary CSS property vocabulary instead.
- *
- * @example A design-vocabulary button
+ * @example
  * ```ts
  * import { createDesignCss } from "pandwind/design";
  * import { examplePreset } from "@pandwind/example-preset";
@@ -44,10 +32,9 @@ type Maybe<T> = T | undefined | null | false;
  * });
  * ```
  *
- * @typeParam TPreset - A design-compatible preset carrying tokens and conditions.
+ * @typeParam TPreset - Design-compatible preset carrying tokens and conditions.
  * @param preset - The preset that defines the design token vocabulary.
- * @param options - CSS backend options such as a class-name strategy or
- *   dynamic-carrier namespace.
+ * @param options - CSS backend options.
  * @returns A preset-aware {@link CssFn} over {@link DesignStyleObject} values.
  * @see {@link createCss} for ordinary CSS property objects.
  * @category factories

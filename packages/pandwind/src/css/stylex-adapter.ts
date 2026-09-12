@@ -27,25 +27,7 @@ const modifierFor = (part: string, conditions: StyleXAdapterOptions["conditions"
 };
 
 /**
- * Emit StyleX-compatible atomic class identities for Pandwind's stylesheet.
- *
- * The hash follows StyleX's stable atomic formula: dashed property, normalized
- * value, sorted condition modifier, and the `<>` compatibility marker. The
- * generated CSS remains Pandwind-owned (`sheetBacked: true`), so this adapter
- * is useful when a project wants StyleX-shaped classes without shipping the
- * StyleX runtime or changing its source API.
- *
- * Condition metadata is intentionally injected rather than guessed. Without
- * it, semantic condition names still produce deterministic valid class names;
- * with it, selectors and at-rules participate in the same identity input as
- * StyleX. Custom conditions therefore work without another hardcoded catalog.
- */
-/**
  * Build a StyleX-shaped, sheet-backed class-name strategy.
- *
- * The hash identity follows StyleX's stable atomic formula, while the CSS
- * remains owned by Pandwind. This is useful for matching an existing naming
- * convention without shipping a second runtime.
  *
  * @example
  * ```ts
@@ -56,7 +38,7 @@ const modifierFor = (part: string, conditions: StyleXAdapterOptions["conditions"
  *   className: createStyleXAdapter({ debug: true, enableDebugClassNames: true }),
  * });
  *
- * css.class({ color: "red" }); // `color-x...` in debug mode
+ * css.class({ color: "red" });
  * ```
  *
  * @param options - Prefix, debug, and resolved condition metadata.

@@ -1,9 +1,4 @@
-/**
- * Preset builders and the built-in Pandwind token/property catalog.
- *
- * Application code normally imports `definePreset`, `defineTokens`, and
- * `pandwindPreset` from this subpath so the chosen design-system boundary is
- * visible in the module graph.
+/** Preset builders and the built-in Pandwind token/property catalog.
  *
  * @category presets
  * @since 0.1.0

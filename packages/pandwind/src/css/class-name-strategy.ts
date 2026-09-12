@@ -41,26 +41,23 @@ export interface ClassNameStrategy {
 	 */
 	readonly sheetBacked?: boolean;
 	/**
-	 * Convert one flattened declaration into a class name.
+	 * Convert a flattened declaration into a class name.
 	 *
-	 * Return `null` when the strategy cannot represent a declaration and the
-	 * atomic fallback should own it. A strategy that returns a class must also
-	 * ensure that another compiler owns the corresponding CSS, unless
-	 * `sheetBacked` is true.
+	 * Return `null` to use the atomic fallback.
 	 *
-	 * @example A minimal named strategy
+	 * @example
 	 * ```ts
 	 * import type { ClassNameStrategy } from "pandwind/css";
 	 *
 	 * const strategy: ClassNameStrategy = {
-	 *   name: "property-value",
+	 *   name: "named",
 	 *   toClassName: (key, value) => `app-${key}-${value}`,
 	 * };
 	 * ```
 	 *
-	 * @param key - A flattened property/condition path such as `_hover__color`.
-	 * @param value - The normalized declaration value.
-	 * @returns A host-safe class name, or `null` for the atomic fallback.
+	 * @param key - Flattened property and condition path.
+	 * @param value - Normalized declaration value.
+	 * @returns A class name, or `null` for the atomic fallback.
 	 */
 	toClassName(key: string, value: string): string | null;
 }

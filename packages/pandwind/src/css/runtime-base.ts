@@ -12,11 +12,7 @@ import { ATOM_REGISTRY, type AtomRegistry } from "./atoms.ts";
 import { isSafeCssValue } from "./value-normalization.ts";
 
 /**
- * Backend options shared by the public CSS factories.
- *
- * Most consumers only need `debug`, `hashFn`, `className`, or `namespace`; the
- * full interface is exported so generated runtimes and adapters can preserve
- * the same configuration contract as {@link createCss}.
+ * Options shared by the public CSS factories.
  *
  * @category styling
  * @since 0.1.0

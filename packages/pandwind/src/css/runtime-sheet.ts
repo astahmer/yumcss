@@ -26,12 +26,7 @@ export type {
 } from "./runtime-sheet-contracts.ts";
 
 /**
- * Replaceable storage, ordering, serialization, and DOM-sink policies for a
- * {@link RuntimeSheet}.
- *
- * The default composition is suitable for ordinary browser and SSR use. Pass
- * explicit ports when an integration needs a custom sink or wants to inspect
- * the same semantic rule stream without coupling itself to the DOM.
+ * Replaceable policies for a {@link RuntimeSheet}.
  *
  * @category runtime
  * @since 0.1.0
@@ -140,33 +135,23 @@ const isRuntimeSemanticRule = (value: unknown): value is RuntimeSemanticRule => 
 };
 
 /**
- * Create a live, DOM-independent runtime stylesheet.
+ * Create a runtime stylesheet with optional DOM mounting.
  *
- * A sheet stores deduplicated rules, keeps their cascade order deterministic,
- * and can mount/update one style element when a document sink is available.
- * `snapshot` and `hydrate` make the same rule state portable between an SSR
- * producer and a browser consumer.
- *
- * @example SSR-friendly sheet lifecycle
+ * @example
  * ```ts
  * import { createRuntimeSheet } from "pandwind/css/runtime";
  *
- * const serverSheet = createRuntimeSheet({ id: "app", autoMount: false });
- * serverSheet.setTokens(":root { --brand: #3182ce; }");
- * serverSheet.register([
+ * const sheet = createRuntimeSheet({ id: "app", autoMount: false });
+ * sheet.register([
  *   { id: "button", css: ".button { color: var(--brand); }", priority: 0 },
  * ]);
  *
- * const snapshot = serverSheet.snapshot();
- * const clientSheet = createRuntimeSheet({ id: "app", autoMount: false });
- * clientSheet.hydrate(snapshot);
- * const css = clientSheet.css();
+ * const css = sheet.css();
  * ```
  *
- * @param options - Identity, mounting, document, and CSP nonce options.
- * @param ports - Optional replacement policies for the sheet internals.
- * @returns A live sheet with registration, serialization, mounting, and
- *   snapshot/hydration operations.
+ * @param options - Identity and DOM mounting options.
+ * @param ports - Optional replacement policies.
+ * @returns A live runtime sheet.
  * @category runtime
  * @since 0.1.0
  */

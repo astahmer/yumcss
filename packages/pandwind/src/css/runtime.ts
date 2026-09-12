@@ -36,11 +36,7 @@ import type {
 type RuntimeDeclaration = { key: string; value: string };
 
 /**
- * Options for the runtime CSS lane, which owns a live stylesheet in addition
- * to the normal `CssFn` projections.
- *
- * Supply a `sheet` when server and client code must share or hydrate one
- * explicit sheet. Otherwise the runtime creates or reuses its default sheet.
+ * Options for the runtime CSS lane and its live stylesheet.
  *
  * @category runtime
  * @since 0.1.0
@@ -54,11 +50,6 @@ export interface RuntimeCssOptions extends CreateCssOptions {
 
 /**
  * Complete runtime CSS surface, including its attached stylesheet.
- *
- * Runtime styles may contain values and properties discovered from another
- * styling system, so keep the preset-aware overload while also exposing the
- * neutral `StyleObject` overload used by migration output. The compile-time
- * `createCss(preset)` surface remains strict and token-aware.
  *
  * @typeParam TStyles - The style-object type accepted by the callable surface.
  * @category runtime
@@ -219,14 +210,9 @@ function withRuntimeFlush(css: CssFn<StyleObject>, runtime: RuntimeBinding): Css
 }
 
 /**
- * Create the full runtime CSS-in-JS engine for a preset.
+ * Create a CSS function that registers rules in a live {@link RuntimeSheet}.
  *
- * Unlike `createCss`, this lane registers discovered rules in a live
- * {@link RuntimeSheet}. It is the right boundary for browser runtime styles,
- * SSR/hydration, and migration output that cannot be fully extracted ahead of
- * time.
- *
- * @example Runtime CSS with an explicit sheet
+ * @example
  * ```ts
  * import { createRuntimeCss, createRuntimeSheet } from "pandwind/css/runtime";
  * import { examplePreset } from "@pandwind/example-preset";
@@ -235,13 +221,13 @@ function withRuntimeFlush(css: CssFn<StyleObject>, runtime: RuntimeBinding): Css
  * const css = createRuntimeCss(examplePreset, { sheet });
  * const className = css.class({ color: "$blue-500" });
  *
- * const emittedCss = sheet.css();
+ * sheet.css();
  * ```
  *
  * @typeParam TPreset - The preset supplying property, token, and condition types.
  * @param preset - The typed preset used to resolve runtime tokens.
  * @param options - Runtime sheet and CSS backend options.
- * @returns A preset-aware CSS function with a live `sheet` property.
+ * @returns A CSS function with a live `sheet` property.
  * @category runtime
  * @since 0.1.0
  */
@@ -263,10 +249,7 @@ export function createRuntimeCss<
 }
 
 /**
- * Create the runtime equivalent of {@link createDesignCss}.
- *
- * The returned function resolves `$frame`, `$layout`, and `$text` values and
- * registers the resulting rules in its live sheet.
+ * Create a runtime CSS function for the design vocabulary.
  *
  * @example
  * ```ts

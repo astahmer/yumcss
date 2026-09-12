@@ -207,11 +207,7 @@ interface TextProps<TTokens extends AnyTokens> {
 }
 
 /**
- * The preset contract required by {@link createDesignCss}.
- *
- * A design preset uses the same token and condition metadata as the atomic CSS
- * lane; the design resolver translates `$frame`, `$layout`, and `$text` into
- * ordinary CSS declarations before atom generation.
+ * Preset contract required by {@link createDesignCss}.
  *
  * @category design system
  * @since 0.1.0
@@ -219,10 +215,7 @@ interface TextProps<TTokens extends AnyTokens> {
 export type DesignPreset = CssConfigReturn<DefinePresetOptions<AnyCssConfig, AnyTokens>>;
 
 /**
- * The design style object: the three `$` modules, available at the top level
- * and recursively inside any condition or selector block. Raw CSS props are
- * not allowed at the top level — they live under `$raw` (the escape hatch),
- * which keeps "wrong is a type error" enforceable via excess-property checks.
+ * Design style object with `$frame`, `$layout`, `$text`, and `$raw` modules.
  *
  * @example
  * ```ts
@@ -236,7 +229,7 @@ export type DesignPreset = CssConfigReturn<DefinePresetOptions<AnyCssConfig, Any
  * };
  * ```
  *
- * @typeParam TPreset - The preset supplying tokens and condition keys.
+ * @typeParam TPreset - Preset supplying tokens and condition keys.
  * @category design system
  * @since 0.1.0
  */
