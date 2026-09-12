@@ -134,6 +134,28 @@ test("css gen simple prop", () => {
 	`);
 });
 
+test("lowers style aliases to valid CSS properties", () => {
+	const preset = definePreset(
+		{
+			config: {} as StandardLonghandProperties,
+			tokens: {},
+		},
+		{
+			strict: true,
+			properties: { $all: true },
+			conditions: {},
+		},
+	);
+	const css = createCss<typeof preset>({ debug: true });
+	const sheet = createStylesheet(preset, { debug: true });
+	const output = sheet.generate([css.raw({ bg: "red", px: 2, minH: 10 } as never)]);
+
+	expect(output).toContain("background:red");
+	expect(output).toContain("padding-inline:2");
+	expect(output).toContain("min-height:10");
+	expect(output).not.toMatch(/(?:^|[;{])(?:bg|px|min-h):/);
+});
+
 test("keeps vendor-prefixed line clamp unitless", () => {
 	const preset = definePreset(
 		{ config: {} as StandardLonghandProperties, tokens: {} },

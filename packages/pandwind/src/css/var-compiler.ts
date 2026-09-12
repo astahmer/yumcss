@@ -2,6 +2,7 @@ import { createHashFn, dashCase } from "./hash.ts";
 import { pairs, type FlatStyles } from "../lib/utils.ts";
 import { isSafeCssValue, normalizeCssValue } from "./value-normalization.ts";
 import { VARS_ATOMS } from "./vars-carrier.ts";
+import { cssPropertyFromKey } from "../backends/css.ts";
 
 /**
  * Var-inline compiler for dynamic values.
@@ -76,7 +77,7 @@ class DefaultVarCompiler implements VarCompiler {
 		const rawProp = propertyFirst ? first : last;
 		const rawConditions = propertyFirst ? parts.slice(1) : parts.slice(0, -1);
 		return {
-			prop: dashCase(rawProp),
+			prop: dashCase(cssPropertyFromKey(rawProp)),
 			canonical: pairs.join(
 				rawConditions
 					.filter((condition) => !this.emptyConditions.has(condition))
@@ -119,7 +120,7 @@ class DefaultVarCompiler implements VarCompiler {
 		if (keys.length === 1 && singleKey !== undefined && !singleKey.includes("__")) {
 			const raw = flat[singleKey];
 			if (!isSafeCssValue(raw) || raw === "") return { atoms: [], style: {} };
-			const prop = dashCase(singleKey);
+			const prop = dashCase(cssPropertyFromKey(singleKey));
 			return {
 				atoms: [{ cls: `${this.prefix}${prop}`, keys: [singleKey] }],
 				style: { [this.baseCustomProp(prop)]: runtimeValue(prop, raw) },

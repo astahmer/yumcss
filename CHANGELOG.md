@@ -4,6 +4,15 @@ All notable changes to `pandwind` are documented here. The project has no
 released version yet — entries group the development waves that produced the
 current `0.1.0` state.
 
+## Unreleased — 2026-09-12 CSS alias lowering
+
+### Fixes
+
+- CSS output now lowers Chakra/Panda-style aliases such as `bg`, `px`, and
+  `minH` to valid longhand properties across atomic, runtime-variable, and
+  inline-variable serialization. Regression coverage locks the emitted
+  declarations and rejects shorthand leakage.
+
 ## Unreleased — 2026-08-25 wave (multi-target backends)
 
 ### API

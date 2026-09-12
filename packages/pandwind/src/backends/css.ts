@@ -30,6 +30,48 @@ const isConditionPathPart = (
 ): boolean =>
 	part.startsWith("_") || Object.hasOwn(conditions, part) || /[&>+~:[\],.#*\s]/.test(part);
 
+const cssPropertyAliases: Readonly<Record<string, string>> = {
+	align: "alignItems",
+	bg: "background",
+	bgColor: "backgroundColor",
+	flexDir: "flexDirection",
+	fs: "fontSize",
+	fw: "fontWeight",
+	h: "height",
+	insetX: "insetInline",
+	insetY: "insetBlock",
+	justify: "justifyContent",
+	lh: "lineHeight",
+	m: "margin",
+	mb: "marginBottom",
+	me: "marginInlineEnd",
+	ml: "marginLeft",
+	ms: "marginInlineStart",
+	mt: "marginTop",
+	mr: "marginRight",
+	mx: "marginInline",
+	my: "marginBlock",
+	minH: "minHeight",
+	minW: "minWidth",
+	maxH: "maxHeight",
+	maxW: "maxWidth",
+	p: "padding",
+	pb: "paddingBottom",
+	pe: "paddingInlineEnd",
+	pl: "paddingLeft",
+	ps: "paddingInlineStart",
+	pt: "paddingTop",
+	pr: "paddingRight",
+	px: "paddingInline",
+	py: "paddingBlock",
+	pos: "position",
+	rounded: "borderRadius",
+	shadow: "boxShadow",
+	tracking: "letterSpacing",
+	w: "width",
+	z: "zIndex",
+};
+
 export const isEmptyCondition = (
 	part: string,
 	conditions: Record<string, string | string[]>,
@@ -43,8 +85,20 @@ export const cssPropertyFromKey = (
 	key: string,
 	conditions: Record<string, string | string[]> = {},
 ): string => {
-	if (!key.includes("__")) return key;
-	const parts = key.split("__");
+	const parts = key.includes("__") ? key.split("__") : [key];
+	for (let index = parts.length - 1; index >= 0; index--) {
+		const part = parts[index]!;
+		if (!isConditionPathPart(part, conditions)) return cssPropertyAliases[part] ?? part;
+	}
+	const fallback = parts.at(-1) ?? "";
+	return cssPropertyAliases[fallback] ?? fallback;
+};
+
+const rawCssPropertyFromKey = (
+	key: string,
+	conditions: Record<string, string | string[]> = {},
+): string => {
+	const parts = key.includes("__") ? key.split("__") : [key];
 	for (let index = parts.length - 1; index >= 0; index--) {
 		const part = parts[index]!;
 		if (!isConditionPathPart(part, conditions)) return part;
@@ -60,7 +114,7 @@ export const canonicalStyleKey = (
 	if (!key.includes("__")) return key;
 	const parts = key.split("__").filter((part) => part !== "");
 	if (parts.length < 2) return parts[0] ?? "";
-	const property = cssPropertyFromKey(key, conditions);
+	const property = rawCssPropertyFromKey(key, conditions);
 	const propertyIndex = parts.lastIndexOf(property);
 	if (propertyIndex < 0) return parts.toSorted().join("__");
 	const conditionParts = parts

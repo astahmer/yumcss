@@ -154,8 +154,9 @@ export const createRuntimeStylesheet = (
 		if (cache.has(pairId)) return;
 
 		const atomic = decodeAtomicPath(preset.conditions, pairId);
-		const value = resolveRuntimeTokenValue(tokenMaps, atomic.prop, normalizedValue);
-		const css = genCSSRule([dashCase(atomic.prop), value].join(":"), {
+		const property = cssPropertyFromKey(atomic.prop, preset.conditions);
+		const value = resolveRuntimeTokenValue(tokenMaps, property, normalizedValue);
+		const css = genCSSRule([dashCase(property), value].join(":"), {
 			...atomic.conditions,
 			className: `.${escapeIdentifier(classNameFor(orderedKey, normalizedValue))}`,
 		});
@@ -197,7 +198,7 @@ export const createRuntimeStylesheet = (
 		if (orderedKey === "" || varCache.has(orderedKey)) return;
 
 		// The canonical key always stores conditions before the property.
-		const prop = dashCase(propPart);
+		const prop = dashCase(cssPropertyFromKey(propPart, preset.conditions));
 		const condParts = orderedConditions.map(varConditionPart);
 		let declaration = `var(--${namespace}-c-${prop})`;
 		for (let i = 1; i <= condParts.length; i++) {
