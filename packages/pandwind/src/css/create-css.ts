@@ -39,10 +39,18 @@ const ALL_RUNTIME_METHODS = [
 ] as const;
 
 /**
- * Create a CSS compiler, optionally typed by a preset.
+ * Create the typed CSS function used by the public `css()` lane.
  *
- * Pass a preset to enable token and condition checking. Use `createCss()` for
- * open-ended raw CSS values.
+ * A preset supplies the token and condition vocabulary; the returned callable
+ * compiles style objects and exposes the projections documented by `CssFn`.
+ * Pass a preset whenever a style references a token or condition. The
+ * no-argument form stays open-ended for raw CSS and generated styles whose
+ * vocabulary is known only at runtime.
+ *
+ * @remarks
+ * The same preset must be supplied to the stylesheet/runtime compiler that
+ * resolves token references. With bare `createCss()`, a value such as
+ * `"$blue-500"` is ordinary raw CSS; it is not looked up as a token.
  *
  * @example
  * ```ts
@@ -105,6 +113,7 @@ type PropsInput =
 export interface CssFn<TStyles extends StyleObject = StyleObject> {
 	/**
 	 * Compile style objects to an atomic declaration map.
+	 * Use `.class` when the host only needs a class string.
 	 *
 	 * @example
 	 * ```ts
@@ -126,6 +135,8 @@ export interface CssFn<TStyles extends StyleObject = StyleObject> {
 	class: (...styles: Array<TStyles>) => string;
 	/**
 	 * Encode runtime values as structural classes plus inline custom properties.
+	 * The carrier is consumed by `.props` or `cx.vars`; use `.class` for styles
+	 * whose values are all static.
 	 *
 	 * @example
 	 * ```ts
@@ -136,6 +147,8 @@ export interface CssFn<TStyles extends StyleObject = StyleObject> {
 	vars: (...styles: Array<TStyles>) => VarsOutput;
 	/**
 	 * Merge style objects without compiling them.
+	 * This is useful when a stylesheet consumer or adapter needs the resolved
+	 * style object before class generation.
 	 *
 	 * @example
 	 * ```ts
@@ -145,6 +158,7 @@ export interface CssFn<TStyles extends StyleObject = StyleObject> {
 	raw: (...styles: Array<TStyles>) => StyleObject;
 	/**
 	 * Normalize styles and class strings into props for a host element.
+	 * Static inputs produce `className`; variable carriers also provide `style`.
 	 *
 	 * @example
 	 * ```ts
@@ -154,6 +168,8 @@ export interface CssFn<TStyles extends StyleObject = StyleObject> {
 	props: (...styles: Array<PropsInput>) => PropsReturn;
 	/**
 	 * Build reusable static or parameterized style groups.
+	 * Function entries return variable carriers, while `$input` entries read a
+	 * runtime input object when the group member is called.
 	 *
 	 * @example
 	 * ```ts
@@ -185,6 +201,8 @@ export interface CssFn<TStyles extends StyleObject = StyleObject> {
 	};
 	/**
 	 * Mark a named runtime input inside a dynamic `group` definition.
+	 * The marker is meaningful only inside `css.group` and keeps the structural
+	 * class stable while the supplied value travels through a custom property.
 	 *
 	 * @example
 	 * ```ts

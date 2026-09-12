@@ -28,6 +28,10 @@ export type {
 /**
  * Replaceable policies for a {@link RuntimeSheet}.
  *
+ * The default composition suits browser and SSR use. Pass explicit ports when
+ * an integration needs a custom sink or wants to inspect the semantic rule
+ * stream without coupling itself to the DOM.
+ *
  * @category runtime
  * @since 0.1.0
  */
@@ -137,21 +141,29 @@ const isRuntimeSemanticRule = (value: unknown): value is RuntimeSemanticRule => 
 /**
  * Create a runtime stylesheet with optional DOM mounting.
  *
+ * A sheet deduplicates rules and keeps cascade order deterministic. Its
+ * `snapshot` and `hydrate` methods make the same rule state portable from SSR
+ * to the browser.
+ *
  * @example
  * ```ts
  * import { createRuntimeSheet } from "pandwind/css/runtime";
  *
- * const sheet = createRuntimeSheet({ id: "app", autoMount: false });
- * sheet.register([
+ * const serverSheet = createRuntimeSheet({ id: "app", autoMount: false });
+ * serverSheet.register([
  *   { id: "button", css: ".button { color: var(--brand); }", priority: 0 },
  * ]);
  *
- * const css = sheet.css();
+ * const snapshot = serverSheet.snapshot();
+ * const clientSheet = createRuntimeSheet({ id: "app", autoMount: false });
+ * clientSheet.hydrate(snapshot);
+ * const css = clientSheet.css();
  * ```
  *
- * @param options - Identity and DOM mounting options.
+ * @param options - Identity, mounting, document, and CSP nonce options.
  * @param ports - Optional replacement policies.
- * @returns A live runtime sheet.
+ * @returns A live sheet with registration, serialization, mounting, and
+ *   snapshot/hydration operations.
  * @category runtime
  * @since 0.1.0
  */

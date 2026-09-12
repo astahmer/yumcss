@@ -33,7 +33,11 @@ export type {
 	TwVariantsMeta,
 } from "./compile.ts";
 
-/** Generated Tailwind vocabulary and merge metadata consumed by {@link createTw}.
+/**
+ * Generated Tailwind vocabulary and merge metadata consumed by {@link createTw}.
+ *
+ * Generate these values from the active project configuration rather than
+ * maintaining a partial utility map by hand.
  *
  * @category tailwind
  * @since 0.1.0
@@ -62,6 +66,10 @@ export interface TwOptions {
 }
 
 /** Create a typed `tw` function bound to generated design-system types.
+ *
+ * `createTw` only produces class strings; it does not resolve Pandwind token
+ * references such as `$blue-500`. Use `createCss(preset)` or
+ * `createDesignCss(preset)` for those APIs.
  *
  * @example
  * ```ts

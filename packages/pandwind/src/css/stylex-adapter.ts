@@ -29,6 +29,9 @@ const modifierFor = (part: string, conditions: StyleXAdapterOptions["conditions"
 /**
  * Build a StyleX-shaped, sheet-backed class-name strategy.
  *
+ * The generated CSS remains Pandwind-owned, so this matches StyleX-shaped
+ * class identities without shipping a second runtime.
+ *
  * @example
  * ```ts
  * import { createCss } from "pandwind/css";

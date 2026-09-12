@@ -73,6 +73,9 @@ const hypenateProperty = (property: string): string => {
 /**
  * Build a class-name strategy compatible with Panda's non-hash output.
  *
+ * Pass it as `className` to `createCss` or `createDesignCss`. The adapter uses
+ * resolved shorthand and condition maps and does not guess unknown vocabulary.
+ *
  * @example
  *
  * ```ts

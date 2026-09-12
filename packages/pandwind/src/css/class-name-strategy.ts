@@ -43,7 +43,10 @@ export interface ClassNameStrategy {
 	/**
 	 * Convert a flattened declaration into a class name.
 	 *
-	 * Return `null` to use the atomic fallback.
+	 * Return `null` when the strategy cannot represent a declaration and the
+	 * atomic fallback should own it. A strategy that returns a class must also
+	 * ensure that another compiler owns the corresponding CSS, unless
+	 * `sheetBacked` is true.
 	 *
 	 * @example
 	 * ```ts
@@ -55,9 +58,9 @@ export interface ClassNameStrategy {
 	 * };
 	 * ```
 	 *
-	 * @param key - Flattened property and condition path.
-	 * @param value - Normalized declaration value.
-	 * @returns A class name, or `null` for the atomic fallback.
+	 * @param key - Flattened property/condition path such as `_hover__color`.
+	 * @param value - The normalized declaration value.
+	 * @returns A host-safe class name, or `null` for the atomic fallback.
 	 */
 	toClassName(key: string, value: string): string | null;
 }

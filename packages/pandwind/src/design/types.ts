@@ -209,6 +209,10 @@ interface TextProps<TTokens extends AnyTokens> {
 /**
  * Preset contract required by {@link createDesignCss}.
  *
+ * A design preset uses the same token and condition metadata as the atomic CSS
+ * lane; the resolver translates design modules into ordinary declarations
+ * before atom generation.
+ *
  * @category design system
  * @since 0.1.0
  */
@@ -216,6 +220,9 @@ export type DesignPreset = CssConfigReturn<DefinePresetOptions<AnyCssConfig, Any
 
 /**
  * Design style object with `$frame`, `$layout`, `$text`, and `$raw` modules.
+ *
+ * The modules are also available inside condition and selector blocks. Raw CSS
+ * is kept under `$raw`, so ordinary top-level CSS properties remain type errors.
  *
  * @example
  * ```ts

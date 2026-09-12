@@ -228,7 +228,10 @@ const sizes = {
 	...percentsRecord,
 } as const;
 
-/** Built-in token catalog used by {@link pandwindPreset}.
+/**
+ * Built-in token catalog used by {@link pandwindPreset}.
+ *
+ * The raw values can also be reused as input when composing a derived preset.
  *
  * @category tokens
  * @since 0.1.0

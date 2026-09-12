@@ -1,7 +1,11 @@
 import { defineProperties } from "../types/define-preset.ts";
 import { tokens } from "./tokens.ts";
 
-/** Default CSS property-to-token map used by {@link pandwindPreset}.
+/**
+ * Default CSS property-to-token map used by {@link pandwindPreset}.
+ *
+ * This is data that can be inspected, composed, or replaced by an
+ * application-specific preset.
  *
  * @category presets
  * @since 0.1.0

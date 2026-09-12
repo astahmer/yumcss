@@ -1,4 +1,9 @@
-/** Built-in color tokens used by the standard Pandwind preset.
+/**
+ * Built-in color tokens used by the standard Pandwind preset.
+ *
+ * The `$` prefix is the authored spelling accepted by strict preset-aware
+ * styles. Reuse this data when composing a smaller preset or define a custom
+ * token group with {@link defineTokens}.
  *
  * @category tokens
  * @since 0.1.0

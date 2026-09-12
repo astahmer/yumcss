@@ -33,6 +33,9 @@ import type { TwVariantsMeta } from "./compile.ts";
 /**
  * Generated `(property, resolved value) -> utility` lookup for Tailwind mode.
  *
+ * The map comes from the active Tailwind project, so custom utilities and
+ * aliases retain their project-specific semantics.
+ *
  * @category adapters
  * @since 0.1.0
  */
@@ -73,6 +76,9 @@ function arbitraryValue(value: string): string {
 /**
  * Build a class-name strategy from generated Tailwind metadata.
  *
+ * Pass the result as `className` to `createCss` or `createDesignCss` to reuse
+ * Tailwind's class vocabulary.
+ *
  * @example
  * ```ts
  * import { createCss } from "pandwind/css";
@@ -87,6 +93,7 @@ function arbitraryValue(value: string): string {
  *
  * const css = createCss({ className: adapter });
  * css.class({ backgroundColor: "#3182ce" });
+ * // "bg-blue-500"
  * ```
  *
  * @param options - Generated utility, variant, and optional preset metadata.

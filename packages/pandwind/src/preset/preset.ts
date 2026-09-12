@@ -6,6 +6,9 @@ import { presetProperties } from "./properties.ts";
 /**
  * Built-in property and condition preset for standard Pandwind CSS.
  *
+ * Use this for the library's default CSS vocabulary. Define a smaller preset
+ * with {@link definePreset} when an application wants a constrained contract.
+ *
  * @example
  * ```ts
  * import { createCss } from "pandwind/css";

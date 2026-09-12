@@ -8,6 +8,8 @@ import type { DesignPreset, DesignStyleObject } from "./types.ts";
 /**
  * Intent-oriented CSS factory and style types for `pandwind/design`.
  *
+ * Use `pandwind/css` when ordinary CSS property names are the better fit.
+ *
  * @category design system
  * @since 0.1.0
  */
@@ -16,6 +18,10 @@ type Maybe<T> = T | undefined | null | false;
 
 /**
  * Create a preset-aware CSS function with `$frame`, `$layout`, and `$text` modules.
+ *
+ * The projections match `createCss`, but the style object is organized by
+ * intent: `$frame` describes the box, `$layout` its children, and `$text`
+ * typography. Raw CSS stays explicit under `$raw`.
  *
  * @example
  * ```ts
@@ -34,7 +40,8 @@ type Maybe<T> = T | undefined | null | false;
  *
  * @typeParam TPreset - Design-compatible preset carrying tokens and conditions.
  * @param preset - The preset that defines the design token vocabulary.
- * @param options - CSS backend options.
+ * @param options - CSS backend options such as a class-name strategy or
+ *   dynamic-carrier namespace.
  * @returns A preset-aware {@link CssFn} over {@link DesignStyleObject} values.
  * @see {@link createCss} for ordinary CSS property objects.
  * @category factories

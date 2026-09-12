@@ -1,11 +1,11 @@
-/** Flat rule emitted by runtime stylesheet lowering. */
+/** Flat rule after semantic lowering and CSS serialization. */
 export interface RuntimeRule {
 	readonly id: string;
 	readonly css: string;
 	readonly priority: number;
 }
 
-/** Runtime rule kinds shared by browser and Node entrypoints. */
+/** Runtime-safe rule kinds shared by browser and Node entrypoints. */
 export const RuntimeSemanticRuleKindTag = {
 	Style: "style",
 	Global: "global",
@@ -65,7 +65,7 @@ export interface RuntimeSemanticRule {
 	readonly priority?: number;
 }
 
-/** Serializable runtime sheet state for SSR and hydration. */
+/** Serializable boundary between an SSR producer and a browser consumer. */
 export interface RuntimeSheetSnapshot {
 	readonly tokens: string;
 	readonly rules: RuntimeRule[];
@@ -87,7 +87,7 @@ export interface RuntimeDocument {
 	head: { appendChild(element: RuntimeStyleElement): void };
 }
 
-/** Options for runtime sheet identity and DOM mounting. */
+/** Options controlling runtime sheet identity and DOM mounting behavior. */
 export interface RuntimeSheetOptions {
 	readonly id?: string;
 	readonly autoMount?: boolean;

@@ -46,6 +46,10 @@ import type { TwComposeMeta, TwConflictsMeta, TwVariantsMeta } from "../tw/compi
 /**
  * Metadata used by {@link createCx} to resolve utility and CSS-atom conflicts.
  *
+ * Generated `tw` metadata is optional: without it, `cx` still combines inputs
+ * but preserves opaque strings rather than guessing at their conflicts. Pass
+ * the same `css` instance that created atoms when they should merge too.
+ *
  * @example
  * ```ts
  * import { createCss } from "pandwind/css";
@@ -73,7 +77,8 @@ export interface CxOptions {
 }
 
 /**
- * Input accepted by {@link createCx}; falsey values are ignored.
+ * Input accepted by {@link createCx}; falsey values are ignored and unknown
+ * strings are kept verbatim.
  *
  * @category composition
  * @since 0.1.0
@@ -441,6 +446,8 @@ export interface CxFn {
 	(...inputs: Array<CxInput | CxInput[]>): string;
 	/**
 	 * Merge `css.vars()` outputs and preserve their inline custom properties.
+	 * The plain `cx` call returns only a class string; use `.vars` when the
+	 * result is going directly to a host element.
 	 *
 	 * @example
 	 * ```ts
@@ -461,6 +468,10 @@ export interface CxFn {
 
 /**
  * Create a metadata-aware, last-wins class composition function.
+ *
+ * `cx` understands generated utility conflicts and CSS atoms registered by
+ * the supplied `css` instance. It does not ship an ecosystem vocabulary of
+ * its own, so unresolved strings remain in the result.
  *
  * @example
  * ```ts

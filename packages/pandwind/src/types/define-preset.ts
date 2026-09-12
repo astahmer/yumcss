@@ -12,6 +12,10 @@ export * from "./typings.ts";
 /**
  * Preserve literal token and CSS config types for a preset theme.
  *
+ * `defineTheme` is a zero-cost identity function. Its `config` value is a
+ * compile-time witness for the CSS properties and raw values the preset may
+ * expose; use it when the theme is named or composed separately.
+ *
  * @example
  * ```ts
  * import { defineTheme, defineTokens, type StandardProperties } from "pandwind/preset";
@@ -40,6 +44,9 @@ export const defineTheme = <TTheme extends DefinePresetOptions>(theme: TTheme) =
  *
  * `strict: true` exposes mapped token names; `$strictness: "inherits"` also
  * allows the property's raw CSS values.
+ * Use the resulting preset with `createCss`, `createDesignCss`, or the
+ * stylesheet compiler. `$all` adds configured property names but does not bind
+ * every token group to every property.
  *
  * @example
  * ```ts
@@ -92,6 +99,8 @@ export function definePreset<
  * Preserve literal names in a raw token map.
  *
  * Values may be CSS values or references to another token path.
+ * Keep stable semantic or component roles as references so a theme can rebind
+ * the underlying raw value without changing component styles.
  *
  * @example
  * ```ts
@@ -117,6 +126,9 @@ export const defineTokens = <T extends AnySimpleTokens>(tokens: T) => tokens;
 
 /**
  * Define token values that change under preset conditions such as `_dark`.
+ *
+ * Condition keys must exist in the condition map and are kept as branches
+ * rather than flattened into one static value.
  *
  * @example
  * ```ts
@@ -149,6 +161,9 @@ export const defineSemanticTokens = <
 /**
  * Preserve a condition map as typed preset metadata.
  *
+ * Keys become nested condition names in style objects; values are selectors or
+ * at-rules used when the stylesheet is generated.
+ *
  * @example
  * ```ts
  * import { defineConditions } from "pandwind/preset";
@@ -172,6 +187,8 @@ export const defineConditions = <T extends AnyConditions>(cond: T) => cond;
  *
  * Use `$tokens` for a token group, `$all` for all configured properties, and
  * `$strictness: "inherits"` when a mapped property also accepts raw CSS values.
+ * `true` uses the corresponding CSS config values, while `$all` adds property
+ * names only and does not create token bindings.
  *
  * @example
  * ```ts

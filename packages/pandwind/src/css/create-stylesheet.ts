@@ -40,7 +40,11 @@ const appendImportant = (declaration: string): string => {
 };
 
 /**
- * Replaceable policies for stylesheet generation.
+ * Replaceable policies for deterministic stylesheet generation.
+ *
+ * Leave these unset for the normal Pandwind CSS dialect. Custom policies are
+ * useful to adapters and tooling that need a different condition parser,
+ * ordering rule, serializer, or token-emission strategy.
  *
  * @category stylesheet
  * @since 0.1.0
@@ -57,6 +61,10 @@ export interface StylesheetPolicies {
 /**
  * Create a pure stylesheet compiler for a preset.
  *
+ * The returned compiler is independent from the DOM. Use `process` and
+ * `generate` for SSR, extraction, or a build plugin, and inspect its rule
+ * generators when an integration needs the intermediate entries.
+ *
  * @example
  * ```ts
  * import { createCss } from "pandwind/css";
@@ -71,9 +79,10 @@ export interface StylesheetPolicies {
  * ```
  *
  * @param preset - The token, property, and condition metadata to compile.
- * @param options - CSS backend options.
+ * @param options - Hashing, class-name strategy, and dynamic-carrier options.
+ *   Match the namespace used by the corresponding CSS factory.
  * @param policies - Optional replaceable stylesheet policies.
- * @returns A pure stylesheet compiler.
+ * @returns A pure compiler with `process`, `generate`, and rule generators.
  * @category stylesheet
  * @since 0.1.0
  */

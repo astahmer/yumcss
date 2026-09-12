@@ -108,6 +108,10 @@ const arbitraryVariants = (selector: string | readonly string[]): string | null 
 /**
  * Build an UnoCSS candidate strategy for the CSS lane.
  *
+ * Only candidates that the supplied metadata can prove are emitted; other
+ * declarations return `null` and use Pandwind's atomic fallback, so a class
+ * is never produced without corresponding CSS.
+ *
  * @example
  * ```ts
  * import { createCss } from "pandwind/css";
