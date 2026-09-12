@@ -241,7 +241,7 @@ describe("userland adversarial contracts", () => {
 		expect(sheet.css()).toBe(".valid{}");
 	});
 
-	test("css props flatten nested and cyclic carriers without recursion", () => {
+	test("css props flatten nested and cyclic carriers safely", () => {
 		const css = createCss();
 		const colorClass = css.class({ color: "red" });
 		const paddingClass = css.class({ padding: 4 });
