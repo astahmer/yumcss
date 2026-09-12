@@ -98,6 +98,7 @@ export const createStylesheet = (
 		conditionNames,
 		conditionNames.filter((name) => isEmptyCondition(name, preset.conditions)),
 		namespace,
+		options.propertyAliases,
 	);
 	const conditionPolicy = policies.conditions ?? defaultConditionPolicy;
 	const ordering = policies.ordering ?? createStylesheetOrderingPolicy();
@@ -213,7 +214,7 @@ export const createStylesheet = (
 			// will always have the same hash
 			// ex: `css({ _hover: { color: "red" } })` === `css({ color: { _hover: "red" }  })`
 			const orderedKey = canonicalStyleKey(key, preset.conditions);
-			const property = cssPropertyFromKey(orderedKey, preset.conditions);
+			const property = cssPropertyFromKey(orderedKey, preset.conditions, options.propertyAliases);
 			const normalizedValue = normalizeCssValue(property, rawValue);
 			processNormalizedStyle(orderedKey, normalizedValue, localCache);
 		}
@@ -231,7 +232,7 @@ export const createStylesheet = (
 		if (cache.has(pairId)) return;
 
 		const atomic = decoder.decode(preset.conditions, pairId);
-		const property = cssPropertyFromKey(atomic.prop!, preset.conditions);
+		const property = cssPropertyFromKey(atomic.prop!, preset.conditions, options.propertyAliases);
 		const tokenGroup = tokenMaps.groupByProp.get(property);
 		const tokenNames = tokenMaps.tokensByProp.get(property);
 		if (tokenNames?.has(normalizedValue)) {
@@ -268,7 +269,7 @@ export const createStylesheet = (
 			if (typeof key !== "string" || key.length === 0 || key.includes("\u0000")) continue;
 			if (!isSafeCssValue(value)) continue;
 			const orderedKey = canonicalStyleKey(key, preset.conditions);
-			const property = cssPropertyFromKey(orderedKey, preset.conditions);
+			const property = cssPropertyFromKey(orderedKey, preset.conditions, options.propertyAliases);
 			processNormalizedStyle(orderedKey, normalizeCssValue(property, value), localCache);
 		}
 		return localCache;
@@ -307,7 +308,7 @@ export const createStylesheet = (
 		const orderedKey = pairs.join([...orderedConditions, propPart]);
 		if (orderedKey === "" || varCache.has(orderedKey)) return;
 		// The canonical key always stores conditions before the property.
-		const prop = dashCase(cssPropertyFromKey(propPart, preset.conditions));
+		const prop = dashCase(cssPropertyFromKey(propPart, preset.conditions, options.propertyAliases));
 		const condParts = orderedConditions.map(varConditionPart);
 		let declaration = `var(--${namespace}-c-${prop})`;
 		for (let i = 1; i <= condParts.length; i++) {

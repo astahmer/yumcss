@@ -2,6 +2,7 @@ import type { StandardLonghandProperties } from "csstype";
 import { expect, test } from "vitest";
 import { createCss } from "../src/css/create-css.ts";
 import { createStylesheet } from "../src/css/create-stylesheet.ts";
+import { cssShorthands } from "../src/css/shorthands.ts";
 import { definePreset } from "../src/types/define-preset.ts";
 
 test("css gen simple prop", () => {
@@ -134,7 +135,25 @@ test("css gen simple prop", () => {
 	`);
 });
 
-test("lowers style aliases to valid CSS properties", () => {
+test("keeps authored aliases literal by default", () => {
+	const preset = definePreset(
+		{ config: {} as StandardLonghandProperties, tokens: {} },
+		{ strict: true, properties: { $all: true }, conditions: {} },
+	);
+	const css = createCss<typeof preset>({ debug: true });
+	const output = createStylesheet(preset, { debug: true }).generate([
+		css.raw({ bg: "red", px: 2, minH: 10 } as never),
+	]);
+
+	expect(output).toContain("bg:red");
+	expect(output).toContain("px:2");
+	expect(output).toContain("min-h:10");
+	expect(output).not.toContain("background:red");
+	expect(output).not.toContain("padding-inline:2");
+	expect(output).not.toContain("min-height:10");
+});
+
+test("lowers style aliases only with an explicit catalog", () => {
 	const preset = definePreset(
 		{
 			config: {} as StandardLonghandProperties,
@@ -146,8 +165,8 @@ test("lowers style aliases to valid CSS properties", () => {
 			conditions: {},
 		},
 	);
-	const css = createCss<typeof preset>({ debug: true });
-	const sheet = createStylesheet(preset, { debug: true });
+	const css = createCss<typeof preset>({ debug: true, propertyAliases: cssShorthands });
+	const sheet = createStylesheet(preset, { debug: true, propertyAliases: cssShorthands });
 	const output = sheet.generate([css.raw({ bg: "red", px: 2, minH: 10 } as never)]);
 
 	expect(output).toContain("background:red");

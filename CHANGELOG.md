@@ -8,10 +8,10 @@ current `0.1.0` state.
 
 ### Fixes
 
-- CSS output now lowers Chakra/Panda-style aliases such as `bg`, `px`, and
-  `minH` to valid longhand properties across atomic, runtime-variable, and
-  inline-variable serialization. Regression coverage locks the emitted
-  declarations and rejects shorthand leakage.
+- CSS output can lower Chakra/Panda-style aliases such as `bg`, `px`, and
+  `minH` through the optional `pandwind/css/shorthands` catalog. Default CSS
+  factories preserve authored property names, keeping the alias table out of
+  bundles that do not opt in.
 
 ## Unreleased — 2026-08-25 wave (multi-target backends)
 

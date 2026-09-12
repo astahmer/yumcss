@@ -89,7 +89,8 @@ function runtimeSheetFor(preset: CssConfigReturn, options: RuntimeCssOptions): R
 	if (
 		options.className !== undefined ||
 		options.debug !== undefined ||
-		options.hashFn !== undefined
+		options.hashFn !== undefined ||
+		options.propertyAliases !== undefined
 	)
 		return createRuntimeSheet();
 	const globalObject = globalThis as RuntimeGlobal;

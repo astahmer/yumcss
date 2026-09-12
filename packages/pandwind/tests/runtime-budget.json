@@ -67,6 +67,10 @@
 		"min": 11000,
 		"gz": 4500
 	},
+	"css, optional shorthands": {
+		"min": 11000,
+		"gz": 4500
+	},
 	"root barrel, tw only": {
 		"min": 3200,
 		"gz": 1500

@@ -27,6 +27,12 @@
 			"import": "./dist/css/index.js",
 			"default": "./dist/css/index.js"
 		},
+		"./css/shorthands": {
+			"pandwind": "./src/css/shorthands.ts",
+			"types": "./dist/css/shorthands.d.ts",
+			"import": "./dist/css/shorthands.js",
+			"default": "./dist/css/shorthands.js"
+		},
 		"./css/runtime": {
 			"pandwind": "./src/css/runtime.ts",
 			"types": "./dist/css/runtime.d.ts",

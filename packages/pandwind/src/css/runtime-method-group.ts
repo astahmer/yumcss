@@ -23,7 +23,8 @@ const INPUT_NAME = /^[-_A-Za-z][-_A-Za-z0-9]*$/;
 export const attachGroup: RuntimeCssAttachment = (css, context) => {
 	const vars = css.vars as ((...styles: Array<StyleObject>) => VarsOutput) | undefined;
 	const conditions = context.backendOptions.conditions ?? {};
-	const propertyForInput = (key: string): string => cssPropertyFromKey(key, conditions);
+	const propertyForInput = (key: string): string =>
+		cssPropertyFromKey(key, conditions, context.backendOptions.propertyAliases);
 	const transform = (styles: StyleObject | DynamicStyles | string) => {
 		if (typeof styles === "string") return styles;
 		if (typeof styles !== "object" || styles === null) return context.compileStyles({});

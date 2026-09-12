@@ -129,4 +129,6 @@ export type CssExtractorOptions = {
 	readonly className?: ClassNameStrategy;
 	/** Namespace used by generated dynamic-value carriers. */
 	readonly namespace?: string;
+	/** Optional authored property aliases used by folded CSS calls. */
+	readonly propertyAliases?: Readonly<Record<string, string>>;
 };

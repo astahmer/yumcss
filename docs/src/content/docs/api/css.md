@@ -68,6 +68,24 @@ Most applications only need css.class(), css.vars(), and occasionally
 css.props(). The other return shapes are useful when building a component
 library or an integration.
 
+### Optional property shorthands
+
+The CSS lane preserves authored property names by default. If an application
+uses aliases such as `bg`, `px`, or `rounded`, opt into the separate catalog:
+
+```ts
+import { createCss } from "pandwind/css";
+import { cssShorthands } from "pandwind/css/shorthands";
+
+const css = createCss({ propertyAliases: cssShorthands });
+const card = css.class({ bg: "red", px: 4 });
+```
+
+The same `propertyAliases` map must be passed to `pandwindCssVite()` when
+static extraction is enabled. Spread `cssShorthands` with application-specific
+aliases when needed; applications that do not import this entry point do not
+ship its alias table.
+
 ## Pick a return shape
 
 All seven methods take the same style object and compile the same atoms;

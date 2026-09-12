@@ -12,6 +12,7 @@ const packageManifest = JSON.parse(
 
 const entries = [
 	"pandwind/css",
+	"pandwind/css/shorthands",
 	"pandwind/tw",
 	"pandwind/cx",
 	"pandwind/preset",

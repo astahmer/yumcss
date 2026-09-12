@@ -61,15 +61,18 @@ class DefaultVarCompiler implements VarCompiler {
 	private readonly conditions: ReadonlySet<string>;
 	private readonly emptyConditions: ReadonlySet<string>;
 	private readonly prefix: string;
+	private readonly propertyAliases: Readonly<Record<string, string>> | undefined;
 
 	constructor(
 		conditionNames: Iterable<string> = [],
 		emptyConditionNames: Iterable<string> = [],
 		namespace?: string,
+		propertyAliases?: Readonly<Record<string, string>>,
 	) {
 		this.conditions = new Set(conditionNames);
 		this.emptyConditions = new Set(emptyConditionNames);
 		this.prefix = `${namespace ?? "pw"}-`;
+		this.propertyAliases = propertyAliases;
 	}
 
 	private splitKey(key: string): { conditions: string[]; prop: string; canonical: string } {
@@ -82,7 +85,7 @@ class DefaultVarCompiler implements VarCompiler {
 		const rawProp = propertyFirst ? first : last;
 		const rawConditions = propertyFirst ? parts.slice(1) : parts.slice(0, -1);
 		return {
-			prop: dashCase(cssPropertyFromKey(rawProp)),
+			prop: dashCase(cssPropertyFromKey(rawProp, {}, this.propertyAliases)),
 			canonical: pairs.join(
 				rawConditions
 					.filter((condition) => !this.emptyConditions.has(condition))
@@ -125,7 +128,7 @@ class DefaultVarCompiler implements VarCompiler {
 		if (keys.length === 1 && singleKey !== undefined && !singleKey.includes("__")) {
 			const raw = flat[singleKey];
 			if (!isSafeCssValue(raw) || raw === "") return { atoms: [], style: {} };
-			const prop = dashCase(cssPropertyFromKey(singleKey));
+			const prop = dashCase(cssPropertyFromKey(singleKey, {}, this.propertyAliases));
 			return {
 				atoms: [{ cls: `${this.prefix}${prop}`, keys: [singleKey] }],
 				style: { [this.baseCustomProp(prop)]: runtimeValue(prop, raw) },
@@ -153,6 +156,7 @@ class DefaultVarCompiler implements VarCompiler {
  * @param emptyConditionNames - Conditions that use the base carrier.
  * @param namespace - Prefix for carrier classes and custom properties.
  *   Defaults to `pw`.
+ * @param propertyAliases - Optional authored property aliases.
  * @returns A compiler used by `css.vars` and runtime stylesheet generation.
  * @category styling
  * @since 0.1.0
@@ -161,4 +165,6 @@ export const createVarCompiler = (
 	conditionNames?: Iterable<string>,
 	emptyConditionNames?: Iterable<string>,
 	namespace?: string,
-): VarCompiler => new DefaultVarCompiler(conditionNames, emptyConditionNames, namespace);
+	propertyAliases?: Readonly<Record<string, string>>,
+): VarCompiler =>
+	new DefaultVarCompiler(conditionNames, emptyConditionNames, namespace, propertyAliases);

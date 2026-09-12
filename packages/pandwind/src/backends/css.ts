@@ -27,6 +27,8 @@ export interface CssBackendOptions {
 	namespace?: string;
 	/** Preset conditions used to canonicalize responsive var paths. */
 	conditions?: Record<string, string | string[]>;
+	/** Optional authored property aliases; omitted aliases remain literal. */
+	propertyAliases?: Readonly<Record<string, string>>;
 }
 
 const isConditionPathPart = (
@@ -34,48 +36,6 @@ const isConditionPathPart = (
 	conditions: Record<string, string | string[]>,
 ): boolean =>
 	part.startsWith("_") || Object.hasOwn(conditions, part) || /[&>+~:[\],.#*\s]/.test(part);
-
-const cssPropertyAliases: Readonly<Record<string, string>> = {
-	align: "alignItems",
-	bg: "background",
-	bgColor: "backgroundColor",
-	flexDir: "flexDirection",
-	fs: "fontSize",
-	fw: "fontWeight",
-	h: "height",
-	insetX: "insetInline",
-	insetY: "insetBlock",
-	justify: "justifyContent",
-	lh: "lineHeight",
-	m: "margin",
-	mb: "marginBottom",
-	me: "marginInlineEnd",
-	ml: "marginLeft",
-	ms: "marginInlineStart",
-	mt: "marginTop",
-	mr: "marginRight",
-	mx: "marginInline",
-	my: "marginBlock",
-	minH: "minHeight",
-	minW: "minWidth",
-	maxH: "maxHeight",
-	maxW: "maxWidth",
-	p: "padding",
-	pb: "paddingBottom",
-	pe: "paddingInlineEnd",
-	pl: "paddingLeft",
-	ps: "paddingInlineStart",
-	pt: "paddingTop",
-	pr: "paddingRight",
-	px: "paddingInline",
-	py: "paddingBlock",
-	pos: "position",
-	rounded: "borderRadius",
-	shadow: "boxShadow",
-	tracking: "letterSpacing",
-	w: "width",
-	z: "zIndex",
-};
 
 export const isEmptyCondition = (
 	part: string,
@@ -89,14 +49,15 @@ export const isEmptyCondition = (
 export const cssPropertyFromKey = (
 	key: string,
 	conditions: Record<string, string | string[]> = {},
+	propertyAliases?: Readonly<Record<string, string>>,
 ): string => {
 	const parts = key.includes("__") ? key.split("__") : [key];
 	for (let index = parts.length - 1; index >= 0; index--) {
 		const part = parts[index]!;
-		if (!isConditionPathPart(part, conditions)) return cssPropertyAliases[part] ?? part;
+		if (!isConditionPathPart(part, conditions)) return propertyAliases?.[part] ?? part;
 	}
 	const fallback = parts.at(-1) ?? "";
-	return cssPropertyAliases[fallback] ?? fallback;
+	return propertyAliases?.[fallback] ?? fallback;
 };
 
 const rawCssPropertyFromKey = (
@@ -148,7 +109,7 @@ export function createCssBackend(options: CssBackendOptions = {}): CssBackend {
 
 	const declare = (key: string, value: string | number): string => {
 		const orderedKey = canonicalStyleKey(key, options.conditions);
-		const property = cssPropertyFromKey(orderedKey, options.conditions);
+		const property = cssPropertyFromKey(orderedKey, options.conditions, options.propertyAliases);
 		const rawValue = normalizeCssValue(property, value);
 		let values = declarations.get(orderedKey);
 		if (values === undefined) {

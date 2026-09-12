@@ -6,6 +6,7 @@
 			"exportPaths": [
 				".",
 				"./css",
+				"./css/shorthands",
 				"./css/runtime",
 				"./cx",
 				"./preset",
@@ -20,6 +21,7 @@
 			"evidence": [
 				"packages/pandwind/package.json",
 				"packages/pandwind/tests/package-exports.test.ts",
+				"docs/src/content/docs/api/css.md",
 				"docs/src/content/docs/getting-started.md"
 			],
 			"note": "The frozen authoring and host contracts."

@@ -19,6 +19,8 @@ export interface StaticCssCallRewriterOptions {
 	readonly transformDynamicClassName?: boolean;
 	/** Namespace used by generated `css.vars()` carriers. */
 	readonly namespace?: string;
+	/** Optional authored property aliases used by folded CSS calls. */
+	readonly propertyAliases?: Readonly<Record<string, string>>;
 }
 
 interface PropertyNode extends OxcNode {
@@ -51,6 +53,7 @@ export class StaticCssCallRewriter implements CssCallRewriter {
 	private readonly className: ClassNameStrategy | undefined;
 	private readonly transformDynamicClassName: boolean;
 	private readonly namespace: string | undefined;
+	private readonly propertyAliases: Readonly<Record<string, string>> | undefined;
 	/** Var toggle keys introduced by carriers this rewriter emitted. */
 	private readonly varKeys = new Set<string>();
 
@@ -65,12 +68,17 @@ export class StaticCssCallRewriter implements CssCallRewriter {
 			options.transformDynamicClassName === true &&
 			(className === undefined || className.sheetBacked === true);
 		this.namespace = options.namespace;
+		this.propertyAliases = options.propertyAliases;
 	}
 
 	inline(code: string, id: string, names: ReadonlySet<string>): InlineCssResult {
 		this.varKeys.clear();
 		if (names.size === 0) return { code, inlined: 0, varKeys: [] };
-		const engine = createCss({ className: this.className, namespace: this.namespace });
+		const engine = createCss({
+			className: this.className,
+			namespace: this.namespace,
+			propertyAliases: this.propertyAliases,
+		});
 		const compileStaticArguments = (
 			propertySets: readonly (readonly PropertyNode[])[],
 		): string | null => {
