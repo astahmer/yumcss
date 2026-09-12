@@ -168,7 +168,7 @@ These optimizations preserve the static-first delivery path: literal calls are
 still erased by the Vite compiler, so the runtime bundle is only paid for
 dynamic or unsupported calls.
 
-## Current runtime size record — 2026-09-10
+## Current runtime size record — 2026-09-12
 
 The canonical table is [the reference size page](docs/src/content/docs/reference/size.md);
 the exact record is the committed `runtime-size.json.snap` and the hard
@@ -176,14 +176,14 @@ ceilings are in `runtime-budget.json`. The current primary entries are:
 
 | entry                        | minified |  gzip |
 | ---------------------------- | -------: | ----: |
-| `createCss()` fallback       |    6,781 | 2,974 |
-| `tw()`                       |    2,711 | 1,266 |
-| `cx()`                       |   12,709 | 5,309 |
-| all direct runtime entries   |   15,311 | 6,245 |
-| `createRuntimeCss()` + sheet |   20,907 | 8,423 |
+| `createCss()` fallback       |   10,279 | 4,192 |
+| `tw()`                       |    2,800 | 1,314 |
+| `cx()`                       |   17,214 | 6,759 |
+| all direct runtime entries   |   19,909 | 7,723 |
+| `createRuntimeCss()` + sheet |   28,046 | 10,748 |
 
-The combined runtime rounds to the supplied `@emotion/css` 11.13.5 reference
-(15.3 KB / 6.25 KB). The size compaction shares one dash-case helper across
+The current combined direct-runtime row is the regression baseline for
+subsequent revisions. The size compaction shares one dash-case helper across
 the runtime, removes unused merge-state storage, and gives the runtime sheet
 its own lean stylesheet/token path while retaining the direct class, variable,
 and LRU performance work.
