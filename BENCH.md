@@ -1,7 +1,7 @@
 # Runtime benchmarks — measured, not guessed
 
-Last measured: **2026-09-10** for the runtime size record and
-`createRuntimeCss()` comparison, **2026-09-02** for the historical optimization replay,
+Last measured: **2026-09-12** for the runtime size and package runtime-path records,
+**2026-09-10** for the `createRuntimeCss()` comparison, **2026-09-02** for the historical optimization replay,
 **2026-09-01** for the historical runtime hot-path pass, **2026-08-23** for `cx()` (v3
 whole-input cache — see the section below), **2026-08-22** for the competitor
 table. Local macOS (arm64),
@@ -248,7 +248,11 @@ sheet by design.
 The package-level runtime throughput record lives in
 [`packages/pandwind/tests/snapshots/runtime-benchmark.json.snap`](./packages/pandwind/tests/snapshots/runtime-benchmark.json.snap)
 and is exercised by `packages/pandwind/tests/runtime-benchmark.test.ts`. It
-records the current `css()`, `tw()`, and `cx()` median/p10/p90 measurements.
+records named `css.flat`, `css.nested`, `css.merge`, `runtime.css`,
+`runtime.sheet`, `tw`, `cx.plain`, and `cx.nested` median/p10/p90 measurements.
+The workloads cover ordinary flat/nested/merged styles, the live runtime sheet,
+and nested class inputs without making pathological deep-input behavior part of
+the performance contract.
 Because throughput is not deterministic like bundle bytes, normal runs compare
 against the recorded median with a broad slowdown floor and retain ordinary
 assertions for output correctness. Refresh it deliberately after a meaningful
