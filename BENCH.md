@@ -174,12 +174,12 @@ The canonical table is [the reference size page](docs/src/content/docs/reference
 the exact record is the committed `runtime-size.json.snap` and the hard
 ceilings are in `runtime-budget.json`. The current primary entries are:
 
-| entry                        | minified |  gzip |
-| ---------------------------- | -------: | ----: |
-| `createCss()` fallback       |   10,279 | 4,192 |
-| `tw()`                       |    2,800 | 1,314 |
-| `cx()`                       |   17,214 | 6,759 |
-| all direct runtime entries   |   19,909 | 7,723 |
+| entry                        | minified |   gzip |
+| ---------------------------- | -------: | -----: |
+| `createCss()` fallback       |   10,279 |  4,192 |
+| `tw()`                       |    2,800 |  1,314 |
+| `cx()`                       |   17,214 |  6,759 |
+| all direct runtime entries   |   19,909 |  7,723 |
 | `createRuntimeCss()` + sheet |   28,046 | 10,748 |
 
 The current combined direct-runtime row is the regression baseline for
