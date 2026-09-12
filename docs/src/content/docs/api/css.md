@@ -86,6 +86,50 @@ static extraction is enabled. Spread `cssShorthands` with application-specific
 aliases when needed; applications that do not import this entry point do not
 ship its alias table.
 
+### Host stylesheet precedence
+
+Generated CSS keeps ordinary selectors by default. If a host runtime injects
+one-class rules that must not override Pandwind, opt into the StyleX-like
+specificity strategy:
+
+```ts
+const css = createCss(preset, { cascade: "specificity" });
+
+// vite.config.ts
+pandwindCssVite(preset, { cascade: "specificity" });
+```
+
+This adds `:not(#\\#)` priority markers to generated selectors. The markers
+raise Pandwind's specificity by priority band, while class names and `cx()`
+semantics stay unchanged. The strategy is intentionally opt-in because it
+makes generated selectors stronger; a host rule with equal or higher
+specificity, or `!important`, can still win.
+
+For an application that coordinates all of its CSS with native cascade layers,
+use the Panda-style layer strategy:
+
+```css
+@layer reset, base, pandwind, app;
+```
+
+```ts
+const css = createCss(preset, { cascade: "layers" });
+
+// vite.config.ts
+pandwindCssVite(preset, { cascade: "layers" });
+```
+
+Pandwind wraps its generated tokens, atomic rules, and variable rules in
+`@layer pandwind`. Declare the layer order before those rules are imported and
+place host layers around it as needed. Native layers are not an override for
+ordinary unlayered host declarations: unlayered normal CSS has higher cascade
+priority than normal layered CSS.
+
+The runtime lane accepts the same option. Use `createRuntimeCss(preset, {
+cascade: "specificity" })` or `{ cascade: "layers" }`; when supplying an
+explicit `sheet`, configure the cascade on `createRuntimeSheet()` itself so
+the sheet and its CSS factory share one policy.
+
 ## Pick a return shape
 
 All seven methods take the same style object and compile the same atoms;

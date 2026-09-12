@@ -85,14 +85,19 @@ type RuntimeGlobal = typeof globalThis & {
 
 function runtimeSheetFor(preset: CssConfigReturn, options: RuntimeCssOptions): RuntimeSheet {
 	if (options.sheet !== undefined) return options.sheet;
-	if (options.sheetOptions !== undefined) return createRuntimeSheet(options.sheetOptions);
+	if (options.sheetOptions !== undefined)
+		return createRuntimeSheet({
+			...options.sheetOptions,
+			...(options.cascade === undefined ? {} : { cascade: options.cascade }),
+		});
 	if (
 		options.className !== undefined ||
 		options.debug !== undefined ||
 		options.hashFn !== undefined ||
-		options.propertyAliases !== undefined
+		options.propertyAliases !== undefined ||
+		options.cascade !== undefined
 	)
-		return createRuntimeSheet();
+		return createRuntimeSheet({ cascade: options.cascade });
 	const globalObject = globalThis as RuntimeGlobal;
 	const sheets = globalObject[sharedSheetsKey] ?? new WeakMap<object, RuntimeSheet>();
 	globalObject[sharedSheetsKey] = sheets;

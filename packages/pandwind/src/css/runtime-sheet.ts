@@ -1,5 +1,6 @@
 /** Runtime stylesheet façade composed from store, canonicalizer, ordering, serializer, and DOM sink ports. */
 import { DomStyleElementSink } from "./runtime-sheet-sink.ts";
+import { decorateCascadeRules, wrapCascadeLayer } from "./cascade.ts";
 import { PriorityOrderingPolicy, RuntimeRuleStore } from "./runtime-sheet-policies.ts";
 import { SemanticRuleCanonicalizer, SemanticRuleSerializer } from "./runtime-sheet-serializer.ts";
 import { RuntimeSemanticRuleKindTag } from "./runtime-sheet-contracts.ts";
@@ -199,11 +200,12 @@ export function createRuntimeSheet(
 
 	const css = (): string => {
 		if (renderedGeneration === generation) return rendered;
-		const body = orderedRules()
+		const rules = decorateCascadeRules(orderedRules(), options.cascade);
+		const body = rules
 			.map((rule) => rule.css)
 			.filter(Boolean)
 			.join("\n");
-		rendered = [tokens, body].filter(Boolean).join("\n");
+		rendered = wrapCascadeLayer([tokens, body].filter(Boolean).join("\n"), options.cascade);
 		renderedGeneration = generation;
 		return rendered;
 	};
@@ -228,6 +230,7 @@ export function createRuntimeSheet(
 		const validRules = rules.filter(isRuntimeRule);
 		if (validRules.length === 0) return;
 		const canInsert =
+			options.cascade === undefined &&
 			orderedGeneration === generation &&
 			ordering.insert !== undefined &&
 			validRules.every((rule, index) => {

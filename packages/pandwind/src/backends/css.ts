@@ -1,5 +1,6 @@
 import type { AtomRegistry } from "../css/atoms.ts";
 import type { ClassNameStrategy } from "../css/class-name-strategy.ts";
+import type { CssCascadeMode } from "../css/cascade.ts";
 import { createHashFn } from "../css/hash.ts";
 import type { StyleBackend } from "./types.ts";
 import { normalizeCssValue } from "../css/value-normalization.ts";
@@ -16,10 +17,11 @@ export interface CssBackendOptions {
 	hashFn?: (key: string, value: string | true) => string;
 	className?: ClassNameStrategy;
 	/**
-	 * Mark emitted declarations as important when Pandwind must override a
-	 * host component runtime stylesheet (for example Chakra's runtime CSS).
+	 * Opt into a host-override cascade strategy. `specificity` follows
+	 * StyleX's `:not(#\#)` priority levels; `layers` wraps output in the
+	 * native `@layer pandwind` layer.
 	 */
-	important?: boolean;
+	cascade?: CssCascadeMode;
 	/**
 	 * Namespace for Pandwind-owned dynamic-value carriers and custom properties.
 	 * Defaults to `pw`; caller-owned class-name strategies are not rewritten.

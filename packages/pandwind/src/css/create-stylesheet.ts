@@ -12,6 +12,7 @@ import {
 	tokenDependencyPaths,
 } from "./tokens.ts";
 import { isSelfSelector } from "./stylesheet-lowering.ts";
+import { decorateCascadeRules, wrapCascadeLayer } from "./cascade.ts";
 import {
 	defaultAtomicPathDecoder,
 	defaultConditionPolicy,
@@ -31,12 +32,6 @@ type Rule = { id: string; css: string; priority: number };
 const cssVar = {
 	ref: (key: string) => `var(--${key})`,
 	declaration: (key: string, value: string) => `--${key}: ${value};`,
-};
-
-const appendImportant = (declaration: string): string => {
-	if (declaration.includes("!important")) return declaration;
-	if (declaration.endsWith(";")) return `${declaration.slice(0, -1)} !important;`;
-	return `${declaration} !important`;
 };
 
 /**
@@ -108,11 +103,7 @@ export const createStylesheet = (
 	const serializeStyle = (
 		declaration: string,
 		conditions: Parameters<typeof serializer.serialize>[1],
-	) =>
-		serializer.serialize(
-			options.important === true ? appendImportant(declaration) : declaration,
-			conditions,
-		);
+	) => serializer.serialize(declaration, conditions);
 
 	const hashFn = options.hashFn ?? createHashFn(Boolean(options.debug));
 	const debug = Boolean(options.debug);
@@ -324,6 +315,17 @@ export const createStylesheet = (
 		return rule;
 	};
 
+	const orderedRuleSections = (): { atomic: Rule[]; vars: Rule[] } => {
+		const atomic = ordering.order(cache.values());
+		const vars = ordering.order(varCache.values());
+		if (options.cascade !== "specificity") return { atomic, vars };
+		const decorated = decorateCascadeRules([...atomic, ...vars], options.cascade);
+		return {
+			atomic: decorated.slice(0, atomic.length),
+			vars: decorated.slice(atomic.length),
+		};
+	};
+
 	const tokenEntries = (): TokenDeclaration[] =>
 		Array.from(cssVars.entries())
 			.filter(([path]) => {
@@ -352,9 +354,8 @@ export const createStylesheet = (
 				.join("\n"));
 		},
 		atomic: () => {
-			return ordering
-				.order(cache.values())
-				.map((v) => v.css)
+			return orderedRuleSections()
+				.atomic.map((v) => v.css)
 				.join("\n");
 		},
 		/**
@@ -363,19 +364,24 @@ export const createStylesheet = (
 		 * each route bucket produces without re-parsing emitted CSS.
 		 */
 		atomicEntries: () =>
-			ordering.order(cache.values()).map((v) => ({ id: v.id, css: v.css, priority: v.priority })),
+			orderedRuleSections().atomic.map((v) => ({
+				id: v.id,
+				css: v.css,
+				priority: v.priority,
+			})),
 		/** Var-inline toggle rules (see processVarKey), priority-ordered. */
 		varRules: () => {
-			return ordering
-				.order(varCache.values())
-				.map((v) => v.css)
+			return orderedRuleSections()
+				.vars.map((v) => v.css)
 				.join("\n");
 		},
 		/** Var toggle rules with identity — see atomicEntries. */
 		varEntries: () =>
-			ordering
-				.order(varCache.values())
-				.map((v) => ({ id: v.id, css: v.css, priority: v.priority })),
+			orderedRuleSections().vars.map((v) => ({
+				id: v.id,
+				css: v.css,
+				priority: v.priority,
+			})),
 	};
 
 	const generate = (styles: Array<StyleObject>) => {
@@ -384,7 +390,7 @@ export const createStylesheet = (
 		const tokensCss = gen.tokens();
 		const atomicCss = gen.atomic();
 
-		return [tokensCss, atomicCss].filter(Boolean).join("\n");
+		return wrapCascadeLayer([tokensCss, atomicCss].filter(Boolean).join("\n"), options.cascade);
 	};
 
 	return {

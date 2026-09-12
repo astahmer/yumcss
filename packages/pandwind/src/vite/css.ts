@@ -42,10 +42,11 @@ import type { ModuleNode } from "vite";
 import { createCssExtractorPluginCore } from "./css-core.ts";
 import type { PandwindEngineContext } from "./engine-context.ts";
 import type { ClassNameStrategy } from "../css/class-name-strategy.ts";
+import type { CssCascadeMode } from "../css/cascade.ts";
 
 export interface PandwindCssViteOptions {
-	/** Mark generated declarations important when a host runtime stylesheet wins by insertion order. */
-	important?: boolean;
+	/** Match host stylesheet precedence with StyleX specificity or a native layer. */
+	cascade?: CssCascadeMode;
 	/**
 	 * Import sources that point at the css() module. Defaults to any source
 	 * whose basename is `css` or `design` (`./css`, `./design.ts`, ...).

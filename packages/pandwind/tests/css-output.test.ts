@@ -175,18 +175,32 @@ test("lowers style aliases only with an explicit catalog", () => {
 	expect(output).not.toMatch(/(?:^|[;{])(?:bg|px|min-h):/);
 });
 
-test("can mark extracted declarations important for host runtime precedence", () => {
+test("can opt into StyleX-like priority specificity for host precedence", () => {
 	const preset = definePreset(
 		{ config: {} as StandardLonghandProperties, tokens: {} },
 		{ strict: true, properties: { $all: true }, conditions: { _hover: "&:hover" } },
 	);
 	const css = createCss<typeof preset>({ debug: true });
-	const output = createStylesheet(preset, { debug: true, important: true }).generate([
+	const output = createStylesheet(preset, { debug: true, cascade: "specificity" }).generate([
 		css.raw({ display: "none", _hover: { display: "block" } } as never),
 	]);
 
-	expect(output).toContain("display:none !important");
-	expect(output).toContain("display:block !important");
+	expect(output).toContain(":not(#\\#)");
+	expect(output).toContain(":not(#\\#):not(#\\#)");
+	expect(output).not.toContain("!important");
+});
+
+test("can opt into a native Pandwind cascade layer", () => {
+	const preset = definePreset(
+		{ config: {} as StandardLonghandProperties, tokens: {} },
+		{ strict: true, properties: { $all: true }, conditions: {} },
+	);
+	const css = createCss<typeof preset>({ debug: true });
+	const output = createStylesheet(preset, { debug: true, cascade: "layers" }).generate([
+		css.raw({ display: "none" } as never),
+	]);
+
+	expect(output).toBe("@layer pandwind{.display__none{display:none}}");
 });
 
 test("keeps vendor-prefixed line clamp unitless", () => {

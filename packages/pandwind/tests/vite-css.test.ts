@@ -591,6 +591,22 @@ test("pandwindCssVite applies explicit property aliases to folded CSS", () => {
 	}
 });
 
+test.each([
+	["specificity", ":not(#\\#)"],
+	["layers", "@layer pandwind{"],
+] as const)("pandwindCssVite applies the %s cascade mode", (cascade, marker) => {
+	const dir = makeProject({
+		"src/css.ts": 'import { createCss } from "pandwind/css"; export const css = createCss();',
+		"src/app.tsx": 'import { css } from "./css"; export const card = css.class({ color: "red" });',
+	});
+	try {
+		const plugin = pandwindCssVite(examplePreset, { root: dir, cascade });
+		expect(loadGenerated(plugin)).toContain(marker);
+	} finally {
+		rmSync(dir, { recursive: true, force: true });
+	}
+});
+
 test("pandwindCssVite extracts static React Strict DOM css.create maps", () => {
 	const dir = makeProject({
 		"src/app.tsx": `

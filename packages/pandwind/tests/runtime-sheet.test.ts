@@ -197,13 +197,39 @@ describe("runtime CSS-in-JS sheet", () => {
 		expect(sheet.snapshot().rules).toHaveLength(1);
 	});
 
-	test("marks runtime declarations important when requested", () => {
-		const sheet = createRuntimeSheet({ autoMount: false });
-		const css = createRuntimeCss(examplePreset, { sheet, important: true });
+	test("supports StyleX-like priority specificity for runtime declarations", () => {
+		const css = createRuntimeCss(examplePreset, { cascade: "specificity" });
 
 		css.class({ display: "none" });
 
-		expect(sheet.css()).toContain("display:none !important");
+		expect(css.sheet.css()).toContain(":not(#\\#)");
+		expect(css.sheet.css()).not.toContain("!important");
+	});
+
+	test("supports a native cascade layer for runtime declarations", () => {
+		const css = createRuntimeCss(examplePreset, { cascade: "layers", debug: true });
+
+		css.class({ display: "none" });
+
+		const output = css.sheet.css();
+		expect(output.startsWith("@layer pandwind{")).toBe(true);
+		expect(output).toContain(".display__none{display:none}");
+	});
+
+	test("keeps non-selector semantic rules valid with specificity precedence", () => {
+		const sheet = createRuntimeSheet({ autoMount: false, cascade: "specificity" });
+
+		sheet.registerSemanticRules([
+			{
+				kind: "font-face",
+				declarations: [
+					{ property: "font-family", value: "Inter" },
+					{ property: "src", value: "url(inter.woff2)" },
+				],
+			},
+		]);
+
+		expect(sheet.css()).toBe("@font-face{font-family:Inter;src:url(inter.woff2)}");
 	});
 
 	test("runtime aliases are opt-in and share the configured stylesheet mapping", () => {

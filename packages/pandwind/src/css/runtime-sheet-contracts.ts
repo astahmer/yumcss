@@ -1,3 +1,5 @@
+import type { CssCascadeMode } from "./cascade.ts";
+
 /** Flat rule after semantic lowering and CSS serialization. */
 export interface RuntimeRule {
 	readonly id: string;
@@ -93,6 +95,8 @@ export interface RuntimeSheetOptions {
 	readonly autoMount?: boolean;
 	readonly document?: RuntimeDocument;
 	readonly nonce?: string;
+	/** Cascade strategy for the rules rendered by this sheet. */
+	readonly cascade?: CssCascadeMode;
 }
 
 /** Replaceable deduplicating store for flat runtime rules. */

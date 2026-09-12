@@ -4,6 +4,7 @@
  * @since 0.1.0
  */
 export * from "./class-name-strategy.ts";
+export type { CssCascadeMode } from "./cascade.ts";
 export * from "./create-css.ts";
 export * from "./named-atoms-strategy.ts";
 export * from "./panda-adapter.ts";

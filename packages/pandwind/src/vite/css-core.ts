@@ -7,6 +7,7 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { createStylesheet } from "../css/create-stylesheet.ts";
 import type { ClassNameStrategy } from "../css/class-name-strategy.ts";
+import { decorateCascadeRules, wrapCascadeLayer } from "../css/cascade.ts";
 import { renderCriticalHtml } from "./critical-css.ts";
 import type { CssExtractorPreset, PandwindCssViteOptions } from "./css.ts";
 import { StaticCssCallRewriter } from "./css-call-rewriter.ts";
@@ -32,13 +33,28 @@ export interface CssExtractorCore {
 
 /** Join sheet sections into one CSS document, dropping empties. */
 const render = (
-	atomic: Array<{ css: string }>,
-	vars: Array<{ css: string }>,
+	atomic: Array<{ css: string; priority: number }>,
+	vars: Array<{ css: string; priority: number }>,
 	tokens: string,
-): string =>
-	[tokens, atomic.map((e) => e.css).join("\n"), vars.map((e) => e.css).join("\n")]
+	cascade: PandwindCssViteOptions["cascade"],
+	priorityUniverse: Array<{ css: string; priority: number }> = [...atomic, ...vars],
+): string => {
+	const decorated = decorateCascadeRules([...atomic, ...vars], cascade, priorityUniverse);
+	const body = [
+		tokens,
+		decorated
+			.slice(0, atomic.length)
+			.map((entry) => entry.css)
+			.join("\n"),
+		decorated
+			.slice(atomic.length)
+			.map((entry) => entry.css)
+			.join("\n"),
+	]
 		.filter(Boolean)
 		.join("\n");
+	return wrapCascadeLayer(body, cascade);
+};
 
 const addImportAfterDirectives = (source: string, statement: string): string => {
 	const lines = source.split("\n");
@@ -157,10 +173,12 @@ export function createCssExtractorPluginCore(
 		if (bodyCache !== undefined && workspace.isFresh(files, bodyCache.files))
 			return bodyCache.value;
 		const sheet = collect(files);
-		const tokens = sheet.gen.tokens();
-		const atomic = sheet.gen.atomic();
-		const varRules = sheet.gen.varRules();
-		const body = [tokens, atomic, varRules].filter(Boolean).join("\n");
+		const body = render(
+			sheet.gen.atomicEntries(),
+			sheet.gen.varEntries(),
+			sheet.gen.tokens(),
+			options.cascade,
+		);
 		if (options.debug !== true) {
 			bodyCache = { files, value: body };
 			return body;
@@ -197,7 +215,6 @@ export function createCssExtractorPluginCore(
 			{
 				className,
 				namespace,
-				important: options.important,
 				propertyAliases: options.propertyAliases,
 			},
 			{ tokens: "used" },
@@ -238,7 +255,6 @@ export function createCssExtractorPluginCore(
 			{
 				className,
 				namespace,
-				important: options.important,
 				propertyAliases: options.propertyAliases,
 			},
 			{ tokens: "used" },
@@ -325,11 +341,17 @@ export function createCssExtractorPluginCore(
 			...pickCommon(anyBucket.vars, "v"),
 			...commonBucket.vars.map((e) => ({ ...e, id: `v:${e.id}` })),
 		].toSorted((a, b) => a.priority - b.priority);
+		const priorityUniverse = [...buckets.values()].flatMap((bucket) => [
+			...bucket.atomic,
+			...bucket.vars,
+		]);
 
 		const common = render(
 			commonAtomic,
 			commonVars,
 			tokenEntries.map((entry) => entry.declaration).join("\n"),
+			options.cascade,
+			priorityUniverse,
 		);
 
 		const out = new Map<string, string>();
@@ -337,7 +359,7 @@ export function createCssExtractorPluginCore(
 			if (name === COMMON_BUCKET) continue;
 			const atomic = bucket.atomic.filter((e) => !sharedIds.has(`a:${e.id}`));
 			const vars = bucket.vars.filter((e) => !sharedIds.has(`v:${e.id}`));
-			out.set(name, render(atomic, vars, ""));
+			out.set(name, render(atomic, vars, "", options.cascade, priorityUniverse));
 		}
 		const value = { common, routes: out };
 		splitCache = { files, value };
