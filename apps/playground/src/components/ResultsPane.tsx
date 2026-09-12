@@ -1318,7 +1318,9 @@ export function ResultsPane(props: {
 			initiallyCollapsed: true,
 			content: <ExecutionEvidenceSection evidence={r.execution} />,
 		},
-		{
+	];
+	if (classString.trim() !== "") {
+		panels.push({
 			id: "class-string",
 			initialSize: 14,
 			collapsible: true,
@@ -1331,24 +1333,26 @@ export function ResultsPane(props: {
 					<Snippet code={classString} lang="css" />
 				</Pane>
 			),
-		},
-		{
-			id: "build-time-fold",
-			initialSize: 11,
-			minExpandedSize: 14,
-			collapsible: true,
-			initiallyCollapsed: true,
-			content: <FoldSection fold={r.fold} note={r.foldNote} />,
-		},
-		{
+		});
+	}
+	panels.push({
+		id: "build-time-fold",
+		initialSize: 11,
+		minExpandedSize: 14,
+		collapsible: true,
+		initiallyCollapsed: true,
+		content: <FoldSection fold={r.fold} note={r.foldNote} />,
+	});
+	if (r.survived.length > 0 || r.killed.length > 0) {
+		panels.push({
 			id: "tokens",
 			initialSize: 13,
 			minExpandedSize: 16,
 			collapsible: true,
 			initiallyCollapsed: true,
 			content: <TokensSection survived={r.survived} killed={r.killed} />,
-		},
-	];
+		});
+	}
 	if (r.atomDeclarations.length > 0) {
 		panels.push({
 			id: "css-atoms",
@@ -1370,6 +1374,9 @@ export function ResultsPane(props: {
 		});
 	}
 	for (const [index, sheet] of r.sheets.entries()) {
+		if (sheet.css.trim() === "" && sheet.tokens.trim() === "" && sheet.rules.length === 0) {
+			continue;
+		}
 		panels.push({
 			id: `generated-css-${index + 1}`,
 			initialSize: 10,
