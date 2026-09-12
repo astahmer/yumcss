@@ -79,7 +79,3 @@ export const CLASS_NAME_ADAPTERS: readonly ClassNameAdapterDefinition[] = [
 export function classNameAdapterById(id: string | null | undefined): ClassNameAdapterDefinition {
 	return CLASS_NAME_ADAPTERS.find((adapter) => adapter.id === id) ?? CLASS_NAME_ADAPTERS[0]!;
 }
-
-export const resolveClassNameStrategy = async (
-	adapter: ClassNameAdapterDefinition,
-): Promise<ClassNameStrategy | null> => adapter.strategy ?? null;
