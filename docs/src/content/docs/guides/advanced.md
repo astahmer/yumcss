@@ -161,6 +161,8 @@ runtime expression/custom property or keep an explicit residual.
 | `css.className`  | Class-name strategy for folded CSS calls               |
 | `css.engine`     | Shared engine context                                  |
 | `css.cssSources` | CSS/design module import sources                       |
+| `css.presetModule` | Source module to reload during Vite HMR               |
+| `css.presetExport` | Export name to reload from the preset module          |
 | `onUnresolved`   | `off`, `warn`, or `error` for unresolved folded tokens |
 
 `pandwindCssVite` options:
@@ -170,6 +172,8 @@ runtime expression/custom property or keep an explicit residual.
 | `cssSources`                | CSS/design imports to scan                                |
 | `include` / `exclude`       | Files included or skipped                                 |
 | `root`                      | Scan root; defaults to the current directory              |
+| `presetModule`              | Source module to reload during Vite HMR                  |
+| `presetExport`              | Export name to reload from the preset module             |
 | `virtualId`                 | Virtual CSS module id                                     |
 | `className`                 | Tailwind or named class strategy                          |
 | `namespace`                 | Pandwind-owned dynamic carriers and critical markers      |

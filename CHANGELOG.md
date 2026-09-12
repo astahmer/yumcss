@@ -4,6 +4,15 @@ All notable changes to `pandwind` are documented here. The project has no
 released version yet — entries group the development waves that produced the
 current `0.1.0` state.
 
+## Unreleased — 2026-09-12 Vite preset HMR
+
+### Fixes
+
+- `pandwindCssVite` can reload a configured preset source module and its
+  imports during Vite HMR, keeping the virtual stylesheet in sync without a
+  manual dev-server restart. Configure `presetModule` and, for named exports,
+  `presetExport`.
+
 ## Unreleased — 2026-09-12 host CSS cascade
 
 ### API

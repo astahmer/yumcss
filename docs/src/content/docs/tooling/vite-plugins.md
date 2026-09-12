@@ -51,6 +51,27 @@ plugins: [pandwindCssVite(examplePreset)];
 import "pandwind:css";
 ```
 
+### Preset changes during Vite HMR
+
+Vite evaluates `vite.config` once, so a preset imported only by the config
+would otherwise stay stale while editing its source module. Point the
+extractor at that module to reload the named export when the preset or one of
+its imports changes:
+
+```ts
+import { pandwindCssVite } from "pandwind/vite";
+
+plugins: [
+	pandwindCssVite(preset, {
+		presetModule: new URL("./src/preset.ts", import.meta.url).href,
+		presetExport: "preset",
+	}),
+];
+```
+
+`presetExport` defaults to `default`. This is a Vite dev-server feature; the
+normal build still uses the preset passed to `pandwindCssVite()` directly.
+
 ### Multiple presets or source lanes
 
 Most applications need one `pandwindCssVite()` instance. Use more than one
