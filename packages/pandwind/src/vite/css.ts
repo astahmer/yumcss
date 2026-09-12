@@ -44,6 +44,8 @@ import type { PandwindEngineContext } from "./engine-context.ts";
 import type { ClassNameStrategy } from "../css/class-name-strategy.ts";
 
 export interface PandwindCssViteOptions {
+	/** Mark generated declarations important when a host runtime stylesheet wins by insertion order. */
+	important?: boolean;
 	/**
 	 * Import sources that point at the css() module. Defaults to any source
 	 * whose basename is `css` or `design` (`./css`, `./design.ts`, ...).

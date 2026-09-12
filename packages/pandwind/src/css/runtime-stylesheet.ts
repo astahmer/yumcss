@@ -21,6 +21,11 @@ import {
 
 type Rule = { id: string; css: string; priority: number };
 
+const appendImportant = (declaration: string): string => {
+	if (declaration.includes("!important")) return declaration;
+	return `${declaration} !important`;
+};
+
 const cssVar = {
 	declaration: (key: string, value: string) => `--${key}: ${value};`,
 };
@@ -156,10 +161,14 @@ export const createRuntimeStylesheet = (
 		const atomic = decodeAtomicPath(preset.conditions, pairId);
 		const property = cssPropertyFromKey(atomic.prop, preset.conditions);
 		const value = resolveRuntimeTokenValue(tokenMaps, property, normalizedValue);
-		const css = genCSSRule([dashCase(property), value].join(":"), {
-			...atomic.conditions,
-			className: `.${escapeIdentifier(classNameFor(orderedKey, normalizedValue))}`,
-		});
+		const declaration = [dashCase(property), value].join(":");
+		const css = genCSSRule(
+			options.important === true ? appendImportant(declaration) : declaration,
+			{
+				...atomic.conditions,
+				className: `.${escapeIdentifier(classNameFor(orderedKey, normalizedValue))}`,
+			},
+		);
 		const rule = { id: pairId, css, priority: atomic.priority };
 		cache.set(pairId, rule);
 		localCache.set(pairId, rule);
@@ -205,10 +214,14 @@ export const createRuntimeStylesheet = (
 			declaration = `var(--${namespace}-c-${prop}_${condParts.slice(0, i).join("_")}, ${declaration})`;
 		}
 		const atomic = decodeAtomicPath(preset.conditions, pairs.concat(orderedKey, "\u0000"));
-		const css = genCSSRule(`${prop}: ${declaration}`, {
-			...atomic.conditions,
-			className: `.${varCompiler.escapeClass(varCompiler.classFor(orderedKey))}`,
-		});
+		const varDeclaration = `${prop}: ${declaration}`;
+		const css = genCSSRule(
+			options.important === true ? appendImportant(varDeclaration) : varDeclaration,
+			{
+				...atomic.conditions,
+				className: `.${varCompiler.escapeClass(varCompiler.classFor(orderedKey))}`,
+			},
+		);
 		const rule = { id: orderedKey, css, priority: atomic.priority };
 		varCache.set(orderedKey, rule);
 		return rule;

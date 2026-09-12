@@ -156,6 +156,20 @@ test("lowers style aliases to valid CSS properties", () => {
 	expect(output).not.toMatch(/(?:^|[;{])(?:bg|px|min-h):/);
 });
 
+test("can mark extracted declarations important for host runtime precedence", () => {
+	const preset = definePreset(
+		{ config: {} as StandardLonghandProperties, tokens: {} },
+		{ strict: true, properties: { $all: true }, conditions: { _hover: "&:hover" } },
+	);
+	const css = createCss<typeof preset>({ debug: true });
+	const output = createStylesheet(preset, { debug: true, important: true }).generate([
+		css.raw({ display: "none", _hover: { display: "block" } } as never),
+	]);
+
+	expect(output).toContain("display:none !important");
+	expect(output).toContain("display:block !important");
+});
+
 test("keeps vendor-prefixed line clamp unitless", () => {
 	const preset = definePreset(
 		{ config: {} as StandardLonghandProperties, tokens: {} },

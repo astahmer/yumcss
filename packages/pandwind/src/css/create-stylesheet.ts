@@ -33,6 +33,12 @@ const cssVar = {
 	declaration: (key: string, value: string) => `--${key}: ${value};`,
 };
 
+const appendImportant = (declaration: string): string => {
+	if (declaration.includes("!important")) return declaration;
+	if (declaration.endsWith(";")) return `${declaration.slice(0, -1)} !important;`;
+	return `${declaration} !important`;
+};
+
 /**
  * Replaceable policies for stylesheet generation.
  *
@@ -89,6 +95,14 @@ export const createStylesheet = (
 	const serializer = policies.serializer ?? defaultRuleSerializer;
 	const decoder = policies.decoder ?? defaultAtomicPathDecoder;
 	const tokenEmission = policies.tokens ?? "all";
+	const serializeStyle = (
+		declaration: string,
+		conditions: Parameters<typeof serializer.serialize>[1],
+	) =>
+		serializer.serialize(
+			options.important === true ? appendImportant(declaration) : declaration,
+			conditions,
+		);
 
 	const hashFn = options.hashFn ?? createHashFn(Boolean(options.debug));
 	const debug = Boolean(options.debug);
@@ -229,7 +243,7 @@ export const createStylesheet = (
 		}
 		const value = resolveTokenValue(tokenMaps, property, normalizedValue);
 
-		const css = serializer.serialize([dashCase(property), value].join(":"), {
+		const css = serializeStyle([dashCase(property), value].join(":"), {
 			...atomic.conditions,
 			className: `.${escapeIdentifier(classNameFor(orderedKey, normalizedValue))}`,
 		});
@@ -291,7 +305,7 @@ export const createStylesheet = (
 			declaration = `var(--${namespace}-c-${prop}_${condParts.slice(0, i).join("_")}, ${declaration})`;
 		}
 		const atomic = decoder.decode(preset.conditions, pairs.concat(orderedKey, "\u0000"));
-		const css = serializer.serialize(`${prop}: ${declaration}`, {
+		const css = serializeStyle(`${prop}: ${declaration}`, {
 			...atomic.conditions,
 			className: `.${varCompiler.escapeClass(varCompiler.classFor(orderedKey))}`,
 		});

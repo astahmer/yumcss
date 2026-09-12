@@ -196,6 +196,15 @@ describe("runtime CSS-in-JS sheet", () => {
 		expect(sheet.snapshot().rules).toHaveLength(1);
 	});
 
+	test("marks runtime declarations important when requested", () => {
+		const sheet = createRuntimeSheet({ autoMount: false });
+		const css = createRuntimeCss(examplePreset, { sheet, important: true });
+
+		css.class({ display: "none" });
+
+		expect(sheet.css()).toContain("display:none !important");
+	});
+
 	test("returns the same classes that sheet-backed strategies emit", () => {
 		for (const strategy of [createNamedAtomsStrategy("runtime"), createStyleXAdapter()]) {
 			const sheet = createRuntimeSheet({ autoMount: false });

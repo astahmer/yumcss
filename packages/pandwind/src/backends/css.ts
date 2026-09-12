@@ -16,6 +16,11 @@ export interface CssBackendOptions {
 	hashFn?: (key: string, value: string | true) => string;
 	className?: ClassNameStrategy;
 	/**
+	 * Mark emitted declarations as important when Pandwind must override a
+	 * host component runtime stylesheet (for example Chakra's runtime CSS).
+	 */
+	important?: boolean;
+	/**
 	 * Namespace for Pandwind-owned dynamic-value carriers and custom properties.
 	 * Defaults to `pw`; caller-owned class-name strategies are not rewritten.
 	 */
