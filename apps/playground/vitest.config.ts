@@ -13,6 +13,7 @@ export default defineConfig({
 		exclude: ["e2e/**", "node_modules/**", "dist/**"],
 	},
 	resolve: {
+		conditions: ["pandwind"],
 		alias: {
 			// Mirror the vite alias: the package "pandwind" export condition is
 			// not active under vitest, so resolve the scenario catalog to source.

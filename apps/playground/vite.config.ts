@@ -32,6 +32,9 @@ export default defineConfig({
 		react(),
 	],
 	resolve: {
+		// Workspace packages expose the `pandwind` condition so the playground
+		// exercises current source during dev instead of a stale dist build.
+		conditions: ["pandwind"],
 		alias: [
 			{
 				find: "@oxc-parser/binding-wasm32-wasi/wasi-worker-browser.mjs",

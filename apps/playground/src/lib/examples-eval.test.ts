@@ -10,13 +10,22 @@ import {
 import { tw } from "../tw.ts";
 import { dss } from "../css.ts";
 import { cx } from "../cx.ts";
-import { createCss } from "pandwind/css";
+import {
+	createCss,
+	createNamedAtomsStrategy,
+	createStyleXAdapter,
+	type ClassNameStrategy,
+} from "pandwind/css";
 import { resolveDesignStyle } from "pandwind/design/resolve";
 import { examplePreset } from "@pandwind/example-preset";
 import { SANDBOX_MODULES } from "./sandbox-modules.ts";
 import { applyPreviewControls } from "./preview-controls.ts";
 
-function makeInput(code: string, moduleBindings?: EvalInput["moduleBindings"]): EvalInput {
+function makeInput(
+	code: string,
+	moduleBindings?: EvalInput["moduleBindings"],
+	classNameStrategy?: ClassNameStrategy | null,
+): EvalInput {
 	return {
 		code,
 		tw: tw as unknown as (...args: Array<unknown>) => unknown,
@@ -25,6 +34,7 @@ function makeInput(code: string, moduleBindings?: EvalInput["moduleBindings"]): 
 		createCss: createCss as unknown as (...args: Array<unknown>) => unknown,
 		moduleBindings:
 			moduleBindings === undefined ? SANDBOX_MODULES : { ...SANDBOX_MODULES, ...moduleBindings },
+		classNameStrategy,
 		resolveCss: (style: Record<string, unknown>) => {
 			const resolved = resolveDesignStyle(style, examplePreset.tokens);
 			const out: Record<string, string> = {};
@@ -43,12 +53,13 @@ const isHostNode = (value: PlaygroundNode | undefined): value is PlaygroundHostN
 
 function siblingBindings(
 	variant: (typeof EXAMPLES)[number]["variants"][number],
+	classNameStrategy?: ClassNameStrategy | null,
 ): EvalInput["moduleBindings"] {
 	if (variant.files.length <= 1) return undefined;
 	const bindings: Record<string, Record<string, unknown>> = {};
 	for (let index = 1; index < variant.files.length; index++) {
 		const file = variant.files[index]!;
-		bindings["./" + file.name] = evalSiblingModule(makeInput(file.code));
+		bindings["./" + file.name] = evalSiblingModule(makeInput(file.code, undefined, classNameStrategy));
 	}
 	return bindings;
 }
@@ -57,6 +68,17 @@ const labelFor = (
 	def: (typeof EXAMPLES)[number],
 	variant: (typeof EXAMPLES)[number]["variants"][number],
 ): string => def.path + " / " + variant.api + " (" + variant.files[0]!.name + ")";
+
+const escapeCssIdentifier = (name: string): string => {
+	const escaped = name.replace(/[^a-zA-Z0-9_\u0081-\uffff-]/g, (part) => `\\${part}`);
+	return /^[0-9]/u.test(escaped) ? `\\3${escaped[0]} ${escaped.slice(1)}` : escaped;
+};
+
+const sheetBackedStrategies: ReadonlyArray<readonly [string, ClassNameStrategy | null]> = [
+	["atomic", null],
+	["named atoms", createNamedAtomsStrategy("playground")],
+	["StyleX", createStyleXAdapter()],
+];
 
 describe("example catalog evaluates end to end", () => {
 	it("groups the own APIs under one conceptual Basics scenario", () => {
@@ -188,6 +210,34 @@ describe("example catalog evaluates end to end", () => {
 					`${authoredProperties} ${emittedCss} ${classString}`,
 					labelFor(example, variant),
 				).toMatch(/bg(?:Color|-)|background(?:Color|-color)|border|boxShadow|box-shadow/u);
+			}
+		}
+	});
+
+	it("keeps generated selectors aligned with every CSS and DSS preview", () => {
+		for (const [strategyName, strategy] of sheetBackedStrategies) {
+			for (const example of EXAMPLES) {
+				for (const variant of example.variants) {
+					if (variant.api === PlaygroundApi.Tw) continue;
+					const label = `${labelFor(example, variant)} / ${strategyName}`;
+					const result = evalPlayground(
+						makeInput(
+							variant.files[0]!.code,
+							siblingBindings(variant, strategy),
+							strategy,
+						),
+					);
+					expect(result.ok, label).toBe(true);
+					if (!result.ok) continue;
+
+					const generatedCss = result.sheets.map((sheet) => sheet.css).join("\n");
+					expect(result.sheets.some((sheet) => sheet.rules.length > 0), label).toBe(true);
+					for (const mapping of result.styleMappings.filter((entry) => entry.active)) {
+						expect(generatedCss, `${label}: ${mapping.className}`).toContain(
+							`.${escapeCssIdentifier(mapping.className)}`,
+						);
+					}
+				}
 			}
 		}
 	});
