@@ -76,6 +76,55 @@ Then("the {string} inspector panel is collapsed", async ({ page }, label: string
 	await expect(pane.locator(":scope > div").last()).toBeHidden();
 });
 
+Then("the collapsed inspector separators match their visible sizes", async ({ page }) => {
+	await expect
+		.poll(
+			() =>
+				page.evaluate(() => {
+					const root = [
+						...document.querySelectorAll('[data-scope="splitter"][data-part="root"]'),
+					].find(
+						(element) =>
+							[...element.children].filter((child) => child.getAttribute("data-part") === "panel")
+								.length > 2,
+					);
+					if (root === undefined) return Number.POSITIVE_INFINITY;
+					const panels = [...root.children].filter(
+						(child) => child.getAttribute("data-part") === "panel",
+					);
+					const handles = [...root.children].filter(
+						(child) => child.getAttribute("data-part") === "resize-trigger",
+					);
+					const panelSizes = panels.map((panel) => panel.getBoundingClientRect()["height"]);
+					const total = panelSizes.reduce((sum, size) => sum + size, 0);
+					const differences = panels.flatMap((panel, index) => {
+						if (panel.style.flexBasis !== "36px") return [];
+						const expected = (panelSizes[index]! / total) * 100;
+						const handle = handles[index] ?? handles[index - 1];
+						return handle === undefined
+							? []
+							: [Math.abs(Number(handle.getAttribute("aria-valuenow")) - expected)];
+					});
+					return Math.max(0, ...differences);
+				}),
+			{ timeout: 5_000 },
+		)
+		.toBeLessThan(1.5);
+});
+
+Then("the {string} inspector separator is disabled", async ({ page }, label: string) => {
+	await expect(page.getByRole("separator", { name: label, exact: true })).toHaveAttribute(
+		"data-disabled",
+		"",
+	);
+});
+
+Then("the {string} inspector separator is enabled", async ({ page }, label: string) => {
+	await expect(page.getByRole("separator", { name: label, exact: true })).not.toHaveAttribute(
+		"data-disabled",
+	);
+});
+
 Then("the {string} selector has value {string}", async ({ page }, label: string, value: string) => {
 	await expect(page.getByRole("combobox", { name: label })).toHaveValue(value);
 });

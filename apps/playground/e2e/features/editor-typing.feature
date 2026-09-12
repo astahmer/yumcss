@@ -26,3 +26,10 @@ Feature: Playground editor typings
     Then the "Generated CSS" inspector panel has room for content
     When I collapse the "Generated CSS" inspector panel
     Then the "Generated CSS" inspector panel is collapsed
+
+  Scenario: inspector separators follow visible panel ownership
+    Given I open the playground route "/basics?api=tw"
+    Then the collapsed inspector separators match their visible sizes
+    And the "Resize live-preview and execution-evidence" inspector separator is disabled
+    When I expand the "Execution evidence" inspector panel
+    Then the "Resize live-preview and execution-evidence" inspector separator is enabled
