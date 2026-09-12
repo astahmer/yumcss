@@ -23,6 +23,7 @@ import { build, createServer, type ViteDevServer } from "vite";
 import { examplePreset } from "@pandwind/example-preset";
 import { RollupOutputKind } from "./helpers/rollup-output-kind.ts";
 import { escapeIdentifier } from "../src/css/hash.ts";
+import { pandwindPreset } from "../src/preset/index.ts";
 import { pandwindCssVite } from "../src/vite/css.ts";
 import { pandwindVite } from "../src/vite/index.ts";
 
@@ -295,6 +296,83 @@ describe("HMR", () => {
 
 		rmSync(frozen, { force: true });
 		project.cssPlugin.handleHotUpdate({ file: frozen });
+	});
+
+	test("preset source changes refresh the extractor without restarting Vite", async () => {
+		const dir = mkdtempSync(join(tmpdir(), "pandwind-vite-preset-hmr-"));
+		const presetFile = join(dir, "src/preset.ts");
+		const files: Record<string, string> = {
+			"src/preset.ts": `
+import { pandwindPreset } from "pandwind/preset";
+
+export const preset = {
+	...pandwindPreset,
+	properties: { backgroundColor: { $tokens: "colors" } },
+	tokens: { colors: { "$green-500": "#60A3BC" } },
+};
+`,
+			"src/design.ts": `
+import { createCss } from "pandwind/css";
+import { preset } from "./preset";
+
+export const css = createCss(preset);
+`,
+			"src/app.ts": `
+import { css } from "./design";
+import "pandwind:css";
+
+export const className = css.class({ backgroundColor: "$green-500" });
+`,
+		};
+		for (const [name, content] of Object.entries(files)) {
+			const file = join(dir, name);
+			mkdirSync(dirname(file), { recursive: true });
+			writeFileSync(file, content);
+		}
+		mkdirSync(join(dir, "node_modules"), { recursive: true });
+		symlinkSync(PACKAGE_ROOT, join(dir, "node_modules/pandwind"), "dir");
+
+		const cssPlugin = pandwindCssVite(
+			{
+				...pandwindPreset,
+				properties: { backgroundColor: { $tokens: "colors" } },
+				tokens: { colors: { "$green-500": "#60A3BC" } },
+			},
+			{ root: dir, presetModule: presetFile, presetExport: "preset" },
+		);
+		const hmrServer = await createServer({
+			root: dir,
+			plugins: [cssPlugin],
+			server: { middlewareMode: true },
+			appType: "custom",
+			logLevel: "silent",
+			optimizeDeps: { noDiscovery: true },
+		});
+		const virtualId = (await hmrServer.pluginContainer.resolveId("pandwind:css", undefined))!.id;
+
+		try {
+			await hmrServer.ssrLoadModule(presetFile);
+			const before = await hmrServer.transformRequest(virtualId);
+			expect(before?.code).toContain("#60A3BC");
+
+			writeFileSync(
+				presetFile,
+				files["src/preset.ts"]!.replace("#60A3BC", "#FF00AA"),
+			);
+			hmrServer.moduleGraph.invalidateAll();
+			await cssPlugin.handleHotUpdate({
+				file: presetFile,
+				modules: [],
+				server: hmrServer,
+			});
+
+			const after = await hmrServer.transformRequest(virtualId);
+			expect(after?.code).toContain("#FF00AA");
+			expect(after?.code).not.toContain("#60A3BC");
+		} finally {
+			await hmrServer.close();
+			rmSync(dir, { recursive: true, force: true });
+		}
 	});
 });
 

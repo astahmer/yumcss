@@ -38,7 +38,9 @@ import type {
 	CssConfigReturn,
 	DefinePresetOptions,
 } from "../types/typings.ts";
-import type { ModuleNode } from "vite";
+import { resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+import type { HmrContext, ModuleNode, ViteDevServer } from "vite";
 import { createCssExtractorPluginCore } from "./css-core.ts";
 import type { PandwindEngineContext } from "./engine-context.ts";
 import type { ClassNameStrategy } from "../css/class-name-strategy.ts";
@@ -100,6 +102,16 @@ export interface PandwindCssViteOptions {
 	/** Directory scanned for css() calls. Defaults to process.cwd(). */
 	root?: string;
 	/**
+	 * Source module that exports the preset, as an absolute path or file URL.
+	 * Vite evaluates its config once, so a preset imported directly by the
+	 * config otherwise stays stale during dev-server HMR. When this is set,
+	 * edits to the module or its imports reload the preset and rebuild the
+	 * extractor before the virtual stylesheet is served.
+	 */
+	presetModule?: string;
+	/** Named export to reload from `presetModule`. Defaults to `default`. */
+	presetExport?: string;
+	/**
 	 * The virtual module id the generated CSS is served under. Use a unique id
 	 * for every extractor instance in one Vite config.
 	 */
@@ -128,31 +140,129 @@ export interface PandwindCssViteOptions {
 
 export type CssExtractorPreset = CssConfigReturn<DefinePresetOptions<AnyCssConfig, AnyTokens>>;
 
+type CssHmrContext = Pick<HmrContext, "file"> &
+	Partial<Pick<HmrContext, "modules" | "server">>;
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+	typeof value === "object" && value !== null;
+
+const isCssExtractorPreset = (value: unknown): value is CssExtractorPreset => {
+	if (!isRecord(value)) return false;
+	return (
+		isRecord(value.conditions) &&
+		isRecord(value.properties) &&
+		typeof value.strict === "boolean" &&
+		isRecord(value.tokens)
+	);
+};
+
+const withoutQuery = (value: string): string => value.split(/[?#]/u, 1)[0]!;
+
+const normalizeFilePath = (value: string): string => resolve(withoutQuery(value));
+
+const moduleContainsFile = (module: ModuleNode, file: string): boolean =>
+	module.file !== null && normalizeFilePath(module.file) === file;
+
+const presetModuleIsAffected = (
+	file: string,
+	presetModule: string,
+	server: ViteDevServer,
+): boolean => {
+	const changedFile = normalizeFilePath(file);
+	if (changedFile === presetModule) return true;
+
+	const rootModule = server.moduleGraph.getModuleById(presetModule);
+	if (rootModule === undefined) return false;
+
+	const pending = [...rootModule.importedModules];
+	const visited = new Set<ModuleNode>();
+	while (pending.length > 0) {
+		const module = pending.pop()!;
+		if (visited.has(module)) continue;
+		visited.add(module);
+		if (moduleContainsFile(module, changedFile)) return true;
+		pending.push(...module.importedModules);
+	}
+	return false;
+};
+
+const resolvePresetModule = (module: string, root: string): string =>
+	module.startsWith("file://") ? fileURLToPath(module) : resolve(root, module);
+
+const loadPreset = async ({
+	server,
+	presetModule,
+	presetExport,
+}: {
+	server: ViteDevServer;
+	presetModule: string;
+	presetExport: string;
+}): Promise<CssExtractorPreset> => {
+	const namespace = await server.ssrLoadModule(presetModule, { fixStacktrace: true });
+	const candidate: unknown = namespace[presetExport];
+	if (!isCssExtractorPreset(candidate)) {
+		throw new Error(
+			`pandwindCssVite: ${presetModule} must export a CSS preset as '${presetExport}'`,
+		);
+	}
+	return candidate;
+};
+
 /**
  * Create the css() static extractor. The preset must be the same object
  * passed to `createDesignCss` in app code — it drives both resolution and
  * token output, so the generated CSS matches the runtime byte-for-byte.
  */
 export function pandwindCssVite(preset: CssExtractorPreset, options: PandwindCssViteOptions = {}) {
-	const core = createCssExtractorPluginCore(preset, options);
+	const root = options.root ?? process.cwd();
+	const presetModule =
+		options.presetModule === undefined
+			? undefined
+			: resolvePresetModule(options.presetModule, root);
+	const presetExport = options.presetExport ?? "default";
+	let core = createCssExtractorPluginCore(preset, options);
+	let resolvedConfig: { command?: "build" | "serve" } | undefined;
+
+	const reloadPreset = async (server: ViteDevServer): Promise<void> => {
+		if (presetModule === undefined) return;
+		const nextPreset = await loadPreset({ server, presetModule, presetExport });
+		if (options.engine !== undefined && nextPreset !== options.engine.preset) {
+			throw new Error(
+				"pandwindCssVite: presetModule HMR cannot reload a preset shared through " +
+					"options.engine; reload the shared engine and extractor together",
+			);
+		}
+		core = createCssExtractorPluginCore(nextPreset, options);
+		if (resolvedConfig !== undefined) core.configResolved(resolvedConfig);
+	};
 
 	return {
-		name: core.name,
+		name: "pandwind:extract-css",
 		enforce: "pre" as const,
-		transform: core.transform,
-		configResolved: core.configResolved?.bind(core),
-		closeBundle: core.closeBundle?.bind(core),
+		transform(code: string, id: string) {
+			return core.transform(code, id);
+		},
+		configResolved(config: { command?: "build" | "serve" }) {
+			resolvedConfig = config;
+			core.configResolved(config);
+		},
+		closeBundle() {
+			core.closeBundle();
+		},
 		resolveId(source: string) {
 			return core.resolveId(source);
 		},
 		load(id: string) {
 			return core.load(id);
 		},
-		handleHotUpdate(ctx: {
-			file: string;
-			modules?: ModuleNode[];
-			server?: { moduleGraph: { getModuleById(id: string): ModuleNode | undefined } };
-		}): ModuleNode[] | undefined {
+		async handleHotUpdate(ctx: CssHmrContext): Promise<ModuleNode[] | undefined> {
+			if (
+				presetModule !== undefined &&
+				ctx.server !== undefined &&
+				presetModuleIsAffected(ctx.file, presetModule, ctx.server)
+			) {
+				await reloadPreset(ctx.server);
+			}
 			core.invalidate(ctx.file);
 			const virtual = ctx.server?.moduleGraph.getModuleById(
 				`\0${options.virtualId ?? "pandwind:css"}.css`,
