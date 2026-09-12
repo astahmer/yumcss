@@ -33,3 +33,8 @@ Feature: Playground editor typings
     And the "Resize live-preview and execution-evidence" inspector separator is disabled
     When I expand the "Execution evidence" inspector panel
     Then the "Resize live-preview and execution-evidence" inspector separator is enabled
+
+  Scenario: CSS Basics renders with the Tailwind adapter
+    Given I open the playground route "/basics?api=css&adapter=tailwind"
+    Then the page heading is "Basics"
+    And the "Class string" inspector panel contains "bg-blue-500"

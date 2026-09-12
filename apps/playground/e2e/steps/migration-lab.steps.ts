@@ -76,6 +76,13 @@ Then("the {string} inspector panel is collapsed", async ({ page }, label: string
 	await expect(pane.locator(":scope > div").last()).toBeHidden();
 });
 
+Then(
+	"the {string} inspector panel contains {string}",
+	async ({ page }, label: string, text: string) => {
+		await expect(page.locator(`[data-pane="${label}"]`)).toContainText(text);
+	},
+);
+
 Then("the collapsed inspector separators match their visible sizes", async ({ page }) => {
 	await expect
 		.poll(
