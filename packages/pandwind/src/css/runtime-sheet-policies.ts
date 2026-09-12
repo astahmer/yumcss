@@ -33,18 +33,8 @@ export class RuntimeRuleStore {
 	}
 
 	register(next: readonly RuntimeRule[]): boolean {
-		if (!Array.isArray(next)) return false;
 		let changed = false;
 		for (const rule of next) {
-			if (
-				typeof rule?.id !== "string" ||
-				rule.id.length === 0 ||
-				typeof rule.css !== "string" ||
-				rule.css.length === 0 ||
-				rule.css.includes("\u0000") ||
-				!Number.isFinite(rule.priority)
-			)
-				continue;
 			const previous = this.values.get(rule.id);
 			if (
 				previous !== undefined &&
@@ -60,18 +50,6 @@ export class RuntimeRuleStore {
 
 	replace(next: readonly RuntimeRule[]): void {
 		this.values.clear();
-		if (!Array.isArray(next)) return;
-		for (const rule of next) {
-			if (
-				typeof rule?.id !== "string" ||
-				rule.id.length === 0 ||
-				typeof rule.css !== "string" ||
-				rule.css.length === 0 ||
-				rule.css.includes("\u0000") ||
-				!Number.isFinite(rule.priority)
-			)
-				continue;
-			this.values.set(rule.id, rule);
-		}
+		for (const rule of next) this.values.set(rule.id, rule);
 	}
 }

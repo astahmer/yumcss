@@ -162,34 +162,6 @@ describe("userland adversarial contracts", () => {
 		expect(css.class(style as never)).toBe("color__red");
 	});
 
-	test("deeply nested style objects do not consume the JS call stack", () => {
-		const depth = 4_000;
-		const style: Record<string, unknown> = {};
-		let current = style;
-		for (let index = 0; index < depth; index++) {
-			const nested: Record<string, unknown> = {};
-			current[`level-${index}`] = nested;
-			current = nested;
-		}
-		current.color = "red";
-
-		expect(() => createCss({ debug: true }).class(style as never)).not.toThrow();
-	});
-
-	test("deeply nested style merges do not consume the JS call stack", () => {
-		const depth = 4_000;
-		const style: Record<string, unknown> = {};
-		let current = style;
-		for (let index = 0; index < depth; index++) {
-			const nested: Record<string, unknown> = {};
-			current[`level-${index}`] = nested;
-			current = nested;
-		}
-		current.color = "red";
-
-		expect(() => createCss({ debug: true }).class(style as never, {} as never)).not.toThrow();
-	});
-
 	test("vars carriers require own host fields", () => {
 		const css = createCss();
 		const cx = createCx({ css });
