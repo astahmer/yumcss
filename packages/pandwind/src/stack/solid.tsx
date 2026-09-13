@@ -1,11 +1,17 @@
 /**
- * `<Stack>` Solid renderer — the same class contract as the React renderer,
- * with Solid's reactive prop split and `class` attribute convention. The
- * Dynamic host keeps this module independent from the consumer's JSX mode.
+ * `<Stack>` Solid renderer — Solid's reactive prop split and `class`
+ * attribute convention. The default component uses the Tailwind-compatible
+ * mapper; `createStack(css)` binds it to a CSS compiler's class strategy.
  */
 import { createComponent, splitProps, type Component, type JSX } from "solid-js";
 import { Dynamic } from "solid-js/web";
-import { stackClasses, type StackProps } from "./index.ts";
+import {
+	createStackClassName,
+	stackClasses,
+	type StackClassCompiler,
+	type StackClassName,
+	type StackProps,
+} from "./index.ts";
 
 export interface StackComponentProps
 	extends
@@ -15,21 +21,36 @@ export interface StackComponentProps
 	children?: JSX.Element;
 }
 
-export const Stack: Component<StackComponentProps> = (props) => {
-	const [stack, attributes] = splitProps(props, [
-		"direction",
-		"gap",
-		"padding",
-		"align",
-		"justify",
-		"class",
-		"children",
-	]);
-	const mapped = stackClasses(stack);
-	return createComponent(Dynamic, {
-		component: "div",
-		...attributes,
-		class: stack.class === undefined ? mapped : `${mapped} ${stack.class}`,
-		children: stack.children,
-	});
-};
+const createSolidStack =
+	(classNameFor: StackClassName): Component<StackComponentProps> =>
+	(props) => {
+		const [stack, attributes] = splitProps(props, [
+			"direction",
+			"gap",
+			"padding",
+			"align",
+			"justify",
+			"class",
+			"children",
+		]);
+		const stackProps = {
+			direction: stack.direction,
+			gap: stack.gap,
+			padding: stack.padding,
+			align: stack.align,
+			justify: stack.justify,
+		} satisfies StackProps;
+		const mapped = classNameFor(stackProps);
+		return createComponent(Dynamic, {
+			component: "div",
+			...attributes,
+			class: stack.class === undefined ? mapped : `${mapped} ${stack.class}`,
+			children: stack.children,
+		});
+	};
+
+/** Bind the Solid Stack component to one CSS compiler. */
+export const createStack = (css: StackClassCompiler) => createSolidStack(createStackClassName(css));
+
+/** Tailwind-compatible Stack component; use `createStack(css)` for other lanes. */
+export const Stack = createSolidStack(stackClasses);

@@ -4,10 +4,13 @@ import { dirname, join, resolve } from "node:path";
 import { expect, test } from "vitest";
 import { createTwAdapter } from "../src/tw/adapter.ts";
 import { createCss } from "../src/css/create-css.ts";
+import { createNamedAtomsStrategy } from "../src/css/named-atoms-strategy.ts";
 import { createStyleXAdapter } from "../src/css/stylex-adapter.ts";
 import { cssShorthands } from "../src/css/shorthands.ts";
 import { examplePreset } from "@pandwind/example-preset";
 import { pandwindCssVite } from "../src/vite/css.ts";
+import { createPandwindEngineContext } from "../src/vite/engine-context.ts";
+import { stackFoldVite } from "../src/vite/stack-fold.ts";
 import { createCssExtractionService, createCssSourceScanner } from "../src/vite/css-extract.ts";
 import { CssSourceScannerService } from "../src/vite/css-source-scanner.ts";
 import { SOURCE_SCANNER_SERVICE } from "../src/source-scanner.ts";
@@ -533,6 +536,35 @@ test("pandwindCssVite with className serves empty CSS and inlines calls", () => 
 	expect(result!.code).toContain('const a = "text-blue-500"');
 	// Tailwind owns the CSS in this mode.
 	expect(loadGenerated(plugin as never)).toBe("");
+});
+
+test("configured Stack folding feeds the shared sheet-backed CSS lane", () => {
+	const dir = makeProject({
+		"src/app.tsx":
+			'import { Stack } from "pandwind/stack/react"; export const app = <Stack direction="column" gap={4} />;',
+	});
+	try {
+		const engine = createPandwindEngineContext({
+			preset: examplePreset,
+			className: createNamedAtomsStrategy("app"),
+		});
+		const id = join(dir, "src/app.tsx");
+		const source = readFileSync(id, "utf8");
+		const stack = stackFoldVite({ engine });
+		const transformed = stack.transform(source, id);
+
+		expect(transformed?.code).toContain(
+			'<div className="app-display-flex app-flexDirection-column app-gap-4px" />',
+		);
+
+		const css = pandwindCssVite(examplePreset, { root: dir, engine });
+		const generated = loadGenerated(css);
+		expect(generated).toContain(".app-display-flex{display:flex}");
+		expect(generated).toContain(".app-flexDirection-column{flex-direction:column}");
+		expect(generated).toContain(".app-gap-4px{gap:4px}");
+	} finally {
+		rmSync(dir, { recursive: true, force: true });
+	}
 });
 
 const makeProject = (files: Record<string, string>): string => {

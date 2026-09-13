@@ -3,10 +3,13 @@ import { describe, expect, test } from "vitest";
 import { h } from "preact";
 import renderPreactToString from "preact-render-to-string";
 import { renderToString } from "solid-js/web";
-import { Stack as PreactStack } from "../src/stack/preact.ts";
-import { Stack as ReactStack } from "../src/stack/react.tsx";
-import { Stack as SolidStack } from "../src/stack/solid.tsx";
-import { Stack as VueStack } from "../src/stack/vue.ts";
+import { createCssOpen } from "../src/css/create-css.ts";
+import { createNamedAtomsStrategy } from "../src/css/named-atoms-strategy.ts";
+import { examplePreset } from "@pandwind/example-preset";
+import { createStack as createPreactStack, Stack as PreactStack } from "../src/stack/preact.ts";
+import { createStack as createReactStack, Stack as ReactStack } from "../src/stack/react.tsx";
+import { createStack as createSolidStack, Stack as SolidStack } from "../src/stack/solid.tsx";
+import { createStack as createVueStack, Stack as VueStack } from "../src/stack/vue.ts";
 
 const stackInput = {
 	direction: "column" as const,
@@ -15,6 +18,14 @@ const stackInput = {
 	align: "center" as const,
 	justify: "between" as const,
 };
+
+const configuredCss = createCssOpen(examplePreset, {
+	className: createNamedAtomsStrategy("app"),
+});
+const configuredInput = { ...stackInput, gap: 4, padding: "1rem" };
+const configuredClassName =
+	"app-display-flex app-flexDirection-column app-gap-4px app-padding-1rem " +
+	"app-alignItems-center app-justifyContent-space-between";
 
 describe("Stack renderer family", () => {
 	test("React preserves the shared class contract and forwards HTML attributes", () => {
@@ -92,5 +103,39 @@ describe("Stack renderer family", () => {
 		);
 		expect(output).toContain('id="preact-stack"');
 		expect(output).toContain('class="flex flex-col gap-4 p-6 items-center justify-between custom"');
+	});
+
+	test("createStack binds every renderer to the supplied class-name strategy", () => {
+		const configuredReact = createReactStack(configuredCss);
+		const reactOutput = renderToStaticMarkup(
+			configuredReact({ ...configuredInput, id: "react-configured", children: "content" }),
+		);
+		expect(reactOutput).toContain(`class="${configuredClassName}"`);
+
+		const configuredSolid = createSolidStack(configuredCss);
+		const solidOutput = renderToString(() =>
+			configuredSolid({ ...configuredInput, id: "solid-configured", children: "content" }),
+		);
+		expect(solidOutput.replace(/\s+"/, '"')).toContain(`class="${configuredClassName}"`);
+
+		const configuredVue = createVueStack(configuredCss);
+		if (configuredVue.setup === undefined) throw new Error("Configured Vue Stack setup is missing");
+		const vueRender = (
+			configuredVue.setup as unknown as (
+				props: typeof configuredInput,
+				context: { attrs: Record<string, unknown>; slots: { default: () => string } },
+			) => () => unknown
+		)(configuredInput, {
+			attrs: { class: "custom", id: "vue-configured" },
+			slots: { default: () => "content" },
+		});
+		const vueVNode = vueRender() as { props: Record<string, unknown> };
+		expect(vueVNode.props.class).toBe(`${configuredClassName} custom`);
+
+		const configuredPreact = createPreactStack(configuredCss);
+		const preactOutput = renderPreactToString(
+			h(configuredPreact, { ...configuredInput, id: "preact-configured" }, "content"),
+		);
+		expect(preactOutput).toContain(`class="${configuredClassName}"`);
 	});
 });

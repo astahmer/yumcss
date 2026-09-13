@@ -4,14 +4,28 @@
  * to the same tstyche gate as tw/css/cx.
  */
 import { expect, test } from "tstyche";
-import { createCss } from "../src/css/create-css.ts";
+import { createCss, createCssOpen } from "../src/css/create-css.ts";
+import { createDesignCss } from "../src/design/index.ts";
 import type { StackComponentProps as PreactStackProps } from "../src/stack/preact.ts";
 import type { StackComponentProps as ReactStackProps } from "../src/stack/react.tsx";
 import type { StackComponentProps as SolidStackProps } from "../src/stack/solid.tsx";
 import type { StackComponentProps as VueStackProps } from "../src/stack/vue.ts";
-import { stackClasses, type StackProps } from "../src/stack/index.ts";
+import { createStack as createPreactStack } from "../src/stack/preact.ts";
+import { createStack as createReactStack } from "../src/stack/react.tsx";
+import { createStack as createSolidStack } from "../src/stack/solid.tsx";
+import { createStack as createVueStack } from "../src/stack/vue.ts";
+import { createStackClassName, stackClasses, type StackProps } from "../src/stack/index.ts";
+import { examplePreset } from "@pandwind/example-preset";
 
 const css = createCss();
+const openCss = createCssOpen(examplePreset);
+const typedCss = createCss(examplePreset);
+const typedDesignCss = createDesignCss(examplePreset);
+const typedReactStack = createReactStack(typedCss);
+const typedSolidStack = createSolidStack(typedCss);
+const typedVueStack = createVueStack(typedCss);
+const typedPreactStack = createPreactStack(typedCss);
+const typedDesignStack = createReactStack(typedDesignCss);
 
 test("css.vars returns a class/style carrier", () => {
 	const output = css.vars({ color: "var(--runtime-color)" });
@@ -28,6 +42,26 @@ test("stackClasses accepts the public stack props", () => {
 	};
 	expect(stackClasses(props)).type.toBe<string>();
 });
+
+test("createStack binds every renderer to an open CSS compiler", () => {
+	const react = createReactStack(openCss);
+	const solid = createSolidStack(openCss);
+	const vue = createVueStack(openCss);
+	const preact = createPreactStack(openCss);
+	const className = createStackClassName(openCss)({ gap: 4 });
+
+	expect(react).type.toBeAssignableTo<unknown>();
+	expect(solid).type.toBeAssignableTo<unknown>();
+	expect(vue).type.toBeAssignableTo<unknown>();
+	expect(preact).type.toBeAssignableTo<unknown>();
+	expect(className).type.toBe<string>();
+});
+
+void typedReactStack;
+void typedSolidStack;
+void typedVueStack;
+void typedPreactStack;
+void typedDesignStack;
 
 test("stack direction and alignment values stay constrained", () => {
 	// @ts-expect-error is not assignable

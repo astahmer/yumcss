@@ -51,7 +51,9 @@ The static-first runtime boundary is explicit:
 - route splitting and critical-CSS inlining are opt-in build policies;
 - `pandwind.agents.json` exposes generated project context to tooling; and
 - the erasable `pandwind/stack` helper provides a small renderer-neutral
-  layout primitive with React, Solid, Vue, and Preact bindings.
+  layout primitive with React, Solid, Vue, and Preact bindings; its default
+  utility mapper is explicitly Tailwind-compatible, while `createStack(css)`
+  routes every renderer through the supplied class-name strategy.
 
 These features preserve the small frozen authoring API while moving runtime
 work into compiler and host contracts. See [theming](/api/theming/),

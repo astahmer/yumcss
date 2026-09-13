@@ -1,23 +1,35 @@
 import type { ClassNameStrategy } from "../css/class-name-strategy.ts";
 import { createHashFn } from "../css/hash.ts";
 import type { AtomRegistry } from "../css/atoms.ts";
+import { cssPropertyFromKey } from "../backends/css.ts";
+import { isSafeCssValue, normalizeCssValue } from "../css/value-normalization.ts";
 import { resolveDesignStyle } from "../design/resolve.ts";
 import { flattenStyle, pairs } from "../lib/utils.ts";
 import type { CssPreset } from "./css-extract.ts";
 
+export interface PreparedStyle {
+	readonly key: string;
+	readonly value: string;
+	readonly className: string;
+}
+
 export interface LiteralStyleCompiler {
 	readonly registry: AtomRegistry;
-	compile(literal: Record<string, unknown>): string | null;
+	readonly preparedStyles: ReadonlyMap<string, readonly PreparedStyle[]>;
+	compile(literal: Record<string, unknown>, source?: string): string | null;
+	clear(source: string): void;
 }
 
 export interface LiteralStyleCompilerOptions {
 	readonly preset: CssPreset;
 	readonly className?: ClassNameStrategy;
 	readonly debug?: boolean;
+	readonly propertyAliases?: Readonly<Record<string, string>>;
 }
 
 class PandwindLiteralStyleCompiler implements LiteralStyleCompiler {
 	readonly registry: AtomRegistry = new Map();
+	readonly preparedStyles = new Map<string, readonly PreparedStyle[]>();
 	private readonly options: LiteralStyleCompilerOptions;
 	private readonly className;
 	private readonly hashFn;
@@ -32,7 +44,7 @@ class PandwindLiteralStyleCompiler implements LiteralStyleCompiler {
 		);
 	}
 
-	compile(literal: Record<string, unknown>): string | null {
+	compile(literal: Record<string, unknown>, source?: string): string | null {
 		let resolved: Record<string, unknown>;
 		try {
 			resolved = resolveDesignStyle(literal, this.options.preset.tokens);
@@ -41,19 +53,26 @@ class PandwindLiteralStyleCompiler implements LiteralStyleCompiler {
 		}
 		const flat = flattenStyle(resolved as never);
 		const merged = new Map<string, string>();
-		for (const key in flat) {
-			const value = flat[key]!;
-			if (typeof value === "string" && value.startsWith("input>$")) return null;
+		for (const key of Object.keys(flat)) {
+			const rawValue = flat[key];
+			if (!isSafeCssValue(rawValue)) return null;
+			if (typeof rawValue === "string" && rawValue.startsWith("input>$")) return null;
 			const orderedKey = pairs.join(
 				pairs
 					.split(key)
 					.filter((part) => part !== this.emptyCondition)
 					.toSorted(),
 			);
-			merged.set(orderedKey, String(value));
+			const property = cssPropertyFromKey(
+				orderedKey,
+				this.options.preset.conditions,
+				this.options.propertyAliases,
+			);
+			merged.set(orderedKey, normalizeCssValue(property, rawValue));
 		}
 
 		const classes: string[] = [];
+		const prepared: PreparedStyle[] = [];
 		for (const [orderedKey, value] of merged) {
 			if (orderedKey.includes("$input")) return null;
 			let name: string | undefined;
@@ -61,7 +80,10 @@ class PandwindLiteralStyleCompiler implements LiteralStyleCompiler {
 				try {
 					const custom = this.className.toClassName(orderedKey, value);
 					name =
-						typeof custom === "string" && custom.length > 0 && !/[\s\u0000]/.test(custom)
+						typeof custom === "string" &&
+						custom.length > 0 &&
+						!/\s/.test(custom) &&
+						!custom.includes("\u0000")
 							? custom
 							: undefined;
 				} catch {
@@ -73,8 +95,17 @@ class PandwindLiteralStyleCompiler implements LiteralStyleCompiler {
 				this.registry.set(name, orderedKey);
 			}
 			classes.push(name);
+			prepared.push({ key: orderedKey, value, className: name });
+		}
+		if (source !== undefined && prepared.length > 0) {
+			const previous = this.preparedStyles.get(source) ?? [];
+			this.preparedStyles.set(source, [...previous, ...prepared]);
 		}
 		return classes.join(" ");
+	}
+
+	clear(source: string): void {
+		this.preparedStyles.delete(source);
 	}
 }
 

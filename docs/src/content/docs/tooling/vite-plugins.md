@@ -51,6 +51,35 @@ plugins: [pandwindCssVite(examplePreset)];
 import "pandwind:css";
 ```
 
+### `Stack` bindings and build-time folding
+
+The bare `Stack` renderer and `stackFoldVite()` are an explicit
+Tailwind-compatible fast path. Use them only when Tailwind, or another
+compiler that owns the same utility classes, generates the stylesheet.
+
+When the app uses a Pandwind class-name strategy, bind the renderer to the
+same CSS compiler and pass the same engine to both build plugins:
+
+```ts
+import { createCss, createNamedAtomsStrategy } from "pandwind/css";
+import { createStack } from "pandwind/stack/react";
+import { createPandwindEngineContext, pandwindCssVite, stackFoldVite } from "pandwind/vite";
+
+const className = createNamedAtomsStrategy("app");
+const engine = createPandwindEngineContext({ preset, className });
+export const css = createCss(preset, { className });
+export const Stack = createStack(css);
+
+plugins: [stackFoldVite({ engine }), pandwindCssVite(preset, { engine })];
+```
+
+Static `<Stack>` props then become the strategy's class names and, for
+sheet-backed strategies, matching generated CSS. With the Tailwind adapter,
+the same recipe feeds Tailwind's scanner. Dynamic props stay on the runtime
+component. The engine is explicit because a JSX alias such as
+`const Stack = createStack(css)` does not retain reliable compiler ownership
+metadata for a Vite plugin to infer after re-exporting.
+
 ### Preset changes during Vite HMR
 
 Vite evaluates `vite.config` once, so a preset imported only by the config

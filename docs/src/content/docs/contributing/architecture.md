@@ -412,12 +412,16 @@ pair-specific `XToY` implementation.
 ## Framework component adapters
 
 Component-family APIs follow the same port-and-adapter boundary as migration
-and backend APIs. `pandwind/stack` owns the renderer-neutral `StackProps` and
-deterministic class mapping. `pandwind/stack/react`, `pandwind/stack/solid`,
-`pandwind/stack/vue`, and `pandwind/stack/preact` each own their framework
-element creation, attribute spelling, children/slot behavior, and prop
-forwarding. The static fold imports only the neutral mapper, so a framework
-runtime is not pulled into static output.
+and backend APIs. `pandwind/stack` owns the renderer-neutral `StackProps`,
+CSS declaration mapping, and explicit Tailwind-compatible class fast path.
+`pandwind/stack/react`, `pandwind/stack/solid`, `pandwind/stack/vue`, and
+`pandwind/stack/preact` each own their framework element creation, attribute
+spelling, children/slot behavior, and prop forwarding. Each renderer also
+exposes `createStack(css)`, so configured class-name strategies and CSS
+compiler ownership are supplied rather than bypassed. The static fold keeps
+the same boundary: bare `stackFoldVite()` is Tailwind-only, while
+`stackFoldVite({ engine })` shares the configured engine with
+`pandwindCssVite` to emit sheet-backed rules for folded declarations.
 
 The family namespace is intentional: `pandwind/stack/{framework}` identifies a
 renderer for the Stack component family without turning `pandwind/{framework}`

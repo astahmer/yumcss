@@ -29,6 +29,12 @@ export { decodeAtomicPath } from "./stylesheet-lowering.ts";
 export { getPropertyPriority } from "./property-priorities.ts";
 
 type Rule = { id: string; css: string; priority: number };
+
+export interface PreparedStyle {
+	readonly key: string;
+	readonly value: string;
+	readonly className?: string;
+}
 const cssVar = {
 	ref: (key: string) => `var(--${key})`,
 	declaration: (key: string, value: string) => `--${key}: ${value};`,
@@ -115,10 +121,18 @@ export const createStylesheet = (
 	const classNameFor = (orderedKey: string, rawValue: string): string => {
 		if (sheetStrategy?.sheetBacked === true) {
 			const named = sheetStrategy.toClassName(orderedKey, rawValue);
-			if (typeof named === "string" && named.length > 0 && !/[\s\u0000]/.test(named)) return named;
+			if (
+				typeof named === "string" &&
+				named.length > 0 &&
+				!/\s/.test(named) &&
+				!named.includes("\u0000")
+			)
+				return named;
 		}
 		return hashFn(orderedKey, rawValue);
 	};
+	const isSafeClassName = (value: string): boolean =>
+		value.length > 0 && !/\s/.test(value) && !value.includes("\u0000");
 
 	const pathParts = (key: string, omitEmptyParts: boolean, sort: boolean): string[] => {
 		const parts: string[] = [];
@@ -217,6 +231,7 @@ export const createStylesheet = (
 		orderedKey: string,
 		normalizedValue: string,
 		localCache: Map<string, Rule>,
+		preparedClassName?: string,
 	): void => {
 		if (orderedKey === "" || !isSafeCssValue(normalizedValue)) return;
 		const pairId = pairs.concat(orderedKey, normalizedValue);
@@ -243,10 +258,14 @@ export const createStylesheet = (
 			}
 		}
 		const value = resolveTokenValue(tokenMaps, property, normalizedValue);
+		const className =
+			preparedClassName !== undefined && isSafeClassName(preparedClassName)
+				? preparedClassName
+				: classNameFor(orderedKey, normalizedValue);
 
 		const css = serializeStyle([dashCase(property), value].join(":"), {
 			...atomic.conditions,
-			className: `.${escapeIdentifier(classNameFor(orderedKey, normalizedValue))}`,
+			className: `.${escapeIdentifier(className)}`,
 		});
 
 		const rule = { id: pairId, css, priority: atomic.priority };
@@ -254,14 +273,19 @@ export const createStylesheet = (
 		localCache.set(pairId, rule);
 	};
 
-	const processPreparedStyles = (styles: readonly { key: string; value: string }[]) => {
+	const processPreparedStyles = (styles: readonly PreparedStyle[]) => {
 		const localCache = new Map<string, Rule>();
-		for (const { key, value } of styles) {
+		for (const { key, value, className: preparedClassName } of styles) {
 			if (typeof key !== "string" || key.length === 0 || key.includes("\u0000")) continue;
 			if (!isSafeCssValue(value)) continue;
 			const orderedKey = canonicalStyleKey(key, preset.conditions);
 			const property = cssPropertyFromKey(orderedKey, preset.conditions, options.propertyAliases);
-			processNormalizedStyle(orderedKey, normalizeCssValue(property, value), localCache);
+			processNormalizedStyle(
+				orderedKey,
+				normalizeCssValue(property, value),
+				localCache,
+				preparedClassName,
+			);
 		}
 		return localCache;
 	};

@@ -5,11 +5,14 @@
  * `pandwind:css` sheet. Without the option nothing changes (default mode
  * is covered by vite-css.test.ts).
  */
-import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { describe, expect, test } from "vitest";
+import { createNamedAtomsStrategy } from "../src/css/named-atoms-strategy.ts";
 import { pandwindCssVite } from "../src/vite/css.ts";
+import { createPandwindEngineContext } from "../src/vite/engine-context.ts";
+import { stackFoldVite } from "../src/vite/stack-fold.ts";
 import { examplePreset } from "@pandwind/example-preset";
 
 const makeProject = (): string => {
@@ -72,6 +75,40 @@ describe("splitByRoute", () => {
 		const user = plugin.load("\0pandwind:css.css?route=user") as string;
 		expect(user).toContain("height:");
 		expect(user).not.toContain("width:20px");
+	});
+
+	test("configured Stack declarations stay in their owning route chunk", () => {
+		const dir = makeProject();
+		const stackFile = join(dir, "src/routes/admin/stack.tsx");
+		const stackSource =
+			'import { Stack } from "pandwind/stack/react"; export const stack = <Stack gap={4} />;';
+		writeFileSync(stackFile, stackSource);
+		try {
+			const engine = createPandwindEngineContext({
+				preset: examplePreset,
+				className: createNamedAtomsStrategy("app"),
+			});
+			const stack = stackFoldVite({ engine });
+			expect(stack.transform(stackSource, stackFile)?.code).toContain(
+				'<div className="app-display-flex app-gap-4px" />',
+			);
+
+			const plugin = pandwindCssVite(examplePreset, {
+				root: dir,
+				splitByRoute: [
+					{ match: /\/routes\/admin\//, name: "admin" },
+					{ match: /\/routes\/user\//, name: "user" },
+				],
+				engine,
+			});
+			const base = plugin.load("\0pandwind:css.css") as string;
+			const admin = plugin.load("\0pandwind:css.css?route=admin") as string;
+
+			expect(base).not.toContain(".app-gap-4px{gap:4px}");
+			expect(admin).toContain(".app-gap-4px{gap:4px}");
+		} finally {
+			rmSync(dir, { recursive: true, force: true });
+		}
 	});
 
 	test("manifest module maps routes to virtual ids", () => {

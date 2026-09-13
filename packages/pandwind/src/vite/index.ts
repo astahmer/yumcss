@@ -441,3 +441,4 @@ export {
 	type PandwindEngineContext,
 	type PandwindEngineContextOptions,
 } from "./engine-context.ts";
+export { foldStackElements, stackFoldVite, type StackFoldOptions } from "./stack-fold.ts";

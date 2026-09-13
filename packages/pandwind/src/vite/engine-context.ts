@@ -28,7 +28,7 @@
  * atoms must resolve to.
  */
 import type { ClassNameStrategy } from "../css/class-name-strategy.ts";
-import { createLiteralStyleCompiler } from "./literal-style-compiler.ts";
+import { createLiteralStyleCompiler, type PreparedStyle } from "./literal-style-compiler.ts";
 
 import type { CssPreset } from "./css-extract.ts";
 
@@ -36,6 +36,7 @@ export interface PandwindEngineContextOptions {
 	preset: CssPreset;
 	className?: ClassNameStrategy;
 	debug?: boolean;
+	propertyAliases?: Readonly<Record<string, string>>;
 }
 
 export interface PandwindEngineContext {
@@ -48,6 +49,8 @@ export interface PandwindEngineContext {
 	 * runtime does.
 	 */
 	readonly registry: import("../css/atoms.ts").AtomRegistry;
+	/** Prepared declarations recorded by source while a build-time fold runs. */
+	readonly preparedStyles: ReadonlyMap<string, readonly PreparedStyle[]>;
 	/**
 	 * Compile one literal (design-vocabulary or raw) style object into the
 	 * exact class string the stylesheet pass generates rules for. Returns
@@ -55,7 +58,9 @@ export interface PandwindEngineContext {
 	 * `$input` dynamics, or a class-name strategy that refuses the
 	 * declaration. The caller must leave such calls to the runtime.
 	 */
-	foldLiteralStyle(literal: Record<string, unknown>): string | null;
+	foldLiteralStyle(literal: Record<string, unknown>, source?: string): string | null;
+	/** Remove prepared declarations for a source before it is transformed again. */
+	clearPreparedStyles(source: string): void;
 }
 
 export function createPandwindEngineContext(
@@ -67,11 +72,14 @@ export function createPandwindEngineContext(
 		preset,
 		...(className === undefined ? {} : { className }),
 		...(options.debug === undefined ? {} : { debug: options.debug }),
+		...(options.propertyAliases === undefined ? {} : { propertyAliases: options.propertyAliases }),
 	});
 	return {
 		preset,
 		className,
 		registry: compiler.registry,
+		preparedStyles: compiler.preparedStyles,
 		foldLiteralStyle: compiler.compile.bind(compiler),
+		clearPreparedStyles: compiler.clear.bind(compiler),
 	};
 }

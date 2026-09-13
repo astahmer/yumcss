@@ -3,8 +3,13 @@
  * classes, and the vite fold pass (static folds, dynamic stays runtime).
  */
 import { describe, expect, test } from "vitest";
-import { stackClasses } from "../src/stack/index.ts";
-import { foldStackElements } from "../src/vite/stack-fold.ts";
+import { createNamedAtomsStrategy } from "../src/css/named-atoms-strategy.ts";
+import { createCssOpen } from "../src/css/create-css.ts";
+import { createStackClassName, stackClasses, stackStyle } from "../src/stack/index.ts";
+import { createTwAdapter } from "../src/tw/adapter.ts";
+import { createPandwindEngineContext } from "../src/vite/engine-context.ts";
+import { foldStackElements, stackFoldVite } from "../src/vite/stack-fold.ts";
+import { examplePreset } from "@pandwind/example-preset";
 
 describe("stackClasses — mapping table", () => {
 	test("bare flex when empty", () => {
@@ -33,6 +38,60 @@ describe("stackClasses — mapping table", () => {
 	test("unknown values pass through verbatim after the prefix", () => {
 		expect(stackClasses({ gap: "3.5", padding: "px" })).toBe("flex gap-3.5 p-px");
 	});
+
+	test("numeric values stay available to both the Tailwind and CSS lanes", () => {
+		expect(stackClasses({ gap: 4, padding: 6 })).toBe("flex gap-4 p-6");
+		expect(stackStyle({ gap: 4, padding: 6 })).toEqual({
+			display: "flex",
+			gap: 4,
+			padding: 6,
+		});
+	});
+});
+
+test("createStackClassName delegates layout declarations to the supplied CSS compiler", () => {
+	const css = createCssOpen(examplePreset, {
+		className: createNamedAtomsStrategy("app"),
+	});
+	const className = createStackClassName(css)({
+		direction: "column",
+		gap: 4,
+		padding: "1rem",
+		align: "center",
+		justify: "between",
+	});
+
+	expect(className).toBe(
+		"app-display-flex app-flexDirection-column app-gap-4px app-padding-1rem " +
+			"app-alignItems-center app-justifyContent-space-between",
+	);
+});
+
+test("createStackClassName also delegates to the Tailwind class strategy", () => {
+	const css = createCssOpen(examplePreset, {
+		className: createTwAdapter({
+			preset: examplePreset,
+			variants: {},
+			bridge: {
+				display: { flex: "flex" },
+				"flex-direction": { column: "flex-col" },
+				gap: { "4px": "gap-4" },
+				padding: { "1rem": "p-4" },
+				"align-items": { center: "items-center" },
+				"justify-content": { "space-between": "justify-between" },
+			},
+		}),
+	});
+
+	expect(
+		createStackClassName(css)({
+			direction: "column",
+			gap: 4,
+			padding: "1rem",
+			align: "center",
+			justify: "between",
+		}),
+	).toBe("flex flex-col gap-4 p-4 items-center justify-between");
 });
 
 describe("differential — folded output equals hand-written div classes", () => {
@@ -76,9 +135,85 @@ describe("foldStackElements — vite fold pass", () => {
 		expect(out.code).toContain(`className="flex flex-row"`);
 	});
 
+	test("static renderer class attributes merge into the generated class", () => {
+		const out = foldStackElements(`<Stack gap="2" className="custom" />`, "class.tsx");
+		expect(out.code).toBe(`<div className="flex gap-2 custom" />`);
+	});
+
+	test("dynamic renderer class attributes keep the component runtime", () => {
+		const input = `<Stack gap="2" className={customClass} />`;
+		expect(foldStackElements(input, "dynamic-class.tsx")).toEqual({ code: input, folded: 0 });
+	});
+
 	test("self-closing form folds", () => {
 		const out = foldStackElements(`<Stack padding="2" />`, "d.tsx");
 		expect(out.code).toBe(`<div className="flex p-2" />`);
+	});
+
+	test("configured folding uses the shared engine and records CSS declarations", () => {
+		const engine = createPandwindEngineContext({
+			preset: examplePreset,
+			className: {
+				name: "named-test",
+				sheetBacked: true,
+				toClassName: (key, value) => `app-${key}-${value}`,
+			},
+		});
+		const source = "/src/configured-stack.tsx";
+		const input = `<Stack direction="column" gap={4} align="center" />`;
+		const out = foldStackElements(input, source, { engine });
+
+		expect(out).toEqual({
+			code: `<div className="app-display-flex app-flexDirection-column app-gap-4px app-alignItems-center" />`,
+			folded: 1,
+		});
+		expect(engine.preparedStyles.get(source)).toEqual([
+			{ key: "display", value: "flex", className: "app-display-flex" },
+			{
+				key: "flexDirection",
+				value: "column",
+				className: "app-flexDirection-column",
+			},
+			{ key: "gap", value: "4px", className: "app-gap-4px" },
+			{ key: "alignItems", value: "center", className: "app-alignItems-center" },
+		]);
+	});
+
+	test("configured folding stays conservative when the strategy refuses a declaration", () => {
+		const engine = createPandwindEngineContext({
+			preset: examplePreset,
+			className: {
+				name: "refusing",
+				toClassName: () => {
+					throw new Error("unrepresentable");
+				},
+			},
+		});
+		const source = "/src/refused-stack.tsx";
+		const input = `<Stack gap={4} />`;
+
+		expect(foldStackElements(input, source, { engine })).toEqual({ code: input, folded: 0 });
+		expect(engine.preparedStyles.has(source)).toBe(false);
+	});
+
+	test("the Stack fold hook clears prepared declarations during HMR", () => {
+		const engine = createPandwindEngineContext({ preset: examplePreset });
+		const source = "/src/hmr-stack.tsx";
+		const plugin = stackFoldVite({ engine });
+
+		plugin.transform(`<Stack gap={4} />`, source);
+		expect(engine.preparedStyles.has(source)).toBe(true);
+
+		plugin.handleHotUpdate({ file: source, modules: [] });
+		expect(engine.preparedStyles.has(source)).toBe(false);
+	});
+
+	test("configured folding supports the renderer's `class` attribute spelling", () => {
+		const out = foldStackElements(`<Stack gap={4} />`, "solid.tsx", {
+			classAttribute: "class",
+		});
+
+		expect(out.code).toBe(`<div class="flex gap-4" />`);
 	});
 
 	test("mixed file: static folds, dynamic sibling untouched, import kept for the dynamic one", () => {

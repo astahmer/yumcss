@@ -25,7 +25,8 @@ implementation.
 - Add `pandwind/stack/solid`, `pandwind/stack/vue`, and `pandwind/stack/preact`.
 - Make each renderer own only its framework import, component type, attribute
   spelling, children handling, and prop forwarding.
-- Preserve `stackClasses` and the Vite fold output byte-for-byte.
+- Preserve `stackClasses` and the no-engine Vite fold output byte-for-byte;
+  configured CSS lanes may use `createStack(css)` through the shared engine.
 - Add package export and typecheck coverage for every renderer.
 
 ## Why
@@ -58,6 +59,9 @@ they do not use.
 - `import { Stack } from "pandwind/stack/preact"`
 - framework-native attributes and children without leaking renderer policy
   into the core or Vite plugin.
+- configured class-name strategies through `createStack(css)`; namespace
+  behavior remains owned by the CSS compiler, and the matching engine is used
+  when folding static JSX.
 
 ## What this does not allow
 
@@ -90,7 +94,9 @@ they do not use.
 - All four renderer entry points resolve through package exports.
 - Each renderer maps the same props to the same class string.
 - Each renderer forwards framework-native attributes and children.
-- Static Stack folding remains unchanged and does not import a renderer.
+- Static Stack folding remains renderer-neutral; its default output is
+  unchanged, and configured folding consumes the shared engine instead of a
+  renderer implementation.
 - Dynamic framework props remain dynamic and type-safe.
 - Optional renderer dependencies are not included in the neutral core path.
 - Focused tests, package typecheck, formatting, and export checks pass.

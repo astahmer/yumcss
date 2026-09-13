@@ -224,6 +224,7 @@ export function createCssExtractorPluginCore(
 		for (const file of files) {
 			const entry = workspace.scan(file);
 			for (const { style } of entry.sources) sheet.process([style]);
+			sheet.processPrepared(options.engine?.preparedStyles.get(file) ?? []);
 			for (const key of entry.varKeys) sheet.processVarKey(key);
 			for (const key of carriedVarKeys.get(file) ?? []) sheet.processVarKey(key);
 		}
@@ -262,6 +263,7 @@ export function createCssExtractorPluginCore(
 		for (const file of files) {
 			const entry = scanFile(file);
 			for (const { style } of entry.sources) sheet.process([style]);
+			sheet.processPrepared(options.engine?.preparedStyles.get(file) ?? []);
 			for (const key of entry.varKeys) sheet.processVarKey(key);
 			for (const key of carriedVarKeys.get(file) ?? []) sheet.processVarKey(key);
 		}

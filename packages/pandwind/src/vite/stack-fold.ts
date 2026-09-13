@@ -5,12 +5,21 @@ import { NodeKind } from "../ast-node-kind.ts";
  *
  * Conservative by contract: if ANY known prop carries a dynamic expression
  * or spread, the whole element stays runtime. Unknown attributes are copied
- * through verbatim (valid on any element). When the last `<Stack>` in a
- * file is erased, its `pandwind/stack` import is removed.
+ * through verbatim (valid on any element). With an engine, classes and
+ * prepared stylesheet declarations come from the same configured CSS lane as
+ * `createStack(css)`; without one, this pass is explicitly Tailwind-only.
  */
 import { SOURCE_SCANNER_SERVICE } from "../source-scanner.ts";
 import { walk, type OxcNode } from "../tw/literal.ts";
-import { stackClasses, type StackProps } from "../stack/index.ts";
+import { stackClasses, stackStyle, type StackProps } from "../stack/index.ts";
+import type { PandwindEngineContext } from "./engine-context.ts";
+
+export interface StackFoldOptions {
+	/** Shared engine used by `createStack(css)` and `pandwindCssVite`. */
+	readonly engine?: PandwindEngineContext;
+	/** JSX attribute spelling for the selected renderer. Defaults to `className`. */
+	readonly classAttribute?: "className" | "class";
+}
 
 const STACK_PROPS = new Set(["direction", "gap", "padding", "align", "justify"]);
 
@@ -44,8 +53,11 @@ function readAttributes(opening: Record<string, unknown>): { attrs: JsxAttr[] } 
 			let value: string | number | undefined;
 			let dynamic = false;
 			if (valueNode === undefined || valueNode === null) {
-				// boolean-presence attribute — not a stack prop; copy through
-				pieces.push(String((attr["name"] as { raw?: string })?.raw ?? name));
+				// Boolean-presence attributes stay passthrough, while a known prop
+				// correctly prevents folding instead of being silently discarded.
+				const raw = String((attr["name"] as { raw?: string })?.raw ?? name);
+				attrs.push({ name, value: undefined, dynamic: true, raw });
+				pieces.push(raw);
 				continue;
 			}
 			if (valueNode["type"] === NodeKind.Literal) {
@@ -69,12 +81,21 @@ function readAttributes(opening: Record<string, unknown>): { attrs: JsxAttr[] } 
 	return { attrs };
 }
 
+const sourceId = (id: string): string => id.split(/[?#]/u, 1)[0]!;
+
 /** Fold all literal-prop Stack elements in one module. Returns edited code. */
-export function foldStackElements(code: string, id: string): { code: string; folded: number } {
+export function foldStackElements(
+	code: string,
+	id: string,
+	options: StackFoldOptions = {},
+): { code: string; folded: number } {
+	const source = sourceId(id);
+	options.engine?.clearPreparedStyles(source);
 	if (!code.includes("Stack")) return { code, folded: 0 };
 	const parsed = SOURCE_SCANNER_SERVICE.parse({ file: id, source: code });
 
 	const targets: FoldTarget[] = [];
+	const classAttribute = options.classAttribute ?? "className";
 	walk(parsed.program as unknown as OxcNode, (node) => {
 		if ((node as { type?: string }).type !== NodeKind.JSXElement) return;
 		const el = node as {
@@ -89,14 +110,27 @@ export function foldStackElements(code: string, id: string): { code: string; fol
 		const { attrs } = readAttributes(opening);
 		const known = attrs.filter((a) => a.name !== "" && STACK_PROPS.has(a.name));
 		// conservative: any dynamic/spread anywhere → leave the element alone
-		if (known.some((a) => a.dynamic) || attrs.some((a) => a.dynamic && a.name === "")) return;
+		if (
+			known.some((a) => a.dynamic) ||
+			attrs.some((a) => a.dynamic && (a.name === "" || a.name === classAttribute))
+		)
+			return;
 
 		const props: StackProps = {};
 		for (const a of known) {
 			if (a.value === undefined) continue;
 			(props as unknown as Record<string, string | number>)[a.name] = a.value;
 		}
-		const classes = stackClasses(props);
+		const classes =
+			options.engine === undefined
+				? stackClasses(props)
+				: options.engine.foldLiteralStyle(stackStyle(props), source);
+		if (classes === null) return;
+		const extraClass = attrs.find((attr) => attr.name === classAttribute)?.value;
+		const mergedClasses =
+			typeof extraClass === "string" || typeof extraClass === "number"
+				? `${classes}${String(extraClass) === "" ? "" : ` ${extraClass}`}`
+				: classes;
 
 		const selfClosing = Boolean(opening.selfClosing);
 		targets.push({
@@ -108,7 +142,7 @@ export function foldStackElements(code: string, id: string): { code: string; fol
 			closingEnd: (el.closingElement?.end as number) ?? -1,
 			selfClosing,
 			attrsText: "",
-			classes,
+			classes: mergedClasses,
 		});
 	});
 
@@ -118,20 +152,20 @@ export function foldStackElements(code: string, id: string): { code: string; fol
 	type Edit = { start: number; end: number; text: string };
 	const edits: Edit[] = [];
 	for (const t of targets) {
-		const passthrough = passthroughAttrs(code.slice(t.openingStart, t.openingEnd));
+		const passthrough = passthroughAttrs(code.slice(t.openingStart, t.openingEnd), classAttribute);
 		if (t.selfClosing) {
 			const inner = passthrough === "" ? "" : ` ${passthrough}`;
 			edits.push({
 				start: t.start,
 				end: t.end,
-				text: `<div className="${t.classes}"${inner} />`,
+				text: `<div ${classAttribute}="${t.classes}"${inner} />`,
 			});
 		} else {
 			const inner = passthrough === "" ? "" : ` ${passthrough}`;
 			edits.push({
 				start: t.openingStart,
 				end: t.openingEnd,
-				text: `<div className="${t.classes}"${inner}>`,
+				text: `<div ${classAttribute}="${t.classes}"${inner}>`,
 			});
 			edits.push({ start: t.closingStart, end: t.closingEnd, text: "</div>" });
 		}
@@ -155,7 +189,7 @@ function stripImportLines(code: string): string {
 }
 
 /** Attributes that are NOT stack props pass through to the div untouched. */
-function passthroughAttrs(openingText: string): string {
+function passthroughAttrs(openingText: string, classAttribute: "className" | "class"): string {
 	const withoutTag = openingText
 		.replace(/^<Stack/, "")
 		.replace(/\/?>$/, "")
@@ -178,24 +212,31 @@ function passthroughAttrs(openingText: string): string {
 	if (cur.trim() !== "") parts.push(cur.trim());
 	for (const part of parts) {
 		const name = /^([A-Za-z_][\w-]*)/.exec(part)?.[1] ?? "";
-		if (STACK_PROPS.has(name)) continue;
+		if (STACK_PROPS.has(name) || name === classAttribute) continue;
 		kept.push(part.replace(/=\{"([^"]*)"\}$/, '="$1"'));
 	}
 	return kept.join(" ");
 }
 
 /** Vite plugin: opt-in erasure of literal-prop Stack elements. */
-export function stackFoldVite(): {
+export function stackFoldVite(options: StackFoldOptions = {}): {
 	name: string;
+	enforce: "pre";
 	transform: (code: string, id: string) => { code: string; map: null } | null;
+	handleHotUpdate: (context: { file: string; modules?: unknown[] }) => unknown[] | undefined;
 } {
 	return {
 		name: "pandwind:stack-fold",
+		enforce: "pre",
 		transform(code: string, id: string) {
-			if (!/\.[cm]?[jt]sx$/.test(id)) return null;
-			const result = foldStackElements(code, id);
+			if (!/\.[cm]?[jt]sx$/.test(sourceId(id))) return null;
+			const result = foldStackElements(code, id, options);
 			if (result.folded === 0) return null;
 			return { code: result.code, map: null };
+		},
+		handleHotUpdate(context) {
+			options.engine?.clearPreparedStyles(sourceId(context.file));
+			return context.modules;
 		},
 	};
 }
