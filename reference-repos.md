@@ -66,3 +66,4 @@ type-checked examples.
 | ------ | ------------------------------------ | ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
 | effect | https://github.com/Effect-TS/effect  | /Users/astahmer/.references/effect | Study per-export `@category`, `@since`, cross-links, and runnable `@example` conventions, including the project's doctest workflow. |
 | kysely | https://github.com/kysely-org/kysely | /Users/astahmer/.references/kysely | Study narrative API descriptions, multiple JSDoc examples, type-parameter documentation, and generated SQL/behavior explanations.   |
+| pandabox | https://github.com/astahmer/pandabox | /Users/astahmer/.references/pandabox | Compare Panda-style property typing, token contracts, and static CSS generation patterns. |
