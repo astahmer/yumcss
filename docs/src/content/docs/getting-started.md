@@ -39,7 +39,7 @@ has a complete preset; the shape is:
 
 ```ts
 // src/preset.ts
-import { definePreset, defineTokens, type StandardProperties } from "pandwind/preset";
+import { definePreset, defineTokens, type PandwindProperties } from "pandwind/preset";
 
 const tokens = defineTokens({
 	colors: { $surface: "#ffffff", $ink: "#111827" },
@@ -47,8 +47,10 @@ const tokens = defineTokens({
 	radii: { lg: "12px" },
 });
 
+const cssConfig: PandwindProperties = {};
+
 export const preset = definePreset(
-	{ config: {} as StandardProperties, tokens },
+	{ config: cssConfig, tokens },
 	{
 		strict: true,
 		conditions: { _hover: "&:hover" },

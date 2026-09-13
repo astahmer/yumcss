@@ -10,7 +10,7 @@ import {
 	defineProperties,
 	defineSemanticTokens,
 	defineTokens,
-	type StandardProperties,
+	type PandwindProperties,
 } from "../src/preset/index.ts";
 import { examplePreset } from "@pandwind/example-preset";
 
@@ -66,9 +66,10 @@ test("definePreset JSDoc example preserves a custom typed vocabulary", () => {
 		color: tokens.colors,
 		padding: tokens.spacing,
 	});
+	const cssConfig: PandwindProperties = {};
 	const preset = definePreset(
 		{
-			config: {} as StandardProperties,
+			config: cssConfig,
 			tokens,
 		},
 		{ strict: true, conditions, properties },
@@ -78,14 +79,15 @@ test("definePreset JSDoc example preserves a custom typed vocabulary", () => {
 	expect(css.class({ backgroundColor: "$brand-500", padding: 4 })).type.toBe<string>();
 });
 
-test("BYOT docs example narrows the CSS contract with Pick", () => {
-	type CardProperties = Pick<StandardProperties, "backgroundColor" | "color" | "padding">;
+test("docs example narrows the curated CSS contract with Pick", () => {
+	type CardProperties = Pick<PandwindProperties, "backgroundColor" | "color" | "padding">;
 	const tokens = defineTokens({
 		colors: { "$brand-500": "#2563eb" },
 		spacing: { 4: "1rem" },
 	});
+	const cardConfig: CardProperties = {};
 	const preset = definePreset(
-		{ config: {} as CardProperties, tokens },
+		{ config: cardConfig, tokens },
 		{
 			strict: true,
 			conditions: {},
@@ -112,7 +114,7 @@ test("preset docs cover strict, inherited, and open property bindings", () => {
 		colors: { "$brand-500": "#2563eb" },
 		spacing: { 4: "1rem" },
 	});
-	const config = {} as Pick<StandardProperties, "color" | "padding">;
+	const config: Pick<PandwindProperties, "color" | "padding"> = {};
 
 	const strictPreset = definePreset(
 		{ config, tokens },
@@ -202,8 +204,9 @@ test("preset docs keep semantic and component token refs as strings", () => {
 			...componentTokens.component,
 		},
 	};
+	const cssConfig: PandwindProperties = {};
 	const preset = definePreset(
-		{ config: {} as StandardProperties, tokens },
+		{ config: cssConfig, tokens },
 		{
 			strict: true,
 			conditions,

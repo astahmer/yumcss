@@ -22,15 +22,17 @@ intentionally loose convenience form without preset token resolution.
 
 ```ts
 import { createCss } from "pandwind/css";
-import { definePreset, defineTokens, type StandardProperties } from "pandwind/preset";
+import { definePreset, defineTokens, type PandwindProperties } from "pandwind/preset";
 
 const tokens = defineTokens({
 	colors: { "$brand-500": "#2563eb" },
 	spacing: { 4: "1rem" },
 });
 
+const cssConfig: PandwindProperties = {};
+
 const preset = definePreset(
-	{ config: {} as StandardProperties, tokens },
+	{ config: cssConfig, tokens },
 	{
 		strict: true,
 		conditions: { _hover: "&:hover" },

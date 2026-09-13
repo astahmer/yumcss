@@ -6,7 +6,9 @@ import {
 	defineTokens,
 	type AnyCssConfig,
 	type SemanticTokenLayer,
+	type PandwindProperties,
 } from "../src/preset/index.ts";
+import type { StandardProperties as CsstypeStandardProperties } from "csstype";
 import { examplePreset } from "@pandwind/example-preset";
 
 const css = createCss(examplePreset);
@@ -51,10 +53,28 @@ test("createCss rejects properties and token values outside the preset", () => {
 test("createCss rejects invalid finite CSS keywords", () => {
 	expect(
 		css({
-			// @ts-expect-error not a valid display value
+			// @ts-expect-error not assignable
 			display: "xxx",
 		}),
 	).type.toBe<Compiled>();
+});
+
+test("PandwindProperties exposes a curated CSS contract with an explicit csstype escape hatch", () => {
+	const common: PandwindProperties = { display: "flex", padding: "1rem" };
+	const invalid: PandwindProperties = {
+		// @ts-expect-error not assignable
+		display: "xxx",
+	};
+	const unsupported: PandwindProperties = {
+		// @ts-expect-error does not exist in type
+		animationName: "fade-in",
+	};
+	const full: CsstypeStandardProperties = { animationName: "fade-in" };
+
+	expect(common).type.toBe<PandwindProperties>();
+	expect(invalid).type.toBe<PandwindProperties>();
+	expect(unsupported).type.toBe<PandwindProperties>();
+	expect(full).type.toBe<CsstypeStandardProperties>();
 });
 
 test("the untyped convenience form remains available", () => {

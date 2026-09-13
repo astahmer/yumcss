@@ -1,5 +1,10 @@
-import type { StandardProperties } from "csstype";
-import { definePreset, defineSemanticTokens, defineTheme, defineTokens } from "pandwind/preset";
+import {
+	definePreset,
+	defineSemanticTokens,
+	defineTheme,
+	defineTokens,
+	type PandwindProperties,
+} from "pandwind/preset";
 
 const tokens = defineTokens({
 	colors: {
@@ -127,8 +132,10 @@ const conditionBoundTokens = defineSemanticTokens(
 	},
 );
 
+const cssConfig: PandwindProperties = {};
+
 const theme = defineTheme({
-	config: {} as StandardProperties,
+	config: cssConfig,
 	tokens: {
 		colors: {
 			...tokens.colors,

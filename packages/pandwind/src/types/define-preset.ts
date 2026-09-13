@@ -18,15 +18,16 @@ export * from "./typings.ts";
  *
  * @example
  * ```ts
- * import { defineTheme, defineTokens, type StandardProperties } from "pandwind/preset";
+ * import { defineTheme, defineTokens, type PandwindProperties } from "pandwind/preset";
  *
  * const tokens = defineTokens({
  *   colors: { "$brand-500": "#2563eb" },
  *   spacing: { 4: "1rem" },
  * });
  *
+ * const cssConfig: PandwindProperties = {};
  * const theme = defineTheme({
- *   config: {} as StandardProperties,
+ *   config: cssConfig,
  *   tokens,
  * });
  * ```
@@ -51,11 +52,13 @@ export const defineTheme = <TTheme extends DefinePresetOptions>(theme: TTheme) =
  * @example
  * ```ts
  * import { createCss } from "pandwind/css";
- * import { definePreset, type StandardProperties } from "pandwind/preset";
+ * import { definePreset, type PandwindProperties } from "pandwind/preset";
+ *
+ * const cssConfig: PandwindProperties = {};
  *
  * const preset = definePreset(
  *   {
- *     config: {} as StandardProperties,
+ *     config: cssConfig,
  *     tokens: { colors: { "$brand-500": "#2563eb" } },
  *   },
  *   {

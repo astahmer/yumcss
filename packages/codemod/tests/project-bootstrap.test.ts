@@ -44,11 +44,11 @@ describe("Pandwind project bootstrap", () => {
 
 		const preset = support.files.find((file) => file.path === "pandwind/preset.ts")?.content;
 		expect(preset).toContain(
-			'defineConditions, definePreset, defineProperties, defineTokens, type StandardProperties } from "pandwind/preset"',
+			'defineConditions, definePreset, defineProperties, defineTokens, type PandwindProperties } from "pandwind/preset"',
 		);
 		expect(preset).toContain("const conditions = defineConditions({");
 		expect(preset).toContain("const appTokens = defineTokens({");
-		expect(preset).toContain("const cssConfig: StandardProperties = {};");
+		expect(preset).toContain("const cssConfig: PandwindProperties = {};");
 		expect(preset).toContain("config: cssConfig");
 		expect(preset).not.toContain("AnyCssConfig");
 		expect(preset).not.toContain("pandwindPreset.tokens");

@@ -314,7 +314,7 @@ semantic names instead of repeating raw colors and spacing values.
 
 ```ts
 // src/preset.ts
-import { definePreset, defineTokens, type StandardProperties } from "pandwind/preset";
+import { definePreset, defineTokens, type PandwindProperties } from "pandwind/preset";
 
 const tokens = defineTokens({
 	colors: {
@@ -328,8 +328,10 @@ const tokens = defineTokens({
 	radii: { md: "8px", lg: "12px" },
 });
 
+const cssConfig: PandwindProperties = {};
+
 export const preset = definePreset(
-	{ config: {} as StandardProperties, tokens },
+	{ config: cssConfig, tokens },
 	{
 		strict: true,
 		conditions: { base: "", _hover: "&:hover", _dark: ".dark &" },
@@ -342,10 +344,12 @@ The [design-system guide](./docs/src/content/docs/guides/design-system.md)
 covers semantic tokens, light/dark themes, component scopes, and how to keep
 the preset shared by codegen, Vite, and the migration tools.
 
-The `config` type is intentionally bring-your-own. Use the re-exported
-`StandardProperties` for ordinary web CSS, or narrow it with `Pick<...>` when a
-component package should expose only a small typed surface. Import specialized
-variants directly from `csstype`; Pandwind does not replace its CSS grammar.
+The exported `PandwindProperties` is Pandwind's curated common-property CSS
+contract: it stays 1:1 with CSS property names while omitting the long tail of
+rare declarations. Narrow it further with `Pick<...>` when a component package
+needs an even smaller surface. For the complete grammar or a specialized
+variant, import `StandardProperties` directly from `csstype` and use that as
+your preset's config type; Pandwind does not replace an explicit BYO contract.
 
 ## When you need more than the happy path
 

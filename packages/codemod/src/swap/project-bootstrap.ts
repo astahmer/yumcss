@@ -694,8 +694,8 @@ function presetSource(
 	};
 	const semanticTokenImport = componentGroups.length === 0 ? "" : ", defineSemanticTokens";
 	const semanticTokenTypeImport = componentGroups.length === 0 ? "" : ", type SemanticTokenLayer";
-	const typeImports = typescript ? ", type StandardProperties" : "";
-	const configDeclaration = typescript ? "\nconst cssConfig: StandardProperties = {};\n" : "";
+	const typeImports = typescript ? ", type PandwindProperties" : "";
+	const configDeclaration = typescript ? "\nconst cssConfig: PandwindProperties = {};\n" : "";
 	const configReference = typescript ? "cssConfig" : "{}";
 	const componentDeclaration =
 		componentGroups.length === 0

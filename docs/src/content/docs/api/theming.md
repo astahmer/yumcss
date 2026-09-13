@@ -41,7 +41,7 @@ import {
 	definePreset,
 	defineSemanticTokens,
 	defineTokens,
-	type StandardProperties,
+	type PandwindProperties,
 } from "pandwind/preset";
 
 const rawTokens = defineTokens({
@@ -116,8 +116,10 @@ const tokens = {
 	},
 };
 
+const cssConfig: PandwindProperties = {};
+
 export const preset = definePreset(
-	{ config: {} as StandardProperties, tokens },
+	{ config: cssConfig, tokens },
 	{
 		strict: true,
 		conditions: themeConditions,

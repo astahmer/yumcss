@@ -545,7 +545,7 @@ import {
 \tdefineProperties,
 ${semanticTokenImport}\tdefineTokens,
 \tdefineConditions,
-${semanticTokenTypeImport}\ttype StandardProperties,
+${semanticTokenTypeImport}\ttype PandwindProperties,
 } from "pandwind/preset";
 
 const conditions = defineConditions(${conditionJson});
@@ -554,7 +554,7 @@ ${appSemanticDeclaration}${componentDeclaration}
 const tokens = {
 ${mergedTokenLines.join("\n")}
 };
-const cssConfig: StandardProperties = {};
+const cssConfig: PandwindProperties = {};
 
 export const preset = definePreset(
 \t{ config: cssConfig, tokens },

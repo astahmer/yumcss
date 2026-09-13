@@ -78,12 +78,14 @@ import {
 	definePreset,
 	defineProperties,
 	defineTheme,
-	type StandardProperties,
+	type PandwindProperties,
 } from "pandwind/preset";
 import { tokens } from "./tokens";
 
+const cssConfig: PandwindProperties = {};
+
 const theme = defineTheme({
-	config: {} as StandardProperties,
+	config: cssConfig,
 	tokens,
 });
 
@@ -204,8 +206,10 @@ const themedTokens = {
 	},
 };
 
+const componentCssConfig: PandwindProperties = {};
+
 export const componentPreset = definePreset(
-	{ config: {} as StandardProperties, tokens: themedTokens },
+	{ config: componentCssConfig, tokens: themedTokens },
 	{
 		strict: true,
 		conditions: { _dark: '[data-theme="dark"] &' },

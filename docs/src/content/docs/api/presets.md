@@ -36,8 +36,9 @@ form keeps a small preset easy to read.
 
 ## A complete typed preset
 
-This is a small preset with all standard CSS properties available, while the
-three properties used by the design system also accept named token references.
+This is a small preset with Pandwind's curated common CSS properties available,
+while the three properties used by the design system also accept named token
+references.
 
 ```ts
 import { createCss } from "pandwind/css";
@@ -45,7 +46,7 @@ import {
 	definePreset,
 	defineProperties,
 	defineTokens,
-	type StandardProperties,
+	type PandwindProperties,
 } from "pandwind/preset";
 
 const tokens = defineTokens({
@@ -65,8 +66,10 @@ const properties = defineProperties({
 	padding: { $tokens: "spacing", $strictness: "inherits" },
 });
 
+const cssConfig: PandwindProperties = {};
+
 const preset = definePreset(
-	{ config: {} as StandardProperties, tokens },
+	{ config: cssConfig, tokens },
 	{
 		strict: true,
 		conditions: {
@@ -89,31 +92,33 @@ css.class({
 
 The `$tokens` entries bind a CSS property to a token group. The
 `$strictness: "inherits"` entries deliberately allow both that token group
-and the raw value type from `StandardProperties`.
+and the raw value type from Pandwind's curated `PandwindProperties` contract.
 
 ## Bring your own CSS type
 
-For the usual web case, `pandwind/preset` re-exports `csstype`'s
-`StandardProperties`, so a preset can use the same CSS property names and
-value types without a second package import:
+Use Pandwind's curated `PandwindProperties` for the common web case. When a
+preset needs the complete CSS grammar or a specialized variant, bring that
+type directly from `csstype`:
 
 ```ts
 import { createCss } from "pandwind/css";
-import {
-	definePreset,
-	defineTokens,
-	type StandardProperties,
-} from "pandwind/preset";
+import { definePreset, defineTokens } from "pandwind/preset";
+import type { StandardProperties as CsstypeStandardProperties } from "csstype";
 
-type CardProperties = Pick<StandardProperties, "backgroundColor" | "color" | "padding">;
+type CardProperties = Pick<
+	CsstypeStandardProperties,
+	"backgroundColor" | "color" | "padding"
+>;
 
 const tokens = defineTokens({
 	colors: { "$brand-500": "#2563eb" },
 	spacing: { 4: "1rem" },
 });
 
+const cardConfig: CardProperties = {};
+
 const cardPreset = definePreset(
-	{ config: {} as CardProperties, tokens },
+	{ config: cardConfig, tokens },
 	{
 		strict: true,
 		conditions: {},
@@ -134,13 +139,12 @@ css.class({
 ```
 
 `Pick` makes the package boundary explicit: this component contract exposes
-three CSS properties, while the values still come from the real CSS type. Use
-`StandardProperties` directly when the preset should expose the modern web
-surface. For a custom or third-party property vocabulary, compose your own
-type instead:
+three CSS properties, while the values still come from the complete CSS type.
+Use Pandwind's `PandwindProperties` directly for its curated common surface.
+For a custom or third-party property vocabulary, compose your own type instead:
 
 ```ts
-type AppProperties = StandardProperties & Record<`--${string}`, string>;
+type AppProperties = CsstypeStandardProperties & Record<`--${string}`, string>;
 ```
 
 That custom-property extension describes the host values your application
@@ -152,20 +156,21 @@ without converting them into a Pandwind-specific CSS grammar.
 ## What belongs in `config`?
 
 `config` is a type witness for the CSS properties and raw values your preset
-understands. `defineTheme` returns the object unchanged; `{} as
-StandardProperties` does not create a runtime object full of CSS properties.
+understands. `defineTheme` returns the object unchanged; an empty typed config
+does not create a runtime object full of CSS properties.
 
 | config type | use it when |
 | --- | --- |
-| `{} as StandardProperties` | the preset should describe ordinary web CSS with `csstype`'s property names and value types |
-| `{} as Pick<StandardProperties, "color" \| "padding">` | the preset intentionally exposes a small, closed CSS surface |
-| `{} as Record<string, never>` | mapped properties should be token-only and there should be no raw CSS value vocabulary |
-| `{} as Record<string, unknown>` | an integration boundary truly has an open record; expect weaker property/value checking |
+| `PandwindProperties` | the preset should expose Pandwind's curated common CSS surface |
+| `Pick<PandwindProperties, "color" \| "padding">` | the preset intentionally exposes an even smaller, closed CSS surface |
+| `Record<string, never>` | mapped properties should be token-only and there should be no raw CSS value vocabulary |
+| `Record<string, unknown>` | an integration boundary truly has an open record; expect weaker property/value checking |
 
-Use `StandardProperties` for a normal web design system. Use `Pick` when the
-package owns a deliberately small contract. A broad record is useful at a
-migration or compatibility boundary, not as a substitute for a design-system
-type.
+Use Pandwind's `PandwindProperties` for a normal web design system. Use `Pick`
+when the package owns a deliberately small contract. Import the full
+`StandardProperties` directly from `csstype` only when the long-tail grammar is
+intentional. A broad record is useful at a migration or compatibility boundary,
+not as a substitute for a design-system type.
 
 ## What does `properties` do?
 
@@ -181,7 +186,7 @@ const properties = defineProperties({
 });
 ```
 
-`borderRadius: true` uses `StandardProperties["borderRadius"]`. It does not
+`borderRadius: true` uses `PandwindProperties["borderRadius"]`. It does not
 attach a token group, and `strict` does not turn it into a token-only property.
 
 ### A token map: bind a property to a group
@@ -221,7 +226,7 @@ const properties = defineProperties({
 	color: { $tokens: "colors", $strictness: "inherits" },
 });
 
-// color accepts the colors group and raw StandardProperties["color"] values.
+// color accepts the colors group and raw PandwindProperties["color"] values.
 // padding is available because of $all, but it accepts its config values only
 // until padding receives an explicit $tokens mapping.
 ```
@@ -257,7 +262,7 @@ css.class({ backgroundColor: "var(--brand-from-host)" });
 ```
 
 The second call is valid in the complete preset above because that property
-explicitly inherits the raw `StandardProperties` value type. Remove
+explicitly inherits the raw `PandwindProperties` value type. Remove
 `$strictness: "inherits"` and the same call becomes a type error while the
 token call remains valid.
 
