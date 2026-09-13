@@ -727,21 +727,20 @@ export async function createPandwindProjectSupport(
 ): Promise<PandwindProjectSupport> {
 	const sourceConfig = await loadSourceConfig(request);
 	const directory = posixPath(request.outputDirectory).replace(/\/$/u, "");
-	const nextIntegration =
-		isPandwindProjectTarget(request.targetAdapter)
-			? planPandwindNextIntegration({
-					projectRoot: request.root,
-					outputDirectory: directory,
-					fileSystem: {
-						read: request.readFile,
-						exists: (file) =>
-							request
-								.listFiles(request.root)
-								.some((candidate) => resolve(request.root, candidate) === file),
-					},
-					...(request.packageJson === undefined ? {} : { packageJson: request.packageJson }),
-				})
-			: { enabled: false, fileChanges: [], notes: [] };
+	const nextIntegration = isPandwindProjectTarget(request.targetAdapter)
+		? planPandwindNextIntegration({
+				projectRoot: request.root,
+				outputDirectory: directory,
+				fileSystem: {
+					read: request.readFile,
+					exists: (file) =>
+						request
+							.listFiles(request.root)
+							.some((candidate) => resolve(request.root, candidate) === file),
+				},
+				...(request.packageJson === undefined ? {} : { packageJson: request.packageJson }),
+			})
+		: { enabled: false, fileChanges: [], notes: [] };
 	const preset = projectFile(directory, "preset.ts");
 	const runtimePreset = projectFile(directory, "preset.mjs");
 	const css = projectFile(directory, "css.ts");
