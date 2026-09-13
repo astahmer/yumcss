@@ -14,15 +14,18 @@ type PanelStyleProps = Pick<
 	"backgroundColor" | "borderRadius" | "padding"
 >;
 
+type PanelXcss = ReturnType<typeof css>;
+
 type PanelProps = PropsWithChildren<
 	PanelStyleProps & {
+		xcss?: PanelXcss;
 		className?: string;
 		style?: CSSProperties;
 	}
 >;
 
-function Panel({ children, className, style, ...styleProps }: PanelProps) {
-	const generated = css.props(css(styleProps));
+function Panel({ children, className, style, xcss, ...styleProps }: PanelProps) {
+	const generated = css.props(css(styleProps), xcss);
 	return (
 		<article
 			className={cx(generated.className, className)}
@@ -53,13 +56,15 @@ export function TypedComponentsApp() {
 				backgroundColor="$gray-50"
 				borderRadius="lg"
 				padding={16}
+				xcss={css({ padding: 20 })}
 				className={tw({ mt: "4", border: "1", borderColor: "gray-200" })}
 				style={{ borderInlineStart: "4px solid #3182ce" }}
 			>
 				<strong className={tw({ textColor: "gray-900" })}>Panel</strong>
 				<p className={tw({ mt: "2", textSize: "sm", textColor: "gray-700" })}>
-					Try changing the component's props in this file: arbitrary style keys do not leak into its
-					public contract.
+					Try changing the component's props in this file: the typed <code>xcss</code> override
+					composes with the component styles, while arbitrary style keys do not leak into its public
+					contract.
 				</p>
 			</Panel>
 		</section>

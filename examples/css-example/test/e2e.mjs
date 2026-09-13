@@ -81,9 +81,9 @@ try {
 	check("card-a pad[0] -> paddingTop 4px", (await computed("card-a", "padding-top")) === "4px");
 	check("card-a pad[1] -> paddingLeft 8px", (await computed("card-a", "padding-left")) === "8px");
 
-	// Card B — raw css() with a plain style object.
+	// Card B — css() composes authored objects before the host projection.
 	check(
-		"card-b raw color",
+		"card-b composed color",
 		(await computed("card-b", "color")) === "rgb(22, 163, 74)",
 		await computed("card-b", "color"),
 	);

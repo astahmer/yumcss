@@ -5,9 +5,19 @@ sidebar:
   order: 4
 ---
 
-When a component gets a base style, a user override, and a conditional state,
-compose them at the edge of the component. cx() keeps the last matching
-declaration and preserves class strings it cannot understand.
+Pandwind has two equal CSS projections for known style objects: `css(...)`
+returns a mergeable declaration map, while `css.class(...)` returns a class
+string. Choose the shape the host needs. Use `css.props(base, override)` when a
+component is composing already-compiled style maps, such as an `xcss` prop.
+Reach for `cx(...)` when the inputs are genuinely mixed or unknown — raw class
+strings, compiled maps, variable carriers, falsey conditionals, or output from
+more than one styling system.
+
+This is the same kind of host boundary that makes StyleX's
+[`stylex.props(...)`](https://stylexjs.com/docs/api/javascript/props/) useful:
+the host projection receives compiled style values. Pandwind lets the caller
+choose either the declaration-map `css(...)` path or the direct class-string
+`css.class(...)` path before using `css.props(...)` where host props are useful.
 
 `createCx({ css, variants, conflicts, compose })` merges raw class strings,
 `tw()` output and css atoms into one className with the same conflict
@@ -23,7 +33,11 @@ import { __pandwindConfig, tw } from "./tw";
 const css = createCss(examplePreset);
 const cx = createCx({ css, ...__pandwindConfig });
 
-cx(tw({ bg: "red-500" }), "px-4", css.class({ color: "blue" }), "bg-blue-500");
+const knownStyles = css({ color: "blue", padding: 4 }, { color: "navy" });
+const knownProps = css.props(knownStyles);
+const directClass = css.class({ color: "navy", padding: 4 });
+
+cx(tw({ bg: "red-500" }), "px-4", knownStyles, directClass, "bg-blue-500");
 // "px-4 bg-blue-500 <color atom>" — bg-red-500 lost to bg-blue-500
 ```
 
@@ -40,14 +54,19 @@ Note: with the [tailwind adapter](/interop/tailwind-adapter/),
 _identical_ class string (`text-blue-500`), so Tailwind compiles the CSS
 exactly once no matter how much of the app is written with each API. `cx()`
 remains the merge layer for raw strings, tw utilities and css atoms in the
-same className.
+same className. If the value is known to be a compiled CSS map, `css.props()`
+keeps the declaration-map path. If the host only needs one class string, use
+`css.class()`. `cx()` is for the cases where class strings and other carriers
+really are mixed, so it must inspect class and atom metadata.
 
 ## Compile-time `cx()` — tree-shakeable for static apps
 
 When a file imports both tw and cx, `pandwindVite` folds statically-evaluable
 `cx(...)` calls into their final class string at build time — by running the
 merge through a real `createCx(config)` built from the same generated
-metadata, so build output is byte-identical to the runtime by construction:
+metadata, so build output is byte-identical to the runtime by construction.
+The CSS inliner likewise folds literal `css(...)` calls to compiled maps and
+literal `css.class(...)` calls to class strings:
 
 ```ts
 // input

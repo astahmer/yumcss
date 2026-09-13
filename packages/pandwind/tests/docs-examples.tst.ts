@@ -28,6 +28,7 @@ test("createCss JSDoc examples use the preset for token references", () => {
 
 test("CssFn JSDoc examples cover groups and runtime inputs", () => {
 	const css = createCss();
+	const composed = css({ display: "flex", padding: 8 }, { padding: 12 });
 	const styles = css.group({
 		card: { borderRadius: 8, padding: 16 },
 		gap: (value: number) => ({ gap: value }),
@@ -39,6 +40,12 @@ test("CssFn JSDoc examples cover groups and runtime inputs", () => {
 		},
 	});
 
+	expect(composed).type.toBe<Record<string, string>>();
+	expect(css.props(composed)).type.toBe<{
+		className: string | undefined;
+		style: Record<string, string> | undefined;
+		[key: string]: unknown;
+	}>();
 	expect(css.props(styles.card, styles.gap(12))).type.toBe<{
 		className: string | undefined;
 		style: Record<string, string> | undefined;
@@ -225,13 +232,21 @@ test("createDesignCss JSDoc example uses the design modules", () => {
 	const dss = createDesignCss(examplePreset);
 
 	expect(
-		dss.class({
-			$frame: { corners: "lg", fill: "$blue-500", pad: [8, 16] },
-			$layout: { flow: "stackX", align: "center", gap: 8 },
-			$text: { color: "$gray-50", weight: "semibold" },
-			_hover: { $frame: { fill: "$blue-600" } },
-		}),
-	).type.toBe<string>();
+		dss.props(
+			dss(
+				{ $frame: { corners: "lg", fill: "$blue-500", pad: [8, 16] } },
+				{
+					$layout: { flow: "stackX", align: "center", gap: 8 },
+					$text: { color: "$gray-50", weight: "semibold" },
+					_hover: { $frame: { fill: "$blue-600" } },
+				},
+			),
+		),
+	).type.toBe<{
+		className: string | undefined;
+		style: Record<string, string> | undefined;
+		[key: string]: unknown;
+	}>();
 });
 
 test("createCx JSDoc example composes CSS atoms and conditionals", () => {
@@ -239,9 +254,7 @@ test("createCx JSDoc example composes CSS atoms and conditionals", () => {
 	const cx = createCx({ css });
 	const isPrimary = true;
 
-	expect(
-		cx("inline-flex", isPrimary && "bg-blue-500", css.class({ padding: 12 })),
-	).type.toBe<string>();
+	expect(cx("inline-flex", isPrimary && "bg-blue-500", css({ padding: 12 }))).type.toBe<string>();
 });
 
 test("createTw JSDoc example accepts generated utility metadata", () => {

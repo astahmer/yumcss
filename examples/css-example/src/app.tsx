@@ -1,4 +1,4 @@
-import { cardBClass } from "./card-b.ts";
+import { cardBProps } from "./card-b.ts";
 import { cx } from "./cx.ts";
 import { cvaButton } from "./cva.ts";
 import { dss } from "./design.ts";
@@ -29,8 +29,8 @@ export function App() {
 			>
 				A — design vocabulary ($blue-500 / lg / pad 4 8)
 			</section>
-			<section data-testid="card-b" className={cardBClass}>
-				B — raw css()
+			<section data-testid="card-b" {...cardBProps}>
+				B — composed css()
 			</section>
 			<section
 				data-testid="card-c"

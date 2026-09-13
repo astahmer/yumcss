@@ -1,6 +1,11 @@
 /**
  * `cx` — last-wins class merge across every pandwind surface.
  *
+ * Use `css(...)` or `css.class(...)` when the inputs are known authored style
+ * objects, choosing the declaration-map or class-string shape the host needs.
+ * Use `cx(...)` at a boundary where inputs may already be class strings,
+ * compiled maps, variable carriers, or values from another engine.
+ *
  * ```ts
  * import { createTw } from "pandwind/tw";
  * import { createCss } from "pandwind/css";
@@ -485,7 +490,7 @@ export interface CxFn {
  * const buttonClass = cx(
  *   "inline-flex",
  *   disabled && "opacity-50",
- *   css.class({ padding: 12 }),
+ *   css({ padding: 12 }),
  * );
  * ```
  *

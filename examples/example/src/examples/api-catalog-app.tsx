@@ -10,7 +10,7 @@ type RuntimeButtonInput = {
 	padding: string;
 };
 
-const declarationMap = css({ color: "$blue-600", padding: 8 });
+const declarationMap = css({ color: "$blue-600", padding: 8 }, { color: "$gray-900" });
 const declarationProps = css.props(declarationMap);
 const classOutput = css.class({
 	backgroundColor: "$gray-100",
@@ -18,14 +18,9 @@ const classOutput = css.class({
 	color: "$gray-900",
 	padding: 8,
 });
-const hostProps = css.props(
-	css({
-		backgroundColor: "$blue-600",
-		borderRadius: "md",
-		color: "$white",
-		padding: 8,
-	}),
-);
+const hostBase = css({ backgroundColor: "$blue-600", color: "$white" });
+const hostXcss = css({ borderRadius: "md", padding: 8 });
+const hostProps = css.props(hostBase, hostXcss);
 const staticGroups = css.group({
 	badge: {
 		backgroundColor: "$gray-100",
@@ -171,18 +166,19 @@ export function ApiCatalogApp() {
 
 				<ApiCard
 					name="css()"
-					call={`css({ color: "$blue-600", padding: 8 })`}
-					detail="strict preset-bound declarations become an atomic declaration map"
+					call={`css({ color: "$blue-600", padding: 8 }, { color: "$gray-900" })`}
+					detail="known style objects merge last-wins into a declaration map that can stay composable"
 				>
 					<div {...declarationProps}>
-						<code>{Object.keys(declarationMap).join(", ")}</code> are the compiled declaration keys.
+						<code>{Object.keys(declarationMap).join(", ")}</code> are the final compiled declaration
+						keys; the second object wins for <code>color</code>.
 					</div>
 				</ApiCard>
 
 				<ApiCard
 					name="css.class()"
 					call={`css.class({ backgroundColor: "$gray-100", borderRadius: "md", padding: 8 })`}
-					detail="the same style object projected directly to one className"
+					detail="the same compiler projected directly to one className when that shape is useful"
 				>
 					<div className={classOutput}>The class projection is ready for a host element.</div>
 				</ApiCard>
@@ -206,8 +202,8 @@ export function ApiCatalogApp() {
 
 				<ApiCard
 					name="css.props()"
-					call={`<button {...css.props(css({ ... }))} />`}
-					detail="the host projection combines className and style for JSX spreading"
+					call={`<button {...css.props(base, xcss)} />`}
+					detail="the host projection combines already-compiled maps, including an xcss override"
 				>
 					<button type="button" {...hostProps}>
 						Spread the generated host props
@@ -263,7 +259,7 @@ export function ApiCatalogApp() {
 
 				<ApiCard
 					name="createCx() / cx()"
-	call={`cx(dss.class({ ... }), tw({ ... }), "caller-class")`}
+					call={`cx(dss.class({ ... }), tw({ ... }), "caller-class")`}
 					detail="composition merges design atoms, utility strings, and caller classes"
 				>
 					<div className={composedClassName}>{composedClassName}</div>

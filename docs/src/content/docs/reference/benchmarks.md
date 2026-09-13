@@ -36,6 +36,11 @@ Reading it honestly:
   remaining runtime cost zero for literal calls.
 - pandwind `css()`/`tw()` trade per-call speed for a much smaller shipped
   runtime ([size](/reference/size/)).
+- The CSS projections are peers, not a winner and loser: use `css(a, b)` when
+  a mergeable declaration map is useful, or `css.class(a, b)` when the host
+  wants one class string. The package harness records both shapes, plus
+  `css.props()` for compiled-map host merging and `cx()` for broader mixed
+  inputs.
 - These numbers are one call, cold-ish — the worst case. In real apps the
   vite inliner removes the per-call cost of literal calls entirely.
 

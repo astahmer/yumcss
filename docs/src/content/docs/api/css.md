@@ -12,9 +12,12 @@ sidebar:
 > use [design css()](/api/design-css/) for the ~30-prop Figma vocabulary on top
 > of this same engine.
 
-`createCss(preset)` returns the preferred typed `css()` that flattens a style
-object into hashed atomic classes, with design tokens, property-priority
-merging, variant conditions and a `$input` escape hatch for dynamic values.
+`createCss(preset)` returns a typed `css` API with two equal projections over
+the same compiler: callable `css(...)` composes style objects into a mergeable
+atomic declaration map, while `css.class(...)` returns the joined class string
+for a host that wants one `className`. Choose the return shape that fits the
+boundary. Use `cx(...)` only when the inputs may be strings, compiled maps,
+variable carriers, or values from more than one styling system.
 `createCssOpen(preset)` keeps the same preset-aware runtime behavior while
 accepting an open style-object surface for applications that discover
 properties or aliases at runtime. `createCss()` remains available as an
@@ -45,7 +48,9 @@ const preset = definePreset(
 );
 
 const css = createCss(preset);
-const className = css.class({ backgroundColor: "$brand-500", padding: 4 });
+const cardStyles = css({ backgroundColor: "$brand-500" }, { padding: 4 });
+const cardProps = css.props(cardStyles);
+const cardClass = css.class({ backgroundColor: "$brand-500", padding: 4 });
 ```
 
 Use `createCssOpen` when the preset should still resolve token names in
@@ -60,8 +65,9 @@ const output = css.vars({ color: "$brand-500", customProperty: runtimeValue });
 ```
 
 This is a factory choice, not a second runtime or a wrapper around `css.vars`.
-Static styles should continue to use `css.class()`; reserve `css.vars()` for
-values that are only known at runtime.
+Use `css()` when a mergeable declaration map is useful, `css.class()` when the
+host wants a direct class string, and reserve `css.vars()` for values that are
+only known at runtime. Neither CSS projection is generally preferred.
 
 This lane is for ordinary CSS properties with a small production path:
 literal calls can be extracted at build time, while dynamic values can use
@@ -71,22 +77,23 @@ across components.
 
 ## The everyday loop
 
-Create one preset for the application, bind one css function to it, and use
-css.class() for elements. Literal calls are extracted by the Vite plugin;
-runtime values use css.vars() and keep their changing data in inline custom
-properties.
+Create one preset for the application and bind one css function to it. Choose
+`css(...)` when composing style objects should produce a mergeable declaration
+map, or `css.class(...)` when the host directly wants a class string. Adapt a
+compiled map to host props with `css.props(...)`. Literal calls are extracted
+by the Vite plugin; runtime values use `css.vars()` and keep their changing
+data in inline custom properties.
 
 ```ts
-const card = css.class({
-	backgroundColor: "$surface",
-	color: "$ink",
-	padding: "4",
-});
+const cardClass = css.class({ backgroundColor: "$surface", color: "$ink", padding: "4" });
+
+const cardProps = css.props(css({ backgroundColor: "$surface", color: "$ink" }, { padding: "4" }));
 ```
 
-Most applications only need css.class(), css.vars(), and occasionally
-css.props(). The other return shapes are useful when building a component
-library or an integration.
+Neither projection is the default. Use `css()` for known style-object
+composition when the declaration map is useful, `css.class()` when a direct
+class string is the useful result, and `css.props()` when compiled values must
+cross a host boundary. `cx()` is for a genuinely mixed or unknown class input.
 
 ### Optional property shorthands
 
@@ -155,45 +162,89 @@ the sheet and its CSS factory share one policy.
 All seven methods take the same style object and compile the same atoms;
 they differ only in what they hand back:
 
-| call                          | returns                                                                             | use when                                                                                                                                             |
-| ----------------------------- | ----------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `css({ ... })`                | `{ color: "color__red" }` — one atom class **per declaration**, keyed by style prop | you need to address individual declarations afterwards (conditional composition, tooling, tests)                                                     |
-| `css.class({ ... })`          | `"color__red"` — declarations fused into one class string                           | styling an element directly (the default choice; ~all app code)                                                                                      |
-| `css.vars({ ... })`           | `{ class, style }` — classes plus inline custom properties                          | **runtime-dynamic values**: the value never enters a generated stylesheet (see below)                                                                |
-| `css.raw({ ... })`            | `{ color: "red" }` — plain style object, untouched                                  | escape hatch _out_ of the atomic pipeline: inline-`style` targets (React Native, opentui), or forcing a call to stay invisible to the vite extractor |
-| `css.props(...)`              | `{ className, style }` — spread onto an element                                     | combining compiled maps with `vars()` outputs in one shot                                                                                            |
-| `css.group({ btn: { ... } })` | named map of compiled outputs                                                       | pre-compiling a set of related styles behind one name                                                                                                |
-| `css.input(name)`             | `"input>$name"` marker                                                              | referencing a `$input` value inside a dynamic group; the Vite extractor emits its structural `var(...)` rule                                         |
+| call                          | returns                                                                                   | use when                                                                                                                                             |
+| ----------------------------- | ----------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `css({ ... }, { ... })`       | `{ color: "color__red" }` — one atom class **per final declaration**, keyed by style prop | composing known style objects or retaining a mergeable declaration map; later objects win before atoms are generated                                 |
+| `css.class({ ... })`          | `"color__red"` — declarations fused into one class string                                 | the host directly needs a class string; equally valid for one or several known style objects                                                         |
+| `css.vars({ ... })`           | `{ class, style }` — classes plus inline custom properties                                | **runtime-dynamic values**: the value never enters a generated stylesheet (see below)                                                                |
+| `css.raw({ ... })`            | `{ color: "red" }` — plain style object, untouched                                        | escape hatch _out_ of the atomic pipeline: inline-`style` targets (React Native, opentui), or forcing a call to stay invisible to the vite extractor |
+| `css.props(...)`              | `{ className, style }` — spread onto an element                                           | combining compiled maps, `vars()` outputs, or a component's `xcss` prop in one shot                                                                  |
+| `css.group({ btn: { ... } })` | named map of compiled outputs                                                             | pre-compiling a set of related styles behind one name                                                                                                |
+| `css.input(name)`             | `"input>$name"` marker                                                                    | referencing a `$input` value inside a dynamic group; the Vite extractor emits its structural `var(...)` rule                                         |
 
 Notes that hold for all of them:
 
 - Same compilation pipeline, same hashed classes, same stylesheet output —
-  zero behavioral difference between `css()` and `css.class()` beyond the
-  return shape. Both also accept multiple style objects and merge them
-  last-wins (`css(a, b)`).
+  the difference is the projection. The callable `css()` form merges authored
+  objects and preserves one compiled atom per final declaration; `.class`
+  joins those atoms for a host class string. Both are first-class choices,
+  accept multiple style objects, and merge them last-wins (`css(a, b)`).
 - `createDesignCss(preset)` mirrors this exact surface: it resolves the
   `$frame` / `$layout` / `$text` vocabulary first, then delegates to the same
   engine methods. Everything in the table applies unchanged.
 
-### css() vs css.class() by example
+### css() vs css.class() vs cx() by example
 
 ```ts
-// css.class — the 90% case: "I just want a className"
-<h1 className={css.class({ $text: { size: "3xl", weight: "bold" } })} />
+// Known authored style objects: choose the output shape the host needs.
+const buttonStyles = css(
+	{ color: "$gray-900", padding: 8 },
+	isPrimary ? { color: "$blue-600" } : {},
+);
+<button {...css.props(buttonStyles)} />;
 
-// mixing class sources through cx() — cx resolves css atoms via the
-// registry, so conflicts merge properly instead of fighting in the DOM:
-cx(tw({ bg: "red-500" }), "px-4", css.class({ color: "blue" }))
-// -> "px-4 bg-blue-500 color__blue"  (bg-red-500 lost, last-wins)
+// A direct class string is equally valid when that is the host boundary:
+<h1 className={css.class({ $text: { size: "3xl", weight: "bold" } })} />;
 
-// css — the per-declaration map, for when you need individual pieces later
-const base = css({ color: "$gray-900", pad: [4, 8] });
-className={cx(base.color, isActive && base.pad)} // drop just the padding part
+// A component can accept a StyleX-like compiled-style prop. `css()` calls
+// passed to xcss are also folded by the Vite plugin when they are static.
+type Xcss = ReturnType<typeof css>;
+const base = css({ display: "flex", padding: 8 });
+function Button({ xcss }: { xcss?: Xcss }) {
+	return <button {...css.props(base, xcss)} />;
+}
+
+// Unknown or mixed values: cx is the right boundary adapter.
+cx(tw({ bg: "red-500" }), maybeClassName, base, isActive && "opacity-80");
 ```
 
-With `css.class()` the declarations are fused into one string — you cannot
-drop a single declaration out of it afterwards. That fusion is exactly what
-you want for elements, and exactly what you don't want for composition.
+`css()` is the merge primitive for authored style objects: JavaScript object
+key precedence decides the last value before the final atoms are emitted. A
+compiled map can then be passed to `css.props()` with another compiled map,
+including an `xcss` component prop. `css.class()` performs the same compilation
+when the useful result is already a class string. `cx()` has a broader job: it
+accepts raw class strings, compiled maps, variable carriers, arrays and falsey
+values, so it must inspect class and atom metadata. Use it when that uncertainty
+is real.
+
+`xcss` is only a component-prop convention, not a special Pandwind runtime
+option. Rename it to match the host component's vocabulary if another name is
+clearer.
+
+With `css.class()` the declarations are fused into one string. That is the
+right path when the host wants `className`; `css()` is the equally valid path
+when the declaration map should stay mergeable.
+
+### Why `css(...)` does not go directly in `className`
+
+The callable form intentionally returns a declaration map, not a class string:
+
+```tsx
+const styles = css({ color: "tomato" });
+// styles: { color: "color__tomato" }
+
+<button className={css.class({ color: "tomato" })} />;
+<button {...css.props(styles)} />;
+```
+
+`className={styles}` is the wrong shape: React expects a string, while
+`css(...)` returns an object so that each declaration can still be composed by
+key. TypeScript catches that mismatch, and stringifying the object at runtime
+would not produce the intended class. The Vite compiler folds static
+`css(...)` calls to the same declaration map and static `css.class(...)` calls
+to their class string; it does not silently change one API's return shape only
+in optimized builds, which would make development, SSR, and non-Vite runtime
+behavior disagree.
 
 ### Dynamic values (`css.vars`) and the escape hatches
 
@@ -370,9 +421,9 @@ dynamic values when the build extractor is present.
 
 ## Static extraction (`pandwindCssVite`)
 
-The css() classes are hashed deterministically; the stylesheet is generated
-from the _same_ literal calls at build time, so nothing is accumulated at
-runtime:
+The classes produced by `css()` and `css.class()` are hashed deterministically;
+the stylesheet is generated from the _same_ literal calls at build time, so
+nothing is accumulated at runtime:
 
 ```ts
 // vite.config.ts
@@ -388,8 +439,11 @@ import "pandwind:css";
 ```
 
 The plugin scans source files (like Tailwind's own scanner) for literal
-`css(...)` calls, resolves them through the design layer and serves the
-deduped CSS — tokens plus atomic rules. `css.vars()` and `css.input()` groups
+`css(...)` and `css.class(...)` calls, resolves them through the design layer,
+and serves the deduped CSS — tokens plus atomic rules. It also replaces a
+static `css(...)` call with its compiled declaration map and a static
+`css.class(...)` call with its final class string, so both valid projections
+avoid their compile cost at runtime. `css.vars()` and `css.input()` groups
 contribute their stable structural rules while their runtime values stay
 inline. Unknown dynamic calls keep working at runtime but are not extracted
 (same constraint as dynamic class names in plain Tailwind), with one refinement:

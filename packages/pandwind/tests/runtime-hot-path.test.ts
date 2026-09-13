@@ -22,6 +22,16 @@ describe("runtime hot paths", () => {
 		});
 	});
 
+	test("callable CSS composes authored objects before atom generation", () => {
+		const css = createCss({ debug: true });
+
+		expect(css({ color: "red", padding: 4 }, { color: "blue", gap: 8 })).toMatchObject({
+			color: "color__blue",
+			padding: "padding__4px",
+			gap: "gap__8px",
+		});
+	});
+
 	test("class projection preserves flat and nested declaration order", () => {
 		const css = createCss({ debug: true });
 

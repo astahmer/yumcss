@@ -22,13 +22,25 @@ import { examplePreset } from "@pandwind/example-preset";
 
 const dss = createDesignCss(examplePreset);
 
-dss.class({
+const cardClass = dss.class({
 	$frame: { w: "20", h: 40, corners: "lg", fill: "$blue-500", pad: [4, 8] },
-	$layout: { flow: "stackY", gap: 16, align: "center" },
-	$text: { size: "xl", weight: "semibold", color: "$red-300" },
-	_hover: { $text: { color: "$red-400" } },
 });
+const card = dss(
+	{ $frame: { w: "20", h: 40, corners: "lg", fill: "$blue-500", pad: [4, 8] } },
+	{
+		$layout: { flow: "stackY", gap: 16, align: "center" },
+		$text: { size: "xl", weight: "semibold", color: "$red-300" },
+		_hover: { $text: { color: "$red-400" } },
+	},
+);
+const cardProps = dss.props(card);
 ```
+
+`dss.class(...)` and callable `dss(...)` are equal projections over the same
+design-aware compiler. Use the class-string projection when the host wants a
+direct `className`; keep the declaration map and pass it to `dss.props(...)`
+when the result should remain composable. The choice is about the boundary,
+not a different styling capability.
 
 - **Wrong is a type error.** Every value is a token or a constrained option;
   colors are strict tokens, so an off-system color or a typo doesn't compile.

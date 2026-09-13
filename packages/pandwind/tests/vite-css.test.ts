@@ -465,19 +465,24 @@ test("inlineCssCalls rewrites literal css() calls to Tailwind classes", () => {
 		import { css } from "./design";
 		const a = css.class({ $text: { color: "$blue-500" } });
 		const b = css({ $frame: { fill: "$red-500" } });
+		const c = css({ $frame: { fill: "$red-500" } }, { $frame: { w: "20" } });
 	`;
 	const result = inline().inline(code, "app.ts", new Set(["css"]));
-	expect(result.inlined).toBe(2);
+	expect(result.inlined).toBe(3);
 	expect(result.code).toContain('const a = "text-blue-500";');
 	expect(result.code).toContain('const b = {"backgroundColor":"bg-red-500"};');
+	expect(result.code).toContain(
+		'const c = {"backgroundColor":"bg-red-500","width":"[width:20px]"};',
+	);
 	expect(result).toMatchInlineSnapshot(`
 		{
 		  "code": "
 				import { css } from "./design";
 				const a = "text-blue-500";
 				const b = {"backgroundColor":"bg-red-500"};
+				const c = {"backgroundColor":"bg-red-500","width":"[width:20px]"};
 			",
-		  "inlined": 2,
+		  "inlined": 3,
 		  "varKeys": [],
 		}
 	`);

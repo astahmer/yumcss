@@ -1,6 +1,7 @@
 # Runtime benchmarks — measured, not guessed
 
-Last measured: **2026-09-12** for the runtime size and package runtime-path records,
+Last measured: **2026-09-12** for the runtime size record, **2026-09-14** for the
+package runtime-throughput record,
 **2026-09-10** for the `createRuntimeCss()` comparison, **2026-09-02** for the historical optimization replay,
 **2026-09-01** for the historical runtime hot-path pass, **2026-08-23** for `cx()` (v3
 whole-input cache — see the section below), **2026-08-22** for the competitor
@@ -248,11 +249,16 @@ sheet by design.
 The package-level runtime throughput record lives in
 [`packages/pandwind/tests/snapshots/runtime-benchmark.json.snap`](./packages/pandwind/tests/snapshots/runtime-benchmark.json.snap)
 and is exercised by `packages/pandwind/tests/runtime-benchmark.test.ts`. It
-records named `css.flat`, `css.nested`, `css.merge`, `runtime.css`,
-`runtime.sheet`, `tw`, `cx.plain`, and `cx.nested` median/p10/p90 measurements.
-The workloads cover ordinary flat/nested/merged styles, the live runtime sheet,
-and nested class inputs without making pathological deep-input behavior part of
-the performance contract.
+records named `css.flat`, `css.nested`, `css.merge`, `css.compose`,
+`css.props`, `runtime.css`, `runtime.sheet`, `tw`, `cx.maps`, `cx.plain`, and
+`cx.nested` median/p10/p90 measurements. `css.compose` compiles three authored
+style objects into a declaration map; `css.props` merges the corresponding
+precompiled maps into host props; `cx.maps` merges those maps into a class
+string. They intentionally expose different output shapes, so the lanes are
+evidence for their respective use cases rather than a single universal speed
+ranking. The remaining workloads cover ordinary flat/nested/direct-class
+styles, the live runtime sheet, and nested class inputs without making
+pathological deep-input behavior part of the performance contract.
 Because throughput is not deterministic like bundle bytes, normal runs compare
 against the recorded median with a broad slowdown floor and retain ordinary
 assertions for output correctness. Refresh it deliberately after a meaningful

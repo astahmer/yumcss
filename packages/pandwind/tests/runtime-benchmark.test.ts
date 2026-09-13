@@ -20,6 +20,7 @@ const nestedCss = createCss({
 	conditions: { _hover: "&:hover", md: "@media (min-width: 768px)" },
 });
 const cx = createCx();
+const cssCx = createCx({ css });
 const runtimeSheet = createRuntimeSheet({ autoMount: false });
 const runtimeCss = createRuntimeCss(examplePreset, { sheet: runtimeSheet });
 
@@ -27,9 +28,12 @@ type BenchmarkName =
 	| "css.flat"
 	| "css.nested"
 	| "css.merge"
+	| "css.compose"
+	| "css.props"
 	| "runtime.css"
 	| "runtime.sheet"
 	| "tw"
+	| "cx.maps"
 	| "cx.plain"
 	| "cx.nested";
 interface BenchmarkRecord {
@@ -97,6 +101,10 @@ test("runtime throughput stays within the recorded evidence band", async () => {
 		gap: 8,
 		_hover: { color: "white" },
 	};
+	const mergeState = {
+		backgroundColor: "white",
+		_hover: { padding: 12 },
+	};
 	const runtimeStyles = {
 		color: "$blue-500",
 		padding: 12,
@@ -104,23 +112,36 @@ test("runtime throughput stays within the recorded evidence band", async () => {
 	};
 	const runtimeRule = { id: "benchmark-rule", css: ".benchmark-rule{color:red}", priority: 0 };
 	const nestedCxInputs = ["flex", "items-center"] as const;
+	const mergeMap = css(mergeStyles);
+	const overrideMap = css(mergeOverrides);
+	const stateMap = css(mergeState);
 	const results: Record<BenchmarkName, BenchmarkRecord> = {
 		"css.flat": measure(() => css.class(styles), 40_000),
 		"css.nested": measure(() => nestedCss.class(nestedStyles), 40_000),
 		"css.merge": measure(() => css.class(mergeStyles, mergeOverrides), 40_000),
+		"css.compose": measure(() => css(mergeStyles, mergeOverrides, mergeState), 40_000),
+		"css.props": measure(() => css.props(mergeMap, overrideMap, stateMap), 40_000),
 		"runtime.css": measure(() => runtimeCss.class(runtimeStyles), 30_000),
 		"runtime.sheet": measure(() => runtimeSheet.register([runtimeRule]), 1_000_000),
 		tw: measure(() => compileStyles(twStyles, {}), 80_000),
+		"cx.maps": measure(() => cssCx(mergeMap, overrideMap, stateMap), 40_000),
 		"cx.plain": measure(() => cx("flex items-center gap-2", "grid gap-4"), 1_000_000),
 		"cx.nested": measure(() => cx(nestedCxInputs, "grid"), 80_000),
 	};
 
 	const cssOutput = css.class(styles);
 	const nestedCssOutput = nestedCss.class(nestedStyles);
+	const composedOutput = css(mergeStyles, mergeOverrides, mergeState);
+	const composedProps = css.props(mergeMap, overrideMap, stateMap);
+	const cxMapsOutput = cssCx(mergeMap, overrideMap, stateMap);
 	const runtimeOutput = runtimeCss.class(runtimeStyles);
 	expect(cssOutput.split(" ")).toHaveLength(8);
 	expect(cssOutput).not.toContain("[object");
 	expect(nestedCssOutput).not.toContain("[object");
+	expect(composedOutput.color).toBe(overrideMap.color);
+	expect(composedOutput.backgroundColor).toBe(stateMap.backgroundColor);
+	expect(composedProps.className).toContain(overrideMap.color);
+	expect(cxMapsOutput).toContain(overrideMap.color);
 	expect(runtimeOutput).not.toContain("[object");
 	expect(runtimeSheet.css()).toContain("color");
 	expect(compileStyles(twStyles, {})).toContain("bg-blue-600");

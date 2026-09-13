@@ -83,17 +83,20 @@ ordering policy.
 ### `css()` and its boundaries
 
 ```ts
-const result = css({ color: "$blue-500" });
+const result = css({ color: "$gray-900", padding: 8 }, isActive ? { color: "$blue-500" } : {});
+const props = css.props(result);
 const className = css.class({ color: "$blue-500" });
 const dynamic = css.vars({ color: runtimeColor });
-const props = css.props(result);
 const raw = css.raw({ "--app-size": "12px" });
 ```
 
-Use `css()` when a consumer needs the compiled declaration map, `.class` when
-it needs a class string, `.vars()` when values are dynamic, and `.props()` to
-adapt a compiled result to a host element. `raw()` is an explicit escape hatch
-and is reported as authored CSS by analysis tools.
+`css()` and `css.class()` are equal projections over the same compiler:
+`css()` keeps a mergeable declaration map, while `.class()` returns the direct
+class string a host may need. Use `.vars()` when values are dynamic and
+`.props()` to adapt compiled maps to a host element or an `xcss` component
+prop. Use `cx()` only when the composition boundary may receive raw classes,
+compiled maps, variable carriers, or mixed styling-system output. `raw()` is
+an explicit escape hatch and is reported as authored CSS by analysis tools.
 
 `$input` creates a runtime input function. `group()` creates named style
 groups. These paths are intentionally not treated as static literals unless a

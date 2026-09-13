@@ -58,7 +58,12 @@ const ALL_RUNTIME_METHODS = [
  * import { examplePreset } from "@pandwind/example-preset";
  *
  * const css = createCss(examplePreset);
- * css.class({ backgroundColor: "$blue-500", padding: 4 });
+ * const cardStyles = css(
+ *   { backgroundColor: "$blue-500" },
+ *   { padding: 4 },
+ * );
+ * const cardProps = css.props(cardStyles);
+ * const cardClass = css.class({ backgroundColor: "$blue-500", padding: 4 });
  * ```
  *
  * @param preset - Preset metadata, or CSS options in the open-ended overload.
@@ -131,24 +136,29 @@ type PropsInput =
  */
 export interface CssFn<TStyles extends StyleObject = StyleObject> {
 	/**
-	 * Compile style objects to an atomic declaration map.
-	 * Use `.class` when the host only needs a class string.
+	 * Compose authored style objects into an atomic declaration map.
+	 * Later objects win through ordinary object-key precedence. Use `.class`
+	 * when the host needs one class string, and use `.props` when the compiled
+	 * map is ready to cross a host boundary.
 	 *
 	 * @example
 	 * ```ts
-	 * const declarations = css({ display: "flex", padding: 8 });
+	 * const button = css(
+	 *   { display: "flex", padding: 8 },
+	 *   isPrimary ? { backgroundColor: "royalblue" } : {},
+	 * );
+	 * const props = css.props(button);
 	 * ```
 	 */
 	(...styles: Array<TStyles>): CompiledStyles;
 	/**
-	 * Compile style objects into one class string. Later values win.
+	 * Compile style objects into one class string. Use this projection when the
+	 * host already wants a class string; the callable `css(...)` form is the
+	 * equivalent compiler projection when a mergeable declaration map is useful.
 	 *
 	 * @example
 	 * ```ts
-	 * const className = css.class(
-	 *   { color: "slategray", padding: 8 },
-	 *   { padding: 12 },
-	 * );
+	 * const className = css.class({ color: "slategray", padding: 12 });
 	 * ```
 	 */
 	class: (...styles: Array<TStyles>) => string;
@@ -177,11 +187,14 @@ export interface CssFn<TStyles extends StyleObject = StyleObject> {
 	raw: (...styles: Array<TStyles>) => StyleObject;
 	/**
 	 * Normalize styles and class strings into props for a host element.
-	 * Static inputs produce `className`; variable carriers also provide `style`.
+	 * Pass compiled maps from `css(...)` here when a component accepts a
+	 * StyleX-like composed-style prop. Variable carriers also provide `style`.
 	 *
 	 * @example
 	 * ```ts
-	 * const props = css.props(css.class({ display: "flex" }), "rounded");
+	 * const base = css({ display: "flex", padding: 8 });
+	 * const override = css({ padding: 12 });
+	 * const props = css.props(base, override);
 	 * ```
 	 */
 	props: (...styles: Array<PropsInput>) => PropsReturn;

@@ -31,12 +31,18 @@ type Maybe<T> = T | undefined | null | false;
  *
  * const dss = createDesignCss(examplePreset);
  *
- * const className = dss.class({
+ * const cardClass = dss.class({
  *   $frame: { corners: "lg", fill: "$blue-500", pad: [8, 16] },
- *   $layout: { flow: "stackX", align: "center", gap: 8 },
- *   $text: { color: "$gray-50", weight: "semibold" },
- *   _hover: { $frame: { fill: "$blue-600" } },
  * });
+ * const card = dss(
+ *   { $frame: { corners: "lg", fill: "$blue-500", pad: [8, 16] } },
+ *   {
+ *     $layout: { flow: "stackX", align: "center", gap: 8 },
+ *     $text: { color: "$gray-50", weight: "semibold" },
+ *     _hover: { $frame: { fill: "$blue-600" } },
+ *   },
+ * );
+ * const props = dss.props(card);
  * ```
  *
  * @typeParam TPreset - Design-compatible preset carrying tokens and conditions.
