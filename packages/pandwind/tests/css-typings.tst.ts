@@ -48,6 +48,15 @@ test("createCss rejects properties and token values outside the preset", () => {
 	).type.toBe<Compiled>();
 });
 
+test("createCss rejects invalid finite CSS keywords", () => {
+	expect(
+		css({
+			// @ts-expect-error not a valid display value
+			display: "xxx",
+		}),
+	).type.toBe<Compiled>();
+});
+
 test("the untyped convenience form remains available", () => {
 	const loose = createCss();
 	expect(loose({ arbitraryProperty: "value" })).type.toBe<Compiled>();

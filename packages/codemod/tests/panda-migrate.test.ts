@@ -4,8 +4,9 @@
  * + closing tags), tier-1 recipe module emission, and import rewrites.
  */
 import { mkdtempSync, readFileSync, rmSync, writeFileSync, mkdirSync } from "node:fs";
+import { execFileSync } from "node:child_process";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { join, resolve } from "node:path";
 import { afterAll, describe, expect, it } from "vitest";
 import { loadMetaFromSources } from "../src/meta.ts";
 import { examplePreset } from "@pandwind/example-preset";
@@ -17,8 +18,13 @@ import {
 } from "../src/swap/adapters/panda/panda-migrate.ts";
 import {
 	foldRecipeCall,
+	renderCssBootstrap,
+	renderCustomPatternModule,
+	renderInternalHelpers,
 	renderJsxIndex,
+	renderPandaPreset,
 	renderPatternModule,
+	renderRecipeModule,
 } from "../src/swap/adapters/panda/modules.ts";
 import { expandBuiltinPattern } from "../src/swap/adapters/panda/patterns.ts";
 import { detectAlias } from "../src/swap/adapters/panda/project.ts";
@@ -26,6 +32,7 @@ import { pandaStyleToIr, type PandaRecipeIR } from "../src/swap/adapters/panda/p
 import type { PandaProjectFileSystem } from "../src/swap/adapters/panda/panda-file-system.ts";
 import { PandaJsxStylePropsModeTag } from "../src/swap/adapters/panda/style-props.ts";
 import { PandaUtilityCatalog } from "../src/swap/adapters/panda/utilities.ts";
+import { emptyPandaTheme, type PandaTheme } from "../src/swap/adapters/panda/theme.ts";
 import { CodemodAdapterId, parseMigrateArgs, TokenReferenceFormat } from "../src/swap/index.ts";
 import type { PandwindMeta } from "../src/meta.ts";
 
@@ -178,6 +185,170 @@ describe("factory elements", () => {
 });
 
 describe("supporting migration primitives", () => {
+	it("emits an app-owned, static-first Pandwind surface", () => {
+		const theme: PandaTheme = {
+			...emptyPandaTheme,
+			tokens: {
+				colors: {
+					brand: "#111111",
+					accent: { _hover: "#222222", DEFAULT: "#333333" },
+					"semantic.label": { base: "#444444", _dark: "#444444" },
+					"component.card.border": "#111111",
+					"component.card.shadow": "0 2px 0 #000000",
+					"component.card.surface": { base: "#111111", _dark: "#111111" },
+					"component.card.bg": { base: "#111111", _dark: "colors.accent" },
+				},
+				spacing: { 4: "1rem" },
+				borderWidths: { thin: "1px" },
+			},
+			conditions: { _hover: "&:hover" },
+		};
+		const preset = renderPandaPreset(theme);
+		const bootstrap = renderCssBootstrap();
+		const internal = renderInternalHelpers(theme);
+		const recipe = renderRecipeModule(
+			"badge",
+			{
+				kind: "cva",
+				slots: null,
+				className: null,
+				base: { "": pandaStyleToIr({ padding: "4" }) },
+				variants: { tone: { accent: { "": pandaStyleToIr({ color: "brand" }) } } },
+				compoundVariants: [],
+				defaultVariants: {},
+				residuals: [],
+			},
+			meta,
+			{ cssImport: 'import { css, cx } from "../css";' },
+		);
+		const customPattern = renderCustomPatternModule(
+			"customPattern",
+			"(props, helpers) => ({ gap: props.gap, color: helpers.isCssVar(props.color) ? props.color : undefined })",
+			{ cssImport: "../css" },
+		);
+
+		expect(preset).toContain("defineTokens");
+		expect(preset).toContain("defineSemanticTokens");
+		expect(preset).toContain("const componentTokens = defineSemanticTokens");
+		expect(preset).toContain("defineProperties");
+		expect(preset).toContain('"component.card.border"');
+		expect(preset).toContain('"base": "colors.brand"');
+		expect(preset).toContain('"_dark": "colors.accent"');
+		expect(preset).toContain('"raw.semantic.label.base": "#444444"');
+		expect(preset).toContain(
+			'"semantic.label": {\n\t\t\t"base": "colors.raw.semantic.label.base"\n\t\t}',
+		);
+		expect(preset).toContain('"raw.component.card.shadow": "0 2px 0 #000000"');
+		expect(preset).toContain(
+			'"component.card.shadow": {\n\t\t\t"base": "colors.raw.component.card.shadow"\n\t\t}',
+		);
+		expect(preset).toMatch(/"component\.card\.surface": \{\n\t+"base": "colors\.brand"\n\t+\}/u);
+		const appSemanticStart = preset.indexOf("const appSemanticTokens");
+		const componentStart = preset.indexOf("const componentTokens");
+		expect(preset.slice(appSemanticStart, componentStart)).not.toContain("component.");
+		expect(preset).toContain('"borderWidth"');
+		expect(preset).not.toContain("pandwindPreset.tokens");
+		expect(preset).not.toContain("pandwindPreset.properties");
+		expect(preset).not.toContain(" as any");
+		expect(bootstrap).toContain("createCss(preset)");
+		expect(bootstrap).toContain("export const css");
+		expect(bootstrap).not.toContain("createDesignCss");
+		expect(bootstrap).not.toContain("dss");
+		expect(internal).not.toContain("pandwindPreset");
+		expect(recipe).toContain("Object.assign");
+		expect(recipe).not.toContain("as Record");
+		expect(recipe).not.toContain(": any");
+		expect(customPattern).toContain("isRecord");
+		expect(customPattern).not.toContain(" as Record");
+	});
+
+	it("typechecks the emitted preset and reusable modules", () => {
+		const theme: PandaTheme = {
+			...emptyPandaTheme,
+			tokens: { colors: { brand: "#111111" }, spacing: { 4: "1rem" } },
+		};
+		const directory = mkdtempSync(join(tmpdir(), "pandwind-emitted-types-"));
+		dirs.push(directory);
+		mkdirSync(join(directory, "patterns"));
+		mkdirSync(join(directory, "jsx"));
+		writeFileSync(join(directory, "preset.ts"), renderPandaPreset(theme));
+		writeFileSync(join(directory, "css.ts"), renderCssBootstrap());
+		writeFileSync(join(directory, "internal.ts"), renderInternalHelpers(theme));
+		writeFileSync(
+			join(directory, "patterns", "custom.ts"),
+			renderCustomPatternModule(
+				"customPattern",
+				"(props, helpers) => ({ gap: props.gap, color: helpers.isCssVar(props.color) ? props.color : undefined })",
+				{ cssImport: "../css" },
+			),
+		);
+		writeFileSync(
+			join(directory, "jsx", "index.tsx"),
+			renderJsxIndex(new Set(["Box"]), {
+				cssImport: "../css",
+				aliasSpecifierFor: (subpath) => `./${subpath}`,
+			}),
+		);
+		writeFileSync(
+			join(directory, "recipe.ts"),
+			renderRecipeModule(
+				"badge",
+				{
+					kind: "cva",
+					slots: null,
+					className: null,
+					base: { "": pandaStyleToIr({ color: "brand" }) },
+					variants: {},
+					compoundVariants: [],
+					defaultVariants: {},
+					residuals: [],
+				},
+				meta,
+				{ cssImport: 'import { css, cx } from "./css";' },
+			),
+		);
+		const workspaceRoot = resolve(import.meta.dirname, "../../..");
+		writeFileSync(
+			join(directory, "tsconfig.json"),
+			JSON.stringify(
+				{
+					compilerOptions: {
+						allowImportingTsExtensions: true,
+						module: "ESNext",
+						moduleResolution: "Bundler",
+						noEmit: true,
+						jsx: "react-jsx",
+						skipLibCheck: true,
+						strict: true,
+						paths: {
+							"pandwind/*": [resolve(workspaceRoot, "packages/pandwind/src/*")],
+							react: [
+								resolve(workspaceRoot, "packages/pandwind/node_modules/@types/react/index.d.ts"),
+							],
+							"react/*": [resolve(workspaceRoot, "packages/pandwind/node_modules/@types/react/*")],
+						},
+					},
+					files: [
+						"preset.ts",
+						"css.ts",
+						"internal.ts",
+						"recipe.ts",
+						"patterns/custom.ts",
+						"jsx/index.tsx",
+					],
+				},
+				undefined,
+				2,
+			),
+		);
+		expect(() =>
+			execFileSync("pnpm", ["exec", "tsc", "-p", join(directory, "tsconfig.json")], {
+				cwd: workspaceRoot,
+				stdio: "inherit",
+			}),
+		).not.toThrow();
+	});
+
 	it("expands built-in patterns and emits reusable modules", () => {
 		const expanded = expandBuiltinPattern("hstack", { gap: "4", px: "2" });
 		expect(expanded.style).toMatchObject({
@@ -282,7 +453,7 @@ describe("supporting migration primitives", () => {
 			cssImport: "../css",
 			aliasSpecifierFor: (subpath) => `@/pandwind/${subpath}`,
 		});
-		expect(jsx).toContain('import { dss, cx } from "../css";');
+		expect(jsx).toContain('import { cssRuntime, cx } from "../css";');
 		expect(jsx).toContain('import("react").ElementType');
 		expect(jsx).toContain("splitStyleProps(rest)");
 		expect(jsx).toContain('className, children, as = "div", ...rest');
@@ -301,7 +472,7 @@ describe("supporting migration primitives", () => {
 			residuals: [],
 		};
 		const folded = foldRecipeCall(recipe, { tone: "accent" }, meta);
-		expect(folded?.text).toContain("dss.class");
+		expect(folded?.text).toContain("css.class");
 		expect(folded?.text).toContain("padding");
 	});
 });
@@ -372,12 +543,12 @@ describe("runPandaMigration", () => {
 		expect(app).toContain("@/pandwind/css");
 		expect(app).toContain("@/pandwind/recipes");
 		expect(app).not.toContain("styled-system");
-		expect(app).toContain("<div className={dss.class(");
+		expect(app).toContain("<div className={css.class(");
 		expect(app).toContain("</div>");
 		// The fixture only declares the custom `fg` token, so the unknown Panda
 		// default path remains an authored dotted value until target metadata
 		// proves a matching Pandwind token.
-		expect(app).toContain('dss.class({ backgroundColor: "gray.100"');
+		expect(app).toContain('css.class({ backgroundColor: "gray.100"');
 
 		// recipe module emitted with identical public name
 		const barrel = readFileSync(join(dir, "src", "pandwind", "recipes", "index.ts"), "utf8");
@@ -387,16 +558,16 @@ describe("runPandaMigration", () => {
 			"utf8",
 		);
 		expect(badgeModule).toContain('"tone"');
-		expect(badgeModule).toContain("export function badge");
+		expect(badgeModule).toContain("export const badge = Object.assign");
 
-		// bootstrap exists and binds dss/cx
+		// bootstrap exists and binds css/cx
 		const bootstrap = readFileSync(join(dir, "src", "pandwind", "css.ts"), "utf8");
-		expect(bootstrap).toContain("createDesignCss");
+		expect(bootstrap).toContain("createCss(preset)");
+		expect(bootstrap).not.toContain("createDesignCss");
 		expect(bootstrap).toContain("createCx");
 		const internal = readFileSync(join(dir, "src", "pandwind", "internal.ts"), "utf8");
-		expect(internal).toContain(
-			'const tokenReferenceFormat = "preserve" as\n\t| "preserve"\n\t| "dot-delimited"\n\t| "stitches";',
-		);
+		expect(internal).not.toContain("pandwindPreset");
+		expect(internal).toContain('"borderWidth": "borderWidths"');
 	});
 
 	it("does not rewrite Panda examples embedded in template strings", async () => {
@@ -425,7 +596,7 @@ describe("runPandaMigration", () => {
 		const output = readFileSync(join(dir, "src", "examples.tsx"), "utf8");
 		expect(output).toContain('import { css } from "./styled-system/css";');
 		expect(output).toContain('const className = css({ color: "red" });');
-		expect(output).toContain('export const App = () => dss.class({ color: "blue" });');
+		expect(output).toContain('export const App = () => css.class({ color: "blue" });');
 	});
 
 	it("removes a local recipe call including its closing parenthesis", async () => {
@@ -449,7 +620,7 @@ describe("runPandaMigration", () => {
 		});
 		const output = readFileSync(join(dir, "src", "local.tsx"), "utf8");
 		expect(output).not.toMatch(/^\s*\)\s*$/m);
-		expect(output).toContain("dss.class");
+		expect(output).toContain("css.class");
 	});
 
 	it("inserts generated imports after a client directive", async () => {

@@ -19,7 +19,7 @@ describe("Pandwind project bootstrap", () => {
 		expect(support.files.map((file) => file.path)).not.toContain("pandwind/tw.ts");
 		expect(support.bindings.twModule).toBeUndefined();
 		expect(support.bindings.cssModule).toBe("pandwind/css.ts");
-		expect(support.files.map((file) => file.path)).toContain("pandwind/dss.ts");
+		expect(support.files.map((file) => file.path)).not.toContain("pandwind/dss.ts");
 		expect(support.files.find((file) => file.path === "pandwind/css.ts")?.content).toContain(
 			'import "pandwind:css";',
 		);
@@ -29,13 +29,10 @@ describe("Pandwind project bootstrap", () => {
 		expect(support.files.find((file) => file.path === "pandwind/vite-env.d.ts")?.content).toContain(
 			'declare module "pandwind:css"',
 		);
-		expect(support.bindings.dssModule).toBe("pandwind/dss.ts");
-		expect(support.files.find((file) => file.path === "pandwind/dss.ts")?.content).toContain(
-			"createDesignCss(pandwindPreset)",
-		);
+		expect(support.bindings.dssModule).toBeUndefined();
 	});
 
-	test("keeps generated css bindings open to CSS properties", async () => {
+	test("emits a typed app-owned token preset", async () => {
 		const support = await createPandwindProjectSupport({
 			root: "/project",
 			sourceAdapter: CodemodAdapterId.Panda,
@@ -46,7 +43,16 @@ describe("Pandwind project bootstrap", () => {
 		});
 
 		const preset = support.files.find((file) => file.path === "pandwind/preset.ts")?.content;
-		expect(preset).toContain('config: {} as import("pandwind/preset").AnyCssConfig');
+		expect(preset).toContain(
+			'defineConditions, definePreset, defineProperties, defineTokens, type StandardProperties } from "pandwind/preset"',
+		);
+		expect(preset).toContain("const conditions = defineConditions({");
+		expect(preset).toContain("const appTokens = defineTokens({");
+		expect(preset).toContain("const cssConfig: StandardProperties = {};");
+		expect(preset).toContain("config: cssConfig");
+		expect(preset).not.toContain("AnyCssConfig");
+		expect(preset).not.toContain("pandwindPreset.tokens");
+		expect(preset).toContain("const properties = defineProperties({");
 		expect(preset).toContain('"$all": true');
 	});
 
@@ -92,10 +98,32 @@ describe("Pandwind project bootstrap", () => {
 		const preset = support.files.find((file) => file.path === "pandwind/preset.ts")?.content;
 		expect(preset).toContain('"color": {');
 		expect(preset).toContain('"$tokens": "colors"');
+		expect(preset).toContain('"$strictness": "inherits"');
 		expect(preset).toContain('"padding": {');
 		expect(preset).toContain('"$tokens": "spacing"');
 		expect(preset).toContain('"$brand": "#123456"');
 		expect(preset).toContain('"$card": "1rem"');
+	});
+
+	test("keeps component catalog values in a semantic layer", async () => {
+		const support = await createPandwindProjectSupport({
+			root: "/project",
+			sourceAdapter: CodemodAdapterId.Tailwind,
+			targetAdapter: CodemodAdapterId.Pandwind,
+			outputDirectory: "pandwind",
+			readFile: (file) =>
+				file === "/project/styles.css"
+					? "@theme { --color-brand: #123456; --color-component-card-border: #654321; }"
+					: undefined,
+			listFiles: () => ["/project/styles.css"],
+		});
+
+		const preset = support.files.find((file) => file.path === "pandwind/preset.ts")?.content;
+		expect(preset).toContain("const componentTokens = defineSemanticTokens");
+		expect(preset).toContain('"$raw-component-card-border": "#654321"');
+		expect(preset).toContain(
+			'"$component-card-border": {\n\t\t\t"base": "colors.$raw-component-card-border"\n\t\t}',
+		);
 	});
 
 	test("carries generated target token spellings into the migration metadata", async () => {

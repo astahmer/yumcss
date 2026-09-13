@@ -170,13 +170,24 @@ root when the command is run outside it. -h and --help work at the root, after
 migrate or tokens, and after a command's arguments.
 
 When the target is Pandwind, the command bootstraps shared project support in
-pandwind/ by default: definePreset, css.ts, runtime.ts, dss.ts, cx.ts, the
-typed tw.ts, its optional bridge, types.d.ts, the versioned interop artifact,
-and a derived theme file when the source configuration proves one. Converted
-files import those shared modules; they do not create a new createCss() instance
-at every call site. Use --out <dir> to change that folder. The bridge is not a
-default runtime import; keep it only when the target project needs the
-Tailwind-class strategy or the build-time bridge metadata.
+pandwind/ by default: an app-owned definePreset, css.ts, runtime.ts, cx.ts,
+the typed tw.ts, its optional bridge, types.d.ts, the versioned interop
+artifact, and a derived theme file when the source configuration proves one.
+Converted files import those shared modules; they do not create a new
+createCss() instance at every call site. The generated preset owns the
+migrated tokens, semantic tokens, conditions, and property associations; it
+does not import or spread Pandwind's default token/property preset. Use --out
+<dir> to change that folder. The optional bridge is not a default runtime
+import; keep it only when the target project needs the Tailwind-class strategy
+or build-time bridge metadata. A `dss.ts` binding is generated only for the
+explicit legacy `dss` target.
+
+The generated token contract is layered deliberately: `appTokens` owns raw
+values, `appSemanticTokens` owns semantic roles, and `componentTokens` owns
+component roles when the source exposes component-prefixed tokens. Repeated
+static values are promoted to one raw alias and semantic/component entries
+reference that raw or semantic path; the generated source does not manufacture
+`var(--...)` token values or keep component literals in the semantic layer.
 
 The source adapter loads the ecosystem's official project configuration when
 one is available. Verified token names, conditions, utilities, and resolved

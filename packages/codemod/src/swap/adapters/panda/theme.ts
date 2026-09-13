@@ -67,10 +67,6 @@ export interface PandaTheme {
 	readonly outdir?: string;
 }
 
-interface ValueBox {
-	value?: unknown;
-}
-
 const isPlainObject = (v: unknown): v is Record<string, unknown> =>
 	typeof v === "object" && v !== null && !Array.isArray(v);
 
@@ -87,11 +83,10 @@ function flattenTokenSection(
 		for (let index = entries.length - 1; index >= 0; index--) {
 			const [key, child] = entries[index]!;
 			if (!isPlainObject(child)) continue;
-			const box = child as ValueBox;
 			const nextPrefix = current.prefix.concat(key === "DEFAULT" ? [] : [key]);
-			if ("value" in box) {
+			if ("value" in child) {
 				const path = nextPrefix.join(".");
-				if (path !== "") (out[group] ??= {})[path] = box.value;
+				if (path !== "") (out[group] ??= {})[path] = child.value;
 				continue;
 			}
 			stack.push({ node: child, prefix: nextPrefix });
@@ -106,80 +101,49 @@ function collectTokenValues(section: unknown, out: Record<string, Record<string,
 	}
 }
 
-function resolveTokenReferences(tokens: Record<string, Record<string, unknown>>): void {
-	const resolving = new Set<string>();
-	const enum PandaThemeTaskKindTag {
-		Value = "value",
-		Leave = "leave",
-	}
-	type Task =
-		| {
-				readonly kind: PandaThemeTaskKindTag.Value;
-				readonly value: unknown;
-				readonly assign: (value: unknown) => void;
-		  }
-		| { readonly kind: PandaThemeTaskKindTag.Leave; readonly id: string };
-	const resolve = (value: unknown, assign: (result: unknown) => void): void => {
-		const stack: Task[] = [{ kind: PandaThemeTaskKindTag.Value, value, assign }];
-		while (stack.length > 0) {
-			const task = stack.pop()!;
-			if (task.kind === PandaThemeTaskKindTag.Leave) {
-				resolving.delete(task.id);
-				continue;
-			}
-			if (typeof task.value === "string") {
-				const ref = /^\{([^}]+)\}$/.exec(task.value)?.[1];
-				const dot = ref?.indexOf(".") ?? -1;
-				if (ref === undefined || dot === -1) {
-					task.assign(task.value);
-					continue;
-				}
-				const group = ref.slice(0, dot);
-				const key = ref.slice(dot + 1);
-				const id = `${group}.${key}`;
-				const candidate = tokens[group]?.[key];
-				if (candidate === undefined || resolving.has(id)) {
-					task.assign(task.value);
-					continue;
-				}
-				resolving.add(id);
-				stack.push({ kind: PandaThemeTaskKindTag.Leave, id });
-				stack.push({ kind: PandaThemeTaskKindTag.Value, value: candidate, assign: task.assign });
-				continue;
-			}
-			if (Array.isArray(task.value)) {
-				const output: unknown[] = [];
-				task.assign(output);
-				for (let index = task.value.length - 1; index >= 0; index--) {
-					const child = task.value[index]!;
-					stack.push({
-						kind: PandaThemeTaskKindTag.Value,
-						value: child,
-						assign: (result) => (output[index] = result),
-					});
-				}
-				continue;
-			}
-			if (isPlainObject(task.value)) {
-				const output: Record<string, unknown> = {};
-				task.assign(output);
-				for (const [key, child] of Object.entries(task.value).toReversed()) {
-					stack.push({
-						kind: PandaThemeTaskKindTag.Value,
-						value: child,
-						assign: (result) => (output[key] = result),
-					});
-				}
-				continue;
-			}
-			task.assign(task.value);
-		}
+const normalizeTokenReferences = (tokens: Record<string, Record<string, unknown>>): void => {
+	type Task = {
+		readonly value: unknown;
+		readonly assign: (value: unknown) => void;
 	};
 	for (const values of Object.values(tokens)) {
-		for (const [key, value] of Object.entries(values))
-			resolve(value, (result) => (values[key] = result));
+		for (const [key, value] of Object.entries(values)) {
+			const stack: Task[] = [{ value, assign: (result) => (values[key] = result) }];
+			while (stack.length > 0) {
+				const task = stack.pop()!;
+				if (typeof task.value === "string") {
+					const reference = /^\{([^}]+)\}$/.exec(task.value)?.[1];
+					task.assign(reference ?? task.value);
+					continue;
+				}
+				if (Array.isArray(task.value)) {
+					const output: unknown[] = [];
+					task.assign(output);
+					for (let index = task.value.length - 1; index >= 0; index--) {
+						const child = task.value[index]!;
+						stack.push({
+							value: child,
+							assign: (result) => (output[index] = result),
+						});
+					}
+					continue;
+				}
+				if (isPlainObject(task.value)) {
+					const output: Record<string, unknown> = {};
+					task.assign(output);
+					for (const [childKey, child] of Object.entries(task.value).toReversed()) {
+						stack.push({
+							value: child,
+							assign: (result) => (output[childKey] = result),
+						});
+					}
+					continue;
+				}
+				task.assign(task.value);
+			}
+		}
 	}
-}
+};
 
 /** Traverse a Panda token tree until `{ value: ... }` leaves; collect paths. */
 const dashSegment = (segment: string): string =>
@@ -202,8 +166,7 @@ function collectTokenPaths(
 		for (let index = entries.length - 1; index >= 0; index--) {
 			const [key, child] = entries[index]!;
 			if (!isPlainObject(child)) continue;
-			const box = child as ValueBox;
-			if ("value" in box) {
+			if ("value" in child) {
 				const segments = current.prefix.concat(key === "DEFAULT" ? [] : [key]);
 				if (segments.length === 0) continue;
 				const path = segments.join(".");
@@ -237,10 +200,9 @@ function collectTextStyles(
 		for (let index = entries.length - 1; index >= 0; index--) {
 			const [key, child] = entries[index]!;
 			if (!isPlainObject(child)) continue;
-			const box = child as ValueBox;
 			const nextPrefix = current.prefix.concat(key);
-			if ("value" in box && isPlainObject(box.value)) {
-				out.set(nextPrefix.join("."), box.value);
+			if ("value" in child && isPlainObject(child.value)) {
+				out.set(nextPrefix.join("."), child.value);
 				continue;
 			}
 			stack.push({ node: child, prefix: nextPrefix });
@@ -367,7 +329,7 @@ function pandaThemeFromConfig(unwrapped: PandaConfigShape | undefined): PandaThe
 	const tokens: Record<string, Record<string, unknown>> = {};
 	collectTokenValues(extend.tokens, tokens);
 	collectTokenValues(extend.semanticTokens, tokens);
-	resolveTokenReferences(tokens);
+	normalizeTokenReferences(tokens);
 	const conditions: Record<string, string | string[]> = {};
 	const conditionConfig = unwrapped?.conditions?.extend ?? unwrapped?.conditions;
 	if (isPlainObject(conditionConfig)) {
@@ -535,7 +497,7 @@ function loadPandaThemeFromSource(
 			}
 		}
 	}
-	resolveTokenReferences(tokens);
+	normalizeTokenReferences(tokens);
 	return {
 		tokens,
 		conditions,

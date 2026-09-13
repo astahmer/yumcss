@@ -116,6 +116,8 @@ const TOKEN_PROPERTIES = {
 		"marginBlock",
 		"marginBlockStart",
 		"marginBlockEnd",
+	],
+	sizes: [
 		"top",
 		"right",
 		"bottom",
@@ -133,6 +135,13 @@ const TOKEN_PROPERTIES = {
 		"height",
 		"minHeight",
 		"maxHeight",
+	],
+	borderWidths: [
+		"borderWidth",
+		"borderTopWidth",
+		"borderRightWidth",
+		"borderBottomWidth",
+		"borderLeftWidth",
 	],
 	radii: [
 		"borderRadius",
@@ -153,10 +162,13 @@ const TOKEN_PROPERTIES = {
 function presetPropertiesSource(
 	groups: Readonly<Record<string, Readonly<Record<string, string>>>>,
 ): string {
-	const properties: Record<string, { $tokens: string } | true> = { $all: true };
+	const properties: Record<string, { $tokens: string; $strictness: "inherits" } | true> = {
+		$all: true,
+	};
 	for (const [group, names] of Object.entries(TOKEN_PROPERTIES)) {
 		if (groups[group] === undefined) continue;
-		for (const property of names) properties[property] = { $tokens: group };
+		for (const property of names)
+			properties[property] = { $tokens: group, $strictness: "inherits" };
 	}
 	return JSON.stringify(properties, null, "\t");
 }
@@ -176,6 +188,95 @@ function pandwindTokenGroups(
 		]),
 	);
 }
+
+const isComponentTokenPath = (path: string): boolean =>
+	path.startsWith("component.") || path.startsWith("component-") || path.startsWith("$component-");
+
+const selectTokenPaths = (
+	groups: Readonly<Record<string, Readonly<Record<string, string>>>>,
+	component: boolean,
+): Record<string, Record<string, string>> => {
+	const result: Record<string, Record<string, string>> = {};
+	for (const [group, values] of Object.entries(groups)) {
+		for (const [path, value] of Object.entries(values)) {
+			if (isComponentTokenPath(path) !== component) continue;
+			(result[group] ??= {})[path] = value;
+		}
+	}
+	return result;
+};
+
+const generatedTokenKey = (path: string): string =>
+	`$${path.replaceAll("$", "").replaceAll(".", "-")}`;
+
+const tokenKeyForPath = (
+	group: string,
+	path: string,
+	rawTokens: Readonly<Record<string, Readonly<Record<string, string>>>>,
+): string | undefined => {
+	if (rawTokens[group]?.[path] !== undefined) return path;
+	const generated = generatedTokenKey(path);
+	return rawTokens[group]?.[generated] === undefined ? undefined : generated;
+};
+
+const projectTokenReference = (
+	value: string,
+	group: string,
+	rawTokens: Readonly<Record<string, Readonly<Record<string, string>>>>,
+): string => {
+	const candidate = /^\{([^}]+)\}$/u.exec(value)?.[1] ?? value;
+	const separator = candidate.indexOf(".");
+	if (separator > 0) {
+		const referenceGroup = candidate.slice(0, separator);
+		const referencePath = candidate.slice(separator + 1);
+		const referenceKey = tokenKeyForPath(referenceGroup, referencePath, rawTokens);
+		if (referenceKey !== undefined) return `${referenceGroup}.${referenceKey}`;
+	}
+	const tokenKey = tokenKeyForPath(group, candidate, rawTokens);
+	if (tokenKey !== undefined) return `${group}.${tokenKey}`;
+	const rawMatch = Object.entries(rawTokens[group] ?? {}).find(
+		([, rawValue]) => rawValue === candidate || rawValue === value,
+	);
+	return rawMatch === undefined ? value : `${group}.${rawMatch[0]}`;
+};
+
+const isUnresolvedTokenReference = (value: string): boolean =>
+	/^\{[^}]+\}$/u.test(value) ||
+	value.startsWith("$") ||
+	/^[a-z][a-z0-9-]*\.[a-z0-9$_.-]+$/u.test(value);
+
+const withComponentRawAliases = (
+	componentTokens: Readonly<Record<string, Readonly<Record<string, string>>>>,
+	rawTokens: Readonly<Record<string, Readonly<Record<string, string>>>>,
+): Record<string, Record<string, string>> => {
+	const result: Record<string, Record<string, string>> = Object.fromEntries(
+		Object.entries(rawTokens).map(([group, values]) => [group, { ...values }]),
+	);
+	for (const [group, values] of Object.entries(componentTokens)) {
+		for (const [path, value] of Object.entries(values)) {
+			const reference = projectTokenReference(value, group, result);
+			if (reference !== value || isUnresolvedTokenReference(value)) continue;
+			(result[group] ??= {})[generatedTokenKey(`raw.${path}`)] = value;
+		}
+	}
+	return result;
+};
+
+const componentSemanticTokenGroups = (
+	componentTokens: Readonly<Record<string, Readonly<Record<string, string>>>>,
+	rawTokens: Readonly<Record<string, Readonly<Record<string, string>>>>,
+): Record<string, Record<string, Record<string, string>>> =>
+	Object.fromEntries(
+		Object.entries(componentTokens).map(([group, values]) => [
+			group,
+			Object.fromEntries(
+				Object.entries(values).map(([path, value]) => [
+					generatedTokenKey(path),
+					{ base: projectTokenReference(value, group, rawTokens) },
+				]),
+			),
+		]),
+	);
 
 function customVariantConditions(css: string): Record<string, string> {
 	const conditions: Record<string, string> = {};
@@ -579,24 +680,57 @@ function presetSource(
 	typescript = true,
 ): string {
 	const sourceTokens = config.tokenCatalog?.groups ?? {};
-	const tokens = pandwindTokenGroups(sourceTokens);
-	const configType = typescript ? ' as import("pandwind/preset").AnyCssConfig' : "";
+	const componentSourceTokens = pandwindTokenGroups(selectTokenPaths(sourceTokens, true));
+	const appTokens = withComponentRawAliases(
+		componentSourceTokens,
+		pandwindTokenGroups(selectTokenPaths(sourceTokens, false)),
+	);
+	const componentTokens = componentSemanticTokenGroups(componentSourceTokens, appTokens);
+	const componentGroups = Object.keys(componentTokens);
 	const presetConditions: AdapterConditionCatalog = {
 		base: "",
 		...config.conditionCatalog,
 		...conditions,
 	};
-	return `import { definePreset } from "pandwind/preset";
+	const semanticTokenImport = componentGroups.length === 0 ? "" : ", defineSemanticTokens";
+	const semanticTokenTypeImport = componentGroups.length === 0 ? "" : ", type SemanticTokenLayer";
+	const typeImports = typescript ? ", type StandardProperties" : "";
+	const configDeclaration = typescript ? "\nconst cssConfig: StandardProperties = {};\n" : "";
+	const configReference = typescript ? "cssConfig" : "{}";
+	const componentDeclaration =
+		componentGroups.length === 0
+			? ""
+			: `const componentTokenDefinitions = ${JSON.stringify(componentTokens, null, "\t")};
+const componentTokens = defineSemanticTokens(
+	conditions,
+	componentTokenDefinitions satisfies SemanticTokenLayer<typeof conditions, typeof appTokens>,
+);
+`;
+	const mergedTokenLines = componentGroups.map(
+		(group) =>
+			`\t${JSON.stringify(group)}: { ...appTokens[${JSON.stringify(group)}], ...componentTokens[${JSON.stringify(group)}] },`,
+	);
+	const tokenDeclaration =
+		componentGroups.length === 0
+			? "const tokens = appTokens;"
+			: `const tokens = {\n\t...appTokens,\n${mergedTokenLines.join("\n")}\n};`;
+	return `import { defineConditions, definePreset, defineProperties, defineTokens${semanticTokenImport}${typeImports}${semanticTokenTypeImport} } from "pandwind/preset";
+
+const conditions = defineConditions(${JSON.stringify(presetConditions, null, "\t")});
+const appTokens = defineTokens(${JSON.stringify(appTokens, null, "\t")});
+${componentDeclaration}${configDeclaration}
+const properties = defineProperties(${presetPropertiesSource(sourceTokens)});
+${tokenDeclaration}
 
 export const pandwindPreset = definePreset(
 	{
-		config: {}${configType},
-		tokens: ${JSON.stringify(tokens, null, "\t")},
+		config: ${configReference},
+		tokens,
 	},
 	{
 		strict: true,
-		conditions: ${JSON.stringify(presetConditions, null, "\t")},
-		properties: ${presetPropertiesSource(sourceTokens)},
+		conditions,
+		properties,
 	},
 );
 `;
@@ -748,6 +882,7 @@ export async function createPandwindProjectSupport(
 	const runtimeCss = projectFile(directory, "runtime.ts");
 	const dss = projectFile(directory, "dss.ts");
 	const cx = projectFile(directory, "cx.ts");
+	const needsDssBinding = request.targetAdapter === SwapTargetId.Dss;
 	const configurationFailed = (sourceConfig.residuals?.length ?? 0) > 0;
 	const files: AdapterGeneratedFile[] = configurationFailed
 		? []
@@ -765,7 +900,9 @@ export async function createPandwindProjectSupport(
 				generatedFile(css, cssSource(nextIntegration.enabled), "shared extracted css() binding"),
 				generatedFile(viteEnv, viteEnvSource(), "Pandwind Vite virtual-module types"),
 				generatedFile(runtimeCss, runtimeCssSource(), "shared runtime css() binding"),
-				generatedFile(dss, dssSource(), "shared design-system dss() binding"),
+				...(needsDssBinding
+					? [generatedFile(dss, dssSource(), "shared design-system dss() binding")]
+					: []),
 				generatedFile(cx, cxSource(), "shared cx() binding"),
 			];
 
@@ -843,7 +980,12 @@ export async function createPandwindProjectSupport(
 		bindings: {
 			...(configurationFailed
 				? {}
-				: { cssModule: css, runtimeCssModule: runtimeCss, dssModule: dss, cxModule: cx }),
+				: {
+						cssModule: css,
+						runtimeCssModule: runtimeCss,
+						cxModule: cx,
+						...(needsDssBinding ? { dssModule: dss } : {}),
+					}),
 			...(configurationFailed || !hasGeneratedTw
 				? {}
 				: { twModule: projectFile(directory, "tw.ts") }),
