@@ -474,6 +474,7 @@ describe("supporting migration primitives", () => {
 		const folded = foldRecipeCall(recipe, { tone: "accent" }, meta);
 		expect(folded?.text).toContain("css.class");
 		expect(folded?.text).toContain("padding");
+		expect(folded?.text).not.toContain("cx(");
 	});
 });
 

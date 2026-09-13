@@ -36,6 +36,9 @@ current `0.1.0` state.
   bootstrap when the migration is complete, and leave unsupported components or
   unresolved tokens as explicit residuals. Tokenami source sigils are also
   normalized to neutral target token paths. Source revision: `ktzymynt`.
+- Collapse adjacent static `css.class()` calls and promote literal Stack layout
+  declarations to native Stack props during generic and Panda migrations while
+  preserving dynamic and responsive values. Source revision: `pmnvsvlx`.
 
 ## Unreleased — 2026-09-13 preset-aware runtime values
 

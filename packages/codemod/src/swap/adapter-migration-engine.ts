@@ -49,7 +49,9 @@ import {
 	StyleHostRepresentationKind,
 	StyleMigrationOutcome,
 	StyleRepresentationKind,
+	CodemodAdapterId,
 } from "./identifiers.ts";
+import { simplifyPandwindStaticStyles } from "./static-style-simplifier.ts";
 import { StyleProgramAnalysis } from "./style-program-analysis.ts";
 import { StyleProgramCore } from "./style-program-core.ts";
 import {
@@ -1478,6 +1480,8 @@ function runAdapterMigrationInternal(
 		code = support.ensureGeneratedStatement(code, statement, outputFile);
 	for (const statement of MigrationOutput.consolidateImports(imports))
 		code = support.ensureGeneratedStatement(code, statement, outputFile);
+	if (targetAdapter.id === CodemodAdapterId.Pandwind)
+		code = simplifyPandwindStaticStyles(code, outputFile).code;
 	return {
 		code,
 		...(outputExtension === undefined ? {} : { outputExtension }),

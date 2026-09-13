@@ -54,6 +54,7 @@ import {
 	TokenReferenceFormat,
 	type TokenReferenceFormat as TokenReferenceFormatValue,
 } from "../../tokens.ts";
+import { simplifyPandwindStaticStyles } from "../../static-style-simplifier.ts";
 
 export interface PandaMigrateOptions {
 	projectRoot: string;
@@ -888,7 +889,7 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 				addExtra(site.file.path, {
 					start: site.start,
 					end: site.end,
-					text: folded.text.replace("css.class(", `cx(css.class(`).replace(/\)$/, "))"),
+					text: folded.text,
 				});
 				tier0Folded.push(def.name);
 				continue;
@@ -1192,6 +1193,7 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 		// panda-only named imports; leaving them would create unresolved exports.
 		next = removeUnusedVariantImports(next, aliasSpecifier(aliasInfo, outDirName, "css"));
 		next = removeUnusedFactoryImports(next);
+		next = simplifyPandwindStaticStyles(next, file.path).code;
 		const validation = validatePandaSource(file.path, next);
 		if (!validation.valid) {
 			report.notes.push(
