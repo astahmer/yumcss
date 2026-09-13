@@ -49,10 +49,10 @@ test("mui -> pandwind -> mui: preserves an actionable concrete round trip", () =
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { Box } from "@mui/material";
-		import { createCss } from "pandwind/css";
+		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const App = () => <Box className={css.class({ padding: "16px", color: "red" })}/>;",
+
+		export const App = () => <div className={css.class({ padding: "16px", color: "red" })} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -85,10 +85,9 @@ test("mui -> pandwind -> mui: preserves an actionable concrete round trip", () =
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { Box } from "@mui/material";
-		import { createCss } from "pandwind/css";
-		export const App = () => <Box className={// pandwind:migrate-skip (route: pandwind -> mui | lowering-residual: host-framework | available: static, named-map, residual)
-		css.class({ padding: "16px", color: "red" })}/>;",
+		    "code": "import { createCss } from "pandwind/css";
+		export const App = () => <div className={// pandwind:migrate-skip (route: pandwind -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		css.class({ padding: "16px", color: "red" })} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -135,9 +134,9 @@ test("mui -> pandwind -> mui: retains the documented secondary API without silen
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { styled } from "@mui/system";
-		import { createCss } from "pandwind/css";
+		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
+
 		export const Card = css.class({ padding: 8, color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -171,10 +170,10 @@ test("mui -> pandwind -> mui: retains the documented secondary API without silen
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { styled } from "@mui/system";
-		import { createCss } from "pandwind/css";
+		    "code": "import { createCss } from "pandwind/css";
 
 		const css = createCss();
+
 		export const Card = css.class({ "padding": 8, "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -237,10 +236,10 @@ test("mui -> pandwind -> mui: preserves concrete theme and project context varia
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { Box } from "@mui/material";
-		import { createCss } from "pandwind/css";
+		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const App = () => <Box className={css.class({ padding: "16px", color: "brand" })}/>;",
+
+		export const App = () => <div className={css.class({ padding: "16px", color: "brand" })} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -273,10 +272,9 @@ test("mui -> pandwind -> mui: preserves concrete theme and project context varia
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { Box } from "@mui/material";
-		import { createCss } from "pandwind/css";
-		export const App = () => <Box className={// pandwind:migrate-skip (route: pandwind -> mui | lowering-residual: host-framework | available: static, named-map, residual)
-		css.class({ padding: "16px", color: "brand" })}/>;",
+		      "code": "import { createCss } from "pandwind/css";
+		export const App = () => <div className={// pandwind:migrate-skip (route: pandwind -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		css.class({ padding: "16px", color: "brand" })} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -311,10 +309,10 @@ test("mui -> pandwind -> mui: preserves concrete theme and project context varia
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { Box } from "@mui/material";
-		import { createCss } from "pandwind/css";
+		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const App = () => <Box className={css.class({ padding: "16px", color: "brand" })}/>;",
+
+		export const App = () => <div className={css.class({ padding: "16px", color: "brand" })} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -347,10 +345,9 @@ test("mui -> pandwind -> mui: preserves concrete theme and project context varia
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { Box } from "@mui/material";
-		import { createCss } from "pandwind/css";
-		export const App = () => <Box className={// pandwind:migrate-skip (route: pandwind -> mui | lowering-residual: host-framework | available: static, named-map, residual)
-		css.class({ padding: "16px", color: "brand" })}/>;",
+		      "code": "import { createCss } from "pandwind/css";
+		export const App = () => <div className={// pandwind:migrate-skip (route: pandwind -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		css.class({ padding: "16px", color: "brand" })} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -399,10 +396,10 @@ test("mui -> pandwind -> mui: resolves token values across both concrete legs", 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { Box } from "@mui/material";
-		import { createCss } from "pandwind/css";
+		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const App = () => <Box className={css.class({ padding: "16px", color: "brand" })}/>;",
+
+		export const App = () => <div className={css.class({ padding: "16px", color: "brand" })} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -435,10 +432,9 @@ test("mui -> pandwind -> mui: resolves token values across both concrete legs", 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { Box } from "@mui/material";
-		import { createCss } from "pandwind/css";
-		export const App = () => <Box className={// pandwind:migrate-skip (route: pandwind -> mui | lowering-residual: host-framework | available: static, named-map, residual)
-		css.class({ padding: "16px", color: "brand" })}/>;",
+		    "code": "import { createCss } from "pandwind/css";
+		export const App = () => <div className={// pandwind:migrate-skip (route: pandwind -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		css.class({ padding: "16px", color: "brand" })} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

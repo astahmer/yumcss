@@ -160,10 +160,10 @@ describe("official primary API forms", () => {
 			  },
 			  "chakra-ui/Chakra style props": {
 			    "changed": true,
-			    "code": "import { Box } from "@chakra-ui/react";
-			import { createCss } from "pandwind/css";
+			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
-			export const App = () => <Box className={css.class({ padding: "var(--chakra-spacing-4)", backgroundColor: "var(--chakra-colors-red-200)" })}/>;",
+
+			export const App = () => <div className={css.class({ padding: "4", backgroundColor: "red.200" })} />;",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -485,10 +485,10 @@ describe("official primary API forms", () => {
 			  },
 			  "mantine/Mantine style props": {
 			    "changed": true,
-			    "code": "import { Box } from "@mantine/core";
-			import { createCss } from "pandwind/css";
+			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
-			export const App = () => <Box className={css.class({ color: "blue.6", marginLeft: "var(--mantine-spacing-auto)", marginRight: "var(--mantine-spacing-auto)", maxWidth: 400 })}/>;",
+
+			export const App = () => <div className={css.class({ color: "blue.6", marginLeft: "auto", marginRight: "auto", maxWidth: 400 })} />;",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -521,10 +521,10 @@ describe("official primary API forms", () => {
 			  },
 			  "mui/MUI sx prop": {
 			    "changed": true,
-			    "code": "import { Box } from "@mui/material";
-			import { createCss } from "pandwind/css";
+			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
-			export const App = () => <Box className={css.class({ padding: "16px", color: "red" })}/>;",
+
+			export const App = () => <div className={css.class({ padding: "16px", color: "red" })} />;",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [

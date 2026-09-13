@@ -49,10 +49,10 @@ test("chakra-ui -> pandwind -> chakra-ui: preserves an actionable concrete round
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { Box } from "@chakra-ui/react";
-		import { createCss } from "pandwind/css";
+		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const App = () => <Box className={css.class({ padding: "var(--chakra-spacing-4)", backgroundColor: "var(--chakra-colors-red-200)" })}/>;",
+
+		export const App = () => <div className={css.class({ padding: "4", backgroundColor: "red.200" })} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -85,9 +85,9 @@ test("chakra-ui -> pandwind -> chakra-ui: preserves an actionable concrete round
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { Box } from "@chakra-ui/react";
+		    "code": "import { chakra } from "@chakra-ui/react";
 
-		export const App = () => <Box css={{ padding: "var(--chakra-spacing-4)", backgroundColor: "var(--chakra-colors-red-200)" }}/>;",
+		export const App = () => <chakra.div css={{ padding: "4", backgroundColor: "red.200" }} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -209,10 +209,10 @@ test("chakra-ui -> pandwind -> chakra-ui: preserves concrete theme and project c
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { Box } from "@chakra-ui/react";
-		import { createCss } from "pandwind/css";
+		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const App = () => <Box p="4"  className={css.class({ backgroundColor: "brand" })}/>;",
+
+		export const App = () => <div className={css.class({ padding: "4", backgroundColor: "brand" })} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -245,9 +245,9 @@ test("chakra-ui -> pandwind -> chakra-ui: preserves concrete theme and project c
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { Box } from "@chakra-ui/react";
+		      "code": "import { chakra } from "@chakra-ui/react";
 
-		export const App = () => <Box p="4"  css={{ backgroundColor: "brand.500" }}/>;",
+		export const App = () => <chakra.div css={{ padding: "4", backgroundColor: "brand.500" }} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -282,10 +282,10 @@ test("chakra-ui -> pandwind -> chakra-ui: preserves concrete theme and project c
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { Box } from "@chakra-ui/react";
-		import { createCss } from "pandwind/css";
+		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const App = () => <Box p="4"  className={css.class({ backgroundColor: "brand" })}/>;",
+
+		export const App = () => <div className={css.class({ padding: "4", backgroundColor: "brand" })} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -318,9 +318,9 @@ test("chakra-ui -> pandwind -> chakra-ui: preserves concrete theme and project c
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { Box } from "@chakra-ui/react";
+		      "code": "import { chakra } from "@chakra-ui/react";
 
-		export const App = () => <Box p="4"  css={{ backgroundColor: "brand.500" }}/>;",
+		export const App = () => <chakra.div css={{ padding: "4", backgroundColor: "brand.500" }} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -369,10 +369,10 @@ test("chakra-ui -> pandwind -> chakra-ui: resolves token values across both conc
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { Box } from "@chakra-ui/react";
-		import { createCss } from "pandwind/css";
+		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const App = () => <Box p="4"  className={css.class({ backgroundColor: "brand" })}/>;",
+
+		export const App = () => <div className={css.class({ padding: "4", backgroundColor: "brand" })} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -405,9 +405,9 @@ test("chakra-ui -> pandwind -> chakra-ui: resolves token values across both conc
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { Box } from "@chakra-ui/react";
+		    "code": "import { chakra } from "@chakra-ui/react";
 
-		export const App = () => <Box p="4"  css={{ backgroundColor: "brand.500" }}/>;",
+		export const App = () => <chakra.div css={{ padding: "4", backgroundColor: "brand.500" }} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

@@ -130,6 +130,8 @@ export interface CodemodAdapterSpec {
 	readonly capabilities: AdapterCapabilities;
 	readonly detectPatterns: readonly RegExp[];
 	readonly sourceModules: readonly string[];
+	/** Optional target-specific source modules to remove after a complete migration. */
+	readonly sourceModulesToRemove?: (targetId: string) => readonly string[];
 	readonly sourceModuleMatchers?: readonly ((moduleSpecifier: string) => boolean)[];
 	readonly lowerings?: readonly StyleLowering[];
 	readonly configFiles?: readonly string[];
@@ -204,6 +206,9 @@ export function defineCodemodAdapter(spec: CodemodAdapterSpec): StyleAdapter {
 			});
 		})(),
 		sourceModules: spec.sourceModules,
+		...(spec.sourceModulesToRemove === undefined
+			? {}
+			: { sourceModulesToRemove: spec.sourceModulesToRemove }),
 		...(spec.sourceModuleMatchers === undefined
 			? {}
 			: { sourceModuleMatchers: spec.sourceModuleMatchers }),

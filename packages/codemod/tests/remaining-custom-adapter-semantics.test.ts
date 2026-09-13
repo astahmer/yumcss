@@ -66,6 +66,22 @@ describe("remaining adapter-owned custom semantics", () => {
 		`);
 	});
 
+	test("normalizes Tokenami token sigils before Pandwind emission", () => {
+		const result = migrate(
+			'import { css } from "@tokenami/css";\n' +
+				'export const card = css({ color: "$colors.brand", padding: "$spacing.4" });',
+			CodemodAdapterId.Tokenami,
+		);
+
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain('color: "brand"');
+		expect(result.code).toContain('padding: "4"');
+		expect(result.code).not.toContain("$colors");
+		expect(result.code).not.toContain("$spacing");
+	});
+
 	test("lowers StyleX defineVars to real custom properties and references", () => {
 		const result = migrate(
 			'import stylex from "@stylexjs/stylex";\n' +
@@ -212,12 +228,12 @@ describe("remaining adapter-owned custom semantics", () => {
 		expect(result.code).toContain("theme.palette.primary.main");
 		expect(result.code).toContain("css.vars");
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { Box, createTheme } from "@mui/material";
+			"import { createTheme } from "@mui/material";
 			import { createRuntimeCss } from "pandwind/css/runtime";
 			import { pandwindPreset } from "pandwind/preset";
 			const css = createRuntimeCss(pandwindPreset);
 			const theme = createTheme({ palette: { primary: { main: "#123456" } } });
-			export const App = () => <Box className={css.vars({ color: theme.palette.primary.main }).class} style={css.vars({ color: theme.palette.primary.main }).style}/>;"
+			export const App = () => <div className={css.vars({ color: theme.palette.primary.main }).class} style={css.vars({ color: theme.palette.primary.main }).style} />;"
 		`);
 	});
 
@@ -236,12 +252,12 @@ describe("remaining adapter-owned custom semantics", () => {
 		expect(result.code).toContain("theme.colors.brand[0]");
 		expect(result.code).toContain("css.vars");
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { Box, createTheme } from "@mantine/core";
+			"import { createTheme } from "@mantine/core";
 			import { createRuntimeCss } from "pandwind/css/runtime";
 			import { pandwindPreset } from "pandwind/preset";
 			const css = createRuntimeCss(pandwindPreset);
 			const theme = createTheme({ colors: { brand: ["#123456"] } });
-			export const App = () => <Box className={css.vars({ backgroundColor: theme.colors.brand[0] }).class} style={css.vars({ backgroundColor: theme.colors.brand[0] }).style}/>;"
+			export const App = () => <div className={css.vars({ backgroundColor: theme.colors.brand[0] }).class} style={css.vars({ backgroundColor: theme.colors.brand[0] }).style} />;"
 		`);
 	});
 

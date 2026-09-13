@@ -1,7 +1,11 @@
 import { CodemodCallPatternFormTag } from "../identifiers.ts";
 import { StyleProgramResidualKindTag, StyleValueKindTag } from "../semantic-ir.ts";
 import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
-import type { AdapterConfigContext, AdapterHostRewriteResult } from "../adapter-contract.ts";
+import type {
+	AdapterConfigContext,
+	AdapterHostRewriteResult,
+	AdapterParseContext,
+} from "../adapter-contract.ts";
 import type { StyleProgram, StyleValue } from "../semantic-ir.ts";
 import {
 	BuiltinHostFramework,
@@ -23,7 +27,8 @@ import { StyleProgramAnalysis } from "../style-program-analysis.ts";
 import { AdapterEvidence } from "../adapter-evidence.ts";
 import type { ProjectModuleLoader } from "../project-module-loader.ts";
 import { joinDocumentPath } from "../../path-utils.ts";
-import { createTokenPolicy, TokenCatalog } from "../tokens.ts";
+import { canonicalizeSourceHost } from "../host-component-rewriter.ts";
+import { createTokenPolicy, recoverSourceToken, TokenCatalog } from "../tokens.ts";
 
 const muiTokenGroup = (property: string): string | undefined => {
 	if (property === "color" || property.endsWith("Color")) return "colors";
@@ -263,7 +268,12 @@ async function officialMuiConfig(
 	return fallback;
 }
 
-function defaultSpacing(property: string, value: StyleValue, theme?: MuiThemeLike): StyleValue {
+function defaultSpacing(
+	property: string,
+	value: StyleValue,
+	theme?: MuiThemeLike,
+	targetId?: string,
+): StyleValue {
 	if (value.kind !== StyleValueKindTag.Literal) return value;
 	if (spacing.has(property) && typeof value.value === "number") {
 		const resolved =
@@ -285,17 +295,19 @@ function defaultSpacing(property: string, value: StyleValue, theme?: MuiThemeLik
 		return { kind: "literal", value: `${value.value * 4}px` };
 	}
 	if (
+		targetId !== CodemodAdapterId.Pandwind &&
 		typeof value.value === "string" &&
 		/^[A-Za-z_$][\w$-]*\.[A-Za-z_$][\w$-]*$/.test(value.value)
-	) {
+	)
 		return { kind: "literal", value: `var(--mui-${value.value.replace(".", "-")})` };
-	}
 	return value;
 }
 
 function muiTransforms(
 	source: string,
 	theme?: MuiThemeLike,
+	catalog?: TokenCatalog,
+	targetId?: string,
 ): Readonly<Record<string, (value: StyleValue) => StyleValue>> {
 	return Object.fromEntries(
 		[
@@ -326,11 +338,22 @@ function muiTransforms(
 						if (resolved !== undefined) return { kind: "literal", value: resolved };
 					}
 				}
-				return defaultSpacing(property, value, theme);
+				const fallback = defaultSpacing(property, value, theme, targetId);
+				return targetId === CodemodAdapterId.Pandwind
+					? recoverSourceToken(fallback, property, muiTokenGroup, catalog)
+					: fallback;
 			},
 		]),
 	);
 }
+
+const MUI_SOURCE_COMPONENTS = {
+	Box: "div",
+	Button: "button",
+	Link: "a",
+	Typography: "p",
+	Paper: "div",
+} as const;
 
 function renderMuiSxHost(
 	openingTag: string,
@@ -468,7 +491,7 @@ export function createMuiAdapter(
 	options: { readonly moduleLoader?: ProjectModuleLoader | null } = {},
 ) {
 	const moduleLoader = options.moduleLoader === null ? undefined : options.moduleLoader;
-	return defineCodemodAdapter({
+	const adapter = defineCodemodAdapter({
 		id: CodemodAdapterId.Mui,
 		officialApi: {
 			pluginSystems: ["theme.components", "styleOverrides", "variants", "sx"],
@@ -521,6 +544,8 @@ export function createMuiAdapter(
 		namedRuleStrategy: StyleNamedRuleStrategy.ClassMap,
 		detectPatterns: [/@mui\/(?:system|material)/, /\bsx\s*=/, /\bstyled\s*\(/],
 		sourceModules: [],
+		sourceModulesToRemove: (targetId) =>
+			targetId === CodemodAdapterId.Pandwind ? ["@mui/system", "@mui/material"] : [],
 		configFiles: ["package.json", "src/theme.ts", "src/theme.js"],
 		...(moduleLoader === undefined
 			? {}
@@ -534,6 +559,8 @@ export function createMuiAdapter(
 			valueTransforms: muiTransforms(
 				source,
 				context.config.values.muiTheme as MuiThemeLike | undefined,
+				TokenCatalog.fromContract(context.config.tokenCatalog),
+				context.targetId,
 			),
 		}),
 		emit(program, { programObject }, context) {
@@ -712,4 +739,18 @@ export function createMuiAdapter(
 			},
 		},
 	});
+	return {
+		...adapter,
+		parse(source: string, context: AdapterParseContext) {
+			const parsed = adapter.parse(source, context);
+			if (context.targetId !== CodemodAdapterId.Pandwind) return parsed;
+			return {
+				...parsed,
+				matches: parsed.matches.map((match) => ({
+					...match,
+					program: canonicalizeSourceHost(match.program, MUI_SOURCE_COMPONENTS, "MUI"),
+				})),
+			};
+		},
+	};
 }

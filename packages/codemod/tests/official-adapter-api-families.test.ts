@@ -1889,9 +1889,9 @@ describe("official adapter API families", () => {
 			  },
 			  "mui/styled component": {
 			    "changed": true,
-			    "code": "import { styled } from "@mui/system";
-			import { createCss } from "pandwind/css";
+			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
+
 			export const Card = css.class({ padding: 8, color: "red" });",
 			    "converted": 1,
 			    "generatedFiles": [],

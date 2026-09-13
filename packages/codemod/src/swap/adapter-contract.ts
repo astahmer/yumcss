@@ -149,6 +149,8 @@ export interface AdapterConfigContext extends AdapterDetectionContext {
 
 export interface AdapterParseContext extends AdapterDetectionContext {
 	readonly config: AdapterProjectConfig;
+	/** Target route used when source normalization has target-specific semantics. */
+	readonly targetId?: string;
 	/** AST-owned import/reference facts from the shared source scanner. */
 	readonly bindings?: SourceBindingIndex;
 	/** Resolve a local binding through relative project re-export barrels. */
@@ -545,6 +547,8 @@ export interface StyleAdapter extends AdapterConfigGraphPort {
 	readonly version: string;
 	/** Package entry points this adapter owns and may remove during migration. */
 	readonly sourceModules: readonly string[];
+	/** Optional target-specific source modules to remove after a complete migration. */
+	readonly sourceModulesToRemove?: (targetId: string) => readonly string[];
 	/** Adapter-owned matcher for project-local aliases of those entry points. */
 	readonly sourceModuleMatchers?: readonly ((moduleSpecifier: string) => boolean)[];
 	readonly capabilities: AdapterCapabilities;

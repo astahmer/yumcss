@@ -39,10 +39,10 @@ describe("Chakra UI official API forms", () => {
 		expect(routeEvidence(result)).toMatchInlineSnapshot(`
 			{
 			  "changed": true,
-			  "code": "import { Box } from "@chakra-ui/react";
-			import { createCss } from "pandwind/css";
+			  "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
-			export const App = () => <Box className={css.class({ padding: "var(--chakra-spacing-4)", backgroundColor: "var(--chakra-colors-red-200)" })}/>;",
+
+			export const App = () => <div className={css.class({ padding: "4", backgroundColor: "red.200" })} />;",
 			  "converted": 1,
 			  "generatedFiles": [],
 			  "loweringPlans": [
@@ -86,10 +86,10 @@ describe("Chakra UI official API forms", () => {
 		expect(routeEvidence(result)).toMatchInlineSnapshot(`
 			{
 			  "changed": true,
-			  "code": "import { Box } from "@chakra-ui/react";
-			import { createCss } from "pandwind/css";
+			  "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
-			export const App = () => <Box className={css.class({ color: "var(--chakra-colors-red-200)", "& svg": { color: "var(--chakra-colors-blue-200)" } })}/>;",
+
+			export const App = () => <div className={css.class({ color: "red.200", "& svg": { color: "blue.200" } })} />;",
 			  "converted": 1,
 			  "generatedFiles": [],
 			  "loweringPlans": [
@@ -133,10 +133,10 @@ describe("Chakra UI official API forms", () => {
 		expect(routeEvidence(result)).toMatchInlineSnapshot(`
 			{
 			  "changed": true,
-			  "code": "import { chakra } from "@chakra-ui/react";
-			import { createCss } from "pandwind/css";
+			  "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
-			export const App = () => <chakra.button className={css.class({ backgroundColor: "var(--chakra-colors-blue-500)", color: "white" })}/>;",
+
+			export const App = () => <button className={css.class({ backgroundColor: "blue.500", color: "white" })} />;",
 			  "converted": 1,
 			  "generatedFiles": [],
 			  "loweringPlans": [
@@ -180,10 +180,10 @@ describe("Chakra UI official API forms", () => {
 		expect(routeEvidence(result)).toMatchInlineSnapshot(`
 			{
 			  "changed": true,
-			  "code": "import { defaultSystem } from "@chakra-ui/react";
-			import { createCss } from "pandwind/css";
+			  "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
-			export const card = css.class({ padding: "var(--chakra-spacing-4)", color: "var(--chakra-colors-red-200)" });",
+
+			export const card = css.class({ padding: "4", color: "red.200" });",
 			  "converted": 1,
 			  "generatedFiles": [],
 			  "loweringPlans": [
@@ -227,11 +227,10 @@ describe("Chakra UI official API forms", () => {
 		expect(routeEvidence(result)).toMatchInlineSnapshot(`
 			{
 			  "changed": true,
-			  "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
-			import { createCss } from "pandwind/css";
+			  "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
-			const system = createSystem(defaultConfig);
-			export const card = css.class({ padding: "var(--chakra-spacing-4)", color: "var(--chakra-colors-red-200)" });",
+
+			export const card = css.class({ padding: "4", color: "red.200" });",
 			  "converted": 1,
 			  "generatedFiles": [],
 			  "loweringPlans": [
@@ -263,6 +262,27 @@ describe("Chakra UI official API forms", () => {
 			  ],
 			}
 		`);
+	});
+
+	test("keeps unsupported Chakra hosts as safe residuals", () => {
+		const result = migrate(
+			'import { AbsoluteCenter } from "@chakra-ui/react";\nexport const App = () => <AbsoluteCenter p="4" />;',
+			CodemodAdapterId.ChakraUi,
+			CodemodAdapterId.Pandwind,
+		);
+
+		expect(result.converted).toBe(0);
+		expect(result.skipped).toBe(1);
+		expect(result.code).toContain('<AbsoluteCenter p="4" />');
+		expect(result.code).toContain("@chakra-ui/react");
+		expect(result.residuals).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({
+					kind: "component",
+					text: "AbsoluteCenter",
+				}),
+			]),
+		);
 	});
 
 	test("preserves documented token helpers when they remain runtime expressions", () => {

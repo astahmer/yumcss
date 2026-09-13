@@ -6,11 +6,12 @@ import {
 } from "../semantic-ir.ts";
 import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
 import type { StyleProgram, StyleValue } from "../semantic-ir.ts";
-import type { AdapterConfigContext } from "../adapter-contract.ts";
+import type { AdapterConfigContext, AdapterParseContext } from "../adapter-contract.ts";
 import { AdapterEvidence } from "../adapter-evidence.ts";
 import type { ProjectModuleLoader } from "../project-module-loader.ts";
 import { joinDocumentPath } from "../../path-utils.ts";
-import { createTokenPolicy, TokenCatalog } from "../tokens.ts";
+import { canonicalizeSourceHost } from "../host-component-rewriter.ts";
+import { createTokenPolicy, recoverSourceToken, TokenCatalog } from "../tokens.ts";
 import { BuiltinHostFramework } from "../host-adapters.ts";
 import { StyleProgramAnalysis } from "../style-program-analysis.ts";
 import {
@@ -417,11 +418,17 @@ async function officialMantineConfig(
 	return fallback;
 }
 
-function mantineValue(property: string, value: StyleValue, theme?: MantineThemeLike): StyleValue {
+function mantineValue(
+	property: string,
+	value: StyleValue,
+	theme?: MantineThemeLike,
+	targetId?: string,
+): StyleValue {
 	if (value.kind !== StyleValueKindTag.Literal || typeof value.value !== "string") return value;
 	if (/^(?:-?\d+(?:\.\d+)?)(?:px|rem|em|%|vh|vw)$/.test(value.value)) return value;
 	const resolved = resolveMantineValue(property, value.value, theme);
 	if (resolved !== undefined) return { kind: "literal", value: resolved };
+	if (targetId === CodemodAdapterId.Pandwind) return value;
 	if (
 		(/^(?:m|m[trblseixy]|p|p[trblseixy])$/.test(property) ||
 			property === "margin" ||
@@ -452,11 +459,20 @@ function mantineValue(property: string, value: StyleValue, theme?: MantineThemeL
 	return value;
 }
 
+const MANTINE_SOURCE_COMPONENTS = {
+	Box: "div",
+	Text: "p",
+	Button: "button",
+	Anchor: "a",
+	Image: "img",
+	Paper: "div",
+} as const;
+
 export function createMantineAdapter(
 	options: { readonly moduleLoader?: ProjectModuleLoader | null } = {},
 ) {
 	const moduleLoader = options.moduleLoader === null ? undefined : options.moduleLoader;
-	return defineCodemodAdapter({
+	const adapter = defineCodemodAdapter({
 		id: CodemodAdapterId.Mantine,
 		officialApi: {
 			pluginSystems: ["theme.components", "style", "styles", "classNames", "vars"],
@@ -586,8 +602,9 @@ export function createMantineAdapter(
 			},
 		},
 		detectPatterns: [/@mantine\/core/, /\b(?:style|sx|maw|fz|c|bg)\s*=/],
-		// Mantine components remain imported; only the style-prop layer is lowered.
 		sourceModules: [],
+		sourceModulesToRemove: (targetId) =>
+			targetId === CodemodAdapterId.Pandwind ? ["@mantine/core"] : [],
 		configFiles: ["package.json", "src/theme.ts", "src/theme.js"],
 		...(moduleLoader === undefined
 			? {}
@@ -602,10 +619,16 @@ export function createMantineAdapter(
 				styleProps.map((property) => [
 					property,
 					(value: StyleValue) =>
-						mantineValue(
+						recoverSourceToken(
+							mantineValue(
+								property,
+								value,
+								context.config.values.mantineTheme as MantineThemeLike | undefined,
+								context.targetId,
+							),
 							property,
-							value,
-							context.config.values.mantineTheme as MantineThemeLike | undefined,
+							mantineTokenGroup,
+							TokenCatalog.fromContract(context.config.tokenCatalog),
 						),
 				]),
 			),
@@ -651,4 +674,18 @@ export function createMantineAdapter(
 			};
 		},
 	});
+	return {
+		...adapter,
+		parse(source: string, context: AdapterParseContext) {
+			const parsed = adapter.parse(source, context);
+			if (context.targetId !== CodemodAdapterId.Pandwind) return parsed;
+			return {
+				...parsed,
+				matches: parsed.matches.map((match) => ({
+					...match,
+					program: canonicalizeSourceHost(match.program, MANTINE_SOURCE_COMPONENTS, "Mantine"),
+				})),
+			};
+		},
+	};
 }

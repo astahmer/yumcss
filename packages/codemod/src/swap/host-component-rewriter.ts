@@ -1,7 +1,7 @@
 import { SourcePass } from "../source-pass-utils.ts";
 import { SourceBindings, SourceHostUseKind } from "pandwind/source";
 import { StyleProgramResidualKindTag } from "./semantic-ir.ts";
-import type { StyleProgramResidual } from "./semantic-ir.ts";
+import type { StyleProgram, StyleProgramResidual } from "./semantic-ir.ts";
 import {
 	BuiltinHostFramework,
 	HOST_FRAMEWORK_REGISTRY,
@@ -10,6 +10,89 @@ import {
 import { HostComponentRewriterId } from "./identifiers.ts";
 
 export const HOST_COMPONENT_REWRITER_SCHEMA = "pandwind.host-component-rewriter/1" as const;
+
+/** Canonical intrinsic host projection for source component adapters. */
+export function canonicalizeSourceHost(
+	program: StyleProgram,
+	componentTags: Readonly<Record<string, string | undefined>>,
+	adapterName: string,
+): StyleProgram {
+	const source = program.source;
+	const openingTag = source?.hostOpenTag;
+	if (source === undefined || openingTag === undefined || source.hostTag !== undefined)
+		return program;
+	const tag = /^<\s*([A-Za-z_$][\w$.-]*)/u.exec(openingTag)?.[1];
+	if (tag === undefined) return program;
+	const member = tag.slice(tag.lastIndexOf(".") + 1);
+	const hasHostOverride = /\b(?:as|asChild|component|renderRoot)\s*=/u.test(openingTag);
+	const hasAdapterComponent =
+		Object.hasOwn(componentTags, tag) || Object.hasOwn(componentTags, member);
+	const intrinsicMember = /^[a-z][\w-]*$/u.test(member) ? member : undefined;
+	if (!hasAdapterComponent && !hasHostOverride)
+		return intrinsicMember === undefined
+			? program
+			: { ...program, source: { ...source, hostTag: intrinsicMember } };
+	const staticIntrinsicOverride =
+		/\bas\s*=\s*(?:"([a-z][\w-]*)"|'([a-z][\w-]*)'|\{\s*["']([a-z][\w-]*)["']\s*\})/u.exec(
+			openingTag,
+		);
+	const hostTag = hasHostOverride
+		? (staticIntrinsicOverride?.[1] ?? staticIntrinsicOverride?.[2] ?? staticIntrinsicOverride?.[3])
+		: Object.hasOwn(componentTags, tag)
+			? componentTags[tag]
+			: (componentTags[member] ?? intrinsicMember);
+	if (hostTag !== undefined)
+		return {
+			...program,
+			source: {
+				...source,
+				hostTag,
+				...(staticIntrinsicOverride === null
+					? {}
+					: {
+							hostStyleAttributes: [
+								...(source.hostStyleAttributes ?? []),
+								staticIntrinsicOverride[0],
+							],
+						}),
+			},
+		};
+	return {
+		...program,
+		residuals: [
+			...program.residuals,
+			{
+				kind: StyleProgramResidualKindTag.Component,
+				text: tag,
+				hint: `${adapterName} host '${tag}' has no verified intrinsic projection`,
+			},
+		],
+	};
+}
+
+export function canonicalSourceHostClosingEdit(
+	sourceText: string,
+	file: string,
+	program: StyleProgram,
+): { readonly start: number; readonly end: number; readonly text: string } | undefined {
+	const source = program.source;
+	const openingTag = source?.hostOpenTag;
+	const hostTag = source?.hostTag;
+	if (source === undefined || openingTag === undefined || hostTag === undefined) return undefined;
+	const sourceTag = /^<\s*([A-Za-z_$][\w$.-]*)/u.exec(openingTag)?.[1];
+	if (sourceTag === undefined || sourceTag === hostTag || source.start === undefined)
+		return undefined;
+	try {
+		const closing = SourceBindings.fromDocument({ file, source: sourceText }).hostUses.find(
+			(use) => use.start === source.start,
+		)?.closing;
+		return closing === undefined
+			? undefined
+			: { start: closing.start, end: closing.end, text: `</${hostTag}>` };
+	} catch {
+		return undefined;
+	}
+}
 
 export interface HostComponentRewriteRequest {
 	readonly source: string;

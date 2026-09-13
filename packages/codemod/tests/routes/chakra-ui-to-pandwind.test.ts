@@ -47,10 +47,10 @@ test("chakra-ui -> pandwind: migrates concrete chakra-ui syntax to pandwind", ()
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { Box } from "@chakra-ui/react";
-		import { createCss } from "pandwind/css";
+		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const App = () => <Box className={css.class({ padding: "var(--chakra-spacing-4)", backgroundColor: "var(--chakra-colors-red-200)" })}/>;",
+
+		export const App = () => <div className={css.class({ padding: "4", backgroundColor: "red.200" })} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -143,10 +143,10 @@ test("chakra-ui -> pandwind: loads concrete theme and project context variants",
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { Box } from "@chakra-ui/react";
-		import { createCss } from "pandwind/css";
+		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const App = () => <Box p="4"  className={css.class({ backgroundColor: "brand" })}/>;",
+
+		export const App = () => <div className={css.class({ padding: "4", backgroundColor: "brand" })} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -179,10 +179,10 @@ test("chakra-ui -> pandwind: loads concrete theme and project context variants",
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { Box } from "@chakra-ui/react";
-		import { createCss } from "pandwind/css";
+		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const App = () => <Box p="4"  className={css.class({ backgroundColor: "brand" })}/>;",
+
+		export const App = () => <div className={css.class({ padding: "4", backgroundColor: "brand" })} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -227,10 +227,10 @@ test("chakra-ui -> pandwind: resolves concrete token values with project context
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { Box } from "@chakra-ui/react";
-		import { createCss } from "pandwind/css";
+		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const App = () => <Box p="4"  className={css.class({ backgroundColor: "brand" })}/>;",
+
+		export const App = () => <div className={css.class({ padding: "4", backgroundColor: "brand" })} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -272,10 +272,10 @@ test("chakra-ui -> pandwind: preserves malformed concrete chakra-ui input", () =
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { Box } from "@chakra-ui/react";
-		import { createCss } from "pandwind/css";
+		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const App = () => <Box className={css.class({ padding: "var(--chakra-spacing-4)", backgroundColor: "var(--chakra-colors-red-200)" })}/>;
+
+		export const App = () => <div className={css.class({ padding: "4", backgroundColor: "red.200" })} />;
 		const unfinished = { /* unfinished chakra-ui */",
 		  "converted": 1,
 		  "generatedFiles": [],

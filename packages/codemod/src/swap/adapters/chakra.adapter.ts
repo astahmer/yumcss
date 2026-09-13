@@ -20,7 +20,8 @@ import type { ProjectModuleLoader } from "../project-module-loader.ts";
 import { joinDocumentPath } from "../../path-utils.ts";
 import { SourcePass } from "../../source-pass-utils.ts";
 import type { JsxStyleHostMatch, JsxStylePropSelector } from "../jsx-style-host.ts";
-import { createTokenPolicy, TokenCatalog } from "../tokens.ts";
+import { canonicalizeSourceHost } from "../host-component-rewriter.ts";
+import { createTokenPolicy, recoverSourceToken, TokenCatalog } from "../tokens.ts";
 
 const styleProps = [
 	"css",
@@ -242,7 +243,8 @@ const propertyAliases = {
 	borderEndColor: "borderInlineEndColor",
 } as const;
 
-function chakraValue(property: string, value: StyleValue): StyleValue {
+function chakraValue(property: string, value: StyleValue, targetId?: string): StyleValue {
+	if (targetId === CodemodAdapterId.Pandwind) return value;
 	if (value.kind !== StyleValueKindTag.Literal) return value;
 	if (typeof value.value === "number" && isSpacingProperty(property)) {
 		if (value.value === 0) return { kind: "literal", value: 0 };
@@ -256,15 +258,13 @@ function chakraValue(property: string, value: StyleValue): StyleValue {
 	if (typeof value.value !== "string") return value;
 	if (/^(?:-?\d+(?:\.\d+)?)(?:px|rem|em|%|vh|vw|svh|svw)$/.test(value.value)) return value;
 	const tokenName = /^(?:[A-Za-z][A-Za-z0-9_.-]*|\d+[A-Za-z][A-Za-z0-9_.-]*)$/.test(value.value);
-	if (isSpacingProperty(property)) {
-		if (/^-?\d+(?:\.\d+)?$/.test(value.value)) {
-			const absolute = value.value.replace(/^-/, "");
-			const variable = `var(--chakra-spacing-${absolute})`;
-			return {
-				kind: "literal",
-				value: value.value.startsWith("-") ? `calc(${variable} * -1)` : variable,
-			};
-		}
+	if (isSpacingProperty(property) && /^-?\d+(?:\.\d+)?$/.test(value.value)) {
+		const absolute = value.value.replace(/^-/, "");
+		const variable = `var(--chakra-spacing-${absolute})`;
+		return {
+			kind: "literal",
+			value: value.value.startsWith("-") ? `calc(${variable} * -1)` : variable,
+		};
 	}
 	if ((property === "borderRadius" || property === "rounded") && tokenName)
 		return { kind: "literal", value: `var(--chakra-radii-${value.value})` };
@@ -406,7 +406,14 @@ function chakraOfficialValue(
 	value: StyleValue,
 	context: AdapterParseContext,
 ): StyleValue {
-	const fallback = chakraValue(property, value);
+	const fallback = chakraValue(property, value, context.targetId);
+	if (context.targetId === CodemodAdapterId.Pandwind)
+		return recoverSourceToken(
+			fallback,
+			property,
+			chakraTokenGroup,
+			TokenCatalog.fromContract(context.config.tokenCatalog),
+		);
 	if (value.kind !== StyleValueKindTag.Literal || typeof value.value !== "string") return fallback;
 	const system = context.config.values.chakraSystem as ChakraSystemLike | undefined;
 	const config = context.config.values.chakraConfig;
@@ -419,9 +426,6 @@ function chakraOfficialValue(
 		return fallback;
 	const catalog = TokenCatalog.fromContract(context.config.tokenCatalog);
 	const token = catalog?.findByReference([group], value.value);
-	// Keep a statically resolvable Chakra token as a token IR node. Resolving it
-	// directly to `var(--chakra-...)` would make later target adapters lose the
-	// authored token and would prevent a configured target preset from reusing it.
 	if (token !== undefined)
 		return {
 			kind: "token",
@@ -441,7 +445,7 @@ interface ChakraSystemLike {
 		readonly shorthands?: ReadonlyMap<string, string>;
 	};
 	readonly token?: {
-		var?(path: string, fallback?: unknown): unknown;
+		readonly var?: (path: string) => string;
 	};
 }
 
@@ -458,13 +462,26 @@ function chakraSourceVocabulary(context: AdapterParseContext): {
 } {
 	const system = context.config.values.chakraSystem as ChakraSystemLike | undefined;
 	const aliases = system?.utility?.shorthands;
-	const resolvedAliases = aliases === undefined ? propertyAliases : Object.fromEntries(aliases);
+	const resolvedAliases =
+		context.targetId === CodemodAdapterId.Pandwind
+			? {
+					...propertyAliases,
+					...(aliases === undefined ? {} : Object.fromEntries(aliases)),
+				}
+			: aliases === undefined
+				? propertyAliases
+				: Object.fromEntries(aliases);
 	const resolvedProperties = system?.properties === undefined ? styleProps : [...system.properties];
 	return {
 		styleProps:
 			system?.properties === undefined
 				? styleProps
-				: (property) => property === "css" || system.properties?.has(property) === true,
+				: context.targetId === CodemodAdapterId.Pandwind
+					? (property) =>
+							property === "css" ||
+							system.properties?.has(property) === true ||
+							Object.hasOwn(resolvedAliases, property)
+					: (property) => property === "css" || system.properties?.has(property) === true,
 		propertyAliases: resolvedAliases,
 		valueTransformProperties: [
 			...new Set([...resolvedProperties, ...Object.keys(resolvedAliases)]),
@@ -657,6 +674,107 @@ function qualifyFirstChakraIntrinsicHost(code: string): {
 	return opening === undefined ? { code, imports: [] } : qualifyChakraIntrinsicHost(code, opening);
 }
 
+const CHAKRA_SOURCE_COMPONENTS = {
+	Box: "div",
+	Text: "p",
+	Heading: "h2",
+	Button: "button",
+	Link: "a",
+	Image: "img",
+	Span: "span",
+	GridItem: "div",
+	WrapItem: "div",
+	Flex: "div",
+	Stack: "div",
+	HStack: "div",
+	VStack: "div",
+	Center: "div",
+	Grid: "div",
+	SimpleGrid: "div",
+	Wrap: "div",
+	AbsoluteCenter: undefined,
+	Badge: undefined,
+	Card: undefined,
+	Circle: undefined,
+	Container: undefined,
+	Float: undefined,
+	Icon: undefined,
+	IconButton: undefined,
+	LinkBox: undefined,
+	LinkOverlay: undefined,
+	Portal: undefined,
+	Separator: undefined,
+	StackSeparator: undefined,
+} as const;
+
+function removeUnusedChakraSystemBootstrap(code: string): string {
+	const edits: Array<{ readonly start: number; readonly end: number }> = [];
+	const declarationPattern =
+		/^[ \t]*(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*createSystem\(\s*([A-Za-z_$][\w$]*)\s*\);?[ \t]*(?:\r?\n|$)/gmu;
+	const escapeIdentifier = (value: string): string => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+	for (const match of code.matchAll(declarationPattern)) {
+		const start = match.index;
+		const binding = match[1];
+		const config = match[2];
+		if (start === undefined || binding === undefined || config === undefined) continue;
+		const end = start + match[0].length;
+		const withoutDeclaration = `${code.slice(0, start)}${code.slice(end)}`;
+		const body = withoutDeclaration.replace(
+			/(^|\n)[ \t]*import\b[\s\S]*?from\s+["'][^"']+["'];?[ \t]*(?=\r?\n|$)/g,
+			"$1",
+		);
+		const bindingPattern = new RegExp(`\\b${escapeIdentifier(binding)}\\b`, "u");
+		const configPattern = new RegExp(`\\b${escapeIdentifier(config)}\\b`, "u");
+		if (!bindingPattern.test(body) && !configPattern.test(body)) edits.push({ start, end });
+	}
+	for (const edit of edits.toReversed())
+		code = `${code.slice(0, edit.start)}${code.slice(edit.end)}`;
+	return code;
+}
+
+const CHAKRA_HOST_DEFAULTS: Readonly<Record<string, Readonly<Record<string, string>>>> = {
+	Flex: { display: "flex" },
+	Stack: { display: "flex", flexDirection: "column" },
+	HStack: { display: "flex", flexDirection: "row" },
+	VStack: { display: "flex", flexDirection: "column" },
+	Center: { display: "flex", alignItems: "center", justifyContent: "center" },
+	Grid: { display: "grid" },
+	SimpleGrid: { display: "grid" },
+	Wrap: { display: "flex", flexWrap: "wrap" },
+};
+
+function applyChakraHostDefaults(program: StyleProgram): StyleProgram {
+	const openingTag = program.source?.hostOpenTag;
+	if (openingTag === undefined) return program;
+	const sourceTag = /^<\s*([A-Za-z_$][\w$.-]*)/u.exec(openingTag)?.[1];
+	if (sourceTag === undefined) return program;
+	const defaults = CHAKRA_HOST_DEFAULTS[sourceTag];
+	if (defaults === undefined) return program;
+	const rootIndex = program.rules.findIndex(
+		(rule) =>
+			rule.kind === StyleRuleKindTag.Style &&
+			rule.name === undefined &&
+			rule.conditions.length === 0,
+	);
+	const rootRule = rootIndex < 0 ? undefined : program.rules[rootIndex];
+	if (rootRule === undefined) return program;
+	const existingProperties = new Set(
+		rootRule.declarations.map((declaration) => declaration.property),
+	);
+	const declarations = Object.entries(defaults)
+		.filter(([property]) => !existingProperties.has(property))
+		.map(([property, value]) => ({
+			conditions: [],
+			property,
+			value: { kind: StyleValueKindTag.Literal as const, value },
+		}));
+	if (declarations.length === 0) return program;
+	const rules = program.rules.map((rule, index) =>
+		index === rootIndex ? { ...rule, declarations: [...declarations, ...rule.declarations] } : rule,
+	);
+	return { ...program, rules, declarations: [...declarations, ...program.declarations] };
+}
+
 function replaceChakraClassAttribute(
 	code: string,
 	binding: string | undefined,
@@ -815,7 +933,7 @@ export function createChakraAdapter(
 	options: { readonly moduleLoader?: ProjectModuleLoader | null } = {},
 ) {
 	const moduleLoader = options.moduleLoader === null ? undefined : options.moduleLoader;
-	return defineCodemodAdapter({
+	const adapter = defineCodemodAdapter({
 		id: CodemodAdapterId.ChakraUi,
 		officialApi: {
 			pluginSystems: ["presets", "recipes", "slot-recipes", "conditions", "globalCss"],
@@ -900,6 +1018,10 @@ export function createChakraAdapter(
 		}),
 		namedRuleStrategy: StyleNamedRuleStrategy.ClassMap,
 		migration: {
+			rewrite: ({ code, targetId, complete }) => {
+				if (targetId !== CodemodAdapterId.Pandwind || !complete) return { code, residuals: [] };
+				return { code: removeUnusedChakraSystemBootstrap(code), residuals: [] };
+			},
 			targetPolicy: {
 				handlesHostRewrites: true,
 				handlesFrameworkSemantics: true,
@@ -937,8 +1059,9 @@ export function createChakraAdapter(
 			},
 		},
 		detectPatterns: [/@chakra-ui\/react/, /<(?:(?:Box|Flex|Stack|Text|Button)(?:\s|>))/],
-		// Component imports remain in place because the host element still uses Chakra's component.
 		sourceModules: [],
+		sourceModulesToRemove: (targetId) =>
+			targetId === CodemodAdapterId.Pandwind ? ["@chakra-ui/react"] : [],
 		configFiles: ["package.json", "chakra.config.ts", "theme.ts"],
 		tokenPolicy: CHAKRA_TOKEN_POLICY,
 		...(moduleLoader === undefined
@@ -1006,4 +1129,20 @@ export function createChakraAdapter(
 			};
 		},
 	});
+	return {
+		...adapter,
+		parse(source: string, context: AdapterParseContext) {
+			const parsed = adapter.parse(source, context);
+			if (context.targetId !== CodemodAdapterId.Pandwind) return parsed;
+			return {
+				...parsed,
+				matches: parsed.matches.map((match) => ({
+					...match,
+					program: applyChakraHostDefaults(
+						canonicalizeSourceHost(match.program, CHAKRA_SOURCE_COMPONENTS, "Chakra"),
+					),
+				})),
+			};
+		},
+	};
 }

@@ -17,7 +17,7 @@ import {
 	type AdapterTokenCatalog,
 	type AdapterTokenPolicy,
 } from "./adapter-contract.ts";
-import type { StyleProgram } from "./semantic-ir.ts";
+import type { StyleProgram, StyleValue } from "./semantic-ir.ts";
 
 /** How emitted token references are qualified. */
 export type TokenRefMode = "off" | "bare" | "group";
@@ -67,6 +67,47 @@ export type TokenReferenceFormatter = (
 	property: string,
 	existingAuthored?: string,
 ) => string;
+
+/**
+ * Recover a source token without manufacturing a source-library CSS variable.
+ *
+ * Source adapters use this before target projection. An exact authored path or
+ * resolved scalar becomes neutral token IR; everything else stays untouched so
+ * the migration runner can preserve it as a residual instead of guessing a
+ * foreign runtime variable.
+ */
+export function recoverSourceToken(
+	value: StyleValue,
+	property: string,
+	groupForProperty: TokenGroupForProperty,
+	catalog: TokenCatalog | undefined,
+): StyleValue {
+	const group = groupForProperty(property);
+	if (group === undefined || catalog === undefined) return value;
+	const match =
+		value.kind === StyleValueKindTag.Token
+			? (catalog.findByReference([group], value.ref) ??
+				(value.resolved === undefined ? undefined : catalog.findUnique([group], value.resolved)))
+			: value.kind === StyleValueKindTag.Literal &&
+				  (typeof value.value === "string" || typeof value.value === "number")
+				? (catalog.findByReference([group], String(value.value)) ??
+					catalog.findUnique([group], String(value.value)))
+				: undefined;
+	if (match === undefined) return value;
+	const authored =
+		value.kind === StyleValueKindTag.Token
+			? value.authored
+			: value.kind === StyleValueKindTag.Literal
+				? String(value.value)
+				: undefined;
+	if (authored === undefined) return value;
+	return {
+		kind: StyleValueKindTag.Token,
+		ref: match.ref,
+		authored,
+		resolved: match.resolved,
+	};
+}
 
 /**
  * Build the shared target-token policy used by ecosystem adapters.

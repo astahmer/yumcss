@@ -186,13 +186,6 @@ const SIMPLE_TOKEN_PROPS = new Set([
 	"zIndex",
 ]);
 
-/** Best-effort panda CSS-var group for an unmapped dotted token. */
-function fallbackVarForPath(path: string): string {
-	const segments = path.split(".");
-	const group = segments[0] ?? "tokens";
-	return `var(--${group}-${segments.map((segment) => segment.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`)).join("-")})`;
-}
-
 /** Authored Pandwind token ref for a known host-theme path (`fg.muted` -> `fg.muted`). */
 function authoredRefForPath(path: string, format: TokenReferenceFormatValue): string {
 	return formatTokenPath(path, format);
@@ -217,15 +210,15 @@ function resolveValue(
 	if (theme.tokenVars.has(bare) && (bare.includes(".") || SIMPLE_TOKEN_PROPS.has(prop))) {
 		resolved = { value: authoredRefForPath(bare, format) };
 	} else if (TOKEN_PATH_RE.test(bare)) {
-		// Dotted candidate the theme does not know — CSS-variable fallback
-		// into panda's generated custom properties + explicit residual.
-		const fallback = fallbackVarForPath(bare);
+		// An unknown dotted value is not evidence for a source CSS variable.
+		// Keep the authored value visible and force a residual so the migration
+		// cannot silently depend on Panda's generated namespace.
 		resolved = {
-			value: fallback,
+			value: bare,
 			residual: {
 				kind: SwapResidualKindTag.UnknownValue,
 				text: `${prop}: '${raw}'`,
-				hint: `token "${bare}" is not in the ingested panda theme — emitted as ${fallback}; lift it via pass 1`,
+				hint: `token "${bare}" is not in the ingested panda theme; add it to the Pandwind preset before migration`,
 			},
 		};
 	} else {

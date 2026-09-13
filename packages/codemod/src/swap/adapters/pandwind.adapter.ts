@@ -72,10 +72,10 @@ import {
 const PANDWIND_TARGET_POLICY: AdapterTargetMigrationPolicy = {
 	handlesHostRewrites: true,
 	handlesFrameworkSemantics: true,
-	// Pandwind is a compose target: any source factory host keeps styling the
-	// element it was authored on, so the shared carrier projection must not
-	// collapse it to a bare intrinsic.
-	demotesFactoryHosts: false,
+	// Pandwind owns the final host. Source factories are projected to verified
+	// intrinsic elements; preserving a foreign factory would keep the source
+	// ecosystem alive after a supposedly complete migration.
+	demotesFactoryHosts: true,
 	hostRepresentation: StyleHostRepresentationKind.Class,
 	standaloneHostRepresentation: StyleHostRepresentationKind.Class,
 	preservesResidualKindsForRepresentation: () => [StyleProgramResidualKindTag.UnknownUtility],

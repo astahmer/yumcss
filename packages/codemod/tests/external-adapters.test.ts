@@ -1970,7 +1970,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).toContain(")(props) });");
 	});
 
-	test("lowers Chakra, MUI, and Mantine host style props without removing component imports", () => {
+	test("lowers Chakra, MUI, and Mantine host style props to canonical elements", () => {
 		const chakra = runAdapterMigration(
 			'import { Box } from "@chakra-ui/react";\nexport const App = () => <Box bg="tomato" p="16px" _hover={{ bg: "blue" }} data-kind="card" />;',
 			{ from: "chakra-ui", to: "pandwind", file: "App.tsx", mode: "safe" },
@@ -1978,11 +1978,23 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(chakra.converted).toBe(1);
 		expect(chakra.skipped).toBe(0);
 		expect(chakra.residuals).toEqual([]);
-		expect(chakra.code).toContain('import { Box } from "@chakra-ui/react";');
+		expect(chakra.code).not.toContain('import { Box } from "@chakra-ui/react";');
+		expect(chakra.code).toContain('<div data-kind="card"');
 		expect(chakra.code).toContain(
 			'className={css.class({ padding: "16px", backgroundColor: "tomato"',
 		);
 		expect(chakra.code).toContain('"&:hover"');
+
+		const intrinsicOverride = runAdapterMigration(
+			'import { Box, Heading } from "@chakra-ui/react";\n' +
+				'export const App = () => <Box as="aside" p="4"><Heading as="h1" color="red.200">Title</Heading></Box>;',
+			{ from: "chakra-ui", to: "pandwind", file: "Intrinsic.tsx", mode: "safe" },
+		);
+		expect(intrinsicOverride.residuals).toEqual([]);
+		expect(intrinsicOverride.code).toContain('<aside className={css.class({ padding: "4" })}>');
+		expect(intrinsicOverride.code).toContain('<h1 className={css.class({ color: "red.200" })}>');
+		expect(intrinsicOverride.code).not.toContain('as="aside"');
+		expect(intrinsicOverride.code).not.toContain('as="h1"');
 
 		const merged = runAdapterMigration(
 			'import { Box } from "@chakra-ui/react";\nexport const App = () => <Box className="existing" bg="tomato" />;',
@@ -2006,8 +2018,8 @@ describe("CSS-in-JS adapter contract v2", () => {
 		);
 
 		const componentSpread = runAdapterMigration(
-			'import { Stack } from "@chakra-ui/react";\n' +
-				'const Notice = (props: any) => <Stack {...props} display="inline-flex" />;\n' +
+			'import { Box } from "@chakra-ui/react";\n' +
+				'const Notice = (props: any) => <Box {...props} display="inline-flex" />;\n' +
 				'const App = () => <Notice mt="3" />;',
 			{ from: "chakra-ui", to: "pandwind", file: "Notice.tsx", mode: "safe" },
 		);
@@ -2041,7 +2053,9 @@ describe("CSS-in-JS adapter contract v2", () => {
 			{ from: "chakra-ui", to: "pandwind", file: "Palette.tsx", mode: "safe" },
 		);
 		expect(palette.residuals).toEqual([]);
-		expect(palette.code).toContain('color: "var(--chakra-colors-color-palette-fg)"');
+		expect(palette.code).toContain('color: "colorPalette.fg"');
+		expect(palette.code).toContain("<p className");
+		expect(palette.code).toContain("</p>");
 
 		const mui = runAdapterMigration(
 			'import { Box } from "@mui/material";\nexport const App = () => <Box sx={{ m: 2, p: 1, color: "red" }} />;',
@@ -2050,7 +2064,8 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(mui.converted).toBe(1);
 		expect(mui.skipped).toBe(0);
 		expect(mui.residuals).toEqual([]);
-		expect(mui.code).toContain('import { Box } from "@mui/material";');
+		expect(mui.code).not.toContain('import { Box } from "@mui/material";');
+		expect(mui.code).toContain("<div");
 		expect(mui.code).toContain('margin: "16px"');
 		expect(mui.code).toContain('padding: "8px"');
 
@@ -2061,7 +2076,8 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(mantine.converted).toBe(1);
 		expect(mantine.skipped).toBe(0);
 		expect(mantine.residuals).toEqual([]);
-		expect(mantine.code).toContain('import { Box } from "@mantine/core";');
+		expect(mantine.code).not.toContain('import { Box } from "@mantine/core";');
+		expect(mantine.code).toContain("<div");
 		expect(mantine.code).toContain('color: "red"');
 		expect(mantine.code).toContain('backgroundColor: "#fff"');
 	});

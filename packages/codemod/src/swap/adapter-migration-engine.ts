@@ -34,6 +34,7 @@ import type {
 } from "./adapter-migration-contract.ts";
 import {
 	getHostComponentRewriter,
+	canonicalSourceHostClosingEdit,
 	componentTagForSubject,
 	isDiscardedExpressionStatement,
 	rewriteDynamicCarrier,
@@ -174,6 +175,7 @@ function runAdapterMigrationInternal(
 		source,
 		root: options.root,
 		config,
+		targetId: targetAdapter.id,
 		readFile,
 		meta: options.meta,
 		document,
@@ -250,6 +252,8 @@ function runAdapterMigrationInternal(
 	};
 	const residuals: StyleProgramResidual[] = [...parsed.residuals];
 	const sourceModulesToRemove = new Set<string>();
+	const sourceModulesForRemoval =
+		sourceAdapter.sourceModulesToRemove?.(targetAdapter.id) ?? sourceAdapter.sourceModules;
 	// Host rewrites that collapse a factory-qualified host to its canonical
 	// element leave the source factory namespace without references. The runner
 	// owns that cleanup because several rewrite batches may demote the same tag.
@@ -1020,6 +1024,7 @@ function runAdapterMigrationInternal(
 					source: emittedForValidation,
 					root: options.root,
 					config: targetConfig,
+					targetId: targetAdapter.id,
 					readFile,
 					meta: options.meta,
 					document,
@@ -1140,6 +1145,8 @@ function runAdapterMigrationInternal(
 				end: match.end,
 				text: support.hostClassExpression(source, match.start, match.end, emitted.text),
 			});
+		const closingEdit = canonicalSourceHostClosingEdit(source, options.file, program);
+		if (closingEdit !== undefined) edits.push(closingEdit);
 		converted++;
 		const successfulRepresentation = targetRepresentationKind;
 		const emissionDetail = emitted.emissionDecisions
@@ -1379,22 +1386,20 @@ function runAdapterMigrationInternal(
 	if (converted > 0 && skipped === 0 && residuals.length === 0) {
 		code = MigrationOutput.removeSourceImports(
 			code,
-			[...sourceAdapter.sourceModules, ...sourceModulesToRemove],
+			[...sourceModulesForRemoval, ...sourceModulesToRemove],
 			sourceAdapter.sourceModuleMatchers,
 			support.generatedBindings(imports),
 		);
 		code = MigrationOutput.removeNamedImportSpecifiers(
 			code,
-			[...sourceAdapter.sourceModules, ...sourceModulesToRemove],
+			[...sourceModulesForRemoval, ...sourceModulesToRemove],
 			["css", "createCss", "createRuntimeCss"],
 		);
 		if (
 			imports.has('import { createCss } from "pandwind/css";') ||
 			imports.has('import { createRuntimeCss } from "pandwind/css/runtime";')
 		)
-			code = MigrationOutput.removeNamedImportSpecifiers(code, sourceAdapter.sourceModules, [
-				"css",
-			]);
+			code = MigrationOutput.removeNamedImportSpecifiers(code, sourceModulesForRemoval, ["css"]);
 		// A demoted factory-qualified host no longer references its factory
 		// namespace; its import would make the emitted module import an API the
 		// target dialect never calls.

@@ -383,11 +383,9 @@ describe("pandaStyleToIr — mdx/pre.tsx cva base", () => {
 		]);
 	});
 
-	it("keeps unknown-token dotted values out of entries via CSS-var fallback + residual", () => {
+	it("keeps unknown-token dotted values authored and adds a residual", () => {
 		const ir = pandaStyleToIr({ color: "made.up.token" }, siteTheme);
-		expect(ir.entries).toEqual([
-			{ conditions: [], prop: "color", value: "var(--made-made-up-token)" },
-		]);
+		expect(ir.entries).toEqual([{ conditions: [], prop: "color", value: "made.up.token" }]);
 		expect(ir.residuals[0]!.kind).toBe("unknown-value");
 	});
 

@@ -12,6 +12,12 @@ current `0.1.0` state.
   while only genuine runtime values use `css.vars()`. Generated code now uses
   `css` by default, with a collision-specific fallback when source code already
   owns that binding.
+- Make external-adapter routes into Pandwind target-aware: Chakra, Mantine, and
+  MUI keep authored/static values instead of fabricating foreign CSS variables,
+  canonicalize supported hosts to intrinsic elements, remove their source
+  bootstrap when the migration is complete, and leave unsupported components or
+  unresolved tokens as explicit residuals. Tokenami source sigils are also
+  normalized to neutral target token paths. Source revision: `ktzymynt`.
 
 ## Unreleased — 2026-09-13 preset-aware runtime values
 

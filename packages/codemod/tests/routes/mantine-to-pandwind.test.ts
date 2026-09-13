@@ -47,10 +47,10 @@ test("mantine -> pandwind: migrates concrete mantine syntax to pandwind", () => 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { Box } from "@mantine/core";
-		import { createCss } from "pandwind/css";
+		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const App = () => <Box className={css.class({ color: "blue.6", marginLeft: "var(--mantine-spacing-auto)", marginRight: "var(--mantine-spacing-auto)", maxWidth: 400 })}/>;",
+
+		export const App = () => <div className={css.class({ color: "blue.6", marginLeft: "auto", marginRight: "auto", maxWidth: 400 })} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -143,10 +143,10 @@ test("mantine -> pandwind: loads concrete theme and project context variants", a
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { Box } from "@mantine/core";
-		import { createCss } from "pandwind/css";
+		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const App = () => <Box className={css.class({ color: "brand", marginLeft: "var(--mantine-spacing-auto)", marginRight: "var(--mantine-spacing-auto)", maxWidth: 400 })}/>;",
+
+		export const App = () => <div className={css.class({ color: "brand", marginLeft: "auto", marginRight: "auto", maxWidth: 400 })} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -179,10 +179,10 @@ test("mantine -> pandwind: loads concrete theme and project context variants", a
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { Box } from "@mantine/core";
-		import { createCss } from "pandwind/css";
+		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const App = () => <Box className={css.class({ color: "brand", marginLeft: "var(--mantine-spacing-auto)", marginRight: "var(--mantine-spacing-auto)", maxWidth: 400 })}/>;",
+
+		export const App = () => <div className={css.class({ color: "brand", marginLeft: "auto", marginRight: "auto", maxWidth: 400 })} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -227,10 +227,10 @@ test("mantine -> pandwind: resolves concrete token values with project context",
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { Box } from "@mantine/core";
-		import { createCss } from "pandwind/css";
+		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const App = () => <Box className={css.class({ color: "brand", marginLeft: "var(--mantine-spacing-auto)", marginRight: "var(--mantine-spacing-auto)", maxWidth: 400 })}/>;",
+
+		export const App = () => <div className={css.class({ color: "brand", marginLeft: "auto", marginRight: "auto", maxWidth: 400 })} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -272,10 +272,10 @@ test("mantine -> pandwind: preserves malformed concrete mantine input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { Box } from "@mantine/core";
-		import { createCss } from "pandwind/css";
+		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const App = () => <Box className={css.class({ color: "blue.6", marginLeft: "var(--mantine-spacing-auto)", marginRight: "var(--mantine-spacing-auto)", maxWidth: 400 })}/>;
+
+		export const App = () => <div className={css.class({ color: "blue.6", marginLeft: "auto", marginRight: "auto", maxWidth: 400 })} />;
 		const unfinished = { /* unfinished mantine */",
 		  "converted": 1,
 		  "generatedFiles": [],

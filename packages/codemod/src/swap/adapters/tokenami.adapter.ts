@@ -267,18 +267,24 @@ function tokenamiSourceValue(
 	if (!value.value.startsWith("$")) return value;
 	const group = tokenamiTokenGroup(property);
 	const catalog = TokenCatalog.fromContract(context.config.tokenCatalog);
-	if (group === undefined || catalog === undefined) return value;
+	if (group === undefined) return value;
 	const reference = value.value
 		.slice(1)
 		.replace(new RegExp(`^${group}\\.`), "")
 		.replaceAll("-", ".");
-	const match = catalog.findByReference([group], reference);
+	const match = catalog?.findByReference([group], reference);
+	if (context.targetId === CodemodAdapterId.Pandwind && match === undefined)
+		return {
+			kind: StyleValueKindTag.Token,
+			ref: reference,
+			authored: reference,
+		};
 	return match === undefined
 		? value
 		: {
 				kind: StyleValueKindTag.Token,
 				ref: match.ref,
-				authored: value.value,
+				authored: context.targetId === CodemodAdapterId.Pandwind ? match.ref : value.value,
 				resolved: match.resolved,
 			};
 }
