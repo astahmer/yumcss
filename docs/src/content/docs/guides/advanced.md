@@ -44,9 +44,9 @@ Dynamic values remain runtime values and need a scanner/safelist strategy.
 
 ```ts
 import { pandwindCssVite } from "pandwind/vite";
-import { preset } from "./src/preset";
+import { css } from "./src/css";
 
-pandwindCssVite(preset, {
+pandwindCssVite(css, {
 	cssSources: [/\/src\/styles\//],
 	include: [/\.(tsx|ts|vue|svelte|astro)$/],
 	exclude: [/\.stories\./],
@@ -67,11 +67,12 @@ build, pass one context created from one preset:
 
 ```ts
 import { createPandwindEngineContext, pandwindCssVite, pandwindVite } from "pandwind/vite";
-import { preset } from "./src/preset";
+import { css } from "./src/css";
+import { preset } from "./src/theme";
 
 const engine = createPandwindEngineContext({ preset });
 
-plugins: [pandwindVite({ css: { preset, engine } }), pandwindCssVite(preset, { engine })];
+plugins: [pandwindVite({ css: { preset, engine } }), pandwindCssVite(css, { engine })];
 ```
 
 This keeps folded classes and extracted rules on the same identity and
@@ -161,8 +162,6 @@ runtime expression/custom property or keep an explicit residual.
 | `css.className`  | Class-name strategy for folded CSS calls               |
 | `css.engine`     | Shared engine context                                  |
 | `css.cssSources` | CSS/design module import sources                       |
-| `css.presetModule` | Source module to reload during Vite HMR               |
-| `css.presetExport` | Export name to reload from the preset module          |
 | `onUnresolved`   | `off`, `warn`, or `error` for unresolved folded tokens |
 
 `pandwindCssVite` options:
@@ -172,8 +171,6 @@ runtime expression/custom property or keep an explicit residual.
 | `cssSources`                | CSS/design imports to scan                                |
 | `include` / `exclude`       | Files included or skipped                                 |
 | `root`                      | Scan root; defaults to the current directory              |
-| `presetModule`              | Source module to reload during Vite HMR                  |
-| `presetExport`              | Export name to reload from the preset module             |
 | `virtualId`                 | Virtual CSS module id                                     |
 | `className`                 | Tailwind or named class strategy                          |
 | `namespace`                 | Pandwind-owned dynamic carriers and critical markers      |

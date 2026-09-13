@@ -1,8 +1,9 @@
-import { createCss } from "pandwind/css";
+import { createCssOpen } from "pandwind/css";
+import { examplePreset } from "@pandwind/example-preset";
 
 /**
- * Raw atomic css() — plain style objects, same engine family, no design
- * vocabulary.
+ * Atomic css() — plain style objects on the app preset, separate from the
+ * design-layer vocabulary exposed by dss.
  *
  * NOTE: literal css.class(...) calls must NOT live in this file. The
  * `pandwindCssVite` extractor only scans calls made through an IMPORT
@@ -10,4 +11,4 @@ import { createCss } from "pandwind/css";
  * `css`/`design` — a file-local const does not qualify (see src/card-b.ts
  * for the working call site).
  */
-export const css = createCss();
+export const css = createCssOpen(examplePreset);

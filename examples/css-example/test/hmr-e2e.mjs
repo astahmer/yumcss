@@ -22,6 +22,7 @@ import { dirname, join } from "node:path";
 import { createServer } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import { examplePreset } from "@pandwind/example-preset";
+import { createDesignCss } from "pandwind/design";
 import { pandwindCssVite } from "pandwind/vite";
 
 const root = realpathSync(mkdtempSync(join(tmpdir(), "pandwind-vite-hmr-")));
@@ -56,7 +57,7 @@ const writeFixture = (color) => {
 		[
 			'import { createDesignCss } from "pandwind/design";',
 			'import { examplePreset } from "@pandwind/example-preset";',
-		"export const dss = createDesignCss(examplePreset);",
+			"export const css = createDesignCss(examplePreset);",
 		].join("\n"),
 	);
 	writeFileSync(
@@ -91,9 +92,10 @@ try {
 	mkdirSync(join(root, "node_modules/@pandwind"), { recursive: true });
 	symlinkSync(examplePresetRoot, join(root, "node_modules/@pandwind/example-preset"), "dir");
 	writeFixture("$blue-500");
+	const css = createDesignCss(examplePreset);
 	server = await createServer({
 		root,
-		plugins: [pandwindCssVite(examplePreset, { root }), react()],
+		plugins: [pandwindCssVite(css, { root }), react()],
 		resolve: {
 			alias: [
 				{ find: "react-dom", replacement: reactDomRoot },

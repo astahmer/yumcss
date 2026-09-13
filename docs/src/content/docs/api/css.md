@@ -97,7 +97,7 @@ uses aliases such as `bg`, `px`, or `rounded`, opt into the separate catalog:
 import { createCss } from "pandwind/css";
 import { cssShorthands } from "pandwind/css/shorthands";
 
-const css = createCss({ propertyAliases: cssShorthands });
+const css = createCss(preset, { propertyAliases: cssShorthands });
 const card = css.class({ bg: "red", px: 4 });
 ```
 
@@ -116,7 +116,7 @@ specificity strategy:
 const css = createCss(preset, { cascade: "specificity" });
 
 // vite.config.ts
-pandwindCssVite(preset, { cascade: "specificity" });
+pandwindCssVite(css, { cascade: "specificity" });
 ```
 
 This adds `:not(#\\#)` priority markers to generated selectors. The markers
@@ -136,7 +136,7 @@ use the Panda-style layer strategy:
 const css = createCss(preset, { cascade: "layers" });
 
 // vite.config.ts
-pandwindCssVite(preset, { cascade: "layers" });
+pandwindCssVite(css, { cascade: "layers" });
 ```
 
 Pandwind wraps its generated tokens, atomic rules, and variable rules in
@@ -244,7 +244,7 @@ markers match the factory:
 const css = createCss(preset, { namespace: "checkout" });
 
 // vite.config.ts
-pandwindCssVite(preset, { namespace: "checkout" });
+pandwindCssVite(css, { namespace: "checkout" });
 ```
 
 ### At-rules: local conditions versus global CSS
@@ -324,7 +324,7 @@ dedup/extraction but keep preset token resolution and typing.
 Use `createCss(preset)` by default. It owns the typed style compiler and returns
 classes, declaration maps, and inline variable props, but it does not create a
 style element or mutate a stylesheet. In a built web application,
-`pandwindCssVite(preset)` or the equivalent unplugin extracts the structural
+`pandwindCssVite(css)` or the equivalent unplugin extracts the structural
 CSS. This includes the value-independent rules for `css.vars()` and
 `css.input()` groups, while the changing values remain in the returned inline
 custom properties.
@@ -377,9 +377,9 @@ runtime:
 ```ts
 // vite.config.ts
 import { pandwindCssVite } from "pandwind/vite";
-import { examplePreset } from "./src/preset";
+import { css } from "./src/styles";
 
-plugins: [pandwindCssVite(examplePreset)];
+plugins: [pandwindCssVite(css)];
 ```
 
 ```ts

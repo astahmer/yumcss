@@ -190,6 +190,11 @@ export function createCssRuntime(
 	const css = ((...styles: Array<StyleObject>) => compileStyles(...styles)) as RuntimeCssFunction;
 	css[ATOM_REGISTRY] = atoms;
 	for (const attach of attachments) attach(css, context);
+	if (preset !== undefined) {
+		Object.defineProperty(css, Symbol.for("pandwind.css-factory"), {
+			value: { kind: "css", preset, options },
+		});
+	}
 	return css;
 }
 

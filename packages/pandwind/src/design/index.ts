@@ -1,5 +1,6 @@
 import { type CreateCssOptions, type CssFn, createCss } from "../css/create-css.ts";
 import { ATOM_REGISTRY, type AtomRegistry } from "../css/atoms.ts";
+import { attachCssFactoryMetadata, CssFactoryKind } from "../css/factory-metadata.ts";
 import { assign } from "../lib/utils.ts";
 import type { StyleObject } from "../types/typings.ts";
 import { resolveDesignStyle } from "./resolve.ts";
@@ -98,6 +99,11 @@ export const createDesignCss = <TPreset extends DesignPreset>(
 	(dss as CssFn & { [ATOM_REGISTRY]?: AtomRegistry })[ATOM_REGISTRY] = (
 		engine as CssFn & { [ATOM_REGISTRY]?: AtomRegistry }
 	)[ATOM_REGISTRY];
+	attachCssFactoryMetadata(dss, {
+		kind: CssFactoryKind.Design,
+		preset,
+		options,
+	});
 
 	return dss as CssFn<Design>;
 };

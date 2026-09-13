@@ -41,9 +41,13 @@ contains static calls. Dynamic values and unsupported helpers stay on the
 runtime fallback path:
 
 ```ts
+import { createCss } from "pandwind/css";
 import { pandwindCssVite } from "pandwind/vite";
+import { examplePreset } from "@pandwind/example-preset";
 
-plugins: [pandwindCssVite(examplePreset)];
+const css = createCss(examplePreset);
+
+plugins: [pandwindCssVite(css)];
 ```
 
 ```ts
@@ -70,7 +74,7 @@ const engine = createPandwindEngineContext({ preset, className });
 export const css = createCss(preset, { className });
 export const Stack = createStack(css);
 
-plugins: [stackFoldVite({ engine }), pandwindCssVite(preset, { engine })];
+plugins: [stackFoldVite({ engine }), pandwindCssVite(css, { engine })];
 ```
 
 Static `<Stack>` props then become the strategy's class names and, for
@@ -80,26 +84,28 @@ component. The engine is explicit because a JSX alias such as
 `const Stack = createStack(css)` does not retain reliable compiler ownership
 metadata for a Vite plugin to infer after re-exporting.
 
-### Preset changes during Vite HMR
+### Composed CSS changes during Vite HMR
 
-Vite evaluates `vite.config` once, so a preset imported only by the config
-would otherwise stay stale while editing its source module. Point the
-extractor at that module to reload the named export when the preset or one of
-its imports changes:
+Pass the same composed CSS function that application modules use. During dev,
+the extractor follows that module's Vite dependency graph and reloads the
+composition when its source or imported theme changes. No preset path or
+separate config file is needed:
 
 ```ts
-import { pandwindCssVite } from "pandwind/vite";
+// src/css.ts
+import { createCss } from "pandwind/css";
+import { preset } from "./theme";
 
-plugins: [
-	pandwindCssVite(preset, {
-		presetModule: new URL("./src/preset.ts", import.meta.url).href,
-		presetExport: "preset",
-	}),
-];
+export const css = createCss(preset);
 ```
 
-`presetExport` defaults to `default`. This is a Vite dev-server feature; the
-normal build still uses the preset passed to `pandwindCssVite()` directly.
+```ts
+// vite.config.ts
+import { pandwindCssVite } from "pandwind/vite";
+import { css } from "./src/css";
+
+plugins: [pandwindCssVite(css)];
+```
 
 ### Multiple presets or source lanes
 
@@ -115,15 +121,15 @@ instance a unique `virtualId`:
 // vite.config.ts
 import { defineConfig } from "vite";
 import { pandwindCssVite } from "pandwind/vite";
-import { appPreset } from "./src/app-preset";
-import { sandboxPreset } from "./src/sandbox-preset";
+import { appCss } from "./src/app-css";
+import { sandboxCss } from "./src/sandbox-css";
 
 export default defineConfig({
 	plugins: [
-		pandwindCssVite(appPreset, {
+		pandwindCssVite(appCss, {
 			cssSources: ["css"],
 		}),
-		pandwindCssVite(sandboxPreset, {
+		pandwindCssVite(sandboxCss, {
 			cssSources: ["sandbox-css"],
 			virtualId: "pandwind:sandbox-css",
 		}),
@@ -134,11 +140,11 @@ export default defineConfig({
 The source modules must use the same presets as their extractor instances:
 
 ```ts
-// src/css.ts
+// src/app-css.ts
 import { createCss } from "pandwind/css";
 import { appPreset } from "./app-preset";
 
-export const css = createCss(appPreset);
+export const appCss = createCss(appPreset);
 ```
 
 ```ts
@@ -146,7 +152,7 @@ export const css = createCss(appPreset);
 import { createCss } from "pandwind/css";
 import { sandboxPreset } from "./sandbox-preset";
 
-export const css = createCss(sandboxPreset);
+export const sandboxCss = createCss(sandboxPreset);
 ```
 
 If the CSS factory uses a custom namespace for dynamic carriers, repeat it on
@@ -156,7 +162,7 @@ runtime factory:
 ```ts
 const css = createCss(appPreset, { namespace: "checkout" });
 
-plugins: [pandwindCssVite(appPreset, { namespace: "checkout" })];
+plugins: [pandwindCssVite(css, { namespace: "checkout" })];
 ```
 
 The default namespace is `pw`. The option only changes Pandwind-owned
@@ -183,7 +189,7 @@ but this is opt-in because it changes a `className` attribute into a
 `className`/`style` props spread:
 
 ```ts
-pandwindCssVite(examplePreset, { transformDynamicClassName: true });
+pandwindCssVite(css, { transformDynamicClassName: true });
 ```
 
 With the option enabled in the default or a sheet-backed class-name mode, this
@@ -224,7 +230,7 @@ conservative runtime carrier instead of being partially reordered or dropped.
 ## Per-route CSS splitting (opt-in)
 
 ```ts
-pandwindCssVite(preset, {
+pandwindCssVite(css, {
 	splitByRoute: [{ match: /\/routes\/admin\//, name: "admin" }],
 });
 ```

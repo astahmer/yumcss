@@ -12,7 +12,7 @@
  * ```ts
  * const engine = createPandwindEngineContext({ preset: examplePreset });
  * pandwindVite({ css: { engine } });
- * pandwindCssVite(examplePreset, { engine, root: dir });
+ * pandwindCssVite(css, { engine, root: dir });
  * ```
  *
  * Both plugins stay fully usable without a context (they construct one
@@ -63,23 +63,56 @@ export interface PandwindEngineContext {
 	clearPreparedStyles(source: string): void;
 }
 
+type EngineRefresh = (options: PandwindEngineContextOptions) => void;
+
+const engineRefreshers = new WeakMap<PandwindEngineContext, EngineRefresh>();
+
+export const refreshPandwindEngineContext = (
+	context: PandwindEngineContext,
+	options: PandwindEngineContextOptions,
+): boolean => {
+	const refresh = engineRefreshers.get(context);
+	if (refresh === undefined) return false;
+	refresh(options);
+	return true;
+};
+
 export function createPandwindEngineContext(
 	options: PandwindEngineContextOptions,
 ): PandwindEngineContext {
-	const { preset } = options;
-	const className = options.className;
+	let preset = options.preset;
+	let className = options.className;
+	let debug = options.debug;
+	let propertyAliases = options.propertyAliases;
 	const compiler = createLiteralStyleCompiler({
 		preset,
 		...(className === undefined ? {} : { className }),
-		...(options.debug === undefined ? {} : { debug: options.debug }),
-		...(options.propertyAliases === undefined ? {} : { propertyAliases: options.propertyAliases }),
+		...(debug === undefined ? {} : { debug }),
+		...(propertyAliases === undefined ? {} : { propertyAliases }),
 	});
-	return {
-		preset,
-		className,
+	const context: PandwindEngineContext = {
+		get preset() {
+			return preset;
+		},
+		get className() {
+			return className;
+		},
 		registry: compiler.registry,
 		preparedStyles: compiler.preparedStyles,
 		foldLiteralStyle: compiler.compile.bind(compiler),
 		clearPreparedStyles: compiler.clear.bind(compiler),
 	};
+	engineRefreshers.set(context, (nextOptions) => {
+		preset = nextOptions.preset;
+		className = nextOptions.className;
+		debug = nextOptions.debug ?? debug;
+		propertyAliases = nextOptions.propertyAliases ?? propertyAliases;
+		compiler.refresh({
+			preset,
+			...(className === undefined ? {} : { className }),
+			...(debug === undefined ? {} : { debug }),
+			...(propertyAliases === undefined ? {} : { propertyAliases }),
+		});
+	});
+	return context;
 }

@@ -46,14 +46,14 @@ current `0.1.0` state.
   Raw CSS values remain unchanged, and no app-level `css.vars` monkey patch is
   required.
 
-## Unreleased — 2026-09-12 Vite preset HMR
+## Unreleased — 2026-09-14 composed CSS HMR
 
 ### Fixes
 
-- `pandwindCssVite` can reload a configured preset source module and its
-  imports during Vite HMR, keeping the virtual stylesheet in sync without a
-  manual dev-server restart. Configure `presetModule` and, for named exports,
-  `presetExport`.
+- `pandwindCssVite` accepts the composed `createCss()` or `createDesignCss()`
+  function used by the application and follows its Vite module graph during
+  HMR. Editing the composition or its imported theme refreshes the virtual
+  stylesheet without a preset path or separate config file.
 
 ## Unreleased — 2026-09-12 host CSS cascade
 

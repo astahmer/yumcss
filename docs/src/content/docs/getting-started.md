@@ -65,10 +65,10 @@ export const preset = definePreset(
 // vite.config.ts
 import { defineConfig } from "vite";
 import { pandwindCssVite } from "pandwind/vite";
-import { preset } from "./src/preset";
+import { css } from "./src/styles";
 
 export default defineConfig({
-	plugins: [pandwindCssVite(preset)],
+	plugins: [pandwindCssVite(css)],
 });
 ```
 

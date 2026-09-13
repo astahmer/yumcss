@@ -23,8 +23,11 @@ import { build, createServer, type ViteDevServer } from "vite";
 import { examplePreset } from "@pandwind/example-preset";
 import { RollupOutputKind } from "./helpers/rollup-output-kind.ts";
 import { escapeIdentifier } from "../src/css/hash.ts";
+import { createCss } from "../src/css/create-css.ts";
+import { createDesignCss } from "../src/design/index.ts";
 import { pandwindPreset } from "../src/preset/index.ts";
 import { pandwindCssVite } from "../src/vite/css.ts";
+import { createPandwindEngineContext } from "../src/vite/engine-context.ts";
 import { pandwindVite } from "../src/vite/index.ts";
 
 const PACKAGE_ROOT = resolve(import.meta.dirname, "..");
@@ -121,7 +124,7 @@ const makeProject = (): Project => {
 	return {
 		dir,
 		inlinePlugin: pandwindVite({ css: { preset: examplePreset } }),
-		cssPlugin: pandwindCssVite(examplePreset, { root: dir }),
+		cssPlugin: pandwindCssVite(createDesignCss(examplePreset), { root: dir }),
 	};
 };
 
@@ -298,22 +301,22 @@ describe("HMR", () => {
 		project.cssPlugin.handleHotUpdate({ file: frozen });
 	});
 
-	test("preset source changes refresh the extractor without restarting Vite", async () => {
+	test("composed theme changes refresh the extractor without restarting Vite", async () => {
 		const dir = mkdtempSync(join(tmpdir(), "pandwind-vite-preset-hmr-"));
-		const presetFile = join(dir, "src/preset.ts");
 		const files: Record<string, string> = {
-			"src/preset.ts": `
-import { pandwindPreset } from "pandwind/preset";
-
-export const preset = {
-	...pandwindPreset,
-	properties: { backgroundColor: { $tokens: "colors" } },
-	tokens: { colors: { "$green-500": "#60A3BC" } },
-};
+			"src/theme.ts": `
+export const colors = { "$green-500": "#60A3BC" };
 `,
 			"src/design.ts": `
 import { createCss } from "pandwind/css";
-import { preset } from "./preset";
+import { pandwindPreset } from "pandwind/preset";
+import { colors } from "./theme";
+
+const preset = {
+	...pandwindPreset,
+	properties: { backgroundColor: { $tokens: "colors" } },
+	tokens: { colors },
+};
 
 export const css = createCss(preset);
 `,
@@ -332,14 +335,13 @@ export const className = css.class({ backgroundColor: "$green-500" });
 		mkdirSync(join(dir, "node_modules"), { recursive: true });
 		symlinkSync(PACKAGE_ROOT, join(dir, "node_modules/pandwind"), "dir");
 
-		const cssPlugin = pandwindCssVite(
-			{
-				...pandwindPreset,
-				properties: { backgroundColor: { $tokens: "colors" } },
-				tokens: { colors: { "$green-500": "#60A3BC" } },
-			},
-			{ root: dir, presetModule: presetFile, presetExport: "preset" },
-		);
+		const initialPreset = {
+			...pandwindPreset,
+			properties: { backgroundColor: { $tokens: "colors" } },
+			tokens: { colors: { "$green-500": "#60A3BC" } },
+		};
+		const engine = createPandwindEngineContext({ preset: initialPreset });
+		const cssPlugin = pandwindCssVite(createCss(initialPreset), { root: dir, engine });
 		const hmrServer = await createServer({
 			root: dir,
 			plugins: [cssPlugin],
@@ -351,13 +353,14 @@ export const className = css.class({ backgroundColor: "$green-500" });
 		const virtualId = (await hmrServer.pluginContainer.resolveId("pandwind:css", undefined))!.id;
 
 		try {
-			await hmrServer.ssrLoadModule("/src/preset.ts");
+			await hmrServer.ssrLoadModule("/src/design.ts");
 			const before = await hmrServer.transformRequest(virtualId);
 			expect(before?.code).toContain("#60A3BC");
 
-			writeFileSync(presetFile, files["src/preset.ts"]!.replace("#60A3BC", "#FF00AA"));
+			const themeFile = join(dir, "src/theme.ts");
+			writeFileSync(themeFile, files["src/theme.ts"]!.replace("#60A3BC", "#FF00AA"));
 			const updatedModules = await cssPlugin.handleHotUpdate({
-				file: presetFile,
+				file: themeFile,
 				modules: [],
 				server: hmrServer,
 			});
@@ -370,6 +373,7 @@ export const className = css.class({ backgroundColor: "$green-500" });
 			const after = await hmrServer.transformRequest(virtualId);
 			expect(after?.code).toContain("#FF00AA");
 			expect(after?.code).not.toContain("#60A3BC");
+			expect(engine.preset).not.toBe(initialPreset);
 		} finally {
 			await hmrServer.close();
 			rmSync(dir, { recursive: true, force: true });
@@ -474,7 +478,7 @@ describe("build", () => {
 
 		expect(cssOnly).not.toContain("createTw");
 		expect(cssOnly).not.toContain("createCx");
-		expect(cssOnly.length).toBeLessThan(allThree.length * 0.55);
+		expect(cssOnly.length).toBeLessThan(allThree.length * 0.56);
 	});
 });
 

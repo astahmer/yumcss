@@ -80,10 +80,10 @@ pnpm add -D unplugin
 import react from "@vitejs/plugin-react-swc";
 import { defineConfig } from "vite";
 import { pandwindCssVite } from "pandwind/vite";
-import { pandwindPreset } from "pandwind/preset";
+import { css } from "./src/styles";
 
 export default defineConfig({
-	plugins: [pandwindCssVite(pandwindPreset), react()],
+	plugins: [pandwindCssVite(css), react()],
 });
 ```
 

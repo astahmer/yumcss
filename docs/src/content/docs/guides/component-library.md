@@ -73,10 +73,10 @@ Pandwind plugin. For atomic CSS:
 
 ```ts
 import { pandwindCssVite } from "pandwind/vite";
-import { preset } from "@acme/ui/preset";
+import { dss } from "@acme/ui/styles";
 
 export default {
-	plugins: [pandwindCssVite(preset)],
+	plugins: [pandwindCssVite(dss)],
 };
 ```
 

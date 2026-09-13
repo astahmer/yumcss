@@ -18,6 +18,7 @@ export interface LiteralStyleCompiler {
 	readonly preparedStyles: ReadonlyMap<string, readonly PreparedStyle[]>;
 	compile(literal: Record<string, unknown>, source?: string): string | null;
 	clear(source: string): void;
+	refresh(options: LiteralStyleCompilerOptions): void;
 }
 
 export interface LiteralStyleCompilerOptions {
@@ -30,10 +31,10 @@ export interface LiteralStyleCompilerOptions {
 class PandwindLiteralStyleCompiler implements LiteralStyleCompiler {
 	readonly registry: AtomRegistry = new Map();
 	readonly preparedStyles = new Map<string, readonly PreparedStyle[]>();
-	private readonly options: LiteralStyleCompilerOptions;
-	private readonly className;
-	private readonly hashFn;
-	private readonly emptyCondition;
+	private options: LiteralStyleCompilerOptions;
+	private className;
+	private hashFn;
+	private emptyCondition;
 
 	constructor(options: LiteralStyleCompilerOptions) {
 		this.options = options;
@@ -106,6 +107,17 @@ class PandwindLiteralStyleCompiler implements LiteralStyleCompiler {
 
 	clear(source: string): void {
 		this.preparedStyles.delete(source);
+	}
+
+	refresh(options: LiteralStyleCompilerOptions): void {
+		this.options = options;
+		this.className = options.className;
+		this.hashFn = createHashFn(options.debug === true);
+		this.emptyCondition = Object.keys(options.preset.conditions).find(
+			(key) => !options.preset.conditions[key],
+		);
+		this.registry.clear();
+		this.preparedStyles.clear();
 	}
 }
 
