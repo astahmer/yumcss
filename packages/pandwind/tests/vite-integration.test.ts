@@ -301,11 +301,16 @@ describe("HMR", () => {
 		project.cssPlugin.handleHotUpdate({ file: frozen });
 	});
 
-	test("composed theme changes refresh the extractor without restarting Vite", async () => {
+	test("transitive composed theme changes refresh the extractor without restarting Vite", async () => {
 		const dir = mkdtempSync(join(tmpdir(), "pandwind-vite-preset-hmr-"));
 		const files: Record<string, string> = {
+			"src/theme-tokens.ts": `
+export const green500 = "#60A3BC";
+`,
 			"src/theme.ts": `
-export const colors = { "$green-500": "#60A3BC" };
+import { green500 } from "./theme-tokens";
+
+export const colors = { "$green-500": green500 };
 `,
 			"src/design.ts": `
 import { createCss } from "pandwind/css";
@@ -357,10 +362,10 @@ export const className = css.class({ backgroundColor: "$green-500" });
 			const before = await hmrServer.transformRequest(virtualId);
 			expect(before?.code).toContain("#60A3BC");
 
-			const themeFile = join(dir, "src/theme.ts");
-			writeFileSync(themeFile, files["src/theme.ts"]!.replace("#60A3BC", "#FF00AA"));
+			const tokenFile = join(dir, "src/theme-tokens.ts");
+			writeFileSync(tokenFile, files["src/theme-tokens.ts"]!.replace("#60A3BC", "#FF00AA"));
 			const updatedModules = await cssPlugin.handleHotUpdate({
-				file: themeFile,
+				file: tokenFile,
 				modules: [],
 				server: hmrServer,
 			});
