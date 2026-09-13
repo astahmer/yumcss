@@ -26,6 +26,10 @@ current `0.1.0` state.
   The built-in preset applies Panda-style finite-value filtering to strict
   keyword properties while projects that need the complete grammar can
   explicitly bring their own `csstype` config.
+- Apply one generic finite-value filter to strict properties and remove the
+  display-specific WebKit escape hatch from the public contract.
+
+Source revision: `c756d727d606533b6efdfdf9420c2ea3587cb65e`
 
 ## Unreleased — 2026-09-13 typed token references
 
