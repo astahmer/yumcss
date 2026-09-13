@@ -3,67 +3,6 @@ import { defineProperties } from "../types/define-preset.ts";
 import { tokens } from "./tokens.ts";
 
 /**
- * Closed vocabulary for the standard `display` keywords.
- *
- * `csstype` deliberately accepts an arbitrary string for `display` so callers
- * can author future or multi-keyword syntax. Pandwind's preset lane is the
- * typed/static lane, so keep the common standard spellings explicit here.
- */
-const standardDisplayValues = [
-	"-moz-initial",
-	"-ms-flexbox",
-	"-ms-grid",
-	"-ms-inline-flexbox",
-	"-ms-inline-grid",
-	"-webkit-box",
-	"-webkit-flex",
-	"-webkit-inline-flex",
-	"block",
-	"block flex",
-	"block flow",
-	"block flow-root",
-	"block grid",
-	"block ruby",
-	"contents",
-	"flex",
-	"flow",
-	"flow-root",
-	"grid",
-	"inherit",
-	"initial",
-	"inline",
-	"inline-block",
-	"inline flex",
-	"inline-flex",
-	"inline flow",
-	"inline flow-root",
-	"inline-grid",
-	"inline-list-item",
-	"inline ruby",
-	"inline-table",
-	"list-item",
-	"none",
-	"revert",
-	"revert-layer",
-	"ruby",
-	"ruby-base",
-	"ruby-base-container",
-	"ruby-text",
-	"ruby-text-container",
-	"run-in",
-	"table",
-	"table-caption",
-	"table-cell",
-	"table-column",
-	"table-column-group",
-	"table-footer-group",
-	"table-header-group",
-	"table-row",
-	"table-row-group",
-	"unset",
-] as const;
-
-/**
  * Default CSS property-to-token map used by {@link pandwindPreset}.
  *
  * This is data that can be inspected, composed, or replaced by an
@@ -249,6 +188,42 @@ type PresetProperties = typeof presetProperties;
 
 type StandardPropertyName = Exclude<keyof PresetProperties, "$all">;
 
+type StrictPropertyName =
+	| "alignContent"
+	| "alignItems"
+	| "alignSelf"
+	| "appearance"
+	| "backgroundAttachment"
+	| "borderCollapse"
+	| "display"
+	| "flexDirection"
+	| "flexWrap"
+	| "objectFit"
+	| "outlineStyle"
+	| "overflowWrap"
+	| "pointerEvents"
+	| "position"
+	| "resize"
+	| "userSelect"
+	| "visibility"
+	| "wordBreak";
+
+/** Retains literal CSS keywords while removing csstype's open string escape hatch. */
+type OnlyKnown<Value> = Value extends boolean ? Value : Value extends `${infer _}` ? Value : never;
+
+type CuratedPropertyValue<
+	TProperties,
+	TPropertyName extends keyof TProperties,
+> = TPropertyName extends "display"
+	? OnlyKnown<TProperties[TPropertyName]> | "-webkit-box"
+	: TPropertyName extends StrictPropertyName
+		? OnlyKnown<TProperties[TPropertyName]>
+		: TProperties[TPropertyName];
+
+type CuratedProperties<TProperties> = {
+	[TPropertyName in keyof TProperties]?: CuratedPropertyValue<TProperties, TPropertyName>;
+};
+
 /**
  * Curated common CSS properties supported by the built-in Pandwind preset.
  *
@@ -256,9 +231,7 @@ type StandardPropertyName = Exclude<keyof PresetProperties, "$all">;
  * complete `csstype` declaration. Import `StandardProperties` from `csstype`
  * directly when a project needs a property outside this catalog.
  */
-export type PandwindProperties<TLength = (string & {}) | 0, TTime = string & {}> = Omit<
-	Pick<CsstypeStandardProperties<TLength, TTime>, StandardPropertyName>,
-	"display"
-> & {
-	display?: (typeof standardDisplayValues)[number];
-};
+export type PandwindProperties<
+	TLength = (string & {}) | 0,
+	TTime = string & {},
+> = CuratedProperties<Pick<CsstypeStandardProperties<TLength, TTime>, StandardPropertyName>>;

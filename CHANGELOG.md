@@ -9,8 +9,9 @@ current `0.1.0` state.
 ### API
 
 - Export a curated `PandwindProperties` contract for common CSS declarations.
-  The built-in preset closes finite `display` keywords while projects that need
-  the complete grammar can explicitly bring their own `csstype` config.
+  The built-in preset applies Panda-style finite-value filtering to strict
+  keyword properties while projects that need the complete grammar can
+  explicitly bring their own `csstype` config.
 
 ## Unreleased — 2026-09-13 typed token references
 
