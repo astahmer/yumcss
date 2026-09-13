@@ -188,7 +188,7 @@ type PresetProperties = typeof presetProperties;
 
 type StandardPropertyName = Exclude<keyof PresetProperties, "$all">;
 
-type StrictPropertyName =
+type StrictValuePropertyName =
 	| "alignContent"
 	| "alignItems"
 	| "alignSelf"
@@ -208,20 +208,17 @@ type StrictPropertyName =
 	| "visibility"
 	| "wordBreak";
 
-/** Retains literal CSS keywords while removing csstype's open string escape hatch. */
-type OnlyKnown<Value> = Value extends boolean ? Value : Value extends `${infer _}` ? Value : never;
+type FilterVagueString<Value> = Value extends `${infer _}` ? Value : never;
 
-type CuratedPropertyValue<
-	TProperties,
-	TPropertyName extends keyof TProperties,
-> = TPropertyName extends "display"
-	? OnlyKnown<TProperties[TPropertyName]> | "-webkit-box"
-	: TPropertyName extends StrictPropertyName
-		? OnlyKnown<TProperties[TPropertyName]>
-		: TProperties[TPropertyName];
+type CuratedPropertyValue<TPropertyName, TValue> = TPropertyName extends StrictValuePropertyName
+	? FilterVagueString<TValue>
+	: TValue;
 
 type CuratedProperties<TProperties> = {
-	[TPropertyName in keyof TProperties]?: CuratedPropertyValue<TProperties, TPropertyName>;
+	[TPropertyName in keyof TProperties]?: CuratedPropertyValue<
+		TPropertyName,
+		TProperties[TPropertyName]
+	>;
 };
 
 /**

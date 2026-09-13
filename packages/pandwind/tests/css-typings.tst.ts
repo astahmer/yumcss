@@ -67,10 +67,14 @@ test("PandwindProperties exposes a curated CSS contract with an explicit csstype
 		position: "relative",
 		overflow: "hidden auto",
 	};
-	const compatibility: PandwindProperties = { display: "-webkit-box" };
+	const modernDisplay: PandwindProperties = { display: "inline-flex" };
 	const invalid: PandwindProperties = {
 		// @ts-expect-error not assignable
 		display: "xxx",
+	};
+	const invalidLegacyDisplay: PandwindProperties = {
+		// @ts-expect-error not assignable
+		display: "-webkit-box",
 	};
 	const invalidFiniteKeyword: PandwindProperties = {
 		// @ts-expect-error not assignable
@@ -83,8 +87,9 @@ test("PandwindProperties exposes a curated CSS contract with an explicit csstype
 	const full: CsstypeStandardProperties = { animationName: "fade-in" };
 
 	expect(common).type.toBe<PandwindProperties>();
-	expect(compatibility).type.toBe<PandwindProperties>();
+	expect(modernDisplay).type.toBe<PandwindProperties>();
 	expect(invalid).type.toBe<PandwindProperties>();
+	expect(invalidLegacyDisplay).type.toBe<PandwindProperties>();
 	expect(invalidFiniteKeyword).type.toBe<PandwindProperties>();
 	expect(unsupported).type.toBe<PandwindProperties>();
 	expect(full).type.toBe<CsstypeStandardProperties>();
