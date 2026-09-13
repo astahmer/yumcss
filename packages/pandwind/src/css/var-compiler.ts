@@ -46,6 +46,8 @@ export interface VarCompiler {
 	encode(flat: FlatStyles): { atoms: Array<VarAtom>; style: Record<string, string> };
 }
 
+type RuntimeValueResolver = (property: string, value: string) => string;
+
 const selectorHash = createHashFn(false);
 
 const isVarSelectorPart = (part: string): boolean =>
@@ -62,20 +64,28 @@ class DefaultVarCompiler implements VarCompiler {
 	private readonly emptyConditions: ReadonlySet<string>;
 	private readonly prefix: string;
 	private readonly propertyAliases: Readonly<Record<string, string>> | undefined;
+	private readonly resolveRuntimeValue: RuntimeValueResolver | undefined;
 
 	constructor(
 		conditionNames: Iterable<string> = [],
 		emptyConditionNames: Iterable<string> = [],
 		namespace?: string,
 		propertyAliases?: Readonly<Record<string, string>>,
+		resolveRuntimeValue?: RuntimeValueResolver,
 	) {
 		this.conditions = new Set(conditionNames);
 		this.emptyConditions = new Set(emptyConditionNames);
 		this.prefix = `${namespace ?? "pw"}-`;
 		this.propertyAliases = propertyAliases;
+		this.resolveRuntimeValue = resolveRuntimeValue;
 	}
 
-	private splitKey(key: string): { conditions: string[]; prop: string; canonical: string } {
+	private splitKey(key: string): {
+		conditions: string[];
+		property: string;
+		prop: string;
+		canonical: string;
+	} {
 		const parts = key.split("__").filter((part) => part !== "");
 		const first = parts[0]!;
 		const last = parts[parts.length - 1]!;
@@ -85,6 +95,7 @@ class DefaultVarCompiler implements VarCompiler {
 		const rawProp = propertyFirst ? first : last;
 		const rawConditions = propertyFirst ? parts.slice(1) : parts.slice(0, -1);
 		return {
+			property: cssPropertyFromKey(rawProp, {}, this.propertyAliases),
 			prop: dashCase(cssPropertyFromKey(rawProp, {}, this.propertyAliases)),
 			canonical: pairs.join(
 				rawConditions
@@ -128,10 +139,15 @@ class DefaultVarCompiler implements VarCompiler {
 		if (keys.length === 1 && singleKey !== undefined && !singleKey.includes("__")) {
 			const raw = flat[singleKey];
 			if (!isSafeCssValue(raw) || raw === "") return { atoms: [], style: {} };
-			const prop = dashCase(cssPropertyFromKey(singleKey, {}, this.propertyAliases));
+			const property = cssPropertyFromKey(singleKey, {}, this.propertyAliases);
+			const prop = dashCase(property);
+			const value =
+				typeof raw === "string" && this.resolveRuntimeValue !== undefined
+					? this.resolveRuntimeValue(property, raw)
+					: raw;
 			return {
 				atoms: [{ cls: `${this.prefix}${prop}`, keys: [singleKey] }],
-				style: { [this.baseCustomProp(prop)]: runtimeValue(prop, raw) },
+				style: { [this.baseCustomProp(prop)]: runtimeValue(prop, value) },
 			};
 		}
 		const atoms: Array<VarAtom> = [];
@@ -139,10 +155,14 @@ class DefaultVarCompiler implements VarCompiler {
 		for (const key of keys.toSorted()) {
 			const raw = flat[key];
 			if (!isSafeCssValue(raw) || raw === "") continue;
-			const { canonical, conditions, prop } = this.splitKey(key);
+			const { canonical, conditions, property, prop } = this.splitKey(key);
 			if (!prop) continue;
+			const value =
+				typeof raw === "string" && this.resolveRuntimeValue !== undefined
+					? this.resolveRuntimeValue(property, raw)
+					: raw;
 			atoms.push({ cls: this.classFor(key), keys: [canonical] });
-			style[this.customPropFor(prop, conditions)] = runtimeValue(prop, raw);
+			style[this.customPropFor(prop, conditions)] = runtimeValue(prop, value);
 		}
 		return { atoms, style };
 	}
@@ -166,5 +186,12 @@ export const createVarCompiler = (
 	emptyConditionNames?: Iterable<string>,
 	namespace?: string,
 	propertyAliases?: Readonly<Record<string, string>>,
+	resolveRuntimeValue?: RuntimeValueResolver,
 ): VarCompiler =>
-	new DefaultVarCompiler(conditionNames, emptyConditionNames, namespace, propertyAliases);
+	new DefaultVarCompiler(
+		conditionNames,
+		emptyConditionNames,
+		namespace,
+		propertyAliases,
+		resolveRuntimeValue,
+	);

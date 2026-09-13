@@ -255,7 +255,7 @@ export function createRuntimeCss<
 	options: RuntimeCssOptions = {},
 ): RuntimeCssFn<TypedStyleObject<TPreset["_config"], TPreset["tokens"], TPreset>> {
 	const runtime = runtimeOptions(preset, options);
-	const css = createCss({ ...runtime.cssOptions, conditions: preset.conditions }) as CssFn<
+	const css = createCss(preset, runtime.cssOptions) as CssFn<
 		TypedStyleObject<TPreset["_config"], TPreset["tokens"], TPreset>
 	>;
 	runtime.registerVars(css as unknown as CssFn<StyleObject>);

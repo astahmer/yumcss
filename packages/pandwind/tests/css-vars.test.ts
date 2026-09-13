@@ -9,13 +9,15 @@
  */
 import { compile } from "@tailwindcss/node";
 import { parse } from "postcss";
+import type { StandardProperties } from "csstype";
 import { describe, expect, test } from "vitest";
-import { createCss } from "../src/css/create-css.ts";
+import { createCss, createCssOpen } from "../src/css/create-css.ts";
 import { createStylesheet } from "../src/css/create-stylesheet.ts";
 import { cssShorthands } from "../src/css/shorthands.ts";
 import { VARS_ATOMS } from "../src/css/var-compiler.ts";
 import { createCx } from "../src/cx/index.ts";
 import { createDesignCss } from "../src/design/index.ts";
+import { definePreset } from "../src/types/define-preset.ts";
 import { createCssSourceScanner } from "../src/vite/css-extract.ts";
 
 const css = createCss();
@@ -34,7 +36,47 @@ const examplePreset = {
 	},
 } as never;
 
+const varsPreset = definePreset(
+	{
+		config: {} as StandardProperties,
+		tokens: {
+			colors: { $brand: "#123456" },
+			sizes: { full: "100%" },
+		},
+	},
+	{
+		strict: true,
+		conditions: { _hover: "&:hover" },
+		properties: {
+			color: { $tokens: "colors", $strictness: "inherits" },
+			width: { $tokens: "sizes", $strictness: "inherits" },
+		},
+	},
+);
+
 describe("css.vars — encoding", () => {
+	test("preset-bound vars resolve token names while preserving raw CSS values", () => {
+		const css = createCss(varsPreset, { debug: true });
+		const output = css.vars({ color: "$brand", width: "100%", _hover: { color: "red" } });
+
+		expect(output.style["--pw-c-color"]).toMatch(/^var\(--/u);
+		expect(output.style["--pw-c-color"]).not.toBe("$brand");
+		expect(output.style).toMatchObject({
+			"--pw-c-width": "100%",
+			"--pw-c-color_hover": "red",
+		});
+	});
+
+	test("open preset factory keeps runtime properties while resolving preset tokens", () => {
+		const css = createCssOpen(varsPreset, { debug: true });
+		const output = css.vars({ color: "$brand", arbitraryProperty: "value" });
+
+		expect(output.style).toMatchObject({
+			"--pw-c-color": expect.stringMatching(/^var\(--/u),
+			"--pw-c-arbitrary-property": "value",
+		});
+	});
+
 	test("uses an explicit namespace for carriers and custom properties", () => {
 		const namespaced = createCss({ namespace: "checkout" });
 		const out = namespaced.vars({ color: "red", _hover: { color: "blue" } });

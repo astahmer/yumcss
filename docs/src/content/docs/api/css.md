@@ -15,7 +15,10 @@ sidebar:
 `createCss(preset)` returns the preferred typed `css()` that flattens a style
 object into hashed atomic classes, with design tokens, property-priority
 merging, variant conditions and a `$input` escape hatch for dynamic values.
-`createCss()` remains available as an intentionally loose convenience form.
+`createCssOpen(preset)` keeps the same preset-aware runtime behavior while
+accepting an open style-object surface for applications that discover
+properties or aliases at runtime. `createCss()` remains available as an
+intentionally loose convenience form without preset token resolution.
 
 ```ts
 import { createCss } from "pandwind/css";
@@ -42,6 +45,21 @@ const preset = definePreset(
 const css = createCss(preset);
 const className = css.class({ backgroundColor: "$brand-500", padding: 4 });
 ```
+
+Use `createCssOpen` when the preset should still resolve token names in
+`css.vars()` but the caller needs open runtime properties:
+
+```ts
+import { createCssOpen } from "pandwind/css";
+import { cssShorthands } from "pandwind/css/shorthands";
+
+const css = createCssOpen(preset, { propertyAliases: cssShorthands });
+const output = css.vars({ color: "$brand-500", customProperty: runtimeValue });
+```
+
+This is a factory choice, not a second runtime or a wrapper around `css.vars`.
+Static styles should continue to use `css.class()`; reserve `css.vars()` for
+values that are only known at runtime.
 
 This lane is for ordinary CSS properties with a small production path:
 literal calls can be extracted at build time, while dynamic values can use
@@ -233,11 +251,11 @@ Pandwind has two deliberately different at-rule lanes. Use a typed style
 condition when the rule belongs to an element; use authored CSS or the
 explicit runtime sheet when it changes the stylesheet itself:
 
-| Need                                                      | Use                                                       | What happens                                                                                                 |
-| --------------------------------------------------------- | --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| Viewport, container, or feature conditions on a component | `@media`, `@container`, or `@supports` in a style object  | The condition is emitted around the component's extracted atomic rule.                                       |
+| Need                                                      | Use                                                       | What happens                                                                                                                                                               |
+| --------------------------------------------------------- | --------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Viewport, container, or feature conditions on a component | `@media`, `@container`, or `@supports` in a style object  | The condition is emitted around the component's extracted atomic rule.                                                                                                     |
 | Browser-global registration and definitions               | Authored CSS                                              | The host CSS toolchain owns `@property`, `@font-face`, `@keyframes`, resets, and global selectors; `cascade: "layers"` is the opt-in wrapper for Pandwind-generated rules. |
-| A rule is created at runtime or collected during SSR      | `createRuntimeCss()` plus `sheet.registerSemanticRules()` | The runtime sheet serializes an explicit semantic rule and can mount, snapshot, or hydrate it.               |
+| A rule is created at runtime or collected during SSR      | `createRuntimeCss()` plus `sheet.registerSemanticRules()` | The runtime sheet serializes an explicit semantic rule and can mount, snapshot, or hydrate it.                                                                             |
 
 For example, `@container` is a normal typed condition on a local class:
 

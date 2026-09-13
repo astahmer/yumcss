@@ -9,6 +9,7 @@ import type {
 } from "../types/typings.ts";
 import { createCssBackend, type CssBackendOptions } from "../backends/css.ts";
 import { ATOM_REGISTRY, type AtomRegistry } from "./atoms.ts";
+import { createTokenResolver } from "./tokens.ts";
 import { isSafeCssValue } from "./value-normalization.ts";
 
 /**
@@ -69,6 +70,7 @@ export interface RuntimeCssContext {
 	readonly compileClass: (...styles: Array<StyleObject>) => string;
 	readonly flatten: (style: StyleObject) => FlatStyles;
 	readonly assign: (...styles: Array<StyleObject>) => StyleObject;
+	readonly resolveRuntimeValue?: (property: string, value: string) => string;
 }
 
 /** One independently replaceable method installation for the CSS runtime. */
@@ -100,6 +102,14 @@ const isPreset = (value: CreateCssOptions | TypedPreset): value is TypedPreset =
 	"properties" in value &&
 	"strict" in value;
 
+const runtimeTokenName = /^[$a-zA-Z0-9_.-]+$/u;
+
+const createRuntimeValueResolver = (preset: TypedPreset, debug: boolean) => {
+	const resolveToken = createTokenResolver(preset, debug);
+	return (property: string, value: string) =>
+		runtimeTokenName.test(value) ? resolveToken(property, value) : value;
+};
+
 /**
  * Build the callable declaration compiler and install the requested method
  * attachments. The default empty attachment list is intentional: low-level
@@ -111,9 +121,14 @@ export function createCssRuntime(
 	options: CreateCssOptions = {},
 	attachments: readonly RuntimeCssAttachment[] = [],
 ): RuntimeCssFunction {
+	const preset = isPreset(presetOrOptions) ? presetOrOptions : undefined;
 	const backendOptions = isPreset(presetOrOptions)
 		? { ...options, conditions: presetOrOptions.conditions }
 		: presetOrOptions;
+	const resolveRuntimeValue =
+		preset === undefined
+			? undefined
+			: createRuntimeValueResolver(preset, Boolean(backendOptions.debug));
 	const backend = createCssBackend(backendOptions);
 	const atoms = backend.atoms;
 
@@ -170,6 +185,7 @@ export function createCssRuntime(
 		compileClass,
 		flatten: (style) => flattenStyle(style, true),
 		assign: assign as (...styles: Array<StyleObject>) => StyleObject,
+		resolveRuntimeValue,
 	};
 	const css = ((...styles: Array<StyleObject>) => compileStyles(...styles)) as RuntimeCssFunction;
 	css[ATOM_REGISTRY] = atoms;

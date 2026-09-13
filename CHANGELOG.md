@@ -4,6 +4,15 @@ All notable changes to `pandwind` are documented here. The project has no
 released version yet — entries group the development waves that produced the
 current `0.1.0` state.
 
+## Unreleased — 2026-09-13 preset-aware runtime values
+
+### API
+
+- Add `createCssOpen(preset, options)` for applications that need an open
+  style-object surface with the preset's token resolution in `css.vars()`.
+  Raw CSS values remain unchanged, and no app-level `css.vars` monkey patch is
+  required.
+
 ## Unreleased — 2026-09-12 Vite preset HMR
 
 ### Fixes
@@ -18,7 +27,7 @@ current `0.1.0` state.
 ### API
 
 - Replace declaration-wide `important` output with opt-in `cascade:
-  "specificity"` (StyleX-like priority specificity) or `cascade: "layers"`
+"specificity"` (StyleX-like priority specificity) or `cascade: "layers"`
   (`@layer pandwind`). Default CSS output remains unchanged.
 
 ## Unreleased — 2026-09-12 CSS alias lowering
