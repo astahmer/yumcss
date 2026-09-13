@@ -662,18 +662,9 @@ export function makeExtraAdapter(options: ExtraAdapterOptions): StyleAdapter {
 					program,
 					context.loweringResiduals ?? [],
 				);
-				const dynamic = PortableStyleArtifact.containsDynamicValues(portableProgram);
+				const emission = PortableStyleArtifact.emission(portableProgram, objectText);
 				return {
-					text: dynamic
-						? `css.vars(${objectText(portableProgram)})`
-						: `css.class(${objectText(portableProgram)})`,
-					imports: dynamic
-						? [
-								'import { createRuntimeCss } from "pandwind/css/runtime";',
-								'import { pandwindPreset } from "pandwind/preset";',
-								"const css = createRuntimeCss(pandwindPreset);",
-							]
-						: ['import { createCss } from "pandwind/css";', "const css = createCss();"],
+					...emission,
 					semantic: portableProgram,
 					residuals: [],
 					dependencies: {

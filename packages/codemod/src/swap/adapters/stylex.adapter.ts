@@ -26,14 +26,14 @@ import {
 } from "../host-adapters.ts";
 
 function generatedCssBinding(source: string): string {
-	if (/\bimport\s+css\s+from\b/.test(source) && !/\b(?:const|let|var)\s+pandwindCss\b/.test(source))
-		return "pandwindCss";
-	for (const candidate of ["css", "pandwindCss", "pwCss"]) {
+	if (/\bimport\s+css\s+from\b/.test(source) && !/\b(?:const|let|var)\s+targetCss\b/.test(source))
+		return "targetCss";
+	for (const candidate of ["css", "targetCss", "pwCss"]) {
 		const escaped = candidate.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 		if (!new RegExp(`\\b(?:const|let|var|import)\\s+(?:default\\s+)?${escaped}\\b`).test(source))
 			return candidate;
 	}
-	return "pandwindCss";
+	return "targetCss";
 }
 
 function staticImports(binding: string): readonly string[] {

@@ -65,4 +65,34 @@ describe("PortableStyleArtifact", () => {
 		]);
 		expect(PortableStyleArtifact.containsDynamicValues(staticProgram)).toBe(false);
 	});
+
+	test("emits static artifacts through css.class and dynamic artifacts through css.vars", () => {
+		const staticProgram = styleProgramFromRules([
+			{
+				kind: "style",
+				conditions: [],
+				declarations: [
+					{ conditions: [], property: "color", value: { kind: "literal", value: "red" } },
+				],
+				children: [],
+				order: 0,
+			},
+		]);
+		const staticEmission = PortableStyleArtifact.emission(staticProgram);
+		expect(staticEmission).toEqual({
+			text: 'css.class({ "color": "red" })',
+			imports: ['import { createCss } from "pandwind/css";', "const css = createCss();"],
+		});
+
+		const dynamicEmission = PortableStyleArtifact.emission(
+			PortableStyleArtifact.restoreDynamicValues(program, [
+				{ kind: "dynamic-custom-property", text: "theme.foreground" },
+			]),
+		);
+		expect(dynamicEmission.text).toContain("css.vars");
+		expect(dynamicEmission.imports).toContain(
+			'import { createRuntimeCss } from "pandwind/css/runtime";',
+		);
+		expect(dynamicEmission.imports).not.toContain('import { createCss } from "pandwind/css";');
+	});
 });

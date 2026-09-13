@@ -615,21 +615,21 @@ function generatedCssBinding(
 		const clause = match[1]?.trim() ?? "";
 		const moduleSpecifier = match[2];
 		if (ownsModule(moduleSpecifier)) continue;
-		if (/^css\b/u.test(clause) || /\{[^}]*\bcss\b[^}]*\}/u.test(clause)) return "pandwindCss";
+		if (/^css\b/u.test(clause) || /\{[^}]*\bcss\b[^}]*\}/u.test(clause)) return "targetCss";
 	}
 	const bindingInput = input.replace(
 		cssImports,
 		(statement, _clause: string, moduleSpecifier: string) =>
 			ownsModule(moduleSpecifier) ? "" : statement,
 	);
-	for (const candidate of ["css", "pandwindCss", "pwCss"]) {
+	for (const candidate of ["css", "targetCss", "pwCss"]) {
 		const escaped = candidate.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 		if (
 			!new RegExp(`\\b(?:const|let|var|import)\\s+(?:default\\s+)?${escaped}\\b`).test(bindingInput)
 		)
 			return candidate;
 	}
-	return "pandwindCss";
+	return "targetCss";
 }
 
 function renameGeneratedCssBinding(
@@ -1657,7 +1657,7 @@ function runtimeHostTemplateExpression(
 		`template-${host.start ?? "0"}`,
 	);
 	const cssText = `".${stableClass}{" + ${runtimeTemplateExpression(template, context?.file, "undefined")} + "}"`;
-	const classExpression = `(() => { const __pandwindCss = ${cssText}; css.sheet.register([{ id: ${JSON.stringify(stableClass)} + ":" + __pandwindCss, css: __pandwindCss, priority: 0 }]); return ${JSON.stringify(stableClass)}; })()`;
+	const classExpression = `(() => { const __compiledCss = ${cssText}; css.sheet.register([{ id: ${JSON.stringify(stableClass)} + ":" + __compiledCss, css: __compiledCss, priority: 0 }]); return ${JSON.stringify(stableClass)}; })()`;
 	const rendered = JsxStyleHost.render(
 		host.hostOpenTag,
 		host.hostStyleAttributes,

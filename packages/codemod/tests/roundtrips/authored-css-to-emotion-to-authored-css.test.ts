@@ -193,8 +193,8 @@ test("authored-css -> emotion -> authored-css: retains the documented secondary 
 		    "changed": true,
 		    "code": "import { css, keyframes } from "@emotion/css";
 		import { createCss } from "pandwind/css";
-		const pandwindCss = createCss();
-		export const styles = { "card": pandwindCss.class({ "@media (prefers-color-scheme: dark)": { "color": "white" } }), "pulse": // pandwind:migrate-skip (route: emotion -> authored-css | capability-blocked: nesting: keyframes nested rules | available: static, residual)
+		const targetCss = createCss();
+		export const styles = { "card": targetCss.class({ "@media (prefers-color-scheme: dark)": { "color": "white" } }), "pulse": // pandwind:migrate-skip (route: emotion -> authored-css | capability-blocked: nesting: keyframes nested rules | available: static, residual)
 		keyframes({ "from": { opacity: "0" }, "to": { opacity: "1" } }) };
 		export default styles;",
 		    "converted": 1,

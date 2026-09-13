@@ -194,7 +194,7 @@ function withRuntimeImports(source: string, lane: StyledComponentsDocsLane): str
 	)
 		return source;
 	const runtimeBinding = lane === StyledComponentsDocsLane.DesignCss ? "dss" : "css";
-	const runtimeAlias = keepsSourceCss ? "__pandwindCss" : runtimeBinding;
+	const runtimeAlias = keepsSourceCss ? "__sourceCss" : runtimeBinding;
 	const runtimeSource = normalizedSource
 		.replaceAll('from "pandwind/runtime"', 'from "@/pandwind/runtime"')
 		.replaceAll('from "pandwind/theme"', 'from "@/pandwind/theme"');
@@ -290,7 +290,7 @@ class StyledComponentsLaneAdapter implements LaneAdapter {
 		return {
 			...result,
 			code: runtimeCode
-				.replaceAll("__pandwindCss", "dss")
+				.replaceAll("__sourceCss", "dss")
 				.replace(/\bcss\.(class|vars|group|props|raw|input|sheet)\b/g, "dss.$1")
 				.replaceAll("css(", "dss(")
 				.replaceAll("createCx({ css })", "createCx({ css: dss })"),
@@ -348,11 +348,11 @@ export default function StyledComponentsRegistry({ children }: { children: React
   const [styledComponentsStyleSheet] = useState(() => new ServerStyleSheet());
 
   useServerInsertedHTML(() => {
-    const pandwindCss = runtimeSheet.css();
+    const targetCss = runtimeSheet.css();
     runtimeSheet.hydrate({ tokens: '', rules: [] });
     const styles = styledComponentsStyleSheet.getStyleElement();
     styledComponentsStyleSheet.instance.clearTag();
-    return <>{pandwindCss !== '' && <style data-pandwind-runtime dangerouslySetInnerHTML={{ __html: pandwindCss }} />}{styles}</>;
+    return <>{targetCss !== '' && <style data-pandwind-runtime dangerouslySetInnerHTML={{ __html: targetCss }} />}{styles}</>;
   });
 
   if (typeof window !== 'undefined') return <>{children}</>;

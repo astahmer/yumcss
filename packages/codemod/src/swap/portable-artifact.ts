@@ -6,6 +6,11 @@ import {
 import type { StyleProgram, StyleProgramResidual, StyleValue } from "./semantic-ir.ts";
 import { StyleProgramAnalysis } from "./style-program-analysis.ts";
 
+export interface PortableStyleEmission {
+	readonly text: string;
+	readonly imports: readonly string[];
+}
+
 /**
  * Portable runtime carrier shared by targets that cannot express a dynamic
  * value in their own API. It is deliberately narrow: only residuals produced
@@ -62,6 +67,26 @@ export class PortableStyleArtifact {
 
 	static containsDynamicValues(program: StyleProgram): boolean {
 		return StyleProgramAnalysis.hasDynamic(program);
+	}
+
+	static emission(
+		program: StyleProgram,
+		objectText: (program: StyleProgram) => string = PortableStyleArtifact.objectText,
+	): PortableStyleEmission {
+		const dynamic = PortableStyleArtifact.containsDynamicValues(program);
+		return dynamic
+			? {
+					text: `css.vars(${objectText(program)})`,
+					imports: [
+						'import { createRuntimeCss } from "pandwind/css/runtime";',
+						'import { pandwindPreset } from "pandwind/preset";',
+						"const css = createRuntimeCss(pandwindPreset);",
+					],
+				}
+			: {
+					text: `css.class(${objectText(program)})`,
+					imports: ['import { createCss } from "pandwind/css";', "const css = createCss();"],
+				};
 	}
 
 	static objectText(program: StyleProgram): string {

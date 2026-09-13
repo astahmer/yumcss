@@ -352,7 +352,7 @@ const pandwindDss = makeCoreAdapter(
 	"target",
 	SWAP_EMITTERS[SwapSourceId.Dss],
 );
-const pandwindCss = makeCoreAdapter(
+const cssAdapter = makeCoreAdapter(
 	CodemodAdapterId.Pandwind,
 	SwapSourceId.Css,
 	"target",
@@ -366,7 +366,7 @@ export const PANDA_STYLE_SYSTEM: StyleSystemAdapter = createStyleSystem(CodemodA
 ]);
 export const PANDWIND_STYLE_SYSTEM: StyleSystemAdapter = createStyleSystem(
 	CodemodAdapterId.Pandwind,
-	[pandwindTw, pandwindDss, pandwindCss],
+	[pandwindTw, pandwindDss, cssAdapter],
 );
 export const CORE_STYLE_SYSTEMS: readonly StyleSystemAdapter[] = [
 	PANDA_STYLE_SYSTEM,

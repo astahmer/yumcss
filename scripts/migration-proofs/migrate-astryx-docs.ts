@@ -415,10 +415,10 @@ function installStaticExtractorConfig(outputRoot: string): Promise<void> {
 				const configFile = join(outputRoot, "next.config.mjs");
 				let config = await readFile(configFile, "utf8");
 				if (!config.includes("pandwindWebpackCss")) {
-					config = `import { pandwindWebpackCss } from "pandwind/unplugin";\nimport { pandwindPreset } from "pandwind/preset";\nconst pandwindCssPlugin = pandwindWebpackCss({ preset: pandwindPreset, root: resolve(import.meta.dirname, "../.."), cssSources: [/pandwind\\/(?:css|design)/], exclude: [/node_modules/, /(^|\\/)dist(\\/|$)/, /\\.git/, /src\\/generated\\/examples/] });\n${config}`;
+					config = `import { pandwindWebpackCss } from "pandwind/unplugin";\nimport { pandwindPreset } from "pandwind/preset";\nconst cssPlugin = pandwindWebpackCss({ preset: pandwindPreset, root: resolve(import.meta.dirname, "../.."), cssSources: [/pandwind\\/(?:css|design)/], exclude: [/node_modules/, /(^|\\/)dist(\\/|$)/, /\\.git/, /src\\/generated\\/examples/] });\n${config}`;
 					config = config.replace(
 						"    return config;",
-						"    config.plugins.push(pandwindCssPlugin);\n    return config;",
+						"    config.plugins.push(cssPlugin);\n    return config;",
 					);
 				}
 				await writeFile(configFile, config);

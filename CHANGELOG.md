@@ -4,6 +4,15 @@ All notable changes to `pandwind` are documented here. The project has no
 released version yet — entries group the development waves that produced the
 current `0.1.0` state.
 
+## Unreleased — 2026-09-13 static-first codemod output
+
+### Fixes
+
+- Centralize portable target emission so literal programs use `css.class()`
+  while only genuine runtime values use `css.vars()`. Generated code now uses
+  `css` by default, with a collision-specific fallback when source code already
+  owns that binding.
+
 ## Unreleased — 2026-09-13 preset-aware runtime values
 
 ### API

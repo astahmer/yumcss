@@ -77,12 +77,12 @@ export function aliasTargetCssBinding(code: string): string {
 	return code
 		.replace(
 			/import\s*\{\s*css\s*\}\s*from\s*(["'])([^"']*pandwind\/css(?:\/runtime)?)[^"']*\1/gu,
-			"import { css as pandwindCss } from $1$2$1",
+			"import { css as targetCss } from $1$2$1",
 		)
-		.replace(/\bconst\s+css\s*=\s*(create(?:Runtime)?Css)\(/gu, "const pandwindCss = $1(")
-		.replace(/\bcss(?=\.(?:class|vars|raw|props|group|input|sheet)\b)/gu, "pandwindCss")
-		.replace(/\b(create(?:Recipe|SlotRecipe)\(\s*)css(?=\s*,)/gu, "$1pandwindCss")
-		.replace(/\b(createCx\(\{\s*)css(?=\s*\})/gu, "$1pandwindCss");
+		.replace(/\bconst\s+css\s*=\s*(create(?:Runtime)?Css)\(/gu, "const targetCss = $1(")
+		.replace(/\bcss(?=\.(?:class|vars|raw|props|group|input|sheet)\b)/gu, "targetCss")
+		.replace(/\b(create(?:Recipe|SlotRecipe)\(\s*)css(?=\s*,)/gu, "$1targetCss")
+		.replace(/\b(createCx\(\{\s*)css(?=\s*\})/gu, "$1targetCss");
 }
 
 export function withoutDuplicateSkipMarkers(

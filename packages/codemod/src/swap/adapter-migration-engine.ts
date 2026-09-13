@@ -70,6 +70,10 @@ import {
 	type PreparedAdapterMigration,
 } from "./adapter-migration-preparation.ts";
 
+const renamedCssBindingPattern = /\b(?:targetCss|pwCss)\s*=\s*createCss\(\)/u;
+const generatedCssBindingPattern = /\b(?:css|targetCss|pwCss)\s*=\s*createCss\(\)/u;
+const runtimeCssBindingPattern = /\b(?:css|targetCss|pwCss)\s*=\s*createRuntimeCss\(/u;
+
 async function runAdapterMigrationAsyncInternal(
 	source: string,
 	options: AdapterMigrationOptions,
@@ -1398,19 +1402,16 @@ function runAdapterMigrationInternal(
 	}
 	if (imports.has('import { createRuntimeCss } from "pandwind/css/runtime";')) {
 		const hasRenamedStaticCss =
-			/\b(?:pandwindCss|pwCss)\s*=\s*createCss\(\)/u.test(code) ||
-			[...imports].some((statement) =>
-				/\b(?:pandwindCss|pwCss)\s*=\s*createCss\(\)/u.test(statement),
-			);
+			renamedCssBindingPattern.test(code) ||
+			[...imports].some((statement) => renamedCssBindingPattern.test(statement));
 		const runtimeUsesSameBinding = [...imports].some((statement) =>
-			/\b(?:css|pandwindCss|pwCss)\s*=\s*createRuntimeCss\(/u.test(statement),
+			runtimeCssBindingPattern.test(statement),
 		);
 		if (!hasRenamedStaticCss || runtimeUsesSameBinding) {
 			imports.delete('import { createCss } from "pandwind/css";');
 			if (runtimeUsesSameBinding) {
 				for (const statement of imports)
-					if (/\b(?:css|pandwindCss|pwCss)\s*=\s*createCss\(\)/u.test(statement))
-						imports.delete(statement);
+					if (generatedCssBindingPattern.test(statement)) imports.delete(statement);
 			} else imports.delete("const css = createCss();");
 		}
 		// A residual-carrying source module keeps its original statements; the

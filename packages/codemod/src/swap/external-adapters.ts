@@ -240,18 +240,12 @@ export function defineCodemodAdapter(spec: CodemodAdapterSpec): StyleAdapter {
 					program,
 					context.loweringResiduals ?? [],
 				);
-				const dynamic = PortableStyleArtifact.containsDynamicValues(portableProgram);
+				const emission = PortableStyleArtifact.emission(
+					portableProgram,
+					AdapterRenderersImplementation.programObject,
+				);
 				return {
-					text: dynamic
-						? `css.vars(${AdapterRenderersImplementation.programObject(portableProgram)})`
-						: `css.class(${AdapterRenderersImplementation.programObject(portableProgram)})`,
-					imports: dynamic
-						? [
-								'import { createRuntimeCss } from "pandwind/css/runtime";',
-								'import { pandwindPreset } from "pandwind/preset";',
-								"const css = createRuntimeCss(pandwindPreset);",
-							]
-						: ['import { createCss } from "pandwind/css";', "const css = createCss();"],
+					...emission,
 					semantic: portableProgram,
 					dependencies: {
 						packages: [{ name: "pandwind", kind: AdapterDependencyKindTag.Runtime }],
