@@ -40,10 +40,12 @@ import type {
 } from "../types/typings.ts";
 import { realpathSync } from "node:fs";
 import { relative, resolve } from "node:path";
+import type { PluginContext } from "rollup";
 import type { HmrContext, ModuleNode, ViteDevServer } from "vite";
 import { createCssExtractorPluginCore } from "./css-core.ts";
 import { refreshPandwindEngineContext, type PandwindEngineContext } from "./engine-context.ts";
 import { findCssFactoryKinds } from "./css-factory-source.ts";
+import { findCssCarrierImportSources } from "./css-source-scanner.ts";
 import { readCssFactoryMetadata } from "./css-factory-metadata.ts";
 import { type CssFactoryKind, type CssFactoryMetadata } from "../css/factory-metadata.ts";
 import type { CssFn } from "../css/create-css.ts";
@@ -169,6 +171,14 @@ const normalizeFilePath = (value: string): string => {
 const moduleContainsFile = (module: ModuleNode, file: string): boolean =>
 	module.file !== null && normalizeFilePath(module.file) === file;
 
+const moduleForId = (server: ViteDevServer, id: string): ModuleNode | undefined => {
+	const direct = server.moduleGraph.getModuleById(id);
+	if (direct !== undefined) return direct;
+	return [...(server.moduleGraph.getModulesByFile(id) ?? [])].find((module) =>
+		moduleContainsFile(module, id),
+	);
+};
+
 const compositionModuleIsAffected = (
 	file: string,
 	compositionModule: string,
@@ -177,7 +187,7 @@ const compositionModuleIsAffected = (
 	const changedFile = normalizeFilePath(file);
 	if (changedFile === compositionModule) return true;
 
-	const rootModule = server.moduleGraph.getModuleById(compositionModule);
+	const rootModule = moduleForId(server, compositionModule);
 	if (rootModule === undefined) return false;
 
 	const pending = [rootModule];
@@ -190,6 +200,33 @@ const compositionModuleIsAffected = (
 		pending.push(...module.importedModules);
 	}
 	return false;
+};
+
+const compositionModulesToUpdate = (
+	server: ViteDevServer,
+	compositionModules: readonly string[],
+): ModuleNode[] => {
+	return compositionModules
+		.map((compositionModule) => moduleForId(server, compositionModule))
+		.filter((module): module is ModuleNode => module !== undefined);
+};
+
+const ensureCompositionModuleGraph = async ({
+	server,
+	compositionModules,
+	root,
+}: {
+	server: ViteDevServer;
+	compositionModules: readonly string[];
+	root: string;
+}): Promise<void> => {
+	for (const compositionModule of compositionModules) {
+		const module = moduleForId(server, compositionModule);
+		if (module !== undefined && module.importedModules.size > 0) continue;
+		await server.ssrLoadModule(toViteModuleUrl(compositionModule, root), {
+			fixStacktrace: true,
+		});
+	}
 };
 
 const toViteModuleUrl = (file: string, root: string): string => {
@@ -261,6 +298,57 @@ export function pandwindCssVite(input: CssViteInput, options: PandwindCssViteOpt
 	let core = createCssExtractorPluginCore(activePreset, initialOptions);
 	let resolvedConfig: { command?: "build" | "serve" } | undefined;
 	const compositionModules = new Map<string, ReadonlySet<CssFactoryKind>>();
+	const compositionConsumers = new Map<string, Set<string>>();
+	const consumerCompositions = new Map<string, Set<string>>();
+
+	const forgetCompositionConsumer = (consumer: string): void => {
+		const compositions = consumerCompositions.get(consumer);
+		if (compositions === undefined) return;
+		for (const composition of compositions) {
+			const consumers = compositionConsumers.get(composition);
+			if (consumers === undefined) continue;
+			consumers.delete(consumer);
+			if (consumers.size === 0) {
+				compositionConsumers.delete(composition);
+				if ((compositionModules.get(composition)?.size ?? 0) === 0)
+					compositionModules.delete(composition);
+			}
+		}
+		consumerCompositions.delete(consumer);
+	};
+
+	const rememberCompositionConsumer = (composition: string, consumer: string): void => {
+		const consumers = compositionConsumers.get(composition) ?? new Set<string>();
+		consumers.add(consumer);
+		compositionConsumers.set(composition, consumers);
+		const compositions = consumerCompositions.get(consumer) ?? new Set<string>();
+		compositions.add(composition);
+		consumerCompositions.set(consumer, compositions);
+		if (!compositionModules.has(composition)) compositionModules.set(composition, new Set());
+	};
+
+	const registerCompositionConsumers = async (
+		pluginContext: Pick<PluginContext, "resolve">,
+		code: string,
+		id: string,
+	): Promise<void> => {
+		const normalizedId = normalizeFilePath(id);
+		forgetCompositionConsumer(normalizedId);
+		const sources = findCssCarrierImportSources(code, id, options.cssSources ?? ["css", "design"]);
+		const resolved = await Promise.all(
+			sources.map(async (source) => {
+				try {
+					return await pluginContext.resolve(source, id, { skipSelf: true });
+				} catch {
+					return null;
+				}
+			}),
+		);
+		for (const module of resolved) {
+			if (module === null) continue;
+			rememberCompositionConsumer(normalizeFilePath(module.id), normalizedId);
+		}
+	};
 
 	const reloadComposition = async (server: ViteDevServer, changedFile: string): Promise<void> => {
 		const affected = [...compositionModules.entries()].filter(([compositionModule]) =>
@@ -310,11 +398,14 @@ export function pandwindCssVite(input: CssViteInput, options: PandwindCssViteOpt
 	return {
 		name: "pandwind:extract-css",
 		enforce: "pre" as const,
-		transform(code: string, id: string) {
+		transform(this: Pick<PluginContext, "resolve"> | null | undefined, code: string, id: string) {
 			const kinds = findCssFactoryKinds(code, id);
 			const normalizedId = normalizeFilePath(id);
 			if (kinds.size === 0) compositionModules.delete(normalizedId);
 			else compositionModules.set(normalizedId, kinds);
+			if (typeof this?.resolve === "function" && !id.includes("node_modules")) {
+				return registerCompositionConsumers(this, code, id).then(() => core.transform(code, id));
+			}
 			return core.transform(code, id);
 		},
 		configResolved(config: { command?: "build" | "serve" }) {
@@ -332,12 +423,25 @@ export function pandwindCssVite(input: CssViteInput, options: PandwindCssViteOpt
 		},
 		async handleHotUpdate(ctx: CssHmrContext): Promise<ModuleNode[] | undefined> {
 			const server = ctx.server;
+			let compositionDependants: ModuleNode[] = [];
+			let compositionChanged = false;
 			if (server !== undefined) {
 				const changedFile = normalizeFilePath(ctx.file);
-				const compositionChanged = [...compositionModules.keys()].some((compositionModule) =>
-					compositionModuleIsAffected(changedFile, compositionModule, server),
+				await ensureCompositionModuleGraph({
+					server,
+					compositionModules: [...compositionModules.keys()],
+					root,
+				});
+				const affectedCompositionModules = [...compositionModules.keys()].filter(
+					(compositionModule) =>
+						compositionModuleIsAffected(changedFile, compositionModule, server),
 				);
-				if (compositionChanged) {
+				if (affectedCompositionModules.length > 0) {
+					compositionChanged = true;
+					const consumers = affectedCompositionModules.flatMap((compositionModule) => [
+						...(compositionConsumers.get(compositionModule) ?? []),
+					]);
+					compositionDependants = compositionModulesToUpdate(server, consumers);
 					server.moduleGraph.onFileChange(changedFile);
 					await reloadComposition(server, changedFile);
 				}
@@ -346,9 +450,12 @@ export function pandwindCssVite(input: CssViteInput, options: PandwindCssViteOpt
 			const virtual = server?.moduleGraph.getModuleById(
 				`\0${options.virtualId ?? "pandwind:css"}.css`,
 			);
-			const modules = ctx.modules ?? [];
-			if (virtual === undefined || modules.includes(virtual)) return ctx.modules;
-			return [...modules, virtual];
+			const modules = [
+				...new Set(compositionChanged ? compositionDependants : (ctx.modules ?? [])),
+			];
+			if (virtual !== undefined && !modules.includes(virtual)) modules.push(virtual);
+			if (modules.length === 0) return ctx.modules;
+			return modules;
 		},
 		/** Programmatic invalidation (tests, custom HMR wiring). */
 		invalidate(file: string) {

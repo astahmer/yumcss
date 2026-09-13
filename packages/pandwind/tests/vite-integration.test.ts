@@ -359,6 +359,8 @@ export const className = css.class({ backgroundColor: "$green-500" });
 
 		try {
 			await hmrServer.ssrLoadModule("/src/design.ts");
+			const app = await hmrServer.transformRequest("/src/app.ts");
+			expect(app?.code).toBeDefined();
 			const before = await hmrServer.transformRequest(virtualId);
 			expect(before?.code).toContain("#60A3BC");
 
@@ -369,6 +371,8 @@ export const className = css.class({ backgroundColor: "$green-500" });
 				modules: [],
 				server: hmrServer,
 			});
+			expect(updatedModules).toBeDefined();
+			expect(updatedModules?.some((module) => module.id?.endsWith("/src/app.ts"))).toBe(true);
 			const virtualModule = hmrServer.moduleGraph.getModuleById(virtualId);
 			expect(updatedModules).toContain(virtualModule);
 			if (virtualModule !== undefined) {

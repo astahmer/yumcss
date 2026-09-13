@@ -127,6 +127,38 @@ const collectNames = (program: OxcNode, matchers: readonly (string | RegExp)[]):
 	return names;
 };
 
+const collectCssCarrierImportSources = (
+	program: OxcNode,
+	matchers: readonly (string | RegExp)[],
+): readonly string[] => {
+	const sources = new Set<string>();
+	walk(program, (node) => {
+		if (node.type !== NodeKind.ImportDeclaration) return;
+		const declaration = node as ImportNode;
+		const source = declaration.source?.value;
+		if (typeof source !== "string" || !cssSourceMatches(source, matchers)) return;
+		if (
+			(declaration.specifiers ?? []).some((specifier) => isCssCarrierImport(declaration, specifier))
+		)
+			sources.add(source);
+	});
+	return [...sources];
+};
+
+export const findCssCarrierImportSources = (
+	code: string,
+	id: string,
+	matchers: readonly (string | RegExp)[],
+): readonly string[] => {
+	if (!SOURCE_SCANNER_SERVICE.isScriptFile(id)) return [];
+	const program = SOURCE_SCANNER_SERVICE.parse({
+		file: id,
+		source: code,
+		language: SOURCE_SCANNER_SERVICE.languageForFile(id),
+	}).program as unknown as OxcNode;
+	return collectCssCarrierImportSources(program, matchers);
+};
+
 const findCallSites = (
 	code: string,
 	id: string,

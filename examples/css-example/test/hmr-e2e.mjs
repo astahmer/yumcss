@@ -1,10 +1,11 @@
 /**
  * Browser-level Vite HMR proof for the CSS extractor.
  *
- * The test changes a literal css() call while a real Vite dev server and
- * Chromium page are running. It verifies both the new computed style and that
- * the page was not reloaded, so this covers the browser-facing HMR loop rather
- * than only calling the plugin's invalidation hook.
+ * The test changes a token transitively imported by a composed createDesignCss
+ * factory while a real Vite dev server and Chromium page are running. It
+ * verifies both the new computed style and that the page was not reloaded, so
+ * this covers the browser-facing HMR loop rather than only calling the
+ * plugin's invalidation hook.
  */
 import { strict as assert } from "node:assert";
 import { createRequire } from "node:module";
@@ -35,15 +36,26 @@ const examplePresetRoot = new URL("../../../examples/pandwind-example-preset/", 
 	.pathname;
 const reactRoot = dirname(requireFromExample.resolve("react"));
 const reactDomRoot = dirname(requireFromExample.resolve("react-dom"));
+const hmrPreset = {
+	...examplePreset,
+	tokens: {
+		...examplePreset.tokens,
+		colors: { ...examplePreset.tokens.colors, "$blue-500": "#3182CE" },
+	},
+};
 
-const writeApp = (color) => {
+const writeApp = () => {
 	writeFileSync(
 		entry,
 		[
 			'import { css } from "./css";',
-			`export function App() { return <div data-testid="target" className={css.class({ $text: { color: "${color}" } })}>HMR</div>; }`,
+			'export function App() { return <div data-testid="target" className={css.class({ $text: { color: "$blue-500" } })}>HMR</div>; }',
 		].join("\n"),
 	);
+};
+
+const writeThemeToken = (color) => {
+	writeFileSync(join(root, "src/theme-token.ts"), `export const blue500 = "${color}";`);
 };
 
 const writeFixture = (color) => {
@@ -57,7 +69,9 @@ const writeFixture = (color) => {
 		[
 			'import { createDesignCss } from "pandwind/design";',
 			'import { examplePreset } from "@pandwind/example-preset";',
-			"export const css = createDesignCss(examplePreset);",
+			'import { blue500 } from "./theme-token";',
+			'const preset = { ...examplePreset, tokens: { ...examplePreset.tokens, colors: { ...examplePreset.tokens.colors, "$blue-500": blue500 } } };',
+			"export const css = createDesignCss(preset);",
 		].join("\n"),
 	);
 	writeFileSync(
@@ -69,7 +83,8 @@ const writeFixture = (color) => {
 			'createRoot(document.getElementById("root")).render(<App />);',
 		].join("\n"),
 	);
-	writeApp(color);
+	writeThemeToken(color);
+	writeApp();
 };
 
 const waitForServerUrl = async (server) => {
@@ -91,8 +106,8 @@ try {
 	symlinkSync(pandwindPackageRoot, join(root, "node_modules/pandwind"), "dir");
 	mkdirSync(join(root, "node_modules/@pandwind"), { recursive: true });
 	symlinkSync(examplePresetRoot, join(root, "node_modules/@pandwind/example-preset"), "dir");
-	writeFixture("$blue-500");
-	const css = createDesignCss(examplePreset);
+	writeFixture("#3182CE");
+	const css = createDesignCss(hmrPreset);
 	server = await createServer({
 		root,
 		plugins: [pandwindCssVite(css, { root }), react()],
@@ -131,9 +146,10 @@ try {
 	assert.equal(await color(), "rgb(49, 130, 206)");
 	assert.equal(navigations, 1);
 
-	writeApp("$red-500");
+	writeThemeToken("#E53E3E");
 	const changedAt = new Date(Date.now() + 1_000);
-	utimesSync(entry, changedAt, changedAt);
+	utimesSync(join(root, "src/theme-token.ts"), changedAt, changedAt);
+	await new Promise((resolve) => setTimeout(resolve, 250));
 	await page.waitForFunction(
 		() =>
 			getComputedStyle(document.querySelector('[data-testid="target"]')).color ===
