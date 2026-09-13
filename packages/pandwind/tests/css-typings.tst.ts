@@ -1,6 +1,12 @@
 import { expect, test } from "tstyche";
 import { createCss, type AtomicStyleProps } from "../src/css/index.ts";
-import { definePreset, type AnyCssConfig } from "../src/preset/index.ts";
+import {
+	definePreset,
+	defineSemanticTokens,
+	defineTokens,
+	type AnyCssConfig,
+	type SemanticTokenLayer,
+} from "../src/preset/index.ts";
 import { examplePreset } from "@pandwind/example-preset";
 
 const css = createCss(examplePreset);
@@ -74,4 +80,31 @@ test("an open preset config keeps arbitrary CSS properties typed", () => {
 	);
 	const generated = createCss(preset);
 	expect(generated.class({ backgroundColor: "var(--brand)", color: "white" })).type.toBe<string>();
+});
+
+test("semantic token references are checked against the supplied catalog", () => {
+	const tokens = defineTokens({
+		colors: {
+			brand: "#2563eb",
+			muted: "#64748b",
+		},
+	});
+	const conditions = { base: "", _dark: ".dark &" };
+
+	const semanticTokens = defineSemanticTokens(conditions, {
+		colors: {
+			button: { base: "colors.brand", _dark: "colors.muted" },
+		},
+	} satisfies SemanticTokenLayer<typeof conditions, typeof tokens>);
+
+	expect(semanticTokens).type.toHaveProperty("colors");
+
+	defineSemanticTokens(conditions, {
+		colors: {
+			button: {
+				// @ts-expect-error not assignable
+				base: "colors.unknown",
+			},
+		},
+	} satisfies SemanticTokenLayer<typeof conditions, typeof tokens>);
 });

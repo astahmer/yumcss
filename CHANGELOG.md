@@ -4,6 +4,15 @@ All notable changes to `pandwind` are documented here. The project has no
 released version yet — entries group the development waves that produced the
 current `0.1.0` state.
 
+## Unreleased — 2026-09-13 typed token references
+
+### API
+
+- Export `TokenReference` and `SemanticTokenLayer` type helpers for zero-runtime
+  validation of semantic token values against an app-owned `group.path`
+  catalog. This keeps token aliases autocomplete-safe without introducing a
+  runtime reference helper.
+
 ## Unreleased — 2026-09-13 static-first codemod output
 
 ### Fixes

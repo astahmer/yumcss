@@ -129,17 +129,21 @@ export const defineTokens = <T extends AnySimpleTokens>(tokens: T) => tokens;
  *
  * Condition keys must exist in the condition map and are kept as branches
  * rather than flattened into one static value.
+ * When semantic values are token paths, use the zero-runtime
+ * {@link SemanticTokenLayer} witness with `satisfies` so references are
+ * checked against the project's own token catalog.
  *
  * @example
  * ```ts
- * import { defineSemanticTokens } from "pandwind/preset";
+ * import { defineSemanticTokens, defineTokens, type SemanticTokenLayer } from "pandwind/preset";
  *
+ * const tokens = defineTokens({ colors: { white: "#ffffff", black: "#000000" } });
  * const conditions = { base: "", _dark: ".dark &" };
  * const semanticTokens = defineSemanticTokens(conditions, {
  *   colors: {
- *     surface: { base: "#ffffff", _dark: "#111827" },
+ *     surface: { base: "colors.white", _dark: "colors.black" },
  *   },
- * });
+ * } satisfies SemanticTokenLayer<typeof conditions, typeof tokens>);
  * ```
  *
  * @typeParam TConditions - The condition map used by the token values.

@@ -148,6 +148,21 @@ export type AnySemanticTokens<TConds extends string> = Record<
 	string,
 	Record<string, Partial<Record<TConds, string>>>
 >;
+
+/** Every `group.name` path available in a token catalog. */
+export type TokenReference<TTokens> = {
+	[TGroup in Extract<keyof TTokens, string>]: `${TGroup}.${Extract<keyof TTokens[TGroup], string>}`;
+}[Extract<keyof TTokens, string>];
+
+/** A condition-aware token layer whose values must reference the catalog. */
+export type SemanticTokenLayer<TConditions extends AnyConditions, TTokens> = {
+	[TGroup in Extract<keyof TTokens, string>]?: {
+		[TTokenName: string]: Partial<
+			Record<Extract<keyof TConditions, string>, TokenReference<TTokens>>
+		>;
+	};
+};
+
 /** The normalized token shape carried by a compiled preset. */
 export type AnyTokens = Record<string, Record<string, Token["value"]>>;
 
