@@ -25,7 +25,7 @@ describe("JsxStyleHost", () => {
 		);
 
 		expect(result.text).toContain(
-			'className={cx(tw({ color: "red" }), className, props.className)}',
+			'className={cx(tw({ color: "red" }), className, props?.className)}',
 		);
 		expect(result.needsCx).toBe(true);
 	});
