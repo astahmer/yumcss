@@ -8,6 +8,7 @@
  */
 import { execFileSync } from "node:child_process";
 import { cp, mkdir, readFile, readdir, symlink, writeFile } from "node:fs/promises";
+import { readFileSync } from "node:fs";
 import { dirname, join, relative, resolve } from "node:path";
 import { CodemodAdapterId, runAdapterMigrationAsync } from "pandwind-codemod/swap";
 import type { AdapterMigrationResult } from "pandwind-codemod/swap";
@@ -44,7 +45,12 @@ export interface ChakraDocsMigrationOptions {
 
 interface LaneAdapter {
 	readonly id: ChakraDocsLane;
-	transform(source: string, file: string, root: string): Promise<AdapterMigrationResult>;
+	transform(
+		source: string,
+		file: string,
+		root: string,
+		files: readonly string[],
+	): Promise<AdapterMigrationResult>;
 }
 
 const repositoryRoot = resolve(import.meta.dirname, "../..");
@@ -144,12 +150,20 @@ function bindMdxRuntime(source: string, lane: ChakraDocsLane): string {
 function createLane(id: ChakraDocsLane): LaneAdapter {
 	return {
 		id,
-		async transform(source, file, root) {
+		async transform(source, file, root, files) {
 			const result = await runAdapterMigrationAsync(source, {
 				from: CodemodAdapterId.ChakraUi,
 				to: CodemodAdapterId.Pandwind,
 				file,
 				root,
+				readFile: (candidate) => {
+					try {
+						return readFileSync(candidate, "utf8");
+					} catch {
+						return undefined;
+					}
+				},
+				listFiles: () => files,
 				mode: "safe",
 			});
 			return { ...result, code: bindRuntimeApi(result.code, file, id) };
@@ -345,11 +359,12 @@ export class ChakraDocsMigration {
 		let skippedCallSites = 0;
 		let sourceBytes = 0;
 		let outputBytes = 0;
-		for (const absolute of await collectSourceFiles(referenceRoot)) {
+		const sourcePaths = await collectSourceFiles(referenceRoot);
+		for (const absolute of sourcePaths) {
 			const source = await readFile(absolute, "utf8");
 			const file = relative(referenceRoot, absolute).replaceAll("\\", "/");
 			// Each file is transformed in source order for deterministic reports.
-			const result = await adapter.transform(source, file, referenceRoot);
+			const result = await adapter.transform(source, file, referenceRoot, sourcePaths);
 			if (!result.changed && result.residuals.length === 0) continue;
 			visitedSourceFiles++;
 			if (result.changed) changedFiles++;
