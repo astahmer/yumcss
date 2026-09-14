@@ -477,7 +477,6 @@ describe("official custom-token loaders", () => {
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { createCss } from "pandwind/css";
 			const css = createCss();
-
 			export const card = css.class({ color: "brand" });"
 		`);
 	});
@@ -840,8 +839,10 @@ describe("official custom-token loaders", () => {
 		const parsed = adapter.parse(source, { ...context, source, config: config! });
 
 		expect(config?.values.officialConfigPackage).toBe("@chakra-ui/react");
-		expect(parsed.matches).toHaveLength(1);
-		expect(parsed.matches[0]?.program.declarations).toMatchInlineSnapshot(`
+		const customSpacingMatch = parsed.matches.find((match) =>
+			match.program.declarations.some((declaration) => declaration.property === "padding"),
+		);
+		expect(customSpacingMatch?.program.declarations).toMatchInlineSnapshot(`
 			[
 			  {
 			    "conditions": [],
@@ -855,7 +856,7 @@ describe("official custom-token loaders", () => {
 			  },
 			]
 		`);
-		expect(parsed.matches[0]?.program.declarations[0]?.property).toBe("padding");
+		expect(customSpacingMatch?.program.declarations[0]?.property).toBe("padding");
 	});
 
 	test("uses the official MUI theme for custom spacing, palette, and radius values", async () => {

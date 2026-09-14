@@ -313,7 +313,6 @@ export const Button = () => <styled.button brandShadow="soft" data-testid="butto
 			"import { createCss } from "pandwind/css";
 			const css = createCss();
 			const staticClassName1 = css.class({ brandShadow: "soft" });
-
 			export const Button = () => <button data-testid="button" className={staticClassName1} />;"
 		`);
 	});

@@ -1135,7 +1135,11 @@ function chakraSourceVocabulary(context: AdapterParseContext): {
 			? Object.keys(CSS_RAW_PROPERTIES).filter((property) => property !== "content")
 			: [];
 	const sourceConditionNames = new Set(Object.keys(context.config.conditionCatalog ?? {}));
-	const knownProperties = new Set<string>([...styleProps, ...sourceValueProperties]);
+	const knownProperties = new Set<string>([
+		...styleProps,
+		...sourceValueProperties,
+		...(system?.properties ?? []),
+	]);
 	const resolvedAliases =
 		context.targetId === CodemodAdapterId.Pandwind
 			? {

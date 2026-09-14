@@ -497,7 +497,7 @@ const conditionQuery = (kind: string, value: string): string => {
 const conditionCatalogEntries = (
 	context: AdapterEmitContext | undefined,
 ): readonly [string, string][] => {
-	const catalogs = [context?.config.conditionCatalog, context?.sourceConfig?.conditionCatalog];
+	const catalogs = [context?.config.conditionCatalog];
 	const entries = new Map<string, string>();
 	for (const catalog of catalogs) {
 		if (catalog === undefined) continue;
