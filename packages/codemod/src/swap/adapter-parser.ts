@@ -523,7 +523,10 @@ function parseCalls(
 			return pattern.semanticBindings?.some(
 				(candidate) =>
 					(candidate.source === resolved.source ||
-						pattern.semanticBindingSourceMatcher?.(resolved.source, candidate.source) === true) &&
+						pattern.semanticBindingSourceMatcher?.(resolved.source, candidate.source) === true ||
+						context.sourceModuleSemanticMatchers?.some((matcher) =>
+							matcher(resolved.source, candidate.source),
+						)) &&
 					(candidate.imported === resolved.importedName ||
 						(binding.kind === SourceBindingKind.Namespace && site.property === candidate.imported)),
 			);
@@ -556,7 +559,10 @@ function parseCalls(
 				if (
 					actualSource === undefined ||
 					(actualSource !== moduleSource &&
-						pattern.semanticBindingSourceMatcher?.(actualSource, moduleSource) !== true)
+						pattern.semanticBindingSourceMatcher?.(actualSource, moduleSource) !== true &&
+						context.sourceModuleSemanticMatchers?.every(
+							(matcher) => matcher(actualSource, moduleSource) !== true,
+						))
 				)
 					continue;
 				const clause = match[1] ?? "";
@@ -581,7 +587,10 @@ function parseCalls(
 					if (
 						actualSource === undefined ||
 						(actualSource !== moduleSource &&
-							pattern.semanticBindingSourceMatcher?.(actualSource, moduleSource) !== true)
+							pattern.semanticBindingSourceMatcher?.(actualSource, moduleSource) !== true &&
+							context.sourceModuleSemanticMatchers?.every(
+								(matcher) => matcher(actualSource, moduleSource) !== true,
+							))
 					)
 						continue;
 					const localName = match[1];

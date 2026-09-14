@@ -79,6 +79,15 @@ const renamedCssBindingPattern = /\b(?:targetCss|pwCss)\s*=\s*createCss\(\)/u;
 const generatedCssBindingPattern = /\b(?:css|targetCss|pwCss)\s*=\s*createCss\(\)/u;
 const runtimeCssBindingPattern = /\b(?:css|targetCss|pwCss)\s*=\s*createRuntimeCss\(/u;
 
+const sourceModuleOwnership = (
+	adapter: import("./adapter-contract.ts").StyleAdapter,
+	config: import("./adapter-contract.ts").AdapterProjectConfig,
+) =>
+	adapter.resolveSourceModuleOwnership?.(config) ?? {
+		modules: adapter.sourceModules,
+		matchers: adapter.sourceModuleMatchers,
+	};
+
 const canonicalizeGeneratedCssBinding = (
 	emission: { text: string; imports: readonly string[] },
 	binding: string,
@@ -150,16 +159,18 @@ function runAdapterMigrationInternal(
 			outcomes: result.outcomes ?? derivedFileOutcomes(source, result.loweringPlans),
 		};
 	}
+	const sourceOwnership = sourceModuleOwnership(sourceAdapter, config);
+	const targetOwnership = sourceModuleOwnership(targetAdapter, targetConfig);
 	if (
 		targetAdapter.id === CodemodAdapterId.Pandwind &&
-		sourceImportsModule(source, sourceAdapter.sourceModules, sourceAdapter.sourceModuleMatchers)
+		sourceImportsModule(source, sourceOwnership.modules, sourceOwnership.matchers)
 	) {
 		source = normalizeForeignCssBinding(
 			source,
-			sourceAdapter.sourceModules,
-			sourceAdapter.sourceModuleMatchers,
-			targetAdapter.sourceModules,
-			targetAdapter.sourceModuleMatchers,
+			sourceOwnership.modules,
+			sourceOwnership.matchers,
+			targetOwnership.modules,
+			targetOwnership.matchers,
 		);
 	}
 	const document = ports.sourceScanner.scan({
@@ -207,6 +218,9 @@ function runAdapterMigrationInternal(
 		config,
 		targetId: targetAdapter.id,
 		readFile,
+		sourceModules: sourceOwnership.modules,
+		sourceModuleMatchers: sourceOwnership.matchers,
+		sourceModuleSemanticMatchers: sourceOwnership.semanticMatchers,
 		meta: options.meta,
 		document,
 		...(bindings === undefined ? {} : { bindings }),
@@ -286,8 +300,12 @@ function runAdapterMigrationInternal(
 	};
 	const residuals: StyleProgramResidual[] = [...parsed.residuals];
 	const sourceModulesToRemove = new Set<string>();
-	const sourceModulesForRemoval =
-		sourceAdapter.sourceModulesToRemove?.(targetAdapter.id) ?? sourceAdapter.sourceModules;
+	const sourceModulesForRemoval = [
+		...new Set([
+			...(sourceAdapter.sourceModulesToRemove?.(targetAdapter.id) ?? []),
+			...sourceOwnership.modules,
+		]),
+	];
 	// Host rewrites that collapse a factory-qualified host to its canonical
 	// element leave the source factory namespace without references. The runner
 	// owns that cleanup because several rewrite batches may demote the same tag.
@@ -955,8 +973,8 @@ function runAdapterMigrationInternal(
 			loweringResiduals: carrierResiduals,
 			index,
 			document,
-			sourceModules: sourceAdapter.sourceModules,
-			sourceModuleMatchers: sourceAdapter.sourceModuleMatchers,
+			sourceModules: sourceOwnership.modules,
+			sourceModuleMatchers: sourceOwnership.matchers,
 			meta: options.meta,
 			project: options.project,
 			tokenReferenceFormat: options.tokenReferenceFormat,
@@ -1044,7 +1062,7 @@ function runAdapterMigrationInternal(
 			targetHostRewrites.push({
 				program,
 				emittedExpression: emitted.text,
-				sourceModules: sourceAdapter.sourceModules,
+				sourceModules: sourceOwnership.modules,
 				representation: emittedHostRepresentation,
 				representationKind: targetRepresentationKind,
 				residuals: carrierResiduals,
@@ -1068,6 +1086,9 @@ function runAdapterMigrationInternal(
 					config: targetConfig,
 					targetId: targetAdapter.id,
 					readFile,
+					sourceModules: targetOwnership.modules,
+					sourceModuleMatchers: targetOwnership.matchers,
+					sourceModuleSemanticMatchers: targetOwnership.semanticMatchers,
 					meta: options.meta,
 					document,
 					semantic: options.semantic,
@@ -1436,7 +1457,7 @@ function runAdapterMigrationInternal(
 		code = MigrationOutput.removeSourceImports(
 			code,
 			[...sourceModulesForRemoval, ...sourceModulesToRemove],
-			sourceAdapter.sourceModuleMatchers,
+			sourceOwnership.matchers,
 			support.generatedBindings(imports),
 		);
 	}
@@ -1511,18 +1532,9 @@ function runAdapterMigrationInternal(
 		code = support.ensureGeneratedStatement(code, statement, outputFile);
 	const sourceCssSurvives =
 		converted > 0 &&
-		sourceImportsBinding(
-			code,
-			"css",
-			sourceAdapter.sourceModules,
-			sourceAdapter.sourceModuleMatchers,
-		);
+		sourceImportsBinding(code, "css", sourceOwnership.modules, sourceOwnership.matchers);
 	if (sourceCssSurvives) {
-		code = normalizeSourceCssBinding(
-			code,
-			sourceAdapter.sourceModules,
-			sourceAdapter.sourceModuleMatchers,
-		);
+		code = normalizeSourceCssBinding(code, sourceOwnership.modules, sourceOwnership.matchers);
 		code = MigrationOutput.removeUnreferencedImportSpecifiers(code, ["sourceCss"]);
 	} else {
 		const generatedTargetBinding =

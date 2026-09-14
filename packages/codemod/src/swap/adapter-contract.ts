@@ -105,6 +105,17 @@ export interface AdapterProjectConfig {
 	readonly artifacts?: readonly AdapterGeneratedArtifactEvidence[];
 }
 
+/** Effective source-module ownership after reading project configuration. */
+export interface AdapterSourceModuleOwnership {
+	readonly modules: readonly string[];
+	readonly matchers?: readonly ((moduleSpecifier: string) => boolean)[];
+	/** Match an authored alias to the corresponding documented entry point. */
+	readonly semanticMatchers?: readonly ((
+		actualSource: string,
+		expectedSource: string,
+	) => boolean)[];
+}
+
 type AdapterConditionValue = string | readonly string[];
 export type AdapterConditionCatalog = Readonly<Record<string, AdapterConditionValue>>;
 
@@ -162,6 +173,13 @@ export interface AdapterConfigContext extends AdapterDetectionContext {
 
 export interface AdapterParseContext extends AdapterDetectionContext {
 	readonly config: AdapterProjectConfig;
+	/** Effective source modules resolved from the owning adapter configuration. */
+	readonly sourceModules?: readonly string[];
+	readonly sourceModuleMatchers?: readonly ((moduleSpecifier: string) => boolean)[];
+	readonly sourceModuleSemanticMatchers?: readonly ((
+		actualSource: string,
+		expectedSource: string,
+	) => boolean)[];
 	/** Target route used when source normalization has target-specific semantics. */
 	readonly targetId?: string;
 	/** AST-owned import/reference facts from the shared source scanner. */
@@ -566,6 +584,10 @@ export interface StyleAdapter extends AdapterConfigGraphPort {
 	readonly sourceModulesToRemove?: (targetId: string) => readonly string[];
 	/** Adapter-owned matcher for project-local aliases of those entry points. */
 	readonly sourceModuleMatchers?: readonly ((moduleSpecifier: string) => boolean)[];
+	/** Resolve configured aliases without embedding project-specific names in the runner. */
+	readonly resolveSourceModuleOwnership?: (
+		config: AdapterProjectConfig,
+	) => AdapterSourceModuleOwnership;
 	readonly capabilities: AdapterCapabilities;
 	readonly dependencies: AdapterDependencies;
 	/** Documentation-driven source surface owned by this adapter. */

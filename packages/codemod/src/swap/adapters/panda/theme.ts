@@ -32,6 +32,7 @@ import {
 	resolvePandaStylePropContract,
 	type PandaStylePropContract,
 } from "./style-props.ts";
+import { pandaImportMapFromSource, pandaOutdirFromSource } from "./source-modules.ts";
 
 interface PandaCustomPattern {
 	/** Runtime transform from pattern props to a style object. */
@@ -65,6 +66,8 @@ export interface PandaTheme {
 	readonly jsxStyleProps: PandaStylePropContract;
 	/** Effective generated-system output directory, when configured. */
 	readonly outdir?: string;
+	/** Panda's configured generated-system import map, when configured. */
+	readonly importMap?: unknown;
 }
 
 const isPlainObject = (v: unknown): v is Record<string, unknown> =>
@@ -225,6 +228,7 @@ interface PandaConfigShape {
 	default?: PandaConfigShape;
 	jsxStyleProps?: "all" | "minimal" | "none";
 	outdir?: string;
+	importMap?: unknown;
 }
 
 async function importModule(path: string): Promise<AnyModule> {
@@ -385,6 +389,7 @@ function pandaThemeFromConfig(unwrapped: PandaConfigShape | undefined): PandaThe
 			matches: () => false,
 		},
 		...(unwrapped?.outdir === undefined ? {} : { outdir: unwrapped.outdir }),
+		...(unwrapped?.importMap === undefined ? {} : { importMap: unwrapped.importMap }),
 	};
 }
 
@@ -414,8 +419,12 @@ function loadPandaThemeFromDisk(
 	const mode = /\bjsxStyleProps\s*:\s*["'](all|minimal|none)["']/u.exec(configSource)?.[1] as
 		| PandaJsxStylePropsModeTag
 		| undefined;
-	const outdir = /\boutdir\s*:\s*["']([^"']+)["']/u.exec(configSource)?.[1];
-	return loadPandaThemeFromSource(configSource, extra, { mode, outdir });
+	const outdir = pandaOutdirFromSource(configSource);
+	return loadPandaThemeFromSource(configSource, extra, {
+		mode,
+		outdir,
+		importMap: pandaImportMapFromSource(configSource),
+	});
 }
 
 /** Empty theme — every token candidate falls back to verbatim/CSS-var. */
@@ -447,7 +456,11 @@ export const emptyPandaTheme: PandaTheme = {
 function loadPandaThemeFromSource(
 	configSource: string,
 	extraSources: Array<string>,
-	options: { readonly mode?: PandaJsxStylePropsModeTag; readonly outdir?: string } = {},
+	options: {
+		readonly mode?: PandaJsxStylePropsModeTag;
+		readonly outdir?: string;
+		readonly importMap?: unknown;
+	} = {},
 ): PandaTheme {
 	const tokenVars = new Map<string, string>();
 	const tokens: Record<string, Record<string, unknown>> = {};
@@ -513,5 +526,6 @@ function loadPandaThemeFromSource(
 			matches: () => false,
 		},
 		...(options.outdir === undefined ? {} : { outdir: options.outdir }),
+		...(options.importMap === undefined ? {} : { importMap: options.importMap }),
 	};
 }

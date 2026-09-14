@@ -304,6 +304,7 @@ export type {
 	AdapterParseResult,
 	AdapterProjectBindings,
 	AdapterProjectConfig,
+	AdapterSourceModuleOwnership,
 	AdapterTokenCatalog,
 	AdapterTokenPolicy,
 	AdapterValidationResult,

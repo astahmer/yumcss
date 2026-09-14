@@ -18,7 +18,15 @@ import {
 import { createTokenPolicy, TokenCatalog } from "../tokens.ts";
 import type { ProjectModuleLoader } from "../project-module-loader.ts";
 import { joinDocumentPath } from "../../path-utils.ts";
-import { isPandaGeneratedSourceModule } from "./panda/source-modules.ts";
+import type { PandaPackageImport } from "./panda/source-modules.ts";
+import {
+	PANDA_SOURCE_MODULES,
+	hasPandaSourceModuleImport,
+	isPandaGeneratedSourceModule,
+	pandaSourceModuleConfigurationFromContext,
+	pandaSourceModuleOwnershipFromContext,
+	resolvePandaSourceModuleOwnership,
+} from "./panda/source-modules.ts";
 import { SourceBindingKind, type SourceBinding } from "pandwind/source";
 import type { PandaTheme } from "./panda/theme.ts";
 import {
@@ -107,13 +115,40 @@ function pandaSourceConditions(theme: PandaTheme | undefined): {
 }
 
 function pandaConfig(context: AdapterConfigContext): AdapterProjectConfig {
+	const sourceModules = pandaSourceModuleConfigurationFromContext(context);
 	return {
 		adapter: CodemodAdapterId.Panda,
 		root: context.root,
 		files: [context.file],
-		values: {},
+		values: {
+			pandaPackageImports: sourceModules.packageImports,
+			...(sourceModules.importMap === undefined ? {} : { pandaImportMap: sourceModules.importMap }),
+			...(sourceModules.outdir === undefined ? {} : { pandaOutdir: sourceModules.outdir }),
+		},
 	};
 }
+
+const pandaPackageImports = (value: unknown): readonly PandaPackageImport[] =>
+	Array.isArray(value)
+		? value.filter(
+				(item): item is PandaPackageImport =>
+					typeof item === "object" &&
+					item !== null &&
+					typeof item.specifier === "string" &&
+					typeof item.target === "string",
+			)
+		: [];
+
+const pandaSourceOwnership = (config: AdapterProjectConfig) => {
+	const theme = config.values.pandaTheme as PandaTheme | undefined;
+	return resolvePandaSourceModuleOwnership({
+		modules: PANDA_SOURCE_MODULES,
+		matchers: [isPandaGeneratedSourceModule],
+		importMap: theme?.importMap ?? config.values.pandaImportMap,
+		outdir: theme?.outdir ?? (config.values.pandaOutdir as string | undefined),
+		packageImports: pandaPackageImports(config.values.pandaPackageImports),
+	});
+};
 
 export interface PandaAdapterOptions {
 	readonly moduleLoader?: ProjectModuleLoader | null;
@@ -173,6 +208,8 @@ async function officialPandaConfig(
 						}),
 				values: {
 					pandaTheme: theme,
+					pandaImportMap: theme.importMap,
+					pandaPackageImports: fallback.values.pandaPackageImports,
 					...(theme.plugins === undefined ? {} : { plugins: theme.plugins }),
 					officialConfigPackage: "@pandacss/config",
 				},
@@ -278,19 +315,25 @@ export function createPandaAdapter(options: PandaAdapterOptions = {}) {
 			"framework-semantics": "exact",
 			components: "partial",
 		}),
+		detect: (context, fallback) => {
+			const detected = fallback();
+			if (detected.matched) return detected;
+			const ownership = pandaSourceModuleOwnershipFromContext(context);
+			return hasPandaSourceModuleImport(context.source, ownership)
+				? {
+						matched: true,
+						confidence: 0.98,
+						evidence: ["configured Panda generated-system import"],
+					}
+				: detected;
+		},
 		detectPatterns: [
 			/from\s+["'](?:@pandacss\/dev|(?:[^"']*[/#])?styled-system\/(?:css|jsx|patterns|recipes|tokens))["']/,
 			/\b(?:cva|sva|css)\s*\(\s*\{/,
 		],
-		sourceModules: [
-			"@pandacss/dev",
-			"styled-system/css",
-			"styled-system/jsx",
-			"styled-system/patterns",
-			"styled-system/recipes",
-			"styled-system/tokens",
-		],
+		sourceModules: PANDA_SOURCE_MODULES,
 		sourceModuleMatchers: [isPandaGeneratedSourceModule],
+		resolveSourceModuleOwnership: pandaSourceOwnership,
 		configFiles: ["panda.config.ts", "panda.config.js", "panda.config.mjs"],
 		loadConfig: pandaConfig,
 		...(moduleLoader === undefined

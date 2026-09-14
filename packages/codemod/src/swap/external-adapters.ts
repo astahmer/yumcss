@@ -19,6 +19,7 @@ import {
 	type AdapterParseContext,
 	type AdapterParseResult,
 	type AdapterProjectConfig,
+	type AdapterSourceModuleOwnership,
 	type AdapterTokenPolicy,
 	type StyleAdapter,
 } from "./adapter-contract.ts";
@@ -139,6 +140,9 @@ export interface CodemodAdapterSpec {
 	/** Optional target-specific source modules to remove after a complete migration. */
 	readonly sourceModulesToRemove?: (targetId: string) => readonly string[];
 	readonly sourceModuleMatchers?: readonly ((moduleSpecifier: string) => boolean)[];
+	readonly resolveSourceModuleOwnership?: (
+		config: AdapterProjectConfig,
+	) => AdapterSourceModuleOwnership;
 	readonly lowerings?: readonly StyleLowering[];
 	readonly configFiles?: readonly string[];
 	readonly detect?: (
@@ -218,6 +222,9 @@ export function defineCodemodAdapter(spec: CodemodAdapterSpec): StyleAdapter {
 		...(spec.sourceModuleMatchers === undefined
 			? {}
 			: { sourceModuleMatchers: spec.sourceModuleMatchers }),
+		...(spec.resolveSourceModuleOwnership === undefined
+			? {}
+			: { resolveSourceModuleOwnership: spec.resolveSourceModuleOwnership }),
 		capabilities: capabilitiesWithRepresentations,
 		dependencies: spec.packages,
 		...(spec.tokenPolicy === undefined ? {} : { tokenPolicy: spec.tokenPolicy }),
