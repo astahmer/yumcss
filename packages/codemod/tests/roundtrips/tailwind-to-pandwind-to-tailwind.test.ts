@@ -51,8 +51,7 @@ test("tailwind -> pandwind -> tailwind: preserves an actionable concrete round t
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		const staticClassName1 = css.class({ gap: "1rem", alignItems: "center", display: "flex" });
-		export const App = () => <div className={staticClassName1}/>;",
+		export const App = () => <div className={css.class({ gap: "1rem", alignItems: "center", display: "flex" })}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,8 +85,7 @@ test("tailwind -> pandwind -> tailwind: preserves an actionable concrete round t
 		  "reverse": {
 		    "changed": true,
 		    "code": "
-		const staticClassName1 = "[gap:1rem] [align-items:center] [display:flex]";
-		export const App = () => <div className={staticClassName1}/>;",
+		export const App = () => <div className={"[gap:1rem] [align-items:center] [display:flex]"}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -138,8 +136,7 @@ test("tailwind -> pandwind -> tailwind: retains the documented secondary API wit
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		const staticClassName1 = css.class({ color: "rebeccapurple", md: { display: "flex" } });
-		export const App = () => <div className={staticClassName1}/>;",
+		export const App = () => <div className={css.class({ color: "rebeccapurple", md: { display: "flex" } })}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -172,13 +169,10 @@ test("tailwind -> pandwind -> tailwind: retains the documented secondary API wit
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
-
-		const staticClassName1 = css.vars({ "color": "rebeccapurple", "md": { display: "flex" } });
-		export const App = () => <div className={staticClassName1}/>;",
-		    "converted": 1,
+		    "code": "import { createCss } from "pandwind/css";
+		export const App = () => <div className={// pandwind:migrate-skip (route: pandwind -> tailwind | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
+		css.class({ color: "rebeccapurple", md: { display: "flex" } })}/>;",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -189,7 +183,6 @@ test("tailwind -> pandwind -> tailwind: retains the documented secondary API wit
 		          "named-map",
 		          "custom-property",
 		          "residual",
-		          "portable-artifact",
 		        ],
 		        "representation": "custom-property",
 		        "residuals": [
@@ -202,19 +195,19 @@ test("tailwind -> pandwind -> tailwind: retains the documented secondary API wit
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "residual",
+		        "representation": "custom-property",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "bind --pandwind-dynamic-1wkt4rw at runtime for target tailwind",
+		        "kind": "dynamic-custom-property",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`)
@@ -248,8 +241,7 @@ test("tailwind -> pandwind -> tailwind: preserves concrete theme and project con
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		const staticClassName1 = css.class({ padding: "card", color: "brand" });
-		export const App = () => <div className={staticClassName1}/>;",
+		export const App = () => <div className={css.class({ padding: "card", color: "brand" })}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -283,8 +275,7 @@ test("tailwind -> pandwind -> tailwind: preserves concrete theme and project con
 		    "reverse": {
 		      "changed": true,
 		      "code": "
-		const staticClassName1 = "p-card text-brand";
-		export const App = () => <div className={staticClassName1}/>;",
+		export const App = () => <div className={"p-card text-brand"}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -324,8 +315,7 @@ test("tailwind -> pandwind -> tailwind: preserves concrete theme and project con
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		const staticClassName1 = css.class({ padding: "card", color: "brand" });
-		export const App = () => <div className={staticClassName1}/>;",
+		export const App = () => <div className={css.class({ padding: "card", color: "brand" })}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -359,8 +349,7 @@ test("tailwind -> pandwind -> tailwind: preserves concrete theme and project con
 		    "reverse": {
 		      "changed": true,
 		      "code": "
-		const staticClassName1 = "p-card text-brand";
-		export const App = () => <div className={staticClassName1}/>;",
+		export const App = () => <div className={"p-card text-brand"}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -414,8 +403,7 @@ test("tailwind -> pandwind -> tailwind: resolves token values across both concre
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		const staticClassName1 = css.class({ padding: "card", color: "brand" });
-		export const App = () => <div className={staticClassName1}/>;",
+		export const App = () => <div className={css.class({ padding: "card", color: "brand" })}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -449,8 +437,7 @@ test("tailwind -> pandwind -> tailwind: resolves token values across both concre
 		  "reverse": {
 		    "changed": true,
 		    "code": "
-		const staticClassName1 = "p-card text-brand";
-		export const App = () => <div className={staticClassName1}/>;",
+		export const App = () => <div className={"p-card text-brand"}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

@@ -97,7 +97,7 @@ describe("official adapter API families", () => {
 					expect(result.code).not.toContain("<styled.button");
 				}
 				if (api.name === "CSS prop" && api.adapter === CodemodAdapterId.Compiled) {
-					expect(result.code).toContain("className={staticClassName");
+					expect(result.code).toContain("className={css.class");
 					expect(result.code).not.toContain(" css={");
 				}
 				if (
@@ -105,7 +105,7 @@ describe("official adapter API families", () => {
 					api.adapter === CodemodAdapterId.Compiled &&
 					api.expectation === "converted"
 				) {
-					expect(result.code).toContain("<button className={staticClassName");
+					expect(result.code).toContain("<button className={css.class");
 					expect(result.code).not.toContain("ClassNames");
 					expect(result.code).not.toContain("migrate-skip");
 				}
@@ -541,8 +541,7 @@ describe("official adapter API families", () => {
 			    "changed": true,
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
-			const staticClassName1 = css.class({ color: "red" });
-			export const Card = () => <button className={staticClassName1}/>;",
+			export const Card = () => <button className={css.class({ color: "red" })}/>;",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -577,8 +576,7 @@ describe("official adapter API families", () => {
 			    "changed": true,
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
-			const staticClassName1 = css.class({ color: "red" });
-			export const Card = () => <button className={staticClassName1}/>;",
+			export const Card = () => <button className={css.class({ color: "red" })}/>;",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -613,8 +611,7 @@ describe("official adapter API families", () => {
 			    "changed": true,
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
-			const staticClassName1 = css.class({ color: "red" });
-			export const Card = () => <button className={staticClassName1}/>;",
+			export const Card = () => <button className={css.class({ color: "red" })}/>;",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -1009,8 +1006,7 @@ describe("official adapter API families", () => {
 			    "changed": true,
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
-			const staticClassName1 = css.class({ color: "red" });
-			export const Card = () => <button className={staticClassName1}/>;",
+			export const Card = () => <button className={css.class({ color: "red" })}/>;",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -1625,8 +1621,7 @@ describe("official adapter API families", () => {
 			    "changed": true,
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
-			const staticClassName1 = css.class({ color: "red" });
-			export const Card = () => <button css={staticClassName1} />;",
+			export const Card = () => <button css={css.class({ color: "red" })} />;",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -1942,8 +1937,7 @@ describe("official adapter API families", () => {
 			    "changed": true,
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
-			const staticClassName1 = css.class({ color: "red" });
-			export const Card = () => <button className={staticClassName1}/>;",
+			export const Card = () => <button className={css.class({ color: "red" })}/>;",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -2081,8 +2075,7 @@ describe("official adapter API families", () => {
 			    "changed": true,
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
-			const staticClassName1 = css.class({ color: "red" });
-			export const Button = () => <button className={staticClassName1} />;",
+			export const Button = () => <button className={css.class({ color: "red" })} />;",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -3355,8 +3348,7 @@ describe("official adapter API families", () => {
 			    "changed": true,
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
-			const staticClassName1 = css.class({ color: "rebeccapurple", md: { display: "flex" } });
-			export const App = () => <div className={staticClassName1}/>;",
+			export const App = () => <div className={css.class({ color: "rebeccapurple", md: { display: "flex" } })}/>;",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -3406,8 +3398,7 @@ describe("official adapter API families", () => {
 			    "changed": true,
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
-			const staticClassName1 = css.class({ "[&[data-state=active]]": { color: "red" } });
-			export const App = () => <div className={staticClassName1}/>;",
+			export const App = () => <div className={css.class({ "[&[data-state=active]]": { color: "red" } })}/>;",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -3586,8 +3577,7 @@ describe("official adapter API families", () => {
 			import { createCx } from "pandwind/cx";
 			const pandwindCx = createCx();
 			const css = createCss();
-			const className = css.class({ padding: "1rem", color: "red" });
-			export const card = () => {  return [(value: string | undefined) => pandwindCx(className, value), (style: Record<string, unknown> | undefined) => style ?? {}] as const; };",
+			export const card = () => { const className = css.class({ padding: "1rem", color: "red" }); return [(value: string | undefined) => pandwindCx(className, value), (style: Record<string, unknown> | undefined) => style ?? {}] as const; };",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -3736,8 +3726,7 @@ describe("official adapter API families", () => {
 			    "changed": true,
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
-			const staticClassName1 = css.class({ hover: { backgroundColor: "black" }, md: { display: "flex" } });
-			export const App = () => <div className={staticClassName1}/>;",
+			export const App = () => <div className={css.class({ hover: { backgroundColor: "black" }, md: { display: "flex" } })}/>;",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [

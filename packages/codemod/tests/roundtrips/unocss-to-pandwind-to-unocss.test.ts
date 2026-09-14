@@ -51,8 +51,7 @@ test("unocss -> pandwind -> unocss: preserves an actionable concrete round trip"
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		const staticClassName1 = css.class({ gap: "1rem", alignItems: "center", display: "flex" });
-		export const App = () => <div className={staticClassName1}/>;",
+		export const App = () => <div className={css.class({ gap: "1rem", alignItems: "center", display: "flex" })}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,8 +85,7 @@ test("unocss -> pandwind -> unocss: preserves an actionable concrete round trip"
 		  "reverse": {
 		    "changed": true,
 		    "code": "
-		const staticClassName1 = "[gap:1rem] [align-items:center] [display:flex]";
-		export const App = () => <div className={staticClassName1}/>;",
+		export const App = () => <div className={"[gap:1rem] [align-items:center] [display:flex]"}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -138,8 +136,7 @@ test("unocss -> pandwind -> unocss: retains the documented secondary API without
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		const staticClassName1 = css.class({ hover: { backgroundColor: "black" }, md: { display: "flex" } });
-		export const App = () => <div className={staticClassName1}/>;",
+		export const App = () => <div className={css.class({ hover: { backgroundColor: "black" }, md: { display: "flex" } })}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -172,13 +169,10 @@ test("unocss -> pandwind -> unocss: retains the documented secondary API without
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
-
-		const staticClassName1 = css.vars({ "md": { display: "flex" }, "hover": { "backgroundColor": "black" } });
-		export const App = () => <div className={staticClassName1}/>;",
-		    "converted": 1,
+		    "code": "import { createCss } from "pandwind/css";
+		export const App = () => <div className={// pandwind:migrate-skip (route: pandwind -> unocss | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
+		css.class({ hover: { backgroundColor: "black" }, md: { display: "flex" } })}/>;",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -189,7 +183,6 @@ test("unocss -> pandwind -> unocss: retains the documented secondary API without
 		          "named-map",
 		          "custom-property",
 		          "residual",
-		          "portable-artifact",
 		        ],
 		        "representation": "custom-property",
 		        "residuals": [
@@ -202,19 +195,19 @@ test("unocss -> pandwind -> unocss: retains the documented secondary API without
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "residual",
+		        "representation": "custom-property",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "bind --pandwind-dynamic-1wkt4rw at runtime for target unocss",
+		        "kind": "dynamic-custom-property",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`)
@@ -248,8 +241,7 @@ test("unocss -> pandwind -> unocss: preserves concrete theme and project context
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		const staticClassName1 = css.class({ padding: "card", color: "brand" });
-		export const App = () => <div className={staticClassName1}/>;",
+		export const App = () => <div className={css.class({ padding: "card", color: "brand" })}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -283,9 +275,8 @@ test("unocss -> pandwind -> unocss: preserves concrete theme and project context
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
-		const staticClassName1 = // pandwind:migrate-skip (route: pandwind -> unocss | lowering-residual: validation)
-		css.class({ padding: "card", color: "brand" });
-		export const App = () => <div className={staticClassName1}/>;",
+		export const App = () => <div className={// pandwind:migrate-skip (route: pandwind -> unocss | lowering-residual: validation)
+		css.class({ padding: "card", color: "brand" })}/>;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -333,8 +324,7 @@ test("unocss -> pandwind -> unocss: preserves concrete theme and project context
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		const staticClassName1 = css.class({ padding: "card", color: "brand" });
-		export const App = () => <div className={staticClassName1}/>;",
+		export const App = () => <div className={css.class({ padding: "card", color: "brand" })}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -368,9 +358,8 @@ test("unocss -> pandwind -> unocss: preserves concrete theme and project context
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
-		const staticClassName1 = // pandwind:migrate-skip (route: pandwind -> unocss | lowering-residual: validation)
-		css.class({ padding: "card", color: "brand" });
-		export const App = () => <div className={staticClassName1}/>;",
+		export const App = () => <div className={// pandwind:migrate-skip (route: pandwind -> unocss | lowering-residual: validation)
+		css.class({ padding: "card", color: "brand" })}/>;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -432,8 +421,7 @@ test("unocss -> pandwind -> unocss: resolves token values across both concrete l
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		const staticClassName1 = css.class({ padding: "card", color: "brand" });
-		export const App = () => <div className={staticClassName1}/>;",
+		export const App = () => <div className={css.class({ padding: "card", color: "brand" })}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -467,9 +455,8 @@ test("unocss -> pandwind -> unocss: resolves token values across both concrete l
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
-		const staticClassName1 = // pandwind:migrate-skip (route: pandwind -> unocss | lowering-residual: validation)
-		css.class({ padding: "card", color: "brand" });
-		export const App = () => <div className={staticClassName1}/>;",
+		export const App = () => <div className={// pandwind:migrate-skip (route: pandwind -> unocss | lowering-residual: validation)
+		css.class({ padding: "card", color: "brand" })}/>;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

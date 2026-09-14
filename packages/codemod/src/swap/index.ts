@@ -17,6 +17,7 @@ import {
 import type { PandwindMeta } from "../meta.ts";
 import { SourcePass } from "../source-pass-utils.ts";
 import { hasCssBinding, relativeModuleImport, ensureImport } from "../shared.ts";
+import { simplifyPandwindStaticStyles } from "./static-style-simplifier.ts";
 import { SWAP_REGISTRY } from "./swap-registry.ts";
 import { createBuiltinCodemodCatalog } from "./adapter-catalog.ts";
 import {
@@ -630,6 +631,8 @@ export interface SwapOptions {
 	sort?: boolean;
 	/** Hoist repeated identical literal call sites into module constants. */
 	dedup?: boolean;
+	/** Hoist all static Pandwind style calls to module scope when enabled. */
+	hoistStaticStyles?: boolean;
 	/** Optional source condition metadata supplied by a project adapter. */
 	conditionKinds?: StyleProgramOptions["conditionKinds"];
 	conditionValues?: StyleProgramOptions["conditionValues"];
@@ -847,6 +850,8 @@ export function runSwap(
 		}
 	}
 
+	if (options.to === SwapTargetId.CssClass && options.hoistStaticStyles === true)
+		code = simplifyPandwindStaticStyles(code, file, { hoistStaticStyles: true }).code;
 	if (options.dedup === true) code = dedupLiteralCallSites(code);
 
 	return {

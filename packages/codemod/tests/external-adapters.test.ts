@@ -1996,9 +1996,8 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(chakra.code).not.toContain('import { Box } from "@chakra-ui/react";');
 		expect(chakra.code).toContain('<div data-kind="card"');
 		expect(chakra.code).toContain(
-			'const staticClassName1 = css.class({ padding: "16px", backgroundColor: "tomato"',
+			'className={css.class({ padding: "16px", backgroundColor: "tomato"',
 		);
-		expect(chakra.code).toContain("className={staticClassName1}");
 		expect(chakra.code).toContain('"&:hover"');
 
 		const intrinsicOverride = runAdapterMigration(
@@ -2007,8 +2006,8 @@ describe("CSS-in-JS adapter contract v2", () => {
 			{ from: "chakra-ui", to: "pandwind", file: "Intrinsic.tsx", mode: "safe" },
 		);
 		expect(intrinsicOverride.residuals).toEqual([]);
-		expect(intrinsicOverride.code).toContain("<aside className={staticClassName1}>");
-		expect(intrinsicOverride.code).toContain("<h1 className={staticClassName2}>");
+		expect(intrinsicOverride.code).toContain("<aside className={css.class({");
+		expect(intrinsicOverride.code).toContain("<h1 className={css.class({");
 		expect(intrinsicOverride.code).not.toContain('as="aside"');
 		expect(intrinsicOverride.code).not.toContain('as="h1"');
 
@@ -2016,7 +2015,9 @@ describe("CSS-in-JS adapter contract v2", () => {
 			'import { Box } from "@chakra-ui/react";\nexport const App = () => <Box className="existing" bg="tomato" />;',
 			{ from: "chakra-ui", to: "pandwind", file: "App.tsx", mode: "safe" },
 		);
-		expect(merged.code).toContain('className={css.props(staticClassName1, "existing").className}');
+		expect(merged.code).toContain(
+			'className={css.props(css.class({ backgroundColor: "tomato" }), "existing").className}',
+		);
 
 		const spread = runAdapterMigration(
 			'import { Box } from "@chakra-ui/react";\n' +
@@ -2025,10 +2026,10 @@ describe("CSS-in-JS adapter contract v2", () => {
 		);
 		expect(spread.residuals).toEqual([]);
 		expect(spread.code).toContain(
-			'className={css.props(staticClassName1, "local", props?.className).className}',
+			'className={css.props(css.class({ backgroundColor: "tomato" }), "local", props?.className).className}',
 		);
 		expect(spread.code.indexOf("props} />")).toBeLessThan(
-			spread.code.indexOf("className={css.props(staticClassName1"),
+			spread.code.indexOf("className={css.props(css.class"),
 		);
 
 		const componentSpread = runAdapterMigration(
@@ -2039,7 +2040,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		);
 		expect(componentSpread.residuals).toEqual([]);
 		expect(componentSpread.code).toContain(
-			"className={css.props(staticClassName1, props?.className).className}",
+			'className={css.props(css.class({ display: "inline-flex" }), props?.className).className}',
 		);
 
 		const appOwnedComponent = runAdapterMigration(
@@ -2051,7 +2052,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(appOwnedComponent.code).toContain('import { Button } from "#ui/button";');
 		expect(appOwnedComponent.code).toContain('<Button size="sm" variant="solid" />');
 		expect(appOwnedComponent.code).not.toContain('<button size="sm" variant="solid"');
-		expect(appOwnedComponent.code).toContain("<div className={staticClassName1}");
+		expect(appOwnedComponent.code).toContain("<div className={css.class({");
 
 		const separator = runAdapterMigration(
 			'import { HStack, StackSeparator } from "@chakra-ui/react";\n' +

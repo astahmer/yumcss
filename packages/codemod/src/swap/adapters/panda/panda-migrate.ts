@@ -71,6 +71,8 @@ export interface PandaMigrateOptions {
 	fileSystem?: PandaProjectFileSystem;
 	/** Token spelling policy used by generated Pandwind sources and modules. */
 	tokenReferenceFormat?: TokenReferenceFormatValue;
+	/** Keep static style calls colocated unless module-scope hoisting is requested. */
+	hoistStaticStyles?: boolean;
 }
 
 export interface PandaMigrateReport {
@@ -1572,7 +1574,9 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 		// panda-only named imports; leaving them would create unresolved exports.
 		next = removeUnusedVariantImports(next, aliasSpecifier(aliasInfo, outDirName, "css"));
 		next = removeUnusedFactoryImports(next);
-		next = simplifyPandwindStaticStyles(next, file.path).code;
+		next = simplifyPandwindStaticStyles(next, file.path, {
+			hoistStaticStyles: options.hoistStaticStyles,
+		}).code;
 		const validation = validatePandaSource(file.path, next);
 		if (!validation.valid) {
 			report.notes.push(

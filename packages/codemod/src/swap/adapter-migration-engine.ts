@@ -1547,7 +1547,9 @@ function runAdapterMigrationInternal(
 		code = code.replace(/\bcss\s+as\s+css\b/gu, "css");
 	}
 	if (targetAdapter.id === CodemodAdapterId.Pandwind)
-		code = simplifyPandwindStaticStyles(code, outputFile).code;
+		code = simplifyPandwindStaticStyles(code, outputFile, {
+			hoistStaticStyles: options.hoistStaticStyles,
+		}).code;
 	return {
 		code,
 		...(outputExtension === undefined ? {} : { outputExtension }),

@@ -44,8 +44,7 @@ describe("Chakra UI official API forms", () => {
 			  "changed": true,
 			  "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
-			const staticClassName1 = css.class({ padding: "4", backgroundColor: "red.200" });
-			export const App = () => <div className={staticClassName1} />;",
+			export const App = () => <div className={css.class({ padding: "4", backgroundColor: "red.200" })} />;",
 			  "converted": 1,
 			  "generatedFiles": [],
 			  "loweringPlans": [
@@ -108,7 +107,7 @@ describe("Chakra UI official API forms", () => {
 		expect(result.converted).toBe(1);
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
-		expect(result.code).toContain("<PageContainer className={staticClassName1}");
+		expect(result.code).toContain("<PageContainer className={css.class({");
 		expect(result.code).not.toContain(" h=");
 		expect(result.code).not.toContain(" py=");
 	});
@@ -126,7 +125,7 @@ describe("Chakra UI official API forms", () => {
 		expect(result.converted).toBe(1);
 		expect(result.residuals).toEqual([]);
 		expect(result.code).toContain('<Button variant="ghost"');
-		expect(result.code).toContain("className={staticClassName1}");
+		expect(result.code).toContain("className={css.class({");
 		expect(result.code).not.toContain("<button");
 	});
 
@@ -156,8 +155,7 @@ describe("Chakra UI official API forms", () => {
 			  "changed": true,
 			  "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
-			const staticClassName1 = css.class({ color: "red.200", "& svg": { color: "blue.200" } });
-			export const App = () => <div className={staticClassName1} />;",
+			export const App = () => <div className={css.class({ color: "red.200", "& svg": { color: "blue.200" } })} />;",
 			  "converted": 1,
 			  "generatedFiles": [],
 			  "loweringPlans": [
@@ -238,7 +236,7 @@ describe("Chakra UI official API forms", () => {
 		for (const result of [chakraThenPanda, pandaThenChakra]) {
 			expect(result.residuals).toEqual([]);
 			expect(result.code).not.toContain("@chakra-ui/react");
-			expect(result.code).toContain("staticClassName");
+			expect(result.code).toContain("className={css.class({");
 		}
 		expect(chakraThenPanda.code, "Chakra then Panda").not.toContain("#styled-system");
 		expect(pandaThenChakra.code, "Panda then Chakra").not.toContain("#styled-system");
@@ -262,7 +260,7 @@ describe("Chakra UI official API forms", () => {
 
 		expectStatic(result);
 		expect(result.code).not.toContain("@chakra-ui/react");
-		expect(result.code).toContain("<div className={staticClassName1}>");
+		expect(result.code).toContain("<div className={css.class({");
 		expect(result.code).toContain(
 			'css.class({ alignItems: "center", display: "flex", justifyContent: "center" })',
 		);
@@ -277,7 +275,7 @@ describe("Chakra UI official API forms", () => {
 
 		expectStatic(result);
 		expect(result.code).not.toContain("@chakra-ui/react");
-		expect(result.code).toContain("<div className={staticClassName1} />");
+		expect(result.code).toContain("<div className={css.class({");
 		expect(result.code).toContain('maxWidth: "breakpoint-lg"');
 	});
 
@@ -453,7 +451,7 @@ describe("Chakra UI official API forms", () => {
 		expectStatic(result);
 		expect(result.code).toContain('fontSize: "lg"');
 		expect(result.code).not.toContain(' size="lg"');
-		expect(result.code).toContain("<h2 className={staticClassName1}>");
+		expect(result.code).toContain("<h2 className={css.class({");
 	});
 
 	test("expands a known Chakra textStyle", () => {
@@ -583,8 +581,7 @@ describe("Chakra UI official API forms", () => {
 			  "changed": true,
 			  "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
-			const staticClassName1 = css.class({ backgroundColor: "blue.500", color: "white" });
-			export const App = () => <button className={staticClassName1} />;",
+			export const App = () => <button className={css.class({ backgroundColor: "blue.500", color: "white" })} />;",
 			  "converted": 1,
 			  "generatedFiles": [],
 			  "loweringPlans": [

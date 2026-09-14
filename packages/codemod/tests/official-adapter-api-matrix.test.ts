@@ -160,8 +160,7 @@ describe("official primary API forms", () => {
 			    "changed": true,
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
-			const staticClassName1 = css.class({ padding: "4", backgroundColor: "red.200" });
-			export const App = () => <div className={staticClassName1} />;",
+			export const App = () => <div className={css.class({ padding: "4", backgroundColor: "red.200" })} />;",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -480,8 +479,7 @@ describe("official primary API forms", () => {
 			    "changed": true,
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
-			const staticClassName1 = css.class({ color: "blue.6", marginLeft: "auto", marginRight: "auto", maxWidth: 400 });
-			export const App = () => <div className={staticClassName1} />;",
+			export const App = () => <div className={css.class({ color: "blue.6", marginLeft: "auto", marginRight: "auto", maxWidth: 400 })} />;",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -516,8 +514,7 @@ describe("official primary API forms", () => {
 			    "changed": true,
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
-			const staticClassName1 = css.class({ padding: "16px", color: "red" });
-			export const App = () => <div className={staticClassName1} />;",
+			export const App = () => <div className={css.class({ padding: "16px", color: "red" })} />;",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -938,8 +935,7 @@ describe("official primary API forms", () => {
 			    "changed": true,
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
-			const staticClassName1 = css.class({ gap: "1rem", alignItems: "center", display: "flex" });
-			export const App = () => <div className={staticClassName1}/>;",
+			export const App = () => <div className={css.class({ gap: "1rem", alignItems: "center", display: "flex" })}/>;",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -1081,8 +1077,7 @@ describe("official primary API forms", () => {
 			    "changed": true,
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
-			const staticClassName1 = css.class({ gap: "1rem", alignItems: "center", display: "flex" });
-			export const App = () => <div className={staticClassName1}/>;",
+			export const App = () => <div className={css.class({ gap: "1rem", alignItems: "center", display: "flex" })}/>;",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [

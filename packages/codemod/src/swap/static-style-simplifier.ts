@@ -7,6 +7,10 @@ export interface PandwindStaticStyleSimplification {
 	readonly changed: boolean;
 }
 
+export interface SimplifyPandwindStaticStylesOptions {
+	readonly hoistStaticStyles?: boolean;
+}
+
 type StaticClassCall = {
 	readonly node: OxcNode;
 	readonly properties: readonly OxcNode[];
@@ -929,21 +933,27 @@ const removeUnusedStaticCssClassBindings = (source: string, file: string): strin
 export const simplifyPandwindStaticStyles = (
 	source: string,
 	file = "migration.tsx",
+	options: SimplifyPandwindStaticStylesOptions = {},
 ): PandwindStaticStyleSimplification => {
 	if (!isScriptFile(file)) return { code: source, changed: false };
 	const composed = simplifyStaticCxCalls(source, file);
 	const stacks = simplifyStackOpening(composed, file);
 	const mixed = simplifyMixedStaticCxCalls(stacks, file);
 	const composedStaticProps = simplifyStaticCssPropsCalls(mixed, file);
-	const hoisted = hoistStaticCssClassCalls(composedStaticProps, file);
-	const composedCarriers = simplifyCarrierCxCalls(hoisted, file);
+	const shouldHoistStaticStyles = options.hoistStaticStyles === true;
+	const afterFirstHoist = shouldHoistStaticStyles
+		? hoistStaticCssClassCalls(composedStaticProps, file)
+		: composedStaticProps;
+	const composedCarriers = simplifyCarrierCxCalls(afterFirstHoist, file);
 	const collapsedStaticProps = simplifyStaticCssPropsCalls(composedCarriers, file);
 	const collapsedMixedProps = simplifyMixedStaticCssPropsCalls(collapsedStaticProps, file);
-	const hoistedCollapsedProps = hoistStaticCssClassCalls(collapsedMixedProps, file);
+	const afterSecondHoist = shouldHoistStaticStyles
+		? hoistStaticCssClassCalls(collapsedMixedProps, file)
+		: collapsedMixedProps;
 	const withoutUnusedStaticBindings =
-		hoistedCollapsedProps === source
-			? hoistedCollapsedProps
-			: removeUnusedStaticCssClassBindings(hoistedCollapsedProps, file);
+		afterSecondHoist === source
+			? afterSecondHoist
+			: removeUnusedStaticCssClassBindings(afterSecondHoist, file);
 	const code = removeUnusedCssBinding(removeUnusedCxBindings(withoutUnusedStaticBindings));
 	return { code, changed: code !== source };
 };

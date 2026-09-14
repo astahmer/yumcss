@@ -75,6 +75,37 @@ describe("swap tw -> css.class", () => {
 	});
 });
 
+describe("swap static style placement", () => {
+	test("keeps generated static classes beside JSX by default", () => {
+		const result = swap(
+			`${WITH_CSS}export const View = () => <div className={tw({ bgColor: "blue-500" })} />;`,
+			"css.class",
+		);
+
+		expect(result.code).toContain('className={css.class({ backgroundColor: "#3182ce" })}');
+		expect(result.code).not.toContain("staticClassName");
+	});
+
+	test("hoists generated static classes only when requested", () => {
+		const result = runSwap(
+			`${WITH_CSS}export const View = () => <div className={tw({ bgColor: "blue-500" })} />;`,
+			meta,
+			{
+				from: "tw",
+				to: "css.class",
+				file: "View.tsx",
+				metaDir: "examples/example/src",
+				hoistStaticStyles: true,
+			},
+		);
+
+		expect(result.code).toContain(
+			'const staticClassName1 = css.class({ backgroundColor: "#3182ce" });',
+		);
+		expect(result.code).toContain("className={staticClassName1}");
+	});
+});
+
 describe("swap css.class -> tw", () => {
 	test("declarations map back through the bridge to typed keys", () => {
 		const result = swap(`const card = css.class({ backgroundColor: "#3182ce" });`, "tw");

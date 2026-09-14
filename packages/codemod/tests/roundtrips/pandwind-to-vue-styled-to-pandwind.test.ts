@@ -91,9 +91,8 @@ test("pandwind -> vue-styled -> pandwind: preserves an actionable concrete round
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		const css = createCss();
-		const style = css.class({ padding: "1rem", color: "red" });
 
-		export const card = defineComponent({ setup(_props, { attrs, slots }) {  return () => h("div", { ...attrs, class: css.props(style, attrs.class).className }, slots.default?.()); } });",
+		export const card = defineComponent({ setup(_props, { attrs, slots }) { const style = css.class({ padding: "1rem", color: "red" }); return () => h("div", { ...attrs, class: cx(style, attrs.class) }, slots.default?.()); } });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -269,9 +268,8 @@ test("pandwind -> vue-styled -> pandwind: preserves concrete theme and project c
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		const css = createCss();
-		const style = css.class({ padding: "1rem", color: "brand" });
 
-		export const card = defineComponent({ setup(_props, { attrs, slots }) {  return () => h("div", { ...attrs, class: css.props(style, attrs.class).className }, slots.default?.()); } });",
+		export const card = defineComponent({ setup(_props, { attrs, slots }) { const style = css.class({ padding: "1rem", color: "brand" }); return () => h("div", { ...attrs, class: cx(style, attrs.class) }, slots.default?.()); } });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -349,9 +347,8 @@ test("pandwind -> vue-styled -> pandwind: preserves concrete theme and project c
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		const css = createCss();
-		const style = css.class({ padding: "1rem", color: "brand" });
 
-		export const card = defineComponent({ setup(_props, { attrs, slots }) {  return () => h("div", { ...attrs, class: css.props(style, attrs.class).className }, slots.default?.()); } });",
+		export const card = defineComponent({ setup(_props, { attrs, slots }) { const style = css.class({ padding: "1rem", color: "brand" }); return () => h("div", { ...attrs, class: cx(style, attrs.class) }, slots.default?.()); } });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -442,9 +439,8 @@ test("pandwind -> vue-styled -> pandwind: resolves token values across both conc
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		const css = createCss();
-		const style = css.class({ padding: "1rem", color: "brand" });
 
-		export const card = defineComponent({ setup(_props, { attrs, slots }) {  return () => h("div", { ...attrs, class: css.props(style, attrs.class).className }, slots.default?.()); } });",
+		export const card = defineComponent({ setup(_props, { attrs, slots }) { const style = css.class({ padding: "1rem", color: "brand" }); return () => h("div", { ...attrs, class: cx(style, attrs.class) }, slots.default?.()); } });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

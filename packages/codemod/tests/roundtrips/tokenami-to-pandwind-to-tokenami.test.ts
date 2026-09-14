@@ -137,8 +137,7 @@ test("tokenami -> pandwind -> tokenami: retains the documented secondary API wit
 		import { createCx } from "pandwind/cx";
 		const pandwindCx = createCx();
 		const css = createCss();
-		const className = css.class({ padding: "1rem", color: "red" });
-		export const card = () => {  return [(value: string | undefined) => pandwindCx(className, value), (style: Record<string, unknown> | undefined) => style ?? {}] as const; };",
+		export const card = () => { const className = css.class({ padding: "1rem", color: "red" }); return [(value: string | undefined) => pandwindCx(className, value), (style: Record<string, unknown> | undefined) => style ?? {}] as const; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -175,8 +174,7 @@ test("tokenami -> pandwind -> tokenami: retains the documented secondary API wit
 		import { createCx } from "pandwind/cx";
 		import { css } from "@tokenami/css";
 		const pandwindCx = createCx();
-		const className = css({ padding: "1rem", color: "red" });
-		export const card = () => {  return [(value: string | undefined) => pandwindCx(className, value), (style: Record<string, unknown> | undefined) => style ?? {}] as const; };",
+		export const card = () => { const className = css({ padding: "1rem", color: "red" }); return [(value: string | undefined) => pandwindCx(className, value), (style: Record<string, unknown> | undefined) => style ?? {}] as const; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

@@ -51,8 +51,7 @@ test("mui -> pandwind -> mui: preserves an actionable concrete round trip", () =
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		const staticClassName1 = css.class({ padding: "16px", color: "red" });
-		export const App = () => <div className={staticClassName1} />;",
+		export const App = () => <div className={css.class({ padding: "16px", color: "red" })} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,10 +85,9 @@ test("mui -> pandwind -> mui: preserves an actionable concrete round trip", () =
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
-		const staticClassName1 = css.class({ "padding": "16px", "color": "red" });
-		export const App = () => <div className={staticClassName1} />;",
-		    "converted": 1,
+		export const App = () => <div className={// pandwind:migrate-skip (route: pandwind -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		css.class({ padding: "16px", color: "red" })} />;",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -98,7 +96,6 @@ test("mui -> pandwind -> mui: preserves an actionable concrete round trip", () =
 		          "static",
 		          "named-map",
 		          "residual",
-		          "portable-artifact",
 		        ],
 		        "representation": "static",
 		        "residuals": [],
@@ -106,19 +103,19 @@ test("mui -> pandwind -> mui: preserves an actionable concrete round trip", () =
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "residual",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "MUI sx styles require a host component prop; no standalone sx() API exists",
+		        "kind": "host-framework",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`)
@@ -237,8 +234,7 @@ test("mui -> pandwind -> mui: preserves concrete theme and project context varia
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		const staticClassName1 = css.class({ padding: "16px", color: "brand" });
-		export const App = () => <div className={staticClassName1} />;",
+		export const App = () => <div className={css.class({ padding: "16px", color: "brand" })} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -272,10 +268,9 @@ test("mui -> pandwind -> mui: preserves concrete theme and project context varia
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
-		const staticClassName1 = css.class({ "padding": "16px", "color": "primary.main" });
-		export const App = () => <div className={staticClassName1} />;",
-		      "converted": 1,
+		export const App = () => <div className={// pandwind:migrate-skip (route: pandwind -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		css.class({ padding: "16px", color: "brand" })} />;",
+		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -284,7 +279,6 @@ test("mui -> pandwind -> mui: preserves concrete theme and project context varia
 		            "static",
 		            "named-map",
 		            "residual",
-		            "portable-artifact",
 		          ],
 		          "representation": "static",
 		          "residuals": [],
@@ -292,19 +286,19 @@ test("mui -> pandwind -> mui: preserves concrete theme and project context varia
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "portable-artifact",
-		          "representation": "portable-artifact",
+		          "outcome": "residual",
+		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
+		      "residuals": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "hint": "MUI sx styles require a host component prop; no standalone sx() API exists",
+		          "kind": "host-framework",
+		          "preserved": undefined,
 		        },
 		      ],
+		      "skipped": 1,
+		      "validations": [],
 		    },
 		  },
 		  "blue": {
@@ -312,8 +306,7 @@ test("mui -> pandwind -> mui: preserves concrete theme and project context varia
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		const staticClassName1 = css.class({ padding: "16px", color: "brand" });
-		export const App = () => <div className={staticClassName1} />;",
+		export const App = () => <div className={css.class({ padding: "16px", color: "brand" })} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -347,10 +340,9 @@ test("mui -> pandwind -> mui: preserves concrete theme and project context varia
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
-		const staticClassName1 = css.class({ "padding": "16px", "color": "primary.main" });
-		export const App = () => <div className={staticClassName1} />;",
-		      "converted": 1,
+		export const App = () => <div className={// pandwind:migrate-skip (route: pandwind -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		css.class({ padding: "16px", color: "brand" })} />;",
+		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -359,7 +351,6 @@ test("mui -> pandwind -> mui: preserves concrete theme and project context varia
 		            "static",
 		            "named-map",
 		            "residual",
-		            "portable-artifact",
 		          ],
 		          "representation": "static",
 		          "residuals": [],
@@ -367,19 +358,19 @@ test("mui -> pandwind -> mui: preserves concrete theme and project context varia
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "portable-artifact",
-		          "representation": "portable-artifact",
+		          "outcome": "residual",
+		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
+		      "residuals": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "hint": "MUI sx styles require a host component prop; no standalone sx() API exists",
+		          "kind": "host-framework",
+		          "preserved": undefined,
 		        },
 		      ],
+		      "skipped": 1,
+		      "validations": [],
 		    },
 		  },
 		}
@@ -401,8 +392,7 @@ test("mui -> pandwind -> mui: resolves token values across both concrete legs", 
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		const staticClassName1 = css.class({ padding: "16px", color: "brand" });
-		export const App = () => <div className={staticClassName1} />;",
+		export const App = () => <div className={css.class({ padding: "16px", color: "brand" })} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -436,10 +426,9 @@ test("mui -> pandwind -> mui: resolves token values across both concrete legs", 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
-		const staticClassName1 = css.class({ "padding": "16px", "color": "primary.main" });
-		export const App = () => <div className={staticClassName1} />;",
-		    "converted": 1,
+		export const App = () => <div className={// pandwind:migrate-skip (route: pandwind -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		css.class({ padding: "16px", color: "brand" })} />;",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -448,7 +437,6 @@ test("mui -> pandwind -> mui: resolves token values across both concrete legs", 
 		          "static",
 		          "named-map",
 		          "residual",
-		          "portable-artifact",
 		        ],
 		        "representation": "static",
 		        "residuals": [],
@@ -456,19 +444,19 @@ test("mui -> pandwind -> mui: resolves token values across both concrete legs", 
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "residual",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "MUI sx styles require a host component prop; no standalone sx() API exists",
+		        "kind": "host-framework",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`)

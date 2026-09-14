@@ -97,14 +97,13 @@ const Button = () => <styled.button color="red" />;`;
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
 		expect(result.code).not.toContain('from "styled-system/jsx"');
-		expect(result.code).toContain("<button className={staticClassName1} />");
+		expect(result.code).toContain("<button className={css.class({");
 		expect(result.code).toMatchInlineSnapshot(`
 			"import React from "react";
 			import { createCss } from "pandwind/css";
 			const css = createCss();
-			const staticClassName1 = css.class({ color: "red" });
 
-			const Button = () => <button className={staticClassName1} />;"
+			const Button = () => <button className={css.class({ color: "red" })} />;"
 		`);
 	});
 
@@ -122,10 +121,9 @@ export const Button = () =>
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { createCss } from "pandwind/css";
 			const css = createCss();
-			const staticClassName1 = css.class({ backgroundColor: "tomato", color: "red", "&:hover": { color: "blue" } });
 
 			export const Button = () =>
-					<button data-testid="button" disabled className={staticClassName1} />;"
+					<button data-testid="button" disabled className={css.class({ backgroundColor: "tomato", color: "red", "&:hover": { color: "blue" } })} />;"
 		`);
 	});
 

@@ -49,8 +49,7 @@ test("mui -> pandwind: migrates concrete mui syntax to pandwind", () => {
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		const staticClassName1 = css.class({ padding: "16px", color: "red" });
-		export const App = () => <div className={staticClassName1} />;",
+		export const App = () => <div className={css.class({ padding: "16px", color: "red" })} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -146,8 +145,7 @@ test("mui -> pandwind: loads concrete theme and project context variants", async
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		const staticClassName1 = css.class({ padding: "16px", color: "brand" });
-		export const App = () => <div className={staticClassName1} />;",
+		export const App = () => <div className={css.class({ padding: "16px", color: "brand" })} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -182,8 +180,7 @@ test("mui -> pandwind: loads concrete theme and project context variants", async
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		const staticClassName1 = css.class({ padding: "16px", color: "brand" });
-		export const App = () => <div className={staticClassName1} />;",
+		export const App = () => <div className={css.class({ padding: "16px", color: "brand" })} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -230,8 +227,7 @@ test("mui -> pandwind: resolves concrete token values with project context", asy
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		const staticClassName1 = css.class({ padding: "16px", color: "brand" });
-		export const App = () => <div className={staticClassName1} />;",
+		export const App = () => <div className={css.class({ padding: "16px", color: "brand" })} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [

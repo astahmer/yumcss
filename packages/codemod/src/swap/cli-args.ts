@@ -46,6 +46,7 @@ export interface MigrateCliArgs {
 	tokenize: boolean;
 	sort: boolean;
 	dedup: boolean;
+	hoistStaticStyles: boolean;
 	/** Output folder for --from=panda project migration (default "pandwind"). */
 	outDir: string;
 	/** Regenerate existing panda migration modules. */
@@ -84,15 +85,26 @@ export function configureMigrateCommand(command: Command): void {
 		.option("--engine", "Resolve unknown Tailwind utilities through the engine")
 		.option("--tokenize", "Rewrite eligible raw values to token references")
 		.option("--sort", "Sort emitted declarations canonically")
-		.option("--dedup", "Hoist repeated literal style calls");
+		.option("--dedup", "Hoist repeated literal style calls")
+		.option("--hoist-static-styles", "Hoist static Pandwind style calls to module scope");
 }
 
-const normalizeReportSyntax = (argv: readonly string[]): string[] => {
+const normalizeMigrateSyntax = (argv: readonly string[]): string[] => {
 	const normalized: string[] = [];
 	for (const argument of argv) {
 		if (argument.startsWith("--report=")) {
 			normalized.push("--report", `--report-format=${argument.slice("--report=".length)}`);
-		} else normalized.push(argument);
+			continue;
+		}
+		if (argument === "--hoist-static-styles") {
+			normalized.push("--hoistStaticStyles");
+			continue;
+		}
+		if (argument.startsWith("--hoist-static-styles=")) {
+			normalized.push(`--hoistStaticStyles=${argument.slice("--hoist-static-styles=".length)}`);
+			continue;
+		}
+		normalized.push(argument);
 	}
 	return normalized;
 };
@@ -113,7 +125,7 @@ const optionString = (
 };
 
 const optionBoolean = (options: Readonly<Record<string, unknown>>, name: string): boolean =>
-	options[name] === true;
+	options[name] === true || options[name] === "true";
 
 const CLI_IDENTIFIERS = new Map<string, string>([
 	["tailwindcss", CodemodAdapterId.Tailwind],
@@ -146,7 +158,7 @@ export function parseMigrateArgs(argv: string[]): MigrateCliArgs {
 	const cli = cac("pandwind-codemod migrate");
 	const command = cli.command("[...patterns]", "Migrate a project between styling adapters");
 	configureMigrateCommand(command);
-	cli.parse(["node", "pandwind-codemod migrate", ...normalizeReportSyntax(argv)], { run: false });
+	cli.parse(["node", "pandwind-codemod migrate", ...normalizeMigrateSyntax(argv)], { run: false });
 	const matched = cli.matchedCommand;
 	if (matched === undefined) throw new Error("codemod migrate: no input patterns given");
 	validateCommand(matched);
@@ -197,6 +209,7 @@ export function parseMigrateArgs(argv: string[]): MigrateCliArgs {
 		tokenize: optionBoolean(options, "tokenize"),
 		sort: optionBoolean(options, "sort"),
 		dedup: optionBoolean(options, "dedup"),
+		hoistStaticStyles: optionBoolean(options, "hoistStaticStyles"),
 		outDir: optionString(options, "out") ?? "",
 		force: optionBoolean(options, "force"),
 		capabilityMode: safe ? "safe" : partial ? "partial" : undefined,

@@ -14,6 +14,7 @@ export interface ProjectMigrationContext {
 	readonly write: boolean;
 	readonly skipMarker: string;
 	readonly tokenReferenceFormat?: TokenReferenceFormat;
+	readonly hoistStaticStyles?: boolean;
 }
 
 export interface ProjectMigrationCommand {

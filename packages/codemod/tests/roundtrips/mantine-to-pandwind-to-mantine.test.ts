@@ -51,8 +51,7 @@ test("mantine -> pandwind -> mantine: preserves an actionable concrete round tri
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		const staticClassName1 = css.class({ color: "blue.6", marginLeft: "auto", marginRight: "auto", maxWidth: 400 });
-		export const App = () => <div className={staticClassName1} />;",
+		export const App = () => <div className={css.class({ color: "blue.6", marginLeft: "auto", marginRight: "auto", maxWidth: 400 })} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -85,11 +84,9 @@ test("mantine -> pandwind -> mantine: preserves an actionable concrete round tri
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const staticClassName1 = // pandwind:migrate-skip (route: pandwind -> mantine | lowering-residual: host-framework, validation)
-		css.class({ color: "blue.6", marginLeft: "auto", marginRight: "auto", maxWidth: 400 });
-		export const App = () => <div className={staticClassName1} />;",
-		    "converted": 0,
+		    "code": "
+		export const App = () => <div className={{ color: "blue.6", marginLeft: "auto", marginRight: "auto", maxWidth: 400 }} />;",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -105,30 +102,17 @@ test("mantine -> pandwind -> mantine: preserves an actionable concrete round tri
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
-		        "kind": "host-framework",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "1 residual conversion(s)",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "1 residual conversion(s)",
-		        ],
-		        "lossiness": "lossy",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },
@@ -225,8 +209,7 @@ test("mantine -> pandwind -> mantine: preserves concrete theme and project conte
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		const staticClassName1 = css.class({ color: "brand", marginLeft: "auto", marginRight: "auto", maxWidth: 400 });
-		export const App = () => <div className={staticClassName1} />;",
+		export const App = () => <div className={css.class({ color: "brand", marginLeft: "auto", marginRight: "auto", maxWidth: 400 })} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -259,11 +242,9 @@ test("mantine -> pandwind -> mantine: preserves concrete theme and project conte
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { createCss } from "pandwind/css";
-		const staticClassName1 = // pandwind:migrate-skip (route: pandwind -> mantine | lowering-residual: host-framework, validation)
-		css.class({ color: "brand", marginLeft: "auto", marginRight: "auto", maxWidth: 400 });
-		export const App = () => <div className={staticClassName1} />;",
-		      "converted": 0,
+		      "code": "
+		export const App = () => <div className={{ color: "var(--mantine-color-brand-0)", marginLeft: "auto", marginRight: "auto", maxWidth: 400 }} />;",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -279,30 +260,17 @@ test("mantine -> pandwind -> mantine: preserves concrete theme and project conte
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
-		          "kind": "host-framework",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "1 residual conversion(s)",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "1 residual conversion(s)",
-		          ],
-		          "lossiness": "lossy",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
@@ -312,8 +280,7 @@ test("mantine -> pandwind -> mantine: preserves concrete theme and project conte
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		const staticClassName1 = css.class({ color: "brand", marginLeft: "auto", marginRight: "auto", maxWidth: 400 });
-		export const App = () => <div className={staticClassName1} />;",
+		export const App = () => <div className={css.class({ color: "brand", marginLeft: "auto", marginRight: "auto", maxWidth: 400 })} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -346,11 +313,9 @@ test("mantine -> pandwind -> mantine: preserves concrete theme and project conte
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { createCss } from "pandwind/css";
-		const staticClassName1 = // pandwind:migrate-skip (route: pandwind -> mantine | lowering-residual: host-framework, validation)
-		css.class({ color: "brand", marginLeft: "auto", marginRight: "auto", maxWidth: 400 });
-		export const App = () => <div className={staticClassName1} />;",
-		      "converted": 0,
+		      "code": "
+		export const App = () => <div className={{ color: "var(--mantine-color-brand-0)", marginLeft: "auto", marginRight: "auto", maxWidth: 400 }} />;",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -366,30 +331,17 @@ test("mantine -> pandwind -> mantine: preserves concrete theme and project conte
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
-		          "kind": "host-framework",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "1 residual conversion(s)",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "1 residual conversion(s)",
-		          ],
-		          "lossiness": "lossy",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
@@ -413,8 +365,7 @@ test("mantine -> pandwind -> mantine: resolves token values across both concrete
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		const staticClassName1 = css.class({ color: "brand", marginLeft: "auto", marginRight: "auto", maxWidth: 400 });
-		export const App = () => <div className={staticClassName1} />;",
+		export const App = () => <div className={css.class({ color: "brand", marginLeft: "auto", marginRight: "auto", maxWidth: 400 })} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -447,11 +398,9 @@ test("mantine -> pandwind -> mantine: resolves token values across both concrete
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const staticClassName1 = // pandwind:migrate-skip (route: pandwind -> mantine | lowering-residual: host-framework, validation)
-		css.class({ color: "brand", marginLeft: "auto", marginRight: "auto", maxWidth: 400 });
-		export const App = () => <div className={staticClassName1} />;",
-		    "converted": 0,
+		    "code": "
+		export const App = () => <div className={{ color: "var(--mantine-color-brand-0)", marginLeft: "auto", marginRight: "auto", maxWidth: 400 }} />;",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -467,30 +416,17 @@ test("mantine -> pandwind -> mantine: resolves token values across both concrete
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
-		        "kind": "host-framework",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "1 residual conversion(s)",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "1 residual conversion(s)",
-		        ],
-		        "lossiness": "lossy",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },

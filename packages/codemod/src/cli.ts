@@ -419,6 +419,7 @@ async function mainMigrate(argv: string[]): Promise<void> {
 			write: !args.dryRun,
 			skipMarker: args.skipMarker,
 			tokenReferenceFormat: args.tokenReferenceFormat,
+			hoistStaticStyles: args.hoistStaticStyles,
 		});
 		if (
 			!args.dryRun &&
@@ -486,6 +487,7 @@ async function mainMigrate(argv: string[]): Promise<void> {
 			sort: args.sort,
 			dedup: args.dedup,
 			tokenReferenceFormat: args.tokenReferenceFormat,
+			hoistStaticStyles: args.hoistStaticStyles,
 		});
 		totalConverted += result.converted;
 		totalResiduals += result.unmappedTokens.length;
@@ -693,6 +695,7 @@ async function runAdapterRoute(
 			packageJson,
 			project: project?.bindings,
 			tokenReferenceFormat: args.tokenReferenceFormat,
+			hoistStaticStyles: args.hoistStaticStyles,
 		});
 		const codeChanged = result.code !== source;
 		const outputFile =

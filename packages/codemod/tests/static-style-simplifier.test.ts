@@ -16,9 +16,8 @@ const View = () => (
 		const result = simplifyPandwindStaticStyles(source, "View.tsx");
 
 		expect(result.changed).toBe(true);
-		expect(result.code).toContain('const staticClassName1 = css.class({ color: "red" });');
 		expect(result.code).toContain(
-			'<Stack direction="column" gap="0" padding="2" align="center" className={staticClassName1} />',
+			'<Stack direction="column" gap="0" padding="2" align="center" className={css.class({ color: "red" })} />',
 		);
 		expect(result.code).not.toContain("cx(");
 		expect(result.code).not.toContain('from "./pandwind/cx"');
@@ -33,8 +32,9 @@ const View = () => <div className={cx(css.class({ color: "red" }), className)} /
 		const result = simplifyPandwindStaticStyles(source, "View.tsx");
 
 		expect(result.changed).toBe(true);
-		expect(result.code).toContain('const staticClassName1 = css.class({ color: "red" });');
-		expect(result.code).toContain("className={css.props(staticClassName1, className).className}");
+		expect(result.code).toContain(
+			'className={css.props(css.class({ color: "red" }), className).className}',
+		);
 		expect(result.code).not.toContain('from "./pandwind/cx"');
 	});
 
@@ -48,7 +48,7 @@ const View = ({ className }: { className?: string }) => (
 		const result = simplifyPandwindStaticStyles(source, "View.tsx");
 
 		expect(result.code).toContain(
-			'<Stack direction="column" align="center" className={css.props(staticClassName1, className).className} />',
+			'<Stack direction="column" align="center" className={css.props(css.class({ color: "red" }), className).className} />',
 		);
 		expect(result.code).not.toContain('import { cx } from "./pandwind/cx";');
 	});
@@ -113,7 +113,9 @@ const View = () => {
 };
 `;
 
-		const result = simplifyPandwindStaticStyles(source, "View.tsx");
+		const result = simplifyPandwindStaticStyles(source, "View.tsx", {
+			hoistStaticStyles: true,
+		});
 
 		expect(result.code).toContain('const chipClassName = css.class({ color: "red" });');
 		expect(result.code).toContain("return <div className={chipClassName} />;");
@@ -148,7 +150,9 @@ const emphasisClassName = css.class({ fontWeight: "700" });
 const View = () => <div className={css.props(baseClassName, emphasisClassName).className} />;
 `;
 
-		const result = simplifyPandwindStaticStyles(source, "View.tsx");
+		const result = simplifyPandwindStaticStyles(source, "View.tsx", {
+			hoistStaticStyles: true,
+		});
 
 		expect(result.code).toContain(
 			'const staticClassName1 = css.class({ color: "red", fontWeight: "700" });',
@@ -185,12 +189,10 @@ const View = ({ className }: { className?: string }) => (
 
 		const result = simplifyPandwindStaticStyles(source, "View.tsx");
 
-		expect(result.code).toContain("className={css.props(staticClassName1, className).className}");
 		expect(result.code).toContain(
-			'const staticClassName1 = css.class({ color: "red", fontWeight: "700" });',
+			'className={css.props(css.class({ color: "red", fontWeight: "700" }), className).className}',
 		);
-		expect(result.code).not.toContain("baseClassName");
-		expect(result.code).not.toContain("emphasisClassName");
+		expect(result.code).toContain('from "./pandwind/css"');
 	});
 
 	it("preserves dynamic and static class order", () => {
@@ -204,7 +206,9 @@ const View = ({ className }: { className?: string }) => (
 
 		const result = simplifyPandwindStaticStyles(source, "View.tsx");
 
-		expect(result.code).toContain("className={css.props(className, staticClassName1).className}");
+		expect(result.code).toContain(
+			'className={css.props(className, css.class({ color: "red" })).className}',
+		);
 		expect(result.code).not.toContain("cx(");
 	});
 
@@ -237,7 +241,9 @@ const css = createCss();
 const View = () => <div className={css.class({ color: "red" })} />;
 `;
 
-		const result = simplifyPandwindStaticStyles(source, "View.tsx");
+		const result = simplifyPandwindStaticStyles(source, "View.tsx", {
+			hoistStaticStyles: true,
+		});
 
 		expect(result.code.indexOf("const css = createCss();")).toBeLessThan(
 			result.code.indexOf('const staticClassName1 = css.class({ color: "red" });'),

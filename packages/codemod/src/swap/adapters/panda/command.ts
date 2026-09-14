@@ -26,6 +26,7 @@ const pandaMigrationCommand: ProjectMigrationCommand = {
 			skipMarker: context.skipMarker,
 			force: context.force,
 			tokenReferenceFormat: context.tokenReferenceFormat,
+			hoistStaticStyles: context.hoistStaticStyles,
 		});
 		console.log(
 			`\nproject migration: ${report.filesScanned} file(s) scanned · ${report.filesChanged} changed · ` +

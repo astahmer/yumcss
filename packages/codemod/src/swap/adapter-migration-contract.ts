@@ -44,6 +44,8 @@ export interface AdapterMigrationOptions {
 	readonly project?: AdapterProjectBindings;
 	/** Token spelling policy selected for target-owned references. */
 	readonly tokenReferenceFormat?: TokenReferenceFormat;
+	/** Keep static style calls colocated unless module-scope hoisting is requested. */
+	readonly hoistStaticStyles?: boolean;
 }
 
 /** Infrastructure ports used by the adapter migration application service. */
