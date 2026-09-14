@@ -1,5 +1,5 @@
 /** Host-project module loading boundary used by optional official integrations. */
-import { mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { existsSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { pathToFileURL } from "node:url";
 import { build } from "esbuild";
@@ -13,6 +13,7 @@ function isUnavailableModule(error: unknown): boolean {
 	if (!(error instanceof Error)) return false;
 	const code = "code" in error ? (error as Error & { code?: string }).code : undefined;
 	return (
+		code === "ENOENT" ||
 		code === "MODULE_NOT_FOUND" ||
 		code === "ERR_MODULE_NOT_FOUND" ||
 		code === "ERR_PACKAGE_PATH_NOT_EXPORTED" ||
@@ -123,11 +124,17 @@ export class NodeProjectModuleLoader implements ProjectModuleLoader {
 	}
 
 	async importFile<T>(file: string): Promise<T | undefined> {
+		if (!existsSync(file)) return undefined;
 		try {
 			return (await import(/* @vite-ignore */ pathToFileURL(file).href)) as T;
 		} catch (error) {
 			if (!isUnavailableModule(error)) throw error;
-			return importBundledProjectFile<T>(file);
+			try {
+				return await importBundledProjectFile<T>(file);
+			} catch (bundleError) {
+				if (isUnavailableModule(bundleError)) return undefined;
+				throw bundleError;
+			}
 		}
 	}
 }

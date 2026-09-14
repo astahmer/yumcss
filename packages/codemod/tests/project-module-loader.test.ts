@@ -70,4 +70,17 @@ describe("NodeProjectModuleLoader", () => {
 			rmSync(root, { recursive: true, force: true });
 		}
 	});
+
+	test("treats a missing project file as unavailable", async () => {
+		const root = mkdtempSync(join(tmpdir(), "pandwind-project-loader-"));
+		try {
+			const module = await new NodeProjectModuleLoader().importFile<{ value: string }>(
+				join(root, "src/theme.ts"),
+			);
+
+			expect(module).toBeUndefined();
+		} finally {
+			rmSync(root, { recursive: true, force: true });
+		}
+	});
 });
