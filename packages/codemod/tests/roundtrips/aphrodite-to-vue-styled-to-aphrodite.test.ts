@@ -50,7 +50,6 @@ test("aphrodite -> vue-styled -> aphrodite: preserves an actionable concrete rou
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-
 		export const styles = { "card": styled.div({ "padding": 8, "color": "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -87,7 +86,6 @@ test("aphrodite -> vue-styled -> aphrodite: preserves an actionable concrete rou
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-
 		export const styles = { "card": // pandwind:migrate-skip (route: vue-styled -> aphrodite | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
 		styled.div({ "padding": 8, "color": "red" }) };",
 		    "converted": 0,
@@ -218,7 +216,6 @@ test("aphrodite -> vue-styled -> aphrodite: preserves concrete theme and project
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-
 		export const styles = { "card": styled.div({ "padding": 8, "color": "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -255,7 +252,6 @@ test("aphrodite -> vue-styled -> aphrodite: preserves concrete theme and project
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-
 		export const styles = { "card": // pandwind:migrate-skip (route: vue-styled -> aphrodite | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
 		styled.div({ "padding": 8, "color": "#2563eb" }) };",
 		      "converted": 0,
@@ -295,7 +291,6 @@ test("aphrodite -> vue-styled -> aphrodite: preserves concrete theme and project
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-
 		export const styles = { "card": styled.div({ "padding": 8, "color": "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -332,7 +327,6 @@ test("aphrodite -> vue-styled -> aphrodite: preserves concrete theme and project
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-
 		export const styles = { "card": // pandwind:migrate-skip (route: vue-styled -> aphrodite | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
 		styled.div({ "padding": 8, "color": "#2563eb" }) };",
 		      "converted": 0,
@@ -386,7 +380,6 @@ test("aphrodite -> vue-styled -> aphrodite: resolves token values across both co
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-
 		export const styles = { "card": styled.div({ "padding": 8, "color": "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -423,7 +416,6 @@ test("aphrodite -> vue-styled -> aphrodite: resolves token values across both co
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-
 		export const styles = { "card": // pandwind:migrate-skip (route: vue-styled -> aphrodite | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
 		styled.div({ "padding": 8, "color": "#2563eb" }) };",
 		    "converted": 0,

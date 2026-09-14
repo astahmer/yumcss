@@ -48,7 +48,6 @@ test("jss -> react-native: migrates concrete jss syntax to react-native", () => 
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "react-native";
-
 		export const useStyles = StyleSheet.create({ "card": { "color": "red" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -95,7 +94,6 @@ test("jss -> react-native: carries a documented secondary jss API explicitly", (
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "react-native";
-
 		export const sheet = StyleSheet.create({ "card": { "color": "red" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -151,7 +149,6 @@ test("jss -> react-native: loads concrete theme and project context variants", a
 		  "amber": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-
 		export const useStyles = StyleSheet.create({ "card": { "color": "#2563eb" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -189,7 +186,6 @@ test("jss -> react-native: loads concrete theme and project context variants", a
 		  "blue": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-
 		export const useStyles = StyleSheet.create({ "card": { "color": "#2563eb" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -239,7 +235,6 @@ test("jss -> react-native: resolves concrete token values with project context",
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "react-native";
-
 		export const useStyles = StyleSheet.create({ "card": { "color": "#2563eb" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -286,7 +281,6 @@ test("jss -> react-native: preserves malformed concrete jss input", () => {
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "react-native";
-
 		export const useStyles = StyleSheet.create({ "card": { "color": "red" } });
 		const unfinished = { /* unfinished jss */",
 		  "converted": 1,

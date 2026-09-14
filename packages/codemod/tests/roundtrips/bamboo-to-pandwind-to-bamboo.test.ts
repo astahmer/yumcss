@@ -51,7 +51,6 @@ test("bamboo -> pandwind -> bamboo: preserves an actionable concrete round trip"
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -136,7 +135,6 @@ test("bamboo -> pandwind -> bamboo: retains the documented secondary API without
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ gap: "4", display: "flex" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -236,7 +234,6 @@ test("bamboo -> pandwind -> bamboo: preserves concrete theme and project context
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -309,7 +306,6 @@ test("bamboo -> pandwind -> bamboo: preserves concrete theme and project context
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ color: "brand" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -404,7 +400,6 @@ test("bamboo -> pandwind -> bamboo: resolves token values across both concrete l
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ color: "brand" });",
 		    "converted": 1,
 		    "generatedFiles": [],

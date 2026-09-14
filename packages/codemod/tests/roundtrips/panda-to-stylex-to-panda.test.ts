@@ -50,7 +50,6 @@ test("panda -> stylex -> panda: preserves an actionable concrete round trip", ()
 		  "forward": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-
 		export const card = stylex.create({ style: { color: "red.300", "&:hover": { color: "blue.300" } } }).style;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -87,8 +86,6 @@ test("panda -> stylex -> panda: preserves an actionable concrete round trip", ()
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-
-
 		export const card = { "style": css({ color: "red.300", "&:hover": { color: "blue.300" } }) }.style;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -349,7 +346,6 @@ test("panda -> stylex -> panda: resolves token values across both concrete legs"
 		  "forward": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-
 		export const card = stylex.create({ style: { color: "#2563eb", "&:hover": { color: "blue.300" } } }).style;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -386,8 +382,6 @@ test("panda -> stylex -> panda: resolves token values across both concrete legs"
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-
-
 		export const card = { "style": css({ color: "brand.500", "&:hover": { color: "blue.300" } }) }.style;",
 		    "converted": 1,
 		    "generatedFiles": [],

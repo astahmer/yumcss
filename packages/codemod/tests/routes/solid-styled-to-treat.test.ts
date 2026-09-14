@@ -47,8 +47,7 @@ test("solid-styled -> treat: migrates concrete solid-styled syntax to treat", ()
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		import { createCx } from "pandwind/cx";
+		  "code": "import { createCx } from "pandwind/cx";
 		import { style } from "@/styles.treat";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} class={cx(style({ "padding": "1rem", "color": "red" }), props.class)} />;",
@@ -95,8 +94,7 @@ test("solid-styled -> treat: carries a documented secondary solid-styled API exp
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		import { createCx } from "pandwind/cx";
+		  "code": "import { createCx } from "pandwind/cx";
 		import { style } from "@/styles.treat";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} class={cx(style({ "padding": "1rem", "color": "red" }), props.class)} />;",
@@ -152,8 +150,7 @@ test("solid-styled -> treat: loads concrete theme and project context variants",
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { style } from "@/styles.treat";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} class={cx(style({ "padding": "1rem", "color": "#2563eb" }), props.class)} />;",
@@ -191,8 +188,7 @@ test("solid-styled -> treat: loads concrete theme and project context variants",
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { style } from "@/styles.treat";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} class={cx(style({ "padding": "1rem", "color": "#2563eb" }), props.class)} />;",
@@ -242,8 +238,7 @@ test("solid-styled -> treat: resolves concrete token values with project context
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		import { createCx } from "pandwind/cx";
+		  "code": "import { createCx } from "pandwind/cx";
 		import { style } from "@/styles.treat";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} class={cx(style({ "padding": "1rem", "color": "#2563eb" }), props.class)} />;",

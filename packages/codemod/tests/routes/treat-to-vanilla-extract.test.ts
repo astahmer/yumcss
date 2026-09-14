@@ -48,7 +48,6 @@ test("treat -> vanilla-extract: migrates concrete treat syntax to vanilla-extrac
 		{
 		  "changed": true,
 		  "code": "import { style } from "@vanilla-extract/css";
-
 		export const card = style({ padding: 8, color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -94,7 +93,6 @@ test("treat -> vanilla-extract: carries a documented secondary treat API explici
 		{
 		  "changed": true,
 		  "code": "import { style } from "@vanilla-extract/css";
-
 		export const card = style({ padding: 8, color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -149,7 +147,6 @@ test("treat -> vanilla-extract: loads concrete theme and project context variant
 		  "amber": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-
 		export const card = style({ padding: 8, color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -186,7 +183,6 @@ test("treat -> vanilla-extract: loads concrete theme and project context variant
 		  "blue": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-
 		export const card = style({ padding: 8, color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -235,7 +231,6 @@ test("treat -> vanilla-extract: resolves concrete token values with project cont
 		{
 		  "changed": true,
 		  "code": "import { style } from "@vanilla-extract/css";
-
 		export const card = style({ padding: 8, color: "#2563eb" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -281,7 +276,6 @@ test("treat -> vanilla-extract: preserves malformed concrete treat input", () =>
 		{
 		  "changed": true,
 		  "code": "import { style } from "@vanilla-extract/css";
-
 		export const card = style({ padding: 8, color: "red" });
 		const unfinished = { /* unfinished treat */",
 		  "converted": 1,

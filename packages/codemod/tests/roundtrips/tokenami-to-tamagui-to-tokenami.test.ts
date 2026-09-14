@@ -50,7 +50,6 @@ test("tokenami -> tamagui -> tokenami: preserves an actionable concrete round tr
 		  "forward": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-
 		export const card = styled(View, { cardGap: "1rem", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -87,7 +86,6 @@ test("tokenami -> tamagui -> tokenami: preserves an actionable concrete round tr
 		import { createCx } from "pandwind/cx";
 		import { css } from "@tokenami/css";
 		const cx = createCx();
-
 		export const card = (props) => <View {...props} className={cx(css({ cardGap: "1rem", color: "red" }), props.className)} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -136,7 +134,6 @@ test("tokenami -> tamagui -> tokenami: retains the documented secondary API with
 		  "forward": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-
 		export const card = styled(View, { padding: "1rem", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -173,7 +170,6 @@ test("tokenami -> tamagui -> tokenami: retains the documented secondary API with
 		import { createCx } from "pandwind/cx";
 		import { css } from "@tokenami/css";
 		const cx = createCx();
-
 		export const card = (props) => <View {...props} className={cx(css({ padding: "1rem", color: "red" }), props.className)} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -236,7 +232,6 @@ test("tokenami -> tamagui -> tokenami: preserves concrete theme and project cont
 		    "forward": {
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
-
 		export const card = styled(View, { cardGap: "1rem", color: "$colors.brand" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -273,7 +268,6 @@ test("tokenami -> tamagui -> tokenami: preserves concrete theme and project cont
 		import { createCx } from "pandwind/cx";
 		import { css } from "@tokenami/css";
 		const cx = createCx();
-
 		export const card = (props) => <View {...props} className={cx(css({ cardGap: "1rem", color: "$colors.brand" }), props.className)} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -310,7 +304,6 @@ test("tokenami -> tamagui -> tokenami: preserves concrete theme and project cont
 		    "forward": {
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
-
 		export const card = styled(View, { cardGap: "1rem", color: "$colors.brand" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -347,7 +340,6 @@ test("tokenami -> tamagui -> tokenami: preserves concrete theme and project cont
 		import { createCx } from "pandwind/cx";
 		import { css } from "@tokenami/css";
 		const cx = createCx();
-
 		export const card = (props) => <View {...props} className={cx(css({ cardGap: "1rem", color: "$colors.brand" }), props.className)} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -398,7 +390,6 @@ test("tokenami -> tamagui -> tokenami: resolves token values across both concret
 		  "forward": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-
 		export const card = styled(View, { cardGap: "1rem", color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -435,7 +426,6 @@ test("tokenami -> tamagui -> tokenami: resolves token values across both concret
 		import { createCx } from "pandwind/cx";
 		import { css } from "@tokenami/css";
 		const cx = createCx();
-
 		export const card = (props) => <View {...props} className={cx(css({ cardGap: "1rem", color: "$colors.brand" }), props.className)} />;",
 		    "converted": 1,
 		    "generatedFiles": [],

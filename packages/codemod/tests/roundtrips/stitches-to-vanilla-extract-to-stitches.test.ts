@@ -50,7 +50,6 @@ test("stitches -> vanilla-extract -> stitches: preserves an actionable concrete 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-
 		export const card = style({ padding: "1rem", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -87,8 +86,6 @@ test("stitches -> vanilla-extract -> stitches: preserves an actionable concrete 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@stitches/react";
-
-
 		export const card = css({ padding: "1rem", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -139,7 +136,6 @@ test("stitches -> vanilla-extract -> stitches: retains the documented secondary 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { globalStyle } from "@vanilla-extract/css";
-
 		export const reset = globalStyle("body", { margin: 0 });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -176,8 +172,6 @@ test("stitches -> vanilla-extract -> stitches: retains the documented secondary 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { globalCss } from "@stitches/react";
-
-
 		export const reset = globalCss({ "body": { margin: 0 } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -243,7 +237,6 @@ test("stitches -> vanilla-extract -> stitches: preserves concrete theme and proj
 		    "forward": {
 		      "changed": true,
 		      "code": "import { style } from "@vanilla-extract/css";
-
 		export const card = style({ padding: "1rem", color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -280,8 +273,6 @@ test("stitches -> vanilla-extract -> stitches: preserves concrete theme and proj
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@stitches/react";
-
-
 		export const card = css({ padding: "1rem", color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -320,7 +311,6 @@ test("stitches -> vanilla-extract -> stitches: preserves concrete theme and proj
 		    "forward": {
 		      "changed": true,
 		      "code": "import { style } from "@vanilla-extract/css";
-
 		export const card = style({ padding: "1rem", color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -357,8 +347,6 @@ test("stitches -> vanilla-extract -> stitches: preserves concrete theme and proj
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@stitches/react";
-
-
 		export const card = css({ padding: "1rem", color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -411,7 +399,6 @@ test("stitches -> vanilla-extract -> stitches: resolves token values across both
 		  "forward": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-
 		export const card = style({ padding: "1rem", color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -448,8 +435,6 @@ test("stitches -> vanilla-extract -> stitches: resolves token values across both
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@stitches/react";
-
-
 		export const card = css({ padding: "1rem", color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],

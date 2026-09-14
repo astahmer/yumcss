@@ -49,7 +49,6 @@ test("vanilla-extract -> sass: migrates concrete vanilla-extract syntax to sass"
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": 8, "color": "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -94,8 +93,7 @@ test("vanilla-extract -> sass: carries a documented secondary vanilla-extract AP
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		body { margin: 0; };",
+		  "code": "body { margin: 0; };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -149,7 +147,6 @@ test("vanilla-extract -> sass: loads concrete theme and project context variants
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": 8, "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -187,7 +184,6 @@ test("vanilla-extract -> sass: loads concrete theme and project context variants
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": 8, "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -237,7 +233,6 @@ test("vanilla-extract -> sass: resolves concrete token values with project conte
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": 8, "color": "#2563eb" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -284,7 +279,6 @@ test("vanilla-extract -> sass: preserves malformed concrete vanilla-extract inpu
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": 8, "color": "red" });
 		const unfinished = { /* unfinished vanilla-extract */",
 		  "converted": 1,

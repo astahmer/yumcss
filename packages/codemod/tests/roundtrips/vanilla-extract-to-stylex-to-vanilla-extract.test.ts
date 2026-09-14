@@ -88,7 +88,6 @@ test("vanilla-extract -> stylex -> vanilla-extract: preserves an actionable conc
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-
 		export const card = { "style": style({ padding: "8px", color: "red" }) }.style;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -265,7 +264,6 @@ test("vanilla-extract -> stylex -> vanilla-extract: preserves concrete theme and
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { style } from "@vanilla-extract/css";
-
 		export const card = { "style": style({ padding: "8px", color: "#2563eb" }) }.style;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -342,7 +340,6 @@ test("vanilla-extract -> stylex -> vanilla-extract: preserves concrete theme and
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { style } from "@vanilla-extract/css";
-
 		export const card = { "style": style({ padding: "8px", color: "#2563eb" }) }.style;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -433,7 +430,6 @@ test("vanilla-extract -> stylex -> vanilla-extract: resolves token values across
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-
 		export const card = { "style": style({ padding: "8px", color: "#2563eb" }) }.style;",
 		    "converted": 1,
 		    "generatedFiles": [],

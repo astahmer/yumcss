@@ -49,8 +49,7 @@ test("solid-styled -> tamagui -> solid-styled: preserves an actionable concrete 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { View, styled } from "@tamagui/core";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} class={cx(styled(View, { padding: "1rem", color: "red" }), props.class)} />;",
@@ -85,8 +84,7 @@ test("solid-styled -> tamagui -> solid-styled: preserves an actionable concrete 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { View } from "@tamagui/core";
 		import { styled } from "solid-styled-components";
 		const cx = createCx();
@@ -139,8 +137,7 @@ test("solid-styled -> tamagui -> solid-styled: retains the documented secondary 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { View, styled } from "@tamagui/core";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} class={cx(styled(View, { padding: "1rem", color: "red" }), props.class)} />;",
@@ -175,8 +172,7 @@ test("solid-styled -> tamagui -> solid-styled: retains the documented secondary 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { View } from "@tamagui/core";
 		import { styled } from "solid-styled-components";
 		const cx = createCx();
@@ -244,8 +240,7 @@ test("solid-styled -> tamagui -> solid-styled: preserves concrete theme and proj
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		import { createCx } from "pandwind/cx";
+		      "code": "import { createCx } from "pandwind/cx";
 		import { View, styled } from "@tamagui/core";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} class={cx(styled(View, { padding: "1rem", color: "#2563eb" }), props.class)} />;",
@@ -280,8 +275,7 @@ test("solid-styled -> tamagui -> solid-styled: preserves concrete theme and proj
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		import { createCx } from "pandwind/cx";
+		      "code": "import { createCx } from "pandwind/cx";
 		import { View } from "@tamagui/core";
 		import { styled } from "solid-styled-components";
 		const cx = createCx();
@@ -322,8 +316,7 @@ test("solid-styled -> tamagui -> solid-styled: preserves concrete theme and proj
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		import { createCx } from "pandwind/cx";
+		      "code": "import { createCx } from "pandwind/cx";
 		import { View, styled } from "@tamagui/core";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} class={cx(styled(View, { padding: "1rem", color: "#2563eb" }), props.class)} />;",
@@ -358,8 +351,7 @@ test("solid-styled -> tamagui -> solid-styled: preserves concrete theme and proj
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		import { createCx } from "pandwind/cx";
+		      "code": "import { createCx } from "pandwind/cx";
 		import { View } from "@tamagui/core";
 		import { styled } from "solid-styled-components";
 		const cx = createCx();
@@ -414,8 +406,7 @@ test("solid-styled -> tamagui -> solid-styled: resolves token values across both
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { View, styled } from "@tamagui/core";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} class={cx(styled(View, { padding: "1rem", color: "#2563eb" }), props.class)} />;",
@@ -450,8 +441,7 @@ test("solid-styled -> tamagui -> solid-styled: resolves token values across both
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { View } from "@tamagui/core";
 		import { styled } from "solid-styled-components";
 		const cx = createCx();

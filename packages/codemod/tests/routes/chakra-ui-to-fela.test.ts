@@ -47,8 +47,7 @@ test("chakra-ui -> fela: migrates concrete chakra-ui syntax to fela", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => renderer.renderRule({ "padding": "var(--chakra-spacing-4)", "backgroundColor": "var(--chakra-colors-red-200)" });",
+		  "code": "export const App = () => renderer.renderRule({ "padding": "var(--chakra-spacing-4)", "backgroundColor": "var(--chakra-colors-red-200)" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -145,8 +144,7 @@ test("chakra-ui -> fela: loads concrete theme and project context variants", asy
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => renderer.renderRule({ "backgroundColor": "#f97316" });",
+		    "code": "export const App = () => renderer.renderRule({ "backgroundColor": "#f97316", "p": "var(--chakra-spacing-4)" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -182,8 +180,7 @@ test("chakra-ui -> fela: loads concrete theme and project context variants", asy
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => renderer.renderRule({ "backgroundColor": "#2563eb" });",
+		    "code": "export const App = () => renderer.renderRule({ "backgroundColor": "#2563eb", "p": "var(--chakra-spacing-4)" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -231,8 +228,7 @@ test("chakra-ui -> fela: resolves concrete token values with project context", a
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => renderer.renderRule({ "backgroundColor": "#2563eb" });",
+		  "code": "export const App = () => renderer.renderRule({ "backgroundColor": "#2563eb", "p": "var(--chakra-spacing-4)" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -276,8 +272,7 @@ test("chakra-ui -> fela: preserves malformed concrete chakra-ui input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => renderer.renderRule({ "padding": "var(--chakra-spacing-4)", "backgroundColor": "var(--chakra-colors-red-200)" });
+		  "code": "export const App = () => renderer.renderRule({ "padding": "var(--chakra-spacing-4)", "backgroundColor": "var(--chakra-colors-red-200)" });
 		const unfinished = { /* unfinished chakra-ui */",
 		  "converted": 1,
 		  "generatedFiles": [],

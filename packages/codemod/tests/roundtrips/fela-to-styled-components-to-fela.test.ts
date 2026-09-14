@@ -86,7 +86,6 @@ test("fela -> styled-components -> fela: preserves an actionable concrete round 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { createRenderer } from "fela";
-
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		const renderer = createRenderer();
@@ -252,7 +251,6 @@ test("fela -> styled-components -> fela: preserves concrete theme and project co
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { createRenderer } from "fela";
-
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		const renderer = createRenderer();
@@ -330,7 +328,6 @@ test("fela -> styled-components -> fela: preserves concrete theme and project co
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { createRenderer } from "fela";
-
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		const renderer = createRenderer();
@@ -422,7 +419,6 @@ test("fela -> styled-components -> fela: resolves token values across both concr
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { createRenderer } from "fela";
-
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		const renderer = createRenderer();

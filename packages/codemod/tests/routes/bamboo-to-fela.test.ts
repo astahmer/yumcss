@@ -47,8 +47,7 @@ test("bamboo -> fela: migrates concrete bamboo syntax to fela", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		export const card = renderer.renderRule({ "color": "red" });",
+		  "code": "export const card = renderer.renderRule({ "color": "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -92,8 +91,7 @@ test("bamboo -> fela: carries a documented secondary bamboo API explicitly", () 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		export const card = renderer.renderRule({ "gap": "4", "display": "flex" });",
+		  "code": "export const card = renderer.renderRule({ "gap": "4", "display": "flex" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -146,8 +144,7 @@ test("bamboo -> fela: loads concrete theme and project context variants", async 
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "
-		export const card = renderer.renderRule({ "color": "#2563eb" });",
+		    "code": "export const card = renderer.renderRule({ "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -182,8 +179,7 @@ test("bamboo -> fela: loads concrete theme and project context variants", async 
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "
-		export const card = renderer.renderRule({ "color": "#2563eb" });",
+		    "code": "export const card = renderer.renderRule({ "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -230,8 +226,7 @@ test("bamboo -> fela: resolves concrete token values with project context", asyn
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		export const card = renderer.renderRule({ "color": "#2563eb" });",
+		  "code": "export const card = renderer.renderRule({ "color": "#2563eb" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -275,8 +270,7 @@ test("bamboo -> fela: preserves malformed concrete bamboo input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		export const card = renderer.renderRule({ "color": "red" });
+		  "code": "export const card = renderer.renderRule({ "color": "red" });
 		const unfinished = { /* unfinished bamboo */",
 		  "converted": 1,
 		  "generatedFiles": [],

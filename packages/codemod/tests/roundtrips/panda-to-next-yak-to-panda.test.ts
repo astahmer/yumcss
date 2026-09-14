@@ -50,7 +50,6 @@ test("panda -> next-yak -> panda: preserves an actionable concrete round trip", 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-
 		export const card = css\`color: red.300;&:hover { color: blue.300; }\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -85,7 +84,6 @@ test("panda -> next-yak -> panda: preserves an actionable concrete round trip", 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-
 		export const card = // pandwind:migrate-skip (route: next-yak -> panda | capability-blocked: rule-level: 1 semantic rules; nesting: style nested rules | available: static, named-map, residual)
 		css\`color: red.300;&:hover { color: blue.300; }\`;",
 		    "converted": 0,
@@ -341,7 +339,6 @@ test("panda -> next-yak -> panda: resolves token values across both concrete leg
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-
 		export const card = css\`color: #2563eb;&:hover { color: blue.300; }\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -376,7 +373,6 @@ test("panda -> next-yak -> panda: resolves token values across both concrete leg
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-
 		export const card = // pandwind:migrate-skip (route: next-yak -> panda | capability-blocked: rule-level: 1 semantic rules; nesting: style nested rules | available: static, named-map, residual)
 		css\`color: #2563eb;&:hover { color: blue.300; }\`;",
 		    "converted": 0,

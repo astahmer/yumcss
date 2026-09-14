@@ -49,8 +49,7 @@ test("panda -> tailwind -> panda: preserves an actionable concrete round trip", 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const card = "[color:red.300] hover:[color:blue.300]";",
+		    "code": "export const card = "[color:red.300] hover:[color:blue.300]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,7 +85,6 @@ test("panda -> tailwind -> panda: preserves an actionable concrete round trip", 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-
 		export const card = css({ color: "red.300", hover: { color: "blue.300" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -222,8 +220,7 @@ test("panda -> tailwind -> panda: preserves concrete theme and project context v
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		export const card = "text-brand hover:[color:#f97316]";",
+		      "code": "export const card = "text-brand hover:[color:#f97316]";",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -259,8 +256,7 @@ test("panda -> tailwind -> panda: preserves concrete theme and project context v
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		export const card = // pandwind:migrate-skip (route: tailwind -> panda | parse-residual: unknown-utility | available: named-map, residual)
+		      "code": "export const card = // pandwind:migrate-skip (route: tailwind -> panda | parse-residual: unknown-utility | available: named-map, residual)
 		"text-brand hover:[color:#f97316]";",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -295,8 +291,7 @@ test("panda -> tailwind -> panda: preserves concrete theme and project context v
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		export const card = "text-brand hover:[color:#2563eb]";",
+		      "code": "export const card = "text-brand hover:[color:#2563eb]";",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -332,8 +327,7 @@ test("panda -> tailwind -> panda: preserves concrete theme and project context v
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		export const card = // pandwind:migrate-skip (route: tailwind -> panda | parse-residual: unknown-utility | available: named-map, residual)
+		      "code": "export const card = // pandwind:migrate-skip (route: tailwind -> panda | parse-residual: unknown-utility | available: named-map, residual)
 		"text-brand hover:[color:#2563eb]";",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -382,8 +376,7 @@ test("panda -> tailwind -> panda: resolves token values across both concrete leg
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const card = "text-brand hover:[color:blue.300]";",
+		    "code": "export const card = "text-brand hover:[color:blue.300]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -418,8 +411,7 @@ test("panda -> tailwind -> panda: resolves token values across both concrete leg
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		export const card = // pandwind:migrate-skip (route: tailwind -> panda | parse-residual: unknown-utility | available: named-map, residual)
+		    "code": "export const card = // pandwind:migrate-skip (route: tailwind -> panda | parse-residual: unknown-utility | available: named-map, residual)
 		"text-brand hover:[color:blue.300]";",
 		    "converted": 0,
 		    "generatedFiles": [],

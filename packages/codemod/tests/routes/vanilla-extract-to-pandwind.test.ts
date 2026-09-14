@@ -49,7 +49,6 @@ test("vanilla-extract -> pandwind: migrates concrete vanilla-extract syntax to p
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ padding: 8, color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -95,7 +94,6 @@ test("vanilla-extract -> pandwind: carries a documented secondary vanilla-extrac
 		  "code": "import { createRuntimeCss } from "pandwind/css/runtime";
 		import { pandwindPreset } from "pandwind/preset";
 		const css = createRuntimeCss(pandwindPreset);
-
 		(css.sheet.registerSemanticRules([{ kind: "global", selector: "body", conditions: [], declarations: [{ property: "margin", value: 0 }], children: [] }]), null);",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -149,7 +147,6 @@ test("vanilla-extract -> pandwind: loads concrete theme and project context vari
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ padding: 8, color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -185,7 +182,6 @@ test("vanilla-extract -> pandwind: loads concrete theme and project context vari
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ padding: 8, color: "brand" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -233,7 +229,6 @@ test("vanilla-extract -> pandwind: resolves concrete token values with project c
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ padding: 8, color: "brand" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -278,7 +273,6 @@ test("vanilla-extract -> pandwind: preserves malformed concrete vanilla-extract 
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ padding: 8, color: "red" });
 		const unfinished = { /* unfinished vanilla-extract */",
 		  "converted": 1,

@@ -48,7 +48,6 @@ test("emotion -> styled-components: migrates concrete emotion syntax to styled-c
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-
 		export const card = styled.div({ padding: "1rem", color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -92,7 +91,6 @@ test("emotion -> styled-components: carries a documented secondary emotion API e
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-
 		export const card = styled.div({ padding: "1rem", color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -145,7 +143,6 @@ test("emotion -> styled-components: loads concrete theme and project context var
 		  "amber": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
 		export const card = styled.div({ padding: "1rem", color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -180,7 +177,6 @@ test("emotion -> styled-components: loads concrete theme and project context var
 		  "blue": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
 		export const card = styled.div({ padding: "1rem", color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -227,7 +223,6 @@ test("emotion -> styled-components: resolves concrete token values with project 
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-
 		export const card = styled.div({ padding: "1rem", color: "#2563eb" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -271,7 +266,6 @@ test("emotion -> styled-components: preserves malformed concrete emotion input",
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-
 		export const card = styled.div({ padding: "1rem", color: "red" });
 		const unfinished = { /* unfinished emotion */",
 		  "converted": 1,

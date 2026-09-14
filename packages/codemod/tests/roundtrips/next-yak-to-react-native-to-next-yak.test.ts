@@ -50,7 +50,6 @@ test("next-yak -> react-native -> next-yak: preserves an actionable concrete rou
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-
 		export const card = StyleSheet.create({ "padding": 16, "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -88,8 +87,6 @@ test("next-yak -> react-native -> next-yak: preserves an actionable concrete rou
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-
-
 		export const card = css\`padding: 16; color: red;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -138,7 +135,6 @@ test("next-yak -> react-native -> next-yak: retains the documented secondary API
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet, View } from "react-native";
-
 		export const Card = (props) => <View {...props} style={StyleSheet.create({ style: { "padding": 16, "color": "red" } }).style} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -177,7 +173,6 @@ test("next-yak -> react-native -> next-yak: retains the documented secondary API
 		    "changed": true,
 		    "code": "import { View } from "react-native";
 		import { css } from "next-yak";
-
 		export const Card = (props) => <View {...props} style={{ "style": css\`padding: 16; color: red;\` }.style} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -241,7 +236,6 @@ test("next-yak -> react-native -> next-yak: preserves concrete theme and project
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "react-native";
-
 		export const card = StyleSheet.create({ "padding": 16, "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -279,8 +273,6 @@ test("next-yak -> react-native -> next-yak: preserves concrete theme and project
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "next-yak";
-
-
 		export const card = css\`padding: 16; color: #2563eb;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -317,7 +309,6 @@ test("next-yak -> react-native -> next-yak: preserves concrete theme and project
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "react-native";
-
 		export const card = StyleSheet.create({ "padding": 16, "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -355,8 +346,6 @@ test("next-yak -> react-native -> next-yak: preserves concrete theme and project
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "next-yak";
-
-
 		export const card = css\`padding: 16; color: #2563eb;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -407,7 +396,6 @@ test("next-yak -> react-native -> next-yak: resolves token values across both co
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-
 		export const card = StyleSheet.create({ "padding": 16, "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -445,8 +433,6 @@ test("next-yak -> react-native -> next-yak: resolves token values across both co
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-
-
 		export const card = css\`padding: 16; color: #2563eb;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],

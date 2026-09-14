@@ -86,7 +86,6 @@ test("authored-css -> tokenami -> authored-css: preserves an actionable concrete
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const styles = { "card": css.class({ "padding": "1rem", "color": "red" }) };
 		export default styles;",
 		    "converted": 1,
@@ -275,7 +274,6 @@ test("authored-css -> tokenami -> authored-css: preserves concrete theme and pro
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const styles = { "card": css.class({ "padding": "1rem", "color": "#2563eb" }) };
 		export default styles;",
 		      "converted": 1,
@@ -351,7 +349,6 @@ test("authored-css -> tokenami -> authored-css: preserves concrete theme and pro
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const styles = { "card": css.class({ "padding": "1rem", "color": "$colors.brand" }) };
 		export default styles;",
 		      "converted": 1,
@@ -441,7 +438,6 @@ test("authored-css -> tokenami -> authored-css: resolves token values across bot
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const styles = { "card": css.class({ "padding": "1rem", "color": "$colors.brand" }) };
 		export default styles;",
 		    "converted": 1,

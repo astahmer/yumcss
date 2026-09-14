@@ -87,7 +87,6 @@ test("tamagui -> emotion -> tamagui: preserves an actionable concrete round trip
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
 		import { View, styled } from "@tamagui/core";
-
 		export const Card = styled(View, { padding: "$4", color: "red" });
 		export const App = () => <View className={Card} />;",
 		    "converted": 1,
@@ -249,7 +248,6 @@ test("tamagui -> emotion -> tamagui: preserves concrete theme and project contex
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
 		import { View, styled } from "@tamagui/core";
-
 		export const Card = styled(View, { padding: "$4", color: "#2563eb" });
 		export const App = () => <View className={Card} />;",
 		      "converted": 1,
@@ -323,7 +321,6 @@ test("tamagui -> emotion -> tamagui: preserves concrete theme and project contex
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
 		import { View, styled } from "@tamagui/core";
-
 		export const Card = styled(View, { padding: "$4", color: "#2563eb" });
 		export const App = () => <View className={Card} />;",
 		      "converted": 1,
@@ -411,7 +408,6 @@ test("tamagui -> emotion -> tamagui: resolves token values across both concrete 
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
 		import { View, styled } from "@tamagui/core";
-
 		export const Card = styled(View, { padding: "$4", color: "#2563eb" });
 		export const App = () => <View className={Card} />;",
 		    "converted": 1,

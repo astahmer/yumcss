@@ -49,7 +49,6 @@ test("goober -> mui: migrates concrete goober syntax to mui", () => {
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": "1rem", "color": "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -94,7 +93,6 @@ test("goober -> mui: carries a documented secondary goober API explicitly", () =
 		{
 		  "changed": true,
 		  "code": "import { styled } from "@mui/system";
-
 		export const Card = styled("div")({ padding: "1rem", color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -148,7 +146,6 @@ test("goober -> mui: loads concrete theme and project context variants", async (
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": "1rem", "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -185,7 +182,6 @@ test("goober -> mui: loads concrete theme and project context variants", async (
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": "1rem", "color": "primary.main" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -234,7 +230,6 @@ test("goober -> mui: resolves concrete token values with project context", async
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": "1rem", "color": "primary.main" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -280,7 +275,6 @@ test("goober -> mui: preserves malformed concrete goober input", () => {
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": "1rem", "color": "red" });
 		const unfinished = { /* unfinished goober */",
 		  "converted": 1,

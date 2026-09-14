@@ -89,7 +89,6 @@ test("treat -> stylex -> treat: preserves an actionable concrete round trip", ()
 		    "changed": true,
 		    "code": "import { style } from "treat";
 		import { style } from "@/styles.treat";
-
 		export const card = { "style": style({ "padding": "8px", "color": "red" }) }.style;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -179,7 +178,6 @@ test("treat -> stylex -> treat: retains the documented secondary API without sil
 		    "changed": true,
 		    "code": "import { style } from "treat";
 		import { style } from "@/styles.treat";
-
 		export const card = { "style": style({ "padding": "8px", "color": "red" }) }.style;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -284,7 +282,6 @@ test("treat -> stylex -> treat: preserves concrete theme and project context var
 		      "changed": true,
 		      "code": "import { style } from "treat";
 		import { style } from "@/styles.treat";
-
 		export const card = { "style": style({ "padding": "8px", "color": "#2563eb" }) }.style;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -362,7 +359,6 @@ test("treat -> stylex -> treat: preserves concrete theme and project context var
 		      "changed": true,
 		      "code": "import { style } from "treat";
 		import { style } from "@/styles.treat";
-
 		export const card = { "style": style({ "padding": "8px", "color": "#2563eb" }) }.style;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -454,7 +450,6 @@ test("treat -> stylex -> treat: resolves token values across both concrete legs"
 		    "changed": true,
 		    "code": "import { style } from "treat";
 		import { style } from "@/styles.treat";
-
 		export const card = { "style": style({ "padding": "8px", "color": "#2563eb" }) }.style;",
 		    "converted": 1,
 		    "generatedFiles": [],

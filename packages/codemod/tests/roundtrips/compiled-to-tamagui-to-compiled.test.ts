@@ -50,7 +50,6 @@ test("compiled -> tamagui -> compiled: preserves an actionable concrete round tr
 		  "forward": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-
 		export const card = styled(View, { padding: 8, color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -87,7 +86,6 @@ test("compiled -> tamagui -> compiled: preserves an actionable concrete round tr
 		import { createCx } from "pandwind/cx";
 		import { css } from "@compiled/react";
 		const cx = createCx();
-
 		export const card = (props) => <View {...props} className={cx(css({ "padding": 8, "color": "red" }), props.className)} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -214,7 +212,6 @@ test("compiled -> tamagui -> compiled: preserves concrete theme and project cont
 		    "forward": {
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
-
 		export const card = styled(View, { padding: 8, color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -251,7 +248,6 @@ test("compiled -> tamagui -> compiled: preserves concrete theme and project cont
 		import { createCx } from "pandwind/cx";
 		import { css } from "@compiled/react";
 		const cx = createCx();
-
 		export const card = (props) => <View {...props} className={cx(css({ "padding": 8, "color": "#2563eb" }), props.className)} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -290,7 +286,6 @@ test("compiled -> tamagui -> compiled: preserves concrete theme and project cont
 		    "forward": {
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
-
 		export const card = styled(View, { padding: 8, color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -327,7 +322,6 @@ test("compiled -> tamagui -> compiled: preserves concrete theme and project cont
 		import { createCx } from "pandwind/cx";
 		import { css } from "@compiled/react";
 		const cx = createCx();
-
 		export const card = (props) => <View {...props} className={cx(css({ "padding": 8, "color": "#2563eb" }), props.className)} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -380,7 +374,6 @@ test("compiled -> tamagui -> compiled: resolves token values across both concret
 		  "forward": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-
 		export const card = styled(View, { padding: 8, color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -417,7 +410,6 @@ test("compiled -> tamagui -> compiled: resolves token values across both concret
 		import { createCx } from "pandwind/cx";
 		import { css } from "@compiled/react";
 		const cx = createCx();
-
 		export const card = (props) => <View {...props} className={cx(css({ "padding": 8, "color": "#2563eb" }), props.className)} />;",
 		    "converted": 1,
 		    "generatedFiles": [],

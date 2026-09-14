@@ -48,7 +48,6 @@ test("treat -> bamboo: migrates concrete treat syntax to bamboo", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-
 		export const card = css({ padding: 8, color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -92,7 +91,6 @@ test("treat -> bamboo: carries a documented secondary treat API explicitly", () 
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-
 		export const card = css({ padding: 8, color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -145,7 +143,6 @@ test("treat -> bamboo: loads concrete theme and project context variants", async
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-
 		export const card = css({ padding: 8, color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -180,7 +177,6 @@ test("treat -> bamboo: loads concrete theme and project context variants", async
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-
 		export const card = css({ padding: 8, color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -227,7 +223,6 @@ test("treat -> bamboo: resolves concrete token values with project context", asy
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-
 		export const card = css({ padding: 8, color: "#2563eb" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -271,7 +266,6 @@ test("treat -> bamboo: preserves malformed concrete treat input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-
 		export const card = css({ padding: 8, color: "red" });
 		const unfinished = { /* unfinished treat */",
 		  "converted": 1,

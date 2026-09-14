@@ -50,7 +50,6 @@ test("goober -> linaria -> goober: preserves an actionable concrete round trip",
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@linaria/core";
-
 		export const card = css\`padding: 1rem; color: red;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -87,8 +86,6 @@ test("goober -> linaria -> goober: preserves an actionable concrete round trip",
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "goober";
-
-
 		export const card = css({ "padding": "1rem", "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -139,7 +136,6 @@ test("goober -> linaria -> goober: retains the documented secondary API without 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "@linaria/react";
-
 		export const Card = styled.div\`padding: 1rem; color: red;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -176,7 +172,6 @@ test("goober -> linaria -> goober: retains the documented secondary API without 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { styled } from "@linaria/react";
-
 		export const Card = // pandwind:migrate-skip (route: linaria -> goober | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
 		styled.div\`padding: 1rem; color: red;\`;",
 		    "converted": 0,
@@ -243,7 +238,6 @@ test("goober -> linaria -> goober: preserves concrete theme and project context 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@linaria/core";
-
 		export const card = css\`padding: 1rem; color: #2563eb;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -280,8 +274,6 @@ test("goober -> linaria -> goober: preserves concrete theme and project context 
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "goober";
-
-
 		export const card = css({ "padding": "1rem", "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -320,7 +312,6 @@ test("goober -> linaria -> goober: preserves concrete theme and project context 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@linaria/core";
-
 		export const card = css\`padding: 1rem; color: #2563eb;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -357,8 +348,6 @@ test("goober -> linaria -> goober: preserves concrete theme and project context 
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "goober";
-
-
 		export const card = css({ "padding": "1rem", "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -411,7 +400,6 @@ test("goober -> linaria -> goober: resolves token values across both concrete le
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@linaria/core";
-
 		export const card = css\`padding: 1rem; color: #2563eb;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -448,8 +436,6 @@ test("goober -> linaria -> goober: resolves token values across both concrete le
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "goober";
-
-
 		export const card = css({ "padding": "1rem", "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],

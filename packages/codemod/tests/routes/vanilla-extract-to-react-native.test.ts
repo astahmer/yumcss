@@ -48,7 +48,6 @@ test("vanilla-extract -> react-native: migrates concrete vanilla-extract syntax 
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "react-native";
-
 		export const card = StyleSheet.create({ "padding": 8, "color": "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -151,7 +150,6 @@ test("vanilla-extract -> react-native: loads concrete theme and project context 
 		  "amber": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-
 		export const card = StyleSheet.create({ "padding": 8, "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -189,7 +187,6 @@ test("vanilla-extract -> react-native: loads concrete theme and project context 
 		  "blue": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-
 		export const card = StyleSheet.create({ "padding": 8, "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -239,7 +236,6 @@ test("vanilla-extract -> react-native: resolves concrete token values with proje
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "react-native";
-
 		export const card = StyleSheet.create({ "padding": 8, "color": "#2563eb" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -286,7 +282,6 @@ test("vanilla-extract -> react-native: preserves malformed concrete vanilla-extr
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "react-native";
-
 		export const card = StyleSheet.create({ "padding": 8, "color": "red" });
 		const unfinished = { /* unfinished vanilla-extract */",
 		  "converted": 1,

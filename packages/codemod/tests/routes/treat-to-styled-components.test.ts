@@ -48,7 +48,6 @@ test("treat -> styled-components: migrates concrete treat syntax to styled-compo
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-
 		export const card = styled.div({ padding: 8, color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -92,7 +91,6 @@ test("treat -> styled-components: carries a documented secondary treat API expli
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-
 		export const card = styled.div({ padding: 8, color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -145,7 +143,6 @@ test("treat -> styled-components: loads concrete theme and project context varia
 		  "amber": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
 		export const card = styled.div({ padding: 8, color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -180,7 +177,6 @@ test("treat -> styled-components: loads concrete theme and project context varia
 		  "blue": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
 		export const card = styled.div({ padding: 8, color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -227,7 +223,6 @@ test("treat -> styled-components: resolves concrete token values with project co
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-
 		export const card = styled.div({ padding: 8, color: "#2563eb" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -271,7 +266,6 @@ test("treat -> styled-components: preserves malformed concrete treat input", () 
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-
 		export const card = styled.div({ padding: 8, color: "red" });
 		const unfinished = { /* unfinished treat */",
 		  "converted": 1,

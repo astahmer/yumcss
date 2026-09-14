@@ -84,8 +84,7 @@ test("tokenami -> chakra-ui -> tokenami: preserves an actionable concrete round 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-		import { css } from "@tokenami/css";
+		    "code": "import { css } from "@tokenami/css";
 
 		export const card = css({ cardGap: "1rem", color: "red" });",
 		    "converted": 1,
@@ -169,8 +168,7 @@ test("tokenami -> chakra-ui -> tokenami: retains the documented secondary API wi
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-		import { css } from "@tokenami/css";
+		    "code": "import { css } from "@tokenami/css";
 
 		export const card = css({ padding: "1rem", color: "red" });",
 		    "converted": 1,
@@ -268,8 +266,7 @@ test("tokenami -> chakra-ui -> tokenami: preserves concrete theme and project co
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { defaultSystem } from "@chakra-ui/react";
-		import { css } from "@tokenami/css";
+		      "code": "import { css } from "@tokenami/css";
 
 		export const card = css({ cardGap: "1rem", color: "$colors.brand" });",
 		      "converted": 1,
@@ -341,8 +338,7 @@ test("tokenami -> chakra-ui -> tokenami: preserves concrete theme and project co
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { defaultSystem } from "@chakra-ui/react";
-		import { css } from "@tokenami/css";
+		      "code": "import { css } from "@tokenami/css";
 
 		export const card = css({ cardGap: "1rem", color: "$colors.brand" });",
 		      "converted": 1,
@@ -428,8 +424,7 @@ test("tokenami -> chakra-ui -> tokenami: resolves token values across both concr
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-		import { css } from "@tokenami/css";
+		    "code": "import { css } from "@tokenami/css";
 
 		export const card = css({ cardGap: "1rem", color: "$colors.brand" });",
 		    "converted": 1,

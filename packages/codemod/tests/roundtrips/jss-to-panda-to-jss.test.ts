@@ -50,7 +50,6 @@ test("jss -> panda -> jss: preserves an actionable concrete round trip", () => {
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-
 		export const useStyles = { "card": css({ color: "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -85,8 +84,6 @@ test("jss -> panda -> jss: preserves an actionable concrete round trip", () => {
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-
-
 		export const useStyles = { "card": createUseStyles({ color: "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -137,7 +134,6 @@ test("jss -> panda -> jss: retains the documented secondary API without silent l
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-
 		export const sheet = { "card": css({ color: "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -172,8 +168,6 @@ test("jss -> panda -> jss: retains the documented secondary API without silent l
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-
-
 		export const sheet = { "card": createUseStyles({ color: "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -239,7 +233,6 @@ test("jss -> panda -> jss: preserves concrete theme and project context variants
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "styled-system/css";
-
 		export const useStyles = { "card": css({ color: "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -274,8 +267,6 @@ test("jss -> panda -> jss: preserves concrete theme and project context variants
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { createUseStyles } from "react-jss";
-
-
 		export const useStyles = { "card": createUseStyles({ color: "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -314,7 +305,6 @@ test("jss -> panda -> jss: preserves concrete theme and project context variants
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "styled-system/css";
-
 		export const useStyles = { "card": css({ color: "brand.500" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -349,7 +339,6 @@ test("jss -> panda -> jss: preserves concrete theme and project context variants
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "styled-system/css";
-
 		export const useStyles = { "card": // pandwind:migrate-skip (route: panda -> jss | lowering-residual: validation)
 		css({ color: "brand.500" }) };",
 		      "converted": 0,
@@ -411,7 +400,6 @@ test("jss -> panda -> jss: resolves token values across both concrete legs", asy
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-
 		export const useStyles = { "card": css({ color: "brand.500" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -446,7 +434,6 @@ test("jss -> panda -> jss: resolves token values across both concrete legs", asy
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-
 		export const useStyles = { "card": // pandwind:migrate-skip (route: panda -> jss | lowering-residual: validation)
 		css({ color: "brand.500" }) };",
 		    "converted": 0,

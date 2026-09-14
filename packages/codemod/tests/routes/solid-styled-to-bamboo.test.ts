@@ -47,8 +47,7 @@ test("solid-styled -> bamboo: migrates concrete solid-styled syntax to bamboo", 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		import { createCx } from "pandwind/cx";
+		  "code": "import { createCx } from "pandwind/cx";
 		import { css } from "styled-system/css";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} class={cx(css({ padding: "1rem", color: "red" }), props.class)} />;",
@@ -93,8 +92,7 @@ test("solid-styled -> bamboo: carries a documented secondary solid-styled API ex
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		import { createCx } from "pandwind/cx";
+		  "code": "import { createCx } from "pandwind/cx";
 		import { css } from "styled-system/css";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} class={cx(css({ padding: "1rem", color: "red" }), props.class)} />;",
@@ -148,8 +146,7 @@ test("solid-styled -> bamboo: loads concrete theme and project context variants"
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { css } from "styled-system/css";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} class={cx(css({ padding: "1rem", color: "#2563eb" }), props.class)} />;",
@@ -185,8 +182,7 @@ test("solid-styled -> bamboo: loads concrete theme and project context variants"
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { css } from "styled-system/css";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} class={cx(css({ padding: "1rem", color: "#2563eb" }), props.class)} />;",
@@ -234,8 +230,7 @@ test("solid-styled -> bamboo: resolves concrete token values with project contex
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		import { createCx } from "pandwind/cx";
+		  "code": "import { createCx } from "pandwind/cx";
 		import { css } from "styled-system/css";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} class={cx(css({ padding: "1rem", color: "#2563eb" }), props.class)} />;",

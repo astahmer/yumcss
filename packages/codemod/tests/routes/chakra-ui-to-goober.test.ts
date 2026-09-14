@@ -47,8 +47,7 @@ test("chakra-ui -> goober: migrates concrete chakra-ui syntax to goober", () => 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { Box } from "@chakra-ui/react";
-		import { css } from "goober";
+		  "code": "import { css } from "goober";
 		export const App = () => css({ "padding": "var(--chakra-spacing-4)", "backgroundColor": "var(--chakra-colors-red-200)" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -146,9 +145,8 @@ test("chakra-ui -> goober: loads concrete theme and project context variants", a
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { Box } from "@chakra-ui/react";
-		import { css } from "goober";
-		export const App = () => css({ "backgroundColor": "#f97316" });",
+		    "code": "import { css } from "goober";
+		export const App = () => css({ "backgroundColor": "#f97316", "p": "var(--chakra-spacing-4)" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -184,9 +182,8 @@ test("chakra-ui -> goober: loads concrete theme and project context variants", a
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { Box } from "@chakra-ui/react";
-		import { css } from "goober";
-		export const App = () => css({ "backgroundColor": "#2563eb" });",
+		    "code": "import { css } from "goober";
+		export const App = () => css({ "backgroundColor": "#2563eb", "p": "var(--chakra-spacing-4)" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -234,9 +231,8 @@ test("chakra-ui -> goober: resolves concrete token values with project context",
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { Box } from "@chakra-ui/react";
-		import { css } from "goober";
-		export const App = () => css({ "backgroundColor": "#2563eb" });",
+		  "code": "import { css } from "goober";
+		export const App = () => css({ "backgroundColor": "#2563eb", "p": "var(--chakra-spacing-4)" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -280,8 +276,7 @@ test("chakra-ui -> goober: preserves malformed concrete chakra-ui input", () => 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { Box } from "@chakra-ui/react";
-		import { css } from "goober";
+		  "code": "import { css } from "goober";
 		export const App = () => css({ "padding": "var(--chakra-spacing-4)", "backgroundColor": "var(--chakra-colors-red-200)" });
 		const unfinished = { /* unfinished chakra-ui */",
 		  "converted": 1,

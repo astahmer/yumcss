@@ -48,7 +48,6 @@ test("bamboo -> vue-styled: migrates concrete bamboo syntax to vue-styled", () =
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-
 		export const card = styled.div({ "color": "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -94,7 +93,6 @@ test("bamboo -> vue-styled: carries a documented secondary bamboo API explicitly
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-
 		export const card = styled.div({ "gap": "4", "display": "flex" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -149,7 +147,6 @@ test("bamboo -> vue-styled: loads concrete theme and project context variants", 
 		  "amber": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-
 		export const card = styled.div({ "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -186,7 +183,6 @@ test("bamboo -> vue-styled: loads concrete theme and project context variants", 
 		  "blue": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-
 		export const card = styled.div({ "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -235,7 +231,6 @@ test("bamboo -> vue-styled: resolves concrete token values with project context"
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-
 		export const card = styled.div({ "color": "#2563eb" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -281,7 +276,6 @@ test("bamboo -> vue-styled: preserves malformed concrete bamboo input", () => {
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-
 		export const card = styled.div({ "color": "red" });
 		const unfinished = { /* unfinished bamboo */",
 		  "converted": 1,

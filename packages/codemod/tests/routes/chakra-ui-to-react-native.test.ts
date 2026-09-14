@@ -148,7 +148,7 @@ test("chakra-ui -> react-native: loads concrete theme and project context varian
 		  "amber": {
 		    "changed": true,
 		    "code": "import { StyleSheet, View } from "react-native";
-		export const App = () => <View  p="4"  style={StyleSheet.create({ style: { "backgroundColor": "#f97316" } }).style}/>;",
+		export const App = () => <View    style={StyleSheet.create({ style: { "backgroundColor": "#f97316", "p": "var(--chakra-spacing-4)" } }).style}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -186,7 +186,7 @@ test("chakra-ui -> react-native: loads concrete theme and project context varian
 		  "blue": {
 		    "changed": true,
 		    "code": "import { StyleSheet, View } from "react-native";
-		export const App = () => <View  p="4"  style={StyleSheet.create({ style: { "backgroundColor": "#2563eb" } }).style}/>;",
+		export const App = () => <View    style={StyleSheet.create({ style: { "backgroundColor": "#2563eb", "p": "var(--chakra-spacing-4)" } }).style}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -236,7 +236,7 @@ test("chakra-ui -> react-native: resolves concrete token values with project con
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet, View } from "react-native";
-		export const App = () => <View  p="4"  style={StyleSheet.create({ style: { "backgroundColor": "#2563eb" } }).style}/>;",
+		export const App = () => <View    style={StyleSheet.create({ style: { "backgroundColor": "#2563eb", "p": "var(--chakra-spacing-4)" } }).style}/>;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [

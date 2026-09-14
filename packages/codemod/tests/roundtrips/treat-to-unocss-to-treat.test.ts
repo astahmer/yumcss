@@ -49,8 +49,7 @@ test("treat -> unocss -> treat: preserves an actionable concrete round trip", ()
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const card = "[padding:8] [color:red]";",
+		    "code": "export const card = "[padding:8] [color:red]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,7 +85,6 @@ test("treat -> unocss -> treat: preserves an actionable concrete round trip", ()
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { style } from "@/styles.treat";
-
 		export const card = style({ "padding": "8", "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -136,8 +134,7 @@ test("treat -> unocss -> treat: retains the documented secondary API without sil
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const card = "[padding:8] [color:red]";",
+		    "code": "export const card = "[padding:8] [color:red]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -173,7 +170,6 @@ test("treat -> unocss -> treat: retains the documented secondary API without sil
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { style } from "@/styles.treat";
-
 		export const card = style({ "padding": "8", "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -238,8 +234,7 @@ test("treat -> unocss -> treat: preserves concrete theme and project context var
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		export const card = "[padding:8] [color:#2563eb]";",
+		      "code": "export const card = "[padding:8] [color:#2563eb]";",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -274,8 +269,7 @@ test("treat -> unocss -> treat: preserves concrete theme and project context var
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		export const card = // pandwind:migrate-skip (route: unocss -> treat | lowering-residual: validation)
+		      "code": "export const card = // pandwind:migrate-skip (route: unocss -> treat | lowering-residual: validation)
 		"[padding:8] [color:#2563eb]";",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -321,8 +315,7 @@ test("treat -> unocss -> treat: preserves concrete theme and project context var
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		export const card = "[padding:8] text-brand";",
+		      "code": "export const card = "[padding:8] text-brand";",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -357,8 +350,7 @@ test("treat -> unocss -> treat: preserves concrete theme and project context var
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		export const card = // pandwind:migrate-skip (route: unocss -> treat | lowering-residual: validation)
+		      "code": "export const card = // pandwind:migrate-skip (route: unocss -> treat | lowering-residual: validation)
 		"[padding:8] text-brand";",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -418,8 +410,7 @@ test("treat -> unocss -> treat: resolves token values across both concrete legs"
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const card = "[padding:8] text-brand";",
+		    "code": "export const card = "[padding:8] text-brand";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -454,8 +445,7 @@ test("treat -> unocss -> treat: resolves token values across both concrete legs"
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		export const card = // pandwind:migrate-skip (route: unocss -> treat | lowering-residual: validation)
+		    "code": "export const card = // pandwind:migrate-skip (route: unocss -> treat | lowering-residual: validation)
 		"[padding:8] text-brand";",
 		    "converted": 0,
 		    "generatedFiles": [],

@@ -53,7 +53,6 @@ test("style9 -> pandwind -> style9: preserves an actionable concrete round trip"
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		const css = createCss();
-
 		export const styles = css.group({ card: { color: "red" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -152,7 +151,6 @@ test("style9 -> pandwind -> style9: retains the documented secondary API without
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		const css = createCss();
-
 		export const styles = css.group({ card: { color: "red" }, muted: { opacity: 0.5 } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -266,7 +264,6 @@ test("style9 -> pandwind -> style9: preserves concrete theme and project context
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		const css = createCss();
-
 		export const styles = css.group({ card: { color: "#2563eb" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -353,7 +350,6 @@ test("style9 -> pandwind -> style9: preserves concrete theme and project context
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		const css = createCss();
-
 		export const styles = css.group({ card: { color: "brand" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -455,7 +451,6 @@ test("style9 -> pandwind -> style9: resolves token values across both concrete l
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		const css = createCss();
-
 		export const styles = css.group({ card: { color: "brand" } });",
 		    "converted": 1,
 		    "generatedFiles": [],

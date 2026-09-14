@@ -48,7 +48,6 @@ test("react-native -> styled-components: migrates concrete react-native syntax t
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-
 		export const styles = { "card": styled.div({ padding: 8, color: "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -92,7 +91,6 @@ test("react-native -> styled-components: carries a documented secondary react-na
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-
 		export const styles = { "card": styled.div({ padding: 8, backgroundColor: "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -145,7 +143,6 @@ test("react-native -> styled-components: loads concrete theme and project contex
 		  "amber": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
 		export const styles = { "card": styled.div({ padding: 8, color: "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -180,7 +177,6 @@ test("react-native -> styled-components: loads concrete theme and project contex
 		  "blue": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
 		export const styles = { "card": styled.div({ padding: 8, color: "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -227,7 +223,6 @@ test("react-native -> styled-components: resolves concrete token values with pro
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-
 		export const styles = { "card": styled.div({ padding: 8, color: "#2563eb" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -271,7 +266,6 @@ test("react-native -> styled-components: preserves malformed concrete react-nati
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-
 		export const styles = { "card": styled.div({ padding: 8, color: "red" }) };
 		const unfinished = { /* unfinished react-native */",
 		  "converted": 1,

@@ -48,7 +48,6 @@ test("bamboo -> jss: migrates concrete bamboo syntax to jss", () => {
 		{
 		  "changed": true,
 		  "code": "import { createUseStyles } from "react-jss";
-
 		export const card = createUseStyles({ color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -94,7 +93,6 @@ test("bamboo -> jss: carries a documented secondary bamboo API explicitly", () =
 		{
 		  "changed": true,
 		  "code": "import { createUseStyles } from "react-jss";
-
 		export const card = createUseStyles({ gap: "4", display: "flex" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -149,7 +147,6 @@ test("bamboo -> jss: loads concrete theme and project context variants", async (
 		  "amber": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-
 		export const card = createUseStyles({ color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -186,7 +183,6 @@ test("bamboo -> jss: loads concrete theme and project context variants", async (
 		  "blue": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-
 		export const card = createUseStyles({ color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -235,7 +231,6 @@ test("bamboo -> jss: resolves concrete token values with project context", async
 		{
 		  "changed": true,
 		  "code": "import { createUseStyles } from "react-jss";
-
 		export const card = createUseStyles({ color: "#2563eb" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -281,7 +276,6 @@ test("bamboo -> jss: preserves malformed concrete bamboo input", () => {
 		{
 		  "changed": true,
 		  "code": "import { createUseStyles } from "react-jss";
-
 		export const card = createUseStyles({ color: "red" });
 		const unfinished = { /* unfinished bamboo */",
 		  "converted": 1,

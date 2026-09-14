@@ -49,8 +49,7 @@ test("chakra-ui -> emotion -> chakra-ui: preserves an actionable concrete round 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { Box } from "@chakra-ui/react";
-		import { css } from "@emotion/css";
+		    "code": "import { css } from "@emotion/css";
 		export const App = () => css({ padding: "var(--chakra-spacing-4)", backgroundColor: "var(--chakra-colors-red-200)" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -84,8 +83,7 @@ test("chakra-ui -> emotion -> chakra-ui: preserves an actionable concrete round 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { Box } from "@chakra-ui/react";
-		import { defaultSystem } from "@chakra-ui/react";
+		    "code": "import { defaultSystem } from "@chakra-ui/react";
 
 		export const App = () => defaultSystem.css({ padding: "var(--chakra-spacing-4)", backgroundColor: "var(--chakra-colors-red-200)" });",
 		    "converted": 1,
@@ -339,9 +337,8 @@ test("chakra-ui -> emotion -> chakra-ui: resolves token values across both concr
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { Box } from "@chakra-ui/react";
-		import { css } from "@emotion/css";
-		export const App = () => css({ backgroundColor: "#2563eb" });",
+		    "code": "import { css } from "@emotion/css";
+		export const App = () => css({ backgroundColor: "#2563eb", p: "var(--chakra-spacing-4)" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -374,10 +371,9 @@ test("chakra-ui -> emotion -> chakra-ui: resolves token values across both concr
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { Box } from "@chakra-ui/react";
-		import { defaultSystem } from "@chakra-ui/react";
+		    "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const App = () => defaultSystem.css({ backgroundColor: "brand.500" });",
+		export const App = () => defaultSystem.css({ backgroundColor: "brand.500", p: "var(--chakra-spacing-4)" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

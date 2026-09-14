@@ -49,8 +49,7 @@ test("chakra-ui -> styled-components -> chakra-ui: preserves an actionable concr
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { Box } from "@chakra-ui/react";
-		import styled from "styled-components";
+		    "code": "import styled from "styled-components";
 		export const App = () => styled.div({ padding: "var(--chakra-spacing-4)", backgroundColor: "var(--chakra-colors-red-200)" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -84,8 +83,7 @@ test("chakra-ui -> styled-components -> chakra-ui: preserves an actionable concr
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { Box } from "@chakra-ui/react";
-		import styled from "styled-components";
+		    "code": "import styled from "styled-components";
 		export const App = () => // pandwind:migrate-skip (route: styled-components -> chakra-ui | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		styled.div({ padding: "var(--chakra-spacing-4)", backgroundColor: "var(--chakra-colors-red-200)" });",
 		    "converted": 0,
@@ -339,9 +337,8 @@ test("chakra-ui -> styled-components -> chakra-ui: resolves token values across 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { Box } from "@chakra-ui/react";
-		import styled from "styled-components";
-		export const App = () => styled.div({ backgroundColor: "#2563eb" });",
+		    "code": "import styled from "styled-components";
+		export const App = () => styled.div({ backgroundColor: "#2563eb", p: "var(--chakra-spacing-4)" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -374,10 +371,9 @@ test("chakra-ui -> styled-components -> chakra-ui: resolves token values across 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { Box } from "@chakra-ui/react";
-		import styled from "styled-components";
+		    "code": "import styled from "styled-components";
 		export const App = () => // pandwind:migrate-skip (route: styled-components -> chakra-ui | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
-		styled.div({ backgroundColor: "#2563eb" });",
+		styled.div({ backgroundColor: "#2563eb", p: "var(--chakra-spacing-4)" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

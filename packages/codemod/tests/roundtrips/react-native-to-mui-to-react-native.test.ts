@@ -51,7 +51,6 @@ test("react-native -> mui -> react-native: preserves an actionable concrete roun
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const styles = { "card": css.class({ padding: 8, color: "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -88,7 +87,6 @@ test("react-native -> mui -> react-native: preserves an actionable concrete roun
 		    "changed": false,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const styles = { "card": css.class({ padding: 8, color: "red" }) };",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -116,7 +114,6 @@ test("react-native -> mui -> react-native: retains the documented secondary API 
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const styles = { "card": css.class({ padding: 8, backgroundColor: "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -153,7 +150,6 @@ test("react-native -> mui -> react-native: retains the documented secondary API 
 		    "changed": false,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const styles = { "card": css.class({ padding: 8, backgroundColor: "red" }) };",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -196,7 +192,6 @@ test("react-native -> mui -> react-native: preserves concrete theme and project 
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const styles = { "card": css.class({ padding: 8, color: "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -233,7 +228,6 @@ test("react-native -> mui -> react-native: preserves concrete theme and project 
 		      "changed": false,
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const styles = { "card": css.class({ padding: 8, color: "#2563eb" }) };",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -249,7 +243,6 @@ test("react-native -> mui -> react-native: preserves concrete theme and project 
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const styles = { "card": css.class({ padding: 8, color: "primary.main" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -286,7 +279,6 @@ test("react-native -> mui -> react-native: preserves concrete theme and project 
 		      "changed": false,
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const styles = { "card": css.class({ padding: 8, color: "primary.main" }) };",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -316,7 +308,6 @@ test("react-native -> mui -> react-native: resolves token values across both con
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const styles = { "card": css.class({ padding: 8, color: "primary.main" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -353,7 +344,6 @@ test("react-native -> mui -> react-native: resolves token values across both con
 		    "changed": false,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const styles = { "card": css.class({ padding: 8, color: "primary.main" }) };",
 		    "converted": 0,
 		    "generatedFiles": [],

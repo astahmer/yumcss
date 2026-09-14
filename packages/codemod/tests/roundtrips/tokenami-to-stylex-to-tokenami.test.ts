@@ -50,7 +50,6 @@ test("tokenami -> stylex -> tokenami: preserves an actionable concrete round tri
 		  "forward": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-
 		export const card = stylex.create({ style: { cardGap: "1rem", color: "red" } }).style;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -87,8 +86,6 @@ test("tokenami -> stylex -> tokenami: preserves an actionable concrete round tri
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-
-
 		export const card = { "style": css({ cardGap: "1rem", color: "red" }) }.style;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -137,7 +134,6 @@ test("tokenami -> stylex -> tokenami: retains the documented secondary API witho
 		  "forward": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-
 		export const card = stylex.create({ style: { padding: "1rem", color: "red" } }).style;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -174,8 +170,6 @@ test("tokenami -> stylex -> tokenami: retains the documented secondary API witho
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-
-
 		export const card = { "style": css({ padding: "1rem", color: "red" }) }.style;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -372,7 +366,6 @@ test("tokenami -> stylex -> tokenami: resolves token values across both concrete
 		  "forward": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-
 		export const card = stylex.create({ style: { cardGap: "1rem", color: "#2563eb" } }).style;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -409,8 +402,6 @@ test("tokenami -> stylex -> tokenami: resolves token values across both concrete
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-
-
 		export const card = { "style": css({ cardGap: "1rem", color: "$colors.brand" }) }.style;",
 		    "converted": 1,
 		    "generatedFiles": [],

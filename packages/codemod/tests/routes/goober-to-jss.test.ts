@@ -48,7 +48,6 @@ test("goober -> jss: migrates concrete goober syntax to jss", () => {
 		{
 		  "changed": true,
 		  "code": "import { createUseStyles } from "react-jss";
-
 		export const card = createUseStyles({ padding: "1rem", color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -149,7 +148,6 @@ test("goober -> jss: loads concrete theme and project context variants", async (
 		  "amber": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-
 		export const card = createUseStyles({ padding: "1rem", color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -186,7 +184,6 @@ test("goober -> jss: loads concrete theme and project context variants", async (
 		  "blue": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-
 		export const card = createUseStyles({ padding: "1rem", color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -235,7 +232,6 @@ test("goober -> jss: resolves concrete token values with project context", async
 		{
 		  "changed": true,
 		  "code": "import { createUseStyles } from "react-jss";
-
 		export const card = createUseStyles({ padding: "1rem", color: "#2563eb" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -281,7 +277,6 @@ test("goober -> jss: preserves malformed concrete goober input", () => {
 		{
 		  "changed": true,
 		  "code": "import { createUseStyles } from "react-jss";
-
 		export const card = createUseStyles({ padding: "1rem", color: "red" });
 		const unfinished = { /* unfinished goober */",
 		  "converted": 1,

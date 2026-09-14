@@ -51,7 +51,6 @@ test("vue-styled -> aphrodite -> vue-styled: preserves an actionable concrete ro
 		    "changed": true,
 		    "code": "import { StyleSheet, css } from "aphrodite";
 		import { defineComponent, h } from "vue";
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css(StyleSheet.create({ style: { "padding": "1rem", "color": "red" } }).style), attrs.class] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -90,7 +89,6 @@ test("vue-styled -> aphrodite -> vue-styled: preserves an actionable concrete ro
 		    "code": "
 		import { defineComponent, h } from "vue";
 		import styled from "vue-styled-components";
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css({ "style": styled.div({ "padding": "1rem", "color": "red" }) }.style), attrs.class] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -142,7 +140,6 @@ test("vue-styled -> aphrodite -> vue-styled: retains the documented secondary AP
 		    "changed": true,
 		    "code": "import { StyleSheet, css } from "aphrodite";
 		import { defineComponent, h } from "vue";
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css(StyleSheet.create({ style: { "padding": "1rem", "color": "red" } }).style), attrs.class] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -181,7 +178,6 @@ test("vue-styled -> aphrodite -> vue-styled: retains the documented secondary AP
 		    "code": "
 		import { defineComponent, h } from "vue";
 		import styled from "vue-styled-components";
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css({ "style": styled.div({ "padding": "1rem", "color": "red" }) }.style), attrs.class] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -248,7 +244,6 @@ test("vue-styled -> aphrodite -> vue-styled: preserves concrete theme and projec
 		      "changed": true,
 		      "code": "import { StyleSheet, css } from "aphrodite";
 		import { defineComponent, h } from "vue";
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css(StyleSheet.create({ style: { "padding": "1rem", "color": "#2563eb" } }).style), attrs.class] }, slots.default?.()));",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -287,7 +282,6 @@ test("vue-styled -> aphrodite -> vue-styled: preserves concrete theme and projec
 		      "code": "
 		import { defineComponent, h } from "vue";
 		import styled from "vue-styled-components";
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css({ "style": styled.div({ "padding": "1rem", "color": "#2563eb" }) }.style), attrs.class] }, slots.default?.()));",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -327,7 +321,6 @@ test("vue-styled -> aphrodite -> vue-styled: preserves concrete theme and projec
 		      "changed": true,
 		      "code": "import { StyleSheet, css } from "aphrodite";
 		import { defineComponent, h } from "vue";
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css(StyleSheet.create({ style: { "padding": "1rem", "color": "#2563eb" } }).style), attrs.class] }, slots.default?.()));",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -366,7 +359,6 @@ test("vue-styled -> aphrodite -> vue-styled: preserves concrete theme and projec
 		      "code": "
 		import { defineComponent, h } from "vue";
 		import styled from "vue-styled-components";
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css({ "style": styled.div({ "padding": "1rem", "color": "#2563eb" }) }.style), attrs.class] }, slots.default?.()));",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -420,7 +412,6 @@ test("vue-styled -> aphrodite -> vue-styled: resolves token values across both c
 		    "changed": true,
 		    "code": "import { StyleSheet, css } from "aphrodite";
 		import { defineComponent, h } from "vue";
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css(StyleSheet.create({ style: { "padding": "1rem", "color": "#2563eb" } }).style), attrs.class] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -459,7 +450,6 @@ test("vue-styled -> aphrodite -> vue-styled: resolves token values across both c
 		    "code": "
 		import { defineComponent, h } from "vue";
 		import styled from "vue-styled-components";
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css({ "style": styled.div({ "padding": "1rem", "color": "#2563eb" }) }.style), attrs.class] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],

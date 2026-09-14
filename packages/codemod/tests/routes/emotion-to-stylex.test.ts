@@ -48,7 +48,6 @@ test("emotion -> stylex: migrates concrete emotion syntax to stylex", () => {
 		{
 		  "changed": true,
 		  "code": "import * as stylex from "@stylexjs/stylex";
-
 		export const card = stylex.create({ style: { padding: "1rem", color: "red" } }).style;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -94,7 +93,6 @@ test("emotion -> stylex: carries a documented secondary emotion API explicitly",
 		{
 		  "changed": true,
 		  "code": "import * as stylex from "@stylexjs/stylex";
-
 		export const card = stylex.create({ style: { padding: "1rem", color: "red" } }).style;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -149,7 +147,6 @@ test("emotion -> stylex: loads concrete theme and project context variants", asy
 		  "amber": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-
 		export const card = stylex.create({ style: { padding: "1rem", color: "#2563eb" } }).style;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -186,7 +183,6 @@ test("emotion -> stylex: loads concrete theme and project context variants", asy
 		  "blue": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-
 		export const card = stylex.create({ style: { padding: "1rem", color: "#2563eb" } }).style;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -235,7 +231,6 @@ test("emotion -> stylex: resolves concrete token values with project context", a
 		{
 		  "changed": true,
 		  "code": "import * as stylex from "@stylexjs/stylex";
-
 		export const card = stylex.create({ style: { padding: "1rem", color: "#2563eb" } }).style;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -281,7 +276,6 @@ test("emotion -> stylex: preserves malformed concrete emotion input", () => {
 		{
 		  "changed": true,
 		  "code": "import * as stylex from "@stylexjs/stylex";
-
 		export const card = stylex.create({ style: { padding: "1rem", color: "red" } }).style;
 		const unfinished = { /* unfinished emotion */",
 		  "converted": 1,

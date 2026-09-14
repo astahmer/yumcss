@@ -51,7 +51,6 @@ test("stylex -> pandwind -> stylex: preserves an actionable concrete round trip"
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const styles = { "card": css.class({ padding: "8px", color: "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -138,7 +137,6 @@ test("stylex -> pandwind -> stylex: retains the documented secondary API without
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const styles = { "card": css.class({ color: "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -240,7 +238,6 @@ test("stylex -> pandwind -> stylex: preserves concrete theme and project context
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const styles = { "card": css.class({ padding: "8px", color: "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -315,7 +312,6 @@ test("stylex -> pandwind -> stylex: preserves concrete theme and project context
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const styles = { "card": css.class({ padding: "8px", color: "brand" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -412,7 +408,6 @@ test("stylex -> pandwind -> stylex: resolves token values across both concrete l
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const styles = { "card": css.class({ padding: "8px", color: "brand" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],

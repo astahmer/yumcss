@@ -48,7 +48,6 @@ test("goober -> bamboo: migrates concrete goober syntax to bamboo", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-
 		export const card = css({ padding: "1rem", color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -145,7 +144,6 @@ test("goober -> bamboo: loads concrete theme and project context variants", asyn
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-
 		export const card = css({ padding: "1rem", color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -180,7 +178,6 @@ test("goober -> bamboo: loads concrete theme and project context variants", asyn
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-
 		export const card = css({ padding: "1rem", color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -227,7 +224,6 @@ test("goober -> bamboo: resolves concrete token values with project context", as
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-
 		export const card = css({ padding: "1rem", color: "#2563eb" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -271,7 +267,6 @@ test("goober -> bamboo: preserves malformed concrete goober input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-
 		export const card = css({ padding: "1rem", color: "red" });
 		const unfinished = { /* unfinished goober */",
 		  "converted": 1,

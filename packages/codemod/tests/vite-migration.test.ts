@@ -63,7 +63,6 @@ describe("virtual Vite migrations", () => {
 		expect(result).toMatchInlineSnapshot(`
 			{
 			  "code": "
-
 			const Card = "[padding:1rem] [color:red]";
 
 			export function App() {
@@ -178,7 +177,6 @@ export function App() {
 		expect(received).toMatchInlineSnapshot(`
 			[
 			  "
-
 			const Card = "[padding:1rem] [color:red]";
 
 			export function App() {
@@ -232,7 +230,6 @@ export function App() {
 			{
 			  "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
-
 			const card = css.class({ color: "red" });
 			",
 			  "map": null,

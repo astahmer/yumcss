@@ -50,7 +50,6 @@ test("jss -> chakra-ui -> jss: preserves an actionable concrete round trip", () 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
 		export const useStyles = { "card": defaultSystem.css({ color: "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -84,9 +83,7 @@ test("jss -> chakra-ui -> jss: preserves an actionable concrete round trip", () 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-		import { createUseStyles } from "react-jss";
-
+		    "code": "import { createUseStyles } from "react-jss";
 		export const useStyles = { "card": createUseStyles({ color: "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -137,7 +134,6 @@ test("jss -> chakra-ui -> jss: retains the documented secondary API without sile
 		  "forward": {
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
 		export const sheet = { "card": defaultSystem.css({ color: "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -171,9 +167,7 @@ test("jss -> chakra-ui -> jss: retains the documented secondary API without sile
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-		import { createUseStyles } from "react-jss";
-
+		    "code": "import { createUseStyles } from "react-jss";
 		export const sheet = { "card": createUseStyles({ color: "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -239,7 +233,6 @@ test("jss -> chakra-ui -> jss: preserves concrete theme and project context vari
 		    "forward": {
 		      "changed": true,
 		      "code": "import { defaultSystem } from "@chakra-ui/react";
-
 		export const useStyles = { "card": defaultSystem.css({ color: "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -273,9 +266,7 @@ test("jss -> chakra-ui -> jss: preserves concrete theme and project context vari
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { defaultSystem } from "@chakra-ui/react";
-		import { createUseStyles } from "react-jss";
-
+		      "code": "import { createUseStyles } from "react-jss";
 		export const useStyles = { "card": createUseStyles({ color: "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -314,7 +305,6 @@ test("jss -> chakra-ui -> jss: preserves concrete theme and project context vari
 		    "forward": {
 		      "changed": true,
 		      "code": "import { defaultSystem } from "@chakra-ui/react";
-
 		export const useStyles = { "card": defaultSystem.css({ color: "brand.500" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -349,7 +339,6 @@ test("jss -> chakra-ui -> jss: preserves concrete theme and project context vari
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { defaultSystem } from "@chakra-ui/react";
-
 		export const useStyles = { "card": // pandwind:migrate-skip (route: chakra-ui -> jss | lowering-residual: validation)
 		defaultSystem.css({ color: "brand.500" }) };",
 		      "converted": 0,
@@ -411,7 +400,6 @@ test("jss -> chakra-ui -> jss: resolves token values across both concrete legs",
 		  "forward": {
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
 		export const useStyles = { "card": defaultSystem.css({ color: "brand.500" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -446,7 +434,6 @@ test("jss -> chakra-ui -> jss: resolves token values across both concrete legs",
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
 		export const useStyles = { "card": // pandwind:migrate-skip (route: chakra-ui -> jss | lowering-residual: validation)
 		defaultSystem.css({ color: "brand.500" }) };",
 		    "converted": 0,

@@ -189,7 +189,7 @@ test("chakra-ui -> css-modules: loads concrete theme and project context variant
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "1 residual conversion(s)",
+		        "hint": "2 residual conversion(s)",
 		        "kind": "validation",
 		        "preserved": undefined,
 		      },
@@ -198,7 +198,7 @@ test("chakra-ui -> css-modules: loads concrete theme and project context variant
 		    "validations": [
 		      {
 		        "differences": [
-		          "1 residual conversion(s)",
+		          "2 residual conversion(s)",
 		        ],
 		        "lossiness": "lossy",
 		        "valid": false,
@@ -233,7 +233,7 @@ test("chakra-ui -> css-modules: loads concrete theme and project context variant
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "1 residual conversion(s)",
+		        "hint": "2 residual conversion(s)",
 		        "kind": "validation",
 		        "preserved": undefined,
 		      },
@@ -242,7 +242,7 @@ test("chakra-ui -> css-modules: loads concrete theme and project context variant
 		    "validations": [
 		      {
 		        "differences": [
-		          "1 residual conversion(s)",
+		          "2 residual conversion(s)",
 		        ],
 		        "lossiness": "lossy",
 		        "valid": false,
@@ -289,7 +289,7 @@ test("chakra-ui -> css-modules: resolves concrete token values with project cont
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "1 residual conversion(s)",
+		      "hint": "2 residual conversion(s)",
 		      "kind": "validation",
 		      "preserved": undefined,
 		    },
@@ -298,7 +298,7 @@ test("chakra-ui -> css-modules: resolves concrete token values with project cont
 		  "validations": [
 		    {
 		      "differences": [
-		        "1 residual conversion(s)",
+		        "2 residual conversion(s)",
 		      ],
 		      "lossiness": "lossy",
 		      "valid": false,

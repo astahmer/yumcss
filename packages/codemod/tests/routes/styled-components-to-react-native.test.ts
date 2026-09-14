@@ -48,7 +48,6 @@ test("styled-components -> react-native: migrates concrete styled-components syn
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet, View } from "react-native";
-
 		export const Card = (props) => <View {...props} style={StyleSheet.create({ style: { "padding": 16, "color": "red" } }).style} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -95,7 +94,6 @@ test("styled-components -> react-native: carries a documented secondary styled-c
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet, View } from "react-native";
-
 		export const Card = (props) => <View {...props} style={StyleSheet.create({ style: { "padding": 16, "color": "red" } }).style} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -151,7 +149,6 @@ test("styled-components -> react-native: loads concrete theme and project contex
 		  "amber": {
 		    "changed": true,
 		    "code": "import { StyleSheet, View } from "react-native";
-
 		export const Card = (props) => <View {...props} style={StyleSheet.create({ style: { "padding": 16, "color": "#2563eb" } }).style} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -189,7 +186,6 @@ test("styled-components -> react-native: loads concrete theme and project contex
 		  "blue": {
 		    "changed": true,
 		    "code": "import { StyleSheet, View } from "react-native";
-
 		export const Card = (props) => <View {...props} style={StyleSheet.create({ style: { "padding": 16, "color": "#2563eb" } }).style} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -239,7 +235,6 @@ test("styled-components -> react-native: resolves concrete token values with pro
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet, View } from "react-native";
-
 		export const Card = (props) => <View {...props} style={StyleSheet.create({ style: { "padding": 16, "color": "#2563eb" } }).style} />;",
 		  "converted": 1,
 		  "generatedFiles": [],

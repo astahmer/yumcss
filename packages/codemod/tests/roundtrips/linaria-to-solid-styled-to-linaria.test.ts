@@ -50,7 +50,6 @@ test("linaria -> solid-styled -> linaria: preserves an actionable concrete round
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-
 		export const card = styled.div({ "padding": "1rem", "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -87,7 +86,6 @@ test("linaria -> solid-styled -> linaria: preserves an actionable concrete round
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-
 		export const card = // pandwind:migrate-skip (route: solid-styled -> linaria | capability-blocked: framework-semantics: solid | available: static, named-map, residual)
 		styled.div({ "padding": "1rem", "color": "red" });",
 		    "converted": 0,
@@ -139,7 +137,6 @@ test("linaria -> solid-styled -> linaria: retains the documented secondary API w
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-
 		export const Card = styled.div({ "padding": "1rem", "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -176,7 +173,6 @@ test("linaria -> solid-styled -> linaria: retains the documented secondary API w
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-
 		export const Card = // pandwind:migrate-skip (route: solid-styled -> linaria | capability-blocked: framework-semantics: solid | available: static, named-map, residual)
 		styled.div({ "padding": "1rem", "color": "red" });",
 		    "converted": 0,
@@ -243,7 +239,6 @@ test("linaria -> solid-styled -> linaria: preserves concrete theme and project c
 		    "forward": {
 		      "changed": true,
 		      "code": "import { styled } from "solid-styled-components";
-
 		export const card = styled.div({ "padding": "1rem", "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -280,7 +275,6 @@ test("linaria -> solid-styled -> linaria: preserves concrete theme and project c
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { styled } from "solid-styled-components";
-
 		export const card = // pandwind:migrate-skip (route: solid-styled -> linaria | capability-blocked: framework-semantics: solid | available: static, named-map, residual)
 		styled.div({ "padding": "1rem", "color": "#2563eb" });",
 		      "converted": 0,
@@ -320,7 +314,6 @@ test("linaria -> solid-styled -> linaria: preserves concrete theme and project c
 		    "forward": {
 		      "changed": true,
 		      "code": "import { styled } from "solid-styled-components";
-
 		export const card = styled.div({ "padding": "1rem", "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -357,7 +350,6 @@ test("linaria -> solid-styled -> linaria: preserves concrete theme and project c
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { styled } from "solid-styled-components";
-
 		export const card = // pandwind:migrate-skip (route: solid-styled -> linaria | capability-blocked: framework-semantics: solid | available: static, named-map, residual)
 		styled.div({ "padding": "1rem", "color": "#2563eb" });",
 		      "converted": 0,
@@ -411,7 +403,6 @@ test("linaria -> solid-styled -> linaria: resolves token values across both conc
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-
 		export const card = styled.div({ "padding": "1rem", "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -448,7 +439,6 @@ test("linaria -> solid-styled -> linaria: resolves token values across both conc
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-
 		export const card = // pandwind:migrate-skip (route: solid-styled -> linaria | capability-blocked: framework-semantics: solid | available: static, named-map, residual)
 		styled.div({ "padding": "1rem", "color": "#2563eb" });",
 		    "converted": 0,

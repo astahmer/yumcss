@@ -48,7 +48,6 @@ test("goober -> styled-components: migrates concrete goober syntax to styled-com
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-
 		export const card = styled.div({ padding: "1rem", color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -92,7 +91,6 @@ test("goober -> styled-components: carries a documented secondary goober API exp
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-
 		export const Card = styled.div({ padding: "1rem", color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -145,7 +143,6 @@ test("goober -> styled-components: loads concrete theme and project context vari
 		  "amber": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
 		export const card = styled.div({ padding: "1rem", color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -180,7 +177,6 @@ test("goober -> styled-components: loads concrete theme and project context vari
 		  "blue": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
 		export const card = styled.div({ padding: "1rem", color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -227,7 +223,6 @@ test("goober -> styled-components: resolves concrete token values with project c
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-
 		export const card = styled.div({ padding: "1rem", color: "#2563eb" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -271,7 +266,6 @@ test("goober -> styled-components: preserves malformed concrete goober input", (
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-
 		export const card = styled.div({ padding: "1rem", color: "red" });
 		const unfinished = { /* unfinished goober */",
 		  "converted": 1,

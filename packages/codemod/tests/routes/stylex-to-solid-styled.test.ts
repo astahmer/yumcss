@@ -48,7 +48,6 @@ test("stylex -> solid-styled: migrates concrete stylex syntax to solid-styled", 
 		{
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
-
 		export const styles = { "card": styled.div({ "padding": "8px", "color": "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -94,7 +93,6 @@ test("stylex -> solid-styled: carries a documented secondary stylex API explicit
 		{
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
-
 		export const styles = { "card": styled.div({ "color": "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -149,7 +147,6 @@ test("stylex -> solid-styled: loads concrete theme and project context variants"
 		  "amber": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-
 		export const styles = { "card": styled.div({ "padding": "8px", "color": "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -186,7 +183,6 @@ test("stylex -> solid-styled: loads concrete theme and project context variants"
 		  "blue": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-
 		export const styles = { "card": styled.div({ "padding": "8px", "color": "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -235,7 +231,6 @@ test("stylex -> solid-styled: resolves concrete token values with project contex
 		{
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
-
 		export const styles = { "card": styled.div({ "padding": "8px", "color": "#2563eb" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -281,7 +276,6 @@ test("stylex -> solid-styled: preserves malformed concrete stylex input", () => 
 		{
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
-
 		export const styles = { "card": styled.div({ "padding": "8px", "color": "red" }) };
 		const unfinished = { /* unfinished stylex */",
 		  "converted": 1,

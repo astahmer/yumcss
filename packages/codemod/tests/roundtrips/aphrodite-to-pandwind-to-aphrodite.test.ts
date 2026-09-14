@@ -51,7 +51,6 @@ test("aphrodite -> pandwind -> aphrodite: preserves an actionable concrete round
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const styles = { "card": css.class({ padding: 8, color: "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -139,7 +138,6 @@ test("aphrodite -> pandwind -> aphrodite: retains the documented secondary API w
 		    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
 		import { pandwindPreset } from "pandwind/preset";
 		const css = createRuntimeCss(pandwindPreset);
-
 		export const styles = { "fonts": (css.sheet.registerSemanticRules([{ kind: "font-face", declarations: [{ property: "fontFamily", value: "Inter" }, { property: "src", value: "url(inter.woff2)" } ] }]), css.group({  })) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -176,7 +174,6 @@ test("aphrodite -> pandwind -> aphrodite: retains the documented secondary API w
 		    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
 		import { pandwindPreset } from "pandwind/preset";
 		const css = createRuntimeCss(pandwindPreset);
-
 		export const styles = { "fonts": // pandwind:migrate-skip (route: pandwind -> aphrodite | capability-blocked: rule-level: 1 semantic rules; font-face: font-face rule | available: static, named-map, residual)
 		(css.sheet.registerSemanticRules([{ kind: "font-face", declarations: [{ property: "fontFamily", value: "Inter" }, { property: "src", value: "url(inter.woff2)" } ] }]), css.group({  })) };",
 		    "converted": 0,
@@ -244,7 +241,6 @@ test("aphrodite -> pandwind -> aphrodite: preserves concrete theme and project c
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const styles = { "card": css.class({ padding: 8, color: "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -319,7 +315,6 @@ test("aphrodite -> pandwind -> aphrodite: preserves concrete theme and project c
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const styles = { "card": css.class({ padding: 8, color: "brand" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -409,7 +404,6 @@ test("aphrodite -> pandwind -> aphrodite: resolves token values across both conc
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const styles = { "card": css.class({ padding: 8, color: "brand" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],

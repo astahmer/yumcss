@@ -50,7 +50,6 @@ test("stitches -> linaria -> stitches: preserves an actionable concrete round tr
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@linaria/core";
-
 		export const card = css\`padding: 1rem; color: red;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -87,8 +86,6 @@ test("stitches -> linaria -> stitches: preserves an actionable concrete round tr
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@stitches/react";
-
-
 		export const card = css({ padding: "1rem", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -226,7 +223,6 @@ test("stitches -> linaria -> stitches: preserves concrete theme and project cont
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@linaria/core";
-
 		export const card = css\`padding: 1rem; color: #2563eb;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -263,8 +259,6 @@ test("stitches -> linaria -> stitches: preserves concrete theme and project cont
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@stitches/react";
-
-
 		export const card = css({ padding: "1rem", color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -303,7 +297,6 @@ test("stitches -> linaria -> stitches: preserves concrete theme and project cont
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@linaria/core";
-
 		export const card = css\`padding: 1rem; color: #2563eb;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -340,8 +333,6 @@ test("stitches -> linaria -> stitches: preserves concrete theme and project cont
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@stitches/react";
-
-
 		export const card = css({ padding: "1rem", color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -394,7 +385,6 @@ test("stitches -> linaria -> stitches: resolves token values across both concret
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@linaria/core";
-
 		export const card = css\`padding: 1rem; color: #2563eb;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -431,8 +421,6 @@ test("stitches -> linaria -> stitches: resolves token values across both concret
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@stitches/react";
-
-
 		export const card = css({ padding: "1rem", color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],

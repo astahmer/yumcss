@@ -50,7 +50,6 @@ test("bamboo -> solid-styled -> bamboo: preserves an actionable concrete round t
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-
 		export const card = styled.div({ "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -86,11 +85,9 @@ test("bamboo -> solid-styled -> bamboo: preserves an actionable concrete round t
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { css } from "styled-system/css";
 		const cx = createCx();
-
 		export const card = (props) => <div {...props} class={cx(css({ color: "red" }), props.class)} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -139,7 +136,6 @@ test("bamboo -> solid-styled -> bamboo: retains the documented secondary API wit
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-
 		export const card = styled.div({ "gap": "4", "display": "flex" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -175,11 +171,9 @@ test("bamboo -> solid-styled -> bamboo: retains the documented secondary API wit
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { css } from "styled-system/css";
 		const cx = createCx();
-
 		export const card = (props) => <div {...props} class={cx(css({ gap: "4", display: "flex" }), props.class)} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -243,7 +237,6 @@ test("bamboo -> solid-styled -> bamboo: preserves concrete theme and project con
 		    "forward": {
 		      "changed": true,
 		      "code": "import { styled } from "solid-styled-components";
-
 		export const card = styled.div({ "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -279,11 +272,9 @@ test("bamboo -> solid-styled -> bamboo: preserves concrete theme and project con
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		import { createCx } from "pandwind/cx";
+		      "code": "import { createCx } from "pandwind/cx";
 		import { css } from "styled-system/css";
 		const cx = createCx();
-
 		export const card = (props) => <div {...props} class={cx(css({ color: "#2563eb" }), props.class)} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -320,7 +311,6 @@ test("bamboo -> solid-styled -> bamboo: preserves concrete theme and project con
 		    "forward": {
 		      "changed": true,
 		      "code": "import { styled } from "solid-styled-components";
-
 		export const card = styled.div({ "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -356,11 +346,9 @@ test("bamboo -> solid-styled -> bamboo: preserves concrete theme and project con
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		import { createCx } from "pandwind/cx";
+		      "code": "import { createCx } from "pandwind/cx";
 		import { css } from "styled-system/css";
 		const cx = createCx();
-
 		export const card = (props) => <div {...props} class={cx(css({ color: "#2563eb" }), props.class)} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -411,7 +399,6 @@ test("bamboo -> solid-styled -> bamboo: resolves token values across both concre
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-
 		export const card = styled.div({ "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -447,11 +434,9 @@ test("bamboo -> solid-styled -> bamboo: resolves token values across both concre
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { css } from "styled-system/css";
 		const cx = createCx();
-
 		export const card = (props) => <div {...props} class={cx(css({ color: "#2563eb" }), props.class)} />;",
 		    "converted": 1,
 		    "generatedFiles": [],

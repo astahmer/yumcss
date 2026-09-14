@@ -49,7 +49,6 @@ test("treat -> pandwind: migrates concrete treat syntax to pandwind", () => {
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ padding: 8, color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -94,7 +93,6 @@ test("treat -> pandwind: carries a documented secondary treat API explicitly", (
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ padding: 8, color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -148,7 +146,6 @@ test("treat -> pandwind: loads concrete theme and project context variants", asy
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ padding: 8, color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -184,7 +181,6 @@ test("treat -> pandwind: loads concrete theme and project context variants", asy
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ padding: 8, color: "brand" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -232,7 +228,6 @@ test("treat -> pandwind: resolves concrete token values with project context", a
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ padding: 8, color: "brand" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -277,7 +272,6 @@ test("treat -> pandwind: preserves malformed concrete treat input", () => {
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ padding: 8, color: "red" });
 		const unfinished = { /* unfinished treat */",
 		  "converted": 1,

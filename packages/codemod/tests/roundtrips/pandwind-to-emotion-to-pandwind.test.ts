@@ -87,7 +87,6 @@ test("pandwind -> emotion -> pandwind: preserves an actionable concrete round tr
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-
 		export const card = css.class({ padding: "1rem", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -378,7 +377,6 @@ test("pandwind -> emotion -> pandwind: resolves token values across both concret
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 
 		export const card = css.class({ padding: "1rem", color: "brand" });",
 		    "converted": 1,

@@ -49,8 +49,7 @@ test("solid-styled -> jss -> solid-styled: preserves an actionable concrete roun
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import jss from "jss";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} class={cx(jss.createStyleSheet({ style: { padding: "1rem", color: "red" } }).attach().classes.style, props.class)} />;",
@@ -88,10 +87,8 @@ test("solid-styled -> jss -> solid-styled: preserves an actionable concrete roun
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { styled } from "solid-styled-components";
-
 		const cx = createCx();
 		export const Card = (props) => <div {...props} class={cx({ "style": styled.div({ "padding": "1rem", "color": "red" }) }.attach().classes.style, props.class)} />;",
 		    "converted": 1,
@@ -142,8 +139,7 @@ test("solid-styled -> jss -> solid-styled: retains the documented secondary API 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import jss from "jss";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} class={cx(jss.createStyleSheet({ style: { padding: "1rem", color: "red" } }).attach().classes.style, props.class)} />;",
@@ -181,10 +177,8 @@ test("solid-styled -> jss -> solid-styled: retains the documented secondary API 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { styled } from "solid-styled-components";
-
 		const cx = createCx();
 		export const Card = (props) => <div {...props} class={cx({ "style": styled.div({ "padding": "1rem", "color": "red" }) }.attach().classes.style, props.class)} />;",
 		    "converted": 1,
@@ -250,8 +244,7 @@ test("solid-styled -> jss -> solid-styled: preserves concrete theme and project 
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		import { createCx } from "pandwind/cx";
+		      "code": "import { createCx } from "pandwind/cx";
 		import jss from "jss";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} class={cx(jss.createStyleSheet({ style: { padding: "1rem", color: "#2563eb" } }).attach().classes.style, props.class)} />;",
@@ -289,10 +282,8 @@ test("solid-styled -> jss -> solid-styled: preserves concrete theme and project 
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		import { createCx } from "pandwind/cx";
+		      "code": "import { createCx } from "pandwind/cx";
 		import { styled } from "solid-styled-components";
-
 		const cx = createCx();
 		export const Card = (props) => <div {...props} class={cx({ "style": styled.div({ "padding": "1rem", "color": "#2563eb" }) }.attach().classes.style, props.class)} />;",
 		      "converted": 1,
@@ -331,8 +322,7 @@ test("solid-styled -> jss -> solid-styled: preserves concrete theme and project 
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		import { createCx } from "pandwind/cx";
+		      "code": "import { createCx } from "pandwind/cx";
 		import jss from "jss";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} class={cx(jss.createStyleSheet({ style: { padding: "1rem", color: "#2563eb" } }).attach().classes.style, props.class)} />;",
@@ -370,10 +360,8 @@ test("solid-styled -> jss -> solid-styled: preserves concrete theme and project 
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		import { createCx } from "pandwind/cx";
+		      "code": "import { createCx } from "pandwind/cx";
 		import { styled } from "solid-styled-components";
-
 		const cx = createCx();
 		export const Card = (props) => <div {...props} class={cx({ "style": styled.div({ "padding": "1rem", "color": "#2563eb" }) }.attach().classes.style, props.class)} />;",
 		      "converted": 1,
@@ -426,8 +414,7 @@ test("solid-styled -> jss -> solid-styled: resolves token values across both con
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import jss from "jss";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} class={cx(jss.createStyleSheet({ style: { padding: "1rem", color: "#2563eb" } }).attach().classes.style, props.class)} />;",
@@ -465,10 +452,8 @@ test("solid-styled -> jss -> solid-styled: resolves token values across both con
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { styled } from "solid-styled-components";
-
 		const cx = createCx();
 		export const Card = (props) => <div {...props} class={cx({ "style": styled.div({ "padding": "1rem", "color": "#2563eb" }) }.attach().classes.style, props.class)} />;",
 		    "converted": 1,

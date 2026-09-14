@@ -48,7 +48,6 @@ test("jss -> vanilla-extract: migrates concrete jss syntax to vanilla-extract", 
 		{
 		  "changed": true,
 		  "code": "import { style } from "@vanilla-extract/css";
-
 		export const useStyles = { "card": style({ color: "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -94,7 +93,6 @@ test("jss -> vanilla-extract: carries a documented secondary jss API explicitly"
 		{
 		  "changed": true,
 		  "code": "import { style } from "@vanilla-extract/css";
-
 		export const sheet = { "card": style({ color: "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -149,7 +147,6 @@ test("jss -> vanilla-extract: loads concrete theme and project context variants"
 		  "amber": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-
 		export const useStyles = { "card": style({ color: "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -186,7 +183,6 @@ test("jss -> vanilla-extract: loads concrete theme and project context variants"
 		  "blue": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-
 		export const useStyles = { "card": style({ color: "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -235,7 +231,6 @@ test("jss -> vanilla-extract: resolves concrete token values with project contex
 		{
 		  "changed": true,
 		  "code": "import { style } from "@vanilla-extract/css";
-
 		export const useStyles = { "card": style({ color: "#2563eb" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -281,7 +276,6 @@ test("jss -> vanilla-extract: preserves malformed concrete jss input", () => {
 		{
 		  "changed": true,
 		  "code": "import { style } from "@vanilla-extract/css";
-
 		export const useStyles = { "card": style({ color: "red" }) };
 		const unfinished = { /* unfinished jss */",
 		  "converted": 1,

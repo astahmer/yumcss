@@ -48,7 +48,6 @@ test("react-native -> vue-styled: migrates concrete react-native syntax to vue-s
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-
 		export const styles = { "card": styled.div({ "padding": 8, "color": "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -94,7 +93,6 @@ test("react-native -> vue-styled: carries a documented secondary react-native AP
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-
 		export const styles = { "card": styled.div({ "padding": 8, "backgroundColor": "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -149,7 +147,6 @@ test("react-native -> vue-styled: loads concrete theme and project context varia
 		  "amber": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-
 		export const styles = { "card": styled.div({ "padding": 8, "color": "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -186,7 +183,6 @@ test("react-native -> vue-styled: loads concrete theme and project context varia
 		  "blue": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-
 		export const styles = { "card": styled.div({ "padding": 8, "color": "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -235,7 +231,6 @@ test("react-native -> vue-styled: resolves concrete token values with project co
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-
 		export const styles = { "card": styled.div({ "padding": 8, "color": "#2563eb" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -281,7 +276,6 @@ test("react-native -> vue-styled: preserves malformed concrete react-native inpu
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-
 		export const styles = { "card": styled.div({ "padding": 8, "color": "red" }) };
 		const unfinished = { /* unfinished react-native */",
 		  "converted": 1,

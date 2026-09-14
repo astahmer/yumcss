@@ -47,8 +47,7 @@ test("tokenami -> unocss: migrates concrete tokenami syntax to unocss", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		export const card = "[card-gap:1rem] [color:red]";",
+		  "code": "export const card = "[card-gap:1rem] [color:red]";",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -92,8 +91,7 @@ test("tokenami -> unocss: carries a documented secondary tokenami API explicitly
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		export const card = "[padding:1rem] [color:red]";",
+		  "code": "export const card = "[padding:1rem] [color:red]";",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -145,8 +143,7 @@ test("tokenami -> unocss: loads concrete theme and project context variants", as
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "
-		export const card = "[card-gap:1rem] text-brand";",
+		    "code": "export const card = "[card-gap:1rem] text-brand";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -182,8 +179,7 @@ test("tokenami -> unocss: loads concrete theme and project context variants", as
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "
-		export const card = "[card-gap:1rem] text-brand";",
+		    "code": "export const card = "[card-gap:1rem] text-brand";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -231,8 +227,7 @@ test("tokenami -> unocss: resolves concrete token values with project context", 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		export const card = "[card-gap:1rem] text-brand";",
+		  "code": "export const card = "[card-gap:1rem] text-brand";",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -276,8 +271,7 @@ test("tokenami -> unocss: preserves malformed concrete tokenami input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		export const card = "[card-gap:1rem] [color:red]";
+		  "code": "export const card = "[card-gap:1rem] [color:red]";
 		const unfinished = { /* unfinished tokenami */",
 		  "converted": 1,
 		  "generatedFiles": [],

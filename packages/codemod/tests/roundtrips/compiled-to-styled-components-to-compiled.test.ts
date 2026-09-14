@@ -50,7 +50,6 @@ test("compiled -> styled-components -> compiled: preserves an actionable concret
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
 		export const card = styled.div({ padding: 8, color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -84,11 +83,9 @@ test("compiled -> styled-components -> compiled: preserves an actionable concret
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { css } from "@compiled/react";
 		const cx = createCx();
-
 		export const card = (props) => <div {...props} className={cx(css({ "padding": 8, "color": "red" }), props.className)} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -139,7 +136,6 @@ test("compiled -> styled-components -> compiled: retains the documented secondar
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
 		export const colors = { "red": styled.div({ color: "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -174,7 +170,6 @@ test("compiled -> styled-components -> compiled: retains the documented secondar
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
 		export const colors = { "red": // pandwind:migrate-skip (route: styled-components -> compiled | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		styled.div({ color: "red" }) };",
 		    "converted": 0,
@@ -241,7 +236,6 @@ test("compiled -> styled-components -> compiled: preserves concrete theme and pr
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-
 		export const card = styled.div({ padding: 8, color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -275,11 +269,9 @@ test("compiled -> styled-components -> compiled: preserves concrete theme and pr
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		import { createCx } from "pandwind/cx";
+		      "code": "import { createCx } from "pandwind/cx";
 		import { css } from "@compiled/react";
 		const cx = createCx();
-
 		export const card = (props) => <div {...props} className={cx(css({ "padding": 8, "color": "#2563eb" }), props.className)} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -318,7 +310,6 @@ test("compiled -> styled-components -> compiled: preserves concrete theme and pr
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-
 		export const card = styled.div({ padding: 8, color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -352,11 +343,9 @@ test("compiled -> styled-components -> compiled: preserves concrete theme and pr
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		import { createCx } from "pandwind/cx";
+		      "code": "import { createCx } from "pandwind/cx";
 		import { css } from "@compiled/react";
 		const cx = createCx();
-
 		export const card = (props) => <div {...props} className={cx(css({ "padding": 8, "color": "#2563eb" }), props.className)} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -409,7 +398,6 @@ test("compiled -> styled-components -> compiled: resolves token values across bo
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
 		export const card = styled.div({ padding: 8, color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -443,11 +431,9 @@ test("compiled -> styled-components -> compiled: resolves token values across bo
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { css } from "@compiled/react";
 		const cx = createCx();
-
 		export const card = (props) => <div {...props} className={cx(css({ "padding": 8, "color": "#2563eb" }), props.className)} />;",
 		    "converted": 1,
 		    "generatedFiles": [],

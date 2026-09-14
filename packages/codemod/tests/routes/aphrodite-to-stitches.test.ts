@@ -48,7 +48,6 @@ test("aphrodite -> stitches: migrates concrete aphrodite syntax to stitches", ()
 		{
 		  "changed": true,
 		  "code": "import { css } from "@stitches/react";
-
 		export const styles = { "card": css({ padding: 8, color: "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -157,7 +156,6 @@ test("aphrodite -> stitches: loads concrete theme and project context variants",
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "@stitches/react";
-
 		export const styles = { "card": css({ padding: 8, color: "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -194,7 +192,6 @@ test("aphrodite -> stitches: loads concrete theme and project context variants",
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "@stitches/react";
-
 		export const styles = { "card": css({ padding: 8, color: "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -243,7 +240,6 @@ test("aphrodite -> stitches: resolves concrete token values with project context
 		{
 		  "changed": true,
 		  "code": "import { css } from "@stitches/react";
-
 		export const styles = { "card": css({ padding: 8, color: "#2563eb" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -289,7 +285,6 @@ test("aphrodite -> stitches: preserves malformed concrete aphrodite input", () =
 		{
 		  "changed": true,
 		  "code": "import { css } from "@stitches/react";
-
 		export const styles = { "card": css({ padding: 8, color: "red" }) };
 		const unfinished = { /* unfinished aphrodite */",
 		  "converted": 1,

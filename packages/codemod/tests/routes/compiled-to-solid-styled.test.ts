@@ -48,7 +48,6 @@ test("compiled -> solid-styled: migrates concrete compiled syntax to solid-style
 		{
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
-
 		export const card = styled.div({ "padding": 8, "color": "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -94,7 +93,6 @@ test("compiled -> solid-styled: carries a documented secondary compiled API expl
 		{
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
-
 		export const colors = { "red": styled.div({ "color": "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -149,7 +147,6 @@ test("compiled -> solid-styled: loads concrete theme and project context variant
 		  "amber": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-
 		export const card = styled.div({ "padding": 8, "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -186,7 +183,6 @@ test("compiled -> solid-styled: loads concrete theme and project context variant
 		  "blue": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-
 		export const card = styled.div({ "padding": 8, "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -235,7 +231,6 @@ test("compiled -> solid-styled: resolves concrete token values with project cont
 		{
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
-
 		export const card = styled.div({ "padding": 8, "color": "#2563eb" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -281,7 +276,6 @@ test("compiled -> solid-styled: preserves malformed concrete compiled input", ()
 		{
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
-
 		export const card = styled.div({ "padding": 8, "color": "red" });
 		const unfinished = { /* unfinished compiled */",
 		  "converted": 1,

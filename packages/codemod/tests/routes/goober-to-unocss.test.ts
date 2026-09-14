@@ -47,8 +47,7 @@ test("goober -> unocss: migrates concrete goober syntax to unocss", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		export const card = "[padding:1rem] [color:red]";",
+		  "code": "export const card = "[padding:1rem] [color:red]";",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -147,8 +146,7 @@ test("goober -> unocss: loads concrete theme and project context variants", asyn
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "
-		export const card = "[padding:1rem] [color:#2563eb]";",
+		    "code": "export const card = "[padding:1rem] [color:#2563eb]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -183,8 +181,7 @@ test("goober -> unocss: loads concrete theme and project context variants", asyn
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "
-		export const card = "[padding:1rem] text-brand";",
+		    "code": "export const card = "[padding:1rem] text-brand";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -231,8 +228,7 @@ test("goober -> unocss: resolves concrete token values with project context", as
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		export const card = "[padding:1rem] text-brand";",
+		  "code": "export const card = "[padding:1rem] text-brand";",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -276,8 +272,7 @@ test("goober -> unocss: preserves malformed concrete goober input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		export const card = "[padding:1rem] [color:red]";
+		  "code": "export const card = "[padding:1rem] [color:red]";
 		const unfinished = { /* unfinished goober */",
 		  "converted": 1,
 		  "generatedFiles": [],

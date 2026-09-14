@@ -50,7 +50,6 @@ test("stylex -> next-yak -> stylex: preserves an actionable concrete round trip"
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-
 		export const styles = { "card": css\`padding: 8px; color: red;\` };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -85,8 +84,6 @@ test("stylex -> next-yak -> stylex: preserves an actionable concrete round trip"
 		  "reverse": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-
-
 		export const styles = { "card": stylex.create({ style: { padding: "8px", color: "red" } }).style };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -137,7 +134,6 @@ test("stylex -> next-yak -> stylex: retains the documented secondary API without
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-
 		export const styles = { "card": css\`color: red;\` };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -172,8 +168,6 @@ test("stylex -> next-yak -> stylex: retains the documented secondary API without
 		  "reverse": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-
-
 		export const styles = { "card": stylex.create({ style: { color: "red" } }).style };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -239,7 +233,6 @@ test("stylex -> next-yak -> stylex: preserves concrete theme and project context
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "next-yak";
-
 		export const styles = { "card": css\`padding: 8px; color: #2563eb;\` };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -274,8 +267,6 @@ test("stylex -> next-yak -> stylex: preserves concrete theme and project context
 		    "reverse": {
 		      "changed": true,
 		      "code": "import * as stylex from "@stylexjs/stylex";
-
-
 		export const styles = { "card": stylex.create({ style: { padding: "8px", color: "#2563eb" } }).style };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -314,7 +305,6 @@ test("stylex -> next-yak -> stylex: preserves concrete theme and project context
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "next-yak";
-
 		export const styles = { "card": css\`padding: 8px; color: #2563eb;\` };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -349,8 +339,6 @@ test("stylex -> next-yak -> stylex: preserves concrete theme and project context
 		    "reverse": {
 		      "changed": true,
 		      "code": "import * as stylex from "@stylexjs/stylex";
-
-
 		export const styles = { "card": stylex.create({ style: { padding: "8px", color: "#2563eb" } }).style };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -403,7 +391,6 @@ test("stylex -> next-yak -> stylex: resolves token values across both concrete l
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-
 		export const styles = { "card": css\`padding: 8px; color: #2563eb;\` };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -438,8 +425,6 @@ test("stylex -> next-yak -> stylex: resolves token values across both concrete l
 		  "reverse": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-
-
 		export const styles = { "card": stylex.create({ style: { padding: "8px", color: "#2563eb" } }).style };",
 		    "converted": 1,
 		    "generatedFiles": [],

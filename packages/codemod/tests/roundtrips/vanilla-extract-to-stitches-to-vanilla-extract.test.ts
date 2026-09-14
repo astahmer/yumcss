@@ -50,7 +50,6 @@ test("vanilla-extract -> stitches -> vanilla-extract: preserves an actionable co
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@stitches/react";
-
 		export const card = css({ padding: 8, color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -87,8 +86,6 @@ test("vanilla-extract -> stitches -> vanilla-extract: preserves an actionable co
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-
-
 		export const card = style({ padding: 8, color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -139,7 +136,6 @@ test("vanilla-extract -> stitches -> vanilla-extract: retains the documented sec
 		  "forward": {
 		    "changed": true,
 		    "code": "import { globalCss } from "@stitches/react";
-
 		globalCss({ "body": { margin: 0 } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -176,8 +172,6 @@ test("vanilla-extract -> stitches -> vanilla-extract: retains the documented sec
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { globalStyle } from "@vanilla-extract/css";
-
-
 		globalStyle("body", { margin: 0 });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -243,7 +237,6 @@ test("vanilla-extract -> stitches -> vanilla-extract: preserves concrete theme a
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@stitches/react";
-
 		export const card = css({ padding: 8, color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -280,8 +273,6 @@ test("vanilla-extract -> stitches -> vanilla-extract: preserves concrete theme a
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { style } from "@vanilla-extract/css";
-
-
 		export const card = style({ padding: 8, color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -320,7 +311,6 @@ test("vanilla-extract -> stitches -> vanilla-extract: preserves concrete theme a
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@stitches/react";
-
 		export const card = css({ padding: 8, color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -357,8 +347,6 @@ test("vanilla-extract -> stitches -> vanilla-extract: preserves concrete theme a
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { style } from "@vanilla-extract/css";
-
-
 		export const card = style({ padding: 8, color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -411,7 +399,6 @@ test("vanilla-extract -> stitches -> vanilla-extract: resolves token values acro
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@stitches/react";
-
 		export const card = css({ padding: 8, color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -448,8 +435,6 @@ test("vanilla-extract -> stitches -> vanilla-extract: resolves token values acro
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-
-
 		export const card = style({ padding: 8, color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],

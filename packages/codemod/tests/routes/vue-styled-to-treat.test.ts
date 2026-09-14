@@ -49,7 +49,6 @@ test("vue-styled -> treat: migrates concrete vue-styled syntax to treat", () => 
 		  "changed": true,
 		  "code": "import { style } from "@/styles.treat";
 		import { defineComponent, h } from "vue";
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [style({ "padding": "1rem", "color": "red" }), attrs.class] }, slots.default?.()));",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -96,7 +95,6 @@ test("vue-styled -> treat: carries a documented secondary vue-styled API explici
 		  "changed": true,
 		  "code": "import { style } from "@/styles.treat";
 		import { defineComponent, h } from "vue";
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [style({ "padding": "1rem", "color": "red" }), attrs.class] }, slots.default?.()));",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -152,7 +150,6 @@ test("vue-styled -> treat: loads concrete theme and project context variants", a
 		    "changed": true,
 		    "code": "import { style } from "@/styles.treat";
 		import { defineComponent, h } from "vue";
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [style({ "padding": "1rem", "color": "#2563eb" }), attrs.class] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -190,7 +187,6 @@ test("vue-styled -> treat: loads concrete theme and project context variants", a
 		    "changed": true,
 		    "code": "import { style } from "@/styles.treat";
 		import { defineComponent, h } from "vue";
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [style({ "padding": "1rem", "color": "#2563eb" }), attrs.class] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -240,7 +236,6 @@ test("vue-styled -> treat: resolves concrete token values with project context",
 		  "changed": true,
 		  "code": "import { style } from "@/styles.treat";
 		import { defineComponent, h } from "vue";
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [style({ "padding": "1rem", "color": "#2563eb" }), attrs.class] }, slots.default?.()));",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -287,7 +282,6 @@ test("vue-styled -> treat: preserves malformed concrete vue-styled input", () =>
 		  "changed": true,
 		  "code": "import { style } from "@/styles.treat";
 		import { defineComponent, h } from "vue";
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [style({ "padding": "1rem", "color": "red" }), attrs.class] }, slots.default?.()));
 		const unfinished = { /* unfinished vue-styled */",
 		  "converted": 1,

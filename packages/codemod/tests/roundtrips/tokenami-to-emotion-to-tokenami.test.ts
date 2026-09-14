@@ -50,7 +50,6 @@ test("tokenami -> emotion -> tokenami: preserves an actionable concrete round tr
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
-
 		export const card = css({ cardGap: "1rem", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -85,8 +84,6 @@ test("tokenami -> emotion -> tokenami: preserves an actionable concrete round tr
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-
-
 		export const card = css({ cardGap: "1rem", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -135,7 +132,6 @@ test("tokenami -> emotion -> tokenami: retains the documented secondary API with
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
-
 		export const card = css({ padding: "1rem", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -170,8 +166,6 @@ test("tokenami -> emotion -> tokenami: retains the documented secondary API with
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-
-
 		export const card = css({ padding: "1rem", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -275,17 +269,39 @@ test("tokenami -> emotion -> tokenami: preserves concrete theme and project cont
 		      ],
 		    },
 		    "reverse": {
-		      "changed": false,
+		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
 		export const card = // pandwind:migrate-skip (route: tokenami -> emotion | lowering-residual: validation)
-		css({ color: "$colors.brand", "--card-gap": "1rem" });",
-		      "converted": 0,
+		css({ "--card-gap": "1rem", color: "$colors.brand" });",
+		      "converted": 1,
 		      "generatedFiles": [],
-		      "loweringPlans": [],
-		      "outcomes": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
+		      "outcomes": [
+		        {
+		          "outcome": "static",
+		          "representation": "static",
+		        },
+		      ],
 		      "residuals": [],
 		      "skipped": 0,
-		      "validations": [],
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
 		    },
 		  },
 		  "blue": {
@@ -333,17 +349,39 @@ test("tokenami -> emotion -> tokenami: preserves concrete theme and project cont
 		      ],
 		    },
 		    "reverse": {
-		      "changed": false,
+		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
 		export const card = // pandwind:migrate-skip (route: tokenami -> emotion | lowering-residual: validation)
-		css({ color: "$colors.brand", "--card-gap": "1rem" });",
-		      "converted": 0,
+		css({ "--card-gap": "1rem", color: "$colors.brand" });",
+		      "converted": 1,
 		      "generatedFiles": [],
-		      "loweringPlans": [],
-		      "outcomes": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
+		      "outcomes": [
+		        {
+		          "outcome": "static",
+		          "representation": "static",
+		        },
+		      ],
 		      "residuals": [],
 		      "skipped": 0,
-		      "validations": [],
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
 		    },
 		  },
 		}
@@ -364,7 +402,6 @@ test("tokenami -> emotion -> tokenami: resolves token values across both concret
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
-
 		export const card = css({ cardGap: "1rem", color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -399,8 +436,6 @@ test("tokenami -> emotion -> tokenami: resolves token values across both concret
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-
-
 		export const card = css({ cardGap: "1rem", color: "$colors.brand" });",
 		    "converted": 1,
 		    "generatedFiles": [],

@@ -50,7 +50,6 @@ test("panda -> tamagui -> panda: preserves an actionable concrete round trip", (
 		  "forward": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-
 		export const card = styled(View, { color: "red.300", "&:hover": { color: "blue.300" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -87,7 +86,6 @@ test("panda -> tamagui -> panda: preserves an actionable concrete round trip", (
 		import { createCx } from "pandwind/cx";
 		import { css } from "styled-system/css";
 		const cx = createCx();
-
 		export const card = (props) => <View {...props} className={cx(css({ color: "red.300", "&:hover": { color: "blue.300" } }), props.className)} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -211,7 +209,6 @@ test("panda -> tamagui -> panda: preserves concrete theme and project context va
 		    "forward": {
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
-
 		export const card = styled(View, { color: "brand.500", "&:hover": { color: "brand.500" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -248,7 +245,6 @@ test("panda -> tamagui -> panda: preserves concrete theme and project context va
 		import { createCx } from "pandwind/cx";
 		import { css } from "styled-system/css";
 		const cx = createCx();
-
 		export const card = (props) => <View {...props} className={cx(css({ color: "brand.500", "&:hover": { color: "brand.500" } }), props.className)} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -285,7 +281,6 @@ test("panda -> tamagui -> panda: preserves concrete theme and project context va
 		    "forward": {
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
-
 		export const card = styled(View, { color: "brand.500", "&:hover": { color: "brand.500" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -322,7 +317,6 @@ test("panda -> tamagui -> panda: preserves concrete theme and project context va
 		import { createCx } from "pandwind/cx";
 		import { css } from "styled-system/css";
 		const cx = createCx();
-
 		export const card = (props) => <View {...props} className={cx(css({ color: "brand.500", "&:hover": { color: "brand.500" } }), props.className)} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -373,7 +367,6 @@ test("panda -> tamagui -> panda: resolves token values across both concrete legs
 		  "forward": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-
 		export const card = styled(View, { color: "#2563eb", "&:hover": { color: "blue.300" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -410,7 +403,6 @@ test("panda -> tamagui -> panda: resolves token values across both concrete legs
 		import { createCx } from "pandwind/cx";
 		import { css } from "styled-system/css";
 		const cx = createCx();
-
 		export const card = (props) => <View {...props} className={cx(css({ color: "brand.500", "&:hover": { color: "blue.300" } }), props.className)} />;",
 		    "converted": 1,
 		    "generatedFiles": [],

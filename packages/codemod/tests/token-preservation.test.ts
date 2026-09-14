@@ -52,7 +52,6 @@ describe("verified Pandwind token preservation", () => {
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { createCss } from "pandwind/css";
 			const css = createCss();
-
 			export const card = css.class({ padding: "4", borderRadius: "lg", color: "blue.500" });"
 		`);
 	});
@@ -80,7 +79,6 @@ describe("verified Pandwind token preservation", () => {
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { createCss } from "pandwind/css";
 			const css = createCss();
-
 			export const card = css.class({ color: "#3182ce" });"
 		`);
 	});
@@ -98,7 +96,6 @@ describe("verified Pandwind token preservation", () => {
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { createCss } from "pandwind/css";
 			const css = createCss();
-
 			export const card = css.class({ color: "#60A3BC" });"
 		`);
 	});

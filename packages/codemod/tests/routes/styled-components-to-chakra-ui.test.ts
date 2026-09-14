@@ -48,7 +48,6 @@ test("styled-components -> chakra-ui: migrates concrete styled-components syntax
 		{
 		  "changed": true,
 		  "code": "import { chakra } from "@chakra-ui/react";
-
 		export const Card = (props) => <chakra.div {...props} css={{ padding: "1rem", color: "red" }} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -92,7 +91,6 @@ test("styled-components -> chakra-ui: carries a documented secondary styled-comp
 		{
 		  "changed": true,
 		  "code": "import { chakra } from "@chakra-ui/react";
-
 		export const Card = (props) => <chakra.div {...props} css={{ padding: "1rem", color: "red" }} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -145,7 +143,6 @@ test("styled-components -> chakra-ui: loads concrete theme and project context v
 		  "amber": {
 		    "changed": true,
 		    "code": "import { chakra } from "@chakra-ui/react";
-
 		export const Card = (props) => <chakra.div {...props} css={{ padding: "1rem", color: "#2563eb" }} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -180,7 +177,6 @@ test("styled-components -> chakra-ui: loads concrete theme and project context v
 		  "blue": {
 		    "changed": true,
 		    "code": "import { chakra } from "@chakra-ui/react";
-
 		export const Card = (props) => <chakra.div {...props} css={{ padding: "1rem", color: "brand.500" }} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -227,7 +223,6 @@ test("styled-components -> chakra-ui: resolves concrete token values with projec
 		{
 		  "changed": true,
 		  "code": "import { chakra } from "@chakra-ui/react";
-
 		export const Card = (props) => <chakra.div {...props} css={{ padding: "1rem", color: "brand.500" }} />;",
 		  "converted": 1,
 		  "generatedFiles": [],

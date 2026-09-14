@@ -49,7 +49,6 @@ test("next-yak -> css-modules: migrates concrete next-yak syntax to css-modules"
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": "1rem", "color": "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -151,7 +150,6 @@ test("next-yak -> css-modules: loads concrete theme and project context variants
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": "1rem", "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -189,7 +187,6 @@ test("next-yak -> css-modules: loads concrete theme and project context variants
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": "1rem", "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -239,7 +236,6 @@ test("next-yak -> css-modules: resolves concrete token values with project conte
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": "1rem", "color": "#2563eb" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -286,7 +282,6 @@ test("next-yak -> css-modules: preserves malformed concrete next-yak input", () 
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": "1rem", "color": "red" });
 		const unfinished = { /* unfinished next-yak */",
 		  "converted": 1,

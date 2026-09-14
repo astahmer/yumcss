@@ -50,7 +50,6 @@ test("goober -> bamboo -> goober: preserves an actionable concrete round trip", 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-
 		export const card = css({ padding: "1rem", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -85,8 +84,6 @@ test("goober -> bamboo -> goober: preserves an actionable concrete round trip", 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "goober";
-
-
 		export const card = css({ "padding": "1rem", "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -214,7 +211,6 @@ test("goober -> bamboo -> goober: preserves concrete theme and project context v
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "styled-system/css";
-
 		export const card = css({ padding: "1rem", color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -249,8 +245,6 @@ test("goober -> bamboo -> goober: preserves concrete theme and project context v
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "goober";
-
-
 		export const card = css({ "padding": "1rem", "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -289,7 +283,6 @@ test("goober -> bamboo -> goober: preserves concrete theme and project context v
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "styled-system/css";
-
 		export const card = css({ padding: "1rem", color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -324,8 +317,6 @@ test("goober -> bamboo -> goober: preserves concrete theme and project context v
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "goober";
-
-
 		export const card = css({ "padding": "1rem", "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -378,7 +369,6 @@ test("goober -> bamboo -> goober: resolves token values across both concrete leg
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-
 		export const card = css({ padding: "1rem", color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -413,8 +403,6 @@ test("goober -> bamboo -> goober: resolves token values across both concrete leg
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "goober";
-
-
 		export const card = css({ "padding": "1rem", "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],

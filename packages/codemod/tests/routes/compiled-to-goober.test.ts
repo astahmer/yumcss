@@ -48,7 +48,6 @@ test("compiled -> goober: migrates concrete compiled syntax to goober", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "goober";
-
 		export const card = css({ "padding": 8, "color": "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -94,7 +93,6 @@ test("compiled -> goober: carries a documented secondary compiled API explicitly
 		{
 		  "changed": true,
 		  "code": "import { css } from "goober";
-
 		export const colors = { "red": css({ "color": "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -149,7 +147,6 @@ test("compiled -> goober: loads concrete theme and project context variants", as
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "goober";
-
 		export const card = css({ "padding": 8, "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -186,7 +183,6 @@ test("compiled -> goober: loads concrete theme and project context variants", as
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "goober";
-
 		export const card = css({ "padding": 8, "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -235,7 +231,6 @@ test("compiled -> goober: resolves concrete token values with project context", 
 		{
 		  "changed": true,
 		  "code": "import { css } from "goober";
-
 		export const card = css({ "padding": 8, "color": "#2563eb" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -281,7 +276,6 @@ test("compiled -> goober: preserves malformed concrete compiled input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "goober";
-
 		export const card = css({ "padding": 8, "color": "red" });
 		const unfinished = { /* unfinished compiled */",
 		  "converted": 1,

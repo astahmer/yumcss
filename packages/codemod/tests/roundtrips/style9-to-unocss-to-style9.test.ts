@@ -49,8 +49,7 @@ test("style9 -> unocss -> style9: preserves an actionable concrete round trip", 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const styles = { "card": "[color:red]" };",
+		    "code": "export const styles = { "card": "[color:red]" };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,7 +85,6 @@ test("style9 -> unocss -> style9: preserves an actionable concrete round trip", 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import style9 from "style9";
-
 		export const styles = { "card": style9.create({ "color": "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -136,8 +134,7 @@ test("style9 -> unocss -> style9: retains the documented secondary API without s
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const styles = { "card": "[color:red]", "muted": "[opacity:0.5]" };",
+		    "code": "export const styles = { "card": "[color:red]", "muted": "[opacity:0.5]" };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -172,10 +169,9 @@ test("style9 -> unocss -> style9: retains the documented secondary API without s
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		export const styles = // pandwind:migrate-skip (route: unocss -> style9 | lowering-residual: validation)
-		{ "card": "[color:red]", "muted": "[opacity:0.5]" };",
-		    "converted": 0,
+		    "code": "import style9 from "style9";
+		export const styles = { "card": style9.create({ "color": "red" }), "muted": style9.create({ "opacity": "0.5" }) };",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -193,25 +189,17 @@ test("style9 -> unocss -> style9: retains the documented secondary API without s
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "target-native",
 		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "canonical CSS differs",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },
@@ -246,8 +234,7 @@ test("style9 -> unocss -> style9: preserves concrete theme and project context v
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		export const styles = { "card": "[color:#2563eb]" };",
+		      "code": "export const styles = { "card": "[color:#2563eb]" };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -282,8 +269,7 @@ test("style9 -> unocss -> style9: preserves concrete theme and project context v
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		export const styles = // pandwind:migrate-skip (route: unocss -> style9 | lowering-residual: validation)
+		      "code": "export const styles = // pandwind:migrate-skip (route: unocss -> style9 | lowering-residual: validation)
 		{ "card": "[color:#2563eb]" };",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -329,8 +315,7 @@ test("style9 -> unocss -> style9: preserves concrete theme and project context v
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		export const styles = { "card": "text-brand" };",
+		      "code": "export const styles = { "card": "text-brand" };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -366,7 +351,6 @@ test("style9 -> unocss -> style9: preserves concrete theme and project context v
 		    "reverse": {
 		      "changed": true,
 		      "code": "import style9 from "style9";
-
 		export const styles = { "card": style9.create({ "color": "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -418,8 +402,7 @@ test("style9 -> unocss -> style9: resolves token values across both concrete leg
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const styles = { "card": "text-brand" };",
+		    "code": "export const styles = { "card": "text-brand" };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -455,7 +438,6 @@ test("style9 -> unocss -> style9: resolves token values across both concrete leg
 		  "reverse": {
 		    "changed": true,
 		    "code": "import style9 from "style9";
-
 		export const styles = { "card": style9.create({ "color": "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],

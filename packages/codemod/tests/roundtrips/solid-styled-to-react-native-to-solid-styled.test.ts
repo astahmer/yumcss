@@ -50,7 +50,6 @@ test("solid-styled -> react-native -> solid-styled: preserves an actionable conc
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet, View } from "react-native";
-
 		export const Card = (props) => <View {...props} style={StyleSheet.create({ style: { "padding": 16, "color": "red" } }).style} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -89,7 +88,6 @@ test("solid-styled -> react-native -> solid-styled: preserves an actionable conc
 		    "changed": true,
 		    "code": "import { View } from "react-native";
 		import { styled } from "solid-styled-components";
-
 		export const Card = (props) => <View {...props} style={{ "style": styled.div({ "padding": 16, "color": "red" }) }.style} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -140,7 +138,6 @@ test("solid-styled -> react-native -> solid-styled: retains the documented secon
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet, View } from "react-native";
-
 		export const Card = (props) => <View {...props} style={StyleSheet.create({ style: { "padding": 16, "color": "red" } }).style} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -179,7 +176,6 @@ test("solid-styled -> react-native -> solid-styled: retains the documented secon
 		    "changed": true,
 		    "code": "import { View } from "react-native";
 		import { styled } from "solid-styled-components";
-
 		export const Card = (props) => <View {...props} style={{ "style": styled.div({ "padding": 16, "color": "red" }) }.style} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -245,7 +241,6 @@ test("solid-styled -> react-native -> solid-styled: preserves concrete theme and
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet, View } from "react-native";
-
 		export const Card = (props) => <View {...props} style={StyleSheet.create({ style: { "padding": 16, "color": "#2563eb" } }).style} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -284,7 +279,6 @@ test("solid-styled -> react-native -> solid-styled: preserves concrete theme and
 		      "changed": true,
 		      "code": "import { View } from "react-native";
 		import { styled } from "solid-styled-components";
-
 		export const Card = (props) => <View {...props} style={{ "style": styled.div({ "padding": 16, "color": "#2563eb" }) }.style} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -323,7 +317,6 @@ test("solid-styled -> react-native -> solid-styled: preserves concrete theme and
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet, View } from "react-native";
-
 		export const Card = (props) => <View {...props} style={StyleSheet.create({ style: { "padding": 16, "color": "#2563eb" } }).style} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -362,7 +355,6 @@ test("solid-styled -> react-native -> solid-styled: preserves concrete theme and
 		      "changed": true,
 		      "code": "import { View } from "react-native";
 		import { styled } from "solid-styled-components";
-
 		export const Card = (props) => <View {...props} style={{ "style": styled.div({ "padding": 16, "color": "#2563eb" }) }.style} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -415,7 +407,6 @@ test("solid-styled -> react-native -> solid-styled: resolves token values across
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet, View } from "react-native";
-
 		export const Card = (props) => <View {...props} style={StyleSheet.create({ style: { "padding": 16, "color": "#2563eb" } }).style} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -454,7 +445,6 @@ test("solid-styled -> react-native -> solid-styled: resolves token values across
 		    "changed": true,
 		    "code": "import { View } from "react-native";
 		import { styled } from "solid-styled-components";
-
 		export const Card = (props) => <View {...props} style={{ "style": styled.div({ "padding": 16, "color": "#2563eb" }) }.style} />;",
 		    "converted": 1,
 		    "generatedFiles": [],

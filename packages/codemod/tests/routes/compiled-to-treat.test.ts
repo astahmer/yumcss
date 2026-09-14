@@ -48,7 +48,6 @@ test("compiled -> treat: migrates concrete compiled syntax to treat", () => {
 		{
 		  "changed": true,
 		  "code": "import { style } from "@/styles.treat";
-
 		export const card = style({ "padding": 8, "color": "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -94,7 +93,6 @@ test("compiled -> treat: carries a documented secondary compiled API explicitly"
 		{
 		  "changed": true,
 		  "code": "import { style } from "@/styles.treat";
-
 		export const colors = { "red": style({ "color": "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -149,7 +147,6 @@ test("compiled -> treat: loads concrete theme and project context variants", asy
 		  "amber": {
 		    "changed": true,
 		    "code": "import { style } from "@/styles.treat";
-
 		export const card = style({ "padding": 8, "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -186,7 +183,6 @@ test("compiled -> treat: loads concrete theme and project context variants", asy
 		  "blue": {
 		    "changed": true,
 		    "code": "import { style } from "@/styles.treat";
-
 		export const card = style({ "padding": 8, "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -235,7 +231,6 @@ test("compiled -> treat: resolves concrete token values with project context", a
 		{
 		  "changed": true,
 		  "code": "import { style } from "@/styles.treat";
-
 		export const card = style({ "padding": 8, "color": "#2563eb" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -281,7 +276,6 @@ test("compiled -> treat: preserves malformed concrete compiled input", () => {
 		{
 		  "changed": true,
 		  "code": "import { style } from "@/styles.treat";
-
 		export const card = style({ "padding": 8, "color": "red" });
 		const unfinished = { /* unfinished compiled */",
 		  "converted": 1,

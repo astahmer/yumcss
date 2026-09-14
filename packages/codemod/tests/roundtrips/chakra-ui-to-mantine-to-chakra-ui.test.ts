@@ -207,7 +207,7 @@ test("chakra-ui -> mantine -> chakra-ui: preserves concrete theme and project co
 		    "forward": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		export const App = () => <Box p="4"  style={{ backgroundColor: "var(--mantine-color-brand-0)" }}/>;",
+		export const App = () => <Box  style={{ backgroundColor: "var(--mantine-color-brand-0)", p: "var(--chakra-spacing-4)" }}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -241,7 +241,7 @@ test("chakra-ui -> mantine -> chakra-ui: preserves concrete theme and project co
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		export const App = () => <Box  css={{ padding: "4", backgroundColor: "var(--mantine-color-brand-0)" }}/>;",
+		export const App = () => <Box  css={{ padding: "var(--chakra-spacing-4)", backgroundColor: "var(--mantine-color-brand-0)" }}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -277,7 +277,7 @@ test("chakra-ui -> mantine -> chakra-ui: preserves concrete theme and project co
 		    "forward": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		export const App = () => <Box p="4"  style={{ backgroundColor: "var(--mantine-color-brand-0)" }}/>;",
+		export const App = () => <Box  style={{ backgroundColor: "var(--mantine-color-brand-0)", p: "var(--chakra-spacing-4)" }}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -311,7 +311,7 @@ test("chakra-ui -> mantine -> chakra-ui: preserves concrete theme and project co
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		export const App = () => <Box  css={{ padding: "4", backgroundColor: "var(--mantine-color-brand-0)" }}/>;",
+		export const App = () => <Box  css={{ padding: "var(--chakra-spacing-4)", backgroundColor: "var(--mantine-color-brand-0)" }}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -361,7 +361,7 @@ test("chakra-ui -> mantine -> chakra-ui: resolves token values across both concr
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		export const App = () => <Box p="4"  style={{ backgroundColor: "var(--mantine-color-brand-0)" }}/>;",
+		export const App = () => <Box  style={{ backgroundColor: "var(--mantine-color-brand-0)", p: "var(--chakra-spacing-4)" }}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -395,7 +395,7 @@ test("chakra-ui -> mantine -> chakra-ui: resolves token values across both concr
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		export const App = () => <Box  css={{ padding: "4", backgroundColor: "var(--mantine-color-brand-0)" }}/>;",
+		export const App = () => <Box  css={{ padding: "var(--chakra-spacing-4)", backgroundColor: "var(--mantine-color-brand-0)" }}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

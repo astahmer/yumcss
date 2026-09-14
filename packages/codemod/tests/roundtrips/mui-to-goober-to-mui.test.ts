@@ -89,7 +89,6 @@ test("mui -> goober -> mui: preserves an actionable concrete round trip", () => 
 		    "code": "import { Box } from "@mui/material";
 		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const App = () => css.class({ "padding": "16px", "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -178,7 +177,6 @@ test("mui -> goober -> mui: retains the documented secondary API without silent 
 		    "code": "import { styled } from "@mui/system";
 		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const Card = css.class({ "padding": 8, "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -281,7 +279,6 @@ test("mui -> goober -> mui: preserves concrete theme and project context variant
 		      "code": "import { Box } from "@mui/material";
 		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const App = () => css.class({ "padding": "16px", "color": "primary.main" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -358,7 +355,6 @@ test("mui -> goober -> mui: preserves concrete theme and project context variant
 		      "code": "import { Box } from "@mui/material";
 		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const App = () => css.class({ "padding": "16px", "color": "primary.main" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -449,7 +445,6 @@ test("mui -> goober -> mui: resolves token values across both concrete legs", as
 		    "code": "import { Box } from "@mui/material";
 		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const App = () => css.class({ "padding": "16px", "color": "primary.main" });",
 		    "converted": 1,
 		    "generatedFiles": [],

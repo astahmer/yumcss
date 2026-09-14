@@ -48,7 +48,6 @@ test("tokenami -> vanilla-extract: migrates concrete tokenami syntax to vanilla-
 		{
 		  "changed": true,
 		  "code": "import { style } from "@vanilla-extract/css";
-
 		export const card = style({ cardGap: "1rem", color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -94,7 +93,6 @@ test("tokenami -> vanilla-extract: carries a documented secondary tokenami API e
 		{
 		  "changed": true,
 		  "code": "import { style } from "@vanilla-extract/css";
-
 		export const card = style({ padding: "1rem", color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -250,7 +248,6 @@ test("tokenami -> vanilla-extract: resolves concrete token values with project c
 		{
 		  "changed": true,
 		  "code": "import { style } from "@vanilla-extract/css";
-
 		export const card = style({ cardGap: "1rem", color: "#2563eb" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -296,7 +293,6 @@ test("tokenami -> vanilla-extract: preserves malformed concrete tokenami input",
 		{
 		  "changed": true,
 		  "code": "import { style } from "@vanilla-extract/css";
-
 		export const card = style({ cardGap: "1rem", color: "red" });
 		const unfinished = { /* unfinished tokenami */",
 		  "converted": 1,

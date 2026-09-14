@@ -48,7 +48,6 @@ test("vanilla-extract -> compiled: migrates concrete vanilla-extract syntax to c
 		{
 		  "changed": true,
 		  "code": "import { css } from "@compiled/react";
-
 		export const card = css({ "padding": 8, "color": "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -157,7 +156,6 @@ test("vanilla-extract -> compiled: loads concrete theme and project context vari
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "@compiled/react";
-
 		export const card = css({ "padding": 8, "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -194,7 +192,6 @@ test("vanilla-extract -> compiled: loads concrete theme and project context vari
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "@compiled/react";
-
 		export const card = css({ "padding": 8, "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -243,7 +240,6 @@ test("vanilla-extract -> compiled: resolves concrete token values with project c
 		{
 		  "changed": true,
 		  "code": "import { css } from "@compiled/react";
-
 		export const card = css({ "padding": 8, "color": "#2563eb" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -289,7 +285,6 @@ test("vanilla-extract -> compiled: preserves malformed concrete vanilla-extract 
 		{
 		  "changed": true,
 		  "code": "import { css } from "@compiled/react";
-
 		export const card = css({ "padding": 8, "color": "red" });
 		const unfinished = { /* unfinished vanilla-extract */",
 		  "converted": 1,

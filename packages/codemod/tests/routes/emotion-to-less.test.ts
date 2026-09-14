@@ -49,7 +49,6 @@ test("emotion -> less: migrates concrete emotion syntax to less", () => {
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": "1rem", "color": "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -96,7 +95,6 @@ test("emotion -> less: carries a documented secondary emotion API explicitly", (
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": "1rem", "color": "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -152,7 +150,6 @@ test("emotion -> less: loads concrete theme and project context variants", async
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": "1rem", "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -190,7 +187,6 @@ test("emotion -> less: loads concrete theme and project context variants", async
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": "1rem", "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -240,7 +236,6 @@ test("emotion -> less: resolves concrete token values with project context", asy
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": "1rem", "color": "#2563eb" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -287,7 +282,6 @@ test("emotion -> less: preserves malformed concrete emotion input", () => {
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": "1rem", "color": "red" });
 		const unfinished = { /* unfinished emotion */",
 		  "converted": 1,

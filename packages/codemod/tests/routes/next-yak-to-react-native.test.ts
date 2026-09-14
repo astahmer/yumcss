@@ -48,7 +48,6 @@ test("next-yak -> react-native: migrates concrete next-yak syntax to react-nativ
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "react-native";
-
 		export const card = StyleSheet.create({ "padding": 16, "color": "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -95,7 +94,6 @@ test("next-yak -> react-native: carries a documented secondary next-yak API expl
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet, View } from "react-native";
-
 		export const Card = (props) => <View {...props} style={StyleSheet.create({ style: { "padding": 16, "color": "red" } }).style} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -151,7 +149,6 @@ test("next-yak -> react-native: loads concrete theme and project context variant
 		  "amber": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-
 		export const card = StyleSheet.create({ "padding": 16, "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -189,7 +186,6 @@ test("next-yak -> react-native: loads concrete theme and project context variant
 		  "blue": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-
 		export const card = StyleSheet.create({ "padding": 16, "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -239,7 +235,6 @@ test("next-yak -> react-native: resolves concrete token values with project cont
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "react-native";
-
 		export const card = StyleSheet.create({ "padding": 16, "color": "#2563eb" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -286,7 +281,6 @@ test("next-yak -> react-native: preserves malformed concrete next-yak input", ()
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "react-native";
-
 		export const card = StyleSheet.create({ "padding": 16, "color": "red" });
 		const unfinished = { /* unfinished next-yak */",
 		  "converted": 1,

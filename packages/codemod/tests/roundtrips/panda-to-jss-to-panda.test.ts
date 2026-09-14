@@ -50,7 +50,6 @@ test("panda -> jss -> panda: preserves an actionable concrete round trip", () =>
 		  "forward": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-
 		export const card = createUseStyles({ color: "red.300", "&:hover": { color: "blue.300" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -87,8 +86,6 @@ test("panda -> jss -> panda: preserves an actionable concrete round trip", () =>
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-
-
 		export const card = css({ color: "red.300", "&:hover": { color: "blue.300" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -354,7 +351,6 @@ test("panda -> jss -> panda: resolves token values across both concrete legs", a
 		  "forward": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-
 		export const card = createUseStyles({ color: "#2563eb", "&:hover": { color: "blue.300" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -391,8 +387,6 @@ test("panda -> jss -> panda: resolves token values across both concrete legs", a
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-
-
 		export const card = css({ color: "brand.500", "&:hover": { color: "blue.300" } });",
 		    "converted": 1,
 		    "generatedFiles": [],

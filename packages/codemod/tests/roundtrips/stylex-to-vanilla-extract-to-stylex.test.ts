@@ -50,7 +50,6 @@ test("stylex -> vanilla-extract -> stylex: preserves an actionable concrete roun
 		  "forward": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-
 		export const styles = { "card": style({ padding: "8px", color: "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -88,7 +87,6 @@ test("stylex -> vanilla-extract -> stylex: preserves an actionable concrete roun
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
 		import * as stylex from "@stylexjs/stylex";
-
 		export const styles = { "card": stylex.create({ style: { padding: "8px", color: "red" } }).style };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -139,7 +137,6 @@ test("stylex -> vanilla-extract -> stylex: retains the documented secondary API 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-
 		export const styles = { "card": style({ color: "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -177,7 +174,6 @@ test("stylex -> vanilla-extract -> stylex: retains the documented secondary API 
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
 		import * as stylex from "@stylexjs/stylex";
-
 		export const styles = { "card": stylex.create({ style: { color: "red" } }).style };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -243,7 +239,6 @@ test("stylex -> vanilla-extract -> stylex: preserves concrete theme and project 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { style } from "@vanilla-extract/css";
-
 		export const styles = { "card": style({ padding: "8px", color: "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -281,7 +276,6 @@ test("stylex -> vanilla-extract -> stylex: preserves concrete theme and project 
 		      "changed": true,
 		      "code": "import { style } from "@vanilla-extract/css";
 		import * as stylex from "@stylexjs/stylex";
-
 		export const styles = { "card": stylex.create({ style: { padding: "8px", color: "#2563eb" } }).style };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -320,7 +314,6 @@ test("stylex -> vanilla-extract -> stylex: preserves concrete theme and project 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { style } from "@vanilla-extract/css";
-
 		export const styles = { "card": style({ padding: "8px", color: "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -358,7 +351,6 @@ test("stylex -> vanilla-extract -> stylex: preserves concrete theme and project 
 		      "changed": true,
 		      "code": "import { style } from "@vanilla-extract/css";
 		import * as stylex from "@stylexjs/stylex";
-
 		export const styles = { "card": stylex.create({ style: { padding: "8px", color: "#2563eb" } }).style };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -411,7 +403,6 @@ test("stylex -> vanilla-extract -> stylex: resolves token values across both con
 		  "forward": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-
 		export const styles = { "card": style({ padding: "8px", color: "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -449,7 +440,6 @@ test("stylex -> vanilla-extract -> stylex: resolves token values across both con
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
 		import * as stylex from "@stylexjs/stylex";
-
 		export const styles = { "card": stylex.create({ style: { padding: "8px", color: "#2563eb" } }).style };",
 		    "converted": 1,
 		    "generatedFiles": [],

@@ -48,7 +48,6 @@ test("linaria -> tokenami: migrates concrete linaria syntax to tokenami", () => 
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-
 		export const card = css({ padding: "1rem", color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -145,7 +144,6 @@ test("linaria -> tokenami: loads concrete theme and project context variants", a
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-
 		export const card = css({ padding: "1rem", color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -180,7 +178,6 @@ test("linaria -> tokenami: loads concrete theme and project context variants", a
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-
 		export const card = css({ padding: "1rem", color: "$colors.brand" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -227,7 +224,6 @@ test("linaria -> tokenami: resolves concrete token values with project context",
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-
 		export const card = css({ padding: "1rem", color: "$colors.brand" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -271,7 +267,6 @@ test("linaria -> tokenami: preserves malformed concrete linaria input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-
 		export const card = css({ padding: "1rem", color: "red" });
 		const unfinished = { /* unfinished linaria */",
 		  "converted": 1,

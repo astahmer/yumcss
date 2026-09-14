@@ -50,7 +50,6 @@ test("vanilla-extract -> tamagui -> vanilla-extract: preserves an actionable con
 		  "forward": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-
 		export const card = styled(View, { padding: 8, color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -87,7 +86,6 @@ test("vanilla-extract -> tamagui -> vanilla-extract: preserves an actionable con
 		import { createCx } from "pandwind/cx";
 		import { style } from "@vanilla-extract/css";
 		const cx = createCx();
-
 		export const card = (props) => <View {...props} className={cx(style({ padding: 8, color: "red" }), props.className)} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -138,7 +136,6 @@ test("vanilla-extract -> tamagui -> vanilla-extract: retains the documented seco
 		  "forward": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-
 		styled(View, { "body": { margin: 0 } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -175,7 +172,6 @@ test("vanilla-extract -> tamagui -> vanilla-extract: retains the documented seco
 		import { createRuntimeCss } from "pandwind/css/runtime";
 		import { pandwindPreset } from "pandwind/preset";
 		const css = createRuntimeCss(pandwindPreset);
-
 		css.vars({ "body": { margin: 0 } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -247,7 +243,6 @@ test("vanilla-extract -> tamagui -> vanilla-extract: preserves concrete theme an
 		    "forward": {
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
-
 		export const card = styled(View, { padding: 8, color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -284,7 +279,6 @@ test("vanilla-extract -> tamagui -> vanilla-extract: preserves concrete theme an
 		import { createCx } from "pandwind/cx";
 		import { style } from "@vanilla-extract/css";
 		const cx = createCx();
-
 		export const card = (props) => <View {...props} className={cx(style({ padding: 8, color: "#2563eb" }), props.className)} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -323,7 +317,6 @@ test("vanilla-extract -> tamagui -> vanilla-extract: preserves concrete theme an
 		    "forward": {
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
-
 		export const card = styled(View, { padding: 8, color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -360,7 +353,6 @@ test("vanilla-extract -> tamagui -> vanilla-extract: preserves concrete theme an
 		import { createCx } from "pandwind/cx";
 		import { style } from "@vanilla-extract/css";
 		const cx = createCx();
-
 		export const card = (props) => <View {...props} className={cx(style({ padding: 8, color: "#2563eb" }), props.className)} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -413,7 +405,6 @@ test("vanilla-extract -> tamagui -> vanilla-extract: resolves token values acros
 		  "forward": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-
 		export const card = styled(View, { padding: 8, color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -450,7 +441,6 @@ test("vanilla-extract -> tamagui -> vanilla-extract: resolves token values acros
 		import { createCx } from "pandwind/cx";
 		import { style } from "@vanilla-extract/css";
 		const cx = createCx();
-
 		export const card = (props) => <View {...props} className={cx(style({ padding: 8, color: "#2563eb" }), props.className)} />;",
 		    "converted": 1,
 		    "generatedFiles": [],

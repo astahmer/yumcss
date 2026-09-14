@@ -50,7 +50,6 @@ test("vanilla-extract -> linaria -> vanilla-extract: preserves an actionable con
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@linaria/core";
-
 		export const card = css\`padding: 8; color: red;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -87,8 +86,6 @@ test("vanilla-extract -> linaria -> vanilla-extract: preserves an actionable con
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-
-
 		export const card = style({ padding: "8", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -226,7 +223,6 @@ test("vanilla-extract -> linaria -> vanilla-extract: preserves concrete theme an
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@linaria/core";
-
 		export const card = css\`padding: 8; color: #2563eb;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -263,8 +259,6 @@ test("vanilla-extract -> linaria -> vanilla-extract: preserves concrete theme an
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { style } from "@vanilla-extract/css";
-
-
 		export const card = style({ padding: "8", color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -303,7 +297,6 @@ test("vanilla-extract -> linaria -> vanilla-extract: preserves concrete theme an
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@linaria/core";
-
 		export const card = css\`padding: 8; color: #2563eb;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -340,8 +333,6 @@ test("vanilla-extract -> linaria -> vanilla-extract: preserves concrete theme an
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { style } from "@vanilla-extract/css";
-
-
 		export const card = style({ padding: "8", color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -394,7 +385,6 @@ test("vanilla-extract -> linaria -> vanilla-extract: resolves token values acros
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@linaria/core";
-
 		export const card = css\`padding: 8; color: #2563eb;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -431,8 +421,6 @@ test("vanilla-extract -> linaria -> vanilla-extract: resolves token values acros
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-
-
 		export const card = style({ padding: "8", color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],

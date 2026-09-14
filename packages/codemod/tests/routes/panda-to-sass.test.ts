@@ -49,7 +49,6 @@ test("panda -> sass: migrates concrete panda syntax to sass", () => {
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "color": "red.300", "_hover": { "color": "blue.300" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -160,7 +159,6 @@ test("panda -> sass: loads concrete theme and project context variants", async (
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "color": "brand.500", "_hover": { "color": "brand.500" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -198,7 +196,6 @@ test("panda -> sass: loads concrete theme and project context variants", async (
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "color": "brand.500", "_hover": { "color": "brand.500" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -248,7 +245,6 @@ test("panda -> sass: resolves concrete token values with project context", async
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "color": "#2563eb", "_hover": { "color": "blue.300" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -295,7 +291,6 @@ test("panda -> sass: preserves malformed concrete panda input", () => {
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "color": "red.300", "_hover": { "color": "blue.300" } });
 		const unfinished = { /* unfinished panda */",
 		  "converted": 1,

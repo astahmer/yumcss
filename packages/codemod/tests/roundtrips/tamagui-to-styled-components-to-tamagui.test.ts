@@ -87,7 +87,6 @@ test("tamagui -> styled-components -> tamagui: preserves an actionable concrete 
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
 		import { View, styled } from "@tamagui/core";
-
 		export const Card = styled(View, { padding: "$4", color: "red" });
 		export const App = () => <View className={Card} />;",
 		    "converted": 1,
@@ -249,7 +248,6 @@ test("tamagui -> styled-components -> tamagui: preserves concrete theme and proj
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
 		import { View, styled } from "@tamagui/core";
-
 		export const Card = styled(View, { padding: "$4", color: "#2563eb" });
 		export const App = () => <View className={Card} />;",
 		      "converted": 1,
@@ -323,7 +321,6 @@ test("tamagui -> styled-components -> tamagui: preserves concrete theme and proj
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
 		import { View, styled } from "@tamagui/core";
-
 		export const Card = styled(View, { padding: "$4", color: "#2563eb" });
 		export const App = () => <View className={Card} />;",
 		      "converted": 1,
@@ -411,7 +408,6 @@ test("tamagui -> styled-components -> tamagui: resolves token values across both
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
 		import { View, styled } from "@tamagui/core";
-
 		export const Card = styled(View, { padding: "$4", color: "#2563eb" });
 		export const App = () => <View className={Card} />;",
 		    "converted": 1,

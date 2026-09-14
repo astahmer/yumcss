@@ -50,7 +50,6 @@ test("vanilla-extract -> vue-styled -> vanilla-extract: preserves an actionable 
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-
 		export const card = styled.div({ "padding": 8, "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -88,8 +87,6 @@ test("vanilla-extract -> vue-styled -> vanilla-extract: preserves an actionable 
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
 		import { defineComponent, h } from "vue";
-
-
 		export const card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [style({ padding: 8, color: "red" }), attrs.class] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -219,7 +216,6 @@ test("vanilla-extract -> vue-styled -> vanilla-extract: preserves concrete theme
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-
 		export const card = styled.div({ "padding": 8, "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -257,8 +253,6 @@ test("vanilla-extract -> vue-styled -> vanilla-extract: preserves concrete theme
 		      "changed": true,
 		      "code": "import { style } from "@vanilla-extract/css";
 		import { defineComponent, h } from "vue";
-
-
 		export const card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [style({ padding: 8, color: "#2563eb" }), attrs.class] }, slots.default?.()));",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -297,7 +291,6 @@ test("vanilla-extract -> vue-styled -> vanilla-extract: preserves concrete theme
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-
 		export const card = styled.div({ "padding": 8, "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -335,8 +328,6 @@ test("vanilla-extract -> vue-styled -> vanilla-extract: preserves concrete theme
 		      "changed": true,
 		      "code": "import { style } from "@vanilla-extract/css";
 		import { defineComponent, h } from "vue";
-
-
 		export const card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [style({ padding: 8, color: "#2563eb" }), attrs.class] }, slots.default?.()));",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -389,7 +380,6 @@ test("vanilla-extract -> vue-styled -> vanilla-extract: resolves token values ac
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-
 		export const card = styled.div({ "padding": 8, "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -427,8 +417,6 @@ test("vanilla-extract -> vue-styled -> vanilla-extract: resolves token values ac
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
 		import { defineComponent, h } from "vue";
-
-
 		export const card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [style({ padding: 8, color: "#2563eb" }), attrs.class] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],

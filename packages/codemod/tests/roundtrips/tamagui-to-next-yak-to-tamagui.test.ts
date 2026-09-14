@@ -87,7 +87,6 @@ test("tamagui -> next-yak -> tamagui: preserves an actionable concrete round tri
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
 		import { View, styled } from "@tamagui/core";
-
 		export const Card = styled(View, { padding: "$4", color: "red" });
 		export const App = () => <View className={Card} />;",
 		    "converted": 1,
@@ -249,7 +248,6 @@ test("tamagui -> next-yak -> tamagui: preserves concrete theme and project conte
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
 		import { View, styled } from "@tamagui/core";
-
 		export const Card = styled(View, { padding: "$4", color: "#2563eb" });
 		export const App = () => <View className={Card} />;",
 		      "converted": 1,
@@ -323,7 +321,6 @@ test("tamagui -> next-yak -> tamagui: preserves concrete theme and project conte
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
 		import { View, styled } from "@tamagui/core";
-
 		export const Card = styled(View, { padding: "$4", color: "#2563eb" });
 		export const App = () => <View className={Card} />;",
 		      "converted": 1,
@@ -411,7 +408,6 @@ test("tamagui -> next-yak -> tamagui: resolves token values across both concrete
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
 		import { View, styled } from "@tamagui/core";
-
 		export const Card = styled(View, { padding: "$4", color: "#2563eb" });
 		export const App = () => <View className={Card} />;",
 		    "converted": 1,

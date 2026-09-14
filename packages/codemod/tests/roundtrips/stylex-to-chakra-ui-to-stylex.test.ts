@@ -50,7 +50,6 @@ test("stylex -> chakra-ui -> stylex: preserves an actionable concrete round trip
 		  "forward": {
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
 		export const styles = { "card": defaultSystem.css({ padding: "8px", color: "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -84,9 +83,7 @@ test("stylex -> chakra-ui -> stylex: preserves an actionable concrete round trip
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-		import * as stylex from "@stylexjs/stylex";
-
+		    "code": "import * as stylex from "@stylexjs/stylex";
 		export const styles = { "card": stylex.create({ style: { padding: "8px", color: "red" } }).style };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -137,7 +134,6 @@ test("stylex -> chakra-ui -> stylex: retains the documented secondary API withou
 		  "forward": {
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
 		export const styles = { "card": defaultSystem.css({ color: "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -171,9 +167,7 @@ test("stylex -> chakra-ui -> stylex: retains the documented secondary API withou
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-		import * as stylex from "@stylexjs/stylex";
-
+		    "code": "import * as stylex from "@stylexjs/stylex";
 		export const styles = { "card": stylex.create({ style: { color: "red" } }).style };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -239,7 +233,6 @@ test("stylex -> chakra-ui -> stylex: preserves concrete theme and project contex
 		    "forward": {
 		      "changed": true,
 		      "code": "import { defaultSystem } from "@chakra-ui/react";
-
 		export const styles = { "card": defaultSystem.css({ padding: "8px", color: "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -273,9 +266,7 @@ test("stylex -> chakra-ui -> stylex: preserves concrete theme and project contex
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { defaultSystem } from "@chakra-ui/react";
-		import * as stylex from "@stylexjs/stylex";
-
+		      "code": "import * as stylex from "@stylexjs/stylex";
 		export const styles = { "card": stylex.create({ style: { padding: "8px", color: "#2563eb" } }).style };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -314,7 +305,6 @@ test("stylex -> chakra-ui -> stylex: preserves concrete theme and project contex
 		    "forward": {
 		      "changed": true,
 		      "code": "import { defaultSystem } from "@chakra-ui/react";
-
 		export const styles = { "card": defaultSystem.css({ padding: "8px", color: "brand.500" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -349,7 +339,6 @@ test("stylex -> chakra-ui -> stylex: preserves concrete theme and project contex
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { defaultSystem } from "@chakra-ui/react";
-
 		export const styles = { "card": // pandwind:migrate-skip (route: chakra-ui -> stylex | lowering-residual: validation)
 		defaultSystem.css({ padding: "8px", color: "brand.500" }) };",
 		      "converted": 0,
@@ -411,7 +400,6 @@ test("stylex -> chakra-ui -> stylex: resolves token values across both concrete 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
 		export const styles = { "card": defaultSystem.css({ padding: "8px", color: "brand.500" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -446,7 +434,6 @@ test("stylex -> chakra-ui -> stylex: resolves token values across both concrete 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
 		export const styles = { "card": // pandwind:migrate-skip (route: chakra-ui -> stylex | lowering-residual: validation)
 		defaultSystem.css({ padding: "8px", color: "brand.500" }) };",
 		    "converted": 0,

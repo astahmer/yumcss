@@ -48,7 +48,6 @@ test("next-yak -> aphrodite: migrates concrete next-yak syntax to aphrodite", ()
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "aphrodite";
-
 		export const card = StyleSheet.create({ "padding": "1rem", "color": "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -93,8 +92,7 @@ test("next-yak -> aphrodite: carries a documented secondary next-yak API explici
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		import { createCx } from "pandwind/cx";
+		  "code": "import { createCx } from "pandwind/cx";
 		import { StyleSheet, css } from "aphrodite";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(css(StyleSheet.create({ style: { "padding": "1rem", "color": "red" } }).style), props.className)} />;",
@@ -151,7 +149,6 @@ test("next-yak -> aphrodite: loads concrete theme and project context variants",
 		  "amber": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-
 		export const card = StyleSheet.create({ "padding": "1rem", "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -188,7 +185,6 @@ test("next-yak -> aphrodite: loads concrete theme and project context variants",
 		  "blue": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-
 		export const card = StyleSheet.create({ "padding": "1rem", "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -237,7 +233,6 @@ test("next-yak -> aphrodite: resolves concrete token values with project context
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "aphrodite";
-
 		export const card = StyleSheet.create({ "padding": "1rem", "color": "#2563eb" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -283,7 +278,6 @@ test("next-yak -> aphrodite: preserves malformed concrete next-yak input", () =>
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "aphrodite";
-
 		export const card = StyleSheet.create({ "padding": "1rem", "color": "red" });
 		const unfinished = { /* unfinished next-yak */",
 		  "converted": 1,

@@ -50,7 +50,6 @@ test("aphrodite -> jss -> aphrodite: preserves an actionable concrete round trip
 		  "forward": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-
 		export const styles = createUseStyles({ card: { padding: 8, color: "red" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -87,8 +86,6 @@ test("aphrodite -> jss -> aphrodite: preserves an actionable concrete round trip
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-
-
 		export const styles = StyleSheet.create({ "card": { "padding": 8, "color": "red" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -218,7 +215,6 @@ test("aphrodite -> jss -> aphrodite: preserves concrete theme and project contex
 		    "forward": {
 		      "changed": true,
 		      "code": "import { createUseStyles } from "react-jss";
-
 		export const styles = createUseStyles({ card: { padding: 8, color: "#2563eb" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -255,8 +251,6 @@ test("aphrodite -> jss -> aphrodite: preserves concrete theme and project contex
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "aphrodite";
-
-
 		export const styles = StyleSheet.create({ "card": { "padding": 8, "color": "#2563eb" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -295,7 +289,6 @@ test("aphrodite -> jss -> aphrodite: preserves concrete theme and project contex
 		    "forward": {
 		      "changed": true,
 		      "code": "import { createUseStyles } from "react-jss";
-
 		export const styles = createUseStyles({ card: { padding: 8, color: "#2563eb" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -332,8 +325,6 @@ test("aphrodite -> jss -> aphrodite: preserves concrete theme and project contex
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "aphrodite";
-
-
 		export const styles = StyleSheet.create({ "card": { "padding": 8, "color": "#2563eb" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -386,7 +377,6 @@ test("aphrodite -> jss -> aphrodite: resolves token values across both concrete 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-
 		export const styles = createUseStyles({ card: { padding: 8, color: "#2563eb" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -423,8 +413,6 @@ test("aphrodite -> jss -> aphrodite: resolves token values across both concrete 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-
-
 		export const styles = StyleSheet.create({ "card": { "padding": 8, "color": "#2563eb" } });",
 		    "converted": 1,
 		    "generatedFiles": [],

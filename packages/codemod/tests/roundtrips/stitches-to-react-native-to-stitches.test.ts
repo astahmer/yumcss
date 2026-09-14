@@ -50,7 +50,6 @@ test("stitches -> react-native -> stitches: preserves an actionable concrete rou
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-
 		export const card = StyleSheet.create({ "padding": 16, "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -88,8 +87,6 @@ test("stitches -> react-native -> stitches: preserves an actionable concrete rou
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@stitches/react";
-
-
 		export const card = css({ padding: 16, color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -220,7 +217,6 @@ test("stitches -> react-native -> stitches: preserves concrete theme and project
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "react-native";
-
 		export const card = StyleSheet.create({ "padding": 16, "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -258,8 +254,6 @@ test("stitches -> react-native -> stitches: preserves concrete theme and project
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@stitches/react";
-
-
 		export const card = css({ padding: 16, color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -298,7 +292,6 @@ test("stitches -> react-native -> stitches: preserves concrete theme and project
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "react-native";
-
 		export const card = StyleSheet.create({ "padding": 16, "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -336,8 +329,6 @@ test("stitches -> react-native -> stitches: preserves concrete theme and project
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@stitches/react";
-
-
 		export const card = css({ padding: 16, color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -390,7 +381,6 @@ test("stitches -> react-native -> stitches: resolves token values across both co
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-
 		export const card = StyleSheet.create({ "padding": 16, "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -428,8 +418,6 @@ test("stitches -> react-native -> stitches: resolves token values across both co
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@stitches/react";
-
-
 		export const card = css({ padding: 16, color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],

@@ -48,7 +48,6 @@ test("stylex -> jss: migrates concrete stylex syntax to jss", () => {
 		{
 		  "changed": true,
 		  "code": "import { createUseStyles } from "react-jss";
-
 		export const styles = createUseStyles({ card: { padding: "8px", color: "red" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -94,7 +93,6 @@ test("stylex -> jss: carries a documented secondary stylex API explicitly", () =
 		{
 		  "changed": true,
 		  "code": "import { createUseStyles } from "react-jss";
-
 		export const styles = createUseStyles({ card: { color: "red" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -149,7 +147,6 @@ test("stylex -> jss: loads concrete theme and project context variants", async (
 		  "amber": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-
 		export const styles = createUseStyles({ card: { padding: "8px", color: "#2563eb" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -186,7 +183,6 @@ test("stylex -> jss: loads concrete theme and project context variants", async (
 		  "blue": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-
 		export const styles = createUseStyles({ card: { padding: "8px", color: "#2563eb" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -235,7 +231,6 @@ test("stylex -> jss: resolves concrete token values with project context", async
 		{
 		  "changed": true,
 		  "code": "import { createUseStyles } from "react-jss";
-
 		export const styles = createUseStyles({ card: { padding: "8px", color: "#2563eb" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -281,7 +276,6 @@ test("stylex -> jss: preserves malformed concrete stylex input", () => {
 		{
 		  "changed": true,
 		  "code": "import { createUseStyles } from "react-jss";
-
 		export const styles = createUseStyles({ card: { padding: "8px", color: "red" } });
 		const unfinished = { /* unfinished stylex */",
 		  "converted": 1,

@@ -51,7 +51,6 @@ test("goober -> css-modules -> goober: preserves an actionable concrete round tr
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": "1rem", "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -90,7 +89,6 @@ test("goober -> css-modules -> goober: preserves an actionable concrete round tr
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
 		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": "1rem", "color": "red" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -279,7 +277,6 @@ test("goober -> css-modules -> goober: preserves concrete theme and project cont
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": "1rem", "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -318,7 +315,6 @@ test("goober -> css-modules -> goober: preserves concrete theme and project cont
 		      "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
 		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": "1rem", "color": "#2563eb" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -372,7 +368,6 @@ test("goober -> css-modules -> goober: preserves concrete theme and project cont
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": "1rem", "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -411,7 +406,6 @@ test("goober -> css-modules -> goober: preserves concrete theme and project cont
 		      "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
 		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": "1rem", "color": "#2563eb" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -479,7 +473,6 @@ test("goober -> css-modules -> goober: resolves token values across both concret
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": "1rem", "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -518,7 +511,6 @@ test("goober -> css-modules -> goober: resolves token values across both concret
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
 		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": "1rem", "color": "#2563eb" });",
 		    "converted": 0,
 		    "generatedFiles": [],

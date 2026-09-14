@@ -49,8 +49,7 @@ test("compiled -> unocss -> compiled: preserves an actionable concrete round tri
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const card = "[padding:8] [color:red]";",
+		    "code": "export const card = "[padding:8] [color:red]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,7 +85,6 @@ test("compiled -> unocss -> compiled: preserves an actionable concrete round tri
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@compiled/react";
-
 		export const card = css({ "padding": "8", "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -136,8 +134,7 @@ test("compiled -> unocss -> compiled: retains the documented secondary API witho
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const colors = { "red": "[color:red]" };",
+		    "code": "export const colors = { "red": "[color:red]" };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -173,7 +170,6 @@ test("compiled -> unocss -> compiled: retains the documented secondary API witho
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@compiled/react";
-
 		export const colors = { "red": css({ "color": "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -238,8 +234,7 @@ test("compiled -> unocss -> compiled: preserves concrete theme and project conte
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		export const card = "[padding:8] [color:#2563eb]";",
+		      "code": "export const card = "[padding:8] [color:#2563eb]";",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -274,8 +269,7 @@ test("compiled -> unocss -> compiled: preserves concrete theme and project conte
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		export const card = // pandwind:migrate-skip (route: unocss -> compiled | lowering-residual: validation)
+		      "code": "export const card = // pandwind:migrate-skip (route: unocss -> compiled | lowering-residual: validation)
 		"[padding:8] [color:#2563eb]";",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -321,8 +315,7 @@ test("compiled -> unocss -> compiled: preserves concrete theme and project conte
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		export const card = "[padding:8] text-brand";",
+		      "code": "export const card = "[padding:8] text-brand";",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -357,8 +350,7 @@ test("compiled -> unocss -> compiled: preserves concrete theme and project conte
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		export const card = // pandwind:migrate-skip (route: unocss -> compiled | lowering-residual: validation)
+		      "code": "export const card = // pandwind:migrate-skip (route: unocss -> compiled | lowering-residual: validation)
 		"[padding:8] text-brand";",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -418,8 +410,7 @@ test("compiled -> unocss -> compiled: resolves token values across both concrete
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const card = "[padding:8] text-brand";",
+		    "code": "export const card = "[padding:8] text-brand";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -454,8 +445,7 @@ test("compiled -> unocss -> compiled: resolves token values across both concrete
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		export const card = // pandwind:migrate-skip (route: unocss -> compiled | lowering-residual: validation)
+		    "code": "export const card = // pandwind:migrate-skip (route: unocss -> compiled | lowering-residual: validation)
 		"[padding:8] text-brand";",
 		    "converted": 0,
 		    "generatedFiles": [],

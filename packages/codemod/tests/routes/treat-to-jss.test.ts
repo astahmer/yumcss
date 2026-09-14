@@ -48,7 +48,6 @@ test("treat -> jss: migrates concrete treat syntax to jss", () => {
 		{
 		  "changed": true,
 		  "code": "import { createUseStyles } from "react-jss";
-
 		export const card = createUseStyles({ padding: 8, color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -94,7 +93,6 @@ test("treat -> jss: carries a documented secondary treat API explicitly", () => 
 		{
 		  "changed": true,
 		  "code": "import { createUseStyles } from "react-jss";
-
 		export const card = createUseStyles({ padding: 8, color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -149,7 +147,6 @@ test("treat -> jss: loads concrete theme and project context variants", async ()
 		  "amber": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-
 		export const card = createUseStyles({ padding: 8, color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -186,7 +183,6 @@ test("treat -> jss: loads concrete theme and project context variants", async ()
 		  "blue": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-
 		export const card = createUseStyles({ padding: 8, color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -235,7 +231,6 @@ test("treat -> jss: resolves concrete token values with project context", async 
 		{
 		  "changed": true,
 		  "code": "import { createUseStyles } from "react-jss";
-
 		export const card = createUseStyles({ padding: 8, color: "#2563eb" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -281,7 +276,6 @@ test("treat -> jss: preserves malformed concrete treat input", () => {
 		{
 		  "changed": true,
 		  "code": "import { createUseStyles } from "react-jss";
-
 		export const card = createUseStyles({ padding: 8, color: "red" });
 		const unfinished = { /* unfinished treat */",
 		  "converted": 1,

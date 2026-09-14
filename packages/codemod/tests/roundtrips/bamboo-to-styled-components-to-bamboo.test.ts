@@ -50,7 +50,6 @@ test("bamboo -> styled-components -> bamboo: preserves an actionable concrete ro
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
 		export const card = styled.div({ color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -84,11 +83,9 @@ test("bamboo -> styled-components -> bamboo: preserves an actionable concrete ro
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { css } from "styled-system/css";
 		const cx = createCx();
-
 		export const card = (props) => <div {...props} className={cx(css({ color: "red" }), props.className)} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -137,7 +134,6 @@ test("bamboo -> styled-components -> bamboo: retains the documented secondary AP
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
 		export const card = styled.div({ gap: "4", display: "flex" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -171,11 +167,9 @@ test("bamboo -> styled-components -> bamboo: retains the documented secondary AP
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { css } from "styled-system/css";
 		const cx = createCx();
-
 		export const card = (props) => <div {...props} className={cx(css({ gap: "4", display: "flex" }), props.className)} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -239,7 +233,6 @@ test("bamboo -> styled-components -> bamboo: preserves concrete theme and projec
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-
 		export const card = styled.div({ color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -273,11 +266,9 @@ test("bamboo -> styled-components -> bamboo: preserves concrete theme and projec
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		import { createCx } from "pandwind/cx";
+		      "code": "import { createCx } from "pandwind/cx";
 		import { css } from "styled-system/css";
 		const cx = createCx();
-
 		export const card = (props) => <div {...props} className={cx(css({ color: "#2563eb" }), props.className)} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -314,7 +305,6 @@ test("bamboo -> styled-components -> bamboo: preserves concrete theme and projec
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-
 		export const card = styled.div({ color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -348,11 +338,9 @@ test("bamboo -> styled-components -> bamboo: preserves concrete theme and projec
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		import { createCx } from "pandwind/cx";
+		      "code": "import { createCx } from "pandwind/cx";
 		import { css } from "styled-system/css";
 		const cx = createCx();
-
 		export const card = (props) => <div {...props} className={cx(css({ color: "#2563eb" }), props.className)} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -403,7 +391,6 @@ test("bamboo -> styled-components -> bamboo: resolves token values across both c
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
 		export const card = styled.div({ color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -437,11 +424,9 @@ test("bamboo -> styled-components -> bamboo: resolves token values across both c
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { css } from "styled-system/css";
 		const cx = createCx();
-
 		export const card = (props) => <div {...props} className={cx(css({ color: "#2563eb" }), props.className)} />;",
 		    "converted": 1,
 		    "generatedFiles": [],

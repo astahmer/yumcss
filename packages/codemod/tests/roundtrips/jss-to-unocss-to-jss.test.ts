@@ -49,8 +49,7 @@ test("jss -> unocss -> jss: preserves an actionable concrete round trip", () => 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const useStyles = { "card": "[color:red]" };",
+		    "code": "export const useStyles = { "card": "[color:red]" };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,7 +85,6 @@ test("jss -> unocss -> jss: preserves an actionable concrete round trip", () => 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-
 		export const useStyles = createUseStyles({ "card": { color: "red" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -136,8 +134,7 @@ test("jss -> unocss -> jss: retains the documented secondary API without silent 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const sheet = { "card": "[color:red]" };",
+		    "code": "export const sheet = { "card": "[color:red]" };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -173,7 +170,6 @@ test("jss -> unocss -> jss: retains the documented secondary API without silent 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-
 		export const sheet = createUseStyles({ "card": { color: "red" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -238,8 +234,7 @@ test("jss -> unocss -> jss: preserves concrete theme and project context variant
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		export const useStyles = { "card": "[color:#2563eb]" };",
+		      "code": "export const useStyles = { "card": "[color:#2563eb]" };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -274,8 +269,7 @@ test("jss -> unocss -> jss: preserves concrete theme and project context variant
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		export const useStyles = // pandwind:migrate-skip (route: unocss -> jss | lowering-residual: validation)
+		      "code": "export const useStyles = // pandwind:migrate-skip (route: unocss -> jss | lowering-residual: validation)
 		{ "card": "[color:#2563eb]" };",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -321,8 +315,7 @@ test("jss -> unocss -> jss: preserves concrete theme and project context variant
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		export const useStyles = { "card": "text-brand" };",
+		      "code": "export const useStyles = { "card": "text-brand" };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -358,7 +351,6 @@ test("jss -> unocss -> jss: preserves concrete theme and project context variant
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { createUseStyles } from "react-jss";
-
 		export const useStyles = createUseStyles({ "card": { color: "#2563eb" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -410,8 +402,7 @@ test("jss -> unocss -> jss: resolves token values across both concrete legs", as
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const useStyles = { "card": "text-brand" };",
+		    "code": "export const useStyles = { "card": "text-brand" };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -447,7 +438,6 @@ test("jss -> unocss -> jss: resolves token values across both concrete legs", as
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-
 		export const useStyles = createUseStyles({ "card": { color: "#2563eb" } });",
 		    "converted": 1,
 		    "generatedFiles": [],

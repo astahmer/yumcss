@@ -196,7 +196,6 @@ describe("official adapter API families", () => {
 			    "changed": true,
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
-
 			export const styles = css.vars({ card: [{ color: "red" }, { padding: 8 }] });",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -233,7 +232,6 @@ describe("official adapter API families", () => {
 			    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
 			import { pandwindPreset } from "pandwind/preset";
 			const css = createRuntimeCss(pandwindPreset);
-
 			export const styles = { "fonts": (css.sheet.registerSemanticRules([{ kind: "font-face", declarations: [{ property: "fontFamily", value: "Inter" }, { property: "src", value: "url(inter.woff2)" } ] }]), css.group({  })) };",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -448,7 +446,6 @@ describe("official adapter API families", () => {
 			    "changed": true,
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
-
 			export const card = css.class({ gap: "4", display: "flex" });",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -545,7 +542,6 @@ describe("official adapter API families", () => {
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
 			const staticClassName1 = css.class({ color: "red" });
-
 			export const Card = () => <button className={staticClassName1}/>;",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -582,7 +578,6 @@ describe("official adapter API families", () => {
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
 			const staticClassName1 = css.class({ color: "red" });
-
 			export const Card = () => <button className={staticClassName1}/>;",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -619,7 +614,6 @@ describe("official adapter API families", () => {
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
 			const staticClassName1 = css.class({ color: "red" });
-
 			export const Card = () => <button className={staticClassName1}/>;",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -690,7 +684,6 @@ describe("official adapter API families", () => {
 			    "changed": true,
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
-
 			export const colors = { "red": css.class({ color: "red" }) };",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -727,7 +720,6 @@ describe("official adapter API families", () => {
 			    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
 			import { pandwindPreset } from "pandwind/preset";
 			const css = createRuntimeCss(pandwindPreset);
-
 			export const pulse = (() => { const name = "pw-kf-pulse"; css.sheet.registerSemanticRules([{ kind: "keyframes", name, children: [{ kind: "style", selector: "from", declarations: [{ property: "opacity", value: 0 }] }, { kind: "style", selector: "to", declarations: [{ property: "opacity", value: 1 }] }] }]); return name; })();",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -766,7 +758,6 @@ describe("official adapter API families", () => {
 			const cx = createCx();
 			const css = createCss();
 			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Component {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
-
 			export const Card = __pandwindSlot({ defaultComponent: "button", style: css.class({ color: "red" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -983,7 +974,6 @@ describe("official adapter API families", () => {
 			    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
 			import { pandwindPreset } from "pandwind/preset";
 			const css = createRuntimeCss(pandwindPreset);
-
 			export const App = () => (css.sheet.registerSemanticRules([{ kind: "global", selector: "body", conditions: [], declarations: [{ property: "margin", value: 0 }], children: [] }]), null);",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -1020,7 +1010,6 @@ describe("official adapter API families", () => {
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
 			const staticClassName1 = css.class({ color: "red" });
-
 			export const Card = () => <button className={staticClassName1}/>;",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -1057,7 +1046,6 @@ describe("official adapter API families", () => {
 			    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
 			import { pandwindPreset } from "pandwind/preset";
 			const css = createRuntimeCss(pandwindPreset);
-
 			() => (css.sheet.registerSemanticRules([{ kind: "global", selector: "body", conditions: [], declarations: [{ property: "margin", value: "0" }], children: [] }]), null);",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -1094,7 +1082,6 @@ describe("official adapter API families", () => {
 			    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
 			import { pandwindPreset } from "pandwind/preset";
 			const css = createRuntimeCss(pandwindPreset);
-
 			export const pulse = (() => { const name = "pw-kf-pulse"; css.sheet.registerSemanticRules([{ kind: "keyframes", name, children: [{ kind: "style", selector: "from", declarations: [{ property: "opacity", value: 0 }] }, { kind: "style", selector: "to", declarations: [{ property: "opacity", value: 1 }] }] }]); return name; })();",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -1133,7 +1120,6 @@ describe("official adapter API families", () => {
 			const cx = createCx();
 			const css = createCss();
 			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Component {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
-
 			export const Card = __pandwindSlot({ defaultComponent: "button", style: css.class({ color: "red" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -1169,7 +1155,6 @@ describe("official adapter API families", () => {
 			    "changed": true,
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
-
 			export const card = css.class({ padding: "1rem", color: "red" });",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -1208,7 +1193,6 @@ describe("official adapter API families", () => {
 			const cx = createCx();
 			const css = createCss();
 			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Component {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
-
 			export const Card = __pandwindSlot({ defaultComponent: "button", style: css.class({ color: "red" }), stableClass: "pw-1sqdko1", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -1279,7 +1263,6 @@ describe("official adapter API families", () => {
 			    "changed": true,
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
-
 			export const card = css.class({ padding: "1rem", color: "red" });",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -1353,7 +1336,6 @@ describe("official adapter API families", () => {
 			const cx = createCx();
 			const css = createCss();
 			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Component {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
-
 			export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "red" }), stableClass: "pw-1sqdko1", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -1389,7 +1371,6 @@ describe("official adapter API families", () => {
 			    "changed": true,
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
-
 			export const rule = css.class({ color: "red" });",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -1425,7 +1406,6 @@ describe("official adapter API families", () => {
 			    "changed": true,
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
-
 			export const sheet = { "card": css.class({ color: "red" }) };",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -1461,7 +1441,6 @@ describe("official adapter API families", () => {
 			    "changed": true,
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
-
 			const sheet = { "card": css.class({ color: "red" }) };
 
 			element!.classList.add(sheet.card);",
@@ -1647,7 +1626,6 @@ describe("official adapter API families", () => {
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
 			const staticClassName1 = css.class({ color: "red" });
-
 			export const Card = () => <button css={staticClassName1} />;",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -1686,7 +1664,6 @@ describe("official adapter API families", () => {
 			const cx = createCx();
 			const css = createCss();
 			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Component {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
-
 			export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "red" }), stableClass: "pw-1sqdko1", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -1896,7 +1873,6 @@ describe("official adapter API families", () => {
 			    "changed": true,
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
-
 			export const Card = css.class({ padding: 8, color: "red" });",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -1967,7 +1943,6 @@ describe("official adapter API families", () => {
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
 			const staticClassName1 = css.class({ color: "red" });
-
 			export const Card = () => <button className={staticClassName1}/>;",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -2006,7 +1981,6 @@ describe("official adapter API families", () => {
 			const cx = createCx();
 			const css = createCss();
 			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Component {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
-
 			export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "red" }), stableClass: "pw-1sqdko1", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -2043,7 +2017,6 @@ describe("official adapter API families", () => {
 			    "code": "import { createCss } from "pandwind/css";
 			import { createRecipe as __pandwindcreateRecipe } from "../__pandwind/recipe";
 			const css = createCss();
-
 			export const button = __pandwindcreateRecipe(css, { base: { color: "red" }, variants: { "size": { "sm": { padding: "2" } } } });",
 			    "converted": 1,
 			    "generatedFiles": [
@@ -2109,7 +2082,6 @@ describe("official adapter API families", () => {
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
 			const staticClassName1 = css.class({ color: "red" });
-
 			export const Button = () => <button className={staticClassName1} />;",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -2148,7 +2120,6 @@ describe("official adapter API families", () => {
 			const cx = createCx();
 			const css = createCss();
 			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Component {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
-
 			export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "red" }), stableClass: "pw-jifjss", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -2198,7 +2169,6 @@ describe("official adapter API families", () => {
 			    "code": "import { createCss } from "pandwind/css";
 			import { createSlotRecipe as __pandwindcreateSlotRecipe } from "../__pandwind/recipe";
 			const css = createCss();
-
 			export const card = __pandwindcreateSlotRecipe(css, { slots: { "root": { color: "red" }, "label": {  } }, slotVariants: {  } });",
 			    "converted": 1,
 			    "generatedFiles": [
@@ -2298,7 +2268,6 @@ describe("official adapter API families", () => {
 			    "changed": true,
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
-
 			export const styles = { "card": css.class({ padding: 8, backgroundColor: "red" }) };",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -2333,9 +2302,8 @@ describe("official adapter API families", () => {
 			  "react-native/inline style array": {
 			    "changed": true,
 			    "code": "import { View } from "react-native";
-			import { createRuntimeCss } from "pandwind/css/runtime";
-			import { pandwindPreset } from "pandwind/preset";
-			const css = createRuntimeCss(pandwindPreset);
+			import { createCss } from "pandwind/css";
+			const css = createCss();
 			export const App = () => <View className={css.vars({ style: [{ padding: 8 }, { backgroundColor: "red" }] }).class} style={css.vars({ style: [{ padding: 8 }, { backgroundColor: "red" }] }).style}/>;",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -2440,9 +2408,8 @@ describe("official adapter API families", () => {
 			    "changed": true,
 			    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
 			import { pandwindPreset } from "pandwind/preset";
-			const css = createRuntimeCss(pandwindPreset);
-
-			export const theme = (css.sheet.registerSemanticRules([{ kind: "global", selector: ":root", declarations: [{ property: "--accent", value: "red" }] }]), { "accent": "var(--accent)" });",
+			const targetCss = createRuntimeCss(pandwindPreset);
+			export const theme = (targetCss.sheet.registerSemanticRules([{ kind: "global", selector: ":root", declarations: [{ property: "--accent", value: "red" }] }]), { "accent": "var(--accent)" });",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -2477,9 +2444,8 @@ describe("official adapter API families", () => {
 			    "changed": true,
 			    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
 			import { pandwindPreset } from "pandwind/preset";
-			const css = createRuntimeCss(pandwindPreset);
-
-			export const pulse = (() => { const name = "pw-kf-pulse"; css.sheet.registerSemanticRules([{ kind: "keyframes", name, children: [{ kind: "style", selector: "from", declarations: [{ property: "opacity", value: 0 }] }, { kind: "style", selector: "to", declarations: [{ property: "opacity", value: 1 }] }] }]); return name; })();",
+			const targetCss = createRuntimeCss(pandwindPreset);
+			export const pulse = (() => { const name = "pw-kf-pulse"; targetCss.sheet.registerSemanticRules([{ kind: "keyframes", name, children: [{ kind: "style", selector: "from", declarations: [{ property: "opacity", value: 0 }] }, { kind: "style", selector: "to", declarations: [{ property: "opacity", value: 1 }] }] }]); return name; })();",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -2627,7 +2593,6 @@ describe("official adapter API families", () => {
 			    "changed": true,
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
-
 			export const Card = (() => { const staticClass = ""; const component = (props) => {  const dynamic = css.vars({ color: ((props) => props.color)(props) }); const Component = props.as ?? "button"; const { as: _as, ...rest } = props; const attrs = {}; return <Component {...attrs} {...rest} className={css.props(staticClass, dynamic, "pw-1fn70s4", props.className).className} style={{ ...props.style, ...dynamic.style }} />; }; component.__pandwindClassName = "pw-1fn70s4"; return component; })();",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -2665,7 +2630,6 @@ describe("official adapter API families", () => {
 			const cx = createCx();
 			const css = createCss();
 			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Component {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
-
 			export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "red" }), stableClass: "pw-1sqdko1", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -2714,7 +2678,6 @@ describe("official adapter API families", () => {
 			    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
 			import { pandwindPreset } from "pandwind/preset";
 			const css = createRuntimeCss(pandwindPreset);
-
 			export const reset = () => (css.sheet.registerSemanticRules([{ kind: "global", selector: "body", conditions: [], declarations: [{ property: "margin", value: 0 }], children: [] }]), null);",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -2751,7 +2714,6 @@ describe("official adapter API families", () => {
 			    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
 			import { pandwindPreset } from "pandwind/preset";
 			const css = createRuntimeCss(pandwindPreset);
-
 			export const pulse = (() => { const name = "pw-kf-pulse"; css.sheet.registerSemanticRules([{ kind: "keyframes", name, children: [{ kind: "style", selector: "from", declarations: [{ property: "opacity", value: 0 }] }, { kind: "style", selector: "to", declarations: [{ property: "opacity", value: 1 }] }] }]); return name; })();",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -2790,7 +2752,6 @@ describe("official adapter API families", () => {
 			const cx = createCx();
 			const css = createCss();
 			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Component {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
-
 			export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "red" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -2870,7 +2831,6 @@ describe("official adapter API families", () => {
 			import { createCx } from "pandwind/cx";
 			const cx = createCx();
 			const css = createCss();
-
 			export const styles = css.group({ card: { color: "red" }, muted: { opacity: 0.5 } });",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -2908,7 +2868,6 @@ describe("official adapter API families", () => {
 			import { createCx } from "pandwind/cx";
 			const cx = createCx();
 			const css = createCss();
-
 			const styles = css.group({ card: { color: "red" } });
 			export const Card = () => <div className={cx(styles.card)} />;",
 			    "converted": 1,
@@ -2999,7 +2958,6 @@ describe("official adapter API families", () => {
 			    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
 			import { pandwindPreset } from "pandwind/preset";
 			const css = createRuntimeCss(pandwindPreset);
-
 			export const Global = () => (css.sheet.registerSemanticRules([{ kind: "global", selector: "body", conditions: [], declarations: [{ property: "margin", value: "0" }], children: [] }]), null);",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -3036,7 +2994,6 @@ describe("official adapter API families", () => {
 			    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
 			import { pandwindPreset } from "pandwind/preset";
 			const css = createRuntimeCss(pandwindPreset);
-
 			export const pulse = (() => { const name = "pw-kf-pulse"; css.sheet.registerSemanticRules([{ kind: "keyframes", name, children: [{ kind: "style", selector: "from", declarations: [{ property: "opacity", value: "0" }] }, { kind: "style", selector: "to", declarations: [{ property: "opacity", value: "1" }] }] }]); return name; })();",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -3072,7 +3029,6 @@ describe("official adapter API families", () => {
 			    "changed": true,
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
-
 			const Card = css.class({ color: "red" });
 			export const App = () => <div as="a" href="/docs" className={Card} />;",
 			    "converted": 1,
@@ -3112,7 +3068,6 @@ describe("official adapter API families", () => {
 			const cx = createCx();
 			const css = createCss();
 			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Component {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
-
 			const Link = (props: { href: string }) => <a {...props} />;
 			export const Card = __pandwindSlot({ defaultComponent: (Link), style: css.class({ color: "red" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
 			    "converted": 1,
@@ -3152,7 +3107,6 @@ describe("official adapter API families", () => {
 			const cx = createCx();
 			const css = createCss();
 			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Component {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
-
 			export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "red" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -3188,7 +3142,6 @@ describe("official adapter API families", () => {
 			    "changed": true,
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
-
 			export const Card = (() => { const staticClass = ""; const component = (props) => {  const dynamic = css.vars({ color: (({ theme }) => theme.colors.brand)(props) }); const Component = props.as ?? "div"; const { as: _as, ...rest } = props; const attrs = {}; return <Component {...attrs} {...rest} className={css.props(staticClass, dynamic, "pw-1fn70s4", props.className).className} style={{ ...props.style, ...dynamic.style }} />; }; component.__pandwindClassName = "pw-1fn70s4"; return component; })();",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -3224,7 +3177,6 @@ describe("official adapter API families", () => {
 			    "changed": true,
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
-
 			export const styles = { "card": css.class({ color: "red" }) };",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -3296,7 +3248,6 @@ describe("official adapter API families", () => {
 			    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
 			import { pandwindPreset } from "pandwind/preset";
 			const css = createRuntimeCss(pandwindPreset);
-
 			export const theme = (css.sheet.registerSemanticRules([{ kind: "global", selector: ":root", declarations: [{ property: "--accent", value: "red" }] }]), { "accent": "var(--accent)" });",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -3333,7 +3284,6 @@ describe("official adapter API families", () => {
 			    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
 			import { pandwindPreset } from "pandwind/preset";
 			const css = createRuntimeCss(pandwindPreset);
-
 			export const pulse = (() => { const name = "pw-kf-pulse"; css.sheet.registerSemanticRules([{ kind: "keyframes", name, children: [{ kind: "style", selector: "from", declarations: [{ property: "opacity", value: 0 }] }, { kind: "style", selector: "to", declarations: [{ property: "opacity", value: 1 }] }] }]); return name; })();",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -3369,7 +3319,6 @@ describe("official adapter API families", () => {
 			    "changed": true,
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
-
 			const styles = { "card": css.class({ color: "red" }) };
 			export const Card = () => <div {...css.props(styles.card)} />;",
 			    "converted": 1,
@@ -3589,7 +3538,6 @@ describe("official adapter API families", () => {
 			    "changed": true,
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
-
 			export const card = css.class({ cardColor: "red", "&[data-state=active]": { color: "var(--card-color)" } });",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -3639,7 +3587,6 @@ describe("official adapter API families", () => {
 			const pandwindCx = createCx();
 			const css = createCss();
 			const className = css.class({ padding: "1rem", color: "red" });
-
 			export const card = () => {  return [(value: string | undefined) => pandwindCx(className, value), (style: Record<string, unknown> | undefined) => style ?? {}] as const; };",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -3709,7 +3656,6 @@ describe("official adapter API families", () => {
 			    "changed": true,
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
-
 			export const card = css.class({ padding: 8, color: "red" });",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -3895,7 +3841,6 @@ describe("official adapter API families", () => {
 			    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
 			import { pandwindPreset } from "pandwind/preset";
 			const css = createRuntimeCss(pandwindPreset);
-
 			export const inter = (css.sheet.registerSemanticRules([{ kind: "font-face", declarations: [{ property: "fontFamily", value: "Inter" }, { property: "src", value: "url(inter.woff2)" } ] }]), css.group({  }));",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -3932,7 +3877,6 @@ describe("official adapter API families", () => {
 			    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
 			import { pandwindPreset } from "pandwind/preset";
 			const css = createRuntimeCss(pandwindPreset);
-
 			(css.sheet.registerSemanticRules([{ kind: "global", selector: "body", conditions: [], declarations: [{ property: "margin", value: 0 }], children: [] }]), null);",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -3969,7 +3913,6 @@ describe("official adapter API families", () => {
 			    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
 			import { pandwindPreset } from "pandwind/preset";
 			const css = createRuntimeCss(pandwindPreset);
-
 			export const pulse = (() => { const name = "pw-kf-pulse"; css.sheet.registerSemanticRules([{ kind: "keyframes", name, children: [{ kind: "style", selector: "from", declarations: [{ property: "opacity", value: 0 }] }, { kind: "style", selector: "to", declarations: [{ property: "opacity", value: 1 }] }] }]); return name; })();",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -4006,7 +3949,6 @@ describe("official adapter API families", () => {
 			    "code": "import { createCss } from "pandwind/css";
 			import { createRecipe as __pandwindcreateRecipe } from "../__pandwind/recipe";
 			const css = createCss();
-
 			export const button = __pandwindcreateRecipe(css, { base: { color: "red" }, variants: { "size": { "sm": { padding: 4 } } } });",
 			    "converted": 1,
 			    "generatedFiles": [
@@ -4047,7 +3989,6 @@ describe("official adapter API families", () => {
 			    "changed": true,
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
-
 			export const variants = { "primary": css.class({ color: "red" }) };",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -4120,7 +4061,6 @@ describe("official adapter API families", () => {
 			const cx = createCx();
 			const css = createCss();
 			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Component {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
-
 			export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "red" }), stableClass: "pw-1sqdko1", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -4155,7 +4095,6 @@ describe("official adapter API families", () => {
 			  "vue-styled/theme callback": {
 			    "changed": true,
 			    "code": "<script setup>
-
 			import { createCx } from "pandwind/cx";
 			import { createRuntimeCss } from "pandwind/css/runtime";
 			import { pandwindPreset } from "pandwind/preset";

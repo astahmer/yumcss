@@ -50,7 +50,6 @@ test("stylex -> goober -> stylex: preserves an actionable concrete round trip", 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "goober";
-
 		export const styles = { "card": css({ "padding": "8px", "color": "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -87,8 +86,6 @@ test("stylex -> goober -> stylex: preserves an actionable concrete round trip", 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-
-
 		export const styles = { "card": stylex.create({ style: { padding: "8px", color: "red" } }).style };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -139,7 +136,6 @@ test("stylex -> goober -> stylex: retains the documented secondary API without s
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "goober";
-
 		export const styles = { "card": css({ "color": "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -176,8 +172,6 @@ test("stylex -> goober -> stylex: retains the documented secondary API without s
 		  "reverse": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-
-
 		export const styles = { "card": stylex.create({ style: { color: "red" } }).style };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -243,7 +237,6 @@ test("stylex -> goober -> stylex: preserves concrete theme and project context v
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "goober";
-
 		export const styles = { "card": css({ "padding": "8px", "color": "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -280,8 +273,6 @@ test("stylex -> goober -> stylex: preserves concrete theme and project context v
 		    "reverse": {
 		      "changed": true,
 		      "code": "import * as stylex from "@stylexjs/stylex";
-
-
 		export const styles = { "card": stylex.create({ style: { padding: "8px", color: "#2563eb" } }).style };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -320,7 +311,6 @@ test("stylex -> goober -> stylex: preserves concrete theme and project context v
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "goober";
-
 		export const styles = { "card": css({ "padding": "8px", "color": "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -357,8 +347,6 @@ test("stylex -> goober -> stylex: preserves concrete theme and project context v
 		    "reverse": {
 		      "changed": true,
 		      "code": "import * as stylex from "@stylexjs/stylex";
-
-
 		export const styles = { "card": stylex.create({ style: { padding: "8px", color: "#2563eb" } }).style };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -411,7 +399,6 @@ test("stylex -> goober -> stylex: resolves token values across both concrete leg
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "goober";
-
 		export const styles = { "card": css({ "padding": "8px", "color": "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -448,8 +435,6 @@ test("stylex -> goober -> stylex: resolves token values across both concrete leg
 		  "reverse": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-
-
 		export const styles = { "card": stylex.create({ style: { padding: "8px", color: "#2563eb" } }).style };",
 		    "converted": 1,
 		    "generatedFiles": [],

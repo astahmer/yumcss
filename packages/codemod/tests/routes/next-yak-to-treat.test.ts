@@ -48,7 +48,6 @@ test("next-yak -> treat: migrates concrete next-yak syntax to treat", () => {
 		{
 		  "changed": true,
 		  "code": "import { style } from "@/styles.treat";
-
 		export const card = style({ "padding": "1rem", "color": "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -93,8 +92,7 @@ test("next-yak -> treat: carries a documented secondary next-yak API explicitly"
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		import { createCx } from "pandwind/cx";
+		  "code": "import { createCx } from "pandwind/cx";
 		import { style } from "@/styles.treat";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(style({ "padding": "1rem", "color": "red" }), props.className)} />;",
@@ -151,7 +149,6 @@ test("next-yak -> treat: loads concrete theme and project context variants", asy
 		  "amber": {
 		    "changed": true,
 		    "code": "import { style } from "@/styles.treat";
-
 		export const card = style({ "padding": "1rem", "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -188,7 +185,6 @@ test("next-yak -> treat: loads concrete theme and project context variants", asy
 		  "blue": {
 		    "changed": true,
 		    "code": "import { style } from "@/styles.treat";
-
 		export const card = style({ "padding": "1rem", "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -237,7 +233,6 @@ test("next-yak -> treat: resolves concrete token values with project context", a
 		{
 		  "changed": true,
 		  "code": "import { style } from "@/styles.treat";
-
 		export const card = style({ "padding": "1rem", "color": "#2563eb" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -283,7 +278,6 @@ test("next-yak -> treat: preserves malformed concrete next-yak input", () => {
 		{
 		  "changed": true,
 		  "code": "import { style } from "@/styles.treat";
-
 		export const card = style({ "padding": "1rem", "color": "red" });
 		const unfinished = { /* unfinished next-yak */",
 		  "converted": 1,

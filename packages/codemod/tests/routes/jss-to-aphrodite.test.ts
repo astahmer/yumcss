@@ -48,7 +48,6 @@ test("jss -> aphrodite: migrates concrete jss syntax to aphrodite", () => {
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "aphrodite";
-
 		export const useStyles = StyleSheet.create({ "card": { "color": "red" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -94,7 +93,6 @@ test("jss -> aphrodite: carries a documented secondary jss API explicitly", () =
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "aphrodite";
-
 		export const sheet = StyleSheet.create({ "card": { "color": "red" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -149,7 +147,6 @@ test("jss -> aphrodite: loads concrete theme and project context variants", asyn
 		  "amber": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-
 		export const useStyles = StyleSheet.create({ "card": { "color": "#2563eb" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -186,7 +183,6 @@ test("jss -> aphrodite: loads concrete theme and project context variants", asyn
 		  "blue": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-
 		export const useStyles = StyleSheet.create({ "card": { "color": "#2563eb" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -235,7 +231,6 @@ test("jss -> aphrodite: resolves concrete token values with project context", as
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "aphrodite";
-
 		export const useStyles = StyleSheet.create({ "card": { "color": "#2563eb" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -281,7 +276,6 @@ test("jss -> aphrodite: preserves malformed concrete jss input", () => {
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "aphrodite";
-
 		export const useStyles = StyleSheet.create({ "card": { "color": "red" } });
 		const unfinished = { /* unfinished jss */",
 		  "converted": 1,

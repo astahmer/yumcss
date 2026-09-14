@@ -48,7 +48,6 @@ test("goober -> tokenami: migrates concrete goober syntax to tokenami", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-
 		export const card = css({ padding: "1rem", color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -145,7 +144,6 @@ test("goober -> tokenami: loads concrete theme and project context variants", as
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-
 		export const card = css({ padding: "1rem", color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -180,7 +178,6 @@ test("goober -> tokenami: loads concrete theme and project context variants", as
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-
 		export const card = css({ padding: "1rem", color: "$colors.brand" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -227,7 +224,6 @@ test("goober -> tokenami: resolves concrete token values with project context", 
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-
 		export const card = css({ padding: "1rem", color: "$colors.brand" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -271,7 +267,6 @@ test("goober -> tokenami: preserves malformed concrete goober input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-
 		export const card = css({ padding: "1rem", color: "red" });
 		const unfinished = { /* unfinished goober */",
 		  "converted": 1,

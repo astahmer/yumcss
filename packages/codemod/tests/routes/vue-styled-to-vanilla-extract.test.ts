@@ -49,7 +49,6 @@ test("vue-styled -> vanilla-extract: migrates concrete vue-styled syntax to vani
 		  "changed": true,
 		  "code": "import { style } from "@vanilla-extract/css";
 		import { defineComponent, h } from "vue";
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [style({ padding: "1rem", color: "red" }), attrs.class] }, slots.default?.()));",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -96,7 +95,6 @@ test("vue-styled -> vanilla-extract: carries a documented secondary vue-styled A
 		  "changed": true,
 		  "code": "import { style } from "@vanilla-extract/css";
 		import { defineComponent, h } from "vue";
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [style({ padding: "1rem", color: "red" }), attrs.class] }, slots.default?.()));",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -152,7 +150,6 @@ test("vue-styled -> vanilla-extract: loads concrete theme and project context va
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
 		import { defineComponent, h } from "vue";
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [style({ padding: "1rem", color: "#2563eb" }), attrs.class] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -190,7 +187,6 @@ test("vue-styled -> vanilla-extract: loads concrete theme and project context va
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
 		import { defineComponent, h } from "vue";
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [style({ padding: "1rem", color: "#2563eb" }), attrs.class] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -240,7 +236,6 @@ test("vue-styled -> vanilla-extract: resolves concrete token values with project
 		  "changed": true,
 		  "code": "import { style } from "@vanilla-extract/css";
 		import { defineComponent, h } from "vue";
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [style({ padding: "1rem", color: "#2563eb" }), attrs.class] }, slots.default?.()));",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -287,7 +282,6 @@ test("vue-styled -> vanilla-extract: preserves malformed concrete vue-styled inp
 		  "changed": true,
 		  "code": "import { style } from "@vanilla-extract/css";
 		import { defineComponent, h } from "vue";
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [style({ padding: "1rem", color: "red" }), attrs.class] }, slots.default?.()));
 		const unfinished = { /* unfinished vue-styled */",
 		  "converted": 1,

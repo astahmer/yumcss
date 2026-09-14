@@ -87,7 +87,6 @@ test("pandwind -> chakra-ui -> pandwind: preserves an actionable concrete round 
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-
 		export const card = css.class({ padding: "1rem", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -249,7 +248,6 @@ test("pandwind -> chakra-ui -> pandwind: preserves concrete theme and project co
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-
 		export const card = css.class({ padding: "1rem", color: "brand" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -322,7 +320,6 @@ test("pandwind -> chakra-ui -> pandwind: preserves concrete theme and project co
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 
 		export const card = css.class({ padding: "1rem", color: "brand" });",
 		      "converted": 1,
@@ -410,7 +407,6 @@ test("pandwind -> chakra-ui -> pandwind: resolves token values across both concr
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 
 		export const card = css.class({ padding: "1rem", color: "brand" });",
 		    "converted": 1,

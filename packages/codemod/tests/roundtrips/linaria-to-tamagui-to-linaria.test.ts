@@ -50,7 +50,6 @@ test("linaria -> tamagui -> linaria: preserves an actionable concrete round trip
 		  "forward": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-
 		export const card = styled(View, { padding: "1rem", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -85,7 +84,6 @@ test("linaria -> tamagui -> linaria: preserves an actionable concrete round trip
 		    "changed": true,
 		    "code": "import { View } from "@tamagui/core";
 		import { styled } from "@linaria/react";
-
 		export const card = styled(View)\`padding: 1rem; color: red;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -212,7 +210,6 @@ test("linaria -> tamagui -> linaria: preserves concrete theme and project contex
 		    "forward": {
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
-
 		export const card = styled(View, { padding: "1rem", color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -247,7 +244,6 @@ test("linaria -> tamagui -> linaria: preserves concrete theme and project contex
 		      "changed": true,
 		      "code": "import { View } from "@tamagui/core";
 		import { styled } from "@linaria/react";
-
 		export const card = styled(View)\`padding: 1rem; color: #2563eb;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -286,7 +282,6 @@ test("linaria -> tamagui -> linaria: preserves concrete theme and project contex
 		    "forward": {
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
-
 		export const card = styled(View, { padding: "1rem", color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -321,7 +316,6 @@ test("linaria -> tamagui -> linaria: preserves concrete theme and project contex
 		      "changed": true,
 		      "code": "import { View } from "@tamagui/core";
 		import { styled } from "@linaria/react";
-
 		export const card = styled(View)\`padding: 1rem; color: #2563eb;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -374,7 +368,6 @@ test("linaria -> tamagui -> linaria: resolves token values across both concrete 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-
 		export const card = styled(View, { padding: "1rem", color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -409,7 +402,6 @@ test("linaria -> tamagui -> linaria: resolves token values across both concrete 
 		    "changed": true,
 		    "code": "import { View } from "@tamagui/core";
 		import { styled } from "@linaria/react";
-
 		export const card = styled(View)\`padding: 1rem; color: #2563eb;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],

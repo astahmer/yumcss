@@ -51,7 +51,6 @@ test("bamboo -> mui -> bamboo: preserves an actionable concrete round trip", () 
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -88,7 +87,6 @@ test("bamboo -> mui -> bamboo: preserves an actionable concrete round trip", () 
 		    "changed": false,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "color": "red" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -116,7 +114,6 @@ test("bamboo -> mui -> bamboo: retains the documented secondary API without sile
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "gap": "4", "display": "flex" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -153,7 +150,6 @@ test("bamboo -> mui -> bamboo: retains the documented secondary API without sile
 		    "changed": false,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "gap": "4", "display": "flex" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -196,7 +192,6 @@ test("bamboo -> mui -> bamboo: preserves concrete theme and project context vari
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -233,7 +228,6 @@ test("bamboo -> mui -> bamboo: preserves concrete theme and project context vari
 		      "changed": false,
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "color": "#2563eb" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -249,7 +243,6 @@ test("bamboo -> mui -> bamboo: preserves concrete theme and project context vari
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "color": "primary.main" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -286,7 +279,6 @@ test("bamboo -> mui -> bamboo: preserves concrete theme and project context vari
 		      "changed": false,
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "color": "primary.main" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -316,7 +308,6 @@ test("bamboo -> mui -> bamboo: resolves token values across both concrete legs",
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "color": "primary.main" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -353,7 +344,6 @@ test("bamboo -> mui -> bamboo: resolves token values across both concrete legs",
 		    "changed": false,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "color": "primary.main" });",
 		    "converted": 0,
 		    "generatedFiles": [],

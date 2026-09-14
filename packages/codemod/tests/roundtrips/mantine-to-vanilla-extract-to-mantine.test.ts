@@ -87,7 +87,6 @@ test("mantine -> vanilla-extract -> mantine: preserves an actionable concrete ro
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-
 		export const App = () => <Box className={{ color: "blue.6", marginLeft: "var(--mantine-spacing-auto)", marginRight: "var(--mantine-spacing-auto)", maxWidth: 400 }}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -250,7 +249,6 @@ test("mantine -> vanilla-extract -> mantine: preserves concrete theme and projec
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-
 		export const App = () => <Box className={{ color: "var(--mantine-color-brand-0)", marginLeft: "var(--mantine-spacing-auto)", marginRight: "var(--mantine-spacing-auto)", maxWidth: 400 }}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -324,7 +322,6 @@ test("mantine -> vanilla-extract -> mantine: preserves concrete theme and projec
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-
 		export const App = () => <Box className={{ color: "var(--mantine-color-brand-0)", marginLeft: "var(--mantine-spacing-auto)", marginRight: "var(--mantine-spacing-auto)", maxWidth: 400 }}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -412,7 +409,6 @@ test("mantine -> vanilla-extract -> mantine: resolves token values across both c
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-
 		export const App = () => <Box className={{ color: "var(--mantine-color-brand-0)", marginLeft: "var(--mantine-spacing-auto)", marginRight: "var(--mantine-spacing-auto)", maxWidth: 400 }}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],

@@ -47,8 +47,7 @@ test("panda -> unocss: migrates concrete panda syntax to unocss", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		export const card = "[color:red.300] hover:[color:blue.300]";",
+		  "code": "export const card = "[color:red.300] hover:[color:blue.300]";",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -260,8 +259,7 @@ test("panda -> unocss: resolves concrete token values with project context", asy
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		export const card = "text-brand hover:[color:blue.300]";",
+		  "code": "export const card = "text-brand hover:[color:blue.300]";",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -305,8 +303,7 @@ test("panda -> unocss: preserves malformed concrete panda input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		export const card = "[color:red.300] hover:[color:blue.300]";
+		  "code": "export const card = "[color:red.300] hover:[color:blue.300]";
 		const unfinished = { /* unfinished panda */",
 		  "converted": 1,
 		  "generatedFiles": [],

@@ -52,7 +52,6 @@ test("mui -> pandwind -> mui: preserves an actionable concrete round trip", () =
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 		const staticClassName1 = css.class({ padding: "16px", color: "red" });
-
 		export const App = () => <div className={staticClassName1} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -87,10 +86,8 @@ test("mui -> pandwind -> mui: preserves an actionable concrete round trip", () =
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
-
 		const css = createCss();
 		const staticClassName1 = css.class({ "padding": "16px", "color": "red" });
-
 		export const App = () => <div className={staticClassName1} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -141,7 +138,6 @@ test("mui -> pandwind -> mui: retains the documented secondary API without silen
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const Card = css.class({ padding: 8, color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -176,9 +172,7 @@ test("mui -> pandwind -> mui: retains the documented secondary API without silen
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
-
 		const css = createCss();
-
 		export const Card = css.class({ "padding": 8, "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -244,7 +238,6 @@ test("mui -> pandwind -> mui: preserves concrete theme and project context varia
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 		const staticClassName1 = css.class({ padding: "16px", color: "brand" });
-
 		export const App = () => <div className={staticClassName1} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -279,10 +272,8 @@ test("mui -> pandwind -> mui: preserves concrete theme and project context varia
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
-
 		const css = createCss();
 		const staticClassName1 = css.class({ "padding": "16px", "color": "primary.main" });
-
 		export const App = () => <div className={staticClassName1} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -322,7 +313,6 @@ test("mui -> pandwind -> mui: preserves concrete theme and project context varia
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 		const staticClassName1 = css.class({ padding: "16px", color: "brand" });
-
 		export const App = () => <div className={staticClassName1} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -357,10 +347,8 @@ test("mui -> pandwind -> mui: preserves concrete theme and project context varia
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
-
 		const css = createCss();
 		const staticClassName1 = css.class({ "padding": "16px", "color": "primary.main" });
-
 		export const App = () => <div className={staticClassName1} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -414,7 +402,6 @@ test("mui -> pandwind -> mui: resolves token values across both concrete legs", 
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 		const staticClassName1 = css.class({ padding: "16px", color: "brand" });
-
 		export const App = () => <div className={staticClassName1} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -449,10 +436,8 @@ test("mui -> pandwind -> mui: resolves token values across both concrete legs", 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
-
 		const css = createCss();
 		const staticClassName1 = css.class({ "padding": "16px", "color": "primary.main" });
-
 		export const App = () => <div className={staticClassName1} />;",
 		    "converted": 1,
 		    "generatedFiles": [],

@@ -48,7 +48,6 @@ test("style9 -> linaria: migrates concrete style9 syntax to linaria", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "@linaria/core";
-
 		export const styles = { "card": css\`color: red;\` };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -94,7 +93,6 @@ test("style9 -> linaria: carries a documented secondary style9 API explicitly", 
 		{
 		  "changed": true,
 		  "code": "import { css } from "@linaria/core";
-
 		export const styles = { "card": css\`color: red;\`, "muted": css\`opacity: 0.5;\` };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -149,7 +147,6 @@ test("style9 -> linaria: loads concrete theme and project context variants", asy
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "@linaria/core";
-
 		export const styles = { "card": css\`color: #2563eb;\` };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -186,7 +183,6 @@ test("style9 -> linaria: loads concrete theme and project context variants", asy
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "@linaria/core";
-
 		export const styles = { "card": css\`color: #2563eb;\` };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -235,7 +231,6 @@ test("style9 -> linaria: resolves concrete token values with project context", a
 		{
 		  "changed": true,
 		  "code": "import { css } from "@linaria/core";
-
 		export const styles = { "card": css\`color: #2563eb;\` };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -281,7 +276,6 @@ test("style9 -> linaria: preserves malformed concrete style9 input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "@linaria/core";
-
 		export const styles = { "card": css\`color: red;\` };
 		const unfinished = { /* unfinished style9 */",
 		  "converted": 1,

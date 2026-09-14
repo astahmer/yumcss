@@ -49,8 +49,7 @@ test("styled-components -> mantine -> styled-components: preserves an actionable
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const Card = (props) => <div {...props} style={{ ...{ padding: "1rem", color: "red" }, ...props.style }} />;",
+		    "code": "export const Card = (props) => <div {...props} style={{ ...{ padding: "1rem", color: "red" }, ...props.style }} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -83,8 +82,7 @@ test("styled-components -> mantine -> styled-components: preserves an actionable
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		export const Card = (props) => // pandwind:migrate-skip (route: mantine -> styled-components | parse-residual: dynamic | available: named-map, residual)
+		    "code": "export const Card = (props) => // pandwind:migrate-skip (route: mantine -> styled-components | parse-residual: dynamic | available: named-map, residual)
 		<div {...props} style={{ ...{ padding: "1rem", color: "red" }, ...props.style }} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -136,8 +134,7 @@ test("styled-components -> mantine -> styled-components: retains the documented 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const Card = (props) => <div {...props} style={{ ...{ padding: "1rem", color: "red" }, ...props.style }} />;",
+		    "code": "export const Card = (props) => <div {...props} style={{ ...{ padding: "1rem", color: "red" }, ...props.style }} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -170,8 +167,7 @@ test("styled-components -> mantine -> styled-components: retains the documented 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		export const Card = (props) => // pandwind:migrate-skip (route: mantine -> styled-components | parse-residual: dynamic | available: named-map, residual)
+		    "code": "export const Card = (props) => // pandwind:migrate-skip (route: mantine -> styled-components | parse-residual: dynamic | available: named-map, residual)
 		<div {...props} style={{ ...{ padding: "1rem", color: "red" }, ...props.style }} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -238,8 +234,7 @@ test("styled-components -> mantine -> styled-components: preserves concrete them
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		export const Card = (props) => <div {...props} style={{ ...{ padding: "1rem", color: "#2563eb" }, ...props.style }} />;",
+		      "code": "export const Card = (props) => <div {...props} style={{ ...{ padding: "1rem", color: "#2563eb" }, ...props.style }} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -272,8 +267,7 @@ test("styled-components -> mantine -> styled-components: preserves concrete them
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		export const Card = (props) => // pandwind:migrate-skip (route: mantine -> styled-components | parse-residual: dynamic | available: named-map, residual)
+		      "code": "export const Card = (props) => // pandwind:migrate-skip (route: mantine -> styled-components | parse-residual: dynamic | available: named-map, residual)
 		<div {...props} style={{ ...{ padding: "1rem", color: "#2563eb" }, ...props.style }} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -313,8 +307,7 @@ test("styled-components -> mantine -> styled-components: preserves concrete them
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		export const Card = (props) => <div {...props} style={{ ...{ padding: "1rem", color: "var(--mantine-color-brand-0)" }, ...props.style }} />;",
+		      "code": "export const Card = (props) => <div {...props} style={{ ...{ padding: "1rem", color: "var(--mantine-color-brand-0)" }, ...props.style }} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -347,8 +340,7 @@ test("styled-components -> mantine -> styled-components: preserves concrete them
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		export const Card = (props) => // pandwind:migrate-skip (route: mantine -> styled-components | parse-residual: dynamic | available: named-map, residual)
+		      "code": "export const Card = (props) => // pandwind:migrate-skip (route: mantine -> styled-components | parse-residual: dynamic | available: named-map, residual)
 		<div {...props} style={{ ...{ padding: "1rem", color: "var(--mantine-color-brand-0)" }, ...props.style }} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -402,8 +394,7 @@ test("styled-components -> mantine -> styled-components: resolves token values a
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const Card = (props) => <div {...props} style={{ ...{ padding: "1rem", color: "var(--mantine-color-brand-0)" }, ...props.style }} />;",
+		    "code": "export const Card = (props) => <div {...props} style={{ ...{ padding: "1rem", color: "var(--mantine-color-brand-0)" }, ...props.style }} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -436,8 +427,7 @@ test("styled-components -> mantine -> styled-components: resolves token values a
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		export const Card = (props) => // pandwind:migrate-skip (route: mantine -> styled-components | parse-residual: dynamic | available: named-map, residual)
+		    "code": "export const Card = (props) => // pandwind:migrate-skip (route: mantine -> styled-components | parse-residual: dynamic | available: named-map, residual)
 		<div {...props} style={{ ...{ padding: "1rem", color: "var(--mantine-color-brand-0)" }, ...props.style }} />;",
 		    "converted": 0,
 		    "generatedFiles": [],

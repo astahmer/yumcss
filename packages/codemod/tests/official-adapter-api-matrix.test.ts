@@ -54,7 +54,6 @@ describe("official primary API forms", () => {
 			    "changed": true,
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
-
 			export const styles = { "card": css.class({ padding: 8, color: "red" }) };",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -126,7 +125,6 @@ describe("official primary API forms", () => {
 			    "changed": true,
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
-
 			export const card = css.class({ color: "red" });",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -163,7 +161,6 @@ describe("official primary API forms", () => {
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
 			const staticClassName1 = css.class({ padding: "4", backgroundColor: "red.200" });
-
 			export const App = () => <div className={staticClassName1} />;",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -199,7 +196,6 @@ describe("official primary API forms", () => {
 			    "changed": true,
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
-
 			export const card = css.class({ padding: 8, color: "red" });",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -271,7 +267,6 @@ describe("official primary API forms", () => {
 			    "changed": true,
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
-
 			export const card = css.class({ padding: "1rem", color: "red" });",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -344,7 +339,6 @@ describe("official primary API forms", () => {
 			    "changed": true,
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
-
 			export const card = css.class({ padding: "1rem", color: "red" });",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -380,7 +374,6 @@ describe("official primary API forms", () => {
 			    "changed": true,
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
-
 			export const useStyles = { "card": css.class({ color: "red" }) };",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -452,7 +445,6 @@ describe("official primary API forms", () => {
 			    "changed": true,
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
-
 			export const card = css.class({ padding: "1rem", color: "red" });",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -489,7 +481,6 @@ describe("official primary API forms", () => {
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
 			const staticClassName1 = css.class({ color: "blue.6", marginLeft: "auto", marginRight: "auto", maxWidth: 400 });
-
 			export const App = () => <div className={staticClassName1} />;",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -526,7 +517,6 @@ describe("official primary API forms", () => {
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
 			const staticClassName1 = css.class({ padding: "16px", color: "red" });
-
 			export const App = () => <div className={staticClassName1} />;",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -562,7 +552,6 @@ describe("official primary API forms", () => {
 			    "changed": true,
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
-
 			export const card = css.class({ padding: "1rem", color: "red" });",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -598,7 +587,6 @@ describe("official primary API forms", () => {
 			    "changed": true,
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
-
 			export const card = css.class({ color: "red.300", "&:hover": { color: "blue.300" } });",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -660,7 +648,6 @@ describe("official primary API forms", () => {
 			    "changed": true,
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
-
 			export const styles = { "card": css.class({ padding: 8, color: "red" }) };",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -696,7 +683,6 @@ describe("official primary API forms", () => {
 			    "changed": true,
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
-
 			const styles = { "card": css.class({ padding: "1rem", color: "red" }) };
 			export const Card = () => <div className={styles.card} />;",
 			    "converted": 1,
@@ -772,7 +758,6 @@ describe("official primary API forms", () => {
 			const cx = createCx();
 			const css = createCss();
 			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Component {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
-
 			export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "red" }), stableClass: "pw-t6bw3o", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -808,7 +793,6 @@ describe("official primary API forms", () => {
 			    "changed": true,
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
-
 			export const card = css.class({ padding: "1rem", color: "red" });",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -846,7 +830,6 @@ describe("official primary API forms", () => {
 			import { createCx } from "pandwind/cx";
 			const cx = createCx();
 			const css = createCss();
-
 			export const styles = css.group({ card: { color: "red" } });",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -885,7 +868,6 @@ describe("official primary API forms", () => {
 			const cx = createCx();
 			const css = createCss();
 			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Component {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
-
 			export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "red" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -921,7 +903,6 @@ describe("official primary API forms", () => {
 			    "changed": true,
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
-
 			export const styles = { "card": css.class({ padding: "8px", color: "red" }) };",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -1030,7 +1011,6 @@ describe("official primary API forms", () => {
 			    "changed": true,
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
-
 			export const card = css.class({ cardGap: "1rem", color: "red" });",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -1066,7 +1046,6 @@ describe("official primary API forms", () => {
 			    "changed": true,
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
-
 			export const card = css.class({ padding: 8, color: "red" });",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -1138,7 +1117,6 @@ describe("official primary API forms", () => {
 			    "changed": true,
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
-
 			export const card = css.class({ padding: 8, color: "red" });",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -1174,7 +1152,6 @@ describe("official primary API forms", () => {
 			    "changed": true,
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
-
 			export const Card = css.class({ padding: "1rem", color: "red" });",
 			    "converted": 1,
 			    "generatedFiles": [],

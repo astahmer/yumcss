@@ -49,8 +49,7 @@ test("goober -> unocss -> goober: preserves an actionable concrete round trip", 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const card = "[padding:1rem] [color:red]";",
+		    "code": "export const card = "[padding:1rem] [color:red]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,7 +85,6 @@ test("goober -> unocss -> goober: preserves an actionable concrete round trip", 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "goober";
-
 		export const card = css({ "padding": "1rem", "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -215,8 +213,7 @@ test("goober -> unocss -> goober: preserves concrete theme and project context v
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		export const card = "[padding:1rem] [color:#2563eb]";",
+		      "code": "export const card = "[padding:1rem] [color:#2563eb]";",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -251,8 +248,7 @@ test("goober -> unocss -> goober: preserves concrete theme and project context v
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		export const card = // pandwind:migrate-skip (route: unocss -> goober | lowering-residual: validation)
+		      "code": "export const card = // pandwind:migrate-skip (route: unocss -> goober | lowering-residual: validation)
 		"[padding:1rem] [color:#2563eb]";",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -298,8 +294,7 @@ test("goober -> unocss -> goober: preserves concrete theme and project context v
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		export const card = "[padding:1rem] text-brand";",
+		      "code": "export const card = "[padding:1rem] text-brand";",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -334,8 +329,7 @@ test("goober -> unocss -> goober: preserves concrete theme and project context v
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		export const card = // pandwind:migrate-skip (route: unocss -> goober | lowering-residual: validation)
+		      "code": "export const card = // pandwind:migrate-skip (route: unocss -> goober | lowering-residual: validation)
 		"[padding:1rem] text-brand";",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -395,8 +389,7 @@ test("goober -> unocss -> goober: resolves token values across both concrete leg
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const card = "[padding:1rem] text-brand";",
+		    "code": "export const card = "[padding:1rem] text-brand";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -431,8 +424,7 @@ test("goober -> unocss -> goober: resolves token values across both concrete leg
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		export const card = // pandwind:migrate-skip (route: unocss -> goober | lowering-residual: validation)
+		    "code": "export const card = // pandwind:migrate-skip (route: unocss -> goober | lowering-residual: validation)
 		"[padding:1rem] text-brand";",
 		    "converted": 0,
 		    "generatedFiles": [],

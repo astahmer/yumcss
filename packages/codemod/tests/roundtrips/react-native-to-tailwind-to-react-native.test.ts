@@ -49,8 +49,7 @@ test("react-native -> tailwind -> react-native: preserves an actionable concrete
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const styles = { "card": "[padding:8] [color:red]" };",
+		    "code": "export const styles = { "card": "[padding:8] [color:red]" };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,7 +85,6 @@ test("react-native -> tailwind -> react-native: preserves an actionable concrete
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-
 		export const styles = StyleSheet.create({ "card": { "padding": "8", "color": "red" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -137,8 +135,7 @@ test("react-native -> tailwind -> react-native: retains the documented secondary
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const styles = { "card": "[padding:8] [background-color:red]" };",
+		    "code": "export const styles = { "card": "[padding:8] [background-color:red]" };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -174,7 +171,6 @@ test("react-native -> tailwind -> react-native: retains the documented secondary
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-
 		export const styles = StyleSheet.create({ "card": { "padding": "8", "backgroundColor": "red" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -240,8 +236,7 @@ test("react-native -> tailwind -> react-native: preserves concrete theme and pro
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		export const styles = { "card": "[padding:8] [color:#2563eb]" };",
+		      "code": "export const styles = { "card": "[padding:8] [color:#2563eb]" };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -276,8 +271,7 @@ test("react-native -> tailwind -> react-native: preserves concrete theme and pro
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "
-		export const styles = { "card": "[padding:8] [color:#2563eb]" };",
+		      "code": "export const styles = { "card": "[padding:8] [color:#2563eb]" };",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],

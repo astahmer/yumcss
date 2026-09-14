@@ -48,7 +48,6 @@ test("next-yak -> panda: migrates concrete next-yak syntax to panda", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-
 		export const card = css({ padding: "1rem", color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -91,8 +90,7 @@ test("next-yak -> panda: carries a documented secondary next-yak API explicitly"
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		import { createCx } from "pandwind/cx";
+		  "code": "import { createCx } from "pandwind/cx";
 		import { css } from "styled-system/css";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(css({ padding: "1rem", color: "red" }), props.className)} />;",
@@ -147,7 +145,6 @@ test("next-yak -> panda: loads concrete theme and project context variants", asy
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-
 		export const card = css({ padding: "1rem", color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -182,7 +179,6 @@ test("next-yak -> panda: loads concrete theme and project context variants", asy
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-
 		export const card = css({ padding: "1rem", color: "brand.500" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -229,7 +225,6 @@ test("next-yak -> panda: resolves concrete token values with project context", a
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-
 		export const card = css({ padding: "1rem", color: "brand.500" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -273,7 +268,6 @@ test("next-yak -> panda: preserves malformed concrete next-yak input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-
 		export const card = css({ padding: "1rem", color: "red" });
 		const unfinished = { /* unfinished next-yak */",
 		  "converted": 1,

@@ -50,7 +50,6 @@ test("react-native -> solid-styled -> react-native: preserves an actionable conc
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-
 		export const styles = { "card": styled.div({ "padding": 8, "color": "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -87,7 +86,6 @@ test("react-native -> solid-styled -> react-native: preserves an actionable conc
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-
 		export const styles = { "card": // pandwind:migrate-skip (route: solid-styled -> react-native | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
 		styled.div({ "padding": 8, "color": "red" }) };",
 		    "converted": 0,
@@ -140,7 +138,6 @@ test("react-native -> solid-styled -> react-native: retains the documented secon
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-
 		export const styles = { "card": styled.div({ "padding": 8, "backgroundColor": "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -177,7 +174,6 @@ test("react-native -> solid-styled -> react-native: retains the documented secon
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-
 		export const styles = { "card": // pandwind:migrate-skip (route: solid-styled -> react-native | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
 		styled.div({ "padding": 8, "backgroundColor": "red" }) };",
 		    "converted": 0,
@@ -245,7 +241,6 @@ test("react-native -> solid-styled -> react-native: preserves concrete theme and
 		    "forward": {
 		      "changed": true,
 		      "code": "import { styled } from "solid-styled-components";
-
 		export const styles = { "card": styled.div({ "padding": 8, "color": "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -282,7 +277,6 @@ test("react-native -> solid-styled -> react-native: preserves concrete theme and
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { styled } from "solid-styled-components";
-
 		export const styles = { "card": // pandwind:migrate-skip (route: solid-styled -> react-native | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
 		styled.div({ "padding": 8, "color": "#2563eb" }) };",
 		      "converted": 0,
@@ -323,7 +317,6 @@ test("react-native -> solid-styled -> react-native: preserves concrete theme and
 		    "forward": {
 		      "changed": true,
 		      "code": "import { styled } from "solid-styled-components";
-
 		export const styles = { "card": styled.div({ "padding": 8, "color": "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -360,7 +353,6 @@ test("react-native -> solid-styled -> react-native: preserves concrete theme and
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { styled } from "solid-styled-components";
-
 		export const styles = { "card": // pandwind:migrate-skip (route: solid-styled -> react-native | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
 		styled.div({ "padding": 8, "color": "#2563eb" }) };",
 		      "converted": 0,
@@ -415,7 +407,6 @@ test("react-native -> solid-styled -> react-native: resolves token values across
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-
 		export const styles = { "card": styled.div({ "padding": 8, "color": "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -452,7 +443,6 @@ test("react-native -> solid-styled -> react-native: resolves token values across
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-
 		export const styles = { "card": // pandwind:migrate-skip (route: solid-styled -> react-native | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
 		styled.div({ "padding": 8, "color": "#2563eb" }) };",
 		    "converted": 0,

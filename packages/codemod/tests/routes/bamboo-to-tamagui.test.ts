@@ -48,7 +48,6 @@ test("bamboo -> tamagui: migrates concrete bamboo syntax to tamagui", () => {
 		{
 		  "changed": true,
 		  "code": "import { View, styled } from "@tamagui/core";
-
 		export const card = styled(View, { color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -91,7 +90,6 @@ test("bamboo -> tamagui: carries a documented secondary bamboo API explicitly", 
 		{
 		  "changed": true,
 		  "code": "import { View, styled } from "@tamagui/core";
-
 		export const card = styled(View, { gap: "4", display: "flex" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -143,7 +141,6 @@ test("bamboo -> tamagui: loads concrete theme and project context variants", asy
 		  "amber": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-
 		export const card = styled(View, { color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -177,7 +174,6 @@ test("bamboo -> tamagui: loads concrete theme and project context variants", asy
 		  "blue": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-
 		export const card = styled(View, { color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -223,7 +219,6 @@ test("bamboo -> tamagui: resolves concrete token values with project context", a
 		{
 		  "changed": true,
 		  "code": "import { View, styled } from "@tamagui/core";
-
 		export const card = styled(View, { color: "#2563eb" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -266,7 +261,6 @@ test("bamboo -> tamagui: preserves malformed concrete bamboo input", () => {
 		{
 		  "changed": true,
 		  "code": "import { View, styled } from "@tamagui/core";
-
 		export const card = styled(View, { color: "red" });
 		const unfinished = { /* unfinished bamboo */",
 		  "converted": 1,

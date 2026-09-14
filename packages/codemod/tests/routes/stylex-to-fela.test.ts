@@ -47,8 +47,7 @@ test("stylex -> fela: migrates concrete stylex syntax to fela", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		export const styles = { "card": renderer.renderRule({ "padding": "8px", "color": "red" }) };",
+		  "code": "export const styles = { "card": renderer.renderRule({ "padding": "8px", "color": "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -92,8 +91,7 @@ test("stylex -> fela: carries a documented secondary stylex API explicitly", () 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		export const styles = { "card": renderer.renderRule({ "color": "red" }) };",
+		  "code": "export const styles = { "card": renderer.renderRule({ "color": "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -146,8 +144,7 @@ test("stylex -> fela: loads concrete theme and project context variants", async 
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "
-		export const styles = { "card": renderer.renderRule({ "padding": "8px", "color": "#2563eb" }) };",
+		    "code": "export const styles = { "card": renderer.renderRule({ "padding": "8px", "color": "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -182,8 +179,7 @@ test("stylex -> fela: loads concrete theme and project context variants", async 
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "
-		export const styles = { "card": renderer.renderRule({ "padding": "8px", "color": "#2563eb" }) };",
+		    "code": "export const styles = { "card": renderer.renderRule({ "padding": "8px", "color": "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -230,8 +226,7 @@ test("stylex -> fela: resolves concrete token values with project context", asyn
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		export const styles = { "card": renderer.renderRule({ "padding": "8px", "color": "#2563eb" }) };",
+		  "code": "export const styles = { "card": renderer.renderRule({ "padding": "8px", "color": "#2563eb" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -275,8 +270,7 @@ test("stylex -> fela: preserves malformed concrete stylex input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		export const styles = { "card": renderer.renderRule({ "padding": "8px", "color": "red" }) };
+		  "code": "export const styles = { "card": renderer.renderRule({ "padding": "8px", "color": "red" }) };
 		const unfinished = { /* unfinished stylex */",
 		  "converted": 1,
 		  "generatedFiles": [],

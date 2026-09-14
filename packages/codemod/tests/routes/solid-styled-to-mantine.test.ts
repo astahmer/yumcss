@@ -49,7 +49,6 @@ test("solid-styled -> mantine: migrates concrete solid-styled syntax to mantine"
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const Card = (props) => <div {...props} class={css.props(css.class({ "padding": "1rem", "color": "red" }), props.class).className} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -95,7 +94,6 @@ test("solid-styled -> mantine: carries a documented secondary solid-styled API e
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const Card = (props) => <div {...props} class={css.props(css.class({ "padding": "1rem", "color": "red" }), props.class).className} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -150,7 +148,6 @@ test("solid-styled -> mantine: loads concrete theme and project context variants
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const Card = (props) => <div {...props} class={css.props(css.class({ "padding": "1rem", "color": "#2563eb" }), props.class).className} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -187,7 +184,6 @@ test("solid-styled -> mantine: loads concrete theme and project context variants
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const Card = (props) => <div {...props} class={css.props(css.class({ "padding": "1rem", "color": "var(--mantine-color-brand-0)" }), props.class).className} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -236,7 +232,6 @@ test("solid-styled -> mantine: resolves concrete token values with project conte
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const Card = (props) => <div {...props} class={css.props(css.class({ "padding": "1rem", "color": "var(--mantine-color-brand-0)" }), props.class).className} />;",
 		  "converted": 1,
 		  "generatedFiles": [],

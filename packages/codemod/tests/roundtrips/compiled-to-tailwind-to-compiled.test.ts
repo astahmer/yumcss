@@ -49,8 +49,7 @@ test("compiled -> tailwind -> compiled: preserves an actionable concrete round t
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const card = "[padding:8] [color:red]";",
+		    "code": "export const card = "[padding:8] [color:red]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,7 +85,6 @@ test("compiled -> tailwind -> compiled: preserves an actionable concrete round t
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@compiled/react";
-
 		export const card = css({ "padding": "8", "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -136,8 +134,7 @@ test("compiled -> tailwind -> compiled: retains the documented secondary API wit
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const colors = { "red": "[color:red]" };",
+		    "code": "export const colors = { "red": "[color:red]" };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -173,7 +170,6 @@ test("compiled -> tailwind -> compiled: retains the documented secondary API wit
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@compiled/react";
-
 		export const colors = { "red": css({ "color": "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -238,8 +234,7 @@ test("compiled -> tailwind -> compiled: preserves concrete theme and project con
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		export const card = "[padding:8] [color:#2563eb]";",
+		      "code": "export const card = "[padding:8] [color:#2563eb]";",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -274,8 +269,7 @@ test("compiled -> tailwind -> compiled: preserves concrete theme and project con
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		export const card = // pandwind:migrate-skip (route: tailwind -> compiled | parse-residual: unknown-utility | available: named-map, residual)
+		      "code": "export const card = // pandwind:migrate-skip (route: tailwind -> compiled | parse-residual: unknown-utility | available: named-map, residual)
 		"[padding:8] [color:#2563eb]";",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -317,8 +311,7 @@ test("compiled -> tailwind -> compiled: preserves concrete theme and project con
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		export const card = "[padding:8] text-brand";",
+		      "code": "export const card = "[padding:8] text-brand";",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -353,8 +346,7 @@ test("compiled -> tailwind -> compiled: preserves concrete theme and project con
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		export const card = // pandwind:migrate-skip (route: tailwind -> compiled | parse-residual: unknown-utility | available: named-map, residual)
+		      "code": "export const card = // pandwind:migrate-skip (route: tailwind -> compiled | parse-residual: unknown-utility | available: named-map, residual)
 		"[padding:8] text-brand";",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -405,8 +397,7 @@ test("compiled -> tailwind -> compiled: resolves token values across both concre
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const card = "[padding:8] text-brand";",
+		    "code": "export const card = "[padding:8] text-brand";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -441,8 +432,7 @@ test("compiled -> tailwind -> compiled: resolves token values across both concre
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		export const card = // pandwind:migrate-skip (route: tailwind -> compiled | parse-residual: unknown-utility | available: named-map, residual)
+		    "code": "export const card = // pandwind:migrate-skip (route: tailwind -> compiled | parse-residual: unknown-utility | available: named-map, residual)
 		"[padding:8] text-brand";",
 		    "converted": 0,
 		    "generatedFiles": [],

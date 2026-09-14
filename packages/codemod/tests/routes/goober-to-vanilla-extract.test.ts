@@ -48,7 +48,6 @@ test("goober -> vanilla-extract: migrates concrete goober syntax to vanilla-extr
 		{
 		  "changed": true,
 		  "code": "import { style } from "@vanilla-extract/css";
-
 		export const card = style({ padding: "1rem", color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -149,7 +148,6 @@ test("goober -> vanilla-extract: loads concrete theme and project context varian
 		  "amber": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-
 		export const card = style({ padding: "1rem", color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -186,7 +184,6 @@ test("goober -> vanilla-extract: loads concrete theme and project context varian
 		  "blue": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-
 		export const card = style({ padding: "1rem", color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -235,7 +232,6 @@ test("goober -> vanilla-extract: resolves concrete token values with project con
 		{
 		  "changed": true,
 		  "code": "import { style } from "@vanilla-extract/css";
-
 		export const card = style({ padding: "1rem", color: "#2563eb" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -281,7 +277,6 @@ test("goober -> vanilla-extract: preserves malformed concrete goober input", () 
 		{
 		  "changed": true,
 		  "code": "import { style } from "@vanilla-extract/css";
-
 		export const card = style({ padding: "1rem", color: "red" });
 		const unfinished = { /* unfinished goober */",
 		  "converted": 1,

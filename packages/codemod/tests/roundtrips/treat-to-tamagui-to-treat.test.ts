@@ -50,7 +50,6 @@ test("treat -> tamagui -> treat: preserves an actionable concrete round trip", (
 		  "forward": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-
 		export const card = styled(View, { padding: 8, color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -87,7 +86,6 @@ test("treat -> tamagui -> treat: preserves an actionable concrete round trip", (
 		import { createCx } from "pandwind/cx";
 		import { style } from "@/styles.treat";
 		const cx = createCx();
-
 		export const card = (props) => <View {...props} className={cx(style({ "padding": 8, "color": "red" }), props.className)} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -138,7 +136,6 @@ test("treat -> tamagui -> treat: retains the documented secondary API without si
 		  "forward": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-
 		export const card = styled(View, { padding: 8, color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -175,7 +172,6 @@ test("treat -> tamagui -> treat: retains the documented secondary API without si
 		import { createCx } from "pandwind/cx";
 		import { style } from "@/styles.treat";
 		const cx = createCx();
-
 		export const card = (props) => <View {...props} className={cx(style({ "padding": 8, "color": "red" }), props.className)} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -241,7 +237,6 @@ test("treat -> tamagui -> treat: preserves concrete theme and project context va
 		    "forward": {
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
-
 		export const card = styled(View, { padding: 8, color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -278,7 +273,6 @@ test("treat -> tamagui -> treat: preserves concrete theme and project context va
 		import { createCx } from "pandwind/cx";
 		import { style } from "@/styles.treat";
 		const cx = createCx();
-
 		export const card = (props) => <View {...props} className={cx(style({ "padding": 8, "color": "#2563eb" }), props.className)} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -317,7 +311,6 @@ test("treat -> tamagui -> treat: preserves concrete theme and project context va
 		    "forward": {
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
-
 		export const card = styled(View, { padding: 8, color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -354,7 +347,6 @@ test("treat -> tamagui -> treat: preserves concrete theme and project context va
 		import { createCx } from "pandwind/cx";
 		import { style } from "@/styles.treat";
 		const cx = createCx();
-
 		export const card = (props) => <View {...props} className={cx(style({ "padding": 8, "color": "#2563eb" }), props.className)} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -407,7 +399,6 @@ test("treat -> tamagui -> treat: resolves token values across both concrete legs
 		  "forward": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-
 		export const card = styled(View, { padding: 8, color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -444,7 +435,6 @@ test("treat -> tamagui -> treat: resolves token values across both concrete legs
 		import { createCx } from "pandwind/cx";
 		import { style } from "@/styles.treat";
 		const cx = createCx();
-
 		export const card = (props) => <View {...props} className={cx(style({ "padding": 8, "color": "#2563eb" }), props.className)} />;",
 		    "converted": 1,
 		    "generatedFiles": [],

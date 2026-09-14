@@ -47,8 +47,7 @@ test("solid-styled -> aphrodite: migrates concrete solid-styled syntax to aphrod
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		import { createCx } from "pandwind/cx";
+		  "code": "import { createCx } from "pandwind/cx";
 		import { StyleSheet, css } from "aphrodite";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} class={cx(css(StyleSheet.create({ style: { "padding": "1rem", "color": "red" } }).style), props.class)} />;",
@@ -95,8 +94,7 @@ test("solid-styled -> aphrodite: carries a documented secondary solid-styled API
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		import { createCx } from "pandwind/cx";
+		  "code": "import { createCx } from "pandwind/cx";
 		import { StyleSheet, css } from "aphrodite";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} class={cx(css(StyleSheet.create({ style: { "padding": "1rem", "color": "red" } }).style), props.class)} />;",
@@ -152,8 +150,7 @@ test("solid-styled -> aphrodite: loads concrete theme and project context varian
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { StyleSheet, css } from "aphrodite";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} class={cx(css(StyleSheet.create({ style: { "padding": "1rem", "color": "#2563eb" } }).style), props.class)} />;",
@@ -191,8 +188,7 @@ test("solid-styled -> aphrodite: loads concrete theme and project context varian
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { StyleSheet, css } from "aphrodite";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} class={cx(css(StyleSheet.create({ style: { "padding": "1rem", "color": "#2563eb" } }).style), props.class)} />;",
@@ -242,8 +238,7 @@ test("solid-styled -> aphrodite: resolves concrete token values with project con
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		import { createCx } from "pandwind/cx";
+		  "code": "import { createCx } from "pandwind/cx";
 		import { StyleSheet, css } from "aphrodite";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} class={cx(css(StyleSheet.create({ style: { "padding": "1rem", "color": "#2563eb" } }).style), props.class)} />;",

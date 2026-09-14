@@ -50,7 +50,6 @@ test("tokenami -> aphrodite -> tokenami: preserves an actionable concrete round 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-
 		export const card = StyleSheet.create({ "cardGap": "1rem", "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -87,8 +86,6 @@ test("tokenami -> aphrodite -> tokenami: preserves an actionable concrete round 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-
-
 		export const card = css({ cardGap: "1rem", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -137,7 +134,6 @@ test("tokenami -> aphrodite -> tokenami: retains the documented secondary API wi
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-
 		export const card = StyleSheet.create({ "padding": "1rem", "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -174,8 +170,6 @@ test("tokenami -> aphrodite -> tokenami: retains the documented secondary API wi
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-
-
 		export const card = css({ padding: "1rem", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -238,7 +232,6 @@ test("tokenami -> aphrodite -> tokenami: preserves concrete theme and project co
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "aphrodite";
-
 		export const card = StyleSheet.create({ "cardGap": "1rem", "color": "#f97316" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -276,8 +269,6 @@ test("tokenami -> aphrodite -> tokenami: preserves concrete theme and project co
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-
-
 		export const card = css({ cardGap: "1rem", color: "$colors.brand" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -314,7 +305,6 @@ test("tokenami -> aphrodite -> tokenami: preserves concrete theme and project co
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "aphrodite";
-
 		export const card = StyleSheet.create({ "cardGap": "1rem", "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -352,8 +342,6 @@ test("tokenami -> aphrodite -> tokenami: preserves concrete theme and project co
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-
-
 		export const card = css({ cardGap: "1rem", color: "$colors.brand" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -404,7 +392,6 @@ test("tokenami -> aphrodite -> tokenami: resolves token values across both concr
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-
 		export const card = StyleSheet.create({ "cardGap": "1rem", "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -441,8 +428,6 @@ test("tokenami -> aphrodite -> tokenami: resolves token values across both concr
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-
-
 		export const card = css({ cardGap: "1rem", color: "$colors.brand" });",
 		    "converted": 1,
 		    "generatedFiles": [],

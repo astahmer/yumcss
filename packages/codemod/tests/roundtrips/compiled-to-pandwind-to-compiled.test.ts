@@ -51,7 +51,6 @@ test("compiled -> pandwind -> compiled: preserves an actionable concrete round t
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ padding: 8, color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -138,7 +137,6 @@ test("compiled -> pandwind -> compiled: retains the documented secondary API wit
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const colors = { "red": css.class({ color: "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -240,7 +238,6 @@ test("compiled -> pandwind -> compiled: preserves concrete theme and project con
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ padding: 8, color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -315,7 +312,6 @@ test("compiled -> pandwind -> compiled: preserves concrete theme and project con
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ padding: 8, color: "brand" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -412,7 +408,6 @@ test("compiled -> pandwind -> compiled: resolves token values across both concre
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ padding: 8, color: "brand" });",
 		    "converted": 1,
 		    "generatedFiles": [],

@@ -48,7 +48,6 @@ test("goober -> tamagui: migrates concrete goober syntax to tamagui", () => {
 		{
 		  "changed": true,
 		  "code": "import { View, styled } from "@tamagui/core";
-
 		export const card = styled(View, { padding: "1rem", color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -143,7 +142,6 @@ test("goober -> tamagui: loads concrete theme and project context variants", asy
 		  "amber": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-
 		export const card = styled(View, { padding: "1rem", color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -177,7 +175,6 @@ test("goober -> tamagui: loads concrete theme and project context variants", asy
 		  "blue": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-
 		export const card = styled(View, { padding: "1rem", color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -223,7 +220,6 @@ test("goober -> tamagui: resolves concrete token values with project context", a
 		{
 		  "changed": true,
 		  "code": "import { View, styled } from "@tamagui/core";
-
 		export const card = styled(View, { padding: "1rem", color: "#2563eb" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -266,7 +262,6 @@ test("goober -> tamagui: preserves malformed concrete goober input", () => {
 		{
 		  "changed": true,
 		  "code": "import { View, styled } from "@tamagui/core";
-
 		export const card = styled(View, { padding: "1rem", color: "red" });
 		const unfinished = { /* unfinished goober */",
 		  "converted": 1,

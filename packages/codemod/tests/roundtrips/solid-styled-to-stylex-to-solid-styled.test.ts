@@ -50,7 +50,6 @@ test("solid-styled -> stylex -> solid-styled: preserves an actionable concrete r
 		  "forward": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-
 		export const Card = stylex.create({ style: { padding: "1rem", color: "red" } }).style;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -87,8 +86,6 @@ test("solid-styled -> stylex -> solid-styled: preserves an actionable concrete r
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-
-
 		export const Card = { "style": styled.div({ "padding": "1rem", "color": "red" }) }.style;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -139,7 +136,6 @@ test("solid-styled -> stylex -> solid-styled: retains the documented secondary A
 		  "forward": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-
 		export const Card = stylex.create({ style: { padding: "1rem", color: "red" } }).style;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -176,8 +172,6 @@ test("solid-styled -> stylex -> solid-styled: retains the documented secondary A
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-
-
 		export const Card = { "style": styled.div({ "padding": "1rem", "color": "red" }) }.style;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -243,7 +237,6 @@ test("solid-styled -> stylex -> solid-styled: preserves concrete theme and proje
 		    "forward": {
 		      "changed": true,
 		      "code": "import * as stylex from "@stylexjs/stylex";
-
 		export const Card = stylex.create({ style: { padding: "1rem", color: "#2563eb" } }).style;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -280,8 +273,6 @@ test("solid-styled -> stylex -> solid-styled: preserves concrete theme and proje
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { styled } from "solid-styled-components";
-
-
 		export const Card = { "style": styled.div({ "padding": "1rem", "color": "#2563eb" }) }.style;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -320,7 +311,6 @@ test("solid-styled -> stylex -> solid-styled: preserves concrete theme and proje
 		    "forward": {
 		      "changed": true,
 		      "code": "import * as stylex from "@stylexjs/stylex";
-
 		export const Card = stylex.create({ style: { padding: "1rem", color: "#2563eb" } }).style;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -357,8 +347,6 @@ test("solid-styled -> stylex -> solid-styled: preserves concrete theme and proje
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { styled } from "solid-styled-components";
-
-
 		export const Card = { "style": styled.div({ "padding": "1rem", "color": "#2563eb" }) }.style;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -411,7 +399,6 @@ test("solid-styled -> stylex -> solid-styled: resolves token values across both 
 		  "forward": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-
 		export const Card = stylex.create({ style: { padding: "1rem", color: "#2563eb" } }).style;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -448,8 +435,6 @@ test("solid-styled -> stylex -> solid-styled: resolves token values across both 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-
-
 		export const Card = { "style": styled.div({ "padding": "1rem", "color": "#2563eb" }) }.style;",
 		    "converted": 1,
 		    "generatedFiles": [],

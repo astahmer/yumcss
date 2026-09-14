@@ -148,7 +148,7 @@ test("chakra-ui -> style9: loads concrete theme and project context variants", a
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
 		import style9 from "style9";
-		export const App = () => <Box p="4" className={style9(style9.create({ style: { "backgroundColor": "#f97316" } }).style)}/>;",
+		export const App = () => <Box className={style9(style9.create({ style: { "backgroundColor": "#f97316", "p": "var(--chakra-spacing-4)" } }).style)}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -186,7 +186,7 @@ test("chakra-ui -> style9: loads concrete theme and project context variants", a
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
 		import style9 from "style9";
-		export const App = () => <Box p="4" className={style9(style9.create({ style: { "backgroundColor": "#2563eb" } }).style)}/>;",
+		export const App = () => <Box className={style9(style9.create({ style: { "backgroundColor": "#2563eb", "p": "var(--chakra-spacing-4)" } }).style)}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -236,7 +236,7 @@ test("chakra-ui -> style9: resolves concrete token values with project context",
 		  "changed": true,
 		  "code": "import { Box } from "@chakra-ui/react";
 		import style9 from "style9";
-		export const App = () => <Box p="4" className={style9(style9.create({ style: { "backgroundColor": "#2563eb" } }).style)}/>;",
+		export const App = () => <Box className={style9(style9.create({ style: { "backgroundColor": "#2563eb", "p": "var(--chakra-spacing-4)" } }).style)}/>;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [

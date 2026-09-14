@@ -48,7 +48,6 @@ test("jss -> chakra-ui: migrates concrete jss syntax to chakra-ui", () => {
 		{
 		  "changed": true,
 		  "code": "import { defaultSystem } from "@chakra-ui/react";
-
 		export const useStyles = { "card": defaultSystem.css({ color: "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -92,7 +91,6 @@ test("jss -> chakra-ui: carries a documented secondary jss API explicitly", () =
 		{
 		  "changed": true,
 		  "code": "import { defaultSystem } from "@chakra-ui/react";
-
 		export const sheet = { "card": defaultSystem.css({ color: "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -145,7 +143,6 @@ test("jss -> chakra-ui: loads concrete theme and project context variants", asyn
 		  "amber": {
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
 		export const useStyles = { "card": defaultSystem.css({ color: "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -180,7 +177,6 @@ test("jss -> chakra-ui: loads concrete theme and project context variants", asyn
 		  "blue": {
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
 		export const useStyles = { "card": defaultSystem.css({ color: "brand.500" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -227,7 +223,6 @@ test("jss -> chakra-ui: resolves concrete token values with project context", as
 		{
 		  "changed": true,
 		  "code": "import { defaultSystem } from "@chakra-ui/react";
-
 		export const useStyles = { "card": defaultSystem.css({ color: "brand.500" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -271,7 +266,6 @@ test("jss -> chakra-ui: preserves malformed concrete jss input", () => {
 		{
 		  "changed": true,
 		  "code": "import { defaultSystem } from "@chakra-ui/react";
-
 		export const useStyles = { "card": defaultSystem.css({ color: "red" }) };
 		const unfinished = { /* unfinished jss */",
 		  "converted": 1,

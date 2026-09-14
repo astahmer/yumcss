@@ -87,7 +87,6 @@ test("chakra-ui -> linaria -> chakra-ui: preserves an actionable concrete round 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-
 		export const App = () => <Box css={{ padding: "var(--chakra-spacing-4)", backgroundColor: "var(--chakra-colors-red-200)" }}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -214,7 +213,7 @@ test("chakra-ui -> linaria -> chakra-ui: preserves concrete theme and project co
 		      "changed": true,
 		      "code": "import { Box } from "@chakra-ui/react";
 		export const App = () => // pandwind:migrate-skip (route: chakra-ui -> linaria | lowering-residual: validation)
-		<Box p="4" className={css\`background-color: brand.500;\`}/>;",
+		<Box className={css\`background-color: brand.500; p: var(--chakra-spacing-4);\`}/>;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -259,7 +258,7 @@ test("chakra-ui -> linaria -> chakra-ui: preserves concrete theme and project co
 		      "changed": true,
 		      "code": "import { Box } from "@chakra-ui/react";
 		export const App = () => // pandwind:migrate-skip (route: chakra-ui -> linaria | lowering-residual: validation)
-		<Box p="4" css={{ backgroundColor: "brand.500" }}/>;",
+		<Box css={{ backgroundColor: "brand.500", p: "var(--chakra-spacing-4)" }}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -296,7 +295,7 @@ test("chakra-ui -> linaria -> chakra-ui: preserves concrete theme and project co
 		      "changed": true,
 		      "code": "import { Box } from "@chakra-ui/react";
 		export const App = () => // pandwind:migrate-skip (route: chakra-ui -> linaria | lowering-residual: validation)
-		<Box p="4" className={css\`background-color: brand.500;\`}/>;",
+		<Box className={css\`background-color: brand.500; p: var(--chakra-spacing-4);\`}/>;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -341,7 +340,7 @@ test("chakra-ui -> linaria -> chakra-ui: preserves concrete theme and project co
 		      "changed": true,
 		      "code": "import { Box } from "@chakra-ui/react";
 		export const App = () => // pandwind:migrate-skip (route: chakra-ui -> linaria | lowering-residual: validation)
-		<Box p="4" css={{ backgroundColor: "brand.500" }}/>;",
+		<Box css={{ backgroundColor: "brand.500", p: "var(--chakra-spacing-4)" }}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -392,7 +391,7 @@ test("chakra-ui -> linaria -> chakra-ui: resolves token values across both concr
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
 		import { css } from "@linaria/core";
-		export const App = () => <Box p="4" className={css\`background-color: #2563eb;\`}/>;",
+		export const App = () => <Box className={css\`background-color: #2563eb; p: var(--chakra-spacing-4);\`}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -428,8 +427,7 @@ test("chakra-ui -> linaria -> chakra-ui: resolves token values across both concr
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-
-		export const App = () => <Box p="4" css={{ backgroundColor: "brand.500" }}/>;",
+		export const App = () => <Box css={{ backgroundColor: "brand.500", p: "var(--chakra-spacing-4)" }}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

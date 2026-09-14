@@ -50,7 +50,6 @@ test("treat -> vanilla-extract -> treat: preserves an actionable concrete round 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-
 		export const card = style({ padding: 8, color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -87,8 +86,6 @@ test("treat -> vanilla-extract -> treat: preserves an actionable concrete round 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { style } from "@/styles.treat";
-
-
 		export const card = style({ "padding": 8, "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -139,7 +136,6 @@ test("treat -> vanilla-extract -> treat: retains the documented secondary API wi
 		  "forward": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-
 		export const card = style({ padding: 8, color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -176,8 +172,6 @@ test("treat -> vanilla-extract -> treat: retains the documented secondary API wi
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { style } from "@/styles.treat";
-
-
 		export const card = style({ "padding": 8, "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -243,7 +237,6 @@ test("treat -> vanilla-extract -> treat: preserves concrete theme and project co
 		    "forward": {
 		      "changed": true,
 		      "code": "import { style } from "@vanilla-extract/css";
-
 		export const card = style({ padding: 8, color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -280,8 +273,6 @@ test("treat -> vanilla-extract -> treat: preserves concrete theme and project co
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { style } from "@/styles.treat";
-
-
 		export const card = style({ "padding": 8, "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -320,7 +311,6 @@ test("treat -> vanilla-extract -> treat: preserves concrete theme and project co
 		    "forward": {
 		      "changed": true,
 		      "code": "import { style } from "@vanilla-extract/css";
-
 		export const card = style({ padding: 8, color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -357,8 +347,6 @@ test("treat -> vanilla-extract -> treat: preserves concrete theme and project co
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { style } from "@/styles.treat";
-
-
 		export const card = style({ "padding": 8, "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -411,7 +399,6 @@ test("treat -> vanilla-extract -> treat: resolves token values across both concr
 		  "forward": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-
 		export const card = style({ padding: 8, color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -448,8 +435,6 @@ test("treat -> vanilla-extract -> treat: resolves token values across both concr
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { style } from "@/styles.treat";
-
-
 		export const card = style({ "padding": 8, "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],

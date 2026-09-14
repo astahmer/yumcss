@@ -47,8 +47,7 @@ test("stitches -> unocss: migrates concrete stitches syntax to unocss", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		export const card = "[padding:1rem] [color:red]";",
+		  "code": "export const card = "[padding:1rem] [color:red]";",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -147,8 +146,7 @@ test("stitches -> unocss: loads concrete theme and project context variants", as
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "
-		export const card = "[padding:1rem] [color:#2563eb]";",
+		    "code": "export const card = "[padding:1rem] [color:#2563eb]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -183,8 +181,7 @@ test("stitches -> unocss: loads concrete theme and project context variants", as
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "
-		export const card = "[padding:1rem] text-brand";",
+		    "code": "export const card = "[padding:1rem] text-brand";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -231,8 +228,7 @@ test("stitches -> unocss: resolves concrete token values with project context", 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		export const card = "[padding:1rem] text-brand";",
+		  "code": "export const card = "[padding:1rem] text-brand";",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -276,8 +272,7 @@ test("stitches -> unocss: preserves malformed concrete stitches input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		export const card = "[padding:1rem] [color:red]";
+		  "code": "export const card = "[padding:1rem] [color:red]";
 		const unfinished = { /* unfinished stitches */",
 		  "converted": 1,
 		  "generatedFiles": [],

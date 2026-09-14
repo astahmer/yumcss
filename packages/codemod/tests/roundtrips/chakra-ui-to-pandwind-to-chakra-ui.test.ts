@@ -52,7 +52,6 @@ test("chakra-ui -> pandwind -> chakra-ui: preserves an actionable concrete round
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 		const staticClassName1 = css.class({ padding: "4", backgroundColor: "red.200" });
-
 		export const App = () => <div className={staticClassName1} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -89,7 +88,6 @@ test("chakra-ui -> pandwind -> chakra-ui: preserves an actionable concrete round
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
 
 		const staticClassName1 = defaultSystem.css({ padding: "4", backgroundColor: "red.200" });
-
 		export const App = () => <div className={staticClassName1} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -215,7 +213,6 @@ test("chakra-ui -> pandwind -> chakra-ui: preserves concrete theme and project c
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 		const staticClassName1 = css.class({ padding: "4", backgroundColor: "brand" });
-
 		export const App = () => <div className={staticClassName1} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -252,7 +249,6 @@ test("chakra-ui -> pandwind -> chakra-ui: preserves concrete theme and project c
 		      "code": "import { defaultSystem } from "@chakra-ui/react";
 
 		const staticClassName1 = defaultSystem.css({ padding: "4", backgroundColor: "brand.500" });
-
 		export const App = () => <div className={staticClassName1} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -291,7 +287,6 @@ test("chakra-ui -> pandwind -> chakra-ui: preserves concrete theme and project c
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 		const staticClassName1 = css.class({ padding: "4", backgroundColor: "brand" });
-
 		export const App = () => <div className={staticClassName1} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -328,7 +323,6 @@ test("chakra-ui -> pandwind -> chakra-ui: preserves concrete theme and project c
 		      "code": "import { defaultSystem } from "@chakra-ui/react";
 
 		const staticClassName1 = defaultSystem.css({ padding: "4", backgroundColor: "brand.500" });
-
 		export const App = () => <div className={staticClassName1} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -381,7 +375,6 @@ test("chakra-ui -> pandwind -> chakra-ui: resolves token values across both conc
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 		const staticClassName1 = css.class({ padding: "4", backgroundColor: "brand" });
-
 		export const App = () => <div className={staticClassName1} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -418,7 +411,6 @@ test("chakra-ui -> pandwind -> chakra-ui: resolves token values across both conc
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
 
 		const staticClassName1 = defaultSystem.css({ padding: "4", backgroundColor: "brand.500" });
-
 		export const App = () => <div className={staticClassName1} />;",
 		    "converted": 1,
 		    "generatedFiles": [],

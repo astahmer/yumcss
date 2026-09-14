@@ -49,8 +49,7 @@ test("styled-components -> fela -> styled-components: preserves an actionable co
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(renderer.renderRule({ "padding": "1rem", "color": "red" }), props.className)} />;",
 		    "converted": 1,
@@ -87,8 +86,7 @@ test("styled-components -> fela -> styled-components: preserves an actionable co
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import styled from "styled-components";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(styled.div({ padding: "1rem", color: "red" }), props.className)} />;",
@@ -138,8 +136,7 @@ test("styled-components -> fela -> styled-components: retains the documented sec
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(renderer.renderRule({ "padding": "1rem", "color": "red" }), props.className)} />;",
 		    "converted": 1,
@@ -176,8 +173,7 @@ test("styled-components -> fela -> styled-components: retains the documented sec
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import styled from "styled-components";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(styled.div({ padding: "1rem", color: "red" }), props.className)} />;",
@@ -242,8 +238,7 @@ test("styled-components -> fela -> styled-components: preserves concrete theme a
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		import { createCx } from "pandwind/cx";
+		      "code": "import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(renderer.renderRule({ "padding": "1rem", "color": "#2563eb" }), props.className)} />;",
 		      "converted": 1,
@@ -280,8 +275,7 @@ test("styled-components -> fela -> styled-components: preserves concrete theme a
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		import { createCx } from "pandwind/cx";
+		      "code": "import { createCx } from "pandwind/cx";
 		import styled from "styled-components";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(styled.div({ padding: "1rem", color: "#2563eb" }), props.className)} />;",
@@ -319,8 +313,7 @@ test("styled-components -> fela -> styled-components: preserves concrete theme a
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		import { createCx } from "pandwind/cx";
+		      "code": "import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(renderer.renderRule({ "padding": "1rem", "color": "#2563eb" }), props.className)} />;",
 		      "converted": 1,
@@ -357,8 +350,7 @@ test("styled-components -> fela -> styled-components: preserves concrete theme a
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		import { createCx } from "pandwind/cx";
+		      "code": "import { createCx } from "pandwind/cx";
 		import styled from "styled-components";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(styled.div({ padding: "1rem", color: "#2563eb" }), props.className)} />;",
@@ -410,8 +402,7 @@ test("styled-components -> fela -> styled-components: resolves token values acro
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(renderer.renderRule({ "padding": "1rem", "color": "#2563eb" }), props.className)} />;",
 		    "converted": 1,
@@ -448,8 +439,7 @@ test("styled-components -> fela -> styled-components: resolves token values acro
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import styled from "styled-components";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(styled.div({ padding: "1rem", color: "#2563eb" }), props.className)} />;",

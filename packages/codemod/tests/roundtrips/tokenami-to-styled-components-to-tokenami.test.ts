@@ -50,7 +50,6 @@ test("tokenami -> styled-components -> tokenami: preserves an actionable concret
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
 		export const card = styled.div({ cardGap: "1rem", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -84,11 +83,9 @@ test("tokenami -> styled-components -> tokenami: preserves an actionable concret
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { css } from "@tokenami/css";
 		const cx = createCx();
-
 		export const card = (props) => <div {...props} className={cx(css({ cardGap: "1rem", color: "red" }), props.className)} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -137,7 +134,6 @@ test("tokenami -> styled-components -> tokenami: retains the documented secondar
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
 		export const card = styled.div({ padding: "1rem", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -171,11 +167,9 @@ test("tokenami -> styled-components -> tokenami: retains the documented secondar
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { css } from "@tokenami/css";
 		const cx = createCx();
-
 		export const card = (props) => <div {...props} className={cx(css({ padding: "1rem", color: "red" }), props.className)} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -368,7 +362,6 @@ test("tokenami -> styled-components -> tokenami: resolves token values across bo
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
 		export const card = styled.div({ cardGap: "1rem", color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -402,11 +395,9 @@ test("tokenami -> styled-components -> tokenami: resolves token values across bo
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { css } from "@tokenami/css";
 		const cx = createCx();
-
 		export const card = (props) => <div {...props} className={cx(css({ cardGap: "1rem", color: "$colors.brand" }), props.className)} />;",
 		    "converted": 1,
 		    "generatedFiles": [],

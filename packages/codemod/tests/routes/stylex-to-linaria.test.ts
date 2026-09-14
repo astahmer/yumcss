@@ -48,7 +48,6 @@ test("stylex -> linaria: migrates concrete stylex syntax to linaria", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "@linaria/core";
-
 		export const styles = { "card": css\`padding: 8px; color: red;\` };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -94,7 +93,6 @@ test("stylex -> linaria: carries a documented secondary stylex API explicitly", 
 		{
 		  "changed": true,
 		  "code": "import { css } from "@linaria/core";
-
 		export const styles = { "card": css\`color: red;\` };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -149,7 +147,6 @@ test("stylex -> linaria: loads concrete theme and project context variants", asy
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "@linaria/core";
-
 		export const styles = { "card": css\`padding: 8px; color: #2563eb;\` };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -186,7 +183,6 @@ test("stylex -> linaria: loads concrete theme and project context variants", asy
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "@linaria/core";
-
 		export const styles = { "card": css\`padding: 8px; color: #2563eb;\` };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -235,7 +231,6 @@ test("stylex -> linaria: resolves concrete token values with project context", a
 		{
 		  "changed": true,
 		  "code": "import { css } from "@linaria/core";
-
 		export const styles = { "card": css\`padding: 8px; color: #2563eb;\` };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -281,7 +276,6 @@ test("stylex -> linaria: preserves malformed concrete stylex input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "@linaria/core";
-
 		export const styles = { "card": css\`padding: 8px; color: red;\` };
 		const unfinished = { /* unfinished stylex */",
 		  "converted": 1,

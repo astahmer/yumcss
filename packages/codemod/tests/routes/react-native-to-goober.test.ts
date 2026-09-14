@@ -48,7 +48,6 @@ test("react-native -> goober: migrates concrete react-native syntax to goober", 
 		{
 		  "changed": true,
 		  "code": "import { css } from "goober";
-
 		export const styles = { "card": css({ "padding": 8, "color": "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -94,7 +93,6 @@ test("react-native -> goober: carries a documented secondary react-native API ex
 		{
 		  "changed": true,
 		  "code": "import { css } from "goober";
-
 		export const styles = { "card": css({ "padding": 8, "backgroundColor": "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -149,7 +147,6 @@ test("react-native -> goober: loads concrete theme and project context variants"
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "goober";
-
 		export const styles = { "card": css({ "padding": 8, "color": "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -186,7 +183,6 @@ test("react-native -> goober: loads concrete theme and project context variants"
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "goober";
-
 		export const styles = { "card": css({ "padding": 8, "color": "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -235,7 +231,6 @@ test("react-native -> goober: resolves concrete token values with project contex
 		{
 		  "changed": true,
 		  "code": "import { css } from "goober";
-
 		export const styles = { "card": css({ "padding": 8, "color": "#2563eb" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -281,7 +276,6 @@ test("react-native -> goober: preserves malformed concrete react-native input", 
 		{
 		  "changed": true,
 		  "code": "import { css } from "goober";
-
 		export const styles = { "card": css({ "padding": 8, "color": "red" }) };
 		const unfinished = { /* unfinished react-native */",
 		  "converted": 1,

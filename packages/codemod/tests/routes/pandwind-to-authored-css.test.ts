@@ -48,7 +48,6 @@ test("pandwind -> authored-css: migrates concrete pandwind syntax to authored-cs
 		{
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
-
 		const css = createCss();
 		export const card = css.class({ "padding": "1rem", "color": "red" });",
 		  "converted": 1,
@@ -149,7 +148,6 @@ test("pandwind -> authored-css: loads concrete theme and project context variant
 		  "amber": {
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
-
 		const css = createCss();
 		export const card = css.class({ "padding": "1rem", "color": "$brand" });",
 		    "converted": 1,
@@ -187,7 +185,6 @@ test("pandwind -> authored-css: loads concrete theme and project context variant
 		  "blue": {
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
-
 		const css = createCss();
 		export const card = css.class({ "padding": "1rem", "color": "$brand" });",
 		    "converted": 1,
@@ -237,7 +234,6 @@ test("pandwind -> authored-css: resolves concrete token values with project cont
 		{
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
-
 		const css = createCss();
 		export const card = css.class({ "padding": "1rem", "color": "#2563eb" });",
 		  "converted": 1,
@@ -284,7 +280,6 @@ test("pandwind -> authored-css: preserves malformed concrete pandwind input", ()
 		{
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
-
 		const css = createCss();
 		export const card = css.class({ "padding": "1rem", "color": "red" });
 		const unfinished = { /* unfinished pandwind */",

@@ -50,7 +50,6 @@ test("treat -> styled-components -> treat: preserves an actionable concrete roun
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
 		export const card = styled.div({ padding: 8, color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -84,11 +83,9 @@ test("treat -> styled-components -> treat: preserves an actionable concrete roun
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { style } from "@/styles.treat";
 		const cx = createCx();
-
 		export const card = (props) => <div {...props} className={cx(style({ "padding": 8, "color": "red" }), props.className)} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -139,7 +136,6 @@ test("treat -> styled-components -> treat: retains the documented secondary API 
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
 		export const card = styled.div({ padding: 8, color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -173,11 +169,9 @@ test("treat -> styled-components -> treat: retains the documented secondary API 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { style } from "@/styles.treat";
 		const cx = createCx();
-
 		export const card = (props) => <div {...props} className={cx(style({ "padding": 8, "color": "red" }), props.className)} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -243,7 +237,6 @@ test("treat -> styled-components -> treat: preserves concrete theme and project 
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-
 		export const card = styled.div({ padding: 8, color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -277,11 +270,9 @@ test("treat -> styled-components -> treat: preserves concrete theme and project 
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		import { createCx } from "pandwind/cx";
+		      "code": "import { createCx } from "pandwind/cx";
 		import { style } from "@/styles.treat";
 		const cx = createCx();
-
 		export const card = (props) => <div {...props} className={cx(style({ "padding": 8, "color": "#2563eb" }), props.className)} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -320,7 +311,6 @@ test("treat -> styled-components -> treat: preserves concrete theme and project 
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-
 		export const card = styled.div({ padding: 8, color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -354,11 +344,9 @@ test("treat -> styled-components -> treat: preserves concrete theme and project 
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		import { createCx } from "pandwind/cx";
+		      "code": "import { createCx } from "pandwind/cx";
 		import { style } from "@/styles.treat";
 		const cx = createCx();
-
 		export const card = (props) => <div {...props} className={cx(style({ "padding": 8, "color": "#2563eb" }), props.className)} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -411,7 +399,6 @@ test("treat -> styled-components -> treat: resolves token values across both con
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
 		export const card = styled.div({ padding: 8, color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -445,11 +432,9 @@ test("treat -> styled-components -> treat: resolves token values across both con
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { style } from "@/styles.treat";
 		const cx = createCx();
-
 		export const card = (props) => <div {...props} className={cx(style({ "padding": 8, "color": "#2563eb" }), props.className)} />;",
 		    "converted": 1,
 		    "generatedFiles": [],

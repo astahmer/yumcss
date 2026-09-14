@@ -48,7 +48,6 @@ test("react-native -> stylex: migrates concrete react-native syntax to stylex", 
 		{
 		  "changed": true,
 		  "code": "import * as stylex from "@stylexjs/stylex";
-
 		export const styles = stylex.create({ card: { padding: "8px", color: "red" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -95,7 +94,6 @@ test("react-native -> stylex: carries a documented secondary react-native API ex
 		{
 		  "changed": true,
 		  "code": "import * as stylex from "@stylexjs/stylex";
-
 		export const styles = stylex.create({ card: { padding: "8px", backgroundColor: "red" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -151,7 +149,6 @@ test("react-native -> stylex: loads concrete theme and project context variants"
 		  "amber": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-
 		export const styles = stylex.create({ card: { padding: "8px", color: "#2563eb" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -189,7 +186,6 @@ test("react-native -> stylex: loads concrete theme and project context variants"
 		  "blue": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-
 		export const styles = stylex.create({ card: { padding: "8px", color: "#2563eb" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -239,7 +235,6 @@ test("react-native -> stylex: resolves concrete token values with project contex
 		{
 		  "changed": true,
 		  "code": "import * as stylex from "@stylexjs/stylex";
-
 		export const styles = stylex.create({ card: { padding: "8px", color: "#2563eb" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -286,7 +281,6 @@ test("react-native -> stylex: preserves malformed concrete react-native input", 
 		{
 		  "changed": true,
 		  "code": "import * as stylex from "@stylexjs/stylex";
-
 		export const styles = stylex.create({ card: { padding: "8px", color: "red" } });
 		const unfinished = { /* unfinished react-native */",
 		  "converted": 1,

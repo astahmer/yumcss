@@ -48,7 +48,6 @@ test("stylex -> treat: migrates concrete stylex syntax to treat", () => {
 		{
 		  "changed": true,
 		  "code": "import { style } from "@/styles.treat";
-
 		export const styles = { "card": style({ "padding": "8px", "color": "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -94,7 +93,6 @@ test("stylex -> treat: carries a documented secondary stylex API explicitly", ()
 		{
 		  "changed": true,
 		  "code": "import { style } from "@/styles.treat";
-
 		export const styles = { "card": style({ "color": "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -149,7 +147,6 @@ test("stylex -> treat: loads concrete theme and project context variants", async
 		  "amber": {
 		    "changed": true,
 		    "code": "import { style } from "@/styles.treat";
-
 		export const styles = { "card": style({ "padding": "8px", "color": "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -186,7 +183,6 @@ test("stylex -> treat: loads concrete theme and project context variants", async
 		  "blue": {
 		    "changed": true,
 		    "code": "import { style } from "@/styles.treat";
-
 		export const styles = { "card": style({ "padding": "8px", "color": "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -235,7 +231,6 @@ test("stylex -> treat: resolves concrete token values with project context", asy
 		{
 		  "changed": true,
 		  "code": "import { style } from "@/styles.treat";
-
 		export const styles = { "card": style({ "padding": "8px", "color": "#2563eb" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -281,7 +276,6 @@ test("stylex -> treat: preserves malformed concrete stylex input", () => {
 		{
 		  "changed": true,
 		  "code": "import { style } from "@/styles.treat";
-
 		export const styles = { "card": style({ "padding": "8px", "color": "red" }) };
 		const unfinished = { /* unfinished stylex */",
 		  "converted": 1,

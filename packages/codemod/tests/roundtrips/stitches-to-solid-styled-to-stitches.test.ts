@@ -50,7 +50,6 @@ test("stitches -> solid-styled -> stitches: preserves an actionable concrete rou
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-
 		export const card = styled.div({ "padding": "1rem", "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -87,8 +86,6 @@ test("stitches -> solid-styled -> stitches: preserves an actionable concrete rou
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@stitches/react";
-
-
 		export const card = css({ padding: "1rem", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -218,7 +215,6 @@ test("stitches -> solid-styled -> stitches: preserves concrete theme and project
 		    "forward": {
 		      "changed": true,
 		      "code": "import { styled } from "solid-styled-components";
-
 		export const card = styled.div({ "padding": "1rem", "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -255,8 +251,6 @@ test("stitches -> solid-styled -> stitches: preserves concrete theme and project
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@stitches/react";
-
-
 		export const card = css({ padding: "1rem", color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -295,7 +289,6 @@ test("stitches -> solid-styled -> stitches: preserves concrete theme and project
 		    "forward": {
 		      "changed": true,
 		      "code": "import { styled } from "solid-styled-components";
-
 		export const card = styled.div({ "padding": "1rem", "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -332,8 +325,6 @@ test("stitches -> solid-styled -> stitches: preserves concrete theme and project
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@stitches/react";
-
-
 		export const card = css({ padding: "1rem", color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -386,7 +377,6 @@ test("stitches -> solid-styled -> stitches: resolves token values across both co
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-
 		export const card = styled.div({ "padding": "1rem", "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -423,8 +413,6 @@ test("stitches -> solid-styled -> stitches: resolves token values across both co
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@stitches/react";
-
-
 		export const card = css({ padding: "1rem", color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],

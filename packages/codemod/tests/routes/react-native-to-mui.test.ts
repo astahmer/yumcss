@@ -49,7 +49,6 @@ test("react-native -> mui: migrates concrete react-native syntax to mui", () => 
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const styles = { "card": css.class({ padding: 8, color: "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -95,7 +94,6 @@ test("react-native -> mui: carries a documented secondary react-native API expli
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const styles = { "card": css.class({ padding: 8, backgroundColor: "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -150,7 +148,6 @@ test("react-native -> mui: loads concrete theme and project context variants", a
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const styles = { "card": css.class({ padding: 8, color: "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -187,7 +184,6 @@ test("react-native -> mui: loads concrete theme and project context variants", a
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const styles = { "card": css.class({ padding: 8, color: "primary.main" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -236,7 +232,6 @@ test("react-native -> mui: resolves concrete token values with project context",
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const styles = { "card": css.class({ padding: 8, color: "primary.main" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -282,7 +277,6 @@ test("react-native -> mui: preserves malformed concrete react-native input", () 
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const styles = { "card": css.class({ padding: 8, color: "red" }) };
 		const unfinished = { /* unfinished react-native */",
 		  "converted": 1,

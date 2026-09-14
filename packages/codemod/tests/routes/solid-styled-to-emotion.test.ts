@@ -48,7 +48,6 @@ test("solid-styled -> emotion: migrates concrete solid-styled syntax to emotion"
 		{
 		  "changed": true,
 		  "code": "import styled from "@emotion/styled";
-
 		export const Card = styled.div({ padding: "1rem", color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -92,7 +91,6 @@ test("solid-styled -> emotion: carries a documented secondary solid-styled API e
 		{
 		  "changed": true,
 		  "code": "import styled from "@emotion/styled";
-
 		export const Card = styled.div({ padding: "1rem", color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -145,7 +143,6 @@ test("solid-styled -> emotion: loads concrete theme and project context variants
 		  "amber": {
 		    "changed": true,
 		    "code": "import styled from "@emotion/styled";
-
 		export const Card = styled.div({ padding: "1rem", color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -180,7 +177,6 @@ test("solid-styled -> emotion: loads concrete theme and project context variants
 		  "blue": {
 		    "changed": true,
 		    "code": "import styled from "@emotion/styled";
-
 		export const Card = styled.div({ padding: "1rem", color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -227,7 +223,6 @@ test("solid-styled -> emotion: resolves concrete token values with project conte
 		{
 		  "changed": true,
 		  "code": "import styled from "@emotion/styled";
-
 		export const Card = styled.div({ padding: "1rem", color: "#2563eb" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -271,7 +266,6 @@ test("solid-styled -> emotion: preserves malformed concrete solid-styled input",
 		{
 		  "changed": true,
 		  "code": "import styled from "@emotion/styled";
-
 		export const Card = styled.div({ padding: "1rem", color: "red" });
 		const unfinished = { /* unfinished solid-styled */",
 		  "converted": 1,

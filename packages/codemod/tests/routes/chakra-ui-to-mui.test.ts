@@ -142,8 +142,9 @@ test("chakra-ui -> mui: loads concrete theme and project context variants", asyn
 		  "amber": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => <Box p="4"  sx={{ backgroundColor: "primary.main" }}/>;",
-		    "converted": 1,
+		export const App = () => // pandwind:migrate-skip (route: chakra-ui -> mui | lowering-residual: validation)
+		<Box bg="brand.500" p="4" />;",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -159,25 +160,34 @@ test("chakra-ui -> mui: loads concrete theme and project context variants", asyn
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
+		    "residuals": [
+		      {
+		        "hint": "canonical CSS differs",
+		        "kind": "validation",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
 		    "validations": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "differences": [
+		          "canonical CSS differs",
+		        ],
+		        "lossiness": "unsupported",
+		        "valid": false,
 		      },
 		    ],
 		  },
 		  "blue": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => <Box p="4"  sx={{ backgroundColor: "primary.main" }}/>;",
-		    "converted": 1,
+		export const App = () => // pandwind:migrate-skip (route: chakra-ui -> mui | lowering-residual: validation)
+		<Box bg="brand.500" p="4" />;",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -193,17 +203,25 @@ test("chakra-ui -> mui: loads concrete theme and project context variants", asyn
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
+		    "residuals": [
+		      {
+		        "hint": "canonical CSS differs",
+		        "kind": "validation",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
 		    "validations": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "differences": [
+		          "canonical CSS differs",
+		        ],
+		        "lossiness": "unsupported",
+		        "valid": false,
 		      },
 		    ],
 		  },
@@ -222,8 +240,9 @@ test("chakra-ui -> mui: resolves concrete token values with project context", as
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => <Box p="4"  sx={{ backgroundColor: "primary.main" }}/>;",
-		  "converted": 1,
+		export const App = () => // pandwind:migrate-skip (route: chakra-ui -> mui | lowering-residual: validation)
+		<Box bg="#2563eb" p="4" />;",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -239,17 +258,25 @@ test("chakra-ui -> mui: resolves concrete token values with project context", as
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
+		      "outcome": "residual",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
+		  "residuals": [
+		    {
+		      "hint": "canonical CSS differs",
+		      "kind": "validation",
+		      "preserved": undefined,
+		    },
+		  ],
+		  "skipped": 1,
 		  "validations": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "differences": [
+		        "canonical CSS differs",
+		      ],
+		      "lossiness": "unsupported",
+		      "valid": false,
 		    },
 		  ],
 		}

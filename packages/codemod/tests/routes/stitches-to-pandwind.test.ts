@@ -49,7 +49,6 @@ test("stitches -> pandwind: migrates concrete stitches syntax to pandwind", () =
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ padding: "1rem", color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -95,7 +94,6 @@ test("stitches -> pandwind: carries a documented secondary stitches API explicit
 		  "code": "import { createRuntimeCss } from "pandwind/css/runtime";
 		import { pandwindPreset } from "pandwind/preset";
 		const css = createRuntimeCss(pandwindPreset);
-
 		export const reset = () => (css.sheet.registerSemanticRules([{ kind: "global", selector: "body", conditions: [], declarations: [{ property: "margin", value: 0 }], children: [] }]), null);",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -149,7 +147,6 @@ test("stitches -> pandwind: loads concrete theme and project context variants", 
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ padding: "1rem", color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -185,7 +182,6 @@ test("stitches -> pandwind: loads concrete theme and project context variants", 
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ padding: "1rem", color: "brand" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -233,7 +229,6 @@ test("stitches -> pandwind: resolves concrete token values with project context"
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ padding: "1rem", color: "brand" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -278,7 +273,6 @@ test("stitches -> pandwind: preserves malformed concrete stitches input", () => 
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ padding: "1rem", color: "red" });
 		const unfinished = { /* unfinished stitches */",
 		  "converted": 1,

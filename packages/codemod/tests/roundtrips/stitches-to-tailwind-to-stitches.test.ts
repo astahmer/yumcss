@@ -49,8 +49,7 @@ test("stitches -> tailwind -> stitches: preserves an actionable concrete round t
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const card = "[padding:1rem] [color:red]";",
+		    "code": "export const card = "[padding:1rem] [color:red]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,7 +85,6 @@ test("stitches -> tailwind -> stitches: preserves an actionable concrete round t
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@stitches/react";
-
 		export const card = css({ padding: "1rem", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -215,8 +213,7 @@ test("stitches -> tailwind -> stitches: preserves concrete theme and project con
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		export const card = "[padding:1rem] [color:#2563eb]";",
+		      "code": "export const card = "[padding:1rem] [color:#2563eb]";",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -251,8 +248,7 @@ test("stitches -> tailwind -> stitches: preserves concrete theme and project con
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		export const card = // pandwind:migrate-skip (route: tailwind -> stitches | parse-residual: unknown-utility | available: named-map, residual)
+		      "code": "export const card = // pandwind:migrate-skip (route: tailwind -> stitches | parse-residual: unknown-utility | available: named-map, residual)
 		"[padding:1rem] [color:#2563eb]";",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -294,8 +290,7 @@ test("stitches -> tailwind -> stitches: preserves concrete theme and project con
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		export const card = "[padding:1rem] text-brand";",
+		      "code": "export const card = "[padding:1rem] text-brand";",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -330,8 +325,7 @@ test("stitches -> tailwind -> stitches: preserves concrete theme and project con
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		export const card = // pandwind:migrate-skip (route: tailwind -> stitches | parse-residual: unknown-utility | available: named-map, residual)
+		      "code": "export const card = // pandwind:migrate-skip (route: tailwind -> stitches | parse-residual: unknown-utility | available: named-map, residual)
 		"[padding:1rem] text-brand";",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -382,8 +376,7 @@ test("stitches -> tailwind -> stitches: resolves token values across both concre
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const card = "[padding:1rem] text-brand";",
+		    "code": "export const card = "[padding:1rem] text-brand";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -418,8 +411,7 @@ test("stitches -> tailwind -> stitches: resolves token values across both concre
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		export const card = // pandwind:migrate-skip (route: tailwind -> stitches | parse-residual: unknown-utility | available: named-map, residual)
+		    "code": "export const card = // pandwind:migrate-skip (route: tailwind -> stitches | parse-residual: unknown-utility | available: named-map, residual)
 		"[padding:1rem] text-brand";",
 		    "converted": 0,
 		    "generatedFiles": [],

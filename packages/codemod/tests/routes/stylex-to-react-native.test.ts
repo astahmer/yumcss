@@ -48,7 +48,6 @@ test("stylex -> react-native: migrates concrete stylex syntax to react-native", 
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "react-native";
-
 		export const styles = StyleSheet.create({ "card": { "padding": 8, "color": "red" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -95,7 +94,6 @@ test("stylex -> react-native: carries a documented secondary stylex API explicit
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "react-native";
-
 		export const styles = StyleSheet.create({ "card": { "color": "red" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -151,7 +149,6 @@ test("stylex -> react-native: loads concrete theme and project context variants"
 		  "amber": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-
 		export const styles = StyleSheet.create({ "card": { "padding": 8, "color": "#2563eb" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -189,7 +186,6 @@ test("stylex -> react-native: loads concrete theme and project context variants"
 		  "blue": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-
 		export const styles = StyleSheet.create({ "card": { "padding": 8, "color": "#2563eb" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -239,7 +235,6 @@ test("stylex -> react-native: resolves concrete token values with project contex
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "react-native";
-
 		export const styles = StyleSheet.create({ "card": { "padding": 8, "color": "#2563eb" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -286,7 +281,6 @@ test("stylex -> react-native: preserves malformed concrete stylex input", () => 
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "react-native";
-
 		export const styles = StyleSheet.create({ "card": { "padding": 8, "color": "red" } });
 		const unfinished = { /* unfinished stylex */",
 		  "converted": 1,

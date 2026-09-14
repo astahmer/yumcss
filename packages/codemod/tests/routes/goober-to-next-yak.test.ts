@@ -48,7 +48,6 @@ test("goober -> next-yak: migrates concrete goober syntax to next-yak", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "next-yak";
-
 		export const card = css\`padding: 1rem; color: red;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -92,7 +91,6 @@ test("goober -> next-yak: carries a documented secondary goober API explicitly",
 		{
 		  "changed": true,
 		  "code": "import { styled } from "next-yak";
-
 		export const Card = styled.div\`padding: 1rem; color: red;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -145,7 +143,6 @@ test("goober -> next-yak: loads concrete theme and project context variants", as
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-
 		export const card = css\`padding: 1rem; color: #2563eb;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -180,7 +177,6 @@ test("goober -> next-yak: loads concrete theme and project context variants", as
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-
 		export const card = css\`padding: 1rem; color: #2563eb;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -227,7 +223,6 @@ test("goober -> next-yak: resolves concrete token values with project context", 
 		{
 		  "changed": true,
 		  "code": "import { css } from "next-yak";
-
 		export const card = css\`padding: 1rem; color: #2563eb;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -271,7 +266,6 @@ test("goober -> next-yak: preserves malformed concrete goober input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "next-yak";
-
 		export const card = css\`padding: 1rem; color: red;\`;
 		const unfinished = { /* unfinished goober */",
 		  "converted": 1,

@@ -50,7 +50,6 @@ test("pandwind -> css-modules -> pandwind: preserves an actionable concrete roun
 		  "forward": {
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
-
 		const css = createCss();
 		export const card = css.class({ "padding": "1rem", "color": "red" });",
 		    "converted": 1,
@@ -89,7 +88,6 @@ test("pandwind -> css-modules -> pandwind: preserves an actionable concrete roun
 		    "changed": false,
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
 		import { createCss } from "pandwind/css";
-
 		const css = createCss();
 		export const card = css.class({ "padding": "1rem", "color": "red" });",
 		    "converted": 0,
@@ -263,7 +261,6 @@ test("pandwind -> css-modules -> pandwind: preserves concrete theme and project 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
-
 		const css = createCss();
 		export const card = css.class({ "padding": "1rem", "color": "$brand" });",
 		      "converted": 1,
@@ -302,7 +299,6 @@ test("pandwind -> css-modules -> pandwind: preserves concrete theme and project 
 		      "changed": false,
 		      "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
 		import { createCss } from "pandwind/css";
-
 		const css = createCss();
 		export const card = css.class({ "padding": "1rem", "color": "$brand" });",
 		      "converted": 0,
@@ -354,7 +350,6 @@ test("pandwind -> css-modules -> pandwind: preserves concrete theme and project 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
-
 		const css = createCss();
 		export const card = css.class({ "padding": "1rem", "color": "$brand" });",
 		      "converted": 1,
@@ -393,7 +388,6 @@ test("pandwind -> css-modules -> pandwind: preserves concrete theme and project 
 		      "changed": false,
 		      "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
 		import { createCss } from "pandwind/css";
-
 		const css = createCss();
 		export const card = css.class({ "padding": "1rem", "color": "$brand" });",
 		      "converted": 0,
@@ -459,7 +453,6 @@ test("pandwind -> css-modules -> pandwind: resolves token values across both con
 		  "forward": {
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
-
 		const css = createCss();
 		export const card = css.class({ "padding": "1rem", "color": "#2563eb" });",
 		    "converted": 1,
@@ -498,7 +491,6 @@ test("pandwind -> css-modules -> pandwind: resolves token values across both con
 		    "changed": false,
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
 		import { createCss } from "pandwind/css";
-
 		const css = createCss();
 		export const card = css.class({ "padding": "1rem", "color": "#2563eb" });",
 		    "converted": 0,

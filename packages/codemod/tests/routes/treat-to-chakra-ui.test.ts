@@ -48,7 +48,6 @@ test("treat -> chakra-ui: migrates concrete treat syntax to chakra-ui", () => {
 		{
 		  "changed": true,
 		  "code": "import { defaultSystem } from "@chakra-ui/react";
-
 		export const card = defaultSystem.css({ padding: "8px", color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -92,7 +91,6 @@ test("treat -> chakra-ui: carries a documented secondary treat API explicitly", 
 		{
 		  "changed": true,
 		  "code": "import { defaultSystem } from "@chakra-ui/react";
-
 		export const card = defaultSystem.css({ padding: "8px", color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -145,7 +143,6 @@ test("treat -> chakra-ui: loads concrete theme and project context variants", as
 		  "amber": {
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
 		export const card = defaultSystem.css({ padding: "8px", color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -180,7 +177,6 @@ test("treat -> chakra-ui: loads concrete theme and project context variants", as
 		  "blue": {
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
 		export const card = defaultSystem.css({ padding: "8px", color: "brand.500" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -227,7 +223,6 @@ test("treat -> chakra-ui: resolves concrete token values with project context", 
 		{
 		  "changed": true,
 		  "code": "import { defaultSystem } from "@chakra-ui/react";
-
 		export const card = defaultSystem.css({ padding: "8px", color: "brand.500" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -271,7 +266,6 @@ test("treat -> chakra-ui: preserves malformed concrete treat input", () => {
 		{
 		  "changed": true,
 		  "code": "import { defaultSystem } from "@chakra-ui/react";
-
 		export const card = defaultSystem.css({ padding: "8px", color: "red" });
 		const unfinished = { /* unfinished treat */",
 		  "converted": 1,

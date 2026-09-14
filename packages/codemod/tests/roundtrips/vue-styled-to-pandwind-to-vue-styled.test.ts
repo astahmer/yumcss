@@ -55,7 +55,6 @@ test("vue-styled -> pandwind -> vue-styled: preserves an actionable concrete rou
 		const cx = createCx();
 		const css = createCss();
 		const style = css.class({ padding: "1rem", color: "red" });
-
 		export const Card = defineComponent({ setup(_props, { attrs, slots }) {  return () => h("div", { ...attrs, class: css.props(style, attrs.class).className }, slots.default?.()); } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -95,7 +94,6 @@ test("vue-styled -> pandwind -> vue-styled: preserves an actionable concrete rou
 		import styled from "vue-styled-components";
 		const cx = createCx();
 		const style = styled.div({ "padding": "1rem", "color": "red" });
-
 		export const Card = defineComponent({ setup(_props, { attrs, slots }) {  return () => h("div", { ...attrs, class: css.props(style, attrs.class).className }, slots.default?.()); } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -151,7 +149,6 @@ test("vue-styled -> pandwind -> vue-styled: retains the documented secondary API
 		const cx = createCx();
 		const css = createCss();
 		const style = css.class({ padding: "1rem", color: "red" });
-
 		export const Card = defineComponent({ setup(_props, { attrs, slots }) {  return () => h("div", { ...attrs, class: css.props(style, attrs.class).className }, slots.default?.()); } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -191,7 +188,6 @@ test("vue-styled -> pandwind -> vue-styled: retains the documented secondary API
 		import styled from "vue-styled-components";
 		const cx = createCx();
 		const style = styled.div({ "padding": "1rem", "color": "red" });
-
 		export const Card = defineComponent({ setup(_props, { attrs, slots }) {  return () => h("div", { ...attrs, class: css.props(style, attrs.class).className }, slots.default?.()); } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -262,7 +258,6 @@ test("vue-styled -> pandwind -> vue-styled: preserves concrete theme and project
 		const cx = createCx();
 		const css = createCss();
 		const style = css.class({ padding: "1rem", color: "#2563eb" });
-
 		export const Card = defineComponent({ setup(_props, { attrs, slots }) {  return () => h("div", { ...attrs, class: css.props(style, attrs.class).className }, slots.default?.()); } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -302,7 +297,6 @@ test("vue-styled -> pandwind -> vue-styled: preserves concrete theme and project
 		import styled from "vue-styled-components";
 		const cx = createCx();
 		const style = styled.div({ "padding": "1rem", "color": "#2563eb" });
-
 		export const Card = defineComponent({ setup(_props, { attrs, slots }) {  return () => h("div", { ...attrs, class: css.props(style, attrs.class).className }, slots.default?.()); } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -346,7 +340,6 @@ test("vue-styled -> pandwind -> vue-styled: preserves concrete theme and project
 		const cx = createCx();
 		const css = createCss();
 		const style = css.class({ padding: "1rem", color: "brand" });
-
 		export const Card = defineComponent({ setup(_props, { attrs, slots }) {  return () => h("div", { ...attrs, class: css.props(style, attrs.class).className }, slots.default?.()); } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -386,7 +379,6 @@ test("vue-styled -> pandwind -> vue-styled: preserves concrete theme and project
 		import styled from "vue-styled-components";
 		const cx = createCx();
 		const style = styled.div({ "padding": "1rem", "color": "#2563eb" });
-
 		export const Card = defineComponent({ setup(_props, { attrs, slots }) {  return () => h("div", { ...attrs, class: css.props(style, attrs.class).className }, slots.default?.()); } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -445,7 +437,6 @@ test("vue-styled -> pandwind -> vue-styled: resolves token values across both co
 		const cx = createCx();
 		const css = createCss();
 		const style = css.class({ padding: "1rem", color: "brand" });
-
 		export const Card = defineComponent({ setup(_props, { attrs, slots }) {  return () => h("div", { ...attrs, class: css.props(style, attrs.class).className }, slots.default?.()); } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -485,7 +476,6 @@ test("vue-styled -> pandwind -> vue-styled: resolves token values across both co
 		import styled from "vue-styled-components";
 		const cx = createCx();
 		const style = styled.div({ "padding": "1rem", "color": "#2563eb" });
-
 		export const Card = defineComponent({ setup(_props, { attrs, slots }) {  return () => h("div", { ...attrs, class: css.props(style, attrs.class).className }, slots.default?.()); } });",
 		    "converted": 1,
 		    "generatedFiles": [],

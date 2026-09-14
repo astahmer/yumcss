@@ -48,7 +48,6 @@ test("panda -> solid-styled: migrates concrete panda syntax to solid-styled", ()
 		{
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
-
 		export const card = styled.div({ "color": "red.300", "_hover": { "color": "blue.300" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -153,7 +152,6 @@ test("panda -> solid-styled: loads concrete theme and project context variants",
 		  "amber": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-
 		export const card = styled.div({ "color": "#f97316", "_hover": { "color": "#f97316" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -191,7 +189,6 @@ test("panda -> solid-styled: loads concrete theme and project context variants",
 		  "blue": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-
 		export const card = styled.div({ "color": "#2563eb", "_hover": { "color": "#2563eb" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -241,7 +238,6 @@ test("panda -> solid-styled: resolves concrete token values with project context
 		{
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
-
 		export const card = styled.div({ "color": "#2563eb", "_hover": { "color": "blue.300" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -287,7 +283,6 @@ test("panda -> solid-styled: preserves malformed concrete panda input", () => {
 		{
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
-
 		export const card = styled.div({ "color": "red.300", "_hover": { "color": "blue.300" } });
 		const unfinished = { /* unfinished panda */",
 		  "converted": 1,

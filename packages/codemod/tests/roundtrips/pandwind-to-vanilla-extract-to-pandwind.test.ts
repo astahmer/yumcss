@@ -89,7 +89,6 @@ test("pandwind -> vanilla-extract -> pandwind: preserves an actionable concrete 
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-
 		export const card = css.class({ padding: "1rem", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -388,7 +387,6 @@ test("pandwind -> vanilla-extract -> pandwind: resolves token values across both
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 
 		export const card = css.class({ padding: "1rem", color: "brand" });",
 		    "converted": 1,

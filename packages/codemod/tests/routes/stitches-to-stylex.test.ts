@@ -48,7 +48,6 @@ test("stitches -> stylex: migrates concrete stitches syntax to stylex", () => {
 		{
 		  "changed": true,
 		  "code": "import * as stylex from "@stylexjs/stylex";
-
 		export const card = stylex.create({ style: { padding: "1rem", color: "red" } }).style;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -158,7 +157,6 @@ test("stitches -> stylex: loads concrete theme and project context variants", as
 		  "amber": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-
 		export const card = stylex.create({ style: { padding: "1rem", color: "#2563eb" } }).style;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -195,7 +193,6 @@ test("stitches -> stylex: loads concrete theme and project context variants", as
 		  "blue": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-
 		export const card = stylex.create({ style: { padding: "1rem", color: "#2563eb" } }).style;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -244,7 +241,6 @@ test("stitches -> stylex: resolves concrete token values with project context", 
 		{
 		  "changed": true,
 		  "code": "import * as stylex from "@stylexjs/stylex";
-
 		export const card = stylex.create({ style: { padding: "1rem", color: "#2563eb" } }).style;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -290,7 +286,6 @@ test("stitches -> stylex: preserves malformed concrete stitches input", () => {
 		{
 		  "changed": true,
 		  "code": "import * as stylex from "@stylexjs/stylex";
-
 		export const card = stylex.create({ style: { padding: "1rem", color: "red" } }).style;
 		const unfinished = { /* unfinished stitches */",
 		  "converted": 1,

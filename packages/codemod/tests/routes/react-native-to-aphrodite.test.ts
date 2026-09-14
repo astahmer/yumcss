@@ -48,7 +48,6 @@ test("react-native -> aphrodite: migrates concrete react-native syntax to aphrod
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "aphrodite";
-
 		export const styles = StyleSheet.create({ "card": { "padding": 8, "color": "red" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -94,7 +93,6 @@ test("react-native -> aphrodite: carries a documented secondary react-native API
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "aphrodite";
-
 		export const styles = StyleSheet.create({ "card": { "padding": 8, "backgroundColor": "red" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -149,7 +147,6 @@ test("react-native -> aphrodite: loads concrete theme and project context varian
 		  "amber": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-
 		export const styles = StyleSheet.create({ "card": { "padding": 8, "color": "#2563eb" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -186,7 +183,6 @@ test("react-native -> aphrodite: loads concrete theme and project context varian
 		  "blue": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-
 		export const styles = StyleSheet.create({ "card": { "padding": 8, "color": "#2563eb" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -235,7 +231,6 @@ test("react-native -> aphrodite: resolves concrete token values with project con
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "aphrodite";
-
 		export const styles = StyleSheet.create({ "card": { "padding": 8, "color": "#2563eb" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -281,7 +276,6 @@ test("react-native -> aphrodite: preserves malformed concrete react-native input
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "aphrodite";
-
 		export const styles = StyleSheet.create({ "card": { "padding": 8, "color": "red" } });
 		const unfinished = { /* unfinished react-native */",
 		  "converted": 1,

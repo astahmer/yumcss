@@ -51,7 +51,6 @@ test("emotion -> sass -> emotion: preserves an actionable concrete round trip", 
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": "1rem", "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -90,7 +89,6 @@ test("emotion -> sass -> emotion: preserves an actionable concrete round trip", 
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
 		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": "1rem", "color": "red" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -154,7 +152,6 @@ test("emotion -> sass -> emotion: retains the documented secondary API without s
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": "1rem", "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -193,7 +190,6 @@ test("emotion -> sass -> emotion: retains the documented secondary API without s
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
 		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": "1rem", "color": "red" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -272,7 +268,6 @@ test("emotion -> sass -> emotion: preserves concrete theme and project context v
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": "1rem", "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -311,7 +306,6 @@ test("emotion -> sass -> emotion: preserves concrete theme and project context v
 		      "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
 		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": "1rem", "color": "#2563eb" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -363,7 +357,6 @@ test("emotion -> sass -> emotion: preserves concrete theme and project context v
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": "1rem", "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -402,7 +395,6 @@ test("emotion -> sass -> emotion: preserves concrete theme and project context v
 		      "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
 		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": "1rem", "color": "#2563eb" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -468,7 +460,6 @@ test("emotion -> sass -> emotion: resolves token values across both concrete leg
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": "1rem", "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -507,7 +498,6 @@ test("emotion -> sass -> emotion: resolves token values across both concrete leg
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
 		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": "1rem", "color": "#2563eb" });",
 		    "converted": 0,
 		    "generatedFiles": [],

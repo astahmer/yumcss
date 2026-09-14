@@ -48,7 +48,6 @@ test("styled-components -> stitches: migrates concrete styled-components syntax 
 		{
 		  "changed": true,
 		  "code": "import { css } from "@stitches/react";
-
 		export const Card = css({ padding: "1rem", color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -94,7 +93,6 @@ test("styled-components -> stitches: carries a documented secondary styled-compo
 		{
 		  "changed": true,
 		  "code": "import { css } from "@stitches/react";
-
 		export const Card = css({ padding: "1rem", color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -149,7 +147,6 @@ test("styled-components -> stitches: loads concrete theme and project context va
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "@stitches/react";
-
 		export const Card = css({ padding: "1rem", color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -186,7 +183,6 @@ test("styled-components -> stitches: loads concrete theme and project context va
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "@stitches/react";
-
 		export const Card = css({ padding: "1rem", color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -235,7 +231,6 @@ test("styled-components -> stitches: resolves concrete token values with project
 		{
 		  "changed": true,
 		  "code": "import { css } from "@stitches/react";
-
 		export const Card = css({ padding: "1rem", color: "#2563eb" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -281,7 +276,6 @@ test("styled-components -> stitches: preserves malformed concrete styled-compone
 		{
 		  "changed": true,
 		  "code": "import { css } from "@stitches/react";
-
 		export const Card = css({ padding: "1rem", color: "red" });
 		const unfinished = { /* unfinished styled-components */",
 		  "converted": 1,

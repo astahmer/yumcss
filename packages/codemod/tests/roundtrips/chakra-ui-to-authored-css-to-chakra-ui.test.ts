@@ -297,7 +297,7 @@ test("chakra-ui -> authored-css -> chakra-ui: preserves concrete theme and proje
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "1 residual conversion(s)",
+		          "hint": "2 residual conversion(s)",
 		          "kind": "validation",
 		          "preserved": undefined,
 		        },
@@ -306,7 +306,7 @@ test("chakra-ui -> authored-css -> chakra-ui: preserves concrete theme and proje
 		      "validations": [
 		        {
 		          "differences": [
-		            "1 residual conversion(s)",
+		            "2 residual conversion(s)",
 		          ],
 		          "lossiness": "lossy",
 		          "valid": false,
@@ -388,7 +388,7 @@ test("chakra-ui -> authored-css -> chakra-ui: preserves concrete theme and proje
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "1 residual conversion(s)",
+		          "hint": "2 residual conversion(s)",
 		          "kind": "validation",
 		          "preserved": undefined,
 		        },
@@ -397,7 +397,7 @@ test("chakra-ui -> authored-css -> chakra-ui: preserves concrete theme and proje
 		      "validations": [
 		        {
 		          "differences": [
-		            "1 residual conversion(s)",
+		            "2 residual conversion(s)",
 		          ],
 		          "lossiness": "lossy",
 		          "valid": false,
@@ -493,7 +493,7 @@ test("chakra-ui -> authored-css -> chakra-ui: resolves token values across both 
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "1 residual conversion(s)",
+		        "hint": "2 residual conversion(s)",
 		        "kind": "validation",
 		        "preserved": undefined,
 		      },
@@ -502,7 +502,7 @@ test("chakra-ui -> authored-css -> chakra-ui: resolves token values across both 
 		    "validations": [
 		      {
 		        "differences": [
-		          "1 residual conversion(s)",
+		          "2 residual conversion(s)",
 		        ],
 		        "lossiness": "lossy",
 		        "valid": false,

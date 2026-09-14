@@ -50,7 +50,6 @@ test("aphrodite -> styled-components -> aphrodite: preserves an actionable concr
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
 		export const styles = { "card": styled.div({ padding: 8, color: "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -85,7 +84,6 @@ test("aphrodite -> styled-components -> aphrodite: preserves an actionable concr
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
 		export const styles = { "card": // pandwind:migrate-skip (route: styled-components -> aphrodite | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		styled.div({ padding: 8, color: "red" }) };",
 		    "converted": 0,
@@ -222,7 +220,6 @@ test("aphrodite -> styled-components -> aphrodite: preserves concrete theme and 
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-
 		export const styles = { "card": styled.div({ padding: 8, color: "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -257,7 +254,6 @@ test("aphrodite -> styled-components -> aphrodite: preserves concrete theme and 
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-
 		export const styles = { "card": // pandwind:migrate-skip (route: styled-components -> aphrodite | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		styled.div({ padding: 8, color: "#2563eb" }) };",
 		      "converted": 0,
@@ -297,7 +293,6 @@ test("aphrodite -> styled-components -> aphrodite: preserves concrete theme and 
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-
 		export const styles = { "card": styled.div({ padding: 8, color: "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -332,7 +327,6 @@ test("aphrodite -> styled-components -> aphrodite: preserves concrete theme and 
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-
 		export const styles = { "card": // pandwind:migrate-skip (route: styled-components -> aphrodite | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		styled.div({ padding: 8, color: "#2563eb" }) };",
 		      "converted": 0,
@@ -386,7 +380,6 @@ test("aphrodite -> styled-components -> aphrodite: resolves token values across 
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
 		export const styles = { "card": styled.div({ padding: 8, color: "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -421,7 +414,6 @@ test("aphrodite -> styled-components -> aphrodite: resolves token values across 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
 		export const styles = { "card": // pandwind:migrate-skip (route: styled-components -> aphrodite | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		styled.div({ padding: 8, color: "#2563eb" }) };",
 		    "converted": 0,

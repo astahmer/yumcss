@@ -50,7 +50,6 @@ test("goober -> solid-styled -> goober: preserves an actionable concrete round t
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-
 		export const card = styled.div({ "padding": "1rem", "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -86,11 +85,9 @@ test("goober -> solid-styled -> goober: preserves an actionable concrete round t
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { css } from "goober";
 		const cx = createCx();
-
 		export const card = (props) => <div {...props} class={cx(css({ "padding": "1rem", "color": "red" }), props.class)} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -141,7 +138,6 @@ test("goober -> solid-styled -> goober: retains the documented secondary API wit
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-
 		export const Card = styled.div({ "padding": "1rem", "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -177,11 +173,9 @@ test("goober -> solid-styled -> goober: retains the documented secondary API wit
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { css } from "goober";
 		const cx = createCx();
-
 		export const Card = (props) => <div {...props} class={cx(css({ "padding": "1rem", "color": "red" }), props.class)} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -247,7 +241,6 @@ test("goober -> solid-styled -> goober: preserves concrete theme and project con
 		    "forward": {
 		      "changed": true,
 		      "code": "import { styled } from "solid-styled-components";
-
 		export const card = styled.div({ "padding": "1rem", "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -283,11 +276,9 @@ test("goober -> solid-styled -> goober: preserves concrete theme and project con
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		import { createCx } from "pandwind/cx";
+		      "code": "import { createCx } from "pandwind/cx";
 		import { css } from "goober";
 		const cx = createCx();
-
 		export const card = (props) => <div {...props} class={cx(css({ "padding": "1rem", "color": "#2563eb" }), props.class)} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -326,7 +317,6 @@ test("goober -> solid-styled -> goober: preserves concrete theme and project con
 		    "forward": {
 		      "changed": true,
 		      "code": "import { styled } from "solid-styled-components";
-
 		export const card = styled.div({ "padding": "1rem", "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -362,11 +352,9 @@ test("goober -> solid-styled -> goober: preserves concrete theme and project con
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		import { createCx } from "pandwind/cx";
+		      "code": "import { createCx } from "pandwind/cx";
 		import { css } from "goober";
 		const cx = createCx();
-
 		export const card = (props) => <div {...props} class={cx(css({ "padding": "1rem", "color": "#2563eb" }), props.class)} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -419,7 +407,6 @@ test("goober -> solid-styled -> goober: resolves token values across both concre
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-
 		export const card = styled.div({ "padding": "1rem", "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -455,11 +442,9 @@ test("goober -> solid-styled -> goober: resolves token values across both concre
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { css } from "goober";
 		const cx = createCx();
-
 		export const card = (props) => <div {...props} class={cx(css({ "padding": "1rem", "color": "#2563eb" }), props.class)} />;",
 		    "converted": 1,
 		    "generatedFiles": [],

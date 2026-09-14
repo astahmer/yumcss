@@ -50,7 +50,6 @@ test("panda -> vanilla-extract -> panda: preserves an actionable concrete round 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-
 		export const card = style({ color: "red.300", "&:hover": { color: "blue.300" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -87,8 +86,6 @@ test("panda -> vanilla-extract -> panda: preserves an actionable concrete round 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-
-
 		export const card = css({ color: "red.300", "&:hover": { color: "blue.300" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -359,7 +356,6 @@ test("panda -> vanilla-extract -> panda: resolves token values across both concr
 		  "forward": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-
 		export const card = style({ color: "#2563eb", "&:hover": { color: "blue.300" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -396,8 +392,6 @@ test("panda -> vanilla-extract -> panda: resolves token values across both concr
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-
-
 		export const card = css({ color: "brand.500", "&:hover": { color: "blue.300" } });",
 		    "converted": 1,
 		    "generatedFiles": [],

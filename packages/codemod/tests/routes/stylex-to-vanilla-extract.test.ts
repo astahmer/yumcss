@@ -48,7 +48,6 @@ test("stylex -> vanilla-extract: migrates concrete stylex syntax to vanilla-extr
 		{
 		  "changed": true,
 		  "code": "import { style } from "@vanilla-extract/css";
-
 		export const styles = { "card": style({ padding: "8px", color: "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -94,7 +93,6 @@ test("stylex -> vanilla-extract: carries a documented secondary stylex API expli
 		{
 		  "changed": true,
 		  "code": "import { style } from "@vanilla-extract/css";
-
 		export const styles = { "card": style({ color: "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -149,7 +147,6 @@ test("stylex -> vanilla-extract: loads concrete theme and project context varian
 		  "amber": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-
 		export const styles = { "card": style({ padding: "8px", color: "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -186,7 +183,6 @@ test("stylex -> vanilla-extract: loads concrete theme and project context varian
 		  "blue": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-
 		export const styles = { "card": style({ padding: "8px", color: "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -235,7 +231,6 @@ test("stylex -> vanilla-extract: resolves concrete token values with project con
 		{
 		  "changed": true,
 		  "code": "import { style } from "@vanilla-extract/css";
-
 		export const styles = { "card": style({ padding: "8px", color: "#2563eb" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -281,7 +276,6 @@ test("stylex -> vanilla-extract: preserves malformed concrete stylex input", () 
 		{
 		  "changed": true,
 		  "code": "import { style } from "@vanilla-extract/css";
-
 		export const styles = { "card": style({ padding: "8px", color: "red" }) };
 		const unfinished = { /* unfinished stylex */",
 		  "converted": 1,

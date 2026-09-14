@@ -50,7 +50,6 @@ test("emotion -> jss -> emotion: preserves an actionable concrete round trip", (
 		  "forward": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-
 		export const card = createUseStyles({ padding: "1rem", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -87,8 +86,6 @@ test("emotion -> jss -> emotion: preserves an actionable concrete round trip", (
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
-
-
 		export const card = css({ padding: "1rem", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -137,7 +134,6 @@ test("emotion -> jss -> emotion: retains the documented secondary API without si
 		  "forward": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-
 		export const card = createUseStyles({ padding: "1rem", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -174,8 +170,6 @@ test("emotion -> jss -> emotion: retains the documented secondary API without si
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
-
-
 		export const card = css({ padding: "1rem", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -239,7 +233,6 @@ test("emotion -> jss -> emotion: preserves concrete theme and project context va
 		    "forward": {
 		      "changed": true,
 		      "code": "import { createUseStyles } from "react-jss";
-
 		export const card = createUseStyles({ padding: "1rem", color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -276,8 +269,6 @@ test("emotion -> jss -> emotion: preserves concrete theme and project context va
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@emotion/css";
-
-
 		export const card = css({ padding: "1rem", color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -314,7 +305,6 @@ test("emotion -> jss -> emotion: preserves concrete theme and project context va
 		    "forward": {
 		      "changed": true,
 		      "code": "import { createUseStyles } from "react-jss";
-
 		export const card = createUseStyles({ padding: "1rem", color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -351,8 +341,6 @@ test("emotion -> jss -> emotion: preserves concrete theme and project context va
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@emotion/css";
-
-
 		export const card = css({ padding: "1rem", color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -403,7 +391,6 @@ test("emotion -> jss -> emotion: resolves token values across both concrete legs
 		  "forward": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-
 		export const card = createUseStyles({ padding: "1rem", color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -440,8 +427,6 @@ test("emotion -> jss -> emotion: resolves token values across both concrete legs
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
-
-
 		export const card = css({ padding: "1rem", color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],

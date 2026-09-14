@@ -48,7 +48,6 @@ test("jss -> stylex: migrates concrete jss syntax to stylex", () => {
 		{
 		  "changed": true,
 		  "code": "import * as stylex from "@stylexjs/stylex";
-
 		export const useStyles = stylex.create({ card: { color: "red" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -94,7 +93,6 @@ test("jss -> stylex: carries a documented secondary jss API explicitly", () => {
 		{
 		  "changed": true,
 		  "code": "import * as stylex from "@stylexjs/stylex";
-
 		export const sheet = stylex.create({ card: { color: "red" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -149,7 +147,6 @@ test("jss -> stylex: loads concrete theme and project context variants", async (
 		  "amber": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-
 		export const useStyles = stylex.create({ card: { color: "#2563eb" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -186,7 +183,6 @@ test("jss -> stylex: loads concrete theme and project context variants", async (
 		  "blue": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-
 		export const useStyles = stylex.create({ card: { color: "#2563eb" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -235,7 +231,6 @@ test("jss -> stylex: resolves concrete token values with project context", async
 		{
 		  "changed": true,
 		  "code": "import * as stylex from "@stylexjs/stylex";
-
 		export const useStyles = stylex.create({ card: { color: "#2563eb" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -281,7 +276,6 @@ test("jss -> stylex: preserves malformed concrete jss input", () => {
 		{
 		  "changed": true,
 		  "code": "import * as stylex from "@stylexjs/stylex";
-
 		export const useStyles = stylex.create({ card: { color: "red" } });
 		const unfinished = { /* unfinished jss */",
 		  "converted": 1,

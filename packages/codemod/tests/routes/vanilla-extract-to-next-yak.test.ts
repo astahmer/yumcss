@@ -48,7 +48,6 @@ test("vanilla-extract -> next-yak: migrates concrete vanilla-extract syntax to n
 		{
 		  "changed": true,
 		  "code": "import { css } from "next-yak";
-
 		export const card = css\`padding: 8; color: red;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -153,7 +152,6 @@ test("vanilla-extract -> next-yak: loads concrete theme and project context vari
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-
 		export const card = css\`padding: 8; color: #2563eb;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -188,7 +186,6 @@ test("vanilla-extract -> next-yak: loads concrete theme and project context vari
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-
 		export const card = css\`padding: 8; color: #2563eb;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -235,7 +232,6 @@ test("vanilla-extract -> next-yak: resolves concrete token values with project c
 		{
 		  "changed": true,
 		  "code": "import { css } from "next-yak";
-
 		export const card = css\`padding: 8; color: #2563eb;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -279,7 +275,6 @@ test("vanilla-extract -> next-yak: preserves malformed concrete vanilla-extract 
 		{
 		  "changed": true,
 		  "code": "import { css } from "next-yak";
-
 		export const card = css\`padding: 8; color: red;\`;
 		const unfinished = { /* unfinished vanilla-extract */",
 		  "converted": 1,

@@ -48,7 +48,6 @@ test("stylex -> panda: migrates concrete stylex syntax to panda", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-
 		export const styles = { "card": css({ padding: "8px", color: "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -92,7 +91,6 @@ test("stylex -> panda: carries a documented secondary stylex API explicitly", ()
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-
 		export const styles = { "card": css({ color: "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -145,7 +143,6 @@ test("stylex -> panda: loads concrete theme and project context variants", async
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-
 		export const styles = { "card": css({ padding: "8px", color: "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -180,7 +177,6 @@ test("stylex -> panda: loads concrete theme and project context variants", async
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-
 		export const styles = { "card": css({ padding: "8px", color: "brand.500" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -227,7 +223,6 @@ test("stylex -> panda: resolves concrete token values with project context", asy
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-
 		export const styles = { "card": css({ padding: "8px", color: "brand.500" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -271,7 +266,6 @@ test("stylex -> panda: preserves malformed concrete stylex input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-
 		export const styles = { "card": css({ padding: "8px", color: "red" }) };
 		const unfinished = { /* unfinished stylex */",
 		  "converted": 1,

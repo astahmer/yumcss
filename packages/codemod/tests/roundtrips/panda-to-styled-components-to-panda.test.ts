@@ -50,7 +50,6 @@ test("panda -> styled-components -> panda: preserves an actionable concrete roun
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
 		export const card = styled.div({ color: "red.300", "&:hover": { color: "blue.300" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -84,11 +83,9 @@ test("panda -> styled-components -> panda: preserves an actionable concrete roun
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { css } from "styled-system/css";
 		const cx = createCx();
-
 		export const card = (props) => <div {...props} className={cx(css({ color: "red.300", "&:hover": { color: "blue.300" } }), props.className)} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -343,7 +340,6 @@ test("panda -> styled-components -> panda: resolves token values across both con
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
 		export const card = styled.div({ color: "#2563eb", "&:hover": { color: "blue.300" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -377,11 +373,9 @@ test("panda -> styled-components -> panda: resolves token values across both con
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { css } from "styled-system/css";
 		const cx = createCx();
-
 		export const card = (props) => <div {...props} className={cx(css({ color: "brand.500", "&:hover": { color: "blue.300" } }), props.className)} />;",
 		    "converted": 1,
 		    "generatedFiles": [],

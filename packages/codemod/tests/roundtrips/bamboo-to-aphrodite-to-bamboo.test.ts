@@ -50,7 +50,6 @@ test("bamboo -> aphrodite -> bamboo: preserves an actionable concrete round trip
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-
 		export const card = StyleSheet.create({ "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -87,8 +86,6 @@ test("bamboo -> aphrodite -> bamboo: preserves an actionable concrete round trip
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-
-
 		export const card = css({ color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -137,7 +134,6 @@ test("bamboo -> aphrodite -> bamboo: retains the documented secondary API withou
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-
 		export const card = StyleSheet.create({ "gap": "4", "display": "flex" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -174,8 +170,6 @@ test("bamboo -> aphrodite -> bamboo: retains the documented secondary API withou
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-
-
 		export const card = css({ gap: "4", display: "flex" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -239,7 +233,6 @@ test("bamboo -> aphrodite -> bamboo: preserves concrete theme and project contex
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "aphrodite";
-
 		export const card = StyleSheet.create({ "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -276,8 +269,6 @@ test("bamboo -> aphrodite -> bamboo: preserves concrete theme and project contex
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "styled-system/css";
-
-
 		export const card = css({ color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -314,7 +305,6 @@ test("bamboo -> aphrodite -> bamboo: preserves concrete theme and project contex
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "aphrodite";
-
 		export const card = StyleSheet.create({ "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -351,8 +341,6 @@ test("bamboo -> aphrodite -> bamboo: preserves concrete theme and project contex
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "styled-system/css";
-
-
 		export const card = css({ color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -403,7 +391,6 @@ test("bamboo -> aphrodite -> bamboo: resolves token values across both concrete 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-
 		export const card = StyleSheet.create({ "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -440,8 +427,6 @@ test("bamboo -> aphrodite -> bamboo: resolves token values across both concrete 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-
-
 		export const card = css({ color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],

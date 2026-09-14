@@ -92,7 +92,6 @@ test("next-yak -> chakra-ui: carries a documented secondary next-yak API explici
 		{
 		  "changed": true,
 		  "code": "import { chakra } from "@chakra-ui/react";
-
 		export const Card = (props) => <chakra.div {...props} css={{ padding: "1rem", color: "red" }} />;",
 		  "converted": 1,
 		  "generatedFiles": [],

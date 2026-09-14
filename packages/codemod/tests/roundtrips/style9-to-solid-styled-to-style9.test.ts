@@ -50,7 +50,6 @@ test("style9 -> solid-styled -> style9: preserves an actionable concrete round t
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-
 		export const styles = { "card": styled.div({ "color": "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -87,7 +86,6 @@ test("style9 -> solid-styled -> style9: preserves an actionable concrete round t
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-
 		export const styles = { "card": // pandwind:migrate-skip (route: solid-styled -> style9 | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
 		styled.div({ "color": "red" }) };",
 		    "converted": 0,
@@ -139,7 +137,6 @@ test("style9 -> solid-styled -> style9: retains the documented secondary API wit
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-
 		export const styles = { "card": styled.div({ "color": "red" }), "muted": styled.div({ "opacity": 0.5 }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -176,7 +173,6 @@ test("style9 -> solid-styled -> style9: retains the documented secondary API wit
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-
 		export const styles = { "card": // pandwind:migrate-skip (route: solid-styled -> style9 | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
 		styled.div({ "color": "red" }), "muted": // pandwind:migrate-skip (route: solid-styled -> style9 | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
 		styled.div({ "opacity": 0.5 }) };",
@@ -265,7 +261,6 @@ test("style9 -> solid-styled -> style9: preserves concrete theme and project con
 		    "forward": {
 		      "changed": true,
 		      "code": "import { styled } from "solid-styled-components";
-
 		export const styles = { "card": styled.div({ "color": "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -302,7 +297,6 @@ test("style9 -> solid-styled -> style9: preserves concrete theme and project con
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { styled } from "solid-styled-components";
-
 		export const styles = { "card": // pandwind:migrate-skip (route: solid-styled -> style9 | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
 		styled.div({ "color": "#2563eb" }) };",
 		      "converted": 0,
@@ -342,7 +336,6 @@ test("style9 -> solid-styled -> style9: preserves concrete theme and project con
 		    "forward": {
 		      "changed": true,
 		      "code": "import { styled } from "solid-styled-components";
-
 		export const styles = { "card": styled.div({ "color": "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -379,7 +372,6 @@ test("style9 -> solid-styled -> style9: preserves concrete theme and project con
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { styled } from "solid-styled-components";
-
 		export const styles = { "card": // pandwind:migrate-skip (route: solid-styled -> style9 | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
 		styled.div({ "color": "#2563eb" }) };",
 		      "converted": 0,
@@ -433,7 +425,6 @@ test("style9 -> solid-styled -> style9: resolves token values across both concre
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-
 		export const styles = { "card": styled.div({ "color": "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -470,7 +461,6 @@ test("style9 -> solid-styled -> style9: resolves token values across both concre
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-
 		export const styles = { "card": // pandwind:migrate-skip (route: solid-styled -> style9 | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
 		styled.div({ "color": "#2563eb" }) };",
 		    "converted": 0,

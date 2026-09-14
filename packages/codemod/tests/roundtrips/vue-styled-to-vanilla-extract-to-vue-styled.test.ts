@@ -51,7 +51,6 @@ test("vue-styled -> vanilla-extract -> vue-styled: preserves an actionable concr
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
 		import { defineComponent, h } from "vue";
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [style({ padding: "1rem", color: "red" }), attrs.class] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -87,10 +86,8 @@ test("vue-styled -> vanilla-extract -> vue-styled: preserves an actionable concr
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		import { defineComponent, h } from "vue";
+		    "code": "import { defineComponent, h } from "vue";
 		import styled from "vue-styled-components";
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [styled.div({ "padding": "1rem", "color": "red" }), attrs.class] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -142,7 +139,6 @@ test("vue-styled -> vanilla-extract -> vue-styled: retains the documented second
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
 		import { defineComponent, h } from "vue";
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [style({ padding: "1rem", color: "red" }), attrs.class] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -178,10 +174,8 @@ test("vue-styled -> vanilla-extract -> vue-styled: retains the documented second
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		import { defineComponent, h } from "vue";
+		    "code": "import { defineComponent, h } from "vue";
 		import styled from "vue-styled-components";
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [styled.div({ "padding": "1rem", "color": "red" }), attrs.class] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -248,7 +242,6 @@ test("vue-styled -> vanilla-extract -> vue-styled: preserves concrete theme and 
 		      "changed": true,
 		      "code": "import { style } from "@vanilla-extract/css";
 		import { defineComponent, h } from "vue";
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [style({ padding: "1rem", color: "#2563eb" }), attrs.class] }, slots.default?.()));",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -284,10 +277,8 @@ test("vue-styled -> vanilla-extract -> vue-styled: preserves concrete theme and 
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		import { defineComponent, h } from "vue";
+		      "code": "import { defineComponent, h } from "vue";
 		import styled from "vue-styled-components";
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [styled.div({ "padding": "1rem", "color": "#2563eb" }), attrs.class] }, slots.default?.()));",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -327,7 +318,6 @@ test("vue-styled -> vanilla-extract -> vue-styled: preserves concrete theme and 
 		      "changed": true,
 		      "code": "import { style } from "@vanilla-extract/css";
 		import { defineComponent, h } from "vue";
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [style({ padding: "1rem", color: "#2563eb" }), attrs.class] }, slots.default?.()));",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -363,10 +353,8 @@ test("vue-styled -> vanilla-extract -> vue-styled: preserves concrete theme and 
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		import { defineComponent, h } from "vue";
+		      "code": "import { defineComponent, h } from "vue";
 		import styled from "vue-styled-components";
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [styled.div({ "padding": "1rem", "color": "#2563eb" }), attrs.class] }, slots.default?.()));",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -420,7 +408,6 @@ test("vue-styled -> vanilla-extract -> vue-styled: resolves token values across 
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
 		import { defineComponent, h } from "vue";
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [style({ padding: "1rem", color: "#2563eb" }), attrs.class] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -456,10 +443,8 @@ test("vue-styled -> vanilla-extract -> vue-styled: resolves token values across 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		import { defineComponent, h } from "vue";
+		    "code": "import { defineComponent, h } from "vue";
 		import styled from "vue-styled-components";
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [styled.div({ "padding": "1rem", "color": "#2563eb" }), attrs.class] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],

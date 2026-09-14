@@ -51,7 +51,6 @@ test("goober -> mui -> goober: preserves an actionable concrete round trip", () 
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": "1rem", "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -88,7 +87,6 @@ test("goober -> mui -> goober: preserves an actionable concrete round trip", () 
 		    "changed": false,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": "1rem", "color": "red" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -115,7 +113,6 @@ test("goober -> mui -> goober: retains the documented secondary API without sile
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "@mui/system";
-
 		export const Card = styled("div")({ padding: "1rem", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -151,7 +148,6 @@ test("goober -> mui -> goober: retains the documented secondary API without sile
 		    "changed": true,
 		    "code": "import { styled } from "@mui/system";
 		import { css } from "goober";
-
 		export const Card = css({ "padding": "1rem", "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -218,7 +214,6 @@ test("goober -> mui -> goober: preserves concrete theme and project context vari
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": "1rem", "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -255,7 +250,6 @@ test("goober -> mui -> goober: preserves concrete theme and project context vari
 		      "changed": false,
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": "1rem", "color": "#2563eb" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -271,7 +265,6 @@ test("goober -> mui -> goober: preserves concrete theme and project context vari
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": "1rem", "color": "primary.main" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -308,7 +301,6 @@ test("goober -> mui -> goober: preserves concrete theme and project context vari
 		      "changed": false,
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": "1rem", "color": "primary.main" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -338,7 +330,6 @@ test("goober -> mui -> goober: resolves token values across both concrete legs",
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": "1rem", "color": "primary.main" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -375,7 +366,6 @@ test("goober -> mui -> goober: resolves token values across both concrete legs",
 		    "changed": false,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": "1rem", "color": "primary.main" });",
 		    "converted": 0,
 		    "generatedFiles": [],

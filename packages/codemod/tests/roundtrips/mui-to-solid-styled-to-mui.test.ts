@@ -88,7 +88,6 @@ test("mui -> solid-styled -> mui: preserves an actionable concrete round trip", 
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
 		import { styled } from "@mui/system";
-
 		export const App = () => styled("div")({ padding: "16px", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -174,7 +173,6 @@ test("mui -> solid-styled -> mui: retains the documented secondary API without s
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { styled } from "@mui/system";
-
 		export const Card = styled("div")({ padding: 8, color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -275,7 +273,6 @@ test("mui -> solid-styled -> mui: preserves concrete theme and project context v
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
 		import { styled } from "@mui/system";
-
 		export const App = () => styled("div")({ padding: "16px", color: "primary.main" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -350,7 +347,6 @@ test("mui -> solid-styled -> mui: preserves concrete theme and project context v
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
 		import { styled } from "@mui/system";
-
 		export const App = () => styled("div")({ padding: "16px", color: "primary.main" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -439,7 +435,6 @@ test("mui -> solid-styled -> mui: resolves token values across both concrete leg
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
 		import { styled } from "@mui/system";
-
 		export const App = () => styled("div")({ padding: "16px", color: "primary.main" });",
 		    "converted": 1,
 		    "generatedFiles": [],

@@ -50,7 +50,6 @@ test("jss -> solid-styled -> jss: preserves an actionable concrete round trip", 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-
 		export const useStyles = { "card": styled.div({ "color": "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -87,7 +86,6 @@ test("jss -> solid-styled -> jss: preserves an actionable concrete round trip", 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-
 		export const useStyles = { "card": // pandwind:migrate-skip (route: solid-styled -> jss | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
 		styled.div({ "color": "red" }) };",
 		    "converted": 0,
@@ -139,7 +137,6 @@ test("jss -> solid-styled -> jss: retains the documented secondary API without s
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-
 		export const sheet = { "card": styled.div({ "color": "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -176,7 +173,6 @@ test("jss -> solid-styled -> jss: retains the documented secondary API without s
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-
 		export const sheet = { "card": // pandwind:migrate-skip (route: solid-styled -> jss | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
 		styled.div({ "color": "red" }) };",
 		    "converted": 0,
@@ -243,7 +239,6 @@ test("jss -> solid-styled -> jss: preserves concrete theme and project context v
 		    "forward": {
 		      "changed": true,
 		      "code": "import { styled } from "solid-styled-components";
-
 		export const useStyles = { "card": styled.div({ "color": "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -280,7 +275,6 @@ test("jss -> solid-styled -> jss: preserves concrete theme and project context v
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { styled } from "solid-styled-components";
-
 		export const useStyles = { "card": // pandwind:migrate-skip (route: solid-styled -> jss | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
 		styled.div({ "color": "#2563eb" }) };",
 		      "converted": 0,
@@ -320,7 +314,6 @@ test("jss -> solid-styled -> jss: preserves concrete theme and project context v
 		    "forward": {
 		      "changed": true,
 		      "code": "import { styled } from "solid-styled-components";
-
 		export const useStyles = { "card": styled.div({ "color": "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -357,7 +350,6 @@ test("jss -> solid-styled -> jss: preserves concrete theme and project context v
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { styled } from "solid-styled-components";
-
 		export const useStyles = { "card": // pandwind:migrate-skip (route: solid-styled -> jss | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
 		styled.div({ "color": "#2563eb" }) };",
 		      "converted": 0,
@@ -411,7 +403,6 @@ test("jss -> solid-styled -> jss: resolves token values across both concrete leg
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-
 		export const useStyles = { "card": styled.div({ "color": "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -448,7 +439,6 @@ test("jss -> solid-styled -> jss: resolves token values across both concrete leg
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-
 		export const useStyles = { "card": // pandwind:migrate-skip (route: solid-styled -> jss | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
 		styled.div({ "color": "#2563eb" }) };",
 		    "converted": 0,

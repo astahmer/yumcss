@@ -84,8 +84,7 @@ test("next-yak -> chakra-ui -> next-yak: preserves an actionable concrete round 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-		import { css } from "next-yak";
+		    "code": "import { css } from "next-yak";
 
 		export const card = css\`padding: 1rem; color: red;\`;",
 		    "converted": 1,
@@ -135,7 +134,6 @@ test("next-yak -> chakra-ui -> next-yak: retains the documented secondary API wi
 		  "forward": {
 		    "changed": true,
 		    "code": "import { chakra } from "@chakra-ui/react";
-
 		export const Card = (props) => <chakra.div {...props} css={{ padding: "1rem", color: "red" }} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -169,9 +167,7 @@ test("next-yak -> chakra-ui -> next-yak: retains the documented secondary API wi
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { chakra } from "@chakra-ui/react";
-		import { css } from "next-yak";
-
+		    "code": "import { css } from "next-yak";
 		export const Card = (props) => css\`padding: 1rem; color: red;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -269,8 +265,7 @@ test("next-yak -> chakra-ui -> next-yak: preserves concrete theme and project co
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { defaultSystem } from "@chakra-ui/react";
-		import { css } from "next-yak";
+		      "code": "import { css } from "next-yak";
 
 		export const card = css\`padding: 1rem; color: #2563eb;\`;",
 		      "converted": 1,

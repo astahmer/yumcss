@@ -48,7 +48,6 @@ test("tokenami -> emotion: migrates concrete tokenami syntax to emotion", () => 
 		{
 		  "changed": true,
 		  "code": "import { css } from "@emotion/css";
-
 		export const card = css({ cardGap: "1rem", color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -92,7 +91,6 @@ test("tokenami -> emotion: carries a documented secondary tokenami API explicitl
 		{
 		  "changed": true,
 		  "code": "import { css } from "@emotion/css";
-
 		export const card = css({ padding: "1rem", color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -242,7 +240,6 @@ test("tokenami -> emotion: resolves concrete token values with project context",
 		{
 		  "changed": true,
 		  "code": "import { css } from "@emotion/css";
-
 		export const card = css({ cardGap: "1rem", color: "#2563eb" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -286,7 +283,6 @@ test("tokenami -> emotion: preserves malformed concrete tokenami input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "@emotion/css";
-
 		export const card = css({ cardGap: "1rem", color: "red" });
 		const unfinished = { /* unfinished tokenami */",
 		  "converted": 1,

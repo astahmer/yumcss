@@ -84,8 +84,7 @@ test("stitches -> chakra-ui -> stitches: preserves an actionable concrete round 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-		import { css } from "@stitches/react";
+		    "code": "import { css } from "@stitches/react";
 
 		export const card = css({ padding: "1rem", color: "red" });",
 		    "converted": 1,
@@ -137,7 +136,7 @@ test("stitches -> chakra-ui -> stitches: retains the documented secondary API wi
 		  "forward": {
 		    "changed": true,
 		    "code": "import { globalCss } from "@stitches/react";
-		export const reset = // pandwind:migrate-skip (route: stitches -> chakra-ui | lowering-residual: rule-level, validation)
+		export const reset = // pandwind:migrate-skip (route: stitches -> chakra-ui | lowering-residual: emission-empty, rule-level | available: static, named-map, residual)
 		globalCss({ body: { margin: 0 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -161,31 +160,23 @@ test("stitches -> chakra-ui -> stitches: retains the documented secondary API wi
 		    ],
 		    "residuals": [
 		      {
+		        "hint": "target adapter produced no representable output",
+		        "kind": "emission-empty",
+		        "preserved": undefined,
+		      },
+		      {
 		        "hint": "Chakra standalone css projection supports style rules only",
 		        "kind": "rule-level",
 		        "preserved": undefined,
 		      },
-		      {
-		        "hint": "1 residual conversion(s)",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
 		    ],
 		    "skipped": 1,
-		    "validations": [
-		      {
-		        "differences": [
-		          "1 residual conversion(s)",
-		        ],
-		        "lossiness": "lossy",
-		        "valid": false,
-		      },
-		    ],
+		    "validations": [],
 		  },
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { globalCss } from "@stitches/react";
-		export const reset = // pandwind:migrate-skip (route: stitches -> chakra-ui | lowering-residual: rule-level, validation)
+		export const reset = // pandwind:migrate-skip (route: stitches -> chakra-ui | lowering-residual: emission-empty, rule-level | available: static, named-map, residual)
 		globalCss({ body: { margin: 0 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -261,8 +252,7 @@ test("stitches -> chakra-ui -> stitches: preserves concrete theme and project co
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { defaultSystem } from "@chakra-ui/react";
-		import { css } from "@stitches/react";
+		      "code": "import { css } from "@stitches/react";
 
 		export const card = css({ padding: "1rem", color: "#2563eb" });",
 		      "converted": 1,

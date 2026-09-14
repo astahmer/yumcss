@@ -48,7 +48,6 @@ test("panda -> compiled: migrates concrete panda syntax to compiled", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "@compiled/react";
-
 		export const card = css({ "color": "red.300", "_hover": { "color": "blue.300" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -260,7 +259,6 @@ test("panda -> compiled: resolves concrete token values with project context", a
 		{
 		  "changed": true,
 		  "code": "import { css } from "@compiled/react";
-
 		export const card = css({ "color": "#2563eb", "_hover": { "color": "blue.300" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -306,7 +304,6 @@ test("panda -> compiled: preserves malformed concrete panda input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "@compiled/react";
-
 		export const card = css({ "color": "red.300", "_hover": { "color": "blue.300" } });
 		const unfinished = { /* unfinished panda */",
 		  "converted": 1,

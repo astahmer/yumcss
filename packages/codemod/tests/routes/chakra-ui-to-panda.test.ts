@@ -144,7 +144,7 @@ test("chakra-ui -> panda: loads concrete theme and project context variants", as
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
 		import { css } from "styled-system/css";
-		export const App = () => <Box p="4" className={css({ backgroundColor: "brand.500" })}/>;",
+		export const App = () => <Box className={css({ backgroundColor: "brand.500", p: "var(--chakra-spacing-4)" })}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -179,7 +179,7 @@ test("chakra-ui -> panda: loads concrete theme and project context variants", as
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
 		import { css } from "styled-system/css";
-		export const App = () => <Box p="4" className={css({ backgroundColor: "brand.500" })}/>;",
+		export const App = () => <Box className={css({ backgroundColor: "brand.500", p: "var(--chakra-spacing-4)" })}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -226,7 +226,7 @@ test("chakra-ui -> panda: resolves concrete token values with project context", 
 		  "changed": true,
 		  "code": "import { Box } from "@chakra-ui/react";
 		import { css } from "styled-system/css";
-		export const App = () => <Box p="4" className={css({ backgroundColor: "brand.500" })}/>;",
+		export const App = () => <Box className={css({ backgroundColor: "brand.500", p: "var(--chakra-spacing-4)" })}/>;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [

@@ -126,7 +126,6 @@ describe("generated target files", () => {
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { createCss } from "pandwind/css";
 			const css = createCss();
-
 			const card = css.class({ color: "red" });
 			"
 		`);
@@ -153,7 +152,6 @@ describe("generated target files", () => {
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { createCss } from "pandwind/css";
 			const css = createCss();
-
 			const card = css.class({ color: "red" });
 			const panel = css.class({ backgroundColor: "white" });
 			"

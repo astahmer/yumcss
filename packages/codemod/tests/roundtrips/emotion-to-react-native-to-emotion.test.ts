@@ -50,7 +50,6 @@ test("emotion -> react-native -> emotion: preserves an actionable concrete round
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-
 		export const card = StyleSheet.create({ "padding": 16, "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -88,8 +87,6 @@ test("emotion -> react-native -> emotion: preserves an actionable concrete round
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
-
-
 		export const card = css({ padding: 16, color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -138,7 +135,6 @@ test("emotion -> react-native -> emotion: retains the documented secondary API w
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-
 		export const card = StyleSheet.create({ "padding": 16, "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -176,8 +172,6 @@ test("emotion -> react-native -> emotion: retains the documented secondary API w
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
-
-
 		export const card = css({ padding: 16, color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -241,7 +235,6 @@ test("emotion -> react-native -> emotion: preserves concrete theme and project c
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "react-native";
-
 		export const card = StyleSheet.create({ "padding": 16, "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -279,8 +272,6 @@ test("emotion -> react-native -> emotion: preserves concrete theme and project c
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@emotion/css";
-
-
 		export const card = css({ padding: 16, color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -317,7 +308,6 @@ test("emotion -> react-native -> emotion: preserves concrete theme and project c
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "react-native";
-
 		export const card = StyleSheet.create({ "padding": 16, "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -355,8 +345,6 @@ test("emotion -> react-native -> emotion: preserves concrete theme and project c
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@emotion/css";
-
-
 		export const card = css({ padding: 16, color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -407,7 +395,6 @@ test("emotion -> react-native -> emotion: resolves token values across both conc
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-
 		export const card = StyleSheet.create({ "padding": 16, "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -445,8 +432,6 @@ test("emotion -> react-native -> emotion: resolves token values across both conc
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
-
-
 		export const card = css({ padding: 16, color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],

@@ -48,7 +48,6 @@ test("tokenami -> linaria: migrates concrete tokenami syntax to linaria", () => 
 		{
 		  "changed": true,
 		  "code": "import { css } from "@linaria/core";
-
 		export const card = css\`card-gap: 1rem; color: red;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -94,7 +93,6 @@ test("tokenami -> linaria: carries a documented secondary tokenami API explicitl
 		{
 		  "changed": true,
 		  "code": "import { css } from "@linaria/core";
-
 		export const card = css\`padding: 1rem; color: red;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -250,7 +248,6 @@ test("tokenami -> linaria: resolves concrete token values with project context",
 		{
 		  "changed": true,
 		  "code": "import { css } from "@linaria/core";
-
 		export const card = css\`card-gap: 1rem; color: #2563eb;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -296,7 +293,6 @@ test("tokenami -> linaria: preserves malformed concrete tokenami input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "@linaria/core";
-
 		export const card = css\`card-gap: 1rem; color: red;\`;
 		const unfinished = { /* unfinished tokenami */",
 		  "converted": 1,

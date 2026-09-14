@@ -48,7 +48,6 @@ test("styled-components -> next-yak: migrates concrete styled-components syntax 
 		{
 		  "changed": true,
 		  "code": "import { styled } from "next-yak";
-
 		export const Card = styled.div\`padding: 1rem; color: red;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -92,7 +91,6 @@ test("styled-components -> next-yak: carries a documented secondary styled-compo
 		{
 		  "changed": true,
 		  "code": "import { styled } from "next-yak";
-
 		export const Card = styled.div\`padding: 1rem; color: red;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -145,7 +143,6 @@ test("styled-components -> next-yak: loads concrete theme and project context va
 		  "amber": {
 		    "changed": true,
 		    "code": "import { styled } from "next-yak";
-
 		export const Card = styled.div\`padding: 1rem; color: #2563eb;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -180,7 +177,6 @@ test("styled-components -> next-yak: loads concrete theme and project context va
 		  "blue": {
 		    "changed": true,
 		    "code": "import { styled } from "next-yak";
-
 		export const Card = styled.div\`padding: 1rem; color: #2563eb;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -227,7 +223,6 @@ test("styled-components -> next-yak: resolves concrete token values with project
 		{
 		  "changed": true,
 		  "code": "import { styled } from "next-yak";
-
 		export const Card = styled.div\`padding: 1rem; color: #2563eb;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -271,7 +266,6 @@ test("styled-components -> next-yak: preserves malformed concrete styled-compone
 		{
 		  "changed": true,
 		  "code": "import { styled } from "next-yak";
-
 		export const Card = styled.div\`padding: 1rem; color: red;\`;
 		const unfinished = { /* unfinished styled-components */",
 		  "converted": 1,

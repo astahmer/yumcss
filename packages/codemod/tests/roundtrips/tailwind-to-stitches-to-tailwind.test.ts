@@ -85,8 +85,7 @@ test("tailwind -> stitches -> tailwind: preserves an actionable concrete round t
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		export const App = () => "[gap:1rem] [align-items:center] [display:flex]";",
+		    "code": "export const App = () => "[gap:1rem] [align-items:center] [display:flex]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -247,8 +246,7 @@ test("tailwind -> stitches -> tailwind: preserves concrete theme and project con
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		export const App = () => "p-card text-brand";",
+		      "code": "export const App = () => "p-card text-brand";",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -321,8 +319,7 @@ test("tailwind -> stitches -> tailwind: preserves concrete theme and project con
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		export const App = () => "p-card text-brand";",
+		      "code": "export const App = () => "p-card text-brand";",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -409,8 +406,7 @@ test("tailwind -> stitches -> tailwind: resolves token values across both concre
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		export const App = () => "p-card text-brand";",
+		    "code": "export const App = () => "p-card text-brand";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

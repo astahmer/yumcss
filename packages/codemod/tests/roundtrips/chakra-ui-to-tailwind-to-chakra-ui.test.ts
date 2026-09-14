@@ -211,7 +211,7 @@ test("chakra-ui -> tailwind -> chakra-ui: preserves concrete theme and project c
 		    "forward": {
 		      "changed": true,
 		      "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => <Box p="4" className={"bg-brand"}/>;",
+		export const App = () => <Box className={"bg-brand [p:var(--chakra-spacing-4)]"}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -248,43 +248,43 @@ test("chakra-ui -> tailwind -> chakra-ui: preserves concrete theme and project c
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => <Box p="4" css={{ backgroundColor: "brand.500" }}/>;",
-		      "converted": 1,
+		export const App = () => // pandwind:migrate-skip (route: tailwind -> chakra-ui | parse-residual: unknown-utility | available: named-map, residual)
+		<Box className={"bg-brand [p:var(--chakra-spacing-4)]"}/>;",
+		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
 		          "applied": [],
 		          "availableRepresentations": [
-		            "static",
 		            "named-map",
 		            "residual",
 		          ],
-		          "representation": "static",
+		          "representation": "residual",
 		          "residuals": [],
 		        },
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "static",
-		          "representation": "static",
+		          "outcome": "residual",
+		          "representation": "residual",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
+		      "residuals": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "hint": "Tailwind utility requires the project engine or a custom preset",
+		          "kind": "unknown-utility",
+		          "preserved": undefined,
 		        },
 		      ],
+		      "skipped": 1,
+		      "validations": [],
 		    },
 		  },
 		  "blue": {
 		    "forward": {
 		      "changed": true,
 		      "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => <Box p="4" className={"bg-brand"}/>;",
+		export const App = () => <Box className={"bg-brand [p:var(--chakra-spacing-4)]"}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -321,36 +321,36 @@ test("chakra-ui -> tailwind -> chakra-ui: preserves concrete theme and project c
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => <Box p="4" css={{ backgroundColor: "brand.500" }}/>;",
-		      "converted": 1,
+		export const App = () => // pandwind:migrate-skip (route: tailwind -> chakra-ui | parse-residual: unknown-utility | available: named-map, residual)
+		<Box className={"bg-brand [p:var(--chakra-spacing-4)]"}/>;",
+		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
 		          "applied": [],
 		          "availableRepresentations": [
-		            "static",
 		            "named-map",
 		            "residual",
 		          ],
-		          "representation": "static",
+		          "representation": "residual",
 		          "residuals": [],
 		        },
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "static",
-		          "representation": "static",
+		          "outcome": "residual",
+		          "representation": "residual",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
+		      "residuals": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "hint": "Tailwind utility requires the project engine or a custom preset",
+		          "kind": "unknown-utility",
+		          "preserved": undefined,
 		        },
 		      ],
+		      "skipped": 1,
+		      "validations": [],
 		    },
 		  },
 		}
@@ -371,7 +371,7 @@ test("chakra-ui -> tailwind -> chakra-ui: resolves token values across both conc
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => <Box p="4" className={"bg-brand"}/>;",
+		export const App = () => <Box className={"bg-brand [p:var(--chakra-spacing-4)]"}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -407,36 +407,36 @@ test("chakra-ui -> tailwind -> chakra-ui: resolves token values across both conc
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => <Box p="4" css={{ backgroundColor: "brand.500" }}/>;",
-		    "converted": 1,
+		export const App = () => // pandwind:migrate-skip (route: tailwind -> chakra-ui | parse-residual: unknown-utility | available: named-map, residual)
+		<Box className={"bg-brand [p:var(--chakra-spacing-4)]"}/>;",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
 		        "applied": [],
 		        "availableRepresentations": [
-		          "static",
 		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "static",
+		        "representation": "residual",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
-		        "representation": "static",
+		        "outcome": "residual",
+		        "representation": "residual",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "Tailwind utility requires the project engine or a custom preset",
+		        "kind": "unknown-utility",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`)

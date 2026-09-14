@@ -48,7 +48,6 @@ test("solid-styled -> stylex: migrates concrete solid-styled syntax to stylex", 
 		{
 		  "changed": true,
 		  "code": "import * as stylex from "@stylexjs/stylex";
-
 		export const Card = stylex.create({ style: { padding: "1rem", color: "red" } }).style;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -94,7 +93,6 @@ test("solid-styled -> stylex: carries a documented secondary solid-styled API ex
 		{
 		  "changed": true,
 		  "code": "import * as stylex from "@stylexjs/stylex";
-
 		export const Card = stylex.create({ style: { padding: "1rem", color: "red" } }).style;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -149,7 +147,6 @@ test("solid-styled -> stylex: loads concrete theme and project context variants"
 		  "amber": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-
 		export const Card = stylex.create({ style: { padding: "1rem", color: "#2563eb" } }).style;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -186,7 +183,6 @@ test("solid-styled -> stylex: loads concrete theme and project context variants"
 		  "blue": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-
 		export const Card = stylex.create({ style: { padding: "1rem", color: "#2563eb" } }).style;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -235,7 +231,6 @@ test("solid-styled -> stylex: resolves concrete token values with project contex
 		{
 		  "changed": true,
 		  "code": "import * as stylex from "@stylexjs/stylex";
-
 		export const Card = stylex.create({ style: { padding: "1rem", color: "#2563eb" } }).style;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -281,7 +276,6 @@ test("solid-styled -> stylex: preserves malformed concrete solid-styled input", 
 		{
 		  "changed": true,
 		  "code": "import * as stylex from "@stylexjs/stylex";
-
 		export const Card = stylex.create({ style: { padding: "1rem", color: "red" } }).style;
 		const unfinished = { /* unfinished solid-styled */",
 		  "converted": 1,

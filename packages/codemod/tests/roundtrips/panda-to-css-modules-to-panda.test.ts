@@ -51,7 +51,6 @@ test("panda -> css-modules -> panda: preserves an actionable concrete round trip
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "color": "red.300", "_hover": { "color": "blue.300" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -90,7 +89,6 @@ test("panda -> css-modules -> panda: preserves an actionable concrete round trip
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
 		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "color": "red.300", "_hover": { "color": "blue.300" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -264,7 +262,6 @@ test("panda -> css-modules -> panda: preserves concrete theme and project contex
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "color": "brand.500", "_hover": { "color": "brand.500" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -303,7 +300,6 @@ test("panda -> css-modules -> panda: preserves concrete theme and project contex
 		      "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
 		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "color": "brand.500", "_hover": { "color": "brand.500" } });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -355,7 +351,6 @@ test("panda -> css-modules -> panda: preserves concrete theme and project contex
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "color": "brand.500", "_hover": { "color": "brand.500" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -394,7 +389,6 @@ test("panda -> css-modules -> panda: preserves concrete theme and project contex
 		      "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
 		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "color": "brand.500", "_hover": { "color": "brand.500" } });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -460,7 +454,6 @@ test("panda -> css-modules -> panda: resolves token values across both concrete 
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "color": "#2563eb", "_hover": { "color": "blue.300" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -499,7 +492,6 @@ test("panda -> css-modules -> panda: resolves token values across both concrete 
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
 		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "color": "#2563eb", "_hover": { "color": "blue.300" } });",
 		    "converted": 0,
 		    "generatedFiles": [],

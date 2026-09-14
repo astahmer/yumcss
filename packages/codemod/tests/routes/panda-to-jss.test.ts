@@ -48,7 +48,6 @@ test("panda -> jss: migrates concrete panda syntax to jss", () => {
 		{
 		  "changed": true,
 		  "code": "import { createUseStyles } from "react-jss";
-
 		export const card = createUseStyles({ color: "red.300", "&:hover": { color: "blue.300" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -255,7 +254,6 @@ test("panda -> jss: resolves concrete token values with project context", async 
 		{
 		  "changed": true,
 		  "code": "import { createUseStyles } from "react-jss";
-
 		export const card = createUseStyles({ color: "#2563eb", "&:hover": { color: "blue.300" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -301,7 +299,6 @@ test("panda -> jss: preserves malformed concrete panda input", () => {
 		{
 		  "changed": true,
 		  "code": "import { createUseStyles } from "react-jss";
-
 		export const card = createUseStyles({ color: "red.300", "&:hover": { color: "blue.300" } });
 		const unfinished = { /* unfinished panda */",
 		  "converted": 1,

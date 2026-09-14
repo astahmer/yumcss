@@ -87,7 +87,6 @@ test("chakra-ui -> aphrodite -> chakra-ui: preserves an actionable concrete roun
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-
 		export const App = () => <Box css={{ "style": { padding: "var(--chakra-spacing-4)", backgroundColor: "var(--chakra-colors-red-200)" } }}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -214,7 +213,7 @@ test("chakra-ui -> aphrodite -> chakra-ui: preserves concrete theme and project 
 		      "changed": true,
 		      "code": "import { Box } from "@chakra-ui/react";
 		import { StyleSheet, css } from "aphrodite";
-		export const App = () => <Box p="4" className={css(StyleSheet.create({ style: { "backgroundColor": "#f97316" } }).style)}/>;",
+		export const App = () => <Box className={css(StyleSheet.create({ style: { "backgroundColor": "#f97316", "p": "var(--chakra-spacing-4)" } }).style)}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -251,8 +250,7 @@ test("chakra-ui -> aphrodite -> chakra-ui: preserves concrete theme and project 
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@chakra-ui/react";
-
-		export const App = () => <Box p="4" css={{ "style": { backgroundColor: "brand.500" } }}/>;",
+		export const App = () => <Box css={{ "style": { backgroundColor: "brand.500", p: "var(--chakra-spacing-4)" } }}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -289,7 +287,7 @@ test("chakra-ui -> aphrodite -> chakra-ui: preserves concrete theme and project 
 		      "changed": true,
 		      "code": "import { Box } from "@chakra-ui/react";
 		import { StyleSheet, css } from "aphrodite";
-		export const App = () => <Box p="4" className={css(StyleSheet.create({ style: { "backgroundColor": "#2563eb" } }).style)}/>;",
+		export const App = () => <Box className={css(StyleSheet.create({ style: { "backgroundColor": "#2563eb", "p": "var(--chakra-spacing-4)" } }).style)}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -326,8 +324,7 @@ test("chakra-ui -> aphrodite -> chakra-ui: preserves concrete theme and project 
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@chakra-ui/react";
-
-		export const App = () => <Box p="4" css={{ "style": { backgroundColor: "brand.500" } }}/>;",
+		export const App = () => <Box css={{ "style": { backgroundColor: "brand.500", p: "var(--chakra-spacing-4)" } }}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -378,7 +375,7 @@ test("chakra-ui -> aphrodite -> chakra-ui: resolves token values across both con
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
 		import { StyleSheet, css } from "aphrodite";
-		export const App = () => <Box p="4" className={css(StyleSheet.create({ style: { "backgroundColor": "#2563eb" } }).style)}/>;",
+		export const App = () => <Box className={css(StyleSheet.create({ style: { "backgroundColor": "#2563eb", "p": "var(--chakra-spacing-4)" } }).style)}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -414,8 +411,7 @@ test("chakra-ui -> aphrodite -> chakra-ui: resolves token values across both con
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-
-		export const App = () => <Box p="4" css={{ "style": { backgroundColor: "brand.500" } }}/>;",
+		export const App = () => <Box css={{ "style": { backgroundColor: "brand.500", p: "var(--chakra-spacing-4)" } }}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

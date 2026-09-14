@@ -50,7 +50,6 @@ test("aphrodite -> linaria -> aphrodite: preserves an actionable concrete round 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@linaria/core";
-
 		export const styles = { "card": css\`padding: 8; color: red;\` };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -87,8 +86,6 @@ test("aphrodite -> linaria -> aphrodite: preserves an actionable concrete round 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-
-
 		export const styles = { "card": StyleSheet.create({ "padding": "8", "color": "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -226,7 +223,6 @@ test("aphrodite -> linaria -> aphrodite: preserves concrete theme and project co
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@linaria/core";
-
 		export const styles = { "card": css\`padding: 8; color: #2563eb;\` };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -263,8 +259,6 @@ test("aphrodite -> linaria -> aphrodite: preserves concrete theme and project co
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "aphrodite";
-
-
 		export const styles = { "card": StyleSheet.create({ "padding": "8", "color": "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -303,7 +297,6 @@ test("aphrodite -> linaria -> aphrodite: preserves concrete theme and project co
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@linaria/core";
-
 		export const styles = { "card": css\`padding: 8; color: #2563eb;\` };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -340,8 +333,6 @@ test("aphrodite -> linaria -> aphrodite: preserves concrete theme and project co
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "aphrodite";
-
-
 		export const styles = { "card": StyleSheet.create({ "padding": "8", "color": "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -394,7 +385,6 @@ test("aphrodite -> linaria -> aphrodite: resolves token values across both concr
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@linaria/core";
-
 		export const styles = { "card": css\`padding: 8; color: #2563eb;\` };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -431,8 +421,6 @@ test("aphrodite -> linaria -> aphrodite: resolves token values across both concr
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-
-
 		export const styles = { "card": StyleSheet.create({ "padding": "8", "color": "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],

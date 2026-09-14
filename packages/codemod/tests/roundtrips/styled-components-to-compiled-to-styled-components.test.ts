@@ -49,8 +49,7 @@ test("styled-components -> compiled -> styled-components: preserves an actionabl
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { css } from "@compiled/react";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(css({ "padding": "1rem", "color": "red" }), props.className)} />;",
@@ -88,10 +87,8 @@ test("styled-components -> compiled -> styled-components: preserves an actionabl
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import styled from "styled-components";
-
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(styled.div({ padding: "1rem", color: "red" }), props.className)} />;",
 		    "converted": 1,
@@ -140,8 +137,7 @@ test("styled-components -> compiled -> styled-components: retains the documented
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { css } from "@compiled/react";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(css({ "padding": "1rem", "color": "red" }), props.className)} />;",
@@ -179,10 +175,8 @@ test("styled-components -> compiled -> styled-components: retains the documented
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import styled from "styled-components";
-
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(styled.div({ padding: "1rem", color: "red" }), props.className)} />;",
 		    "converted": 1,
@@ -246,8 +240,7 @@ test("styled-components -> compiled -> styled-components: preserves concrete the
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		import { createCx } from "pandwind/cx";
+		      "code": "import { createCx } from "pandwind/cx";
 		import { css } from "@compiled/react";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(css({ "padding": "1rem", "color": "#2563eb" }), props.className)} />;",
@@ -285,10 +278,8 @@ test("styled-components -> compiled -> styled-components: preserves concrete the
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		import { createCx } from "pandwind/cx";
+		      "code": "import { createCx } from "pandwind/cx";
 		import styled from "styled-components";
-
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(styled.div({ padding: "1rem", color: "#2563eb" }), props.className)} />;",
 		      "converted": 1,
@@ -325,8 +316,7 @@ test("styled-components -> compiled -> styled-components: preserves concrete the
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		import { createCx } from "pandwind/cx";
+		      "code": "import { createCx } from "pandwind/cx";
 		import { css } from "@compiled/react";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(css({ "padding": "1rem", "color": "#2563eb" }), props.className)} />;",
@@ -364,10 +354,8 @@ test("styled-components -> compiled -> styled-components: preserves concrete the
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		import { createCx } from "pandwind/cx";
+		      "code": "import { createCx } from "pandwind/cx";
 		import styled from "styled-components";
-
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(styled.div({ padding: "1rem", color: "#2563eb" }), props.className)} />;",
 		      "converted": 1,
@@ -418,8 +406,7 @@ test("styled-components -> compiled -> styled-components: resolves token values 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { css } from "@compiled/react";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(css({ "padding": "1rem", "color": "#2563eb" }), props.className)} />;",
@@ -457,10 +444,8 @@ test("styled-components -> compiled -> styled-components: resolves token values 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import styled from "styled-components";
-
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(styled.div({ padding: "1rem", color: "#2563eb" }), props.className)} />;",
 		    "converted": 1,

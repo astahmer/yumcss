@@ -31,7 +31,6 @@ describe("Vanilla Extract source adapter", () => {
 			  "changed": true,
 			  "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
-
 			export const tone = { "regular": css.class({ color: "red" }), "quiet": css.class({ color: "gray" }) };",
 			  "converted": 1,
 			  "dependencies": [

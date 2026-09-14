@@ -48,7 +48,6 @@ test("linaria -> emotion: migrates concrete linaria syntax to emotion", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "@emotion/css";
-
 		export const card = css({ padding: "1rem", color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -92,7 +91,6 @@ test("linaria -> emotion: carries a documented secondary linaria API explicitly"
 		{
 		  "changed": true,
 		  "code": "import styled from "@emotion/styled";
-
 		export const Card = styled.div({ padding: "1rem", color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -145,7 +143,6 @@ test("linaria -> emotion: loads concrete theme and project context variants", as
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
-
 		export const card = css({ padding: "1rem", color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -180,7 +177,6 @@ test("linaria -> emotion: loads concrete theme and project context variants", as
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
-
 		export const card = css({ padding: "1rem", color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -227,7 +223,6 @@ test("linaria -> emotion: resolves concrete token values with project context", 
 		{
 		  "changed": true,
 		  "code": "import { css } from "@emotion/css";
-
 		export const card = css({ padding: "1rem", color: "#2563eb" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -271,7 +266,6 @@ test("linaria -> emotion: preserves malformed concrete linaria input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "@emotion/css";
-
 		export const card = css({ padding: "1rem", color: "red" });
 		const unfinished = { /* unfinished linaria */",
 		  "converted": 1,

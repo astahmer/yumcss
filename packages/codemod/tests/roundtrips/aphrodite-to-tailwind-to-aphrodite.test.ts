@@ -49,8 +49,7 @@ test("aphrodite -> tailwind -> aphrodite: preserves an actionable concrete round
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const styles = { "card": "[padding:8] [color:red]" };",
+		    "code": "export const styles = { "card": "[padding:8] [color:red]" };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,7 +85,6 @@ test("aphrodite -> tailwind -> aphrodite: preserves an actionable concrete round
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-
 		export const styles = StyleSheet.create({ "card": { "padding": "8", "color": "red" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -215,8 +213,7 @@ test("aphrodite -> tailwind -> aphrodite: preserves concrete theme and project c
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		export const styles = { "card": "[padding:8] [color:#2563eb]" };",
+		      "code": "export const styles = { "card": "[padding:8] [color:#2563eb]" };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -251,8 +248,7 @@ test("aphrodite -> tailwind -> aphrodite: preserves concrete theme and project c
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "
-		export const styles = { "card": "[padding:8] [color:#2563eb]" };",
+		      "code": "export const styles = { "card": "[padding:8] [color:#2563eb]" };",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],

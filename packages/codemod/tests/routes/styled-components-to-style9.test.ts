@@ -47,8 +47,7 @@ test("styled-components -> style9: migrates concrete styled-components syntax to
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		import { createCx } from "pandwind/cx";
+		  "code": "import { createCx } from "pandwind/cx";
 		import style9 from "style9";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(style9(style9.create({ style: { "padding": "1rem", "color": "red" } }).style), props.className)} />;",
@@ -95,8 +94,7 @@ test("styled-components -> style9: carries a documented secondary styled-compone
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		import { createCx } from "pandwind/cx";
+		  "code": "import { createCx } from "pandwind/cx";
 		import style9 from "style9";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(style9(style9.create({ style: { "padding": "1rem", "color": "red" } }).style), props.className)} />;",
@@ -152,8 +150,7 @@ test("styled-components -> style9: loads concrete theme and project context vari
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import style9 from "style9";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(style9(style9.create({ style: { "padding": "1rem", "color": "#2563eb" } }).style), props.className)} />;",
@@ -191,8 +188,7 @@ test("styled-components -> style9: loads concrete theme and project context vari
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import style9 from "style9";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(style9(style9.create({ style: { "padding": "1rem", "color": "#2563eb" } }).style), props.className)} />;",
@@ -242,8 +238,7 @@ test("styled-components -> style9: resolves concrete token values with project c
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		import { createCx } from "pandwind/cx";
+		  "code": "import { createCx } from "pandwind/cx";
 		import style9 from "style9";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(style9(style9.create({ style: { "padding": "1rem", "color": "#2563eb" } }).style), props.className)} />;",

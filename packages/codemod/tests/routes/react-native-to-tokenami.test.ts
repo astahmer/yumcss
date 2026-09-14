@@ -48,7 +48,6 @@ test("react-native -> tokenami: migrates concrete react-native syntax to tokenam
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-
 		export const styles = { "card": css({ padding: 8, color: "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -92,7 +91,6 @@ test("react-native -> tokenami: carries a documented secondary react-native API 
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-
 		export const styles = { "card": css({ padding: 8, backgroundColor: "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -145,7 +143,6 @@ test("react-native -> tokenami: loads concrete theme and project context variant
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-
 		export const styles = { "card": css({ padding: 8, color: "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -180,7 +177,6 @@ test("react-native -> tokenami: loads concrete theme and project context variant
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-
 		export const styles = { "card": css({ padding: 8, color: "$colors.brand" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -227,7 +223,6 @@ test("react-native -> tokenami: resolves concrete token values with project cont
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-
 		export const styles = { "card": css({ padding: 8, color: "$colors.brand" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -271,7 +266,6 @@ test("react-native -> tokenami: preserves malformed concrete react-native input"
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-
 		export const styles = { "card": css({ padding: 8, color: "red" }) };
 		const unfinished = { /* unfinished react-native */",
 		  "converted": 1,

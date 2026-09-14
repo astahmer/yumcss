@@ -49,8 +49,7 @@ test("bamboo -> tailwind -> bamboo: preserves an actionable concrete round trip"
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const card = "[color:red]";",
+		    "code": "export const card = "[color:red]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,7 +85,6 @@ test("bamboo -> tailwind -> bamboo: preserves an actionable concrete round trip"
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-
 		export const card = css({ color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -134,8 +132,7 @@ test("bamboo -> tailwind -> bamboo: retains the documented secondary API without
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const card = "[gap:4] [display:flex]";",
+		    "code": "export const card = "[gap:4] [display:flex]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -171,7 +168,6 @@ test("bamboo -> tailwind -> bamboo: retains the documented secondary API without
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-
 		export const card = css({ gap: "4", display: "flex" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -234,8 +230,7 @@ test("bamboo -> tailwind -> bamboo: preserves concrete theme and project context
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		export const card = "[color:#2563eb]";",
+		      "code": "export const card = "[color:#2563eb]";",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -270,8 +265,7 @@ test("bamboo -> tailwind -> bamboo: preserves concrete theme and project context
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		export const card = // pandwind:migrate-skip (route: tailwind -> bamboo | parse-residual: unknown-utility | available: named-map, residual)
+		      "code": "export const card = // pandwind:migrate-skip (route: tailwind -> bamboo | parse-residual: unknown-utility | available: named-map, residual)
 		"[color:#2563eb]";",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -306,8 +300,7 @@ test("bamboo -> tailwind -> bamboo: preserves concrete theme and project context
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		export const card = "text-brand";",
+		      "code": "export const card = "text-brand";",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -343,7 +336,6 @@ test("bamboo -> tailwind -> bamboo: preserves concrete theme and project context
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "styled-system/css";
-
 		export const card = css({ color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -393,8 +385,7 @@ test("bamboo -> tailwind -> bamboo: resolves token values across both concrete l
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const card = "text-brand";",
+		    "code": "export const card = "text-brand";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -430,7 +421,6 @@ test("bamboo -> tailwind -> bamboo: resolves token values across both concrete l
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-
 		export const card = css({ color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],

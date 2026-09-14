@@ -50,7 +50,6 @@ test("vue-styled -> next-yak -> vue-styled: preserves an actionable concrete rou
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "next-yak";
-
 		export const Card = styled.div\`padding: 1rem; color: red;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -85,8 +84,6 @@ test("vue-styled -> next-yak -> vue-styled: preserves an actionable concrete rou
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-
-
 		export const Card = styled.div({ "padding": "1rem", "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -137,7 +134,6 @@ test("vue-styled -> next-yak -> vue-styled: retains the documented secondary API
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "next-yak";
-
 		export const Card = styled.div\`padding: 1rem; color: red;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -172,8 +168,6 @@ test("vue-styled -> next-yak -> vue-styled: retains the documented secondary API
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-
-
 		export const Card = styled.div({ "padding": "1rem", "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -239,7 +233,6 @@ test("vue-styled -> next-yak -> vue-styled: preserves concrete theme and project
 		    "forward": {
 		      "changed": true,
 		      "code": "import { styled } from "next-yak";
-
 		export const Card = styled.div\`padding: 1rem; color: #2563eb;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -274,8 +267,6 @@ test("vue-styled -> next-yak -> vue-styled: preserves concrete theme and project
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-
-
 		export const Card = styled.div({ "padding": "1rem", "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -314,7 +305,6 @@ test("vue-styled -> next-yak -> vue-styled: preserves concrete theme and project
 		    "forward": {
 		      "changed": true,
 		      "code": "import { styled } from "next-yak";
-
 		export const Card = styled.div\`padding: 1rem; color: #2563eb;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -349,8 +339,6 @@ test("vue-styled -> next-yak -> vue-styled: preserves concrete theme and project
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-
-
 		export const Card = styled.div({ "padding": "1rem", "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -403,7 +391,6 @@ test("vue-styled -> next-yak -> vue-styled: resolves token values across both co
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "next-yak";
-
 		export const Card = styled.div\`padding: 1rem; color: #2563eb;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -438,8 +425,6 @@ test("vue-styled -> next-yak -> vue-styled: resolves token values across both co
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-
-
 		export const Card = styled.div({ "padding": "1rem", "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],

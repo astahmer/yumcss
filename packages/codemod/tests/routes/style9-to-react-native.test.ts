@@ -48,7 +48,6 @@ test("style9 -> react-native: migrates concrete style9 syntax to react-native", 
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "react-native";
-
 		export const styles = StyleSheet.create({ "card": { "color": "red" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -95,7 +94,6 @@ test("style9 -> react-native: carries a documented secondary style9 API explicit
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "react-native";
-
 		export const styles = StyleSheet.create({ "card": { "color": "red" }, "muted": { "opacity": 0.5 } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -151,7 +149,6 @@ test("style9 -> react-native: loads concrete theme and project context variants"
 		  "amber": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-
 		export const styles = StyleSheet.create({ "card": { "color": "#2563eb" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -189,7 +186,6 @@ test("style9 -> react-native: loads concrete theme and project context variants"
 		  "blue": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-
 		export const styles = StyleSheet.create({ "card": { "color": "#2563eb" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -239,7 +235,6 @@ test("style9 -> react-native: resolves concrete token values with project contex
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "react-native";
-
 		export const styles = StyleSheet.create({ "card": { "color": "#2563eb" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -286,7 +281,6 @@ test("style9 -> react-native: preserves malformed concrete style9 input", () => 
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "react-native";
-
 		export const styles = StyleSheet.create({ "card": { "color": "red" } });
 		const unfinished = { /* unfinished style9 */",
 		  "converted": 1,

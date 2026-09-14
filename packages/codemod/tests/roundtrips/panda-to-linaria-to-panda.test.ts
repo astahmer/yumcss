@@ -50,7 +50,6 @@ test("panda -> linaria -> panda: preserves an actionable concrete round trip", (
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@linaria/core";
-
 		export const card = css\`color: red.300;&:hover { color: blue.300; }\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -87,7 +86,6 @@ test("panda -> linaria -> panda: preserves an actionable concrete round trip", (
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@linaria/core";
-
 		export const card = // pandwind:migrate-skip (route: linaria -> panda | capability-blocked: rule-level: 1 semantic rules; nesting: style nested rules | available: static, named-map, residual)
 		css\`color: red.300;&:hover { color: blue.300; }\`;",
 		    "converted": 0,
@@ -359,7 +357,6 @@ test("panda -> linaria -> panda: resolves token values across both concrete legs
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@linaria/core";
-
 		export const card = css\`color: #2563eb;&:hover { color: blue.300; }\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -396,7 +393,6 @@ test("panda -> linaria -> panda: resolves token values across both concrete legs
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@linaria/core";
-
 		export const card = // pandwind:migrate-skip (route: linaria -> panda | capability-blocked: rule-level: 1 semantic rules; nesting: style nested rules | available: static, named-map, residual)
 		css\`color: #2563eb;&:hover { color: blue.300; }\`;",
 		    "converted": 0,

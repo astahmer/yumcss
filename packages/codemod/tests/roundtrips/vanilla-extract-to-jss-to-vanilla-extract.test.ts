@@ -50,7 +50,6 @@ test("vanilla-extract -> jss -> vanilla-extract: preserves an actionable concret
 		  "forward": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-
 		export const card = createUseStyles({ padding: 8, color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -87,8 +86,6 @@ test("vanilla-extract -> jss -> vanilla-extract: preserves an actionable concret
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-
-
 		export const card = style({ padding: 8, color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -218,7 +215,6 @@ test("vanilla-extract -> jss -> vanilla-extract: preserves concrete theme and pr
 		    "forward": {
 		      "changed": true,
 		      "code": "import { createUseStyles } from "react-jss";
-
 		export const card = createUseStyles({ padding: 8, color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -255,8 +251,6 @@ test("vanilla-extract -> jss -> vanilla-extract: preserves concrete theme and pr
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { style } from "@vanilla-extract/css";
-
-
 		export const card = style({ padding: 8, color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -295,7 +289,6 @@ test("vanilla-extract -> jss -> vanilla-extract: preserves concrete theme and pr
 		    "forward": {
 		      "changed": true,
 		      "code": "import { createUseStyles } from "react-jss";
-
 		export const card = createUseStyles({ padding: 8, color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -332,8 +325,6 @@ test("vanilla-extract -> jss -> vanilla-extract: preserves concrete theme and pr
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { style } from "@vanilla-extract/css";
-
-
 		export const card = style({ padding: 8, color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -386,7 +377,6 @@ test("vanilla-extract -> jss -> vanilla-extract: resolves token values across bo
 		  "forward": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-
 		export const card = createUseStyles({ padding: 8, color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -423,8 +413,6 @@ test("vanilla-extract -> jss -> vanilla-extract: resolves token values across bo
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-
-
 		export const card = style({ padding: 8, color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],

@@ -48,7 +48,6 @@ test("compiled -> emotion: migrates concrete compiled syntax to emotion", () => 
 		{
 		  "changed": true,
 		  "code": "import { css } from "@emotion/css";
-
 		export const card = css({ padding: 8, color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -92,7 +91,6 @@ test("compiled -> emotion: carries a documented secondary compiled API explicitl
 		{
 		  "changed": true,
 		  "code": "import { css } from "@emotion/css";
-
 		export const colors = { "red": css({ color: "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -145,7 +143,6 @@ test("compiled -> emotion: loads concrete theme and project context variants", a
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
-
 		export const card = css({ padding: 8, color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -180,7 +177,6 @@ test("compiled -> emotion: loads concrete theme and project context variants", a
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
-
 		export const card = css({ padding: 8, color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -227,7 +223,6 @@ test("compiled -> emotion: resolves concrete token values with project context",
 		{
 		  "changed": true,
 		  "code": "import { css } from "@emotion/css";
-
 		export const card = css({ padding: 8, color: "#2563eb" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -271,7 +266,6 @@ test("compiled -> emotion: preserves malformed concrete compiled input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "@emotion/css";
-
 		export const card = css({ padding: 8, color: "red" });
 		const unfinished = { /* unfinished compiled */",
 		  "converted": 1,

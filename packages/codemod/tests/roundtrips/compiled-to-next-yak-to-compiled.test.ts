@@ -50,7 +50,6 @@ test("compiled -> next-yak -> compiled: preserves an actionable concrete round t
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-
 		export const card = css\`padding: 8; color: red;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -85,8 +84,6 @@ test("compiled -> next-yak -> compiled: preserves an actionable concrete round t
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@compiled/react";
-
-
 		export const card = css({ "padding": "8", "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -137,7 +134,6 @@ test("compiled -> next-yak -> compiled: retains the documented secondary API wit
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-
 		export const colors = { "red": css\`color: red;\` };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -172,8 +168,6 @@ test("compiled -> next-yak -> compiled: retains the documented secondary API wit
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@compiled/react";
-
-
 		export const colors = { "red": css({ "color": "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -239,7 +233,6 @@ test("compiled -> next-yak -> compiled: preserves concrete theme and project con
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "next-yak";
-
 		export const card = css\`padding: 8; color: #2563eb;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -274,8 +267,6 @@ test("compiled -> next-yak -> compiled: preserves concrete theme and project con
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@compiled/react";
-
-
 		export const card = css({ "padding": "8", "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -314,7 +305,6 @@ test("compiled -> next-yak -> compiled: preserves concrete theme and project con
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "next-yak";
-
 		export const card = css\`padding: 8; color: #2563eb;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -349,8 +339,6 @@ test("compiled -> next-yak -> compiled: preserves concrete theme and project con
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@compiled/react";
-
-
 		export const card = css({ "padding": "8", "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -403,7 +391,6 @@ test("compiled -> next-yak -> compiled: resolves token values across both concre
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-
 		export const card = css\`padding: 8; color: #2563eb;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -438,8 +425,6 @@ test("compiled -> next-yak -> compiled: resolves token values across both concre
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@compiled/react";
-
-
 		export const card = css({ "padding": "8", "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],

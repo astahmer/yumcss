@@ -48,7 +48,6 @@ test("styled-components -> solid-styled: migrates concrete styled-components syn
 		{
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
-
 		export const Card = styled.div({ "padding": "1rem", "color": "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -94,7 +93,6 @@ test("styled-components -> solid-styled: carries a documented secondary styled-c
 		{
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
-
 		export const Card = styled.div({ "padding": "1rem", "color": "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -149,7 +147,6 @@ test("styled-components -> solid-styled: loads concrete theme and project contex
 		  "amber": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-
 		export const Card = styled.div({ "padding": "1rem", "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -186,7 +183,6 @@ test("styled-components -> solid-styled: loads concrete theme and project contex
 		  "blue": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-
 		export const Card = styled.div({ "padding": "1rem", "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -235,7 +231,6 @@ test("styled-components -> solid-styled: resolves concrete token values with pro
 		{
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
-
 		export const Card = styled.div({ "padding": "1rem", "color": "#2563eb" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -281,7 +276,6 @@ test("styled-components -> solid-styled: preserves malformed concrete styled-com
 		{
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
-
 		export const Card = styled.div({ "padding": "1rem", "color": "red" });
 		const unfinished = { /* unfinished styled-components */",
 		  "converted": 1,

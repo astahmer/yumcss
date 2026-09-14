@@ -50,7 +50,6 @@ test("aphrodite -> bamboo -> aphrodite: preserves an actionable concrete round t
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-
 		export const styles = { "card": css({ padding: 8, color: "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -85,8 +84,6 @@ test("aphrodite -> bamboo -> aphrodite: preserves an actionable concrete round t
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-
-
 		export const styles = { "card": StyleSheet.create({ "padding": 8, "color": "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -222,7 +219,6 @@ test("aphrodite -> bamboo -> aphrodite: preserves concrete theme and project con
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "styled-system/css";
-
 		export const styles = { "card": css({ padding: 8, color: "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -257,8 +253,6 @@ test("aphrodite -> bamboo -> aphrodite: preserves concrete theme and project con
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "aphrodite";
-
-
 		export const styles = { "card": StyleSheet.create({ "padding": 8, "color": "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -297,7 +291,6 @@ test("aphrodite -> bamboo -> aphrodite: preserves concrete theme and project con
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "styled-system/css";
-
 		export const styles = { "card": css({ padding: 8, color: "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -332,8 +325,6 @@ test("aphrodite -> bamboo -> aphrodite: preserves concrete theme and project con
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "aphrodite";
-
-
 		export const styles = { "card": StyleSheet.create({ "padding": 8, "color": "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -386,7 +377,6 @@ test("aphrodite -> bamboo -> aphrodite: resolves token values across both concre
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-
 		export const styles = { "card": css({ padding: 8, color: "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -421,8 +411,6 @@ test("aphrodite -> bamboo -> aphrodite: resolves token values across both concre
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-
-
 		export const styles = { "card": StyleSheet.create({ "padding": 8, "color": "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],

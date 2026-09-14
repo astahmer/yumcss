@@ -48,7 +48,6 @@ test("vanilla-extract -> treat: migrates concrete vanilla-extract syntax to trea
 		{
 		  "changed": true,
 		  "code": "import { style } from "@/styles.treat";
-
 		export const card = style({ "padding": 8, "color": "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -149,7 +148,6 @@ test("vanilla-extract -> treat: loads concrete theme and project context variant
 		  "amber": {
 		    "changed": true,
 		    "code": "import { style } from "@/styles.treat";
-
 		export const card = style({ "padding": 8, "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -186,7 +184,6 @@ test("vanilla-extract -> treat: loads concrete theme and project context variant
 		  "blue": {
 		    "changed": true,
 		    "code": "import { style } from "@/styles.treat";
-
 		export const card = style({ "padding": 8, "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -235,7 +232,6 @@ test("vanilla-extract -> treat: resolves concrete token values with project cont
 		{
 		  "changed": true,
 		  "code": "import { style } from "@/styles.treat";
-
 		export const card = style({ "padding": 8, "color": "#2563eb" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -281,7 +277,6 @@ test("vanilla-extract -> treat: preserves malformed concrete vanilla-extract inp
 		{
 		  "changed": true,
 		  "code": "import { style } from "@/styles.treat";
-
 		export const card = style({ "padding": 8, "color": "red" });
 		const unfinished = { /* unfinished vanilla-extract */",
 		  "converted": 1,

@@ -51,7 +51,6 @@ test("vue-styled -> tokenami -> vue-styled: preserves an actionable concrete rou
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
 		import { defineComponent, h } from "vue";
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css({ padding: "1rem", color: "red" }), attrs.class] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -85,10 +84,8 @@ test("vue-styled -> tokenami -> vue-styled: preserves an actionable concrete rou
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		import { defineComponent, h } from "vue";
+		    "code": "import { defineComponent, h } from "vue";
 		import styled from "vue-styled-components";
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [styled.div({ "padding": "1rem", "color": "red" }), attrs.class] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -140,7 +137,6 @@ test("vue-styled -> tokenami -> vue-styled: retains the documented secondary API
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
 		import { defineComponent, h } from "vue";
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css({ padding: "1rem", color: "red" }), attrs.class] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -174,10 +170,8 @@ test("vue-styled -> tokenami -> vue-styled: retains the documented secondary API
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		import { defineComponent, h } from "vue";
+		    "code": "import { defineComponent, h } from "vue";
 		import styled from "vue-styled-components";
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [styled.div({ "padding": "1rem", "color": "red" }), attrs.class] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -244,7 +238,6 @@ test("vue-styled -> tokenami -> vue-styled: preserves concrete theme and project
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
 		import { defineComponent, h } from "vue";
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css({ padding: "1rem", color: "#2563eb" }), attrs.class] }, slots.default?.()));",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -278,10 +271,8 @@ test("vue-styled -> tokenami -> vue-styled: preserves concrete theme and project
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		import { defineComponent, h } from "vue";
+		      "code": "import { defineComponent, h } from "vue";
 		import styled from "vue-styled-components";
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [styled.div({ "padding": "1rem", "color": "#2563eb" }), attrs.class] }, slots.default?.()));",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -321,7 +312,6 @@ test("vue-styled -> tokenami -> vue-styled: preserves concrete theme and project
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
 		import { defineComponent, h } from "vue";
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css({ padding: "1rem", color: "$colors.brand" }), attrs.class] }, slots.default?.()));",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -355,10 +345,8 @@ test("vue-styled -> tokenami -> vue-styled: preserves concrete theme and project
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		import { defineComponent, h } from "vue";
+		      "code": "import { defineComponent, h } from "vue";
 		import styled from "vue-styled-components";
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [styled.div({ "padding": "1rem", "color": "#2563eb" }), attrs.class] }, slots.default?.()));",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -413,7 +401,6 @@ test("vue-styled -> tokenami -> vue-styled: resolves token values across both co
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
 		import { defineComponent, h } from "vue";
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css({ padding: "1rem", color: "$colors.brand" }), attrs.class] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -447,10 +434,8 @@ test("vue-styled -> tokenami -> vue-styled: resolves token values across both co
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		import { defineComponent, h } from "vue";
+		    "code": "import { defineComponent, h } from "vue";
 		import styled from "vue-styled-components";
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [styled.div({ "padding": "1rem", "color": "#2563eb" }), attrs.class] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],

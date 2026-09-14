@@ -48,7 +48,6 @@ test("panda -> vanilla-extract: migrates concrete panda syntax to vanilla-extrac
 		{
 		  "changed": true,
 		  "code": "import { style } from "@vanilla-extract/css";
-
 		export const card = style({ color: "red.300", "&:hover": { color: "blue.300" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -260,7 +259,6 @@ test("panda -> vanilla-extract: resolves concrete token values with project cont
 		{
 		  "changed": true,
 		  "code": "import { style } from "@vanilla-extract/css";
-
 		export const card = style({ color: "#2563eb", "&:hover": { color: "blue.300" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -306,7 +304,6 @@ test("panda -> vanilla-extract: preserves malformed concrete panda input", () =>
 		{
 		  "changed": true,
 		  "code": "import { style } from "@vanilla-extract/css";
-
 		export const card = style({ color: "red.300", "&:hover": { color: "blue.300" } });
 		const unfinished = { /* unfinished panda */",
 		  "converted": 1,

@@ -49,7 +49,6 @@ test("jss -> mui: migrates concrete jss syntax to mui", () => {
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const useStyles = { "card": css.class({ color: "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -95,7 +94,6 @@ test("jss -> mui: carries a documented secondary jss API explicitly", () => {
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const sheet = { "card": css.class({ color: "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -150,7 +148,6 @@ test("jss -> mui: loads concrete theme and project context variants", async () =
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const useStyles = { "card": css.class({ color: "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -187,7 +184,6 @@ test("jss -> mui: loads concrete theme and project context variants", async () =
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const useStyles = { "card": css.class({ color: "primary.main" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -236,7 +232,6 @@ test("jss -> mui: resolves concrete token values with project context", async ()
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const useStyles = { "card": css.class({ color: "primary.main" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -282,7 +277,6 @@ test("jss -> mui: preserves malformed concrete jss input", () => {
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const useStyles = { "card": css.class({ color: "red" }) };
 		const unfinished = { /* unfinished jss */",
 		  "converted": 1,

@@ -92,7 +92,6 @@ test("pandwind -> solid-styled -> pandwind: preserves an actionable concrete rou
 		const css = createCss();
 		const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Component {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
 
-
 		export const card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "red" }), stableClass: "pw-t752ck", inheritedClass: undefined, classAttribute: "class", attrs: {}, joinClass: cx });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -270,7 +269,6 @@ test("pandwind -> solid-styled -> pandwind: preserves concrete theme and project
 		const cx = createCx();
 		const css = createCss();
 
-
 		export const card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "brand" }), stableClass: "pw-t752ck", inheritedClass: undefined, classAttribute: "class", attrs: {}, joinClass: cx });",
 		      "converted": 1,
 		      "generatedFiles": [
@@ -354,7 +352,6 @@ test("pandwind -> solid-styled -> pandwind: preserves concrete theme and project
 		import { __pandwindSlot } from "../__pandwind/slot";
 		const cx = createCx();
 		const css = createCss();
-
 
 		export const card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "brand" }), stableClass: "pw-t752ck", inheritedClass: undefined, classAttribute: "class", attrs: {}, joinClass: cx });",
 		      "converted": 1,
@@ -452,7 +449,6 @@ test("pandwind -> solid-styled -> pandwind: resolves token values across both co
 		import { __pandwindSlot } from "../__pandwind/slot";
 		const cx = createCx();
 		const css = createCss();
-
 
 		export const card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "brand" }), stableClass: "pw-t752ck", inheritedClass: undefined, classAttribute: "class", attrs: {}, joinClass: cx });",
 		    "converted": 1,

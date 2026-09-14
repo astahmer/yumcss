@@ -48,7 +48,6 @@ test("vanilla-extract -> emotion: migrates concrete vanilla-extract syntax to em
 		{
 		  "changed": true,
 		  "code": "import { css } from "@emotion/css";
-
 		export const card = css({ padding: 8, color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -92,7 +91,6 @@ test("vanilla-extract -> emotion: carries a documented secondary vanilla-extract
 		{
 		  "changed": true,
 		  "code": "import { injectGlobal } from "@emotion/css";
-
 		injectGlobal\`body { margin: 0; }\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -145,7 +143,6 @@ test("vanilla-extract -> emotion: loads concrete theme and project context varia
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
-
 		export const card = css({ padding: 8, color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -180,7 +177,6 @@ test("vanilla-extract -> emotion: loads concrete theme and project context varia
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
-
 		export const card = css({ padding: 8, color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -227,7 +223,6 @@ test("vanilla-extract -> emotion: resolves concrete token values with project co
 		{
 		  "changed": true,
 		  "code": "import { css } from "@emotion/css";
-
 		export const card = css({ padding: 8, color: "#2563eb" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -271,7 +266,6 @@ test("vanilla-extract -> emotion: preserves malformed concrete vanilla-extract i
 		{
 		  "changed": true,
 		  "code": "import { css } from "@emotion/css";
-
 		export const card = css({ padding: 8, color: "red" });
 		const unfinished = { /* unfinished vanilla-extract */",
 		  "converted": 1,

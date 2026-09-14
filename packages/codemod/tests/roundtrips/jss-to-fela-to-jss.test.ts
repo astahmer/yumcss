@@ -49,8 +49,7 @@ test("jss -> fela -> jss: preserves an actionable concrete round trip", () => {
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const useStyles = { "card": renderer.renderRule({ "color": "red" }) };",
+		    "code": "export const useStyles = { "card": renderer.renderRule({ "color": "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,7 +85,6 @@ test("jss -> fela -> jss: preserves an actionable concrete round trip", () => {
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-
 		export const useStyles = { "card": createUseStyles({ color: "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -136,8 +134,7 @@ test("jss -> fela -> jss: retains the documented secondary API without silent lo
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const sheet = { "card": renderer.renderRule({ "color": "red" }) };",
+		    "code": "export const sheet = { "card": renderer.renderRule({ "color": "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -173,7 +170,6 @@ test("jss -> fela -> jss: retains the documented secondary API without silent lo
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-
 		export const sheet = { "card": createUseStyles({ color: "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -238,8 +234,7 @@ test("jss -> fela -> jss: preserves concrete theme and project context variants"
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		export const useStyles = { "card": renderer.renderRule({ "color": "#2563eb" }) };",
+		      "code": "export const useStyles = { "card": renderer.renderRule({ "color": "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -275,7 +270,6 @@ test("jss -> fela -> jss: preserves concrete theme and project context variants"
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { createUseStyles } from "react-jss";
-
 		export const useStyles = { "card": createUseStyles({ color: "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -313,8 +307,7 @@ test("jss -> fela -> jss: preserves concrete theme and project context variants"
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		export const useStyles = { "card": renderer.renderRule({ "color": "#2563eb" }) };",
+		      "code": "export const useStyles = { "card": renderer.renderRule({ "color": "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -350,7 +343,6 @@ test("jss -> fela -> jss: preserves concrete theme and project context variants"
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { createUseStyles } from "react-jss";
-
 		export const useStyles = { "card": createUseStyles({ color: "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -402,8 +394,7 @@ test("jss -> fela -> jss: resolves token values across both concrete legs", asyn
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const useStyles = { "card": renderer.renderRule({ "color": "#2563eb" }) };",
+		    "code": "export const useStyles = { "card": renderer.renderRule({ "color": "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -439,7 +430,6 @@ test("jss -> fela -> jss: resolves token values across both concrete legs", asyn
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-
 		export const useStyles = { "card": createUseStyles({ color: "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],

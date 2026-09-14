@@ -89,7 +89,6 @@ test("mui -> stylex -> mui: preserves an actionable concrete round trip", () => 
 		    "code": "import { Box } from "@mui/material";
 		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const App = () => { "style": css.class({ padding: "16px", color: "red" }) }.style;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -179,7 +178,6 @@ test("mui -> stylex -> mui: retains the documented secondary API without silent 
 		    "code": "import { styled } from "@mui/system";
 		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const Card = { "style": css.class({ padding: "8px", color: "red" }) }.style;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -282,7 +280,6 @@ test("mui -> stylex -> mui: preserves concrete theme and project context variant
 		      "code": "import { Box } from "@mui/material";
 		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const App = () => { "style": css.class({ padding: "16px", color: "primary.main" }) }.style;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -359,7 +356,6 @@ test("mui -> stylex -> mui: preserves concrete theme and project context variant
 		      "code": "import { Box } from "@mui/material";
 		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const App = () => { "style": css.class({ padding: "16px", color: "primary.main" }) }.style;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -450,7 +446,6 @@ test("mui -> stylex -> mui: resolves token values across both concrete legs", as
 		    "code": "import { Box } from "@mui/material";
 		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const App = () => { "style": css.class({ padding: "16px", color: "primary.main" }) }.style;",
 		    "converted": 1,
 		    "generatedFiles": [],

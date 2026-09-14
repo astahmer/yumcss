@@ -48,7 +48,6 @@ test("panda -> stylex: migrates concrete panda syntax to stylex", () => {
 		{
 		  "changed": true,
 		  "code": "import * as stylex from "@stylexjs/stylex";
-
 		export const card = stylex.create({ style: { color: "red.300", "&:hover": { color: "blue.300" } } }).style;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -250,7 +249,6 @@ test("panda -> stylex: resolves concrete token values with project context", asy
 		{
 		  "changed": true,
 		  "code": "import * as stylex from "@stylexjs/stylex";
-
 		export const card = stylex.create({ style: { color: "#2563eb", "&:hover": { color: "blue.300" } } }).style;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -296,7 +294,6 @@ test("panda -> stylex: preserves malformed concrete panda input", () => {
 		{
 		  "changed": true,
 		  "code": "import * as stylex from "@stylexjs/stylex";
-
 		export const card = stylex.create({ style: { color: "red.300", "&:hover": { color: "blue.300" } } }).style;
 		const unfinished = { /* unfinished panda */",
 		  "converted": 1,

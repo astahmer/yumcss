@@ -48,7 +48,6 @@ test("next-yak -> compiled: migrates concrete next-yak syntax to compiled", () =
 		{
 		  "changed": true,
 		  "code": "import { css } from "@compiled/react";
-
 		export const card = css({ "padding": "1rem", "color": "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -93,8 +92,7 @@ test("next-yak -> compiled: carries a documented secondary next-yak API explicit
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		import { createCx } from "pandwind/cx";
+		  "code": "import { createCx } from "pandwind/cx";
 		import { css } from "@compiled/react";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(css({ "padding": "1rem", "color": "red" }), props.className)} />;",
@@ -151,7 +149,6 @@ test("next-yak -> compiled: loads concrete theme and project context variants", 
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "@compiled/react";
-
 		export const card = css({ "padding": "1rem", "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -188,7 +185,6 @@ test("next-yak -> compiled: loads concrete theme and project context variants", 
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "@compiled/react";
-
 		export const card = css({ "padding": "1rem", "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -237,7 +233,6 @@ test("next-yak -> compiled: resolves concrete token values with project context"
 		{
 		  "changed": true,
 		  "code": "import { css } from "@compiled/react";
-
 		export const card = css({ "padding": "1rem", "color": "#2563eb" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -283,7 +278,6 @@ test("next-yak -> compiled: preserves malformed concrete next-yak input", () => 
 		{
 		  "changed": true,
 		  "code": "import { css } from "@compiled/react";
-
 		export const card = css({ "padding": "1rem", "color": "red" });
 		const unfinished = { /* unfinished next-yak */",
 		  "converted": 1,

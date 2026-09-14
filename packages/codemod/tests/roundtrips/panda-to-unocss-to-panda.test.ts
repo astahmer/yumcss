@@ -49,8 +49,7 @@ test("panda -> unocss -> panda: preserves an actionable concrete round trip", ()
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const card = "[color:red.300] hover:[color:blue.300]";",
+		    "code": "export const card = "[color:red.300] hover:[color:blue.300]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,7 +85,6 @@ test("panda -> unocss -> panda: preserves an actionable concrete round trip", ()
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-
 		export const card = css({ color: "red.300", hover: { color: "blue.300" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -358,8 +356,7 @@ test("panda -> unocss -> panda: resolves token values across both concrete legs"
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const card = "text-brand hover:[color:blue.300]";",
+		    "code": "export const card = "text-brand hover:[color:blue.300]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -395,7 +392,6 @@ test("panda -> unocss -> panda: resolves token values across both concrete legs"
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-
 		export const card = css({ color: "brand.500", hover: { color: "blue.300" } });",
 		    "converted": 1,
 		    "generatedFiles": [],

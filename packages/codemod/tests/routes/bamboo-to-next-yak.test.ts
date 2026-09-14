@@ -48,7 +48,6 @@ test("bamboo -> next-yak: migrates concrete bamboo syntax to next-yak", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "next-yak";
-
 		export const card = css\`color: red;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -92,7 +91,6 @@ test("bamboo -> next-yak: carries a documented secondary bamboo API explicitly",
 		{
 		  "changed": true,
 		  "code": "import { css } from "next-yak";
-
 		export const card = css\`gap: 4; display: flex;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -145,7 +143,6 @@ test("bamboo -> next-yak: loads concrete theme and project context variants", as
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-
 		export const card = css\`color: #2563eb;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -180,7 +177,6 @@ test("bamboo -> next-yak: loads concrete theme and project context variants", as
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-
 		export const card = css\`color: #2563eb;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -227,7 +223,6 @@ test("bamboo -> next-yak: resolves concrete token values with project context", 
 		{
 		  "changed": true,
 		  "code": "import { css } from "next-yak";
-
 		export const card = css\`color: #2563eb;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -271,7 +266,6 @@ test("bamboo -> next-yak: preserves malformed concrete bamboo input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "next-yak";
-
 		export const card = css\`color: red;\`;
 		const unfinished = { /* unfinished bamboo */",
 		  "converted": 1,

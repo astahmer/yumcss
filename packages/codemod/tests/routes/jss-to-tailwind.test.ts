@@ -47,8 +47,7 @@ test("jss -> tailwind: migrates concrete jss syntax to tailwind", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		export const useStyles = { "card": "[color:red]" };",
+		  "code": "export const useStyles = { "card": "[color:red]" };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -92,8 +91,7 @@ test("jss -> tailwind: carries a documented secondary jss API explicitly", () =>
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		export const sheet = { "card": "[color:red]" };",
+		  "code": "export const sheet = { "card": "[color:red]" };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -146,8 +144,7 @@ test("jss -> tailwind: loads concrete theme and project context variants", async
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "
-		export const useStyles = { "card": "[color:#2563eb]" };",
+		    "code": "export const useStyles = { "card": "[color:#2563eb]" };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -182,8 +179,7 @@ test("jss -> tailwind: loads concrete theme and project context variants", async
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "
-		export const useStyles = { "card": "text-brand" };",
+		    "code": "export const useStyles = { "card": "text-brand" };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -230,8 +226,7 @@ test("jss -> tailwind: resolves concrete token values with project context", asy
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		export const useStyles = { "card": "text-brand" };",
+		  "code": "export const useStyles = { "card": "text-brand" };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -275,8 +270,7 @@ test("jss -> tailwind: preserves malformed concrete jss input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		export const useStyles = { "card": "[color:red]" };
+		  "code": "export const useStyles = { "card": "[color:red]" };
 		const unfinished = { /* unfinished jss */",
 		  "converted": 1,
 		  "generatedFiles": [],

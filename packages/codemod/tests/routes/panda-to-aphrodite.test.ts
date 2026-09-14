@@ -48,7 +48,6 @@ test("panda -> aphrodite: migrates concrete panda syntax to aphrodite", () => {
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "aphrodite";
-
 		export const card = StyleSheet.create({ "color": "red.300", "_hover": { "color": "blue.300" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -153,7 +152,6 @@ test("panda -> aphrodite: loads concrete theme and project context variants", as
 		  "amber": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-
 		export const card = StyleSheet.create({ "color": "#f97316", "_hover": { "color": "#f97316" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -191,7 +189,6 @@ test("panda -> aphrodite: loads concrete theme and project context variants", as
 		  "blue": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-
 		export const card = StyleSheet.create({ "color": "#2563eb", "_hover": { "color": "#2563eb" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -241,7 +238,6 @@ test("panda -> aphrodite: resolves concrete token values with project context", 
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "aphrodite";
-
 		export const card = StyleSheet.create({ "color": "#2563eb", "_hover": { "color": "blue.300" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -287,7 +283,6 @@ test("panda -> aphrodite: preserves malformed concrete panda input", () => {
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "aphrodite";
-
 		export const card = StyleSheet.create({ "color": "red.300", "_hover": { "color": "blue.300" } });
 		const unfinished = { /* unfinished panda */",
 		  "converted": 1,

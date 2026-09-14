@@ -146,7 +146,7 @@ test("chakra-ui -> tailwind: loads concrete theme and project context variants",
 		  "amber": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => <Box p="4" className={"bg-brand"}/>;",
+		export const App = () => <Box className={"bg-brand [p:var(--chakra-spacing-4)]"}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -183,7 +183,7 @@ test("chakra-ui -> tailwind: loads concrete theme and project context variants",
 		  "blue": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => <Box p="4" className={"bg-brand"}/>;",
+		export const App = () => <Box className={"bg-brand [p:var(--chakra-spacing-4)]"}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -232,7 +232,7 @@ test("chakra-ui -> tailwind: resolves concrete token values with project context
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => <Box p="4" className={"bg-brand"}/>;",
+		export const App = () => <Box className={"bg-brand [p:var(--chakra-spacing-4)]"}/>;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [

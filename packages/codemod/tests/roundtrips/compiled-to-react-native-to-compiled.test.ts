@@ -50,7 +50,6 @@ test("compiled -> react-native -> compiled: preserves an actionable concrete rou
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-
 		export const card = StyleSheet.create({ "padding": 8, "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -88,8 +87,6 @@ test("compiled -> react-native -> compiled: preserves an actionable concrete rou
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@compiled/react";
-
-
 		export const card = css({ "padding": 8, "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -140,7 +137,6 @@ test("compiled -> react-native -> compiled: retains the documented secondary API
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-
 		export const colors = StyleSheet.create({ "red": { "color": "red" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -178,8 +174,6 @@ test("compiled -> react-native -> compiled: retains the documented secondary API
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@compiled/react";
-
-
 		export const colors = { "red": css({ "color": "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -245,7 +239,6 @@ test("compiled -> react-native -> compiled: preserves concrete theme and project
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "react-native";
-
 		export const card = StyleSheet.create({ "padding": 8, "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -283,8 +276,6 @@ test("compiled -> react-native -> compiled: preserves concrete theme and project
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@compiled/react";
-
-
 		export const card = css({ "padding": 8, "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -323,7 +314,6 @@ test("compiled -> react-native -> compiled: preserves concrete theme and project
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "react-native";
-
 		export const card = StyleSheet.create({ "padding": 8, "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -361,8 +351,6 @@ test("compiled -> react-native -> compiled: preserves concrete theme and project
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@compiled/react";
-
-
 		export const card = css({ "padding": 8, "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -415,7 +403,6 @@ test("compiled -> react-native -> compiled: resolves token values across both co
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-
 		export const card = StyleSheet.create({ "padding": 8, "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -453,8 +440,6 @@ test("compiled -> react-native -> compiled: resolves token values across both co
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@compiled/react";
-
-
 		export const card = css({ "padding": 8, "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],

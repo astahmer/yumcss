@@ -48,7 +48,6 @@ test("tokenami -> stylex: migrates concrete tokenami syntax to stylex", () => {
 		{
 		  "changed": true,
 		  "code": "import * as stylex from "@stylexjs/stylex";
-
 		export const card = stylex.create({ style: { cardGap: "1rem", color: "red" } }).style;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -94,7 +93,6 @@ test("tokenami -> stylex: carries a documented secondary tokenami API explicitly
 		{
 		  "changed": true,
 		  "code": "import * as stylex from "@stylexjs/stylex";
-
 		export const card = stylex.create({ style: { padding: "1rem", color: "red" } }).style;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -250,7 +248,6 @@ test("tokenami -> stylex: resolves concrete token values with project context", 
 		{
 		  "changed": true,
 		  "code": "import * as stylex from "@stylexjs/stylex";
-
 		export const card = stylex.create({ style: { cardGap: "1rem", color: "#2563eb" } }).style;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -296,7 +293,6 @@ test("tokenami -> stylex: preserves malformed concrete tokenami input", () => {
 		{
 		  "changed": true,
 		  "code": "import * as stylex from "@stylexjs/stylex";
-
 		export const card = stylex.create({ style: { cardGap: "1rem", color: "red" } }).style;
 		const unfinished = { /* unfinished tokenami */",
 		  "converted": 1,

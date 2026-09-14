@@ -50,7 +50,6 @@ test("tokenami -> vue-styled -> tokenami: preserves an actionable concrete round
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-
 		export const card = styled.div({ "cardGap": "1rem", "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -88,8 +87,6 @@ test("tokenami -> vue-styled -> tokenami: preserves an actionable concrete round
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
 		import { defineComponent, h } from "vue";
-
-
 		export const card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css({ cardGap: "1rem", color: "red" }), attrs.class] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -138,7 +135,6 @@ test("tokenami -> vue-styled -> tokenami: retains the documented secondary API w
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-
 		export const card = styled.div({ "padding": "1rem", "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -176,8 +172,6 @@ test("tokenami -> vue-styled -> tokenami: retains the documented secondary API w
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
 		import { defineComponent, h } from "vue";
-
-
 		export const card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css({ padding: "1rem", color: "red" }), attrs.class] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -240,7 +234,6 @@ test("tokenami -> vue-styled -> tokenami: preserves concrete theme and project c
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-
 		export const card = styled.div({ "cardGap": "1rem", "color": "#f97316" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -279,8 +272,6 @@ test("tokenami -> vue-styled -> tokenami: preserves concrete theme and project c
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
 		import { defineComponent, h } from "vue";
-
-
 		export const card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css({ cardGap: "1rem", color: "$colors.brand" }), attrs.class] }, slots.default?.()));",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -317,7 +308,6 @@ test("tokenami -> vue-styled -> tokenami: preserves concrete theme and project c
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-
 		export const card = styled.div({ "cardGap": "1rem", "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -356,8 +346,6 @@ test("tokenami -> vue-styled -> tokenami: preserves concrete theme and project c
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
 		import { defineComponent, h } from "vue";
-
-
 		export const card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css({ cardGap: "1rem", color: "$colors.brand" }), attrs.class] }, slots.default?.()));",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -408,7 +396,6 @@ test("tokenami -> vue-styled -> tokenami: resolves token values across both conc
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-
 		export const card = styled.div({ "cardGap": "1rem", "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -446,8 +433,6 @@ test("tokenami -> vue-styled -> tokenami: resolves token values across both conc
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
 		import { defineComponent, h } from "vue";
-
-
 		export const card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css({ cardGap: "1rem", color: "$colors.brand" }), attrs.class] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],

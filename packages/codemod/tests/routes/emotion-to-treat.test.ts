@@ -48,7 +48,6 @@ test("emotion -> treat: migrates concrete emotion syntax to treat", () => {
 		{
 		  "changed": true,
 		  "code": "import { style } from "@/styles.treat";
-
 		export const card = style({ "padding": "1rem", "color": "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -94,7 +93,6 @@ test("emotion -> treat: carries a documented secondary emotion API explicitly", 
 		{
 		  "changed": true,
 		  "code": "import { style } from "@/styles.treat";
-
 		export const card = style({ "padding": "1rem", "color": "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -149,7 +147,6 @@ test("emotion -> treat: loads concrete theme and project context variants", asyn
 		  "amber": {
 		    "changed": true,
 		    "code": "import { style } from "@/styles.treat";
-
 		export const card = style({ "padding": "1rem", "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -186,7 +183,6 @@ test("emotion -> treat: loads concrete theme and project context variants", asyn
 		  "blue": {
 		    "changed": true,
 		    "code": "import { style } from "@/styles.treat";
-
 		export const card = style({ "padding": "1rem", "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -235,7 +231,6 @@ test("emotion -> treat: resolves concrete token values with project context", as
 		{
 		  "changed": true,
 		  "code": "import { style } from "@/styles.treat";
-
 		export const card = style({ "padding": "1rem", "color": "#2563eb" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -281,7 +276,6 @@ test("emotion -> treat: preserves malformed concrete emotion input", () => {
 		{
 		  "changed": true,
 		  "code": "import { style } from "@/styles.treat";
-
 		export const card = style({ "padding": "1rem", "color": "red" });
 		const unfinished = { /* unfinished emotion */",
 		  "converted": 1,

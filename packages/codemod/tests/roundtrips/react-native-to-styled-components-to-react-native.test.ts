@@ -50,7 +50,6 @@ test("react-native -> styled-components -> react-native: preserves an actionable
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
 		export const styles = { "card": styled.div({ padding: 8, color: "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -85,7 +84,6 @@ test("react-native -> styled-components -> react-native: preserves an actionable
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
 		export const styles = { "card": // pandwind:migrate-skip (route: styled-components -> react-native | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		styled.div({ padding: 8, color: "red" }) };",
 		    "converted": 0,
@@ -138,7 +136,6 @@ test("react-native -> styled-components -> react-native: retains the documented 
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
 		export const styles = { "card": styled.div({ padding: 8, backgroundColor: "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -173,7 +170,6 @@ test("react-native -> styled-components -> react-native: retains the documented 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
 		export const styles = { "card": // pandwind:migrate-skip (route: styled-components -> react-native | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		styled.div({ padding: 8, backgroundColor: "red" }) };",
 		    "converted": 0,
@@ -241,7 +237,6 @@ test("react-native -> styled-components -> react-native: preserves concrete them
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-
 		export const styles = { "card": styled.div({ padding: 8, color: "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -276,7 +271,6 @@ test("react-native -> styled-components -> react-native: preserves concrete them
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-
 		export const styles = { "card": // pandwind:migrate-skip (route: styled-components -> react-native | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		styled.div({ padding: 8, color: "#2563eb" }) };",
 		      "converted": 0,
@@ -317,7 +311,6 @@ test("react-native -> styled-components -> react-native: preserves concrete them
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-
 		export const styles = { "card": styled.div({ padding: 8, color: "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -352,7 +345,6 @@ test("react-native -> styled-components -> react-native: preserves concrete them
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-
 		export const styles = { "card": // pandwind:migrate-skip (route: styled-components -> react-native | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		styled.div({ padding: 8, color: "#2563eb" }) };",
 		      "converted": 0,
@@ -407,7 +399,6 @@ test("react-native -> styled-components -> react-native: resolves token values a
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
 		export const styles = { "card": styled.div({ padding: 8, color: "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -442,7 +433,6 @@ test("react-native -> styled-components -> react-native: resolves token values a
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
 		export const styles = { "card": // pandwind:migrate-skip (route: styled-components -> react-native | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		styled.div({ padding: 8, color: "#2563eb" }) };",
 		    "converted": 0,

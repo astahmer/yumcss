@@ -93,7 +93,6 @@ describe("codemod unplugin factory", () => {
 			    "name": "pandwind:virtual-migration:styled-components->tailwind",
 			    "result": {
 			      "code": "
-
 			const Card = "[padding:1rem] [color:red]";
 
 			export function App() {
@@ -107,7 +106,6 @@ describe("codemod unplugin factory", () => {
 			    "name": "pandwind:virtual-migration:styled-components->tailwind",
 			    "result": {
 			      "code": "
-
 			const Card = "[padding:1rem] [color:red]";
 
 			export function App() {
@@ -121,7 +119,6 @@ describe("codemod unplugin factory", () => {
 			    "name": "pandwind:virtual-migration:styled-components->tailwind",
 			    "result": {
 			      "code": "
-
 			const Card = "[padding:1rem] [color:red]";
 
 			export function App() {
@@ -135,7 +132,6 @@ describe("codemod unplugin factory", () => {
 			    "name": "pandwind:virtual-migration:styled-components->tailwind",
 			    "result": {
 			      "code": "
-
 			const Card = "[padding:1rem] [color:red]";
 
 			export function App() {
@@ -149,7 +145,6 @@ describe("codemod unplugin factory", () => {
 			    "name": "pandwind:virtual-migration:styled-components->tailwind",
 			    "result": {
 			      "code": "
-
 			const Card = "[padding:1rem] [color:red]";
 
 			export function App() {

@@ -48,7 +48,6 @@ test("bamboo -> tokenami: migrates concrete bamboo syntax to tokenami", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-
 		export const card = css({ color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -92,7 +91,6 @@ test("bamboo -> tokenami: carries a documented secondary bamboo API explicitly",
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-
 		export const card = css({ gap: "4", display: "flex" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -145,7 +143,6 @@ test("bamboo -> tokenami: loads concrete theme and project context variants", as
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-
 		export const card = css({ color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -180,7 +177,6 @@ test("bamboo -> tokenami: loads concrete theme and project context variants", as
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-
 		export const card = css({ color: "$colors.brand" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -227,7 +223,6 @@ test("bamboo -> tokenami: resolves concrete token values with project context", 
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-
 		export const card = css({ color: "$colors.brand" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -271,7 +266,6 @@ test("bamboo -> tokenami: preserves malformed concrete bamboo input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-
 		export const card = css({ color: "red" });
 		const unfinished = { /* unfinished bamboo */",
 		  "converted": 1,

@@ -47,8 +47,7 @@ test("chakra-ui -> vue-styled: migrates concrete chakra-ui syntax to vue-styled"
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { Box } from "@chakra-ui/react";
-		import styled from "vue-styled-components";
+		  "code": "import styled from "vue-styled-components";
 		export const App = () => styled.div({ "padding": "var(--chakra-spacing-4)", "backgroundColor": "var(--chakra-colors-red-200)" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -146,9 +145,8 @@ test("chakra-ui -> vue-styled: loads concrete theme and project context variants
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { Box } from "@chakra-ui/react";
-		import styled from "vue-styled-components";
-		export const App = () => styled.div({ "backgroundColor": "#f97316" });",
+		    "code": "import styled from "vue-styled-components";
+		export const App = () => styled.div({ "backgroundColor": "#f97316", "p": "var(--chakra-spacing-4)" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -184,9 +182,8 @@ test("chakra-ui -> vue-styled: loads concrete theme and project context variants
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { Box } from "@chakra-ui/react";
-		import styled from "vue-styled-components";
-		export const App = () => styled.div({ "backgroundColor": "#2563eb" });",
+		    "code": "import styled from "vue-styled-components";
+		export const App = () => styled.div({ "backgroundColor": "#2563eb", "p": "var(--chakra-spacing-4)" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -234,9 +231,8 @@ test("chakra-ui -> vue-styled: resolves concrete token values with project conte
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { Box } from "@chakra-ui/react";
-		import styled from "vue-styled-components";
-		export const App = () => styled.div({ "backgroundColor": "#2563eb" });",
+		  "code": "import styled from "vue-styled-components";
+		export const App = () => styled.div({ "backgroundColor": "#2563eb", "p": "var(--chakra-spacing-4)" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -280,8 +276,7 @@ test("chakra-ui -> vue-styled: preserves malformed concrete chakra-ui input", ()
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { Box } from "@chakra-ui/react";
-		import styled from "vue-styled-components";
+		  "code": "import styled from "vue-styled-components";
 		export const App = () => styled.div({ "padding": "var(--chakra-spacing-4)", "backgroundColor": "var(--chakra-colors-red-200)" });
 		const unfinished = { /* unfinished chakra-ui */",
 		  "converted": 1,

@@ -50,7 +50,6 @@ test("style9 -> vanilla-extract -> style9: preserves an actionable concrete roun
 		  "forward": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-
 		export const styles = { "card": style({ color: "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -87,8 +86,6 @@ test("style9 -> vanilla-extract -> style9: preserves an actionable concrete roun
 		  "reverse": {
 		    "changed": true,
 		    "code": "import style9 from "style9";
-
-
 		export const styles = { "card": style9.create({ "color": "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -139,7 +136,6 @@ test("style9 -> vanilla-extract -> style9: retains the documented secondary API 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-
 		export const styles = { "card": style({ color: "red" }), "muted": style({ opacity: 0.5 }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -176,8 +172,6 @@ test("style9 -> vanilla-extract -> style9: retains the documented secondary API 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import style9 from "style9";
-
-
 		export const styles = { "card": style9.create({ "color": "red" }), "muted": style9.create({ "opacity": 0.5 }) };",
 		    "converted": 2,
 		    "generatedFiles": [],
@@ -264,7 +258,6 @@ test("style9 -> vanilla-extract -> style9: preserves concrete theme and project 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { style } from "@vanilla-extract/css";
-
 		export const styles = { "card": style({ color: "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -301,8 +294,6 @@ test("style9 -> vanilla-extract -> style9: preserves concrete theme and project 
 		    "reverse": {
 		      "changed": true,
 		      "code": "import style9 from "style9";
-
-
 		export const styles = { "card": style9.create({ "color": "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -341,7 +332,6 @@ test("style9 -> vanilla-extract -> style9: preserves concrete theme and project 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { style } from "@vanilla-extract/css";
-
 		export const styles = { "card": style({ color: "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -378,8 +368,6 @@ test("style9 -> vanilla-extract -> style9: preserves concrete theme and project 
 		    "reverse": {
 		      "changed": true,
 		      "code": "import style9 from "style9";
-
-
 		export const styles = { "card": style9.create({ "color": "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -432,7 +420,6 @@ test("style9 -> vanilla-extract -> style9: resolves token values across both con
 		  "forward": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-
 		export const styles = { "card": style({ color: "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -469,8 +456,6 @@ test("style9 -> vanilla-extract -> style9: resolves token values across both con
 		  "reverse": {
 		    "changed": true,
 		    "code": "import style9 from "style9";
-
-
 		export const styles = { "card": style9.create({ "color": "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],

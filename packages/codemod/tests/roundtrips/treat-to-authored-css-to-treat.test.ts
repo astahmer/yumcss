@@ -51,7 +51,6 @@ test("treat -> authored-css -> treat: preserves an actionable concrete round tri
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": 8, "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -90,7 +89,6 @@ test("treat -> authored-css -> treat: preserves an actionable concrete round tri
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
 		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": 8, "color": "red" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -156,7 +154,6 @@ test("treat -> authored-css -> treat: retains the documented secondary API witho
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": 8, "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -195,7 +192,6 @@ test("treat -> authored-css -> treat: retains the documented secondary API witho
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
 		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": 8, "color": "red" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -276,7 +272,6 @@ test("treat -> authored-css -> treat: preserves concrete theme and project conte
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": 8, "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -315,7 +310,6 @@ test("treat -> authored-css -> treat: preserves concrete theme and project conte
 		      "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
 		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": 8, "color": "#2563eb" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -369,7 +363,6 @@ test("treat -> authored-css -> treat: preserves concrete theme and project conte
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": 8, "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -408,7 +401,6 @@ test("treat -> authored-css -> treat: preserves concrete theme and project conte
 		      "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
 		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": 8, "color": "#2563eb" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -476,7 +468,6 @@ test("treat -> authored-css -> treat: resolves token values across both concrete
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": 8, "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -515,7 +506,6 @@ test("treat -> authored-css -> treat: resolves token values across both concrete
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
 		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": 8, "color": "#2563eb" });",
 		    "converted": 0,
 		    "generatedFiles": [],

@@ -47,8 +47,7 @@ test("chakra-ui -> tamagui: migrates concrete chakra-ui syntax to tamagui", () =
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { Box } from "@chakra-ui/react";
-		import { View, styled } from "@tamagui/core";
+		  "code": "import { View, styled } from "@tamagui/core";
 		export const App = () => styled(View, { padding: "var(--chakra-spacing-4)", backgroundColor: "var(--chakra-colors-red-200)" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -140,9 +139,8 @@ test("chakra-ui -> tamagui: loads concrete theme and project context variants", 
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { Box } from "@chakra-ui/react";
-		import { View, styled } from "@tamagui/core";
-		export const App = () => styled(View, { backgroundColor: "brand.500" });",
+		    "code": "import { View, styled } from "@tamagui/core";
+		export const App = () => styled(View, { backgroundColor: "brand.500", p: "var(--chakra-spacing-4)" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -174,9 +172,8 @@ test("chakra-ui -> tamagui: loads concrete theme and project context variants", 
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { Box } from "@chakra-ui/react";
-		import { View, styled } from "@tamagui/core";
-		export const App = () => styled(View, { backgroundColor: "brand.500" });",
+		    "code": "import { View, styled } from "@tamagui/core";
+		export const App = () => styled(View, { backgroundColor: "brand.500", p: "var(--chakra-spacing-4)" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -220,9 +217,8 @@ test("chakra-ui -> tamagui: resolves concrete token values with project context"
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { Box } from "@chakra-ui/react";
-		import { View, styled } from "@tamagui/core";
-		export const App = () => styled(View, { backgroundColor: "#2563eb" });",
+		  "code": "import { View, styled } from "@tamagui/core";
+		export const App = () => styled(View, { backgroundColor: "#2563eb", p: "var(--chakra-spacing-4)" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -263,8 +259,7 @@ test("chakra-ui -> tamagui: preserves malformed concrete chakra-ui input", () =>
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { Box } from "@chakra-ui/react";
-		import { View, styled } from "@tamagui/core";
+		  "code": "import { View, styled } from "@tamagui/core";
 		export const App = () => styled(View, { padding: "var(--chakra-spacing-4)", backgroundColor: "var(--chakra-colors-red-200)" });
 		const unfinished = { /* unfinished chakra-ui */",
 		  "converted": 1,

@@ -104,7 +104,6 @@ const Button = () => <styled.button color="red" />;`;
 			const css = createCss();
 			const staticClassName1 = css.class({ color: "red" });
 
-
 			const Button = () => <button className={staticClassName1} />;"
 		`);
 	});
@@ -125,7 +124,6 @@ export const Button = () =>
 			const css = createCss();
 			const staticClassName1 = css.class({ backgroundColor: "tomato", color: "red", "&:hover": { color: "blue" } });
 
-
 			export const Button = () =>
 					<button data-testid="button" disabled className={staticClassName1} />;"
 		`);
@@ -145,13 +143,12 @@ export const App = () => <Card />;`;
 		expect(result.code).not.toContain("styled-components");
 		expect(result.code).toContain('import { createCss } from "pandwind/css";');
 		expect(result.code).toMatchInlineSnapshot(`
-		"import React from "react";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
+			"import React from "react";
+			import { createCss } from "pandwind/css";
+			const css = createCss();
 
-
-		const Card = css.class({ color: "red" });
-		export const App = () => <button className={Card} />;"
-	`);
+			const Card = css.class({ color: "red" });
+			export const App = () => <button className={Card} />;"
+		`);
 	});
 });

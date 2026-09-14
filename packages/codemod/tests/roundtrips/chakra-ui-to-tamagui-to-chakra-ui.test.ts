@@ -49,8 +49,7 @@ test("chakra-ui -> tamagui -> chakra-ui: preserves an actionable concrete round 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { Box } from "@chakra-ui/react";
-		import { View, styled } from "@tamagui/core";
+		    "code": "import { View, styled } from "@tamagui/core";
 		export const App = () => styled(View, { padding: "var(--chakra-spacing-4)", backgroundColor: "var(--chakra-colors-red-200)" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -83,8 +82,7 @@ test("chakra-ui -> tamagui -> chakra-ui: preserves an actionable concrete round 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { Box } from "@chakra-ui/react";
-		import { View, styled } from "@tamagui/core";
+		    "code": "import { View, styled } from "@tamagui/core";
 		export const App = () => // pandwind:migrate-skip (route: tamagui -> chakra-ui | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
 		styled(View, { padding: "var(--chakra-spacing-4)", backgroundColor: "var(--chakra-colors-red-200)" });",
 		    "converted": 0,
@@ -207,9 +205,8 @@ test("chakra-ui -> tamagui -> chakra-ui: preserves concrete theme and project co
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { Box } from "@chakra-ui/react";
-		import { View, styled } from "@tamagui/core";
-		export const App = () => styled(View, { backgroundColor: "brand.500" });",
+		      "code": "import { View, styled } from "@tamagui/core";
+		export const App = () => styled(View, { backgroundColor: "brand.500", p: "var(--chakra-spacing-4)" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -241,10 +238,9 @@ test("chakra-ui -> tamagui -> chakra-ui: preserves concrete theme and project co
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { Box } from "@chakra-ui/react";
-		import { View, styled } from "@tamagui/core";
+		      "code": "import { View, styled } from "@tamagui/core";
 		export const App = () => // pandwind:migrate-skip (route: tamagui -> chakra-ui | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
-		styled(View, { backgroundColor: "brand.500" });",
+		styled(View, { backgroundColor: "brand.500", p: "var(--chakra-spacing-4)" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -279,9 +275,8 @@ test("chakra-ui -> tamagui -> chakra-ui: preserves concrete theme and project co
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { Box } from "@chakra-ui/react";
-		import { View, styled } from "@tamagui/core";
-		export const App = () => styled(View, { backgroundColor: "brand.500" });",
+		      "code": "import { View, styled } from "@tamagui/core";
+		export const App = () => styled(View, { backgroundColor: "brand.500", p: "var(--chakra-spacing-4)" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -313,10 +308,9 @@ test("chakra-ui -> tamagui -> chakra-ui: preserves concrete theme and project co
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { Box } from "@chakra-ui/react";
-		import { View, styled } from "@tamagui/core";
+		      "code": "import { View, styled } from "@tamagui/core";
 		export const App = () => // pandwind:migrate-skip (route: tamagui -> chakra-ui | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
-		styled(View, { backgroundColor: "brand.500" });",
+		styled(View, { backgroundColor: "brand.500", p: "var(--chakra-spacing-4)" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -365,9 +359,8 @@ test("chakra-ui -> tamagui -> chakra-ui: resolves token values across both concr
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { Box } from "@chakra-ui/react";
-		import { View, styled } from "@tamagui/core";
-		export const App = () => styled(View, { backgroundColor: "#2563eb" });",
+		    "code": "import { View, styled } from "@tamagui/core";
+		export const App = () => styled(View, { backgroundColor: "#2563eb", p: "var(--chakra-spacing-4)" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -399,10 +392,9 @@ test("chakra-ui -> tamagui -> chakra-ui: resolves token values across both concr
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { Box } from "@chakra-ui/react";
-		import { View, styled } from "@tamagui/core";
+		    "code": "import { View, styled } from "@tamagui/core";
 		export const App = () => // pandwind:migrate-skip (route: tamagui -> chakra-ui | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
-		styled(View, { backgroundColor: "#2563eb" });",
+		styled(View, { backgroundColor: "#2563eb", p: "var(--chakra-spacing-4)" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

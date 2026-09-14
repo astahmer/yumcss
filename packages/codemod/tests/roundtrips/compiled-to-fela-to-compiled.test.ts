@@ -49,8 +49,7 @@ test("compiled -> fela -> compiled: preserves an actionable concrete round trip"
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const card = renderer.renderRule({ "padding": 8, "color": "red" });",
+		    "code": "export const card = renderer.renderRule({ "padding": 8, "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,7 +85,6 @@ test("compiled -> fela -> compiled: preserves an actionable concrete round trip"
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@compiled/react";
-
 		export const card = css({ "padding": 8, "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -136,8 +134,7 @@ test("compiled -> fela -> compiled: retains the documented secondary API without
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const colors = { "red": renderer.renderRule({ "color": "red" }) };",
+		    "code": "export const colors = { "red": renderer.renderRule({ "color": "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -173,7 +170,6 @@ test("compiled -> fela -> compiled: retains the documented secondary API without
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@compiled/react";
-
 		export const colors = { "red": css({ "color": "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -238,8 +234,7 @@ test("compiled -> fela -> compiled: preserves concrete theme and project context
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		export const card = renderer.renderRule({ "padding": 8, "color": "#2563eb" });",
+		      "code": "export const card = renderer.renderRule({ "padding": 8, "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -275,7 +270,6 @@ test("compiled -> fela -> compiled: preserves concrete theme and project context
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@compiled/react";
-
 		export const card = css({ "padding": 8, "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -313,8 +307,7 @@ test("compiled -> fela -> compiled: preserves concrete theme and project context
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		export const card = renderer.renderRule({ "padding": 8, "color": "#2563eb" });",
+		      "code": "export const card = renderer.renderRule({ "padding": 8, "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -350,7 +343,6 @@ test("compiled -> fela -> compiled: preserves concrete theme and project context
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@compiled/react";
-
 		export const card = css({ "padding": 8, "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -402,8 +394,7 @@ test("compiled -> fela -> compiled: resolves token values across both concrete l
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const card = renderer.renderRule({ "padding": 8, "color": "#2563eb" });",
+		    "code": "export const card = renderer.renderRule({ "padding": 8, "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -439,7 +430,6 @@ test("compiled -> fela -> compiled: resolves token values across both concrete l
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@compiled/react";
-
 		export const card = css({ "padding": 8, "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],

@@ -52,7 +52,6 @@ test("styled-components -> pandwind: migrates concrete styled-components syntax 
 		const cx = createCx();
 		const css = createCss();
 		const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Component {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
-
 		export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "red" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -100,7 +99,6 @@ test("styled-components -> pandwind: carries a documented secondary styled-compo
 		const cx = createCx();
 		const css = createCss();
 		const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Component {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
-
 		export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "red" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -157,7 +155,6 @@ test("styled-components -> pandwind: loads concrete theme and project context va
 		import { __pandwindSlot } from "../__pandwind/slot";
 		const cx = createCx();
 		const css = createCss();
-
 		export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "#2563eb" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
 		    "converted": 1,
 		    "generatedFiles": [
@@ -201,7 +198,6 @@ test("styled-components -> pandwind: loads concrete theme and project context va
 		import { __pandwindSlot } from "../__pandwind/slot";
 		const cx = createCx();
 		const css = createCss();
-
 		export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "brand" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
 		    "converted": 1,
 		    "generatedFiles": [
@@ -257,7 +253,6 @@ test("styled-components -> pandwind: resolves concrete token values with project
 		import { __pandwindSlot } from "../__pandwind/slot";
 		const cx = createCx();
 		const css = createCss();
-
 		export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "brand" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
 		  "converted": 1,
 		  "generatedFiles": [
@@ -310,7 +305,6 @@ test("styled-components -> pandwind: preserves malformed concrete styled-compone
 		const cx = createCx();
 		const css = createCss();
 		const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Component {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
-
 		export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "red" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });
 		const unfinished = { /* unfinished styled-components */",
 		  "converted": 1,

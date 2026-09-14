@@ -51,7 +51,6 @@ test("vue-styled -> style9 -> vue-styled: preserves an actionable concrete round
 		    "changed": true,
 		    "code": "import style9 from "style9";
 		import { defineComponent, h } from "vue";
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [style9(style9.create({ style: { "padding": "1rem", "color": "red" } }).style), attrs.class] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -90,7 +89,6 @@ test("vue-styled -> style9 -> vue-styled: preserves an actionable concrete round
 		    "code": "import style9 from "style9";
 		import { defineComponent, h } from "vue";
 		import styled from "vue-styled-components";
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [style9({ "style": styled.div({ "padding": "1rem", "color": "red" }) }.style), attrs.class] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -142,7 +140,6 @@ test("vue-styled -> style9 -> vue-styled: retains the documented secondary API w
 		    "changed": true,
 		    "code": "import style9 from "style9";
 		import { defineComponent, h } from "vue";
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [style9(style9.create({ style: { "padding": "1rem", "color": "red" } }).style), attrs.class] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -181,7 +178,6 @@ test("vue-styled -> style9 -> vue-styled: retains the documented secondary API w
 		    "code": "import style9 from "style9";
 		import { defineComponent, h } from "vue";
 		import styled from "vue-styled-components";
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [style9({ "style": styled.div({ "padding": "1rem", "color": "red" }) }.style), attrs.class] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -248,7 +244,6 @@ test("vue-styled -> style9 -> vue-styled: preserves concrete theme and project c
 		      "changed": true,
 		      "code": "import style9 from "style9";
 		import { defineComponent, h } from "vue";
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [style9(style9.create({ style: { "padding": "1rem", "color": "#2563eb" } }).style), attrs.class] }, slots.default?.()));",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -287,7 +282,6 @@ test("vue-styled -> style9 -> vue-styled: preserves concrete theme and project c
 		      "code": "import style9 from "style9";
 		import { defineComponent, h } from "vue";
 		import styled from "vue-styled-components";
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [style9({ "style": styled.div({ "padding": "1rem", "color": "#2563eb" }) }.style), attrs.class] }, slots.default?.()));",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -327,7 +321,6 @@ test("vue-styled -> style9 -> vue-styled: preserves concrete theme and project c
 		      "changed": true,
 		      "code": "import style9 from "style9";
 		import { defineComponent, h } from "vue";
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [style9(style9.create({ style: { "padding": "1rem", "color": "#2563eb" } }).style), attrs.class] }, slots.default?.()));",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -366,7 +359,6 @@ test("vue-styled -> style9 -> vue-styled: preserves concrete theme and project c
 		      "code": "import style9 from "style9";
 		import { defineComponent, h } from "vue";
 		import styled from "vue-styled-components";
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [style9({ "style": styled.div({ "padding": "1rem", "color": "#2563eb" }) }.style), attrs.class] }, slots.default?.()));",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -420,7 +412,6 @@ test("vue-styled -> style9 -> vue-styled: resolves token values across both conc
 		    "changed": true,
 		    "code": "import style9 from "style9";
 		import { defineComponent, h } from "vue";
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [style9(style9.create({ style: { "padding": "1rem", "color": "#2563eb" } }).style), attrs.class] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -459,7 +450,6 @@ test("vue-styled -> style9 -> vue-styled: resolves token values across both conc
 		    "code": "import style9 from "style9";
 		import { defineComponent, h } from "vue";
 		import styled from "vue-styled-components";
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [style9({ "style": styled.div({ "padding": "1rem", "color": "#2563eb" }) }.style), attrs.class] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],

@@ -49,8 +49,7 @@ test("react-native -> unocss -> react-native: preserves an actionable concrete r
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const styles = { "card": "[padding:8] [color:red]" };",
+		    "code": "export const styles = { "card": "[padding:8] [color:red]" };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,7 +85,6 @@ test("react-native -> unocss -> react-native: preserves an actionable concrete r
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-
 		export const styles = StyleSheet.create({ "card": { "padding": "8", "color": "red" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -137,8 +135,7 @@ test("react-native -> unocss -> react-native: retains the documented secondary A
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const styles = { "card": "[padding:8] [background-color:red]" };",
+		    "code": "export const styles = { "card": "[padding:8] [background-color:red]" };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -174,7 +171,6 @@ test("react-native -> unocss -> react-native: retains the documented secondary A
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-
 		export const styles = StyleSheet.create({ "card": { "padding": "8", "backgroundColor": "red" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -240,8 +236,7 @@ test("react-native -> unocss -> react-native: preserves concrete theme and proje
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		export const styles = { "card": "[padding:8] [color:#2563eb]" };",
+		      "code": "export const styles = { "card": "[padding:8] [color:#2563eb]" };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -276,8 +271,7 @@ test("react-native -> unocss -> react-native: preserves concrete theme and proje
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		export const styles = // pandwind:migrate-skip (route: unocss -> react-native | lowering-residual: validation)
+		      "code": "export const styles = // pandwind:migrate-skip (route: unocss -> react-native | lowering-residual: validation)
 		{ "card": "[padding:8] [color:#2563eb]" };",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -324,8 +318,7 @@ test("react-native -> unocss -> react-native: preserves concrete theme and proje
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		export const styles = { "card": "[padding:8] text-brand" };",
+		      "code": "export const styles = { "card": "[padding:8] text-brand" };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -360,8 +353,7 @@ test("react-native -> unocss -> react-native: preserves concrete theme and proje
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		export const styles = // pandwind:migrate-skip (route: unocss -> react-native | lowering-residual: validation)
+		      "code": "export const styles = // pandwind:migrate-skip (route: unocss -> react-native | lowering-residual: validation)
 		{ "card": "[padding:8] text-brand" };",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -422,8 +414,7 @@ test("react-native -> unocss -> react-native: resolves token values across both 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const styles = { "card": "[padding:8] text-brand" };",
+		    "code": "export const styles = { "card": "[padding:8] text-brand" };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -458,8 +449,7 @@ test("react-native -> unocss -> react-native: resolves token values across both 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		export const styles = // pandwind:migrate-skip (route: unocss -> react-native | lowering-residual: validation)
+		    "code": "export const styles = // pandwind:migrate-skip (route: unocss -> react-native | lowering-residual: validation)
 		{ "card": "[padding:8] text-brand" };",
 		    "converted": 0,
 		    "generatedFiles": [],

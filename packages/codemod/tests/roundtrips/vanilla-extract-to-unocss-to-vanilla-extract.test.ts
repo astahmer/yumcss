@@ -49,8 +49,7 @@ test("vanilla-extract -> unocss -> vanilla-extract: preserves an actionable conc
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const card = "[padding:8] [color:red]";",
+		    "code": "export const card = "[padding:8] [color:red]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,7 +85,6 @@ test("vanilla-extract -> unocss -> vanilla-extract: preserves an actionable conc
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-
 		export const card = style({ padding: "8", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -215,8 +213,7 @@ test("vanilla-extract -> unocss -> vanilla-extract: preserves concrete theme and
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		export const card = "[padding:8] [color:#2563eb]";",
+		      "code": "export const card = "[padding:8] [color:#2563eb]";",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -251,8 +248,7 @@ test("vanilla-extract -> unocss -> vanilla-extract: preserves concrete theme and
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		export const card = // pandwind:migrate-skip (route: unocss -> vanilla-extract | lowering-residual: validation)
+		      "code": "export const card = // pandwind:migrate-skip (route: unocss -> vanilla-extract | lowering-residual: validation)
 		"[padding:8] [color:#2563eb]";",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -298,8 +294,7 @@ test("vanilla-extract -> unocss -> vanilla-extract: preserves concrete theme and
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		export const card = "[padding:8] text-brand";",
+		      "code": "export const card = "[padding:8] text-brand";",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -334,8 +329,7 @@ test("vanilla-extract -> unocss -> vanilla-extract: preserves concrete theme and
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		export const card = // pandwind:migrate-skip (route: unocss -> vanilla-extract | lowering-residual: validation)
+		      "code": "export const card = // pandwind:migrate-skip (route: unocss -> vanilla-extract | lowering-residual: validation)
 		"[padding:8] text-brand";",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -395,8 +389,7 @@ test("vanilla-extract -> unocss -> vanilla-extract: resolves token values across
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const card = "[padding:8] text-brand";",
+		    "code": "export const card = "[padding:8] text-brand";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -431,8 +424,7 @@ test("vanilla-extract -> unocss -> vanilla-extract: resolves token values across
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		export const card = // pandwind:migrate-skip (route: unocss -> vanilla-extract | lowering-residual: validation)
+		    "code": "export const card = // pandwind:migrate-skip (route: unocss -> vanilla-extract | lowering-residual: validation)
 		"[padding:8] text-brand";",
 		    "converted": 0,
 		    "generatedFiles": [],

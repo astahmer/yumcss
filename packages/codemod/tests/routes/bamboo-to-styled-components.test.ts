@@ -48,7 +48,6 @@ test("bamboo -> styled-components: migrates concrete bamboo syntax to styled-com
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-
 		export const card = styled.div({ color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -92,7 +91,6 @@ test("bamboo -> styled-components: carries a documented secondary bamboo API exp
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-
 		export const card = styled.div({ gap: "4", display: "flex" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -145,7 +143,6 @@ test("bamboo -> styled-components: loads concrete theme and project context vari
 		  "amber": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
 		export const card = styled.div({ color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -180,7 +177,6 @@ test("bamboo -> styled-components: loads concrete theme and project context vari
 		  "blue": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
 		export const card = styled.div({ color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -227,7 +223,6 @@ test("bamboo -> styled-components: resolves concrete token values with project c
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-
 		export const card = styled.div({ color: "#2563eb" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -271,7 +266,6 @@ test("bamboo -> styled-components: preserves malformed concrete bamboo input", (
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-
 		export const card = styled.div({ color: "red" });
 		const unfinished = { /* unfinished bamboo */",
 		  "converted": 1,

@@ -47,8 +47,7 @@ test("chakra-ui -> styled-components: migrates concrete chakra-ui syntax to styl
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { Box } from "@chakra-ui/react";
-		import styled from "styled-components";
+		  "code": "import styled from "styled-components";
 		export const App = () => styled.div({ padding: "var(--chakra-spacing-4)", backgroundColor: "var(--chakra-colors-red-200)" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -240,9 +239,8 @@ test("chakra-ui -> styled-components: resolves concrete token values with projec
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { Box } from "@chakra-ui/react";
-		import styled from "styled-components";
-		export const App = () => styled.div({ backgroundColor: "#2563eb" });",
+		  "code": "import styled from "styled-components";
+		export const App = () => styled.div({ backgroundColor: "#2563eb", p: "var(--chakra-spacing-4)" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -284,8 +282,7 @@ test("chakra-ui -> styled-components: preserves malformed concrete chakra-ui inp
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { Box } from "@chakra-ui/react";
-		import styled from "styled-components";
+		  "code": "import styled from "styled-components";
 		export const App = () => styled.div({ padding: "var(--chakra-spacing-4)", backgroundColor: "var(--chakra-colors-red-200)" });
 		const unfinished = { /* unfinished chakra-ui */",
 		  "converted": 1,

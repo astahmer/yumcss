@@ -47,8 +47,7 @@ test("chakra-ui -> emotion: migrates concrete chakra-ui syntax to emotion", () =
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { Box } from "@chakra-ui/react";
-		import { css } from "@emotion/css";
+		  "code": "import { css } from "@emotion/css";
 		export const App = () => css({ padding: "var(--chakra-spacing-4)", backgroundColor: "var(--chakra-colors-red-200)" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -240,9 +239,8 @@ test("chakra-ui -> emotion: resolves concrete token values with project context"
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { Box } from "@chakra-ui/react";
-		import { css } from "@emotion/css";
-		export const App = () => css({ backgroundColor: "#2563eb" });",
+		  "code": "import { css } from "@emotion/css";
+		export const App = () => css({ backgroundColor: "#2563eb", p: "var(--chakra-spacing-4)" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -284,8 +282,7 @@ test("chakra-ui -> emotion: preserves malformed concrete chakra-ui input", () =>
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { Box } from "@chakra-ui/react";
-		import { css } from "@emotion/css";
+		  "code": "import { css } from "@emotion/css";
 		export const App = () => css({ padding: "var(--chakra-spacing-4)", backgroundColor: "var(--chakra-colors-red-200)" });
 		const unfinished = { /* unfinished chakra-ui */",
 		  "converted": 1,

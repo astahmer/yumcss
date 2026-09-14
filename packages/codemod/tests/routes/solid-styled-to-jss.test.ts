@@ -47,8 +47,7 @@ test("solid-styled -> jss: migrates concrete solid-styled syntax to jss", () => 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		import { createCx } from "pandwind/cx";
+		  "code": "import { createCx } from "pandwind/cx";
 		import jss from "jss";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} class={cx(jss.createStyleSheet({ style: { padding: "1rem", color: "red" } }).attach().classes.style, props.class)} />;",
@@ -95,8 +94,7 @@ test("solid-styled -> jss: carries a documented secondary solid-styled API expli
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		import { createCx } from "pandwind/cx";
+		  "code": "import { createCx } from "pandwind/cx";
 		import jss from "jss";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} class={cx(jss.createStyleSheet({ style: { padding: "1rem", color: "red" } }).attach().classes.style, props.class)} />;",
@@ -152,8 +150,7 @@ test("solid-styled -> jss: loads concrete theme and project context variants", a
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import jss from "jss";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} class={cx(jss.createStyleSheet({ style: { padding: "1rem", color: "#2563eb" } }).attach().classes.style, props.class)} />;",
@@ -191,8 +188,7 @@ test("solid-styled -> jss: loads concrete theme and project context variants", a
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import jss from "jss";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} class={cx(jss.createStyleSheet({ style: { padding: "1rem", color: "#2563eb" } }).attach().classes.style, props.class)} />;",
@@ -242,8 +238,7 @@ test("solid-styled -> jss: resolves concrete token values with project context",
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		import { createCx } from "pandwind/cx";
+		  "code": "import { createCx } from "pandwind/cx";
 		import jss from "jss";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} class={cx(jss.createStyleSheet({ style: { padding: "1rem", color: "#2563eb" } }).attach().classes.style, props.class)} />;",

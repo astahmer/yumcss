@@ -51,7 +51,6 @@ test("stitches -> pandwind -> stitches: preserves an actionable concrete round t
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ padding: "1rem", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -139,7 +138,6 @@ test("stitches -> pandwind -> stitches: retains the documented secondary API wit
 		    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
 		import { pandwindPreset } from "pandwind/preset";
 		const css = createRuntimeCss(pandwindPreset);
-
 		export const reset = () => (css.sheet.registerSemanticRules([{ kind: "global", selector: "body", conditions: [], declarations: [{ property: "margin", value: 0 }], children: [] }]), null);",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -174,7 +172,6 @@ test("stitches -> pandwind -> stitches: retains the documented secondary API wit
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { globalCss } from "@stitches/react";
-
 		export const reset = globalCss({ "body": { margin: 0 } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -241,7 +238,6 @@ test("stitches -> pandwind -> stitches: preserves concrete theme and project con
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ padding: "1rem", color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -316,7 +312,6 @@ test("stitches -> pandwind -> stitches: preserves concrete theme and project con
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ padding: "1rem", color: "brand" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -413,7 +408,6 @@ test("stitches -> pandwind -> stitches: resolves token values across both concre
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ padding: "1rem", color: "brand" });",
 		    "converted": 1,
 		    "generatedFiles": [],

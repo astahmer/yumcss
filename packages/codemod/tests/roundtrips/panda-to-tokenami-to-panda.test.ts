@@ -50,7 +50,6 @@ test("panda -> tokenami -> panda: preserves an actionable concrete round trip", 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-
 		export const card = css({ color: "red.300", "&:hover": { color: "blue.300" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -85,8 +84,6 @@ test("panda -> tokenami -> panda: preserves an actionable concrete round trip", 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-
-
 		export const card = css({ color: "red.300", "&:hover": { color: "blue.300" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -211,7 +208,6 @@ test("panda -> tokenami -> panda: preserves concrete theme and project context v
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-
 		export const card = css({ color: "$colors.brand", "&:hover": { color: "$colors.brand" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -246,8 +242,6 @@ test("panda -> tokenami -> panda: preserves concrete theme and project context v
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "styled-system/css";
-
-
 		export const card = css({ color: "brand.500", "&:hover": { color: "brand.500" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -284,7 +278,6 @@ test("panda -> tokenami -> panda: preserves concrete theme and project context v
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-
 		export const card = css({ color: "$colors.brand", "&:hover": { color: "$colors.brand" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -319,8 +312,6 @@ test("panda -> tokenami -> panda: preserves concrete theme and project context v
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "styled-system/css";
-
-
 		export const card = css({ color: "brand.500", "&:hover": { color: "brand.500" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -371,7 +362,6 @@ test("panda -> tokenami -> panda: resolves token values across both concrete leg
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-
 		export const card = css({ color: "$colors.brand", "&:hover": { color: "blue.300" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -406,8 +396,6 @@ test("panda -> tokenami -> panda: resolves token values across both concrete leg
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-
-
 		export const card = css({ color: "brand.500", "&:hover": { color: "blue.300" } });",
 		    "converted": 1,
 		    "generatedFiles": [],

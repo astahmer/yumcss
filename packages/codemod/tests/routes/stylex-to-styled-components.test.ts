@@ -48,7 +48,6 @@ test("stylex -> styled-components: migrates concrete stylex syntax to styled-com
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-
 		export const styles = { "card": styled.div({ padding: "8px", color: "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -92,7 +91,6 @@ test("stylex -> styled-components: carries a documented secondary stylex API exp
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-
 		export const styles = { "card": styled.div({ color: "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -145,7 +143,6 @@ test("stylex -> styled-components: loads concrete theme and project context vari
 		  "amber": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
 		export const styles = { "card": styled.div({ padding: "8px", color: "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -180,7 +177,6 @@ test("stylex -> styled-components: loads concrete theme and project context vari
 		  "blue": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
 		export const styles = { "card": styled.div({ padding: "8px", color: "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -227,7 +223,6 @@ test("stylex -> styled-components: resolves concrete token values with project c
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-
 		export const styles = { "card": styled.div({ padding: "8px", color: "#2563eb" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -271,7 +266,6 @@ test("stylex -> styled-components: preserves malformed concrete stylex input", (
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-
 		export const styles = { "card": styled.div({ padding: "8px", color: "red" }) };
 		const unfinished = { /* unfinished stylex */",
 		  "converted": 1,

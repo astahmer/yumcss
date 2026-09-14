@@ -48,7 +48,6 @@ test("bamboo -> react-native: migrates concrete bamboo syntax to react-native", 
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "react-native";
-
 		export const card = StyleSheet.create({ "color": "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -95,7 +94,6 @@ test("bamboo -> react-native: carries a documented secondary bamboo API explicit
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "react-native";
-
 		export const card = StyleSheet.create({ "gap": "4", "display": "flex" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -151,7 +149,6 @@ test("bamboo -> react-native: loads concrete theme and project context variants"
 		  "amber": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-
 		export const card = StyleSheet.create({ "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -189,7 +186,6 @@ test("bamboo -> react-native: loads concrete theme and project context variants"
 		  "blue": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-
 		export const card = StyleSheet.create({ "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -239,7 +235,6 @@ test("bamboo -> react-native: resolves concrete token values with project contex
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "react-native";
-
 		export const card = StyleSheet.create({ "color": "#2563eb" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -286,7 +281,6 @@ test("bamboo -> react-native: preserves malformed concrete bamboo input", () => 
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "react-native";
-
 		export const card = StyleSheet.create({ "color": "red" });
 		const unfinished = { /* unfinished bamboo */",
 		  "converted": 1,

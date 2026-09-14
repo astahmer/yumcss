@@ -49,8 +49,7 @@ test("react-native -> fela -> react-native: preserves an actionable concrete rou
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const styles = { "card": renderer.renderRule({ "padding": 8, "color": "red" }) };",
+		    "code": "export const styles = { "card": renderer.renderRule({ "padding": 8, "color": "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,7 +85,6 @@ test("react-native -> fela -> react-native: preserves an actionable concrete rou
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-
 		export const styles = { "card": StyleSheet.create({ "padding": 8, "color": "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -137,8 +135,7 @@ test("react-native -> fela -> react-native: retains the documented secondary API
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const styles = { "card": renderer.renderRule({ "padding": 8, "backgroundColor": "red" }) };",
+		    "code": "export const styles = { "card": renderer.renderRule({ "padding": 8, "backgroundColor": "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -174,7 +171,6 @@ test("react-native -> fela -> react-native: retains the documented secondary API
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-
 		export const styles = { "card": StyleSheet.create({ "padding": 8, "backgroundColor": "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -240,8 +236,7 @@ test("react-native -> fela -> react-native: preserves concrete theme and project
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		export const styles = { "card": renderer.renderRule({ "padding": 8, "color": "#2563eb" }) };",
+		      "code": "export const styles = { "card": renderer.renderRule({ "padding": 8, "color": "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -277,7 +272,6 @@ test("react-native -> fela -> react-native: preserves concrete theme and project
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "react-native";
-
 		export const styles = { "card": StyleSheet.create({ "padding": 8, "color": "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -316,8 +310,7 @@ test("react-native -> fela -> react-native: preserves concrete theme and project
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		export const styles = { "card": renderer.renderRule({ "padding": 8, "color": "#2563eb" }) };",
+		      "code": "export const styles = { "card": renderer.renderRule({ "padding": 8, "color": "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -353,7 +346,6 @@ test("react-native -> fela -> react-native: preserves concrete theme and project
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "react-native";
-
 		export const styles = { "card": StyleSheet.create({ "padding": 8, "color": "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -406,8 +398,7 @@ test("react-native -> fela -> react-native: resolves token values across both co
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const styles = { "card": renderer.renderRule({ "padding": 8, "color": "#2563eb" }) };",
+		    "code": "export const styles = { "card": renderer.renderRule({ "padding": 8, "color": "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -443,7 +434,6 @@ test("react-native -> fela -> react-native: resolves token values across both co
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-
 		export const styles = { "card": StyleSheet.create({ "padding": 8, "color": "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],

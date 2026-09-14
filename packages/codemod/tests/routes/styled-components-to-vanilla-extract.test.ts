@@ -47,8 +47,7 @@ test("styled-components -> vanilla-extract: migrates concrete styled-components 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		import { createCx } from "pandwind/cx";
+		  "code": "import { createCx } from "pandwind/cx";
 		import { style } from "@vanilla-extract/css";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(style({ padding: "1rem", color: "red" }), props.className)} />;",
@@ -95,8 +94,7 @@ test("styled-components -> vanilla-extract: carries a documented secondary style
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		import { createCx } from "pandwind/cx";
+		  "code": "import { createCx } from "pandwind/cx";
 		import { style } from "@vanilla-extract/css";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(style({ padding: "1rem", color: "red" }), props.className)} />;",
@@ -152,8 +150,7 @@ test("styled-components -> vanilla-extract: loads concrete theme and project con
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { style } from "@vanilla-extract/css";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(style({ padding: "1rem", color: "#2563eb" }), props.className)} />;",
@@ -191,8 +188,7 @@ test("styled-components -> vanilla-extract: loads concrete theme and project con
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { style } from "@vanilla-extract/css";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(style({ padding: "1rem", color: "#2563eb" }), props.className)} />;",
@@ -242,8 +238,7 @@ test("styled-components -> vanilla-extract: resolves concrete token values with 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		import { createCx } from "pandwind/cx";
+		  "code": "import { createCx } from "pandwind/cx";
 		import { style } from "@vanilla-extract/css";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(style({ padding: "1rem", color: "#2563eb" }), props.className)} />;",

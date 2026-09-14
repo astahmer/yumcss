@@ -50,7 +50,6 @@ test("react-native -> next-yak -> react-native: preserves an actionable concrete
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-
 		export const styles = { "card": css\`padding: 8; color: red;\` };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -85,8 +84,6 @@ test("react-native -> next-yak -> react-native: preserves an actionable concrete
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-
-
 		export const styles = { "card": StyleSheet.create({ "padding": "8", "color": "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -138,7 +135,6 @@ test("react-native -> next-yak -> react-native: retains the documented secondary
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-
 		export const styles = { "card": css\`padding: 8; background-color: red;\` };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -173,8 +169,6 @@ test("react-native -> next-yak -> react-native: retains the documented secondary
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-
-
 		export const styles = { "card": StyleSheet.create({ "padding": "8", "backgroundColor": "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -241,7 +235,6 @@ test("react-native -> next-yak -> react-native: preserves concrete theme and pro
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "next-yak";
-
 		export const styles = { "card": css\`padding: 8; color: #2563eb;\` };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -276,8 +269,6 @@ test("react-native -> next-yak -> react-native: preserves concrete theme and pro
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "react-native";
-
-
 		export const styles = { "card": StyleSheet.create({ "padding": "8", "color": "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -317,7 +308,6 @@ test("react-native -> next-yak -> react-native: preserves concrete theme and pro
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "next-yak";
-
 		export const styles = { "card": css\`padding: 8; color: #2563eb;\` };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -352,8 +342,6 @@ test("react-native -> next-yak -> react-native: preserves concrete theme and pro
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "react-native";
-
-
 		export const styles = { "card": StyleSheet.create({ "padding": "8", "color": "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -407,7 +395,6 @@ test("react-native -> next-yak -> react-native: resolves token values across bot
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-
 		export const styles = { "card": css\`padding: 8; color: #2563eb;\` };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -442,8 +429,6 @@ test("react-native -> next-yak -> react-native: resolves token values across bot
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-
-
 		export const styles = { "card": StyleSheet.create({ "padding": "8", "color": "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],

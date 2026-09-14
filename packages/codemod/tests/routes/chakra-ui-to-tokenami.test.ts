@@ -144,7 +144,7 @@ test("chakra-ui -> tokenami: loads concrete theme and project context variants",
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
 		import { css } from "@tokenami/css";
-		export const App = () => <Box p="4" className={css({ backgroundColor: "$colors.brand" })}/>;",
+		export const App = () => <Box className={css({ backgroundColor: "$colors.brand", p: "var(--chakra-spacing-4)" })}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -179,7 +179,7 @@ test("chakra-ui -> tokenami: loads concrete theme and project context variants",
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
 		import { css } from "@tokenami/css";
-		export const App = () => <Box p="4" className={css({ backgroundColor: "$colors.brand" })}/>;",
+		export const App = () => <Box className={css({ backgroundColor: "$colors.brand", p: "var(--chakra-spacing-4)" })}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -226,7 +226,7 @@ test("chakra-ui -> tokenami: resolves concrete token values with project context
 		  "changed": true,
 		  "code": "import { Box } from "@chakra-ui/react";
 		import { css } from "@tokenami/css";
-		export const App = () => <Box p="4" className={css({ backgroundColor: "$colors.brand" })}/>;",
+		export const App = () => <Box className={css({ backgroundColor: "$colors.brand", p: "var(--chakra-spacing-4)" })}/>;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [

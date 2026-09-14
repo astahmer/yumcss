@@ -52,7 +52,6 @@ test("vue-styled -> mantine -> vue-styled: preserves an actionable concrete roun
 		    "code": "import { createCss } from "pandwind/css";
 		import { defineComponent, h } from "vue";
 		const css = createCss();
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css.class({ "padding": "1rem", "color": "red" }), attrs.class] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -90,7 +89,6 @@ test("vue-styled -> mantine -> vue-styled: preserves an actionable concrete roun
 		    "code": "import { createCss } from "pandwind/css";
 		import { defineComponent, h } from "vue";
 		const css = createCss();
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css.class({ "padding": "1rem", "color": "red" }), attrs.class] }, slots.default?.()));",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -119,7 +117,6 @@ test("vue-styled -> mantine -> vue-styled: retains the documented secondary API 
 		    "code": "import { createCss } from "pandwind/css";
 		import { defineComponent, h } from "vue";
 		const css = createCss();
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css.class({ "padding": "1rem", "color": "red" }), attrs.class] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -157,7 +154,6 @@ test("vue-styled -> mantine -> vue-styled: retains the documented secondary API 
 		    "code": "import { createCss } from "pandwind/css";
 		import { defineComponent, h } from "vue";
 		const css = createCss();
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css.class({ "padding": "1rem", "color": "red" }), attrs.class] }, slots.default?.()));",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -201,7 +197,6 @@ test("vue-styled -> mantine -> vue-styled: preserves concrete theme and project 
 		      "code": "import { createCss } from "pandwind/css";
 		import { defineComponent, h } from "vue";
 		const css = createCss();
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css.class({ "padding": "1rem", "color": "#2563eb" }), attrs.class] }, slots.default?.()));",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -239,7 +234,6 @@ test("vue-styled -> mantine -> vue-styled: preserves concrete theme and project 
 		      "code": "import { createCss } from "pandwind/css";
 		import { defineComponent, h } from "vue";
 		const css = createCss();
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css.class({ "padding": "1rem", "color": "#2563eb" }), attrs.class] }, slots.default?.()));",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -256,7 +250,6 @@ test("vue-styled -> mantine -> vue-styled: preserves concrete theme and project 
 		      "code": "import { createCss } from "pandwind/css";
 		import { defineComponent, h } from "vue";
 		const css = createCss();
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css.class({ "padding": "1rem", "color": "var(--mantine-color-brand-0)" }), attrs.class] }, slots.default?.()));",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -294,7 +287,6 @@ test("vue-styled -> mantine -> vue-styled: preserves concrete theme and project 
 		      "code": "import { createCss } from "pandwind/css";
 		import { defineComponent, h } from "vue";
 		const css = createCss();
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css.class({ "padding": "1rem", "color": "var(--mantine-color-brand-0)" }), attrs.class] }, slots.default?.()));",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -325,7 +317,6 @@ test("vue-styled -> mantine -> vue-styled: resolves token values across both con
 		    "code": "import { createCss } from "pandwind/css";
 		import { defineComponent, h } from "vue";
 		const css = createCss();
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css.class({ "padding": "1rem", "color": "var(--mantine-color-brand-0)" }), attrs.class] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -363,7 +354,6 @@ test("vue-styled -> mantine -> vue-styled: resolves token values across both con
 		    "code": "import { createCss } from "pandwind/css";
 		import { defineComponent, h } from "vue";
 		const css = createCss();
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css.class({ "padding": "1rem", "color": "var(--mantine-color-brand-0)" }), attrs.class] }, slots.default?.()));",
 		    "converted": 0,
 		    "generatedFiles": [],

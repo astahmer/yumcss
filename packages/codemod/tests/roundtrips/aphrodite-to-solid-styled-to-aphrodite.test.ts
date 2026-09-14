@@ -50,7 +50,6 @@ test("aphrodite -> solid-styled -> aphrodite: preserves an actionable concrete r
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-
 		export const styles = { "card": styled.div({ "padding": 8, "color": "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -87,7 +86,6 @@ test("aphrodite -> solid-styled -> aphrodite: preserves an actionable concrete r
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-
 		export const styles = { "card": // pandwind:migrate-skip (route: solid-styled -> aphrodite | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
 		styled.div({ "padding": 8, "color": "red" }) };",
 		    "converted": 0,
@@ -218,7 +216,6 @@ test("aphrodite -> solid-styled -> aphrodite: preserves concrete theme and proje
 		    "forward": {
 		      "changed": true,
 		      "code": "import { styled } from "solid-styled-components";
-
 		export const styles = { "card": styled.div({ "padding": 8, "color": "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -255,7 +252,6 @@ test("aphrodite -> solid-styled -> aphrodite: preserves concrete theme and proje
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { styled } from "solid-styled-components";
-
 		export const styles = { "card": // pandwind:migrate-skip (route: solid-styled -> aphrodite | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
 		styled.div({ "padding": 8, "color": "#2563eb" }) };",
 		      "converted": 0,
@@ -295,7 +291,6 @@ test("aphrodite -> solid-styled -> aphrodite: preserves concrete theme and proje
 		    "forward": {
 		      "changed": true,
 		      "code": "import { styled } from "solid-styled-components";
-
 		export const styles = { "card": styled.div({ "padding": 8, "color": "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -332,7 +327,6 @@ test("aphrodite -> solid-styled -> aphrodite: preserves concrete theme and proje
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { styled } from "solid-styled-components";
-
 		export const styles = { "card": // pandwind:migrate-skip (route: solid-styled -> aphrodite | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
 		styled.div({ "padding": 8, "color": "#2563eb" }) };",
 		      "converted": 0,
@@ -386,7 +380,6 @@ test("aphrodite -> solid-styled -> aphrodite: resolves token values across both 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-
 		export const styles = { "card": styled.div({ "padding": 8, "color": "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -423,7 +416,6 @@ test("aphrodite -> solid-styled -> aphrodite: resolves token values across both 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-
 		export const styles = { "card": // pandwind:migrate-skip (route: solid-styled -> aphrodite | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
 		styled.div({ "padding": 8, "color": "#2563eb" }) };",
 		    "converted": 0,

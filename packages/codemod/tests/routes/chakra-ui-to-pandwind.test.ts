@@ -50,7 +50,6 @@ test("chakra-ui -> pandwind: migrates concrete chakra-ui syntax to pandwind", ()
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 		const staticClassName1 = css.class({ padding: "4", backgroundColor: "red.200" });
-
 		export const App = () => <div className={staticClassName1} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -147,7 +146,6 @@ test("chakra-ui -> pandwind: loads concrete theme and project context variants",
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 		const staticClassName1 = css.class({ padding: "4", backgroundColor: "brand" });
-
 		export const App = () => <div className={staticClassName1} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -184,7 +182,6 @@ test("chakra-ui -> pandwind: loads concrete theme and project context variants",
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 		const staticClassName1 = css.class({ padding: "4", backgroundColor: "brand" });
-
 		export const App = () => <div className={staticClassName1} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -233,7 +230,6 @@ test("chakra-ui -> pandwind: resolves concrete token values with project context
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 		const staticClassName1 = css.class({ padding: "4", backgroundColor: "brand" });
-
 		export const App = () => <div className={staticClassName1} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -278,7 +274,6 @@ test("chakra-ui -> pandwind: preserves malformed concrete chakra-ui input", () =
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const App = () => <div className={css.class({ padding: "4", backgroundColor: "red.200" })} />;
 		const unfinished = { /* unfinished chakra-ui */",
 		  "converted": 1,

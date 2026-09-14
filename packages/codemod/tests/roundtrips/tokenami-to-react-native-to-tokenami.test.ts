@@ -50,7 +50,6 @@ test("tokenami -> react-native -> tokenami: preserves an actionable concrete rou
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-
 		export const card = StyleSheet.create({ "cardGap": 16, "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -88,8 +87,6 @@ test("tokenami -> react-native -> tokenami: preserves an actionable concrete rou
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-
-
 		export const card = css({ cardGap: 16, color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -138,7 +135,6 @@ test("tokenami -> react-native -> tokenami: retains the documented secondary API
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-
 		export const card = StyleSheet.create({ "padding": 16, "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -176,8 +172,6 @@ test("tokenami -> react-native -> tokenami: retains the documented secondary API
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-
-
 		export const card = css({ padding: 16, color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -240,7 +234,6 @@ test("tokenami -> react-native -> tokenami: preserves concrete theme and project
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "react-native";
-
 		export const card = StyleSheet.create({ "cardGap": 16, "color": "#f97316" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -279,8 +272,6 @@ test("tokenami -> react-native -> tokenami: preserves concrete theme and project
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-
-
 		export const card = css({ cardGap: 16, color: "$colors.brand" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -317,7 +308,6 @@ test("tokenami -> react-native -> tokenami: preserves concrete theme and project
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "react-native";
-
 		export const card = StyleSheet.create({ "cardGap": 16, "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -356,8 +346,6 @@ test("tokenami -> react-native -> tokenami: preserves concrete theme and project
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-
-
 		export const card = css({ cardGap: 16, color: "$colors.brand" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -408,7 +396,6 @@ test("tokenami -> react-native -> tokenami: resolves token values across both co
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-
 		export const card = StyleSheet.create({ "cardGap": 16, "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -446,8 +433,6 @@ test("tokenami -> react-native -> tokenami: resolves token values across both co
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-
-
 		export const card = css({ cardGap: 16, color: "$colors.brand" });",
 		    "converted": 1,
 		    "generatedFiles": [],

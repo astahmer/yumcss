@@ -50,7 +50,6 @@ test("vanilla-extract -> style9 -> vanilla-extract: preserves an actionable conc
 		  "forward": {
 		    "changed": true,
 		    "code": "import style9 from "style9";
-
 		export const card = style9.create({ "padding": 8, "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -87,8 +86,6 @@ test("vanilla-extract -> style9 -> vanilla-extract: preserves an actionable conc
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-
-
 		export const card = style({ padding: 8, color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -218,7 +215,6 @@ test("vanilla-extract -> style9 -> vanilla-extract: preserves concrete theme and
 		    "forward": {
 		      "changed": true,
 		      "code": "import style9 from "style9";
-
 		export const card = style9.create({ "padding": 8, "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -255,8 +251,6 @@ test("vanilla-extract -> style9 -> vanilla-extract: preserves concrete theme and
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { style } from "@vanilla-extract/css";
-
-
 		export const card = style({ padding: 8, color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -295,7 +289,6 @@ test("vanilla-extract -> style9 -> vanilla-extract: preserves concrete theme and
 		    "forward": {
 		      "changed": true,
 		      "code": "import style9 from "style9";
-
 		export const card = style9.create({ "padding": 8, "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -332,8 +325,6 @@ test("vanilla-extract -> style9 -> vanilla-extract: preserves concrete theme and
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { style } from "@vanilla-extract/css";
-
-
 		export const card = style({ padding: 8, color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -386,7 +377,6 @@ test("vanilla-extract -> style9 -> vanilla-extract: resolves token values across
 		  "forward": {
 		    "changed": true,
 		    "code": "import style9 from "style9";
-
 		export const card = style9.create({ "padding": 8, "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -423,8 +413,6 @@ test("vanilla-extract -> style9 -> vanilla-extract: resolves token values across
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-
-
 		export const card = style({ padding: 8, color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],

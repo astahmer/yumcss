@@ -50,7 +50,6 @@ test("styled-components -> react-native -> styled-components: preserves an actio
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet, View } from "react-native";
-
 		export const Card = (props) => <View {...props} style={StyleSheet.create({ style: { "padding": 16, "color": "red" } }).style} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -89,7 +88,6 @@ test("styled-components -> react-native -> styled-components: preserves an actio
 		    "changed": true,
 		    "code": "import { View } from "react-native";
 		import styled from "styled-components";
-
 		export const Card = (props) => <View {...props} style={{ "style": styled.div({ padding: 16, color: "red" }) }.style} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -138,7 +136,6 @@ test("styled-components -> react-native -> styled-components: retains the docume
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet, View } from "react-native";
-
 		export const Card = (props) => <View {...props} style={StyleSheet.create({ style: { "padding": 16, "color": "red" } }).style} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -177,7 +174,6 @@ test("styled-components -> react-native -> styled-components: retains the docume
 		    "changed": true,
 		    "code": "import { View } from "react-native";
 		import styled from "styled-components";
-
 		export const Card = (props) => <View {...props} style={{ "style": styled.div({ padding: 16, color: "red" }) }.style} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -241,7 +237,6 @@ test("styled-components -> react-native -> styled-components: preserves concrete
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet, View } from "react-native";
-
 		export const Card = (props) => <View {...props} style={StyleSheet.create({ style: { "padding": 16, "color": "#2563eb" } }).style} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -280,7 +275,6 @@ test("styled-components -> react-native -> styled-components: preserves concrete
 		      "changed": true,
 		      "code": "import { View } from "react-native";
 		import styled from "styled-components";
-
 		export const Card = (props) => <View {...props} style={{ "style": styled.div({ padding: 16, color: "#2563eb" }) }.style} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -317,7 +311,6 @@ test("styled-components -> react-native -> styled-components: preserves concrete
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet, View } from "react-native";
-
 		export const Card = (props) => <View {...props} style={StyleSheet.create({ style: { "padding": 16, "color": "#2563eb" } }).style} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -356,7 +349,6 @@ test("styled-components -> react-native -> styled-components: preserves concrete
 		      "changed": true,
 		      "code": "import { View } from "react-native";
 		import styled from "styled-components";
-
 		export const Card = (props) => <View {...props} style={{ "style": styled.div({ padding: 16, color: "#2563eb" }) }.style} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -407,7 +399,6 @@ test("styled-components -> react-native -> styled-components: resolves token val
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet, View } from "react-native";
-
 		export const Card = (props) => <View {...props} style={StyleSheet.create({ style: { "padding": 16, "color": "#2563eb" } }).style} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -446,7 +437,6 @@ test("styled-components -> react-native -> styled-components: resolves token val
 		    "changed": true,
 		    "code": "import { View } from "react-native";
 		import styled from "styled-components";
-
 		export const Card = (props) => <View {...props} style={{ "style": styled.div({ padding: 16, color: "#2563eb" }) }.style} />;",
 		    "converted": 1,
 		    "generatedFiles": [],

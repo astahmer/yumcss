@@ -35,7 +35,7 @@ describe("adapter evidence contracts", () => {
 			    "id": "bamboo",
 			  },
 			  {
-			    "apiCount": 9,
+			    "apiCount": 11,
 			    "configCount": 3,
 			    "id": "chakra-ui",
 			  },

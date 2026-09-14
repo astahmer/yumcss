@@ -84,8 +84,7 @@ test("emotion -> chakra-ui -> emotion: preserves an actionable concrete round tr
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-		import { css } from "@emotion/css";
+		    "code": "import { css } from "@emotion/css";
 
 		export const card = css({ padding: "1rem", color: "red" });",
 		    "converted": 1,
@@ -169,8 +168,7 @@ test("emotion -> chakra-ui -> emotion: retains the documented secondary API with
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-		import { css } from "@emotion/css";
+		    "code": "import { css } from "@emotion/css";
 
 		export const card = css({ padding: "1rem", color: "red" });",
 		    "converted": 1,
@@ -269,8 +267,7 @@ test("emotion -> chakra-ui -> emotion: preserves concrete theme and project cont
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { defaultSystem } from "@chakra-ui/react";
-		import { css } from "@emotion/css";
+		      "code": "import { css } from "@emotion/css";
 
 		export const card = css({ padding: "1rem", color: "#2563eb" });",
 		      "converted": 1,

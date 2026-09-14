@@ -50,7 +50,6 @@ test("vanilla-extract -> styled-components -> vanilla-extract: preserves an acti
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
 		export const card = styled.div({ padding: 8, color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -84,11 +83,9 @@ test("vanilla-extract -> styled-components -> vanilla-extract: preserves an acti
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { style } from "@vanilla-extract/css";
 		const cx = createCx();
-
 		export const card = (props) => <div {...props} className={cx(style({ padding: 8, color: "red" }), props.className)} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -139,7 +136,6 @@ test("vanilla-extract -> styled-components -> vanilla-extract: retains the docum
 		  "forward": {
 		    "changed": true,
 		    "code": "import { createGlobalStyle } from "styled-components";
-
 		createGlobalStyle\`body { margin: 0; }\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -174,8 +170,6 @@ test("vanilla-extract -> styled-components -> vanilla-extract: retains the docum
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { globalStyle } from "@vanilla-extract/css";
-
-
 		globalStyle("body", { margin: "0" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -241,7 +235,6 @@ test("vanilla-extract -> styled-components -> vanilla-extract: preserves concret
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-
 		export const card = styled.div({ padding: 8, color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -275,11 +268,9 @@ test("vanilla-extract -> styled-components -> vanilla-extract: preserves concret
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		import { createCx } from "pandwind/cx";
+		      "code": "import { createCx } from "pandwind/cx";
 		import { style } from "@vanilla-extract/css";
 		const cx = createCx();
-
 		export const card = (props) => <div {...props} className={cx(style({ padding: 8, color: "#2563eb" }), props.className)} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -318,7 +309,6 @@ test("vanilla-extract -> styled-components -> vanilla-extract: preserves concret
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-
 		export const card = styled.div({ padding: 8, color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -352,11 +342,9 @@ test("vanilla-extract -> styled-components -> vanilla-extract: preserves concret
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		import { createCx } from "pandwind/cx";
+		      "code": "import { createCx } from "pandwind/cx";
 		import { style } from "@vanilla-extract/css";
 		const cx = createCx();
-
 		export const card = (props) => <div {...props} className={cx(style({ padding: 8, color: "#2563eb" }), props.className)} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -409,7 +397,6 @@ test("vanilla-extract -> styled-components -> vanilla-extract: resolves token va
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
 		export const card = styled.div({ padding: 8, color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -443,11 +430,9 @@ test("vanilla-extract -> styled-components -> vanilla-extract: resolves token va
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { style } from "@vanilla-extract/css";
 		const cx = createCx();
-
 		export const card = (props) => <div {...props} className={cx(style({ padding: 8, color: "#2563eb" }), props.className)} />;",
 		    "converted": 1,
 		    "generatedFiles": [],

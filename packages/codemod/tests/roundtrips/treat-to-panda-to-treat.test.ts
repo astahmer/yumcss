@@ -50,7 +50,6 @@ test("treat -> panda -> treat: preserves an actionable concrete round trip", () 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-
 		export const card = css({ padding: 8, color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -85,8 +84,6 @@ test("treat -> panda -> treat: preserves an actionable concrete round trip", () 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { style } from "@/styles.treat";
-
-
 		export const card = style({ "padding": 8, "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -137,7 +134,6 @@ test("treat -> panda -> treat: retains the documented secondary API without sile
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-
 		export const card = css({ padding: 8, color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -172,8 +168,6 @@ test("treat -> panda -> treat: retains the documented secondary API without sile
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { style } from "@/styles.treat";
-
-
 		export const card = style({ "padding": 8, "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -239,7 +233,6 @@ test("treat -> panda -> treat: preserves concrete theme and project context vari
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "styled-system/css";
-
 		export const card = css({ padding: 8, color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -274,8 +267,6 @@ test("treat -> panda -> treat: preserves concrete theme and project context vari
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { style } from "@/styles.treat";
-
-
 		export const card = style({ "padding": 8, "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -314,7 +305,6 @@ test("treat -> panda -> treat: preserves concrete theme and project context vari
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "styled-system/css";
-
 		export const card = css({ padding: 8, color: "brand.500" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -349,8 +339,6 @@ test("treat -> panda -> treat: preserves concrete theme and project context vari
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { style } from "@/styles.treat";
-
-
 		export const card = style({ "padding": 8, "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -404,7 +392,6 @@ test("treat -> panda -> treat: resolves token values across both concrete legs",
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-
 		export const card = css({ padding: 8, color: "brand.500" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -439,8 +426,6 @@ test("treat -> panda -> treat: resolves token values across both concrete legs",
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { style } from "@/styles.treat";
-
-
 		export const card = style({ "padding": 8, "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],

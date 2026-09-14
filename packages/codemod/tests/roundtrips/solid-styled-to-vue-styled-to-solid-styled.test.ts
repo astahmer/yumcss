@@ -52,7 +52,6 @@ test("solid-styled -> vue-styled -> solid-styled: preserves an actionable concre
 		    "code": "<script setup>
 		import styled from "vue-styled-components";
 
-
 		export const Card = styled.div({ "padding": "1rem", "color": "red" });
 		</script>
 		",
@@ -92,7 +91,6 @@ test("solid-styled -> vue-styled -> solid-styled: preserves an actionable concre
 		    "changed": true,
 		    "code": "<script setup>
 		import styled from "vue-styled-components";
-
 
 		export const Card = // pandwind:migrate-skip (route: vue-styled -> solid-styled | lowering-residual: host-framework | available: static, named-map, residual)
 		styled.div({ "padding": "1rem", "color": "red" });
@@ -149,7 +147,6 @@ test("solid-styled -> vue-styled -> solid-styled: retains the documented seconda
 		    "code": "<script setup>
 		import styled from "vue-styled-components";
 
-
 		export const Card = styled.div({ "padding": "1rem", "color": "red" });
 		</script>
 		",
@@ -189,7 +186,6 @@ test("solid-styled -> vue-styled -> solid-styled: retains the documented seconda
 		    "changed": true,
 		    "code": "<script setup>
 		import styled from "vue-styled-components";
-
 
 		export const Card = // pandwind:migrate-skip (route: vue-styled -> solid-styled | lowering-residual: host-framework | available: static, named-map, residual)
 		styled.div({ "padding": "1rem", "color": "red" });
@@ -261,7 +257,6 @@ test("solid-styled -> vue-styled -> solid-styled: preserves concrete theme and p
 		      "code": "<script setup>
 		import styled from "vue-styled-components";
 
-
 		export const Card = styled.div({ "padding": "1rem", "color": "#2563eb" });
 		</script>
 		",
@@ -301,7 +296,6 @@ test("solid-styled -> vue-styled -> solid-styled: preserves concrete theme and p
 		      "changed": true,
 		      "code": "<script setup>
 		import styled from "vue-styled-components";
-
 
 		export const Card = // pandwind:migrate-skip (route: vue-styled -> solid-styled | lowering-residual: host-framework | available: static, named-map, residual)
 		styled.div({ "padding": "1rem", "color": "#2563eb" });
@@ -346,7 +340,6 @@ test("solid-styled -> vue-styled -> solid-styled: preserves concrete theme and p
 		      "code": "<script setup>
 		import styled from "vue-styled-components";
 
-
 		export const Card = styled.div({ "padding": "1rem", "color": "#2563eb" });
 		</script>
 		",
@@ -386,7 +379,6 @@ test("solid-styled -> vue-styled -> solid-styled: preserves concrete theme and p
 		      "changed": true,
 		      "code": "<script setup>
 		import styled from "vue-styled-components";
-
 
 		export const Card = // pandwind:migrate-skip (route: vue-styled -> solid-styled | lowering-residual: host-framework | available: static, named-map, residual)
 		styled.div({ "padding": "1rem", "color": "#2563eb" });
@@ -445,7 +437,6 @@ test("solid-styled -> vue-styled -> solid-styled: resolves token values across b
 		    "code": "<script setup>
 		import styled from "vue-styled-components";
 
-
 		export const Card = styled.div({ "padding": "1rem", "color": "#2563eb" });
 		</script>
 		",
@@ -485,7 +476,6 @@ test("solid-styled -> vue-styled -> solid-styled: resolves token values across b
 		    "changed": true,
 		    "code": "<script setup>
 		import styled from "vue-styled-components";
-
 
 		export const Card = // pandwind:migrate-skip (route: vue-styled -> solid-styled | lowering-residual: host-framework | available: static, named-map, residual)
 		styled.div({ "padding": "1rem", "color": "#2563eb" });

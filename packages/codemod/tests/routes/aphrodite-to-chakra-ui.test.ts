@@ -48,7 +48,6 @@ test("aphrodite -> chakra-ui: migrates concrete aphrodite syntax to chakra-ui", 
 		{
 		  "changed": true,
 		  "code": "import { defaultSystem } from "@chakra-ui/react";
-
 		export const styles = { "card": defaultSystem.css({ padding: "8px", color: "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -92,7 +91,6 @@ test("aphrodite -> chakra-ui: carries a documented secondary aphrodite API expli
 		{
 		  "changed": true,
 		  "code": "import { defaultSystem } from "@chakra-ui/react";
-
 		export const styles = { "fonts": defaultSystem.css({ "font-face": { fontFamily: "Inter", src: "url(inter.woff2)" } }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -145,7 +143,6 @@ test("aphrodite -> chakra-ui: loads concrete theme and project context variants"
 		  "amber": {
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
 		export const styles = { "card": defaultSystem.css({ padding: "8px", color: "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -180,7 +177,6 @@ test("aphrodite -> chakra-ui: loads concrete theme and project context variants"
 		  "blue": {
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
 		export const styles = { "card": defaultSystem.css({ padding: "8px", color: "brand.500" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -227,7 +223,6 @@ test("aphrodite -> chakra-ui: resolves concrete token values with project contex
 		{
 		  "changed": true,
 		  "code": "import { defaultSystem } from "@chakra-ui/react";
-
 		export const styles = { "card": defaultSystem.css({ padding: "8px", color: "brand.500" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -271,7 +266,6 @@ test("aphrodite -> chakra-ui: preserves malformed concrete aphrodite input", () 
 		{
 		  "changed": true,
 		  "code": "import { defaultSystem } from "@chakra-ui/react";
-
 		export const styles = { "card": defaultSystem.css({ padding: "8px", color: "red" }) };
 		const unfinished = { /* unfinished aphrodite */",
 		  "converted": 1,

@@ -89,7 +89,6 @@ test("pandwind -> stylex -> pandwind: preserves an actionable concrete round tri
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-
 		export const card = { "style": css.class({ padding: "1rem", color: "red" }) }.style;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -397,7 +396,6 @@ test("pandwind -> stylex -> pandwind: resolves token values across both concrete
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 
 		export const card = { "style": css.class({ padding: "1rem", color: "brand" }) }.style;",
 		    "converted": 1,

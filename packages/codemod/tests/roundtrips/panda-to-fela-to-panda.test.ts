@@ -49,8 +49,7 @@ test("panda -> fela -> panda: preserves an actionable concrete round trip", () =
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const card = renderer.renderRule({ "color": "red.300", "_hover": { "color": "blue.300" } });",
+		    "code": "export const card = renderer.renderRule({ "color": "red.300", "_hover": { "color": "blue.300" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,7 +85,6 @@ test("panda -> fela -> panda: preserves an actionable concrete round trip", () =
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-
 		export const card = css({ color: "red.300", "&:hover": { color: "blue.300" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -217,8 +215,7 @@ test("panda -> fela -> panda: preserves concrete theme and project context varia
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		export const card = renderer.renderRule({ "color": "#f97316", "_hover": { "color": "#f97316" } });",
+		      "code": "export const card = renderer.renderRule({ "color": "#f97316", "_hover": { "color": "#f97316" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -255,7 +252,6 @@ test("panda -> fela -> panda: preserves concrete theme and project context varia
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "styled-system/css";
-
 		export const card = css({ color: "brand.500", "&:hover": { color: "brand.500" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -291,8 +287,7 @@ test("panda -> fela -> panda: preserves concrete theme and project context varia
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		export const card = renderer.renderRule({ "color": "#2563eb", "_hover": { "color": "#2563eb" } });",
+		      "code": "export const card = renderer.renderRule({ "color": "#2563eb", "_hover": { "color": "#2563eb" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -329,7 +324,6 @@ test("panda -> fela -> panda: preserves concrete theme and project context varia
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "styled-system/css";
-
 		export const card = css({ color: "brand.500", "&:hover": { color: "brand.500" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -379,8 +373,7 @@ test("panda -> fela -> panda: resolves token values across both concrete legs", 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const card = renderer.renderRule({ "color": "#2563eb", "_hover": { "color": "blue.300" } });",
+		    "code": "export const card = renderer.renderRule({ "color": "#2563eb", "_hover": { "color": "blue.300" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -416,7 +409,6 @@ test("panda -> fela -> panda: resolves token values across both concrete legs", 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-
 		export const card = css({ color: "brand.500", "&:hover": { color: "blue.300" } });",
 		    "converted": 1,
 		    "generatedFiles": [],

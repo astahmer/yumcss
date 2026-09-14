@@ -48,7 +48,6 @@ test("linaria -> react-native: migrates concrete linaria syntax to react-native"
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "react-native";
-
 		export const card = StyleSheet.create({ "padding": 16, "color": "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -151,7 +150,6 @@ test("linaria -> react-native: loads concrete theme and project context variants
 		  "amber": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-
 		export const card = StyleSheet.create({ "padding": 16, "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -189,7 +187,6 @@ test("linaria -> react-native: loads concrete theme and project context variants
 		  "blue": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-
 		export const card = StyleSheet.create({ "padding": 16, "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -239,7 +236,6 @@ test("linaria -> react-native: resolves concrete token values with project conte
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "react-native";
-
 		export const card = StyleSheet.create({ "padding": 16, "color": "#2563eb" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -286,7 +282,6 @@ test("linaria -> react-native: preserves malformed concrete linaria input", () =
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "react-native";
-
 		export const card = StyleSheet.create({ "padding": 16, "color": "red" });
 		const unfinished = { /* unfinished linaria */",
 		  "converted": 1,

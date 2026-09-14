@@ -51,7 +51,6 @@ test("stitches -> mui -> stitches: preserves an actionable concrete round trip",
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": "1rem", "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -88,7 +87,6 @@ test("stitches -> mui -> stitches: preserves an actionable concrete round trip",
 		    "changed": false,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": "1rem", "color": "red" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -116,7 +114,6 @@ test("stitches -> mui -> stitches: retains the documented secondary API without 
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const reset = css.class({ "margin": 0 });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -153,7 +150,6 @@ test("stitches -> mui -> stitches: retains the documented secondary API without 
 		    "changed": false,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const reset = css.class({ "margin": 0 });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -196,7 +192,6 @@ test("stitches -> mui -> stitches: preserves concrete theme and project context 
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": "1rem", "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -233,7 +228,6 @@ test("stitches -> mui -> stitches: preserves concrete theme and project context 
 		      "changed": false,
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": "1rem", "color": "#2563eb" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -249,7 +243,6 @@ test("stitches -> mui -> stitches: preserves concrete theme and project context 
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": "1rem", "color": "primary.main" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -286,7 +279,6 @@ test("stitches -> mui -> stitches: preserves concrete theme and project context 
 		      "changed": false,
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": "1rem", "color": "primary.main" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -316,7 +308,6 @@ test("stitches -> mui -> stitches: resolves token values across both concrete le
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": "1rem", "color": "primary.main" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -353,7 +344,6 @@ test("stitches -> mui -> stitches: resolves token values across both concrete le
 		    "changed": false,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": "1rem", "color": "primary.main" });",
 		    "converted": 0,
 		    "generatedFiles": [],

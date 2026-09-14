@@ -50,7 +50,6 @@ test("aphrodite -> stitches -> aphrodite: preserves an actionable concrete round
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@stitches/react";
-
 		export const styles = { "card": css({ padding: 8, color: "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -87,8 +86,6 @@ test("aphrodite -> stitches -> aphrodite: preserves an actionable concrete round
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-
-
 		export const styles = { "card": StyleSheet.create({ "padding": 8, "color": "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -226,7 +223,6 @@ test("aphrodite -> stitches -> aphrodite: preserves concrete theme and project c
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@stitches/react";
-
 		export const styles = { "card": css({ padding: 8, color: "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -263,8 +259,6 @@ test("aphrodite -> stitches -> aphrodite: preserves concrete theme and project c
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "aphrodite";
-
-
 		export const styles = { "card": StyleSheet.create({ "padding": 8, "color": "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -303,7 +297,6 @@ test("aphrodite -> stitches -> aphrodite: preserves concrete theme and project c
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@stitches/react";
-
 		export const styles = { "card": css({ padding: 8, color: "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -340,8 +333,6 @@ test("aphrodite -> stitches -> aphrodite: preserves concrete theme and project c
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "aphrodite";
-
-
 		export const styles = { "card": StyleSheet.create({ "padding": 8, "color": "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -394,7 +385,6 @@ test("aphrodite -> stitches -> aphrodite: resolves token values across both conc
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@stitches/react";
-
 		export const styles = { "card": css({ padding: 8, color: "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -431,8 +421,6 @@ test("aphrodite -> stitches -> aphrodite: resolves token values across both conc
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-
-
 		export const styles = { "card": StyleSheet.create({ "padding": 8, "color": "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],

@@ -50,7 +50,6 @@ test("solid-styled -> mui -> solid-styled: preserves an actionable concrete roun
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "@mui/system";
-
 		export const Card = styled("div")({ padding: "1rem", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -86,7 +85,6 @@ test("solid-styled -> mui -> solid-styled: preserves an actionable concrete roun
 		    "changed": true,
 		    "code": "import { styled } from "@mui/system";
 		import { styled } from "solid-styled-components";
-
 		export const Card = styled.div({ "padding": "1rem", "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -137,7 +135,6 @@ test("solid-styled -> mui -> solid-styled: retains the documented secondary API 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "@mui/system";
-
 		export const Card = styled("div")({ padding: "1rem", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -173,7 +170,6 @@ test("solid-styled -> mui -> solid-styled: retains the documented secondary API 
 		    "changed": true,
 		    "code": "import { styled } from "@mui/system";
 		import { styled } from "solid-styled-components";
-
 		export const Card = styled.div({ "padding": "1rem", "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -239,7 +235,6 @@ test("solid-styled -> mui -> solid-styled: preserves concrete theme and project 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { styled } from "@mui/system";
-
 		export const Card = styled("div")({ padding: "1rem", color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -275,7 +270,6 @@ test("solid-styled -> mui -> solid-styled: preserves concrete theme and project 
 		      "changed": true,
 		      "code": "import { styled } from "@mui/system";
 		import { styled } from "solid-styled-components";
-
 		export const Card = styled.div({ "padding": "1rem", "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -314,7 +308,6 @@ test("solid-styled -> mui -> solid-styled: preserves concrete theme and project 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { styled } from "@mui/system";
-
 		export const Card = styled("div")({ padding: "1rem", color: "primary.main" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -350,7 +343,6 @@ test("solid-styled -> mui -> solid-styled: preserves concrete theme and project 
 		      "changed": true,
 		      "code": "import { styled } from "@mui/system";
 		import { styled } from "solid-styled-components";
-
 		export const Card = styled.div({ "padding": "1rem", "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -403,7 +395,6 @@ test("solid-styled -> mui -> solid-styled: resolves token values across both con
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "@mui/system";
-
 		export const Card = styled("div")({ padding: "1rem", color: "primary.main" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -439,7 +430,6 @@ test("solid-styled -> mui -> solid-styled: resolves token values across both con
 		    "changed": true,
 		    "code": "import { styled } from "@mui/system";
 		import { styled } from "solid-styled-components";
-
 		export const Card = styled.div({ "padding": "1rem", "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],

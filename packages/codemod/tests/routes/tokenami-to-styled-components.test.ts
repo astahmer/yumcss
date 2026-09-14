@@ -48,7 +48,6 @@ test("tokenami -> styled-components: migrates concrete tokenami syntax to styled
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-
 		export const card = styled.div({ cardGap: "1rem", color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -92,7 +91,6 @@ test("tokenami -> styled-components: carries a documented secondary tokenami API
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-
 		export const card = styled.div({ padding: "1rem", color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -242,7 +240,6 @@ test("tokenami -> styled-components: resolves concrete token values with project
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-
 		export const card = styled.div({ cardGap: "1rem", color: "#2563eb" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -286,7 +283,6 @@ test("tokenami -> styled-components: preserves malformed concrete tokenami input
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-
 		export const card = styled.div({ cardGap: "1rem", color: "red" });
 		const unfinished = { /* unfinished tokenami */",
 		  "converted": 1,

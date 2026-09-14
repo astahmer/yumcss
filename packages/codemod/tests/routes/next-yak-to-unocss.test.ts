@@ -47,8 +47,7 @@ test("next-yak -> unocss: migrates concrete next-yak syntax to unocss", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		export const card = "[padding:1rem] [color:red]";",
+		  "code": "export const card = "[padding:1rem] [color:red]";",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -92,8 +91,7 @@ test("next-yak -> unocss: carries a documented secondary next-yak API explicitly
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		import { createCx } from "pandwind/cx";
+		  "code": "import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx("[padding:1rem] [color:red]", props.className)} />;",
 		  "converted": 1,
@@ -148,8 +146,7 @@ test("next-yak -> unocss: loads concrete theme and project context variants", as
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "
-		export const card = "[padding:1rem] [color:#2563eb]";",
+		    "code": "export const card = "[padding:1rem] [color:#2563eb]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -184,8 +181,7 @@ test("next-yak -> unocss: loads concrete theme and project context variants", as
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "
-		export const card = "[padding:1rem] text-brand";",
+		    "code": "export const card = "[padding:1rem] text-brand";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -232,8 +228,7 @@ test("next-yak -> unocss: resolves concrete token values with project context", 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		export const card = "[padding:1rem] text-brand";",
+		  "code": "export const card = "[padding:1rem] text-brand";",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -277,8 +272,7 @@ test("next-yak -> unocss: preserves malformed concrete next-yak input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		export const card = "[padding:1rem] [color:red]";
+		  "code": "export const card = "[padding:1rem] [color:red]";
 		const unfinished = { /* unfinished next-yak */",
 		  "converted": 1,
 		  "generatedFiles": [],

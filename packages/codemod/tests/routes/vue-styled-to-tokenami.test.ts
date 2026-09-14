@@ -49,7 +49,6 @@ test("vue-styled -> tokenami: migrates concrete vue-styled syntax to tokenami", 
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
 		import { defineComponent, h } from "vue";
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css({ padding: "1rem", color: "red" }), attrs.class] }, slots.default?.()));",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -94,7 +93,6 @@ test("vue-styled -> tokenami: carries a documented secondary vue-styled API expl
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
 		import { defineComponent, h } from "vue";
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css({ padding: "1rem", color: "red" }), attrs.class] }, slots.default?.()));",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -148,7 +146,6 @@ test("vue-styled -> tokenami: loads concrete theme and project context variants"
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
 		import { defineComponent, h } from "vue";
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css({ padding: "1rem", color: "#2563eb" }), attrs.class] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -184,7 +181,6 @@ test("vue-styled -> tokenami: loads concrete theme and project context variants"
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
 		import { defineComponent, h } from "vue";
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css({ padding: "1rem", color: "$colors.brand" }), attrs.class] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -232,7 +228,6 @@ test("vue-styled -> tokenami: resolves concrete token values with project contex
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
 		import { defineComponent, h } from "vue";
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css({ padding: "1rem", color: "$colors.brand" }), attrs.class] }, slots.default?.()));",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -277,7 +272,6 @@ test("vue-styled -> tokenami: preserves malformed concrete vue-styled input", ()
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
 		import { defineComponent, h } from "vue";
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css({ padding: "1rem", color: "red" }), attrs.class] }, slots.default?.()));
 		const unfinished = { /* unfinished vue-styled */",
 		  "converted": 1,

@@ -50,7 +50,6 @@ test("jss -> styled-components -> jss: preserves an actionable concrete round tr
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
 		export const useStyles = { "card": styled.div({ color: "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -85,7 +84,6 @@ test("jss -> styled-components -> jss: preserves an actionable concrete round tr
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
 		export const useStyles = { "card": // pandwind:migrate-skip (route: styled-components -> jss | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		styled.div({ color: "red" }) };",
 		    "converted": 0,
@@ -137,7 +135,6 @@ test("jss -> styled-components -> jss: retains the documented secondary API with
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
 		export const sheet = { "card": styled.div({ color: "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -172,7 +169,6 @@ test("jss -> styled-components -> jss: retains the documented secondary API with
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
 		export const sheet = { "card": // pandwind:migrate-skip (route: styled-components -> jss | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		styled.div({ color: "red" }) };",
 		    "converted": 0,
@@ -239,7 +235,6 @@ test("jss -> styled-components -> jss: preserves concrete theme and project cont
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-
 		export const useStyles = { "card": styled.div({ color: "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -274,7 +269,6 @@ test("jss -> styled-components -> jss: preserves concrete theme and project cont
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-
 		export const useStyles = { "card": // pandwind:migrate-skip (route: styled-components -> jss | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		styled.div({ color: "#2563eb" }) };",
 		      "converted": 0,
@@ -314,7 +308,6 @@ test("jss -> styled-components -> jss: preserves concrete theme and project cont
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-
 		export const useStyles = { "card": styled.div({ color: "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -349,7 +342,6 @@ test("jss -> styled-components -> jss: preserves concrete theme and project cont
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-
 		export const useStyles = { "card": // pandwind:migrate-skip (route: styled-components -> jss | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		styled.div({ color: "#2563eb" }) };",
 		      "converted": 0,
@@ -403,7 +395,6 @@ test("jss -> styled-components -> jss: resolves token values across both concret
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
 		export const useStyles = { "card": styled.div({ color: "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -438,7 +429,6 @@ test("jss -> styled-components -> jss: resolves token values across both concret
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
 		export const useStyles = { "card": // pandwind:migrate-skip (route: styled-components -> jss | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		styled.div({ color: "#2563eb" }) };",
 		    "converted": 0,

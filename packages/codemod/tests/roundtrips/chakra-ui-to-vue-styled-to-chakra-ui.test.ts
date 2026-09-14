@@ -49,8 +49,7 @@ test("chakra-ui -> vue-styled -> chakra-ui: preserves an actionable concrete rou
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { Box } from "@chakra-ui/react";
-		import styled from "vue-styled-components";
+		    "code": "import styled from "vue-styled-components";
 		export const App = () => styled.div({ "padding": "var(--chakra-spacing-4)", "backgroundColor": "var(--chakra-colors-red-200)" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -86,8 +85,7 @@ test("chakra-ui -> vue-styled -> chakra-ui: preserves an actionable concrete rou
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { Box } from "@chakra-ui/react";
-		import styled from "vue-styled-components";
+		    "code": "import styled from "vue-styled-components";
 		export const App = () => // pandwind:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
 		styled.div({ "padding": "var(--chakra-spacing-4)", "backgroundColor": "var(--chakra-colors-red-200)" });",
 		    "converted": 0,
@@ -218,9 +216,8 @@ test("chakra-ui -> vue-styled -> chakra-ui: preserves concrete theme and project
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { Box } from "@chakra-ui/react";
-		import styled from "vue-styled-components";
-		export const App = () => styled.div({ "backgroundColor": "#f97316" });",
+		      "code": "import styled from "vue-styled-components";
+		export const App = () => styled.div({ "backgroundColor": "#f97316", "p": "var(--chakra-spacing-4)" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -256,10 +253,9 @@ test("chakra-ui -> vue-styled -> chakra-ui: preserves concrete theme and project
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { Box } from "@chakra-ui/react";
-		import styled from "vue-styled-components";
+		      "code": "import styled from "vue-styled-components";
 		export const App = () => // pandwind:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
-		styled.div({ "backgroundColor": "#f97316" });",
+		styled.div({ "backgroundColor": "#f97316", "p": "var(--chakra-spacing-4)" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -299,9 +295,8 @@ test("chakra-ui -> vue-styled -> chakra-ui: preserves concrete theme and project
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { Box } from "@chakra-ui/react";
-		import styled from "vue-styled-components";
-		export const App = () => styled.div({ "backgroundColor": "#2563eb" });",
+		      "code": "import styled from "vue-styled-components";
+		export const App = () => styled.div({ "backgroundColor": "#2563eb", "p": "var(--chakra-spacing-4)" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -337,10 +332,9 @@ test("chakra-ui -> vue-styled -> chakra-ui: preserves concrete theme and project
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { Box } from "@chakra-ui/react";
-		import styled from "vue-styled-components";
+		      "code": "import styled from "vue-styled-components";
 		export const App = () => // pandwind:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
-		styled.div({ "backgroundColor": "#2563eb" });",
+		styled.div({ "backgroundColor": "#2563eb", "p": "var(--chakra-spacing-4)" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -394,9 +388,8 @@ test("chakra-ui -> vue-styled -> chakra-ui: resolves token values across both co
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { Box } from "@chakra-ui/react";
-		import styled from "vue-styled-components";
-		export const App = () => styled.div({ "backgroundColor": "#2563eb" });",
+		    "code": "import styled from "vue-styled-components";
+		export const App = () => styled.div({ "backgroundColor": "#2563eb", "p": "var(--chakra-spacing-4)" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -431,10 +424,9 @@ test("chakra-ui -> vue-styled -> chakra-ui: resolves token values across both co
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { Box } from "@chakra-ui/react";
-		import styled from "vue-styled-components";
+		    "code": "import styled from "vue-styled-components";
 		export const App = () => // pandwind:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
-		styled.div({ "backgroundColor": "#2563eb" });",
+		styled.div({ "backgroundColor": "#2563eb", "p": "var(--chakra-spacing-4)" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

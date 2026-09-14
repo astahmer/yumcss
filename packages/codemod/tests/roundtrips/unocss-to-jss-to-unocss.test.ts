@@ -85,8 +85,7 @@ test("unocss -> jss -> unocss: preserves an actionable concrete round trip", () 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		export const App = () => <div className={{ "style": "[gap:1rem] [align-items:center] [display:flex]" }.attach().classes.style}/>;",
+		    "code": "export const App = () => <div className={{ "style": "[gap:1rem] [align-items:center] [display:flex]" }.attach().classes.style}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -279,8 +278,7 @@ test("unocss -> jss -> unocss: preserves concrete theme and project context vari
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		export const App = () => <div className={{ "style": "p-card text-brand" }.attach().classes.style}/>;",
+		      "code": "export const App = () => <div className={{ "style": "p-card text-brand" }.attach().classes.style}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -353,8 +351,7 @@ test("unocss -> jss -> unocss: preserves concrete theme and project context vari
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		export const App = () => <div className={{ "style": "p-card text-brand" }.attach().classes.style}/>;",
+		      "code": "export const App = () => <div className={{ "style": "p-card text-brand" }.attach().classes.style}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -441,8 +438,7 @@ test("unocss -> jss -> unocss: resolves token values across both concrete legs",
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		export const App = () => <div className={{ "style": "p-card text-brand" }.attach().classes.style}/>;",
+		    "code": "export const App = () => <div className={{ "style": "p-card text-brand" }.attach().classes.style}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

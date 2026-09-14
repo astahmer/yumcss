@@ -86,7 +86,6 @@ test("tamagui -> chakra-ui -> tamagui: preserves an actionable concrete round tr
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
-		import { chakra } from "@chakra-ui/react";
 		import { View, styled } from "@tamagui/core";
 		export const Card = (props) => styled(View, { padding: "$4", color: "red" });
 		export const App = () => <Card />;",
@@ -253,7 +252,6 @@ test("tamagui -> chakra-ui -> tamagui: preserves concrete theme and project cont
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
-		import { chakra } from "@chakra-ui/react";
 		import { View, styled } from "@tamagui/core";
 		export const Card = (props) => styled(View, { padding: "$4", color: "#2563eb" });
 		export const App = () => <Card />;",
@@ -327,7 +325,6 @@ test("tamagui -> chakra-ui -> tamagui: preserves concrete theme and project cont
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
-		import { chakra } from "@chakra-ui/react";
 		import { View, styled } from "@tamagui/core";
 		export const Card = (props) => styled(View, { padding: "$4", color: "brand.500" });
 		export const App = () => <Card />;",
@@ -415,7 +412,6 @@ test("tamagui -> chakra-ui -> tamagui: resolves token values across both concret
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
-		import { chakra } from "@chakra-ui/react";
 		import { View, styled } from "@tamagui/core";
 		export const Card = (props) => styled(View, { padding: "$4", color: "brand.500" });
 		export const App = () => <Card />;",

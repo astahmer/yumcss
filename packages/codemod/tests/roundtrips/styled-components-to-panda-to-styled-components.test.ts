@@ -49,8 +49,7 @@ test("styled-components -> panda -> styled-components: preserves an actionable c
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { css } from "styled-system/css";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(css({ padding: "1rem", color: "red" }), props.className)} />;",
@@ -86,10 +85,8 @@ test("styled-components -> panda -> styled-components: preserves an actionable c
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import styled from "styled-components";
-
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(styled.div({ padding: "1rem", color: "red" }), props.className)} />;",
 		    "converted": 1,
@@ -138,8 +135,7 @@ test("styled-components -> panda -> styled-components: retains the documented se
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { css } from "styled-system/css";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(css({ padding: "1rem", color: "red" }), props.className)} />;",
@@ -175,10 +171,8 @@ test("styled-components -> panda -> styled-components: retains the documented se
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import styled from "styled-components";
-
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(styled.div({ padding: "1rem", color: "red" }), props.className)} />;",
 		    "converted": 1,
@@ -242,8 +236,7 @@ test("styled-components -> panda -> styled-components: preserves concrete theme 
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		import { createCx } from "pandwind/cx";
+		      "code": "import { createCx } from "pandwind/cx";
 		import { css } from "styled-system/css";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(css({ padding: "1rem", color: "#2563eb" }), props.className)} />;",
@@ -279,10 +272,8 @@ test("styled-components -> panda -> styled-components: preserves concrete theme 
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		import { createCx } from "pandwind/cx";
+		      "code": "import { createCx } from "pandwind/cx";
 		import styled from "styled-components";
-
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(styled.div({ padding: "1rem", color: "#2563eb" }), props.className)} />;",
 		      "converted": 1,
@@ -319,8 +310,7 @@ test("styled-components -> panda -> styled-components: preserves concrete theme 
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		import { createCx } from "pandwind/cx";
+		      "code": "import { createCx } from "pandwind/cx";
 		import { css } from "styled-system/css";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(css({ padding: "1rem", color: "brand.500" }), props.className)} />;",
@@ -356,8 +346,7 @@ test("styled-components -> panda -> styled-components: preserves concrete theme 
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		import { createCx } from "pandwind/cx";
+		      "code": "import { createCx } from "pandwind/cx";
 		import { css } from "styled-system/css";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(// pandwind:migrate-skip (route: panda -> styled-components | lowering-residual: validation)
@@ -418,8 +407,7 @@ test("styled-components -> panda -> styled-components: resolves token values acr
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { css } from "styled-system/css";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(css({ padding: "1rem", color: "brand.500" }), props.className)} />;",
@@ -455,8 +443,7 @@ test("styled-components -> panda -> styled-components: resolves token values acr
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { css } from "styled-system/css";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(// pandwind:migrate-skip (route: panda -> styled-components | lowering-residual: validation)

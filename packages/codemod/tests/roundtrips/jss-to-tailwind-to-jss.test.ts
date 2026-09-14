@@ -49,8 +49,7 @@ test("jss -> tailwind -> jss: preserves an actionable concrete round trip", () =
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const useStyles = { "card": "[color:red]" };",
+		    "code": "export const useStyles = { "card": "[color:red]" };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,7 +85,6 @@ test("jss -> tailwind -> jss: preserves an actionable concrete round trip", () =
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-
 		export const useStyles = createUseStyles({ "card": { color: "red" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -136,8 +134,7 @@ test("jss -> tailwind -> jss: retains the documented secondary API without silen
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const sheet = { "card": "[color:red]" };",
+		    "code": "export const sheet = { "card": "[color:red]" };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -173,7 +170,6 @@ test("jss -> tailwind -> jss: retains the documented secondary API without silen
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-
 		export const sheet = createUseStyles({ "card": { color: "red" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -238,8 +234,7 @@ test("jss -> tailwind -> jss: preserves concrete theme and project context varia
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		export const useStyles = { "card": "[color:#2563eb]" };",
+		      "code": "export const useStyles = { "card": "[color:#2563eb]" };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -274,8 +269,7 @@ test("jss -> tailwind -> jss: preserves concrete theme and project context varia
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "
-		export const useStyles = { "card": "[color:#2563eb]" };",
+		      "code": "export const useStyles = { "card": "[color:#2563eb]" };",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -288,8 +282,7 @@ test("jss -> tailwind -> jss: preserves concrete theme and project context varia
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		export const useStyles = { "card": "text-brand" };",
+		      "code": "export const useStyles = { "card": "text-brand" };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -325,7 +318,6 @@ test("jss -> tailwind -> jss: preserves concrete theme and project context varia
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { createUseStyles } from "react-jss";
-
 		export const useStyles = createUseStyles({ "card": { color: "#2563eb" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -377,8 +369,7 @@ test("jss -> tailwind -> jss: resolves token values across both concrete legs", 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const useStyles = { "card": "text-brand" };",
+		    "code": "export const useStyles = { "card": "text-brand" };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -414,7 +405,6 @@ test("jss -> tailwind -> jss: resolves token values across both concrete legs", 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-
 		export const useStyles = createUseStyles({ "card": { color: "#2563eb" } });",
 		    "converted": 1,
 		    "generatedFiles": [],

@@ -48,7 +48,6 @@ test("compiled -> tamagui: migrates concrete compiled syntax to tamagui", () => 
 		{
 		  "changed": true,
 		  "code": "import { View, styled } from "@tamagui/core";
-
 		export const card = styled(View, { padding: 8, color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -143,7 +142,6 @@ test("compiled -> tamagui: loads concrete theme and project context variants", a
 		  "amber": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-
 		export const card = styled(View, { padding: 8, color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -177,7 +175,6 @@ test("compiled -> tamagui: loads concrete theme and project context variants", a
 		  "blue": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-
 		export const card = styled(View, { padding: 8, color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -223,7 +220,6 @@ test("compiled -> tamagui: resolves concrete token values with project context",
 		{
 		  "changed": true,
 		  "code": "import { View, styled } from "@tamagui/core";
-
 		export const card = styled(View, { padding: 8, color: "#2563eb" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -266,7 +262,6 @@ test("compiled -> tamagui: preserves malformed concrete compiled input", () => {
 		{
 		  "changed": true,
 		  "code": "import { View, styled } from "@tamagui/core";
-
 		export const card = styled(View, { padding: 8, color: "red" });
 		const unfinished = { /* unfinished compiled */",
 		  "converted": 1,

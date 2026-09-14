@@ -50,7 +50,6 @@ test("vanilla-extract -> tokenami -> vanilla-extract: preserves an actionable co
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-
 		export const card = css({ padding: 8, color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -85,8 +84,6 @@ test("vanilla-extract -> tokenami -> vanilla-extract: preserves an actionable co
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-
-
 		export const card = style({ padding: 8, color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -214,7 +211,6 @@ test("vanilla-extract -> tokenami -> vanilla-extract: preserves concrete theme a
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-
 		export const card = css({ padding: 8, color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -249,8 +245,6 @@ test("vanilla-extract -> tokenami -> vanilla-extract: preserves concrete theme a
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { style } from "@vanilla-extract/css";
-
-
 		export const card = style({ padding: 8, color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -289,7 +283,6 @@ test("vanilla-extract -> tokenami -> vanilla-extract: preserves concrete theme a
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-
 		export const card = css({ padding: 8, color: "$colors.brand" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -324,7 +317,6 @@ test("vanilla-extract -> tokenami -> vanilla-extract: preserves concrete theme a
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-
 		export const card = // pandwind:migrate-skip (route: tokenami -> vanilla-extract | lowering-residual: validation)
 		css({ padding: 8, color: "$colors.brand" });",
 		      "converted": 0,
@@ -386,7 +378,6 @@ test("vanilla-extract -> tokenami -> vanilla-extract: resolves token values acro
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-
 		export const card = css({ padding: 8, color: "$colors.brand" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -421,7 +412,6 @@ test("vanilla-extract -> tokenami -> vanilla-extract: resolves token values acro
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-
 		export const card = // pandwind:migrate-skip (route: tokenami -> vanilla-extract | lowering-residual: validation)
 		css({ padding: 8, color: "$colors.brand" });",
 		    "converted": 0,

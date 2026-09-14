@@ -50,7 +50,6 @@ test("aphrodite -> treat -> aphrodite: preserves an actionable concrete round tr
 		  "forward": {
 		    "changed": true,
 		    "code": "import { style } from "@/styles.treat";
-
 		export const styles = { "card": style({ "padding": 8, "color": "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -87,8 +86,6 @@ test("aphrodite -> treat -> aphrodite: preserves an actionable concrete round tr
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-
-
 		export const styles = { "card": StyleSheet.create({ "padding": 8, "color": "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -218,7 +215,6 @@ test("aphrodite -> treat -> aphrodite: preserves concrete theme and project cont
 		    "forward": {
 		      "changed": true,
 		      "code": "import { style } from "@/styles.treat";
-
 		export const styles = { "card": style({ "padding": 8, "color": "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -255,8 +251,6 @@ test("aphrodite -> treat -> aphrodite: preserves concrete theme and project cont
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "aphrodite";
-
-
 		export const styles = { "card": StyleSheet.create({ "padding": 8, "color": "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -295,7 +289,6 @@ test("aphrodite -> treat -> aphrodite: preserves concrete theme and project cont
 		    "forward": {
 		      "changed": true,
 		      "code": "import { style } from "@/styles.treat";
-
 		export const styles = { "card": style({ "padding": 8, "color": "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -332,8 +325,6 @@ test("aphrodite -> treat -> aphrodite: preserves concrete theme and project cont
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "aphrodite";
-
-
 		export const styles = { "card": StyleSheet.create({ "padding": 8, "color": "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -386,7 +377,6 @@ test("aphrodite -> treat -> aphrodite: resolves token values across both concret
 		  "forward": {
 		    "changed": true,
 		    "code": "import { style } from "@/styles.treat";
-
 		export const styles = { "card": style({ "padding": 8, "color": "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -423,8 +413,6 @@ test("aphrodite -> treat -> aphrodite: resolves token values across both concret
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-
-
 		export const styles = { "card": StyleSheet.create({ "padding": 8, "color": "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],

@@ -49,8 +49,7 @@ test("solid-styled -> vanilla-extract -> solid-styled: preserves an actionable c
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { style } from "@vanilla-extract/css";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} class={cx(style({ padding: "1rem", color: "red" }), props.class)} />;",
@@ -88,10 +87,8 @@ test("solid-styled -> vanilla-extract -> solid-styled: preserves an actionable c
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { styled } from "solid-styled-components";
-
 		const cx = createCx();
 		export const Card = (props) => <div {...props} class={cx(styled.div({ "padding": "1rem", "color": "red" }), props.class)} />;",
 		    "converted": 1,
@@ -142,8 +139,7 @@ test("solid-styled -> vanilla-extract -> solid-styled: retains the documented se
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { style } from "@vanilla-extract/css";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} class={cx(style({ padding: "1rem", color: "red" }), props.class)} />;",
@@ -181,10 +177,8 @@ test("solid-styled -> vanilla-extract -> solid-styled: retains the documented se
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { styled } from "solid-styled-components";
-
 		const cx = createCx();
 		export const Card = (props) => <div {...props} class={cx(styled.div({ "padding": "1rem", "color": "red" }), props.class)} />;",
 		    "converted": 1,
@@ -250,8 +244,7 @@ test("solid-styled -> vanilla-extract -> solid-styled: preserves concrete theme 
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		import { createCx } from "pandwind/cx";
+		      "code": "import { createCx } from "pandwind/cx";
 		import { style } from "@vanilla-extract/css";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} class={cx(style({ padding: "1rem", color: "#2563eb" }), props.class)} />;",
@@ -289,10 +282,8 @@ test("solid-styled -> vanilla-extract -> solid-styled: preserves concrete theme 
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		import { createCx } from "pandwind/cx";
+		      "code": "import { createCx } from "pandwind/cx";
 		import { styled } from "solid-styled-components";
-
 		const cx = createCx();
 		export const Card = (props) => <div {...props} class={cx(styled.div({ "padding": "1rem", "color": "#2563eb" }), props.class)} />;",
 		      "converted": 1,
@@ -331,8 +322,7 @@ test("solid-styled -> vanilla-extract -> solid-styled: preserves concrete theme 
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		import { createCx } from "pandwind/cx";
+		      "code": "import { createCx } from "pandwind/cx";
 		import { style } from "@vanilla-extract/css";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} class={cx(style({ padding: "1rem", color: "#2563eb" }), props.class)} />;",
@@ -370,10 +360,8 @@ test("solid-styled -> vanilla-extract -> solid-styled: preserves concrete theme 
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		import { createCx } from "pandwind/cx";
+		      "code": "import { createCx } from "pandwind/cx";
 		import { styled } from "solid-styled-components";
-
 		const cx = createCx();
 		export const Card = (props) => <div {...props} class={cx(styled.div({ "padding": "1rem", "color": "#2563eb" }), props.class)} />;",
 		      "converted": 1,
@@ -426,8 +414,7 @@ test("solid-styled -> vanilla-extract -> solid-styled: resolves token values acr
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { style } from "@vanilla-extract/css";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} class={cx(style({ padding: "1rem", color: "#2563eb" }), props.class)} />;",
@@ -465,10 +452,8 @@ test("solid-styled -> vanilla-extract -> solid-styled: resolves token values acr
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { styled } from "solid-styled-components";
-
 		const cx = createCx();
 		export const Card = (props) => <div {...props} class={cx(styled.div({ "padding": "1rem", "color": "#2563eb" }), props.class)} />;",
 		    "converted": 1,

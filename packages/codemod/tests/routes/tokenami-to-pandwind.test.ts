@@ -49,7 +49,6 @@ test("tokenami -> pandwind: migrates concrete tokenami syntax to pandwind", () =
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ cardGap: "1rem", color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -98,7 +97,6 @@ test("tokenami -> pandwind: carries a documented secondary tokenami API explicit
 		const pandwindCx = createCx();
 		const css = createCss();
 		const className = css.class({ padding: "1rem", color: "red" });
-
 		export const card = () => {  return [(value: string | undefined) => pandwindCx(className, value), (style: Record<string, unknown> | undefined) => style ?? {}] as const; };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -151,7 +149,6 @@ test("tokenami -> pandwind: loads concrete theme and project context variants", 
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ cardGap: "1rem", color: "brand" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -187,7 +184,6 @@ test("tokenami -> pandwind: loads concrete theme and project context variants", 
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ cardGap: "1rem", color: "brand" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -235,7 +231,6 @@ test("tokenami -> pandwind: resolves concrete token values with project context"
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ cardGap: "1rem", color: "brand" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -280,7 +275,6 @@ test("tokenami -> pandwind: preserves malformed concrete tokenami input", () => 
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ cardGap: "1rem", color: "red" });
 		const unfinished = { /* unfinished tokenami */",
 		  "converted": 1,

@@ -87,7 +87,6 @@ test("pandwind -> tokenami -> pandwind: preserves an actionable concrete round t
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-
 		export const card = css.class({ padding: "1rem", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -249,7 +248,6 @@ test("pandwind -> tokenami -> pandwind: preserves concrete theme and project con
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-
 		export const card = css.class({ padding: "1rem", color: "brand" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -322,7 +320,6 @@ test("pandwind -> tokenami -> pandwind: preserves concrete theme and project con
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 
 		export const card = css.class({ padding: "1rem", color: "brand" });",
 		      "converted": 1,
@@ -410,7 +407,6 @@ test("pandwind -> tokenami -> pandwind: resolves token values across both concre
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 
 		export const card = css.class({ padding: "1rem", color: "brand" });",
 		    "converted": 1,

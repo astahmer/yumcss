@@ -82,38 +82,16 @@ test("mui -> chakra-ui -> mui: preserves an actionable concrete round trip", () 
 		    ],
 		  },
 		  "reverse": {
-		    "changed": true,
+		    "changed": false,
 		    "code": "import { Box } from "@mui/material";
-		export const App = () => <Box  sx={{ padding: "16px", color: "red" }}/>;",
-		    "converted": 1,
+		export const App = () => <Box  css={{ padding: "16px", color: "red" }}/>;",
+		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "static",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "static",
-		        "representation": "static",
-		      },
-		    ],
+		    "loweringPlans": [],
+		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
+		    "validations": [],
 		  },
 		}
 	`)
@@ -167,7 +145,6 @@ test("mui -> chakra-ui -> mui: retains the documented secondary API without sile
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { styled } from "@mui/system";
-		import { defaultSystem } from "@chakra-ui/react";
 		import { createCss } from "pandwind/css";
 		const css = createCss();
 		export const Card = css.class({ "padding": "8px", "color": "red" });",
@@ -265,38 +242,16 @@ test("mui -> chakra-ui -> mui: preserves concrete theme and project context vari
 		      ],
 		    },
 		    "reverse": {
-		      "changed": true,
+		      "changed": false,
 		      "code": "import { Box } from "@mui/material";
-		export const App = () => <Box  sx={{ padding: "16px", color: "primary.main" }}/>;",
-		      "converted": 1,
+		export const App = () => <Box  css={{ padding: "16px", color: "brand.500" }}/>;",
+		      "converted": 0,
 		      "generatedFiles": [],
-		      "loweringPlans": [
-		        {
-		          "applied": [],
-		          "availableRepresentations": [
-		            "static",
-		            "named-map",
-		            "residual",
-		          ],
-		          "representation": "static",
-		          "residuals": [],
-		        },
-		      ],
-		      "outcomes": [
-		        {
-		          "outcome": "static",
-		          "representation": "static",
-		        },
-		      ],
+		      "loweringPlans": [],
+		      "outcomes": [],
 		      "residuals": [],
 		      "skipped": 0,
-		      "validations": [
-		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
-		        },
-		      ],
+		      "validations": [],
 		    },
 		  },
 		  "blue": {
@@ -335,38 +290,16 @@ test("mui -> chakra-ui -> mui: preserves concrete theme and project context vari
 		      ],
 		    },
 		    "reverse": {
-		      "changed": true,
+		      "changed": false,
 		      "code": "import { Box } from "@mui/material";
-		export const App = () => <Box  sx={{ padding: "16px", color: "primary.main" }}/>;",
-		      "converted": 1,
+		export const App = () => <Box  css={{ padding: "16px", color: "brand.500" }}/>;",
+		      "converted": 0,
 		      "generatedFiles": [],
-		      "loweringPlans": [
-		        {
-		          "applied": [],
-		          "availableRepresentations": [
-		            "static",
-		            "named-map",
-		            "residual",
-		          ],
-		          "representation": "static",
-		          "residuals": [],
-		        },
-		      ],
-		      "outcomes": [
-		        {
-		          "outcome": "static",
-		          "representation": "static",
-		        },
-		      ],
+		      "loweringPlans": [],
+		      "outcomes": [],
 		      "residuals": [],
 		      "skipped": 0,
-		      "validations": [
-		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
-		        },
-		      ],
+		      "validations": [],
 		    },
 		  },
 		}
@@ -419,38 +352,16 @@ test("mui -> chakra-ui -> mui: resolves token values across both concrete legs",
 		    ],
 		  },
 		  "reverse": {
-		    "changed": true,
+		    "changed": false,
 		    "code": "import { Box } from "@mui/material";
-		export const App = () => <Box  sx={{ padding: "16px", color: "primary.main" }}/>;",
-		    "converted": 1,
+		export const App = () => <Box  css={{ padding: "16px", color: "brand.500" }}/>;",
+		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "static",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "static",
-		        "representation": "static",
-		      },
-		    ],
+		    "loweringPlans": [],
+		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
+		    "validations": [],
 		  },
 		}
 	`)

@@ -48,7 +48,6 @@ test("vanilla-extract -> chakra-ui: migrates concrete vanilla-extract syntax to 
 		{
 		  "changed": true,
 		  "code": "import { defaultSystem } from "@chakra-ui/react";
-
 		export const card = defaultSystem.css({ padding: "8px", color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -92,7 +91,7 @@ test("vanilla-extract -> chakra-ui: carries a documented secondary vanilla-extra
 		{
 		  "changed": true,
 		  "code": "import { globalStyle } from "@vanilla-extract/css";
-		// pandwind:migrate-skip (route: vanilla-extract -> chakra-ui | lowering-residual: rule-level, validation)
+		// pandwind:migrate-skip (route: vanilla-extract -> chakra-ui | lowering-residual: emission-empty, rule-level | available: static, named-map, residual)
 		globalStyle("body", { margin: 0 });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -116,26 +115,18 @@ test("vanilla-extract -> chakra-ui: carries a documented secondary vanilla-extra
 		  ],
 		  "residuals": [
 		    {
+		      "hint": "target adapter produced no representable output",
+		      "kind": "emission-empty",
+		      "preserved": undefined,
+		    },
+		    {
 		      "hint": "Chakra standalone css projection supports style rules only",
 		      "kind": "rule-level",
 		      "preserved": undefined,
 		    },
-		    {
-		      "hint": "1 residual conversion(s)",
-		      "kind": "validation",
-		      "preserved": undefined,
-		    },
 		  ],
 		  "skipped": 1,
-		  "validations": [
-		    {
-		      "differences": [
-		        "1 residual conversion(s)",
-		      ],
-		      "lossiness": "lossy",
-		      "valid": false,
-		    },
-		  ],
+		  "validations": [],
 		}
 	`)
 });
@@ -158,7 +149,6 @@ test("vanilla-extract -> chakra-ui: loads concrete theme and project context var
 		  "amber": {
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
 		export const card = defaultSystem.css({ padding: "8px", color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -193,7 +183,6 @@ test("vanilla-extract -> chakra-ui: loads concrete theme and project context var
 		  "blue": {
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
 		export const card = defaultSystem.css({ padding: "8px", color: "brand.500" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -240,7 +229,6 @@ test("vanilla-extract -> chakra-ui: resolves concrete token values with project 
 		{
 		  "changed": true,
 		  "code": "import { defaultSystem } from "@chakra-ui/react";
-
 		export const card = defaultSystem.css({ padding: "8px", color: "brand.500" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -284,7 +272,6 @@ test("vanilla-extract -> chakra-ui: preserves malformed concrete vanilla-extract
 		{
 		  "changed": true,
 		  "code": "import { defaultSystem } from "@chakra-ui/react";
-
 		export const card = defaultSystem.css({ padding: "8px", color: "red" });
 		const unfinished = { /* unfinished vanilla-extract */",
 		  "converted": 1,

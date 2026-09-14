@@ -48,7 +48,6 @@ test("jss -> next-yak: migrates concrete jss syntax to next-yak", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "next-yak";
-
 		export const useStyles = { "card": css\`color: red;\` };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -92,7 +91,6 @@ test("jss -> next-yak: carries a documented secondary jss API explicitly", () =>
 		{
 		  "changed": true,
 		  "code": "import { css } from "next-yak";
-
 		export const sheet = { "card": css\`color: red;\` };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -145,7 +143,6 @@ test("jss -> next-yak: loads concrete theme and project context variants", async
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-
 		export const useStyles = { "card": css\`color: #2563eb;\` };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -180,7 +177,6 @@ test("jss -> next-yak: loads concrete theme and project context variants", async
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-
 		export const useStyles = { "card": css\`color: #2563eb;\` };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -227,7 +223,6 @@ test("jss -> next-yak: resolves concrete token values with project context", asy
 		{
 		  "changed": true,
 		  "code": "import { css } from "next-yak";
-
 		export const useStyles = { "card": css\`color: #2563eb;\` };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -271,7 +266,6 @@ test("jss -> next-yak: preserves malformed concrete jss input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "next-yak";
-
 		export const useStyles = { "card": css\`color: red;\` };
 		const unfinished = { /* unfinished jss */",
 		  "converted": 1,

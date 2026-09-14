@@ -48,7 +48,6 @@ test("stylex -> compiled: migrates concrete stylex syntax to compiled", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "@compiled/react";
-
 		export const styles = { "card": css({ "padding": "8px", "color": "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -94,7 +93,6 @@ test("stylex -> compiled: carries a documented secondary stylex API explicitly",
 		{
 		  "changed": true,
 		  "code": "import { css } from "@compiled/react";
-
 		export const styles = { "card": css({ "color": "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -149,7 +147,6 @@ test("stylex -> compiled: loads concrete theme and project context variants", as
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "@compiled/react";
-
 		export const styles = { "card": css({ "padding": "8px", "color": "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -186,7 +183,6 @@ test("stylex -> compiled: loads concrete theme and project context variants", as
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "@compiled/react";
-
 		export const styles = { "card": css({ "padding": "8px", "color": "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -235,7 +231,6 @@ test("stylex -> compiled: resolves concrete token values with project context", 
 		{
 		  "changed": true,
 		  "code": "import { css } from "@compiled/react";
-
 		export const styles = { "card": css({ "padding": "8px", "color": "#2563eb" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -281,7 +276,6 @@ test("stylex -> compiled: preserves malformed concrete stylex input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "@compiled/react";
-
 		export const styles = { "card": css({ "padding": "8px", "color": "red" }) };
 		const unfinished = { /* unfinished stylex */",
 		  "converted": 1,

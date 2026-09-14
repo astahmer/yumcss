@@ -48,7 +48,6 @@ test("emotion -> stitches: migrates concrete emotion syntax to stitches", () => 
 		{
 		  "changed": true,
 		  "code": "import { css } from "@stitches/react";
-
 		export const card = css({ padding: "1rem", color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -94,7 +93,6 @@ test("emotion -> stitches: carries a documented secondary emotion API explicitly
 		{
 		  "changed": true,
 		  "code": "import { css } from "@stitches/react";
-
 		export const card = css({ padding: "1rem", color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -149,7 +147,6 @@ test("emotion -> stitches: loads concrete theme and project context variants", a
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "@stitches/react";
-
 		export const card = css({ padding: "1rem", color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -186,7 +183,6 @@ test("emotion -> stitches: loads concrete theme and project context variants", a
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "@stitches/react";
-
 		export const card = css({ padding: "1rem", color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -235,7 +231,6 @@ test("emotion -> stitches: resolves concrete token values with project context",
 		{
 		  "changed": true,
 		  "code": "import { css } from "@stitches/react";
-
 		export const card = css({ padding: "1rem", color: "#2563eb" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -281,7 +276,6 @@ test("emotion -> stitches: preserves malformed concrete emotion input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "@stitches/react";
-
 		export const card = css({ padding: "1rem", color: "red" });
 		const unfinished = { /* unfinished emotion */",
 		  "converted": 1,

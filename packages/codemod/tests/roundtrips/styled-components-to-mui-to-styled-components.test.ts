@@ -50,7 +50,6 @@ test("styled-components -> mui -> styled-components: preserves an actionable con
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "@mui/system";
-
 		export const Card = styled("div")({ padding: "1rem", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -86,7 +85,6 @@ test("styled-components -> mui -> styled-components: preserves an actionable con
 		    "changed": true,
 		    "code": "import { styled } from "@mui/system";
 		import styled from "styled-components";
-
 		export const Card = styled.div({ padding: "1rem", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -135,7 +133,6 @@ test("styled-components -> mui -> styled-components: retains the documented seco
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "@mui/system";
-
 		export const Card = styled("div")({ padding: "1rem", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -171,7 +168,6 @@ test("styled-components -> mui -> styled-components: retains the documented seco
 		    "changed": true,
 		    "code": "import { styled } from "@mui/system";
 		import styled from "styled-components";
-
 		export const Card = styled.div({ padding: "1rem", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -235,7 +231,6 @@ test("styled-components -> mui -> styled-components: preserves concrete theme an
 		    "forward": {
 		      "changed": true,
 		      "code": "import { styled } from "@mui/system";
-
 		export const Card = styled("div")({ padding: "1rem", color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -271,7 +266,6 @@ test("styled-components -> mui -> styled-components: preserves concrete theme an
 		      "changed": true,
 		      "code": "import { styled } from "@mui/system";
 		import styled from "styled-components";
-
 		export const Card = styled.div({ padding: "1rem", color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -308,7 +302,6 @@ test("styled-components -> mui -> styled-components: preserves concrete theme an
 		    "forward": {
 		      "changed": true,
 		      "code": "import { styled } from "@mui/system";
-
 		export const Card = styled("div")({ padding: "1rem", color: "primary.main" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -344,7 +337,6 @@ test("styled-components -> mui -> styled-components: preserves concrete theme an
 		      "changed": true,
 		      "code": "import { styled } from "@mui/system";
 		import styled from "styled-components";
-
 		export const Card = styled.div({ padding: "1rem", color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -395,7 +387,6 @@ test("styled-components -> mui -> styled-components: resolves token values acros
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "@mui/system";
-
 		export const Card = styled("div")({ padding: "1rem", color: "primary.main" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -431,7 +422,6 @@ test("styled-components -> mui -> styled-components: resolves token values acros
 		    "changed": true,
 		    "code": "import { styled } from "@mui/system";
 		import styled from "styled-components";
-
 		export const Card = styled.div({ padding: "1rem", color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],

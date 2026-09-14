@@ -48,7 +48,6 @@ test("aphrodite -> styled-components: migrates concrete aphrodite syntax to styl
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-
 		export const styles = { "card": styled.div({ padding: 8, color: "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -153,7 +152,6 @@ test("aphrodite -> styled-components: loads concrete theme and project context v
 		  "amber": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
 		export const styles = { "card": styled.div({ padding: 8, color: "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -188,7 +186,6 @@ test("aphrodite -> styled-components: loads concrete theme and project context v
 		  "blue": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
 		export const styles = { "card": styled.div({ padding: 8, color: "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -235,7 +232,6 @@ test("aphrodite -> styled-components: resolves concrete token values with projec
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-
 		export const styles = { "card": styled.div({ padding: 8, color: "#2563eb" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -279,7 +275,6 @@ test("aphrodite -> styled-components: preserves malformed concrete aphrodite inp
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-
 		export const styles = { "card": styled.div({ padding: 8, color: "red" }) };
 		const unfinished = { /* unfinished aphrodite */",
 		  "converted": 1,

@@ -48,7 +48,6 @@ test("vanilla-extract -> tamagui: migrates concrete vanilla-extract syntax to ta
 		{
 		  "changed": true,
 		  "code": "import { View, styled } from "@tamagui/core";
-
 		export const card = styled(View, { padding: 8, color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -91,7 +90,6 @@ test("vanilla-extract -> tamagui: carries a documented secondary vanilla-extract
 		{
 		  "changed": true,
 		  "code": "import { View, styled } from "@tamagui/core";
-
 		styled(View, { "body": { margin: 0 } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -143,7 +141,6 @@ test("vanilla-extract -> tamagui: loads concrete theme and project context varia
 		  "amber": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-
 		export const card = styled(View, { padding: 8, color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -177,7 +174,6 @@ test("vanilla-extract -> tamagui: loads concrete theme and project context varia
 		  "blue": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-
 		export const card = styled(View, { padding: 8, color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -223,7 +219,6 @@ test("vanilla-extract -> tamagui: resolves concrete token values with project co
 		{
 		  "changed": true,
 		  "code": "import { View, styled } from "@tamagui/core";
-
 		export const card = styled(View, { padding: 8, color: "#2563eb" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -266,7 +261,6 @@ test("vanilla-extract -> tamagui: preserves malformed concrete vanilla-extract i
 		{
 		  "changed": true,
 		  "code": "import { View, styled } from "@tamagui/core";
-
 		export const card = styled(View, { padding: 8, color: "red" });
 		const unfinished = { /* unfinished vanilla-extract */",
 		  "converted": 1,

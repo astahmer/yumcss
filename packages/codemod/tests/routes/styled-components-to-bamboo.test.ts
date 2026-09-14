@@ -47,8 +47,7 @@ test("styled-components -> bamboo: migrates concrete styled-components syntax to
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		import { createCx } from "pandwind/cx";
+		  "code": "import { createCx } from "pandwind/cx";
 		import { css } from "styled-system/css";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(css({ padding: "1rem", color: "red" }), props.className)} />;",
@@ -93,8 +92,7 @@ test("styled-components -> bamboo: carries a documented secondary styled-compone
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		import { createCx } from "pandwind/cx";
+		  "code": "import { createCx } from "pandwind/cx";
 		import { css } from "styled-system/css";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(css({ padding: "1rem", color: "red" }), props.className)} />;",
@@ -148,8 +146,7 @@ test("styled-components -> bamboo: loads concrete theme and project context vari
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { css } from "styled-system/css";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(css({ padding: "1rem", color: "#2563eb" }), props.className)} />;",
@@ -185,8 +182,7 @@ test("styled-components -> bamboo: loads concrete theme and project context vari
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { css } from "styled-system/css";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(css({ padding: "1rem", color: "#2563eb" }), props.className)} />;",
@@ -234,8 +230,7 @@ test("styled-components -> bamboo: resolves concrete token values with project c
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		import { createCx } from "pandwind/cx";
+		  "code": "import { createCx } from "pandwind/cx";
 		import { css } from "styled-system/css";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(css({ padding: "1rem", color: "#2563eb" }), props.className)} />;",

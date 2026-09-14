@@ -49,7 +49,6 @@ test("stylex -> pandwind: migrates concrete stylex syntax to pandwind", () => {
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const styles = { "card": css.class({ padding: "8px", color: "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -94,7 +93,6 @@ test("stylex -> pandwind: carries a documented secondary stylex API explicitly",
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const styles = { "card": css.class({ color: "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -148,7 +146,6 @@ test("stylex -> pandwind: loads concrete theme and project context variants", as
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const styles = { "card": css.class({ padding: "8px", color: "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -184,7 +181,6 @@ test("stylex -> pandwind: loads concrete theme and project context variants", as
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const styles = { "card": css.class({ padding: "8px", color: "brand" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -232,7 +228,6 @@ test("stylex -> pandwind: resolves concrete token values with project context", 
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const styles = { "card": css.class({ padding: "8px", color: "brand" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -277,7 +272,6 @@ test("stylex -> pandwind: preserves malformed concrete stylex input", () => {
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const styles = { "card": css.class({ padding: "8px", color: "red" }) };
 		const unfinished = { /* unfinished stylex */",
 		  "converted": 1,

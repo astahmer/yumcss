@@ -89,7 +89,6 @@ test("fela -> vue-styled -> fela: preserves an actionable concrete round trip", 
 		    "changed": true,
 		    "code": "import { createRenderer } from "fela";
 		import { defineComponent, h } from "vue";
-
 		const renderer = createRenderer();
 		export const card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [renderer.renderRule({ "color": "red" }), attrs.class] }, slots.default?.()));",
 		    "converted": 1,
@@ -258,7 +257,6 @@ test("fela -> vue-styled -> fela: preserves concrete theme and project context v
 		      "changed": true,
 		      "code": "import { createRenderer } from "fela";
 		import { defineComponent, h } from "vue";
-
 		const renderer = createRenderer();
 		export const card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [renderer.renderRule({ "color": "#2563eb" }), attrs.class] }, slots.default?.()));",
 		      "converted": 1,
@@ -337,7 +335,6 @@ test("fela -> vue-styled -> fela: preserves concrete theme and project context v
 		      "changed": true,
 		      "code": "import { createRenderer } from "fela";
 		import { defineComponent, h } from "vue";
-
 		const renderer = createRenderer();
 		export const card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [renderer.renderRule({ "color": "#2563eb" }), attrs.class] }, slots.default?.()));",
 		      "converted": 1,
@@ -430,7 +427,6 @@ test("fela -> vue-styled -> fela: resolves token values across both concrete leg
 		    "changed": true,
 		    "code": "import { createRenderer } from "fela";
 		import { defineComponent, h } from "vue";
-
 		const renderer = createRenderer();
 		export const card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [renderer.renderRule({ "color": "#2563eb" }), attrs.class] }, slots.default?.()));",
 		    "converted": 1,

@@ -48,7 +48,6 @@ test("panda -> goober: migrates concrete panda syntax to goober", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "goober";
-
 		export const card = css({ "color": "red.300", "_hover": { "color": "blue.300" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -153,7 +152,6 @@ test("panda -> goober: loads concrete theme and project context variants", async
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "goober";
-
 		export const card = css({ "color": "#f97316", "_hover": { "color": "#f97316" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -191,7 +189,6 @@ test("panda -> goober: loads concrete theme and project context variants", async
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "goober";
-
 		export const card = css({ "color": "#2563eb", "_hover": { "color": "#2563eb" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -241,7 +238,6 @@ test("panda -> goober: resolves concrete token values with project context", asy
 		{
 		  "changed": true,
 		  "code": "import { css } from "goober";
-
 		export const card = css({ "color": "#2563eb", "_hover": { "color": "blue.300" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -287,7 +283,6 @@ test("panda -> goober: preserves malformed concrete panda input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "goober";
-
 		export const card = css({ "color": "red.300", "_hover": { "color": "blue.300" } });
 		const unfinished = { /* unfinished panda */",
 		  "converted": 1,

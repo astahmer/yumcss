@@ -49,8 +49,7 @@ test("stylex -> tailwind -> stylex: preserves an actionable concrete round trip"
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const styles = { "card": "[padding:8px] [color:red]" };",
+		    "code": "export const styles = { "card": "[padding:8px] [color:red]" };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,7 +85,6 @@ test("stylex -> tailwind -> stylex: preserves an actionable concrete round trip"
 		  "reverse": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-
 		export const styles = stylex.create({ "card": { padding: "8px", color: "red" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -136,8 +134,7 @@ test("stylex -> tailwind -> stylex: retains the documented secondary API without
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const styles = { "card": "[color:red]" };",
+		    "code": "export const styles = { "card": "[color:red]" };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -173,7 +170,6 @@ test("stylex -> tailwind -> stylex: retains the documented secondary API without
 		  "reverse": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-
 		export const styles = stylex.create({ "card": { color: "red" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -238,8 +234,7 @@ test("stylex -> tailwind -> stylex: preserves concrete theme and project context
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		export const styles = { "card": "[padding:8px] [color:#2563eb]" };",
+		      "code": "export const styles = { "card": "[padding:8px] [color:#2563eb]" };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -274,8 +269,7 @@ test("stylex -> tailwind -> stylex: preserves concrete theme and project context
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "
-		export const styles = { "card": "[padding:8px] [color:#2563eb]" };",
+		      "code": "export const styles = { "card": "[padding:8px] [color:#2563eb]" };",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],

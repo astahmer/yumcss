@@ -85,8 +85,7 @@ test("tailwind -> goober -> tailwind: preserves an actionable concrete round tri
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		export const App = () => "[gap:1rem] [align-items:center] [display:flex]";",
+		    "code": "export const App = () => "[gap:1rem] [align-items:center] [display:flex]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -255,8 +254,7 @@ test("tailwind -> goober -> tailwind: preserves concrete theme and project conte
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		export const App = () => "p-card text-brand";",
+		      "code": "export const App = () => "p-card text-brand";",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -329,8 +327,7 @@ test("tailwind -> goober -> tailwind: preserves concrete theme and project conte
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		export const App = () => "p-card text-brand";",
+		      "code": "export const App = () => "p-card text-brand";",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -417,8 +414,7 @@ test("tailwind -> goober -> tailwind: resolves token values across both concrete
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		export const App = () => "p-card text-brand";",
+		    "code": "export const App = () => "p-card text-brand";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

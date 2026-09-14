@@ -114,7 +114,6 @@ describe("concrete adapter capability proofs", () => {
 			  {
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
-
 			const card = css.class({ padding: "1rem", color: "red" });",
 			    "converted": 1,
 			    "id": "emotion-object-css",
@@ -123,7 +122,6 @@ describe("concrete adapter capability proofs", () => {
 			  {
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
-
 			const Card = css.class({ padding: "1rem", color: "red" });
 			export const App = () => <div className={Card} />;",
 			    "converted": 1,
@@ -133,7 +131,6 @@ describe("concrete adapter capability proofs", () => {
 			  {
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
-
 			const card = css.class({ padding: "1rem", color: "red" });",
 			    "converted": 1,
 			    "id": "panda-aliased-css",
@@ -142,7 +139,6 @@ describe("concrete adapter capability proofs", () => {
 			  {
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
-
 			const styles = { "card": css.class({ padding: "2px", color: "red" }) };",
 			    "converted": 1,
 			    "id": "stylex-create",
@@ -151,7 +147,6 @@ describe("concrete adapter capability proofs", () => {
 			  {
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
-
 			const useStyles = { "card": css.class({ padding: 2, color: "red" }) };",
 			    "converted": 1,
 			    "id": "jss-hook",
@@ -193,7 +188,6 @@ describe("concrete adapter capability proofs", () => {
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { createCss } from "pandwind/css";
 			const css = createCss();
-
 			const Card = (() => { const staticClass = ""; const component = (props) => {  const dynamic = css.vars({ color: (props => props.color)(props) }); const Component = props.as ?? "div"; const { as: _as, ...rest } = props; const attrs = {}; return <Component {...attrs} {...rest} className={css.props(staticClass, dynamic, "pw-1fn70s4", props.className).className} style={{ ...props.style, ...dynamic.style }} />; }; component.__pandwindClassName = "pw-1fn70s4"; return component; })();"
 		`);
 	});
@@ -265,7 +259,6 @@ describe("explicit adapter round trips", () => {
 			{
 			  "forward": "import { createCss } from "pandwind/css";
 			const css = createCss();
-
 			const card = css.class({ padding: "1rem", color: "red" });",
 			  "reverse": "import { css } from "@emotion/css";
 

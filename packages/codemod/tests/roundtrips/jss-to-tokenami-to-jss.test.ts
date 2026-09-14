@@ -50,7 +50,6 @@ test("jss -> tokenami -> jss: preserves an actionable concrete round trip", () =
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-
 		export const useStyles = { "card": css({ color: "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -85,8 +84,6 @@ test("jss -> tokenami -> jss: preserves an actionable concrete round trip", () =
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-
-
 		export const useStyles = { "card": createUseStyles({ color: "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -137,7 +134,6 @@ test("jss -> tokenami -> jss: retains the documented secondary API without silen
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-
 		export const sheet = { "card": css({ color: "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -172,8 +168,6 @@ test("jss -> tokenami -> jss: retains the documented secondary API without silen
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-
-
 		export const sheet = { "card": createUseStyles({ color: "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -239,7 +233,6 @@ test("jss -> tokenami -> jss: preserves concrete theme and project context varia
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-
 		export const useStyles = { "card": css({ color: "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -274,8 +267,6 @@ test("jss -> tokenami -> jss: preserves concrete theme and project context varia
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { createUseStyles } from "react-jss";
-
-
 		export const useStyles = { "card": createUseStyles({ color: "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -314,7 +305,6 @@ test("jss -> tokenami -> jss: preserves concrete theme and project context varia
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-
 		export const useStyles = { "card": css({ color: "$colors.brand" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -349,7 +339,6 @@ test("jss -> tokenami -> jss: preserves concrete theme and project context varia
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-
 		export const useStyles = { "card": // pandwind:migrate-skip (route: tokenami -> jss | lowering-residual: validation)
 		css({ color: "$colors.brand" }) };",
 		      "converted": 0,
@@ -411,7 +400,6 @@ test("jss -> tokenami -> jss: resolves token values across both concrete legs", 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-
 		export const useStyles = { "card": css({ color: "$colors.brand" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -446,7 +434,6 @@ test("jss -> tokenami -> jss: resolves token values across both concrete legs", 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-
 		export const useStyles = { "card": // pandwind:migrate-skip (route: tokenami -> jss | lowering-residual: validation)
 		css({ color: "$colors.brand" }) };",
 		    "converted": 0,

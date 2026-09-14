@@ -50,7 +50,6 @@ test("linaria -> vue-styled -> linaria: preserves an actionable concrete round t
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-
 		export const card = styled.div({ "padding": "1rem", "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -87,7 +86,6 @@ test("linaria -> vue-styled -> linaria: preserves an actionable concrete round t
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-
 		export const card = // pandwind:migrate-skip (route: vue-styled -> linaria | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
 		styled.div({ "padding": "1rem", "color": "red" });",
 		    "converted": 0,
@@ -139,7 +137,6 @@ test("linaria -> vue-styled -> linaria: retains the documented secondary API wit
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-
 		export const Card = styled.div({ "padding": "1rem", "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -176,7 +173,6 @@ test("linaria -> vue-styled -> linaria: retains the documented secondary API wit
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-
 		export const Card = // pandwind:migrate-skip (route: vue-styled -> linaria | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
 		styled.div({ "padding": "1rem", "color": "red" });",
 		    "converted": 0,
@@ -243,7 +239,6 @@ test("linaria -> vue-styled -> linaria: preserves concrete theme and project con
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-
 		export const card = styled.div({ "padding": "1rem", "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -280,7 +275,6 @@ test("linaria -> vue-styled -> linaria: preserves concrete theme and project con
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-
 		export const card = // pandwind:migrate-skip (route: vue-styled -> linaria | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
 		styled.div({ "padding": "1rem", "color": "#2563eb" });",
 		      "converted": 0,
@@ -320,7 +314,6 @@ test("linaria -> vue-styled -> linaria: preserves concrete theme and project con
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-
 		export const card = styled.div({ "padding": "1rem", "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -357,7 +350,6 @@ test("linaria -> vue-styled -> linaria: preserves concrete theme and project con
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-
 		export const card = // pandwind:migrate-skip (route: vue-styled -> linaria | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
 		styled.div({ "padding": "1rem", "color": "#2563eb" });",
 		      "converted": 0,
@@ -411,7 +403,6 @@ test("linaria -> vue-styled -> linaria: resolves token values across both concre
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-
 		export const card = styled.div({ "padding": "1rem", "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -448,7 +439,6 @@ test("linaria -> vue-styled -> linaria: resolves token values across both concre
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-
 		export const card = // pandwind:migrate-skip (route: vue-styled -> linaria | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
 		styled.div({ "padding": "1rem", "color": "#2563eb" });",
 		    "converted": 0,

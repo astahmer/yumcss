@@ -48,7 +48,6 @@ test("vanilla-extract -> solid-styled: migrates concrete vanilla-extract syntax 
 		{
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
-
 		export const card = styled.div({ "padding": 8, "color": "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -149,7 +148,6 @@ test("vanilla-extract -> solid-styled: loads concrete theme and project context 
 		  "amber": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-
 		export const card = styled.div({ "padding": 8, "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -186,7 +184,6 @@ test("vanilla-extract -> solid-styled: loads concrete theme and project context 
 		  "blue": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-
 		export const card = styled.div({ "padding": 8, "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -235,7 +232,6 @@ test("vanilla-extract -> solid-styled: resolves concrete token values with proje
 		{
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
-
 		export const card = styled.div({ "padding": 8, "color": "#2563eb" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -281,7 +277,6 @@ test("vanilla-extract -> solid-styled: preserves malformed concrete vanilla-extr
 		{
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
-
 		export const card = styled.div({ "padding": 8, "color": "red" });
 		const unfinished = { /* unfinished vanilla-extract */",
 		  "converted": 1,

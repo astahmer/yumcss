@@ -48,7 +48,6 @@ test("panda -> linaria: migrates concrete panda syntax to linaria", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "@linaria/core";
-
 		export const card = css\`color: red.300;&:hover { color: blue.300; }\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -260,7 +259,6 @@ test("panda -> linaria: resolves concrete token values with project context", as
 		{
 		  "changed": true,
 		  "code": "import { css } from "@linaria/core";
-
 		export const card = css\`color: #2563eb;&:hover { color: blue.300; }\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -306,7 +304,6 @@ test("panda -> linaria: preserves malformed concrete panda input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "@linaria/core";
-
 		export const card = css\`color: red.300;&:hover { color: blue.300; }\`;
 		const unfinished = { /* unfinished panda */",
 		  "converted": 1,

@@ -49,8 +49,7 @@ test("stitches -> unocss -> stitches: preserves an actionable concrete round tri
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const card = "[padding:1rem] [color:red]";",
+		    "code": "export const card = "[padding:1rem] [color:red]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,7 +85,6 @@ test("stitches -> unocss -> stitches: preserves an actionable concrete round tri
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@stitches/react";
-
 		export const card = css({ padding: "1rem", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -215,8 +213,7 @@ test("stitches -> unocss -> stitches: preserves concrete theme and project conte
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		export const card = "[padding:1rem] [color:#2563eb]";",
+		      "code": "export const card = "[padding:1rem] [color:#2563eb]";",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -251,8 +248,7 @@ test("stitches -> unocss -> stitches: preserves concrete theme and project conte
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		export const card = // pandwind:migrate-skip (route: unocss -> stitches | lowering-residual: validation)
+		      "code": "export const card = // pandwind:migrate-skip (route: unocss -> stitches | lowering-residual: validation)
 		"[padding:1rem] [color:#2563eb]";",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -298,8 +294,7 @@ test("stitches -> unocss -> stitches: preserves concrete theme and project conte
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		export const card = "[padding:1rem] text-brand";",
+		      "code": "export const card = "[padding:1rem] text-brand";",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -334,8 +329,7 @@ test("stitches -> unocss -> stitches: preserves concrete theme and project conte
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		export const card = // pandwind:migrate-skip (route: unocss -> stitches | lowering-residual: validation)
+		      "code": "export const card = // pandwind:migrate-skip (route: unocss -> stitches | lowering-residual: validation)
 		"[padding:1rem] text-brand";",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -395,8 +389,7 @@ test("stitches -> unocss -> stitches: resolves token values across both concrete
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const card = "[padding:1rem] text-brand";",
+		    "code": "export const card = "[padding:1rem] text-brand";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -431,8 +424,7 @@ test("stitches -> unocss -> stitches: resolves token values across both concrete
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		export const card = // pandwind:migrate-skip (route: unocss -> stitches | lowering-residual: validation)
+		    "code": "export const card = // pandwind:migrate-skip (route: unocss -> stitches | lowering-residual: validation)
 		"[padding:1rem] text-brand";",
 		    "converted": 0,
 		    "generatedFiles": [],

@@ -52,7 +52,6 @@ test("mantine -> pandwind -> mantine: preserves an actionable concrete round tri
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 		const staticClassName1 = css.class({ color: "blue.6", marginLeft: "auto", marginRight: "auto", maxWidth: 400 });
-
 		export const App = () => <div className={staticClassName1} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -89,7 +88,6 @@ test("mantine -> pandwind -> mantine: preserves an actionable concrete round tri
 		    "code": "import { createCss } from "pandwind/css";
 		const staticClassName1 = // pandwind:migrate-skip (route: pandwind -> mantine | lowering-residual: host-framework, validation)
 		css.class({ color: "blue.6", marginLeft: "auto", marginRight: "auto", maxWidth: 400 });
-
 		export const App = () => <div className={staticClassName1} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -228,7 +226,6 @@ test("mantine -> pandwind -> mantine: preserves concrete theme and project conte
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 		const staticClassName1 = css.class({ color: "brand", marginLeft: "auto", marginRight: "auto", maxWidth: 400 });
-
 		export const App = () => <div className={staticClassName1} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -265,7 +262,6 @@ test("mantine -> pandwind -> mantine: preserves concrete theme and project conte
 		      "code": "import { createCss } from "pandwind/css";
 		const staticClassName1 = // pandwind:migrate-skip (route: pandwind -> mantine | lowering-residual: host-framework, validation)
 		css.class({ color: "brand", marginLeft: "auto", marginRight: "auto", maxWidth: 400 });
-
 		export const App = () => <div className={staticClassName1} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -317,7 +313,6 @@ test("mantine -> pandwind -> mantine: preserves concrete theme and project conte
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 		const staticClassName1 = css.class({ color: "brand", marginLeft: "auto", marginRight: "auto", maxWidth: 400 });
-
 		export const App = () => <div className={staticClassName1} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -354,7 +349,6 @@ test("mantine -> pandwind -> mantine: preserves concrete theme and project conte
 		      "code": "import { createCss } from "pandwind/css";
 		const staticClassName1 = // pandwind:migrate-skip (route: pandwind -> mantine | lowering-residual: host-framework, validation)
 		css.class({ color: "brand", marginLeft: "auto", marginRight: "auto", maxWidth: 400 });
-
 		export const App = () => <div className={staticClassName1} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -420,7 +414,6 @@ test("mantine -> pandwind -> mantine: resolves token values across both concrete
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 		const staticClassName1 = css.class({ color: "brand", marginLeft: "auto", marginRight: "auto", maxWidth: 400 });
-
 		export const App = () => <div className={staticClassName1} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -457,7 +450,6 @@ test("mantine -> pandwind -> mantine: resolves token values across both concrete
 		    "code": "import { createCss } from "pandwind/css";
 		const staticClassName1 = // pandwind:migrate-skip (route: pandwind -> mantine | lowering-residual: host-framework, validation)
 		css.class({ color: "brand", marginLeft: "auto", marginRight: "auto", maxWidth: 400 });
-
 		export const App = () => <div className={staticClassName1} />;",
 		    "converted": 0,
 		    "generatedFiles": [],

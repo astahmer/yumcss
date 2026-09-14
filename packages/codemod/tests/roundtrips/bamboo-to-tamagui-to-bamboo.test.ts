@@ -50,7 +50,6 @@ test("bamboo -> tamagui -> bamboo: preserves an actionable concrete round trip",
 		  "forward": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-
 		export const card = styled(View, { color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -87,7 +86,6 @@ test("bamboo -> tamagui -> bamboo: preserves an actionable concrete round trip",
 		import { createCx } from "pandwind/cx";
 		import { css } from "styled-system/css";
 		const cx = createCx();
-
 		export const card = (props) => <View {...props} className={cx(css({ color: "red" }), props.className)} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -136,7 +134,6 @@ test("bamboo -> tamagui -> bamboo: retains the documented secondary API without 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-
 		export const card = styled(View, { gap: "4", display: "flex" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -173,7 +170,6 @@ test("bamboo -> tamagui -> bamboo: retains the documented secondary API without 
 		import { createCx } from "pandwind/cx";
 		import { css } from "styled-system/css";
 		const cx = createCx();
-
 		export const card = (props) => <View {...props} className={cx(css({ gap: "4", display: "flex" }), props.className)} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -237,7 +233,6 @@ test("bamboo -> tamagui -> bamboo: preserves concrete theme and project context 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
-
 		export const card = styled(View, { color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -274,7 +269,6 @@ test("bamboo -> tamagui -> bamboo: preserves concrete theme and project context 
 		import { createCx } from "pandwind/cx";
 		import { css } from "styled-system/css";
 		const cx = createCx();
-
 		export const card = (props) => <View {...props} className={cx(css({ color: "#2563eb" }), props.className)} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -311,7 +305,6 @@ test("bamboo -> tamagui -> bamboo: preserves concrete theme and project context 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
-
 		export const card = styled(View, { color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -348,7 +341,6 @@ test("bamboo -> tamagui -> bamboo: preserves concrete theme and project context 
 		import { createCx } from "pandwind/cx";
 		import { css } from "styled-system/css";
 		const cx = createCx();
-
 		export const card = (props) => <View {...props} className={cx(css({ color: "#2563eb" }), props.className)} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -399,7 +391,6 @@ test("bamboo -> tamagui -> bamboo: resolves token values across both concrete le
 		  "forward": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-
 		export const card = styled(View, { color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -436,7 +427,6 @@ test("bamboo -> tamagui -> bamboo: resolves token values across both concrete le
 		import { createCx } from "pandwind/cx";
 		import { css } from "styled-system/css";
 		const cx = createCx();
-
 		export const card = (props) => <View {...props} className={cx(css({ color: "#2563eb" }), props.className)} />;",
 		    "converted": 1,
 		    "generatedFiles": [],

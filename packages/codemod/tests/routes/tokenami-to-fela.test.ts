@@ -47,8 +47,7 @@ test("tokenami -> fela: migrates concrete tokenami syntax to fela", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		export const card = renderer.renderRule({ "cardGap": "1rem", "color": "red" });",
+		  "code": "export const card = renderer.renderRule({ "cardGap": "1rem", "color": "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -92,8 +91,7 @@ test("tokenami -> fela: carries a documented secondary tokenami API explicitly",
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		export const card = renderer.renderRule({ "padding": "1rem", "color": "red" });",
+		  "code": "export const card = renderer.renderRule({ "padding": "1rem", "color": "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -145,8 +143,7 @@ test("tokenami -> fela: loads concrete theme and project context variants", asyn
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "
-		export const card = renderer.renderRule({ "cardGap": "1rem", "color": "#f97316" });",
+		    "code": "export const card = renderer.renderRule({ "cardGap": "1rem", "color": "#f97316" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -182,8 +179,7 @@ test("tokenami -> fela: loads concrete theme and project context variants", asyn
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "
-		export const card = renderer.renderRule({ "cardGap": "1rem", "color": "#2563eb" });",
+		    "code": "export const card = renderer.renderRule({ "cardGap": "1rem", "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -231,8 +227,7 @@ test("tokenami -> fela: resolves concrete token values with project context", as
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		export const card = renderer.renderRule({ "cardGap": "1rem", "color": "#2563eb" });",
+		  "code": "export const card = renderer.renderRule({ "cardGap": "1rem", "color": "#2563eb" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -276,8 +271,7 @@ test("tokenami -> fela: preserves malformed concrete tokenami input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		export const card = renderer.renderRule({ "cardGap": "1rem", "color": "red" });
+		  "code": "export const card = renderer.renderRule({ "cardGap": "1rem", "color": "red" });
 		const unfinished = { /* unfinished tokenami */",
 		  "converted": 1,
 		  "generatedFiles": [],

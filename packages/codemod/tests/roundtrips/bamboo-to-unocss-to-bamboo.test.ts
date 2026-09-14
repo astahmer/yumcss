@@ -49,8 +49,7 @@ test("bamboo -> unocss -> bamboo: preserves an actionable concrete round trip", 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const card = "[color:red]";",
+		    "code": "export const card = "[color:red]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,7 +85,6 @@ test("bamboo -> unocss -> bamboo: preserves an actionable concrete round trip", 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-
 		export const card = css({ color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -134,8 +132,7 @@ test("bamboo -> unocss -> bamboo: retains the documented secondary API without s
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const card = "[gap:4] [display:flex]";",
+		    "code": "export const card = "[gap:4] [display:flex]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -171,7 +168,6 @@ test("bamboo -> unocss -> bamboo: retains the documented secondary API without s
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-
 		export const card = css({ gap: "4", display: "flex" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -234,8 +230,7 @@ test("bamboo -> unocss -> bamboo: preserves concrete theme and project context v
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		export const card = "[color:#2563eb]";",
+		      "code": "export const card = "[color:#2563eb]";",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -270,8 +265,7 @@ test("bamboo -> unocss -> bamboo: preserves concrete theme and project context v
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		export const card = // pandwind:migrate-skip (route: unocss -> bamboo | lowering-residual: validation)
+		      "code": "export const card = // pandwind:migrate-skip (route: unocss -> bamboo | lowering-residual: validation)
 		"[color:#2563eb]";",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -315,8 +309,7 @@ test("bamboo -> unocss -> bamboo: preserves concrete theme and project context v
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		export const card = "text-brand";",
+		      "code": "export const card = "text-brand";",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -352,7 +345,6 @@ test("bamboo -> unocss -> bamboo: preserves concrete theme and project context v
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "styled-system/css";
-
 		export const card = css({ color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -402,8 +394,7 @@ test("bamboo -> unocss -> bamboo: resolves token values across both concrete leg
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const card = "text-brand";",
+		    "code": "export const card = "text-brand";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -439,7 +430,6 @@ test("bamboo -> unocss -> bamboo: resolves token values across both concrete leg
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-
 		export const card = css({ color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],

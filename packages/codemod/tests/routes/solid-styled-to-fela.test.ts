@@ -47,8 +47,7 @@ test("solid-styled -> fela: migrates concrete solid-styled syntax to fela", () =
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		import { createCx } from "pandwind/cx";
+		  "code": "import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} class={cx(renderer.renderRule({ "padding": "1rem", "color": "red" }), props.class)} />;",
 		  "converted": 1,
@@ -94,8 +93,7 @@ test("solid-styled -> fela: carries a documented secondary solid-styled API expl
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		import { createCx } from "pandwind/cx";
+		  "code": "import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} class={cx(renderer.renderRule({ "padding": "1rem", "color": "red" }), props.class)} />;",
 		  "converted": 1,
@@ -150,8 +148,7 @@ test("solid-styled -> fela: loads concrete theme and project context variants", 
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} class={cx(renderer.renderRule({ "padding": "1rem", "color": "#2563eb" }), props.class)} />;",
 		    "converted": 1,
@@ -188,8 +185,7 @@ test("solid-styled -> fela: loads concrete theme and project context variants", 
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} class={cx(renderer.renderRule({ "padding": "1rem", "color": "#2563eb" }), props.class)} />;",
 		    "converted": 1,
@@ -238,8 +234,7 @@ test("solid-styled -> fela: resolves concrete token values with project context"
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		import { createCx } from "pandwind/cx";
+		  "code": "import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} class={cx(renderer.renderRule({ "padding": "1rem", "color": "#2563eb" }), props.class)} />;",
 		  "converted": 1,

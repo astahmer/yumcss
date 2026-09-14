@@ -48,7 +48,6 @@ test("pandwind -> mui: migrates concrete pandwind syntax to mui", () => {
 		{
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
-
 		const css = createCss();
 		export const card = css.class({ "padding": "1rem", "color": "red" });",
 		  "converted": 1,
@@ -147,7 +146,6 @@ test("pandwind -> mui: loads concrete theme and project context variants", async
 		  "amber": {
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
-
 		const css = createCss();
 		export const card = css.class({ "padding": "1rem", "color": "primary.main" });",
 		    "converted": 1,
@@ -184,7 +182,6 @@ test("pandwind -> mui: loads concrete theme and project context variants", async
 		  "blue": {
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
-
 		const css = createCss();
 		export const card = css.class({ "padding": "1rem", "color": "primary.main" });",
 		    "converted": 1,
@@ -233,7 +230,6 @@ test("pandwind -> mui: resolves concrete token values with project context", asy
 		{
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
-
 		const css = createCss();
 		export const card = css.class({ "padding": "1rem", "color": "primary.main" });",
 		  "converted": 1,
@@ -279,7 +275,6 @@ test("pandwind -> mui: preserves malformed concrete pandwind input", () => {
 		{
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
-
 		const css = createCss();
 		export const card = css.class({ "padding": "1rem", "color": "red" });
 		const unfinished = { /* unfinished pandwind */",

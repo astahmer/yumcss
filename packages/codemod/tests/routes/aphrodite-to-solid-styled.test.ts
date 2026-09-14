@@ -48,7 +48,6 @@ test("aphrodite -> solid-styled: migrates concrete aphrodite syntax to solid-sty
 		{
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
-
 		export const styles = { "card": styled.div({ "padding": 8, "color": "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -149,7 +148,6 @@ test("aphrodite -> solid-styled: loads concrete theme and project context varian
 		  "amber": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-
 		export const styles = { "card": styled.div({ "padding": 8, "color": "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -186,7 +184,6 @@ test("aphrodite -> solid-styled: loads concrete theme and project context varian
 		  "blue": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-
 		export const styles = { "card": styled.div({ "padding": 8, "color": "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -235,7 +232,6 @@ test("aphrodite -> solid-styled: resolves concrete token values with project con
 		{
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
-
 		export const styles = { "card": styled.div({ "padding": 8, "color": "#2563eb" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -281,7 +277,6 @@ test("aphrodite -> solid-styled: preserves malformed concrete aphrodite input", 
 		{
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
-
 		export const styles = { "card": styled.div({ "padding": 8, "color": "red" }) };
 		const unfinished = { /* unfinished aphrodite */",
 		  "converted": 1,

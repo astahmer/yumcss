@@ -50,7 +50,6 @@ test("mantine -> pandwind: migrates concrete mantine syntax to pandwind", () => 
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 		const staticClassName1 = css.class({ color: "blue.6", marginLeft: "auto", marginRight: "auto", maxWidth: 400 });
-
 		export const App = () => <div className={staticClassName1} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -147,7 +146,6 @@ test("mantine -> pandwind: loads concrete theme and project context variants", a
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 		const staticClassName1 = css.class({ color: "brand", marginLeft: "auto", marginRight: "auto", maxWidth: 400 });
-
 		export const App = () => <div className={staticClassName1} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -184,7 +182,6 @@ test("mantine -> pandwind: loads concrete theme and project context variants", a
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 		const staticClassName1 = css.class({ color: "brand", marginLeft: "auto", marginRight: "auto", maxWidth: 400 });
-
 		export const App = () => <div className={staticClassName1} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -233,7 +230,6 @@ test("mantine -> pandwind: resolves concrete token values with project context",
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 		const staticClassName1 = css.class({ color: "brand", marginLeft: "auto", marginRight: "auto", maxWidth: 400 });
-
 		export const App = () => <div className={staticClassName1} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -278,7 +274,6 @@ test("mantine -> pandwind: preserves malformed concrete mantine input", () => {
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const App = () => <div className={css.class({ color: "blue.6", marginLeft: "auto", marginRight: "auto", maxWidth: 400 })} />;
 		const unfinished = { /* unfinished mantine */",
 		  "converted": 1,

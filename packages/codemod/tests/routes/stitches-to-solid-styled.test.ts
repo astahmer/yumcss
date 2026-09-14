@@ -48,7 +48,6 @@ test("stitches -> solid-styled: migrates concrete stitches syntax to solid-style
 		{
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
-
 		export const card = styled.div({ "padding": "1rem", "color": "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -149,7 +148,6 @@ test("stitches -> solid-styled: loads concrete theme and project context variant
 		  "amber": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-
 		export const card = styled.div({ "padding": "1rem", "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -186,7 +184,6 @@ test("stitches -> solid-styled: loads concrete theme and project context variant
 		  "blue": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-
 		export const card = styled.div({ "padding": "1rem", "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -235,7 +232,6 @@ test("stitches -> solid-styled: resolves concrete token values with project cont
 		{
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
-
 		export const card = styled.div({ "padding": "1rem", "color": "#2563eb" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -281,7 +277,6 @@ test("stitches -> solid-styled: preserves malformed concrete stitches input", ()
 		{
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
-
 		export const card = styled.div({ "padding": "1rem", "color": "red" });
 		const unfinished = { /* unfinished stitches */",
 		  "converted": 1,

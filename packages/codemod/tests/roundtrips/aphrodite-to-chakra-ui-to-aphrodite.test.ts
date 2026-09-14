@@ -50,7 +50,6 @@ test("aphrodite -> chakra-ui -> aphrodite: preserves an actionable concrete roun
 		  "forward": {
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
 		export const styles = { "card": defaultSystem.css({ padding: "8px", color: "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -84,9 +83,7 @@ test("aphrodite -> chakra-ui -> aphrodite: preserves an actionable concrete roun
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-		import { StyleSheet } from "aphrodite";
-
+		    "code": "import { StyleSheet } from "aphrodite";
 		export const styles = { "card": StyleSheet.create({ "padding": "8px", "color": "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -137,7 +134,6 @@ test("aphrodite -> chakra-ui -> aphrodite: retains the documented secondary API 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
 		export const styles = { "fonts": defaultSystem.css({ "font-face": { fontFamily: "Inter", src: "url(inter.woff2)" } }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -171,11 +167,9 @@ test("aphrodite -> chakra-ui -> aphrodite: retains the documented secondary API 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-		import { createRuntimeCss } from "pandwind/css/runtime";
+		    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
 		import { pandwindPreset } from "pandwind/preset";
 		const css = createRuntimeCss(pandwindPreset);
-
 		export const styles = { "fonts": css.vars({ "font-face": { fontFamily: "Inter", src: "url(inter.woff2)" } }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -247,7 +241,6 @@ test("aphrodite -> chakra-ui -> aphrodite: preserves concrete theme and project 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { defaultSystem } from "@chakra-ui/react";
-
 		export const styles = { "card": defaultSystem.css({ padding: "8px", color: "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -281,9 +274,7 @@ test("aphrodite -> chakra-ui -> aphrodite: preserves concrete theme and project 
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { defaultSystem } from "@chakra-ui/react";
-		import { StyleSheet } from "aphrodite";
-
+		      "code": "import { StyleSheet } from "aphrodite";
 		export const styles = { "card": StyleSheet.create({ "padding": "8px", "color": "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -322,7 +313,6 @@ test("aphrodite -> chakra-ui -> aphrodite: preserves concrete theme and project 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { defaultSystem } from "@chakra-ui/react";
-
 		export const styles = { "card": defaultSystem.css({ padding: "8px", color: "brand.500" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -356,9 +346,7 @@ test("aphrodite -> chakra-ui -> aphrodite: preserves concrete theme and project 
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { defaultSystem } from "@chakra-ui/react";
-		import { StyleSheet } from "aphrodite";
-
+		      "code": "import { StyleSheet } from "aphrodite";
 		export const styles = { "card": StyleSheet.create({ "padding": "8px", "color": "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -412,7 +400,6 @@ test("aphrodite -> chakra-ui -> aphrodite: resolves token values across both con
 		  "forward": {
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
 		export const styles = { "card": defaultSystem.css({ padding: "8px", color: "brand.500" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -446,9 +433,7 @@ test("aphrodite -> chakra-ui -> aphrodite: resolves token values across both con
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-		import { StyleSheet } from "aphrodite";
-
+		    "code": "import { StyleSheet } from "aphrodite";
 		export const styles = { "card": StyleSheet.create({ "padding": "8px", "color": "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],

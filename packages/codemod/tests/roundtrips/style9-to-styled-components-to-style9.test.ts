@@ -50,7 +50,6 @@ test("style9 -> styled-components -> style9: preserves an actionable concrete ro
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
 		export const styles = { "card": styled.div({ color: "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -85,7 +84,6 @@ test("style9 -> styled-components -> style9: preserves an actionable concrete ro
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
 		export const styles = { "card": // pandwind:migrate-skip (route: styled-components -> style9 | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		styled.div({ color: "red" }) };",
 		    "converted": 0,
@@ -137,7 +135,6 @@ test("style9 -> styled-components -> style9: retains the documented secondary AP
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
 		export const styles = { "card": styled.div({ color: "red" }), "muted": styled.div({ opacity: 0.5 }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -172,7 +169,6 @@ test("style9 -> styled-components -> style9: retains the documented secondary AP
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
 		export const styles = { "card": // pandwind:migrate-skip (route: styled-components -> style9 | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		styled.div({ color: "red" }), "muted": // pandwind:migrate-skip (route: styled-components -> style9 | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		styled.div({ opacity: 0.5 }) };",
@@ -261,7 +257,6 @@ test("style9 -> styled-components -> style9: preserves concrete theme and projec
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-
 		export const styles = { "card": styled.div({ color: "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -296,7 +291,6 @@ test("style9 -> styled-components -> style9: preserves concrete theme and projec
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-
 		export const styles = { "card": // pandwind:migrate-skip (route: styled-components -> style9 | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		styled.div({ color: "#2563eb" }) };",
 		      "converted": 0,
@@ -336,7 +330,6 @@ test("style9 -> styled-components -> style9: preserves concrete theme and projec
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-
 		export const styles = { "card": styled.div({ color: "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -371,7 +364,6 @@ test("style9 -> styled-components -> style9: preserves concrete theme and projec
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-
 		export const styles = { "card": // pandwind:migrate-skip (route: styled-components -> style9 | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		styled.div({ color: "#2563eb" }) };",
 		      "converted": 0,
@@ -425,7 +417,6 @@ test("style9 -> styled-components -> style9: resolves token values across both c
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
 		export const styles = { "card": styled.div({ color: "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -460,7 +451,6 @@ test("style9 -> styled-components -> style9: resolves token values across both c
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
 		export const styles = { "card": // pandwind:migrate-skip (route: styled-components -> style9 | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		styled.div({ color: "#2563eb" }) };",
 		    "converted": 0,

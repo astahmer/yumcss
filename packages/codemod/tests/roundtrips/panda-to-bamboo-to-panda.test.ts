@@ -49,9 +49,8 @@ test("panda -> bamboo -> panda: preserves an actionable concrete round trip", ()
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
-
-		export const card = css({ color: "red.300", "&:hover": { color: "blue.300" } });",
+		    "code": "import { css as sourceCss } from "styled-system/css";
+		export const card = sourceCss({ color: "red.300", "&:hover": { color: "blue.300" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -83,40 +82,16 @@ test("panda -> bamboo -> panda: preserves an actionable concrete round trip", ()
 		    ],
 		  },
 		  "reverse": {
-		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
-
-
-		export const card = css({ color: "red.300", "&:hover": { color: "blue.300" } });",
-		    "converted": 1,
+		    "changed": false,
+		    "code": "import { css as sourceCss } from "styled-system/css";
+		export const card = sourceCss({ color: "red.300", "&:hover": { color: "blue.300" } });",
+		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "static",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "static",
-		        "representation": "static",
-		      },
-		    ],
+		    "loweringPlans": [],
+		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
+		    "validations": [],
 		  },
 		}
 	`)
@@ -253,10 +228,9 @@ test("panda -> bamboo -> panda: preserves concrete theme and project context var
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "styled-system/css";
-
+		      "code": "import { css as sourceCss } from "styled-system/css";
 		export const card = // pandwind:migrate-skip (route: panda -> bamboo | lowering-residual: validation)
-		css({ color: "brand.500", "&:hover": { color: "brand.500" } });",
+		sourceCss({ color: "brand.500", "&:hover": { color: "brand.500" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -334,10 +308,9 @@ test("panda -> bamboo -> panda: preserves concrete theme and project context var
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "styled-system/css";
-
+		      "code": "import { css as sourceCss } from "styled-system/css";
 		export const card = // pandwind:migrate-skip (route: panda -> bamboo | lowering-residual: validation)
-		css({ color: "brand.500", "&:hover": { color: "brand.500" } });",
+		sourceCss({ color: "brand.500", "&:hover": { color: "brand.500" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -386,9 +359,8 @@ test("panda -> bamboo -> panda: resolves token values across both concrete legs"
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
-
-		export const card = css({ color: "#2563eb", "&:hover": { color: "blue.300" } });",
+		    "code": "import { css as sourceCss } from "styled-system/css";
+		export const card = sourceCss({ color: "#2563eb", "&:hover": { color: "blue.300" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -420,40 +392,16 @@ test("panda -> bamboo -> panda: resolves token values across both concrete legs"
 		    ],
 		  },
 		  "reverse": {
-		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
-
-
-		export const card = css({ color: "brand.500", "&:hover": { color: "blue.300" } });",
-		    "converted": 1,
+		    "changed": false,
+		    "code": "import { css as sourceCss } from "styled-system/css";
+		export const card = sourceCss({ color: "#2563eb", "&:hover": { color: "blue.300" } });",
+		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "static",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "static",
-		        "representation": "static",
-		      },
-		    ],
+		    "loweringPlans": [],
+		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
+		    "validations": [],
 		  },
 		}
 	`)

@@ -50,7 +50,6 @@ test("emotion -> vanilla-extract -> emotion: preserves an actionable concrete ro
 		  "forward": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-
 		export const card = style({ padding: "1rem", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -87,8 +86,6 @@ test("emotion -> vanilla-extract -> emotion: preserves an actionable concrete ro
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
-
-
 		export const card = css({ padding: "1rem", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -137,7 +134,6 @@ test("emotion -> vanilla-extract -> emotion: retains the documented secondary AP
 		  "forward": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-
 		export const card = style({ padding: "1rem", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -174,8 +170,6 @@ test("emotion -> vanilla-extract -> emotion: retains the documented secondary AP
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
-
-
 		export const card = css({ padding: "1rem", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -239,7 +233,6 @@ test("emotion -> vanilla-extract -> emotion: preserves concrete theme and projec
 		    "forward": {
 		      "changed": true,
 		      "code": "import { style } from "@vanilla-extract/css";
-
 		export const card = style({ padding: "1rem", color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -276,8 +269,6 @@ test("emotion -> vanilla-extract -> emotion: preserves concrete theme and projec
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@emotion/css";
-
-
 		export const card = css({ padding: "1rem", color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -314,7 +305,6 @@ test("emotion -> vanilla-extract -> emotion: preserves concrete theme and projec
 		    "forward": {
 		      "changed": true,
 		      "code": "import { style } from "@vanilla-extract/css";
-
 		export const card = style({ padding: "1rem", color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -351,8 +341,6 @@ test("emotion -> vanilla-extract -> emotion: preserves concrete theme and projec
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@emotion/css";
-
-
 		export const card = css({ padding: "1rem", color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -403,7 +391,6 @@ test("emotion -> vanilla-extract -> emotion: resolves token values across both c
 		  "forward": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-
 		export const card = style({ padding: "1rem", color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -440,8 +427,6 @@ test("emotion -> vanilla-extract -> emotion: resolves token values across both c
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
-
-
 		export const card = css({ padding: "1rem", color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],

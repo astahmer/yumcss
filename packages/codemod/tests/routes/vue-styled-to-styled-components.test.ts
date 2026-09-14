@@ -48,7 +48,6 @@ test("vue-styled -> styled-components: migrates concrete vue-styled syntax to st
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-
 		export const Card = styled.div({ padding: "1rem", color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -92,7 +91,6 @@ test("vue-styled -> styled-components: carries a documented secondary vue-styled
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-
 		export const Card = styled.div({ padding: "1rem", color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -145,7 +143,6 @@ test("vue-styled -> styled-components: loads concrete theme and project context 
 		  "amber": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
 		export const Card = styled.div({ padding: "1rem", color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -180,7 +177,6 @@ test("vue-styled -> styled-components: loads concrete theme and project context 
 		  "blue": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
 		export const Card = styled.div({ padding: "1rem", color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -227,7 +223,6 @@ test("vue-styled -> styled-components: resolves concrete token values with proje
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-
 		export const Card = styled.div({ padding: "1rem", color: "#2563eb" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -271,7 +266,6 @@ test("vue-styled -> styled-components: preserves malformed concrete vue-styled i
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-
 		export const Card = styled.div({ padding: "1rem", color: "red" });
 		const unfinished = { /* unfinished vue-styled */",
 		  "converted": 1,

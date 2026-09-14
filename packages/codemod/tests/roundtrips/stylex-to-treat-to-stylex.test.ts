@@ -50,7 +50,6 @@ test("stylex -> treat -> stylex: preserves an actionable concrete round trip", (
 		  "forward": {
 		    "changed": true,
 		    "code": "import { style } from "@/styles.treat";
-
 		export const styles = { "card": style({ "padding": "8px", "color": "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -88,7 +87,6 @@ test("stylex -> treat -> stylex: preserves an actionable concrete round trip", (
 		    "changed": true,
 		    "code": "import { style } from "@/styles.treat";
 		import * as stylex from "@stylexjs/stylex";
-
 		export const styles = { "card": stylex.create({ style: { padding: "8px", color: "red" } }).style };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -139,7 +137,6 @@ test("stylex -> treat -> stylex: retains the documented secondary API without si
 		  "forward": {
 		    "changed": true,
 		    "code": "import { style } from "@/styles.treat";
-
 		export const styles = { "card": style({ "color": "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -177,7 +174,6 @@ test("stylex -> treat -> stylex: retains the documented secondary API without si
 		    "changed": true,
 		    "code": "import { style } from "@/styles.treat";
 		import * as stylex from "@stylexjs/stylex";
-
 		export const styles = { "card": stylex.create({ style: { color: "red" } }).style };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -243,7 +239,6 @@ test("stylex -> treat -> stylex: preserves concrete theme and project context va
 		    "forward": {
 		      "changed": true,
 		      "code": "import { style } from "@/styles.treat";
-
 		export const styles = { "card": style({ "padding": "8px", "color": "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -281,7 +276,6 @@ test("stylex -> treat -> stylex: preserves concrete theme and project context va
 		      "changed": true,
 		      "code": "import { style } from "@/styles.treat";
 		import * as stylex from "@stylexjs/stylex";
-
 		export const styles = { "card": stylex.create({ style: { padding: "8px", color: "#2563eb" } }).style };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -320,7 +314,6 @@ test("stylex -> treat -> stylex: preserves concrete theme and project context va
 		    "forward": {
 		      "changed": true,
 		      "code": "import { style } from "@/styles.treat";
-
 		export const styles = { "card": style({ "padding": "8px", "color": "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -358,7 +351,6 @@ test("stylex -> treat -> stylex: preserves concrete theme and project context va
 		      "changed": true,
 		      "code": "import { style } from "@/styles.treat";
 		import * as stylex from "@stylexjs/stylex";
-
 		export const styles = { "card": stylex.create({ style: { padding: "8px", color: "#2563eb" } }).style };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -411,7 +403,6 @@ test("stylex -> treat -> stylex: resolves token values across both concrete legs
 		  "forward": {
 		    "changed": true,
 		    "code": "import { style } from "@/styles.treat";
-
 		export const styles = { "card": style({ "padding": "8px", "color": "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -449,7 +440,6 @@ test("stylex -> treat -> stylex: resolves token values across both concrete legs
 		    "changed": true,
 		    "code": "import { style } from "@/styles.treat";
 		import * as stylex from "@stylexjs/stylex";
-
 		export const styles = { "card": stylex.create({ style: { padding: "8px", color: "#2563eb" } }).style };",
 		    "converted": 1,
 		    "generatedFiles": [],

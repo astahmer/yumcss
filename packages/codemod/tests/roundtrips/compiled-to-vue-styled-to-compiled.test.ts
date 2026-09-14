@@ -50,7 +50,6 @@ test("compiled -> vue-styled -> compiled: preserves an actionable concrete round
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-
 		export const card = styled.div({ "padding": 8, "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -88,8 +87,6 @@ test("compiled -> vue-styled -> compiled: preserves an actionable concrete round
 		    "changed": true,
 		    "code": "import { css } from "@compiled/react";
 		import { defineComponent, h } from "vue";
-
-
 		export const card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css({ "padding": 8, "color": "red" }), attrs.class] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -140,7 +137,6 @@ test("compiled -> vue-styled -> compiled: retains the documented secondary API w
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-
 		export const colors = { "red": styled.div({ "color": "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -177,7 +173,6 @@ test("compiled -> vue-styled -> compiled: retains the documented secondary API w
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-
 		export const colors = { "red": // pandwind:migrate-skip (route: vue-styled -> compiled | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
 		styled.div({ "color": "red" }) };",
 		    "converted": 0,
@@ -244,7 +239,6 @@ test("compiled -> vue-styled -> compiled: preserves concrete theme and project c
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-
 		export const card = styled.div({ "padding": 8, "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -282,8 +276,6 @@ test("compiled -> vue-styled -> compiled: preserves concrete theme and project c
 		      "changed": true,
 		      "code": "import { css } from "@compiled/react";
 		import { defineComponent, h } from "vue";
-
-
 		export const card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css({ "padding": 8, "color": "#2563eb" }), attrs.class] }, slots.default?.()));",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -322,7 +314,6 @@ test("compiled -> vue-styled -> compiled: preserves concrete theme and project c
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-
 		export const card = styled.div({ "padding": 8, "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -360,8 +351,6 @@ test("compiled -> vue-styled -> compiled: preserves concrete theme and project c
 		      "changed": true,
 		      "code": "import { css } from "@compiled/react";
 		import { defineComponent, h } from "vue";
-
-
 		export const card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css({ "padding": 8, "color": "#2563eb" }), attrs.class] }, slots.default?.()));",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -414,7 +403,6 @@ test("compiled -> vue-styled -> compiled: resolves token values across both conc
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-
 		export const card = styled.div({ "padding": 8, "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -452,8 +440,6 @@ test("compiled -> vue-styled -> compiled: resolves token values across both conc
 		    "changed": true,
 		    "code": "import { css } from "@compiled/react";
 		import { defineComponent, h } from "vue";
-
-
 		export const card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css({ "padding": 8, "color": "#2563eb" }), attrs.class] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],

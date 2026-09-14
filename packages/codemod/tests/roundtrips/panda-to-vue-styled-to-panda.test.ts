@@ -50,7 +50,6 @@ test("panda -> vue-styled -> panda: preserves an actionable concrete round trip"
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-
 		export const card = styled.div({ "color": "red.300", "_hover": { "color": "blue.300" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -88,8 +87,6 @@ test("panda -> vue-styled -> panda: preserves an actionable concrete round trip"
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
 		import { defineComponent, h } from "vue";
-
-
 		export const card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css({ color: "red.300", "&:hover": { color: "blue.300" } }), attrs.class] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -221,7 +218,6 @@ test("panda -> vue-styled -> panda: preserves concrete theme and project context
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-
 		export const card = styled.div({ "color": "#f97316", "_hover": { "color": "#f97316" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -260,8 +256,6 @@ test("panda -> vue-styled -> panda: preserves concrete theme and project context
 		      "changed": true,
 		      "code": "import { css } from "styled-system/css";
 		import { defineComponent, h } from "vue";
-
-
 		export const card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css({ color: "brand.500", "&:hover": { color: "brand.500" } }), attrs.class] }, slots.default?.()));",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -298,7 +292,6 @@ test("panda -> vue-styled -> panda: preserves concrete theme and project context
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-
 		export const card = styled.div({ "color": "#2563eb", "_hover": { "color": "#2563eb" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -337,8 +330,6 @@ test("panda -> vue-styled -> panda: preserves concrete theme and project context
 		      "changed": true,
 		      "code": "import { css } from "styled-system/css";
 		import { defineComponent, h } from "vue";
-
-
 		export const card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css({ color: "brand.500", "&:hover": { color: "brand.500" } }), attrs.class] }, slots.default?.()));",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -389,7 +380,6 @@ test("panda -> vue-styled -> panda: resolves token values across both concrete l
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-
 		export const card = styled.div({ "color": "#2563eb", "_hover": { "color": "blue.300" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -427,8 +417,6 @@ test("panda -> vue-styled -> panda: resolves token values across both concrete l
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
 		import { defineComponent, h } from "vue";
-
-
 		export const card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css({ color: "brand.500", "&:hover": { color: "blue.300" } }), attrs.class] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],

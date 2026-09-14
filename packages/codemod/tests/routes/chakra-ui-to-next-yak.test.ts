@@ -47,8 +47,7 @@ test("chakra-ui -> next-yak: migrates concrete chakra-ui syntax to next-yak", ()
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { Box } from "@chakra-ui/react";
-		import { css } from "next-yak";
+		  "code": "import { css } from "next-yak";
 		export const App = () => css\`padding: var(--chakra-spacing-4); background-color: var(--chakra-colors-red-200);\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -240,9 +239,8 @@ test("chakra-ui -> next-yak: resolves concrete token values with project context
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { Box } from "@chakra-ui/react";
-		import { css } from "next-yak";
-		export const App = () => css\`background-color: #2563eb;\`;",
+		  "code": "import { css } from "next-yak";
+		export const App = () => css\`background-color: #2563eb; p: var(--chakra-spacing-4);\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -284,8 +282,7 @@ test("chakra-ui -> next-yak: preserves malformed concrete chakra-ui input", () =
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { Box } from "@chakra-ui/react";
-		import { css } from "next-yak";
+		  "code": "import { css } from "next-yak";
 		export const App = () => css\`padding: var(--chakra-spacing-4); background-color: var(--chakra-colors-red-200);\`;
 		const unfinished = { /* unfinished chakra-ui */",
 		  "converted": 1,

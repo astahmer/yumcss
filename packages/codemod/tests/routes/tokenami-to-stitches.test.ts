@@ -48,7 +48,6 @@ test("tokenami -> stitches: migrates concrete tokenami syntax to stitches", () =
 		{
 		  "changed": true,
 		  "code": "import { css } from "@stitches/react";
-
 		export const card = css({ cardGap: "1rem", color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -94,7 +93,6 @@ test("tokenami -> stitches: carries a documented secondary tokenami API explicit
 		{
 		  "changed": true,
 		  "code": "import { css } from "@stitches/react";
-
 		export const card = css({ padding: "1rem", color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -250,7 +248,6 @@ test("tokenami -> stitches: resolves concrete token values with project context"
 		{
 		  "changed": true,
 		  "code": "import { css } from "@stitches/react";
-
 		export const card = css({ cardGap: "1rem", color: "#2563eb" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -296,7 +293,6 @@ test("tokenami -> stitches: preserves malformed concrete tokenami input", () => 
 		{
 		  "changed": true,
 		  "code": "import { css } from "@stitches/react";
-
 		export const card = css({ cardGap: "1rem", color: "red" });
 		const unfinished = { /* unfinished tokenami */",
 		  "converted": 1,

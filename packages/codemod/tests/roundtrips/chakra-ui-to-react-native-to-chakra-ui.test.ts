@@ -214,7 +214,7 @@ test("chakra-ui -> react-native -> chakra-ui: preserves concrete theme and proje
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet, View } from "react-native";
-		export const App = () => <View  p="4"  style={StyleSheet.create({ style: { "backgroundColor": "#f97316" } }).style}/>;",
+		export const App = () => <View    style={StyleSheet.create({ style: { "backgroundColor": "#f97316", "p": "var(--chakra-spacing-4)" } }).style}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -253,7 +253,7 @@ test("chakra-ui -> react-native -> chakra-ui: preserves concrete theme and proje
 		      "changed": true,
 		      "code": "import { View } from "react-native";
 		import { defaultSystem } from "@chakra-ui/react";
-		export const App = () => <View  p="4"  style={{ "style": defaultSystem.css({ backgroundColor: "brand.500" }) }.style}/>;",
+		export const App = () => <View    style={{ "style": defaultSystem.css({ backgroundColor: "brand.500", p: "var(--chakra-spacing-4)" }) }.style}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -289,7 +289,7 @@ test("chakra-ui -> react-native -> chakra-ui: preserves concrete theme and proje
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet, View } from "react-native";
-		export const App = () => <View  p="4"  style={StyleSheet.create({ style: { "backgroundColor": "#2563eb" } }).style}/>;",
+		export const App = () => <View    style={StyleSheet.create({ style: { "backgroundColor": "#2563eb", "p": "var(--chakra-spacing-4)" } }).style}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -328,7 +328,7 @@ test("chakra-ui -> react-native -> chakra-ui: preserves concrete theme and proje
 		      "changed": true,
 		      "code": "import { View } from "react-native";
 		import { defaultSystem } from "@chakra-ui/react";
-		export const App = () => <View  p="4"  style={{ "style": defaultSystem.css({ backgroundColor: "brand.500" }) }.style}/>;",
+		export const App = () => <View    style={{ "style": defaultSystem.css({ backgroundColor: "brand.500", p: "var(--chakra-spacing-4)" }) }.style}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -378,7 +378,7 @@ test("chakra-ui -> react-native -> chakra-ui: resolves token values across both 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet, View } from "react-native";
-		export const App = () => <View  p="4"  style={StyleSheet.create({ style: { "backgroundColor": "#2563eb" } }).style}/>;",
+		export const App = () => <View    style={StyleSheet.create({ style: { "backgroundColor": "#2563eb", "p": "var(--chakra-spacing-4)" } }).style}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -416,7 +416,7 @@ test("chakra-ui -> react-native -> chakra-ui: resolves token values across both 
 		    "changed": true,
 		    "code": "import { View } from "react-native";
 		import { defaultSystem } from "@chakra-ui/react";
-		export const App = () => <View  p="4"  style={{ "style": defaultSystem.css({ backgroundColor: "brand.500" }) }.style}/>;",
+		export const App = () => <View    style={{ "style": defaultSystem.css({ backgroundColor: "brand.500", p: "var(--chakra-spacing-4)" }) }.style}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

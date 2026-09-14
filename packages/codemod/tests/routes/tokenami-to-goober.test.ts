@@ -48,7 +48,6 @@ test("tokenami -> goober: migrates concrete tokenami syntax to goober", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "goober";
-
 		export const card = css({ "cardGap": "1rem", "color": "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -94,7 +93,6 @@ test("tokenami -> goober: carries a documented secondary tokenami API explicitly
 		{
 		  "changed": true,
 		  "code": "import { css } from "goober";
-
 		export const card = css({ "padding": "1rem", "color": "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -148,7 +146,6 @@ test("tokenami -> goober: loads concrete theme and project context variants", as
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "goober";
-
 		export const card = css({ "cardGap": "1rem", "color": "#f97316" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -186,7 +183,6 @@ test("tokenami -> goober: loads concrete theme and project context variants", as
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "goober";
-
 		export const card = css({ "cardGap": "1rem", "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -236,7 +232,6 @@ test("tokenami -> goober: resolves concrete token values with project context", 
 		{
 		  "changed": true,
 		  "code": "import { css } from "goober";
-
 		export const card = css({ "cardGap": "1rem", "color": "#2563eb" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -282,7 +277,6 @@ test("tokenami -> goober: preserves malformed concrete tokenami input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "goober";
-
 		export const card = css({ "cardGap": "1rem", "color": "red" });
 		const unfinished = { /* unfinished tokenami */",
 		  "converted": 1,

@@ -47,8 +47,7 @@ test("solid-styled -> style9: migrates concrete solid-styled syntax to style9", 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		import { createCx } from "pandwind/cx";
+		  "code": "import { createCx } from "pandwind/cx";
 		import style9 from "style9";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} class={cx(style9(style9.create({ style: { "padding": "1rem", "color": "red" } }).style), props.class)} />;",
@@ -95,8 +94,7 @@ test("solid-styled -> style9: carries a documented secondary solid-styled API ex
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		import { createCx } from "pandwind/cx";
+		  "code": "import { createCx } from "pandwind/cx";
 		import style9 from "style9";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} class={cx(style9(style9.create({ style: { "padding": "1rem", "color": "red" } }).style), props.class)} />;",
@@ -152,8 +150,7 @@ test("solid-styled -> style9: loads concrete theme and project context variants"
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import style9 from "style9";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} class={cx(style9(style9.create({ style: { "padding": "1rem", "color": "#2563eb" } }).style), props.class)} />;",
@@ -191,8 +188,7 @@ test("solid-styled -> style9: loads concrete theme and project context variants"
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import style9 from "style9";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} class={cx(style9(style9.create({ style: { "padding": "1rem", "color": "#2563eb" } }).style), props.class)} />;",
@@ -242,8 +238,7 @@ test("solid-styled -> style9: resolves concrete token values with project contex
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		import { createCx } from "pandwind/cx";
+		  "code": "import { createCx } from "pandwind/cx";
 		import style9 from "style9";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} class={cx(style9(style9.create({ style: { "padding": "1rem", "color": "#2563eb" } }).style), props.class)} />;",

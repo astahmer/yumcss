@@ -49,8 +49,7 @@ test("bamboo -> fela -> bamboo: preserves an actionable concrete round trip", ()
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const card = renderer.renderRule({ "color": "red" });",
+		    "code": "export const card = renderer.renderRule({ "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,7 +85,6 @@ test("bamboo -> fela -> bamboo: preserves an actionable concrete round trip", ()
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-
 		export const card = css({ color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -134,8 +132,7 @@ test("bamboo -> fela -> bamboo: retains the documented secondary API without sil
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const card = renderer.renderRule({ "gap": "4", "display": "flex" });",
+		    "code": "export const card = renderer.renderRule({ "gap": "4", "display": "flex" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -171,7 +168,6 @@ test("bamboo -> fela -> bamboo: retains the documented secondary API without sil
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-
 		export const card = css({ gap: "4", display: "flex" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -234,8 +230,7 @@ test("bamboo -> fela -> bamboo: preserves concrete theme and project context var
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		export const card = renderer.renderRule({ "color": "#2563eb" });",
+		      "code": "export const card = renderer.renderRule({ "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -271,7 +266,6 @@ test("bamboo -> fela -> bamboo: preserves concrete theme and project context var
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "styled-system/css";
-
 		export const card = css({ color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -307,8 +301,7 @@ test("bamboo -> fela -> bamboo: preserves concrete theme and project context var
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		export const card = renderer.renderRule({ "color": "#2563eb" });",
+		      "code": "export const card = renderer.renderRule({ "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -344,7 +337,6 @@ test("bamboo -> fela -> bamboo: preserves concrete theme and project context var
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "styled-system/css";
-
 		export const card = css({ color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -394,8 +386,7 @@ test("bamboo -> fela -> bamboo: resolves token values across both concrete legs"
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const card = renderer.renderRule({ "color": "#2563eb" });",
+		    "code": "export const card = renderer.renderRule({ "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -431,7 +422,6 @@ test("bamboo -> fela -> bamboo: resolves token values across both concrete legs"
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-
 		export const card = css({ color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],

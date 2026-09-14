@@ -52,7 +52,6 @@ test("solid-styled -> pandwind: migrates concrete solid-styled syntax to pandwin
 		const cx = createCx();
 		const css = createCss();
 		const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Component {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
-
 		export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "red" }), stableClass: "pw-t6bw3o", inheritedClass: undefined, classAttribute: "class", attrs: {}, joinClass: cx });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -100,7 +99,6 @@ test("solid-styled -> pandwind: carries a documented secondary solid-styled API 
 		const cx = createCx();
 		const css = createCss();
 		const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Component {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
-
 		export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "red" }), stableClass: "pw-t6bw3o", inheritedClass: undefined, classAttribute: "class", attrs: {}, joinClass: cx });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -157,7 +155,6 @@ test("solid-styled -> pandwind: loads concrete theme and project context variant
 		import { __pandwindSlot } from "../__pandwind/slot";
 		const cx = createCx();
 		const css = createCss();
-
 		export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "#2563eb" }), stableClass: "pw-t6bw3o", inheritedClass: undefined, classAttribute: "class", attrs: {}, joinClass: cx });",
 		    "converted": 1,
 		    "generatedFiles": [
@@ -201,7 +198,6 @@ test("solid-styled -> pandwind: loads concrete theme and project context variant
 		import { __pandwindSlot } from "../__pandwind/slot";
 		const cx = createCx();
 		const css = createCss();
-
 		export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "brand" }), stableClass: "pw-t6bw3o", inheritedClass: undefined, classAttribute: "class", attrs: {}, joinClass: cx });",
 		    "converted": 1,
 		    "generatedFiles": [
@@ -257,7 +253,6 @@ test("solid-styled -> pandwind: resolves concrete token values with project cont
 		import { __pandwindSlot } from "../__pandwind/slot";
 		const cx = createCx();
 		const css = createCss();
-
 		export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "brand" }), stableClass: "pw-t6bw3o", inheritedClass: undefined, classAttribute: "class", attrs: {}, joinClass: cx });",
 		  "converted": 1,
 		  "generatedFiles": [
@@ -310,7 +305,6 @@ test("solid-styled -> pandwind: preserves malformed concrete solid-styled input"
 		const cx = createCx();
 		const css = createCss();
 		const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Component {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
-
 		export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "red" }), stableClass: "pw-t6bw3o", inheritedClass: undefined, classAttribute: "class", attrs: {}, joinClass: cx });
 		const unfinished = { /* unfinished solid-styled */",
 		  "converted": 1,

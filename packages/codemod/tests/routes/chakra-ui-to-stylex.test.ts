@@ -47,8 +47,7 @@ test("chakra-ui -> stylex: migrates concrete chakra-ui syntax to stylex", () => 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { Box } from "@chakra-ui/react";
-		import * as stylex from "@stylexjs/stylex";
+		  "code": "import * as stylex from "@stylexjs/stylex";
 		export const App = () => stylex.create({ style: { padding: "var(--chakra-spacing-4)", backgroundColor: "var(--chakra-colors-red-200)" } }).style;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -248,9 +247,8 @@ test("chakra-ui -> stylex: resolves concrete token values with project context",
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { Box } from "@chakra-ui/react";
-		import * as stylex from "@stylexjs/stylex";
-		export const App = () => stylex.create({ style: { backgroundColor: "#2563eb" } }).style;",
+		  "code": "import * as stylex from "@stylexjs/stylex";
+		export const App = () => stylex.create({ style: { backgroundColor: "#2563eb", p: "var(--chakra-spacing-4)" } }).style;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -294,8 +292,7 @@ test("chakra-ui -> stylex: preserves malformed concrete chakra-ui input", () => 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { Box } from "@chakra-ui/react";
-		import * as stylex from "@stylexjs/stylex";
+		  "code": "import * as stylex from "@stylexjs/stylex";
 		export const App = () => stylex.create({ style: { padding: "var(--chakra-spacing-4)", backgroundColor: "var(--chakra-colors-red-200)" } }).style;
 		const unfinished = { /* unfinished chakra-ui */",
 		  "converted": 1,

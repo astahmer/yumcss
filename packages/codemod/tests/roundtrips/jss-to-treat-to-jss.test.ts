@@ -50,7 +50,6 @@ test("jss -> treat -> jss: preserves an actionable concrete round trip", () => {
 		  "forward": {
 		    "changed": true,
 		    "code": "import { style } from "@/styles.treat";
-
 		export const useStyles = { "card": style({ "color": "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -87,8 +86,6 @@ test("jss -> treat -> jss: preserves an actionable concrete round trip", () => {
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-
-
 		export const useStyles = { "card": createUseStyles({ color: "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -139,7 +136,6 @@ test("jss -> treat -> jss: retains the documented secondary API without silent l
 		  "forward": {
 		    "changed": true,
 		    "code": "import { style } from "@/styles.treat";
-
 		export const sheet = { "card": style({ "color": "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -176,8 +172,6 @@ test("jss -> treat -> jss: retains the documented secondary API without silent l
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-
-
 		export const sheet = { "card": createUseStyles({ color: "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -243,7 +237,6 @@ test("jss -> treat -> jss: preserves concrete theme and project context variants
 		    "forward": {
 		      "changed": true,
 		      "code": "import { style } from "@/styles.treat";
-
 		export const useStyles = { "card": style({ "color": "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -280,8 +273,6 @@ test("jss -> treat -> jss: preserves concrete theme and project context variants
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { createUseStyles } from "react-jss";
-
-
 		export const useStyles = { "card": createUseStyles({ color: "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -320,7 +311,6 @@ test("jss -> treat -> jss: preserves concrete theme and project context variants
 		    "forward": {
 		      "changed": true,
 		      "code": "import { style } from "@/styles.treat";
-
 		export const useStyles = { "card": style({ "color": "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -357,8 +347,6 @@ test("jss -> treat -> jss: preserves concrete theme and project context variants
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { createUseStyles } from "react-jss";
-
-
 		export const useStyles = { "card": createUseStyles({ color: "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -411,7 +399,6 @@ test("jss -> treat -> jss: resolves token values across both concrete legs", asy
 		  "forward": {
 		    "changed": true,
 		    "code": "import { style } from "@/styles.treat";
-
 		export const useStyles = { "card": style({ "color": "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -448,8 +435,6 @@ test("jss -> treat -> jss: resolves token values across both concrete legs", asy
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-
-
 		export const useStyles = { "card": createUseStyles({ color: "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],

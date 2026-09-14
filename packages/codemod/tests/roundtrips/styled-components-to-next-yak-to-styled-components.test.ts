@@ -50,7 +50,6 @@ test("styled-components -> next-yak -> styled-components: preserves an actionabl
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "next-yak";
-
 		export const Card = styled.div\`padding: 1rem; color: red;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -85,8 +84,6 @@ test("styled-components -> next-yak -> styled-components: preserves an actionabl
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
-
 		export const Card = styled.div({ padding: "1rem", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -135,7 +132,6 @@ test("styled-components -> next-yak -> styled-components: retains the documented
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "next-yak";
-
 		export const Card = styled.div\`padding: 1rem; color: red;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -170,8 +166,6 @@ test("styled-components -> next-yak -> styled-components: retains the documented
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
-
 		export const Card = styled.div({ padding: "1rem", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -235,7 +229,6 @@ test("styled-components -> next-yak -> styled-components: preserves concrete the
 		    "forward": {
 		      "changed": true,
 		      "code": "import { styled } from "next-yak";
-
 		export const Card = styled.div\`padding: 1rem; color: #2563eb;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -270,8 +263,6 @@ test("styled-components -> next-yak -> styled-components: preserves concrete the
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-
-
 		export const Card = styled.div({ padding: "1rem", color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -308,7 +299,6 @@ test("styled-components -> next-yak -> styled-components: preserves concrete the
 		    "forward": {
 		      "changed": true,
 		      "code": "import { styled } from "next-yak";
-
 		export const Card = styled.div\`padding: 1rem; color: #2563eb;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -343,8 +333,6 @@ test("styled-components -> next-yak -> styled-components: preserves concrete the
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-
-
 		export const Card = styled.div({ padding: "1rem", color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -395,7 +383,6 @@ test("styled-components -> next-yak -> styled-components: resolves token values 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "next-yak";
-
 		export const Card = styled.div\`padding: 1rem; color: #2563eb;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -430,8 +417,6 @@ test("styled-components -> next-yak -> styled-components: resolves token values 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
-
 		export const Card = styled.div({ padding: "1rem", color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],

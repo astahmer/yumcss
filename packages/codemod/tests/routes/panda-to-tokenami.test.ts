@@ -48,7 +48,6 @@ test("panda -> tokenami: migrates concrete panda syntax to tokenami", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-
 		export const card = css({ color: "red.300", "&:hover": { color: "blue.300" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -144,7 +143,6 @@ test("panda -> tokenami: loads concrete theme and project context variants", asy
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-
 		export const card = css({ color: "$colors.brand", "&:hover": { color: "$colors.brand" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -179,7 +177,6 @@ test("panda -> tokenami: loads concrete theme and project context variants", asy
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-
 		export const card = css({ color: "$colors.brand", "&:hover": { color: "$colors.brand" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -226,7 +223,6 @@ test("panda -> tokenami: resolves concrete token values with project context", a
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-
 		export const card = css({ color: "$colors.brand", "&:hover": { color: "blue.300" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -270,7 +266,6 @@ test("panda -> tokenami: preserves malformed concrete panda input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-
 		export const card = css({ color: "red.300", "&:hover": { color: "blue.300" } });
 		const unfinished = { /* unfinished panda */",
 		  "converted": 1,

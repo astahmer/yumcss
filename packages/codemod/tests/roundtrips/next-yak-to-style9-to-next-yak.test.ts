@@ -50,7 +50,6 @@ test("next-yak -> style9 -> next-yak: preserves an actionable concrete round tri
 		  "forward": {
 		    "changed": true,
 		    "code": "import style9 from "style9";
-
 		export const card = style9.create({ "padding": "1rem", "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -87,8 +86,6 @@ test("next-yak -> style9 -> next-yak: preserves an actionable concrete round tri
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-
-
 		export const card = css\`padding: 1rem; color: red;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -136,8 +133,7 @@ test("next-yak -> style9 -> next-yak: retains the documented secondary API witho
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import style9 from "style9";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(style9(style9.create({ style: { "padding": "1rem", "color": "red" } }).style), props.className)} />;",
@@ -175,8 +171,7 @@ test("next-yak -> style9 -> next-yak: retains the documented secondary API witho
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import style9 from "style9";
 		import { css } from "next-yak";
 		const cx = createCx();
@@ -243,7 +238,6 @@ test("next-yak -> style9 -> next-yak: preserves concrete theme and project conte
 		    "forward": {
 		      "changed": true,
 		      "code": "import style9 from "style9";
-
 		export const card = style9.create({ "padding": "1rem", "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -280,8 +274,6 @@ test("next-yak -> style9 -> next-yak: preserves concrete theme and project conte
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "next-yak";
-
-
 		export const card = css\`padding: 1rem; color: #2563eb;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -318,7 +310,6 @@ test("next-yak -> style9 -> next-yak: preserves concrete theme and project conte
 		    "forward": {
 		      "changed": true,
 		      "code": "import style9 from "style9";
-
 		export const card = style9.create({ "padding": "1rem", "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -355,8 +346,6 @@ test("next-yak -> style9 -> next-yak: preserves concrete theme and project conte
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "next-yak";
-
-
 		export const card = css\`padding: 1rem; color: #2563eb;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -407,7 +396,6 @@ test("next-yak -> style9 -> next-yak: resolves token values across both concrete
 		  "forward": {
 		    "changed": true,
 		    "code": "import style9 from "style9";
-
 		export const card = style9.create({ "padding": "1rem", "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -444,8 +432,6 @@ test("next-yak -> style9 -> next-yak: resolves token values across both concrete
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-
-
 		export const card = css\`padding: 1rem; color: #2563eb;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],

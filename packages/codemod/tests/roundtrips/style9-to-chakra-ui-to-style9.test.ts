@@ -50,7 +50,6 @@ test("style9 -> chakra-ui -> style9: preserves an actionable concrete round trip
 		  "forward": {
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
 		export const styles = { "card": defaultSystem.css({ color: "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -84,9 +83,7 @@ test("style9 -> chakra-ui -> style9: preserves an actionable concrete round trip
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-		import style9 from "style9";
-
+		    "code": "import style9 from "style9";
 		export const styles = { "card": style9.create({ "color": "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -137,7 +134,6 @@ test("style9 -> chakra-ui -> style9: retains the documented secondary API withou
 		  "forward": {
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
 		export const styles = { "card": defaultSystem.css({ color: "red" }), "muted": defaultSystem.css({ opacity: 0.5 }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -171,9 +167,7 @@ test("style9 -> chakra-ui -> style9: retains the documented secondary API withou
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-		import style9 from "style9";
-
+		    "code": "import style9 from "style9";
 		export const styles = { "card": style9.create({ "color": "red" }), "muted": style9.create({ "opacity": 0.5 }) };",
 		    "converted": 2,
 		    "generatedFiles": [],
@@ -260,7 +254,6 @@ test("style9 -> chakra-ui -> style9: preserves concrete theme and project contex
 		    "forward": {
 		      "changed": true,
 		      "code": "import { defaultSystem } from "@chakra-ui/react";
-
 		export const styles = { "card": defaultSystem.css({ color: "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -294,9 +287,7 @@ test("style9 -> chakra-ui -> style9: preserves concrete theme and project contex
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { defaultSystem } from "@chakra-ui/react";
-		import style9 from "style9";
-
+		      "code": "import style9 from "style9";
 		export const styles = { "card": style9.create({ "color": "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -335,7 +326,6 @@ test("style9 -> chakra-ui -> style9: preserves concrete theme and project contex
 		    "forward": {
 		      "changed": true,
 		      "code": "import { defaultSystem } from "@chakra-ui/react";
-
 		export const styles = { "card": defaultSystem.css({ color: "brand.500" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -369,9 +359,7 @@ test("style9 -> chakra-ui -> style9: preserves concrete theme and project contex
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { defaultSystem } from "@chakra-ui/react";
-		import style9 from "style9";
-
+		      "code": "import style9 from "style9";
 		export const styles = { "card": style9.create({ "color": "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -425,7 +413,6 @@ test("style9 -> chakra-ui -> style9: resolves token values across both concrete 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
 		export const styles = { "card": defaultSystem.css({ color: "brand.500" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -459,9 +446,7 @@ test("style9 -> chakra-ui -> style9: resolves token values across both concrete 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-		import style9 from "style9";
-
+		    "code": "import style9 from "style9";
 		export const styles = { "card": style9.create({ "color": "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],

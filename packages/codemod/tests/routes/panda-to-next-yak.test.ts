@@ -48,7 +48,6 @@ test("panda -> next-yak: migrates concrete panda syntax to next-yak", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "next-yak";
-
 		export const card = css\`color: red.300;&:hover { color: blue.300; }\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -242,7 +241,6 @@ test("panda -> next-yak: resolves concrete token values with project context", a
 		{
 		  "changed": true,
 		  "code": "import { css } from "next-yak";
-
 		export const card = css\`color: #2563eb;&:hover { color: blue.300; }\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -286,7 +284,6 @@ test("panda -> next-yak: preserves malformed concrete panda input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "next-yak";
-
 		export const card = css\`color: red.300;&:hover { color: blue.300; }\`;
 		const unfinished = { /* unfinished panda */",
 		  "converted": 1,

@@ -51,7 +51,6 @@ test("vanilla-extract -> css-modules -> vanilla-extract: preserves an actionable
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": 8, "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -90,7 +89,6 @@ test("vanilla-extract -> css-modules -> vanilla-extract: preserves an actionable
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
 		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": 8, "color": "red" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -154,8 +152,7 @@ test("vanilla-extract -> css-modules -> vanilla-extract: retains the documented 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		body { margin: 0; };",
+		    "code": "body { margin: 0; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -190,7 +187,6 @@ test("vanilla-extract -> css-modules -> vanilla-extract: retains the documented 
 		  "reverse": {
 		    "changed": false,
 		    "code": "// pandwind:migrate-skip (lowering-residual: capability)
-
 		body { margin: 0; };",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -257,7 +253,6 @@ test("vanilla-extract -> css-modules -> vanilla-extract: preserves concrete them
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": 8, "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -296,7 +291,6 @@ test("vanilla-extract -> css-modules -> vanilla-extract: preserves concrete them
 		      "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
 		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": 8, "color": "#2563eb" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -350,7 +344,6 @@ test("vanilla-extract -> css-modules -> vanilla-extract: preserves concrete them
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": 8, "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -389,7 +382,6 @@ test("vanilla-extract -> css-modules -> vanilla-extract: preserves concrete them
 		      "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
 		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": 8, "color": "#2563eb" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -457,7 +449,6 @@ test("vanilla-extract -> css-modules -> vanilla-extract: resolves token values a
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": 8, "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -496,7 +487,6 @@ test("vanilla-extract -> css-modules -> vanilla-extract: resolves token values a
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
 		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": 8, "color": "#2563eb" });",
 		    "converted": 0,
 		    "generatedFiles": [],

@@ -50,7 +50,6 @@ test("next-yak -> solid-styled -> next-yak: preserves an actionable concrete rou
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-
 		export const card = styled.div({ "padding": "1rem", "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -87,8 +86,6 @@ test("next-yak -> solid-styled -> next-yak: preserves an actionable concrete rou
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { styled } from "next-yak";
-
-
 		export const card = styled.div\`padding: 1rem; color: red;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -137,7 +134,6 @@ test("next-yak -> solid-styled -> next-yak: retains the documented secondary API
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-
 		export const Card = styled.div({ "padding": "1rem", "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -174,8 +170,6 @@ test("next-yak -> solid-styled -> next-yak: retains the documented secondary API
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { styled } from "next-yak";
-
-
 		export const Card = styled.div\`padding: 1rem; color: red;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -239,7 +233,6 @@ test("next-yak -> solid-styled -> next-yak: preserves concrete theme and project
 		    "forward": {
 		      "changed": true,
 		      "code": "import { styled } from "solid-styled-components";
-
 		export const card = styled.div({ "padding": "1rem", "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -276,8 +269,6 @@ test("next-yak -> solid-styled -> next-yak: preserves concrete theme and project
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { styled } from "next-yak";
-
-
 		export const card = styled.div\`padding: 1rem; color: #2563eb;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -314,7 +305,6 @@ test("next-yak -> solid-styled -> next-yak: preserves concrete theme and project
 		    "forward": {
 		      "changed": true,
 		      "code": "import { styled } from "solid-styled-components";
-
 		export const card = styled.div({ "padding": "1rem", "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -351,8 +341,6 @@ test("next-yak -> solid-styled -> next-yak: preserves concrete theme and project
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { styled } from "next-yak";
-
-
 		export const card = styled.div\`padding: 1rem; color: #2563eb;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -403,7 +391,6 @@ test("next-yak -> solid-styled -> next-yak: resolves token values across both co
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-
 		export const card = styled.div({ "padding": "1rem", "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -440,8 +427,6 @@ test("next-yak -> solid-styled -> next-yak: resolves token values across both co
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { styled } from "next-yak";
-
-
 		export const card = styled.div\`padding: 1rem; color: #2563eb;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],

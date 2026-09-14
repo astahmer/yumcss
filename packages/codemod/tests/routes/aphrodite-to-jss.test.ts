@@ -48,7 +48,6 @@ test("aphrodite -> jss: migrates concrete aphrodite syntax to jss", () => {
 		{
 		  "changed": true,
 		  "code": "import { createUseStyles } from "react-jss";
-
 		export const styles = createUseStyles({ card: { padding: 8, color: "red" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -149,7 +148,6 @@ test("aphrodite -> jss: loads concrete theme and project context variants", asyn
 		  "amber": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-
 		export const styles = createUseStyles({ card: { padding: 8, color: "#2563eb" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -186,7 +184,6 @@ test("aphrodite -> jss: loads concrete theme and project context variants", asyn
 		  "blue": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-
 		export const styles = createUseStyles({ card: { padding: 8, color: "#2563eb" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -235,7 +232,6 @@ test("aphrodite -> jss: resolves concrete token values with project context", as
 		{
 		  "changed": true,
 		  "code": "import { createUseStyles } from "react-jss";
-
 		export const styles = createUseStyles({ card: { padding: 8, color: "#2563eb" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -281,7 +277,6 @@ test("aphrodite -> jss: preserves malformed concrete aphrodite input", () => {
 		{
 		  "changed": true,
 		  "code": "import { createUseStyles } from "react-jss";
-
 		export const styles = createUseStyles({ card: { padding: 8, color: "red" } });
 		const unfinished = { /* unfinished aphrodite */",
 		  "converted": 1,

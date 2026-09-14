@@ -47,8 +47,7 @@ test("aphrodite -> tailwind: migrates concrete aphrodite syntax to tailwind", ()
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		export const styles = { "card": "[padding:8] [color:red]" };",
+		  "code": "export const styles = { "card": "[padding:8] [color:red]" };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -147,8 +146,7 @@ test("aphrodite -> tailwind: loads concrete theme and project context variants",
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "
-		export const styles = { "card": "[padding:8] [color:#2563eb]" };",
+		    "code": "export const styles = { "card": "[padding:8] [color:#2563eb]" };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -294,8 +292,7 @@ test("aphrodite -> tailwind: preserves malformed concrete aphrodite input", () =
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		export const styles = { "card": "[padding:8] [color:red]" };
+		  "code": "export const styles = { "card": "[padding:8] [color:red]" };
 		const unfinished = { /* unfinished aphrodite */",
 		  "converted": 1,
 		  "generatedFiles": [],

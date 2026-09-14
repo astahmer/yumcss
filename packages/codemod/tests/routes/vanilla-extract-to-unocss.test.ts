@@ -47,8 +47,7 @@ test("vanilla-extract -> unocss: migrates concrete vanilla-extract syntax to uno
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		export const card = "[padding:8] [color:red]";",
+		  "code": "export const card = "[padding:8] [color:red]";",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -147,8 +146,7 @@ test("vanilla-extract -> unocss: loads concrete theme and project context varian
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "
-		export const card = "[padding:8] [color:#2563eb]";",
+		    "code": "export const card = "[padding:8] [color:#2563eb]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -183,8 +181,7 @@ test("vanilla-extract -> unocss: loads concrete theme and project context varian
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "
-		export const card = "[padding:8] text-brand";",
+		    "code": "export const card = "[padding:8] text-brand";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -231,8 +228,7 @@ test("vanilla-extract -> unocss: resolves concrete token values with project con
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		export const card = "[padding:8] text-brand";",
+		  "code": "export const card = "[padding:8] text-brand";",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -276,8 +272,7 @@ test("vanilla-extract -> unocss: preserves malformed concrete vanilla-extract in
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		export const card = "[padding:8] [color:red]";
+		  "code": "export const card = "[padding:8] [color:red]";
 		const unfinished = { /* unfinished vanilla-extract */",
 		  "converted": 1,
 		  "generatedFiles": [],

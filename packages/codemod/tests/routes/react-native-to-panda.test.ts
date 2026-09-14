@@ -48,7 +48,6 @@ test("react-native -> panda: migrates concrete react-native syntax to panda", ()
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-
 		export const styles = { "card": css({ padding: 8, color: "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -92,7 +91,6 @@ test("react-native -> panda: carries a documented secondary react-native API exp
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-
 		export const styles = { "card": css({ padding: 8, backgroundColor: "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -145,7 +143,6 @@ test("react-native -> panda: loads concrete theme and project context variants",
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-
 		export const styles = { "card": css({ padding: 8, color: "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -180,7 +177,6 @@ test("react-native -> panda: loads concrete theme and project context variants",
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-
 		export const styles = { "card": css({ padding: 8, color: "brand.500" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -227,7 +223,6 @@ test("react-native -> panda: resolves concrete token values with project context
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-
 		export const styles = { "card": css({ padding: 8, color: "brand.500" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -271,7 +266,6 @@ test("react-native -> panda: preserves malformed concrete react-native input", (
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-
 		export const styles = { "card": css({ padding: 8, color: "red" }) };
 		const unfinished = { /* unfinished react-native */",
 		  "converted": 1,

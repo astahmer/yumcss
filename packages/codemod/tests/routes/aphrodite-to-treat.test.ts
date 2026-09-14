@@ -48,7 +48,6 @@ test("aphrodite -> treat: migrates concrete aphrodite syntax to treat", () => {
 		{
 		  "changed": true,
 		  "code": "import { style } from "@/styles.treat";
-
 		export const styles = { "card": style({ "padding": 8, "color": "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -149,7 +148,6 @@ test("aphrodite -> treat: loads concrete theme and project context variants", as
 		  "amber": {
 		    "changed": true,
 		    "code": "import { style } from "@/styles.treat";
-
 		export const styles = { "card": style({ "padding": 8, "color": "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -186,7 +184,6 @@ test("aphrodite -> treat: loads concrete theme and project context variants", as
 		  "blue": {
 		    "changed": true,
 		    "code": "import { style } from "@/styles.treat";
-
 		export const styles = { "card": style({ "padding": 8, "color": "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -235,7 +232,6 @@ test("aphrodite -> treat: resolves concrete token values with project context", 
 		{
 		  "changed": true,
 		  "code": "import { style } from "@/styles.treat";
-
 		export const styles = { "card": style({ "padding": 8, "color": "#2563eb" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -281,7 +277,6 @@ test("aphrodite -> treat: preserves malformed concrete aphrodite input", () => {
 		{
 		  "changed": true,
 		  "code": "import { style } from "@/styles.treat";
-
 		export const styles = { "card": style({ "padding": 8, "color": "red" }) };
 		const unfinished = { /* unfinished aphrodite */",
 		  "converted": 1,

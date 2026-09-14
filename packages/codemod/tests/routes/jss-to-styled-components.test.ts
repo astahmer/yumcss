@@ -48,7 +48,6 @@ test("jss -> styled-components: migrates concrete jss syntax to styled-component
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-
 		export const useStyles = { "card": styled.div({ color: "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -92,7 +91,6 @@ test("jss -> styled-components: carries a documented secondary jss API explicitl
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-
 		export const sheet = { "card": styled.div({ color: "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -145,7 +143,6 @@ test("jss -> styled-components: loads concrete theme and project context variant
 		  "amber": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
 		export const useStyles = { "card": styled.div({ color: "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -180,7 +177,6 @@ test("jss -> styled-components: loads concrete theme and project context variant
 		  "blue": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
 		export const useStyles = { "card": styled.div({ color: "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -227,7 +223,6 @@ test("jss -> styled-components: resolves concrete token values with project cont
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-
 		export const useStyles = { "card": styled.div({ color: "#2563eb" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -271,7 +266,6 @@ test("jss -> styled-components: preserves malformed concrete jss input", () => {
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-
 		export const useStyles = { "card": styled.div({ color: "red" }) };
 		const unfinished = { /* unfinished jss */",
 		  "converted": 1,

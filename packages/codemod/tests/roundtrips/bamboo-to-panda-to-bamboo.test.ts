@@ -49,9 +49,8 @@ test("bamboo -> panda -> bamboo: preserves an actionable concrete round trip", (
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
-
-		export const card = css({ color: "red" });",
+		    "code": "import { css as sourceCss } from "styled-system/css";
+		export const card = sourceCss({ color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -83,11 +82,9 @@ test("bamboo -> panda -> bamboo: preserves an actionable concrete round trip", (
 		    ],
 		  },
 		  "reverse": {
-		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
-
-
-		export const card = css({ color: "red" });",
+		    "changed": false,
+		    "code": "import { css as sourceCss } from "styled-system/css";
+		export const card = sourceCss({ color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -134,9 +131,8 @@ test("bamboo -> panda -> bamboo: retains the documented secondary API without si
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
-
-		export const card = css({ gap: "4", display: "flex" });",
+		    "code": "import { css as sourceCss } from "styled-system/css";
+		export const card = sourceCss({ gap: "4", display: "flex" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -168,11 +164,9 @@ test("bamboo -> panda -> bamboo: retains the documented secondary API without si
 		    ],
 		  },
 		  "reverse": {
-		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
-
-
-		export const card = css({ gap: "4", display: "flex" });",
+		    "changed": false,
+		    "code": "import { css as sourceCss } from "styled-system/css";
+		export const card = sourceCss({ gap: "4", display: "flex" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -234,9 +228,8 @@ test("bamboo -> panda -> bamboo: preserves concrete theme and project context va
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "styled-system/css";
-
-		export const card = css({ color: "#2563eb" });",
+		      "code": "import { css as sourceCss } from "styled-system/css";
+		export const card = sourceCss({ color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -268,11 +261,9 @@ test("bamboo -> panda -> bamboo: preserves concrete theme and project context va
 		      ],
 		    },
 		    "reverse": {
-		      "changed": true,
-		      "code": "import { css } from "styled-system/css";
-
-
-		export const card = css({ color: "#2563eb" });",
+		      "changed": false,
+		      "code": "import { css as sourceCss } from "styled-system/css";
+		export const card = sourceCss({ color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -307,9 +298,8 @@ test("bamboo -> panda -> bamboo: preserves concrete theme and project context va
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "styled-system/css";
-
-		export const card = css({ color: "brand.500" });",
+		      "code": "import { css as sourceCss } from "styled-system/css";
+		export const card = sourceCss({ color: "brand.500" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -342,10 +332,9 @@ test("bamboo -> panda -> bamboo: preserves concrete theme and project context va
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "styled-system/css";
-
+		      "code": "import { css as sourceCss } from "styled-system/css";
 		export const card = // pandwind:migrate-skip (route: panda -> bamboo | lowering-residual: validation)
-		css({ color: "brand.500" });",
+		sourceCss({ color: "brand.500" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -402,9 +391,8 @@ test("bamboo -> panda -> bamboo: resolves token values across both concrete legs
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
-
-		export const card = css({ color: "brand.500" });",
+		    "code": "import { css as sourceCss } from "styled-system/css";
+		export const card = sourceCss({ color: "brand.500" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -437,10 +425,9 @@ test("bamboo -> panda -> bamboo: resolves token values across both concrete legs
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
-
+		    "code": "import { css as sourceCss } from "styled-system/css";
 		export const card = // pandwind:migrate-skip (route: panda -> bamboo | lowering-residual: validation)
-		css({ color: "brand.500" });",
+		sourceCss({ color: "brand.500" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

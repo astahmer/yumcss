@@ -51,7 +51,6 @@ test("vanilla-extract -> pandwind -> vanilla-extract: preserves an actionable co
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ padding: 8, color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -139,7 +138,6 @@ test("vanilla-extract -> pandwind -> vanilla-extract: retains the documented sec
 		    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
 		import { pandwindPreset } from "pandwind/preset";
 		const css = createRuntimeCss(pandwindPreset);
-
 		(css.sheet.registerSemanticRules([{ kind: "global", selector: "body", conditions: [], declarations: [{ property: "margin", value: 0 }], children: [] }]), null);",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -174,7 +172,6 @@ test("vanilla-extract -> pandwind -> vanilla-extract: retains the documented sec
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { globalStyle } from "@vanilla-extract/css";
-
 		globalStyle("body", { margin: 0 });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -241,7 +238,6 @@ test("vanilla-extract -> pandwind -> vanilla-extract: preserves concrete theme a
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ padding: 8, color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -316,7 +312,6 @@ test("vanilla-extract -> pandwind -> vanilla-extract: preserves concrete theme a
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ padding: 8, color: "brand" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -413,7 +408,6 @@ test("vanilla-extract -> pandwind -> vanilla-extract: resolves token values acro
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ padding: 8, color: "brand" });",
 		    "converted": 1,
 		    "generatedFiles": [],

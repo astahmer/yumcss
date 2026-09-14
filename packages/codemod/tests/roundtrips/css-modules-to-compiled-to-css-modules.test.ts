@@ -88,7 +88,6 @@ test("css-modules -> compiled -> css-modules: preserves an actionable concrete r
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const styles = { "card": css.class({ "padding": "1rem", "color": "red" }) };
 		export default styles;",
 		    "converted": 1,
@@ -199,7 +198,6 @@ test("css-modules -> compiled -> css-modules: retains the documented secondary A
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const styles = { "card": css.class({ "color": "red" }), "primary": css.class({ "color": "red", "fontWeight": "600" }) };
 		export default styles;",
 		    "converted": 2,
@@ -325,7 +323,6 @@ test("css-modules -> compiled -> css-modules: preserves concrete theme and proje
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const styles = { "card": css.class({ "padding": "1rem", "color": "#2563eb" }) };
 		export default styles;",
 		      "converted": 1,
@@ -403,7 +400,6 @@ test("css-modules -> compiled -> css-modules: preserves concrete theme and proje
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const styles = { "card": css.class({ "padding": "1rem", "color": "#2563eb" }) };
 		export default styles;",
 		      "converted": 1,
@@ -495,7 +491,6 @@ test("css-modules -> compiled -> css-modules: resolves token values across both 
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const styles = { "card": css.class({ "padding": "1rem", "color": "#2563eb" }) };
 		export default styles;",
 		    "converted": 1,

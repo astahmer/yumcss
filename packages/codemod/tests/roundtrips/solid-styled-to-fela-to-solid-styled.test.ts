@@ -49,8 +49,7 @@ test("solid-styled -> fela -> solid-styled: preserves an actionable concrete rou
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} class={cx(renderer.renderRule({ "padding": "1rem", "color": "red" }), props.class)} />;",
 		    "converted": 1,
@@ -87,8 +86,7 @@ test("solid-styled -> fela -> solid-styled: preserves an actionable concrete rou
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { styled } from "solid-styled-components";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} class={cx(styled.div({ "padding": "1rem", "color": "red" }), props.class)} />;",
@@ -140,8 +138,7 @@ test("solid-styled -> fela -> solid-styled: retains the documented secondary API
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} class={cx(renderer.renderRule({ "padding": "1rem", "color": "red" }), props.class)} />;",
 		    "converted": 1,
@@ -178,8 +175,7 @@ test("solid-styled -> fela -> solid-styled: retains the documented secondary API
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { styled } from "solid-styled-components";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} class={cx(styled.div({ "padding": "1rem", "color": "red" }), props.class)} />;",
@@ -246,8 +242,7 @@ test("solid-styled -> fela -> solid-styled: preserves concrete theme and project
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		import { createCx } from "pandwind/cx";
+		      "code": "import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} class={cx(renderer.renderRule({ "padding": "1rem", "color": "#2563eb" }), props.class)} />;",
 		      "converted": 1,
@@ -284,8 +279,7 @@ test("solid-styled -> fela -> solid-styled: preserves concrete theme and project
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		import { createCx } from "pandwind/cx";
+		      "code": "import { createCx } from "pandwind/cx";
 		import { styled } from "solid-styled-components";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} class={cx(styled.div({ "padding": "1rem", "color": "#2563eb" }), props.class)} />;",
@@ -325,8 +319,7 @@ test("solid-styled -> fela -> solid-styled: preserves concrete theme and project
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		import { createCx } from "pandwind/cx";
+		      "code": "import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} class={cx(renderer.renderRule({ "padding": "1rem", "color": "#2563eb" }), props.class)} />;",
 		      "converted": 1,
@@ -363,8 +356,7 @@ test("solid-styled -> fela -> solid-styled: preserves concrete theme and project
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		import { createCx } from "pandwind/cx";
+		      "code": "import { createCx } from "pandwind/cx";
 		import { styled } from "solid-styled-components";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} class={cx(styled.div({ "padding": "1rem", "color": "#2563eb" }), props.class)} />;",
@@ -418,8 +410,7 @@ test("solid-styled -> fela -> solid-styled: resolves token values across both co
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} class={cx(renderer.renderRule({ "padding": "1rem", "color": "#2563eb" }), props.class)} />;",
 		    "converted": 1,
@@ -456,8 +447,7 @@ test("solid-styled -> fela -> solid-styled: resolves token values across both co
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { styled } from "solid-styled-components";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} class={cx(styled.div({ "padding": "1rem", "color": "#2563eb" }), props.class)} />;",

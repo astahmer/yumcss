@@ -148,7 +148,7 @@ test("chakra-ui -> jss: loads concrete theme and project context variants", asyn
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
 		export const App = () => // pandwind:migrate-skip (route: chakra-ui -> jss | lowering-residual: validation)
-		<Box p="4" className={jss.createStyleSheet({ style: { backgroundColor: "brand.500" } }).attach().classes.style}/>;",
+		<Box className={jss.createStyleSheet({ style: { backgroundColor: "brand.500", p: "var(--chakra-spacing-4)" } }).attach().classes.style}/>;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -193,7 +193,7 @@ test("chakra-ui -> jss: loads concrete theme and project context variants", asyn
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
 		export const App = () => // pandwind:migrate-skip (route: chakra-ui -> jss | lowering-residual: validation)
-		<Box p="4" className={jss.createStyleSheet({ style: { backgroundColor: "brand.500" } }).attach().classes.style}/>;",
+		<Box className={jss.createStyleSheet({ style: { backgroundColor: "brand.500", p: "var(--chakra-spacing-4)" } }).attach().classes.style}/>;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -250,7 +250,7 @@ test("chakra-ui -> jss: resolves concrete token values with project context", as
 		  "changed": true,
 		  "code": "import { Box } from "@chakra-ui/react";
 		import jss from "jss";
-		export const App = () => <Box p="4" className={jss.createStyleSheet({ style: { backgroundColor: "#2563eb" } }).attach().classes.style}/>;",
+		export const App = () => <Box className={jss.createStyleSheet({ style: { backgroundColor: "#2563eb", p: "var(--chakra-spacing-4)" } }).attach().classes.style}/>;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [

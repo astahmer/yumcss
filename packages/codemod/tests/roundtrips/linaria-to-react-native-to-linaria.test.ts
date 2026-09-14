@@ -50,7 +50,6 @@ test("linaria -> react-native -> linaria: preserves an actionable concrete round
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-
 		export const card = StyleSheet.create({ "padding": 16, "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -88,8 +87,6 @@ test("linaria -> react-native -> linaria: preserves an actionable concrete round
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@linaria/core";
-
-
 		export const card = css\`padding: 16; color: red;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -220,7 +217,6 @@ test("linaria -> react-native -> linaria: preserves concrete theme and project c
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "react-native";
-
 		export const card = StyleSheet.create({ "padding": 16, "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -258,8 +254,6 @@ test("linaria -> react-native -> linaria: preserves concrete theme and project c
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@linaria/core";
-
-
 		export const card = css\`padding: 16; color: #2563eb;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -298,7 +292,6 @@ test("linaria -> react-native -> linaria: preserves concrete theme and project c
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "react-native";
-
 		export const card = StyleSheet.create({ "padding": 16, "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -336,8 +329,6 @@ test("linaria -> react-native -> linaria: preserves concrete theme and project c
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@linaria/core";
-
-
 		export const card = css\`padding: 16; color: #2563eb;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -390,7 +381,6 @@ test("linaria -> react-native -> linaria: resolves token values across both conc
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-
 		export const card = StyleSheet.create({ "padding": 16, "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -428,8 +418,6 @@ test("linaria -> react-native -> linaria: resolves token values across both conc
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@linaria/core";
-
-
 		export const card = css\`padding: 16; color: #2563eb;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],

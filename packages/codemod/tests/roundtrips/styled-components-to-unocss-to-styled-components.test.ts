@@ -49,8 +49,7 @@ test("styled-components -> unocss -> styled-components: preserves an actionable 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx("[padding:1rem] [color:red]", props.className)} />;",
 		    "converted": 1,
@@ -88,7 +87,6 @@ test("styled-components -> unocss -> styled-components: preserves an actionable 
 		  "reverse": {
 		    "changed": true,
 		    "code": "// pandwind:migrate-skip (route: unocss -> styled-components | parse-residual: dynamic)
-
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx("[padding:1rem] [color:red]", props.className)} />;",
@@ -127,8 +125,7 @@ test("styled-components -> unocss -> styled-components: retains the documented s
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx("[padding:1rem] [color:red]", props.className)} />;",
 		    "converted": 1,
@@ -166,7 +163,6 @@ test("styled-components -> unocss -> styled-components: retains the documented s
 		  "reverse": {
 		    "changed": true,
 		    "code": "// pandwind:migrate-skip (route: unocss -> styled-components | parse-residual: dynamic)
-
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx("[padding:1rem] [color:red]", props.className)} />;",
@@ -220,8 +216,7 @@ test("styled-components -> unocss -> styled-components: preserves concrete theme
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		import { createCx } from "pandwind/cx";
+		      "code": "import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx("[padding:1rem] [color:#2563eb]", props.className)} />;",
 		      "converted": 1,
@@ -259,7 +254,6 @@ test("styled-components -> unocss -> styled-components: preserves concrete theme
 		    "reverse": {
 		      "changed": true,
 		      "code": "// pandwind:migrate-skip (route: unocss -> styled-components | parse-residual: dynamic)
-
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx("[padding:1rem] [color:#2563eb]", props.className)} />;",
@@ -286,8 +280,7 @@ test("styled-components -> unocss -> styled-components: preserves concrete theme
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		import { createCx } from "pandwind/cx";
+		      "code": "import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx("[padding:1rem] text-brand", props.className)} />;",
 		      "converted": 1,
@@ -325,7 +318,6 @@ test("styled-components -> unocss -> styled-components: preserves concrete theme
 		    "reverse": {
 		      "changed": true,
 		      "code": "// pandwind:migrate-skip (route: unocss -> styled-components | parse-residual: dynamic)
-
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx("[padding:1rem] text-brand", props.className)} />;",
@@ -366,8 +358,7 @@ test("styled-components -> unocss -> styled-components: resolves token values ac
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx("[padding:1rem] text-brand", props.className)} />;",
 		    "converted": 1,
@@ -405,7 +396,6 @@ test("styled-components -> unocss -> styled-components: resolves token values ac
 		  "reverse": {
 		    "changed": true,
 		    "code": "// pandwind:migrate-skip (route: unocss -> styled-components | parse-residual: dynamic)
-
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx("[padding:1rem] text-brand", props.className)} />;",

@@ -50,7 +50,6 @@ test("bamboo -> vue-styled -> bamboo: preserves an actionable concrete round tri
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-
 		export const card = styled.div({ "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -88,8 +87,6 @@ test("bamboo -> vue-styled -> bamboo: preserves an actionable concrete round tri
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
 		import { defineComponent, h } from "vue";
-
-
 		export const card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css({ color: "red" }), attrs.class] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -138,7 +135,6 @@ test("bamboo -> vue-styled -> bamboo: retains the documented secondary API witho
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-
 		export const card = styled.div({ "gap": "4", "display": "flex" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -176,8 +172,6 @@ test("bamboo -> vue-styled -> bamboo: retains the documented secondary API witho
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
 		import { defineComponent, h } from "vue";
-
-
 		export const card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css({ gap: "4", display: "flex" }), attrs.class] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -241,7 +235,6 @@ test("bamboo -> vue-styled -> bamboo: preserves concrete theme and project conte
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-
 		export const card = styled.div({ "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -279,8 +272,6 @@ test("bamboo -> vue-styled -> bamboo: preserves concrete theme and project conte
 		      "changed": true,
 		      "code": "import { css } from "styled-system/css";
 		import { defineComponent, h } from "vue";
-
-
 		export const card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css({ color: "#2563eb" }), attrs.class] }, slots.default?.()));",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -317,7 +308,6 @@ test("bamboo -> vue-styled -> bamboo: preserves concrete theme and project conte
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-
 		export const card = styled.div({ "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -355,8 +345,6 @@ test("bamboo -> vue-styled -> bamboo: preserves concrete theme and project conte
 		      "changed": true,
 		      "code": "import { css } from "styled-system/css";
 		import { defineComponent, h } from "vue";
-
-
 		export const card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css({ color: "#2563eb" }), attrs.class] }, slots.default?.()));",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -407,7 +395,6 @@ test("bamboo -> vue-styled -> bamboo: resolves token values across both concrete
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-
 		export const card = styled.div({ "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -445,8 +432,6 @@ test("bamboo -> vue-styled -> bamboo: resolves token values across both concrete
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
 		import { defineComponent, h } from "vue";
-
-
 		export const card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css({ color: "#2563eb" }), attrs.class] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],

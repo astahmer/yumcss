@@ -47,8 +47,7 @@ test("styled-components -> tokenami: migrates concrete styled-components syntax 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		import { createCx } from "pandwind/cx";
+		  "code": "import { createCx } from "pandwind/cx";
 		import { css } from "@tokenami/css";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(css({ padding: "1rem", color: "red" }), props.className)} />;",
@@ -93,8 +92,7 @@ test("styled-components -> tokenami: carries a documented secondary styled-compo
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		import { createCx } from "pandwind/cx";
+		  "code": "import { createCx } from "pandwind/cx";
 		import { css } from "@tokenami/css";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(css({ padding: "1rem", color: "red" }), props.className)} />;",
@@ -148,8 +146,7 @@ test("styled-components -> tokenami: loads concrete theme and project context va
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { css } from "@tokenami/css";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(css({ padding: "1rem", color: "#2563eb" }), props.className)} />;",
@@ -185,8 +182,7 @@ test("styled-components -> tokenami: loads concrete theme and project context va
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { css } from "@tokenami/css";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(css({ padding: "1rem", color: "$colors.brand" }), props.className)} />;",
@@ -234,8 +230,7 @@ test("styled-components -> tokenami: resolves concrete token values with project
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		import { createCx } from "pandwind/cx";
+		  "code": "import { createCx } from "pandwind/cx";
 		import { css } from "@tokenami/css";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(css({ padding: "1rem", color: "$colors.brand" }), props.className)} />;",

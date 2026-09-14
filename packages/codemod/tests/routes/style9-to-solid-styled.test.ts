@@ -48,7 +48,6 @@ test("style9 -> solid-styled: migrates concrete style9 syntax to solid-styled", 
 		{
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
-
 		export const styles = { "card": styled.div({ "color": "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -94,7 +93,6 @@ test("style9 -> solid-styled: carries a documented secondary style9 API explicit
 		{
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
-
 		export const styles = { "card": styled.div({ "color": "red" }), "muted": styled.div({ "opacity": 0.5 }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -149,7 +147,6 @@ test("style9 -> solid-styled: loads concrete theme and project context variants"
 		  "amber": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-
 		export const styles = { "card": styled.div({ "color": "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -186,7 +183,6 @@ test("style9 -> solid-styled: loads concrete theme and project context variants"
 		  "blue": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-
 		export const styles = { "card": styled.div({ "color": "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -235,7 +231,6 @@ test("style9 -> solid-styled: resolves concrete token values with project contex
 		{
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
-
 		export const styles = { "card": styled.div({ "color": "#2563eb" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -281,7 +276,6 @@ test("style9 -> solid-styled: preserves malformed concrete style9 input", () => 
 		{
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
-
 		export const styles = { "card": styled.div({ "color": "red" }) };
 		const unfinished = { /* unfinished style9 */",
 		  "converted": 1,

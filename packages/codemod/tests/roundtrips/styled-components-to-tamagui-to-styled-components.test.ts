@@ -49,8 +49,7 @@ test("styled-components -> tamagui -> styled-components: preserves an actionable
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { View, styled } from "@tamagui/core";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(styled(View, { padding: "1rem", color: "red" }), props.className)} />;",
@@ -85,8 +84,7 @@ test("styled-components -> tamagui -> styled-components: preserves an actionable
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { View } from "@tamagui/core";
 		import styled from "styled-components";
 		const cx = createCx();
@@ -137,8 +135,7 @@ test("styled-components -> tamagui -> styled-components: retains the documented 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { View, styled } from "@tamagui/core";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(styled(View, { padding: "1rem", color: "red" }), props.className)} />;",
@@ -173,8 +170,7 @@ test("styled-components -> tamagui -> styled-components: retains the documented 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { View } from "@tamagui/core";
 		import styled from "styled-components";
 		const cx = createCx();
@@ -240,8 +236,7 @@ test("styled-components -> tamagui -> styled-components: preserves concrete them
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		import { createCx } from "pandwind/cx";
+		      "code": "import { createCx } from "pandwind/cx";
 		import { View, styled } from "@tamagui/core";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(styled(View, { padding: "1rem", color: "#2563eb" }), props.className)} />;",
@@ -276,8 +271,7 @@ test("styled-components -> tamagui -> styled-components: preserves concrete them
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		import { createCx } from "pandwind/cx";
+		      "code": "import { createCx } from "pandwind/cx";
 		import { View } from "@tamagui/core";
 		import styled from "styled-components";
 		const cx = createCx();
@@ -316,8 +310,7 @@ test("styled-components -> tamagui -> styled-components: preserves concrete them
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		import { createCx } from "pandwind/cx";
+		      "code": "import { createCx } from "pandwind/cx";
 		import { View, styled } from "@tamagui/core";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(styled(View, { padding: "1rem", color: "#2563eb" }), props.className)} />;",
@@ -352,8 +345,7 @@ test("styled-components -> tamagui -> styled-components: preserves concrete them
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		import { createCx } from "pandwind/cx";
+		      "code": "import { createCx } from "pandwind/cx";
 		import { View } from "@tamagui/core";
 		import styled from "styled-components";
 		const cx = createCx();
@@ -406,8 +398,7 @@ test("styled-components -> tamagui -> styled-components: resolves token values a
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { View, styled } from "@tamagui/core";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(styled(View, { padding: "1rem", color: "#2563eb" }), props.className)} />;",
@@ -442,8 +433,7 @@ test("styled-components -> tamagui -> styled-components: resolves token values a
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { View } from "@tamagui/core";
 		import styled from "styled-components";
 		const cx = createCx();

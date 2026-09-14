@@ -178,7 +178,6 @@ test("mui -> react-native -> mui: retains the documented secondary API without s
 		    "code": "import { styled } from "@mui/system";
 		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const Card = css.class({ "padding": 8, "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],

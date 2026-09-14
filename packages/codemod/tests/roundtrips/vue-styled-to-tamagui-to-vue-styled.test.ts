@@ -51,7 +51,6 @@ test("vue-styled -> tamagui -> vue-styled: preserves an actionable concrete roun
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
 		import { defineComponent, h } from "vue";
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [styled(View, { padding: "1rem", color: "red" }), attrs.class] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -87,7 +86,6 @@ test("vue-styled -> tamagui -> vue-styled: preserves an actionable concrete roun
 		    "code": "import { View } from "@tamagui/core";
 		import { defineComponent, h } from "vue";
 		import styled from "vue-styled-components";
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [styled.div({ "padding": "1rem", "color": "red" }), attrs.class] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -139,7 +137,6 @@ test("vue-styled -> tamagui -> vue-styled: retains the documented secondary API 
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
 		import { defineComponent, h } from "vue";
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [styled(View, { padding: "1rem", color: "red" }), attrs.class] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -175,7 +172,6 @@ test("vue-styled -> tamagui -> vue-styled: retains the documented secondary API 
 		    "code": "import { View } from "@tamagui/core";
 		import { defineComponent, h } from "vue";
 		import styled from "vue-styled-components";
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [styled.div({ "padding": "1rem", "color": "red" }), attrs.class] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -242,7 +238,6 @@ test("vue-styled -> tamagui -> vue-styled: preserves concrete theme and project 
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
 		import { defineComponent, h } from "vue";
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [styled(View, { padding: "1rem", color: "#2563eb" }), attrs.class] }, slots.default?.()));",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -278,7 +273,6 @@ test("vue-styled -> tamagui -> vue-styled: preserves concrete theme and project 
 		      "code": "import { View } from "@tamagui/core";
 		import { defineComponent, h } from "vue";
 		import styled from "vue-styled-components";
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [styled.div({ "padding": "1rem", "color": "#2563eb" }), attrs.class] }, slots.default?.()));",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -318,7 +312,6 @@ test("vue-styled -> tamagui -> vue-styled: preserves concrete theme and project 
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
 		import { defineComponent, h } from "vue";
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [styled(View, { padding: "1rem", color: "#2563eb" }), attrs.class] }, slots.default?.()));",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -354,7 +347,6 @@ test("vue-styled -> tamagui -> vue-styled: preserves concrete theme and project 
 		      "code": "import { View } from "@tamagui/core";
 		import { defineComponent, h } from "vue";
 		import styled from "vue-styled-components";
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [styled.div({ "padding": "1rem", "color": "#2563eb" }), attrs.class] }, slots.default?.()));",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -408,7 +400,6 @@ test("vue-styled -> tamagui -> vue-styled: resolves token values across both con
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
 		import { defineComponent, h } from "vue";
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [styled(View, { padding: "1rem", color: "#2563eb" }), attrs.class] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -444,7 +435,6 @@ test("vue-styled -> tamagui -> vue-styled: resolves token values across both con
 		    "code": "import { View } from "@tamagui/core";
 		import { defineComponent, h } from "vue";
 		import styled from "vue-styled-components";
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [styled.div({ "padding": "1rem", "color": "#2563eb" }), attrs.class] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],

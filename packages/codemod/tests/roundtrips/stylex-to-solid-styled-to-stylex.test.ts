@@ -50,7 +50,6 @@ test("stylex -> solid-styled -> stylex: preserves an actionable concrete round t
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-
 		export const styles = { "card": styled.div({ "padding": "8px", "color": "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -87,7 +86,6 @@ test("stylex -> solid-styled -> stylex: preserves an actionable concrete round t
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-
 		export const styles = { "card": // pandwind:migrate-skip (route: solid-styled -> stylex | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
 		styled.div({ "padding": "8px", "color": "red" }) };",
 		    "converted": 0,
@@ -139,7 +137,6 @@ test("stylex -> solid-styled -> stylex: retains the documented secondary API wit
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-
 		export const styles = { "card": styled.div({ "color": "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -176,7 +173,6 @@ test("stylex -> solid-styled -> stylex: retains the documented secondary API wit
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-
 		export const styles = { "card": // pandwind:migrate-skip (route: solid-styled -> stylex | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
 		styled.div({ "color": "red" }) };",
 		    "converted": 0,
@@ -243,7 +239,6 @@ test("stylex -> solid-styled -> stylex: preserves concrete theme and project con
 		    "forward": {
 		      "changed": true,
 		      "code": "import { styled } from "solid-styled-components";
-
 		export const styles = { "card": styled.div({ "padding": "8px", "color": "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -280,7 +275,6 @@ test("stylex -> solid-styled -> stylex: preserves concrete theme and project con
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { styled } from "solid-styled-components";
-
 		export const styles = { "card": // pandwind:migrate-skip (route: solid-styled -> stylex | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
 		styled.div({ "padding": "8px", "color": "#2563eb" }) };",
 		      "converted": 0,
@@ -320,7 +314,6 @@ test("stylex -> solid-styled -> stylex: preserves concrete theme and project con
 		    "forward": {
 		      "changed": true,
 		      "code": "import { styled } from "solid-styled-components";
-
 		export const styles = { "card": styled.div({ "padding": "8px", "color": "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -357,7 +350,6 @@ test("stylex -> solid-styled -> stylex: preserves concrete theme and project con
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { styled } from "solid-styled-components";
-
 		export const styles = { "card": // pandwind:migrate-skip (route: solid-styled -> stylex | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
 		styled.div({ "padding": "8px", "color": "#2563eb" }) };",
 		      "converted": 0,
@@ -411,7 +403,6 @@ test("stylex -> solid-styled -> stylex: resolves token values across both concre
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-
 		export const styles = { "card": styled.div({ "padding": "8px", "color": "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -448,7 +439,6 @@ test("stylex -> solid-styled -> stylex: resolves token values across both concre
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-
 		export const styles = { "card": // pandwind:migrate-skip (route: solid-styled -> stylex | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
 		styled.div({ "padding": "8px", "color": "#2563eb" }) };",
 		    "converted": 0,

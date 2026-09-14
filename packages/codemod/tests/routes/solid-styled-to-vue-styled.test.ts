@@ -50,7 +50,6 @@ test("solid-styled -> vue-styled: migrates concrete solid-styled syntax to vue-s
 		  "code": "<script setup>
 		import styled from "vue-styled-components";
 
-
 		export const Card = styled.div({ "padding": "1rem", "color": "red" });
 		</script>
 		",
@@ -99,7 +98,6 @@ test("solid-styled -> vue-styled: carries a documented secondary solid-styled AP
 		  "changed": true,
 		  "code": "<script setup>
 		import styled from "vue-styled-components";
-
 
 		export const Card = styled.div({ "padding": "1rem", "color": "red" });
 		</script>
@@ -159,7 +157,6 @@ test("solid-styled -> vue-styled: loads concrete theme and project context varia
 		    "code": "<script setup>
 		import styled from "vue-styled-components";
 
-
 		export const Card = styled.div({ "padding": "1rem", "color": "#2563eb" });
 		</script>
 		",
@@ -199,7 +196,6 @@ test("solid-styled -> vue-styled: loads concrete theme and project context varia
 		    "changed": true,
 		    "code": "<script setup>
 		import styled from "vue-styled-components";
-
 
 		export const Card = styled.div({ "padding": "1rem", "color": "#2563eb" });
 		</script>
@@ -253,7 +249,6 @@ test("solid-styled -> vue-styled: resolves concrete token values with project co
 		  "code": "<script setup>
 		import styled from "vue-styled-components";
 
-
 		export const Card = styled.div({ "padding": "1rem", "color": "#2563eb" });
 		</script>
 		",
@@ -302,7 +297,6 @@ test("solid-styled -> vue-styled: preserves malformed concrete solid-styled inpu
 		  "changed": true,
 		  "code": "<script setup>
 		import styled from "vue-styled-components";
-
 
 		export const Card = styled.div({ "padding": "1rem", "color": "red" });
 		const unfinished = { /* unfinished solid-styled */

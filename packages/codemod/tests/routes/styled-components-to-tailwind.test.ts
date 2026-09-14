@@ -47,8 +47,7 @@ test("styled-components -> tailwind: migrates concrete styled-components syntax 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		import { createCx } from "pandwind/cx";
+		  "code": "import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx("[padding:1rem] [color:red]", props.className)} />;",
 		  "converted": 1,
@@ -94,8 +93,7 @@ test("styled-components -> tailwind: carries a documented secondary styled-compo
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		import { createCx } from "pandwind/cx";
+		  "code": "import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx("[padding:1rem] [color:red]", props.className)} />;",
 		  "converted": 1,
@@ -150,8 +148,7 @@ test("styled-components -> tailwind: loads concrete theme and project context va
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx("[padding:1rem] [color:#2563eb]", props.className)} />;",
 		    "converted": 1,
@@ -188,8 +185,7 @@ test("styled-components -> tailwind: loads concrete theme and project context va
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx("[padding:1rem] text-brand", props.className)} />;",
 		    "converted": 1,
@@ -238,8 +234,7 @@ test("styled-components -> tailwind: resolves concrete token values with project
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		import { createCx } from "pandwind/cx";
+		  "code": "import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx("[padding:1rem] text-brand", props.className)} />;",
 		  "converted": 1,

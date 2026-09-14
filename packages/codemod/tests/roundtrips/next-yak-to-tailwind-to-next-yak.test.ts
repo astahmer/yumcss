@@ -49,8 +49,7 @@ test("next-yak -> tailwind -> next-yak: preserves an actionable concrete round t
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const card = "[padding:1rem] [color:red]";",
+		    "code": "export const card = "[padding:1rem] [color:red]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,7 +85,6 @@ test("next-yak -> tailwind -> next-yak: preserves an actionable concrete round t
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-
 		export const card = css\`padding: 1rem; color: red;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -134,8 +132,7 @@ test("next-yak -> tailwind -> next-yak: retains the documented secondary API wit
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx("[padding:1rem] [color:red]", props.className)} />;",
 		    "converted": 1,
@@ -173,7 +170,6 @@ test("next-yak -> tailwind -> next-yak: retains the documented secondary API wit
 		  "reverse": {
 		    "changed": true,
 		    "code": "// pandwind:migrate-skip (route: tailwind -> next-yak | parse-residual: dynamic)
-
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx("[padding:1rem] [color:red]", props.className)} />;",
@@ -227,8 +223,7 @@ test("next-yak -> tailwind -> next-yak: preserves concrete theme and project con
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		export const card = "[padding:1rem] [color:#2563eb]";",
+		      "code": "export const card = "[padding:1rem] [color:#2563eb]";",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -263,8 +258,7 @@ test("next-yak -> tailwind -> next-yak: preserves concrete theme and project con
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		export const card = // pandwind:migrate-skip (route: tailwind -> next-yak | parse-residual: unknown-utility | available: named-map, residual)
+		      "code": "export const card = // pandwind:migrate-skip (route: tailwind -> next-yak | parse-residual: unknown-utility | available: named-map, residual)
 		"[padding:1rem] [color:#2563eb]";",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -304,8 +298,7 @@ test("next-yak -> tailwind -> next-yak: preserves concrete theme and project con
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		export const card = "[padding:1rem] text-brand";",
+		      "code": "export const card = "[padding:1rem] text-brand";",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -340,8 +333,7 @@ test("next-yak -> tailwind -> next-yak: preserves concrete theme and project con
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		export const card = // pandwind:migrate-skip (route: tailwind -> next-yak | parse-residual: unknown-utility | available: named-map, residual)
+		      "code": "export const card = // pandwind:migrate-skip (route: tailwind -> next-yak | parse-residual: unknown-utility | available: named-map, residual)
 		"[padding:1rem] text-brand";",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -390,8 +382,7 @@ test("next-yak -> tailwind -> next-yak: resolves token values across both concre
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const card = "[padding:1rem] text-brand";",
+		    "code": "export const card = "[padding:1rem] text-brand";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -426,8 +417,7 @@ test("next-yak -> tailwind -> next-yak: resolves token values across both concre
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		export const card = // pandwind:migrate-skip (route: tailwind -> next-yak | parse-residual: unknown-utility | available: named-map, residual)
+		    "code": "export const card = // pandwind:migrate-skip (route: tailwind -> next-yak | parse-residual: unknown-utility | available: named-map, residual)
 		"[padding:1rem] text-brand";",
 		    "converted": 0,
 		    "generatedFiles": [],

@@ -47,8 +47,7 @@ test("vanilla-extract -> fela: migrates concrete vanilla-extract syntax to fela"
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		export const card = renderer.renderRule({ "padding": 8, "color": "red" });",
+		  "code": "export const card = renderer.renderRule({ "padding": 8, "color": "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -147,8 +146,7 @@ test("vanilla-extract -> fela: loads concrete theme and project context variants
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "
-		export const card = renderer.renderRule({ "padding": 8, "color": "#2563eb" });",
+		    "code": "export const card = renderer.renderRule({ "padding": 8, "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -183,8 +181,7 @@ test("vanilla-extract -> fela: loads concrete theme and project context variants
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "
-		export const card = renderer.renderRule({ "padding": 8, "color": "#2563eb" });",
+		    "code": "export const card = renderer.renderRule({ "padding": 8, "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -231,8 +228,7 @@ test("vanilla-extract -> fela: resolves concrete token values with project conte
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		export const card = renderer.renderRule({ "padding": 8, "color": "#2563eb" });",
+		  "code": "export const card = renderer.renderRule({ "padding": 8, "color": "#2563eb" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -276,8 +272,7 @@ test("vanilla-extract -> fela: preserves malformed concrete vanilla-extract inpu
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		export const card = renderer.renderRule({ "padding": 8, "color": "red" });
+		  "code": "export const card = renderer.renderRule({ "padding": 8, "color": "red" });
 		const unfinished = { /* unfinished vanilla-extract */",
 		  "converted": 1,
 		  "generatedFiles": [],

@@ -49,8 +49,7 @@ test("styled-components -> vanilla-extract -> styled-components: preserves an ac
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { style } from "@vanilla-extract/css";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(style({ padding: "1rem", color: "red" }), props.className)} />;",
@@ -88,10 +87,8 @@ test("styled-components -> vanilla-extract -> styled-components: preserves an ac
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import styled from "styled-components";
-
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(styled.div({ padding: "1rem", color: "red" }), props.className)} />;",
 		    "converted": 1,
@@ -140,8 +137,7 @@ test("styled-components -> vanilla-extract -> styled-components: retains the doc
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { style } from "@vanilla-extract/css";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(style({ padding: "1rem", color: "red" }), props.className)} />;",
@@ -179,10 +175,8 @@ test("styled-components -> vanilla-extract -> styled-components: retains the doc
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import styled from "styled-components";
-
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(styled.div({ padding: "1rem", color: "red" }), props.className)} />;",
 		    "converted": 1,
@@ -246,8 +240,7 @@ test("styled-components -> vanilla-extract -> styled-components: preserves concr
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		import { createCx } from "pandwind/cx";
+		      "code": "import { createCx } from "pandwind/cx";
 		import { style } from "@vanilla-extract/css";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(style({ padding: "1rem", color: "#2563eb" }), props.className)} />;",
@@ -285,10 +278,8 @@ test("styled-components -> vanilla-extract -> styled-components: preserves concr
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		import { createCx } from "pandwind/cx";
+		      "code": "import { createCx } from "pandwind/cx";
 		import styled from "styled-components";
-
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(styled.div({ padding: "1rem", color: "#2563eb" }), props.className)} />;",
 		      "converted": 1,
@@ -325,8 +316,7 @@ test("styled-components -> vanilla-extract -> styled-components: preserves concr
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		import { createCx } from "pandwind/cx";
+		      "code": "import { createCx } from "pandwind/cx";
 		import { style } from "@vanilla-extract/css";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(style({ padding: "1rem", color: "#2563eb" }), props.className)} />;",
@@ -364,10 +354,8 @@ test("styled-components -> vanilla-extract -> styled-components: preserves concr
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		import { createCx } from "pandwind/cx";
+		      "code": "import { createCx } from "pandwind/cx";
 		import styled from "styled-components";
-
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(styled.div({ padding: "1rem", color: "#2563eb" }), props.className)} />;",
 		      "converted": 1,
@@ -418,8 +406,7 @@ test("styled-components -> vanilla-extract -> styled-components: resolves token 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { style } from "@vanilla-extract/css";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(style({ padding: "1rem", color: "#2563eb" }), props.className)} />;",
@@ -457,10 +444,8 @@ test("styled-components -> vanilla-extract -> styled-components: resolves token 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import styled from "styled-components";
-
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(styled.div({ padding: "1rem", color: "#2563eb" }), props.className)} />;",
 		    "converted": 1,

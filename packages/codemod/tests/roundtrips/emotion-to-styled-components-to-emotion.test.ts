@@ -50,7 +50,6 @@ test("emotion -> styled-components -> emotion: preserves an actionable concrete 
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
 		export const card = styled.div({ padding: "1rem", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -85,8 +84,6 @@ test("emotion -> styled-components -> emotion: preserves an actionable concrete 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "@emotion/styled";
-
-
 		export const card = styled.div({ padding: "1rem", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -135,7 +132,6 @@ test("emotion -> styled-components -> emotion: retains the documented secondary 
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
 		export const card = styled.div({ padding: "1rem", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -170,8 +166,6 @@ test("emotion -> styled-components -> emotion: retains the documented secondary 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "@emotion/styled";
-
-
 		export const card = styled.div({ padding: "1rem", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -235,7 +229,6 @@ test("emotion -> styled-components -> emotion: preserves concrete theme and proj
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-
 		export const card = styled.div({ padding: "1rem", color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -270,8 +263,6 @@ test("emotion -> styled-components -> emotion: preserves concrete theme and proj
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "@emotion/styled";
-
-
 		export const card = styled.div({ padding: "1rem", color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -308,7 +299,6 @@ test("emotion -> styled-components -> emotion: preserves concrete theme and proj
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-
 		export const card = styled.div({ padding: "1rem", color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -343,8 +333,6 @@ test("emotion -> styled-components -> emotion: preserves concrete theme and proj
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "@emotion/styled";
-
-
 		export const card = styled.div({ padding: "1rem", color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -395,7 +383,6 @@ test("emotion -> styled-components -> emotion: resolves token values across both
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
 		export const card = styled.div({ padding: "1rem", color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -430,8 +417,6 @@ test("emotion -> styled-components -> emotion: resolves token values across both
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "@emotion/styled";
-
-
 		export const card = styled.div({ padding: "1rem", color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],

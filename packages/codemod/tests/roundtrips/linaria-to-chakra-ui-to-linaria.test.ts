@@ -84,8 +84,7 @@ test("linaria -> chakra-ui -> linaria: preserves an actionable concrete round tr
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-		import { css } from "@linaria/core";
+		    "code": "import { css } from "@linaria/core";
 
 		export const card = css\`padding: 1rem; color: red;\`;",
 		    "converted": 1,
@@ -248,8 +247,7 @@ test("linaria -> chakra-ui -> linaria: preserves concrete theme and project cont
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { defaultSystem } from "@chakra-ui/react";
-		import { css } from "@linaria/core";
+		      "code": "import { css } from "@linaria/core";
 
 		export const card = css\`padding: 1rem; color: #2563eb;\`;",
 		      "converted": 1,

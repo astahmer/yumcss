@@ -85,8 +85,7 @@ test("unocss -> stylex -> unocss: preserves an actionable concrete round trip", 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		export const App = () => { "style": "[gap:1rem] [align-items:center] [display:flex]" }.style;",
+		    "code": "export const App = () => { "style": "[gap:1rem] [align-items:center] [display:flex]" }.style;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -255,8 +254,7 @@ test("unocss -> stylex -> unocss: preserves concrete theme and project context v
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		export const App = () => { "style": "p-card text-brand" }.style;",
+		      "code": "export const App = () => { "style": "p-card text-brand" }.style;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -329,8 +327,7 @@ test("unocss -> stylex -> unocss: preserves concrete theme and project context v
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		export const App = () => { "style": "p-card text-brand" }.style;",
+		      "code": "export const App = () => { "style": "p-card text-brand" }.style;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -417,8 +414,7 @@ test("unocss -> stylex -> unocss: resolves token values across both concrete leg
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		export const App = () => { "style": "p-card text-brand" }.style;",
+		    "code": "export const App = () => { "style": "p-card text-brand" }.style;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

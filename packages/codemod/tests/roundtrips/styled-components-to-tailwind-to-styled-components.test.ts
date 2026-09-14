@@ -49,8 +49,7 @@ test("styled-components -> tailwind -> styled-components: preserves an actionabl
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx("[padding:1rem] [color:red]", props.className)} />;",
 		    "converted": 1,
@@ -88,7 +87,6 @@ test("styled-components -> tailwind -> styled-components: preserves an actionabl
 		  "reverse": {
 		    "changed": true,
 		    "code": "// pandwind:migrate-skip (route: tailwind -> styled-components | parse-residual: dynamic)
-
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx("[padding:1rem] [color:red]", props.className)} />;",
@@ -127,8 +125,7 @@ test("styled-components -> tailwind -> styled-components: retains the documented
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx("[padding:1rem] [color:red]", props.className)} />;",
 		    "converted": 1,
@@ -166,7 +163,6 @@ test("styled-components -> tailwind -> styled-components: retains the documented
 		  "reverse": {
 		    "changed": true,
 		    "code": "// pandwind:migrate-skip (route: tailwind -> styled-components | parse-residual: dynamic)
-
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx("[padding:1rem] [color:red]", props.className)} />;",
@@ -220,8 +216,7 @@ test("styled-components -> tailwind -> styled-components: preserves concrete the
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		import { createCx } from "pandwind/cx";
+		      "code": "import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx("[padding:1rem] [color:#2563eb]", props.className)} />;",
 		      "converted": 1,
@@ -259,7 +254,6 @@ test("styled-components -> tailwind -> styled-components: preserves concrete the
 		    "reverse": {
 		      "changed": true,
 		      "code": "// pandwind:migrate-skip (route: tailwind -> styled-components | parse-residual: dynamic)
-
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx("[padding:1rem] [color:#2563eb]", props.className)} />;",
@@ -286,8 +280,7 @@ test("styled-components -> tailwind -> styled-components: preserves concrete the
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		import { createCx } from "pandwind/cx";
+		      "code": "import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx("[padding:1rem] text-brand", props.className)} />;",
 		      "converted": 1,
@@ -325,7 +318,6 @@ test("styled-components -> tailwind -> styled-components: preserves concrete the
 		    "reverse": {
 		      "changed": true,
 		      "code": "// pandwind:migrate-skip (route: tailwind -> styled-components | parse-residual: dynamic)
-
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx("[padding:1rem] text-brand", props.className)} />;",
@@ -366,8 +358,7 @@ test("styled-components -> tailwind -> styled-components: resolves token values 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx("[padding:1rem] text-brand", props.className)} />;",
 		    "converted": 1,
@@ -405,7 +396,6 @@ test("styled-components -> tailwind -> styled-components: resolves token values 
 		  "reverse": {
 		    "changed": true,
 		    "code": "// pandwind:migrate-skip (route: tailwind -> styled-components | parse-residual: dynamic)
-
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx("[padding:1rem] text-brand", props.className)} />;",

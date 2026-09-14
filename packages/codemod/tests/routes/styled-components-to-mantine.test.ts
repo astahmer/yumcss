@@ -47,8 +47,7 @@ test("styled-components -> mantine: migrates concrete styled-components syntax t
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		export const Card = (props) => <div {...props} style={{ ...{ padding: "1rem", color: "red" }, ...props.style }} />;",
+		  "code": "export const Card = (props) => <div {...props} style={{ ...{ padding: "1rem", color: "red" }, ...props.style }} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -90,8 +89,7 @@ test("styled-components -> mantine: carries a documented secondary styled-compon
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		export const Card = (props) => <div {...props} style={{ ...{ padding: "1rem", color: "red" }, ...props.style }} />;",
+		  "code": "export const Card = (props) => <div {...props} style={{ ...{ padding: "1rem", color: "red" }, ...props.style }} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -142,8 +140,7 @@ test("styled-components -> mantine: loads concrete theme and project context var
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "
-		export const Card = (props) => <div {...props} style={{ ...{ padding: "1rem", color: "#2563eb" }, ...props.style }} />;",
+		    "code": "export const Card = (props) => <div {...props} style={{ ...{ padding: "1rem", color: "#2563eb" }, ...props.style }} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -176,8 +173,7 @@ test("styled-components -> mantine: loads concrete theme and project context var
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "
-		export const Card = (props) => <div {...props} style={{ ...{ padding: "1rem", color: "var(--mantine-color-brand-0)" }, ...props.style }} />;",
+		    "code": "export const Card = (props) => <div {...props} style={{ ...{ padding: "1rem", color: "var(--mantine-color-brand-0)" }, ...props.style }} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -222,8 +218,7 @@ test("styled-components -> mantine: resolves concrete token values with project 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		export const Card = (props) => <div {...props} style={{ ...{ padding: "1rem", color: "var(--mantine-color-brand-0)" }, ...props.style }} />;",
+		  "code": "export const Card = (props) => <div {...props} style={{ ...{ padding: "1rem", color: "var(--mantine-color-brand-0)" }, ...props.style }} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [

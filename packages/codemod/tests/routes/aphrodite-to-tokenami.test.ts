@@ -48,7 +48,6 @@ test("aphrodite -> tokenami: migrates concrete aphrodite syntax to tokenami", ()
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-
 		export const styles = { "card": css({ padding: 8, color: "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -92,7 +91,6 @@ test("aphrodite -> tokenami: carries a documented secondary aphrodite API explic
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-
 		export const styles = { "fonts": css({ "font-face": { fontFamily: "Inter", src: "url(inter.woff2)" } }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -145,7 +143,6 @@ test("aphrodite -> tokenami: loads concrete theme and project context variants",
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-
 		export const styles = { "card": css({ padding: 8, color: "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -180,7 +177,6 @@ test("aphrodite -> tokenami: loads concrete theme and project context variants",
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-
 		export const styles = { "card": css({ padding: 8, color: "$colors.brand" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -227,7 +223,6 @@ test("aphrodite -> tokenami: resolves concrete token values with project context
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-
 		export const styles = { "card": css({ padding: 8, color: "$colors.brand" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -271,7 +266,6 @@ test("aphrodite -> tokenami: preserves malformed concrete aphrodite input", () =
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-
 		export const styles = { "card": css({ padding: 8, color: "red" }) };
 		const unfinished = { /* unfinished aphrodite */",
 		  "converted": 1,

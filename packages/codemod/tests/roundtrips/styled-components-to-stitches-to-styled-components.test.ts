@@ -50,7 +50,6 @@ test("styled-components -> stitches -> styled-components: preserves an actionabl
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@stitches/react";
-
 		export const Card = css({ padding: "1rem", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -87,8 +86,6 @@ test("styled-components -> stitches -> styled-components: preserves an actionabl
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
-
 		export const Card = styled.div({ padding: "1rem", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -137,7 +134,6 @@ test("styled-components -> stitches -> styled-components: retains the documented
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@stitches/react";
-
 		export const Card = css({ padding: "1rem", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -174,8 +170,6 @@ test("styled-components -> stitches -> styled-components: retains the documented
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
-
 		export const Card = styled.div({ padding: "1rem", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -239,7 +233,6 @@ test("styled-components -> stitches -> styled-components: preserves concrete the
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@stitches/react";
-
 		export const Card = css({ padding: "1rem", color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -276,8 +269,6 @@ test("styled-components -> stitches -> styled-components: preserves concrete the
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-
-
 		export const Card = styled.div({ padding: "1rem", color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -314,7 +305,6 @@ test("styled-components -> stitches -> styled-components: preserves concrete the
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@stitches/react";
-
 		export const Card = css({ padding: "1rem", color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -351,8 +341,6 @@ test("styled-components -> stitches -> styled-components: preserves concrete the
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-
-
 		export const Card = styled.div({ padding: "1rem", color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -403,7 +391,6 @@ test("styled-components -> stitches -> styled-components: resolves token values 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@stitches/react";
-
 		export const Card = css({ padding: "1rem", color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -440,8 +427,6 @@ test("styled-components -> stitches -> styled-components: resolves token values 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
-
 		export const Card = styled.div({ padding: "1rem", color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],

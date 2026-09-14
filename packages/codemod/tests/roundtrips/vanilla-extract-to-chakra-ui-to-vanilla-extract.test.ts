@@ -50,7 +50,6 @@ test("vanilla-extract -> chakra-ui -> vanilla-extract: preserves an actionable c
 		  "forward": {
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
 		export const card = defaultSystem.css({ padding: "8px", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -84,9 +83,7 @@ test("vanilla-extract -> chakra-ui -> vanilla-extract: preserves an actionable c
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-		import { style } from "@vanilla-extract/css";
-
+		    "code": "import { style } from "@vanilla-extract/css";
 		export const card = style({ padding: "8px", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -137,7 +134,7 @@ test("vanilla-extract -> chakra-ui -> vanilla-extract: retains the documented se
 		  "forward": {
 		    "changed": true,
 		    "code": "import { globalStyle } from "@vanilla-extract/css";
-		// pandwind:migrate-skip (route: vanilla-extract -> chakra-ui | lowering-residual: rule-level, validation)
+		// pandwind:migrate-skip (route: vanilla-extract -> chakra-ui | lowering-residual: emission-empty, rule-level | available: static, named-map, residual)
 		globalStyle("body", { margin: 0 });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -161,31 +158,23 @@ test("vanilla-extract -> chakra-ui -> vanilla-extract: retains the documented se
 		    ],
 		    "residuals": [
 		      {
+		        "hint": "target adapter produced no representable output",
+		        "kind": "emission-empty",
+		        "preserved": undefined,
+		      },
+		      {
 		        "hint": "Chakra standalone css projection supports style rules only",
 		        "kind": "rule-level",
 		        "preserved": undefined,
 		      },
-		      {
-		        "hint": "1 residual conversion(s)",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
 		    ],
 		    "skipped": 1,
-		    "validations": [
-		      {
-		        "differences": [
-		          "1 residual conversion(s)",
-		        ],
-		        "lossiness": "lossy",
-		        "valid": false,
-		      },
-		    ],
+		    "validations": [],
 		  },
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { globalStyle } from "@vanilla-extract/css";
-		// pandwind:migrate-skip (route: vanilla-extract -> chakra-ui | lowering-residual: rule-level, validation)
+		// pandwind:migrate-skip (route: vanilla-extract -> chakra-ui | lowering-residual: emission-empty, rule-level | available: static, named-map, residual)
 		globalStyle("body", { margin: 0 });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -227,7 +216,6 @@ test("vanilla-extract -> chakra-ui -> vanilla-extract: preserves concrete theme 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { defaultSystem } from "@chakra-ui/react";
-
 		export const card = defaultSystem.css({ padding: "8px", color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -261,9 +249,7 @@ test("vanilla-extract -> chakra-ui -> vanilla-extract: preserves concrete theme 
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { defaultSystem } from "@chakra-ui/react";
-		import { style } from "@vanilla-extract/css";
-
+		      "code": "import { style } from "@vanilla-extract/css";
 		export const card = style({ padding: "8px", color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -302,7 +288,6 @@ test("vanilla-extract -> chakra-ui -> vanilla-extract: preserves concrete theme 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { defaultSystem } from "@chakra-ui/react";
-
 		export const card = defaultSystem.css({ padding: "8px", color: "brand.500" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -337,7 +322,6 @@ test("vanilla-extract -> chakra-ui -> vanilla-extract: preserves concrete theme 
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { defaultSystem } from "@chakra-ui/react";
-
 		export const card = // pandwind:migrate-skip (route: chakra-ui -> vanilla-extract | lowering-residual: validation)
 		defaultSystem.css({ padding: "8px", color: "brand.500" });",
 		      "converted": 0,
@@ -399,7 +383,6 @@ test("vanilla-extract -> chakra-ui -> vanilla-extract: resolves token values acr
 		  "forward": {
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
 		export const card = defaultSystem.css({ padding: "8px", color: "brand.500" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -434,7 +417,6 @@ test("vanilla-extract -> chakra-ui -> vanilla-extract: resolves token values acr
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
 		export const card = // pandwind:migrate-skip (route: chakra-ui -> vanilla-extract | lowering-residual: validation)
 		defaultSystem.css({ padding: "8px", color: "brand.500" });",
 		    "converted": 0,

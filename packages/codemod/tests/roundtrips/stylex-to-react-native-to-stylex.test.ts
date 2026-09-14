@@ -50,7 +50,6 @@ test("stylex -> react-native -> stylex: preserves an actionable concrete round t
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-
 		export const styles = StyleSheet.create({ "card": { "padding": 8, "color": "red" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -88,8 +87,6 @@ test("stylex -> react-native -> stylex: preserves an actionable concrete round t
 		  "reverse": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-
-
 		export const styles = stylex.create({ card: { padding: "8px", color: "red" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -141,7 +138,6 @@ test("stylex -> react-native -> stylex: retains the documented secondary API wit
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-
 		export const styles = StyleSheet.create({ "card": { "color": "red" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -179,8 +175,6 @@ test("stylex -> react-native -> stylex: retains the documented secondary API wit
 		  "reverse": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-
-
 		export const styles = stylex.create({ card: { color: "red" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -246,7 +240,6 @@ test("stylex -> react-native -> stylex: preserves concrete theme and project con
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "react-native";
-
 		export const styles = StyleSheet.create({ "card": { "padding": 8, "color": "#2563eb" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -284,8 +277,6 @@ test("stylex -> react-native -> stylex: preserves concrete theme and project con
 		    "reverse": {
 		      "changed": true,
 		      "code": "import * as stylex from "@stylexjs/stylex";
-
-
 		export const styles = stylex.create({ card: { padding: "8px", color: "#2563eb" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -325,7 +316,6 @@ test("stylex -> react-native -> stylex: preserves concrete theme and project con
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "react-native";
-
 		export const styles = StyleSheet.create({ "card": { "padding": 8, "color": "#2563eb" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -363,8 +353,6 @@ test("stylex -> react-native -> stylex: preserves concrete theme and project con
 		    "reverse": {
 		      "changed": true,
 		      "code": "import * as stylex from "@stylexjs/stylex";
-
-
 		export const styles = stylex.create({ card: { padding: "8px", color: "#2563eb" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -418,7 +406,6 @@ test("stylex -> react-native -> stylex: resolves token values across both concre
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-
 		export const styles = StyleSheet.create({ "card": { "padding": 8, "color": "#2563eb" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -456,8 +443,6 @@ test("stylex -> react-native -> stylex: resolves token values across both concre
 		  "reverse": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-
-
 		export const styles = stylex.create({ card: { padding: "8px", color: "#2563eb" } });",
 		    "converted": 1,
 		    "generatedFiles": [],

@@ -50,7 +50,6 @@ test("pandwind -> mui -> pandwind: preserves an actionable concrete round trip",
 		  "forward": {
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
-
 		const css = createCss();
 		export const card = css.class({ "padding": "1rem", "color": "red" });",
 		    "converted": 1,
@@ -87,7 +86,6 @@ test("pandwind -> mui -> pandwind: preserves an actionable concrete round trip",
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { createCss } from "pandwind/css";
-
 		const css = createCss();
 		export const card = css.class({ "padding": "1rem", "color": "red" });",
 		    "converted": 0,
@@ -192,7 +190,6 @@ test("pandwind -> mui -> pandwind: preserves concrete theme and project context 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
-
 		const css = createCss();
 		export const card = css.class({ "padding": "1rem", "color": "primary.main" });",
 		      "converted": 1,
@@ -229,7 +226,6 @@ test("pandwind -> mui -> pandwind: preserves concrete theme and project context 
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { createCss } from "pandwind/css";
-
 		const css = createCss();
 		export const card = css.class({ "padding": "1rem", "color": "primary.main" });",
 		      "converted": 0,
@@ -245,7 +241,6 @@ test("pandwind -> mui -> pandwind: preserves concrete theme and project context 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
-
 		const css = createCss();
 		export const card = css.class({ "padding": "1rem", "color": "primary.main" });",
 		      "converted": 1,
@@ -282,7 +277,6 @@ test("pandwind -> mui -> pandwind: preserves concrete theme and project context 
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { createCss } from "pandwind/css";
-
 		const css = createCss();
 		export const card = css.class({ "padding": "1rem", "color": "primary.main" });",
 		      "converted": 0,
@@ -312,7 +306,6 @@ test("pandwind -> mui -> pandwind: resolves token values across both concrete le
 		  "forward": {
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
-
 		const css = createCss();
 		export const card = css.class({ "padding": "1rem", "color": "primary.main" });",
 		    "converted": 1,
@@ -349,7 +342,6 @@ test("pandwind -> mui -> pandwind: resolves token values across both concrete le
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { createCss } from "pandwind/css";
-
 		const css = createCss();
 		export const card = css.class({ "padding": "1rem", "color": "primary.main" });",
 		    "converted": 0,

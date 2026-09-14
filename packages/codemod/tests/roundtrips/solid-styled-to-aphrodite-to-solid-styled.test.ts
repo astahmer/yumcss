@@ -49,8 +49,7 @@ test("solid-styled -> aphrodite -> solid-styled: preserves an actionable concret
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { StyleSheet, css } from "aphrodite";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} class={cx(css(StyleSheet.create({ style: { "padding": "1rem", "color": "red" } }).style), props.class)} />;",
@@ -88,8 +87,7 @@ test("solid-styled -> aphrodite -> solid-styled: preserves an actionable concret
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { styled } from "solid-styled-components";
 
 		const cx = createCx();
@@ -142,8 +140,7 @@ test("solid-styled -> aphrodite -> solid-styled: retains the documented secondar
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { StyleSheet, css } from "aphrodite";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} class={cx(css(StyleSheet.create({ style: { "padding": "1rem", "color": "red" } }).style), props.class)} />;",
@@ -181,8 +178,7 @@ test("solid-styled -> aphrodite -> solid-styled: retains the documented secondar
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { styled } from "solid-styled-components";
 
 		const cx = createCx();
@@ -250,8 +246,7 @@ test("solid-styled -> aphrodite -> solid-styled: preserves concrete theme and pr
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		import { createCx } from "pandwind/cx";
+		      "code": "import { createCx } from "pandwind/cx";
 		import { StyleSheet, css } from "aphrodite";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} class={cx(css(StyleSheet.create({ style: { "padding": "1rem", "color": "#2563eb" } }).style), props.class)} />;",
@@ -289,8 +284,7 @@ test("solid-styled -> aphrodite -> solid-styled: preserves concrete theme and pr
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		import { createCx } from "pandwind/cx";
+		      "code": "import { createCx } from "pandwind/cx";
 		import { styled } from "solid-styled-components";
 
 		const cx = createCx();
@@ -331,8 +325,7 @@ test("solid-styled -> aphrodite -> solid-styled: preserves concrete theme and pr
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		import { createCx } from "pandwind/cx";
+		      "code": "import { createCx } from "pandwind/cx";
 		import { StyleSheet, css } from "aphrodite";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} class={cx(css(StyleSheet.create({ style: { "padding": "1rem", "color": "#2563eb" } }).style), props.class)} />;",
@@ -370,8 +363,7 @@ test("solid-styled -> aphrodite -> solid-styled: preserves concrete theme and pr
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		import { createCx } from "pandwind/cx";
+		      "code": "import { createCx } from "pandwind/cx";
 		import { styled } from "solid-styled-components";
 
 		const cx = createCx();
@@ -426,8 +418,7 @@ test("solid-styled -> aphrodite -> solid-styled: resolves token values across bo
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { StyleSheet, css } from "aphrodite";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} class={cx(css(StyleSheet.create({ style: { "padding": "1rem", "color": "#2563eb" } }).style), props.class)} />;",
@@ -465,8 +456,7 @@ test("solid-styled -> aphrodite -> solid-styled: resolves token values across bo
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { styled } from "solid-styled-components";
 
 		const cx = createCx();

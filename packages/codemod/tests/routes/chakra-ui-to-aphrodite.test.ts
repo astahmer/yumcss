@@ -148,7 +148,7 @@ test("chakra-ui -> aphrodite: loads concrete theme and project context variants"
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
 		import { StyleSheet, css } from "aphrodite";
-		export const App = () => <Box p="4" className={css(StyleSheet.create({ style: { "backgroundColor": "#f97316" } }).style)}/>;",
+		export const App = () => <Box className={css(StyleSheet.create({ style: { "backgroundColor": "#f97316", "p": "var(--chakra-spacing-4)" } }).style)}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -186,7 +186,7 @@ test("chakra-ui -> aphrodite: loads concrete theme and project context variants"
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
 		import { StyleSheet, css } from "aphrodite";
-		export const App = () => <Box p="4" className={css(StyleSheet.create({ style: { "backgroundColor": "#2563eb" } }).style)}/>;",
+		export const App = () => <Box className={css(StyleSheet.create({ style: { "backgroundColor": "#2563eb", "p": "var(--chakra-spacing-4)" } }).style)}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -236,7 +236,7 @@ test("chakra-ui -> aphrodite: resolves concrete token values with project contex
 		  "changed": true,
 		  "code": "import { Box } from "@chakra-ui/react";
 		import { StyleSheet, css } from "aphrodite";
-		export const App = () => <Box p="4" className={css(StyleSheet.create({ style: { "backgroundColor": "#2563eb" } }).style)}/>;",
+		export const App = () => <Box className={css(StyleSheet.create({ style: { "backgroundColor": "#2563eb", "p": "var(--chakra-spacing-4)" } }).style)}/>;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [

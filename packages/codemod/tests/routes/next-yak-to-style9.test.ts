@@ -48,7 +48,6 @@ test("next-yak -> style9: migrates concrete next-yak syntax to style9", () => {
 		{
 		  "changed": true,
 		  "code": "import style9 from "style9";
-
 		export const card = style9.create({ "padding": "1rem", "color": "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -93,8 +92,7 @@ test("next-yak -> style9: carries a documented secondary next-yak API explicitly
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		import { createCx } from "pandwind/cx";
+		  "code": "import { createCx } from "pandwind/cx";
 		import style9 from "style9";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(style9(style9.create({ style: { "padding": "1rem", "color": "red" } }).style), props.className)} />;",
@@ -151,7 +149,6 @@ test("next-yak -> style9: loads concrete theme and project context variants", as
 		  "amber": {
 		    "changed": true,
 		    "code": "import style9 from "style9";
-
 		export const card = style9.create({ "padding": "1rem", "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -188,7 +185,6 @@ test("next-yak -> style9: loads concrete theme and project context variants", as
 		  "blue": {
 		    "changed": true,
 		    "code": "import style9 from "style9";
-
 		export const card = style9.create({ "padding": "1rem", "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -237,7 +233,6 @@ test("next-yak -> style9: resolves concrete token values with project context", 
 		{
 		  "changed": true,
 		  "code": "import style9 from "style9";
-
 		export const card = style9.create({ "padding": "1rem", "color": "#2563eb" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -283,7 +278,6 @@ test("next-yak -> style9: preserves malformed concrete next-yak input", () => {
 		{
 		  "changed": true,
 		  "code": "import style9 from "style9";
-
 		export const card = style9.create({ "padding": "1rem", "color": "red" });
 		const unfinished = { /* unfinished next-yak */",
 		  "converted": 1,

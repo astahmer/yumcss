@@ -185,7 +185,6 @@ describe("custom design-system context resolution", () => {
 		expect(result.code).not.toContain("#123456");
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { css } from "styled-system/css";
-
 			export const card = css({ padding: "17px", color: "brand.500" });"
 		`);
 	});
@@ -345,10 +344,7 @@ describe("custom design-system context resolution", () => {
 		expect(result.residuals).toEqual([]);
 		expect(result.code).toContain('"p-card text-brand"');
 		expect(result.code).not.toContain("#123456");
-		expect(result.code).toMatchInlineSnapshot(`
-			"
-			export const card = "p-card text-brand";"
-		`);
+		expect(result.code).toMatchInlineSnapshot(`"export const card = "p-card text-brand";"`);
 
 		const source = await runAdapterMigrationAsync(
 			'export const App = () => <div className="btn-brand text-brand" />;',
@@ -419,10 +415,7 @@ describe("custom design-system context resolution", () => {
 		expect(result.residuals).toEqual([]);
 		expect(result.code).toContain('"p-card text-brand"');
 		expect(result.code).not.toContain("#123456");
-		expect(result.code).toMatchInlineSnapshot(`
-			"
-			export const card = "p-card text-brand";"
-		`);
+		expect(result.code).toMatchInlineSnapshot(`"export const card = "p-card text-brand";"`);
 
 		const source = await runAdapterMigrationAsync(
 			'export const App = () => <div class="btn-brand text-brand" />;',
@@ -472,7 +465,6 @@ describe("custom design-system context resolution", () => {
 		expect(result.code).not.toContain("#123456");
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { css } from "@tokenami/css";
-
 			export const card = css({ padding: "17px", color: "$colors.brand" });"
 		`);
 	});

@@ -92,7 +92,6 @@ test("compiled -> chakra-ui: carries a documented secondary compiled API explici
 		{
 		  "changed": true,
 		  "code": "import { defaultSystem } from "@chakra-ui/react";
-
 		export const colors = { "red": defaultSystem.css({ color: "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],

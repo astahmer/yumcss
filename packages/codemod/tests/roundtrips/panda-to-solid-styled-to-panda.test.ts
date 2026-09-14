@@ -50,7 +50,6 @@ test("panda -> solid-styled -> panda: preserves an actionable concrete round tri
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-
 		export const card = styled.div({ "color": "red.300", "_hover": { "color": "blue.300" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -86,11 +85,9 @@ test("panda -> solid-styled -> panda: preserves an actionable concrete round tri
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { css } from "styled-system/css";
 		const cx = createCx();
-
 		export const card = (props) => <div {...props} class={cx(css({ color: "red.300", "&:hover": { color: "blue.300" } }), props.class)} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -222,7 +219,6 @@ test("panda -> solid-styled -> panda: preserves concrete theme and project conte
 		    "forward": {
 		      "changed": true,
 		      "code": "import { styled } from "solid-styled-components";
-
 		export const card = styled.div({ "color": "#f97316", "_hover": { "color": "#f97316" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -259,11 +255,9 @@ test("panda -> solid-styled -> panda: preserves concrete theme and project conte
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		import { createCx } from "pandwind/cx";
+		      "code": "import { createCx } from "pandwind/cx";
 		import { css } from "styled-system/css";
 		const cx = createCx();
-
 		export const card = (props) => <div {...props} class={cx(css({ color: "brand.500", "&:hover": { color: "brand.500" } }), props.class)} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -300,7 +294,6 @@ test("panda -> solid-styled -> panda: preserves concrete theme and project conte
 		    "forward": {
 		      "changed": true,
 		      "code": "import { styled } from "solid-styled-components";
-
 		export const card = styled.div({ "color": "#2563eb", "_hover": { "color": "#2563eb" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -337,11 +330,9 @@ test("panda -> solid-styled -> panda: preserves concrete theme and project conte
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		import { createCx } from "pandwind/cx";
+		      "code": "import { createCx } from "pandwind/cx";
 		import { css } from "styled-system/css";
 		const cx = createCx();
-
 		export const card = (props) => <div {...props} class={cx(css({ color: "brand.500", "&:hover": { color: "brand.500" } }), props.class)} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -392,7 +383,6 @@ test("panda -> solid-styled -> panda: resolves token values across both concrete
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-
 		export const card = styled.div({ "color": "#2563eb", "_hover": { "color": "blue.300" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -428,11 +418,9 @@ test("panda -> solid-styled -> panda: resolves token values across both concrete
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { css } from "styled-system/css";
 		const cx = createCx();
-
 		export const card = (props) => <div {...props} class={cx(css({ color: "brand.500", "&:hover": { color: "blue.300" } }), props.class)} />;",
 		    "converted": 1,
 		    "generatedFiles": [],

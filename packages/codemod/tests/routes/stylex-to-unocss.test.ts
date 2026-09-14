@@ -47,8 +47,7 @@ test("stylex -> unocss: migrates concrete stylex syntax to unocss", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		export const styles = { "card": "[padding:8px] [color:red]" };",
+		  "code": "export const styles = { "card": "[padding:8px] [color:red]" };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -92,8 +91,7 @@ test("stylex -> unocss: carries a documented secondary stylex API explicitly", (
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		export const styles = { "card": "[color:red]" };",
+		  "code": "export const styles = { "card": "[color:red]" };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -146,8 +144,7 @@ test("stylex -> unocss: loads concrete theme and project context variants", asyn
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "
-		export const styles = { "card": "[padding:8px] [color:#2563eb]" };",
+		    "code": "export const styles = { "card": "[padding:8px] [color:#2563eb]" };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -182,8 +179,7 @@ test("stylex -> unocss: loads concrete theme and project context variants", asyn
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "
-		export const styles = { "card": "[padding:8px] text-brand" };",
+		    "code": "export const styles = { "card": "[padding:8px] text-brand" };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -230,8 +226,7 @@ test("stylex -> unocss: resolves concrete token values with project context", as
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		export const styles = { "card": "[padding:8px] text-brand" };",
+		  "code": "export const styles = { "card": "[padding:8px] text-brand" };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -275,8 +270,7 @@ test("stylex -> unocss: preserves malformed concrete stylex input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		export const styles = { "card": "[padding:8px] [color:red]" };
+		  "code": "export const styles = { "card": "[padding:8px] [color:red]" };
 		const unfinished = { /* unfinished stylex */",
 		  "converted": 1,
 		  "generatedFiles": [],

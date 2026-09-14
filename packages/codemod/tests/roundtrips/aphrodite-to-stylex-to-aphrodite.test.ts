@@ -50,7 +50,6 @@ test("aphrodite -> stylex -> aphrodite: preserves an actionable concrete round t
 		  "forward": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-
 		export const styles = stylex.create({ card: { padding: "8px", color: "red" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -88,8 +87,6 @@ test("aphrodite -> stylex -> aphrodite: preserves an actionable concrete round t
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-
-
 		export const styles = StyleSheet.create({ "card": { "padding": "8px", "color": "red" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -227,7 +224,6 @@ test("aphrodite -> stylex -> aphrodite: preserves concrete theme and project con
 		    "forward": {
 		      "changed": true,
 		      "code": "import * as stylex from "@stylexjs/stylex";
-
 		export const styles = stylex.create({ card: { padding: "8px", color: "#2563eb" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -265,8 +261,6 @@ test("aphrodite -> stylex -> aphrodite: preserves concrete theme and project con
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "aphrodite";
-
-
 		export const styles = StyleSheet.create({ "card": { "padding": "8px", "color": "#2563eb" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -305,7 +299,6 @@ test("aphrodite -> stylex -> aphrodite: preserves concrete theme and project con
 		    "forward": {
 		      "changed": true,
 		      "code": "import * as stylex from "@stylexjs/stylex";
-
 		export const styles = stylex.create({ card: { padding: "8px", color: "#2563eb" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -343,8 +336,6 @@ test("aphrodite -> stylex -> aphrodite: preserves concrete theme and project con
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "aphrodite";
-
-
 		export const styles = StyleSheet.create({ "card": { "padding": "8px", "color": "#2563eb" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -397,7 +388,6 @@ test("aphrodite -> stylex -> aphrodite: resolves token values across both concre
 		  "forward": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-
 		export const styles = stylex.create({ card: { padding: "8px", color: "#2563eb" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -435,8 +425,6 @@ test("aphrodite -> stylex -> aphrodite: resolves token values across both concre
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-
-
 		export const styles = StyleSheet.create({ "card": { "padding": "8px", "color": "#2563eb" } });",
 		    "converted": 1,
 		    "generatedFiles": [],

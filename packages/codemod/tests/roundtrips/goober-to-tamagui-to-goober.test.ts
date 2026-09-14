@@ -50,7 +50,6 @@ test("goober -> tamagui -> goober: preserves an actionable concrete round trip",
 		  "forward": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-
 		export const card = styled(View, { padding: "1rem", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -87,7 +86,6 @@ test("goober -> tamagui -> goober: preserves an actionable concrete round trip",
 		import { createCx } from "pandwind/cx";
 		import { css } from "goober";
 		const cx = createCx();
-
 		export const card = (props) => <View {...props} className={cx(css({ "padding": "1rem", "color": "red" }), props.className)} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -214,7 +212,6 @@ test("goober -> tamagui -> goober: preserves concrete theme and project context 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
-
 		export const card = styled(View, { padding: "1rem", color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -251,7 +248,6 @@ test("goober -> tamagui -> goober: preserves concrete theme and project context 
 		import { createCx } from "pandwind/cx";
 		import { css } from "goober";
 		const cx = createCx();
-
 		export const card = (props) => <View {...props} className={cx(css({ "padding": "1rem", "color": "#2563eb" }), props.className)} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -290,7 +286,6 @@ test("goober -> tamagui -> goober: preserves concrete theme and project context 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
-
 		export const card = styled(View, { padding: "1rem", color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -327,7 +322,6 @@ test("goober -> tamagui -> goober: preserves concrete theme and project context 
 		import { createCx } from "pandwind/cx";
 		import { css } from "goober";
 		const cx = createCx();
-
 		export const card = (props) => <View {...props} className={cx(css({ "padding": "1rem", "color": "#2563eb" }), props.className)} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -380,7 +374,6 @@ test("goober -> tamagui -> goober: resolves token values across both concrete le
 		  "forward": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-
 		export const card = styled(View, { padding: "1rem", color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -417,7 +410,6 @@ test("goober -> tamagui -> goober: resolves token values across both concrete le
 		import { createCx } from "pandwind/cx";
 		import { css } from "goober";
 		const cx = createCx();
-
 		export const card = (props) => <View {...props} className={cx(css({ "padding": "1rem", "color": "#2563eb" }), props.className)} />;",
 		    "converted": 1,
 		    "generatedFiles": [],

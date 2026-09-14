@@ -86,7 +86,6 @@ test("fela -> chakra-ui -> fela: preserves an actionable concrete round trip", (
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { createRenderer } from "fela";
-		import { defaultSystem } from "@chakra-ui/react";
 		const renderer = createRenderer();
 		export const card = renderer.renderRule({ "color": "red" });",
 		    "converted": 1,
@@ -250,7 +249,6 @@ test("fela -> chakra-ui -> fela: preserves concrete theme and project context va
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { createRenderer } from "fela";
-		import { defaultSystem } from "@chakra-ui/react";
 		const renderer = createRenderer();
 		export const card = renderer.renderRule({ "color": "#2563eb" });",
 		      "converted": 1,
@@ -326,7 +324,6 @@ test("fela -> chakra-ui -> fela: preserves concrete theme and project context va
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { createRenderer } from "fela";
-		import { defaultSystem } from "@chakra-ui/react";
 		const renderer = createRenderer();
 		export const card = renderer.renderRule({ "color": "#2563eb" });",
 		      "converted": 1,
@@ -417,7 +414,6 @@ test("fela -> chakra-ui -> fela: resolves token values across both concrete legs
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { createRenderer } from "fela";
-		import { defaultSystem } from "@chakra-ui/react";
 		const renderer = createRenderer();
 		export const card = renderer.renderRule({ "color": "#2563eb" });",
 		    "converted": 1,

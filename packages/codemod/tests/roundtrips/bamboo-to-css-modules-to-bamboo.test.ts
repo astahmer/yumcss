@@ -51,7 +51,6 @@ test("bamboo -> css-modules -> bamboo: preserves an actionable concrete round tr
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -90,7 +89,6 @@ test("bamboo -> css-modules -> bamboo: preserves an actionable concrete round tr
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
 		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "color": "red" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -154,7 +152,6 @@ test("bamboo -> css-modules -> bamboo: retains the documented secondary API with
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "gap": "4", "display": "flex" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -193,7 +190,6 @@ test("bamboo -> css-modules -> bamboo: retains the documented secondary API with
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
 		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "gap": "4", "display": "flex" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -272,7 +268,6 @@ test("bamboo -> css-modules -> bamboo: preserves concrete theme and project cont
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -311,7 +306,6 @@ test("bamboo -> css-modules -> bamboo: preserves concrete theme and project cont
 		      "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
 		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "color": "#2563eb" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -363,7 +357,6 @@ test("bamboo -> css-modules -> bamboo: preserves concrete theme and project cont
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -402,7 +395,6 @@ test("bamboo -> css-modules -> bamboo: preserves concrete theme and project cont
 		      "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
 		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "color": "#2563eb" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -468,7 +460,6 @@ test("bamboo -> css-modules -> bamboo: resolves token values across both concret
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -507,7 +498,6 @@ test("bamboo -> css-modules -> bamboo: resolves token values across both concret
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
 		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "color": "#2563eb" });",
 		    "converted": 0,
 		    "generatedFiles": [],

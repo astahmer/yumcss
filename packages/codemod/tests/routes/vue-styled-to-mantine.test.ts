@@ -50,7 +50,6 @@ test("vue-styled -> mantine: migrates concrete vue-styled syntax to mantine", ()
 		  "code": "import { createCss } from "pandwind/css";
 		import { defineComponent, h } from "vue";
 		const css = createCss();
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css.class({ "padding": "1rem", "color": "red" }), attrs.class] }, slots.default?.()));",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -97,7 +96,6 @@ test("vue-styled -> mantine: carries a documented secondary vue-styled API expli
 		  "code": "import { createCss } from "pandwind/css";
 		import { defineComponent, h } from "vue";
 		const css = createCss();
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css.class({ "padding": "1rem", "color": "red" }), attrs.class] }, slots.default?.()));",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -153,7 +151,6 @@ test("vue-styled -> mantine: loads concrete theme and project context variants",
 		    "code": "import { createCss } from "pandwind/css";
 		import { defineComponent, h } from "vue";
 		const css = createCss();
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css.class({ "padding": "1rem", "color": "#2563eb" }), attrs.class] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -191,7 +188,6 @@ test("vue-styled -> mantine: loads concrete theme and project context variants",
 		    "code": "import { createCss } from "pandwind/css";
 		import { defineComponent, h } from "vue";
 		const css = createCss();
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css.class({ "padding": "1rem", "color": "var(--mantine-color-brand-0)" }), attrs.class] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -241,7 +237,6 @@ test("vue-styled -> mantine: resolves concrete token values with project context
 		  "code": "import { createCss } from "pandwind/css";
 		import { defineComponent, h } from "vue";
 		const css = createCss();
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css.class({ "padding": "1rem", "color": "var(--mantine-color-brand-0)" }), attrs.class] }, slots.default?.()));",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -288,7 +283,6 @@ test("vue-styled -> mantine: preserves malformed concrete vue-styled input", () 
 		  "code": "import { createCss } from "pandwind/css";
 		import { defineComponent, h } from "vue";
 		const css = createCss();
-
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css.class({ "padding": "1rem", "color": "red" }), attrs.class] }, slots.default?.()));
 		const unfinished = { /* unfinished vue-styled */",
 		  "converted": 1,

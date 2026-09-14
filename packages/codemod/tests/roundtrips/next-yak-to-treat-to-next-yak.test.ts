@@ -50,7 +50,6 @@ test("next-yak -> treat -> next-yak: preserves an actionable concrete round trip
 		  "forward": {
 		    "changed": true,
 		    "code": "import { style } from "@/styles.treat";
-
 		export const card = style({ "padding": "1rem", "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -87,8 +86,6 @@ test("next-yak -> treat -> next-yak: preserves an actionable concrete round trip
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-
-
 		export const card = css\`padding: 1rem; color: red;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -136,8 +133,7 @@ test("next-yak -> treat -> next-yak: retains the documented secondary API withou
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { style } from "@/styles.treat";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(style({ "padding": "1rem", "color": "red" }), props.className)} />;",
@@ -175,10 +171,8 @@ test("next-yak -> treat -> next-yak: retains the documented secondary API withou
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		import { css } from "next-yak";
-
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(css\`padding: 1rem; color: red;\`, props.className)} />;",
 		    "converted": 1,
@@ -243,7 +237,6 @@ test("next-yak -> treat -> next-yak: preserves concrete theme and project contex
 		    "forward": {
 		      "changed": true,
 		      "code": "import { style } from "@/styles.treat";
-
 		export const card = style({ "padding": "1rem", "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -280,8 +273,6 @@ test("next-yak -> treat -> next-yak: preserves concrete theme and project contex
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "next-yak";
-
-
 		export const card = css\`padding: 1rem; color: #2563eb;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -318,7 +309,6 @@ test("next-yak -> treat -> next-yak: preserves concrete theme and project contex
 		    "forward": {
 		      "changed": true,
 		      "code": "import { style } from "@/styles.treat";
-
 		export const card = style({ "padding": "1rem", "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -355,8 +345,6 @@ test("next-yak -> treat -> next-yak: preserves concrete theme and project contex
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "next-yak";
-
-
 		export const card = css\`padding: 1rem; color: #2563eb;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -407,7 +395,6 @@ test("next-yak -> treat -> next-yak: resolves token values across both concrete 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { style } from "@/styles.treat";
-
 		export const card = style({ "padding": "1rem", "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -444,8 +431,6 @@ test("next-yak -> treat -> next-yak: resolves token values across both concrete 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-
-
 		export const card = css\`padding: 1rem; color: #2563eb;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],

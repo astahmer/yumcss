@@ -49,8 +49,7 @@ test("chakra-ui -> stylex -> chakra-ui: preserves an actionable concrete round t
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { Box } from "@chakra-ui/react";
-		import * as stylex from "@stylexjs/stylex";
+		    "code": "import * as stylex from "@stylexjs/stylex";
 		export const App = () => stylex.create({ style: { padding: "var(--chakra-spacing-4)", backgroundColor: "var(--chakra-colors-red-200)" } }).style;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -86,9 +85,7 @@ test("chakra-ui -> stylex -> chakra-ui: preserves an actionable concrete round t
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { Box } from "@chakra-ui/react";
-		import { defaultSystem } from "@chakra-ui/react";
-
+		    "code": "import { defaultSystem } from "@chakra-ui/react";
 		export const App = () => { "style": defaultSystem.css({ padding: "var(--chakra-spacing-4)", backgroundColor: "var(--chakra-colors-red-200)" }) }.style;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -347,9 +344,8 @@ test("chakra-ui -> stylex -> chakra-ui: resolves token values across both concre
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { Box } from "@chakra-ui/react";
-		import * as stylex from "@stylexjs/stylex";
-		export const App = () => stylex.create({ style: { backgroundColor: "#2563eb" } }).style;",
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		export const App = () => stylex.create({ style: { backgroundColor: "#2563eb", p: "var(--chakra-spacing-4)" } }).style;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -384,10 +380,8 @@ test("chakra-ui -> stylex -> chakra-ui: resolves token values across both concre
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { Box } from "@chakra-ui/react";
-		import { defaultSystem } from "@chakra-ui/react";
-
-		export const App = () => { "style": defaultSystem.css({ backgroundColor: "brand.500" }) }.style;",
+		    "code": "import { defaultSystem } from "@chakra-ui/react";
+		export const App = () => { "style": defaultSystem.css({ backgroundColor: "brand.500", p: "var(--chakra-spacing-4)" }) }.style;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

@@ -50,7 +50,6 @@ test("compiled -> panda -> compiled: preserves an actionable concrete round trip
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-
 		export const card = css({ padding: 8, color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -85,8 +84,6 @@ test("compiled -> panda -> compiled: preserves an actionable concrete round trip
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@compiled/react";
-
-
 		export const card = css({ "padding": 8, "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -137,7 +134,6 @@ test("compiled -> panda -> compiled: retains the documented secondary API withou
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-
 		export const colors = { "red": css({ color: "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -172,8 +168,6 @@ test("compiled -> panda -> compiled: retains the documented secondary API withou
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@compiled/react";
-
-
 		export const colors = { "red": css({ "color": "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -239,7 +233,6 @@ test("compiled -> panda -> compiled: preserves concrete theme and project contex
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "styled-system/css";
-
 		export const card = css({ padding: 8, color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -274,8 +267,6 @@ test("compiled -> panda -> compiled: preserves concrete theme and project contex
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@compiled/react";
-
-
 		export const card = css({ "padding": 8, "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -314,7 +305,6 @@ test("compiled -> panda -> compiled: preserves concrete theme and project contex
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "styled-system/css";
-
 		export const card = css({ padding: 8, color: "brand.500" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -349,7 +339,6 @@ test("compiled -> panda -> compiled: preserves concrete theme and project contex
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "styled-system/css";
-
 		export const card = // pandwind:migrate-skip (route: panda -> compiled | lowering-residual: validation)
 		css({ padding: 8, color: "brand.500" });",
 		      "converted": 0,
@@ -411,7 +400,6 @@ test("compiled -> panda -> compiled: resolves token values across both concrete 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-
 		export const card = css({ padding: 8, color: "brand.500" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -446,7 +434,6 @@ test("compiled -> panda -> compiled: resolves token values across both concrete 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-
 		export const card = // pandwind:migrate-skip (route: panda -> compiled | lowering-residual: validation)
 		css({ padding: 8, color: "brand.500" });",
 		    "converted": 0,

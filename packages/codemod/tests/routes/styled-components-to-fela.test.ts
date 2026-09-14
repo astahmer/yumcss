@@ -47,8 +47,7 @@ test("styled-components -> fela: migrates concrete styled-components syntax to f
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		import { createCx } from "pandwind/cx";
+		  "code": "import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(renderer.renderRule({ "padding": "1rem", "color": "red" }), props.className)} />;",
 		  "converted": 1,
@@ -94,8 +93,7 @@ test("styled-components -> fela: carries a documented secondary styled-component
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		import { createCx } from "pandwind/cx";
+		  "code": "import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(renderer.renderRule({ "padding": "1rem", "color": "red" }), props.className)} />;",
 		  "converted": 1,
@@ -150,8 +148,7 @@ test("styled-components -> fela: loads concrete theme and project context varian
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(renderer.renderRule({ "padding": "1rem", "color": "#2563eb" }), props.className)} />;",
 		    "converted": 1,
@@ -188,8 +185,7 @@ test("styled-components -> fela: loads concrete theme and project context varian
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
+		    "code": "import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(renderer.renderRule({ "padding": "1rem", "color": "#2563eb" }), props.className)} />;",
 		    "converted": 1,
@@ -238,8 +234,7 @@ test("styled-components -> fela: resolves concrete token values with project con
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		import { createCx } from "pandwind/cx";
+		  "code": "import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(renderer.renderRule({ "padding": "1rem", "color": "#2563eb" }), props.className)} />;",
 		  "converted": 1,

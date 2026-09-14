@@ -48,7 +48,6 @@ test("pandwind -> css-modules: migrates concrete pandwind syntax to css-modules"
 		{
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
-
 		const css = createCss();
 		export const card = css.class({ "padding": "1rem", "color": "red" });",
 		  "converted": 1,
@@ -149,7 +148,6 @@ test("pandwind -> css-modules: loads concrete theme and project context variants
 		  "amber": {
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
-
 		const css = createCss();
 		export const card = css.class({ "padding": "1rem", "color": "$brand" });",
 		    "converted": 1,
@@ -187,7 +185,6 @@ test("pandwind -> css-modules: loads concrete theme and project context variants
 		  "blue": {
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
-
 		const css = createCss();
 		export const card = css.class({ "padding": "1rem", "color": "$brand" });",
 		    "converted": 1,
@@ -237,7 +234,6 @@ test("pandwind -> css-modules: resolves concrete token values with project conte
 		{
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
-
 		const css = createCss();
 		export const card = css.class({ "padding": "1rem", "color": "#2563eb" });",
 		  "converted": 1,
@@ -284,7 +280,6 @@ test("pandwind -> css-modules: preserves malformed concrete pandwind input", () 
 		{
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
-
 		const css = createCss();
 		export const card = css.class({ "padding": "1rem", "color": "red" });
 		const unfinished = { /* unfinished pandwind */",

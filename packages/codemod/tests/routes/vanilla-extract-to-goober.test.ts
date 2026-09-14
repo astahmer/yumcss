@@ -48,7 +48,6 @@ test("vanilla-extract -> goober: migrates concrete vanilla-extract syntax to goo
 		{
 		  "changed": true,
 		  "code": "import { css } from "goober";
-
 		export const card = css({ "padding": 8, "color": "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -149,7 +148,6 @@ test("vanilla-extract -> goober: loads concrete theme and project context varian
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "goober";
-
 		export const card = css({ "padding": 8, "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -186,7 +184,6 @@ test("vanilla-extract -> goober: loads concrete theme and project context varian
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "goober";
-
 		export const card = css({ "padding": 8, "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -235,7 +232,6 @@ test("vanilla-extract -> goober: resolves concrete token values with project con
 		{
 		  "changed": true,
 		  "code": "import { css } from "goober";
-
 		export const card = css({ "padding": 8, "color": "#2563eb" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -281,7 +277,6 @@ test("vanilla-extract -> goober: preserves malformed concrete vanilla-extract in
 		{
 		  "changed": true,
 		  "code": "import { css } from "goober";
-
 		export const card = css({ "padding": 8, "color": "red" });
 		const unfinished = { /* unfinished vanilla-extract */",
 		  "converted": 1,

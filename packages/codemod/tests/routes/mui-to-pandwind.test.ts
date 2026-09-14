@@ -50,7 +50,6 @@ test("mui -> pandwind: migrates concrete mui syntax to pandwind", () => {
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 		const staticClassName1 = css.class({ padding: "16px", color: "red" });
-
 		export const App = () => <div className={staticClassName1} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -95,7 +94,6 @@ test("mui -> pandwind: carries a documented secondary mui API explicitly", () =>
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const Card = css.class({ padding: 8, color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -149,7 +147,6 @@ test("mui -> pandwind: loads concrete theme and project context variants", async
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 		const staticClassName1 = css.class({ padding: "16px", color: "brand" });
-
 		export const App = () => <div className={staticClassName1} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -186,7 +183,6 @@ test("mui -> pandwind: loads concrete theme and project context variants", async
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 		const staticClassName1 = css.class({ padding: "16px", color: "brand" });
-
 		export const App = () => <div className={staticClassName1} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -235,7 +231,6 @@ test("mui -> pandwind: resolves concrete token values with project context", asy
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 		const staticClassName1 = css.class({ padding: "16px", color: "brand" });
-
 		export const App = () => <div className={staticClassName1} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -280,7 +275,6 @@ test("mui -> pandwind: preserves malformed concrete mui input", () => {
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const App = () => <div className={css.class({ padding: "16px", color: "red" })} />;
 		const unfinished = { /* unfinished mui */",
 		  "converted": 1,

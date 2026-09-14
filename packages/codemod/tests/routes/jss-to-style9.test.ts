@@ -48,7 +48,6 @@ test("jss -> style9: migrates concrete jss syntax to style9", () => {
 		{
 		  "changed": true,
 		  "code": "import style9 from "style9";
-
 		export const useStyles = { "card": style9.create({ "color": "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -94,7 +93,6 @@ test("jss -> style9: carries a documented secondary jss API explicitly", () => {
 		{
 		  "changed": true,
 		  "code": "import style9 from "style9";
-
 		export const sheet = { "card": style9.create({ "color": "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -149,7 +147,6 @@ test("jss -> style9: loads concrete theme and project context variants", async (
 		  "amber": {
 		    "changed": true,
 		    "code": "import style9 from "style9";
-
 		export const useStyles = { "card": style9.create({ "color": "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -186,7 +183,6 @@ test("jss -> style9: loads concrete theme and project context variants", async (
 		  "blue": {
 		    "changed": true,
 		    "code": "import style9 from "style9";
-
 		export const useStyles = { "card": style9.create({ "color": "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -235,7 +231,6 @@ test("jss -> style9: resolves concrete token values with project context", async
 		{
 		  "changed": true,
 		  "code": "import style9 from "style9";
-
 		export const useStyles = { "card": style9.create({ "color": "#2563eb" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -281,7 +276,6 @@ test("jss -> style9: preserves malformed concrete jss input", () => {
 		{
 		  "changed": true,
 		  "code": "import style9 from "style9";
-
 		export const useStyles = { "card": style9.create({ "color": "red" }) };
 		const unfinished = { /* unfinished jss */",
 		  "converted": 1,

@@ -89,7 +89,6 @@ test("tamagui -> solid-styled -> tamagui: preserves an actionable concrete round
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
 		import { View, styled } from "@tamagui/core";
-
 		export const Card = styled(View, { padding: "$4", color: "red" });
 		export const App = () => <div className={Card} />;",
 		    "converted": 1,
@@ -255,7 +254,6 @@ test("tamagui -> solid-styled -> tamagui: preserves concrete theme and project c
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
 		import { View, styled } from "@tamagui/core";
-
 		export const Card = styled(View, { padding: "$4", color: "#2563eb" });
 		export const App = () => <div className={Card} />;",
 		      "converted": 1,
@@ -331,7 +329,6 @@ test("tamagui -> solid-styled -> tamagui: preserves concrete theme and project c
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
 		import { View, styled } from "@tamagui/core";
-
 		export const Card = styled(View, { padding: "$4", color: "#2563eb" });
 		export const App = () => <div className={Card} />;",
 		      "converted": 1,
@@ -421,7 +418,6 @@ test("tamagui -> solid-styled -> tamagui: resolves token values across both conc
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
 		import { View, styled } from "@tamagui/core";
-
 		export const Card = styled(View, { padding: "$4", color: "#2563eb" });
 		export const App = () => <div className={Card} />;",
 		    "converted": 1,

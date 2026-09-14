@@ -50,7 +50,6 @@ test("react-native -> chakra-ui -> react-native: preserves an actionable concret
 		  "forward": {
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
 		export const styles = { "card": defaultSystem.css({ padding: "8px", color: "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -84,9 +83,7 @@ test("react-native -> chakra-ui -> react-native: preserves an actionable concret
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-		import { StyleSheet } from "react-native";
-
+		    "code": "import { StyleSheet } from "react-native";
 		export const styles = { "card": StyleSheet.create({ "padding": 8, "color": "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -138,7 +135,6 @@ test("react-native -> chakra-ui -> react-native: retains the documented secondar
 		  "forward": {
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
 		export const styles = { "card": defaultSystem.css({ padding: "8px", backgroundColor: "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -172,9 +168,7 @@ test("react-native -> chakra-ui -> react-native: retains the documented secondar
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-		import { StyleSheet } from "react-native";
-
+		    "code": "import { StyleSheet } from "react-native";
 		export const styles = { "card": StyleSheet.create({ "padding": 8, "backgroundColor": "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -241,7 +235,6 @@ test("react-native -> chakra-ui -> react-native: preserves concrete theme and pr
 		    "forward": {
 		      "changed": true,
 		      "code": "import { defaultSystem } from "@chakra-ui/react";
-
 		export const styles = { "card": defaultSystem.css({ padding: "8px", color: "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -275,9 +268,7 @@ test("react-native -> chakra-ui -> react-native: preserves concrete theme and pr
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { defaultSystem } from "@chakra-ui/react";
-		import { StyleSheet } from "react-native";
-
+		      "code": "import { StyleSheet } from "react-native";
 		export const styles = { "card": StyleSheet.create({ "padding": 8, "color": "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -317,7 +308,6 @@ test("react-native -> chakra-ui -> react-native: preserves concrete theme and pr
 		    "forward": {
 		      "changed": true,
 		      "code": "import { defaultSystem } from "@chakra-ui/react";
-
 		export const styles = { "card": defaultSystem.css({ padding: "8px", color: "brand.500" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -351,9 +341,7 @@ test("react-native -> chakra-ui -> react-native: preserves concrete theme and pr
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { defaultSystem } from "@chakra-ui/react";
-		import { StyleSheet } from "react-native";
-
+		      "code": "import { StyleSheet } from "react-native";
 		export const styles = { "card": StyleSheet.create({ "padding": 8, "color": "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -408,7 +396,6 @@ test("react-native -> chakra-ui -> react-native: resolves token values across bo
 		  "forward": {
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
 		export const styles = { "card": defaultSystem.css({ padding: "8px", color: "brand.500" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -442,9 +429,7 @@ test("react-native -> chakra-ui -> react-native: resolves token values across bo
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-		import { StyleSheet } from "react-native";
-
+		    "code": "import { StyleSheet } from "react-native";
 		export const styles = { "card": StyleSheet.create({ "padding": 8, "color": "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],

@@ -49,8 +49,7 @@ test("chakra-ui -> fela -> chakra-ui: preserves an actionable concrete round tri
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => renderer.renderRule({ "padding": "var(--chakra-spacing-4)", "backgroundColor": "var(--chakra-colors-red-200)" });",
+		    "code": "export const App = () => renderer.renderRule({ "padding": "var(--chakra-spacing-4)", "backgroundColor": "var(--chakra-colors-red-200)" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -85,8 +84,7 @@ test("chakra-ui -> fela -> chakra-ui: preserves an actionable concrete round tri
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { Box } from "@chakra-ui/react";
-		import { defaultSystem } from "@chakra-ui/react";
+		    "code": "import { defaultSystem } from "@chakra-ui/react";
 		export const App = () => defaultSystem.css({ padding: "var(--chakra-spacing-4)", backgroundColor: "var(--chakra-colors-red-200)" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -211,8 +209,7 @@ test("chakra-ui -> fela -> chakra-ui: preserves concrete theme and project conte
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => renderer.renderRule({ "backgroundColor": "#f97316" });",
+		      "code": "export const App = () => renderer.renderRule({ "backgroundColor": "#f97316", "p": "var(--chakra-spacing-4)" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -248,9 +245,8 @@ test("chakra-ui -> fela -> chakra-ui: preserves concrete theme and project conte
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { Box } from "@chakra-ui/react";
-		import { defaultSystem } from "@chakra-ui/react";
-		export const App = () => defaultSystem.css({ backgroundColor: "brand.500" });",
+		      "code": "import { defaultSystem } from "@chakra-ui/react";
+		export const App = () => defaultSystem.css({ backgroundColor: "brand.500", p: "var(--chakra-spacing-4)" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -285,8 +281,7 @@ test("chakra-ui -> fela -> chakra-ui: preserves concrete theme and project conte
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => renderer.renderRule({ "backgroundColor": "#2563eb" });",
+		      "code": "export const App = () => renderer.renderRule({ "backgroundColor": "#2563eb", "p": "var(--chakra-spacing-4)" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -322,9 +317,8 @@ test("chakra-ui -> fela -> chakra-ui: preserves concrete theme and project conte
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { Box } from "@chakra-ui/react";
-		import { defaultSystem } from "@chakra-ui/react";
-		export const App = () => defaultSystem.css({ backgroundColor: "brand.500" });",
+		      "code": "import { defaultSystem } from "@chakra-ui/react";
+		export const App = () => defaultSystem.css({ backgroundColor: "brand.500", p: "var(--chakra-spacing-4)" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -373,8 +367,7 @@ test("chakra-ui -> fela -> chakra-ui: resolves token values across both concrete
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => renderer.renderRule({ "backgroundColor": "#2563eb" });",
+		    "code": "export const App = () => renderer.renderRule({ "backgroundColor": "#2563eb", "p": "var(--chakra-spacing-4)" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -409,9 +402,8 @@ test("chakra-ui -> fela -> chakra-ui: resolves token values across both concrete
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { Box } from "@chakra-ui/react";
-		import { defaultSystem } from "@chakra-ui/react";
-		export const App = () => defaultSystem.css({ backgroundColor: "brand.500" });",
+		    "code": "import { defaultSystem } from "@chakra-ui/react";
+		export const App = () => defaultSystem.css({ backgroundColor: "brand.500", p: "var(--chakra-spacing-4)" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

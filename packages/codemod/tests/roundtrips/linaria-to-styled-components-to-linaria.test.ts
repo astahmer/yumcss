@@ -50,7 +50,6 @@ test("linaria -> styled-components -> linaria: preserves an actionable concrete 
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
 		export const card = styled.div({ padding: "1rem", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -85,7 +84,6 @@ test("linaria -> styled-components -> linaria: preserves an actionable concrete 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
 		export const card = // pandwind:migrate-skip (route: styled-components -> linaria | capability-blocked: framework-semantics: react | available: static, named-map, residual)
 		styled.div({ padding: "1rem", color: "red" });",
 		    "converted": 0,
@@ -137,7 +135,6 @@ test("linaria -> styled-components -> linaria: retains the documented secondary 
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
 		export const Card = styled.div({ padding: "1rem", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -172,7 +169,6 @@ test("linaria -> styled-components -> linaria: retains the documented secondary 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
 		export const Card = // pandwind:migrate-skip (route: styled-components -> linaria | capability-blocked: framework-semantics: react | available: static, named-map, residual)
 		styled.div({ padding: "1rem", color: "red" });",
 		    "converted": 0,
@@ -239,7 +235,6 @@ test("linaria -> styled-components -> linaria: preserves concrete theme and proj
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-
 		export const card = styled.div({ padding: "1rem", color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -274,7 +269,6 @@ test("linaria -> styled-components -> linaria: preserves concrete theme and proj
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-
 		export const card = // pandwind:migrate-skip (route: styled-components -> linaria | capability-blocked: framework-semantics: react | available: static, named-map, residual)
 		styled.div({ padding: "1rem", color: "#2563eb" });",
 		      "converted": 0,
@@ -314,7 +308,6 @@ test("linaria -> styled-components -> linaria: preserves concrete theme and proj
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-
 		export const card = styled.div({ padding: "1rem", color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -349,7 +342,6 @@ test("linaria -> styled-components -> linaria: preserves concrete theme and proj
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-
 		export const card = // pandwind:migrate-skip (route: styled-components -> linaria | capability-blocked: framework-semantics: react | available: static, named-map, residual)
 		styled.div({ padding: "1rem", color: "#2563eb" });",
 		      "converted": 0,
@@ -403,7 +395,6 @@ test("linaria -> styled-components -> linaria: resolves token values across both
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
 		export const card = styled.div({ padding: "1rem", color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -438,7 +429,6 @@ test("linaria -> styled-components -> linaria: resolves token values across both
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
 		export const card = // pandwind:migrate-skip (route: styled-components -> linaria | capability-blocked: framework-semantics: react | available: static, named-map, residual)
 		styled.div({ padding: "1rem", color: "#2563eb" });",
 		    "converted": 0,

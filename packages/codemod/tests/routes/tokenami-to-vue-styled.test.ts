@@ -48,7 +48,6 @@ test("tokenami -> vue-styled: migrates concrete tokenami syntax to vue-styled", 
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-
 		export const card = styled.div({ "cardGap": "1rem", "color": "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -94,7 +93,6 @@ test("tokenami -> vue-styled: carries a documented secondary tokenami API explic
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-
 		export const card = styled.div({ "padding": "1rem", "color": "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -148,7 +146,6 @@ test("tokenami -> vue-styled: loads concrete theme and project context variants"
 		  "amber": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-
 		export const card = styled.div({ "cardGap": "1rem", "color": "#f97316" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -186,7 +183,6 @@ test("tokenami -> vue-styled: loads concrete theme and project context variants"
 		  "blue": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-
 		export const card = styled.div({ "cardGap": "1rem", "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -236,7 +232,6 @@ test("tokenami -> vue-styled: resolves concrete token values with project contex
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-
 		export const card = styled.div({ "cardGap": "1rem", "color": "#2563eb" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -282,7 +277,6 @@ test("tokenami -> vue-styled: preserves malformed concrete tokenami input", () =
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-
 		export const card = styled.div({ "cardGap": "1rem", "color": "red" });
 		const unfinished = { /* unfinished tokenami */",
 		  "converted": 1,

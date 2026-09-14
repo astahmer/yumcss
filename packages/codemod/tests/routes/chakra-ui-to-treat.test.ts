@@ -148,7 +148,7 @@ test("chakra-ui -> treat: loads concrete theme and project context variants", as
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
 		import { style } from "@/styles.treat";
-		export const App = () => <Box p="4" className={style({ "backgroundColor": "#f97316" })}/>;",
+		export const App = () => <Box className={style({ "backgroundColor": "#f97316", "p": "var(--chakra-spacing-4)" })}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -186,7 +186,7 @@ test("chakra-ui -> treat: loads concrete theme and project context variants", as
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
 		import { style } from "@/styles.treat";
-		export const App = () => <Box p="4" className={style({ "backgroundColor": "#2563eb" })}/>;",
+		export const App = () => <Box className={style({ "backgroundColor": "#2563eb", "p": "var(--chakra-spacing-4)" })}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -236,7 +236,7 @@ test("chakra-ui -> treat: resolves concrete token values with project context", 
 		  "changed": true,
 		  "code": "import { Box } from "@chakra-ui/react";
 		import { style } from "@/styles.treat";
-		export const App = () => <Box p="4" className={style({ "backgroundColor": "#2563eb" })}/>;",
+		export const App = () => <Box className={style({ "backgroundColor": "#2563eb", "p": "var(--chakra-spacing-4)" })}/>;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [

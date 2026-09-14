@@ -47,8 +47,7 @@ test("panda -> tailwind: migrates concrete panda syntax to tailwind", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		export const card = "[color:red.300] hover:[color:blue.300]";",
+		  "code": "export const card = "[color:red.300] hover:[color:blue.300]";",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -156,8 +155,7 @@ test("panda -> tailwind: loads concrete theme and project context variants", asy
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "
-		export const card = "text-brand hover:[color:#f97316]";",
+		    "code": "export const card = "text-brand hover:[color:#f97316]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -193,8 +191,7 @@ test("panda -> tailwind: loads concrete theme and project context variants", asy
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "
-		export const card = "text-brand hover:[color:#2563eb]";",
+		    "code": "export const card = "text-brand hover:[color:#2563eb]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -242,8 +239,7 @@ test("panda -> tailwind: resolves concrete token values with project context", a
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		export const card = "text-brand hover:[color:blue.300]";",
+		  "code": "export const card = "text-brand hover:[color:blue.300]";",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -287,8 +283,7 @@ test("panda -> tailwind: preserves malformed concrete panda input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		export const card = "[color:red.300] hover:[color:blue.300]";
+		  "code": "export const card = "[color:red.300] hover:[color:blue.300]";
 		const unfinished = { /* unfinished panda */",
 		  "converted": 1,
 		  "generatedFiles": [],

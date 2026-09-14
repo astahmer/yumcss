@@ -148,7 +148,7 @@ test("chakra-ui -> vanilla-extract: loads concrete theme and project context var
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
 		export const App = () => // pandwind:migrate-skip (route: chakra-ui -> vanilla-extract | lowering-residual: validation)
-		<Box p="4" className={style({ backgroundColor: "brand.500" })}/>;",
+		<Box className={style({ backgroundColor: "brand.500", p: "var(--chakra-spacing-4)" })}/>;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -193,7 +193,7 @@ test("chakra-ui -> vanilla-extract: loads concrete theme and project context var
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
 		export const App = () => // pandwind:migrate-skip (route: chakra-ui -> vanilla-extract | lowering-residual: validation)
-		<Box p="4" className={style({ backgroundColor: "brand.500" })}/>;",
+		<Box className={style({ backgroundColor: "brand.500", p: "var(--chakra-spacing-4)" })}/>;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -250,7 +250,7 @@ test("chakra-ui -> vanilla-extract: resolves concrete token values with project 
 		  "changed": true,
 		  "code": "import { Box } from "@chakra-ui/react";
 		import { style } from "@vanilla-extract/css";
-		export const App = () => <Box p="4" className={style({ backgroundColor: "#2563eb" })}/>;",
+		export const App = () => <Box className={style({ backgroundColor: "#2563eb", p: "var(--chakra-spacing-4)" })}/>;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [

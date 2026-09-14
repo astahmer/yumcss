@@ -50,7 +50,6 @@ test("bamboo -> tokenami -> bamboo: preserves an actionable concrete round trip"
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-
 		export const card = css({ color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -85,8 +84,6 @@ test("bamboo -> tokenami -> bamboo: preserves an actionable concrete round trip"
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-
-
 		export const card = css({ color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -135,7 +132,6 @@ test("bamboo -> tokenami -> bamboo: retains the documented secondary API without
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-
 		export const card = css({ gap: "4", display: "flex" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -170,8 +166,6 @@ test("bamboo -> tokenami -> bamboo: retains the documented secondary API without
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-
-
 		export const card = css({ gap: "4", display: "flex" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -235,7 +229,6 @@ test("bamboo -> tokenami -> bamboo: preserves concrete theme and project context
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-
 		export const card = css({ color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -270,8 +263,6 @@ test("bamboo -> tokenami -> bamboo: preserves concrete theme and project context
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "styled-system/css";
-
-
 		export const card = css({ color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -308,7 +299,6 @@ test("bamboo -> tokenami -> bamboo: preserves concrete theme and project context
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-
 		export const card = css({ color: "$colors.brand" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -343,7 +333,6 @@ test("bamboo -> tokenami -> bamboo: preserves concrete theme and project context
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-
 		export const card = // pandwind:migrate-skip (route: tokenami -> bamboo | lowering-residual: validation)
 		css({ color: "$colors.brand" });",
 		      "converted": 0,
@@ -403,7 +392,6 @@ test("bamboo -> tokenami -> bamboo: resolves token values across both concrete l
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-
 		export const card = css({ color: "$colors.brand" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -438,7 +426,6 @@ test("bamboo -> tokenami -> bamboo: resolves token values across both concrete l
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-
 		export const card = // pandwind:migrate-skip (route: tokenami -> bamboo | lowering-residual: validation)
 		css({ color: "$colors.brand" });",
 		    "converted": 0,

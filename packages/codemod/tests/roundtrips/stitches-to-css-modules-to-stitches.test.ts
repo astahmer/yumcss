@@ -51,7 +51,6 @@ test("stitches -> css-modules -> stitches: preserves an actionable concrete roun
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": "1rem", "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -90,7 +89,6 @@ test("stitches -> css-modules -> stitches: preserves an actionable concrete roun
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
 		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": "1rem", "color": "red" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -154,8 +152,7 @@ test("stitches -> css-modules -> stitches: retains the documented secondary API 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const reset = body { margin: 0; };",
+		    "code": "export const reset = body { margin: 0; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -190,7 +187,6 @@ test("stitches -> css-modules -> stitches: retains the documented secondary API 
 		  "reverse": {
 		    "changed": false,
 		    "code": "// pandwind:migrate-skip (lowering-residual: capability)
-
 		export const reset = body { margin: 0; };",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -257,7 +253,6 @@ test("stitches -> css-modules -> stitches: preserves concrete theme and project 
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": "1rem", "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -296,7 +291,6 @@ test("stitches -> css-modules -> stitches: preserves concrete theme and project 
 		      "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
 		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": "1rem", "color": "#2563eb" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -350,7 +344,6 @@ test("stitches -> css-modules -> stitches: preserves concrete theme and project 
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": "1rem", "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -389,7 +382,6 @@ test("stitches -> css-modules -> stitches: preserves concrete theme and project 
 		      "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
 		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": "1rem", "color": "#2563eb" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -457,7 +449,6 @@ test("stitches -> css-modules -> stitches: resolves token values across both con
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": "1rem", "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -496,7 +487,6 @@ test("stitches -> css-modules -> stitches: resolves token values across both con
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
 		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const card = css.class({ "padding": "1rem", "color": "#2563eb" });",
 		    "converted": 0,
 		    "generatedFiles": [],

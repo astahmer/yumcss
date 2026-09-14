@@ -89,7 +89,6 @@ test("tamagui -> vanilla-extract -> tamagui: preserves an actionable concrete ro
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
 		import { View, styled } from "@tamagui/core";
-
 		export const Card = styled(View, { padding: "$4", color: "red" });
 		export const App = () => <View className={Card} />;",
 		    "converted": 1,
@@ -260,7 +259,6 @@ test("tamagui -> vanilla-extract -> tamagui: preserves concrete theme and projec
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
 		import { View, styled } from "@tamagui/core";
-
 		export const Card = styled(View, { padding: "$4", color: "#2563eb" });
 		export const App = () => <View className={Card} />;",
 		      "converted": 1,
@@ -336,7 +334,6 @@ test("tamagui -> vanilla-extract -> tamagui: preserves concrete theme and projec
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
 		import { View, styled } from "@tamagui/core";
-
 		export const Card = styled(View, { padding: "$4", color: "#2563eb" });
 		export const App = () => <View className={Card} />;",
 		      "converted": 1,
@@ -426,7 +423,6 @@ test("tamagui -> vanilla-extract -> tamagui: resolves token values across both c
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
 		import { View, styled } from "@tamagui/core";
-
 		export const Card = styled(View, { padding: "$4", color: "#2563eb" });
 		export const App = () => <View className={Card} />;",
 		    "converted": 1,

@@ -86,7 +86,6 @@ test("authored-css -> emotion -> authored-css: preserves an actionable concrete 
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const styles = { "card": css.class({ "padding": "1rem", "color": "red" }) };
 		export default styles;",
 		    "converted": 1,
@@ -191,10 +190,10 @@ test("authored-css -> emotion -> authored-css: retains the documented secondary 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css, keyframes } from "@emotion/css";
+		    "code": "import { keyframes } from "@emotion/css";
 		import { createCss } from "pandwind/css";
-		const targetCss = createCss();
-		export const styles = { "card": targetCss.class({ "@media (prefers-color-scheme: dark)": { "color": "white" } }), "pulse": // pandwind:migrate-skip (route: emotion -> authored-css | capability-blocked: nesting: keyframes nested rules | available: static, residual)
+		const css = createCss();
+		export const styles = { "card": css.class({ "@media (prefers-color-scheme: dark)": { "color": "white" } }), "pulse": // pandwind:migrate-skip (route: emotion -> authored-css | capability-blocked: nesting: keyframes nested rules | available: static, residual)
 		keyframes({ "from": { opacity: "0" }, "to": { opacity: "1" } }) };
 		export default styles;",
 		    "converted": 1,
@@ -318,7 +317,6 @@ test("authored-css -> emotion -> authored-css: preserves concrete theme and proj
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const styles = { "card": css.class({ "padding": "1rem", "color": "#2563eb" }) };
 		export default styles;",
 		      "converted": 1,
@@ -394,7 +392,6 @@ test("authored-css -> emotion -> authored-css: preserves concrete theme and proj
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const styles = { "card": css.class({ "padding": "1rem", "color": "#2563eb" }) };
 		export default styles;",
 		      "converted": 1,
@@ -484,7 +481,6 @@ test("authored-css -> emotion -> authored-css: resolves token values across both
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const styles = { "card": css.class({ "padding": "1rem", "color": "#2563eb" }) };
 		export default styles;",
 		    "converted": 1,

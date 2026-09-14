@@ -48,7 +48,6 @@ test("style9 -> next-yak: migrates concrete style9 syntax to next-yak", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "next-yak";
-
 		export const styles = { "card": css\`color: red;\` };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -92,7 +91,6 @@ test("style9 -> next-yak: carries a documented secondary style9 API explicitly",
 		{
 		  "changed": true,
 		  "code": "import { css } from "next-yak";
-
 		export const styles = { "card": css\`color: red;\`, "muted": css\`opacity: 0.5;\` };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -145,7 +143,6 @@ test("style9 -> next-yak: loads concrete theme and project context variants", as
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-
 		export const styles = { "card": css\`color: #2563eb;\` };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -180,7 +177,6 @@ test("style9 -> next-yak: loads concrete theme and project context variants", as
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-
 		export const styles = { "card": css\`color: #2563eb;\` };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -227,7 +223,6 @@ test("style9 -> next-yak: resolves concrete token values with project context", 
 		{
 		  "changed": true,
 		  "code": "import { css } from "next-yak";
-
 		export const styles = { "card": css\`color: #2563eb;\` };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -271,7 +266,6 @@ test("style9 -> next-yak: preserves malformed concrete style9 input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "next-yak";
-
 		export const styles = { "card": css\`color: red;\` };
 		const unfinished = { /* unfinished style9 */",
 		  "converted": 1,

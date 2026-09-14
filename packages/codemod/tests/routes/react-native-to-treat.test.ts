@@ -48,7 +48,6 @@ test("react-native -> treat: migrates concrete react-native syntax to treat", ()
 		{
 		  "changed": true,
 		  "code": "import { style } from "@/styles.treat";
-
 		export const styles = { "card": style({ "padding": 8, "color": "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -94,7 +93,6 @@ test("react-native -> treat: carries a documented secondary react-native API exp
 		{
 		  "changed": true,
 		  "code": "import { style } from "@/styles.treat";
-
 		export const styles = { "card": style({ "padding": 8, "backgroundColor": "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -149,7 +147,6 @@ test("react-native -> treat: loads concrete theme and project context variants",
 		  "amber": {
 		    "changed": true,
 		    "code": "import { style } from "@/styles.treat";
-
 		export const styles = { "card": style({ "padding": 8, "color": "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -186,7 +183,6 @@ test("react-native -> treat: loads concrete theme and project context variants",
 		  "blue": {
 		    "changed": true,
 		    "code": "import { style } from "@/styles.treat";
-
 		export const styles = { "card": style({ "padding": 8, "color": "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -235,7 +231,6 @@ test("react-native -> treat: resolves concrete token values with project context
 		{
 		  "changed": true,
 		  "code": "import { style } from "@/styles.treat";
-
 		export const styles = { "card": style({ "padding": 8, "color": "#2563eb" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -281,7 +276,6 @@ test("react-native -> treat: preserves malformed concrete react-native input", (
 		{
 		  "changed": true,
 		  "code": "import { style } from "@/styles.treat";
-
 		export const styles = { "card": style({ "padding": 8, "color": "red" }) };
 		const unfinished = { /* unfinished react-native */",
 		  "converted": 1,

@@ -84,8 +84,7 @@ test("bamboo -> chakra-ui -> bamboo: preserves an actionable concrete round trip
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-		import { css } from "styled-system/css";
+		    "code": "import { css } from "styled-system/css";
 
 		export const card = css({ color: "red" });",
 		    "converted": 1,
@@ -169,8 +168,7 @@ test("bamboo -> chakra-ui -> bamboo: retains the documented secondary API withou
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-		import { css } from "styled-system/css";
+		    "code": "import { css } from "styled-system/css";
 
 		export const card = css({ gap: "var(--chakra-spacing-4)", display: "flex" });",
 		    "converted": 1,
@@ -269,8 +267,7 @@ test("bamboo -> chakra-ui -> bamboo: preserves concrete theme and project contex
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { defaultSystem } from "@chakra-ui/react";
-		import { css } from "styled-system/css";
+		      "code": "import { css } from "styled-system/css";
 
 		export const card = css({ color: "#2563eb" });",
 		      "converted": 1,

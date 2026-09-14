@@ -48,7 +48,6 @@ test("panda -> styled-components: migrates concrete panda syntax to styled-compo
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-
 		export const card = styled.div({ color: "red.300", "&:hover": { color: "blue.300" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -242,7 +241,6 @@ test("panda -> styled-components: resolves concrete token values with project co
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-
 		export const card = styled.div({ color: "#2563eb", "&:hover": { color: "blue.300" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -286,7 +284,6 @@ test("panda -> styled-components: preserves malformed concrete panda input", () 
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-
 		export const card = styled.div({ color: "red.300", "&:hover": { color: "blue.300" } });
 		const unfinished = { /* unfinished panda */",
 		  "converted": 1,

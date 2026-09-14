@@ -85,8 +85,7 @@ test("tailwind -> stylex -> tailwind: preserves an actionable concrete round tri
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		export const App = () => { "style": "[gap:1rem] [align-items:center] [display:flex]" }.style;",
+		    "code": "export const App = () => { "style": "[gap:1rem] [align-items:center] [display:flex]" }.style;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -255,8 +254,7 @@ test("tailwind -> stylex -> tailwind: preserves concrete theme and project conte
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		export const App = () => { "style": "p-card text-brand" }.style;",
+		      "code": "export const App = () => { "style": "p-card text-brand" }.style;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -329,8 +327,7 @@ test("tailwind -> stylex -> tailwind: preserves concrete theme and project conte
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		export const App = () => { "style": "p-card text-brand" }.style;",
+		      "code": "export const App = () => { "style": "p-card text-brand" }.style;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -417,8 +414,7 @@ test("tailwind -> stylex -> tailwind: resolves token values across both concrete
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		export const App = () => { "style": "p-card text-brand" }.style;",
+		    "code": "export const App = () => { "style": "p-card text-brand" }.style;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

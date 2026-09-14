@@ -48,7 +48,6 @@ test("vanilla-extract -> linaria: migrates concrete vanilla-extract syntax to li
 		{
 		  "changed": true,
 		  "code": "import { css } from "@linaria/core";
-
 		export const card = css\`padding: 8; color: red;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -157,7 +156,6 @@ test("vanilla-extract -> linaria: loads concrete theme and project context varia
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "@linaria/core";
-
 		export const card = css\`padding: 8; color: #2563eb;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -194,7 +192,6 @@ test("vanilla-extract -> linaria: loads concrete theme and project context varia
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "@linaria/core";
-
 		export const card = css\`padding: 8; color: #2563eb;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -243,7 +240,6 @@ test("vanilla-extract -> linaria: resolves concrete token values with project co
 		{
 		  "changed": true,
 		  "code": "import { css } from "@linaria/core";
-
 		export const card = css\`padding: 8; color: #2563eb;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -289,7 +285,6 @@ test("vanilla-extract -> linaria: preserves malformed concrete vanilla-extract i
 		{
 		  "changed": true,
 		  "code": "import { css } from "@linaria/core";
-
 		export const card = css\`padding: 8; color: red;\`;
 		const unfinished = { /* unfinished vanilla-extract */",
 		  "converted": 1,

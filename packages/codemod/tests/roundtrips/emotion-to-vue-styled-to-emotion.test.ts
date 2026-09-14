@@ -50,7 +50,6 @@ test("emotion -> vue-styled -> emotion: preserves an actionable concrete round t
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-
 		export const card = styled.div({ "padding": "1rem", "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -87,8 +86,6 @@ test("emotion -> vue-styled -> emotion: preserves an actionable concrete round t
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "@emotion/styled";
-
-
 		export const card = styled.div({ padding: "1rem", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -137,7 +134,6 @@ test("emotion -> vue-styled -> emotion: retains the documented secondary API wit
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-
 		export const card = styled.div({ "padding": "1rem", "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -174,8 +170,6 @@ test("emotion -> vue-styled -> emotion: retains the documented secondary API wit
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "@emotion/styled";
-
-
 		export const card = styled.div({ padding: "1rem", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -239,7 +233,6 @@ test("emotion -> vue-styled -> emotion: preserves concrete theme and project con
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-
 		export const card = styled.div({ "padding": "1rem", "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -276,8 +269,6 @@ test("emotion -> vue-styled -> emotion: preserves concrete theme and project con
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "@emotion/styled";
-
-
 		export const card = styled.div({ padding: "1rem", color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -314,7 +305,6 @@ test("emotion -> vue-styled -> emotion: preserves concrete theme and project con
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-
 		export const card = styled.div({ "padding": "1rem", "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -351,8 +341,6 @@ test("emotion -> vue-styled -> emotion: preserves concrete theme and project con
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "@emotion/styled";
-
-
 		export const card = styled.div({ padding: "1rem", color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -403,7 +391,6 @@ test("emotion -> vue-styled -> emotion: resolves token values across both concre
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-
 		export const card = styled.div({ "padding": "1rem", "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -440,8 +427,6 @@ test("emotion -> vue-styled -> emotion: resolves token values across both concre
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "@emotion/styled";
-
-
 		export const card = styled.div({ padding: "1rem", color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],

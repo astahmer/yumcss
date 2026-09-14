@@ -49,8 +49,7 @@ test("stylex -> unocss -> stylex: preserves an actionable concrete round trip", 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const styles = { "card": "[padding:8px] [color:red]" };",
+		    "code": "export const styles = { "card": "[padding:8px] [color:red]" };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,7 +85,6 @@ test("stylex -> unocss -> stylex: preserves an actionable concrete round trip", 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-
 		export const styles = stylex.create({ "card": { padding: "8px", color: "red" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -136,8 +134,7 @@ test("stylex -> unocss -> stylex: retains the documented secondary API without s
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const styles = { "card": "[color:red]" };",
+		    "code": "export const styles = { "card": "[color:red]" };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -173,7 +170,6 @@ test("stylex -> unocss -> stylex: retains the documented secondary API without s
 		  "reverse": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-
 		export const styles = stylex.create({ "card": { color: "red" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -238,8 +234,7 @@ test("stylex -> unocss -> stylex: preserves concrete theme and project context v
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		export const styles = { "card": "[padding:8px] [color:#2563eb]" };",
+		      "code": "export const styles = { "card": "[padding:8px] [color:#2563eb]" };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -274,8 +269,7 @@ test("stylex -> unocss -> stylex: preserves concrete theme and project context v
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		export const styles = // pandwind:migrate-skip (route: unocss -> stylex | lowering-residual: validation)
+		      "code": "export const styles = // pandwind:migrate-skip (route: unocss -> stylex | lowering-residual: validation)
 		{ "card": "[padding:8px] [color:#2563eb]" };",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -321,8 +315,7 @@ test("stylex -> unocss -> stylex: preserves concrete theme and project context v
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		export const styles = { "card": "[padding:8px] text-brand" };",
+		      "code": "export const styles = { "card": "[padding:8px] text-brand" };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -357,8 +350,7 @@ test("stylex -> unocss -> stylex: preserves concrete theme and project context v
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		export const styles = // pandwind:migrate-skip (route: unocss -> stylex | lowering-residual: validation)
+		      "code": "export const styles = // pandwind:migrate-skip (route: unocss -> stylex | lowering-residual: validation)
 		{ "card": "[padding:8px] text-brand" };",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -418,8 +410,7 @@ test("stylex -> unocss -> stylex: resolves token values across both concrete leg
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const styles = { "card": "[padding:8px] text-brand" };",
+		    "code": "export const styles = { "card": "[padding:8px] text-brand" };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -454,8 +445,7 @@ test("stylex -> unocss -> stylex: resolves token values across both concrete leg
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		export const styles = // pandwind:migrate-skip (route: unocss -> stylex | lowering-residual: validation)
+		    "code": "export const styles = // pandwind:migrate-skip (route: unocss -> stylex | lowering-residual: validation)
 		{ "card": "[padding:8px] text-brand" };",
 		    "converted": 0,
 		    "generatedFiles": [],

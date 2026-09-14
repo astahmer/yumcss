@@ -86,7 +86,6 @@ test("authored-css -> pandwind -> authored-css: preserves an actionable concrete
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
-
 		const css = createCss();
 		export const styles = { "card": css.class({ "padding": "1rem", "color": "red" }) };
 		export default styles;",
@@ -323,7 +322,6 @@ test("authored-css -> pandwind -> authored-css: preserves concrete theme and pro
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
-
 		const css = createCss();
 		export const styles = { "card": css.class({ "padding": "1rem", "color": "#2563eb" }) };
 		export default styles;",
@@ -400,7 +398,6 @@ test("authored-css -> pandwind -> authored-css: preserves concrete theme and pro
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
-
 		const css = createCss();
 		export const styles = { "card": css.class({ "padding": "1rem", "color": "brand" }) };
 		export default styles;",
@@ -491,7 +488,6 @@ test("authored-css -> pandwind -> authored-css: resolves token values across bot
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
-
 		const css = createCss();
 		export const styles = { "card": css.class({ "padding": "1rem", "color": "brand" }) };
 		export default styles;",

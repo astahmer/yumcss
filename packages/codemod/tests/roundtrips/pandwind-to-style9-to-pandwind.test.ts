@@ -91,7 +91,6 @@ test("pandwind -> style9 -> pandwind: preserves an actionable concrete round tri
 		const cx = createCx();
 		const css = createCss();
 
-
 		export const card = css.class({ padding: "1rem", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -268,7 +267,6 @@ test("pandwind -> style9 -> pandwind: preserves concrete theme and project conte
 		const cx = createCx();
 		const css = createCss();
 
-
 		export const card = css.class({ padding: "1rem", color: "brand" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -346,7 +344,6 @@ test("pandwind -> style9 -> pandwind: preserves concrete theme and project conte
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		const css = createCss();
-
 
 		export const card = css.class({ padding: "1rem", color: "brand" });",
 		      "converted": 1,
@@ -438,7 +435,6 @@ test("pandwind -> style9 -> pandwind: resolves token values across both concrete
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		const css = createCss();
-
 
 		export const card = css.class({ padding: "1rem", color: "brand" });",
 		    "converted": 1,
