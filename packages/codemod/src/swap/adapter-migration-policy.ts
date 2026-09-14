@@ -73,16 +73,69 @@ export function sourceImportsBinding(
 	return false;
 }
 
-export function aliasTargetCssBinding(code: string): string {
-	return code
-		.replace(
-			/import\s*\{\s*css\s*\}\s*from\s*(["'])([^"']*pandwind\/css(?:\/runtime)?)[^"']*\1/gu,
-			"import { css as targetCss } from $1$2$1",
-		)
-		.replace(/\bconst\s+css\s*=\s*(create(?:Runtime)?Css)\(/gu, "const targetCss = $1(")
-		.replace(/\bcss(?=\.(?:class|vars|raw|props|group|input|sheet)\b)/gu, "targetCss")
-		.replace(/\b(create(?:Recipe|SlotRecipe)\(\s*)css(?=\s*,)/gu, "$1targetCss")
-		.replace(/\b(createCx\(\{\s*)css(?=\s*\})/gu, "$1targetCss");
+export function sourceImportsModule(
+	source: string,
+	modules: readonly string[],
+	matchers: readonly ((moduleSpecifier: string) => boolean)[] = [],
+): boolean {
+	const owned = new Set(modules);
+	return [...source.matchAll(/\bimport\s+[\s\S]*?\s+from\s+["']([^"']+)["']/gu)].some((match) => {
+		const moduleSpecifier = match[1];
+		return (
+			moduleSpecifier !== undefined &&
+			(owned.has(moduleSpecifier) || matchers.some((matcher) => matcher(moduleSpecifier)))
+		);
+	});
+}
+
+export function normalizeSourceCssBinding(
+	code: string,
+	modules: readonly string[],
+	matchers: readonly ((moduleSpecifier: string) => boolean)[] = [],
+): string {
+	if (!sourceImportsBinding(code, "css", modules, matchers)) return code;
+	const owned = new Set(modules);
+	const sourceImport = /\bimport\s+(\{[^}]*\})\s+from\s+["']([^"']+)["']/gu;
+	const withSourceAlias = code.replace(
+		sourceImport,
+		(statement, named: string, moduleSpecifier: string) => {
+			if (!owned.has(moduleSpecifier) && !matchers.some((matcher) => matcher(moduleSpecifier)))
+				return statement;
+			const nextNamed = named.replace(/\bcss\b(?!\s+as)/u, "css as sourceCss");
+			return nextNamed === named ? statement : statement.replace(named, nextNamed);
+		},
+	);
+	return withSourceAlias.replace(/\bcss(?=\s*[.(])/gu, "sourceCss");
+}
+
+/** Keep an unrelated imported `css` binding from colliding with Pandwind's target binding. */
+export function normalizeForeignCssBinding(
+	code: string,
+	modules: readonly string[],
+	matchers: readonly ((moduleSpecifier: string) => boolean)[] = [],
+	targetModules: readonly string[] = [],
+	targetMatchers: readonly ((moduleSpecifier: string) => boolean)[] = [],
+): string {
+	const owned = new Set(modules);
+	const targetOwned = new Set(targetModules);
+	let hasForeignCssImport = false;
+	const withSourceAlias = code.replace(
+		/\bimport\s+(\{[^}]*\})\s+from\s+["']([^"']+)["']/gu,
+		(statement, named: string, moduleSpecifier: string) => {
+			if (
+				targetOwned.has(moduleSpecifier) ||
+				targetMatchers.some((matcher) => matcher(moduleSpecifier)) ||
+				owned.has(moduleSpecifier) ||
+				matchers.some((matcher) => matcher(moduleSpecifier))
+			)
+				return statement;
+			const nextNamed = named.replace(/\bcss(?:\s+as\s+css)?[ \t]*(?=,|\})/u, "css as sourceCss");
+			if (nextNamed === named) return statement;
+			hasForeignCssImport = true;
+			return statement.replace(named, nextNamed);
+		},
+	);
+	return hasForeignCssImport ? withSourceAlias.replace(/\bcss(?=\s*[.(])/gu, "sourceCss") : code;
 }
 
 export function withoutDuplicateSkipMarkers(

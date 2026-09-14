@@ -55,12 +55,14 @@ import { simplifyPandwindStaticStyles } from "./static-style-simplifier.ts";
 import { StyleProgramAnalysis } from "./style-program-analysis.ts";
 import { StyleProgramCore } from "./style-program-core.ts";
 import {
-	aliasTargetCssBinding,
 	derivedFileOutcomes,
 	hasTargetHostPort,
 	hostFrameworkConversion,
 	loweringRegistryForRoute,
 	normalizeAsyncMigrationResult,
+	normalizeForeignCssBinding,
+	normalizeSourceCssBinding,
+	sourceImportsModule,
 	sourceImportsBinding,
 	targetAcceptsSourceFramework,
 	targetHostFramework,
@@ -76,6 +78,20 @@ import {
 const renamedCssBindingPattern = /\b(?:targetCss|pwCss)\s*=\s*createCss\(\)/u;
 const generatedCssBindingPattern = /\b(?:css|targetCss|pwCss)\s*=\s*createCss\(\)/u;
 const runtimeCssBindingPattern = /\b(?:css|targetCss|pwCss)\s*=\s*createRuntimeCss\(/u;
+
+const canonicalizeGeneratedCssBinding = (
+	emission: { text: string; imports: readonly string[] },
+	binding: string,
+): { text: string; imports: readonly string[] } => {
+	if (binding === "css") return emission;
+	const escaped = binding.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+	const rename = (value: string) =>
+		value
+			.replace(new RegExp(`\\b${escaped}(?=\\s*[.({,;}])`, "gu"), "css")
+			.replace(new RegExp(`\\b${escaped}(?=\\s*=)`, "gu"), "css")
+			.replace(/\bcss\s+as\s+css\b/gu, "css");
+	return { text: rename(emission.text), imports: emission.imports.map(rename) };
+};
 
 async function runAdapterMigrationAsyncInternal(
 	source: string,
@@ -133,6 +149,18 @@ function runAdapterMigrationInternal(
 			loweringPlans: result.loweringPlans,
 			outcomes: result.outcomes ?? derivedFileOutcomes(source, result.loweringPlans),
 		};
+	}
+	if (
+		targetAdapter.id === CodemodAdapterId.Pandwind &&
+		sourceImportsModule(source, sourceAdapter.sourceModules, sourceAdapter.sourceModuleMatchers)
+	) {
+		source = normalizeForeignCssBinding(
+			source,
+			sourceAdapter.sourceModules,
+			sourceAdapter.sourceModuleMatchers,
+			targetAdapter.sourceModules,
+			targetAdapter.sourceModuleMatchers,
+		);
 	}
 	const document = ports.sourceScanner.scan({
 		file: options.file,
@@ -202,6 +230,10 @@ function runAdapterMigrationInternal(
 		targetAdapter,
 	);
 	const marker = options.skipMarker ?? "pandwind:migrate-skip";
+	const renderSkipMarker = (index: number, text: string): string => {
+		const rendered = SourcePass.markerText(source, options.file, index, text);
+		return `${rendered}\n`;
+	};
 	const edits: Array<{ start: number; end: number; text: string }> = [];
 	const imports = new Set<string>();
 	const generatedStatements = new Set<string>();
@@ -315,13 +347,15 @@ function runAdapterMigrationInternal(
 		edits.push({
 			start: 0,
 			end: 0,
-			text:
+			text: renderSkipMarker(
+				0,
 				MigrationDiagnostics.skipMarker({
 					marker,
 					sourceAdapter: sourceAdapter.id,
 					targetAdapter: targetAdapter.id,
 					parseResiduals: unpreservedParseResiduals,
-				}) + "\n",
+				}),
+			),
 		});
 	}
 	for (const [index, match] of support.selectNonOverlappingMatches(parsed.matches).entries()) {
@@ -547,7 +581,8 @@ function runAdapterMigrationInternal(
 					edits.push({
 						start: match.start,
 						end: match.start,
-						text:
+						text: renderSkipMarker(
+							match.start,
 							MigrationDiagnostics.skipMarker({
 								marker,
 								loweringResiduals: [
@@ -557,7 +592,8 @@ function runAdapterMigrationInternal(
 										hint: "dynamic values require a host-bound class/style carrier",
 									},
 								],
-							}) + "\n",
+							}),
+						),
 					});
 					continue;
 				}
@@ -894,7 +930,8 @@ function runAdapterMigrationInternal(
 			edits.push({
 				start: match.start,
 				end: match.start,
-				text:
+				text: renderSkipMarker(
+					match.start,
 					MigrationDiagnostics.skipMarker({
 						marker,
 						sourceAdapter: sourceAdapter.id,
@@ -903,7 +940,8 @@ function runAdapterMigrationInternal(
 						loweringResiduals,
 						blockers: effectiveReport.blockers,
 						availableRepresentations: lowering.availableRepresentations,
-					}) + "\n",
+					}),
+				),
 			});
 			continue;
 		}
@@ -954,14 +992,16 @@ function runAdapterMigrationInternal(
 			edits.push({
 				start: match.start,
 				end: match.start,
-				text:
+				text: renderSkipMarker(
+					match.start,
 					MigrationDiagnostics.skipMarker({
 						marker,
 						sourceAdapter: sourceAdapter.id,
 						targetAdapter: targetAdapter.id,
 						loweringResiduals: [emptyEmission, ...emitted.residuals],
 						availableRepresentations: lowering.availableRepresentations,
-					}) + "\n",
+					}),
+				),
 			});
 			continue;
 		}
@@ -1069,7 +1109,8 @@ function runAdapterMigrationInternal(
 			edits.push({
 				start: match.start,
 				end: match.start,
-				text:
+				text: renderSkipMarker(
+					match.start,
 					MigrationDiagnostics.skipMarker({
 						marker,
 						sourceAdapter: sourceAdapter.id,
@@ -1082,7 +1123,8 @@ function runAdapterMigrationInternal(
 								hint: validation.differences.join("; "),
 							},
 						],
-					}) + "\n",
+					}),
+				),
 			});
 			continue;
 		}
@@ -1283,6 +1325,8 @@ function runAdapterMigrationInternal(
 		code: runtimeEdited,
 		file: options.file,
 		targetId: targetAdapter.id,
+		sourceConfig: config,
+		...(options.project === undefined ? {} : { project: options.project }),
 		convertedBindings,
 		complete: skipped === 0 && residuals.length === 0,
 	});
@@ -1345,14 +1389,15 @@ function runAdapterMigrationInternal(
 		if (documentRewrite.residuals.length > 0) {
 			residuals.push(...documentRewrite.residuals);
 			runtimeEdited =
-				MigrationDiagnostics.skipMarker({
-					marker,
-					sourceAdapter: sourceAdapter.id,
-					targetAdapter: targetAdapter.id,
-					loweringResiduals: documentRewrite.residuals,
-				}) +
-				"\n" +
-				source;
+				renderSkipMarker(
+					0,
+					MigrationDiagnostics.skipMarker({
+						marker,
+						sourceAdapter: sourceAdapter.id,
+						targetAdapter: targetAdapter.id,
+						loweringResiduals: documentRewrite.residuals,
+					}),
+				) + source;
 			converted = 0;
 			skipped = 1;
 			imports.clear();
@@ -1368,30 +1413,34 @@ function runAdapterMigrationInternal(
 	if (generatedFileResiduals.length > 0) {
 		residuals.push(...generatedFileResiduals);
 		runtimeEdited =
-			MigrationDiagnostics.skipMarker({
-				marker,
-				sourceAdapter: sourceAdapter.id,
-				targetAdapter: targetAdapter.id,
-				loweringResiduals: generatedFileResiduals,
-			}) +
-			"\n" +
-			source;
+			renderSkipMarker(
+				0,
+				MigrationDiagnostics.skipMarker({
+					marker,
+					sourceAdapter: sourceAdapter.id,
+					targetAdapter: targetAdapter.id,
+					loweringResiduals: generatedFileResiduals,
+				}),
+			) + source;
 		converted = 0;
 		skipped = Math.max(1, skipped);
 		imports.clear();
 		generatedFiles.clear();
 		outputExtension = undefined;
 	}
-	// Keep source imports whenever a skipped/residual match still depends on the
-	// source runtime. Removing them would turn a safe residual into broken code.
+	// Prune only source bindings that are no longer referenced. This is safe even
+	// when another match remains residual: used Chakra/Panda bindings stay in the
+	// file, while dead layout imports do not keep the old runtime surface alive.
 	let code = runtimeEdited;
-	if (converted > 0 && skipped === 0 && residuals.length === 0) {
+	if (converted > 0) {
 		code = MigrationOutput.removeSourceImports(
 			code,
 			[...sourceModulesForRemoval, ...sourceModulesToRemove],
 			sourceAdapter.sourceModuleMatchers,
 			support.generatedBindings(imports),
 		);
+	}
+	if (converted > 0 && skipped === 0 && residuals.length === 0) {
 		code = MigrationOutput.removeNamedImportSpecifiers(
 			code,
 			[...sourceModulesForRemoval, ...sourceModulesToRemove],
@@ -1406,6 +1455,28 @@ function runAdapterMigrationInternal(
 		// namespace; its import would make the emitted module import an API the
 		// target dialect never calls.
 		code = MigrationOutput.removeUnreferencedImportSpecifiers(code, [...demotedFactoryHosts]);
+	}
+	if (converted > 0 && skipped === 0 && residuals.length === 0) {
+		const generatedTargetBinding =
+			/\b(?:const|let|var)\s+(targetCss|pwCss)\s*=\s*createCss\(|\bcss\s+as\s+(targetCss|pwCss)\b/u.exec(
+				[code, ...imports, ...generatedStatements].join("\n"),
+			);
+		const binding = generatedTargetBinding?.[1] ?? generatedTargetBinding?.[2];
+		if (binding !== undefined) {
+			const canonical = canonicalizeGeneratedCssBinding(
+				{ text: code, imports: [...imports] },
+				binding,
+			);
+			code = canonical.text;
+			imports.clear();
+			for (const statement of canonical.imports) imports.add(statement);
+			const canonicalStatements = canonicalizeGeneratedCssBinding(
+				{ text: "", imports: [...generatedStatements] },
+				binding,
+			);
+			generatedStatements.clear();
+			for (const statement of canonicalStatements.imports) generatedStatements.add(statement);
+		}
 	}
 	if (imports.has('import { createRuntimeCss } from "pandwind/css/runtime";')) {
 		const hasRenamedStaticCss =
@@ -1433,53 +1504,36 @@ function runAdapterMigrationInternal(
 		imports.has('import { createRuntimeCss } from "pandwind/css/runtime";');
 	if (!targetUsesPandwindCss)
 		code = MigrationOutput.removeGeneratedStatements(code, ["const css = createCss();"]);
-	const sourceCssSurvives =
-		(skipped > 0 || residuals.length > 0) &&
-		sourceImportsBinding(
-			source,
-			"css",
-			sourceAdapter.sourceModules,
-			sourceAdapter.sourceModuleMatchers,
-		);
-	if (sourceCssSurvives) {
-		code = aliasTargetCssBinding(code);
-		for (const statement of imports) {
-			const aliased = aliasTargetCssBinding(statement);
-			if (aliased !== statement) {
-				imports.delete(statement);
-				imports.add(aliased);
-			}
-		}
-		for (const statement of generatedStatements) {
-			const aliased = aliasTargetCssBinding(statement);
-			if (aliased !== statement) {
-				generatedStatements.delete(statement);
-				generatedStatements.add(aliased);
-			}
-		}
-	}
-	if (
-		(skipped > 0 || residuals.length > 0) &&
-		sourceImportsBinding(
-			source,
-			"cx",
-			sourceAdapter.sourceModules,
-			sourceAdapter.sourceModuleMatchers,
-		)
-	) {
-		for (const statement of imports) {
-			if (
-				/^import\s*\{\s*cx\s*\}\s*from\s*["'][^"']*pandwind\/cx["'];?$/u.test(statement.trim()) ||
-				/^const\s+cx\s*=\s*createCx\(\);?$/u.test(statement.trim())
-			)
-				imports.delete(statement);
-		}
-	}
 	const outputFile = support.fileWithExtension(options.file, outputExtension);
 	for (const statement of generatedStatements)
 		code = support.ensureGeneratedStatement(code, statement, outputFile);
 	for (const statement of MigrationOutput.consolidateImports(imports))
 		code = support.ensureGeneratedStatement(code, statement, outputFile);
+	const sourceCssSurvives =
+		converted > 0 &&
+		sourceImportsBinding(
+			code,
+			"css",
+			sourceAdapter.sourceModules,
+			sourceAdapter.sourceModuleMatchers,
+		);
+	if (sourceCssSurvives) {
+		code = normalizeSourceCssBinding(
+			code,
+			sourceAdapter.sourceModules,
+			sourceAdapter.sourceModuleMatchers,
+		);
+		code = MigrationOutput.removeUnreferencedImportSpecifiers(code, ["sourceCss"]);
+	} else {
+		const generatedTargetBinding =
+			/\b(?:const|let|var)\s+(targetCss|pwCss)\s*=\s*createCss\(|\bcss\s+as\s+(targetCss|pwCss)\b/u.exec(
+				code,
+			);
+		const binding = generatedTargetBinding?.[1] ?? generatedTargetBinding?.[2];
+		if (binding !== undefined)
+			code = canonicalizeGeneratedCssBinding({ text: code, imports: [] }, binding).text;
+		code = code.replace(/\bcss\s+as\s+css\b/gu, "css");
+	}
 	if (targetAdapter.id === CodemodAdapterId.Pandwind)
 		code = simplifyPandwindStaticStyles(code, outputFile).code;
 	return {

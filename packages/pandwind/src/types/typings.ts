@@ -21,6 +21,18 @@ export type StyleValue = string | number | null | StyleObject | readonly StyleVa
  */
 export interface StyleObject extends Record<string, StyleValue> {}
 
+/** Runtime style input accepted only by `css.vars`. */
+export type DynamicStyleValue =
+	| string
+	| number
+	| boolean
+	| null
+	| DynamicStyleObject
+	| readonly DynamicStyleValue[]
+	| undefined;
+
+export interface DynamicStyleObject extends Record<string, DynamicStyleValue> {}
+
 /* -----------------------------------------------------------------------------
  * properties config
  * -----------------------------------------------------------------------------*/

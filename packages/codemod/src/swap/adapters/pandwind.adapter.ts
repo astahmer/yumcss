@@ -25,6 +25,7 @@ import type {
 import {
 	styleProgramFromSourceObject,
 	styleProgramFromRules,
+	type StyleCondition,
 	type StyleProgram,
 	type StyleRule,
 	type StyleValue,
@@ -488,6 +489,99 @@ function preserveKnownPresetTokens(
 	);
 }
 
+const conditionQuery = (kind: string, value: string): string => {
+	const prefix = `@${kind} `;
+	return value.startsWith(prefix) ? value.slice(prefix.length) : value;
+};
+
+const conditionCatalogEntries = (
+	context: AdapterEmitContext | undefined,
+): readonly [string, string][] => {
+	const catalogs = [context?.config.conditionCatalog, context?.sourceConfig?.conditionCatalog];
+	const entries = new Map<string, string>();
+	for (const catalog of catalogs) {
+		if (catalog === undefined) continue;
+		for (const [name, value] of Object.entries(catalog)) {
+			if (typeof value === "string") entries.set(name, value);
+			else if (Array.isArray(value))
+				for (const item of value) if (typeof item === "string") entries.set(name, item);
+		}
+	}
+	return [...entries];
+};
+
+const conditionCatalogMatch = (
+	condition: StyleCondition,
+	entries: readonly [string, string][],
+): string | undefined => {
+	if (condition.kind === SemanticConditionKindTag.Named) {
+		if (entries.some(([name]) => name === condition.name)) return condition.name;
+		return undefined;
+	}
+	const authored = condition.value ?? condition.raw ?? condition.name;
+	const expected =
+		condition.kind === SemanticConditionKindTag.Media ||
+		condition.kind === SemanticConditionKindTag.Container ||
+		condition.kind === SemanticConditionKindTag.Supports
+			? conditionQuery(condition.kind, authored)
+			: authored;
+	const candidates = entries.filter(([, value]) => {
+		const candidate =
+			condition.kind === SemanticConditionKindTag.Media ||
+			condition.kind === SemanticConditionKindTag.Container ||
+			condition.kind === SemanticConditionKindTag.Supports
+				? conditionQuery(condition.kind, value)
+				: value;
+		return candidate === expected;
+	});
+	const wantsNativeAlias = condition.raw?.startsWith("_") === true;
+	candidates.sort(([left], [right]) => {
+		const leftAlias = left.startsWith("_") === wantsNativeAlias;
+		const rightAlias = right.startsWith("_") === wantsNativeAlias;
+		return Number(rightAlias) - Number(leftAlias);
+	});
+	return candidates[0]?.[0];
+};
+
+const pandwindCondition = (
+	condition: StyleCondition,
+	entries: readonly [string, string][],
+): StyleCondition | undefined => {
+	if (condition.kind === SemanticConditionKindTag.Named && condition.name === "base")
+		return undefined;
+	const match = conditionCatalogMatch(condition, entries);
+	if (match === undefined) return condition;
+	return { kind: SemanticConditionKindTag.Named, name: match, raw: match };
+};
+
+function normalizePandwindConditions(
+	program: StyleProgram,
+	context: AdapterEmitContext | undefined,
+): StyleProgram {
+	const entries = conditionCatalogEntries(context);
+	if (entries.length === 0) return program;
+	const normalize = (conditions: readonly StyleCondition[]): readonly StyleCondition[] =>
+		conditions.flatMap((condition) => {
+			const normalized = pandwindCondition(condition, entries);
+			return normalized === undefined ? [] : [normalized];
+		});
+	const declaration = (item: StyleProgram["declarations"][number]) => ({
+		...item,
+		conditions: normalize(item.conditions),
+	});
+	const rule = (item: StyleProgram["rules"][number]): StyleProgram["rules"][number] => ({
+		...item,
+		conditions: normalize(item.conditions),
+		declarations: item.declarations.map(declaration),
+		children: item.children.map(rule),
+	});
+	return {
+		...program,
+		declarations: program.declarations.map(declaration),
+		rules: program.rules.map(rule),
+	};
+}
+
 const PANDWIND_TOKEN_POLICY: AdapterTokenPolicy = {
 	schema: "pandwind.adapter-token-policy/1",
 	preserve: (program, context) => preserveKnownPresetTokens(program, context),
@@ -614,8 +708,15 @@ function generatedCssBinding(
 	for (const match of input.matchAll(cssImports)) {
 		const clause = match[1]?.trim() ?? "";
 		const moduleSpecifier = match[2];
+		const named = /\{([^}]*)\}/u.exec(clause)?.[1] ?? "";
+		const importsBareCss =
+			clause.split(",")[0]?.trim() === "css" ||
+			named.split(",").some((specifier) => {
+				const [imported, local] = specifier.trim().split(/\s+as\s+/u);
+				return imported === "css" && (local === undefined || local === "css");
+			});
+		if (importsBareCss) return "targetCss";
 		if (ownsModule(moduleSpecifier)) continue;
-		if (/^css\b/u.test(clause) || /\{[^}]*\bcss\b[^}]*\}/u.test(clause)) return "targetCss";
 	}
 	const bindingInput = input.replace(
 		cssImports,
@@ -2124,9 +2225,14 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 					) || rule.children.some(containsFunction)
 				);
 			});
-			const outputProgram = preserveKnownPresetTokens(program, context);
+			const outputProgram = normalizePandwindConditions(
+				preserveKnownPresetTokens(program, context),
+				context,
+			);
 			const renderProgramObject = (value: StyleProgram): string =>
-				programObject(preserveKnownPresetTokens(value, context));
+				programObject(
+					normalizePandwindConditions(preserveKnownPresetTokens(value, context), context),
+				);
 			const finalize = (emission: {
 				text: string;
 				imports: readonly string[];
@@ -2189,6 +2295,25 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 					],
 				});
 			}
+			const host = program.source;
+			const hasStyleContent = program.rules.some(function hasContent(rule): boolean {
+				return rule.declarations.length > 0 || rule.children.some(hasContent);
+			});
+			if (
+				host?.hostOpenTag !== undefined &&
+				host.hostTag !== undefined &&
+				host.hostStyleAttributes?.length === 0 &&
+				!hasStyleContent &&
+				program.residuals.length === 0
+			) {
+				return finalize({
+					text: host.hostOpenTag.replace(
+						/^<\s*[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)?/u,
+						`<${host.hostTag}`,
+					),
+					imports: [],
+				});
+			}
 			if (program.rules.some((rule) => rule.kind === StyleRuleKindTag.Global)) {
 				const register = `css.sheet.registerSemanticRules([${runtimeGlobalRules(outputProgram)}])`;
 				const immediate =
@@ -2225,7 +2350,6 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 				const hybrid = hybridComponent(outputProgram, renderProgramObject, context);
 				if (hybrid !== undefined) return finalize(hybrid);
 			}
-			const host = program.source;
 			if (host?.hostOpenTag !== undefined && host.hostStyleAttributes !== undefined) {
 				const runtimeHost =
 					host.template !== undefined && hasComponentSelectorInterpolation(host.template)
@@ -2251,13 +2375,8 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 				return finalize({
 					text: rendered.text,
 					imports: [
-						dynamicHost
-							? 'import { createRuntimeCss } from "pandwind/css/runtime";'
-							: 'import { createCss } from "pandwind/css";',
-						...(dynamicHost ? ['import { pandwindPreset } from "pandwind/preset";'] : []),
-						dynamicHost
-							? "const css = createRuntimeCss(pandwindPreset);"
-							: "const css = createCss();",
+						'import { createCss } from "pandwind/css";',
+						"const css = createCss();",
 						...(rendered.needsCx
 							? ['import { createCx } from "pandwind/cx";', "const cx = createCx();"]
 							: []),

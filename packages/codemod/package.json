@@ -150,6 +150,7 @@
 	"dependencies": {
 		"@tailwindcss/node": "4.3.3",
 		"cac": "7.0.0",
+		"esbuild": "0.28.2",
 		"magic-string": "1.2.3",
 		"oxc-parser": "0.148.0",
 		"pandwind": "workspace:*",

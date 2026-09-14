@@ -3,6 +3,7 @@ import type {
 	AnyTokens,
 	CssConfigReturn,
 	DefinePresetOptions,
+	DynamicStyleObject,
 	StyleObject,
 	TypedStyleObject,
 } from "../types/typings.ts";
@@ -173,7 +174,7 @@ export interface CssFn<TStyles extends StyleObject = StyleObject> {
 	 * const props = css.props(css.vars({ color: tone }));
 	 * ```
 	 */
-	vars: (...styles: Array<TStyles>) => VarsOutput;
+	vars: (...styles: Array<TStyles | DynamicStyleObject>) => VarsOutput;
 	/**
 	 * Merge style objects without compiling them.
 	 * This is useful when a stylesheet consumer or adapter needs the resolved

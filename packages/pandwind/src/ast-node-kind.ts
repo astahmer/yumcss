@@ -49,6 +49,7 @@ export const NodeKind = defineNodeKinds({
 	JSXElement: "JSXElement",
 	JSXEmptyExpression: "JSXEmptyExpression",
 	JSXExpressionContainer: "JSXExpressionContainer",
+	JSXFragment: "JSXFragment",
 	JSXIdentifier: "JSXIdentifier",
 	JSXMemberExpression: "JSXMemberExpression",
 	JSXOpeningElement: "JSXOpeningElement",

@@ -29,6 +29,7 @@ describe("Panda migration pipeline", () => {
 			"const y = 1;",
 		);
 		expect(validatePandaSource("stage.ts", "const x = 1;").valid).toBe(true);
+		expect(validatePandaSource("stage.tsx", "const x = (<div>;").valid).toBe(false);
 	});
 
 	test("executes every Panda stage against a real project workspace", async () => {

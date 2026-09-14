@@ -149,7 +149,6 @@ describe("adapter route round-trip contract", () => {
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { createCss } from "pandwind/css";
 			const css = createCss();
-
 			const card = css.class({ color: "red" });"
 		`);
 	});

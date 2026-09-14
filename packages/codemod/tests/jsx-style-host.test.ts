@@ -29,4 +29,24 @@ describe("JsxStyleHost", () => {
 		);
 		expect(result.needsCx).toBe(true);
 	});
+
+	it("does not attach a boolean attribute's following name to the host tag", () => {
+		const result = JsxStyleHost.parse(
+			'<Text fontWeight="700" truncate title="Campaign" />',
+			0,
+			{
+				file: "App.tsx",
+				source: '<Text fontWeight="700" truncate title="Campaign" />',
+				config: { adapter: "chakra-ui", files: [], values: {} },
+			},
+			["fontWeight", "truncate"],
+			{ adapter: "chakra-ui", framework: "react" },
+		);
+
+		expect(result?.attributes.map((attribute) => attribute.raw)).toEqual([
+			'fontWeight="700"',
+			"truncate",
+			'title="Campaign"',
+		]);
+	});
 });

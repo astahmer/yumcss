@@ -101,7 +101,6 @@ describe("remaining adapter-owned custom semantics", () => {
 			"import { createRuntimeCss } from "pandwind/css/runtime";
 			import { pandwindPreset } from "pandwind/preset";
 			const css = createRuntimeCss(pandwindPreset);
-
 			export const theme = (css.sheet.registerSemanticRules([{ kind: "global", selector: ":root", declarations: [{ property: "--brand", value: "#123456" }] }]), { "brand": "var(--brand)" });
 			export const card = { "root": css.class({ color: "var(--brand)" }) };"
 		`);
@@ -124,7 +123,6 @@ describe("remaining adapter-owned custom semantics", () => {
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { createCss } from "pandwind/css";
 			const css = createCss();
-
 			export const accent = "--pw-accent";
 			export const card = css.class({ "--pw-accent": "#123456", color: "var(--pw-accent)" });"
 		`);
@@ -150,7 +148,7 @@ describe("remaining adapter-owned custom semantics", () => {
 		expect(result.code).toContain("createThemeContract");
 		expect(result.code).toContain("createTheme(contract");
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { createTheme, createThemeContract, style } from "@vanilla-extract/css";
+			"import { createTheme, createThemeContract } from "@vanilla-extract/css";
 			import { createRuntimeCss } from "pandwind/css/runtime";
 			import { pandwindPreset } from "pandwind/preset";
 			const css = createRuntimeCss(pandwindPreset);
@@ -183,10 +181,9 @@ describe("remaining adapter-owned custom semantics", () => {
 		expect(result.code).toMatchInlineSnapshot(`
 			"// pandwind:migrate-skip (route: emotion -> pandwind | parse-residual: runtime-context | available: named-map, residual)
 			import { ThemeProvider } from "@emotion/react";
-			import { css } from "@emotion/css";
 			import { createCss } from "pandwind/css";
-			const targetCss = createCss();
-			export const card = targetCss.vars({ color: theme.colors.brand });
+			const css = createCss();
+			export const card = css.vars({ color: theme.colors.brand });
 			export const App = () => // pandwind:migrate-skip (route: emotion -> pandwind | parse-residual: runtime-context | available: named-map, residual)
 			<ThemeProvider theme={theme}><div /></ThemeProvider>;"
 		`);
@@ -208,7 +205,6 @@ describe("remaining adapter-owned custom semantics", () => {
 			"import { createRuntimeCss } from "pandwind/css/runtime";
 			import { pandwindPreset } from "pandwind/preset";
 			const css = createRuntimeCss(pandwindPreset);
-
 			export const useStyles = { "card": css.group({ color: (theme) => theme.colors.brand }) };"
 		`);
 	});
@@ -229,9 +225,8 @@ describe("remaining adapter-owned custom semantics", () => {
 		expect(result.code).toContain("css.vars");
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { createTheme } from "@mui/material";
-			import { createRuntimeCss } from "pandwind/css/runtime";
-			import { pandwindPreset } from "pandwind/preset";
-			const css = createRuntimeCss(pandwindPreset);
+			import { createCss } from "pandwind/css";
+			const css = createCss();
 			const theme = createTheme({ palette: { primary: { main: "#123456" } } });
 			export const App = () => <div className={css.vars({ color: theme.palette.primary.main }).class} style={css.vars({ color: theme.palette.primary.main }).style} />;"
 		`);
@@ -253,9 +248,8 @@ describe("remaining adapter-owned custom semantics", () => {
 		expect(result.code).toContain("css.vars");
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { createTheme } from "@mantine/core";
-			import { createRuntimeCss } from "pandwind/css/runtime";
-			import { pandwindPreset } from "pandwind/preset";
-			const css = createRuntimeCss(pandwindPreset);
+			import { createCss } from "pandwind/css";
+			const css = createCss();
 			const theme = createTheme({ colors: { brand: ["#123456"] } });
 			export const App = () => <div className={css.vars({ backgroundColor: theme.colors.brand[0] }).class} style={css.vars({ backgroundColor: theme.colors.brand[0] }).style} />;"
 		`);
@@ -277,7 +271,7 @@ describe("remaining adapter-owned custom semantics", () => {
 			"import { createRuntimeCss } from "pandwind/css/runtime";
 			import { pandwindPreset } from "pandwind/preset";
 			const css = createRuntimeCss(pandwindPreset);
-			import { createTheme, style } from "treat"; export const theme = // pandwind:migrate-skip (route: treat -> pandwind | parse-residual: configuration | available: named-map, residual)
+			import { createTheme } from "treat"; export const theme = // pandwind:migrate-skip (route: treat -> pandwind | parse-residual: configuration | available: named-map, residual)
 			createTheme({ color: "#123456" }); export const card = css.class({ color: theme.color });"
 		`);
 	});
@@ -316,9 +310,9 @@ describe("remaining adapter-owned custom semantics", () => {
 		expect(result.code).toContain("setup(React.createElement)");
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { createCss } from "pandwind/css";
-			const targetCss = createCss();
-			import { css, setup } from "goober"; // pandwind:migrate-skip (route: goober -> pandwind | parse-residual: configuration | available: named-map, residual)
-			setup(React.createElement); export const card = targetCss.vars({ color: theme.colors.brand });"
+			const css = createCss();
+			import { setup } from "goober"; // pandwind:migrate-skip (route: goober -> pandwind | parse-residual: configuration | available: named-map, residual)
+			setup(React.createElement); export const card = css.vars({ color: theme.colors.brand });"
 		`);
 	});
 
@@ -348,7 +342,6 @@ describe("remaining adapter-owned custom semantics", () => {
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { cva } from "styled-system/recipes";
 
-
 			export const button = cva({ base: { color: "red" }, variants: { "size": { "sm": { padding: "2" } } } });"
 		`);
 	});
@@ -377,7 +370,6 @@ describe("remaining adapter-owned custom semantics", () => {
 		expect(result.code).not.toContain("createSlotRecipe");
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { sva } from "styled-system/recipes";
-
 
 			export const card = sva({ slots: ["root", "label"], base: { "root": { color: "red" }, "label": {  } }, variants: { "size": { "sm": { "root": { padding: "2" } } } } });"
 		`);

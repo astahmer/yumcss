@@ -93,6 +93,8 @@ export interface AdapterProjectConfig {
 	 * a verified match can be emitted in its native token syntax.
 	 */
 	readonly tokenCatalog?: AdapterTokenCatalog;
+	/** Authored raw and semantic token trees used to build the target preset. */
+	readonly tokenDefinitions?: AdapterTokenDefinitions;
 	/** Configuration-loading failures are semantic residuals, never silent fallback. */
 	readonly residuals?: readonly StyleProgramResidual[];
 	/** Ordered evidence for how project semantics were resolved. */
@@ -110,6 +112,8 @@ export type AdapterConditionCatalog = Readonly<Record<string, AdapterConditionVa
 export interface AdapterProjectBindings {
 	/** Module exporting the extracted/static `css` binding. */
 	readonly cssModule?: string;
+	/** Module exporting the configured React Stack binding. */
+	readonly stackModule?: string;
 	/** Module exporting the runtime `css` binding for dynamic/global rules. */
 	readonly runtimeCssModule?: string;
 	/** Module exporting the project-configured design-system `dss` binding. */
@@ -134,11 +138,20 @@ export interface AdapterConfigGraphPort {
 
 export const ADAPTER_TOKEN_CATALOG_SCHEMA = "pandwind.adapter-token-catalog/1" as const;
 export const ADAPTER_TOKEN_POLICY_SCHEMA = "pandwind.adapter-token-policy/1" as const;
+export const ADAPTER_TOKEN_DEFINITIONS_SCHEMA = "pandwind.adapter-token-definitions/1" as const;
 
 export interface AdapterTokenCatalog {
 	readonly schema: typeof ADAPTER_TOKEN_CATALOG_SCHEMA;
 	/** group -> authored token key -> resolved value */
 	readonly groups: Readonly<Record<string, Readonly<Record<string, string>>>>;
+}
+
+export interface AdapterTokenDefinitions {
+	readonly schema: typeof ADAPTER_TOKEN_DEFINITIONS_SCHEMA;
+	/** Authored raw token tree, before flattening or semantic resolution. */
+	readonly raw: Readonly<Record<string, unknown>>;
+	/** Authored semantic token tree, including condition branches. */
+	readonly semantic: Readonly<Record<string, unknown>>;
 }
 
 export interface AdapterConfigContext extends AdapterDetectionContext {
@@ -185,7 +198,6 @@ export interface AdapterParseResult {
 export interface AdapterEmitContext {
 	readonly file: string;
 	readonly config: AdapterProjectConfig;
-	/** Source-owned configuration evidence available to a generated target project. */
 	readonly sourceConfig?: AdapterProjectConfig;
 	readonly mode: AdapterCapabilityMode;
 	readonly capability?: AdapterCapabilityReport;
@@ -358,6 +370,9 @@ export interface AdapterRewriteContext {
 	readonly code: string;
 	readonly file: string;
 	readonly targetId: string;
+	readonly sourceConfig?: AdapterProjectConfig;
+	/** Shared target modules prepared by the project bootstrap. */
+	readonly project?: AdapterProjectBindings;
 	readonly convertedBindings: ReadonlySet<string>;
 	readonly complete: boolean;
 }

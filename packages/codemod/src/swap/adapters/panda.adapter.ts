@@ -18,6 +18,8 @@ import {
 import { createTokenPolicy, TokenCatalog } from "../tokens.ts";
 import type { ProjectModuleLoader } from "../project-module-loader.ts";
 import { joinDocumentPath } from "../../path-utils.ts";
+import { isPandaGeneratedSourceModule } from "./panda/source-modules.ts";
+import { SourceBindingKind, type SourceBinding } from "pandwind/source";
 import type { PandaTheme } from "./panda/theme.ts";
 import {
 	preserveUnsupportedRecipeFields,
@@ -200,13 +202,27 @@ export function createPandaAdapter(options: PandaAdapterOptions = {}) {
 			compilerIntegrations: ["@pandacss/config", "@pandacss/dev"],
 		},
 		patterns: [
-			{ name: "css", regex: /\bcss\s*\(\s*\{/g },
+			{
+				name: "css",
+				regex: /\bcss\s*\(\s*\{/g,
+				semanticBindings: [{ source: "styled-system/css", imported: "css" }],
+				semanticBindingSourceMatcher: isPandaGeneratedSourceModule,
+				regexForBinding: (binding: SourceBinding) =>
+					new RegExp(
+						`\\b${(binding.kind === SourceBindingKind.Namespace
+							? `${binding.localName}.css`
+							: binding.localName
+						).replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\$&")}\\s*\\(\\s*\\{`,
+						"g",
+					),
+			},
 			{
 				name: "jsx-style-props",
 				regex: /<\s*styled\.[A-Za-z_$][\w$]*\b/g,
 				form: CodemodCallPatternFormTag.JsxStyle,
 				styleProps: pandaJsxStyleProps,
 				semanticBindings: [{ source: "styled-system/jsx", imported: "styled" }],
+				semanticBindingSourceMatcher: isPandaGeneratedSourceModule,
 				regexForBinding: (binding) =>
 					new RegExp(
 						`<\\s*${binding.localName.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\$&")}\\.[A-Za-z_$][\\w$]*\\b`,
@@ -263,18 +279,18 @@ export function createPandaAdapter(options: PandaAdapterOptions = {}) {
 			components: "partial",
 		}),
 		detectPatterns: [
-			/from\s+["'](?:@pandacss\/dev|styled-system\/(?:css|jsx|recipes))["']/,
+			/from\s+["'](?:@pandacss\/dev|(?:[^"']*[/#])?styled-system\/(?:css|jsx|patterns|recipes|tokens))["']/,
 			/\b(?:cva|sva|css)\s*\(\s*\{/,
 		],
 		sourceModules: [
 			"@pandacss/dev",
 			"styled-system/css",
 			"styled-system/jsx",
+			"styled-system/patterns",
 			"styled-system/recipes",
+			"styled-system/tokens",
 		],
-		sourceModuleMatchers: [
-			(moduleSpecifier) => /(?:^|[\\/])styled-system\/(?:css|jsx|recipes)$/u.test(moduleSpecifier),
-		],
+		sourceModuleMatchers: [isPandaGeneratedSourceModule],
 		configFiles: ["panda.config.ts", "panda.config.js", "panda.config.mjs"],
 		loadConfig: pandaConfig,
 		...(moduleLoader === undefined

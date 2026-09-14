@@ -42,7 +42,8 @@ function excludeStyleProps(
 	excluded: ReadonlySet<string>,
 ): JsxStylePropSelector {
 	if (excluded.size === 0) return styleProps;
-	if (typeof styleProps === "function") return (name) => !excluded.has(name) && styleProps(name);
+	if (typeof styleProps === "function")
+		return (name, openingTag) => !excluded.has(name) && styleProps(name, openingTag);
 	return styleProps.filter((name) => !excluded.has(name));
 }
 
@@ -521,7 +522,8 @@ function parseCalls(
 			const resolved = context.resolveBinding?.(binding.localName) ?? binding;
 			return pattern.semanticBindings?.some(
 				(candidate) =>
-					candidate.source === resolved.source &&
+					(candidate.source === resolved.source ||
+						pattern.semanticBindingSourceMatcher?.(resolved.source, candidate.source) === true) &&
 					(candidate.imported === resolved.importedName ||
 						(binding.kind === SourceBindingKind.Namespace && site.property === candidate.imported)),
 			);
@@ -541,20 +543,22 @@ function parseCalls(
 		// generic reverse route) can be intentionally unparsable as the selected
 		// file language. Recover only explicit named or namespace imports here;
 		// an unbound identifier must never become an adapter match.
-		const escapeRegExp = (value: string): string => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 		const sourceText = context.source;
 		return pattern.semanticBindings.flatMap(({ source: moduleSource, imported }) => {
-			const sourcePattern = escapeRegExp(moduleSource);
-			const namedImport = new RegExp(
-				`import\\s*\\{([^}]*)\\}\\s*from\\s*["']${sourcePattern}["']`,
-				"g",
-			);
+			const namedImport = new RegExp(`import\\s*\\{([^}]*)\\}\\s*from\\s*["']([^"']+)["']`, "g");
 			const namespaceImport = new RegExp(
-				`import\\s*\\*\\s*as\\s+([A-Za-z_$][\\w$]*)\\s*from\\s*["']${sourcePattern}["']`,
+				`import\\s*\\*\\s*as\\s+([A-Za-z_$][\\w$]*)\\s*from\\s*["']([^"']+)["']`,
 				"g",
 			);
 			const fallback: RegexCandidate[] = [];
 			for (const match of sourceText.matchAll(namedImport)) {
+				const actualSource = match[2];
+				if (
+					actualSource === undefined ||
+					(actualSource !== moduleSource &&
+						pattern.semanticBindingSourceMatcher?.(actualSource, moduleSource) !== true)
+				)
+					continue;
 				const clause = match[1] ?? "";
 				for (const specifier of clause.split(",")) {
 					const parts = specifier.trim().split(/\s+as\s+/u);
@@ -564,7 +568,7 @@ function parseCalls(
 					const binding: SourceBinding = {
 						localName,
 						importedName: imported,
-						source: moduleSource,
+						source: actualSource,
 						kind: SourceBindingKind.Named,
 						range: { start: match.index ?? 0, end: (match.index ?? 0) + match[0].length },
 					};
@@ -573,12 +577,19 @@ function parseCalls(
 			}
 			if (imported !== "default")
 				for (const match of sourceText.matchAll(namespaceImport)) {
+					const actualSource = match[2];
+					if (
+						actualSource === undefined ||
+						(actualSource !== moduleSource &&
+							pattern.semanticBindingSourceMatcher?.(actualSource, moduleSource) !== true)
+					)
+						continue;
 					const localName = match[1];
 					if (localName === undefined) continue;
 					const binding: SourceBinding = {
 						localName,
 						importedName: imported,
-						source: moduleSource,
+						source: actualSource,
 						kind: SourceBindingKind.Namespace,
 						range: { start: match.index ?? 0, end: (match.index ?? 0) + match[0].length },
 					};
@@ -631,8 +642,11 @@ function parseCalls(
 					context,
 					resolveStyleProps(pattern, context),
 					adapterSource(context, start),
+					pattern.matchWithoutStyleProps,
 				);
-				return tag === undefined ? [] : [{ start, end: tag.end }];
+				return tag === undefined || pattern.hostGuard?.(tag, context) === false
+					? []
+					: [{ start, end: tag.end }];
 			});
 	});
 	const isInsideHostRange = (start: number): boolean =>
@@ -672,8 +686,9 @@ function parseCalls(
 						context,
 						resolveStyleProps(pattern, context),
 						adapterSource(context, start),
+						pattern.matchWithoutStyleProps,
 					);
-					if (initialTag !== undefined) {
+					if (initialTag !== undefined && pattern.hostGuard?.(initialTag, context) !== false) {
 						if (
 							pattern.form === CodemodCallPatternFormTag.JsxGlobal &&
 							initialTag.styleAttributes.some(
@@ -694,6 +709,7 @@ function parseCalls(
 										context,
 										excludeStyleProps(resolveStyleProps(pattern, context), preserved),
 										adapterSource(context, start),
+										pattern.matchWithoutStyleProps,
 									);
 						if (tag === undefined) continue;
 						const program =

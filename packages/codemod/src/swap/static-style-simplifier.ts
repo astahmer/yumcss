@@ -140,6 +140,39 @@ const isCssClassCall = (value: unknown): StaticClassCall | undefined => {
 	return { node: call, properties };
 };
 
+type StaticClassBindings = ReadonlyMap<string, StaticClassCall>;
+
+const staticClassCallFor = (
+	value: unknown,
+	bindings: StaticClassBindings,
+): StaticClassCall | undefined => {
+	const direct = isCssClassCall(value);
+	if (direct !== undefined) return direct;
+	const node = unwrapExpression(value);
+	return node?.type === NodeKind.Identifier ? bindings.get(nodeName(node) ?? "") : undefined;
+};
+
+const topLevelStaticClassBindings = (program: unknown): StaticClassBindings => {
+	const bindings = new Map<string, StaticClassCall>();
+	const statements = childNodes(program, "body") ?? [];
+	for (let pass = 0; pass <= statements.length; pass += 1) {
+		let added = false;
+		for (const statement of statements) {
+			if (statement.type !== NodeKind.VariableDeclaration) continue;
+			for (const declaration of childNodes(statement, "declarations") ?? []) {
+				const name = bindingName(declaration.id);
+				if (name === undefined || bindings.has(name)) continue;
+				const call = staticClassCallFor(declaration.init, bindings);
+				if (call === undefined) continue;
+				bindings.set(name, call);
+				added = true;
+			}
+		}
+		if (!added) break;
+	}
+	return bindings;
+};
+
 const isCxCall = (value: unknown): value is OxcNode => {
 	const node = unwrapExpression(value);
 	return node?.type === NodeKind.CallExpression && nodeName(node.callee) === "cx";
@@ -339,37 +372,22 @@ const simplifyMixedStaticCxCalls = (source: string, file: string): string => {
 	return SourcePass.applyEdits(source, edits);
 };
 
-const isPandwindStaticCarrier = (value: unknown, carrierNames: ReadonlySet<string>): boolean => {
+const isPandwindStaticCarrier = (value: unknown, bindings: StaticClassBindings): boolean => {
 	const node = unwrapExpression(value);
 	if (node === undefined) return false;
-	if (isCssClassCall(node)) return true;
-	if (node.type === NodeKind.Identifier) return carrierNames.has(nodeName(node) ?? "");
+	if (staticClassCallFor(node, bindings) !== undefined) return true;
 	if (node.type === NodeKind.ConditionalExpression) {
 		return (
-			isPandwindStaticCarrier(node.consequent, carrierNames) ||
-			isPandwindStaticCarrier(node.alternate, carrierNames)
+			isPandwindStaticCarrier(node.consequent, bindings) ||
+			isPandwindStaticCarrier(node.alternate, bindings)
 		);
 	}
 	if (node.type === NodeKind.LogicalExpression) {
 		return (
-			isPandwindStaticCarrier(node.left, carrierNames) ||
-			isPandwindStaticCarrier(node.right, carrierNames)
+			isPandwindStaticCarrier(node.left, bindings) || isPandwindStaticCarrier(node.right, bindings)
 		);
 	}
 	return false;
-};
-
-const topLevelPandwindStaticCarrierNames = (program: unknown): ReadonlySet<string> => {
-	const names = new Set<string>();
-	for (const statement of childNodes(program, "body") ?? []) {
-		if (statement.type !== NodeKind.VariableDeclaration) continue;
-		for (const declaration of childNodes(statement, "declarations") ?? []) {
-			const name = bindingName(declaration.id);
-			if (name !== undefined && isPandwindStaticCarrier(declaration.init, new Set()))
-				names.add(name);
-		}
-	}
-	return names;
 };
 
 const flattenedCxArguments = (node: OxcNode, source: string): readonly string[] | undefined => {
@@ -392,21 +410,106 @@ const simplifyCarrierCxCalls = (source: string, file: string): string => {
 	if (!isScriptFile(file)) return source;
 	const parsed = SOURCE_SCANNER_SERVICE.parse({ file, source });
 	if (parsed.errors.length > 0) return source;
-	const carrierNames = topLevelPandwindStaticCarrierNames(parsed.program);
-	if (carrierNames.size === 0) return source;
+	const bindings = topLevelStaticClassBindings(parsed.program);
+	if (bindings.size === 0) return source;
 	const edits: SourceEdit[] = [];
 	walkWithParent(parsed.program, (node, _parent, ancestors) => {
 		if (!isCxCall(node) || ancestors.some((ancestor) => isCxCall(ancestor))) return;
 		const argumentsList = childNodes(node, "arguments");
 		const range = nodeRange(node);
 		if (argumentsList === undefined || range === undefined) return;
-		if (!argumentsList.some((argument) => isPandwindStaticCarrier(argument, carrierNames))) return;
+		if (!argumentsList.some((argument) => isPandwindStaticCarrier(argument, bindings))) return;
 		const flattened = flattenedCxArguments(node, source);
 		if (flattened === undefined || flattened.length === 0) return;
 		edits.push({
 			start: range.start,
 			end: range.end,
 			text: `css.props(${flattened.join(", ")}).className`,
+		});
+	});
+	return SourcePass.applyEdits(source, edits);
+};
+
+const simplifyStaticCssPropsCalls = (source: string, file: string): string => {
+	if (!isScriptFile(file)) return source;
+	const parsed = SOURCE_SCANNER_SERVICE.parse({ file, source });
+	if (parsed.errors.length > 0) return source;
+	const bindings = topLevelStaticClassBindings(parsed.program);
+	const edits: SourceEdit[] = [];
+	walkWithParent(parsed.program, (node) => {
+		if (node.type !== NodeKind.MemberExpression || node.computed === true) return;
+		if (nodeName(node.property) !== "className") return;
+		const propsCall = childNode(node, "object");
+		if (propsCall?.type !== NodeKind.CallExpression) return;
+		const callee = childNode(propsCall, "callee");
+		if (
+			callee?.type !== NodeKind.MemberExpression ||
+			callee.computed === true ||
+			nodeName(callee.object) !== "css" ||
+			nodeName(callee.property) !== "props"
+		)
+			return;
+		const argumentsList = childNodes(propsCall, "arguments");
+		const range = nodeRange(node);
+		if (argumentsList === undefined || argumentsList.length === 0 || range === undefined) return;
+		const calls = argumentsList.map((argument) => staticClassCallFor(argument, bindings));
+		if (!calls.every((call): call is StaticClassCall => call !== undefined)) return;
+		const replacement = mergedClassExpression(calls, source);
+		if (replacement !== undefined)
+			edits.push({ start: range.start, end: range.end, text: replacement });
+	});
+	return SourcePass.applyEdits(source, edits);
+};
+
+const simplifyMixedStaticCssPropsCalls = (source: string, file: string): string => {
+	if (!isScriptFile(file)) return source;
+	const parsed = SOURCE_SCANNER_SERVICE.parse({ file, source });
+	if (parsed.errors.length > 0) return source;
+	const bindings = topLevelStaticClassBindings(parsed.program);
+	const edits: SourceEdit[] = [];
+	walk(parsed.program, (node) => {
+		if (node.type !== NodeKind.MemberExpression || node.computed === true) return;
+		if (nodeName(node.property) !== "className") return;
+		const propsCall = childNode(node, "object");
+		if (propsCall?.type !== NodeKind.CallExpression) return;
+		const callee = childNode(propsCall, "callee");
+		if (
+			callee?.type !== NodeKind.MemberExpression ||
+			callee.computed === true ||
+			nodeName(callee.object) !== "css" ||
+			nodeName(callee.property) !== "props"
+		)
+			return;
+		const argumentsList = childNodes(propsCall, "arguments");
+		const range = nodeRange(node);
+		if (argumentsList === undefined || argumentsList.length < 2 || range === undefined) return;
+		const expressions: string[] = [];
+		let changed = false;
+		for (let index = 0; index < argumentsList.length;) {
+			const staticCalls: StaticClassCall[] = [];
+			while (index < argumentsList.length) {
+				const staticCall = staticClassCallFor(argumentsList[index], bindings);
+				if (staticCall === undefined) break;
+				staticCalls.push(staticCall);
+				index += 1;
+			}
+			if (staticCalls.length > 0) {
+				if (staticCalls.length > 1) changed = true;
+				const merged = mergedClassExpression(staticCalls, source);
+				if (merged === undefined) return;
+				expressions.push(merged);
+				continue;
+			}
+			const argumentRange = nodeRange(argumentsList[index]);
+			if (argumentRange === undefined) return;
+			expressions.push(source.slice(argumentRange.start, argumentRange.end));
+			index += 1;
+		}
+		if (!changed) return;
+		edits.push({
+			start: range.start,
+			end: range.end,
+			text: `css.props(${expressions.join(", ")}).className`,
 		});
 	});
 	return SourcePass.applyEdits(source, edits);
@@ -732,7 +835,7 @@ const simplifyStackOpening = (source: string, file: string): string => {
 				.filter((argument): argument is string => argument !== undefined);
 			if (argumentSources.length === 0) classExpression = undefined;
 			else if (argumentSources.length === 1) classExpression = argumentSources[0];
-			else classExpression = `cx(${argumentSources.join(", ")})`;
+			else classExpression = `css.props(${argumentSources.join(", ")}).className`;
 		}
 		const classText = classExpression === undefined ? "" : `className={${classExpression}}`;
 		const replacement = [...stackAttributes.map((attribute) => attribute.text), classText]
@@ -781,6 +884,48 @@ const removeUnusedCssBinding = (source: string): string => {
 	return /\bcss\b/u.test(withoutCssImport) ? source : withoutCssImport;
 };
 
+const removeUnusedStaticCssClassBindings = (source: string, file: string): string => {
+	if (!isScriptFile(file)) return source;
+	const parsed = SOURCE_SCANNER_SERVICE.parse({ file, source });
+	if (parsed.errors.length > 0) return source;
+	const candidates = new Map<string, { readonly declaration: OxcNode; readonly id: OxcNode }>();
+	for (const statement of childNodes(parsed.program, "body") ?? []) {
+		if (statement.type !== NodeKind.VariableDeclaration) continue;
+		const declarations = childNodes(statement, "declarations") ?? [];
+		if (declarations.length !== 1) continue;
+		const declaration = declarations[0];
+		if (declaration === undefined) continue;
+		const name = bindingName(declaration.id);
+		if (name === undefined || isCssClassCall(declaration.init) === undefined) continue;
+		const id = childNode(declaration, "id");
+		if (id !== undefined) candidates.set(name, { declaration: statement, id });
+	}
+	if (candidates.size === 0) return source;
+	const usedNames = new Set<string>();
+	walk(parsed.program, (node) => {
+		if (node.type !== NodeKind.Identifier) return;
+		const name = nodeName(node);
+		if (name === undefined) return;
+		const candidate = candidates.get(name);
+		if (candidate === undefined) return;
+		const identifierRange = nodeRange(node);
+		const declarationRange = nodeRange(candidate.id);
+		if (
+			identifierRange !== undefined &&
+			declarationRange !== undefined &&
+			identifierRange.start === declarationRange.start
+		)
+			return;
+		usedNames.add(name);
+	});
+	const edits = [...candidates.entries()].flatMap(([name, candidate]) => {
+		if (usedNames.has(name)) return [];
+		const range = nodeRange(candidate.declaration);
+		return range === undefined ? [] : [{ start: range.start, end: range.end, text: "" }];
+	});
+	return SourcePass.applyEdits(source, edits);
+};
+
 export const simplifyPandwindStaticStyles = (
 	source: string,
 	file = "migration.tsx",
@@ -789,8 +934,16 @@ export const simplifyPandwindStaticStyles = (
 	const composed = simplifyStaticCxCalls(source, file);
 	const stacks = simplifyStackOpening(composed, file);
 	const mixed = simplifyMixedStaticCxCalls(stacks, file);
-	const hoisted = hoistStaticCssClassCalls(mixed, file);
+	const composedStaticProps = simplifyStaticCssPropsCalls(mixed, file);
+	const hoisted = hoistStaticCssClassCalls(composedStaticProps, file);
 	const composedCarriers = simplifyCarrierCxCalls(hoisted, file);
-	const code = removeUnusedCssBinding(removeUnusedCxBindings(composedCarriers));
+	const collapsedStaticProps = simplifyStaticCssPropsCalls(composedCarriers, file);
+	const collapsedMixedProps = simplifyMixedStaticCssPropsCalls(collapsedStaticProps, file);
+	const hoistedCollapsedProps = hoistStaticCssClassCalls(collapsedMixedProps, file);
+	const withoutUnusedStaticBindings =
+		hoistedCollapsedProps === source
+			? hoistedCollapsedProps
+			: removeUnusedStaticCssClassBindings(hoistedCollapsedProps, file);
+	const code = removeUnusedCssBinding(removeUnusedCxBindings(withoutUnusedStaticBindings));
 	return { code, changed: code !== source };
 };

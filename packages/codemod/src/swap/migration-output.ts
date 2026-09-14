@@ -11,9 +11,8 @@ export class MigrationOutput {
 	): string {
 		const ownedModules = new Set(modules);
 		const reserved = new Set(reservedBindings);
-		// Keep line breaks outside the match. The rewritten import may be kept
-		// with a reduced specifier list; consuming the following newline would
-		// concatenate it with the first non-import statement.
+		// Keep line breaks for reduced imports, but remove the complete source
+		// line when no specifier survives.
 		const imports = /\bimport\s+(?:[^;]*?\s+from\s+)?["']([^"']+)["'][ \t]*;?/g;
 		const edits: Array<{ start: number; end: number; text: string }> = [];
 		const body = code
@@ -36,10 +35,19 @@ export class MigrationOutput {
 			)
 				continue;
 			const statement = match[0];
-			const clause = /^import\s+(.+?)\s+from\s+(["'][^"']+["'])/u.exec(statement);
+			const clause = /^import\s+([\s\S]+?)\s+from\s+(["'][^"']+["'])/u.exec(statement);
 			const start = match.index ?? 0;
 			if (clause === null) {
-				edits.push({ start, end: start + statement.length, text: "" });
+				const lineStart = code.lastIndexOf("\n", start) + 1;
+				const lineEnd = code.indexOf("\n", start + statement.length);
+				const isStandaloneLine =
+					code.slice(lineStart, start).trim() === "" &&
+					(lineEnd === -1 || code.slice(start + statement.length, lineEnd).trim() === "");
+				edits.push({
+					start: isStandaloneLine ? lineStart : start,
+					end: isStandaloneLine && lineEnd !== -1 ? lineEnd + 1 : start + statement.length,
+					text: "",
+				});
 				continue;
 			}
 			const used = (binding: string): boolean =>
@@ -75,9 +83,20 @@ export class MigrationOutput {
 				keptDefault,
 				keptNamed.length === 0 ? undefined : `{ ${keptNamed.join(", ")} }`,
 			].filter((part): part is string => part !== undefined);
+			const isStandaloneLine =
+				code.slice(code.lastIndexOf("\n", start) + 1, start).trim() === "" &&
+				(code.indexOf("\n", start + statement.length) === -1 ||
+					code
+						.slice(start + statement.length, code.indexOf("\n", start + statement.length))
+						.trim() === "");
+			const lineEnd = code.indexOf("\n", start + statement.length);
 			edits.push({
-				start,
-				end: start + statement.length,
+				start:
+					specifier.length === 0 && isStandaloneLine ? code.lastIndexOf("\n", start) + 1 : start,
+				end:
+					specifier.length === 0 && isStandaloneLine && lineEnd !== -1
+						? lineEnd + 1
+						: start + statement.length,
 				text: specifier.length === 0 ? "" : `import ${specifier.join(", ")} from ${clause[2]!};`,
 			});
 		}
@@ -201,6 +220,10 @@ export class MigrationOutput {
 			}
 			const group = grouped.get(match[2]) ?? { named: new Set<string>() };
 			const specifier = match[1].trim();
+			if (specifier.startsWith("type ")) {
+				other.push(statement);
+				continue;
+			}
 			if (specifier.startsWith("{")) {
 				for (const name of specifier.slice(1, -1).split(",")) {
 					const trimmed = name.trim();

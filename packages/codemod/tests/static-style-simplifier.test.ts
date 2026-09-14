@@ -140,6 +140,59 @@ const View = ({ className }: { className?: string }) => (
 		expect(result.code).not.toContain('from "./pandwind/cx"');
 	});
 
+	it("collapses css.props when every carrier is static", () => {
+		const source = `import { css } from "./pandwind/css";
+
+const baseClassName = css.class({ color: "red" });
+const emphasisClassName = css.class({ fontWeight: "700" });
+const View = () => <div className={css.props(baseClassName, emphasisClassName).className} />;
+`;
+
+		const result = simplifyPandwindStaticStyles(source, "View.tsx");
+
+		expect(result.code).toContain(
+			'const staticClassName1 = css.class({ color: "red", fontWeight: "700" });',
+		);
+		expect(result.code).toContain("className={staticClassName1}");
+		expect(result.code).not.toContain("baseClassName");
+		expect(result.code).not.toContain("emphasisClassName");
+		expect(result.code).not.toContain("css.props(");
+	});
+
+	it("keeps css.props when a carrier is combined with a runtime class", () => {
+		const source = `import { css } from "./pandwind/css";
+
+const baseClassName = css.class({ color: "red" });
+const View = ({ className }: { className?: string }) => (
+		<div className={css.props(baseClassName, className).className} />
+);
+`;
+
+		const result = simplifyPandwindStaticStyles(source, "View.tsx");
+
+		expect(result.code).toContain("css.props(baseClassName, className).className");
+	});
+
+	it("merges contiguous static css.props carriers around runtime values", () => {
+		const source = `import { css } from "./pandwind/css";
+
+const baseClassName = css.class({ color: "red" });
+const emphasisClassName = css.class({ fontWeight: "700" });
+const View = ({ className }: { className?: string }) => (
+		<div className={css.props(baseClassName, emphasisClassName, className).className} />
+);
+`;
+
+		const result = simplifyPandwindStaticStyles(source, "View.tsx");
+
+		expect(result.code).toContain("className={css.props(staticClassName1, className).className}");
+		expect(result.code).toContain(
+			'const staticClassName1 = css.class({ color: "red", fontWeight: "700" });',
+		);
+		expect(result.code).not.toContain("baseClassName");
+		expect(result.code).not.toContain("emphasisClassName");
+	});
+
 	it("preserves dynamic and static class order", () => {
 		const source = `import { cx } from "./pandwind/cx";
 import { css } from "./pandwind/css";
@@ -164,6 +217,17 @@ const View = () => <Stack direction="column" />;
 		const result = simplifyPandwindStaticStyles(source, "View.tsx");
 
 		expect(result.code).not.toContain('from "./pandwind/css"');
+	});
+
+	it("preserves authored static class declarations when no composition was simplified", () => {
+		const source = `import { createCss } from "pandwind/css";
+const css = createCss();
+const card = css.class({ color: "red" });
+`;
+
+		const result = simplifyPandwindStaticStyles(source, "unused.ts");
+
+		expect(result.code).toContain('const card = css.class({ color: "red" });');
 	});
 
 	it("inserts hoisted classes after a module css initializer", () => {

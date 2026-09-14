@@ -22,12 +22,10 @@ import { CodemodAdapterId } from "../../identifiers.ts";
 import {
 	foldRecipeCall,
 	renderCssBootstrap,
-	renderCustomPatternModule,
-	renderInternalHelpers,
-	renderJsxIndex,
 	renderPandaPreset,
 	renderPatternModule,
 	renderRecipeModule,
+	renderStackBootstrap,
 	renderVirtualCssDeclaration,
 } from "./modules.ts";
 import { BUILTIN_PATTERNS } from "./patterns.ts";
@@ -448,7 +446,7 @@ function findCallSites(
 
 /** Props that stay DOM attributes (never become declarations). */
 const DOM_ATTR_RE =
-	/^(key|ref|children|as|href|src|alt|title|target|rel|role|type|id|lang|dir|hidden|tabIndex|download|loading|method|action|placeholder|for|aria-[\w-]+|data-[\w-]+|on[A-Z][\w]*)$/;
+	/^(key|ref|children|as|href|src|alt|title|target|rel|role|type|id|lang|dir|hidden|tabIndex|download|loading|method|action|placeholder|for|style|aria-[\w-]+|data-[\w-]+|on[A-Z][\w]*)$/;
 
 interface FactoryAttr {
 	name: string;
@@ -469,11 +467,18 @@ interface FactoryElement {
 	attrs: Array<FactoryAttr>;
 }
 
-/** Scan `<panda.tag …>` opening tags from the shared AST; spreads bail out. */
-export function scanFactoryElements(
+type JsxTagMatcher = (name: {
+	type?: string;
+	object?: { name?: string };
+	property?: { name?: string };
+	name?: string;
+}) => string | undefined;
+
+const scanJsxElements = (
 	source: string,
 	isExcluded: (start: number) => boolean,
-): Array<FactoryElement> {
+	matchTag: JsxTagMatcher,
+): Array<FactoryElement> => {
 	const out: Array<FactoryElement> = [];
 	let program: OxcNode;
 	try {
@@ -488,17 +493,21 @@ export function scanFactoryElements(
 		if (opening === null || typeof opening !== "object") return;
 		const element = opening as {
 			type?: string;
-			name?: { type?: string; object?: { name?: string }; property?: { name?: string } };
+			name?: {
+				type?: string;
+				object?: { name?: string };
+				property?: { name?: string };
+				name?: string;
+			};
 			attributes?: unknown[];
 			selfClosing?: boolean;
 			start?: number;
 			end?: number;
 		};
 		const name = element.name;
+		const tag = name === undefined ? undefined : matchTag(name);
 		if (
-			name?.type !== NodeKind.JSXMemberExpression ||
-			name.object?.name !== "panda" ||
-			name.property?.name === undefined ||
+			tag === undefined ||
 			element.start === undefined ||
 			element.end === undefined ||
 			isExcluded(element.start)
@@ -580,12 +589,36 @@ export function scanFactoryElements(
 			start: element.start,
 			openEnd: element.end,
 			selfClosing: element.selfClosing === true,
-			tag: name.property.name,
+			tag,
 			attrs,
 		});
 	});
 	return out;
+};
+
+/** Scan `<panda.tag …>` opening tags from the shared AST; spreads bail out. */
+export function scanFactoryElements(
+	source: string,
+	isExcluded: (start: number) => boolean,
+): Array<FactoryElement> {
+	return scanJsxElements(source, isExcluded, (name) =>
+		name.type === NodeKind.JSXMemberExpression && name.object?.name === "panda"
+			? name.property?.name
+			: undefined,
+	);
 }
+
+/** Scan imported Panda JSX components without creating a wrapper module. */
+const scanImportedJsxElements = (
+	source: string,
+	isExcluded: (start: number) => boolean,
+	components: ReadonlySet<string>,
+): Array<FactoryElement> =>
+	scanJsxElements(source, isExcluded, (name) =>
+		name.type === NodeKind.JSXIdentifier && name.name !== undefined && components.has(name.name)
+			? name.name
+			: undefined,
+	);
 
 function renderStyleValue(v: unknown): string {
 	if (Array.isArray(v)) return `[${v.map(renderStyleValue).join(", ")}]`;
@@ -620,6 +653,26 @@ function styleScalarOf(raw: string): string | number | boolean | null {
 	return null;
 }
 
+const openingAttributePrefix = (
+	source: string,
+	offset: number,
+	removed: readonly { start: number; end: number }[] = [],
+): string => {
+	let cursor = offset - 1;
+	let moved = true;
+	while (moved) {
+		moved = false;
+		for (const range of removed) {
+			if (cursor >= range.start && cursor < range.end) {
+				cursor = range.start - 1;
+				moved = true;
+				break;
+			}
+		}
+	}
+	return /\s/u.test(source[cursor] ?? "") ? "" : " ";
+};
+
 /**
  * Replacement edits for one convertible factory element; null when any
  * style prop is non-literal (caller flags instead of half-converting).
@@ -633,6 +686,7 @@ export function factoryEdits(
 ): Array<{ start: number; end: number; text: string }> | null {
 	const kept: Array<string> = [];
 	const styleEntries: Array<[string, unknown]> = [];
+	let styleAttributeStart: number | undefined;
 	let existingClassExpr: string | null = null;
 	for (const attr of el.attrs) {
 		if (attr.name === "className" && attr.valueText !== null) {
@@ -650,21 +704,25 @@ export function factoryEdits(
 			continue;
 		}
 		if (attr.valueText === null) {
+			styleAttributeStart ??= attr.nameStart;
 			styleEntries.push([attr.name, true]);
 			continue;
 		}
 		if (attr.quoted) {
+			styleAttributeStart ??= attr.nameStart;
 			styleEntries.push([attr.name, attr.valueText]);
 			continue;
 		}
 		const objText = stripOuterBraces(attr.valueText);
 		const parsedObj = objText === null ? null : parseObjectLiteral(objText);
 		if (objText !== null && parsedObj !== null) {
+			styleAttributeStart ??= attr.nameStart;
 			styleEntries.push([attr.name, literalToPlain(parsedObj)]);
 			continue;
 		}
 		const v = styleScalarOf(attr.valueText);
 		if (v === null) return null;
+		styleAttributeStart ??= attr.nameStart;
 		styleEntries.push([attr.name, v]);
 	}
 	if (!/^[A-Za-z][\w]*$/.test(el.tag)) return null;
@@ -699,11 +757,308 @@ export function factoryEdits(
 	// <panda.x -> <x
 	edits.push({ start: el.start, end: el.start + "<panda.".length, text: "<" });
 	// inject className just before `>` / `/>`
-	const injectAt = el.selfClosing ? el.openEnd - 2 : el.openEnd - 1;
-	edits.push({ start: injectAt, end: injectAt, text: ` className={${classExpr}}` });
+	const injectAt = styleAttributeStart ?? (el.selfClosing ? el.openEnd - 2 : el.openEnd - 1);
+	edits.push({
+		start: injectAt,
+		end: injectAt,
+		text: `${openingAttributePrefix(source, injectAt, edits)}className={${classExpr}}`,
+	});
 	void kept;
 	return edits;
 }
+
+const NATIVE_JSX_COMPONENT_TAGS: Readonly<Record<string, string>> = {
+	Box: "div",
+	Container: "div",
+	Flex: "div",
+	Grid: "div",
+	Center: "div",
+	Circle: "div",
+	Square: "div",
+	Wrap: "div",
+	Spacer: "div",
+	Absolute: "div",
+	Relative: "div",
+	Text: "span",
+	Heading: "h2",
+	Button: "button",
+	Link: "a",
+	Image: "img",
+};
+
+const STACK_JSX_COMPONENTS: Readonly<Record<string, "row" | "column" | undefined>> = {
+	Stack: undefined,
+	HStack: "row",
+	VStack: "column",
+};
+
+const NATIVE_JSX_COMPONENT_STYLES: Readonly<Record<string, Record<string, unknown>>> = {
+	Flex: { display: "flex" },
+	Grid: { display: "grid" },
+	Center: { display: "flex", alignItems: "center", justifyContent: "center" },
+	Circle: {
+		display: "flex",
+		alignItems: "center",
+		justifyContent: "center",
+		borderRadius: "9999px",
+	},
+	Square: { display: "flex", alignItems: "center", justifyContent: "center" },
+	Wrap: { display: "flex", flexWrap: "wrap", alignItems: "center" },
+	Spacer: { flex: "1 1 auto" },
+	Absolute: { position: "absolute" },
+	Relative: { position: "relative" },
+};
+
+const STACK_DIRECT_PROPS = new Set(["direction", "gap", "padding", "align", "justify"]);
+
+interface ImportedJsxComponent {
+	readonly imported: string;
+	readonly local: string;
+}
+
+const importedJsxComponents = (source: string): readonly ImportedJsxComponent[] => {
+	const components: ImportedJsxComponent[] = [];
+	for (const match of source.matchAll(
+		/import\s*\{([^}]*)\}\s*from\s*(["'])[^"']*styled-system\/jsx\2\s*;?/g,
+	)) {
+		for (const rawSpecifier of match[1]!.split(",")) {
+			const specifier = rawSpecifier.trim();
+			if (specifier === "" || specifier.startsWith("type ")) continue;
+			const names = specifier.split(/\s+as\s+/u);
+			const imported = names[0]?.trim();
+			const local = names[1]?.trim() ?? imported;
+			if (imported === undefined || local === undefined || local === "") continue;
+			components.push({ imported, local });
+		}
+	}
+	return components;
+};
+
+const closeTagEdits = (
+	source: string,
+	element: FactoryElement,
+	from: string,
+	to: string,
+): Array<{ start: number; end: number; text: string }> => {
+	if (from === to || element.selfClosing) return [];
+	const closeRe = new RegExp(`</${from}>|<${from}[\\s/>]`, "g");
+	closeRe.lastIndex = element.openEnd;
+	let nesting = 0;
+	for (const match of source.matchAll(closeRe)) {
+		if (match[0]!.startsWith("</")) {
+			if (nesting === 0) {
+				const start = match.index ?? 0;
+				return [{ start, end: start + match[0]!.length, text: `</${to}>` }];
+			}
+			nesting--;
+			continue;
+		}
+		nesting++;
+	}
+	return [];
+};
+
+const stackDirectionAttribute = (
+	component: string,
+	attrs: readonly FactoryAttr[],
+): string | undefined => {
+	const direction = STACK_JSX_COMPONENTS[component];
+	if (direction === undefined) return undefined;
+	return attrs.some((attr) => attr.name === "direction") ? undefined : ` direction="${direction}"`;
+};
+
+const staticJsxComponentEdits = (
+	element: FactoryElement,
+	source: string,
+	meta: PandwindMeta,
+	theme: PandaTheme,
+	tokenReferenceFormat: TokenReferenceFormatValue | undefined,
+	component: string,
+	localTag: string,
+): Array<{ start: number; end: number; text: string }> | null => {
+	const isStack = STACK_JSX_COMPONENTS[component] !== undefined || component === "Stack";
+	const targetTag = isStack ? localTag : NATIVE_JSX_COMPONENT_TAGS[component];
+	if (targetTag === undefined) return null;
+	let targetFromAs: string | undefined;
+	const styleEntries: Array<[string, unknown]> = [];
+	let styleAttributeStart: number | undefined;
+	let existingClassExpr: string | null = null;
+	const removedAttributes: Array<{ start: number; end: number; text: string }> = [];
+	for (const attr of element.attrs) {
+		if (attr.name === "className") {
+			if (attr.valueText === null) return null;
+			existingClassExpr = attr.quoted ? JSON.stringify(attr.valueText) : attr.valueText;
+			continue;
+		}
+		if (attr.name === "as") {
+			if (isStack) return null;
+			if (!attr.quoted || !/^[a-z][\w.-]*$/u.test(attr.valueText ?? "")) return null;
+			targetFromAs = attr.valueText ?? undefined;
+			let end = attr.attrEnd;
+			while (/\s/u.test(source[end] ?? "")) end++;
+			removedAttributes.push({ start: attr.nameStart, end, text: "" });
+			continue;
+		}
+		if (isStack && STACK_DIRECT_PROPS.has(attr.name)) continue;
+		if (DOM_ATTR_RE.test(attr.name)) continue;
+		if (!theme.jsxStyleProps.matches(attr.name) && attr.name !== "css") return null;
+		styleAttributeStart ??= attr.nameStart;
+		let end = attr.attrEnd;
+		while (/\s/u.test(source[end] ?? "")) end++;
+		removedAttributes.push({ start: attr.nameStart, end, text: "" });
+		if (attr.valueText === null) return null;
+		const objectText = stripOuterBraces(attr.valueText);
+		const parsedObject = objectText === null ? null : parseObjectLiteral(objectText);
+		if (attr.name === "css" && parsedObject !== null) {
+			const cssStyle = literalToPlain(parsedObject);
+			if (typeof cssStyle !== "object" || cssStyle === null || Array.isArray(cssStyle)) return null;
+			for (const [key, value] of Object.entries(cssStyle)) styleEntries.push([key, value]);
+			continue;
+		}
+		if (attr.quoted) {
+			styleEntries.push([attr.name, attr.valueText]);
+			continue;
+		}
+		if (parsedObject !== null) {
+			styleEntries.push([attr.name, literalToPlain(parsedObject)]);
+			continue;
+		}
+		const scalar = styleScalarOf(attr.valueText);
+		if (scalar === null) return null;
+		styleEntries.push([attr.name, scalar]);
+	}
+
+	const defaults = isStack ? {} : (NATIVE_JSX_COMPONENT_STYLES[component] ?? {});
+	const styleObject: Record<string, unknown> = { ...defaults };
+	for (const [key, value] of styleEntries) {
+		styleObject[theme.utilityCatalog.resolveProperty(key) ?? key] = value;
+	}
+	const ir = convertPandaStyle(styleObject, theme, tokenReferenceFormat);
+	if (ir.residuals.some((residual) => residual.kind === SwapResidualKindTag.Unrepresentable))
+		return null;
+	if (Object.keys(styleObject).length === 0) {
+		if (
+			targetFromAs === undefined &&
+			removedAttributes.length === 0 &&
+			stackDirectionAttribute(component, element.attrs) === undefined
+		)
+			return [];
+	} else if (irToText(ir, meta, tokenReferenceFormat) === "") {
+		return null;
+	}
+
+	const normalizedStyle = normalizePandaStyleObject(styleObject, theme.utilityCatalog);
+	const edits = [...removedAttributes];
+	if (targetFromAs !== undefined) {
+		edits.push({
+			start: element.start + 1,
+			end: element.start + 1 + localTag.length,
+			text: targetFromAs,
+		});
+		edits.push(...closeTagEdits(source, element, localTag, targetFromAs));
+	}
+	const injectedAttributes: string[] = [];
+	if (Object.keys(normalizedStyle).length > 0) {
+		const styleText = `{ ${Object.entries(normalizedStyle)
+			.map(([key, value]) => `${JSON.stringify(key)}: ${renderStyleValue(value)}`)
+			.join(", ")} }`;
+		const classExpression = existingClassExpr
+			? `css.props(css.class(${styleText}), ${existingClassExpr}).className`
+			: `css.class(${styleText})`;
+		injectedAttributes.push(`className={${classExpression}}`);
+	}
+	const direction = stackDirectionAttribute(component, element.attrs);
+	if (direction !== undefined) injectedAttributes.push(direction.trimStart());
+	if (!isStack && targetFromAs === undefined) {
+		const nativeTag = NATIVE_JSX_COMPONENT_TAGS[component];
+		if (nativeTag === undefined) return null;
+		edits.push({
+			start: element.start + 1,
+			end: element.start + 1 + localTag.length,
+			text: nativeTag,
+		});
+		edits.push(...closeTagEdits(source, element, localTag, nativeTag));
+	}
+	if (injectedAttributes.length > 0) {
+		const injectAt =
+			styleAttributeStart ?? (element.selfClosing ? element.openEnd - 2 : element.openEnd - 1);
+		edits.push({
+			start: injectAt,
+			end: injectAt,
+			text: `${openingAttributePrefix(source, injectAt, edits)}${injectedAttributes.join(" ")}`,
+		});
+	}
+	return edits;
+};
+
+const rewritePandaJsxImports = (
+	source: string,
+	components: readonly ImportedJsxComponent[],
+	unsupported: ReadonlySet<string>,
+	stackImport: string,
+): Array<{ start: number; end: number; text: string }> => {
+	if (unsupported.size > 0) return [];
+	const importedByLocal = new Map(
+		components.map((component) => [component.local, component.imported]),
+	);
+	const edits: Array<{ start: number; end: number; text: string }> = [];
+	for (const match of source.matchAll(
+		/import\s*\{([^}]*)\}\s*from\s*(["'])[^"']*styled-system\/jsx\2\s*;?/g,
+	)) {
+		const start = match.index ?? 0;
+		const stackSpecifiers: string[] = [];
+		let canRemove = true;
+		for (const rawSpecifier of match[1]!.split(",")) {
+			const specifier = rawSpecifier.trim();
+			if (specifier === "" || specifier.startsWith("type ")) continue;
+			const names = specifier.split(/\s+as\s+/u);
+			const imported = names[0]?.trim();
+			const local = names[1]?.trim() ?? imported;
+			if (imported === undefined || local === undefined || !importedByLocal.has(local)) {
+				canRemove = false;
+				break;
+			}
+			const direction = STACK_JSX_COMPONENTS[imported];
+			if (imported === "Stack" || direction !== undefined) {
+				stackSpecifiers.push(imported === "Stack" ? specifier : `Stack as ${local}`);
+			} else if (NATIVE_JSX_COMPONENT_TAGS[imported] === undefined) {
+				canRemove = false;
+				break;
+			}
+		}
+		if (!canRemove) continue;
+		const replacement =
+			stackSpecifiers.length === 0
+				? ""
+				: `import { ${stackSpecifiers.join(", ")} } from "${stackImport}";`;
+		edits.push({ start, end: start + match[0]!.length, text: replacement });
+	}
+	return edits;
+};
+
+const rewritePandaPatternImports = (
+	source: string,
+	emittedPatterns: ReadonlySet<string>,
+	replacement: string,
+): Array<{ start: number; end: number; text: string }> => {
+	const edits: Array<{ start: number; end: number; text: string }> = [];
+	for (const match of source.matchAll(
+		/import\s*\{([^}]*)\}\s*from\s*(["'])[^"']*styled-system\/patterns\2\s*;?/g,
+	)) {
+		const start = match.index ?? 0;
+		const names = match[1]!
+			.split(",")
+			.map((specifier) => specifier.trim().split(/\s+as\s+/u)[0])
+			.filter((name): name is string => name !== undefined && name !== "");
+		if (names.length === 0 || names.some((name) => !emittedPatterns.has(name))) continue;
+		edits.push({
+			start,
+			end: start + match[0]!.length,
+			text: match[0]!.replace(/styled-system\/patterns/u, replacement),
+		});
+	}
+	return edits;
+};
 
 /* ------------------------------------------------------------------ */
 /* main orchestration                                                  */
@@ -782,7 +1137,11 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 	queueEmission(join(outDir, "preset.ts"), renderPandaPreset(theme, tokenReferenceFormat));
 	queueEmission(join(outDir, "css.ts"), renderCssBootstrap());
 	queueEmission(join(outDir, "virtual.d.ts"), renderVirtualCssDeclaration());
-	queueEmission(join(outDir, "internal.ts"), renderInternalHelpers(theme, tokenReferenceFormat));
+	const stackImport = aliasSpecifier(aliasInfo, outDirName, "stack");
+	const hasStackUsage = [...usage.jsxComponents].some(
+		(component) => component === "Stack" || component === "HStack" || component === "VStack",
+	);
+	if (hasStackUsage) queueEmission(join(outDir, "stack.tsx"), renderStackBootstrap());
 
 	/** Extra per-file edits: declaration removals, folds, import insertion. */
 	const fileExtras = new Map<string, Array<{ start: number; end: number; text: string }>>();
@@ -825,7 +1184,7 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 			: def.name;
 		recipeModuleNames.set(`${def.file.path}#${def.start}`, moduleName);
 		emittedRecipeDefs.push(def);
-		const cssImport = `import { css, cx } from "${cssImportFor(1)}";`;
+		const cssImport = `import { css } from "${cssImportFor(1)}";`;
 		let content = renderRecipeModule(exportName, ir, meta, {
 			cssImport,
 			tokenReferenceFormat,
@@ -907,50 +1266,23 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 		});
 	}
 
-	// JSX layout components also consume pattern modules. Add their backing
-	// patterns before determining the usage-driven emission set.
-	const jsxPatternNames: Record<string, string> = {
-		Stack: "stack",
-		HStack: "hstack",
-		VStack: "vstack",
-		Flex: "flex",
-		Grid: "grid",
-		Center: "center",
-		Circle: "circle",
-		Square: "square",
-		Wrap: "wrap",
-	};
-	for (const component of usage.jsxComponents) {
-		const pattern = jsxPatternNames[component];
-		if (pattern !== undefined) usage.patterns.add(pattern);
-	}
-
 	// Pattern modules for builtins and evaluated custom patterns in use.
 	const usedBuiltinPatterns = [...usage.patterns].filter((p) => BUILTIN_PATTERNS.has(p)).toSorted();
 	const emittedPatternNames = [...usedBuiltinPatterns];
 	for (const name of usedBuiltinPatterns) {
 		queueEmission(
 			join(outDir, "patterns", `${name}.ts`),
-			renderPatternModule(name, { cssImport: cssImportFor(1) }),
+			renderPatternModule(name, {
+				cssImport: cssImportFor(1),
+				propertyAliases: theme.utilityCatalog.propertyAliases,
+			}),
 		);
 		report.patternModules.push(name);
 	}
 	for (const custom of [...usage.patterns].filter((p) => !BUILTIN_PATTERNS.has(p)).toSorted()) {
-		const definition = theme.customPatterns.get(custom);
-		if (definition?.transform === undefined) {
-			report.notes.push(
-				`custom pattern '${custom}' has no statically serializable transform — flagged at call sites`,
-			);
-			continue;
-		}
-		queueEmission(
-			join(outDir, "patterns", `${custom}.ts`),
-			renderCustomPatternModule(custom, definition.transform.toString(), {
-				cssImport: cssImportFor(1),
-			}),
+		report.notes.push(
+			`custom pattern '${custom}' was left as a residual: generated runtime pattern modules are not type-safe`,
 		);
-		emittedPatternNames.push(custom);
-		report.patternModules.push(custom);
 	}
 
 	// Barrels keep call-site import rewrites 1:1.
@@ -1007,16 +1339,6 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 		);
 	}
 
-	// Layout component wrappers (Stack/HStack/Box/…) keep JSX working.
-	const layoutComps = new Set([...usage.jsxComponents].filter((c) => LAYOUT_COMPONENTS.has(c)));
-	queueEmission(
-		join(outDir, "jsx", "index.tsx"),
-		renderJsxIndex(layoutComps, {
-			cssImport: cssImportFor(1),
-			aliasSpecifierFor: (subpath: string) => aliasSpecifier(aliasInfo, outDirName, subpath),
-		}),
-	);
-
 	report.tier1Modules = [...new Set(tier1Modules)];
 	report.tier0Folded = [...new Set(tier0Folded)];
 	report.emittedModules = emitted.map((e) => relative(projectRoot, e.path));
@@ -1042,8 +1364,6 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 	/* ---- call-site rewrite pass ---- */
 	const specifierRewrites: Array<[RegExp, string]> = [
 		[/([\w@./-]*)styled-system\/recipes/g, aliasSpecifier(aliasInfo, outDirName, "recipes")],
-		[/([\w@./-]*)styled-system\/patterns/g, aliasSpecifier(aliasInfo, outDirName, "patterns")],
-		[/([\w@./-]*)styled-system\/jsx/g, aliasSpecifier(aliasInfo, outDirName, "jsx")],
 		[/([\w@./-]*)styled-system\/css/g, aliasSpecifier(aliasInfo, outDirName, "css")],
 		[/([\w@./-]*)styled-system\/tokens/g, aliasSpecifier(aliasInfo, outDirName, "token")],
 	];
@@ -1058,6 +1378,11 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 		];
 		const mask = SourcePass.computeExcludedRanges(file.source, file.path);
 		const masked = (start: number): boolean => mask.isExcluded(start);
+		const jsxImports = importedJsxComponents(file.source);
+		const jsxComponentsByLocal = new Map(
+			jsxImports.map((component) => [component.local, component.imported]),
+		);
+		const unsupportedJsxComponents = new Set<string>();
 
 		// css({...}) -> css.class({...}) / marker
 		for (const call of parsePandaCalls(file.source, masked, {
@@ -1077,6 +1402,7 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 				report.cssCallsFlagged++;
 				applyMarker(
 					edits,
+					file.path,
 					file.source,
 					call.start,
 					call.ir.residuals[0]!.hint ?? "unrepresentable css()",
@@ -1088,6 +1414,7 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 				if (call.ir.residuals.length > 0) {
 					applyMarker(
 						edits,
+						file.path,
 						file.source,
 						call.start,
 						call.ir.residuals[0]!.hint ?? call.ir.residuals[0]!.kind,
@@ -1110,6 +1437,7 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 				});
 				applyMarker(
 					edits,
+					file.path,
 					file.source,
 					call.start,
 					residual?.hint ?? "non-literal css()",
@@ -1124,7 +1452,14 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 			if (elEdits === null) {
 				report.factoryElementsFlagged++;
 				countResidual(report, "dynamic");
-				applyMarker(edits, file.source, el.start, "non-literal factory props", skipMarker);
+				applyMarker(
+					edits,
+					file.path,
+					file.source,
+					el.start,
+					"non-literal factory props",
+					skipMarker,
+				);
 				continue;
 			}
 			edits.push(...elEdits);
@@ -1165,6 +1500,50 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 				}
 			}
 		}
+
+		for (const el of scanImportedJsxElements(
+			file.source,
+			masked,
+			new Set(jsxComponentsByLocal.keys()),
+		)) {
+			const component = jsxComponentsByLocal.get(el.tag);
+			if (component === undefined) continue;
+			const componentEdits = staticJsxComponentEdits(
+				el,
+				file.source,
+				meta,
+				theme,
+				tokenReferenceFormat,
+				component,
+				el.tag,
+			);
+			if (componentEdits === null) {
+				unsupportedJsxComponents.add(el.tag);
+				report.factoryElementsFlagged++;
+				countResidual(report, "dynamic");
+				applyMarker(
+					edits,
+					file.path,
+					file.source,
+					el.start,
+					`non-static ${component} props`,
+					skipMarker,
+				);
+				continue;
+			}
+			edits.push(...componentEdits);
+			report.factoryElementsConverted++;
+		}
+		edits.push(
+			...rewritePandaJsxImports(file.source, jsxImports, unsupportedJsxComponents, stackImport),
+		);
+		edits.push(
+			...rewritePandaPatternImports(
+				file.source,
+				new Set(emittedPatternNames),
+				aliasSpecifier(aliasInfo, outDirName, "patterns"),
+			),
+		);
 
 		// Import specifiers.
 		for (const [re, replacement] of specifierRewrites) {
@@ -1214,23 +1593,6 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 
 	return report;
 }
-
-const LAYOUT_COMPONENTS = new Set([
-	"Stack",
-	"HStack",
-	"VStack",
-	"Flex",
-	"Grid",
-	"Box",
-	"Container",
-	"Center",
-	"Circle",
-	"Square",
-	"Wrap",
-	"Spacer",
-	"Absolute",
-	"Relative",
-]);
 
 function isActualImportSpecifier(source: string, offset: number): boolean {
 	const before = source.slice(Math.max(0, offset - 400), offset);
@@ -1301,6 +1663,7 @@ function removeUnusedFactoryImports(source: string): string {
 
 function applyMarker(
 	edits: Array<{ start: number; end: number; text: string }>,
+	file: string,
 	source: string,
 	index: number,
 	reason: string,
@@ -1309,15 +1672,16 @@ function applyMarker(
 	const lineStart = source.lastIndexOf("\n", Math.max(0, index - 1)) + 1;
 	const indentMatch = /^\s*/.exec(source.slice(lineStart));
 	const indent = indentMatch ? indentMatch[0] : "";
-	if (source.slice(lineStart, index).includes(`// ${marker} (`)) return;
+	const markerText = SourcePass.markerText(source, file, index, `// ${marker} (${reason})`);
+	if (source.slice(lineStart, index).includes(marker)) return;
 	const previousLineStart = source.lastIndexOf("\n", Math.max(0, lineStart - 2)) + 1;
 	const previousLine = source
 		.slice(previousLineStart, Math.max(previousLineStart, lineStart - 1))
 		.trim();
-	if (previousLine.includes(`// ${marker} (`)) return;
+	if (previousLine.includes(marker)) return;
 	edits.push({
 		start: lineStart,
 		end: lineStart,
-		text: `${indent}// ${marker} (${reason})\n`,
+		text: `${indent}${markerText}\n`,
 	});
 }

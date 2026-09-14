@@ -1,6 +1,8 @@
 /** Host-project module loading boundary used by optional official integrations. */
-import { readFileSync } from "node:fs";
-import { join } from "node:path";
+import { mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { pathToFileURL } from "node:url";
+import { build } from "esbuild";
 
 export interface ProjectModuleLoader {
 	importPackage<T>(packageName: string, root: string): Promise<T | undefined>;
@@ -16,8 +18,29 @@ function isUnavailableModule(error: unknown): boolean {
 		code === "ERR_PACKAGE_PATH_NOT_EXPORTED" ||
 		code === "ERR_INVALID_PACKAGE_CONFIG" ||
 		code === "ERR_INVALID_MODULE_SPECIFIER" ||
-		code === "ERR_UNSUPPORTED_DIR_IMPORT"
+		code === "ERR_UNSUPPORTED_DIR_IMPORT" ||
+		code === "ERR_UNKNOWN_FILE_EXTENSION"
 	);
+}
+
+async function importBundledProjectFile<T>(file: string): Promise<T | undefined> {
+	const temporaryDirectory = mkdtempSync(join(dirname(file), ".pandwind-codemod-"));
+	try {
+		const outputFile = join(temporaryDirectory, "module.mjs");
+		await build({
+			absWorkingDir: dirname(file),
+			bundle: true,
+			entryPoints: [file],
+			format: "esm",
+			logLevel: "silent",
+			outfile: outputFile,
+			packages: "external",
+			platform: "node",
+		});
+		return (await import(/* @vite-ignore */ pathToFileURL(outputFile).href)) as T;
+	} finally {
+		rmSync(temporaryDirectory, { force: true, recursive: true });
+	}
 }
 
 function packageNames(root: string): readonly string[] {
@@ -101,11 +124,10 @@ export class NodeProjectModuleLoader implements ProjectModuleLoader {
 
 	async importFile<T>(file: string): Promise<T | undefined> {
 		try {
-			const { pathToFileURL } = await import(/* @vite-ignore */ "node:url");
 			return (await import(/* @vite-ignore */ pathToFileURL(file).href)) as T;
 		} catch (error) {
-			if (isUnavailableModule(error)) return undefined;
-			throw error;
+			if (!isUnavailableModule(error)) throw error;
+			return importBundledProjectFile<T>(file);
 		}
 	}
 }

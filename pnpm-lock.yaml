@@ -358,7 +358,7 @@ importers:
     dependencies:
       '@pandwind/example-preset':
         specifier: workspace:*
-        version: link:../../examples/pandwind-example-preset
+        version: link:../pandwind-example-preset
       pandwind:
         specifier: workspace:*
         version: link:../../packages/pandwind
@@ -592,6 +592,9 @@ importers:
       cac:
         specifier: 7.0.0
         version: 7.0.0
+      esbuild:
+        specifier: 0.28.2
+        version: 0.28.2
       magic-string:
         specifier: 1.2.3
         version: 1.2.3

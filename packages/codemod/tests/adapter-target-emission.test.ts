@@ -86,7 +86,6 @@ describe("target adapter emission contract", () => {
 		expect(result.code).not.toContain('from "styled-system/css"');
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { chakra } from "@chakra-ui/react";
-
 			const card = { padding: "1rem", color: "$colors.brand" };
 			export const App = () => <chakra.div css={{ padding: "1rem", color: "$colors.brand" }} />;"
 		`);
@@ -272,7 +271,6 @@ describe("target adapter emission contract", () => {
 			"import { createRuntimeCss } from "pandwind/css/runtime";
 			import { pandwindPreset } from "pandwind/preset";
 			const css = createRuntimeCss(pandwindPreset);
-
 			const card = css.vars({ "padding": "0.5em 1em", "color": theme.foreground });"
 		`);
 	});

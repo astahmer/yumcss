@@ -8,6 +8,7 @@ import {
 import type { AdapterRenderers } from "./external-adapters.ts";
 
 function conditionKey(condition: StyleProgram["rules"][number]["conditions"][number]): string {
+	if (condition.kind === SemanticConditionKindTag.Named && condition.name === "base") return "";
 	// A raw source key such as Panda's `_dark` is only a fallback. When the
 	// official source config supplied a resolved selector, the resolved value
 	// is the semantic condition that must reach the target stylesheet.
@@ -84,7 +85,11 @@ function addDeclaration(
 function declarationsObject(declarations: readonly StyleDeclaration[]): string {
 	const root = objectNode();
 	for (const declaration of declarations) {
-		addDeclaration(root, declaration, declaration.conditions.map(conditionKey));
+		addDeclaration(
+			root,
+			declaration,
+			declaration.conditions.map(conditionKey).filter((condition) => condition.length > 0),
+		);
 	}
 	return renderObjectNode(root);
 }
@@ -95,7 +100,9 @@ function styleRuleNode(rule: StyleProgram["rules"][number]): ObjectNode {
 		addDeclaration(
 			root,
 			declaration,
-			[...rule.conditions, ...declaration.conditions].map(conditionKey),
+			[...rule.conditions, ...declaration.conditions]
+				.map(conditionKey)
+				.filter((condition) => condition.length > 0),
 		);
 	for (const child of rule.children) {
 		const key = child.selector ?? child.name ?? child.kind;
@@ -149,7 +156,11 @@ function programObject(program: StyleProgram): string {
 	for (const rule of program.rules) {
 		if (rule.kind === StyleRuleKindTag.Style && rule.name === undefined) {
 			for (const declaration of rule.declarations) {
-				addDeclaration(root, declaration, declaration.conditions.map(conditionKey));
+				addDeclaration(
+					root,
+					declaration,
+					declaration.conditions.map(conditionKey).filter((condition) => condition.length > 0),
+				);
 			}
 		} else if (rule.kind === StyleRuleKindTag.Style && rule.name !== undefined) {
 			root.entries.push([rule.name, ruleObject(rule)]);

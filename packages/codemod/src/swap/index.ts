@@ -705,6 +705,7 @@ export function runSwap(
 	type Edit = { start: number; end: number; text: string };
 	let code = source;
 	const edits: Edit[] = [];
+	const markerEdits: Edit[] = [];
 	const residualsOut: Array<{ file: string; token: string; reason: string }> = [];
 	let converted = 0;
 	let skippedByMarker = 0;
@@ -715,6 +716,9 @@ export function runSwap(
 	const tokenReferenceFormat = options.tokenReferenceFormat ?? TokenReferenceFormat.Preserve;
 	const headers: string[] = [];
 	const imports: string[] = [];
+	const addSkipMarker = (index: number, reason: string): void => {
+		markerEdits.push(SourcePass.markerEdit(source, index, reason, marker, file));
+	};
 	for (const match of matches) {
 		const { ir } = match;
 		siteIndex += 1;
@@ -730,12 +734,7 @@ export function runSwap(
 				const details = capabilityReport.blockers
 					.map((issue) => `${issue.capability}: ${issue.detail}`)
 					.join("; ");
-				code = SourcePass.insertSkipMarker(
-					code,
-					match.start,
-					`${MigrationSkipReason.CapabilityBlocked}: ${details}`,
-					marker,
-				);
+				addSkipMarker(match.start, `${MigrationSkipReason.CapabilityBlocked}: ${details}`);
 				skippedByMarker++;
 				for (const issue of capabilityReport.blockers) {
 					residualsOut.push({ file, token: issue.detail, reason: issue.level });
@@ -751,11 +750,9 @@ export function runSwap(
 		const hasDssBinding =
 			/\b(?:const|let|var)\s+dss\b/.test(code) || /import\s*\{[^}]*\bdss\b[^}]*}\s*from/.test(code);
 		if ((needsCssTarget && !hasCssBinding(code)) || (needsDssTarget && !hasDssBinding)) {
-			code = SourcePass.insertSkipMarker(
-				code,
+			addSkipMarker(
 				match.start,
 				`${MigrationSkipReason.HostRewriteRequired}: no local ${needsDssTarget ? "dss" : "pandwind css"} instance to swap into (${options.to})`,
-				marker,
 			);
 			skippedByMarker++;
 			continue;
@@ -775,11 +772,9 @@ export function runSwap(
 			// Nothing representable — document why, keep the original.
 			const emissionResiduals = [...ir.residuals, ...result.residuals];
 			const hints = emissionResiduals.map((r) => r.hint ?? r.kind).join("; ");
-			code = SourcePass.insertSkipMarker(
-				code,
+			addSkipMarker(
 				match.start,
 				`${MigrationSkipReason.LoweringResidual}: ${hints || "unconvertible"}`,
-				marker,
 			);
 			skippedByMarker++;
 			continue;
@@ -792,11 +787,9 @@ export function runSwap(
 		const blockingResiduals = emissionResiduals.filter((residual) => residual.preserved !== true);
 		if (blockingResiduals.length > 0) {
 			const hints = blockingResiduals.map((residual) => residual.hint ?? residual.kind).join("; ");
-			code = SourcePass.insertSkipMarker(
-				code,
+			addSkipMarker(
 				match.start,
 				`${MigrationSkipReason.LoweringResidual}: ${hints || "unrepresentable semantics"}`,
-				marker,
 			);
 			skippedByMarker++;
 			for (const residual of emissionResiduals) {
@@ -819,30 +812,36 @@ export function runSwap(
 		}
 	}
 
-	if (edits.length > 0) {
-		code = SourcePass.applyEdits(code, edits);
-		for (const statement of imports) code = ensureImport(code, statement);
-		if (headers.length > 0) {
-			// Structural blocks (stylex.create) go after the import section.
-			for (const header of headers) code = ensureImport(code, header);
-		}
-		// Target-import hygiene: tw targets need the app's generated tw module
-		// unless the file already binds it; css.class/design ride the existing
-		// css binding (gated above).
-		if (options.to === SwapTargetId.Tw && options.metaDir !== undefined && options.metaDir !== "") {
+	if (edits.length > 0 || markerEdits.length > 0) {
+		code = SourcePass.applyEdits(source, [...edits, ...markerEdits]);
+		if (edits.length > 0) {
+			for (const statement of imports) code = ensureImport(code, statement);
+			if (headers.length > 0) {
+				// Structural blocks (stylex.create) go after the import section.
+				for (const header of headers) code = ensureImport(code, header);
+			}
+			// Target-import hygiene: tw targets need the app's generated tw module
+			// unless the file already binds it; css.class/design ride the existing
+			// css binding (gated above).
 			if (
-				!/\btw\s*\(/.test(
-					code
-						.split("\n")
-						.filter((l) => l.startsWith("import"))
-						.join("\n"),
-				) &&
-				!/(?:^|\n)\s*import\s*\{[^}]*\btw\b[^}]*\}\s*from/.test(code)
+				options.to === SwapTargetId.Tw &&
+				options.metaDir !== undefined &&
+				options.metaDir !== ""
 			) {
-				code = ensureImport(
-					code,
-					`import { tw } from "${relativeModuleImport(file, options.metaDir, "tw")}";`,
-				);
+				if (
+					!/\btw\s*\(/.test(
+						code
+							.split("\n")
+							.filter((l) => l.startsWith("import"))
+							.join("\n"),
+					) &&
+					!/(?:^|\n)\s*import\s*\{[^}]*\btw\b[^}]*\}\s*from/.test(code)
+				) {
+					code = ensureImport(
+						code,
+						`import { tw } from "${relativeModuleImport(file, options.metaDir, "tw")}";`,
+					);
+				}
 			}
 		}
 	}

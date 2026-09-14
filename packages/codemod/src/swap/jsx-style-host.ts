@@ -25,10 +25,20 @@ export interface JsxStyleHostRenderResult {
 	readonly needsCx: boolean;
 }
 
-export type JsxStylePropSelector = readonly string[] | ((name: string) => boolean);
+export type JsxStylePropSelector =
+	| readonly string[]
+	| ((name: string, openingTag?: string) => boolean);
 
 const isPandwindCarrier = (expression: string): boolean =>
 	/^css\.(?:class|vars)\(/u.test(expression.trim());
+
+const classNameExpression = (expression: string): string => {
+	const match = /^([A-Za-z_$][\w$]*)\.className$/u.exec(expression.trim());
+	return match === null ? expression : `${match[1]}?.className`;
+};
+
+const canCarryClassName = (binding: string): boolean =>
+	/^(?:props|rest|attrs|[A-Za-z_$][\w$]*(?:Props|Attributes|attrs))$/u.test(binding);
 
 const mergeClassExpression = (
 	generated: string,
@@ -46,6 +56,7 @@ export class JsxStyleHost {
 		_context: AdapterParseContext,
 		styleProps: JsxStylePropSelector,
 		styleSource: StyleProgramSource,
+		matchWithoutStyleProps = false,
 	): JsxStyleHostMatch | undefined {
 		const end = this.findEnd(source, start);
 		if (end === undefined) return undefined;
@@ -55,8 +66,8 @@ export class JsxStyleHost {
 			typeof styleProps === "function"
 				? styleProps
 				: (name: string) => new Set(styleProps).has(name);
-		const styleAttributes = attributes.filter((attribute) => matches(attribute.name));
-		if (styleAttributes.length === 0) return undefined;
+		const styleAttributes = attributes.filter((attribute) => matches(attribute.name, openingTag));
+		if (styleAttributes.length === 0 && !matchWithoutStyleProps) return undefined;
 		const parts: string[] = [];
 		let template: string | undefined;
 		for (const attribute of styleAttributes) {
@@ -139,8 +150,13 @@ export class JsxStyleHost {
 		if (existing !== null) {
 			const value = existing[4] ?? JSON.stringify(existing[2] ?? existing[3] ?? "");
 			const spreadClass =
-				spread !== undefined && spread.index > existing.index ? `, ${spread[1]}.className` : "";
-			const merged = mergeClassExpression(classExpression, `${value}${spreadClass}`);
+				spread !== undefined && spread.index > existing.index && canCarryClassName(spread[1]!)
+					? `, ${classNameExpression(spread[1]! + ".className")}`
+					: "";
+			const merged = mergeClassExpression(
+				classExpression,
+				classNameExpression(`${value}${spreadClass}`),
+			);
 			const replacement = `${existing[1]}${attribute}={${merged.expression}}`;
 			text = `${text.slice(0, existing.index)}${replacement}${text.slice(existing.index + existing[0].length)}`;
 			if (spread !== undefined && spread.index > existing.index) {
@@ -151,8 +167,11 @@ export class JsxStyleHost {
 				}
 			}
 			needsCx ||= merged.needsCx;
-		} else if (spread !== undefined) {
-			const merged = mergeClassExpression(classExpression, `${spread[1]}.className`);
+		} else if (spread !== undefined && canCarryClassName(spread[1]!)) {
+			const merged = mergeClassExpression(
+				classExpression,
+				classNameExpression(spread[1]! + ".className"),
+			);
 			const rendered = ` ${attribute}={${merged.expression}}`;
 			insertAttribute(hostTag === undefined ? rendered : rendered.trimStart());
 			needsCx ||= merged.needsCx;
@@ -226,7 +245,9 @@ export class JsxStyleHost {
 				index++;
 				continue;
 			}
+			const nameEnd = index;
 			while (index < openingTag.length && /\s/.test(openingTag[index]!)) index++;
+			let rawEnd = nameEnd;
 			let value: string | true = true;
 			let expression = false;
 			if (openingTag[index] === "=") {
@@ -249,8 +270,9 @@ export class JsxStyleHost {
 					while (index < openingTag.length && !/[\s/>]/.test(openingTag[index]!)) index++;
 					value = openingTag.slice(valueStart, index);
 				}
+				rawEnd = index;
 			}
-			attributes.push({ name, raw: openingTag.slice(rawStart, index), value, expression });
+			attributes.push({ name, raw: openingTag.slice(rawStart, rawEnd), value, expression });
 		}
 		return attributes;
 	}

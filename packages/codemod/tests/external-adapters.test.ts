@@ -427,7 +427,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
 		expect(result.code).toContain('import { createRuntimeCss } from "pandwind/css/runtime";');
-		expect(result.code).toContain("css.sheet.register");
+		expect(result.code).toContain("targetCss.sheet.register");
 		expect(result.code).toContain("className=");
 		expect(result.code).not.toContain('from "next-yak"');
 	});
@@ -667,8 +667,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).not.toContain("solid-styled-components");
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
 		expect(result.code).toMatchInlineSnapshot(`
-			"
-			import { createCx } from "pandwind/cx";
+			"import { createCx } from "pandwind/cx";
 			import { createRuntimeCss } from "pandwind/css/runtime";
 			import { pandwindPreset } from "pandwind/preset";
 			const css = createRuntimeCss(pandwindPreset);
@@ -2026,7 +2025,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		);
 		expect(spread.residuals).toEqual([]);
 		expect(spread.code).toContain(
-			'className={css.props(staticClassName1, "local", props.className).className}',
+			'className={css.props(staticClassName1, "local", props?.className).className}',
 		);
 		expect(spread.code.indexOf("props} />")).toBeLessThan(
 			spread.code.indexOf("className={css.props(staticClassName1"),
@@ -2040,8 +2039,19 @@ describe("CSS-in-JS adapter contract v2", () => {
 		);
 		expect(componentSpread.residuals).toEqual([]);
 		expect(componentSpread.code).toContain(
-			"className={css.props(staticClassName1, props.className).className}",
+			"className={css.props(staticClassName1, props?.className).className}",
 		);
+
+		const appOwnedComponent = runAdapterMigration(
+			'import { Box } from "@chakra-ui/react";\n' +
+				'import { Button } from "#ui/button";\n' +
+				'export const App = () => <><Button size="sm" variant="solid" /><Box p="4" /></>;',
+			{ from: "chakra-ui", to: "pandwind", file: "App.tsx", mode: "safe" },
+		);
+		expect(appOwnedComponent.code).toContain('import { Button } from "#ui/button";');
+		expect(appOwnedComponent.code).toContain('<Button size="sm" variant="solid" />');
+		expect(appOwnedComponent.code).not.toContain('<button size="sm" variant="solid"');
+		expect(appOwnedComponent.code).toContain("<div className={staticClassName1}");
 
 		const separator = runAdapterMigration(
 			'import { HStack, StackSeparator } from "@chakra-ui/react";\n' +

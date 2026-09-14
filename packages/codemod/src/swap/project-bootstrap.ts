@@ -26,6 +26,7 @@ import {
 	planPandwindNextIntegration,
 	type HostFileChange,
 } from "./host-integration.ts";
+import { PANDWIND_RAW_PROPERTIES, PANDWIND_TOKEN_PROPERTIES } from "./adapters/panda/properties.ts";
 
 export interface ProjectBootstrapRequest {
 	readonly root: string;
@@ -74,100 +75,14 @@ const scalarTokenValues = (config: AdapterProjectConfig): Set<string> =>
 		Object.values(config.tokenCatalog?.groups ?? {}).flatMap((group) => Object.values(group)),
 	);
 
-const TOKEN_PROPERTIES = {
-	colors: [
-		"color",
-		"background",
-		"backgroundColor",
-		"borderColor",
-		"borderTopColor",
-		"borderRightColor",
-		"borderBottomColor",
-		"borderLeftColor",
-		"outlineColor",
-		"textDecorationColor",
-		"textEmphasisColor",
-		"fill",
-		"stroke",
-	],
-	spacing: [
-		"gap",
-		"rowGap",
-		"columnGap",
-		"padding",
-		"paddingTop",
-		"paddingRight",
-		"paddingBottom",
-		"paddingLeft",
-		"paddingInline",
-		"paddingInlineStart",
-		"paddingInlineEnd",
-		"paddingBlock",
-		"paddingBlockStart",
-		"paddingBlockEnd",
-		"margin",
-		"marginTop",
-		"marginRight",
-		"marginBottom",
-		"marginLeft",
-		"marginInline",
-		"marginInlineStart",
-		"marginInlineEnd",
-		"marginBlock",
-		"marginBlockStart",
-		"marginBlockEnd",
-	],
-	sizes: [
-		"top",
-		"right",
-		"bottom",
-		"left",
-		"inset",
-		"insetInline",
-		"insetInlineStart",
-		"insetInlineEnd",
-		"insetBlock",
-		"insetBlockStart",
-		"insetBlockEnd",
-		"width",
-		"minWidth",
-		"maxWidth",
-		"height",
-		"minHeight",
-		"maxHeight",
-	],
-	borderWidths: [
-		"borderWidth",
-		"borderTopWidth",
-		"borderRightWidth",
-		"borderBottomWidth",
-		"borderLeftWidth",
-	],
-	radii: [
-		"borderRadius",
-		"borderTopLeftRadius",
-		"borderTopRightRadius",
-		"borderBottomRightRadius",
-		"borderBottomLeftRadius",
-	],
-	fonts: ["fontFamily"],
-	fontSizes: ["fontSize"],
-	fontWeights: ["fontWeight"],
-	lineHeights: ["lineHeight"],
-	letterSpacings: ["letterSpacing"],
-	shadows: ["boxShadow", "textShadow"],
-	zIndices: ["zIndex"],
-} as const satisfies Readonly<Record<string, readonly string[]>>;
-
 function presetPropertiesSource(
 	groups: Readonly<Record<string, Readonly<Record<string, string>>>>,
 ): string {
 	const properties: Record<string, { $tokens: string; $strictness: "inherits" } | true> = {
-		$all: true,
+		...PANDWIND_RAW_PROPERTIES,
 	};
-	for (const [group, names] of Object.entries(TOKEN_PROPERTIES)) {
-		if (groups[group] === undefined) continue;
-		for (const property of names)
+	for (const [property, group] of Object.entries(PANDWIND_TOKEN_PROPERTIES)) {
+		if (groups[group] !== undefined)
 			properties[property] = { $tokens: group, $strictness: "inherits" };
 	}
 	return JSON.stringify(properties, null, "\t");
@@ -180,14 +95,74 @@ function pandwindTokenGroups(
 		Object.entries(groups).map(([group, values]) => [
 			group,
 			Object.fromEntries(
-				Object.entries(values).map(([key, value]) => [
-					`$${key.replace(/^\$/u, "").replaceAll(".", "-")}`,
-					value,
-				]),
+				Object.entries(values).map(([key, value]) => [key.replace(/^\$/u, ""), value]),
 			),
 		]),
 	);
 }
+
+const scalarToken = (value: unknown): string | undefined =>
+	typeof value === "string" || typeof value === "number" ? String(value) : undefined;
+
+const tokenTreeRecord = (value: unknown): Record<string, unknown> | undefined =>
+	typeof value === "object" && value !== null && !Array.isArray(value)
+		? (value as Record<string, unknown>)
+		: undefined;
+
+const flattenRawTokenGroups = (
+	groups: Readonly<Record<string, unknown>>,
+): Record<string, Record<string, string>> => {
+	const result: Record<string, Record<string, string>> = {};
+	const visit = (group: string, value: unknown, path: readonly string[]): void => {
+		const record = tokenTreeRecord(value);
+		if (record !== undefined && Object.hasOwn(record, "value")) {
+			const scalar = scalarToken(record.value);
+			if (scalar !== undefined) (result[group] ??= {})[path.join(".")] = scalar;
+			return;
+		}
+		const scalar = scalarToken(value);
+		if (scalar !== undefined) {
+			(result[group] ??= {})[path.join(".")] = scalar;
+			return;
+		}
+		if (record === undefined) return;
+		for (const [key, child] of Object.entries(record)) visit(group, child, [...path, key]);
+	};
+	for (const [group, values] of Object.entries(groups)) visit(group, values, []);
+	return result;
+};
+
+const normalizeTokenReference = (value: string): string =>
+	/^\{([^}]+)\}$/u.exec(value)?.[1] ?? value;
+
+const flattenSemanticTokenGroups = (
+	groups: Readonly<Record<string, unknown>>,
+): Record<string, Record<string, Record<string, string>>> => {
+	const result: Record<string, Record<string, Record<string, string>>> = {};
+	const visit = (group: string, value: unknown, path: readonly string[]): void => {
+		const record = tokenTreeRecord(value);
+		if (record !== undefined && Object.hasOwn(record, "value")) {
+			const tokenValue = record.value;
+			const branches: Record<string, string> = {};
+			const branchRecord = tokenTreeRecord(tokenValue);
+			if (branchRecord !== undefined) {
+				for (const [condition, branch] of Object.entries(branchRecord)) {
+					const scalar = scalarToken(branch);
+					if (scalar !== undefined) branches[condition] = normalizeTokenReference(scalar);
+				}
+			} else {
+				const scalar = scalarToken(tokenValue);
+				if (scalar !== undefined) branches.base = normalizeTokenReference(scalar);
+			}
+			if (Object.keys(branches).length > 0) (result[group] ??= {})[path.join(".")] = branches;
+			return;
+		}
+		if (record === undefined) return;
+		for (const [key, child] of Object.entries(record)) visit(group, child, [...path, key]);
+	};
+	for (const [group, values] of Object.entries(groups)) visit(group, values, []);
+	return result;
+};
 
 const isComponentTokenPath = (path: string): boolean =>
 	path.startsWith("component.") || path.startsWith("component-") || path.startsWith("$component-");
@@ -206,8 +181,61 @@ const selectTokenPaths = (
 	return result;
 };
 
-const generatedTokenKey = (path: string): string =>
-	`$${path.replaceAll("$", "").replaceAll(".", "-")}`;
+const selectSemanticTokenPaths = (
+	groups: Readonly<Record<string, Readonly<Record<string, Readonly<Record<string, string>>>>>>,
+	component: boolean,
+): Record<string, Record<string, Record<string, string>>> => {
+	const result: Record<string, Record<string, Record<string, string>>> = {};
+	for (const [group, values] of Object.entries(groups)) {
+		for (const [path, branches] of Object.entries(values)) {
+			if (isComponentTokenPath(path) !== component) continue;
+			(result[group] ??= {})[path] = { ...branches };
+		}
+	}
+	return result;
+};
+
+const mergeSemanticTokenGroups = (
+	...layers: ReadonlyArray<
+		Readonly<Record<string, Readonly<Record<string, Readonly<Record<string, string>>>>>>
+	>
+): Record<string, Record<string, Record<string, string>>> => {
+	const result: Record<string, Record<string, Record<string, string>>> = {};
+	for (const layer of layers) {
+		for (const [group, values] of Object.entries(layer)) {
+			for (const [path, branches] of Object.entries(values)) {
+				const groupValues = (result[group] ??= {});
+				const pathValues = groupValues[path];
+				groupValues[path] =
+					pathValues === undefined ? { ...branches } : { ...pathValues, ...branches };
+			}
+		}
+	}
+	return result;
+};
+
+const normalizeSemanticTokenGroups = (
+	groups: Readonly<Record<string, Readonly<Record<string, Readonly<Record<string, string>>>>>>,
+	rawTokens: Readonly<Record<string, Readonly<Record<string, string>>>>,
+): Record<string, Record<string, Record<string, string>>> =>
+	Object.fromEntries(
+		Object.entries(groups).map(([group, values]) => [
+			group,
+			Object.fromEntries(
+				Object.entries(values).map(([path, branches]) => [
+					path,
+					Object.fromEntries(
+						Object.entries(branches).map(([condition, value]) => [
+							condition,
+							projectTokenReference(value, group, rawTokens),
+						]),
+					),
+				]),
+			),
+		]),
+	);
+
+const generatedTokenKey = (path: string): string => path.replaceAll("$", "");
 
 const tokenKeyForPath = (
 	group: string,
@@ -216,7 +244,9 @@ const tokenKeyForPath = (
 ): string | undefined => {
 	if (rawTokens[group]?.[path] !== undefined) return path;
 	const generated = generatedTokenKey(path);
-	return rawTokens[group]?.[generated] === undefined ? undefined : generated;
+	if (rawTokens[group]?.[generated] !== undefined) return generated;
+	const rawGenerated = generatedTokenKey(`raw.${path}`);
+	return rawTokens[group]?.[rawGenerated] === undefined ? undefined : rawGenerated;
 };
 
 const projectTokenReference = (
@@ -680,46 +710,83 @@ function presetSource(
 	typescript = true,
 ): string {
 	const sourceTokens = config.tokenCatalog?.groups ?? {};
-	const componentSourceTokens = pandwindTokenGroups(selectTokenPaths(sourceTokens, true));
+	const rawSourceTokens =
+		config.tokenDefinitions === undefined
+			? sourceTokens
+			: flattenRawTokenGroups(config.tokenDefinitions.raw);
+	const sourceSemanticTokens =
+		config.tokenDefinitions === undefined
+			? {}
+			: flattenSemanticTokenGroups(config.tokenDefinitions.semantic);
+	const componentSourceTokens = pandwindTokenGroups(selectTokenPaths(rawSourceTokens, true));
 	const appTokens = withComponentRawAliases(
 		componentSourceTokens,
-		pandwindTokenGroups(selectTokenPaths(sourceTokens, false)),
+		pandwindTokenGroups(selectTokenPaths(rawSourceTokens, false)),
 	);
-	const componentTokens = componentSemanticTokenGroups(componentSourceTokens, appTokens);
+	const appSemanticTokens = normalizeSemanticTokenGroups(
+		selectSemanticTokenPaths(sourceSemanticTokens, false),
+		appTokens,
+	);
+	const componentTokens = mergeSemanticTokenGroups(
+		componentSemanticTokenGroups(componentSourceTokens, appTokens),
+		normalizeSemanticTokenGroups(selectSemanticTokenPaths(sourceSemanticTokens, true), appTokens),
+	);
+	const appSemanticGroups = Object.keys(appSemanticTokens);
 	const componentGroups = Object.keys(componentTokens);
+	const semanticGroups = [...new Set([...appSemanticGroups, ...componentGroups])];
 	const presetConditions: AdapterConditionCatalog = {
 		base: "",
 		...config.conditionCatalog,
 		...conditions,
 	};
-	const semanticTokenImport = componentGroups.length === 0 ? "" : ", defineSemanticTokens";
-	const semanticTokenTypeImport = componentGroups.length === 0 ? "" : ", type SemanticTokenLayer";
+	const hasSemanticTokens = semanticGroups.length > 0;
+	const semanticTokenImport = hasSemanticTokens ? ", defineSemanticTokens" : "";
+	const semanticTokenTypeImport = hasSemanticTokens ? ", type SemanticTokenLayer" : "";
 	const typeImports = typescript ? ", type PandwindProperties" : "";
 	const configDeclaration = typescript ? "\nconst cssConfig: PandwindProperties = {};\n" : "";
 	const configReference = typescript ? "cssConfig" : "{}";
+	const semanticTokenCatalogDeclaration = hasSemanticTokens
+		? `type SemanticTokenCatalog = typeof appTokens${
+				appSemanticGroups.length === 0 ? "" : " & typeof appSemanticTokenDefinitions"
+			} ;\n`
+		: "";
+	const appSemanticDeclaration =
+		appSemanticGroups.length === 0
+			? ""
+			: `const appSemanticTokenDefinitions = ${JSON.stringify(appSemanticTokens, null, "\t")} as const;
+const appSemanticTokens = defineSemanticTokens(
+	conditions,
+	appSemanticTokenDefinitions satisfies SemanticTokenLayer<typeof conditions, SemanticTokenCatalog>,
+);
+`;
 	const componentDeclaration =
 		componentGroups.length === 0
 			? ""
-			: `const componentTokenDefinitions = ${JSON.stringify(componentTokens, null, "\t")};
+			: `const componentTokenDefinitions = ${JSON.stringify(componentTokens, null, "\t")} as const;
 const componentTokens = defineSemanticTokens(
 	conditions,
-	componentTokenDefinitions satisfies SemanticTokenLayer<typeof conditions, typeof appTokens>,
+	componentTokenDefinitions satisfies SemanticTokenLayer<typeof conditions, SemanticTokenCatalog>,
 );
 `;
-	const mergedTokenLines = componentGroups.map(
-		(group) =>
-			`\t${JSON.stringify(group)}: { ...appTokens[${JSON.stringify(group)}], ...componentTokens[${JSON.stringify(group)}] },`,
-	);
-	const tokenDeclaration =
-		componentGroups.length === 0
-			? "const tokens = appTokens;"
-			: `const tokens = {\n\t...appTokens,\n${mergedTokenLines.join("\n")}\n};`;
+	const mergedTokenLines = semanticGroups.map((group) => {
+		const references = [
+			...(Object.hasOwn(appTokens, group) ? [`...appTokens[${JSON.stringify(group)}]`] : []),
+			...(appSemanticGroups.includes(group)
+				? [`...appSemanticTokens[${JSON.stringify(group)}]`]
+				: []),
+			...(componentGroups.includes(group) ? [`...componentTokens[${JSON.stringify(group)}]`] : []),
+		];
+		return `\t${JSON.stringify(group)}: { ${references.join(", ")} },`;
+	});
+	const tokenDeclaration = !hasSemanticTokens
+		? "const tokens = appTokens;"
+		: `const tokens = {\n\t...appTokens,\n${mergedTokenLines.join("\n")}\n};`;
 	return `import { defineConditions, definePreset, defineProperties, defineTokens${semanticTokenImport}${typeImports}${semanticTokenTypeImport} } from "pandwind/preset";
 
-const conditions = defineConditions(${JSON.stringify(presetConditions, null, "\t")});
-const appTokens = defineTokens(${JSON.stringify(appTokens, null, "\t")});
-${componentDeclaration}${configDeclaration}
-const properties = defineProperties(${presetPropertiesSource(sourceTokens)});
+const conditions = defineConditions(${JSON.stringify(presetConditions, null, "\t")} as const);
+const appTokens = defineTokens(${JSON.stringify(appTokens, null, "\t")} as const);
+${semanticTokenCatalogDeclaration}${appSemanticDeclaration}${componentDeclaration}${configDeclaration}
+const properties = defineProperties(${presetPropertiesSource(rawSourceTokens)} as const);
 ${tokenDeclaration}
 
 export const pandwindPreset = definePreset(
@@ -740,10 +807,20 @@ function cssSource(nextHost: boolean): string {
 	const virtualId = nextHost ? PANDWIND_NEXT_CSS_ID : "pandwind:css";
 	return `/// <reference path="./vite-env.d.ts" />
 import "${virtualId}";
-import { createCss } from "pandwind/css";
+import { createCss, type AtomicStyleProps } from "pandwind/css";
 import { pandwindPreset } from "./preset";
 
 export const css = createCss(pandwindPreset);
+export type StyleProps = AtomicStyleProps<typeof css>;
+`;
+}
+
+function stackSource(): string {
+	return `import { createStack } from "pandwind/stack/react";
+import { css } from "./css";
+
+export const Stack = createStack(css);
+export type { StackComponentProps, StackProps } from "pandwind/stack/react";
 `;
 }
 
@@ -861,6 +938,7 @@ export async function createPandwindProjectSupport(
 ): Promise<PandwindProjectSupport> {
 	const sourceConfig = await loadSourceConfig(request);
 	const directory = posixPath(request.outputDirectory).replace(/\/$/u, "");
+	const canonicalPandwindTarget = request.targetAdapter === CodemodAdapterId.Pandwind;
 	const nextIntegration = isPandwindProjectTarget(request.targetAdapter)
 		? planPandwindNextIntegration({
 				projectRoot: request.root,
@@ -878,6 +956,7 @@ export async function createPandwindProjectSupport(
 	const preset = projectFile(directory, "preset.ts");
 	const runtimePreset = projectFile(directory, "preset.mjs");
 	const css = projectFile(directory, "css.ts");
+	const stack = projectFile(directory, "stack.tsx");
 	const viteEnv = projectFile(directory, "vite-env.d.ts");
 	const runtimeCss = projectFile(directory, "runtime.ts");
 	const dss = projectFile(directory, "dss.ts");
@@ -898,13 +977,15 @@ export async function createPandwindProjectSupport(
 						]
 					: []),
 				generatedFile(css, cssSource(nextIntegration.enabled), "shared extracted css() binding"),
+				generatedFile(stack, stackSource(), "shared configured Stack binding"),
 				generatedFile(viteEnv, viteEnvSource(), "Pandwind Vite virtual-module types"),
 				generatedFile(runtimeCss, runtimeCssSource(), "shared runtime css() binding"),
 				...(needsDssBinding
 					? [generatedFile(dss, dssSource(), "shared design-system dss() binding")]
 					: []),
-				generatedFile(cx, cxSource(), "shared cx() binding"),
+				...(canonicalPandwindTarget ? [] : [generatedFile(cx, cxSource(), "shared cx() binding")]),
 			];
+	const derivedFiles: AdapterGeneratedFile[] = [];
 
 	const cssEntry = sourceConfig.files.find((file) => file.endsWith(".css"));
 	if (!configurationFailed && cssEntry !== undefined) {
@@ -942,7 +1023,7 @@ export async function createPandwindProjectSupport(
 				bridge,
 				...(theme === "" ? {} : { themeBlock: theme }),
 			});
-			files.push(
+			derivedFiles.push(
 				generatedFile(types, generated.typesDts, "Tailwind-derived typed tw() metadata"),
 				generatedFile(tw, generated.twTs, "Tailwind-derived tw() runtime"),
 				generatedFile(
@@ -957,18 +1038,19 @@ export async function createPandwindProjectSupport(
 				),
 			);
 			if (theme !== "")
-				files.push(
+				derivedFiles.push(
 					generatedFile(projectFile(directory, "pandwind-theme.css"), theme, "derived theme block"),
 				);
 		}
 	}
 
-	const metaFiles = files.some(
+	const outputFiles = canonicalPandwindTarget ? files : [...files, ...derivedFiles];
+	const metaFiles = derivedFiles.some(
 		(file) => file.path === projectFile(directory, "pandwind.interop.json"),
 	)
-		? files
+		? derivedFiles
 		: undefined;
-	const hasGeneratedTw = files.some((file) => file.path === projectFile(directory, "tw.ts"));
+	const hasGeneratedTw = derivedFiles.some((file) => file.path === projectFile(directory, "tw.ts"));
 	const viteConfigChanges = rewritePandwindViteConfigs(request, sourceConfig, directory);
 	const hostFileChanges: readonly HostFileChange[] = nextIntegration.fileChanges;
 	const normalizedHostChanges = hostFileChanges.map((change) => ({
@@ -982,15 +1064,16 @@ export async function createPandwindProjectSupport(
 				? {}
 				: {
 						cssModule: css,
+						stackModule: stack,
 						runtimeCssModule: runtimeCss,
-						cxModule: cx,
+						...(canonicalPandwindTarget ? {} : { cxModule: cx }),
 						...(needsDssBinding ? { dssModule: dss } : {}),
 					}),
-			...(configurationFailed || !hasGeneratedTw
+			...(configurationFailed || canonicalPandwindTarget || !hasGeneratedTw
 				? {}
 				: { twModule: projectFile(directory, "tw.ts") }),
 		},
-		files,
+		files: outputFiles,
 		fileChanges: [
 			...rewriteTailwindStylesheets(request, sourceConfig),
 			...removeTailwindStylesheetImports(request, sourceConfig),

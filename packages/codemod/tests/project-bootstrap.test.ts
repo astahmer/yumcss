@@ -53,7 +53,8 @@ describe("Pandwind project bootstrap", () => {
 		expect(preset).not.toContain("AnyCssConfig");
 		expect(preset).not.toContain("pandwindPreset.tokens");
 		expect(preset).toContain("const properties = defineProperties({");
-		expect(preset).toContain('"$all": true');
+		expect(preset).toContain('"display": true');
+		expect(preset).not.toContain('"$all": true');
 	});
 
 	test("carries source named conditions into the generated preset", async () => {
@@ -101,8 +102,8 @@ describe("Pandwind project bootstrap", () => {
 		expect(preset).toContain('"$strictness": "inherits"');
 		expect(preset).toContain('"padding": {');
 		expect(preset).toContain('"$tokens": "spacing"');
-		expect(preset).toContain('"$brand": "#123456"');
-		expect(preset).toContain('"$card": "1rem"');
+		expect(preset).toContain('"brand": "#123456"');
+		expect(preset).toContain('"card": "1rem"');
 	});
 
 	test("keeps component catalog values in a semantic layer", async () => {
@@ -120,9 +121,9 @@ describe("Pandwind project bootstrap", () => {
 
 		const preset = support.files.find((file) => file.path === "pandwind/preset.ts")?.content;
 		expect(preset).toContain("const componentTokens = defineSemanticTokens");
-		expect(preset).toContain('"$raw-component-card-border": "#654321"');
+		expect(preset).toContain('"raw.component-card-border": "#654321"');
 		expect(preset).toContain(
-			'"$component-card-border": {\n\t\t\t"base": "colors.$raw-component-card-border"\n\t\t}',
+			'"component-card-border": {\n\t\t\t"base": "colors.raw.component-card-border"\n\t\t}',
 		);
 	});
 
@@ -140,8 +141,20 @@ describe("Pandwind project bootstrap", () => {
 		});
 
 		expect(support.meta?.tokens).toMatchObject({
-			colors: { $brand: "#123456" },
+			colors: { brand: "#123456" },
 		});
+		expect(support.files.map((file) => file.path)).not.toEqual(
+			expect.arrayContaining([
+				"pandwind/types.d.ts",
+				"pandwind/tw.ts",
+				"pandwind/bridge.ts",
+				"pandwind/pandwind.interop.json",
+				"pandwind/pandwind-theme.css",
+			]),
+		);
+		expect(support.files.map((file) => file.path)).not.toContain("pandwind/cx.ts");
+		expect(support.bindings.cxModule).toBeUndefined();
+		expect(support.bindings.twModule).toBeUndefined();
 	});
 
 	test(

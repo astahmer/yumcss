@@ -19,9 +19,6 @@ import {
 import {
 	foldRecipeCall,
 	renderCssBootstrap,
-	renderCustomPatternModule,
-	renderInternalHelpers,
-	renderJsxIndex,
 	renderPandaPreset,
 	renderPatternModule,
 	renderRecipeModule,
@@ -205,7 +202,6 @@ describe("supporting migration primitives", () => {
 		};
 		const preset = renderPandaPreset(theme);
 		const bootstrap = renderCssBootstrap();
-		const internal = renderInternalHelpers(theme);
 		const recipe = renderRecipeModule(
 			"badge",
 			{
@@ -219,14 +215,8 @@ describe("supporting migration primitives", () => {
 				residuals: [],
 			},
 			meta,
-			{ cssImport: 'import { css, cx } from "../css";' },
+			{ cssImport: 'import { css } from "../css";' },
 		);
-		const customPattern = renderCustomPatternModule(
-			"customPattern",
-			"(props, helpers) => ({ gap: props.gap, color: helpers.isCssVar(props.color) ? props.color : undefined })",
-			{ cssImport: "../css" },
-		);
-
 		expect(preset).toContain("defineTokens");
 		expect(preset).toContain("defineSemanticTokens");
 		expect(preset).toContain("const componentTokens = defineSemanticTokens");
@@ -247,19 +237,20 @@ describe("supporting migration primitives", () => {
 		const componentStart = preset.indexOf("const componentTokens");
 		expect(preset.slice(appSemanticStart, componentStart)).not.toContain("component.");
 		expect(preset).toContain('"borderWidth"');
+		expect(preset).toContain('"display": true');
+		expect(preset).not.toContain('"$all": true');
 		expect(preset).not.toContain("pandwindPreset.tokens");
 		expect(preset).not.toContain("pandwindPreset.properties");
 		expect(preset).not.toContain(" as any");
 		expect(bootstrap).toContain("createCss(preset)");
 		expect(bootstrap).toContain("export const css");
+		expect(bootstrap).not.toContain("createCssOpen");
+		expect(bootstrap).not.toContain("cssRuntime");
 		expect(bootstrap).not.toContain("createDesignCss");
 		expect(bootstrap).not.toContain("dss");
-		expect(internal).not.toContain("pandwindPreset");
 		expect(recipe).toContain("Object.assign");
 		expect(recipe).not.toContain("as Record");
 		expect(recipe).not.toContain(": any");
-		expect(customPattern).toContain("isRecord");
-		expect(customPattern).not.toContain(" as Record");
 	});
 
 	it("typechecks the emitted preset and reusable modules", () => {
@@ -270,23 +261,13 @@ describe("supporting migration primitives", () => {
 		const directory = mkdtempSync(join(tmpdir(), "pandwind-emitted-types-"));
 		dirs.push(directory);
 		mkdirSync(join(directory, "patterns"));
-		mkdirSync(join(directory, "jsx"));
 		writeFileSync(join(directory, "preset.ts"), renderPandaPreset(theme));
 		writeFileSync(join(directory, "css.ts"), renderCssBootstrap());
-		writeFileSync(join(directory, "internal.ts"), renderInternalHelpers(theme));
 		writeFileSync(
-			join(directory, "patterns", "custom.ts"),
-			renderCustomPatternModule(
-				"customPattern",
-				"(props, helpers) => ({ gap: props.gap, color: helpers.isCssVar(props.color) ? props.color : undefined })",
-				{ cssImport: "../css" },
-			),
-		);
-		writeFileSync(
-			join(directory, "jsx", "index.tsx"),
-			renderJsxIndex(new Set(["Box"]), {
+			join(directory, "patterns", "hstack.ts"),
+			renderPatternModule("hstack", {
 				cssImport: "../css",
-				aliasSpecifierFor: (subpath) => `./${subpath}`,
+				propertyAliases: new Map([["px", "paddingX"]]),
 			}),
 		);
 		writeFileSync(
@@ -304,7 +285,7 @@ describe("supporting migration primitives", () => {
 					residuals: [],
 				},
 				meta,
-				{ cssImport: 'import { css, cx } from "./css";' },
+				{ cssImport: 'import { css } from "./css";' },
 			),
 		);
 		const workspaceRoot = resolve(import.meta.dirname, "../../..");
@@ -328,14 +309,7 @@ describe("supporting migration primitives", () => {
 							"react/*": [resolve(workspaceRoot, "packages/pandwind/node_modules/@types/react/*")],
 						},
 					},
-					files: [
-						"preset.ts",
-						"css.ts",
-						"internal.ts",
-						"recipe.ts",
-						"patterns/custom.ts",
-						"jsx/index.tsx",
-					],
+					files: ["preset.ts", "css.ts", "recipe.ts", "patterns/hstack.ts"],
 				},
 				undefined,
 				2,
@@ -357,8 +331,12 @@ describe("supporting migration primitives", () => {
 			gap: "4",
 			px: "2",
 		});
-		const module = renderPatternModule("hstack", { cssImport: "../css" });
-		expect(module).toContain('import { canonicalProps } from "../internal";');
+		const module = renderPatternModule("hstack", {
+			cssImport: "../css",
+			propertyAliases: new Map([["px", "paddingX"]]),
+		});
+		expect(module).toContain('import { css, type StyleProps } from "../css";');
+		expect(module).not.toContain("canonicalProps");
 		expect(module).toContain("export function hstack");
 	});
 
@@ -442,22 +420,14 @@ describe("supporting migration primitives", () => {
 		);
 	});
 
-	it("detects tsconfig aliases and emits valid JSX wrapper types", () => {
+	it("detects tsconfig aliases for direct JSX lowering", () => {
 		const dir = makeProject();
 		expect(detectAlias(dir)).toMatchObject({
 			alias: "@",
 			targetRoot: "src",
 			source: "tsconfig.json paths",
 		});
-		const jsx = renderJsxIndex(new Set(["Box", "Wrap"]), {
-			cssImport: "../css",
-			aliasSpecifierFor: (subpath) => `@/pandwind/${subpath}`,
-		});
-		expect(jsx).toContain('import { cssRuntime } from "../css";');
-		expect(jsx).toContain('import("react").ElementType');
-		expect(jsx).toContain("splitStyleProps(rest)");
-		expect(jsx).toContain('className, children, as = "div", ...rest');
-		expect(jsx).toContain(">{children}</Tag>");
+		expect(dir).toContain("pandwind-migrate");
 	});
 
 	it("folds a single-use recipe without duplicating a shared definition", () => {
@@ -561,14 +531,52 @@ describe("runPandaMigration", () => {
 		expect(badgeModule).toContain('"tone"');
 		expect(badgeModule).toContain("export const badge = Object.assign");
 
-		// bootstrap exists and binds css/cx
+		// bootstrap owns the configured css binding
 		const bootstrap = readFileSync(join(dir, "src", "pandwind", "css.ts"), "utf8");
 		expect(bootstrap).toContain("createCss(preset)");
 		expect(bootstrap).not.toContain("createDesignCss");
-		expect(bootstrap).toContain("createCx");
-		const internal = readFileSync(join(dir, "src", "pandwind", "internal.ts"), "utf8");
-		expect(internal).not.toContain("pandwindPreset");
-		expect(internal).toContain('"borderWidth": "borderWidths"');
+		expect(bootstrap).not.toContain("createCx");
+		expect(readFileSync(join(dir, "src", "pandwind", "css.ts"), "utf8")).toContain(
+			"export type StyleProps",
+		);
+	});
+
+	it("lowers static Panda JSX components to native elements and Stack", async () => {
+		const dir = makeProject();
+		writeFileSync(
+			join(dir, "src", "layout.tsx"),
+			[
+				'import { Box, VStack } from "@/styled-system/jsx";',
+				"",
+				"export const Layout = () => (",
+				'  <VStack gap="4" align="center">',
+				'    <Box px="4">Content</Box>',
+				"  </VStack>",
+				");",
+			].join("\n"),
+		);
+
+		await runPandaMigration({
+			projectRoot: dir,
+			patterns: ["src/**/*.tsx"],
+			meta,
+			outDirName: "pandwind",
+			write: true,
+			diff: false,
+			skipMarker: "pandwind:migrate-skip",
+		});
+
+		const output = readFileSync(join(dir, "src", "layout.tsx"), "utf8");
+		expect(output).toContain('from "@/pandwind/stack"');
+		expect(output).not.toContain("styled-system/jsx");
+		expect(output).toContain('direction="column"');
+		expect(output).toContain("<div className={staticClassName");
+		expect(output).toContain("paddingInline");
+		expect(output).toContain("</div>");
+		expect(output).not.toContain("<Box");
+		expect(readFileSync(join(dir, "src", "pandwind", "stack.tsx"), "utf8")).toContain(
+			"createStack(css)",
+		);
 	});
 
 	it("does not rewrite Panda examples embedded in template strings", async () => {

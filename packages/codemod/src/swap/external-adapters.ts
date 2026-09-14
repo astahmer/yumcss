@@ -55,6 +55,8 @@ export type CallPattern = {
 	readonly sourceGuard?: (source: string, context: AdapterParseContext) => boolean;
 	/** Resolve authored aliases through the shared AST binding index. */
 	readonly semanticBindings?: readonly { source: string; imported: string }[];
+	/** Accept adapter-owned aliases while keeping source ownership explicit. */
+	readonly semanticBindingSourceMatcher?: (actualSource: string, expectedSource: string) => boolean;
 	readonly regexForBinding?: (binding: SourceBinding) => RegExp;
 	readonly form?: `${CodemodCallPatternFormTag}`;
 	readonly residual?: Pick<StyleProgramResidual, "kind" | "hint">;
@@ -72,6 +74,10 @@ export type CallPattern = {
 		| ((context: AdapterParseContext) => JsxStylePropSelector);
 	/** Source-specific host props that must remain for component semantics. */
 	readonly preserveHostStyleProps?: (host: JsxStyleHostMatch) => readonly string[];
+	/** Restrict JSX style-host matching to components owned by the source adapter. */
+	readonly hostGuard?: (host: JsxStyleHostMatch, context: AdapterParseContext) => boolean;
+	/** Permit a source host match when it has no style props, for host-only defaults. */
+	readonly matchWithoutStyleProps?: boolean;
 	readonly transform?: (program: StyleProgram, context: AdapterParseContext) => StyleProgram;
 };
 

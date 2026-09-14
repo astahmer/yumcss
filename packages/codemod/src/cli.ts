@@ -225,6 +225,18 @@ const projectOutputDirectory = (root: string, output: string): string => {
 	return relativePath;
 };
 
+const projectModuleSpecifier = (file: string, modulePath: string): string => {
+	const withoutExtension = modulePath.replace(/\.(?:[cm]?tsx?|jsx?)$/u, "");
+	let specifier = relative(dirname(file), withoutExtension).replaceAll("\\", "/");
+	if (!specifier.startsWith(".")) specifier = "./" + specifier;
+	return specifier;
+};
+
+const usesProjectModule = (file: string, modulePath: string, source: string): boolean => {
+	const specifier = projectModuleSpecifier(file, modulePath).replace(/[.*+?^$()|[\]\\]/g, "\\$&");
+	return new RegExp(`from\\s+["']${specifier}["']`, "u").test(source);
+};
+
 const existingProjectSupport = (
 	root: string,
 	directory: string,
@@ -235,6 +247,7 @@ const existingProjectSupport = (
 		existsSync(resolve(root, relativeDirectory, name)) ? `${relativeDirectory}/${name}` : undefined;
 	const bindings: AdapterProjectBindings = {
 		...(modulePath("css.ts") === undefined ? {} : { cssModule: modulePath("css.ts") }),
+		...(modulePath("stack.tsx") === undefined ? {} : { stackModule: modulePath("stack.tsx") }),
 		...(modulePath("runtime.ts") === undefined
 			? {}
 			: { runtimeCssModule: modulePath("runtime.ts") }),
@@ -629,7 +642,7 @@ async function runAdapterRoute(
 	const plannedGeneratedFiles = new Map<string, string>();
 	const plannedFileChanges = new Map<string, string>();
 	const projectFiles = sourceWorkspace.files(["**/*"], root, { includeUnsupported: true });
-	const projectGeneratedFiles = project?.files ?? [];
+	let projectGeneratedFiles = project?.files ?? [];
 	const projectFileChanges = project?.fileChanges ?? [];
 	const projectFileChangeByPath = new Map(
 		projectFileChanges.map((change) => [change.path, change]),
@@ -756,6 +769,16 @@ async function runAdapterRoute(
 					console.log(`  blocker: ${report.blockers.map((issue) => issue.detail).join("; ")}`);
 			}
 		}
+	}
+	const runtimeCssModule = project?.bindings.runtimeCssModule;
+	if (runtimeCssModule !== undefined) {
+		const runtimeUsed = pendingWrites.some(({ file, result }) =>
+			usesProjectModule(file.slice(root.length + 1), runtimeCssModule, result.code),
+		);
+		if (!runtimeUsed)
+			projectGeneratedFiles = projectGeneratedFiles.filter(
+				(file) => file.path !== runtimeCssModule,
+			);
 	}
 	if (pendingWrites.length > 0 && projectGeneratedFiles.length > 0) {
 		validatePlannedGeneratedFiles(root, projectGeneratedFiles, plannedGeneratedFiles, args.force);

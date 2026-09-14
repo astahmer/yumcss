@@ -1,4 +1,6 @@
 import { computeExcludedRanges as scanExcludedRanges } from "pandwind/source";
+import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
+import { NodeKind, type OxcNode, walkWithParent } from "pandwind/tw/literal";
 import { MagicString } from "magic-string";
 
 export type SourceEdit = { readonly start: number; readonly end: number; readonly text: string };
@@ -38,12 +40,86 @@ export class SourcePass {
 		return null;
 	}
 
-	static insertSkipMarker(source: string, index: number, reason: string, marker: string): string {
+	static markerText(source: string, file: string, index: number, marker: string): string {
+		const markerBody = marker.replace(/^\/\/\s?/u, "");
+		if (isJsxChildInsertion(source, file, index)) return `{/* ${markerBody} */}`;
+		if (/\.(?:css|pcss|scss|sass|less)$/iu.test(file)) return `/* ${markerBody} */`;
+		return marker;
+	}
+
+	static markerEdit(
+		source: string,
+		index: number,
+		reason: string,
+		marker: string,
+		file = "migration.ts",
+	): SourceEdit {
 		const lineStart = source.lastIndexOf("\n", Math.max(0, index - 1)) + 1;
 		const indentMatch = /^\s*/.exec(source.slice(lineStart));
 		const indent = indentMatch ? indentMatch[0] : "";
-		return (
-			source.slice(0, lineStart) + `${indent}// ${marker} (${reason})\n` + source.slice(lineStart)
-		);
+		const text = SourcePass.markerText(source, file, index, `// ${marker} (${reason})`);
+		return { start: lineStart, end: lineStart, text: `${indent}${text}\n` };
+	}
+
+	static insertSkipMarker(
+		source: string,
+		index: number,
+		reason: string,
+		marker: string,
+		file = "migration.ts",
+	): string {
+		return SourcePass.applyEdits(source, [
+			SourcePass.markerEdit(source, index, reason, marker, file),
+		]);
 	}
 }
+
+const isJsxChildInsertion = (source: string, file: string, index: number): boolean => {
+	const language = SOURCE_SCANNER_SERVICE.languageForFile(file);
+	if (language !== "tsx" && language !== "jsx") return false;
+	let parsed: ReturnType<typeof SOURCE_SCANNER_SERVICE.parse>;
+	try {
+		parsed = SOURCE_SCANNER_SERVICE.parse({ file, source });
+	} catch {
+		return false;
+	}
+	if (parsed.errors.length > 0) return false;
+	const remainingSource = source.slice(index);
+	const leadingWhitespace = /^\s*/u.exec(remainingSource)?.[0].length ?? 0;
+	const probeIndex = index + leadingWhitespace;
+	let candidate:
+		| { readonly ancestors: readonly OxcNode[]; readonly span: number; readonly start: number }
+		| undefined;
+	const openingSyntaxStarts: number[] = [];
+	walkWithParent(parsed.program, (node, _parent, ancestors) => {
+		if (
+			(node.type === NodeKind.JSXOpeningElement || node.type === NodeKind.JSXAttribute) &&
+			typeof node.start === "number" &&
+			typeof node.end === "number" &&
+			probeIndex > node.start &&
+			probeIndex < node.end
+		)
+			openingSyntaxStarts.push(node.start);
+		if (node.type !== NodeKind.JSXElement && node.type !== NodeKind.JSXFragment) return;
+		if (typeof node.start !== "number" || typeof node.end !== "number") return;
+		if (probeIndex < node.start || probeIndex >= node.end) return;
+		const span = node.end - node.start;
+		if (candidate !== undefined && candidate.span <= span) return;
+		candidate = { ancestors: [...ancestors], span, start: node.start };
+	});
+	const selectedCandidate = candidate;
+	if (selectedCandidate === undefined) return false;
+	if (openingSyntaxStarts.some((start) => start >= selectedCandidate.start)) return false;
+	const nearestJsxAncestor = selectedCandidate.ancestors.findLastIndex(
+		(ancestor) => ancestor.type === NodeKind.JSXElement || ancestor.type === NodeKind.JSXFragment,
+	);
+	if (nearestJsxAncestor === -1) return false;
+	return !selectedCandidate.ancestors
+		.slice(nearestJsxAncestor + 1)
+		.some(
+			(ancestor) =>
+				ancestor.type === NodeKind.JSXExpressionContainer ||
+				ancestor.type === NodeKind.JSXAttribute ||
+				ancestor.type === NodeKind.JSXOpeningElement,
+		);
+};

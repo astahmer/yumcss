@@ -53,7 +53,13 @@ export function validatePandaSource(
 	source: string,
 ): { valid: true } | { valid: false; message: string } {
 	try {
-		SOURCE_SCANNER_SERVICE.parse({ file, source });
+		const parsed = SOURCE_SCANNER_SERVICE.parse({ file, source });
+		if (parsed.errors.length > 0) {
+			return {
+				valid: false,
+				message: parsed.errors[0]?.message ?? "source parser rejected migrated output",
+			};
+		}
 		return { valid: true };
 	} catch (error) {
 		return { valid: false, message: error instanceof Error ? error.message : String(error) };

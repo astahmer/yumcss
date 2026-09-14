@@ -17,6 +17,9 @@ current `0.1.0` state.
   generating a second `cx` merge. The static simplifier also flattens nested
   `cx` calls around hoisted Pandwind carriers into one `css.props(...).className`
   projection for every adapter. Source revision: `lqvmzxpt`.
+- Keep Chakra and Panda migrations independently owned: each adapter recognizes
+  its own imports and aliases, while a mixed file can run either adapter first
+  and then the other without binding collisions or a second-pass rewrite.
 
 ### Performance
 

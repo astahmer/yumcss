@@ -60,4 +60,166 @@ describe("SourcePass", () => {
 			),
 		).toBe("  // pandwind:migrate-skip (dynamic)\n  css({ color: value });");
 	});
+
+	test("uses a JSX comment when a residual marks a JSX child", () => {
+		const source = ["const value = (", "  <Tooltip>", "    <Badge />", "  </Tooltip>", ");"].join(
+			"\n",
+		);
+		const migrated = SourcePass.insertSkipMarker(
+			source,
+			source.indexOf("<Badge"),
+			"dynamic",
+			"pandwind:migrate-skip",
+			"App.tsx",
+		);
+
+		expect(migrated).toContain("    {/* pandwind:migrate-skip (dynamic) */}\n    <Badge />");
+		expect(migrated).not.toContain("    // pandwind:migrate-skip");
+	});
+
+	test("recognizes a JSX child when insertion starts at its indentation", () => {
+		const source = ["const value = (", "  <Tooltip>", "    <Badge />", "  </Tooltip>", ");"].join(
+			"\n",
+		);
+		const index = source.lastIndexOf("\n", source.indexOf("<Badge")) + 1;
+		const migrated = SourcePass.insertSkipMarker(
+			source,
+			index,
+			"dynamic",
+			"pandwind:migrate-skip",
+			"App.tsx",
+		);
+
+		expect(migrated).toContain("    {/* pandwind:migrate-skip (dynamic) */}\n    <Badge />");
+	});
+
+	test("recognizes children of JSX member elements", () => {
+		const source = [
+			"const value = (",
+			"  <Table.Cell>",
+			"    <Badge />",
+			"  </Table.Cell>",
+			");",
+		].join("\n");
+		const index = source.lastIndexOf("\n", source.indexOf("<Badge")) + 1;
+		const migrated = SourcePass.insertSkipMarker(
+			source,
+			index,
+			"dynamic",
+			"pandwind:migrate-skip",
+			"App.tsx",
+		);
+
+		expect(migrated).toContain("    {/* pandwind:migrate-skip (dynamic) */}\n    <Badge />");
+	});
+
+	test("keeps markers before a root JSX element as JavaScript comments", () => {
+		const source = ["const value = (", "  <Widget />", ");"].join("\n");
+		const migrated = SourcePass.insertSkipMarker(
+			source,
+			source.indexOf("<Widget"),
+			"residual",
+			"pandwind:migrate-skip",
+			"App.tsx",
+		);
+
+		expect(migrated).toContain("  // pandwind:migrate-skip (residual)\n  <Widget />");
+		expect(migrated).not.toContain("{/* pandwind:migrate-skip");
+	});
+
+	test("keeps markers inside JSX expression containers as JavaScript comments", () => {
+		const source = [
+			"const value = (",
+			"  <div>",
+			"    {enabled && (",
+			"      <Widget />",
+			"    )}",
+			"  </div>",
+			");",
+		].join("\n");
+		const migrated = SourcePass.insertSkipMarker(
+			source,
+			source.indexOf("<Widget"),
+			"residual",
+			"pandwind:migrate-skip",
+			"App.tsx",
+		);
+
+		expect(migrated).toContain("      // pandwind:migrate-skip (residual)\n      <Widget />");
+		expect(migrated).not.toContain("{/* pandwind:migrate-skip");
+	});
+
+	test("keeps nested JSX comments valid across an outer expression container", () => {
+		const source = [
+			"const value = (",
+			"  <Table.Cell>",
+			"    {enabled && (",
+			"      <Stack>",
+			"        <Badge />",
+			"      </Stack>",
+			"    )}",
+			"  </Table.Cell>",
+			");",
+		].join("\n");
+		const index = source.lastIndexOf("\n", source.indexOf("<Badge")) + 1;
+		const migrated = SourcePass.insertSkipMarker(
+			source,
+			index,
+			"residual",
+			"pandwind:migrate-skip",
+			"App.tsx",
+		);
+
+		expect(migrated).toContain(
+			"        {/* pandwind:migrate-skip (residual) */}\n        <Badge />",
+		);
+	});
+
+	test("keeps nested JSX comments valid inside a JSX callback attribute", () => {
+		const source = [
+			"const value = (",
+			"  <VirtualizedTableBody",
+			"    renderRow={() => (",
+			"      <Table.Cell>",
+			"        <Badge />",
+			"      </Table.Cell>",
+			"    )}",
+			"  />",
+			");",
+		].join("\n");
+		const index = source.lastIndexOf("\n", source.indexOf("<Badge")) + 1;
+		const migrated = SourcePass.insertSkipMarker(
+			source,
+			index,
+			"residual",
+			"pandwind:migrate-skip",
+			"App.tsx",
+		);
+
+		expect(migrated).toContain(
+			"        {/* pandwind:migrate-skip (residual) */}\n        <Badge />",
+		);
+	});
+
+	test("keeps markers inside JSX attributes as JavaScript comments", () => {
+		const source = [
+			"const value = (",
+			"  <div className={cx(",
+			"    className,",
+			"    sourceCss({ color: value }),",
+			"  )} />",
+			");",
+		].join("\n");
+		const index = source.indexOf("sourceCss");
+		const migrated = SourcePass.insertSkipMarker(
+			source,
+			index,
+			"dynamic",
+			"pandwind:migrate-skip",
+			"App.tsx",
+		);
+
+		expect(migrated).toContain("    // pandwind:migrate-skip (dynamic)\n    sourceCss");
+		expect(migrated).not.toContain("{/* pandwind:migrate-skip");
+	});
 });
