@@ -14,6 +14,7 @@ describe("Panda generated-system source ownership", () => {
 			importMap: "#design-system",
 			packageImports: [
 				{ specifier: "#generated/*", target: "./styled-system/dist/*" },
+				{ specifier: "#generated/css/*", target: "./styled-system/dist/css/*" },
 				{ specifier: "#ui/*", target: "./src/components/*" },
 			],
 		});
@@ -23,6 +24,7 @@ describe("Panda generated-system source ownership", () => {
 			expect(ownership.modules).toContain(`#generated/${entrypoint}`);
 			expect(ownership.modules).not.toContain(`#ui/${entrypoint}`);
 		}
+		expect(ownership.modules).not.toContain("#generated/css/css");
 		expect(
 			ownership.semanticMatchers?.some((matcher) =>
 				matcher("#design-system/css", "styled-system/css"),
