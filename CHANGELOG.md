@@ -18,6 +18,21 @@ current `0.1.0` state.
   `cx` calls around hoisted Pandwind carriers into one `css.props(...).className`
   projection for every adapter. Source revision: `lqvmzxpt`.
 
+### Performance
+
+- Apply Panda v2's type-graph lessons to Pandwind: use named value boundaries,
+  one shared selector/condition nesting map, and an owned CSS property
+  vocabulary instead of repeatedly expanding `csstype` unions.
+- Remove the open CSS-config index signature's `any` and preserve arbitrary
+  `$all` properties through a typed object fallback. Runtime token-map readers
+  now narrow unknown configuration values at the boundary.
+- Local package measurement with `tsc --extendedDiagnostics` improved from
+  `399743` to `271161` type instantiations and from `299989K` to `285452K` peak
+  memory; repeated check time moved from `0.168s` to `0.140s`. These are
+  Pandwind package measurements, not a reproduction of Panda's fixture corpus.
+
+Source revision: `c05a1b28`, `c05a1b28`
+
 ## Unreleased — 2026-09-13 curated CSS property contract
 
 ### API
