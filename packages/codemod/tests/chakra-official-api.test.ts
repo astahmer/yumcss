@@ -41,8 +41,9 @@ describe("Chakra UI official API forms", () => {
 			  "changed": true,
 			  "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
+			const staticClassName1 = css.class({ padding: "4", backgroundColor: "red.200" });
 
-			export const App = () => <div className={css.class({ padding: "4", backgroundColor: "red.200" })} />;",
+			export const App = () => <div className={staticClassName1} />;",
 			  "converted": 1,
 			  "generatedFiles": [],
 			  "loweringPlans": [
@@ -88,8 +89,9 @@ describe("Chakra UI official API forms", () => {
 			  "changed": true,
 			  "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
+			const staticClassName1 = css.class({ color: "red.200", "& svg": { color: "blue.200" } });
 
-			export const App = () => <div className={css.class({ color: "red.200", "& svg": { color: "blue.200" } })} />;",
+			export const App = () => <div className={staticClassName1} />;",
 			  "converted": 1,
 			  "generatedFiles": [],
 			  "loweringPlans": [
@@ -135,8 +137,9 @@ describe("Chakra UI official API forms", () => {
 			  "changed": true,
 			  "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
+			const staticClassName1 = css.class({ backgroundColor: "blue.500", color: "white" });
 
-			export const App = () => <button className={css.class({ backgroundColor: "blue.500", color: "white" })} />;",
+			export const App = () => <button className={staticClassName1} />;",
 			  "converted": 1,
 			  "generatedFiles": [],
 			  "loweringPlans": [

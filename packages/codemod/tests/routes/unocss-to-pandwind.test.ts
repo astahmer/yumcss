@@ -49,7 +49,8 @@ test("unocss -> pandwind: migrates concrete unocss syntax to pandwind", () => {
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const App = () => <div className={css.class({ gap: "1rem", alignItems: "center", display: "flex" })}/>;",
+		const staticClassName1 = css.class({ gap: "1rem", alignItems: "center", display: "flex" });
+		export const App = () => <div className={staticClassName1}/>;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -93,7 +94,8 @@ test("unocss -> pandwind: carries a documented secondary unocss API explicitly",
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const App = () => <div className={css.class({ hover: { backgroundColor: "black" }, md: { display: "flex" } })}/>;",
+		const staticClassName1 = css.class({ hover: { backgroundColor: "black" }, md: { display: "flex" } });
+		export const App = () => <div className={staticClassName1}/>;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -145,7 +147,8 @@ test("unocss -> pandwind: loads concrete theme and project context variants", as
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const App = () => <div className={css.class({ padding: "card", color: "brand" })}/>;",
+		const staticClassName1 = css.class({ padding: "card", color: "brand" });
+		export const App = () => <div className={staticClassName1}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -180,7 +183,8 @@ test("unocss -> pandwind: loads concrete theme and project context variants", as
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const App = () => <div className={css.class({ padding: "card", color: "brand" })}/>;",
+		const staticClassName1 = css.class({ padding: "card", color: "brand" });
+		export const App = () => <div className={staticClassName1}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -227,7 +231,8 @@ test("unocss -> pandwind: resolves concrete token values with project context", 
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const App = () => <div className={css.class({ padding: "card", color: "brand" })}/>;",
+		const staticClassName1 = css.class({ padding: "card", color: "brand" });
+		export const App = () => <div className={staticClassName1}/>;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [

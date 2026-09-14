@@ -88,21 +88,40 @@ function mergeClassNameAfterPropsSpread(code: string, binding: string): string {
 		const classNameMatch = /\bclassName\s*=\s*\{/g;
 		classNameMatch.lastIndex = spreadBlock.end;
 		const className = classNameMatch.exec(code);
-		if (className === null || className.index >= tagEnd) continue;
-		const classBlock = SourcePass.matchBlock(code, className.index + className[0].lastIndexOf("{"));
-		if (classBlock === null || classBlock.end > tagEnd) continue;
-		const classBodyStart = className.index + className[0].lastIndexOf("{") + 1;
 		const spreadText = code.slice(spreadStart, spreadBlock.end);
 		const propsStart = spreadText.indexOf(".props(");
 		const propsEnd = spreadText.lastIndexOf(")");
-		if (propsStart < 0 || propsEnd <= propsStart) continue;
+		if (
+			propsStart < 0 ||
+			propsEnd <= propsStart ||
+			(className !== null && className.index >= tagEnd)
+		)
+			continue;
 		const styleExpression = spreadText.slice(propsStart + ".props(".length, propsEnd).trim();
-		const classExpression = classBlock.body.trim();
-		if (styleExpression === "" || classExpression === "") continue;
+		if (styleExpression === "") continue;
+		if (className !== null) {
+			const classBlock = SourcePass.matchBlock(
+				code,
+				className.index + className[0].lastIndexOf("{"),
+			);
+			if (classBlock === null || classBlock.end > tagEnd) continue;
+			const classExpression = classBlock.body.trim();
+			if (classExpression === "") continue;
+			edits.push({
+				start: className.index + className[0].lastIndexOf("{") + 1,
+				end: classBlock.end - 1,
+				text: `${binding}.props(${styleExpression}, ${classExpression}).className`,
+			});
+			continue;
+		}
+		const staticClassName = /\bclassName\s*=\s*(["'])([^"']*)\1/g;
+		staticClassName.lastIndex = spreadBlock.end;
+		const staticClass = staticClassName.exec(code);
+		if (staticClass === null || staticClass.index >= tagEnd) continue;
 		edits.push({
-			start: classBodyStart,
-			end: classBlock.end - 1,
-			text: `[${binding}.props(${styleExpression}).className, ${classExpression}].filter(Boolean).join(" ")`,
+			start: staticClass.index,
+			end: staticClass.index + staticClass[0].length,
+			text: `className={${binding}.props(${styleExpression}, ${JSON.stringify(staticClass[2]!.trim())}).className}`,
 		});
 	}
 	for (const edit of edits.toReversed())
@@ -168,7 +187,7 @@ function rewriteStaticXstyleHosts(source: string, binding: string): string {
 			edits.push({
 				start: classOpen + 1,
 				end: classBlock.end - 1,
-				text: `[${binding}.props(${expression}).className, ${classExpression}].filter(Boolean).join(" ")`,
+				text: `${binding}.props(${expression}, ${classExpression}).className`,
 			});
 			edits.push({
 				start: attributeStart,
@@ -184,7 +203,7 @@ function rewriteStaticXstyleHosts(source: string, binding: string): string {
 			edits.push({
 				start: classStart,
 				end: classEnd,
-				text: `className={[${binding}.props(${expression}).className, ${JSON.stringify(staticClassName[2]!.trim())}].filter(Boolean).join(" ")}`,
+				text: `className={${binding}.props(${expression}, ${JSON.stringify(staticClassName[2]!.trim())}).className}`,
 			});
 			edits.push({
 				start: attributeStart,

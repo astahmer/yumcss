@@ -541,8 +541,10 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.residuals).toEqual([]);
 		expect(result.code).toContain("__pandwindStandaloneComponent");
 		expect(result.code).toContain("<div {...props}");
-		expect(result.code).toContain("className={cx(__pandwindStandaloneClass, props.className)}");
-		expect(result.code).toContain('import { createCx } from "pandwind/cx";');
+		expect(result.code).toContain(
+			"className={css.props(__pandwindStandaloneClass, props.className).className}",
+		);
+		expect(result.code).not.toContain('from "pandwind/cx"');
 		expect(result.code).not.toContain('from "styled-components"');
 	});
 
@@ -671,7 +673,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 			import { pandwindPreset } from "pandwind/preset";
 			const css = createRuntimeCss(pandwindPreset);
 			const cx = createCx();
-			const Div = (props) => <div {...props} class={cx((props) => { const style = css.vars({ border: (({ border = 1, color = "gainsboro" }) => \`\${border}px solid \${color}\`)(props), color: "steelblue", fontWeight: (({ bold = false }) => (bold ? "bold" : 100))(props) }); const Component = props.as ?? "div"; const { as: _as, ...rest } = props; const attrs = {}; return <Component {...attrs} {...rest} class={cx(style.class, props.class)} style={{ ...props.style, ...style.style }} />; }, props.class)} />;
+			const Div = (props) => <div {...props} class={cx((props) => { const style = css.vars({ border: (({ border = 1, color = "gainsboro" }) => \`\${border}px solid \${color}\`)(props), color: "steelblue", fontWeight: (({ bold = false }) => (bold ? "bold" : 100))(props) }); const Component = props.as ?? "div"; const { as: _as, ...rest } = props; const attrs = {}; return <Component {...attrs} {...rest} class={css.props(style, props.class).className} style={{ ...props.style, ...style.style }} />; }, props.class)} />;
 			export const App = () => <Div bold={true} border={1} color="whitesmoke" />;"
 		`);
 	});
@@ -1566,6 +1568,20 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).toContain('from "pandwind/css"');
 	});
 
+	test("passes an existing host class through the static props host", () => {
+		const result = runAdapterMigration(
+			'import * as stylex from "@stylexjs/stylex";\n' +
+				"const styles = stylex.create({ card: { color: colors.foreground } });\n" +
+				'export const App = () => <div {...stylex.props(styles.card)} className="custom-card" />;',
+			{ from: "stylex", to: "pandwind", file: "Card.tsx", mode: "safe" },
+		);
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain('className={css.props(styles.card, "custom-card").className}');
+		expect(result.code).not.toContain("[css.props(styles.card).className");
+	});
+
 	test("projects a Pandwind class binding through StyleX props on a React host", () => {
 		const result = runAdapterMigration(
 			'import { css } from "pandwind/css";\n' +
@@ -1905,9 +1921,9 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(solid.converted).toBe(1);
 		expect(solid.residuals).toEqual([]);
 		expect(solid.code).toContain("css.vars({ color: ((props) => props.color)(props) })");
-		expect(solid.code).toContain('import { createCx } from "pandwind/cx";');
-		expect(solid.code).toContain("class={cx(");
-		expect(solid.code).toContain("dynamic.class");
+		expect(solid.code).toContain("css.props(staticClass, dynamic,");
+		expect(solid.code).toContain("props.class).className");
+		expect(solid.code).not.toContain('from "pandwind/cx"');
 		expect(solid.code).toContain("props.class");
 
 		const vue = runAdapterMigration(
@@ -1981,8 +1997,9 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(chakra.code).not.toContain('import { Box } from "@chakra-ui/react";');
 		expect(chakra.code).toContain('<div data-kind="card"');
 		expect(chakra.code).toContain(
-			'className={css.class({ padding: "16px", backgroundColor: "tomato"',
+			'const staticClassName1 = css.class({ padding: "16px", backgroundColor: "tomato"',
 		);
+		expect(chakra.code).toContain("className={staticClassName1}");
 		expect(chakra.code).toContain('"&:hover"');
 
 		const intrinsicOverride = runAdapterMigration(
@@ -1991,8 +2008,8 @@ describe("CSS-in-JS adapter contract v2", () => {
 			{ from: "chakra-ui", to: "pandwind", file: "Intrinsic.tsx", mode: "safe" },
 		);
 		expect(intrinsicOverride.residuals).toEqual([]);
-		expect(intrinsicOverride.code).toContain('<aside className={css.class({ padding: "4" })}>');
-		expect(intrinsicOverride.code).toContain('<h1 className={css.class({ color: "red.200" })}>');
+		expect(intrinsicOverride.code).toContain("<aside className={staticClassName1}>");
+		expect(intrinsicOverride.code).toContain("<h1 className={staticClassName2}>");
 		expect(intrinsicOverride.code).not.toContain('as="aside"');
 		expect(intrinsicOverride.code).not.toContain('as="h1"');
 
@@ -2000,9 +2017,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 			'import { Box } from "@chakra-ui/react";\nexport const App = () => <Box className="existing" bg="tomato" />;',
 			{ from: "chakra-ui", to: "pandwind", file: "App.tsx", mode: "safe" },
 		);
-		expect(merged.code).toContain(
-			'className={cx(css.class({ backgroundColor: "tomato" }), "existing")}',
-		);
+		expect(merged.code).toContain('className={css.props(staticClassName1, "existing").className}');
 
 		const spread = runAdapterMigration(
 			'import { Box } from "@chakra-ui/react";\n' +
@@ -2011,10 +2026,10 @@ describe("CSS-in-JS adapter contract v2", () => {
 		);
 		expect(spread.residuals).toEqual([]);
 		expect(spread.code).toContain(
-			'className={cx(css.class({ backgroundColor: "tomato" }), "local", props.className)}',
+			'className={css.props(staticClassName1, "local", props.className).className}',
 		);
 		expect(spread.code.indexOf("props} />")).toBeLessThan(
-			spread.code.indexOf("className={cx(css.class"),
+			spread.code.indexOf("className={css.props(staticClassName1"),
 		);
 
 		const componentSpread = runAdapterMigration(
@@ -2025,7 +2040,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		);
 		expect(componentSpread.residuals).toEqual([]);
 		expect(componentSpread.code).toContain(
-			'className={cx(css.class({ display: "inline-flex" }), props.className)}',
+			"className={css.props(staticClassName1, props.className).className}",
 		);
 
 		const separator = runAdapterMigration(

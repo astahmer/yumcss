@@ -1,5 +1,5 @@
 import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
-import { NodeKind, type OxcNode, walk } from "pandwind/tw/literal";
+import { NodeKind, type OxcNode, walk, walkWithParent } from "pandwind/tw/literal";
 import { SourcePass, type SourceEdit } from "../source-pass-utils.ts";
 
 export interface PandwindStaticStyleSimplification {
@@ -8,6 +8,7 @@ export interface PandwindStaticStyleSimplification {
 }
 
 type StaticClassCall = {
+	readonly node: OxcNode;
 	readonly properties: readonly OxcNode[];
 };
 
@@ -20,12 +21,14 @@ const isNode = (value: unknown): value is OxcNode => {
 	return "type" in value && typeof value.type === "string";
 };
 
-const childNode = (node: OxcNode, name: string): OxcNode | undefined => {
+const childNode = (node: unknown, name: string): OxcNode | undefined => {
+	if (!isNode(node)) return undefined;
 	const value = node[name];
 	return isNode(value) ? value : undefined;
 };
 
-const childNodes = (node: OxcNode, name: string): readonly OxcNode[] | undefined => {
+const childNodes = (node: unknown, name: string): readonly OxcNode[] | undefined => {
+	if (!isNode(node)) return undefined;
 	const value = node[name];
 	if (!Array.isArray(value) || !value.every(isNode)) return undefined;
 	return value;
@@ -36,7 +39,8 @@ const nodeName = (value: unknown): string | undefined => {
 	return value.name;
 };
 
-const nodeRange = (node: OxcNode): { readonly start: number; readonly end: number } | undefined => {
+const nodeRange = (node: unknown): { readonly start: number; readonly end: number } | undefined => {
+	if (!isNode(node)) return undefined;
 	if (typeof node.start !== "number" || typeof node.end !== "number") return undefined;
 	return { start: node.start, end: node.end };
 };
@@ -133,23 +137,12 @@ const isCssClassCall = (value: unknown): StaticClassCall | undefined => {
 	if (object?.type !== NodeKind.ObjectExpression) return undefined;
 	const properties = childNodes(object, "properties");
 	if (properties === undefined || !properties.every(isStaticProperty)) return undefined;
-	return { properties };
+	return { node: call, properties };
 };
 
 const isCxCall = (value: unknown): value is OxcNode => {
 	const node = unwrapExpression(value);
 	return node?.type === NodeKind.CallExpression && nodeName(node.callee) === "cx";
-};
-
-const staticClassCallsIn = (value: unknown): readonly StaticClassCall[] | undefined => {
-	const node = unwrapExpression(value);
-	const direct = isCssClassCall(node);
-	if (direct !== undefined) return [direct];
-	if (!isCxCall(node)) return undefined;
-	const args = childNodes(node, "arguments");
-	if (args === undefined || args.length === 0) return undefined;
-	const calls = args.map(isCssClassCall);
-	return calls.every((call): call is StaticClassCall => call !== undefined) ? calls : undefined;
 };
 
 type StaticObjectProperty = {
@@ -281,19 +274,317 @@ const mergedClassExpression = (
 };
 
 const simplifyStaticCxCalls = (source: string, file: string): string => {
+	if (!isScriptFile(file)) return source;
 	const parsed = SOURCE_SCANNER_SERVICE.parse({ file, source });
 	if (parsed.errors.length > 0) return source;
 	const edits: SourceEdit[] = [];
 	walk(parsed.program, (node) => {
 		if (node.type !== NodeKind.CallExpression || !isCxCall(node)) return;
-		const calls = staticClassCallsIn(node);
+		const calls = childNodes(node, "arguments")?.map(isCssClassCall);
 		const range = nodeRange(node);
-		if (calls === undefined || range === undefined) return;
+		if (
+			calls === undefined ||
+			range === undefined ||
+			!calls.every((call): call is StaticClassCall => call !== undefined)
+		)
+			return;
 		const replacement = mergedClassExpression(calls, source);
-		if (replacement === undefined) return;
-		edits.push({ start: range.start, end: range.end, text: replacement });
+		if (replacement !== undefined)
+			edits.push({ start: range.start, end: range.end, text: replacement });
 	});
 	return SourcePass.applyEdits(source, edits);
+};
+
+const simplifyMixedStaticCxCalls = (source: string, file: string): string => {
+	if (!isScriptFile(file)) return source;
+	const parsed = SOURCE_SCANNER_SERVICE.parse({ file, source });
+	if (parsed.errors.length > 0) return source;
+	const edits: SourceEdit[] = [];
+	walk(parsed.program, (node) => {
+		if (node.type !== NodeKind.CallExpression || !isCxCall(node)) return;
+		const args = childNodes(node, "arguments");
+		const range = nodeRange(node);
+		if (args === undefined || range === undefined) return;
+		if (
+			args.every((argument) => isCssClassCall(argument) !== undefined) ||
+			args.every((argument) => isCssClassCall(argument) === undefined)
+		)
+			return;
+		const expressions: string[] = [];
+		for (let index = 0; index < args.length;) {
+			const staticCalls: StaticClassCall[] = [];
+			while (index < args.length) {
+				const staticCall = isCssClassCall(args[index]);
+				if (staticCall === undefined) break;
+				staticCalls.push(staticCall);
+				index += 1;
+			}
+			if (staticCalls.length > 0) {
+				const merged = mergedClassExpression(staticCalls, source);
+				if (merged === undefined) return;
+				expressions.push(merged);
+				continue;
+			}
+			const argumentRange = nodeRange(args[index]);
+			if (argumentRange === undefined) return;
+			expressions.push(source.slice(argumentRange.start, argumentRange.end));
+			index += 1;
+		}
+		edits.push({
+			start: range.start,
+			end: range.end,
+			text: `css.props(${expressions.join(", ")}).className`,
+		});
+	});
+	return SourcePass.applyEdits(source, edits);
+};
+
+const isPandwindStaticCarrier = (value: unknown, carrierNames: ReadonlySet<string>): boolean => {
+	const node = unwrapExpression(value);
+	if (node === undefined) return false;
+	if (isCssClassCall(node)) return true;
+	if (node.type === NodeKind.Identifier) return carrierNames.has(nodeName(node) ?? "");
+	if (node.type === NodeKind.ConditionalExpression) {
+		return (
+			isPandwindStaticCarrier(node.consequent, carrierNames) ||
+			isPandwindStaticCarrier(node.alternate, carrierNames)
+		);
+	}
+	if (node.type === NodeKind.LogicalExpression) {
+		return (
+			isPandwindStaticCarrier(node.left, carrierNames) ||
+			isPandwindStaticCarrier(node.right, carrierNames)
+		);
+	}
+	return false;
+};
+
+const topLevelPandwindStaticCarrierNames = (program: unknown): ReadonlySet<string> => {
+	const names = new Set<string>();
+	for (const statement of childNodes(program, "body") ?? []) {
+		if (statement.type !== NodeKind.VariableDeclaration) continue;
+		for (const declaration of childNodes(statement, "declarations") ?? []) {
+			const name = bindingName(declaration.id);
+			if (name !== undefined && isPandwindStaticCarrier(declaration.init, new Set()))
+				names.add(name);
+		}
+	}
+	return names;
+};
+
+const flattenedCxArguments = (node: OxcNode, source: string): readonly string[] | undefined => {
+	if (!isCxCall(node)) {
+		const range = nodeRange(node);
+		return range === undefined ? undefined : [source.slice(range.start, range.end)];
+	}
+	const argumentsList = childNodes(node, "arguments");
+	if (argumentsList === undefined) return undefined;
+	const flattened: string[] = [];
+	for (const argument of argumentsList) {
+		const values = flattenedCxArguments(argument, source);
+		if (values === undefined) return undefined;
+		flattened.push(...values);
+	}
+	return flattened;
+};
+
+const simplifyCarrierCxCalls = (source: string, file: string): string => {
+	if (!isScriptFile(file)) return source;
+	const parsed = SOURCE_SCANNER_SERVICE.parse({ file, source });
+	if (parsed.errors.length > 0) return source;
+	const carrierNames = topLevelPandwindStaticCarrierNames(parsed.program);
+	if (carrierNames.size === 0) return source;
+	const edits: SourceEdit[] = [];
+	walkWithParent(parsed.program, (node, _parent, ancestors) => {
+		if (!isCxCall(node) || ancestors.some((ancestor) => isCxCall(ancestor))) return;
+		const argumentsList = childNodes(node, "arguments");
+		const range = nodeRange(node);
+		if (argumentsList === undefined || range === undefined) return;
+		if (!argumentsList.some((argument) => isPandwindStaticCarrier(argument, carrierNames))) return;
+		const flattened = flattenedCxArguments(node, source);
+		if (flattened === undefined || flattened.length === 0) return;
+		edits.push({
+			start: range.start,
+			end: range.end,
+			text: `css.props(${flattened.join(", ")}).className`,
+		});
+	});
+	return SourcePass.applyEdits(source, edits);
+};
+
+const SCRIPT_FILE_PATTERN = /\.(?:c|m)?(?:j|t)sx?$/u;
+const FUNCTION_NODE_TYPES: ReadonlySet<string> = new Set([
+	NodeKind.ArrowFunctionExpression,
+	NodeKind.FunctionDeclaration,
+	NodeKind.FunctionExpression,
+]);
+
+const isDirectiveStatement = (node: OxcNode): boolean => {
+	if (node.type !== NodeKind.ExpressionStatement) return false;
+	const expression = unwrapExpression(node.expression);
+	return expression?.type === NodeKind.Literal && typeof expression.value === "string";
+};
+
+const moduleStyleInsertionOffset = (program: unknown, source: string): number => {
+	const body = childNodes(program, "body") ?? [];
+	const imports = body.filter((node) => node.type === NodeKind.ImportDeclaration);
+	const lastImport = imports.at(-1);
+	const cssInitializer = body.find(
+		(node) =>
+			node.type === NodeKind.VariableDeclaration &&
+			(childNodes(node, "declarations") ?? []).some(
+				(declaration) => bindingName(declaration.id) === "css",
+			),
+	);
+	const requiredStatements = [lastImport, cssInitializer].filter(
+		(statement): statement is OxcNode => statement !== undefined,
+	);
+	const lastRequiredStatement = requiredStatements
+		.toSorted((left, right) => (nodeRange(left)?.end ?? 0) - (nodeRange(right)?.end ?? 0))
+		.at(-1);
+	if (lastRequiredStatement !== undefined)
+		return nodeRange(lastRequiredStatement)?.end ?? source.length;
+	const firstNonDirective = body.find((node) => !isDirectiveStatement(node));
+	return firstNonDirective === undefined
+		? source.length
+		: (nodeRange(firstNonDirective)?.start ?? source.length);
+};
+
+const isScriptFile = (file: string): boolean => SCRIPT_FILE_PATTERN.test(file);
+
+const bindingName = (node: unknown): string | undefined => {
+	if (!isNode(node)) return undefined;
+	return node.type === NodeKind.Identifier ? nodeName(node) : undefined;
+};
+
+const topLevelBindingNames = (program: unknown): ReadonlySet<string> => {
+	const names = new Set<string>();
+	for (const statement of childNodes(program, "body") ?? []) {
+		if (statement.type === NodeKind.VariableDeclaration) {
+			for (const declaration of childNodes(statement, "declarations") ?? []) {
+				const name = bindingName(declaration.id);
+				if (name !== undefined) names.add(name);
+			}
+			continue;
+		}
+		if (
+			statement.type === NodeKind.FunctionDeclaration ||
+			statement.type === NodeKind.ClassDeclaration
+		) {
+			const name = bindingName(statement.id);
+			if (name !== undefined) names.add(name);
+			continue;
+		}
+		if (statement.type !== NodeKind.ImportDeclaration) continue;
+		for (const specifier of childNodes(statement, "specifiers") ?? []) {
+			const name = bindingName(specifier.local);
+			if (name !== undefined) names.add(name);
+		}
+	}
+	return names;
+};
+
+/** Move static css.class calls out of render functions so they run once per module. */
+const hoistStaticCssClassCalls = (source: string, file: string): string => {
+	if (!isScriptFile(file)) return source;
+	const parsed = SOURCE_SCANNER_SERVICE.parse({ file, source });
+	if (parsed.errors.length > 0) return source;
+	const usedNames = new Set<string>();
+	const candidates: Array<{
+		readonly node: OxcNode;
+		readonly source: string;
+		readonly bindingName?: string;
+		readonly declaration?: OxcNode;
+	}> = [];
+	walkWithParent(parsed.program, (node, parent, ancestors) => {
+		if (node.type === NodeKind.Identifier || node.type === NodeKind.JSXIdentifier) {
+			const name = nodeName(node);
+			if (name !== undefined) usedNames.add(name);
+		}
+		if (
+			node.type !== NodeKind.CallExpression ||
+			!ancestors.some((ancestor) => FUNCTION_NODE_TYPES.has(ancestor.type))
+		)
+			return;
+		const call = isCssClassCall(node);
+		const range = call === undefined ? undefined : nodeRange(node);
+		if (call === undefined || range === undefined) return;
+		const declaration =
+			parent?.type === NodeKind.VariableDeclarator && parent.init === node
+				? [...ancestors]
+						.toReversed()
+						.find((ancestor) => ancestor.type === NodeKind.VariableDeclaration)
+				: undefined;
+		const declarationIsSimpleConst =
+			declaration?.kind === "const" && childNodes(declaration, "declarations")?.length === 1;
+		const localName = declarationIsSimpleConst ? bindingName(parent?.id) : undefined;
+		candidates.push({
+			node,
+			source: source.slice(range.start, range.end),
+			...(localName === undefined || declaration === undefined
+				? {}
+				: { bindingName: localName, declaration }),
+		});
+	});
+	if (candidates.length === 0) return source;
+
+	const declarationNamesBySource = new Map<string, Set<string>>();
+	for (const candidate of candidates) {
+		if (candidate.bindingName === undefined) continue;
+		const names = declarationNamesBySource.get(candidate.source) ?? new Set<string>();
+		names.add(candidate.bindingName);
+		declarationNamesBySource.set(candidate.source, names);
+	}
+	const topLevelNames = topLevelBindingNames(parsed.program);
+	const namesBySource = new Map<string, string>();
+	const assignedNames = new Set<string>();
+	let nameIndex = 1;
+	for (const candidate of candidates) {
+		if (namesBySource.has(candidate.source)) continue;
+		const declarationNames = declarationNamesBySource.get(candidate.source);
+		const preferredName = declarationNames?.size === 1 ? [...declarationNames][0] : undefined;
+		const canUsePreferredName =
+			preferredName !== undefined &&
+			!topLevelNames.has(preferredName) &&
+			!assignedNames.has(preferredName);
+		let name = canUsePreferredName ? preferredName : `staticClassName${nameIndex}`;
+		while ((usedNames.has(name) && name !== preferredName) || assignedNames.has(name))
+			name = `staticClassName${++nameIndex}`;
+		nameIndex += 1;
+		usedNames.add(name);
+		assignedNames.add(name);
+		namesBySource.set(candidate.source, name);
+	}
+	const replacements = candidates.flatMap((candidate) => {
+		const range = nodeRange(candidate.node);
+		const name = namesBySource.get(candidate.source);
+		const hasHoistedDeclaration =
+			candidate.declaration !== undefined && candidate.bindingName === name;
+		if (hasHoistedDeclaration) return [];
+		return range === undefined || name === undefined
+			? []
+			: [{ start: range.start, end: range.end, text: name }];
+	});
+	const removedDeclarations = candidates.flatMap((candidate) => {
+		if (
+			candidate.declaration === undefined ||
+			candidate.bindingName !== namesBySource.get(candidate.source)
+		)
+			return [];
+		const range = nodeRange(candidate.declaration);
+		return range === undefined ? [] : [{ start: range.start, end: range.end, text: "" }];
+	});
+	const declarations = [...namesBySource.entries()]
+		.map(([styleSource, name]) => `const ${name} = ${styleSource};`)
+		.join("\n");
+	const insertion = moduleStyleInsertionOffset(parsed.program, source);
+	const prefix = insertion > 0 && source[insertion - 1] === "\n" ? "" : "\n";
+	const suffix = source[insertion] === "\n" || source[insertion] === "\r" ? "" : "\n\n";
+	return SourcePass.applyEdits(source, [
+		...replacements,
+		...removedDeclarations,
+		{ start: insertion, end: insertion, text: `${prefix}${declarations}${suffix}` },
+	]);
 };
 
 const literalValue = (node: unknown): string | number | undefined => {
@@ -338,6 +629,7 @@ const stackAttributeName = (attribute: OxcNode): string | undefined =>
 	attribute.type === NodeKind.JSXAttribute ? nodeName(attribute.name) : undefined;
 
 const simplifyStackOpening = (source: string, file: string): string => {
+	if (!isScriptFile(file)) return source;
 	const parsed = SOURCE_SCANNER_SERVICE.parse({ file, source });
 	if (parsed.errors.length > 0) return source;
 	const edits: SourceEdit[] = [];
@@ -482,12 +774,23 @@ const removeUnusedCxBindings = (source: string): string => {
 	return withoutCxBinding.replace(createCxImport, "");
 };
 
+const removeUnusedCssBinding = (source: string): string => {
+	const cssImport =
+		/^[ \t]*import\s*\{\s*css\s*\}\s*from\s*["'][^"']*pandwind\/css["'];?[ \t]*\r?\n?/gmu;
+	const withoutCssImport = source.replace(cssImport, "");
+	return /\bcss\b/u.test(withoutCssImport) ? source : withoutCssImport;
+};
+
 export const simplifyPandwindStaticStyles = (
 	source: string,
 	file = "migration.tsx",
 ): PandwindStaticStyleSimplification => {
+	if (!isScriptFile(file)) return { code: source, changed: false };
 	const composed = simplifyStaticCxCalls(source, file);
 	const stacks = simplifyStackOpening(composed, file);
-	const code = removeUnusedCxBindings(stacks);
+	const mixed = simplifyMixedStaticCxCalls(stacks, file);
+	const hoisted = hoistStaticCssClassCalls(mixed, file);
+	const composedCarriers = simplifyCarrierCxCalls(hoisted, file);
+	const code = removeUnusedCssBinding(removeUnusedCxBindings(composedCarriers));
 	return { code, changed: code !== source };
 };

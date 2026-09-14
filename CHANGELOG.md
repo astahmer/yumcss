@@ -4,6 +4,20 @@ All notable changes to `pandwind` are documented here. The project has no
 released version yet — entries group the development waves that produced the
 current `0.1.0` state.
 
+## Unreleased — 2026-09-14 static style carrier hoisting
+
+### Fixes
+
+- Hoist literal `css.class()` calls out of render functions into deduplicated
+  module constants, while preserving dynamic calls and removing unused `css`
+  imports. Insert generated constants after a module `css` initializer so the
+  output cannot hit the temporal dead zone.
+- Keep existing host classes inside `css.props` when migrating StyleX props
+  spreads, covering both expression and quoted `className` attributes without
+  generating a second `cx` merge. The static simplifier also flattens nested
+  `cx` calls around hoisted Pandwind carriers into one `css.props(...).className`
+  projection for every adapter. Source revision: `lqvmzxpt`.
+
 ## Unreleased — 2026-09-13 curated CSS property contract
 
 ### API

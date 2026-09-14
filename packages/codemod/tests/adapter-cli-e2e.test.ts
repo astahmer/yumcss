@@ -148,7 +148,7 @@ describe("adapter migration e2e matrix", () => {
 				{ cwd: codemodRoot, encoding: "utf8" },
 			);
 			const preset = readFileSync(presetFile, "utf8");
-			expect(preset).toMatch(/\bbase:\s*""/u);
+			expect(preset).toMatch(/["']?base["']?\s*:\s*""/u);
 			expect(preset).toContain('"midnight": "[data-theme=midnight] &"');
 		} finally {
 			rmSync(directory, { recursive: true, force: true });

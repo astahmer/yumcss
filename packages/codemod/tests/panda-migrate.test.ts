@@ -453,7 +453,7 @@ describe("supporting migration primitives", () => {
 			cssImport: "../css",
 			aliasSpecifierFor: (subpath) => `@/pandwind/${subpath}`,
 		});
-		expect(jsx).toContain('import { cssRuntime, cx } from "../css";');
+		expect(jsx).toContain('import { cssRuntime } from "../css";');
 		expect(jsx).toContain('import("react").ElementType');
 		expect(jsx).toContain("splitStyleProps(rest)");
 		expect(jsx).toContain('className, children, as = "div", ...rest');
@@ -544,7 +544,7 @@ describe("runPandaMigration", () => {
 		expect(app).toContain("@/pandwind/css");
 		expect(app).toContain("@/pandwind/recipes");
 		expect(app).not.toContain("styled-system");
-		expect(app).toContain("<div className={css.class(");
+		expect(app).toContain("<div className={staticClassName");
 		expect(app).toContain("</div>");
 		// The fixture only declares the custom `fg` token, so the unknown Panda
 		// default path remains an authored dotted value until target metadata
@@ -597,7 +597,7 @@ describe("runPandaMigration", () => {
 		const output = readFileSync(join(dir, "src", "examples.tsx"), "utf8");
 		expect(output).toContain('import { css } from "./styled-system/css";');
 		expect(output).toContain('const className = css({ color: "red" });');
-		expect(output).toContain('export const App = () => css.class({ color: "blue" });');
+		expect(output).toContain("export const App = () => staticClassName1;");
 	});
 
 	it("removes a local recipe call including its closing parenthesis", async () => {

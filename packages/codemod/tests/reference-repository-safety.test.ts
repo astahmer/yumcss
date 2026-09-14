@@ -97,15 +97,16 @@ const Button = () => <styled.button color="red" />;`;
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
 		expect(result.code).not.toContain('from "styled-system/jsx"');
-		expect(result.code).toContain('<button className={css.class({ color: "red" })} />');
+		expect(result.code).toContain("<button className={staticClassName1} />");
 		expect(result.code).toMatchInlineSnapshot(`
-		"import React from "react";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
+			"import React from "react";
+			import { createCss } from "pandwind/css";
+			const css = createCss();
+			const staticClassName1 = css.class({ color: "red" });
 
 
-		const Button = () => <button className={css.class({ color: "red" })} />;"
-	`);
+			const Button = () => <button className={staticClassName1} />;"
+		`);
 	});
 
 	test("handles aliased Panda styled factories and preserves ordinary JSX attributes", async () => {
@@ -120,13 +121,14 @@ export const Button = () =>
 		expect(result.residuals).toEqual([]);
 		expect(result.code).not.toContain("pandaStyled");
 		expect(result.code).toMatchInlineSnapshot(`
-		"import { createCss } from "pandwind/css";
-		const css = createCss();
+			"import { createCss } from "pandwind/css";
+			const css = createCss();
+			const staticClassName1 = css.class({ backgroundColor: "tomato", color: "red", "&:hover": { color: "blue" } });
 
 
-		export const Button = () =>
-		\t\t<button data-testid="button" disabled className={css.class({ backgroundColor: "tomato", color: "red", "&:hover": { color: "blue" } })} />;"
-	`);
+			export const Button = () =>
+					<button data-testid="button" disabled className={staticClassName1} />;"
+		`);
 	});
 
 	test("converts the supported styled-components template form without leaving its import", () => {

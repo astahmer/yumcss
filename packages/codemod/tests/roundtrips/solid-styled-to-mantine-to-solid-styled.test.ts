@@ -49,12 +49,10 @@ test("solid-styled -> mantine -> solid-styled: preserves an actionable concrete 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
-		import { createCss } from "pandwind/css";
+		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		const cx = createCx();
-		export const Card = (props) => <div {...props} class={cx(css.class({ "padding": "1rem", "color": "red" }), props.class)} />;",
+
+		export const Card = (props) => <div {...props} class={css.props(css.class({ "padding": "1rem", "color": "red" }), props.class).className} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -88,12 +86,10 @@ test("solid-styled -> mantine -> solid-styled: preserves an actionable concrete 
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "
-		import { createCx } from "pandwind/cx";
-		import { createCss } from "pandwind/css";
+		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		const cx = createCx();
-		export const Card = (props) => <div {...props} class={cx(css.class({ "padding": "1rem", "color": "red" }), props.class)} />;",
+
+		export const Card = (props) => <div {...props} class={css.props(css.class({ "padding": "1rem", "color": "red" }), props.class).className} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -118,12 +114,10 @@ test("solid-styled -> mantine -> solid-styled: retains the documented secondary 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
-		import { createCss } from "pandwind/css";
+		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		const cx = createCx();
-		export const Card = (props) => <div {...props} class={cx(css.class({ "padding": "1rem", "color": "red" }), props.class)} />;",
+
+		export const Card = (props) => <div {...props} class={css.props(css.class({ "padding": "1rem", "color": "red" }), props.class).className} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -157,12 +151,10 @@ test("solid-styled -> mantine -> solid-styled: retains the documented secondary 
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "
-		import { createCx } from "pandwind/cx";
-		import { createCss } from "pandwind/css";
+		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		const cx = createCx();
-		export const Card = (props) => <div {...props} class={cx(css.class({ "padding": "1rem", "color": "red" }), props.class)} />;",
+
+		export const Card = (props) => <div {...props} class={css.props(css.class({ "padding": "1rem", "color": "red" }), props.class).className} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -202,12 +194,10 @@ test("solid-styled -> mantine -> solid-styled: preserves concrete theme and proj
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		import { createCx } from "pandwind/cx";
-		import { createCss } from "pandwind/css";
+		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		const cx = createCx();
-		export const Card = (props) => <div {...props} class={cx(css.class({ "padding": "1rem", "color": "#2563eb" }), props.class)} />;",
+
+		export const Card = (props) => <div {...props} class={css.props(css.class({ "padding": "1rem", "color": "#2563eb" }), props.class).className} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -241,12 +231,10 @@ test("solid-styled -> mantine -> solid-styled: preserves concrete theme and proj
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "
-		import { createCx } from "pandwind/cx";
-		import { createCss } from "pandwind/css";
+		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		const cx = createCx();
-		export const Card = (props) => <div {...props} class={cx(css.class({ "padding": "1rem", "color": "#2563eb" }), props.class)} />;",
+
+		export const Card = (props) => <div {...props} class={css.props(css.class({ "padding": "1rem", "color": "#2563eb" }), props.class).className} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -259,12 +247,10 @@ test("solid-styled -> mantine -> solid-styled: preserves concrete theme and proj
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		import { createCx } from "pandwind/cx";
-		import { createCss } from "pandwind/css";
+		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		const cx = createCx();
-		export const Card = (props) => <div {...props} class={cx(css.class({ "padding": "1rem", "color": "var(--mantine-color-brand-0)" }), props.class)} />;",
+
+		export const Card = (props) => <div {...props} class={css.props(css.class({ "padding": "1rem", "color": "var(--mantine-color-brand-0)" }), props.class).className} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -298,12 +284,10 @@ test("solid-styled -> mantine -> solid-styled: preserves concrete theme and proj
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "
-		import { createCx } from "pandwind/cx";
-		import { createCss } from "pandwind/css";
+		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		const cx = createCx();
-		export const Card = (props) => <div {...props} class={cx(css.class({ "padding": "1rem", "color": "var(--mantine-color-brand-0)" }), props.class)} />;",
+
+		export const Card = (props) => <div {...props} class={css.props(css.class({ "padding": "1rem", "color": "var(--mantine-color-brand-0)" }), props.class).className} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -330,12 +314,10 @@ test("solid-styled -> mantine -> solid-styled: resolves token values across both
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
-		import { createCss } from "pandwind/css";
+		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		const cx = createCx();
-		export const Card = (props) => <div {...props} class={cx(css.class({ "padding": "1rem", "color": "var(--mantine-color-brand-0)" }), props.class)} />;",
+
+		export const Card = (props) => <div {...props} class={css.props(css.class({ "padding": "1rem", "color": "var(--mantine-color-brand-0)" }), props.class).className} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -369,12 +351,10 @@ test("solid-styled -> mantine -> solid-styled: resolves token values across both
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "
-		import { createCx } from "pandwind/cx";
-		import { createCss } from "pandwind/css";
+		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		const cx = createCx();
-		export const Card = (props) => <div {...props} class={cx(css.class({ "padding": "1rem", "color": "var(--mantine-color-brand-0)" }), props.class)} />;",
+
+		export const Card = (props) => <div {...props} class={css.props(css.class({ "padding": "1rem", "color": "var(--mantine-color-brand-0)" }), props.class).className} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],

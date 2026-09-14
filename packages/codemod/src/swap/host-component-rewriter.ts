@@ -123,6 +123,17 @@ export interface StandaloneHostComponentRewriteRequest {
 	readonly classExpression: string;
 }
 
+const isPandwindCarrier = (expression: string): boolean =>
+	/^css\.(?:class|vars)\(/u.test(expression.trim());
+
+const mergeClassExpression = (
+	generated: string,
+	existing: string,
+): { readonly expression: string; readonly needsCx: boolean } =>
+	isPandwindCarrier(generated)
+		? { expression: `css.props(${generated}, ${existing}).className`, needsCx: false }
+		: { expression: `cx(${generated}, ${existing})`, needsCx: true };
+
 export interface HostComponentRewriter {
 	readonly schema: typeof HOST_COMPONENT_REWRITER_SCHEMA;
 	readonly id: string;
@@ -323,17 +334,13 @@ function rewriteJsx(request: HostComponentRewriteRequest): HostComponentRewriteR
 		const dynamicClass = /\bclassName\s*=\s*\{([^{}]*)\}/.exec(attrs);
 		const staticClass = /\bclassName\s*=\s*"([^"]*)"/.exec(attrs);
 		if (dynamicClass !== null) {
-			needsCx = true;
-			attrs = attrs.replace(
-				dynamicClass[0],
-				`className={cx(${classExpression}, ${dynamicClass[1]})}`,
-			);
+			const merged = mergeClassExpression(classExpression, dynamicClass[1]!);
+			needsCx ||= merged.needsCx;
+			attrs = attrs.replace(dynamicClass[0], `className={${merged.expression}}`);
 		} else if (staticClass !== null) {
-			needsCx = true;
-			attrs = attrs.replace(
-				staticClass[0],
-				`className={cx(${classExpression}, ${JSON.stringify(staticClass[1]!.trim())})}`,
-			);
+			const merged = mergeClassExpression(classExpression, JSON.stringify(staticClass[1]!.trim()));
+			needsCx ||= merged.needsCx;
+			attrs = attrs.replace(staticClass[0], `className={${merged.expression}}`);
 		} else if (/\bclassName\s*=/.test(attrs)) {
 			continue;
 		} else {
@@ -390,9 +397,10 @@ function rewriteJsxDeclaration(request: HostComponentRewriteRequest): HostCompon
 		};
 	}
 	const classAttribute = getHostFrameworkAdapter(request.framework)?.classAttribute ?? "className";
+	const mergedClass = mergeClassExpression(request.classExpression, `props.${classAttribute}`);
 	const declaration =
 		`${request.binding} = (props) => <${request.tag} {...props} ` +
-		`${classAttribute}={cx(${request.classExpression}, props.${classAttribute})} />;`;
+		`${classAttribute}={${mergedClass.expression}} />;`;
 	const declarationWithStyle =
 		request.styleExpression === undefined
 			? declaration
@@ -411,7 +419,7 @@ function rewriteJsxDeclaration(request: HostComponentRewriteRequest): HostCompon
 					match[0].indexOf(request.binding),
 			),
 		changed: true,
-		needsCx: true,
+		needsCx: mergedClass.needsCx,
 		residuals: [],
 	};
 }
@@ -558,16 +566,17 @@ function rewriteStandaloneJsx(
 	const className = "__pandwindStandaloneClass";
 	const componentName = "__pandwindStandaloneComponent";
 	const classAttribute = getHostFrameworkAdapter(request.framework)?.classAttribute ?? "className";
+	const mergedClass = mergeClassExpression(className, `props.${classAttribute}`);
 	const replacement =
 		`const ${className} = ${request.classExpression};\n` +
 		`const ${componentName} = (props) => <${request.tag} {...props} ` +
-		`${classAttribute}={cx(${className}, props.${classAttribute})} />;\n` +
+		`${classAttribute}={${isPandwindCarrier(request.classExpression) ? `css.props(${className}, props.${classAttribute}).className` : mergedClass.expression}} />;\n` +
 		`export default ${componentName};`;
 	const end = expressionStart + expression.length;
 	return {
 		code: request.source.slice(0, exportMatch.index) + replacement + request.source.slice(end),
 		changed: true,
-		needsCx: true,
+		needsCx: isPandwindCarrier(request.classExpression) ? false : mergedClass.needsCx,
 		residuals: [],
 	};
 }

@@ -47,12 +47,10 @@ test("solid-styled -> mantine: migrates concrete solid-styled syntax to mantine"
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		import { createCx } from "pandwind/cx";
-		import { createCss } from "pandwind/css";
+		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		const cx = createCx();
-		export const Card = (props) => <div {...props} class={cx(css.class({ "padding": "1rem", "color": "red" }), props.class)} />;",
+
+		export const Card = (props) => <div {...props} class={css.props(css.class({ "padding": "1rem", "color": "red" }), props.class).className} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -95,12 +93,10 @@ test("solid-styled -> mantine: carries a documented secondary solid-styled API e
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		import { createCx } from "pandwind/cx";
-		import { createCss } from "pandwind/css";
+		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		const cx = createCx();
-		export const Card = (props) => <div {...props} class={cx(css.class({ "padding": "1rem", "color": "red" }), props.class)} />;",
+
+		export const Card = (props) => <div {...props} class={css.props(css.class({ "padding": "1rem", "color": "red" }), props.class).className} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -152,12 +148,10 @@ test("solid-styled -> mantine: loads concrete theme and project context variants
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
-		import { createCss } from "pandwind/css";
+		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		const cx = createCx();
-		export const Card = (props) => <div {...props} class={cx(css.class({ "padding": "1rem", "color": "#2563eb" }), props.class)} />;",
+
+		export const Card = (props) => <div {...props} class={css.props(css.class({ "padding": "1rem", "color": "#2563eb" }), props.class).className} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -191,12 +185,10 @@ test("solid-styled -> mantine: loads concrete theme and project context variants
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "pandwind/cx";
-		import { createCss } from "pandwind/css";
+		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		const cx = createCx();
-		export const Card = (props) => <div {...props} class={cx(css.class({ "padding": "1rem", "color": "var(--mantine-color-brand-0)" }), props.class)} />;",
+
+		export const Card = (props) => <div {...props} class={css.props(css.class({ "padding": "1rem", "color": "var(--mantine-color-brand-0)" }), props.class).className} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -242,12 +234,10 @@ test("solid-styled -> mantine: resolves concrete token values with project conte
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		import { createCx } from "pandwind/cx";
-		import { createCss } from "pandwind/css";
+		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		const cx = createCx();
-		export const Card = (props) => <div {...props} class={cx(css.class({ "padding": "1rem", "color": "var(--mantine-color-brand-0)" }), props.class)} />;",
+
+		export const Card = (props) => <div {...props} class={css.props(css.class({ "padding": "1rem", "color": "var(--mantine-color-brand-0)" }), props.class).className} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -291,11 +281,9 @@ test("solid-styled -> mantine: preserves malformed concrete solid-styled input",
 		{
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
-		import { createCx } from "pandwind/cx";
 		import { createCss } from "pandwind/css";
 		const css = createCss();
-		const cx = createCx();
-		export const Card = (props) => <div {...props} class={cx(css.class({ "padding": "1rem", "color": "red" }), props.class)} />;
+		export const Card = (props) => <div {...props} class={css.props(css.class({ "padding": "1rem", "color": "red" }), props.class).className} />;
 		const unfinished = { /* unfinished solid-styled */",
 		  "converted": 1,
 		  "generatedFiles": [],

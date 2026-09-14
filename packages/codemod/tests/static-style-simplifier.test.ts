@@ -16,8 +16,9 @@ const View = () => (
 		const result = simplifyPandwindStaticStyles(source, "View.tsx");
 
 		expect(result.changed).toBe(true);
+		expect(result.code).toContain('const staticClassName1 = css.class({ color: "red" });');
 		expect(result.code).toContain(
-			'<Stack direction="column" gap="0" padding="2" align="center" className={css.class({ color: "red" })} />',
+			'<Stack direction="column" gap="0" padding="2" align="center" className={staticClassName1} />',
 		);
 		expect(result.code).not.toContain("cx(");
 		expect(result.code).not.toContain('from "./pandwind/cx"');
@@ -31,8 +32,10 @@ const View = () => <div className={cx(css.class({ color: "red" }), className)} /
 
 		const result = simplifyPandwindStaticStyles(source, "View.tsx");
 
-		expect(result.changed).toBe(false);
-		expect(result.code).toBe(source);
+		expect(result.changed).toBe(true);
+		expect(result.code).toContain('const staticClassName1 = css.class({ color: "red" });');
+		expect(result.code).toContain("className={css.props(staticClassName1, className).className}");
+		expect(result.code).not.toContain('from "./pandwind/cx"');
 	});
 
 	it("promotes static Stack layout while preserving a dynamic class", () => {
@@ -45,9 +48,9 @@ const View = ({ className }: { className?: string }) => (
 		const result = simplifyPandwindStaticStyles(source, "View.tsx");
 
 		expect(result.code).toContain(
-			'<Stack direction="column" align="center" className={cx(css.class({ color: "red" }), className)} />',
+			'<Stack direction="column" align="center" className={css.props(staticClassName1, className).className} />',
 		);
-		expect(result.code).toContain('import { cx } from "./pandwind/cx";');
+		expect(result.code).not.toContain('import { cx } from "./pandwind/cx";');
 	});
 
 	it("keeps responsive Stack values in the class", () => {
@@ -87,6 +90,93 @@ const View = ({ className }: { className?: string }) => (
 		expect(result.changed).toBe(true);
 		expect(result.code).toContain(
 			'className={css.class({ color: { base: "blue", md: "green" } })}',
+		);
+	});
+
+	it("leaves dynamic style values inside the render function", () => {
+		const source = `const View = ({ color }: { color: string }) =>
+			<div className={css.class({ color })} />;
+`;
+
+		const result = simplifyPandwindStaticStyles(source, "View.tsx");
+
+		expect(result.changed).toBe(false);
+		expect(result.code).toBe(source);
+	});
+
+	it("hoists a named static carrier instead of leaving a render-local alias", () => {
+		const source = `import { css } from "./pandwind/css";
+
+const View = () => {
+		const chipClassName = css.class({ color: "red" });
+		return <div className={chipClassName} />;
+};
+`;
+
+		const result = simplifyPandwindStaticStyles(source, "View.tsx");
+
+		expect(result.code).toContain('const chipClassName = css.class({ color: "red" });');
+		expect(result.code).toContain("return <div className={chipClassName} />;");
+		expect(result.code).not.toContain("const chipClassName = staticClassName");
+		expect(result.code).toContain('from "./pandwind/css"');
+	});
+
+	it("passes hoisted static carriers through css.props instead of cx", () => {
+		const source = `import { cx } from "./pandwind/cx";
+import { css } from "./pandwind/css";
+
+const baseClassName = css.class({ color: "red" });
+const View = ({ className }: { className?: string }) => (
+		<div className={cx(baseClassName, cx("external", className))} />
+);
+`;
+
+		const result = simplifyPandwindStaticStyles(source, "View.tsx");
+
+		expect(result.code).toContain(
+			'className={css.props(baseClassName, "external", className).className}',
+		);
+		expect(result.code).not.toContain("cx(");
+		expect(result.code).not.toContain('from "./pandwind/cx"');
+	});
+
+	it("preserves dynamic and static class order", () => {
+		const source = `import { cx } from "./pandwind/cx";
+import { css } from "./pandwind/css";
+
+const View = ({ className }: { className?: string }) => (
+		<div className={cx(className, css.class({ color: "red" }))} />
+);
+`;
+
+		const result = simplifyPandwindStaticStyles(source, "View.tsx");
+
+		expect(result.code).toContain("className={css.props(className, staticClassName1).className}");
+		expect(result.code).not.toContain("cx(");
+	});
+
+	it("removes an unused css import after Stack migration", () => {
+		const source = `import { css } from "./pandwind/css";
+
+const View = () => <Stack direction="column" />;
+`;
+
+		const result = simplifyPandwindStaticStyles(source, "View.tsx");
+
+		expect(result.code).not.toContain('from "./pandwind/css"');
+	});
+
+	it("inserts hoisted classes after a module css initializer", () => {
+		const source = `import { createCss } from "pandwind/css";
+const css = createCss();
+
+const View = () => <div className={css.class({ color: "red" })} />;
+`;
+
+		const result = simplifyPandwindStaticStyles(source, "View.tsx");
+
+		expect(result.code.indexOf("const css = createCss();")).toBeLessThan(
+			result.code.indexOf('const staticClassName1 = css.class({ color: "red" });'),
 		);
 	});
 });

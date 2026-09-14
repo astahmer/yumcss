@@ -192,11 +192,9 @@ describe("concrete adapter capability proofs", () => {
 		expect(result.code).toContain("props => props.color");
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { createCss } from "pandwind/css";
-			import { createCx } from "pandwind/cx";
-			const cx = createCx();
 			const css = createCss();
 
-			const Card = (() => { const staticClass = ""; const component = (props) => {  const dynamic = css.vars({ color: (props => props.color)(props) }); const Component = props.as ?? "div"; const { as: _as, ...rest } = props; const attrs = {}; return <Component {...attrs} {...rest} className={cx(staticClass, dynamic.class, "pw-1fn70s4", props.className)} style={{ ...props.style, ...dynamic.style }} />; }; component.__pandwindClassName = "pw-1fn70s4"; return component; })();"
+			const Card = (() => { const staticClass = ""; const component = (props) => {  const dynamic = css.vars({ color: (props => props.color)(props) }); const Component = props.as ?? "div"; const { as: _as, ...rest } = props; const attrs = {}; return <Component {...attrs} {...rest} className={css.props(staticClass, dynamic, "pw-1fn70s4", props.className).className} style={{ ...props.style, ...dynamic.style }} />; }; component.__pandwindClassName = "pw-1fn70s4"; return component; })();"
 		`);
 	});
 

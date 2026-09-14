@@ -27,6 +27,17 @@ export interface JsxStyleHostRenderResult {
 
 export type JsxStylePropSelector = readonly string[] | ((name: string) => boolean);
 
+const isPandwindCarrier = (expression: string): boolean =>
+	/^css\.(?:class|vars)\(/u.test(expression.trim());
+
+const mergeClassExpression = (
+	generated: string,
+	existing: string,
+): { readonly expression: string; readonly needsCx: boolean } =>
+	isPandwindCarrier(generated)
+		? { expression: `css.props(${generated}, ${existing}).className`, needsCx: false }
+		: { expression: `cx(${generated}, ${existing})`, needsCx: true };
+
 /** Shared host syntax port for adapters that express styles as JSX attributes. */
 export class JsxStyleHost {
 	static parse(
@@ -129,7 +140,8 @@ export class JsxStyleHost {
 			const value = existing[4] ?? JSON.stringify(existing[2] ?? existing[3] ?? "");
 			const spreadClass =
 				spread !== undefined && spread.index > existing.index ? `, ${spread[1]}.className` : "";
-			const replacement = `${existing[1]}${attribute}={cx(${classExpression}, ${value}${spreadClass})}`;
+			const merged = mergeClassExpression(classExpression, `${value}${spreadClass}`);
+			const replacement = `${existing[1]}${attribute}={${merged.expression}}`;
 			text = `${text.slice(0, existing.index)}${replacement}${text.slice(existing.index + existing[0].length)}`;
 			if (spread !== undefined && spread.index > existing.index) {
 				const renderedIndex = text.indexOf(replacement);
@@ -138,11 +150,12 @@ export class JsxStyleHost {
 					insertAttribute(hostTag === undefined ? replacement : replacement.trimStart());
 				}
 			}
-			needsCx = true;
+			needsCx ||= merged.needsCx;
 		} else if (spread !== undefined) {
-			const rendered = ` ${attribute}={cx(${classExpression}, ${spread[1]}.className)}`;
+			const merged = mergeClassExpression(classExpression, `${spread[1]}.className`);
+			const rendered = ` ${attribute}={${merged.expression}}`;
 			insertAttribute(hostTag === undefined ? rendered : rendered.trimStart());
-			needsCx = true;
+			needsCx ||= merged.needsCx;
 		} else {
 			insertAttribute(`${attribute}={${classExpression}}`);
 		}

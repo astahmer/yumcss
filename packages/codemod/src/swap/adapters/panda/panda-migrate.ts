@@ -685,7 +685,7 @@ export function factoryEdits(
 			.join(", ")} }`,
 	];
 	const classExpr = existingClassExpr
-		? `cx(css.class(${classCallArgs}), ${existingClassExpr})`
+		? `css.props(css.class(${classCallArgs}), ${existingClassExpr}).className`
 		: `css.class(${classCallArgs})`;
 
 	const edits: Array<{ start: number; end: number; text: string }> = [];

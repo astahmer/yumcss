@@ -97,8 +97,9 @@ test("tokenami -> pandwind: carries a documented secondary tokenami API explicit
 		import { createCx } from "pandwind/cx";
 		const pandwindCx = createCx();
 		const css = createCss();
+		const className = css.class({ padding: "1rem", color: "red" });
 
-		export const card = () => { const className = css.class({ padding: "1rem", color: "red" }); return [(value: string | undefined) => pandwindCx(className, value), (style: Record<string, unknown> | undefined) => style ?? {}] as const; };",
+		export const card = () => {  return [(value: string | undefined) => pandwindCx(className, value), (style: Record<string, unknown> | undefined) => style ?? {}] as const; };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [

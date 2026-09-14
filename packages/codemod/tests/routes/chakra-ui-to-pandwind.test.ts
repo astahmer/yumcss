@@ -49,8 +49,9 @@ test("chakra-ui -> pandwind: migrates concrete chakra-ui syntax to pandwind", ()
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
+		const staticClassName1 = css.class({ padding: "4", backgroundColor: "red.200" });
 
-		export const App = () => <div className={css.class({ padding: "4", backgroundColor: "red.200" })} />;",
+		export const App = () => <div className={staticClassName1} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -145,8 +146,9 @@ test("chakra-ui -> pandwind: loads concrete theme and project context variants",
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
+		const staticClassName1 = css.class({ padding: "4", backgroundColor: "brand" });
 
-		export const App = () => <div className={css.class({ padding: "4", backgroundColor: "brand" })} />;",
+		export const App = () => <div className={staticClassName1} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -181,8 +183,9 @@ test("chakra-ui -> pandwind: loads concrete theme and project context variants",
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
+		const staticClassName1 = css.class({ padding: "4", backgroundColor: "brand" });
 
-		export const App = () => <div className={css.class({ padding: "4", backgroundColor: "brand" })} />;",
+		export const App = () => <div className={staticClassName1} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -229,8 +232,9 @@ test("chakra-ui -> pandwind: resolves concrete token values with project context
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
+		const staticClassName1 = css.class({ padding: "4", backgroundColor: "brand" });
 
-		export const App = () => <div className={css.class({ padding: "4", backgroundColor: "brand" })} />;",
+		export const App = () => <div className={staticClassName1} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [

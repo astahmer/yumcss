@@ -1034,7 +1034,7 @@ function runtimeComponent(
 	const classAttribute = framework === BuiltinHostFramework.Solid ? "class" : "className";
 	const mergedClass =
 		inheritedClass === undefined
-			? `cx(style.class, props.${classAttribute})`
+			? `css.props(style, props.${classAttribute}).className`
 			: `composedCx.vars(style, ${JSON.stringify(inheritedClass)}, props.${classAttribute}).class`;
 	const composedCxBinding =
 		inheritedClass === undefined ? "" : "const composedCx = createCx({ css }); ";
@@ -1046,10 +1046,9 @@ function runtimeComponent(
 					? `{...(${componentAttrs})(props), ...props}`
 					: `{...(${componentAttrs}), ...props}`;
 		return {
-			text: `(props) => { ${composedCxBinding}const style = css.vars(${object}); const Base = props.as ?? (${componentExpression}); return <Base ${forwardedProps} ${classAttribute}={cx(style.class, props.${classAttribute})} style={{ ...props.style, ...style.style }} />; }`,
+			text: `(props) => { ${composedCxBinding}const style = css.vars(${object}); const Base = props.as ?? (${componentExpression}); return <Base ${forwardedProps} ${classAttribute}={${mergedClass}} style={{ ...props.style, ...style.style }} />; }`,
 			imports: [
-				'import { createCx } from "pandwind/cx";',
-				"const cx = createCx();",
+				...(inheritedClass === undefined ? [] : ['import { createCx } from "pandwind/cx";']),
 				'import { createRuntimeCss } from "pandwind/css/runtime";',
 				'import { pandwindPreset } from "pandwind/preset";',
 				"const css = createRuntimeCss(pandwindPreset);",
@@ -1059,8 +1058,7 @@ function runtimeComponent(
 	return {
 		text: `(props) => { ${composedCxBinding}const style = css.vars(${object}); const Component = props.as ?? ${JSON.stringify(tag)}; const { as: _as, ...rest } = props; const attrs = ${componentAttrs === undefined ? "{}" : /=>|\bfunction\b/.test(componentAttrs) ? `(${componentAttrs})(props)` : `(${componentAttrs})`}; return <Component {...attrs} {...rest} ${classAttribute}={${mergedClass}} style={{ ...props.style, ...style.style }} />; }`,
 		imports: [
-			'import { createCx } from "pandwind/cx";',
-			"const cx = createCx();",
+			...(inheritedClass === undefined ? [] : ['import { createCx } from "pandwind/cx";']),
 			'import { createRuntimeCss } from "pandwind/css/runtime";',
 			'import { pandwindPreset } from "pandwind/preset";',
 			"const css = createRuntimeCss(pandwindPreset);",
@@ -1462,7 +1460,7 @@ function hybridComponent(
 				: `css(${programObject(staticProgram)})`;
 	const mergedClass =
 		inheritedClass === undefined
-			? `cx(staticClass, dynamic.class, ${JSON.stringify(stableClass)}, props.${classAttribute})`
+			? `css.props(staticClass, dynamic, ${JSON.stringify(stableClass)}, props.${classAttribute}).className`
 			: `composedCx.vars(staticClass, dynamic, ${JSON.stringify(inheritedClass)}, ${JSON.stringify(stableClass)}, props.${classAttribute}).class`;
 	const composedCxBinding =
 		inheritedClass === undefined ? "" : "const composedCx = createCx({ css }); ";
@@ -1471,8 +1469,7 @@ function hybridComponent(
 		imports: [
 			'import { createCss } from "pandwind/css";',
 			"const css = createCss();",
-			'import { createCx } from "pandwind/cx";',
-			"const cx = createCx();",
+			...(inheritedClass === undefined ? [] : ['import { createCx } from "pandwind/cx";']),
 			...(needsThemeContext ? ['import { usePandwindTheme } from "pandwind/theme";'] : []),
 		],
 	};
@@ -1789,15 +1786,15 @@ function runtimeRawComponent(
 	const inheritedClass =
 		subject === undefined ? undefined : composedBaseClassName(subject, context);
 	const classExpression = dynamic
-		? `cx(className, ${JSON.stringify(stableClass)}${inheritedClass === undefined ? "" : `, ${JSON.stringify(inheritedClass)}`}, props.${classAttribute})`
-		: `cx(${JSON.stringify(stableClass)}${inheritedClass === undefined ? "" : `, ${JSON.stringify(inheritedClass)}`}, props.${classAttribute})`;
-	const resolvedClassExpression =
-		inheritedClass === undefined
-			? classExpression
-			: classExpression.replace(/^cx\(/, "composedCx(");
+		? inheritedClass === undefined
+			? `css.props(className, ${JSON.stringify(stableClass)}, props.${classAttribute}).className`
+			: `composedCx(className, ${JSON.stringify(stableClass)}, ${JSON.stringify(inheritedClass)}, props.${classAttribute})`
+		: inheritedClass === undefined
+			? `css.props(${JSON.stringify(stableClass)}, props.${classAttribute}).className`
+			: `composedCx(${JSON.stringify(stableClass)}, ${JSON.stringify(inheritedClass)}, props.${classAttribute})`;
 	const composedCxBinding =
 		inheritedClass === undefined ? "" : "const composedCx = createCx({ css }); ";
-	const render = `const Component = props.as ?? ${defaultComponent}; const { as: _as, ...rest } = props; const attrs = ${attrsExpression}; const element = <Component {...attrs} {...rest} ${classAttribute}={${resolvedClassExpression}} />; return element;`;
+	const render = `const Component = props.as ?? ${defaultComponent}; const { as: _as, ...rest } = props; const attrs = ${attrsExpression}; const element = <Component {...attrs} {...rest} ${classAttribute}={${classExpression}} />; return element;`;
 	const themeContextAssignment = needsThemeContext
 		? "props = { ...props, theme: props.theme ?? usePandwindTheme() };"
 		: "";
@@ -1816,8 +1813,7 @@ function runtimeRawComponent(
 			? `(() => { ${composedCxBinding}${hostStyleSanitizer} ${variantHelper} ${staticRegistration} ${componentFactory} })()`
 			: `(() => { ${composedCxBinding}${hostStyleSanitizer} ${registration} ${componentFactory} })()`,
 		imports: [
-			'import { createCx } from "pandwind/cx";',
-			"const cx = createCx();",
+			...(inheritedClass === undefined ? [] : ['import { createCx } from "pandwind/cx";']),
 			'import { createRuntimeCss } from "pandwind/css/runtime";',
 			'import { pandwindPreset } from "pandwind/preset";',
 			"const css = createRuntimeCss(pandwindPreset);",

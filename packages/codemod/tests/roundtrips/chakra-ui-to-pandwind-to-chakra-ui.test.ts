@@ -51,8 +51,9 @@ test("chakra-ui -> pandwind -> chakra-ui: preserves an actionable concrete round
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
+		const staticClassName1 = css.class({ padding: "4", backgroundColor: "red.200" });
 
-		export const App = () => <div className={css.class({ padding: "4", backgroundColor: "red.200" })} />;",
+		export const App = () => <div className={staticClassName1} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -85,9 +86,11 @@ test("chakra-ui -> pandwind -> chakra-ui: preserves an actionable concrete round
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { chakra } from "@chakra-ui/react";
+		    "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const App = () => <chakra.div css={{ padding: "4", backgroundColor: "red.200" }} />;",
+		const staticClassName1 = defaultSystem.css({ padding: "4", backgroundColor: "red.200" });
+
+		export const App = () => <div className={staticClassName1} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -211,8 +214,9 @@ test("chakra-ui -> pandwind -> chakra-ui: preserves concrete theme and project c
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
+		const staticClassName1 = css.class({ padding: "4", backgroundColor: "brand" });
 
-		export const App = () => <div className={css.class({ padding: "4", backgroundColor: "brand" })} />;",
+		export const App = () => <div className={staticClassName1} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -245,9 +249,11 @@ test("chakra-ui -> pandwind -> chakra-ui: preserves concrete theme and project c
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { chakra } from "@chakra-ui/react";
+		      "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const App = () => <chakra.div css={{ padding: "4", backgroundColor: "brand.500" }} />;",
+		const staticClassName1 = defaultSystem.css({ padding: "4", backgroundColor: "brand.500" });
+
+		export const App = () => <div className={staticClassName1} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -284,8 +290,9 @@ test("chakra-ui -> pandwind -> chakra-ui: preserves concrete theme and project c
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
+		const staticClassName1 = css.class({ padding: "4", backgroundColor: "brand" });
 
-		export const App = () => <div className={css.class({ padding: "4", backgroundColor: "brand" })} />;",
+		export const App = () => <div className={staticClassName1} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -318,9 +325,11 @@ test("chakra-ui -> pandwind -> chakra-ui: preserves concrete theme and project c
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { chakra } from "@chakra-ui/react";
+		      "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const App = () => <chakra.div css={{ padding: "4", backgroundColor: "brand.500" }} />;",
+		const staticClassName1 = defaultSystem.css({ padding: "4", backgroundColor: "brand.500" });
+
+		export const App = () => <div className={staticClassName1} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -371,8 +380,9 @@ test("chakra-ui -> pandwind -> chakra-ui: resolves token values across both conc
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
+		const staticClassName1 = css.class({ padding: "4", backgroundColor: "brand" });
 
-		export const App = () => <div className={css.class({ padding: "4", backgroundColor: "brand" })} />;",
+		export const App = () => <div className={staticClassName1} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -405,9 +415,11 @@ test("chakra-ui -> pandwind -> chakra-ui: resolves token values across both conc
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { chakra } from "@chakra-ui/react";
+		    "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const App = () => <chakra.div css={{ padding: "4", backgroundColor: "brand.500" }} />;",
+		const staticClassName1 = defaultSystem.css({ padding: "4", backgroundColor: "brand.500" });
+
+		export const App = () => <div className={staticClassName1} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

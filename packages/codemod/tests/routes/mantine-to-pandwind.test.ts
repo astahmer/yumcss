@@ -49,8 +49,9 @@ test("mantine -> pandwind: migrates concrete mantine syntax to pandwind", () => 
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
+		const staticClassName1 = css.class({ color: "blue.6", marginLeft: "auto", marginRight: "auto", maxWidth: 400 });
 
-		export const App = () => <div className={css.class({ color: "blue.6", marginLeft: "auto", marginRight: "auto", maxWidth: 400 })} />;",
+		export const App = () => <div className={staticClassName1} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -145,8 +146,9 @@ test("mantine -> pandwind: loads concrete theme and project context variants", a
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
+		const staticClassName1 = css.class({ color: "brand", marginLeft: "auto", marginRight: "auto", maxWidth: 400 });
 
-		export const App = () => <div className={css.class({ color: "brand", marginLeft: "auto", marginRight: "auto", maxWidth: 400 })} />;",
+		export const App = () => <div className={staticClassName1} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -181,8 +183,9 @@ test("mantine -> pandwind: loads concrete theme and project context variants", a
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
+		const staticClassName1 = css.class({ color: "brand", marginLeft: "auto", marginRight: "auto", maxWidth: 400 });
 
-		export const App = () => <div className={css.class({ color: "brand", marginLeft: "auto", marginRight: "auto", maxWidth: 400 })} />;",
+		export const App = () => <div className={staticClassName1} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -229,8 +232,9 @@ test("mantine -> pandwind: resolves concrete token values with project context",
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
+		const staticClassName1 = css.class({ color: "brand", marginLeft: "auto", marginRight: "auto", maxWidth: 400 });
 
-		export const App = () => <div className={css.class({ color: "brand", marginLeft: "auto", marginRight: "auto", maxWidth: 400 })} />;",
+		export const App = () => <div className={staticClassName1} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
