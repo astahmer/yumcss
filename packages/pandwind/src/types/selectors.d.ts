@@ -1,5 +1,3 @@
-import type { Pseudos } from "csstype";
-
 type AriaAttributes =
 	| "[aria-disabled]"
 	| "[aria-hidden]"
@@ -49,7 +47,7 @@ type DataAttributes =
 	| "[data-exited]"
 	| "[data-exiting]";
 
-type AttributeSelector = `&${Pseudos | DataAttributes | AriaAttributes}`;
+type AttributeSelector = `&:${string}` | `&${DataAttributes | AriaAttributes}`;
 type ParentSelector = `${DataAttributes | AriaAttributes} &`;
 
 type AtRuleType = "media" | "layer" | "container" | "supports" | "page";

@@ -250,7 +250,5 @@ export type DesignStyleObject<TPreset extends DesignPreset> = {
 	/** Raw CSS escape hatch — passed through verbatim. */
 	$raw?: StyleObject;
 } & {
-	[K in keyof TPreset["conditions"]]?: DesignStyleObject<TPreset>;
-} & {
-	[K in AnySelector]?: DesignStyleObject<TPreset>;
+	[K in keyof TPreset["conditions"] | AnySelector]?: DesignStyleObject<TPreset>;
 };

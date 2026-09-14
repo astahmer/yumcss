@@ -1,4 +1,3 @@
-import type { StandardProperties as CsstypeStandardProperties } from "csstype";
 import { defineProperties } from "../types/define-preset.ts";
 import { tokens } from "./tokens.ts";
 
@@ -188,37 +187,111 @@ type PresetProperties = typeof presetProperties;
 
 type StandardPropertyName = Exclude<keyof PresetProperties, "$all">;
 
-type StrictValuePropertyName =
-	| "alignContent"
-	| "alignItems"
-	| "alignSelf"
-	| "appearance"
-	| "backgroundAttachment"
-	| "borderCollapse"
-	| "display"
-	| "flexDirection"
-	| "flexWrap"
-	| "objectFit"
-	| "outlineStyle"
-	| "overflowWrap"
-	| "pointerEvents"
-	| "position"
-	| "resize"
-	| "userSelect"
-	| "visibility"
-	| "wordBreak";
+/** Common CSS values keep autocomplete without expanding csstype's full keyword graph. */
+export type PandwindCssValue =
+	| "inherit"
+	| "initial"
+	| "revert"
+	| "revert-layer"
+	| "unset"
+	| (string & {})
+	| number;
 
-type FilterVagueString<Value> = Value extends `${infer _}` ? Value : never;
+type PandwindFinitePropertyValues = {
+	display:
+		| "block"
+		| "contents"
+		| "flex"
+		| "flow-root"
+		| "grid"
+		| "inline"
+		| "inline-block"
+		| "inline-flex"
+		| "inline-grid"
+		| "list-item"
+		| "math"
+		| "none"
+		| "table"
+		| "table-caption"
+		| "table-cell"
+		| "table-column"
+		| "table-column-group"
+		| "table-footer-group"
+		| "table-header-group"
+		| "table-row"
+		| "table-row-group";
+	alignContent:
+		| "baseline"
+		| "center"
+		| "end"
+		| "flex-end"
+		| "flex-start"
+		| "normal"
+		| "safe center"
+		| "safe end"
+		| "safe start"
+		| "space-around"
+		| "space-between"
+		| "space-evenly"
+		| "start"
+		| "stretch";
+	alignItems:
+		| "baseline"
+		| "center"
+		| "end"
+		| "flex-end"
+		| "flex-start"
+		| "normal"
+		| "safe center"
+		| "safe end"
+		| "safe start"
+		| "self-end"
+		| "self-start"
+		| "start"
+		| "stretch";
+	alignSelf: PandwindFinitePropertyValues["alignItems"] | "auto";
+	appearance: "auto" | "none" | "base-select";
+	backgroundAttachment: "fixed" | "local" | "scroll";
+	borderCollapse: "collapse" | "separate";
+	flexDirection: "column" | "column-reverse" | "row" | "row-reverse";
+	flexWrap: "nowrap" | "wrap" | "wrap-reverse";
+	objectFit: "contain" | "cover" | "fill" | "none" | "scale-down";
+	outlineStyle:
+		| "auto"
+		| "dashed"
+		| "dotted"
+		| "double"
+		| "groove"
+		| "inset"
+		| "none"
+		| "outset"
+		| "ridge"
+		| "solid";
+	pointerEvents:
+		| "all"
+		| "auto"
+		| "fill"
+		| "none"
+		| "painted"
+		| "stroke"
+		| "visible"
+		| "visibleFill"
+		| "visiblePainted"
+		| "visibleStroke";
+	position: "absolute" | "fixed" | "relative" | "static" | "sticky";
+	resize: "block" | "both" | "horizontal" | "inline" | "none" | "vertical";
+	userSelect: "all" | "auto" | "none" | "text";
+	visibility: "collapse" | "hidden" | "visible";
+	wordBreak: "auto-phrase" | "break-all" | "break-word" | "keep-all" | "normal";
+};
 
-type CuratedPropertyValue<TPropertyName, TValue> = TPropertyName extends StrictValuePropertyName
-	? FilterVagueString<TValue>
-	: TValue;
+type PandwindPropertyValue<TPropertyName extends StandardPropertyName> =
+	TPropertyName extends keyof PandwindFinitePropertyValues
+		? PandwindFinitePropertyValues[TPropertyName]
+		: PandwindCssValue;
 
-type CuratedProperties<TProperties> = {
-	[TPropertyName in keyof TProperties]?: CuratedPropertyValue<
-		TPropertyName,
-		TProperties[TPropertyName]
-	>;
+type PandwindPropertyContract = {
+	[TPropertyName in StandardPropertyName]?: PandwindPropertyValue<TPropertyName>;
 };
 
 /**
@@ -228,7 +301,4 @@ type CuratedProperties<TProperties> = {
  * complete `csstype` declaration. Import `StandardProperties` from `csstype`
  * directly when a project needs a property outside this catalog.
  */
-export type PandwindProperties<
-	TLength = (string & {}) | 0,
-	TTime = string & {},
-> = CuratedProperties<Pick<CsstypeStandardProperties<TLength, TTime>, StandardPropertyName>>;
+export type PandwindProperties = PandwindPropertyContract;

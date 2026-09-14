@@ -26,16 +26,9 @@ export interface StyleObject extends Record<string, StyleValue> {}
  * -----------------------------------------------------------------------------*/
 
 /** A CSS property configuration supplied by the project's type vocabulary. */
-export interface AnyCssConfig {
-	[key: string]: any;
-}
+export type AnyCssConfig = object;
 
-interface AnyCssPropConf<TConfig, TName extends keyof TConfig> extends Record<
-	string,
-	TConfig[TName]
-> {}
-
-type CssValuesOf<TConfig, TName extends keyof TConfig> = AnyCssPropConf<TConfig, TName>;
+type CssValuesOf<TConfig, TName extends keyof TConfig> = Record<string, TConfig[TName]>;
 
 type ColorPropertyName =
 	| "color"
@@ -87,7 +80,13 @@ type PropConfigValues<
 	TConfig,
 	TName extends keyof TConfig,
 	Value extends CssValuesOf<TConfig, TName>,
-> = Value | true;
+	TTokens,
+> =
+	| true
+	| (Value & {
+			$strictness?: "inherits";
+			$tokens?: keyof TTokens;
+	  });
 
 /**
  * Maps CSS properties to raw values or named token groups in a preset.
@@ -100,15 +99,13 @@ type PropConfigValues<
  * @category presets
  * @since 0.1.0
  */
-export type AnyPresetProperties<TConfig, TTokens> = {
+export type AnyPresetProperties<TConfig extends object, TTokens> = {
 	[PropName in keyof TConfig]?: PropConfigValues<
 		TConfig,
 		PropName,
-		CssValuesOf<TConfig, PropName>
-	> & {
-		$strictness?: "inherits";
-		$tokens?: keyof TTokens;
-	};
+		CssValuesOf<TConfig, PropName>,
+		TTokens
+	>;
 } & {
 	$all?: true;
 };
@@ -164,7 +161,8 @@ export type SemanticTokenLayer<TConditions extends AnyConditions, TTokens> = {
 };
 
 /** The normalized token shape carried by a compiled preset. */
-export type AnyTokens = Record<string, Record<string, Token["value"]>>;
+type TokenValue = string | Record<string, string>;
+export type AnyTokens = Record<string, Record<string, TokenValue>>;
 
 /** Runtime and typing metadata consumed by Pandwind CSS factories.
  *
@@ -176,7 +174,7 @@ export type AnyTokens = Record<string, Record<string, Token["value"]>>;
  * @since 0.1.0
  */
 export interface CssPreset<
-	TConfig extends AnyCssConfig = AnyCssConfig,
+	TConfig extends object = AnyCssConfig,
 	TTokens extends AnyTokens = AnyTokens,
 	TConditions extends AnyConditions = AnyConditions,
 	TProps extends AnyPresetProperties<TConfig, TTokens> = AnyPresetProperties<TConfig, TTokens>,
@@ -191,7 +189,7 @@ export interface CssPreset<
 
 /** Values portion passed to {@link definePreset}. */
 export interface DefinePresetOptions<
-	TConfig extends AnyCssConfig = AnyCssConfig,
+	TConfig extends object = AnyCssConfig,
 	TTokens extends AnyTokens = AnyTokens,
 > {
 	config: TConfig;
@@ -225,18 +223,18 @@ type InferPropValues<TTokens, Value> = Value extends {
 		: ExplicitTokenNames<Value>
 	: ExplicitTokenNames<Value>;
 
-type StrictValue<TConfig, TTokens, TName extends keyof TConfig, Value> = Value extends {
+type StrictValue<TConfig, TTokens, TName extends string, Value> = Value extends {
 	$strictness: "inherits";
 }
-	? MaybeColorOpacity<TName, InferPropValues<TTokens, Value>> | TConfig[TName]
+	? MaybeColorOpacity<TName, InferPropValues<TTokens, Value>> | ConfigPropertyValue<TConfig, TName>
 	: MaybeColorOpacity<TName, InferPropValues<TTokens, Value>>;
 
-type PropValue<TConfig, TTokens, TName extends keyof TConfig, Value, Strict> =
+type PropValue<TConfig, TTokens, TName extends string, Value, Strict> =
 	| (Value extends boolean
-			? TConfig[TName]
+			? ConfigPropertyValue<TConfig, TName>
 			: Strict extends true | undefined
 				? StrictValue<TConfig, TTokens, TName, Value>
-				: InferPropValues<TTokens, Value> | TConfig[TName])
+				: InferPropValues<TTokens, Value> | ConfigPropertyValue<TConfig, TName>)
 	| null;
 
 type ConditionalValue<V, TConds extends string> = [TConds] extends [never]
@@ -244,19 +242,27 @@ type ConditionalValue<V, TConds extends string> = [TConds] extends [never]
 	: V | { [K in TConds]?: ConditionalValue<V, TConds> };
 
 type Nested<TStyle, TConds extends string> = TStyle & {
-	[K in AnySelector]?: Nested<TStyle, TConds>;
-} & {
-	[K in TConds]?: Nested<TStyle, TConds>;
+	[K in AnySelector | TConds]?: Nested<TStyle, TConds>;
 };
 
 type ThemeConds<
-	TConfig extends AnyCssConfig,
+	TConfig extends object,
 	TPreset extends CssPreset<TConfig>,
 	TKeys = keyof TPreset["conditions"],
 > = TKeys extends string ? TKeys : never;
 
-type InitialCssTypesValues<TConfig, TAll, PropName extends keyof TConfig> = TAll extends true
+type ConfigPropertyNames<TConfig> = [keyof TConfig] extends [never]
+	? string
+	: Extract<keyof TConfig, string>;
+
+type ConfigPropertyValue<TConfig, PropName extends string> = PropName extends keyof TConfig
 	? TConfig[PropName]
+	: [keyof TConfig] extends [never]
+		? string | number
+		: never;
+
+type InitialCssTypesValues<TConfig, TAll, PropName extends string> = TAll extends true
+	? ConfigPropertyValue<TConfig, PropName>
 	: never;
 
 declare const ErrorSymbol: unique symbol;
@@ -285,17 +291,16 @@ declare const ErrorSymbol: unique symbol;
  * @since 0.1.0
  */
 export type TypedStyleObject<
-	TConfig extends AnyCssConfig,
+	TConfig extends object,
 	TTokens extends AnyTokens,
 	TPreset extends CssPreset<TConfig>,
 	TConds extends string = ThemeConds<TConfig, TPreset>,
 	TAll = TPreset["properties"] extends { $all: true } ? true : false,
 	TList extends string = Exclude<Extract<keyof TPreset["properties"], string>, "$all">,
-	TCssPropName = Extract<keyof TConfig, string>,
-	TPropList extends string = TAll extends true ? Extract<keyof TConfig, string> | TList : TList,
+	TPropList extends string = TAll extends true ? ConfigPropertyNames<TConfig> | TList : TList,
 > = Nested<
 	{
-		[PropName in TPropList]?: PropName extends TCssPropName
+		[PropName in TPropList]?: PropName extends ConfigPropertyNames<TConfig>
 			? PropName extends keyof TPreset["properties"]
 				? ConditionalValue<
 						PropValue<

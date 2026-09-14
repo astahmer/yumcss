@@ -28,6 +28,9 @@ export interface TokenMaps {
 
 const cssVarRef = (key: string) => `var(--${key})`;
 
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+	typeof value === "object" && value !== null && !Array.isArray(value);
+
 /** Precompute the preset's token lookup tables (build-time only). */
 export function buildTokenMaps(
 	preset: CssConfigReturn<DefinePresetOptions>,
@@ -74,15 +77,17 @@ export function buildTokenMaps(
 		}
 	}
 
-	for (const prop of Object.keys(presetProperties)) {
-		if (typeof presetProperties[prop] !== "object") continue;
+	for (const [prop, propertyValue] of Object.entries(presetProperties)) {
+		const propertyConfig = propertyValue;
+		if (!isRecord(propertyConfig)) continue;
 
-		for (const token of Object.keys(presetProperties[prop]!)) {
+		for (const token of Object.keys(propertyConfig)) {
 			if (token === "$strictness") continue;
 
 			// Add every token of that group to the list of tokens for that prop
 			if (token === "$tokens") {
-				const group = presetProperties[prop]!.$tokens!;
+				const group = propertyConfig.$tokens;
+				if (typeof group !== "string") continue;
 				const groupTokens = tokensByGroup.get(group);
 				if (!groupTokens) continue;
 
@@ -105,10 +110,12 @@ export function buildTokenMaps(
 			for (const alias of tokenNameAliases(token)) tokenList.add(alias);
 
 			const tokenPath = `${prop}.${token}`;
+			const tokenValue = propertyConfig[token];
+			if (typeof tokenValue !== "string") continue;
 			const simpleToken: SimpleToken = {
 				path: tokenPath,
 				name: token,
-				value: presetProperties[prop]![token],
+				value: tokenValue,
 				hash: pairs.join([prop, token]),
 			};
 			for (const alias of tokenNameAliases(token)) setFlatToken(`${prop}.${alias}`, simpleToken);

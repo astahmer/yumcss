@@ -1,6 +1,6 @@
 import type {
 	AnyConditions,
-	AnyPresetProperties,
+	AnyTokens,
 	AnySemanticTokens,
 	AnySimpleTokens,
 	CssPreset,
@@ -87,7 +87,7 @@ export const defineTheme = <TTheme extends DefinePresetOptions>(theme: TTheme) =
  * @since 0.1.0
  */
 export function definePreset<
-	TTheme extends DefinePresetOptions<any, any>,
+	TTheme extends DefinePresetOptions<object, AnyTokens>,
 	TConfig extends TTheme["config"],
 	TTokens extends TTheme["tokens"],
 	TPreset extends CssPreset<TConfig, TTokens>,
@@ -214,4 +214,4 @@ export const defineConditions = <T extends AnyConditions>(cond: T) => cond;
  * @category presets
  * @since 0.1.0
  */
-export const defineProperties = <T extends AnyPresetProperties<any, any>>(props: T) => props;
+export const defineProperties = <const T extends object>(props: T) => props;

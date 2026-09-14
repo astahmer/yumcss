@@ -20,6 +20,9 @@ const tokenNameAliases = (name: string): readonly string[] => {
 	return [name, name.slice(1).replaceAll("-", ".")];
 };
 
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+	typeof value === "object" && value !== null && !Array.isArray(value);
+
 /** Build only the token indexes consumed by the runtime stylesheet. */
 export function buildRuntimeTokenMaps(preset: CssConfigReturn, debug: boolean): RuntimeTokenMaps {
 	const tokensByProp = new Map<string, Set<string>>();
@@ -52,14 +55,15 @@ export function buildRuntimeTokenMaps(preset: CssConfigReturn, debug: boolean): 
 		}
 	}
 
-	for (const prop of Object.keys(presetProperties)) {
-		const property = presetProperties[prop];
-		if (typeof property !== "object") continue;
+	for (const [prop, propertyValue] of Object.entries(presetProperties)) {
+		if (!isRecord(propertyValue)) continue;
+		const property = propertyValue;
 
 		for (const token of Object.keys(property)) {
 			if (token === "$strictness") continue;
 			if (token === "$tokens") {
-				const group = property.$tokens!;
+				const group = property.$tokens;
+				if (typeof group !== "string") continue;
 				const groupTokens = tokensByGroup.get(group);
 				if (groupTokens === undefined) continue;
 				const tokenList = tokensByProp.get(prop) ?? new Set<string>();
