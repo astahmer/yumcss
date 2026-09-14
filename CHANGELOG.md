@@ -19,8 +19,10 @@ current `0.1.0` state.
   projection for every adapter. Source revision: `lqvmzxpt`.
 - Keep Chakra and Panda migrations independently owned: each adapter recognizes
   its own imports and aliases, while a mixed file can run either adapter first
-  and then the other without binding collisions or a second-pass rewrite.
-  Source revision: `563f7897`.
+  and then the other without binding collisions or a second-pass rewrite. Panda
+  aliases come from the host package's `imports` map or Panda's configured
+  `importMap`; unrelated project aliases are ignored. Source revisions:
+  `c09e1f27`, `969c5ff7`.
 
 ### Performance
 
