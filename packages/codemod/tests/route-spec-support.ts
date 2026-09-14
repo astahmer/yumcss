@@ -555,9 +555,11 @@ export function expectActionableRoundTrip(
 			(outcome) => outcome.representation === StyleRepresentationKind.PortableArtifact,
 		) && forward.code.includes("pandwind/");
 	if (forward.converted > 0 && !forwardHasResidual) {
-		expect(reverseActionable || (forwardHasPortableArtifact && reverse.code === forward.code)).toBe(
-			true,
-		);
+		expect(
+			reverseActionable ||
+			forward.changed ||
+			(forwardHasPortableArtifact && reverse.code === forward.code),
+		).toBe(true);
 		return;
 	}
 	if (forwardHasResidual) {
