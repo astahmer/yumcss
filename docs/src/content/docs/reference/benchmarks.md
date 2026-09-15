@@ -197,3 +197,40 @@ RSS deltas are especially noisy. The incremental column is the useful HMR
 signal: the changed file is invalidated while unchanged files remain cache
 hits. Codemod has no such stateful watcher boundary, so its incremental value
 is a full migration run.
+
+## Styling ecosystem typecheck benchmark
+
+The standalone
+[styling TypeScript benchmark](https://github.com/astahmer/pandwind/tree/main/benchmarks/styling-tsc)
+compares realistic consumer typecheck cost across Pandwind, Panda CSS, StyleX,
+and Vanilla Extract Sprinkles. It uses native APIs for each library and records
+the compiler program size, symbols, types, type instantiations, memory, check
+time, and total time for fresh TypeScript processes.
+
+The first matrix has two workload sizes:
+
+- <code>natural</code>: 12 repeated component-style uses and a 16-entry token
+  catalog;
+- <code>stress</code>: 180 repeated component-style uses and a 128-entry token
+  catalog.
+
+Pandwind's fixture covers the callable css API, class and props projections,
+variables, groups and inputs, class composition, tokens, semantic tokens,
+color palettes, conditions, and strict property typing. The comparison
+fixtures use Panda's generated css/cva API, StyleX's vars/create/props API,
+and Sprinkles' generated helper.
+
+Run the comparison from the repository root:
+
+```sh
+pnpm run bench:tsc:styling -- --update
+```
+
+The committed
+[JSON snapshot](https://github.com/astahmer/pandwind/blob/main/benchmarks/styling-tsc/snapshots/tsc.json)
+and [Markdown report](https://github.com/astahmer/pandwind/blob/main/benchmarks/styling-tsc/snapshots/tsc.md)
+are the reviewable evidence. Pandwind rows are regression gates with
+noise-tolerant thresholds; competitor rows are descriptive because generated
+declaration graphs and dependency sets belong to their pinned releases. These
+are typecheck measurements, not universal library or runtime performance
+claims.

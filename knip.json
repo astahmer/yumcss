@@ -97,6 +97,19 @@
 			"entry": ["src/index.ts"],
 			"project": ["src/**/*.ts"]
 		},
+		"benchmarks/styling-tsc": {
+			"entry": ["runner/benchmark.mts"],
+			"project": ["runner/**/*.mts"],
+			"ignoreDependencies": [
+				"@pandacss/dev",
+				"@stylexjs/stylex",
+				"@types/node",
+				"@vanilla-extract/css",
+				"@vanilla-extract/sprinkles",
+				"csstype",
+				"pandwind"
+			]
+		},
 		"docs": {
 			"entry": ["astro.config.mjs", "src/content.config.ts"],
 			"project": ["src/**/*.{ts,tsx,mjs,md,mdx}", "astro.config.mjs"]

@@ -1,0 +1,78 @@
+# Styling TypeScript benchmark
+
+This is a version-pinned comparison of the typecheck cost of realistic styling
+code. It measures Pandwind against Panda CSS, StyleX, and Vanilla Extract
+Sprinkles using each library's native authoring API.
+
+Run the checked-in regression gate with:
+
+```sh
+pnpm run bench:tsc:styling
+```
+
+Establish or intentionally refresh the descriptive comparison snapshot with:
+
+```sh
+pnpm run bench:tsc:styling -- --update
+```
+
+The runner accepts <code>--samples N</code>,
+<code>--library pandwind|panda|stylex|sprinkles</code>, and
+<code>--scenario natural|stress</code>. The benchmark package and its runner
+can be typechecked independently:
+
+```sh
+pnpm --filter pandwind-styling-tsc-benchmark run typecheck
+```
+
+## Workloads
+
+The fixture generator is the source of truth. It creates two equivalent
+workload sizes for every library:
+
+- <code>natural</code>: 12 repeated component-style uses and a 16-entry token
+  catalog.
+- <code>stress</code>: 180 repeated component-style uses and a 128-entry token
+  catalog.
+
+Pandwind's fixture exercises <code>css()</code>, <code>css.class()</code>,
+<code>css.props()</code>, <code>css.vars()</code>, <code>css.group()</code>,
+<code>css.input()</code>, <code>createCx()</code>, tokens, semantic tokens,
+color palettes, conditions, and strict property typing. The other fixtures
+use Panda's generated <code>css()</code> and <code>cva()</code>, StyleX's
+<code>defineVars()</code>/<code>create()</code>/<code>props()</code>, and
+Sprinkles' generated <code>createSprinkles()</code> helper.
+
+Each workload is checked in a fresh TypeScript process with extended
+diagnostics. The recorded median includes:
+
+- files in the compiler program;
+- symbols;
+- types;
+- type instantiations;
+- peak TypeScript memory in KiB;
+- check time;
+- total process time.
+
+## Reproducibility and interpretation
+
+Panda's generated <code>styled-system</code> is recreated with its pinned code
+generator before every run. All other sources are recreated by
+<code>runner/generate-fixtures.mts</code>. Generated sources are ignored and
+the committed JSON/Markdown files under <code>snapshots/</code> are the
+reviewable evidence.
+
+The Pandwind natural and stress rows are regression gates. They allow 10%
+growth in instantiations and memory and 50% growth in check and total time;
+the wider time bound accounts for sub-10ms process noise.
+TypeScript, Node, platform, or architecture changes require reviewing and
+refreshing the baseline; memory and time comparisons are skipped when the
+machine environment differs. Competitor rows are descriptive rather than CI
+gates because their generated declaration graphs and dependency sets are
+owned by their pinned releases.
+
+These numbers compare typecheck workloads, not universal library quality or
+runtime/browser performance. The source shapes express the same broad intent,
+but generated declarations, compiler plugins, and build-time transforms are
+part of each library's normal consumer experience and therefore remain in the
+measurement.

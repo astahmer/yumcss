@@ -20,6 +20,7 @@ pnpm run test:coverage
 pnpm run typecheck
 pnpm run bench:tsc
 pnpm run bench:tsc:example
+pnpm run bench:tsc:styling
 pnpm run lint
 pnpm run format
 pnpm run knip
@@ -61,6 +62,17 @@ with:
 
 ```sh
 pnpm run bench:tsc:example -- --update
+```
+
+`bench:tsc:styling` runs the version-pinned ecosystem comparison under
+`benchmarks/styling-tsc`. It regenerates native Pandwind, Panda CSS, StyleX,
+and Vanilla Extract Sprinkles fixtures, runs natural and stress workloads in
+fresh TypeScript processes, and compares the Pandwind rows with the committed
+baseline. Use `--update` only after reviewing the resulting JSON and Markdown
+evidence:
+
+```sh
+pnpm run bench:tsc:styling -- --update
 ```
 
 ### Pivot proof matrix
