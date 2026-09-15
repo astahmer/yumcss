@@ -66,7 +66,7 @@ export class PortableStyleArtifact {
 	}
 
 	static containsDynamicValues(program: StyleProgram): boolean {
-		return StyleProgramAnalysis.hasDynamic(program);
+		return StyleProgramAnalysis.hasRuntimeDynamic(program);
 	}
 
 	static emission(

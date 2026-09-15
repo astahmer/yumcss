@@ -197,7 +197,7 @@ export function projectDynamicClassMigration(
 
 function hasPortableDynamicValue(program: import("./semantic-ir.ts").StyleProgram): boolean {
 	return (
-		StyleProgramAnalysis.hasDynamic(program) ||
+		StyleProgramAnalysis.hasRuntimeDynamic(program) ||
 		program.rules.some(function containsCarrier(rule): boolean {
 			return (
 				rule.declarations.some(
