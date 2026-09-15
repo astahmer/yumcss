@@ -36,6 +36,28 @@ Source revisions: `qqyulusz`, `rrxooprr`, `uspqzmlu`, `zwtzvqvk`, `nqoyxvkq`,
 
 Source revisions: `snuqwnpr`, `aad9c82d`, `83421402`, `e4caec1f`, `11be10fd`.
 
+## Unreleased — 2026-09-15 condition migration fidelity
+
+### API / codemod
+
+- Carry target-owned condition catalogs through both synchronous and
+  asynchronous migrations, so configured Pandwind conditions remain typed
+  across every adapter route.
+- Preserve Pandwind underscore condition keys when emitting Panda again,
+  recognize nested media and selector objects as structural CSS conditions,
+  and reuse the configured parser dialect for referenced style objects.
+- Keep undeclared conditions and ambiguous values as source plus typed
+  residual evidence instead of inventing arbitrary selectors or runtime
+  carriers.
+
+### Tooling
+
+- Run generated-artifact checks through the built codemod CLI so Nub's
+  TypeScript loader cannot resolve linked workspace packages against the wrong
+  project root.
+
+Source revisions: `utqmmrto`, `kwnsukvw`, `mkmlsrsv`.
+
 ## Unreleased — 2026-09-15 explicit runtime CSS carrier
 
 ### Fixes
