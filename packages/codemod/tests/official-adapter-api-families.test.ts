@@ -3553,10 +3553,10 @@ describe("official adapter API families", () => {
 			  },
 			  "tokenami/alias and custom property selector": {
 			    "changed": true,
-			    "code": "import { css } from "@tokenami/css";
-			export const card = // pandwind:migrate-skip (route: tokenami -> pandwind | lowering-residual: capability, validation)
-			css({ "--card-color": "red", "&[data-state=active]": { color: "var(--card-color)" } });",
-			    "converted": 0,
+			    "code": "import { createCss } from "pandwind/css";
+			const css = createCss();
+			export const card = css.class({ cardColor: "red", "&[data-state=active]": { color: "var(--card-color)" } });",
+			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
 			      {
@@ -3572,30 +3572,17 @@ describe("official adapter API families", () => {
 			    ],
 			    "outcomes": [
 			      {
-			        "outcome": "residual",
+			        "outcome": "static",
 			        "representation": "static",
 			      },
 			    ],
-			    "residuals": [
-			      {
-			        "hint": "condition is not declared by the Pandwind preset or project condition catalog",
-			        "kind": "capability",
-			        "preserved": undefined,
-			      },
-			      {
-			        "hint": "1 residual conversion(s)",
-			        "kind": "validation",
-			        "preserved": undefined,
-			      },
-			    ],
-			    "skipped": 1,
+			    "residuals": [],
+			    "skipped": 0,
 			    "validations": [
 			      {
-			        "differences": [
-			          "1 residual conversion(s)",
-			        ],
-			        "lossiness": "lossy",
-			        "valid": false,
+			        "differences": [],
+			        "lossiness": "lossless",
+			        "valid": true,
 			      },
 			    ],
 			  },

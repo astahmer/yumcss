@@ -65,7 +65,9 @@ describe("Vanilla Extract source adapter", () => {
 			        "canonicalization": undefined,
 			        "compositions": [],
 			        "declarations": [],
-			        "emissionHints": [],
+			        "emissionHints": [
+			          "runtime-class",
+			        ],
 			        "plugins": [],
 			        "residuals": [],
 			        "rules": [

@@ -88,7 +88,7 @@ test("panda -> solid-styled -> panda: preserves an actionable concrete round tri
 		    "code": "import { createCx } from "pandwind/cx";
 		import { css } from "styled-system/css";
 		const cx = createCx();
-		export const card = (props) => <div {...props} class={cx(css({ color: "red.300", "&:hover": { color: "blue.300" } }), props.class)} />;",
+		export const card = (props) => <div {...props} class={cx(css({ color: "red.300", _hover: { color: "blue.300" } }), props.class)} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -258,7 +258,7 @@ test("panda -> solid-styled -> panda: preserves concrete theme and project conte
 		      "code": "import { createCx } from "pandwind/cx";
 		import { css } from "styled-system/css";
 		const cx = createCx();
-		export const card = (props) => <div {...props} class={cx(css({ color: "brand.500", "&:hover": { color: "brand.500" } }), props.class)} />;",
+		export const card = (props) => <div {...props} class={cx(css({ color: "brand.500", _hover: { color: "brand.500" } }), props.class)} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -333,7 +333,7 @@ test("panda -> solid-styled -> panda: preserves concrete theme and project conte
 		      "code": "import { createCx } from "pandwind/cx";
 		import { css } from "styled-system/css";
 		const cx = createCx();
-		export const card = (props) => <div {...props} class={cx(css({ color: "brand.500", "&:hover": { color: "brand.500" } }), props.class)} />;",
+		export const card = (props) => <div {...props} class={cx(css({ color: "brand.500", _hover: { color: "brand.500" } }), props.class)} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -421,7 +421,7 @@ test("panda -> solid-styled -> panda: resolves token values across both concrete
 		    "code": "import { createCx } from "pandwind/cx";
 		import { css } from "styled-system/css";
 		const cx = createCx();
-		export const card = (props) => <div {...props} class={cx(css({ color: "brand.500", "&:hover": { color: "blue.300" } }), props.class)} />;",
+		export const card = (props) => <div {...props} class={cx(css({ color: "brand.500", _hover: { color: "blue.300" } }), props.class)} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

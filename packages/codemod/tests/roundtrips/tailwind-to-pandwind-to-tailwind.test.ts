@@ -134,10 +134,9 @@ test("tailwind -> pandwind -> tailwind: retains the documented secondary API wit
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
-		export const App = () => <div className={css.class({ color: "rebeccapurple", md: { display: "flex" } })}/>;",
-		    "converted": 1,
+		    "code": "export const App = () => // pandwind:migrate-skip (route: tailwind -> pandwind | lowering-residual: capability, validation)
+		<div className="[color:rebeccapurple] md:[display:flex]" />;",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -153,60 +152,43 @@ test("tailwind -> pandwind -> tailwind: retains the documented secondary API wit
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
-		        "representation": "static",
-		      },
-		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
-		  },
-		  "reverse": {
-		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		export const App = () => <div className={// pandwind:migrate-skip (route: pandwind -> tailwind | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
-		css.class({ color: "rebeccapurple", md: { display: "flex" } })}/>;",
-		    "converted": 0,
-		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [
-		          "dynamic-and-theme",
-		        ],
-		        "availableRepresentations": [
-		          "named-map",
-		          "custom-property",
-		          "residual",
-		        ],
-		        "representation": "custom-property",
-		        "residuals": [
-		          {
-		            "hint": "bind --pandwind-dynamic-1wkt4rw at runtime for target tailwind",
-		            "kind": "dynamic-custom-property",
-		          },
-		        ],
-		      },
-		    ],
-		    "outcomes": [
-		      {
 		        "outcome": "residual",
-		        "representation": "custom-property",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "bind --pandwind-dynamic-1wkt4rw at runtime for target tailwind",
-		        "kind": "dynamic-custom-property",
+		        "hint": "condition is not declared by the Pandwind preset or project condition catalog",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "1 residual conversion(s)",
+		        "kind": "validation",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 1,
+		    "validations": [
+		      {
+		        "differences": [
+		          "1 residual conversion(s)",
+		        ],
+		        "lossiness": "lossy",
+		        "valid": false,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": false,
+		    "code": "export const App = () => // pandwind:migrate-skip (route: tailwind -> pandwind | lowering-residual: capability, validation)
+		<div className="[color:rebeccapurple] md:[display:flex]" />;",
+		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [],
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [],
 		  },
 		}

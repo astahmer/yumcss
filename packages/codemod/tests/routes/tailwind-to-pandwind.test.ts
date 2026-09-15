@@ -91,10 +91,9 @@ test("tailwind -> pandwind: carries a documented secondary tailwind API explicit
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
-		export const App = () => <div className={css.class({ color: "rebeccapurple", md: { display: "flex" } })}/>;",
-		  "converted": 1,
+		  "code": "export const App = () => // pandwind:migrate-skip (route: tailwind -> pandwind | lowering-residual: capability, validation)
+		<div className="[color:rebeccapurple] md:[display:flex]" />;",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -110,17 +109,30 @@ test("tailwind -> pandwind: carries a documented secondary tailwind API explicit
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
+		      "outcome": "residual",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
+		  "residuals": [
+		    {
+		      "hint": "condition is not declared by the Pandwind preset or project condition catalog",
+		      "kind": "capability",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "1 residual conversion(s)",
+		      "kind": "validation",
+		      "preserved": undefined,
+		    },
+		  ],
+		  "skipped": 1,
 		  "validations": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "differences": [
+		        "1 residual conversion(s)",
+		      ],
+		      "lossiness": "lossy",
+		      "valid": false,
 		    },
 		  ],
 		}
