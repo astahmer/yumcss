@@ -977,15 +977,26 @@ export async function createPandwindProjectSupport(
 	const cx = projectFile(directory, "cx.ts");
 	const needsDssBinding = request.targetAdapter === SwapTargetId.Dss;
 	const configurationFailed = (sourceConfig.residuals?.length ?? 0) > 0;
+	const cssEntry = sourceConfig.files.find((file) => file.endsWith(".css"));
+	const stylesheet = cssEntry === undefined ? undefined : request.readFile(cssEntry);
+	const customConditions = stylesheet === undefined ? {} : customVariantConditions(stylesheet);
+	const targetConditionCatalog = canonicalizePandwindConditions({
+		...sourceConfig.conditionCatalog,
+		...customConditions,
+	});
 	const files: AdapterGeneratedFile[] = configurationFailed
 		? []
 		: [
-				generatedFile(preset, presetSource(sourceConfig, {}), "Pandwind target preset"),
+				generatedFile(
+					preset,
+					presetSource(sourceConfig, customConditions),
+					"Pandwind target preset",
+				),
 				...(nextIntegration.enabled
 					? [
 							generatedFile(
 								runtimePreset,
-								presetSource(sourceConfig, {}, false),
+								presetSource(sourceConfig, customConditions, false),
 								"Next/Webpack runtime preset",
 							),
 						]
@@ -1001,61 +1012,57 @@ export async function createPandwindProjectSupport(
 			];
 	const derivedFiles: AdapterGeneratedFile[] = [];
 
-	const cssEntry = sourceConfig.files.find((file) => file.endsWith(".css"));
-	if (!configurationFailed && cssEntry !== undefined) {
-		const stylesheet = request.readFile(cssEntry);
-		if (stylesheet !== undefined) {
-			const conditions = customVariantConditions(stylesheet);
-			const presetFile = files.find((file) => file.path === preset)!;
-			const withConditions = presetSource(sourceConfig, conditions);
-			files[files.indexOf(presetFile)] = generatedFile(
-				preset,
-				withConditions,
-				"Pandwind target preset",
+	if (!configurationFailed && cssEntry !== undefined && stylesheet !== undefined) {
+		const conditions = customConditions;
+		const presetFile = files.find((file) => file.path === preset)!;
+		const withConditions = presetSource(sourceConfig, conditions);
+		files[files.indexOf(presetFile)] = generatedFile(
+			preset,
+			withConditions,
+			"Pandwind target preset",
+		);
+		const runtimePresetFile = files.find((file) => file.path === runtimePreset);
+		if (runtimePresetFile !== undefined) {
+			files[files.indexOf(runtimePresetFile)] = generatedFile(
+				runtimePreset,
+				presetSource(sourceConfig, conditions, false),
+				"Next/Webpack runtime preset",
 			);
-			const runtimePresetFile = files.find((file) => file.path === runtimePreset);
-			if (runtimePresetFile !== undefined) {
-				files[files.indexOf(runtimePresetFile)] = generatedFile(
-					runtimePreset,
-					presetSource(sourceConfig, conditions, false),
-					"Next/Webpack runtime preset",
-				);
-			}
-			const base = dirname(cssEntry);
-			const generated = await generateDesignSystem(stylesheet, base);
-			const bridge = await generateUtilityBridge(stylesheet, base, {
-				props: BRIDGE_PROPS,
-				values: scalarTokenValues(sourceConfig),
-			});
-			const types = projectFile(directory, "types.d.ts");
-			const tw = projectFile(directory, "tw.ts");
-			const bridgeFile = projectFile(directory, "bridge.ts");
-			const theme = buildThemeBlock(sourceConfig.tokenCatalog?.groups ?? {});
-			const interop = buildPandwindInteropArtifact({
-				typesDts: generated.typesDts,
-				twTs: generated.twTs,
-				bridge,
-				...(theme === "" ? {} : { themeBlock: theme }),
-			});
-			derivedFiles.push(
-				generatedFile(types, generated.typesDts, "Tailwind-derived typed tw() metadata"),
-				generatedFile(tw, generated.twTs, "Tailwind-derived tw() runtime"),
-				generatedFile(
-					bridgeFile,
-					bridgeSource(bridge, generated.twTs, "./preset"),
-					"Tailwind-derived css() utility bridge",
-				),
-				generatedFile(
-					projectFile(directory, "pandwind.interop.json"),
-					`${JSON.stringify(interop, null, "\t")}\n`,
-					"versioned Pandwind interop artifact",
-				),
-			);
-			if (theme !== "")
-				derivedFiles.push(
-					generatedFile(projectFile(directory, "pandwind-theme.css"), theme, "derived theme block"),
-				);
 		}
+		const base = dirname(cssEntry);
+		const generated = await generateDesignSystem(stylesheet, base);
+		const bridge = await generateUtilityBridge(stylesheet, base, {
+			props: BRIDGE_PROPS,
+			values: scalarTokenValues(sourceConfig),
+		});
+		const types = projectFile(directory, "types.d.ts");
+		const tw = projectFile(directory, "tw.ts");
+		const bridgeFile = projectFile(directory, "bridge.ts");
+		const theme = buildThemeBlock(sourceConfig.tokenCatalog?.groups ?? {});
+		const interop = buildPandwindInteropArtifact({
+			typesDts: generated.typesDts,
+			twTs: generated.twTs,
+			bridge,
+			...(theme === "" ? {} : { themeBlock: theme }),
+		});
+		derivedFiles.push(
+			generatedFile(types, generated.typesDts, "Tailwind-derived typed tw() metadata"),
+			generatedFile(tw, generated.twTs, "Tailwind-derived tw() runtime"),
+			generatedFile(
+				bridgeFile,
+				bridgeSource(bridge, generated.twTs, "./preset"),
+				"Tailwind-derived css() utility bridge",
+			),
+			generatedFile(
+				projectFile(directory, "pandwind.interop.json"),
+				`${JSON.stringify(interop, null, "\t")}\n`,
+				"versioned Pandwind interop artifact",
+			),
+		);
+		if (theme !== "")
+			derivedFiles.push(
+				generatedFile(projectFile(directory, "pandwind-theme.css"), theme, "derived theme block"),
+			);
 	}
 
 	const outputFiles = canonicalPandwindTarget ? files : [...files, ...derivedFiles];
@@ -1077,6 +1084,7 @@ export async function createPandwindProjectSupport(
 			...(configurationFailed
 				? {}
 				: {
+						conditionCatalog: targetConditionCatalog,
 						cssModule: css,
 						stackModule: stack,
 						runtimeCssModule: runtimeCss,

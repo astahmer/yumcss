@@ -4,6 +4,7 @@ import {
 	StyleProgramResidualKindTag,
 	StyleRuleKindTag,
 	StyleValueKindTag,
+	type SemanticConditionKind,
 } from "../semantic-ir.ts";
 import {
 	CodemodAdapterKit,
@@ -13,6 +14,7 @@ import {
 import { SourcePass } from "../../source-pass-utils.ts";
 import type {
 	AdapterConfigContext,
+	AdapterConditionCatalog,
 	AdapterEmitContext,
 	AdapterGeneratedFile,
 	AdapterParseContext,
@@ -501,9 +503,9 @@ const conditionQuery = (kind: string, value: string): string => {
 };
 
 const conditionCatalogEntries = (
-	context: AdapterEmitContext | undefined,
+	conditionCatalog: AdapterConditionCatalog | undefined,
 ): readonly [string, string][] => {
-	const catalogs = [presetConditions, context?.config.conditionCatalog];
+	const catalogs = [presetConditions, conditionCatalog];
 	const entries = new Map<string, string>();
 	for (const catalog of catalogs) {
 		if (catalog === undefined) continue;
@@ -514,6 +516,22 @@ const conditionCatalogEntries = (
 		}
 	}
 	return [...entries];
+};
+
+const pandwindConditionOptions = (
+	conditionCatalog: AdapterConditionCatalog | undefined,
+): {
+	readonly conditionKinds: Readonly<Record<string, SemanticConditionKind>>;
+	readonly conditionValues: Readonly<Record<string, string>>;
+} => {
+	const conditionKinds: Record<string, SemanticConditionKind> = {};
+	const conditionValues: Record<string, string> = {};
+	for (const [name, value] of conditionCatalogEntries(conditionCatalog)) {
+		const normalized = name.replace(/^_/, "");
+		conditionKinds[normalized] = inferSemanticConditionKind(value);
+		conditionValues[normalized] = value.replace(/^@(media|container|supports)\s+/u, "");
+	}
+	return { conditionKinds, conditionValues };
 };
 
 const conditionCatalogMatch = (
@@ -554,6 +572,11 @@ const conditionCatalogMatch = (
 	return candidates[0]?.[0];
 };
 
+const conditionCatalogValue = (
+	name: string,
+	entries: readonly [string, string][],
+): string | undefined => entries.find(([candidate]) => candidate === name)?.[1];
+
 type PandwindConditionResult = {
 	readonly condition?: StyleCondition;
 	readonly residual?: StyleProgram["residuals"][number];
@@ -563,23 +586,38 @@ const pandwindCondition = (
 	condition: StyleCondition,
 	entries: readonly [string, string][],
 ): PandwindConditionResult => {
-	if (condition.kind === SemanticConditionKindTag.Named && condition.name === "base")
-		return {};
+	const named = (name: string): StyleCondition => {
+		const preserveResolvedValue = condition.kind !== SemanticConditionKindTag.Named;
+		const catalogValue = conditionCatalogValue(name, entries);
+		const value = preserveResolvedValue
+			? condition.value ??
+				(catalogValue?.replace(/^@(media|container|supports)\s+/u, "") ?? condition.name)
+			: undefined;
+		return {
+			kind: preserveResolvedValue ? condition.kind : SemanticConditionKindTag.Named,
+			name,
+			...(value === undefined ? {} : { value }),
+		};
+	};
+	if (condition.kind === SemanticConditionKindTag.Named && condition.name === "base") return {};
 	const authoredName = condition.raw ?? condition.name;
 	const canonicalName = canonicalPandwindConditionName(authoredName);
+	if (isPandwindConditionName(canonicalName))
+		return { condition: named(canonicalName) };
 	if (
-		isPandwindConditionName(canonicalName) &&
-		(canonicalName === authoredName || canonicalName !== condition.name)
-	)
-		return { condition: { kind: SemanticConditionKindTag.Named, name: canonicalName } };
-	if (condition.kind === SemanticConditionKindTag.Selector) {
-		const selectorName = pandwindConditionNameForSelector(condition.value ?? condition.name);
+		condition.kind === SemanticConditionKindTag.Selector ||
+		condition.kind === SemanticConditionKindTag.Pseudo
+	) {
+		const selector = condition.value ?? condition.name;
+		const selectorName = pandwindConditionNameForSelector(
+			selector.startsWith("&") ? selector : `&${selector}`,
+		);
 		if (selectorName !== undefined)
-			return { condition: { kind: SemanticConditionKindTag.Named, name: selectorName } };
+			return { condition: named(selectorName) };
 	}
 	const match = conditionCatalogMatch(condition, entries);
 	if (match !== undefined)
-		return { condition: { kind: SemanticConditionKindTag.Named, name: match } };
+		return { condition: named(match) };
 	return {
 		residual: {
 			kind: StyleProgramResidualKindTag.Capability,
@@ -594,7 +632,7 @@ function normalizePandwindConditions(
 	context: AdapterEmitContext | undefined,
 	onResidual?: (residual: StyleProgram["residuals"][number]) => void,
 ): StyleProgram {
-	const entries = conditionCatalogEntries(context);
+	const entries = conditionCatalogEntries(context?.config.conditionCatalog);
 	if (entries.length === 0) return program;
 	const preservedConditionPrefix =
 		program.compositions?.some(
@@ -633,12 +671,16 @@ const PANDWIND_TOKEN_POLICY: AdapterTokenPolicy = {
 	preserve: (program, context) => preserveKnownPresetTokens(program, context),
 };
 
-function pandwindConfig(context: AdapterConfigContext): AdapterProjectConfig {
+function pandwindConfig(
+	context: AdapterConfigContext,
+	conditionCatalog?: AdapterConditionCatalog,
+): AdapterProjectConfig {
 	return {
 		adapter: CodemodAdapterId.Pandwind,
 		root: context.root,
 		files: [context.file],
 		values: {},
+		...(conditionCatalog === undefined ? {} : { conditionCatalog }),
 	};
 }
 
@@ -679,8 +721,9 @@ async function importGeneratedPreset(
 async function officialPandwindConfig(
 	context: AdapterConfigContext,
 	loader: ProjectModuleLoader,
+	conditionCatalog?: AdapterConditionCatalog,
 ): Promise<AdapterProjectConfig> {
-	const fallback = pandwindConfig(context);
+	const fallback = pandwindConfig(context, conditionCatalog);
 	if (context.root === undefined || context.readFile === undefined) return fallback;
 	const sourceFile = isAbsoluteDocumentPath(context.file)
 		? context.file
@@ -2185,10 +2228,12 @@ function pandwindRecipeMatches(
 
 export interface PandwindAdapterOptions {
 	readonly moduleLoader?: ProjectModuleLoader | null;
+	readonly conditionCatalog?: AdapterConditionCatalog;
 }
 
 export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 	const moduleLoader = options.moduleLoader === null ? undefined : options.moduleLoader;
+	const configuredConditionCatalog = options.conditionCatalog;
 	const adapter = defineCodemodAdapter({
 		id: CodemodAdapterId.Pandwind,
 		officialApi: {
@@ -2228,15 +2273,16 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 			(moduleSpecifier) => /(?:^|[\\/])__pandwind[\\/]recipe(?:\.ts)?$/u.test(moduleSpecifier),
 		],
 		configFiles: ["pandwind.config.ts", "pandwind.interop.json", "bridge.ts", "package.json"],
-		loadConfig: pandwindConfig,
+		loadConfig: (context) => pandwindConfig(context, configuredConditionCatalog),
 		...(moduleLoader === undefined
 			? {}
 			: {
 					loadConfigAsync: (context: AdapterConfigContext) =>
-						officialPandwindConfig(context, moduleLoader),
+						officialPandwindConfig(context, moduleLoader, configuredConditionCatalog),
 				}),
 		tokenPolicy: PANDWIND_TOKEN_POLICY,
 		sourceObjectOptions: (_source, context) => ({
+			...pandwindConditionOptions(context.config.conditionCatalog),
 			valueTransforms: {
 				"*": (value, property) => pandwindSourceValue(value, property ?? "", context),
 			},

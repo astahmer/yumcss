@@ -671,6 +671,12 @@ function parseCalls(
 				id: context.config.adapter,
 				pattern: pattern.name,
 				...pattern.functionCall,
+				sourceObjectOptions: {
+					...resolvedObjectOptions,
+					...patternObjectOptions,
+					...(pattern.objectKind === undefined ? {} : { nestedObjectKind: pattern.objectKind }),
+					...(pattern.functionCall.sourceObjectOptions ?? {}),
+				},
 			});
 			matches.push(...parsed.matches);
 			residuals.push(...parsed.residuals);

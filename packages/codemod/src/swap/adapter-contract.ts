@@ -123,7 +123,9 @@ export type AdapterConditionCatalog = Readonly<Record<string, AdapterConditionVa
 
 /** Project-owned modules shared by generated target code. Paths are root-relative. */
 export interface AdapterProjectBindings {
-	/** Module exporting the extracted/static `css` binding. */
+	/** Target-owned named conditions already declared by the generated preset. */
+	readonly conditionCatalog?: AdapterConditionCatalog;
+	/** Module exporting the extracted/static css binding. */
 	readonly cssModule?: string;
 	/** Module exporting the configured React Stack binding. */
 	readonly stackModule?: string;

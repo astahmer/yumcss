@@ -1,6 +1,7 @@
 import { StyleValueKindTag } from "./semantic-ir.ts";
 import { StyleProgramResidualKindTag } from "./semantic-ir.ts";
 import type { AdapterParseContext, AdapterParseResult } from "./adapter-contract.ts";
+import type { AdapterSourceObjectOptions } from "./external-adapters.ts";
 import {
 	styleProgramFromSourceObject,
 	type StyleProgram,
@@ -13,10 +14,7 @@ export interface FunctionStyleCallParserOptions {
 	readonly pattern?: string;
 	readonly functionCall: RegExp;
 	readonly namedObjects?: boolean;
-	readonly sourceObjectOptions?: Pick<
-		StyleProgramOptions,
-		"nestedObjectKind" | "namedRuleObjects" | "arrayRuleKinds" | "emissionHints"
-	>;
+	readonly sourceObjectOptions?: AdapterSourceObjectOptions;
 	readonly subjectFromMatch?: (match: string) => string | undefined;
 }
 

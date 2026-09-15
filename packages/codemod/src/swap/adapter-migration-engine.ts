@@ -134,7 +134,17 @@ function runAdapterMigrationInternal(
 	const support = createAdapterMigrationSupport(ports.sourceScanner);
 	const preparation = prepared ?? prepareMigration(source, options, ports);
 	if (isMigrationResult(preparation)) return preparation;
-	const { sourceAdapter, targetAdapter, context, sourceConfig: config, targetConfig } = preparation;
+	const { sourceAdapter, targetAdapter, context, sourceConfig: config } = preparation;
+	const targetConfig =
+		options.project?.conditionCatalog === undefined
+			? preparation.targetConfig
+			: {
+					...preparation.targetConfig,
+					conditionCatalog: {
+						...preparation.targetConfig.conditionCatalog,
+						...options.project.conditionCatalog,
+					},
+				};
 	const readFile = context.readFile;
 	const fileMigration = sourceAdapter.migration?.file;
 	if (fileMigration !== undefined) {

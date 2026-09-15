@@ -124,6 +124,9 @@ describe("Pandwind project bootstrap", () => {
 		const preset = support.files.find((file) => file.path === "pandwind/preset.ts")?.content;
 		expect(preset).toContain('"base": ""');
 		expect(preset).toContain('"midnight": "[data-theme=midnight] &"');
+		expect(support.bindings.conditionCatalog).toMatchObject({
+			midnight: "[data-theme=midnight] &",
+		});
 	});
 
 	test("canonicalizes built-in condition aliases without changing custom names", async () => {

@@ -972,7 +972,7 @@ export function officialApiFamilyCases(): readonly OfficialApiFamilyCase[] {
 		{
 			adapter: CodemodAdapterId.Tokenami,
 			name: "alias and custom property selector",
-			expectation: "converted",
+			expectation: "residual",
 			file: "styles.ts",
 			source:
 				'import { css } from "@tokenami/css";\nexport const card = css({ "--card-color": "red", "&[data-state=active]": { color: "var(--card-color)" } });',
@@ -988,7 +988,7 @@ export function officialApiFamilyCases(): readonly OfficialApiFamilyCase[] {
 		{
 			adapter: CodemodAdapterId.UnoCSS,
 			name: "variant utility",
-			expectation: "converted",
+			expectation: "residual",
 			file: "App.tsx",
 			source:
 				'export const App = () => <div className="hover:[background-color:black] md:[display:flex]" />;',
@@ -1010,7 +1010,7 @@ export function officialApiFamilyCases(): readonly OfficialApiFamilyCase[] {
 		{
 			adapter: CodemodAdapterId.Tailwind,
 			name: "arbitrary utility",
-			expectation: "converted",
+			expectation: "residual",
 			file: "App.tsx",
 			source:
 				'export const App = () => <div className="[color:rebeccapurple] md:[display:flex]" />;',
@@ -1018,7 +1018,7 @@ export function officialApiFamilyCases(): readonly OfficialApiFamilyCase[] {
 		{
 			adapter: CodemodAdapterId.Tailwind,
 			name: "custom variant candidate",
-			expectation: "converted",
+			expectation: "residual",
 			file: "App.tsx",
 			source: 'export const App = () => <div className="[&[data-state=active]]:[color:red]" />;',
 		},

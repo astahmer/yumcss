@@ -16,6 +16,16 @@ function conditionKey(condition: StyleProgram["rules"][number]["conditions"][num
 		if (condition.raw.startsWith("_")) return `&:${condition.raw.slice(1)}`;
 		return condition.raw;
 	}
+	if (
+		(condition.kind === SemanticConditionKindTag.Media ||
+			condition.kind === SemanticConditionKindTag.Container ||
+			condition.kind === SemanticConditionKindTag.Supports ||
+			condition.kind === SemanticConditionKindTag.Pseudo ||
+			condition.kind === SemanticConditionKindTag.Selector) &&
+		condition.name.startsWith("_") &&
+		condition.value !== undefined
+	)
+		return condition.name;
 	if (condition.kind === SemanticConditionKindTag.Pseudo)
 		return condition.name.startsWith(":") ? `&${condition.name}` : `&:${condition.name}`;
 	if (condition.kind === SemanticConditionKindTag.Media)
