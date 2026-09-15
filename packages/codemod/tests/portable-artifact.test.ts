@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
 import { PortableStyleArtifact } from "../src/swap/portable-artifact.ts";
-import { styleProgramFromRules } from "../src/swap/semantic-ir.ts";
+import { styleProgramFromRules, styleProgramFromSourceObject } from "../src/swap/semantic-ir.ts";
 
 const program = styleProgramFromRules([
 	{
@@ -94,5 +94,17 @@ describe("PortableStyleArtifact", () => {
 		expect(dynamicEmission.imports).not.toContain(
 			'import { createRuntimeCss } from "pandwind/css/runtime";',
 		);
+	});
+
+	test("keeps finite literal conditionals on the static class path", () => {
+		const conditionalProgram = styleProgramFromSourceObject(
+			'color: noHistoricalData ? "fg.muted" : "red"',
+			{ source: { file: "SyncCell.tsx", adapter: "chakra" } },
+		);
+
+		const emission = PortableStyleArtifact.emission(conditionalProgram);
+
+		expect(emission.text).toContain("css.class");
+		expect(emission.text).not.toContain("css.vars");
 	});
 });
