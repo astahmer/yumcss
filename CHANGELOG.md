@@ -4,6 +4,23 @@ All notable changes to `pandwind` are documented here. The project has no
 released version yet — entries group the development waves that produced the
 current `0.1.0` state.
 
+## Unreleased — 2026-09-15 explicit runtime CSS carrier
+
+### Fixes
+
+- Keep ordinary migrated styles on the static `createCss()` lane, including
+  dynamic `css.vars()` and `css.props()` output. Reserve `createRuntimeCss()`
+  for sheet-backed global rules, keyframes, font faces, and runtime component
+  registration.
+- Give generated runtime modules an explicit `runtimeCss` export and preserve
+  separate static and runtime project bindings when a migration needs both.
+  Existing runtime modules exporting a custom binding remain supported through
+  project binding discovery and aliasing.
+- Make Pandwind's own runtime-rule parser accept the configured local binding,
+  and remove duplicate host arrows when an adapter lowers a global component.
+
+Source revisions: `38c52079`, `785d7229`.
+
 ## Unreleased — 2026-09-14 static style carrier hoisting
 
 ### Fixes
