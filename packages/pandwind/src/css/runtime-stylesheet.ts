@@ -1,5 +1,10 @@
 import { pairs } from "../lib/utils.ts";
-import { canonicalStyleKey, cssPropertyFromKey, isEmptyCondition } from "../backends/css.ts";
+import {
+	canonicalStyleKey,
+	cssPropertyFromKey,
+	isColorProperty,
+	isEmptyCondition,
+} from "../backends/css.ts";
 import type { CssConfigReturn, TokenDeclaration } from "../types/typings.ts";
 import { createVarCompiler, varConditionPart } from "./var-compiler.ts";
 import type { CreateCssOptions } from "./runtime-base.ts";
@@ -10,6 +15,7 @@ import {
 	resolveRuntimeTokenAliasValue,
 	resolveRuntimeTokenValue,
 } from "./runtime-token-maps.ts";
+import { buildRuntimeColorPaletteMaps } from "./runtime-color-palettes.ts";
 import { isSafeCssValue, normalizeCssValue } from "./value-normalization.ts";
 import {
 	createConditionsBucket,
@@ -73,6 +79,10 @@ export const createRuntimeStylesheet = (
 	};
 
 	const tokenMaps = buildRuntimeTokenMaps(preset, debug);
+	const colorPaletteMaps =
+		preset.colorPalettes === undefined
+			? undefined
+			: buildRuntimeColorPaletteMaps(preset, tokenMaps, debug);
 	const cssVars = new Map<string, TokenDeclaration>();
 	const presetTokens = preset.tokens ?? {};
 	// Pre-compute the `:root` token declarations (the class-value maps live
@@ -157,7 +167,26 @@ export const createRuntimeStylesheet = (
 
 		const atomic = decodeAtomicPath(preset.conditions, pairId);
 		const property = cssPropertyFromKey(atomic.prop, preset.conditions);
-		const value = resolveRuntimeTokenValue(tokenMaps, property, normalizedValue);
+		if (property === "colorPalette") {
+			const assignments = colorPaletteMaps?.palettes.get(normalizedValue);
+			if (assignments === undefined) return;
+			const declaration = assignments
+				.map((assignment) => cssVar.declaration(assignment.cssVar, assignment.value))
+				.join("");
+			const css = genCSSRule(declaration, {
+				...atomic.conditions,
+				className: `.${escapeIdentifier(classNameFor(orderedKey, normalizedValue))}`,
+			});
+			const rule = { id: pairId, css, priority: atomic.priority };
+			cache.set(pairId, rule);
+			localCache.set(pairId, rule);
+			return;
+		}
+		const colorPaletteValue = isColorProperty(property)
+			? colorPaletteMaps?.values.get(normalizedValue)
+			: undefined;
+		const value =
+			colorPaletteValue ?? resolveRuntimeTokenValue(tokenMaps, property, normalizedValue);
 		const declaration = [dashCase(property), value].join(":");
 		const css = genCSSRule(declaration, {
 			...atomic.conditions,

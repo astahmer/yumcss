@@ -37,6 +37,24 @@ const isConditionPathPart = (
 ): boolean =>
 	part.startsWith("_") || Object.hasOwn(conditions, part) || /[&>+~:[\],.#*\s]/.test(part);
 
+const colorProperties = new Set([
+	"color",
+	"background",
+	"backgroundColor",
+	"borderColor",
+	"borderTopColor",
+	"borderRightColor",
+	"borderBottomColor",
+	"borderLeftColor",
+	"outlineColor",
+	"textDecorationColor",
+	"textEmphasisColor",
+	"fill",
+	"stroke",
+]);
+
+export const isColorProperty = (property: string): boolean => colorProperties.has(property);
+
 export const isEmptyCondition = (
 	part: string,
 	conditions: Record<string, string | string[]>,

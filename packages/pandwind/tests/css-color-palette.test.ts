@@ -1,6 +1,7 @@
 import { expect, test } from "vitest";
 import { createCss } from "../src/css/create-css.ts";
 import { createStylesheet } from "../src/css/create-stylesheet.ts";
+import { createRuntimeCss } from "../src/css/runtime.ts";
 import { definePreset, defineProperties, defineTokens } from "../src/preset/index.ts";
 
 const tokens = defineTokens({
@@ -28,6 +29,19 @@ const preset = definePreset(
 			color: { $tokens: "colors" },
 			backgroundColor: { $tokens: "colors" },
 		}),
+		colorPalettes,
+	},
+);
+
+const explicitColorPreset = definePreset(
+	{ config: {}, tokens },
+	{
+		strict: true,
+		conditions: { base: "" },
+		properties: {
+			color: tokens.colors,
+			backgroundColor: tokens.colors,
+		},
 		colorPalettes,
 	},
 );
@@ -84,6 +98,44 @@ test("keeps palette aliases and their token references on the same virtual varia
 		output.indexOf(".colorPalette__brand{") + 500,
 	);
 	expect(paletteRule).toContain("var(--");
+});
+
+test("runtime sheets emit palette assignments and virtual color references", () => {
+	const css = createRuntimeCss(preset, {
+		debug: true,
+		sheetOptions: { autoMount: false },
+	});
+
+	css.class({
+		colorPalette: "brand",
+		color: "colorPalette.solid",
+		backgroundColor: "colorPalette.contrast",
+	});
+
+	const output = css.sheet.css();
+
+	expect(output).toContain(".colorPalette__brand{");
+	expect(output).toContain("color:var(--");
+	expect(output).toContain("background-color:var(--");
+	expect(output).not.toContain("color-palette:brand");
+	expect(output).not.toContain("color:colorPalette.solid");
+});
+
+test("palette colors resolve with explicit color property maps", () => {
+	const stylesheet = createStylesheet(explicitColorPreset, { debug: true });
+	const output = stylesheet.generate([
+		{
+			colorPalette: "brand",
+			backgroundColor: "colorPalette.contrast",
+			color: "colorPalette.solid",
+		},
+	]);
+
+	expect(output).toContain("backgroundColor__colorPalette\\.contrast{");
+	expect(output).toContain("color__colorPalette\\.solid{");
+	expect(output).toContain("background-color:var(--");
+	expect(output).toContain("color:var(--");
+	expect(output).not.toContain("background-color:colorPalette.contrast");
 });
 
 test("token composers remain non-enumerable and compose immutable catalogs", () => {

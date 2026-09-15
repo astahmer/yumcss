@@ -2,7 +2,12 @@ import { assign, type FlatStyles, flattenStyle, pairs } from "../lib/utils.ts";
 import type { CssConfigReturn, StyleObject, TokenDeclaration } from "../types/typings.ts";
 import { createVarCompiler, varConditionPart } from "./var-compiler.ts";
 import type { CreateCssOptions } from "./create-css.ts";
-import { canonicalStyleKey, cssPropertyFromKey, isEmptyCondition } from "../backends/css.ts";
+import {
+	canonicalStyleKey,
+	cssPropertyFromKey,
+	isColorProperty,
+	isEmptyCondition,
+} from "../backends/css.ts";
 import { createHashFn, dashCase, escapeIdentifier, hashCssVar } from "./hash.ts";
 import { getPropertyPriority } from "./property-priorities.ts";
 import {
@@ -286,10 +291,9 @@ export const createStylesheet = (
 				}
 			}
 		}
-		const colorPaletteValue =
-			tokenMaps.groupByProp.get(property) === "colors"
-				? colorPaletteMaps.values.get(normalizedValue)
-				: undefined;
+		const colorPaletteValue = isColorProperty(property)
+			? colorPaletteMaps.values.get(normalizedValue)
+			: undefined;
 		const value = colorPaletteValue ?? resolveTokenValue(tokenMaps, property, normalizedValue);
 		const className =
 			preparedClassName !== undefined && isSafeClassName(preparedClassName)

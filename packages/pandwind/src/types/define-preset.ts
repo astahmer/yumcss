@@ -47,6 +47,8 @@ export const defineTheme = <TTheme extends DefinePresetOptions>(theme: TTheme) =
  *
  * `strict: true` exposes mapped token names; `$strictness: "inherits"` also
  * allows the property's raw CSS values.
+ * `colorPalettes` adds named color roles that can be selected with
+ * `colorPalette` and consumed as `colorPalette.<role>` values.
  * Use the resulting preset with `createCss`, `createDesignCss`, or the
  * stylesheet compiler. `$all` adds configured property names but does not bind
  * every token group to every property.
@@ -160,7 +162,8 @@ const createTokenCatalog = <T extends AnyTokens>(tokens: T): TokenCatalog<T> => 
  *
  * Semantic layers are merged into a new catalog and can be chained. Color
  * palettes remain separate preset metadata, but their token references are
- * checked against this catalog.
+ * checked against this catalog; pass the returned palette map to
+ * `definePreset` as `colorPalettes`.
  *
  * @example
  * ```ts

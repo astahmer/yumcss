@@ -223,6 +223,7 @@ export type TokenCatalog<TTokens extends AnyTokens> = TTokens & {
 		conditions: TConditions,
 		semanticTokens: TLayer & ValidatedSemanticTokens<TConditions, TTokens, TLayer>,
 	) => TokenCatalog<TTokens & TLayer>;
+	/** Define named color roles checked against this token catalog. */
 	readonly defineColorPalettes: <TPalettes extends ColorPaletteDefinitions<TTokens>>(
 		palettes: TPalettes,
 	) => TPalettes;
@@ -253,7 +254,7 @@ type ColorPaletteTokenPath<TTokens extends AnyTokens> =
 			: TPath
 		: never;
 
-/** A static color palette root or a named map of color token references. */
+/** A static color subtree or a named map of color token references. */
 export type ColorPaletteSource<TTokens extends AnyTokens = AnyTokens> =
 	| ColorPaletteSourcePath<TTokens>
 	| { readonly [TName: string]: ColorPaletteTokenPath<TTokens> };
