@@ -47,6 +47,23 @@ describe("pandwind package boundary", () => {
 		expect("VARS_ATOMS" in cssApi).toBe(false);
 	});
 
+	test("exposes token composers on catalogs instead of standalone helpers", async () => {
+		const presetApi = await import("pandwind/preset");
+		expect("defineSemanticTokens" in presetApi).toBe(false);
+		expect("defineColorPalettes" in presetApi).toBe(false);
+
+		const tokens = presetApi.defineTokens({ colors: { blue: "#3182ce" } });
+		const themedTokens = tokens.defineSemanticTokens(
+			{ base: "", _dark: ".dark &" },
+			{ semantic: { surface: { base: "colors.blue", _dark: "colors.blue" } } },
+		);
+
+		expect(Object.keys(themedTokens)).toEqual(["colors", "semantic"]);
+		expect(themedTokens.defineColorPalettes({ brand: "colors.blue" })).toEqual({
+			brand: "colors.blue",
+		});
+	});
+
 	test("does not expose the codemod-owned recipe runtime", () => {
 		expect(() => import.meta.resolve("pandwind/recipe")).toThrow();
 	});
