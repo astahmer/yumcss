@@ -17,7 +17,7 @@ import { VARS_ATOMS } from "../src/css/var-compiler.ts";
 import { createUnsafeCss } from "../src/unsafe/css.ts";
 import { createCx } from "../src/cx/index.ts";
 import { createDesignCss } from "../src/design/index.ts";
-import { definePreset } from "../src/types/define-preset.ts";
+import { define } from "../src/types/define-preset.ts";
 import { createCssSourceScanner } from "../src/vite/css-extract.ts";
 
 const css = createUnsafeCss();
@@ -35,7 +35,7 @@ const examplePreset = {
 	},
 } as never;
 
-const varsPreset = definePreset(
+const varsPreset = define.preset(
 	{
 		config: {} as StandardProperties,
 		tokens: {

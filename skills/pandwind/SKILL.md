@@ -17,8 +17,8 @@ description: Work with Pandwind's typed styling APIs in this repository. Use whe
   typecheck, it is not part of the design system. Do not silence the error
   with `as any` or string casts — extend the preset instead.
 - Keep property configuration and token references in the typed source
-  contract. Use `definePreset`, `defineTheme`, `defineTokens`, and
-  `defineSemanticTokens` with `createCss` or `createDesignCss`; fix the
+  contract. Use `define.preset`, `define.theme`, `define.tokens`, and
+  `tokens.defineSemanticTokens` with `createCss` or `createDesignCss`; fix the
   contract instead of weakening a call site with a cast.
 - Run the consuming package's generation script after changing a Tailwind
   preset, `tailwind.css`, or generated `tw()` surface. In this repository,

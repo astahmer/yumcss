@@ -1,4 +1,4 @@
-import { definePreset } from "../types/define-preset.ts";
+import { define } from "../types/define-preset.ts";
 import { presetConditions } from "./conditions.ts";
 import { presetProperties, type PandwindProperties } from "./properties.ts";
 
@@ -8,7 +8,7 @@ const standardCssConfig: PandwindProperties = {};
  * Built-in property and condition preset for standard Pandwind CSS.
  *
  * Use this for the library's default CSS vocabulary. Define a smaller preset
- * with {@link definePreset} when an application wants a constrained contract.
+ * with {@link define.preset} when an application wants a constrained contract.
  *
  * @example
  * ```ts
@@ -22,7 +22,7 @@ const standardCssConfig: PandwindProperties = {};
  * @category presets
  * @since 0.1.0
  */
-export const pandwindPreset = definePreset(
+export const pandwindPreset = define.preset(
 	{
 		config: standardCssConfig,
 		tokens: {},

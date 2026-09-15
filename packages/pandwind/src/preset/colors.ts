@@ -3,7 +3,7 @@
  *
  * The `$` prefix is the authored spelling accepted by strict preset-aware
  * styles. Reuse this data when composing a smaller preset or define a custom
- * token group with {@link defineTokens}.
+ * token group with {@link define.tokens}.
  *
  * @category tokens
  * @since 0.1.0

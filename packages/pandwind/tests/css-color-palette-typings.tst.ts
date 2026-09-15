@@ -1,8 +1,8 @@
 import { expect, test } from "tstyche";
 import { createCss } from "../src/css/create-css.ts";
-import { definePreset, defineProperties, defineTokens } from "../src/preset/index.ts";
+import { define } from "../src/preset/index.ts";
 
-const tokens = defineTokens({
+const tokens = define.tokens({
 	colors: {
 		"blue.500": "#3182ce",
 		"gray.500": "#718096",
@@ -16,12 +16,12 @@ const palettes = tokens.defineColorPalettes({
 	},
 });
 
-const preset = definePreset(
+const preset = define.preset(
 	{ config: {}, tokens },
 	{
 		strict: true,
 		conditions: { base: "" },
-		properties: defineProperties({ color: { $tokens: "colors" } }),
+		properties: define.properties({ color: { $tokens: "colors" } }),
 		colorPalettes: palettes,
 	},
 );

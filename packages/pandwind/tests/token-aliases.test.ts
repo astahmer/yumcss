@@ -3,9 +3,9 @@ import { describe, expect, test } from "vitest";
 import { createCss } from "../src/css/create-css.ts";
 import { createStylesheet } from "../src/css/create-stylesheet.ts";
 import { createRuntimeCss } from "../src/css/runtime.ts";
-import { definePreset, defineTokens } from "../src/types/define-preset.ts";
+import { define } from "../src/types/define-preset.ts";
 
-const rawTokens = defineTokens({
+const rawTokens = define.tokens({
 	colors: {
 		"$blue-600": "#2b6cb0",
 		"$blue-700": "#2c5282",
@@ -30,7 +30,7 @@ const semanticTokens = rawTokens.defineSemanticTokens(
 	},
 );
 
-const preset = definePreset(
+const preset = define.preset(
 	{
 		config: {} as StandardProperties,
 		tokens: {

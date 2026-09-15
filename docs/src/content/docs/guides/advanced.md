@@ -142,8 +142,8 @@ and fall back to the atomic engine instead of emitting dead classes.
 
 ## Presets and themes
 
-Use `defineTokens`, `defineTheme`, `definePreset`, `defineConditions`, and
-`defineProperties` to make the design contract explicit. A preset can carry
+Use `define.tokens`, `define.theme`, `define.preset`, `define.conditions`, and
+`define.properties` to make the design contract explicit. A preset can carry
 raw property configuration, token groups, semantic tokens, conditions, and
 strictness. See [Build a design system](/guides/design-system/) for a complete
 composition.

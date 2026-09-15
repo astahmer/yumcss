@@ -640,9 +640,9 @@ export default <TokenCard />`,
 					},
 					{
 						name: "tokens.ts",
-						code: `import { definePreset, defineTokens } from "pandwind/preset";
+						code: `import { define } from "pandwind/preset";
 
-const rawTokens = defineTokens({
+const rawTokens = define.tokens({
 	colors: {
 		"$gray-50": "#f9fafb",
 		"$gray-200": "#e5e7eb",
@@ -656,7 +656,7 @@ const rawTokens = defineTokens({
 	radii: { md: "0.375rem" },
 });
 
-const baseTokens = defineTokens({
+const baseTokens = define.tokens({
 	colors: rawTokens.colors,
 	spacing: {
 		...rawTokens.spacing,
@@ -688,7 +688,7 @@ export const componentTokens = {
 	},
 } as const;
 
-export const tokenPreset = definePreset(
+export const tokenPreset = define.preset(
 	{ config: {} as Record<string, unknown>, tokens },
 	{
 		strict: true,
@@ -757,9 +757,9 @@ export default <EmptyState />`,
 					},
 					{
 						name: "tokens.ts",
-						code: `import { definePreset, defineTokens } from "pandwind/preset";
+						code: `import { define } from "pandwind/preset";
 
-const rawTokens = defineTokens({
+const rawTokens = define.tokens({
 	colors: {
 		"$blue-600": "#2b6cb0",
 		"$blue-700": "#2c5282",
@@ -779,7 +779,7 @@ const rawTokens = defineTokens({
 
 const themeConditions = { base: "", _dark: '[data-theme="dark"] &' };
 
-const directComponentTokens = defineTokens({
+const directComponentTokens = define.tokens({
 	component: {
 		"component.card.borderWidth": "semantic.border.width.default",
 		"component.card.border": "semantic.border.default",
@@ -790,7 +790,7 @@ const directComponentTokens = defineTokens({
 	},
 });
 
-const baseTokens = defineTokens({
+const baseTokens = define.tokens({
 	colors: rawTokens.colors,
 	spacing: rawTokens.spacing,
 	radii: rawTokens.radii,
@@ -836,7 +836,7 @@ const tokens = semanticTokens.defineSemanticTokens(themeConditions, {
 	},
 });
 
-export const tokenPreset = definePreset(
+export const tokenPreset = define.preset(
 	{ config: {} as Record<string, unknown>, tokens },
 	{
 		strict: true,
@@ -936,10 +936,10 @@ export default (
 					{
 						name: "Example.tsx",
 						code: `import { createDesignCss } from "pandwind/design";
-import { definePreset } from "pandwind/preset";
+import { define } from "pandwind/preset";
 import { brandTokens } from "./brand.ts";
 
-const brand = definePreset(
+const brand = define.preset(
 	{ config: {} as Record<string, never>, tokens: { colors: brandTokens.colors } },
 	{ strict: true, conditions: { _hover: "&:hover" }, properties: { $all: true } },
 );
@@ -970,9 +970,9 @@ export default <Button active={true} />`,
 					},
 					{
 						name: "brand.ts",
-						code: `import { defineTokens } from "pandwind/preset";
+						code: `import { define } from "pandwind/preset";
 
-export const brandTokens = defineTokens({
+export const brandTokens = define.tokens({
 	colors: { "$brand-500": "#4c51bf", "$brand-600": "#3730a3" },
 });`,
 					},

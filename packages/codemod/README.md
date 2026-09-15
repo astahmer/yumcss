@@ -176,7 +176,7 @@ performance. Pass `--hoist-static-styles` when the generated source should
 share module-scope static carriers instead.
 
 When the target is Pandwind, the command bootstraps shared project support in
-pandwind/ by default: an app-owned definePreset, css.ts, runtime.ts, cx.ts,
+pandwind/ by default: an app-owned define.preset module, css.ts, runtime.ts, cx.ts,
 the typed tw.ts, its optional bridge, types.d.ts, the versioned interop
 artifact, and a derived theme file when the source configuration proves one.
 Converted files import those shared modules; they do not create a new
@@ -277,7 +277,7 @@ pnpm exec pandwind-codemod tokens --from dtcg --to theme tokens.json --out theme
 # panda.config.ts tokens -> DTCG JSON
 pnpm exec pandwind-codemod tokens --from panda --to dtcg panda.config.ts --out tokens.json
 
-# a Pandwind definePreset file -> Panda snippet on stdout
+# a Pandwind define.preset file -> Panda snippet on stdout
 pnpm exec pandwind-codemod tokens --from preset --to panda src/preset.ts
 ```
 

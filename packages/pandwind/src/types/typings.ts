@@ -149,7 +149,7 @@ export interface TokenDeclaration {
 	priority: number;
 }
 
-/** The authored raw-token shape accepted by {@link defineTokens}. */
+/** The authored raw-token shape accepted by {@link define.tokens}. */
 export type AnySimpleTokens = Record<string, Record<string, string>>;
 
 /** Condition-aware token shape accepted by a token catalog's `defineSemanticTokens`. */
@@ -161,7 +161,7 @@ export type AnySemanticTokens<TConds extends string> = Record<
 type TokenValue = string | Record<string, string>;
 type TokenCatalogMethod = (...args: never[]) => unknown;
 
-/** Token maps plus the non-enumerable composers returned by `defineTokens`. */
+/** Token maps plus the non-enumerable composers returned by `define.tokens`. */
 export type AnyTokens = Record<string, Record<string, TokenValue> | TokenCatalogMethod>;
 
 /** The authored token-group keys, excluding the catalog's composer methods. */
@@ -290,7 +290,7 @@ export interface CssPreset<
 	colorPalettes?: TColorPalettes;
 }
 
-/** Values portion passed to {@link definePreset}. */
+/** Values portion passed to {@link define.preset}. */
 export interface DefinePresetOptions<
 	TConfig extends object = AnyCssConfig,
 	TTokens extends AnyTokens = AnyTokens,

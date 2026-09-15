@@ -1,6 +1,6 @@
-import { definePreset, defineTheme, defineTokens, type PandwindProperties } from "pandwind/preset";
+import { define, type PandwindProperties } from "pandwind/preset";
 
-const rawTokens = defineTokens({
+const rawTokens = define.tokens({
 	colors: {
 		$white: "#ffffff",
 		$black: "#000000",
@@ -103,7 +103,7 @@ const rawTokens = defineTokens({
 	},
 });
 
-const tokens = defineTokens({
+const tokens = define.tokens({
 	colors: {
 		...rawTokens.colors,
 		brand: rawTokens.colors["$blue-600"],
@@ -149,12 +149,12 @@ const themedTokens = tokens.defineSemanticTokens(
 
 const cssConfig: PandwindProperties = {};
 
-const theme = defineTheme({
+const theme = define.theme({
 	config: cssConfig,
 	tokens: themedTokens,
 });
 
-export const examplePreset = definePreset(theme, {
+export const examplePreset = define.preset(theme, {
 	strict: true,
 	conditions: {
 		// State modifiers

@@ -5,13 +5,7 @@ import { createUnsafeCss } from "../src/unsafe/css.ts";
 import { createCx } from "../src/cx/index.ts";
 import { createDesignCss } from "../src/design/index.ts";
 import { createTw, type TwOptions } from "../src/tw/index.ts";
-import {
-	defineConditions,
-	definePreset,
-	defineProperties,
-	defineTokens,
-	type PandwindProperties,
-} from "../src/preset/index.ts";
+import { define, type PandwindProperties } from "../src/preset/index.ts";
 import { examplePreset } from "@pandwind/example-preset";
 
 test("createCss JSDoc examples use the preset for token references", () => {
@@ -58,23 +52,23 @@ test("CssFn JSDoc examples cover groups and runtime inputs", () => {
 	}>();
 });
 
-test("definePreset JSDoc example preserves a custom typed vocabulary", () => {
-	const tokens = defineTokens({
+test("define.preset JSDoc example preserves a custom typed vocabulary", () => {
+	const tokens = define.tokens({
 		colors: { "$brand-500": "#2563eb", $surface: "#ffffff" },
 		spacing: { 4: "1rem" },
 	});
-	const conditions = defineConditions({ _hover: "&:hover", _dark: ".dark &" });
+	const conditions = define.conditions({ _hover: "&:hover", _dark: ".dark &" });
 	const semantic = tokens.defineSemanticTokens(conditions, {
 		colors: { surface: { _dark: "#111827" } },
 	});
 	void semantic;
-	const properties = defineProperties({
+	const properties = define.properties({
 		backgroundColor: tokens.colors,
 		color: tokens.colors,
 		padding: tokens.spacing,
 	});
 	const cssConfig: PandwindProperties = {};
-	const preset = definePreset(
+	const preset = define.preset(
 		{
 			config: cssConfig,
 			tokens,
@@ -88,12 +82,12 @@ test("definePreset JSDoc example preserves a custom typed vocabulary", () => {
 
 test("docs example narrows the curated CSS contract with Pick", () => {
 	type CardProperties = Pick<PandwindProperties, "backgroundColor" | "color" | "padding">;
-	const tokens = defineTokens({
+	const tokens = define.tokens({
 		colors: { "$brand-500": "#2563eb" },
 		spacing: { 4: "1rem" },
 	});
 	const cardConfig: CardProperties = {};
-	const preset = definePreset(
+	const preset = define.preset(
 		{ config: cardConfig, tokens },
 		{
 			strict: true,
@@ -117,13 +111,13 @@ test("docs example narrows the curated CSS contract with Pick", () => {
 });
 
 test("preset docs cover strict, inherited, and open property bindings", () => {
-	const tokens = defineTokens({
+	const tokens = define.tokens({
 		colors: { "$brand-500": "#2563eb" },
 		spacing: { 4: "1rem" },
 	});
 	const config: Pick<PandwindProperties, "color" | "padding"> = {};
 
-	const strictPreset = definePreset(
+	const strictPreset = define.preset(
 		{ config, tokens },
 		{
 			strict: true,
@@ -147,7 +141,7 @@ test("preset docs cover strict, inherited, and open property bindings", () => {
 		}),
 	).type.toBe<string>();
 
-	const inheritedPreset = definePreset(
+	const inheritedPreset = define.preset(
 		{ config, tokens },
 		{
 			strict: true,
@@ -167,7 +161,7 @@ test("preset docs cover strict, inherited, and open property bindings", () => {
 		}),
 	).type.toBe<string>();
 
-	const openPreset = definePreset(
+	const openPreset = define.preset(
 		{ config, tokens },
 		{
 			strict: false,
@@ -184,11 +178,11 @@ test("preset docs cover strict, inherited, and open property bindings", () => {
 });
 
 test("preset docs distinguish token paths from resolved values", () => {
-	const rawTokens = defineTokens({
+	const rawTokens = define.tokens({
 		colors: { $surface: "#ffffff" },
 		spacing: { 4: "1rem" },
 	});
-	const conditions = defineConditions({ base: "", _dark: ".dark &" });
+	const conditions = define.conditions({ base: "", _dark: ".dark &" });
 	const semanticTokens = rawTokens.defineSemanticTokens(conditions, {
 		semantic: {
 			"bg.surface": { base: "colors.$surface", _dark: "#111827" },
@@ -212,7 +206,7 @@ test("preset docs distinguish token paths from resolved values", () => {
 		},
 	};
 	const cssConfig: PandwindProperties = {};
-	const preset = definePreset(
+	const preset = define.preset(
 		{ config: cssConfig, tokens },
 		{
 			strict: true,

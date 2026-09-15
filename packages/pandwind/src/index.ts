@@ -8,7 +8,7 @@
  * - `pandwind`          -> tw() + cx() (this file)
  * - `pandwind/css`      -> engine css(): atomic CSS-in-JS (`createCss`)
  * - `pandwind/design`   -> design css(): $frame/$layout/$text vocabulary (`createDesignCss`)
- * - `pandwind/preset`   -> definePreset / defineTokens
+ * - `pandwind/preset`   -> define.* preset builders
  * - `pandwind/tw/collect`, `pandwind/vite`,
  *   `pandwind/react-native`, `pandwind/opentui`, ...
  *

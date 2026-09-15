@@ -776,15 +776,15 @@ function presetSource(
 			: appSemanticGroups.length > 0
 				? "const tokens = appSemanticTokens;"
 				: "const tokens = appTokens;";
-	return `import { defineConditions, definePreset, defineProperties, defineTokens${typeImports} } from "pandwind/preset";
+	return `import { define${typeImports} } from "pandwind/preset";
 
-const conditions = defineConditions(${JSON.stringify(presetConditions, null, "\t")} as const);
-const appTokens = defineTokens(${JSON.stringify(appTokens, null, "\t")} as const);
+const conditions = define.conditions(${JSON.stringify(presetConditions, null, "\t")} as const);
+const appTokens = define.tokens(${JSON.stringify(appTokens, null, "\t")} as const);
 ${appSemanticDeclaration}${componentDeclaration}${configDeclaration}
-const properties = defineProperties(${presetPropertiesSource(rawSourceTokens)} as const);
+const properties = define.properties(${presetPropertiesSource(rawSourceTokens)} as const);
 ${tokenDeclaration}${colorPaletteDeclaration}
 
-export const pandwindPreset = definePreset(
+export const pandwindPreset = define.preset(
 	{
 		config: ${configReference},
 		tokens,${colorPaletteProperty}

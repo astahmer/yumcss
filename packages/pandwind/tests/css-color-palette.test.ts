@@ -2,9 +2,9 @@ import { expect, test } from "vitest";
 import { createCss } from "../src/css/create-css.ts";
 import { createStylesheet } from "../src/css/create-stylesheet.ts";
 import { createRuntimeCss } from "../src/css/runtime.ts";
-import { definePreset, defineProperties, defineTokens } from "../src/preset/index.ts";
+import { define } from "../src/preset/index.ts";
 
-const tokens = defineTokens({
+const tokens = define.tokens({
 	colors: {
 		"blue.500": "#3182ce",
 		"blue.700": "#2c5282",
@@ -20,12 +20,12 @@ const colorPalettes = tokens.defineColorPalettes({
 	},
 });
 
-const preset = definePreset(
+const preset = define.preset(
 	{ config: {}, tokens },
 	{
 		strict: true,
 		conditions: { base: "" },
-		properties: defineProperties({
+		properties: define.properties({
 			color: { $tokens: "colors" },
 			backgroundColor: { $tokens: "colors" },
 		}),
@@ -33,7 +33,7 @@ const preset = definePreset(
 	},
 );
 
-const explicitColorPreset = definePreset(
+const explicitColorPreset = define.preset(
 	{ config: {}, tokens },
 	{
 		strict: true,

@@ -461,25 +461,22 @@ ${colorPaletteJson}
  * It is an app-owned preset: no Pandwind token or property defaults are imported.
  */
 import {
-\tdefinePreset,
-\tdefineProperties,
-\tdefineTokens,
-\tdefineConditions,
+\tdefine,
 \ttype PandwindProperties,
 } from "pandwind/preset";
 
-const conditions = defineConditions(${conditionJson});
-const appTokens = defineTokens(${rawTokenJson});
+const conditions = define.conditions(${conditionJson});
+const appTokens = define.tokens(${rawTokenJson});
 ${appSemanticDeclaration}${componentDeclaration}${tokenDeclaration}
 ${colorPaletteDeclaration}
 const cssConfig: PandwindProperties = {};
 
-export const preset = definePreset(
+export const preset = define.preset(
 \t{ config: cssConfig, tokens },
 \t{
 \t\tstrict: true,
 \t\tconditions,
-\t\tproperties: defineProperties(${propertyJson}),
+\t\tproperties: define.properties(${propertyJson}),
 ${colorPaletteProperty}\t},
 );
 `;

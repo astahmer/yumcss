@@ -420,7 +420,7 @@ describe("example catalog evaluates end to end", () => {
 		expect(source).toContain('boxShadow: "component.card.shadow"');
 		expect(source).not.toContain("componentTokens");
 		const tokenSource = variant.files[1]?.code ?? "";
-		expect(tokenSource).toContain("const rawTokens = defineTokens");
+		expect(tokenSource).toContain("const rawTokens = define.tokens");
 		expect(tokenSource).toContain("const semanticTokens = baseTokens.defineSemanticTokens");
 		expect(tokenSource).toContain(
 			"const tokens = semanticTokens.defineSemanticTokens(themeConditions",

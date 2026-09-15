@@ -1,12 +1,7 @@
 import { expect, test } from "tstyche";
 import { createCss, type AtomicStyleProps } from "../src/css/index.ts";
 import { createUnsafeCss } from "../src/unsafe/css.ts";
-import {
-	definePreset,
-	defineTokens,
-	type AnyCssConfig,
-	type PandwindProperties,
-} from "../src/preset/index.ts";
+import { define, type AnyCssConfig, type PandwindProperties } from "../src/preset/index.ts";
 import type { StandardProperties as CsstypeStandardProperties } from "csstype";
 import { examplePreset } from "@pandwind/example-preset";
 
@@ -125,7 +120,7 @@ test("AtomicStyleProps preserves the selected CssFn style vocabulary", () => {
 });
 
 test("an open preset config keeps arbitrary CSS properties typed", () => {
-	const preset = definePreset(
+	const preset = define.preset(
 		{ config: {} as AnyCssConfig, tokens: {} },
 		{ strict: true, conditions: {}, properties: { $all: true } },
 	);
@@ -134,7 +129,7 @@ test("an open preset config keeps arbitrary CSS properties typed", () => {
 });
 
 test("semantic token references are checked against the supplied catalog", () => {
-	const tokens = defineTokens({
+	const tokens = define.tokens({
 		colors: {
 			brand: "#2563eb",
 			muted: "#64748b",

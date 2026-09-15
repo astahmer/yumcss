@@ -29,7 +29,7 @@ export const presetTokenFormat: TokenFormatAdapter = {
 	canExport: true,
 	importFile: read,
 	export: (set) =>
-		`import { defineTokens } from "pandwind/preset";\n\nexport const tokens = defineTokens({\n${Object.entries(
+		`import { define } from "pandwind/preset";\n\nexport const tokens = define.tokens({\n${Object.entries(
 			set.groups,
 		)
 			.map(

@@ -3,7 +3,8 @@
  * @category presets
  * @since 0.1.0
  */
-export * from "../types/define-preset.ts";
+export * from "../types/typings.ts";
+export { define } from "../types/define-preset.ts";
 export * from "./colors.ts";
 export * from "./conditions.ts";
 export * from "./preset.ts";

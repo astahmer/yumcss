@@ -3,7 +3,7 @@ import { describe, expect, test } from "vitest";
 import { createUnsafeCss } from "../src/unsafe/css.ts";
 import { createStylesheet, decodeAtomicPath } from "../src/css/create-stylesheet.ts";
 import { pairs } from "../src/lib/utils.ts";
-import { definePreset, defineTokens } from "../src/types/define-preset.ts";
+import { define } from "../src/types/define-preset.ts";
 
 const utilities: Record<string, string> = {
 	// Colors and Background
@@ -83,7 +83,7 @@ const utilities: Record<string, string> = {
 // https://tailwindcss.com/docs/configuration#core-plugins
 
 describe("css with custom tailwind hashFn", () => {
-	const tokens = defineTokens({
+	const tokens = define.tokens({
 		colors: {
 			"sky-600": "#0284C7",
 			"red-500": "#E53E3E",
@@ -102,7 +102,7 @@ describe("css with custom tailwind hashFn", () => {
 		},
 	});
 
-	const preset = definePreset(
+	const preset = define.preset(
 		{
 			config: {} as StandardProperties,
 			tokens: tokens,

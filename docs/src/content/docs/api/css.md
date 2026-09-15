@@ -34,16 +34,16 @@ code should normally use `createCss(preset)`.
 
 ```ts
 import { createCss } from "pandwind/css";
-import { definePreset, defineTokens, type PandwindProperties } from "pandwind/preset";
+import { define, type PandwindProperties } from "pandwind/preset";
 
-const tokens = defineTokens({
+const tokens = define.tokens({
 	colors: { "$brand-500": "#2563eb" },
 	spacing: { 4: "1rem" },
 });
 
 const cssConfig: PandwindProperties = {};
 
-const preset = definePreset(
+const preset = define.preset(
 	{ config: cssConfig, tokens },
 	{
 		strict: true,

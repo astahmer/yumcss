@@ -355,7 +355,7 @@ async function packagePandwind(outputRoot: string): Promise<void> {
 	);
 	await writeFile(
 		join(packageRoot, "preset.d.ts"),
-		"export const pandwindPreset: any; export const definePreset: any;\n",
+		"export const pandwindPreset: any;\n",
 	);
 }
 

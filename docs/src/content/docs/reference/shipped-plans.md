@@ -206,7 +206,7 @@ These records must not be presented as shipped product commitments:
 - Plan 019 is a point-in-time competitive research record, not a feature
   checklist.
 - Plan 020 is abandoned research mining and has no implementation commitment.
-- Plan 028 deliberately defers a `definePreset.web` API; authored CSS remains
+- Plan 028 deliberately defers a `define.preset.web` API; authored CSS remains
   the web-global escape hatch.
 - Canvas and build-time Metro support remain extension points without a
   validated consumer.

@@ -1,7 +1,7 @@
 /**
  * Official-config governance adapter (plans/054 steps 2+5) — derive the
  * effective token universe and the strict-token policy snapshot from a
- * loaded preset module (the ecosystem's official definePreset output).
+ * loaded preset module (the ecosystem's official define.preset output).
  *
  * Safety: the adapter reads only what the preset actually declares. A
  * missing or failed load yields diagnostics and a report-only (unresolved)

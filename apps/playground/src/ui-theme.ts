@@ -1,7 +1,7 @@
 import type { Properties } from "csstype";
-import { definePreset, defineTheme, defineTokens } from "pandwind/preset";
+import { define } from "pandwind/preset";
 
-const rawTokens = defineTokens({
+const rawTokens = define.tokens({
 	colors: {
 		"$page-dark": "#09090b",
 		"$page-light": "#f4f6f8",
@@ -176,14 +176,14 @@ const semanticTokens = rawTokens.defineSemanticTokens(themeConditions, {
 	},
 });
 
-const theme = defineTheme({
+const theme = define.theme({
 	config: {} as Properties,
 	tokens: semanticTokens,
 });
 
 export type PlaygroundColorToken = keyof typeof semanticTokens.colors;
 
-export const playgroundPreset = definePreset(theme, {
+export const playgroundPreset = define.preset(theme, {
 	strict: true,
 	conditions: themeConditions,
 	properties: {

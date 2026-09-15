@@ -883,7 +883,7 @@ async function runAdapterRoute(
 
 /**
  * Token-config conversions (plans/022): DTCG JSON <-> @theme css <->
- * definePreset <-> panda.config tokens. One TokenSet IR in between.
+ * define.preset <-> panda.config tokens. One TokenSet IR in between.
  */
 const TOKEN_FORMATS: readonly TokenFormatId[] = [
 	TokenFormat.Dtcg,

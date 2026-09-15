@@ -37,9 +37,9 @@ stable contract without importing a JavaScript token map:
 
 ```ts
 // tokens.ts — the design-system package
-import { definePreset, defineTokens, type PandwindProperties } from "pandwind/preset";
+import { define, type PandwindProperties } from "pandwind/preset";
 
-const rawTokens = defineTokens({
+const rawTokens = define.tokens({
 	colors: {
 		"$gray-200": "#e5e7eb",
 		"$gray-700": "#374151",
@@ -53,7 +53,7 @@ const rawTokens = defineTokens({
 
 const themeConditions = { base: "", _dark: '[data-theme="dark"] &' };
 
-const baseTokens = defineTokens({
+const baseTokens = define.tokens({
 	colors: rawTokens.colors,
 	spacing: rawTokens.spacing,
 	radii: rawTokens.radii,
@@ -106,7 +106,7 @@ const tokens = semanticTokens.defineSemanticTokens(themeConditions, {
 
 const cssConfig: PandwindProperties = {};
 
-export const preset = definePreset(
+export const preset = define.preset(
 	{ config: cssConfig, tokens },
 	{
 		strict: true,
@@ -198,7 +198,7 @@ const colorPalettes = tokens.defineColorPalettes({
 	},
 });
 
-export const preset = definePreset(
+export const preset = define.preset(
 	{ config: cssConfig, tokens },
 	{
 		strict: true,

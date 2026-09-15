@@ -56,10 +56,30 @@ describe("pandwind package boundary", () => {
 
 	test("exposes token composers on catalogs instead of standalone helpers", async () => {
 		const presetApi = await import("pandwind/preset");
+		expect("define" in presetApi).toBe(true);
+		const builders = [
+			"conditions",
+			"properties",
+			"tokens",
+			"theme",
+			"preset",
+		] satisfies ReadonlyArray<keyof typeof presetApi.define>;
+		for (const builder of builders) {
+			expect(presetApi.define[builder]).toBeTypeOf("function");
+		}
+		for (const builder of [
+			"definePreset",
+			"defineTheme",
+			"defineTokens",
+			"defineConditions",
+			"defineProperties",
+		]) {
+			expect(builder in presetApi).toBe(false);
+		}
 		expect("defineSemanticTokens" in presetApi).toBe(false);
 		expect("defineColorPalettes" in presetApi).toBe(false);
 
-		const tokens = presetApi.defineTokens({ colors: { blue: "#3182ce" } });
+		const tokens = presetApi.define.tokens({ colors: { blue: "#3182ce" } });
 		const themedTokens = tokens.defineSemanticTokens(
 			{ base: "", _dark: ".dark &" },
 			{ semantic: { surface: { base: "colors.blue", _dark: "colors.blue" } } },

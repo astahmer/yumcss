@@ -217,10 +217,11 @@ describe("supporting migration primitives", () => {
 			meta,
 			{ cssImport: 'import { css } from "../css";' },
 		);
-		expect(preset).toContain("defineTokens");
+		expect(preset).toContain("define.tokens");
+		expect(preset).toContain("export const preset = define.preset(");
 		expect(preset).toContain("defineSemanticTokens");
 		expect(preset).toContain("const componentTokens = appSemanticTokens.defineSemanticTokens");
-		expect(preset).toContain("defineProperties");
+		expect(preset).toContain("define.properties");
 		expect(preset).toContain('"component.card.border"');
 		expect(preset).toContain('"base": "colors.brand"');
 		expect(preset).toContain('"_dark": "colors.accent"');

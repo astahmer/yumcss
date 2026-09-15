@@ -79,11 +79,11 @@ describe("packed Pandwind consumer", () => {
 			const consumerRequire = createRequire(join(consumerDir, "package.json"));
 			const packedVitePath = consumerRequire.resolve("pandwind/vite");
 			const packedPresetPath = consumerRequire.resolve("pandwind/preset");
-			const [{ pandwindCssVite }, { definePreset }] = await Promise.all([
+			const [{ pandwindCssVite }, { define }] = await Promise.all([
 				import(pathToFileURL(packedVitePath).href),
 				import(pathToFileURL(packedPresetPath).href),
 			]);
-			const preset = definePreset(
+			const preset = define.preset(
 				{ config: {}, tokens: {} },
 				{ strict: false, properties: { $all: true }, conditions: {} },
 			);

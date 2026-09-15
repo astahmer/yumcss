@@ -117,7 +117,7 @@ export function Card() {
 }
 ```
 
-Use `definePreset` when the application needs its own token vocabulary and
+Use `define.preset` when the application needs its own token vocabulary and
 property contract. The [design-system guide](./docs/src/content/docs/guides/design-system.md)
 builds that contract step by step.
 
@@ -314,9 +314,9 @@ semantic names instead of repeating raw colors and spacing values.
 
 ```ts
 // src/preset.ts
-import { definePreset, defineTokens, type PandwindProperties } from "pandwind/preset";
+import { define, type PandwindProperties } from "pandwind/preset";
 
-const tokens = defineTokens({
+const tokens = define.tokens({
 	colors: {
 		$surface: "#ffffff",
 		$ink: "#111827",
@@ -330,7 +330,7 @@ const tokens = defineTokens({
 
 const cssConfig: PandwindProperties = {};
 
-export const preset = definePreset(
+export const preset = define.preset(
 	{ config: cssConfig, tokens },
 	{
 		strict: true,

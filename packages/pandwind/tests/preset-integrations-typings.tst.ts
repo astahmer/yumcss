@@ -52,13 +52,7 @@ import {
 	type TwVariantsMeta,
 } from "../src/tw/compile.ts";
 import { resolveVar, simplifyCalc, themeVariables } from "../src/tw/theme.ts";
-import {
-	defineConditions,
-	definePreset,
-	defineProperties,
-	defineTheme,
-	defineTokens,
-} from "../src/preset/index.ts";
+import { define } from "../src/preset/index.ts";
 import type { StyleObject } from "../src/types/typings.ts";
 import type { Root } from "postcss";
 import { examplePreset } from "@pandwind/example-preset";
@@ -66,17 +60,17 @@ import { examplePreset } from "@pandwind/example-preset";
 declare const postcssRoot: Root;
 
 test("preset builders preserve typed theme, condition, property, and token metadata", () => {
-	const tokens = defineTokens({
+	const tokens = define.tokens({
 		colors: { brand: "#2563eb", muted: "#64748b" },
 		spacing: { sm: "0.5rem", md: "1rem" },
 	});
-	const conditions = defineConditions({ base: "", _dark: ".dark &" });
-	const properties = defineProperties({
+	const conditions = define.conditions({ base: "", _dark: ".dark &" });
+	const properties = define.properties({
 		color: { $tokens: "colors" },
 		padding: { $tokens: "spacing" },
 	});
-	const theme = defineTheme({ config: {}, tokens });
-	const preset = definePreset(theme, { strict: true, conditions, properties });
+	const theme = define.theme({ config: {}, tokens });
+	const preset = define.preset(theme, { strict: true, conditions, properties });
 	const semanticTokens = tokens.defineSemanticTokens(conditions, {
 		semantic: {
 			surface: { base: "colors.brand", _dark: "colors.muted" },

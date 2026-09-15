@@ -1,4 +1,4 @@
-import { defineProperties } from "../types/define-preset.ts";
+import { define } from "../types/define-preset.ts";
 import { tokens } from "./tokens.ts";
 
 /**
@@ -10,7 +10,7 @@ import { tokens } from "./tokens.ts";
  * @category presets
  * @since 0.1.0
  */
-export const presetProperties = defineProperties({
+export const presetProperties = define.properties({
 	display: true,
 	boxShadow: tokens.shadows,
 	textShadow: tokens.shadows,

@@ -60,7 +60,7 @@ export default defineConfig({
 							items: ["api/design-css"],
 						},
 						{
-							label: "Preset contracts — definePreset()",
+							label: "Preset contracts — define.preset()",
 							items: ["api/presets"],
 						},
 						{

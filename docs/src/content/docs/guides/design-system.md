@@ -36,9 +36,9 @@ build-time/migration metadata unless the application explicitly selects its
 
 ```ts
 // src/design-system/tokens.ts
-import { defineTokens } from "pandwind/preset";
+import { define } from "pandwind/preset";
 
-export const tokens = defineTokens({
+export const tokens = define.tokens({
 	colors: {
 		$canvas: "#ffffff",
 		$ink: "#111827",
@@ -74,29 +74,24 @@ underlying hex or pixel value in component code.
 
 ```ts
 // src/design-system/preset.ts
-import {
-	definePreset,
-	defineProperties,
-	defineTheme,
-	type PandwindProperties,
-} from "pandwind/preset";
+import { define, type PandwindProperties } from "pandwind/preset";
 import { tokens } from "./tokens";
 
 const cssConfig: PandwindProperties = {};
 
-const theme = defineTheme({
+const theme = define.theme({
 	config: cssConfig,
 	tokens,
 });
 
-const properties = defineProperties({
+const properties = define.properties({
 	$all: true,
 	backgroundColor: { $tokens: "colors", $strictness: "inherits" },
 	color: { $tokens: "colors", $strictness: "inherits" },
 	padding: { $tokens: "spacing", $strictness: "inherits" },
 });
 
-export const preset = definePreset(theme, {
+export const preset = define.preset(theme, {
 	strict: true,
 	conditions: {
 		_hover: "&:hover",
@@ -141,9 +136,9 @@ Put light/dark behavior in conditions and semantic tokens rather than
 duplicating component styles:
 
 ```ts
-import { defineConditions } from "pandwind/preset";
+import { define } from "pandwind/preset";
 
-const semanticConditions = defineConditions({
+const semanticConditions = define.conditions({
 	base: "",
 	_dark: ".dark &",
 	_highContrast: "@media (prefers-contrast: more)",
@@ -172,7 +167,7 @@ const colorPalettes = themedTokens.defineColorPalettes({
 	},
 });
 
-export const preset = definePreset(
+export const preset = define.preset(
 	{
 		...theme,
 		tokens: themedTokens,
@@ -223,7 +218,7 @@ const themedTokens = {
 
 const componentCssConfig: PandwindProperties = {};
 
-export const componentPreset = definePreset(
+export const componentPreset = define.preset(
 	{ config: componentCssConfig, tokens: themedTokens },
 	{
 		strict: true,

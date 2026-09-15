@@ -68,9 +68,9 @@ const designClassName = dss.class({
 
 const setupCode = `import { createCss } from "pandwind/css";
 import { createUnsafeCss } from "pandwind/unsafe/css";
-import { definePreset } from "pandwind/preset";
+import { define } from "pandwind/preset";
 
-const preset = definePreset(theme, { conditions, properties });
+const preset = define.preset(theme, { conditions, properties });
 const css = createCss(preset);
 const openCss = createUnsafeCss();`;
 

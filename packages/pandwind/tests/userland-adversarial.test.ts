@@ -9,13 +9,13 @@ import { createDesignCss } from "../src/design/index.ts";
 import { createCx } from "../src/cx/index.ts";
 import { createHashFn, escapeIdentifier } from "../src/css/hash.ts";
 import { createNamedAtomsStrategy } from "../src/css/named-atoms-strategy.ts";
-import { definePreset, defineTokens } from "../src/types/define-preset.ts";
+import { define } from "../src/types/define-preset.ts";
 import { examplePreset } from "@pandwind/example-preset";
 
 const conditions = { base: "", _dark: ".dark &" } as const;
 
 const tokenPreset = (() => {
-	const raw = defineTokens({
+	const raw = define.tokens({
 		colors: {
 			"$blue-600": "#2b6cb0",
 			"$blue-700": "#2c5282",
@@ -30,7 +30,7 @@ const tokenPreset = (() => {
 		},
 	});
 
-	return definePreset(
+	return define.preset(
 		{
 			config: {} as StandardProperties,
 			tokens: {
@@ -754,7 +754,7 @@ describe("userland adversarial contracts", () => {
 
 	test("implicit runtime sheets do not mix different preset token scopes", () => {
 		Reflect.deleteProperty(globalThis, Symbol.for("pandwind.runtime.default-sheet"));
-		const firstPreset = definePreset(
+		const firstPreset = define.preset(
 			{
 				config: {} as StandardProperties,
 				tokens: { colors: { $brand: "#111111" } },
@@ -765,7 +765,7 @@ describe("userland adversarial contracts", () => {
 				properties: { color: { $tokens: "colors" } },
 			},
 		);
-		const secondPreset = definePreset(
+		const secondPreset = define.preset(
 			{
 				config: {} as StandardProperties,
 				tokens: { colors: { $brand: "#eeeeee" } },

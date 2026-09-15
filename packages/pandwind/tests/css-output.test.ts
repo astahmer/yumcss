@@ -2,10 +2,10 @@ import type { StandardLonghandProperties } from "csstype";
 import { expect, test } from "vitest";
 import { createUnsafeCss } from "../src/unsafe/css.ts";
 import { createStylesheet } from "../src/css/create-stylesheet.ts";
-import { definePreset } from "../src/types/define-preset.ts";
+import { define } from "../src/types/define-preset.ts";
 
 test("css gen simple prop", () => {
-	const preset = definePreset(
+	const preset = define.preset(
 		{
 			config: {} as StandardLonghandProperties,
 			tokens: {},
@@ -134,7 +134,7 @@ test("css gen simple prop", () => {
 });
 
 test("keeps authored aliases literal by default", () => {
-	const preset = definePreset(
+	const preset = define.preset(
 		{ config: {} as StandardLonghandProperties, tokens: {} },
 		{ strict: true, properties: { $all: true }, conditions: {} },
 	);
@@ -152,7 +152,7 @@ test("keeps authored aliases literal by default", () => {
 });
 
 test("can opt into StyleX-like priority specificity for host precedence", () => {
-	const preset = definePreset(
+	const preset = define.preset(
 		{ config: {} as StandardLonghandProperties, tokens: {} },
 		{ strict: true, properties: { $all: true }, conditions: { _hover: "&:hover" } },
 	);
@@ -167,7 +167,7 @@ test("can opt into StyleX-like priority specificity for host precedence", () => 
 });
 
 test("can opt into a native Pandwind cascade layer", () => {
-	const preset = definePreset(
+	const preset = define.preset(
 		{ config: {} as StandardLonghandProperties, tokens: {} },
 		{ strict: true, properties: { $all: true }, conditions: {} },
 	);
@@ -180,7 +180,7 @@ test("can opt into a native Pandwind cascade layer", () => {
 });
 
 test("keeps vendor-prefixed line clamp unitless", () => {
-	const preset = definePreset(
+	const preset = define.preset(
 		{ config: {} as StandardLonghandProperties, tokens: {} },
 		{ strict: true, properties: { $all: true }, conditions: {} },
 	);

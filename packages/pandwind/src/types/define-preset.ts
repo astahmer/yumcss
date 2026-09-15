@@ -14,21 +14,21 @@ export * from "./typings.ts";
 /**
  * Preserve literal token and CSS config types for a preset theme.
  *
- * `defineTheme` is a zero-cost identity function. Its `config` value is a
+ * `define.theme` is a zero-cost identity function. Its `config` value is a
  * compile-time witness for the CSS properties and raw values the preset may
  * expose; use it when the theme is named or composed separately.
  *
  * @example
  * ```ts
- * import { defineTheme, defineTokens, type PandwindProperties } from "pandwind/preset";
+ * import { define, type PandwindProperties } from "pandwind/preset";
  *
- * const tokens = defineTokens({
+ * const tokens = define.tokens({
  *   colors: { "$brand-500": "#2563eb" },
  *   spacing: { 4: "1rem" },
  * });
  *
  * const cssConfig: PandwindProperties = {};
- * const theme = defineTheme({
+ * const theme = define.theme({
  *   config: cssConfig,
  *   tokens,
  * });
@@ -40,7 +40,7 @@ export * from "./typings.ts";
  * @category presets
  * @since 0.1.0
  */
-export const defineTheme = <TTheme extends DefinePresetOptions>(theme: TTheme) => theme;
+const defineTheme = <TTheme extends DefinePresetOptions>(theme: TTheme) => theme;
 
 /**
  * Combine theme values with the condition and property metadata used by CSS factories.
@@ -56,11 +56,11 @@ export const defineTheme = <TTheme extends DefinePresetOptions>(theme: TTheme) =
  * @example
  * ```ts
  * import { createCss } from "pandwind/css";
- * import { definePreset, type PandwindProperties } from "pandwind/preset";
+ * import { define, type PandwindProperties } from "pandwind/preset";
  *
  * const cssConfig: PandwindProperties = {};
  *
- * const preset = definePreset(
+ * const preset = define.preset(
  *   {
  *     config: cssConfig,
  *     tokens: { colors: { "$brand-500": "#2563eb" } },
@@ -82,15 +82,15 @@ export const defineTheme = <TTheme extends DefinePresetOptions>(theme: TTheme) =
  * @typeParam TConfig - CSS property configuration shape.
  * @typeParam TTokens - Token groups and literal token names.
  * @typeParam TPreset - Resulting preset shape.
- * @param theme - Values, optionally produced by {@link defineTheme}.
+ * @param theme - Values, optionally produced by {@link define.theme}.
  * @param preset - Conditions, strictness, and property-to-token mappings.
  * @returns A preset carrying both runtime metadata and inferred token types.
- * @see {@link defineTokens} for the raw token layer.
+ * @see {@link define.tokens} for the raw token layer.
  * @see {@link createCss} for consuming the resulting preset.
  * @category presets
  * @since 0.1.0
  */
-export function definePreset<
+function definePreset<
 	TTheme extends DefinePresetOptions<object, AnyTokens>,
 	TConfig extends TTheme["config"],
 	TTokens extends TTheme["tokens"],
@@ -114,9 +114,9 @@ export function definePreset<
  *
  * @example
  * ```ts
- * import { defineTokens } from "pandwind/preset";
+ * import { define } from "pandwind/preset";
  *
- * const tokens = defineTokens({
+ * const tokens = define.tokens({
  *   colors: {
  *     "$blue-500": "#3182ce",
  *     "$gray-50": "#f9fafb",
@@ -166,14 +166,14 @@ const createTokenCatalog = <T extends AnyTokens>(tokens: T): TokenCatalog<T> => 
  * Semantic layers are merged into a new catalog and can be chained. Color
  * palettes remain separate preset metadata, but their token references are
  * checked against this catalog; pass the returned palette map to
- * `definePreset` as `colorPalettes`.
+ * `define.preset` as `colorPalettes`.
  *
  * @example
  * ```ts
- * import { defineConditions, defineTokens } from "pandwind/preset";
+ * import { define } from "pandwind/preset";
  *
- * const conditions = defineConditions({ base: "", _dark: ".dark &" });
- * const tokens = defineTokens({ colors: { white: "#fff", black: "#000" } });
+ * const conditions = define.conditions({ base: "", _dark: ".dark &" });
+ * const tokens = define.tokens({ colors: { white: "#fff", black: "#000" } });
  * const themedTokens = tokens.defineSemanticTokens(conditions, {
  *   semantic: {
  *     surface: { base: "colors.white", _dark: "colors.black" },
@@ -190,7 +190,7 @@ const createTokenCatalog = <T extends AnyTokens>(tokens: T): TokenCatalog<T> => 
  * @category tokens
  * @since 0.1.0
  */
-export const defineTokens = <T extends AnySimpleTokens>(tokens: T): TokenCatalog<T> =>
+const defineTokens = <T extends AnySimpleTokens>(tokens: T): TokenCatalog<T> =>
 	createTokenCatalog(tokens);
 
 /**
@@ -201,9 +201,9 @@ export const defineTokens = <T extends AnySimpleTokens>(tokens: T): TokenCatalog
  *
  * @example
  * ```ts
- * import { defineConditions } from "pandwind/preset";
+ * import { define } from "pandwind/preset";
  *
- * const conditions = defineConditions({
+ * const conditions = define.conditions({
  *   _hover: "&:hover",
  *   _dark: ".dark &",
  * });
@@ -215,7 +215,7 @@ export const defineTokens = <T extends AnySimpleTokens>(tokens: T): TokenCatalog
  * @category presets
  * @since 0.1.0
  */
-export const defineConditions = <T extends AnyConditions>(cond: T) => cond;
+const defineConditions = <T extends AnyConditions>(cond: T) => cond;
 
 /**
  * Preserve the property-to-token vocabulary used by a preset.
@@ -227,9 +227,9 @@ export const defineConditions = <T extends AnyConditions>(cond: T) => cond;
  *
  * @example
  * ```ts
- * import { defineProperties } from "pandwind/preset";
+ * import { define } from "pandwind/preset";
  *
- * const properties = defineProperties({
+ * const properties = define.properties({
  *   $all: true,
  *   backgroundColor: { $tokens: "colors", $strictness: "inherits" },
  *   padding: { $tokens: "spacing" },
@@ -242,4 +242,34 @@ export const defineConditions = <T extends AnyConditions>(cond: T) => cond;
  * @category presets
  * @since 0.1.0
  */
-export const defineProperties = <const T extends object>(props: T) => props;
+const defineProperties = <const T extends object>(props: T) => props;
+
+/**
+ * Unified namespace for the public preset builders.
+ *
+ * Use `define.tokens`, `define.conditions`, `define.properties`,
+ * `define.theme`, and `define.preset` as the canonical preset-construction
+ * API. Semantic-token and color-palette composition stays on the token
+ * catalog returned by `define.tokens`.
+ *
+ * @example
+ * ```ts
+ * import { define, type PandwindProperties } from "pandwind/preset";
+ *
+ * const tokens = define.tokens({ colors: { white: "#fff" } });
+ * const conditions = define.conditions({ base: "", _dark: ".dark &" });
+ * const properties = define.properties({ $all: true });
+ * const theme = define.theme({ config: {} as PandwindProperties, tokens });
+ * const preset = define.preset(theme, { strict: true, conditions, properties });
+ * ```
+ *
+ * @category presets
+ * @since 0.1.0
+ */
+export const define = {
+	conditions: defineConditions,
+	properties: defineProperties,
+	tokens: defineTokens,
+	theme: defineTheme,
+	preset: definePreset,
+} as const;

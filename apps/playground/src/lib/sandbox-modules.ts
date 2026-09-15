@@ -1,7 +1,7 @@
 import { createNamedAtomsStrategy } from "pandwind/css";
 import { createRuntimeCss, createRuntimeDesignCss } from "pandwind/css/runtime";
 import { createCx } from "pandwind/cx";
-import { definePreset, defineTheme, defineTokens } from "pandwind/preset";
+import { define } from "pandwind/preset";
 import { examplePreset } from "@pandwind/example-preset";
 
 // The playground runs both public CSS lanes through runtime sheets so example
@@ -26,14 +26,10 @@ export const SANDBOX_MODULES = {
 	"pandwind/design": { createDesignCss: createRuntimeDesignCss },
 	"pandwind/cx": { createCx },
 	"pandwind/preset": {
-		definePreset,
-		defineTheme,
-		defineTokens,
+		define,
 	},
 	"@pandwind/example-preset": {
 		examplePreset,
-		definePreset,
-		defineTheme,
-		defineTokens,
+		define,
 	},
 } as const;

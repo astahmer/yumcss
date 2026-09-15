@@ -1,11 +1,11 @@
 ---
 title: Preset contracts and typing
-description: Understand config types, token bindings, strictness, and theme conditions in definePreset.
+description: Understand config types, token bindings, strictness, and theme conditions in define.preset.
 sidebar:
   order: 4
 ---
 
-`definePreset` is where a token vocabulary becomes a typed styling contract.
+`define.preset` is where a token vocabulary becomes a typed styling contract.
 It does not create a second styling API: it describes the values that
 `createCss(preset)`, `createDesignCss(preset)`, and the stylesheet compiler are
 allowed to resolve.
@@ -20,9 +20,11 @@ Keep the four responsibilities separate:
 
 | helper              | owns                                          | what it changes                                                            |
 | ------------------- | --------------------------------------------- | -------------------------------------------------------------------------- |
-| `defineTokens`      | raw and semantic token values                 | preserves token groups and names                                           |
-| `defineTheme`       | values plus the CSS config type               | preserves the theme's literal types; it is a zero-cost identity at runtime |
-| `definePreset`      | conditions, property bindings, and strictness | adds the rules used to type and resolve style objects                      |
+| `define.tokens`     | raw and semantic token values                 | preserves token groups and names                                           |
+| `define.conditions` | condition names and selectors                 | preserves the condition vocabulary                                         |
+| `define.properties` | property-to-token bindings                    | preserves the property vocabulary                                          |
+| `define.theme`      | values plus the CSS config type               | preserves the theme's literal types; it is a zero-cost identity at runtime |
+| `define.preset`     | conditions, property bindings, and strictness | adds the rules used to type and resolve style objects                      |
 | `createCss(preset)` | the consumer                                  | returns a CSS function whose props and values follow the preset            |
 
 The preset is the boundary between an open-ended CSS function and a design
@@ -30,8 +32,8 @@ system. The safe `pandwind/css` entrypoint requires that preset. If properties
 are discovered at runtime, import `createUnsafeCss` from
 `pandwind/unsafe/css`; its lack of a catalog is then visible at the call site.
 
-Use `defineTheme` when a theme is named, exported, or composed independently.
-When the theme is only passed to one `definePreset` call, inline the
+Use `define.theme` when a theme is named, exported, or composed independently.
+When the theme is only passed to one `define.preset` call, inline the
 `{ config, tokens }` object. Both forms are equivalent at runtime; the direct
 form keeps a small preset easy to read.
 
@@ -43,14 +45,9 @@ references.
 
 ```ts
 import { createCss } from "pandwind/css";
-import {
-	definePreset,
-	defineProperties,
-	defineTokens,
-	type PandwindProperties,
-} from "pandwind/preset";
+import { define, type PandwindProperties } from "pandwind/preset";
 
-const tokens = defineTokens({
+const tokens = define.tokens({
 	colors: {
 		"$brand-500": "#2563eb",
 		$surface: "#ffffff",
@@ -60,7 +57,7 @@ const tokens = defineTokens({
 	},
 });
 
-const properties = defineProperties({
+const properties = define.properties({
 	$all: true,
 	backgroundColor: { $tokens: "colors", $strictness: "inherits" },
 	color: { $tokens: "colors", $strictness: "inherits" },
@@ -69,7 +66,7 @@ const properties = defineProperties({
 
 const cssConfig: PandwindProperties = {};
 
-const preset = definePreset(
+const preset = define.preset(
 	{ config: cssConfig, tokens },
 	{
 		strict: true,
@@ -103,19 +100,19 @@ type directly from `csstype`:
 
 ```ts
 import { createCss } from "pandwind/css";
-import { definePreset, defineTokens } from "pandwind/preset";
+import { define } from "pandwind/preset";
 import type { StandardProperties as CsstypeStandardProperties } from "csstype";
 
 type CardProperties = Pick<CsstypeStandardProperties, "backgroundColor" | "color" | "padding">;
 
-const tokens = defineTokens({
+const tokens = define.tokens({
 	colors: { "$brand-500": "#2563eb" },
 	spacing: { 4: "1rem" },
 });
 
 const cardConfig: CardProperties = {};
 
-const cardPreset = definePreset(
+const cardPreset = define.preset(
 	{ config: cardConfig, tokens },
 	{
 		strict: true,
@@ -154,7 +151,7 @@ without converting them into a Pandwind-specific CSS grammar.
 ## What belongs in `config`?
 
 `config` is a type witness for the CSS properties and raw values your preset
-understands. `defineTheme` returns the object unchanged; an empty typed config
+understands. `define.theme` returns the object unchanged; an empty typed config
 does not create a runtime object full of CSS properties.
 
 | config type                                      | use it when                                                                             |
@@ -179,7 +176,7 @@ for each property.
 ### `true`: use the config's raw values
 
 ```ts
-const properties = defineProperties({
+const properties = define.properties({
 	borderRadius: true,
 });
 ```
@@ -190,7 +187,7 @@ attach a token group, and `strict` does not turn it into a token-only property.
 ### A token map: bind a property to a group
 
 ```ts
-const properties = defineProperties({
+const properties = define.properties({
 	backgroundColor: { $tokens: "colors" },
 	padding: { $tokens: "spacing" },
 });
@@ -202,7 +199,7 @@ without importing a JavaScript token object. A local map is also supported
 when a preset intentionally wants to author the values beside the property:
 
 ```ts
-const properties = defineProperties({
+const properties = define.properties({
 	color: {
 		"$brand-500": "#2563eb",
 		$muted: "#64748b",
@@ -219,7 +216,7 @@ the latter avoids copying a token group into every property entry.
 not automatically bind every token group to every property.
 
 ```ts
-const properties = defineProperties({
+const properties = define.properties({
 	$all: true,
 	color: { $tokens: "colors", $strictness: "inherits" },
 });
@@ -271,7 +268,7 @@ to the theme. A component token can point at one semantic token by string
 reference, or choose different semantic tokens for different conditions:
 
 ```ts
-import { defineTokens } from "pandwind/preset";
+import { define } from "pandwind/preset";
 import { tokens } from "./tokens";
 
 const conditions = {
@@ -279,7 +276,7 @@ const conditions = {
 	_dark: ".dark &",
 };
 
-const baseTokens = defineTokens({
+const baseTokens = define.tokens({
 	colors: tokens.colors,
 	component: {
 		"component.card.background": "semantic.surface",
@@ -324,16 +321,16 @@ use a JavaScript lookup when you intentionally want to copy the current value
 as a literal.
 
 ```ts
-import { defineConditions, defineTokens } from "pandwind/preset";
+import { define } from "pandwind/preset";
 
-const tokens = defineTokens({
+const tokens = define.tokens({
 	colors: {
 		"$blue-600": "#2563eb",
 		"$blue-700": "#1d4ed8",
 	},
 });
 
-const conditions = defineConditions({ base: "", _dark: ".dark &" });
+const conditions = define.conditions({ base: "", _dark: ".dark &" });
 
 const themedTokens = tokens.defineSemanticTokens(conditions, {
 	semantic: {
@@ -364,13 +361,13 @@ group, token name, and condition keys are checked against the catalog.
 
 Color palettes are named roles over the preset's `colors` tokens. Define them
 on the token catalog so both palette names and token references are checked,
-then pass the returned map to `definePreset`:
+then pass the returned map to `define.preset`:
 
 ```ts
 import { createCss } from "pandwind/css";
-import { definePreset, defineTokens } from "pandwind/preset";
+import { define } from "pandwind/preset";
 
-const tokens = defineTokens({
+const tokens = define.tokens({
 	colors: {
 		"$blue-50": "#ebf8ff",
 		"$blue-600": "#2b6cb0",
@@ -386,7 +383,7 @@ const colorPalettes = tokens.defineColorPalettes({
 	},
 });
 
-const preset = definePreset(
+const preset = define.preset(
 	{ config: {}, tokens },
 	{
 		strict: true,

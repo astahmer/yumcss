@@ -39,9 +39,9 @@ has a complete preset; the shape is:
 
 ```ts
 // src/preset.ts
-import { definePreset, defineTokens, type PandwindProperties } from "pandwind/preset";
+import { define, type PandwindProperties } from "pandwind/preset";
 
-const tokens = defineTokens({
+const tokens = define.tokens({
 	colors: { $surface: "#ffffff", $ink: "#111827" },
 	spacing: { 4: "16px" },
 	radii: { lg: "12px" },
@@ -49,7 +49,7 @@ const tokens = defineTokens({
 
 const cssConfig: PandwindProperties = {};
 
-export const preset = definePreset(
+export const preset = define.preset(
 	{ config: cssConfig, tokens },
 	{
 		strict: true,

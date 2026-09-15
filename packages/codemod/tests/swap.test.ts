@@ -480,7 +480,7 @@ describe("TokenSet conversions", () => {
 		expect(back.colors.blue[500].$value).toBe("#3182ce");
 	});
 
-	test("definePreset imports via dynamic import of the real preset", async () => {
+	test("define.preset imports via dynamic import of the real preset", async () => {
 		const set = await T.fromDefinePreset("@pandwind/example-preset");
 		expect(set.groups.colors?.["$blue-500"]).toBe("#3182ce");
 	});
