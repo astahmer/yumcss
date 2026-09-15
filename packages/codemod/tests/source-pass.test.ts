@@ -93,6 +93,28 @@ describe("SourcePass", () => {
 		expect(migrated).toContain("    {/* pandwind:migrate-skip (dynamic) */}\n    <Badge />");
 	});
 
+	test("uses a JSX comment when the residual starts inside a child opening tag", () => {
+		const source = [
+			"const value = (",
+			"  <Tooltip>",
+			'    <Badge gap="2" />',
+			"  </Tooltip>",
+			");",
+		].join("\n");
+		const migrated = SourcePass.insertSkipMarker(
+			source,
+			source.indexOf("gap"),
+			"dynamic",
+			"pandwind:migrate-skip",
+			"App.tsx",
+		);
+
+		expect(migrated).toContain(
+			'    {/* pandwind:migrate-skip (dynamic) */}\n    <Badge gap="2" />',
+		);
+		expect(migrated).not.toContain("    // pandwind:migrate-skip");
+	});
+
 	test("recognizes children of JSX member elements", () => {
 		const source = [
 			"const value = (",
