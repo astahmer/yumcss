@@ -5,6 +5,7 @@ import { tmpdir } from "node:os";
 import { buildGeneratedArtifactManifest, GeneratedArtifactOwnershipTag } from "pandwind-codemod/tw";
 
 const repositoryRoot = resolve(import.meta.dirname, "..");
+const codemodCli = resolve(repositoryRoot, "packages/codemod/dist/cli.js");
 
 const generatedFiles = [
 	"types.d.ts",
@@ -85,10 +86,9 @@ const checkApp = (app: GeneratedApp): void => {
 	const temporarySourceRoot = join(temporaryRoot, "src");
 	try {
 		run(
-			"pnpm",
+			process.execPath,
 			[
-				"exec",
-				"pandwind-codemod",
+				codemodCli,
 				"tw",
 				"generate",
 				"./src/tailwind.css",
