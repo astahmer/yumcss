@@ -110,7 +110,7 @@ export const pandwindUnplugin = createUnplugin((options: PandwindUnpluginOptions
 	};
 });
 
-export interface PandwindUnpluginCssOptions extends PandwindCssViteOptions {
+export interface PandwindUnpluginCssOptions extends Omit<PandwindCssViteOptions, "libraries"> {
 	/** The app's design preset — required (there is no default preset). */
 	preset: CssExtractorPreset;
 }

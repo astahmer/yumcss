@@ -38,7 +38,7 @@ import type {
 	CssConfigReturn,
 	DefinePresetOptions,
 } from "../types/typings.ts";
-import { realpathSync } from "node:fs";
+import { readFileSync, realpathSync } from "node:fs";
 import { relative, resolve } from "node:path";
 import type { PluginContext } from "rollup";
 import type { HmrContext, ModuleNode, ViteDevServer } from "vite";
@@ -51,6 +51,11 @@ import { type CssFactoryKind, type CssFactoryMetadata } from "../css/factory-met
 import type { CssFn } from "../css/create-css.ts";
 import type { ClassNameStrategy } from "../css/class-name-strategy.ts";
 import type { CssCascadeMode } from "../css/cascade.ts";
+import {
+	checkPandwindLibCompatibility,
+	validatePandwindLibArtifact,
+	type PandwindLibArtifact,
+} from "./lib-artifact.ts";
 
 export interface PandwindCssViteOptions {
 	/** Match host stylesheet precedence with StyleX specificity or a native layer. */
@@ -102,6 +107,8 @@ export interface PandwindCssViteOptions {
 	transformDynamicClassName?: boolean;
 	/** Directory scanned for css() calls. Defaults to process.cwd(). */
 	root?: string;
+	/** Package specifiers or artifact paths exposing pandwind.lib.json files. */
+	libraries?: readonly string[];
 	/**
 	 * The virtual module id the generated CSS is served under. Use a unique id
 	 * for every extractor instance in one Vite config.
@@ -235,6 +242,66 @@ const factoryOptions = (metadata: CssFactoryMetadata | undefined): PandwindCssVi
 	return metadata.options;
 };
 
+const isArtifactPath = (value: string): boolean => value.startsWith(".") || value.startsWith("/");
+
+const loadLibraryArtifacts = async ({
+	libraries,
+	root,
+	preset,
+	options,
+	resolver,
+}: {
+	libraries: readonly string[];
+	root: string;
+	preset: CssExtractorPreset;
+	options: PandwindCssViteOptions;
+	resolver: Pick<PluginContext, "resolve">;
+}): Promise<readonly PandwindLibArtifact[]> => {
+	const artifacts: PandwindLibArtifact[] = [];
+	for (const library of libraries) {
+		const source = isArtifactPath(library) ? library : `${library}/pandwind.lib.json`;
+		const resolved = isArtifactPath(library)
+			? { id: resolve(root, library) }
+			: await resolver.resolve(source, undefined, { skipSelf: true });
+		if (resolved === null || resolved === undefined)
+			throw new Error(
+				`pandwindCssVite: registered library '${library}' does not expose ${source}; ` +
+					"publish pandwind.lib.json and expose it from the package",
+			);
+		let parsed: unknown;
+		try {
+			parsed = JSON.parse(readFileSync(resolved.id.split("?", 1)[0]!, "utf8"));
+		} catch (error) {
+			throw new Error(
+				`pandwindCssVite: could not read Pandwind lib artifact for '${library}': ${error instanceof Error ? error.message : String(error)}`,
+				{ cause: error },
+			);
+		}
+		const validation = validatePandwindLibArtifact(parsed);
+		if (!validation.valid || validation.artifact === undefined)
+			throw new Error(
+				[
+					`pandwindCssVite: invalid Pandwind lib artifact for '${library}'`,
+					...validation.errors.map((error) => `- ${error}`),
+				].join("\n"),
+			);
+		const compatibility = checkPandwindLibCompatibility(validation.artifact, preset, {
+			namespace: options.namespace,
+			cascade: options.cascade,
+			className: options.engine?.className ?? options.className,
+		});
+		if (!compatibility.compatible)
+			throw new Error(
+				[
+					`pandwindCssVite: incompatible Pandwind lib artifact for '${library}'`,
+					...compatibility.differences.map((difference) => `- ${difference}`),
+				].join("\n"),
+			);
+		artifacts.push(validation.artifact);
+	}
+	return artifacts;
+};
+
 const loadCssFactory = async ({
 	server,
 	compositionModule,
@@ -290,7 +357,8 @@ export function pandwindCssVite(input: CssViteInput, options: PandwindCssViteOpt
 	let activePreset = inputPreset;
 	let activeMetadata = metadata;
 	const initialOptions = { ...factoryOptions(metadata), ...options };
-	let core = createCssExtractorPluginCore(activePreset, initialOptions);
+	let libraryArtifacts: readonly PandwindLibArtifact[] = [];
+	let core = createCssExtractorPluginCore(activePreset, initialOptions, libraryArtifacts);
 	let resolvedConfig: { command?: "build" | "serve" } | undefined;
 	const compositionModules = new Map<string, ReadonlySet<CssFactoryKind>>();
 	const compositionConsumers = new Map<string, Set<string>>();
@@ -383,13 +451,26 @@ export function pandwindCssVite(input: CssViteInput, options: PandwindCssViteOpt
 		}
 		activePreset = nextMetadata.preset;
 		activeMetadata = nextMetadata;
-		core = createCssExtractorPluginCore(activePreset, nextOptions);
+		core = createCssExtractorPluginCore(activePreset, nextOptions, libraryArtifacts);
 		if (resolvedConfig !== undefined) core.configResolved(resolvedConfig);
 	};
 
 	return {
 		name: "pandwind:extract-css",
 		enforce: "pre" as const,
+		async buildStart(this: Pick<PluginContext, "resolve">) {
+			if (options.libraries === undefined || options.libraries.length === 0) return;
+			const effectiveOptions = { ...factoryOptions(activeMetadata), ...options };
+			libraryArtifacts = await loadLibraryArtifacts({
+				libraries: options.libraries,
+				root,
+				preset: activePreset,
+				options: effectiveOptions,
+				resolver: this,
+			});
+			core = createCssExtractorPluginCore(activePreset, effectiveOptions, libraryArtifacts);
+			if (resolvedConfig !== undefined) core.configResolved(resolvedConfig);
+		},
 		transform(this: Pick<PluginContext, "resolve"> | null | undefined, code: string, id: string) {
 			const kinds = findCssFactoryKinds(code, id);
 			const normalizedId = normalizeFilePath(id);

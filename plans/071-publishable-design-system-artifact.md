@@ -1,6 +1,6 @@
 # Publishable Pandwind design-system artifact
 
-Status: in progress
+Status: complete
 
 ## Context
 
@@ -150,18 +150,18 @@ first slice because it would make ownership and invalidation implicit.
 
 ## Acceptance criteria
 
-- [ ] A library can build a deterministic `pandwind.lib.json` from real
+- [x] A library can build a deterministic `pandwind.lib.json` from real
       `css()`/`css.class()` source and a preset.
-- [ ] The artifact contains rules, used tokens, source fingerprints, and a
+- [x] The artifact contains rules, used tokens, source fingerprints, and a
       compatibility fingerprint.
-- [ ] A consumer can register the artifact by package specifier or file and
+- [x] A consumer can register the artifact by package specifier or file and
       gets the same CSS without scanning the library source.
-- [ ] Duplicate rules are emitted once.
-- [ ] Schema, hash, preset, compiler, namespace, and cascade mismatches fail
+- [x] Duplicate rules are emitted once.
+- [x] Schema, hash, preset, compiler, namespace, and cascade mismatches fail
       closed with actionable diagnostics.
-- [ ] Missing registration preserves the existing source-extraction behavior.
-- [ ] No authoring API or excluded Panda surface is introduced.
-- [ ] Docs show producer and consumer examples and explain the compatibility
+- [x] Missing registration preserves the existing source-extraction behavior.
+- [x] No authoring API or excluded Panda surface is introduced.
+- [x] Docs show producer and consumer examples and explain the compatibility
       contract.
 
 ## Decisions log

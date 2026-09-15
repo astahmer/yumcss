@@ -9,6 +9,35 @@ These are published package binaries and are deterministic: identical inputs
 produce byte-identical outputs. The examples use `pnpm`, but any package
 manager's equivalent executable command works.
 
+## `pandwind-codemod lib build` — publish extracted component-library rules
+
+```sh
+pnpm exec pandwind-codemod lib build [root] [out-file] \
+	[--include <glob>] [--css-source <module>] \
+	[--preset-import <module>] [--preset-export <name>] \
+	[--namespace <name>] [--cascade specificity|layers] [--check]
+```
+
+The defaults are the current directory, `dist/pandwind.lib.json`, the
+`pandwind/preset` export `pandwindPreset`, and `css`/`design` import sources.
+Repeat `--include` for source globs and `--css-source` for custom CSS factory
+module names. The command scans source with the shared workspace, compiles
+literal `css()`/`css.class()` calls, includes structural rules for
+`css.vars()`, and writes a deterministic `pandwind.lib/1` artifact.
+
+The artifact records used token declarations, stable rule identities and
+priorities, source content hashes, and a compatibility fingerprint covering
+the preset, compiler contract, namespace, cascade mode, and default class
+strategy. Expose `pandwind.lib.json` from the library package and register its
+package name with `pandwindCssVite(css, { libraries: ["@acme/ui"] })`.
+`--check` rebuilds in memory and fails when the packed artifact is missing or
+stale. Invalid or incompatible artifacts fail closed; ordinary local source
+extraction remains available when no library is registered.
+
+This is a package distribution boundary, not a generated `styled-system`
+package. It does not add shorthands, recipes, patterns, JSX factories, or a
+static-CSS-only runtime.
+
 ## `pandwind-codemod tw generate` — typed runtime from your tailwind.css
 
 ```

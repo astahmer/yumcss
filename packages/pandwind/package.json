@@ -141,6 +141,12 @@
 			"import": "./dist/vite/css-extract.js",
 			"default": "./dist/vite/css-extract.js"
 		},
+		"./vite/lib-artifact": {
+			"pandwind": "./src/vite/lib-artifact.ts",
+			"types": "./dist/vite/lib-artifact.d.ts",
+			"import": "./dist/vite/lib-artifact.js",
+			"default": "./dist/vite/lib-artifact.js"
+		},
 		"./vite/cross-module-consts": {
 			"pandwind": "./src/vite/cross-module-consts.ts",
 			"types": "./dist/vite/cross-module-consts.d.ts",

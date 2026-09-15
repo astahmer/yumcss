@@ -84,6 +84,53 @@ Import `pandwind:css` once from the host entry. For the Tailwind lane, expose
 generated helpers or compile the library's literal calls as part of the host
 source scan, then run `pandwindVite()` before Tailwind.
 
+## Publish extracted library rules
+
+For a package that is built and consumed independently, publish Pandwind's
+build artifact so the host does not scan the library source again:
+
+```sh
+pnpm exec pandwind-codemod lib build . dist/pandwind.lib.json \
+	--preset-import ./src/preset.ts \
+	--preset-export preset \
+	--include 'src/**/*.{ts,tsx}'
+```
+
+Expose the generated JSON from the package:
+
+```json
+{
+	"exports": {
+		".": "./dist/index.js",
+		"./pandwind.lib.json": "./dist/pandwind.lib.json"
+	}
+}
+```
+
+Register the package in the consuming Vite build:
+
+```ts
+import { pandwindCssVite } from "pandwind/vite";
+import { dss } from "@acme/ui/styles";
+
+export default {
+	plugins: [
+		pandwindCssVite(dss, {
+			libraries: ["@acme/ui"],
+		}),
+	],
+};
+```
+
+The package artifact is validated against the consumer's preset, namespace,
+cascade mode, and class-output strategy before its rules are merged. Keep the
+same Pandwind preset semantics on both sides; token/property/condition or
+compiler mismatches fail the build with the differing compatibility fields.
+Use `pandwind-codemod lib build --check` in the library's CI to catch stale
+output. The artifact contains extracted atomic and variable-carrier rules plus
+used token declarations; it does not replace the library's JavaScript runtime,
+dynamic `css.vars()` values, or authored CSS imports.
+
 If you publish prebuilt CSS, document whether it is additive, replaceable, or
 expected to be tree-shaken. Do not make consumers guess which virtual module
 to import.

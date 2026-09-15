@@ -376,6 +376,14 @@ selectors emitted by the official engine.
 
 ## Boundaries
 
+The publishable CSS artifact is its own boundary: `vite/lib-artifact.ts` owns
+the `pandwind.lib/1` contract, compatibility fingerprint, content validation,
+and rule-entry types; `packages/codemod/src/lib/` owns source scanning and
+artifact writing; `vite/css.ts` owns explicit package resolution; and
+`vite/css-core.ts` only merges already-validated entries. It remains separate
+from the Tailwind-focused `pandwind.interop/1` artifact because the two files
+serve different consumers and failure policies.
+
 | Domain                 | Port boundary                                                                                                                                | Default implementation                                                                                                                                                                                                                                                                                                                |
 | ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Vite CSS extraction    | scanner, classifier, extractor, provenance, diagnostic, and rewriter ports                                                                   | `vite/css-extract.ts`, `vite/css-extraction-contracts.ts`                                                                                                                                                                                                                                                                             |

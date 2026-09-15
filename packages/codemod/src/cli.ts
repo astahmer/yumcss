@@ -20,6 +20,7 @@ import { TokenFormatId as TokenFormat } from "./swap/token-format-contracts.ts";
 import { unifiedDiff } from "./diff.ts";
 import { createTwCli } from "./tw/cli.ts";
 import { createRuntimeCli } from "./runtime/cli.ts";
+import { createLibCli } from "./lib/cli.ts";
 import { configureMigrateCommand } from "./swap/cli-args.ts";
 import {
 	createPandwindProjectSupport,
@@ -946,6 +947,7 @@ const createCodemodCli = (): CAC => {
 	configureTokensCommand(tokens);
 	cli.command("tw [...args]", "Generate and inspect Pandwind Tailwind artifacts");
 	cli.command("runtime [...args]", "Generate a specialized Pandwind CSS runtime");
+	cli.command("lib [...args]", "Build a publishable Pandwind design-system artifact");
 	return cli;
 };
 
@@ -989,6 +991,17 @@ async function main(argv = process.argv.slice(2)): Promise<void> {
 		} catch (error) {
 			console.error(
 				`pandwind-codemod tw: ${error instanceof Error ? error.message : String(error)}`,
+			);
+			process.exitCode = 1;
+		}
+		return;
+	}
+	if (argv[0] === "lib") {
+		try {
+			await createLibCli().run(argv.slice(1));
+		} catch (error) {
+			console.error(
+				`pandwind-codemod lib: ${error instanceof Error ? error.message : String(error)}`,
 			);
 			process.exitCode = 1;
 		}

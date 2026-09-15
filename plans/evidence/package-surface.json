@@ -98,6 +98,20 @@
 		},
 		{
 			"packageName": "pandwind",
+			"exportPaths": ["./vite/lib-artifact"],
+			"owner": "build",
+			"maturity": "experimental",
+			"dependencies": [],
+			"externalContract": true,
+			"evidence": [
+				"packages/pandwind/package.json",
+				"packages/pandwind/tests/lib-artifact.test.ts",
+				"docs/src/content/docs/guides/component-library.md"
+			],
+			"note": "Versioned publishable CSS-rule artifact contract consumed by the Vite integration."
+		},
+		{
+			"packageName": "pandwind",
 			"exportPaths": [
 				"./vite/css-extract",
 				"./vite/cross-module-consts",
@@ -194,6 +208,20 @@
 				"packages/codemod/tests/runtime-cli.test.ts"
 			],
 			"note": "The supported migration and virtual-bundler tooling contract."
+		},
+		{
+			"packageName": "pandwind-codemod",
+			"exportPaths": ["./lib"],
+			"owner": "tooling",
+			"maturity": "experimental",
+			"dependencies": ["cac", "pandwind"],
+			"externalContract": true,
+			"evidence": [
+				"packages/codemod/package.json",
+				"packages/codemod/tests/lib-cli.test.ts",
+				"docs/src/content/docs/tooling/codegen.md"
+			],
+			"note": "Publishable Pandwind design-system artifact builder and CLI boundary."
 		},
 		{
 			"packageName": "pandwind-codemod",

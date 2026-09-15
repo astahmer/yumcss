@@ -8,8 +8,14 @@ import { resolve } from "node:path";
 import { createStylesheet } from "../css/create-stylesheet.ts";
 import type { ClassNameStrategy } from "../css/class-name-strategy.ts";
 import { decorateCascadeRules, wrapCascadeLayer } from "../css/cascade.ts";
+import { createStylesheetOrderingPolicy } from "../css/stylesheet-policies.ts";
 import { renderCriticalHtml } from "./critical-css.ts";
 import type { CssExtractorPreset, PandwindCssViteOptions } from "./css.ts";
+import {
+	checkPandwindLibCompatibility,
+	type PandwindLibArtifact,
+	type PandwindLibRule,
+} from "./lib-artifact.ts";
 import { StaticCssCallRewriter } from "./css-call-rewriter.ts";
 import { createCssSourceService } from "./css-source-service.ts";
 import { createCssSourceWorkspace } from "./css-source-workspace.ts";
@@ -33,27 +39,53 @@ export interface CssExtractorCore {
 
 /** Join sheet sections into one CSS document, dropping empties. */
 const render = (
-	atomic: Array<{ css: string; priority: number }>,
-	vars: Array<{ css: string; priority: number }>,
+	atomic: readonly PandwindLibRule[],
+	vars: readonly PandwindLibRule[],
 	tokens: string,
 	cascade: PandwindCssViteOptions["cascade"],
-	priorityUniverse: Array<{ css: string; priority: number }> = [...atomic, ...vars],
+	priorityUniverse: readonly PandwindLibRule[] = [...atomic, ...vars],
 ): string => {
-	const decorated = decorateCascadeRules([...atomic, ...vars], cascade, priorityUniverse);
+	const ordering = createStylesheetOrderingPolicy();
+	const orderedAtomic = ordering.order(atomic);
+	const orderedVars = ordering.order(vars);
+	const decorated = decorateCascadeRules(
+		[...orderedAtomic, ...orderedVars],
+		cascade,
+		priorityUniverse,
+	);
 	const body = [
 		tokens,
 		decorated
-			.slice(0, atomic.length)
+			.slice(0, orderedAtomic.length)
 			.map((entry) => entry.css)
 			.join("\n"),
 		decorated
-			.slice(atomic.length)
+			.slice(orderedAtomic.length)
 			.map((entry) => entry.css)
 			.join("\n"),
 	]
 		.filter(Boolean)
 		.join("\n");
 	return wrapCascadeLayer(body, cascade);
+};
+
+const mergeEntries = <TEntry extends { readonly id: string }>(
+	local: readonly TEntry[],
+	external: readonly TEntry[],
+): TEntry[] => {
+	const entries = new Map(local.map((entry) => [entry.id, entry] as const));
+	for (const entry of external) if (!entries.has(entry.id)) entries.set(entry.id, entry);
+	return [...entries.values()];
+};
+
+const mergeTokenEntries = (
+	local: readonly { readonly declaration: string; readonly priority: number }[],
+	external: readonly { readonly declaration: string; readonly priority: number }[],
+): Array<{ declaration: string; priority: number }> => {
+	const entries = new Map(local.map((entry) => [entry.declaration, entry] as const));
+	for (const entry of external)
+		if (!entries.has(entry.declaration)) entries.set(entry.declaration, entry);
+	return [...entries.values()];
 };
 
 const addImportAfterDirectives = (source: string, statement: string): string => {
@@ -83,6 +115,7 @@ const addImportAfterDirectives = (source: string, statement: string): string => 
 export function createCssExtractorPluginCore(
 	preset: CssExtractorPreset,
 	options: PandwindCssViteOptions = {},
+	externalArtifacts: readonly PandwindLibArtifact[] = [],
 ): CssExtractorCore {
 	if (options.engine !== undefined && options.engine.preset !== preset) {
 		throw new Error(
@@ -94,6 +127,23 @@ export function createCssExtractorPluginCore(
 	const virtualId = options.virtualId ?? "pandwind:css";
 	const className = options.engine?.className ?? options.className;
 	const namespace = options.namespace ?? "pw";
+	for (const artifact of externalArtifacts) {
+		const compatibility = checkPandwindLibCompatibility(artifact, preset, {
+			namespace,
+			cascade: options.cascade,
+			className,
+		});
+		if (!compatibility.compatible)
+			throw new Error(
+				[
+					"pandwindCssVite: incompatible Pandwind lib artifact",
+					...compatibility.differences.map((difference) => `- ${difference}`),
+				].join("\n"),
+			);
+	}
+	const externalAtomic = externalArtifacts.flatMap((artifact) => artifact.rules.atomic);
+	const externalVars = externalArtifacts.flatMap((artifact) => artifact.rules.vars);
+	const externalTokens = externalArtifacts.flatMap((artifact) => artifact.tokens);
 	const sourceService = createCssSourceService({
 		rewriter: new StaticCssCallRewriter(preset, className, {
 			transformDynamicClassName: options.transformDynamicClassName === true,
@@ -173,10 +223,13 @@ export function createCssExtractorPluginCore(
 			return bodyCache.value;
 		const sheet = collect(files);
 		const body = render(
-			sheet.gen.atomicEntries(),
-			sheet.gen.varEntries(),
-			sheet.gen.tokens(),
+			mergeEntries(sheet.gen.atomicEntries(), externalAtomic),
+			mergeEntries(sheet.gen.varEntries(), externalVars),
+			mergeTokenEntries(sheet.gen.tokenEntries(), externalTokens)
+				.map((entry) => entry.declaration)
+				.join("\n"),
 			options.cascade,
+			[...sheet.gen.atomicEntries(), ...sheet.gen.varEntries(), ...externalAtomic, ...externalVars],
 		);
 		if (options.debug !== true) {
 			bodyCache = { files, value: body };
@@ -299,18 +352,17 @@ export function createCssExtractorPluginCore(
 			}
 		}
 		const sharedIds = new Set([...seenIn.entries()].filter(([, n]) => n >= 2).map(([id]) => id));
+		for (const rule of externalAtomic) sharedIds.add(`a:${rule.id}`);
+		for (const rule of externalVars) sharedIds.add(`v:${rule.id}`);
 
-		const pickCommon = (
-			entries: BucketSheet["atomic"],
-			kind: "a" | "v",
-		): Array<{ css: string; priority: number }> =>
+		const pickCommon = (entries: BucketSheet["atomic"], kind: "a" | "v"): BucketSheet["atomic"] =>
 			entries.filter((e) => sharedIds.has(`${kind}:${e.id}`));
 
 		const commonBucket = buckets.get(COMMON_BUCKET)!;
 		const anyBucket = buckets.get(routes[0]!.name)!;
 		const tokenEntries = Array.from(
 			new Map(
-				[...buckets.values()]
+				[...buckets.values(), { tokenEntries: externalTokens }]
 					.flatMap((bucket) => bucket.tokenEntries)
 					.map((entry) => [entry.declaration, entry] as const),
 			).values(),
@@ -318,18 +370,19 @@ export function createCssExtractorPluginCore(
 			const priority = a.priority - b.priority;
 			return priority === 0 ? a.declaration.localeCompare(b.declaration) : priority;
 		});
-		const commonAtomic = [
-			...pickCommon(anyBucket.atomic, "a"),
-			...commonBucket.atomic.map((e) => ({ ...e, id: `a:${e.id}` })),
-		].toSorted((a, b) => a.priority - b.priority);
-		const commonVars = [
-			...pickCommon(anyBucket.vars, "v"),
-			...commonBucket.vars.map((e) => ({ ...e, id: `v:${e.id}` })),
-		].toSorted((a, b) => a.priority - b.priority);
+		const commonAtomic = mergeEntries(
+			[...pickCommon(anyBucket.atomic, "a"), ...commonBucket.atomic],
+			externalAtomic,
+		).toSorted((a, b) => a.priority - b.priority);
+		const commonVars = mergeEntries(
+			[...pickCommon(anyBucket.vars, "v"), ...commonBucket.vars],
+			externalVars,
+		).toSorted((a, b) => a.priority - b.priority);
 		const priorityUniverse = [...buckets.values()].flatMap((bucket) => [
 			...bucket.atomic,
 			...bucket.vars,
 		]);
+		priorityUniverse.push(...externalAtomic, ...externalVars);
 
 		const common = render(
 			commonAtomic,

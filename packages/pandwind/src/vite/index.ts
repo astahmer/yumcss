@@ -437,6 +437,24 @@ export function pandwindVite(options: PandwindViteOptions = {}) {
 
 export { type PandwindCssViteOptions, pandwindCssVite } from "./css.ts";
 export {
+	PANDWIND_LIB_COMPILER,
+	PANDWIND_LIB_GENERATOR,
+	PANDWIND_LIB_SCHEMA,
+	checkPandwindLibCompatibility,
+	createPandwindLibArtifact,
+	createPandwindLibCompatibility,
+	hashPandwindLibSource,
+	validatePandwindLibArtifact,
+	type PandwindLibArtifact,
+	type PandwindLibArtifactInput,
+	type PandwindLibCompatibility,
+	type PandwindLibCompatibilityCheck,
+	type PandwindLibCompatibilityOptions,
+	type PandwindLibRule,
+	type PandwindLibSource,
+	type PandwindLibValidation,
+} from "./lib-artifact.ts";
+export {
 	createPandwindEngineContext,
 	type PandwindEngineContext,
 	type PandwindEngineContextOptions,

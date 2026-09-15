@@ -55,6 +55,25 @@ plugins: [pandwindCssVite(css)];
 import "pandwind:css";
 ```
 
+### Consuming a published component-library artifact
+
+A library can publish `pandwind.lib.json` and expose it from its package. Add
+the package specifier to the host extractor so its pre-extracted rules are
+loaded without scanning library source:
+
+```ts
+plugins: [
+	pandwindCssVite(css, {
+		libraries: ["@acme/ui"],
+	}),
+];
+```
+
+The artifact is checked against the active preset, namespace, cascade mode,
+and default class strategy. A malformed, stale, or incompatible artifact
+fails closed with the fields that differ. Leave `libraries` unset for ordinary
+local source extraction.
+
 ### `Stack` bindings and build-time folding
 
 The bare `Stack` renderer and `stackFoldVite()` are an explicit
