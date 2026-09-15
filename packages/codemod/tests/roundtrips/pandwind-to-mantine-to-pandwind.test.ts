@@ -15,12 +15,12 @@ import {
 
 const forward = createAdapterRouteSpec(CodemodAdapterId.Pandwind, CodemodAdapterId.Mantine);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.Mantine, CodemodAdapterId.Pandwind);
-	const happySource = "import { createCss } from \"pandwind/css\";\nconst css = createCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });";
-const edgeSource = "import { createCss } from \"pandwind/css\";\nconst css = createCss();\nexport const styles = css.group({ card: { color: \"red\" }, muted: { opacity: 0.5 } });";
-const malformedSource = "import { createCss } from \"pandwind/css\";\nconst css = createCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });\nconst unfinished = { /* unfinished pandwind */";
+	const happySource = "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });";
+const edgeSource = "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const styles = css.group({ card: { color: \"red\" }, muted: { opacity: 0.5 } });";
+const malformedSource = "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });\nconst unfinished = { /* unfinished pandwind */";
 const sourceSemantic = undefined;
-const themedSource = "import { createCss } from \"pandwind/css\";\nconst css = createCss();\nexport const card = css.class({ color: \"$brand\", padding: \"1rem\" });";
-const tokenSource = "import { createCss } from \"pandwind/css\";\nconst css = createCss();\nexport const card = css.class({ color: \"#2563eb\", padding: \"1rem\" });";
+const themedSource = "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"$brand\", padding: \"1rem\" });";
+const tokenSource = "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"#2563eb\", padding: \"1rem\" });";
 const blueSemantic = undefined;
 const amberSemantic = undefined;
 const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
@@ -49,7 +49,7 @@ test("pandwind -> mantine -> pandwind: preserves an actionable concrete round tr
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		export const card = // pandwind:migrate-skip (route: pandwind -> mantine | lowering-residual: host-framework, validation)
 		css.class({ color: "red", padding: "1rem" });",
 		    "converted": 0,
@@ -97,7 +97,7 @@ test("pandwind -> mantine -> pandwind: preserves an actionable concrete round tr
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "import { createCss } from "pandwind/css";
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		export const card = // pandwind:migrate-skip (route: pandwind -> mantine | lowering-residual: host-framework, validation)
 		css.class({ color: "red", padding: "1rem" });",
 		    "converted": 0,
@@ -124,7 +124,7 @@ test("pandwind -> mantine -> pandwind: retains the documented secondary API with
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		export const styles = // pandwind:migrate-skip (route: pandwind -> mantine | capability-blocked: named-conditions: named: card | available: static, named-map, residual)
 		css.group({ card: { color: "red" }, muted: { opacity: 0.5 } });",
 		    "converted": 0,
@@ -159,7 +159,7 @@ test("pandwind -> mantine -> pandwind: retains the documented secondary API with
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "import { createCss } from "pandwind/css";
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		export const styles = // pandwind:migrate-skip (route: pandwind -> mantine | capability-blocked: named-conditions: named: card | available: static, named-map, residual)
 		css.group({ card: { color: "red" }, muted: { opacity: 0.5 } });",
 		    "converted": 0,
@@ -200,7 +200,7 @@ test("pandwind -> mantine -> pandwind: preserves concrete theme and project cont
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createCss } from "pandwind/css";
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		export const card = // pandwind:migrate-skip (route: pandwind -> mantine | lowering-residual: host-framework, validation)
 		css.class({ color: "$brand", padding: "1rem" });",
 		      "converted": 0,
@@ -248,7 +248,7 @@ test("pandwind -> mantine -> pandwind: preserves concrete theme and project cont
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "import { createCss } from "pandwind/css";
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		export const card = // pandwind:migrate-skip (route: pandwind -> mantine | lowering-residual: host-framework, validation)
 		css.class({ color: "$brand", padding: "1rem" });",
 		      "converted": 0,
@@ -263,7 +263,7 @@ test("pandwind -> mantine -> pandwind: preserves concrete theme and project cont
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createCss } from "pandwind/css";
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		export const card = // pandwind:migrate-skip (route: pandwind -> mantine | lowering-residual: host-framework, validation)
 		css.class({ color: "$brand", padding: "1rem" });",
 		      "converted": 0,
@@ -311,7 +311,7 @@ test("pandwind -> mantine -> pandwind: preserves concrete theme and project cont
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "import { createCss } from "pandwind/css";
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		export const card = // pandwind:migrate-skip (route: pandwind -> mantine | lowering-residual: host-framework, validation)
 		css.class({ color: "$brand", padding: "1rem" });",
 		      "converted": 0,
@@ -340,7 +340,7 @@ test("pandwind -> mantine -> pandwind: resolves token values across both concret
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		export const card = // pandwind:migrate-skip (route: pandwind -> mantine | lowering-residual: host-framework, validation)
 		css.class({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 0,
@@ -388,7 +388,7 @@ test("pandwind -> mantine -> pandwind: resolves token values across both concret
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "import { createCss } from "pandwind/css";
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		export const card = // pandwind:migrate-skip (route: pandwind -> mantine | lowering-residual: host-framework, validation)
 		css.class({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 0,

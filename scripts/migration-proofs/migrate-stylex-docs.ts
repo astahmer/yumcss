@@ -122,11 +122,11 @@ function runtimeModuleImport(root: string, file: string): string {
 function bindRuntimeSheet(source: string, root: string, file: string): string {
 	let output = source;
 	output = output.replace(
-		'import { createCss } from "pandwind/css";',
+		'import { createUnsafeCss } from "pandwind/unsafe/css";',
 		'import { createRuntimeCss } from "pandwind/css/runtime";',
 	);
 	output = output.replace(
-		"const css = createCss();",
+		"const css = createUnsafeCss();",
 		"const css = createRuntimeCss(pandwindPreset, { sheet: pandwindRuntime.sheet });",
 	);
 	if (!output.includes("pandwindRuntime")) {

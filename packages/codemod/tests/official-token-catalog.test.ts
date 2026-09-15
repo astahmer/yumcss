@@ -475,8 +475,8 @@ describe("official custom-token loaders", () => {
 		expect(result.code).toContain('color: "brand"');
 		expect(result.code).not.toContain('color: "#123456"');
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { createCss } from "pandwind/css";
-			const css = createCss();
+			"import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const card = css.class({ color: "brand" });"
 		`);
 	});

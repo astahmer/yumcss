@@ -49,8 +49,8 @@ test("mantine -> pandwind -> mantine: preserves an actionable concrete round tri
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const App = () => <div className={css.class({ color: "blue.6", marginLeft: "auto", marginRight: "auto", maxWidth: 400 })} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -207,8 +207,8 @@ test("mantine -> pandwind -> mantine: preserves concrete theme and project conte
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const App = () => <div className={css.class({ color: "brand", marginLeft: "auto", marginRight: "auto", maxWidth: 400 })} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -278,8 +278,8 @@ test("mantine -> pandwind -> mantine: preserves concrete theme and project conte
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const App = () => <div className={css.class({ color: "brand", marginLeft: "auto", marginRight: "auto", maxWidth: 400 })} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -363,8 +363,8 @@ test("mantine -> pandwind -> mantine: resolves token values across both concrete
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const App = () => <div className={css.class({ color: "brand", marginLeft: "auto", marginRight: "auto", maxWidth: 400 })} />;",
 		    "converted": 1,
 		    "generatedFiles": [],

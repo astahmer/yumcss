@@ -47,8 +47,8 @@ test("aphrodite -> mui: migrates concrete aphrodite syntax to mui", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const styles = { "card": css.class({ padding: 8, color: "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -92,8 +92,8 @@ test("aphrodite -> mui: carries a documented secondary aphrodite API explicitly"
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const styles = { "fonts": css.class({ "font-face": { fontFamily: "Inter", src: "url(inter.woff2)" } }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -146,8 +146,8 @@ test("aphrodite -> mui: loads concrete theme and project context variants", asyn
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const styles = { "card": css.class({ padding: 8, color: "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -182,8 +182,8 @@ test("aphrodite -> mui: loads concrete theme and project context variants", asyn
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const styles = { "card": css.class({ padding: 8, color: "primary.main" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -230,8 +230,8 @@ test("aphrodite -> mui: resolves concrete token values with project context", as
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const styles = { "card": css.class({ padding: 8, color: "primary.main" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -275,8 +275,8 @@ test("aphrodite -> mui: preserves malformed concrete aphrodite input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const styles = { "card": css.class({ padding: 8, color: "red" }) };
 		const unfinished = { /* unfinished aphrodite */",
 		  "converted": 1,

@@ -49,8 +49,8 @@ test("jss -> mui -> jss: preserves an actionable concrete round trip", () => {
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const useStyles = { "card": css.class({ color: "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -85,8 +85,8 @@ test("jss -> mui -> jss: preserves an actionable concrete round trip", () => {
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const useStyles = { "card": css.class({ color: "red" }) };",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -112,8 +112,8 @@ test("jss -> mui -> jss: retains the documented secondary API without silent los
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const sheet = { "card": css.class({ color: "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -148,8 +148,8 @@ test("jss -> mui -> jss: retains the documented secondary API without silent los
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const sheet = { "card": css.class({ color: "red" }) };",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -190,8 +190,8 @@ test("jss -> mui -> jss: preserves concrete theme and project context variants",
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const useStyles = { "card": css.class({ color: "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -226,8 +226,8 @@ test("jss -> mui -> jss: preserves concrete theme and project context variants",
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const useStyles = { "card": css.class({ color: "#2563eb" }) };",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -241,8 +241,8 @@ test("jss -> mui -> jss: preserves concrete theme and project context variants",
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const useStyles = { "card": css.class({ color: "primary.main" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -277,8 +277,8 @@ test("jss -> mui -> jss: preserves concrete theme and project context variants",
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const useStyles = { "card": css.class({ color: "primary.main" }) };",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -306,8 +306,8 @@ test("jss -> mui -> jss: resolves token values across both concrete legs", async
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const useStyles = { "card": css.class({ color: "primary.main" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -342,8 +342,8 @@ test("jss -> mui -> jss: resolves token values across both concrete legs", async
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const useStyles = { "card": css.class({ color: "primary.main" }) };",
 		    "converted": 0,
 		    "generatedFiles": [],

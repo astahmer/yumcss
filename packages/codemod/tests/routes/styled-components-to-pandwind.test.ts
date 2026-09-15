@@ -47,10 +47,10 @@ test("styled-components -> pandwind: migrates concrete styled-components syntax 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
+		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		const css = createCss();
+		const css = createUnsafeCss();
 		const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Component {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
 		export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "red" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
 		  "converted": 1,
@@ -94,10 +94,10 @@ test("styled-components -> pandwind: carries a documented secondary styled-compo
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
+		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		const css = createCss();
+		const css = createUnsafeCss();
 		const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Component {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
 		export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "red" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
 		  "converted": 1,
@@ -150,11 +150,11 @@ test("styled-components -> pandwind: loads concrete theme and project context va
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		import { createCx } from "pandwind/cx";
 		import { __pandwindSlot } from "../__pandwind/slot";
 		const cx = createCx();
-		const css = createCss();
+		const css = createUnsafeCss();
 		export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "#2563eb" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
 		    "converted": 1,
 		    "generatedFiles": [
@@ -193,11 +193,11 @@ test("styled-components -> pandwind: loads concrete theme and project context va
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		import { createCx } from "pandwind/cx";
 		import { __pandwindSlot } from "../__pandwind/slot";
 		const cx = createCx();
-		const css = createCss();
+		const css = createUnsafeCss();
 		export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "brand" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
 		    "converted": 1,
 		    "generatedFiles": [
@@ -248,11 +248,11 @@ test("styled-components -> pandwind: resolves concrete token values with project
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
+		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		import { createCx } from "pandwind/cx";
 		import { __pandwindSlot } from "../__pandwind/slot";
 		const cx = createCx();
-		const css = createCss();
+		const css = createUnsafeCss();
 		export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "brand" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
 		  "converted": 1,
 		  "generatedFiles": [
@@ -300,10 +300,10 @@ test("styled-components -> pandwind: preserves malformed concrete styled-compone
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
+		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		const css = createCss();
+		const css = createUnsafeCss();
 		const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Component {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
 		export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "red" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });
 		const unfinished = { /* unfinished styled-components */",

@@ -50,8 +50,8 @@ test("tamagui -> pandwind -> tamagui: preserves an actionable concrete round tri
 		  "forward": {
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
+		import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const Card = css.class({ padding: "$4", color: "red" });
 		export const App = () => <View className={Card} />;",
 		    "converted": 1,
@@ -213,8 +213,8 @@ test("tamagui -> pandwind -> tamagui: preserves concrete theme and project conte
 		    "forward": {
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
+		import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const Card = css.class({ padding: "$4", color: "#2563eb" });
 		export const App = () => <View className={Card} />;",
 		      "converted": 1,
@@ -288,8 +288,8 @@ test("tamagui -> pandwind -> tamagui: preserves concrete theme and project conte
 		    "forward": {
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
+		import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const Card = css.class({ padding: "$4", color: "brand" });
 		export const App = () => <View className={Card} />;",
 		      "converted": 1,
@@ -377,8 +377,8 @@ test("tamagui -> pandwind -> tamagui: resolves token values across both concrete
 		  "forward": {
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
+		import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const Card = css.class({ padding: "$4", color: "brand" });
 		export const App = () => <View className={Card} />;",
 		    "converted": 1,

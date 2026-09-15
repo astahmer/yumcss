@@ -47,8 +47,8 @@ test("treat -> less: migrates concrete treat syntax to less", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "padding": 8, "color": "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -93,8 +93,8 @@ test("treat -> less: carries a documented secondary treat API explicitly", () =>
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "padding": 8, "color": "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -148,8 +148,8 @@ test("treat -> less: loads concrete theme and project context variants", async (
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "padding": 8, "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -185,8 +185,8 @@ test("treat -> less: loads concrete theme and project context variants", async (
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "padding": 8, "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -234,8 +234,8 @@ test("treat -> less: resolves concrete token values with project context", async
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "padding": 8, "color": "#2563eb" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -280,8 +280,8 @@ test("treat -> less: preserves malformed concrete treat input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "padding": 8, "color": "red" });
 		const unfinished = { /* unfinished treat */",
 		  "converted": 1,

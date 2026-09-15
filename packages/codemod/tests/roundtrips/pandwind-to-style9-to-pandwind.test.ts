@@ -15,12 +15,12 @@ import {
 
 const forward = createAdapterRouteSpec(CodemodAdapterId.Pandwind, CodemodAdapterId.Style9);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.Style9, CodemodAdapterId.Pandwind);
-	const happySource = "import { createCss } from \"pandwind/css\";\nconst css = createCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });";
-const edgeSource = "import { createCss } from \"pandwind/css\";\nconst css = createCss();\nexport const styles = css.group({ card: { color: \"red\" }, muted: { opacity: 0.5 } });";
-const malformedSource = "import { createCss } from \"pandwind/css\";\nconst css = createCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });\nconst unfinished = { /* unfinished pandwind */";
+	const happySource = "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });";
+const edgeSource = "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const styles = css.group({ card: { color: \"red\" }, muted: { opacity: 0.5 } });";
+const malformedSource = "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });\nconst unfinished = { /* unfinished pandwind */";
 const sourceSemantic = undefined;
-const themedSource = "import { createCss } from \"pandwind/css\";\nconst css = createCss();\nexport const card = css.class({ color: \"$brand\", padding: \"1rem\" });";
-const tokenSource = "import { createCss } from \"pandwind/css\";\nconst css = createCss();\nexport const card = css.class({ color: \"#2563eb\", padding: \"1rem\" });";
+const themedSource = "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"$brand\", padding: \"1rem\" });";
+const tokenSource = "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"#2563eb\", padding: \"1rem\" });";
 const blueSemantic = undefined;
 const amberSemantic = undefined;
 const blueTargetSemantic = undefined;
@@ -86,10 +86,10 @@ test("pandwind -> style9 -> pandwind: preserves an actionable concrete round tri
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		const css = createCss();
+		const css = createUnsafeCss();
 
 		export const card = css.class({ padding: "1rem", color: "red" });",
 		    "converted": 1,
@@ -138,7 +138,7 @@ test("pandwind -> style9 -> pandwind: retains the documented secondary API witho
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		export const styles = // pandwind:migrate-skip (route: pandwind -> style9 | lowering-residual: validation)
 		css.group({ card: { color: "red" }, muted: { opacity: 0.5 } });",
 		    "converted": 0,
@@ -183,7 +183,7 @@ test("pandwind -> style9 -> pandwind: retains the documented secondary API witho
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "import { createCss } from "pandwind/css";
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		export const styles = // pandwind:migrate-skip (route: pandwind -> style9 | lowering-residual: validation)
 		css.group({ card: { color: "red" }, muted: { opacity: 0.5 } });",
 		    "converted": 0,
@@ -262,10 +262,10 @@ test("pandwind -> style9 -> pandwind: preserves concrete theme and project conte
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { createCss } from "pandwind/css";
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		const css = createCss();
+		const css = createUnsafeCss();
 
 		export const card = css.class({ padding: "1rem", color: "brand" });",
 		      "converted": 1,
@@ -340,10 +340,10 @@ test("pandwind -> style9 -> pandwind: preserves concrete theme and project conte
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { createCss } from "pandwind/css";
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		const css = createCss();
+		const css = createUnsafeCss();
 
 		export const card = css.class({ padding: "1rem", color: "brand" });",
 		      "converted": 1,
@@ -431,10 +431,10 @@ test("pandwind -> style9 -> pandwind: resolves token values across both concrete
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		const css = createCss();
+		const css = createUnsafeCss();
 
 		export const card = css.class({ padding: "1rem", color: "brand" });",
 		    "converted": 1,

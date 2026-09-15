@@ -47,8 +47,8 @@ test("goober -> css-modules: migrates concrete goober syntax to css-modules", ()
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "padding": "1rem", "color": "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -148,8 +148,8 @@ test("goober -> css-modules: loads concrete theme and project context variants",
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "padding": "1rem", "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -185,8 +185,8 @@ test("goober -> css-modules: loads concrete theme and project context variants",
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "padding": "1rem", "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -234,8 +234,8 @@ test("goober -> css-modules: resolves concrete token values with project context
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "padding": "1rem", "color": "#2563eb" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -280,8 +280,8 @@ test("goober -> css-modules: preserves malformed concrete goober input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "padding": "1rem", "color": "red" });
 		const unfinished = { /* unfinished goober */",
 		  "converted": 1,

@@ -255,8 +255,8 @@ describe("stylesheet source adapters", () => {
 		expect(result.residuals).toEqual([]);
 		expect(result.outputExtension).toBe(".ts");
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { createCss } from "pandwind/css";
-			const css = createCss();
+			"import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const styles = { "card": css.class({ padding: "1rem", color: "red" }) };
 			export default styles;"
 		`);
@@ -284,8 +284,8 @@ describe("stylesheet source adapters", () => {
 		expect(result).toMatchInlineSnapshot(`
 			{
 			  "changed": true,
-			  "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
+			  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const styles = { "card": css.class({ color: "red" }), "token": css.class({ color: "blue" }) };
 			export default styles;",
 			  "converted": 2,
@@ -495,8 +495,8 @@ describe("stylesheet source adapters", () => {
 		expect(result).toMatchInlineSnapshot(`
 			{
 			  "changed": true,
-			  "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
+			  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const styles = { "card": css.class({ color: "red" }) };
 			export default styles;",
 			  "converted": 1,
@@ -762,8 +762,8 @@ describe("stylesheet source adapters", () => {
 		expect(result).toMatchInlineSnapshot(`
 			{
 			  "changed": true,
-			  "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
+			  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const styles = { "card": css.class({ color: "red" }) };
 			export default styles;",
 			  "converted": 1,

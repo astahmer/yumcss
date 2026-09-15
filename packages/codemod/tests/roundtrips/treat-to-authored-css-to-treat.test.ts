@@ -49,8 +49,8 @@ test("treat -> authored-css -> treat: preserves an actionable concrete round tri
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "padding": 8, "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -87,8 +87,8 @@ test("treat -> authored-css -> treat: preserves an actionable concrete round tri
 		  "reverse": {
 		    "changed": false,
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import { createCss } from "pandwind/css";
-		const css = createCss();
+		import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "padding": 8, "color": "red" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -152,8 +152,8 @@ test("treat -> authored-css -> treat: retains the documented secondary API witho
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "padding": 8, "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -190,8 +190,8 @@ test("treat -> authored-css -> treat: retains the documented secondary API witho
 		  "reverse": {
 		    "changed": false,
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import { createCss } from "pandwind/css";
-		const css = createCss();
+		import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "padding": 8, "color": "red" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -270,8 +270,8 @@ test("treat -> authored-css -> treat: preserves concrete theme and project conte
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "padding": 8, "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -308,8 +308,8 @@ test("treat -> authored-css -> treat: preserves concrete theme and project conte
 		    "reverse": {
 		      "changed": false,
 		      "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import { createCss } from "pandwind/css";
-		const css = createCss();
+		import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "padding": 8, "color": "#2563eb" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -361,8 +361,8 @@ test("treat -> authored-css -> treat: preserves concrete theme and project conte
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "padding": 8, "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -399,8 +399,8 @@ test("treat -> authored-css -> treat: preserves concrete theme and project conte
 		    "reverse": {
 		      "changed": false,
 		      "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import { createCss } from "pandwind/css";
-		const css = createCss();
+		import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "padding": 8, "color": "#2563eb" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -466,8 +466,8 @@ test("treat -> authored-css -> treat: resolves token values across both concrete
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "padding": 8, "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -504,8 +504,8 @@ test("treat -> authored-css -> treat: resolves token values across both concrete
 		  "reverse": {
 		    "changed": false,
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import { createCss } from "pandwind/css";
-		const css = createCss();
+		import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "padding": 8, "color": "#2563eb" });",
 		    "converted": 0,
 		    "generatedFiles": [],

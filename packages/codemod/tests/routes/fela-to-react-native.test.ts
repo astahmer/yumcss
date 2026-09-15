@@ -14,7 +14,7 @@ import {
 
 const route = createAdapterRouteSpec(CodemodAdapterId.Fela, CodemodAdapterId.ReactNative);
 	const happySource = "import { createRenderer } from \"fela\";\nconst renderer = createRenderer();\nexport const card = renderer.renderRule(() => ({ color: \"red\" }));";
-const edgeSource = "import { createComponent } from \"react-fela\";\nexport const Card = createComponent(() => ({ color: \"red\" }));";
+const edgeSource = "import { createComponent } from \"react-fela\";\nexport const Card = createComponent(() => ({ color: \"red\" }), \"button\");";
 const malformedSource = "import { createRenderer } from \"fela\";\nconst renderer = createRenderer();\nexport const card = renderer.renderRule(() => ({ color: \"red\" }));\nconst unfinished = { /* unfinished fela */";
 const sourceSemantic = undefined;
 const themedSource = "import { createRenderer } from \"fela\";\nconst renderer = createRenderer();\nexport const card = renderer.renderRule(() => ({ color: \"#2563eb\" }));";
@@ -96,8 +96,8 @@ test("fela -> react-native: carries a documented secondary fela API explicitly",
 		{
 		  "changed": true,
 		  "code": "import { createComponent } from "react-fela";
-		export const Card = // pandwind:migrate-skip (route: fela -> react-native | parse-residual: component | available: named-map, residual)
-		createComponent(() => ({ color: "red" }));",
+		export const Card = // pandwind:migrate-skip (route: fela -> react-native | capability-blocked: components: component subject: styled("button") | available: static, named-map, residual)
+		createComponent(() => ({ color: "red" }), "button");",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -107,23 +107,24 @@ test("fela -> react-native: carries a documented secondary fela API explicitly",
 		        "react-native-numeric-normalization",
 		      ],
 		      "availableRepresentations": [
+		        "static",
 		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "residual",
+		      "representation": "static",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "residual",
+		      "representation": "static",
 		    },
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "Fela createComponent requires a style function and a host component",
-		      "kind": "component",
+		      "hint": "components: component subject: styled("button")",
+		      "kind": "capability",
 		      "preserved": undefined,
 		    },
 		  ],

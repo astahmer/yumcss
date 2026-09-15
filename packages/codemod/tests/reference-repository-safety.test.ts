@@ -100,8 +100,8 @@ const Button = () => <styled.button color="red" />;`;
 		expect(result.code).toContain("<button className={css.class({");
 		expect(result.code).toMatchInlineSnapshot(`
 			"import React from "react";
-			import { createCss } from "pandwind/css";
-			const css = createCss();
+			import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 
 			const Button = () => <button className={css.class({ color: "red" })} />;"
 		`);
@@ -119,8 +119,8 @@ export const Button = () =>
 		expect(result.residuals).toEqual([]);
 		expect(result.code).not.toContain("pandaStyled");
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { createCss } from "pandwind/css";
-			const css = createCss();
+			"import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 
 			export const Button = () =>
 					<button data-testid="button" disabled className={css.class({ backgroundColor: "tomato", color: "red", _hover: { color: "blue" } })} />;"
@@ -139,11 +139,11 @@ export const App = () => <Card />;`;
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
 		expect(result.code).not.toContain("styled-components");
-		expect(result.code).toContain('import { createCss } from "pandwind/css";');
+		expect(result.code).toContain('import { createUnsafeCss } from "pandwind/unsafe/css";');
 		expect(result.code).toMatchInlineSnapshot(`
 			"import React from "react";
-			import { createCss } from "pandwind/css";
-			const css = createCss();
+			import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 
 			const Card = css.class({ color: "red" });
 			export const App = () => <button className={Card} />;"

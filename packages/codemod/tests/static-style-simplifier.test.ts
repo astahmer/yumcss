@@ -224,8 +224,8 @@ const View = () => <Stack direction="column" />;
 	});
 
 	it("preserves authored static class declarations when no composition was simplified", () => {
-		const source = `import { createCss } from "pandwind/css";
-const css = createCss();
+		const source = `import { createUnsafeCss } from "pandwind/unsafe/css";
+const css = createUnsafeCss();
 const card = css.class({ color: "red" });
 `;
 
@@ -235,8 +235,8 @@ const card = css.class({ color: "red" });
 	});
 
 	it("inserts hoisted classes after a module css initializer", () => {
-		const source = `import { createCss } from "pandwind/css";
-const css = createCss();
+		const source = `import { createUnsafeCss } from "pandwind/unsafe/css";
+const css = createUnsafeCss();
 
 const View = () => <div className={css.class({ color: "red" })} />;
 `;
@@ -245,7 +245,7 @@ const View = () => <div className={css.class({ color: "red" })} />;
 			hoistStaticStyles: true,
 		});
 
-		expect(result.code.indexOf("const css = createCss();")).toBeLessThan(
+		expect(result.code.indexOf("const css = createUnsafeCss();")).toBeLessThan(
 			result.code.indexOf('const staticClassName1 = css.class({ color: "red" });'),
 		);
 	});

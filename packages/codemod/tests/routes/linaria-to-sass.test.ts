@@ -47,8 +47,8 @@ test("linaria -> sass: migrates concrete linaria syntax to sass", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "padding": "1rem", "color": "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -148,8 +148,8 @@ test("linaria -> sass: loads concrete theme and project context variants", async
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "padding": "1rem", "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -185,8 +185,8 @@ test("linaria -> sass: loads concrete theme and project context variants", async
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "padding": "1rem", "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -234,8 +234,8 @@ test("linaria -> sass: resolves concrete token values with project context", asy
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "padding": "1rem", "color": "#2563eb" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -280,8 +280,8 @@ test("linaria -> sass: preserves malformed concrete linaria input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "padding": "1rem", "color": "red" });
 		const unfinished = { /* unfinished linaria */",
 		  "converted": 1,

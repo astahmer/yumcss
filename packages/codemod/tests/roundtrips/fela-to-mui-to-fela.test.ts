@@ -16,7 +16,7 @@ import {
 const forward = createAdapterRouteSpec(CodemodAdapterId.Fela, CodemodAdapterId.Mui);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.Mui, CodemodAdapterId.Fela);
 	const happySource = "import { createRenderer } from \"fela\";\nconst renderer = createRenderer();\nexport const card = renderer.renderRule(() => ({ color: \"red\" }));";
-const edgeSource = "import { createComponent } from \"react-fela\";\nexport const Card = createComponent(() => ({ color: \"red\" }));";
+const edgeSource = "import { createComponent } from \"react-fela\";\nexport const Card = createComponent(() => ({ color: \"red\" }), \"button\");";
 const malformedSource = "import { createRenderer } from \"fela\";\nconst renderer = createRenderer();\nexport const card = renderer.renderRule(() => ({ color: \"red\" }));\nconst unfinished = { /* unfinished fela */";
 const sourceSemantic = undefined;
 const themedSource = "import { createRenderer } from \"fela\";\nconst renderer = createRenderer();\nexport const card = renderer.renderRule(() => ({ color: \"#2563eb\" }));";
@@ -50,8 +50,8 @@ test("fela -> mui -> fela: preserves an actionable concrete round trip", () => {
 		  "forward": {
 		    "changed": true,
 		    "code": "import { createRenderer } from "fela";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
+		import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		const renderer = createRenderer();
 		export const card = css.class({ "color": "red" });",
 		    "converted": 1,
@@ -88,8 +88,8 @@ test("fela -> mui -> fela: preserves an actionable concrete round trip", () => {
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { createRenderer } from "fela";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
+		import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		const renderer = createRenderer();
 		export const card = css.class({ "color": "red" });",
 		    "converted": 0,
@@ -116,50 +116,73 @@ test("fela -> mui -> fela: retains the documented secondary API without silent l
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createComponent } from "react-fela";
-		export const Card = // pandwind:migrate-skip (route: fela -> mui | parse-residual: component | available: named-map, residual)
-		createComponent(() => ({ color: "red" }));",
-		    "converted": 0,
+		    "code": "import { styled } from "@mui/system";
+		export const Card = styled("button")({ color: "red" });",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
 		        "applied": [],
 		        "availableRepresentations": [
+		          "static",
 		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "residual",
+		        "representation": "static",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
-		        "representation": "residual",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "Fela createComponent requires a style function and a host component",
-		        "kind": "component",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
-		    "validations": [],
-		  },
-		  "reverse": {
-		    "changed": false,
-		    "code": "import { createComponent } from "react-fela";
-		export const Card = // pandwind:migrate-skip (route: fela -> mui | parse-residual: component | available: named-map, residual)
-		createComponent(() => ({ color: "red" }));",
-		    "converted": 0,
-		    "generatedFiles": [],
-		    "loweringPlans": [],
-		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [],
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "import { styled } from "@mui/system";
+		export const Card = renderer.renderRule({ "color": "red" });",
+		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		}
 	`)
@@ -193,8 +216,8 @@ test("fela -> mui -> fela: preserves concrete theme and project context variants
 		    "forward": {
 		      "changed": true,
 		      "code": "import { createRenderer } from "fela";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
+		import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		const renderer = createRenderer();
 		export const card = css.class({ "color": "#2563eb" });",
 		      "converted": 1,
@@ -231,8 +254,8 @@ test("fela -> mui -> fela: preserves concrete theme and project context variants
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { createRenderer } from "fela";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
+		import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		const renderer = createRenderer();
 		export const card = css.class({ "color": "#2563eb" });",
 		      "converted": 0,
@@ -248,8 +271,8 @@ test("fela -> mui -> fela: preserves concrete theme and project context variants
 		    "forward": {
 		      "changed": true,
 		      "code": "import { createRenderer } from "fela";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
+		import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		const renderer = createRenderer();
 		export const card = css.class({ "color": "primary.main" });",
 		      "converted": 1,
@@ -286,8 +309,8 @@ test("fela -> mui -> fela: preserves concrete theme and project context variants
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { createRenderer } from "fela";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
+		import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		const renderer = createRenderer();
 		export const card = css.class({ "color": "primary.main" });",
 		      "converted": 0,
@@ -317,8 +340,8 @@ test("fela -> mui -> fela: resolves token values across both concrete legs", asy
 		  "forward": {
 		    "changed": true,
 		    "code": "import { createRenderer } from "fela";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
+		import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		const renderer = createRenderer();
 		export const card = css.class({ "color": "primary.main" });",
 		    "converted": 1,
@@ -355,8 +378,8 @@ test("fela -> mui -> fela: resolves token values across both concrete legs", asy
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { createRenderer } from "fela";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
+		import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		const renderer = createRenderer();
 		export const card = css.class({ "color": "primary.main" });",
 		    "converted": 0,

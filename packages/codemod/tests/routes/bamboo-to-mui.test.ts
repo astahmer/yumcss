@@ -47,8 +47,8 @@ test("bamboo -> mui: migrates concrete bamboo syntax to mui", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "color": "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -92,8 +92,8 @@ test("bamboo -> mui: carries a documented secondary bamboo API explicitly", () =
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "gap": "4", "display": "flex" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -146,8 +146,8 @@ test("bamboo -> mui: loads concrete theme and project context variants", async (
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -182,8 +182,8 @@ test("bamboo -> mui: loads concrete theme and project context variants", async (
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "color": "primary.main" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -230,8 +230,8 @@ test("bamboo -> mui: resolves concrete token values with project context", async
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "color": "primary.main" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -275,8 +275,8 @@ test("bamboo -> mui: preserves malformed concrete bamboo input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "color": "red" });
 		const unfinished = { /* unfinished bamboo */",
 		  "converted": 1,

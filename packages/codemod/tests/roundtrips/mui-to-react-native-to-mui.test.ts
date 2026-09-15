@@ -87,8 +87,8 @@ test("mui -> react-native -> mui: preserves an actionable concrete round trip", 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { View } from "react-native";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
+		import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const App = () => <View   style={{ "style": css.class({ padding: 16, color: "red" }) }.style}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -176,8 +176,8 @@ test("mui -> react-native -> mui: retains the documented secondary API without s
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { styled } from "@mui/system";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
+		import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const Card = css.class({ "padding": 8, "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -278,8 +278,8 @@ test("mui -> react-native -> mui: preserves concrete theme and project context v
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { View } from "react-native";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
+		import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const App = () => <View   style={{ "style": css.class({ padding: 16, color: "primary.main" }) }.style}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -354,8 +354,8 @@ test("mui -> react-native -> mui: preserves concrete theme and project context v
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { View } from "react-native";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
+		import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const App = () => <View   style={{ "style": css.class({ padding: 16, color: "primary.main" }) }.style}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -444,8 +444,8 @@ test("mui -> react-native -> mui: resolves token values across both concrete leg
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { View } from "react-native";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
+		import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const App = () => <View   style={{ "style": css.class({ padding: 16, color: "primary.main" }) }.style}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],

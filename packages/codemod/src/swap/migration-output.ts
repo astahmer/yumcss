@@ -197,7 +197,7 @@ export class MigrationOutput {
 		);
 		const staticBindings = new Set(
 			input.flatMap((statement) => {
-				const binding = /\b(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*createCss\(\)/u.exec(
+				const binding = /\b(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*createUnsafeCss\(\)/u.exec(
 					statement,
 				)?.[1];
 				return binding === undefined ? [] : [binding];
@@ -213,12 +213,11 @@ export class MigrationOutput {
 		const normalized = input.filter((statement) => {
 			if (
 				collidingBindings.size > 0 &&
-				statement.trim() === 'import { createCss } from "pandwind/css";'
+				statement.trim() === 'import { createUnsafeCss } from "pandwind/unsafe/css";'
 			)
 				return false;
-			const staticBinding = /\b(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*createCss\(\)/u.exec(
-				statement,
-			)?.[1];
+			const staticBinding =
+				/\b(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*createUnsafeCss\(\)/u.exec(statement)?.[1];
 			return staticBinding === undefined || !collidingBindings.has(staticBinding);
 		});
 		const grouped = new Map<string, { defaultImport?: string; named: Set<string> }>();

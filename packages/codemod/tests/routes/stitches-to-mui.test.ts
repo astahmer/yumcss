@@ -47,8 +47,8 @@ test("stitches -> mui: migrates concrete stitches syntax to mui", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "padding": "1rem", "color": "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -92,8 +92,8 @@ test("stitches -> mui: carries a documented secondary stitches API explicitly", 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const reset = css.class({ "margin": 0 });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -146,8 +146,8 @@ test("stitches -> mui: loads concrete theme and project context variants", async
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "padding": "1rem", "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -182,8 +182,8 @@ test("stitches -> mui: loads concrete theme and project context variants", async
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "padding": "1rem", "color": "primary.main" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -230,8 +230,8 @@ test("stitches -> mui: resolves concrete token values with project context", asy
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "padding": "1rem", "color": "primary.main" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -275,8 +275,8 @@ test("stitches -> mui: preserves malformed concrete stitches input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "padding": "1rem", "color": "red" });
 		const unfinished = { /* unfinished stitches */",
 		  "converted": 1,

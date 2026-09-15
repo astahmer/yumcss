@@ -92,8 +92,8 @@ describe("UnoCSS official extraction context", () => {
 		expect(result.residuals).toEqual([]);
 		expect(result.code).toContain('borderWidth: "2px"');
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { createCss } from "pandwind/css";
-			const css = createCss();
+			"import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			const classes = "badge-brand";
 			export const App = () => <div data-x={classes}  className={css.class({ borderWidth: "2px" })}/>;"
 		`);
@@ -117,8 +117,8 @@ describe("UnoCSS official extraction context", () => {
 		expect(result.code).toContain('"@media (min-width: 48rem)"');
 		expect(result.code).toContain('backgroundColor: "#123456"');
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { createCss } from "pandwind/css";
-			const css = createCss();
+			"import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const App = () => <div className={css.class({ backgroundColor: "#123456", "@media (min-width: 48rem)": { _hover: { color: "#fff" } } })}/>;"
 		`);
 	});

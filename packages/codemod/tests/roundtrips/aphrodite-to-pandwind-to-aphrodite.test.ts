@@ -49,8 +49,8 @@ test("aphrodite -> pandwind -> aphrodite: preserves an actionable concrete round
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const styles = { "card": css.class({ padding: 8, color: "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -239,8 +239,8 @@ test("aphrodite -> pandwind -> aphrodite: preserves concrete theme and project c
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const styles = { "card": css.class({ padding: 8, color: "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -313,8 +313,8 @@ test("aphrodite -> pandwind -> aphrodite: preserves concrete theme and project c
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const styles = { "card": css.class({ padding: 8, color: "brand" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -402,8 +402,8 @@ test("aphrodite -> pandwind -> aphrodite: resolves token values across both conc
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const styles = { "card": css.class({ padding: 8, color: "brand" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],

@@ -47,8 +47,8 @@ test("next-yak -> authored-css: migrates concrete next-yak syntax to authored-cs
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "padding": "1rem", "color": "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -148,8 +148,8 @@ test("next-yak -> authored-css: loads concrete theme and project context variant
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "padding": "1rem", "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -185,8 +185,8 @@ test("next-yak -> authored-css: loads concrete theme and project context variant
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "padding": "1rem", "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -234,8 +234,8 @@ test("next-yak -> authored-css: resolves concrete token values with project cont
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "padding": "1rem", "color": "#2563eb" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -280,8 +280,8 @@ test("next-yak -> authored-css: preserves malformed concrete next-yak input", ()
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "padding": "1rem", "color": "red" });
 		const unfinished = { /* unfinished next-yak */",
 		  "converted": 1,

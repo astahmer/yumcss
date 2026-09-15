@@ -50,8 +50,8 @@ describe("verified Pandwind token preservation", () => {
 		expect(result.code).toContain('padding: "4"');
 		expect(result.code).toContain('borderRadius: "lg"');
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { createCss } from "pandwind/css";
-			const css = createCss();
+			"import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const card = css.class({ padding: "4", borderRadius: "lg", color: "blue.500" });"
 		`);
 	});
@@ -77,8 +77,8 @@ describe("verified Pandwind token preservation", () => {
 		expect(result.code).toContain('color: "#3182ce"');
 		expect(result.code).not.toContain('color: "$blue-500"');
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { createCss } from "pandwind/css";
-			const css = createCss();
+			"import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const card = css.class({ color: "#3182ce" });"
 		`);
 	});
@@ -94,8 +94,8 @@ describe("verified Pandwind token preservation", () => {
 		expect(result.code).toContain('color: "#60A3BC"');
 		expect(result.code).not.toMatch(/color: "\$(?:green-500|success)"/u);
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { createCss } from "pandwind/css";
-			const css = createCss();
+			"import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const card = css.class({ color: "#60A3BC" });"
 		`);
 	});

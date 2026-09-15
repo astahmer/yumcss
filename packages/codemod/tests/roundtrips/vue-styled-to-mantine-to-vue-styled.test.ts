@@ -49,9 +49,9 @@ test("vue-styled -> mantine -> vue-styled: preserves an actionable concrete roun
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		import { defineComponent, h } from "vue";
-		const css = createCss();
+		const css = createUnsafeCss();
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css.class({ "padding": "1rem", "color": "red" }), attrs.class] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -86,9 +86,9 @@ test("vue-styled -> mantine -> vue-styled: preserves an actionable concrete roun
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "import { createCss } from "pandwind/css";
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		import { defineComponent, h } from "vue";
-		const css = createCss();
+		const css = createUnsafeCss();
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css.class({ "padding": "1rem", "color": "red" }), attrs.class] }, slots.default?.()));",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -114,9 +114,9 @@ test("vue-styled -> mantine -> vue-styled: retains the documented secondary API 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		import { defineComponent, h } from "vue";
-		const css = createCss();
+		const css = createUnsafeCss();
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css.class({ "padding": "1rem", "color": "red" }), attrs.class] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -151,9 +151,9 @@ test("vue-styled -> mantine -> vue-styled: retains the documented secondary API 
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "import { createCss } from "pandwind/css";
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		import { defineComponent, h } from "vue";
-		const css = createCss();
+		const css = createUnsafeCss();
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css.class({ "padding": "1rem", "color": "red" }), attrs.class] }, slots.default?.()));",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -194,9 +194,9 @@ test("vue-styled -> mantine -> vue-styled: preserves concrete theme and project 
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createCss } from "pandwind/css";
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		import { defineComponent, h } from "vue";
-		const css = createCss();
+		const css = createUnsafeCss();
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css.class({ "padding": "1rem", "color": "#2563eb" }), attrs.class] }, slots.default?.()));",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -231,9 +231,9 @@ test("vue-styled -> mantine -> vue-styled: preserves concrete theme and project 
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "import { createCss } from "pandwind/css";
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		import { defineComponent, h } from "vue";
-		const css = createCss();
+		const css = createUnsafeCss();
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css.class({ "padding": "1rem", "color": "#2563eb" }), attrs.class] }, slots.default?.()));",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -247,9 +247,9 @@ test("vue-styled -> mantine -> vue-styled: preserves concrete theme and project 
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createCss } from "pandwind/css";
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		import { defineComponent, h } from "vue";
-		const css = createCss();
+		const css = createUnsafeCss();
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css.class({ "padding": "1rem", "color": "var(--mantine-color-brand-0)" }), attrs.class] }, slots.default?.()));",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -284,9 +284,9 @@ test("vue-styled -> mantine -> vue-styled: preserves concrete theme and project 
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "import { createCss } from "pandwind/css";
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		import { defineComponent, h } from "vue";
-		const css = createCss();
+		const css = createUnsafeCss();
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css.class({ "padding": "1rem", "color": "var(--mantine-color-brand-0)" }), attrs.class] }, slots.default?.()));",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -314,9 +314,9 @@ test("vue-styled -> mantine -> vue-styled: resolves token values across both con
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		import { defineComponent, h } from "vue";
-		const css = createCss();
+		const css = createUnsafeCss();
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css.class({ "padding": "1rem", "color": "var(--mantine-color-brand-0)" }), attrs.class] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -351,9 +351,9 @@ test("vue-styled -> mantine -> vue-styled: resolves token values across both con
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "import { createCss } from "pandwind/css";
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		import { defineComponent, h } from "vue";
-		const css = createCss();
+		const css = createUnsafeCss();
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css.class({ "padding": "1rem", "color": "var(--mantine-color-brand-0)" }), attrs.class] }, slots.default?.()));",
 		    "converted": 0,
 		    "generatedFiles": [],

@@ -49,8 +49,8 @@ test("bamboo -> pandwind -> bamboo: preserves an actionable concrete round trip"
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -133,8 +133,8 @@ test("bamboo -> pandwind -> bamboo: retains the documented secondary API without
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ gap: "4", display: "flex" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -232,8 +232,8 @@ test("bamboo -> pandwind -> bamboo: preserves concrete theme and project context
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -304,8 +304,8 @@ test("bamboo -> pandwind -> bamboo: preserves concrete theme and project context
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ color: "brand" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -339,7 +339,7 @@ test("bamboo -> pandwind -> bamboo: preserves concrete theme and project context
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { createCss } from "pandwind/css";
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		export const card = // pandwind:migrate-skip (route: pandwind -> bamboo | lowering-residual: validation)
 		css.class({ color: "brand" });",
 		      "converted": 0,
@@ -398,8 +398,8 @@ test("bamboo -> pandwind -> bamboo: resolves token values across both concrete l
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ color: "brand" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -433,7 +433,7 @@ test("bamboo -> pandwind -> bamboo: resolves token values across both concrete l
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		export const card = // pandwind:migrate-skip (route: pandwind -> bamboo | lowering-residual: validation)
 		css.class({ color: "brand" });",
 		    "converted": 0,

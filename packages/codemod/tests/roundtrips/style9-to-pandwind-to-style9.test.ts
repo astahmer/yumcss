@@ -49,10 +49,10 @@ test("style9 -> pandwind -> style9: preserves an actionable concrete round trip"
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		const css = createCss();
+		const css = createUnsafeCss();
 		export const styles = css.group({ card: { color: "red" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -86,7 +86,7 @@ test("style9 -> pandwind -> style9: preserves an actionable concrete round trip"
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		export const styles = // pandwind:migrate-skip (route: pandwind -> style9 | lowering-residual: validation)
@@ -147,10 +147,10 @@ test("style9 -> pandwind -> style9: retains the documented secondary API without
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		const css = createCss();
+		const css = createUnsafeCss();
 		export const styles = css.group({ card: { color: "red" }, muted: { opacity: 0.5 } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -184,7 +184,7 @@ test("style9 -> pandwind -> style9: retains the documented secondary API without
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		export const styles = // pandwind:migrate-skip (route: pandwind -> style9 | lowering-residual: validation)
@@ -260,10 +260,10 @@ test("style9 -> pandwind -> style9: preserves concrete theme and project context
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createCss } from "pandwind/css";
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		const css = createCss();
+		const css = createUnsafeCss();
 		export const styles = css.group({ card: { color: "#2563eb" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -297,7 +297,7 @@ test("style9 -> pandwind -> style9: preserves concrete theme and project context
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { createCss } from "pandwind/css";
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		export const styles = // pandwind:migrate-skip (route: pandwind -> style9 | lowering-residual: validation)
@@ -346,10 +346,10 @@ test("style9 -> pandwind -> style9: preserves concrete theme and project context
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createCss } from "pandwind/css";
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		const css = createCss();
+		const css = createUnsafeCss();
 		export const styles = css.group({ card: { color: "brand" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -383,7 +383,7 @@ test("style9 -> pandwind -> style9: preserves concrete theme and project context
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { createCss } from "pandwind/css";
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		export const styles = // pandwind:migrate-skip (route: pandwind -> style9 | lowering-residual: validation)
@@ -447,10 +447,10 @@ test("style9 -> pandwind -> style9: resolves token values across both concrete l
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		const css = createCss();
+		const css = createUnsafeCss();
 		export const styles = css.group({ card: { color: "brand" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -484,7 +484,7 @@ test("style9 -> pandwind -> style9: resolves token values across both concrete l
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		export const styles = // pandwind:migrate-skip (route: pandwind -> style9 | lowering-residual: validation)

@@ -124,8 +124,8 @@ test("Pandwind emission reuses preset condition keys for stylesheet sources", ()
 
 test("Panda emission keeps Pandwind preset condition keys", () => {
 	const result = runAdapterMigration(
-		'import { createCss } from "pandwind/css";\n' +
-			"const css = createCss();\n" +
+		'import { createUnsafeCss } from "pandwind/unsafe/css";\n' +
+			"const css = createUnsafeCss();\n" +
 			'export const card = css.class({ _hover: { color: "blue.300" } });',
 		{
 			from: CodemodAdapterId.Pandwind,

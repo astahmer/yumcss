@@ -92,12 +92,15 @@ function runtimeImports(file: string, lane: ChakraDocsLane): string {
 function bindRuntimeApi(code: string, file: string, lane: ChakraDocsLane): string {
 	const imports = runtimeImports(file, lane);
 	let generated = code.replace(
-		'import { createCss } from "pandwind/css";\nconst css = createCss();',
+		'import { createUnsafeCss } from "pandwind/unsafe/css";\nconst css = createUnsafeCss();',
 		imports,
 	);
-	if (generated.includes('import { createCss } from "pandwind/css";')) {
-		generated = generated.replace('import { createCss } from "pandwind/css";', imports);
-		generated = generated.replace("const css = createCss();", "");
+	if (generated.includes('import { createUnsafeCss } from "pandwind/unsafe/css";')) {
+		generated = generated.replace(
+			'import { createUnsafeCss } from "pandwind/unsafe/css";',
+			imports,
+		);
+		generated = generated.replace("const css = createUnsafeCss();", "");
 	}
 	generated = generated.replace(
 		'import { pandwindPreset } from "pandwind/preset";',

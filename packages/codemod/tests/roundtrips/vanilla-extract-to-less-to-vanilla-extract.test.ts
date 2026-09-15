@@ -49,8 +49,8 @@ test("vanilla-extract -> less -> vanilla-extract: preserves an actionable concre
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "padding": 8, "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -87,8 +87,8 @@ test("vanilla-extract -> less -> vanilla-extract: preserves an actionable concre
 		  "reverse": {
 		    "changed": false,
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import { createCss } from "pandwind/css";
-		const css = createCss();
+		import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "padding": 8, "color": "red" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -251,8 +251,8 @@ test("vanilla-extract -> less -> vanilla-extract: preserves concrete theme and p
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "padding": 8, "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -289,8 +289,8 @@ test("vanilla-extract -> less -> vanilla-extract: preserves concrete theme and p
 		    "reverse": {
 		      "changed": false,
 		      "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import { createCss } from "pandwind/css";
-		const css = createCss();
+		import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "padding": 8, "color": "#2563eb" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -342,8 +342,8 @@ test("vanilla-extract -> less -> vanilla-extract: preserves concrete theme and p
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "padding": 8, "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -380,8 +380,8 @@ test("vanilla-extract -> less -> vanilla-extract: preserves concrete theme and p
 		    "reverse": {
 		      "changed": false,
 		      "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import { createCss } from "pandwind/css";
-		const css = createCss();
+		import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "padding": 8, "color": "#2563eb" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -447,8 +447,8 @@ test("vanilla-extract -> less -> vanilla-extract: resolves token values across b
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "padding": 8, "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -485,8 +485,8 @@ test("vanilla-extract -> less -> vanilla-extract: resolves token values across b
 		  "reverse": {
 		    "changed": false,
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import { createCss } from "pandwind/css";
-		const css = createCss();
+		import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "padding": 8, "color": "#2563eb" });",
 		    "converted": 0,
 		    "generatedFiles": [],

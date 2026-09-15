@@ -108,8 +108,8 @@ describe("Tailwind official CSS context", () => {
 		expect(result.code).toContain('tabSize: "4"');
 		expect(result.code).toContain('maxWidth: "65ch"');
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { createCss } from "pandwind/css";
-			const css = createCss();
+			"import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const App = () => <div className={css.class({ tabSize: "4", _hover: { tabSize: "4" }, "@media (min-width: 48rem)": { maxWidth: "65ch" } })}/>;"
 		`);
 	});
@@ -128,8 +128,8 @@ describe("Tailwind official CSS context", () => {
 		expect(result.residuals).toEqual([]);
 		expect(result.code).toContain('tabSize: "4"');
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { createCss } from "pandwind/css";
-			const css = createCss();
+			"import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const App = () => <div className={css.class({ "[data-theme=midnight] &": { tabSize: "4" } })}/>;"
 		`);
 	});

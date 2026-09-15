@@ -606,7 +606,10 @@ export function createMuiAdapter(
 			)
 				return {
 					text: `css.class(${programObject(program)})`,
-					imports: ['import { createCss } from "pandwind/css";', "const css = createCss();"],
+					imports: [
+						'import { createUnsafeCss } from "pandwind/unsafe/css";',
+						"const css = createUnsafeCss();",
+					],
 					semantic: program,
 				};
 			if (program.source?.hostOpenTag !== undefined) return { text: programObject(program) };

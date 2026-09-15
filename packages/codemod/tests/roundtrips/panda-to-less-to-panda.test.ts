@@ -49,8 +49,8 @@ test("panda -> less -> panda: preserves an actionable concrete round trip", () =
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "color": "red.300", "_hover": { "color": "blue.300" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -87,8 +87,8 @@ test("panda -> less -> panda: preserves an actionable concrete round trip", () =
 		  "reverse": {
 		    "changed": false,
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import { createCss } from "pandwind/css";
-		const css = createCss();
+		import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "color": "red.300", "_hover": { "color": "blue.300" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -270,8 +270,8 @@ test("panda -> less -> panda: preserves concrete theme and project context varia
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "color": "brand.500", "_hover": { "color": "brand.500" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -308,8 +308,8 @@ test("panda -> less -> panda: preserves concrete theme and project context varia
 		    "reverse": {
 		      "changed": false,
 		      "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import { createCss } from "pandwind/css";
-		const css = createCss();
+		import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "color": "brand.500", "_hover": { "color": "brand.500" } });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -359,8 +359,8 @@ test("panda -> less -> panda: preserves concrete theme and project context varia
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "color": "brand.500", "_hover": { "color": "brand.500" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -397,8 +397,8 @@ test("panda -> less -> panda: preserves concrete theme and project context varia
 		    "reverse": {
 		      "changed": false,
 		      "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import { createCss } from "pandwind/css";
-		const css = createCss();
+		import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "color": "brand.500", "_hover": { "color": "brand.500" } });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -462,8 +462,8 @@ test("panda -> less -> panda: resolves token values across both concrete legs", 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "color": "#2563eb", "_hover": { "color": "blue.300" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -500,8 +500,8 @@ test("panda -> less -> panda: resolves token values across both concrete legs", 
 		  "reverse": {
 		    "changed": false,
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import { createCss } from "pandwind/css";
-		const css = createCss();
+		import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "color": "#2563eb", "_hover": { "color": "blue.300" } });",
 		    "converted": 0,
 		    "generatedFiles": [],

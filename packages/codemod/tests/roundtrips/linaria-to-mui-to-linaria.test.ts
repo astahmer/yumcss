@@ -49,8 +49,8 @@ test("linaria -> mui -> linaria: preserves an actionable concrete round trip", (
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "padding": "1rem", "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -85,8 +85,8 @@ test("linaria -> mui -> linaria: preserves an actionable concrete round trip", (
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "padding": "1rem", "color": "red" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -212,8 +212,8 @@ test("linaria -> mui -> linaria: preserves concrete theme and project context va
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "padding": "1rem", "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -248,8 +248,8 @@ test("linaria -> mui -> linaria: preserves concrete theme and project context va
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "padding": "1rem", "color": "#2563eb" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -263,8 +263,8 @@ test("linaria -> mui -> linaria: preserves concrete theme and project context va
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "padding": "1rem", "color": "primary.main" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -299,8 +299,8 @@ test("linaria -> mui -> linaria: preserves concrete theme and project context va
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "padding": "1rem", "color": "primary.main" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -328,8 +328,8 @@ test("linaria -> mui -> linaria: resolves token values across both concrete legs
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "padding": "1rem", "color": "primary.main" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -364,8 +364,8 @@ test("linaria -> mui -> linaria: resolves token values across both concrete legs
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "padding": "1rem", "color": "primary.main" });",
 		    "converted": 0,
 		    "generatedFiles": [],

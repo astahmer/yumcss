@@ -49,8 +49,8 @@ test("unocss -> pandwind -> unocss: preserves an actionable concrete round trip"
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const App = () => <div className={css.class({ gap: "1rem", alignItems: "center", display: "flex" })}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -221,8 +221,8 @@ test("unocss -> pandwind -> unocss: preserves concrete theme and project context
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const App = () => <div className={css.class({ padding: "card", color: "brand" })}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -256,7 +256,7 @@ test("unocss -> pandwind -> unocss: preserves concrete theme and project context
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { createCss } from "pandwind/css";
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		export const App = () => <div className={// pandwind:migrate-skip (route: pandwind -> unocss | lowering-residual: validation)
 		css.class({ padding: "card", color: "brand" })}/>;",
 		      "converted": 0,
@@ -304,8 +304,8 @@ test("unocss -> pandwind -> unocss: preserves concrete theme and project context
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const App = () => <div className={css.class({ padding: "card", color: "brand" })}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -339,7 +339,7 @@ test("unocss -> pandwind -> unocss: preserves concrete theme and project context
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { createCss } from "pandwind/css";
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		export const App = () => <div className={// pandwind:migrate-skip (route: pandwind -> unocss | lowering-residual: validation)
 		css.class({ padding: "card", color: "brand" })}/>;",
 		      "converted": 0,
@@ -401,8 +401,8 @@ test("unocss -> pandwind -> unocss: resolves token values across both concrete l
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const App = () => <div className={css.class({ padding: "card", color: "brand" })}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -436,7 +436,7 @@ test("unocss -> pandwind -> unocss: resolves token values across both concrete l
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		export const App = () => <div className={// pandwind:migrate-skip (route: pandwind -> unocss | lowering-residual: validation)
 		css.class({ padding: "card", color: "brand" })}/>;",
 		    "converted": 0,

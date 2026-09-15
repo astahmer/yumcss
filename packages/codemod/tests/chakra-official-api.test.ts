@@ -42,8 +42,8 @@ describe("Chakra UI official API forms", () => {
 		expect(routeEvidence(result)).toMatchInlineSnapshot(`
 			{
 			  "changed": true,
-			  "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
+			  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const App = () => <div className={css.class({ padding: "4", backgroundColor: "red.200" })} />;",
 			  "converted": 1,
 			  "generatedFiles": [],
@@ -153,8 +153,8 @@ describe("Chakra UI official API forms", () => {
 		expect(routeEvidence(result)).toMatchInlineSnapshot(`
 			{
 			  "changed": true,
-			  "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
+			  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const App = () => <div className={css.class({ color: "red.200", "& svg": { color: "blue.200" } })} />;",
 			  "converted": 1,
 			  "generatedFiles": [],
@@ -579,8 +579,8 @@ describe("Chakra UI official API forms", () => {
 		expect(routeEvidence(result)).toMatchInlineSnapshot(`
 			{
 			  "changed": true,
-			  "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
+			  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const App = () => <button className={css.class({ backgroundColor: "blue.500", color: "white" })} />;",
 			  "converted": 1,
 			  "generatedFiles": [],
@@ -625,8 +625,8 @@ describe("Chakra UI official API forms", () => {
 		expect(routeEvidence(result)).toMatchInlineSnapshot(`
 			{
 			  "changed": true,
-			  "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
+			  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const card = css.class({ padding: "4", color: "red.200" });",
 			  "converted": 1,
 			  "generatedFiles": [],
@@ -671,8 +671,8 @@ describe("Chakra UI official API forms", () => {
 		expect(routeEvidence(result)).toMatchInlineSnapshot(`
 			{
 			  "changed": true,
-			  "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
+			  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const card = css.class({ padding: "4", color: "red.200" });",
 			  "converted": 1,
 			  "generatedFiles": [],
@@ -774,8 +774,8 @@ describe("Chakra UI official API forms", () => {
 			{
 			  "changed": true,
 			  "code": "import { defaultSystem } from "@chakra-ui/react";
-			import { createCss } from "pandwind/css";
-			const css = createCss();
+			import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const card = css.vars({ backgroundColor: defaultSystem.token.var("colors.blue.200"), color: defaultSystem.token("colors.red.200") });",
 			  "converted": 1,
 			  "generatedFiles": [],

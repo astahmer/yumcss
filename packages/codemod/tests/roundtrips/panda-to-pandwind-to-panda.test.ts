@@ -49,8 +49,8 @@ test("panda -> pandwind -> panda: preserves an actionable concrete round trip", 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ color: "red.300", _hover: { color: "blue.300" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -133,9 +133,9 @@ test("panda -> pandwind -> panda: retains the documented secondary API without s
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		import { createRecipe as __pandwindcreateRecipe } from "../__pandwind/recipe";
-		const css = createCss();
+		const css = createUnsafeCss();
 		export const button = __pandwindcreateRecipe(css, { base: { color: "red" }, variants: { "size": { "sm": { padding: "2" } } } });",
 		    "converted": 1,
 		    "generatedFiles": [
@@ -237,8 +237,8 @@ test("panda -> pandwind -> panda: preserves concrete theme and project context v
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ color: "brand", _hover: { color: "brand" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -309,8 +309,8 @@ test("panda -> pandwind -> panda: preserves concrete theme and project context v
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ color: "brand", _hover: { color: "brand" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -395,8 +395,8 @@ test("panda -> pandwind -> panda: resolves token values across both concrete leg
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ color: "brand", _hover: { color: "blue.300" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -466,3 +466,4 @@ test("panda -> pandwind -> panda: resolves token values across both concrete leg
 		}
 	`)
 });
+

@@ -14,7 +14,7 @@ import {
 
 const route = createAdapterRouteSpec(CodemodAdapterId.ChakraUi, CodemodAdapterId.Pandwind);
 	const happySource = "import { Box } from \"@chakra-ui/react\";\nexport const App = () => <Box bg=\"red.200\" p=\"4\" />;";
-const edgeSource = "import { useRecipe } from \"@chakra-ui/react\";\nexport const button = useRecipe(buttonRecipe);";
+const edgeSource = "import { defineRecipe, useRecipe } from \"@chakra-ui/react\";\nconst buttonRecipe = defineRecipe({ base: { color: \"red\" } });\nexport const button = useRecipe({ recipe: buttonRecipe });";
 const malformedSource = "import { Box } from \"@chakra-ui/react\";\nexport const App = () => <Box bg=\"red.200\" p=\"4\" />;\nconst unfinished = { /* unfinished chakra-ui */";
 const sourceSemantic = { source: { framework: BuiltinHostFramework.React } };
 const themedSource = "import { Box } from \"@chakra-ui/react\";\nexport const App = () => <Box bg=\"brand.500\" p=\"4\" />;";
@@ -47,8 +47,8 @@ test("chakra-ui -> pandwind: migrates concrete chakra-ui syntax to pandwind", ()
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const App = () => <div className={css.class({ padding: "4", backgroundColor: "red.200" })} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -91,9 +91,10 @@ test("chakra-ui -> pandwind: carries a documented secondary chakra-ui API explic
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { useRecipe } from "@chakra-ui/react";
-		export const button = // pandwind:migrate-skip (route: chakra-ui -> pandwind | parse-residual: composition | available: named-map, residual)
-		useRecipe(buttonRecipe);",
+		  "code": "import { defineRecipe, useRecipe } from "@chakra-ui/react";
+		const buttonRecipe = // pandwind:migrate-skip (route: chakra-ui -> pandwind | parse-residual: composition | available: named-map, residual)
+		defineRecipe({ base: { color: "red" } });
+		export const button = useRecipe({ recipe: buttonRecipe });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -115,7 +116,7 @@ test("chakra-ui -> pandwind: carries a documented secondary chakra-ui API explic
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "Chakra recipe usage requires explicit variant/component lowering",
+		      "hint": "Chakra recipes and attached factory styles require explicit composition lowering",
 		      "kind": "composition",
 		      "preserved": undefined,
 		    },
@@ -142,8 +143,8 @@ test("chakra-ui -> pandwind: loads concrete theme and project context variants",
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const App = () => <div className={css.class({ padding: "4", backgroundColor: "brand" })} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -177,8 +178,8 @@ test("chakra-ui -> pandwind: loads concrete theme and project context variants",
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const App = () => <div className={css.class({ padding: "4", backgroundColor: "brand" })} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -224,8 +225,8 @@ test("chakra-ui -> pandwind: resolves concrete token values with project context
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const App = () => <div className={css.class({ padding: "4", backgroundColor: "brand" })} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -268,8 +269,8 @@ test("chakra-ui -> pandwind: preserves malformed concrete chakra-ui input", () =
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const App = () => <div className={css.class({ padding: "4", backgroundColor: "red.200" })} />;
 		const unfinished = { /* unfinished chakra-ui */",
 		  "converted": 1,
@@ -304,3 +305,4 @@ test("chakra-ui -> pandwind: preserves malformed concrete chakra-ui input", () =
 		}
 	`)
 });
+

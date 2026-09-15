@@ -49,8 +49,8 @@ test("treat -> pandwind -> treat: preserves an actionable concrete round trip", 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ padding: 8, color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -135,8 +135,8 @@ test("treat -> pandwind -> treat: retains the documented secondary API without s
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ padding: 8, color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -236,8 +236,8 @@ test("treat -> pandwind -> treat: preserves concrete theme and project context v
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ padding: 8, color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -310,8 +310,8 @@ test("treat -> pandwind -> treat: preserves concrete theme and project context v
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ padding: 8, color: "brand" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -399,8 +399,8 @@ test("treat -> pandwind -> treat: resolves token values across both concrete leg
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ padding: 8, color: "brand" });",
 		    "converted": 1,
 		    "generatedFiles": [],

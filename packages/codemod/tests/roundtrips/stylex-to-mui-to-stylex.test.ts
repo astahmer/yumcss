@@ -15,12 +15,12 @@ import {
 
 const forward = createAdapterRouteSpec(CodemodAdapterId.StyleX, CodemodAdapterId.Mui);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.Mui, CodemodAdapterId.StyleX);
-	const happySource = "import stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"red\", padding: 8 } });";
-const edgeSource = "import stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"red\" } });";
-const malformedSource = "import stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"red\", padding: 8 } });\nconst unfinished = { /* unfinished stylex */";
+	const happySource = "import * as stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"red\", padding: 8 } });";
+const edgeSource = "import * as stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"red\" } });";
+const malformedSource = "import * as stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"red\", padding: 8 } });\nconst unfinished = { /* unfinished stylex */";
 const sourceSemantic = undefined;
-const themedSource = "import stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"#2563eb\", padding: 8 } });";
-const tokenSource = "import stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"#2563eb\", padding: 8 } });";
+const themedSource = "import * as stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"#2563eb\", padding: 8 } });";
+const tokenSource = "import * as stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"#2563eb\", padding: 8 } });";
 const blueSemantic = undefined;
 const amberSemantic = undefined;
 const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
@@ -49,8 +49,8 @@ test("stylex -> mui -> stylex: preserves an actionable concrete round trip", () 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const styles = { "card": css.class({ padding: "8px", color: "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -85,8 +85,8 @@ test("stylex -> mui -> stylex: preserves an actionable concrete round trip", () 
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const styles = { "card": css.class({ padding: "8px", color: "red" }) };",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -112,8 +112,8 @@ test("stylex -> mui -> stylex: retains the documented secondary API without sile
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const styles = { "card": css.class({ color: "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -148,8 +148,8 @@ test("stylex -> mui -> stylex: retains the documented secondary API without sile
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const styles = { "card": css.class({ color: "red" }) };",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -190,8 +190,8 @@ test("stylex -> mui -> stylex: preserves concrete theme and project context vari
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const styles = { "card": css.class({ padding: "8px", color: "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -226,8 +226,8 @@ test("stylex -> mui -> stylex: preserves concrete theme and project context vari
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const styles = { "card": css.class({ padding: "8px", color: "#2563eb" }) };",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -241,8 +241,8 @@ test("stylex -> mui -> stylex: preserves concrete theme and project context vari
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const styles = { "card": css.class({ padding: "8px", color: "primary.main" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -277,8 +277,8 @@ test("stylex -> mui -> stylex: preserves concrete theme and project context vari
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const styles = { "card": css.class({ padding: "8px", color: "primary.main" }) };",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -306,8 +306,8 @@ test("stylex -> mui -> stylex: resolves token values across both concrete legs",
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const styles = { "card": css.class({ padding: "8px", color: "primary.main" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -342,8 +342,8 @@ test("stylex -> mui -> stylex: resolves token values across both concrete legs",
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const styles = { "card": css.class({ padding: "8px", color: "primary.main" }) };",
 		    "converted": 0,
 		    "generatedFiles": [],

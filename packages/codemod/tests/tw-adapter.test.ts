@@ -16,6 +16,7 @@
 import { describe, expect, test } from "vitest";
 import { createCx } from "pandwind/cx";
 import { createCss } from "pandwind/css";
+import { createUnsafeCss } from "pandwind/unsafe/css";
 import { createDesignCss } from "pandwind/design";
 import { examplePreset } from "@pandwind/example-preset";
 import { createTwAdapter } from "pandwind/tw";
@@ -51,7 +52,8 @@ async function setUp() {
 	const { twTs } = await generateDesignSystem(THEME_ENTRY, BASE);
 	const config = extractTwConfig(twTs)!;
 	const adapter = createTwAdapter({ preset: examplePreset, variants: config.variants, bridge });
-	const css = createCss({ className: adapter });
+	const css = createCss(examplePreset, { className: adapter });
+	const unsafeCss = createUnsafeCss({ className: adapter });
 	const dss = createDesignCss(examplePreset, { className: adapter });
 	const cx = createCx({
 		css,
@@ -61,7 +63,7 @@ async function setUp() {
 	});
 	const tw = (styles: Parameters<typeof compileStyles>[0]) =>
 		compileStyles(styles, config.variants, config.conflicts, config.compose);
-	return { bridge, config, adapter, css, dss, cx, tw };
+	return { bridge, config, adapter, css, unsafeCss, dss, cx, tw };
 }
 
 describe("the tailwind adapter", () => {
@@ -111,7 +113,7 @@ describe("the tailwind adapter", () => {
 		expect(s.css.class({ sm: { color: "$blue-500" } })).toBe("sm:text-blue-500");
 		expect(s.tw({ sm: { text: "blue-500" } })).toBe("sm:text-blue-500");
 
-		expect(s.css.class({ group: { hover: { color: "$blue-500" } } })).toBe(
+		expect(s.unsafeCss.class({ group: { hover: { color: "#3182ce" } } })).toBe(
 			"group-hover:text-blue-500",
 		);
 		expect(s.tw({ group: { hover: { text: "blue-500" } } })).toBe("group-hover:text-blue-500");
@@ -120,10 +122,10 @@ describe("the tailwind adapter", () => {
 	test("values without a bridge entry fall back to arbitrary property classes", async () => {
 		const s = await setUp();
 		// 3.5rem folds to calc(var(--spacing) * 14) -> the short `w-14`.
-		expect(s.css.class({ width: "3.5rem" })).toBe("w-14");
-		expect(s.css.class({ width: "13px" })).toBe("[width:13px]");
-		expect(s.css.class({ marginTop: "7px" })).toBe("[margin-top:7px]");
-		expect(s.css.class({ opacity: 0.5 } as never)).toBe("[opacity:0.5]");
+		expect(s.unsafeCss.class({ width: "3.5rem" })).toBe("w-14");
+		expect(s.unsafeCss.class({ width: "13px" })).toBe("[width:13px]");
+		expect(s.unsafeCss.class({ marginTop: "7px" })).toBe("[margin-top:7px]");
+		expect(s.unsafeCss.class({ opacity: 0.5 })).toBe("[opacity:0.5]");
 	});
 
 	test("every emitted class compiles in real Tailwind", async () => {

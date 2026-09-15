@@ -49,8 +49,8 @@ test("authored-css -> pandwind -> authored-css: preserves an actionable concrete
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const styles = { "card": css.class({ padding: "1rem", color: "red" }) };
 		export default styles;",
 		    "converted": 1,
@@ -85,8 +85,8 @@ test("authored-css -> pandwind -> authored-css: preserves an actionable concrete
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const styles = { "card": css.class({ "padding": "1rem", "color": "red" }) };
 		export default styles;",
 		    "converted": 1,
@@ -137,10 +137,10 @@ test("authored-css -> pandwind -> authored-css: retains the documented secondary
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		import { createRuntimeCss } from "pandwind/css/runtime";
 		import { pandwindPreset } from "pandwind/preset";
-		const css = createCss();
+		const css = createUnsafeCss();
 		const runtimeCss = createRuntimeCss(pandwindPreset);
 		export const styles = { "card": css.class({ _osDark: { color: "white" } }), "pulse": (() => { const name = "pw-kf-pulse"; runtimeCss.sheet.registerSemanticRules([{ kind: "keyframes", name, children: [{ kind: "style", selector: "from", declarations: [{ property: "opacity", value: "0" }] }, { kind: "style", selector: "to", declarations: [{ property: "opacity", value: "1" }] }] }]); return name; })() };
 		export default styles;",
@@ -197,8 +197,8 @@ test("authored-css -> pandwind -> authored-css: retains the documented secondary
 		    "changed": true,
 		    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
 		import { pandwindPreset } from "pandwind/preset";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
+		import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		const runtimeCss = createRuntimeCss(pandwindPreset);
 		export const styles = { "card": css.class({ "_osDark": { "color": "white" } }), "pulse": // pandwind:migrate-skip (route: pandwind -> authored-css | capability-blocked: nesting: keyframes nested rules | available: static, residual)
 		(() => { const name = "pw-kf-pulse"; runtimeCss.sheet.registerSemanticRules([{ kind: "keyframes", name, children: [{ kind: "style", selector: "from", declarations: [{ property: "opacity", value: "0" }] }, { kind: "style", selector: "to", declarations: [{ property: "opacity", value: "1" }] }] }]); return name; })() };
@@ -287,8 +287,8 @@ test("authored-css -> pandwind -> authored-css: preserves concrete theme and pro
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const styles = { "card": css.class({ padding: "1rem", color: "#2563eb" }) };
 		export default styles;",
 		      "converted": 1,
@@ -323,8 +323,8 @@ test("authored-css -> pandwind -> authored-css: preserves concrete theme and pro
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const styles = { "card": css.class({ "padding": "1rem", "color": "#2563eb" }) };
 		export default styles;",
 		      "converted": 1,
@@ -363,8 +363,8 @@ test("authored-css -> pandwind -> authored-css: preserves concrete theme and pro
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const styles = { "card": css.class({ padding: "1rem", color: "brand" }) };
 		export default styles;",
 		      "converted": 1,
@@ -399,8 +399,8 @@ test("authored-css -> pandwind -> authored-css: preserves concrete theme and pro
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const styles = { "card": css.class({ "padding": "1rem", "color": "brand" }) };
 		export default styles;",
 		      "converted": 1,
@@ -453,8 +453,8 @@ test("authored-css -> pandwind -> authored-css: resolves token values across bot
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const styles = { "card": css.class({ padding: "1rem", color: "brand" }) };
 		export default styles;",
 		    "converted": 1,
@@ -489,8 +489,8 @@ test("authored-css -> pandwind -> authored-css: resolves token values across bot
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const styles = { "card": css.class({ "padding": "1rem", "color": "brand" }) };
 		export default styles;",
 		    "converted": 1,

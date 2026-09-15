@@ -21,7 +21,7 @@ describe("react-strict-dom codemod adapter", () => {
 		expect(result.converted).toBe(1);
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
-		expect(result.code).toContain('import { createCss } from "pandwind/css";');
+		expect(result.code).toContain('import { createUnsafeCss } from "pandwind/unsafe/css";');
 		expect(result.code).toContain('const styles = { "card": css.class');
 		expect(result.code).toContain("<div className={styles.card} />");
 		expect(result.code).not.toContain("react-strict-dom");
@@ -30,7 +30,7 @@ describe("react-strict-dom codemod adapter", () => {
 
 	test("emits real RSD css.create and html style syntax from Pandwind", () => {
 		const result = migrate(
-			'import { createCss } from "pandwind/css";\nconst css = createCss();\nexport const Card = () => <div className={css.class({ color: "red", padding: "1rem" })} />;',
+			'import { createUnsafeCss } from "pandwind/unsafe/css";\nconst css = createUnsafeCss();\nexport const Card = () => <div className={css.class({ color: "red", padding: "1rem" })} />;',
 			CodemodAdapterId.Pandwind,
 			CodemodAdapterId.ReactStrictDom,
 		);

@@ -47,8 +47,8 @@ test("panda -> mui: migrates concrete panda syntax to mui", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "color": "red.300", "_hover": { "color": "blue.300" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -156,8 +156,8 @@ test("panda -> mui: loads concrete theme and project context variants", async ()
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "color": "primary.main", "_hover": { "color": "primary.main" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -192,8 +192,8 @@ test("panda -> mui: loads concrete theme and project context variants", async ()
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "color": "primary.main", "_hover": { "color": "primary.main" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -240,8 +240,8 @@ test("panda -> mui: resolves concrete token values with project context", async 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "color": "primary.main", "_hover": { "color": "blue.300" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -285,8 +285,8 @@ test("panda -> mui: preserves malformed concrete panda input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "color": "red.300", "_hover": { "color": "blue.300" } });
 		const unfinished = { /* unfinished panda */",
 		  "converted": 1,

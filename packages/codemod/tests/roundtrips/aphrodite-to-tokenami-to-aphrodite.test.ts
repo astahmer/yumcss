@@ -167,8 +167,8 @@ test("aphrodite -> tokenami -> aphrodite: retains the documented secondary API w
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const styles = { "fonts": css.vars({ "fontFace": { fontFamily: "Inter", src: "url(inter.woff2)" } }) };",
 		    "converted": 1,
 		    "generatedFiles": [],

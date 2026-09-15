@@ -76,7 +76,7 @@ import {
 	type PreparedAdapterMigration,
 } from "./adapter-migration-preparation.ts";
 
-const generatedCssBindingPattern = /\b(?:css|targetCss|pwCss)\s*=\s*createCss\(\)/u;
+const generatedCssBindingPattern = /\b(?:css|targetCss|pwCss)\s*=\s*createUnsafeCss\(\)/u;
 const runtimeCssBindingPattern = /\b(?:css|targetCss|pwCss)\s*=\s*createRuntimeCss\(/u;
 
 const sourceModuleOwnership = (
@@ -1481,10 +1481,10 @@ function runAdapterMigrationInternal(
 		code = MigrationOutput.removeNamedImportSpecifiers(
 			code,
 			[...sourceModulesForRemoval, ...sourceModulesToRemove],
-			["css", "createCss", "createRuntimeCss"],
+			["css", "createCss", "createUnsafeCss", "createRuntimeCss"],
 		);
 		if (
-			imports.has('import { createCss } from "pandwind/css";') ||
+			imports.has('import { createUnsafeCss } from "pandwind/unsafe/css";') ||
 			imports.has('import { createRuntimeCss } from "pandwind/css/runtime";')
 		)
 			code = MigrationOutput.removeNamedImportSpecifiers(code, sourceModulesForRemoval, ["css"]);
@@ -1495,7 +1495,7 @@ function runAdapterMigrationInternal(
 	}
 	if (converted > 0 && skipped === 0 && residuals.length === 0) {
 		const generatedTargetBinding =
-			/\b(?:const|let|var)\s+(targetCss|pwCss)\s*=\s*createCss\(|\bcss\s+as\s+(targetCss|pwCss)\b/u.exec(
+			/\b(?:const|let|var)\s+(targetCss|pwCss)\s*=\s*createUnsafeCss\(|\bcss\s+as\s+(targetCss|pwCss)\b/u.exec(
 				[code, ...imports, ...generatedStatements].join("\n"),
 			);
 		const binding = generatedTargetBinding?.[1] ?? generatedTargetBinding?.[2];
@@ -1520,7 +1520,7 @@ function runAdapterMigrationInternal(
 			runtimeCssBindingPattern.test(statement),
 		);
 		if (runtimeUsesSameBinding) {
-			imports.delete('import { createCss } from "pandwind/css";');
+			imports.delete('import { createUnsafeCss } from "pandwind/unsafe/css";');
 			for (const statement of imports)
 				if (generatedCssBindingPattern.test(statement)) imports.delete(statement);
 		}
@@ -1528,13 +1528,13 @@ function runAdapterMigrationInternal(
 		// binding. Remove only a legacy same-name initializer after a complete
 		// migration, where retaining it would redeclare that local.
 		if (converted > 0 && skipped === 0 && residuals.length === 0 && runtimeUsesSameBinding)
-			code = MigrationOutput.removeGeneratedStatements(code, ["const css = createCss();"]);
+			code = MigrationOutput.removeGeneratedStatements(code, ["const css = createUnsafeCss();"]);
 	}
 	const targetUsesPandwindCss =
-		imports.has('import { createCss } from "pandwind/css";') ||
+		imports.has('import { createUnsafeCss } from "pandwind/unsafe/css";') ||
 		imports.has('import { createRuntimeCss } from "pandwind/css/runtime";');
 	if (!targetUsesPandwindCss)
-		code = MigrationOutput.removeGeneratedStatements(code, ["const css = createCss();"]);
+		code = MigrationOutput.removeGeneratedStatements(code, ["const css = createUnsafeCss();"]);
 	const outputFile = support.fileWithExtension(options.file, outputExtension);
 	for (const statement of generatedStatements)
 		code = support.ensureGeneratedStatement(code, statement, outputFile);
@@ -1548,7 +1548,7 @@ function runAdapterMigrationInternal(
 		code = MigrationOutput.removeUnreferencedImportSpecifiers(code, ["sourceCss"]);
 	} else {
 		const generatedTargetBinding =
-			/\b(?:const|let|var)\s+(targetCss|pwCss)\s*=\s*createCss\(|\bcss\s+as\s+(targetCss|pwCss)\b/u.exec(
+			/\b(?:const|let|var)\s+(targetCss|pwCss)\s*=\s*createUnsafeCss\(|\bcss\s+as\s+(targetCss|pwCss)\b/u.exec(
 				code,
 			);
 		const binding = generatedTargetBinding?.[1] ?? generatedTargetBinding?.[2];

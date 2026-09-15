@@ -86,8 +86,8 @@ test("css-modules -> react-native -> css-modules: preserves an actionable concre
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const styles = { "card": css.class({ "padding": "1rem", "color": "red" }) };
 		export default styles;",
 		    "converted": 1,
@@ -196,8 +196,8 @@ test("css-modules -> react-native -> css-modules: retains the documented seconda
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const styles = { "card": css.class({ "color": "red" }), "primary": css.class({ "color": "red", "fontWeight": "600" }) };
 		export default styles;",
 		    "converted": 2,
@@ -321,8 +321,8 @@ test("css-modules -> react-native -> css-modules: preserves concrete theme and p
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const styles = { "card": css.class({ "padding": "1rem", "color": "#2563eb" }) };
 		export default styles;",
 		      "converted": 1,
@@ -398,8 +398,8 @@ test("css-modules -> react-native -> css-modules: preserves concrete theme and p
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const styles = { "card": css.class({ "padding": "1rem", "color": "#2563eb" }) };
 		export default styles;",
 		      "converted": 1,
@@ -489,8 +489,8 @@ test("css-modules -> react-native -> css-modules: resolves token values across b
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const styles = { "card": css.class({ "padding": "1rem", "color": "#2563eb" }) };
 		export default styles;",
 		    "converted": 1,

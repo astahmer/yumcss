@@ -152,11 +152,11 @@ function wrapDesignRawObjects(source: string): string {
 function useDesignApi(source: string): string {
 	let output = wrapDesignRawObjects(source);
 	output = output.replace(
-		/import \{ createCss \} from "pandwind\/css";/g,
+		/import \{ createUnsafeCss \} from "pandwind\/unsafe\/css";/g,
 		'import { createDesignCss } from "pandwind/design";\nimport { pandwindPreset } from "pandwind/preset";',
 	);
 	output = output.replace(
-		/((?:const|let|var)\s+[A-Za-z_$][\w$]*\s*=\s*)createCss\(\);/g,
+		/((?:const|let|var)\s+[A-Za-z_$][\w$]*\s*=\s*)createUnsafeCss\(\);/g,
 		"$1createDesignCss(pandwindPreset);",
 	);
 	return output;
@@ -165,11 +165,11 @@ function useDesignApi(source: string): string {
 function useRuntimeApi(source: string): string {
 	return source
 		.replace(
-			/import \{ createCss \} from "pandwind\/css";/g,
+			/import \{ createUnsafeCss \} from "pandwind\/unsafe\/css";/g,
 			'import { createRuntimeCss } from "pandwind/css/runtime";\nimport { pandwindPreset } from "pandwind/preset";',
 		)
 		.replace(
-			/((?:const|let|var)\s+[A-Za-z_$][\w$]*\s*=\s*)createCss\(\);/g,
+			/((?:const|let|var)\s+[A-Za-z_$][\w$]*\s*=\s*)createUnsafeCss\(\);/g,
 			"$1createRuntimeCss({ ...pandwindPreset, _config: {} as Record<string, unknown>, strict: false, properties: { $all: true } });",
 		);
 }

@@ -13,12 +13,12 @@ import {
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.StyleX, CodemodAdapterId.Sass);
-	const happySource = "import stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"red\", padding: 8 } });";
-const edgeSource = "import stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"red\" } });";
-const malformedSource = "import stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"red\", padding: 8 } });\nconst unfinished = { /* unfinished stylex */";
+	const happySource = "import * as stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"red\", padding: 8 } });";
+const edgeSource = "import * as stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"red\" } });";
+const malformedSource = "import * as stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"red\", padding: 8 } });\nconst unfinished = { /* unfinished stylex */";
 const sourceSemantic = undefined;
-const themedSource = "import stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"#2563eb\", padding: 8 } });";
-const tokenSource = "import stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"#2563eb\", padding: 8 } });";
+const themedSource = "import * as stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"#2563eb\", padding: 8 } });";
+const tokenSource = "import * as stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"#2563eb\", padding: 8 } });";
 const blueSemantic = undefined;
 const amberSemantic = undefined;
 const blueTargetSemantic = undefined;
@@ -47,7 +47,7 @@ test("stylex -> sass: migrates concrete stylex syntax to sass", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import stylex from "@stylexjs/stylex";
+		  "code": "import * as stylex from "@stylexjs/stylex";
 		export const styles = // pandwind:migrate-skip (route: stylex -> sass | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
 		stylex.create({ card: { color: "red", padding: 8 } });",
 		  "converted": 0,
@@ -93,7 +93,7 @@ test("stylex -> sass: carries a documented secondary stylex API explicitly", () 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import stylex from "@stylexjs/stylex";
+		  "code": "import * as stylex from "@stylexjs/stylex";
 		export const styles = // pandwind:migrate-skip (route: stylex -> sass | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
 		stylex.create({ card: { color: "red" } });",
 		  "converted": 0,
@@ -148,7 +148,7 @@ test("stylex -> sass: loads concrete theme and project context variants", async 
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import stylex from "@stylexjs/stylex";
+		    "code": "import * as stylex from "@stylexjs/stylex";
 		export const styles = // pandwind:migrate-skip (route: stylex -> sass | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
 		stylex.create({ card: { color: "#2563eb", padding: 8 } });",
 		    "converted": 0,
@@ -185,7 +185,7 @@ test("stylex -> sass: loads concrete theme and project context variants", async 
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import stylex from "@stylexjs/stylex";
+		    "code": "import * as stylex from "@stylexjs/stylex";
 		export const styles = // pandwind:migrate-skip (route: stylex -> sass | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
 		stylex.create({ card: { color: "#2563eb", padding: 8 } });",
 		    "converted": 0,
@@ -234,7 +234,7 @@ test("stylex -> sass: resolves concrete token values with project context", asyn
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import stylex from "@stylexjs/stylex";
+		  "code": "import * as stylex from "@stylexjs/stylex";
 		export const styles = // pandwind:migrate-skip (route: stylex -> sass | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
 		stylex.create({ card: { color: "#2563eb", padding: 8 } });",
 		  "converted": 0,
@@ -280,7 +280,7 @@ test("stylex -> sass: preserves malformed concrete stylex input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import stylex from "@stylexjs/stylex";
+		  "code": "import * as stylex from "@stylexjs/stylex";
 		export const styles = // pandwind:migrate-skip (route: stylex -> sass | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
 		stylex.create({ card: { color: "red", padding: 8 } });
 		const unfinished = { /* unfinished stylex */",

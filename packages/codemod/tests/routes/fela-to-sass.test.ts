@@ -14,7 +14,7 @@ import {
 
 const route = createAdapterRouteSpec(CodemodAdapterId.Fela, CodemodAdapterId.Sass);
 	const happySource = "import { createRenderer } from \"fela\";\nconst renderer = createRenderer();\nexport const card = renderer.renderRule(() => ({ color: \"red\" }));";
-const edgeSource = "import { createComponent } from \"react-fela\";\nexport const Card = createComponent(() => ({ color: \"red\" }));";
+const edgeSource = "import { createComponent } from \"react-fela\";\nexport const Card = createComponent(() => ({ color: \"red\" }), \"button\");";
 const malformedSource = "import { createRenderer } from \"fela\";\nconst renderer = createRenderer();\nexport const card = renderer.renderRule(() => ({ color: \"red\" }));\nconst unfinished = { /* unfinished fela */";
 const sourceSemantic = undefined;
 const themedSource = "import { createRenderer } from \"fela\";\nconst renderer = createRenderer();\nexport const card = renderer.renderRule(() => ({ color: \"#2563eb\" }));";
@@ -48,8 +48,8 @@ test("fela -> sass: migrates concrete fela syntax to sass", () => {
 		{
 		  "changed": true,
 		  "code": "import { createRenderer } from "fela";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
+		import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		const renderer = createRenderer();
 		export const card = css.class({ "color": "red" });",
 		  "converted": 1,
@@ -96,8 +96,8 @@ test("fela -> sass: carries a documented secondary fela API explicitly", () => {
 		{
 		  "changed": true,
 		  "code": "import { createComponent } from "react-fela";
-		export const Card = // pandwind:migrate-skip (route: fela -> sass | parse-residual: component | available: residual)
-		createComponent(() => ({ color: "red" }));",
+		export const Card = // pandwind:migrate-skip (route: fela -> sass | capability-blocked: components: component subject: styled("button") | available: static, residual, portable-artifact)
+		createComponent(() => ({ color: "red" }), "button");",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -106,22 +106,24 @@ test("fela -> sass: carries a documented secondary fela API explicitly", () => {
 		        "dynamic-and-theme",
 		      ],
 		      "availableRepresentations": [
+		        "static",
 		        "residual",
+		        "portable-artifact",
 		      ],
-		      "representation": "residual",
+		      "representation": "static",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "residual",
+		      "representation": "portable-artifact",
 		    },
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "Fela createComponent requires a style function and a host component",
-		      "kind": "component",
+		      "hint": "components: component subject: styled("button")",
+		      "kind": "capability",
 		      "preserved": undefined,
 		    },
 		  ],
@@ -149,8 +151,8 @@ test("fela -> sass: loads concrete theme and project context variants", async ()
 		  "amber": {
 		    "changed": true,
 		    "code": "import { createRenderer } from "fela";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
+		import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		const renderer = createRenderer();
 		export const card = css.class({ "color": "#2563eb" });",
 		    "converted": 1,
@@ -188,8 +190,8 @@ test("fela -> sass: loads concrete theme and project context variants", async ()
 		  "blue": {
 		    "changed": true,
 		    "code": "import { createRenderer } from "fela";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
+		import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		const renderer = createRenderer();
 		export const card = css.class({ "color": "#2563eb" });",
 		    "converted": 1,
@@ -239,8 +241,8 @@ test("fela -> sass: resolves concrete token values with project context", async 
 		{
 		  "changed": true,
 		  "code": "import { createRenderer } from "fela";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
+		import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		const renderer = createRenderer();
 		export const card = css.class({ "color": "#2563eb" });",
 		  "converted": 1,
@@ -287,8 +289,8 @@ test("fela -> sass: preserves malformed concrete fela input", () => {
 		{
 		  "changed": true,
 		  "code": "import { createRenderer } from "fela";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
+		import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		const renderer = createRenderer();
 		export const card = css.class({ "color": "red" });
 		const unfinished = { /* unfinished fela */",

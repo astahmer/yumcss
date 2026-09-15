@@ -84,8 +84,8 @@ test("authored-css -> panda -> authored-css: preserves an actionable concrete ro
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const styles = { "card": css.class({ "padding": "1rem", "color": "red" }) };
 		export default styles;",
 		    "converted": 1,
@@ -272,8 +272,8 @@ test("authored-css -> panda -> authored-css: preserves concrete theme and projec
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const styles = { "card": css.class({ "padding": "1rem", "color": "#2563eb" }) };
 		export default styles;",
 		      "converted": 1,
@@ -347,8 +347,8 @@ test("authored-css -> panda -> authored-css: preserves concrete theme and projec
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const styles = { "card": css.class({ "padding": "1rem", "color": "brand.500" }) };
 		export default styles;",
 		      "converted": 1,
@@ -436,8 +436,8 @@ test("authored-css -> panda -> authored-css: resolves token values across both c
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const styles = { "card": css.class({ "padding": "1rem", "color": "brand.500" }) };
 		export default styles;",
 		    "converted": 1,

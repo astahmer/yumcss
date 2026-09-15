@@ -77,11 +77,17 @@ export class PortableStyleArtifact {
 		return dynamic
 			? {
 					text: `css.vars(${objectText(program)})`,
-					imports: ['import { createCss } from "pandwind/css";', "const css = createCss();"],
+					imports: [
+						'import { createUnsafeCss } from "pandwind/unsafe/css";',
+						"const css = createUnsafeCss();",
+					],
 				}
 			: {
 					text: `css.class(${objectText(program)})`,
-					imports: ['import { createCss } from "pandwind/css";', "const css = createCss();"],
+					imports: [
+						'import { createUnsafeCss } from "pandwind/unsafe/css";',
+						"const css = createUnsafeCss();",
+					],
 				};
 	}
 

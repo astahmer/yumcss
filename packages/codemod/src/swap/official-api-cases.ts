@@ -24,7 +24,7 @@ export function officialApiCases(): readonly OfficialApiCase[] {
 			name: "css.class object",
 			file: "styles.ts",
 			source:
-				'import { createCss } from "pandwind/css";\nconst css = createCss();\nexport const card = css.class({ color: "red", padding: "1rem" });',
+				'import { createUnsafeCss } from "pandwind/unsafe/css";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: "red", padding: "1rem" });',
 			documentation: "/api/css/",
 		},
 		{
@@ -32,7 +32,7 @@ export function officialApiCases(): readonly OfficialApiCase[] {
 			name: "css.vars object",
 			file: "styles.ts",
 			source:
-				'import { createCss } from "pandwind/css";\nconst css = createCss();\nexport const card = css.vars({ color: "var(--card-color)" });',
+				'import { createUnsafeCss } from "pandwind/unsafe/css";\nconst css = createUnsafeCss();\nexport const card = css.vars({ color: "var(--card-color)" });',
 			documentation: "/api/css/",
 		},
 		{
@@ -306,7 +306,7 @@ export function officialApiFamilyCases(): readonly OfficialApiFamilyCase[] {
 			expectation: "identity",
 			file: "styles.ts",
 			source:
-				'import { createCss } from "pandwind/css";\nconst css = createCss();\nexport const styles = css.group({ card: { color: "red" }, muted: { opacity: 0.5 } });',
+				'import { createUnsafeCss } from "pandwind/unsafe/css";\nconst css = createUnsafeCss();\nexport const styles = css.group({ card: { color: "red" }, muted: { opacity: 0.5 } });',
 		},
 		{
 			adapter: CodemodAdapterId.Panda,
@@ -314,7 +314,7 @@ export function officialApiFamilyCases(): readonly OfficialApiFamilyCase[] {
 			expectation: "converted",
 			file: "styles.ts",
 			source:
-				'import { cva } from "styled-system/css";\nexport const button = cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });',
+				'import { cva } from "styled-system/recipes";\nexport const button = cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });',
 		},
 		{
 			adapter: CodemodAdapterId.Panda,
@@ -322,7 +322,7 @@ export function officialApiFamilyCases(): readonly OfficialApiFamilyCase[] {
 			expectation: "converted",
 			file: "styles.ts",
 			source:
-				'import { sva } from "styled-system/css";\nexport const card = sva({ slots: ["root", "label"], base: { root: { color: "red" } } });',
+				'import { sva } from "styled-system/recipes";\nexport const card = sva({ slots: ["root", "label"], base: { root: { color: "red" } } });',
 		},
 		{
 			adapter: CodemodAdapterId.Panda,

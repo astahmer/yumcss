@@ -174,8 +174,8 @@ test("mui -> aphrodite -> mui: retains the documented secondary API without sile
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { styled } from "@mui/system";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
+		import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const Card = css.class({ "padding": 8, "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],

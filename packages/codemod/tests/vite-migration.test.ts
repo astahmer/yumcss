@@ -228,8 +228,8 @@ export function App() {
 
 		expect(result).toMatchInlineSnapshot(`
 			{
-			  "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
+			  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			const card = css.class({ color: "red" });
 			",
 			  "map": null,

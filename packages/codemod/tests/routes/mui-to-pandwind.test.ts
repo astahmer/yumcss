@@ -47,8 +47,8 @@ test("mui -> pandwind: migrates concrete mui syntax to pandwind", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const App = () => <div className={css.class({ padding: "16px", color: "red" })} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -91,8 +91,8 @@ test("mui -> pandwind: carries a documented secondary mui API explicitly", () =>
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const Card = css.class({ padding: 8, color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -143,8 +143,8 @@ test("mui -> pandwind: loads concrete theme and project context variants", async
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const App = () => <div className={css.class({ padding: "16px", color: "brand" })} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -178,8 +178,8 @@ test("mui -> pandwind: loads concrete theme and project context variants", async
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const App = () => <div className={css.class({ padding: "16px", color: "brand" })} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -225,8 +225,8 @@ test("mui -> pandwind: resolves concrete token values with project context", asy
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const App = () => <div className={css.class({ padding: "16px", color: "brand" })} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -269,8 +269,8 @@ test("mui -> pandwind: preserves malformed concrete mui input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const App = () => <div className={css.class({ padding: "16px", color: "red" })} />;
 		const unfinished = { /* unfinished mui */",
 		  "converted": 1,

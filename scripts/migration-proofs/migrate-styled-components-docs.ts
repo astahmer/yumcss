@@ -279,8 +279,8 @@ class StyledComponentsLaneAdapter implements LaneAdapter {
 			mode: "safe",
 		});
 		const normalizedCode = result.code
-			.replaceAll('import { createCss } from "pandwind/css";\n', "")
-			.replaceAll("const css = createCss();\n", "")
+			.replaceAll('import { createUnsafeCss } from "pandwind/unsafe/css";\n', "")
+			.replaceAll("const css = createUnsafeCss();\n", "")
 			.replaceAll('import { createRuntimeCss } from "pandwind/css/runtime";\n', "")
 			.replaceAll('import { pandwindPreset } from "pandwind/preset";\n', "")
 			.replaceAll("const css = createRuntimeCss(pandwindPreset);\n", "");

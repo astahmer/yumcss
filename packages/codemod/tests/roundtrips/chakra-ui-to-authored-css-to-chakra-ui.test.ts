@@ -16,7 +16,7 @@ import {
 const forward = createAdapterRouteSpec(CodemodAdapterId.ChakraUi, CodemodAdapterId.AuthoredCss);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.AuthoredCss, CodemodAdapterId.ChakraUi);
 	const happySource = "import { Box } from \"@chakra-ui/react\";\nexport const App = () => <Box bg=\"red.200\" p=\"4\" />;";
-const edgeSource = "import { useRecipe } from \"@chakra-ui/react\";\nexport const button = useRecipe(buttonRecipe);";
+const edgeSource = "import { defineRecipe, useRecipe } from \"@chakra-ui/react\";\nconst buttonRecipe = defineRecipe({ base: { color: \"red\" } });\nexport const button = useRecipe({ recipe: buttonRecipe });";
 const malformedSource = "import { Box } from \"@chakra-ui/react\";\nexport const App = () => <Box bg=\"red.200\" p=\"4\" />;\nconst unfinished = { /* unfinished chakra-ui */";
 const sourceSemantic = { source: { framework: BuiltinHostFramework.React } };
 const themedSource = "import { Box } from \"@chakra-ui/react\";\nexport const App = () => <Box bg=\"brand.500\" p=\"4\" />;";
@@ -152,9 +152,10 @@ test("chakra-ui -> authored-css -> chakra-ui: retains the documented secondary A
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { useRecipe } from "@chakra-ui/react";
-		export const button = // pandwind:migrate-skip (route: chakra-ui -> authored-css | parse-residual: composition | lowering-residual: framework-semantics | available: residual)
-		useRecipe(buttonRecipe);",
+		    "code": "import { defineRecipe, useRecipe } from "@chakra-ui/react";
+		const buttonRecipe = // pandwind:migrate-skip (route: chakra-ui -> authored-css | parse-residual: composition | lowering-residual: framework-semantics | available: residual)
+		defineRecipe({ base: { color: "red" } });
+		export const button = useRecipe({ recipe: buttonRecipe });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -183,7 +184,7 @@ test("chakra-ui -> authored-css -> chakra-ui: retains the documented secondary A
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "Chakra recipe usage requires explicit variant/component lowering",
+		        "hint": "Chakra recipes and attached factory styles require explicit composition lowering",
 		        "kind": "composition",
 		        "preserved": undefined,
 		      },
@@ -199,9 +200,10 @@ test("chakra-ui -> authored-css -> chakra-ui: retains the documented secondary A
 		  "reverse": {
 		    "changed": false,
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import { useRecipe } from "@chakra-ui/react";
-		export const button = // pandwind:migrate-skip (route: chakra-ui -> authored-css | parse-residual: composition | lowering-residual: framework-semantics | available: residual)
-		useRecipe(buttonRecipe);",
+		import { defineRecipe, useRecipe } from "@chakra-ui/react";
+		const buttonRecipe = // pandwind:migrate-skip (route: chakra-ui -> authored-css | parse-residual: composition | lowering-residual: framework-semantics | available: residual)
+		defineRecipe({ base: { color: "red" } });
+		export const button = useRecipe({ recipe: buttonRecipe });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -233,12 +235,17 @@ test("chakra-ui -> authored-css -> chakra-ui: retains the documented secondary A
 		        "preserved": undefined,
 		      },
 		      {
+		        "hint": "stylesheet statement is preserved outside the style program",
+		        "kind": "parse",
+		        "preserved": undefined,
+		      },
+		      {
 		        "hint": "stylesheet migration requires a single local class selector",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 3,
+		    "skipped": 4,
 		    "validations": [],
 		  },
 		}

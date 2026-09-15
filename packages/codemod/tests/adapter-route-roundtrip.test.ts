@@ -148,8 +148,8 @@ describe("adapter route round-trip contract", () => {
 		expect(result.skipped).toBe(0);
 		expect(result.code).not.toContain("styled-system/css");
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { createCss } from "pandwind/css";
-			const css = createCss();
+			"import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			const card = css.class({ color: "red" });"
 		`);
 	});

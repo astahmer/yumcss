@@ -49,8 +49,8 @@ test("panda -> mui -> panda: preserves an actionable concrete round trip", () =>
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "color": "red.300", "_hover": { "color": "blue.300" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -85,8 +85,8 @@ test("panda -> mui -> panda: preserves an actionable concrete round trip", () =>
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "color": "red.300", "_hover": { "color": "blue.300" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -200,8 +200,8 @@ test("panda -> mui -> panda: preserves concrete theme and project context varian
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "color": "primary.main", "_hover": { "color": "primary.main" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -236,8 +236,8 @@ test("panda -> mui -> panda: preserves concrete theme and project context varian
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "color": "primary.main", "_hover": { "color": "primary.main" } });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -251,8 +251,8 @@ test("panda -> mui -> panda: preserves concrete theme and project context varian
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "color": "primary.main", "_hover": { "color": "primary.main" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -287,8 +287,8 @@ test("panda -> mui -> panda: preserves concrete theme and project context varian
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "color": "primary.main", "_hover": { "color": "primary.main" } });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -316,8 +316,8 @@ test("panda -> mui -> panda: resolves token values across both concrete legs", a
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "color": "primary.main", "_hover": { "color": "blue.300" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -352,8 +352,8 @@ test("panda -> mui -> panda: resolves token values across both concrete legs", a
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "color": "primary.main", "_hover": { "color": "blue.300" } });",
 		    "converted": 0,
 		    "generatedFiles": [],

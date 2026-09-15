@@ -254,10 +254,10 @@ async function materialize(
 			target,
 			code
 				.replaceAll(
-					'import { createCss } from "pandwind/css";',
-					'import { createCss, type CssFn } from "pandwind/css";',
+					'import { createUnsafeCss } from "pandwind/unsafe/css";',
+					'import { createUnsafeCss, type CssFn } from "pandwind/unsafe/css";',
 				)
-				.replaceAll("const css = createCss();", "const css = createCss() as CssFn;"),
+				.replaceAll("const css = createUnsafeCss();", "const css = createUnsafeCss() as CssFn;"),
 		);
 		const migrated = await readFile(target, "utf8");
 		await writeFile(

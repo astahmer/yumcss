@@ -37,7 +37,10 @@ function generatedCssBinding(source: string): string {
 }
 
 function staticImports(binding: string): readonly string[] {
-	return ['import { createCss } from "pandwind/css";', `const ${binding} = createCss();`];
+	return [
+		'import { createUnsafeCss } from "pandwind/unsafe/css";',
+		`const ${binding} = createUnsafeCss();`,
+	];
 }
 
 function moveStyleAfterPropsSpread(code: string, binding: string): string {

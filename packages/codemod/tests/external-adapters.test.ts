@@ -257,8 +257,8 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(toPandwind.code).toContain("className={");
 
 		const toTailwind = runAdapterMigration(
-			'import { createCss } from "pandwind/css";\n' +
-				"const css = createCss();\n" +
+			'import { createUnsafeCss } from "pandwind/unsafe/css";\n' +
+				"const css = createUnsafeCss();\n" +
 				'export const card = css.class({ display: "flex", padding: "1rem" });',
 			{
 				from: "pandwind",
@@ -969,7 +969,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
 		expect(result.code).toContain("defineComponent");
-		expect(result.code).toContain('import { createCss } from "pandwind/css";');
+		expect(result.code).toContain('import { createUnsafeCss } from "pandwind/unsafe/css";');
 		expect(result.code.indexOf("<script setup>")).toBeLessThan(
 			result.code.indexOf('import { defineComponent, h } from "vue";'),
 		);
@@ -1002,7 +1002,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.converted).toBe(1);
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
-		expect(result.code).toContain('from "pandwind/css"');
+		expect(result.code).toContain('from "pandwind/unsafe/css"');
 		expect(result.code).toContain("css.class");
 		expect(result.code).not.toContain("pandwind:migrate-skip");
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
@@ -1370,7 +1370,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.converted).toBe(1);
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
-		expect(result.code).toContain('import { createCss } from "pandwind/css";');
+		expect(result.code).toContain('import { createUnsafeCss } from "pandwind/unsafe/css";');
 		expect(result.code).toContain(
 			'const styles = { "card": css.class({ padding: 2, color: "red" }) };',
 		);
@@ -1634,7 +1634,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).toContain("css.vars({ color: colors.foreground })");
 		expect(result.code).toContain("css.props(styles.card)");
 		expect(result.code).not.toContain("createRuntimeCss");
-		expect(result.code).toContain('from "pandwind/css"');
+		expect(result.code).toContain('from "pandwind/unsafe/css"');
 	});
 
 	test("passes an existing host class through the static props host", () => {

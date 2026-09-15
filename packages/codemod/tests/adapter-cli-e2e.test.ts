@@ -14,8 +14,8 @@ const repoRoot = resolve(import.meta.dirname, "../../..");
 const codemodRoot = resolve(import.meta.dirname, "..");
 const catalog = createBuiltinCodemodCatalog();
 const pandwindSource =
-	'import { createCss } from "pandwind/css";\n' +
-	"const css = createCss();\n" +
+	'import { createUnsafeCss } from "pandwind/unsafe/css";\n' +
+	"const css = createUnsafeCss();\n" +
 	'export const card = css.class({ color: "red", padding: "1rem" });\n';
 const pandwindFixture = adapterContractFixtures.find(
 	(fixture) => fixture.adapter === CodemodAdapterId.Pandwind,

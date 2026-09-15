@@ -49,8 +49,8 @@ test("tokenami -> pandwind -> tokenami: preserves an actionable concrete round t
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ cardGap: "1rem", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -133,10 +133,10 @@ test("tokenami -> pandwind -> tokenami: retains the documented secondary API wit
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		import { createCx } from "pandwind/cx";
 		const pandwindCx = createCx();
-		const css = createCss();
+		const css = createUnsafeCss();
 		export const card = () => { const className = css.class({ padding: "1rem", color: "red" }); return [(value: string | undefined) => pandwindCx(className, value), (style: Record<string, unknown> | undefined) => style ?? {}] as const; };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -235,8 +235,8 @@ test("tokenami -> pandwind -> tokenami: preserves concrete theme and project con
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ cardGap: "1rem", color: "brand" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -307,8 +307,8 @@ test("tokenami -> pandwind -> tokenami: preserves concrete theme and project con
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ cardGap: "1rem", color: "brand" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -393,8 +393,8 @@ test("tokenami -> pandwind -> tokenami: resolves token values across both concre
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ cardGap: "1rem", color: "brand" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -464,3 +464,4 @@ test("tokenami -> pandwind -> tokenami: resolves token values across both concre
 		}
 	`)
 });
+

@@ -180,7 +180,7 @@ pandwind/ by default: an app-owned definePreset, css.ts, runtime.ts, cx.ts,
 the typed tw.ts, its optional bridge, types.d.ts, the versioned interop
 artifact, and a derived theme file when the source configuration proves one.
 Converted files import those shared modules; they do not create a new
-createCss() instance at every call site. The generated preset owns the
+createUnsafeCss() instance at every call site. The generated preset owns the
 migrated tokens, semantic tokens, conditions, and property associations; it
 does not import or spread Pandwind's default token/property preset. Use --out
 <dir> to change that folder. The optional bridge is not a default runtime

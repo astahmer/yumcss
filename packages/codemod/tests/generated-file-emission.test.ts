@@ -124,8 +124,8 @@ describe("generated target files", () => {
 			]
 		`);
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { createCss } from "pandwind/css";
-			const css = createCss();
+			"import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			const card = css.class({ color: "red" });
 			"
 		`);
@@ -150,8 +150,8 @@ describe("generated target files", () => {
 		expect(result.residuals).toEqual([]);
 		expect(result.generatedFiles).toHaveLength(1);
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { createCss } from "pandwind/css";
-			const css = createCss();
+			"import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			const card = css.class({ color: "red" });
 			const panel = css.class({ backgroundColor: "white" });
 			"

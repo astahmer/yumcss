@@ -76,7 +76,7 @@ describe("Panda generated-system source ownership", () => {
 		expect(result.converted).toBe(1);
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
-		expect(result.code).toContain('import { createCss } from "pandwind/css";');
+		expect(result.code).toContain('import { createUnsafeCss } from "pandwind/unsafe/css";');
 		expect(result.code).toContain("css.class");
 		expect(result.code).not.toContain("#design-system/css");
 	});

@@ -249,8 +249,8 @@ describe("non-CSS-in-JS source adapter contract", () => {
 		expect(result).toMatchInlineSnapshot(`
 			{
 			  "changed": true,
-			  "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
+			  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const styles = { "card": css.class({ color: "red" }) };
 			export default styles;",
 			  "converted": 1,

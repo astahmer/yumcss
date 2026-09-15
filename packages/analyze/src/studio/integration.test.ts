@@ -64,9 +64,8 @@ describe("studio integration", () => {
 			expect(first.evaluation.diagnostics).toEqual([]);
 			expect(first.evaluation.artifacts?.targetCode).toMatchInlineSnapshot(`
 				"// src/Card.tsx
-				import { createCss } from "pandwind/css";
-				const css = createCss();
-
+				import { createUnsafeCss } from "pandwind/unsafe/css";
+				const css = createUnsafeCss();
 				export const card = css.class({ color: "red" });"
 			`);
 

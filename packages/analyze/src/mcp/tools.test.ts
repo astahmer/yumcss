@@ -32,7 +32,7 @@ function project() {
 	);
 	writeFileSync(
 		resolve(root, "src/button.ts"),
-		`import { createCss } from "pandwind/css";\nconst css = createCss();\nexport const button = css.class({ color: "red" });\n`,
+		`import { createUnsafeCss } from "pandwind/unsafe/css";\nconst css = createUnsafeCss();\nexport const button = css.class({ color: "red" });\n`,
 	);
 	writeFileSync(resolve(root, "pandwind.interop.json"), '{"schema":"pandwind.interop/1"}\n');
 	return createMcpToolService(createMcpProjectContext(root));

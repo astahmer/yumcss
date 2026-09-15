@@ -47,8 +47,8 @@ test("react-native -> pandwind: migrates concrete react-native syntax to pandwin
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const styles = { "card": css.class({ padding: 8, color: "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -91,8 +91,8 @@ test("react-native -> pandwind: carries a documented secondary react-native API 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const styles = { "card": css.class({ padding: 8, backgroundColor: "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -144,8 +144,8 @@ test("react-native -> pandwind: loads concrete theme and project context variant
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const styles = { "card": css.class({ padding: 8, color: "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -179,8 +179,8 @@ test("react-native -> pandwind: loads concrete theme and project context variant
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const styles = { "card": css.class({ padding: 8, color: "brand" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -226,8 +226,8 @@ test("react-native -> pandwind: resolves concrete token values with project cont
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const styles = { "card": css.class({ padding: 8, color: "brand" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -270,8 +270,8 @@ test("react-native -> pandwind: preserves malformed concrete react-native input"
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const styles = { "card": css.class({ padding: 8, color: "red" }) };
 		const unfinished = { /* unfinished react-native */",
 		  "converted": 1,

@@ -13,12 +13,12 @@ import {
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.StyleX, CodemodAdapterId.Tamagui);
-	const happySource = "import stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"red\", padding: 8 } });";
-const edgeSource = "import stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"red\" } });";
-const malformedSource = "import stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"red\", padding: 8 } });\nconst unfinished = { /* unfinished stylex */";
+	const happySource = "import * as stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"red\", padding: 8 } });";
+const edgeSource = "import * as stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"red\" } });";
+const malformedSource = "import * as stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"red\", padding: 8 } });\nconst unfinished = { /* unfinished stylex */";
 const sourceSemantic = undefined;
-const themedSource = "import stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"#2563eb\", padding: 8 } });";
-const tokenSource = "import stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"#2563eb\", padding: 8 } });";
+const themedSource = "import * as stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"#2563eb\", padding: 8 } });";
+const tokenSource = "import * as stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"#2563eb\", padding: 8 } });";
 const blueSemantic = undefined;
 const amberSemantic = undefined;
 const blueTargetSemantic = undefined;
@@ -47,7 +47,7 @@ test("stylex -> tamagui: migrates concrete stylex syntax to tamagui", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import stylex from "@stylexjs/stylex";
+		  "code": "import * as stylex from "@stylexjs/stylex";
 		export const styles = // pandwind:migrate-skip (route: stylex -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
 		stylex.create({ card: { color: "red", padding: 8 } });",
 		  "converted": 0,
@@ -90,7 +90,7 @@ test("stylex -> tamagui: carries a documented secondary stylex API explicitly", 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import stylex from "@stylexjs/stylex";
+		  "code": "import * as stylex from "@stylexjs/stylex";
 		export const styles = // pandwind:migrate-skip (route: stylex -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
 		stylex.create({ card: { color: "red" } });",
 		  "converted": 0,
@@ -142,7 +142,7 @@ test("stylex -> tamagui: loads concrete theme and project context variants", asy
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import stylex from "@stylexjs/stylex";
+		    "code": "import * as stylex from "@stylexjs/stylex";
 		export const styles = // pandwind:migrate-skip (route: stylex -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
 		stylex.create({ card: { color: "#2563eb", padding: 8 } });",
 		    "converted": 0,
@@ -176,7 +176,7 @@ test("stylex -> tamagui: loads concrete theme and project context variants", asy
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import stylex from "@stylexjs/stylex";
+		    "code": "import * as stylex from "@stylexjs/stylex";
 		export const styles = // pandwind:migrate-skip (route: stylex -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
 		stylex.create({ card: { color: "#2563eb", padding: 8 } });",
 		    "converted": 0,
@@ -222,7 +222,7 @@ test("stylex -> tamagui: resolves concrete token values with project context", a
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import stylex from "@stylexjs/stylex";
+		  "code": "import * as stylex from "@stylexjs/stylex";
 		export const styles = // pandwind:migrate-skip (route: stylex -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
 		stylex.create({ card: { color: "#2563eb", padding: 8 } });",
 		  "converted": 0,
@@ -265,7 +265,7 @@ test("stylex -> tamagui: preserves malformed concrete stylex input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import stylex from "@stylexjs/stylex";
+		  "code": "import * as stylex from "@stylexjs/stylex";
 		export const styles = // pandwind:migrate-skip (route: stylex -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
 		stylex.create({ card: { color: "red", padding: 8 } });
 		const unfinished = { /* unfinished stylex */",

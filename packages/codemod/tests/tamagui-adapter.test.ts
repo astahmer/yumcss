@@ -71,10 +71,10 @@ describe("Tamagui adapter", () => {
 		expect(result.code).toContain('import { View } from "@tamagui/core";');
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { View } from "@tamagui/core";
-			import { createCss } from "pandwind/css";
+			import { createUnsafeCss } from "pandwind/unsafe/css";
 			import { createCx } from "pandwind/cx";
 			const cx = createCx();
-			const css = createCss();
+			const css = createUnsafeCss();
 			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Component {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
 			export const Card = __pandwindSlot({ defaultComponent: (View), style: css.class({ padding: 16, color: "red" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });"
 		`);

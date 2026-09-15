@@ -180,8 +180,8 @@ describe("target adapter emission contract", () => {
 
 	test("projects an intrinsic React host through MUI Box instead of a DOM sx prop", () => {
 		const result = migrate(
-			'import { createCss } from "pandwind/css";\n' +
-				"const css = createCss();\n" +
+			'import { createUnsafeCss } from "pandwind/unsafe/css";\n' +
+				"const css = createUnsafeCss();\n" +
 				'const card = css.class({ color: "red" });\n' +
 				"export const App = () => <div className={card}>content</div>;",
 			CodemodAdapterId.Pandwind,
@@ -277,7 +277,7 @@ describe("target adapter emission contract", () => {
 
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
-		expect(result.code).toContain('import { createCss } from "pandwind/css";');
+		expect(result.code).toContain('import { createUnsafeCss } from "pandwind/unsafe/css";');
 		expect(result.code).toContain("theme.foreground");
 		expect(result.code).toContain("css.vars({");
 		expect(result.outcomes).toMatchObject([
@@ -302,10 +302,10 @@ describe("target adapter emission contract", () => {
 
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
-		expect(result.code).toContain("const css = createCss();");
+		expect(result.code).toContain("const css = createUnsafeCss();");
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { createCss } from "pandwind/css";
-			const css = createCss();
+			"import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			const card = css.vars({ "padding": "0.5em 1em", "color": theme.foreground });"
 		`);
 	});
@@ -719,8 +719,8 @@ describe("target adapter emission contract", () => {
 
 	test("uses a portable static artifact for an unknown custom component", () => {
 		const result = migrate(
-			'import { createCss } from "pandwind/css";\n' +
-				"const css = createCss();\n" +
+			'import { createUnsafeCss } from "pandwind/unsafe/css";\n' +
+				"const css = createUnsafeCss();\n" +
 				'const card = css.class({ color: "red" });\n' +
 				"export const App = () => <CustomCard className={card} />;",
 			CodemodAdapterId.Pandwind,
@@ -731,7 +731,7 @@ describe("target adapter emission contract", () => {
 		expect(result.residuals).toEqual([]);
 		expect(result.code).toContain("className={card}");
 		expect(result.code).not.toContain("sx={card}");
-		expect(result.code).toContain('import { createCss } from "pandwind/css";');
+		expect(result.code).toContain('import { createUnsafeCss } from "pandwind/unsafe/css";');
 		expect(result.code).toContain("css.class");
 		expect(result.outcomes).toMatchObject([
 			{ outcome: "portable-artifact", representation: "portable-artifact" },
@@ -740,8 +740,8 @@ describe("target adapter emission contract", () => {
 
 	test("uses a portable static artifact for a standalone MUI style value", () => {
 		const result = migrate(
-			'import { createCss } from "pandwind/css";\n' +
-				"const css = createCss();\n" +
+			'import { createUnsafeCss } from "pandwind/unsafe/css";\n' +
+				"const css = createUnsafeCss();\n" +
 				'const card = css.class({ color: "red" });',
 			CodemodAdapterId.Pandwind,
 			CodemodAdapterId.Mui,
@@ -749,7 +749,7 @@ describe("target adapter emission contract", () => {
 
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
-		expect(result.code).toContain('import { createCss } from "pandwind/css";');
+		expect(result.code).toContain('import { createUnsafeCss } from "pandwind/unsafe/css";');
 		expect(result.code).toContain("css.class");
 		expect(result.outcomes).toMatchObject([
 			{ outcome: "portable-artifact", representation: "portable-artifact" },
@@ -824,8 +824,8 @@ describe("target adapter emission contract", () => {
 
 	test("uses the runtime portable artifact for a hostless dynamic MUI value", () => {
 		const result = migrate(
-			'import { createCss } from "pandwind/css";\n' +
-				"const css = createCss();\n" +
+			'import { createUnsafeCss } from "pandwind/unsafe/css";\n' +
+				"const css = createUnsafeCss();\n" +
 				"const card = css.class({ color: theme.foreground });",
 			CodemodAdapterId.Pandwind,
 			CodemodAdapterId.Mui,
@@ -838,7 +838,7 @@ describe("target adapter emission contract", () => {
 			{ outcome: "portable-artifact", representation: "portable-artifact" },
 		]);
 		expect(result.loweringPlans[0]?.availableRepresentations).toContain("portable-artifact");
-		expect(result.code).toContain('import { createCss } from "pandwind/css"');
+		expect(result.code).toContain('import { createUnsafeCss } from "pandwind/unsafe/css"');
 		expect(result.code).toContain("css.vars({");
 		expect(result.code).toMatch(/["']color["']:\s*theme\.foreground/);
 	});

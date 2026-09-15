@@ -47,8 +47,8 @@ test("tokenami -> authored-css: migrates concrete tokenami syntax to authored-cs
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "cardGap": "1rem", "color": "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -93,8 +93,8 @@ test("tokenami -> authored-css: carries a documented secondary tokenami API expl
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "padding": "1rem", "color": "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -147,8 +147,8 @@ test("tokenami -> authored-css: loads concrete theme and project context variant
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "cardGap": "1rem", "color": "$colors.brand" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -184,8 +184,8 @@ test("tokenami -> authored-css: loads concrete theme and project context variant
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "cardGap": "1rem", "color": "$colors.brand" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -233,8 +233,8 @@ test("tokenami -> authored-css: resolves concrete token values with project cont
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "cardGap": "1rem", "color": "#2563eb" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -279,8 +279,8 @@ test("tokenami -> authored-css: preserves malformed concrete tokenami input", ()
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "cardGap": "1rem", "color": "red" });
 		const unfinished = { /* unfinished tokenami */",
 		  "converted": 1,

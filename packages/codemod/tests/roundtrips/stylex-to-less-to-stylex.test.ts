@@ -15,12 +15,12 @@ import {
 
 const forward = createAdapterRouteSpec(CodemodAdapterId.StyleX, CodemodAdapterId.Less);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.Less, CodemodAdapterId.StyleX);
-	const happySource = "import stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"red\", padding: 8 } });";
-const edgeSource = "import stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"red\" } });";
-const malformedSource = "import stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"red\", padding: 8 } });\nconst unfinished = { /* unfinished stylex */";
+	const happySource = "import * as stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"red\", padding: 8 } });";
+const edgeSource = "import * as stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"red\" } });";
+const malformedSource = "import * as stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"red\", padding: 8 } });\nconst unfinished = { /* unfinished stylex */";
 const sourceSemantic = undefined;
-const themedSource = "import stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"#2563eb\", padding: 8 } });";
-const tokenSource = "import stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"#2563eb\", padding: 8 } });";
+const themedSource = "import * as stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"#2563eb\", padding: 8 } });";
+const tokenSource = "import * as stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"#2563eb\", padding: 8 } });";
 const blueSemantic = undefined;
 const amberSemantic = undefined;
 const blueTargetSemantic = undefined;
@@ -49,7 +49,7 @@ test("stylex -> less -> stylex: preserves an actionable concrete round trip", ()
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import stylex from "@stylexjs/stylex";
+		    "code": "import * as stylex from "@stylexjs/stylex";
 		export const styles = // pandwind:migrate-skip (route: stylex -> less | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
 		stylex.create({ card: { color: "red", padding: 8 } });",
 		    "converted": 0,
@@ -87,7 +87,7 @@ test("stylex -> less -> stylex: preserves an actionable concrete round trip", ()
 		  "reverse": {
 		    "changed": false,
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse)
-		import stylex from "@stylexjs/stylex";
+		import * as stylex from "@stylexjs/stylex";
 		export const styles = // pandwind:migrate-skip (route: stylex -> less | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
 		stylex.create({ card: { color: "red", padding: 8 } });",
 		    "converted": 0,
@@ -125,7 +125,7 @@ test("stylex -> less -> stylex: retains the documented secondary API without sil
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import stylex from "@stylexjs/stylex";
+		    "code": "import * as stylex from "@stylexjs/stylex";
 		export const styles = // pandwind:migrate-skip (route: stylex -> less | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
 		stylex.create({ card: { color: "red" } });",
 		    "converted": 0,
@@ -163,7 +163,7 @@ test("stylex -> less -> stylex: retains the documented secondary API without sil
 		  "reverse": {
 		    "changed": false,
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse)
-		import stylex from "@stylexjs/stylex";
+		import * as stylex from "@stylexjs/stylex";
 		export const styles = // pandwind:migrate-skip (route: stylex -> less | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
 		stylex.create({ card: { color: "red" } });",
 		    "converted": 0,
@@ -216,7 +216,7 @@ test("stylex -> less -> stylex: preserves concrete theme and project context var
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import stylex from "@stylexjs/stylex";
+		      "code": "import * as stylex from "@stylexjs/stylex";
 		export const styles = // pandwind:migrate-skip (route: stylex -> less | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
 		stylex.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
@@ -254,7 +254,7 @@ test("stylex -> less -> stylex: preserves concrete theme and project context var
 		    "reverse": {
 		      "changed": false,
 		      "code": "// pandwind:migrate-skip (lowering-residual: parse)
-		import stylex from "@stylexjs/stylex";
+		import * as stylex from "@stylexjs/stylex";
 		export const styles = // pandwind:migrate-skip (route: stylex -> less | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
 		stylex.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
@@ -280,7 +280,7 @@ test("stylex -> less -> stylex: preserves concrete theme and project context var
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import stylex from "@stylexjs/stylex";
+		      "code": "import * as stylex from "@stylexjs/stylex";
 		export const styles = // pandwind:migrate-skip (route: stylex -> less | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
 		stylex.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
@@ -318,7 +318,7 @@ test("stylex -> less -> stylex: preserves concrete theme and project context var
 		    "reverse": {
 		      "changed": false,
 		      "code": "// pandwind:migrate-skip (lowering-residual: parse)
-		import stylex from "@stylexjs/stylex";
+		import * as stylex from "@stylexjs/stylex";
 		export const styles = // pandwind:migrate-skip (route: stylex -> less | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
 		stylex.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
@@ -358,7 +358,7 @@ test("stylex -> less -> stylex: resolves token values across both concrete legs"
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import stylex from "@stylexjs/stylex";
+		    "code": "import * as stylex from "@stylexjs/stylex";
 		export const styles = // pandwind:migrate-skip (route: stylex -> less | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
 		stylex.create({ card: { color: "#2563eb", padding: 8 } });",
 		    "converted": 0,
@@ -396,7 +396,7 @@ test("stylex -> less -> stylex: resolves token values across both concrete legs"
 		  "reverse": {
 		    "changed": false,
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse)
-		import stylex from "@stylexjs/stylex";
+		import * as stylex from "@stylexjs/stylex";
 		export const styles = // pandwind:migrate-skip (route: stylex -> less | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
 		stylex.create({ card: { color: "#2563eb", padding: 8 } });",
 		    "converted": 0,

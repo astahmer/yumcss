@@ -87,8 +87,8 @@ test("mui -> stylex -> mui: preserves an actionable concrete round trip", () => 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
+		import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const App = () => { "style": css.class({ padding: "16px", color: "red" }) }.style;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -176,8 +176,8 @@ test("mui -> stylex -> mui: retains the documented secondary API without silent 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { styled } from "@mui/system";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
+		import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const Card = { "style": css.class({ padding: "8px", color: "red" }) }.style;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -278,8 +278,8 @@ test("mui -> stylex -> mui: preserves concrete theme and project context variant
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
+		import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const App = () => { "style": css.class({ padding: "16px", color: "primary.main" }) }.style;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -354,8 +354,8 @@ test("mui -> stylex -> mui: preserves concrete theme and project context variant
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
+		import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const App = () => { "style": css.class({ padding: "16px", color: "primary.main" }) }.style;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -444,8 +444,8 @@ test("mui -> stylex -> mui: resolves token values across both concrete legs", as
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
+		import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const App = () => { "style": css.class({ padding: "16px", color: "primary.main" }) }.style;",
 		    "converted": 1,
 		    "generatedFiles": [],

@@ -22,7 +22,7 @@ describe("project binding migration", () => {
 
 		expect(result.converted).toBe(1);
 		expect(result.skipped).toBe(0);
-		expect(result.code).toContain("createCss");
+		expect(result.code).toContain("createUnsafeCss");
 		expect(result.code).not.toContain("pandwind:migrate-skip");
 	});
 });

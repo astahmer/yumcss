@@ -25,7 +25,8 @@ recognizes the real Pandwind package boundaries, including aliased and
 namespace imports:
 
 - `pandwind`: named `cx` and `tw`
-- `pandwind/css`: `createCss()` instances
+- `pandwind/css`: preset-bound `createCss(...)` instances
+- `pandwind/unsafe/css`: `createUnsafeCss()` instances
 - `pandwind/design`: `createDesignCss()` instances
 
 It does not treat an unrelated local function named `cx`, `tw`, or `css` as a

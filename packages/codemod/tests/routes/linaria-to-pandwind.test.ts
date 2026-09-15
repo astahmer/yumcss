@@ -47,8 +47,8 @@ test("linaria -> pandwind: migrates concrete linaria syntax to pandwind", () => 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ padding: "1rem", color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -91,8 +91,8 @@ test("linaria -> pandwind: carries a documented secondary linaria API explicitly
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const Card = css.class({ padding: "1rem", color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -144,8 +144,8 @@ test("linaria -> pandwind: loads concrete theme and project context variants", a
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ padding: "1rem", color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -179,8 +179,8 @@ test("linaria -> pandwind: loads concrete theme and project context variants", a
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ padding: "1rem", color: "brand" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -226,8 +226,8 @@ test("linaria -> pandwind: resolves concrete token values with project context",
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ padding: "1rem", color: "brand" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -270,8 +270,8 @@ test("linaria -> pandwind: preserves malformed concrete linaria input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ padding: "1rem", color: "red" });
 		const unfinished = { /* unfinished linaria */",
 		  "converted": 1,

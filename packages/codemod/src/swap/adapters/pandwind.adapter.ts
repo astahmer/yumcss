@@ -1532,9 +1532,9 @@ function staticComponent(
 			text: `defineComponent({ setup(_props, { attrs, slots }) { const style = ${style}; return () => h(${tagExpression}, { ...attrs, class: cx(style, attrs.class) }, slots.default?.()); } })`,
 			imports: [
 				'import { defineComponent, h } from "vue";',
-				'import { createCss } from "pandwind/css";',
+				'import { createUnsafeCss } from "pandwind/unsafe/css";',
 				'import { createCx } from "pandwind/cx";',
-				"const css = createCss();",
+				"const css = createUnsafeCss();",
 				"const cx = createCx();",
 			],
 			generatedStatements: [],
@@ -1547,8 +1547,8 @@ function staticComponent(
 	return {
 		text: `${slotBinding}({ defaultComponent: ${defaultComponent}, style: ${style}, stableClass: ${JSON.stringify(stableClass)}, inheritedClass: ${inheritedClassExpression}, classAttribute: ${JSON.stringify(classAttribute)}, attrs: ${attrsExpression}, joinClass: ${joinClass} })`,
 		imports: [
-			'import { createCss } from "pandwind/css";',
-			"const css = createCss();",
+			'import { createUnsafeCss } from "pandwind/unsafe/css";',
+			"const css = createUnsafeCss();",
 			'import { createCx } from "pandwind/cx";',
 			"const cx = createCx();",
 			...slotImport,
@@ -1670,8 +1670,8 @@ function hybridComponent(
 	return {
 		text: `(() => { ${composedCxBinding}const staticClass = ${staticClass}; const component = (props) => { ${themeContextAssignment} const dynamic = css.vars(${dynamicObject}); const Component = props.as ?? ${tag === undefined ? `(${base})` : JSON.stringify(tag)}; const { as: _as, ...rest } = props; const attrs = ${attrsExpression}; return <Component {...attrs} {...rest} ${classAttribute}={${mergedClass}} style={{ ...props.style, ...dynamic.style }} />; }; component.__pandwindClassName = ${JSON.stringify(stableClass)}; return component; })()`,
 		imports: [
-			'import { createCss } from "pandwind/css";',
-			"const css = createCss();",
+			'import { createUnsafeCss } from "pandwind/unsafe/css";',
+			"const css = createUnsafeCss();",
 			...(inheritedClass === undefined ? [] : ['import { createCx } from "pandwind/cx";']),
 			...(needsThemeContext ? ['import { usePandwindTheme } from "pandwind/theme";'] : []),
 		],
@@ -2275,11 +2275,17 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 		detectPatterns: [
 			/\bcss\.class\s*\(/,
 			/\bcreateCss\s*\(/,
+			/\bcreateUnsafeCss\s*\(/,
 			/\bcreateRuntimeCss\s*\(/,
 			/\b(?:createRecipe|createSlotRecipe)\s*\(/,
 			/\b[A-Za-z_$][\w$]*\.sheet\.registerSemanticRules\s*\(/,
 		],
-		sourceModules: ["pandwind/css", "pandwind/css/runtime", "pandwind/recipe"],
+		sourceModules: [
+			"pandwind/css",
+			"pandwind/unsafe/css",
+			"pandwind/css/runtime",
+			"pandwind/recipe",
+		],
 		sourceModuleMatchers: [
 			(moduleSpecifier) => /(?:^|[\\/])__pandwind[\\/]recipe(?:\.ts)?$/u.test(moduleSpecifier),
 		],
@@ -2407,7 +2413,10 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 				) {
 					return finalize({
 						text: `css.class(${renderProgramObject(outputProgram)})`,
-						imports: ['import { createCss } from "pandwind/css";', "const css = createCss();"],
+						imports: [
+							'import { createUnsafeCss } from "pandwind/unsafe/css";',
+							"const css = createUnsafeCss();",
+						],
 					});
 				}
 				return finalize({
@@ -2509,8 +2518,8 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 				return finalize({
 					text: rendered.text,
 					imports: [
-						'import { createCss } from "pandwind/css";',
-						"const css = createCss();",
+						'import { createUnsafeCss } from "pandwind/unsafe/css";',
+						"const css = createUnsafeCss();",
 						...(rendered.needsCx
 							? ['import { createCx } from "pandwind/cx";', "const cx = createCx();"]
 							: []),
@@ -2616,8 +2625,8 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 				return finalize({
 					text: `() => { const className = ${cssBinding}.class(${renderProgramObject(outputProgram)}); return [(value: string | undefined) => pandwindCx(className, value), (style: Record<string, unknown> | undefined) => style ?? {}] as const; }`,
 					imports: [
-						'import { createCss } from "pandwind/css";',
-						`const ${cssBinding} = createCss();`,
+						'import { createUnsafeCss } from "pandwind/unsafe/css";',
+						`const ${cssBinding} = createUnsafeCss();`,
 						'import { createCx } from "pandwind/cx";',
 						"const pandwindCx = createCx();",
 					],
@@ -2643,15 +2652,15 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 										: `css.class(${renderProgramObject(outputProgram)})`,
 				imports: slotRecipe
 					? [
-							'import { createCss } from "pandwind/css";',
+							'import { createUnsafeCss } from "pandwind/unsafe/css";',
 							...(recipe?.imports ?? []),
-							"const css = createCss();",
+							"const css = createUnsafeCss();",
 						]
 					: recipeVariants
 						? [
-								'import { createCss } from "pandwind/css";',
+								'import { createUnsafeCss } from "pandwind/unsafe/css";',
 								...(recipe?.imports ?? []),
-								"const css = createCss();",
+								"const css = createUnsafeCss();",
 							]
 						: needsRuntimeCss
 							? [
@@ -2659,7 +2668,10 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 									'import { pandwindPreset } from "pandwind/preset";',
 									"const runtimeCss = createRuntimeCss(pandwindPreset);",
 								]
-							: ['import { createCss } from "pandwind/css";', "const css = createCss();"],
+							: [
+									'import { createUnsafeCss } from "pandwind/unsafe/css";',
+									"const css = createUnsafeCss();",
+								],
 				generatedStatements: recipe?.generatedStatements,
 				generatedFiles: recipe?.generatedFiles,
 			});

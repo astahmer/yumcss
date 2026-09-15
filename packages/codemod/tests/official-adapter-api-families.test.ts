@@ -194,8 +194,8 @@ describe("official adapter API families", () => {
 			{
 			  "aphrodite/array composition": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const styles = css.vars({ card: [{ color: "red" }, { padding: 8 }] });",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -265,10 +265,10 @@ describe("official adapter API families", () => {
 			  },
 			  "authored-css/at-rules": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 			import { createRuntimeCss } from "pandwind/css/runtime";
 			import { pandwindPreset } from "pandwind/preset";
-			const css = createCss();
+			const css = createUnsafeCss();
 			const runtimeCss = createRuntimeCss(pandwindPreset);
 			export const styles = { "card": css.class({ _osDark: { color: "white" } }), "pulse": (() => { const name = "pw-kf-pulse"; runtimeCss.sheet.registerSemanticRules([{ kind: "keyframes", name, children: [{ kind: "style", selector: "from", declarations: [{ property: "opacity", value: "0" }] }, { kind: "style", selector: "to", declarations: [{ property: "opacity", value: "1" }] }] }]); return name; })() };
 			export default styles;",
@@ -323,8 +323,8 @@ describe("official adapter API families", () => {
 			  },
 			  "authored-css/multi-rule stylesheet": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const styles = { "card": css.class({ color: "red" }), "title": css.class({ fontWeight: "600" }) };
 			export default styles;",
 			    "converted": 2,
@@ -446,8 +446,8 @@ describe("official adapter API families", () => {
 			  },
 			  "bamboo/styled-system object": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const card = css.class({ gap: "4", display: "flex" });",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -541,8 +541,8 @@ describe("official adapter API families", () => {
 			  },
 			  "compiled/CSS prop": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const Card = () => <button className={css.class({ color: "red" })}/>;",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -576,8 +576,8 @@ describe("official adapter API families", () => {
 			  },
 			  "compiled/ClassNames aliased composition": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const Card = () => <button className={css.class({ color: "red" })}/>;",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -611,8 +611,8 @@ describe("official adapter API families", () => {
 			  },
 			  "compiled/ClassNames composition": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const Card = () => <button className={css.class({ color: "red" })}/>;",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -681,8 +681,8 @@ describe("official adapter API families", () => {
 			  },
 			  "compiled/cssMap": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const colors = { "red": css.class({ color: "red" }) };",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -752,10 +752,10 @@ describe("official adapter API families", () => {
 			  },
 			  "compiled/styled component": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 			import { createCx } from "pandwind/cx";
 			const cx = createCx();
-			const css = createCss();
+			const css = createUnsafeCss();
 			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Component {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
 			export const Card = __pandwindSlot({ defaultComponent: "button", style: css.class({ color: "red" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
 			    "converted": 1,
@@ -790,8 +790,8 @@ describe("official adapter API families", () => {
 			  },
 			  "css-modules/composes": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const styles = { "card": css.class({ color: "red" }), "primary": css.class({ color: "red", fontWeight: "600" }) };
 			export default styles;",
 			    "converted": 2,
@@ -879,8 +879,8 @@ describe("official adapter API families", () => {
 			  },
 			  "css-modules/local pseudo selector": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const styles = { "card": css.class({ _hover: { color: "red" } }) };
 			export default styles;",
 			    "converted": 1,
@@ -915,8 +915,8 @@ describe("official adapter API families", () => {
 			  },
 			  "css-modules/named class map": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const styles = { "card": css.class({ padding: "1rem", color: "red" }), "title": css.class({ fontWeight: "600" }) };
 			export default styles;",
 			    "converted": 2,
@@ -1006,8 +1006,8 @@ describe("official adapter API families", () => {
 			  },
 			  "emotion/css prop": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const Card = () => <button className={css.class({ color: "red" })}/>;",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -1113,10 +1113,10 @@ describe("official adapter API families", () => {
 			  },
 			  "emotion/styled component object": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 			import { createCx } from "pandwind/cx";
 			const cx = createCx();
-			const css = createCss();
+			const css = createUnsafeCss();
 			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Component {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
 			export const Card = __pandwindSlot({ defaultComponent: "button", style: css.class({ color: "red" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
 			    "converted": 1,
@@ -1151,8 +1151,8 @@ describe("official adapter API families", () => {
 			  },
 			  "emotion/tagged css template": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const card = css.class({ padding: "1rem", color: "red" });",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -1186,10 +1186,10 @@ describe("official adapter API families", () => {
 			  },
 			  "fela/createComponent": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 			import { createCx } from "pandwind/cx";
 			const cx = createCx();
-			const css = createCss();
+			const css = createUnsafeCss();
 			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Component {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
 			export const Card = __pandwindSlot({ defaultComponent: "button", style: css.class({ color: "red" }), stableClass: "pw-1sqdko1", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
 			    "converted": 1,
@@ -1259,8 +1259,8 @@ describe("official adapter API families", () => {
 			  },
 			  "goober/css tagged template": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const card = css.class({ padding: "1rem", color: "red" });",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -1329,10 +1329,10 @@ describe("official adapter API families", () => {
 			  },
 			  "goober/styled tagged template": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 			import { createCx } from "pandwind/cx";
 			const cx = createCx();
-			const css = createCss();
+			const css = createUnsafeCss();
 			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Component {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
 			export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "red" }), stableClass: "pw-1sqdko1", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
 			    "converted": 1,
@@ -1367,8 +1367,8 @@ describe("official adapter API families", () => {
 			  },
 			  "jss/createRule named map": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const rule = css.class({ color: "red" });",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -1402,8 +1402,8 @@ describe("official adapter API families", () => {
 			  },
 			  "jss/createStyleSheet named map": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const sheet = { "card": css.class({ color: "red" }) };",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -1437,8 +1437,8 @@ describe("official adapter API families", () => {
 			  },
 			  "jss/imperative applyTo": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			const sheet = { "card": css.class({ color: "red" }) };
 
 			element!.classList.add(sheet.card);",
@@ -1527,8 +1527,8 @@ describe("official adapter API families", () => {
 			  },
 			  "less/less plain rules": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const styles = { "card": css.class({ color: "red" }), "title": css.class({ fontWeight: "600" }) };
 			export default styles;",
 			    "converted": 2,
@@ -1621,8 +1621,8 @@ describe("official adapter API families", () => {
 			  },
 			  "linaria/css prop": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const Card = () => <button css={css.class({ color: "red" })} />;",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -1656,10 +1656,10 @@ describe("official adapter API families", () => {
 			  },
 			  "linaria/styled tagged template": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 			import { createCx } from "pandwind/cx";
 			const cx = createCx();
-			const css = createCss();
+			const css = createUnsafeCss();
 			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Component {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
 			export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "red" }), stableClass: "pw-1sqdko1", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
 			    "converted": 1,
@@ -1868,8 +1868,8 @@ describe("official adapter API families", () => {
 			  },
 			  "mui/styled component": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const Card = css.class({ padding: 8, color: "red" });",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -1937,8 +1937,8 @@ describe("official adapter API families", () => {
 			  },
 			  "next-yak/CSS prop": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const Card = () => <button className={css.class({ color: "red" })}/>;",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -1972,10 +1972,10 @@ describe("official adapter API families", () => {
 			  },
 			  "next-yak/styled tagged template": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 			import { createCx } from "pandwind/cx";
 			const cx = createCx();
-			const css = createCss();
+			const css = createUnsafeCss();
 			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Component {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
 			export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "red" }), stableClass: "pw-1sqdko1", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
 			    "converted": 1,
@@ -2010,9 +2010,9 @@ describe("official adapter API families", () => {
 			  },
 			  "panda/cva recipe": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 			import { createRecipe as __pandwindcreateRecipe } from "../__pandwind/recipe";
-			const css = createCss();
+			const css = createUnsafeCss();
 			export const button = __pandwindcreateRecipe(css, { base: { color: "red" }, variants: { "size": { "sm": { padding: "2" } } } });",
 			    "converted": 1,
 			    "generatedFiles": [
@@ -2075,8 +2075,8 @@ describe("official adapter API families", () => {
 			  },
 			  "panda/generated styled JSX style props": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const Button = () => <button className={css.class({ color: "red" })} />;",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -2110,10 +2110,10 @@ describe("official adapter API families", () => {
 			  },
 			  "panda/generated styled component": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 			import { createCx } from "pandwind/cx";
 			const cx = createCx();
-			const css = createCss();
+			const css = createUnsafeCss();
 			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Component {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
 			export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "red" }), stableClass: "pw-jifjss", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
 			    "converted": 1,
@@ -2161,9 +2161,9 @@ describe("official adapter API families", () => {
 			  },
 			  "panda/sva slot recipe": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 			import { createSlotRecipe as __pandwindcreateSlotRecipe } from "../__pandwind/recipe";
-			const css = createCss();
+			const css = createUnsafeCss();
 			export const card = __pandwindcreateSlotRecipe(css, { slots: { "root": { color: "red" }, "label": {  } }, slotVariants: {  } });",
 			    "converted": 1,
 			    "generatedFiles": [
@@ -2214,8 +2214,8 @@ describe("official adapter API families", () => {
 			  },
 			  "pandwind/css.group named map": {
 			    "changed": false,
-			    "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const styles = css.group({ card: { color: "red" }, muted: { opacity: 0.5 } });",
 			    "converted": 0,
 			    "generatedFiles": [],
@@ -2261,8 +2261,8 @@ describe("official adapter API families", () => {
 			  },
 			  "react-native/StyleSheet named map": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const styles = { "card": css.class({ padding: 8, backgroundColor: "red" }) };",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -2297,8 +2297,8 @@ describe("official adapter API families", () => {
 			  "react-native/inline style array": {
 			    "changed": true,
 			    "code": "import { View } from "react-native";
-			import { createCss } from "pandwind/css";
-			const css = createCss();
+			import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const App = () => <View {...css.props(css.vars({ style: [{ padding: 8 }, { backgroundColor: "red" }] }))} />;",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -2586,8 +2586,8 @@ describe("official adapter API families", () => {
 			  },
 			  "solid-styled/prop callback": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const Card = (() => { const staticClass = ""; const component = (props) => {  const dynamic = css.vars({ color: ((props) => props.color)(props) }); const Component = props.as ?? "button"; const { as: _as, ...rest } = props; const attrs = {}; return <Component {...attrs} {...rest} className={css.props(staticClass, dynamic, "pw-1fn70s4", props.className).className} style={{ ...props.style, ...dynamic.style }} />; }; component.__pandwindClassName = "pw-1fn70s4"; return component; })();",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -2620,10 +2620,10 @@ describe("official adapter API families", () => {
 			  },
 			  "solid-styled/static component template": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 			import { createCx } from "pandwind/cx";
 			const cx = createCx();
-			const css = createCss();
+			const css = createUnsafeCss();
 			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Component {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
 			export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "red" }), stableClass: "pw-1sqdko1", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
 			    "converted": 1,
@@ -2742,10 +2742,10 @@ describe("official adapter API families", () => {
 			  },
 			  "stitches/styled component": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 			import { createCx } from "pandwind/cx";
 			const cx = createCx();
-			const css = createCss();
+			const css = createUnsafeCss();
 			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Component {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
 			export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "red" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
 			    "converted": 1,
@@ -2780,9 +2780,9 @@ describe("official adapter API families", () => {
 			  },
 			  "stitches/variants": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 			import { createRecipe as __pandwindcreateRecipe } from "../__pandwind/recipe";
-			const css = createCss();
+			const css = createUnsafeCss();
 
 			export const button = __pandwindcreateRecipe(css, { base: { compoundVariants: [{ size: "sm", css: { color: "red" } }] }, variants: { "size": { "sm": { padding: 4 } } } });",
 			    "converted": 1,
@@ -2822,10 +2822,10 @@ describe("official adapter API families", () => {
 			  },
 			  "style9/named style map": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 			import { createCx } from "pandwind/cx";
 			const cx = createCx();
-			const css = createCss();
+			const css = createUnsafeCss();
 			export const styles = css.group({ card: { color: "red" }, muted: { opacity: 0.5 } });",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -2859,10 +2859,10 @@ describe("official adapter API families", () => {
 			  },
 			  "style9/style9 call composition": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 			import { createCx } from "pandwind/cx";
 			const cx = createCx();
-			const css = createCss();
+			const css = createUnsafeCss();
 			const styles = css.group({ card: { color: "red" } });
 			export const Card = () => <div className={cx(styles.card)} />;",
 			    "converted": 1,
@@ -3022,8 +3022,8 @@ describe("official adapter API families", () => {
 			  },
 			  "styled-components/polymorphic as": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			const Card = css.class({ color: "red" });
 			export const App = () => <div as="a" href="/docs" className={Card} />;",
 			    "converted": 1,
@@ -3058,10 +3058,10 @@ describe("official adapter API families", () => {
 			  },
 			  "styled-components/styled component subject": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 			import { createCx } from "pandwind/cx";
 			const cx = createCx();
-			const css = createCss();
+			const css = createUnsafeCss();
 			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Component {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
 			const Link = (props: { href: string }) => <a {...props} />;
 			export const Card = __pandwindSlot({ defaultComponent: (Link), style: css.class({ color: "red" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
@@ -3097,10 +3097,10 @@ describe("official adapter API families", () => {
 			  },
 			  "styled-components/styled tagged template": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 			import { createCx } from "pandwind/cx";
 			const cx = createCx();
-			const css = createCss();
+			const css = createUnsafeCss();
 			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Component {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
 			export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "red" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
 			    "converted": 1,
@@ -3135,8 +3135,8 @@ describe("official adapter API families", () => {
 			  },
 			  "styled-components/theme callback": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const Card = (() => { const staticClass = ""; const component = (props) => {  const dynamic = css.vars({ color: (({ theme }) => theme.colors.brand)(props) }); const Component = props.as ?? "div"; const { as: _as, ...rest } = props; const attrs = {}; return <Component {...attrs} {...rest} className={css.props(staticClass, dynamic, "pw-1fn70s4", props.className).className} style={{ ...props.style, ...dynamic.style }} />; }; component.__pandwindClassName = "pw-1fn70s4"; return component; })();",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -3170,8 +3170,8 @@ describe("official adapter API families", () => {
 			  },
 			  "stylex/create": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const styles = { "card": css.class({ color: "red" }) };",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -3312,8 +3312,8 @@ describe("official adapter API families", () => {
 			  },
 			  "stylex/props host projection": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			const styles = { "card": css.class({ color: "red" }) };
 			export const Card = () => <div {...css.props(styles.card)} />;",
 			    "converted": 1,
@@ -3553,8 +3553,8 @@ describe("official adapter API families", () => {
 			  },
 			  "tokenami/alias and custom property selector": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const card = css.class({ cardColor: "red", "&[data-state=active]": { color: "var(--card-color)" } });",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -3599,10 +3599,10 @@ describe("official adapter API families", () => {
 			  },
 			  "tokenami/css.compose": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 			import { createCx } from "pandwind/cx";
 			const pandwindCx = createCx();
-			const css = createCss();
+			const css = createUnsafeCss();
 			export const card = () => { const className = css.class({ padding: "1rem", color: "red" }); return [(value: string | undefined) => pandwindCx(className, value), (style: Record<string, unknown> | undefined) => style ?? {}] as const; };",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -3670,8 +3670,8 @@ describe("official adapter API families", () => {
 			  },
 			  "treat/treat style": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const card = css.class({ padding: 8, color: "red" });",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -3973,9 +3973,9 @@ describe("official adapter API families", () => {
 			  },
 			  "vanilla-extract/recipe": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 			import { createRecipe as __pandwindcreateRecipe } from "../__pandwind/recipe";
-			const css = createCss();
+			const css = createUnsafeCss();
 			export const button = __pandwindcreateRecipe(css, { base: { color: "red" }, variants: { "size": { "sm": { padding: 4 } } } });",
 			    "converted": 1,
 			    "generatedFiles": [
@@ -4014,8 +4014,8 @@ describe("official adapter API families", () => {
 			  },
 			  "vanilla-extract/styleVariants": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const variants = { "primary": css.class({ color: "red" }) };",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -4083,10 +4083,10 @@ describe("official adapter API families", () => {
 			  },
 			  "vue-styled/static component template": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 			import { createCx } from "pandwind/cx";
 			const cx = createCx();
-			const css = createCss();
+			const css = createUnsafeCss();
 			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Component {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
 			export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "red" }), stableClass: "pw-1sqdko1", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
 			    "converted": 1,

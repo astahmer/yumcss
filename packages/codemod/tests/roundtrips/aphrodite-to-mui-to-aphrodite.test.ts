@@ -49,8 +49,8 @@ test("aphrodite -> mui -> aphrodite: preserves an actionable concrete round trip
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const styles = { "card": css.class({ padding: 8, color: "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -85,8 +85,8 @@ test("aphrodite -> mui -> aphrodite: preserves an actionable concrete round trip
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const styles = { "card": css.class({ padding: 8, color: "red" }) };",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -112,8 +112,8 @@ test("aphrodite -> mui -> aphrodite: retains the documented secondary API withou
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const styles = { "fonts": css.class({ "font-face": { fontFamily: "Inter", src: "url(inter.woff2)" } }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -148,8 +148,8 @@ test("aphrodite -> mui -> aphrodite: retains the documented secondary API withou
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const styles = { "fonts": css.class({ "font-face": { fontFamily: "Inter", src: "url(inter.woff2)" } }) };",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -190,8 +190,8 @@ test("aphrodite -> mui -> aphrodite: preserves concrete theme and project contex
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const styles = { "card": css.class({ padding: 8, color: "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -226,8 +226,8 @@ test("aphrodite -> mui -> aphrodite: preserves concrete theme and project contex
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const styles = { "card": css.class({ padding: 8, color: "#2563eb" }) };",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -241,8 +241,8 @@ test("aphrodite -> mui -> aphrodite: preserves concrete theme and project contex
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const styles = { "card": css.class({ padding: 8, color: "primary.main" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -277,8 +277,8 @@ test("aphrodite -> mui -> aphrodite: preserves concrete theme and project contex
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const styles = { "card": css.class({ padding: 8, color: "primary.main" }) };",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -306,8 +306,8 @@ test("aphrodite -> mui -> aphrodite: resolves token values across both concrete 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const styles = { "card": css.class({ padding: 8, color: "primary.main" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -342,8 +342,8 @@ test("aphrodite -> mui -> aphrodite: resolves token values across both concrete 
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const styles = { "card": css.class({ padding: 8, color: "primary.main" }) };",
 		    "converted": 0,
 		    "generatedFiles": [],

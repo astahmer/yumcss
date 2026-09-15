@@ -49,8 +49,8 @@ test("mui -> pandwind -> mui: preserves an actionable concrete round trip", () =
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const App = () => <div className={css.class({ padding: "16px", color: "red" })} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -84,7 +84,7 @@ test("mui -> pandwind -> mui: preserves an actionable concrete round trip", () =
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		export const App = () => <div className={// pandwind:migrate-skip (route: pandwind -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		css.class({ padding: "16px", color: "red" })} />;",
 		    "converted": 0,
@@ -133,8 +133,8 @@ test("mui -> pandwind -> mui: retains the documented secondary API without silen
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const Card = css.class({ padding: 8, color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -168,8 +168,8 @@ test("mui -> pandwind -> mui: retains the documented secondary API without silen
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const Card = css.class({ "padding": 8, "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -232,8 +232,8 @@ test("mui -> pandwind -> mui: preserves concrete theme and project context varia
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const App = () => <div className={css.class({ padding: "16px", color: "brand" })} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -267,7 +267,7 @@ test("mui -> pandwind -> mui: preserves concrete theme and project context varia
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { createCss } from "pandwind/css";
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		export const App = () => <div className={// pandwind:migrate-skip (route: pandwind -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		css.class({ padding: "16px", color: "brand" })} />;",
 		      "converted": 0,
@@ -304,8 +304,8 @@ test("mui -> pandwind -> mui: preserves concrete theme and project context varia
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const App = () => <div className={css.class({ padding: "16px", color: "brand" })} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -339,7 +339,7 @@ test("mui -> pandwind -> mui: preserves concrete theme and project context varia
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { createCss } from "pandwind/css";
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		export const App = () => <div className={// pandwind:migrate-skip (route: pandwind -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		css.class({ padding: "16px", color: "brand" })} />;",
 		      "converted": 0,
@@ -390,8 +390,8 @@ test("mui -> pandwind -> mui: resolves token values across both concrete legs", 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const App = () => <div className={css.class({ padding: "16px", color: "brand" })} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -425,7 +425,7 @@ test("mui -> pandwind -> mui: resolves token values across both concrete legs", 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		export const App = () => <div className={// pandwind:migrate-skip (route: pandwind -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		css.class({ padding: "16px", color: "brand" })} />;",
 		    "converted": 0,

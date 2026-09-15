@@ -24,6 +24,7 @@ import { NodeKind } from "./ast-node-kind.ts";
 const SOURCE = Object.freeze({
 	core: "pandwind",
 	css: "pandwind/css",
+	unsafeCss: "pandwind/unsafe/css",
 	design: "pandwind/design",
 });
 
@@ -31,6 +32,7 @@ const API = Object.freeze({
 	cx: "cx",
 	tw: "tw",
 	cssFactory: "createCss",
+	unsafeCssFactory: "createUnsafeCss",
 	designFactory: "createDesignCss",
 	style: "style",
 });
@@ -182,7 +184,11 @@ const apiFromImport = (
 	imported: string | undefined,
 ): string | undefined => {
 	if (source === SOURCE.core && imported !== undefined && CORE_APIS.has(imported)) return imported;
-	if (source === SOURCE.css && imported === API.cssFactory) return API.cssFactory;
+	if (
+		(source === SOURCE.css && imported === API.cssFactory) ||
+		(source === SOURCE.unsafeCss && imported === API.unsafeCssFactory)
+	)
+		return API.cssFactory;
 	if (source === SOURCE.design && imported === API.designFactory) return API.designFactory;
 	return undefined;
 };
@@ -286,7 +292,13 @@ const createApiResolver = () => {
 	const registerImport = (node: AstNode): void => {
 		if (node.importKind === IMPORT_KIND.type) return;
 		const source = sourceName(node.source);
-		if (source !== SOURCE.core && source !== SOURCE.css && source !== SOURCE.design) return;
+		if (
+			source !== SOURCE.core &&
+			source !== SOURCE.css &&
+			source !== SOURCE.unsafeCss &&
+			source !== SOURCE.design
+		)
+			return;
 		for (const specifier of node.specifiers ?? []) {
 			if (specifier.importKind === IMPORT_KIND.type) continue;
 			if (specifier.type === NodeKind.ImportNamespaceSpecifier) {

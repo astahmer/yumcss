@@ -47,8 +47,8 @@ test("panda -> pandwind: migrates concrete panda syntax to pandwind", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ color: "red.300", _hover: { color: "blue.300" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -91,9 +91,9 @@ test("panda -> pandwind: carries a documented secondary panda API explicitly", (
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
+		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		import { createRecipe as __pandwindcreateRecipe } from "../__pandwind/recipe";
-		const css = createCss();
+		const css = createUnsafeCss();
 		export const button = __pandwindcreateRecipe(css, { base: { color: "red" }, variants: { "size": { "sm": { padding: "2" } } } });",
 		  "converted": 1,
 		  "generatedFiles": [
@@ -149,8 +149,8 @@ test("panda -> pandwind: loads concrete theme and project context variants", asy
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ color: "brand", _hover: { color: "brand" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -184,8 +184,8 @@ test("panda -> pandwind: loads concrete theme and project context variants", asy
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ color: "brand", _hover: { color: "brand" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -231,8 +231,8 @@ test("panda -> pandwind: resolves concrete token values with project context", a
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ color: "brand", _hover: { color: "blue.300" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -275,8 +275,8 @@ test("panda -> pandwind: preserves malformed concrete panda input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ color: "red.300", _hover: { color: "blue.300" } });
 		const unfinished = { /* unfinished panda */",
 		  "converted": 1,
@@ -311,3 +311,4 @@ test("panda -> pandwind: preserves malformed concrete panda input", () => {
 		}
 	`)
 });
+

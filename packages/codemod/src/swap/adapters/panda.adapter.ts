@@ -272,7 +272,10 @@ export function createPandaAdapter(options: PandaAdapterOptions = {}) {
 			{
 				name: "css",
 				regex: /\bcss\s*\(\s*\{/g,
-				semanticBindings: [{ source: "styled-system/css", imported: "css" }],
+				semanticBindings: [
+					{ source: "@pandacss/dev", imported: "css" },
+					{ source: "styled-system/css", imported: "css" },
+				],
 				semanticBindingSourceMatcher: isPandaGeneratedSourceModule,
 				regexForBinding: (binding: SourceBinding) =>
 					new RegExp(

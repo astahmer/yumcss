@@ -15,12 +15,12 @@ import {
 
 const forward = createAdapterRouteSpec(CodemodAdapterId.StyleX, CodemodAdapterId.Mantine);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.Mantine, CodemodAdapterId.StyleX);
-	const happySource = "import stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"red\", padding: 8 } });";
-const edgeSource = "import stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"red\" } });";
-const malformedSource = "import stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"red\", padding: 8 } });\nconst unfinished = { /* unfinished stylex */";
+	const happySource = "import * as stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"red\", padding: 8 } });";
+const edgeSource = "import * as stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"red\" } });";
+const malformedSource = "import * as stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"red\", padding: 8 } });\nconst unfinished = { /* unfinished stylex */";
 const sourceSemantic = undefined;
-const themedSource = "import stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"#2563eb\", padding: 8 } });";
-const tokenSource = "import stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"#2563eb\", padding: 8 } });";
+const themedSource = "import * as stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"#2563eb\", padding: 8 } });";
+const tokenSource = "import * as stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"#2563eb\", padding: 8 } });";
 const blueSemantic = undefined;
 const amberSemantic = undefined;
 const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
@@ -49,7 +49,7 @@ test("stylex -> mantine -> stylex: preserves an actionable concrete round trip",
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import stylex from "@stylexjs/stylex";
+		    "code": "import * as stylex from "@stylexjs/stylex";
 		export const styles = // pandwind:migrate-skip (route: stylex -> mantine | lowering-residual: host-framework, validation)
 		stylex.create({ card: { color: "red", padding: 8 } });",
 		    "converted": 0,
@@ -97,7 +97,7 @@ test("stylex -> mantine -> stylex: preserves an actionable concrete round trip",
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "import stylex from "@stylexjs/stylex";
+		    "code": "import * as stylex from "@stylexjs/stylex";
 		export const styles = // pandwind:migrate-skip (route: stylex -> mantine | lowering-residual: host-framework, validation)
 		stylex.create({ card: { color: "red", padding: 8 } });",
 		    "converted": 0,
@@ -124,7 +124,7 @@ test("stylex -> mantine -> stylex: retains the documented secondary API without 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import stylex from "@stylexjs/stylex";
+		    "code": "import * as stylex from "@stylexjs/stylex";
 		export const styles = // pandwind:migrate-skip (route: stylex -> mantine | lowering-residual: host-framework, validation)
 		stylex.create({ card: { color: "red" } });",
 		    "converted": 0,
@@ -172,7 +172,7 @@ test("stylex -> mantine -> stylex: retains the documented secondary API without 
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "import stylex from "@stylexjs/stylex";
+		    "code": "import * as stylex from "@stylexjs/stylex";
 		export const styles = // pandwind:migrate-skip (route: stylex -> mantine | lowering-residual: host-framework, validation)
 		stylex.create({ card: { color: "red" } });",
 		    "converted": 0,
@@ -214,7 +214,7 @@ test("stylex -> mantine -> stylex: preserves concrete theme and project context 
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import stylex from "@stylexjs/stylex";
+		      "code": "import * as stylex from "@stylexjs/stylex";
 		export const styles = // pandwind:migrate-skip (route: stylex -> mantine | lowering-residual: host-framework, validation)
 		stylex.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
@@ -262,7 +262,7 @@ test("stylex -> mantine -> stylex: preserves concrete theme and project context 
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "import stylex from "@stylexjs/stylex";
+		      "code": "import * as stylex from "@stylexjs/stylex";
 		export const styles = // pandwind:migrate-skip (route: stylex -> mantine | lowering-residual: host-framework, validation)
 		stylex.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
@@ -277,7 +277,7 @@ test("stylex -> mantine -> stylex: preserves concrete theme and project context 
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import stylex from "@stylexjs/stylex";
+		      "code": "import * as stylex from "@stylexjs/stylex";
 		export const styles = // pandwind:migrate-skip (route: stylex -> mantine | lowering-residual: host-framework, validation)
 		stylex.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
@@ -325,7 +325,7 @@ test("stylex -> mantine -> stylex: preserves concrete theme and project context 
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "import stylex from "@stylexjs/stylex";
+		      "code": "import * as stylex from "@stylexjs/stylex";
 		export const styles = // pandwind:migrate-skip (route: stylex -> mantine | lowering-residual: host-framework, validation)
 		stylex.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
@@ -354,7 +354,7 @@ test("stylex -> mantine -> stylex: resolves token values across both concrete le
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import stylex from "@stylexjs/stylex";
+		    "code": "import * as stylex from "@stylexjs/stylex";
 		export const styles = // pandwind:migrate-skip (route: stylex -> mantine | lowering-residual: host-framework, validation)
 		stylex.create({ card: { color: "#2563eb", padding: 8 } });",
 		    "converted": 0,
@@ -402,7 +402,7 @@ test("stylex -> mantine -> stylex: resolves token values across both concrete le
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "import stylex from "@stylexjs/stylex";
+		    "code": "import * as stylex from "@stylexjs/stylex";
 		export const styles = // pandwind:migrate-skip (route: stylex -> mantine | lowering-residual: host-framework, validation)
 		stylex.create({ card: { color: "#2563eb", padding: 8 } });",
 		    "converted": 0,

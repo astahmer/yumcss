@@ -347,8 +347,8 @@ export const Button = () => <styled.button brandShadow="soft" data-testid="butto
 		expect(result.code).toContain('brandShadow: "soft"');
 		expect(result.code).toContain('data-testid="button"');
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { createCss } from "pandwind/css";
-			const css = createCss();
+			"import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const Button = () => <button data-testid="button" className={css.class({ brandShadow: "soft" })} />;"
 		`);
 	});

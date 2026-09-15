@@ -49,8 +49,8 @@ test("bamboo -> authored-css -> bamboo: preserves an actionable concrete round t
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -87,8 +87,8 @@ test("bamboo -> authored-css -> bamboo: preserves an actionable concrete round t
 		  "reverse": {
 		    "changed": false,
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import { createCss } from "pandwind/css";
-		const css = createCss();
+		import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "color": "red" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -150,8 +150,8 @@ test("bamboo -> authored-css -> bamboo: retains the documented secondary API wit
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "gap": "4", "display": "flex" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -188,8 +188,8 @@ test("bamboo -> authored-css -> bamboo: retains the documented secondary API wit
 		  "reverse": {
 		    "changed": false,
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import { createCss } from "pandwind/css";
-		const css = createCss();
+		import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "gap": "4", "display": "flex" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -266,8 +266,8 @@ test("bamboo -> authored-css -> bamboo: preserves concrete theme and project con
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -304,8 +304,8 @@ test("bamboo -> authored-css -> bamboo: preserves concrete theme and project con
 		    "reverse": {
 		      "changed": false,
 		      "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import { createCss } from "pandwind/css";
-		const css = createCss();
+		import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "color": "#2563eb" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -355,8 +355,8 @@ test("bamboo -> authored-css -> bamboo: preserves concrete theme and project con
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -393,8 +393,8 @@ test("bamboo -> authored-css -> bamboo: preserves concrete theme and project con
 		    "reverse": {
 		      "changed": false,
 		      "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import { createCss } from "pandwind/css";
-		const css = createCss();
+		import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "color": "#2563eb" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -458,8 +458,8 @@ test("bamboo -> authored-css -> bamboo: resolves token values across both concre
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -496,8 +496,8 @@ test("bamboo -> authored-css -> bamboo: resolves token values across both concre
 		  "reverse": {
 		    "changed": false,
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import { createCss } from "pandwind/css";
-		const css = createCss();
+		import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "color": "#2563eb" });",
 		    "converted": 0,
 		    "generatedFiles": [],

@@ -48,8 +48,8 @@ test("tamagui -> pandwind: migrates concrete tamagui syntax to pandwind", () => 
 		{
 		  "changed": true,
 		  "code": "import { View } from "tamagui";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
+		import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const Card = css.class({ padding: "$4", color: "red" });
 		export const App = () => <View className={Card} />;",
 		  "converted": 1,
@@ -146,8 +146,8 @@ test("tamagui -> pandwind: loads concrete theme and project context variants", a
 		  "amber": {
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
+		import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const Card = css.class({ padding: "$4", color: "#2563eb" });
 		export const App = () => <View className={Card} />;",
 		    "converted": 1,
@@ -183,8 +183,8 @@ test("tamagui -> pandwind: loads concrete theme and project context variants", a
 		  "blue": {
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
+		import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const Card = css.class({ padding: "$4", color: "brand" });
 		export const App = () => <View className={Card} />;",
 		    "converted": 1,
@@ -232,8 +232,8 @@ test("tamagui -> pandwind: resolves concrete token values with project context",
 		{
 		  "changed": true,
 		  "code": "import { View } from "tamagui";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
+		import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const Card = css.class({ padding: "$4", color: "brand" });
 		export const App = () => <View className={Card} />;",
 		  "converted": 1,
@@ -278,8 +278,8 @@ test("tamagui -> pandwind: preserves malformed concrete tamagui input", () => {
 		{
 		  "changed": true,
 		  "code": "import { View } from "tamagui";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
+		import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const Card = css.class({ padding: "$4", color: "red" });
 		export const App = () => <View className={Card} />;
 		const unfinished = { /* unfinished tamagui */",

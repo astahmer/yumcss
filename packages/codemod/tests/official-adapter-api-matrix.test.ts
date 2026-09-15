@@ -52,8 +52,8 @@ describe("official primary API forms", () => {
 			{
 			  "aphrodite/StyleSheet.create": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const styles = { "card": css.class({ padding: 8, color: "red" }) };",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -87,8 +87,8 @@ describe("official primary API forms", () => {
 			  },
 			  "authored-css/css rule": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const styles = { "card": css.class({ padding: "1rem", color: "red" }) };
 			export default styles;",
 			    "converted": 1,
@@ -123,8 +123,8 @@ describe("official primary API forms", () => {
 			  },
 			  "bamboo/styled-system css object": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const card = css.class({ color: "red" });",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -158,8 +158,8 @@ describe("official primary API forms", () => {
 			  },
 			  "chakra-ui/Chakra style props": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const App = () => <div className={css.class({ padding: "4", backgroundColor: "red.200" })} />;",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -193,8 +193,8 @@ describe("official primary API forms", () => {
 			  },
 			  "compiled/compiled css object": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const card = css.class({ padding: 8, color: "red" });",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -228,8 +228,8 @@ describe("official primary API forms", () => {
 			  },
 			  "css-modules/module class": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const styles = { "card": css.class({ padding: "1rem", color: "red" }) };
 			export default styles;",
 			    "converted": 1,
@@ -264,8 +264,8 @@ describe("official primary API forms", () => {
 			  },
 			  "emotion/@emotion/css object": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const card = css.class({ padding: "1rem", color: "red" });",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -300,8 +300,8 @@ describe("official primary API forms", () => {
 			  "fela/renderer.renderRule": {
 			    "changed": true,
 			    "code": "import { createRenderer } from "fela";
-			import { createCss } from "pandwind/css";
-			const css = createCss();
+			import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			const renderer = createRenderer();
 			export const card = css.class({ color: "red" });",
 			    "converted": 1,
@@ -336,8 +336,8 @@ describe("official primary API forms", () => {
 			  },
 			  "goober/css object": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const card = css.class({ padding: "1rem", color: "red" });",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -371,8 +371,8 @@ describe("official primary API forms", () => {
 			  },
 			  "jss/react-jss createUseStyles": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const useStyles = { "card": css.class({ color: "red" }) };",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -406,8 +406,8 @@ describe("official primary API forms", () => {
 			  },
 			  "less/less rule": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const styles = { "card": css.class({ padding: "1rem", color: "red" }) };
 			export default styles;",
 			    "converted": 1,
@@ -442,8 +442,8 @@ describe("official primary API forms", () => {
 			  },
 			  "linaria/css template": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const card = css.class({ padding: "1rem", color: "red" });",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -477,8 +477,8 @@ describe("official primary API forms", () => {
 			  },
 			  "mantine/Mantine style props": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const App = () => <div className={css.class({ color: "blue.6", marginLeft: "auto", marginRight: "auto", maxWidth: 400 })} />;",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -512,8 +512,8 @@ describe("official primary API forms", () => {
 			  },
 			  "mui/MUI sx prop": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const App = () => <div className={css.class({ padding: "16px", color: "red" })} />;",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -547,8 +547,8 @@ describe("official primary API forms", () => {
 			  },
 			  "next-yak/next-yak css template": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const card = css.class({ padding: "1rem", color: "red" });",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -582,8 +582,8 @@ describe("official primary API forms", () => {
 			  },
 			  "panda/generated styled-system css": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const card = css.class({ color: "red.300", _hover: { color: "blue.300" } });",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -617,8 +617,8 @@ describe("official primary API forms", () => {
 			  },
 			  "pandwind/css.class object": {
 			    "changed": false,
-			    "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const card = css.class({ color: "red", padding: "1rem" });",
 			    "converted": 0,
 			    "generatedFiles": [],
@@ -630,8 +630,8 @@ describe("official primary API forms", () => {
 			  },
 			  "pandwind/css.vars object": {
 			    "changed": false,
-			    "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const card = css.vars({ color: "var(--card-color)" });",
 			    "converted": 0,
 			    "generatedFiles": [],
@@ -643,8 +643,8 @@ describe("official primary API forms", () => {
 			  },
 			  "react-native/React Native StyleSheet": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const styles = { "card": css.class({ padding: 8, color: "red" }) };",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -678,8 +678,8 @@ describe("official primary API forms", () => {
 			  },
 			  "react-strict-dom/react-strict-dom css.create": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			const styles = { "card": css.class({ padding: "1rem", color: "red" }) };
 			export const Card = () => <div className={styles.card} />;",
 			    "converted": 1,
@@ -714,8 +714,8 @@ describe("official primary API forms", () => {
 			  },
 			  "sass/scss rule": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const styles = { "card": css.class({ padding: "1rem", color: "red" }) };
 			export default styles;",
 			    "converted": 1,
@@ -750,10 +750,10 @@ describe("official primary API forms", () => {
 			  },
 			  "solid-styled/solid styled template": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 			import { createCx } from "pandwind/cx";
 			const cx = createCx();
-			const css = createCss();
+			const css = createUnsafeCss();
 			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Component {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
 			export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "red" }), stableClass: "pw-t6bw3o", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
 			    "converted": 1,
@@ -788,8 +788,8 @@ describe("official primary API forms", () => {
 			  },
 			  "stitches/css object": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const card = css.class({ padding: "1rem", color: "red" });",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -823,10 +823,10 @@ describe("official primary API forms", () => {
 			  },
 			  "style9/style9.create": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 			import { createCx } from "pandwind/cx";
 			const cx = createCx();
-			const css = createCss();
+			const css = createUnsafeCss();
 			export const styles = css.group({ card: { color: "red" } });",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -860,10 +860,10 @@ describe("official primary API forms", () => {
 			  },
 			  "styled-components/styled object": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 			import { createCx } from "pandwind/cx";
 			const cx = createCx();
-			const css = createCss();
+			const css = createUnsafeCss();
 			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Component {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
 			export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "red" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
 			    "converted": 1,
@@ -898,8 +898,8 @@ describe("official primary API forms", () => {
 			  },
 			  "stylex/stylex.create": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const styles = { "card": css.class({ padding: "8px", color: "red" }) };",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -933,8 +933,8 @@ describe("official primary API forms", () => {
 			  },
 			  "tailwind/Tailwind arbitrary utility classes": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const App = () => <div className={css.class({ gap: "1rem", alignItems: "center", display: "flex" })}/>;",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -969,8 +969,8 @@ describe("official primary API forms", () => {
 			  "tamagui/styled component": {
 			    "changed": true,
 			    "code": "import { View } from "tamagui";
-			import { createCss } from "pandwind/css";
-			const css = createCss();
+			import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const Card = css.class({ padding: "$4", color: "red" });
 			export const App = () => <View className={Card} />;",
 			    "converted": 1,
@@ -1005,8 +1005,8 @@ describe("official primary API forms", () => {
 			  },
 			  "tokenami/Tokenami css object": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const card = css.class({ cardGap: "1rem", color: "red" });",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -1040,8 +1040,8 @@ describe("official primary API forms", () => {
 			  },
 			  "treat/treat style": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const card = css.class({ padding: 8, color: "red" });",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -1075,8 +1075,8 @@ describe("official primary API forms", () => {
 			  },
 			  "unocss/UnoCSS utility classes": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const App = () => <div className={css.class({ gap: "1rem", alignItems: "center", display: "flex" })}/>;",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -1110,8 +1110,8 @@ describe("official primary API forms", () => {
 			  },
 			  "vanilla-extract/style object": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const card = css.class({ padding: 8, color: "red" });",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -1145,8 +1145,8 @@ describe("official primary API forms", () => {
 			  },
 			  "vue-styled/vue styled template": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const Card = css.class({ padding: "1rem", color: "red" });",
 			    "converted": 1,
 			    "generatedFiles": [],

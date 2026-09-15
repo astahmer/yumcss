@@ -182,7 +182,7 @@ function makeCoreAdapter(
 				? ["pandwind/tw"]
 				: dialect === SwapSourceId.Dss
 					? ["pandwind/design"]
-					: ["pandwind/css"],
+					: ["pandwind/css", "pandwind/unsafe/css"],
 		capabilities: CORE_CAPABILITIES(id),
 		dependencies: CORE_DEPENDENCIES,
 		...(role === "target" && dialect === SwapSourceId.Tw

@@ -157,9 +157,9 @@ cx(...items);`,
 	test("recognizes css and design instances from their real subpath factories", () => {
 		const reports = runRule(
 			"no-dollar-raw",
-			`import * as cssApi from "pandwind/css";
+			`import * as cssApi from "pandwind/unsafe/css";
 import { createDesignCss as makeDesign } from "pandwind/design";
-const css = cssApi.createCss();
+const css = cssApi.createUnsafeCss();
 const dss = makeDesign(preset);
 css({ $raw: { color: "green" } });
 dss({ $raw: { color: "yellow" } });
@@ -168,12 +168,7 @@ dss.class({ $raw: { color: "blue" } });`,
 		);
 
 		expect(reports).toHaveLength(4);
-		expect(reports.map(({ data }) => data.name)).toEqual([
-			"css",
-			"dss",
-			"css.class",
-			"dss.class",
-		]);
+		expect(reports.map(({ data }) => data.name)).toEqual(["css", "dss", "css.class", "dss.class"]);
 		expect(reports).toMatchInlineSnapshot(`
 			[
 			  {
@@ -224,8 +219,8 @@ rootCss(...items);`,
 		const reports = runRule(
 			"no-arbitrary-values",
 			`import { tw } from "pandwind";
-import { createCss } from "pandwind/css";
-const css = createCss();
+import { createUnsafeCss } from "pandwind/unsafe/css";
+const css = createUnsafeCss();
 tw("w-[13px]");
 css.class({ color: "[red]" });`,
 		);
@@ -490,8 +485,8 @@ dss.class({
 		const reports = runRule(
 			"no-dynamic-values",
 			`import { tw } from "pandwind";
-import { createCss } from "pandwind/css";
-const css = createCss();
+import { createUnsafeCss } from "pandwind/unsafe/css";
+const css = createUnsafeCss();
 const card = { color: "red", padding: "1rem" };
 tw(card);
 css.class(card);
@@ -539,8 +534,8 @@ tw({ color: active ? "red" : "blue" }, disabled ? "opacity-50" : "opacity-100");
 		const reports = runRule(
 			"no-dynamic-values",
 			`import type { tw as TypeOnlyTw } from "pandwind";
-import * as cssApi from "pandwind/css";
-const css = cssApi.createCss();
+import * as cssApi from "pandwind/unsafe/css";
+const css = cssApi.createUnsafeCss();
 TypeOnlyTw(theme.value);
 css.class(theme.value);
 css.vars(theme.value);`,
@@ -565,8 +560,8 @@ css.vars(theme.value);`,
 	test("finds host prop conflicts created by css.props spreads", () => {
 		const reports = runRule(
 			"no-conflicting-style-props",
-			`import { createCss } from "pandwind/css";
-const css = createCss();
+			`import { createUnsafeCss } from "pandwind/unsafe/css";
+const css = createUnsafeCss();
 export function Card() {
   return <div {...css.props({ color: "red" })} className="extra" style={inlineStyle} />;
 }`,
@@ -640,8 +635,8 @@ tw(theme.color);`,
 		);
 		const runtimeSkipReports = runRule(
 			"no-stale-migration-skip",
-			`import { createCss } from "pandwind/css";
-const css = createCss();
+			`import { createUnsafeCss } from "pandwind/unsafe/css";
+const css = createUnsafeCss();
 // pandwind:migrate-skip (residual: runtime value)
 css.vars({ color: theme.color });`,
 		);

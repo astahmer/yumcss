@@ -49,8 +49,8 @@ test("tokenami -> mui -> tokenami: preserves an actionable concrete round trip",
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "cardGap": "1rem", "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -85,8 +85,8 @@ test("tokenami -> mui -> tokenami: preserves an actionable concrete round trip",
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "cardGap": "1rem", "color": "red" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -112,8 +112,8 @@ test("tokenami -> mui -> tokenami: retains the documented secondary API without 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "padding": "1rem", "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -148,8 +148,8 @@ test("tokenami -> mui -> tokenami: retains the documented secondary API without 
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "padding": "1rem", "color": "red" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -189,8 +189,8 @@ test("tokenami -> mui -> tokenami: preserves concrete theme and project context 
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "cardGap": "1rem", "color": "primary.main" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -225,8 +225,8 @@ test("tokenami -> mui -> tokenami: preserves concrete theme and project context 
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "cardGap": "1rem", "color": "primary.main" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -240,8 +240,8 @@ test("tokenami -> mui -> tokenami: preserves concrete theme and project context 
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "cardGap": "1rem", "color": "primary.main" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -276,8 +276,8 @@ test("tokenami -> mui -> tokenami: preserves concrete theme and project context 
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "cardGap": "1rem", "color": "primary.main" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -305,8 +305,8 @@ test("tokenami -> mui -> tokenami: resolves token values across both concrete le
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "cardGap": "1rem", "color": "primary.main" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -341,8 +341,8 @@ test("tokenami -> mui -> tokenami: resolves token values across both concrete le
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		export const card = css.class({ "cardGap": "1rem", "color": "primary.main" });",
 		    "converted": 0,
 		    "generatedFiles": [],

@@ -367,8 +367,8 @@ describe("custom design-system context resolution", () => {
 		expect(source.code).toContain('backgroundColor: "#123456"');
 		expect(source.code).toContain('color: "#123456"');
 		expect(source.code).toMatchInlineSnapshot(`
-			"import { createCss } from "pandwind/css";
-			const css = createCss();
+			"import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const App = () => <div className={css.class({ backgroundColor: "#123456", color: "#123456" })}/>;"
 		`);
 	});
@@ -437,8 +437,8 @@ describe("custom design-system context resolution", () => {
 		expect(source.code).toContain('backgroundColor: "#123456"');
 		expect(source.code).toContain('color: "#123456"');
 		expect(source.code).toMatchInlineSnapshot(`
-			"import { createCss } from "pandwind/css";
-			const css = createCss();
+			"import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const App = () => <div className={css.class({ backgroundColor: "#123456", color: "#123456" })}/>;"
 		`);
 	});

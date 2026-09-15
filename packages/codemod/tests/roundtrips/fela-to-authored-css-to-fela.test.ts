@@ -16,7 +16,7 @@ import {
 const forward = createAdapterRouteSpec(CodemodAdapterId.Fela, CodemodAdapterId.AuthoredCss);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.AuthoredCss, CodemodAdapterId.Fela);
 	const happySource = "import { createRenderer } from \"fela\";\nconst renderer = createRenderer();\nexport const card = renderer.renderRule(() => ({ color: \"red\" }));";
-const edgeSource = "import { createComponent } from \"react-fela\";\nexport const Card = createComponent(() => ({ color: \"red\" }));";
+const edgeSource = "import { createComponent } from \"react-fela\";\nexport const Card = createComponent(() => ({ color: \"red\" }), \"button\");";
 const malformedSource = "import { createRenderer } from \"fela\";\nconst renderer = createRenderer();\nexport const card = renderer.renderRule(() => ({ color: \"red\" }));\nconst unfinished = { /* unfinished fela */";
 const sourceSemantic = undefined;
 const themedSource = "import { createRenderer } from \"fela\";\nconst renderer = createRenderer();\nexport const card = renderer.renderRule(() => ({ color: \"#2563eb\" }));";
@@ -50,8 +50,8 @@ test("fela -> authored-css -> fela: preserves an actionable concrete round trip"
 		  "forward": {
 		    "changed": true,
 		    "code": "import { createRenderer } from "fela";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
+		import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		const renderer = createRenderer();
 		export const card = css.class({ "color": "red" });",
 		    "converted": 1,
@@ -90,8 +90,8 @@ test("fela -> authored-css -> fela: preserves an actionable concrete round trip"
 		    "changed": false,
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
 		import { createRenderer } from "fela";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
+		import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		const renderer = createRenderer();
 		export const card = css.class({ "color": "red" });",
 		    "converted": 0,
@@ -187,8 +187,8 @@ test("fela -> authored-css -> fela: retains the documented secondary API without
 		  "forward": {
 		    "changed": true,
 		    "code": "import { createComponent } from "react-fela";
-		export const Card = // pandwind:migrate-skip (route: fela -> authored-css | parse-residual: component | available: residual)
-		createComponent(() => ({ color: "red" }));",
+		export const Card = // pandwind:migrate-skip (route: fela -> authored-css | capability-blocked: components: component subject: styled("button") | available: static, residual, portable-artifact)
+		createComponent(() => ({ color: "red" }), "button");",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -197,22 +197,24 @@ test("fela -> authored-css -> fela: retains the documented secondary API without
 		          "dynamic-and-theme",
 		        ],
 		        "availableRepresentations": [
+		          "static",
 		          "residual",
+		          "portable-artifact",
 		        ],
-		        "representation": "residual",
+		        "representation": "static",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "residual",
+		        "representation": "portable-artifact",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "Fela createComponent requires a style function and a host component",
-		        "kind": "component",
+		        "hint": "components: component subject: styled("button")",
+		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -223,8 +225,8 @@ test("fela -> authored-css -> fela: retains the documented secondary API without
 		    "changed": false,
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
 		import { createComponent } from "react-fela";
-		export const Card = // pandwind:migrate-skip (route: fela -> authored-css | parse-residual: component | available: residual)
-		createComponent(() => ({ color: "red" }));",
+		export const Card = // pandwind:migrate-skip (route: fela -> authored-css | capability-blocked: components: component subject: styled("button") | available: static, residual, portable-artifact)
+		createComponent(() => ({ color: "red" }), "button");",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -298,8 +300,8 @@ test("fela -> authored-css -> fela: preserves concrete theme and project context
 		    "forward": {
 		      "changed": true,
 		      "code": "import { createRenderer } from "fela";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
+		import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		const renderer = createRenderer();
 		export const card = css.class({ "color": "#2563eb" });",
 		      "converted": 1,
@@ -338,8 +340,8 @@ test("fela -> authored-css -> fela: preserves concrete theme and project context
 		      "changed": false,
 		      "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
 		import { createRenderer } from "fela";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
+		import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		const renderer = createRenderer();
 		export const card = css.class({ "color": "#2563eb" });",
 		      "converted": 0,
@@ -423,8 +425,8 @@ test("fela -> authored-css -> fela: preserves concrete theme and project context
 		    "forward": {
 		      "changed": true,
 		      "code": "import { createRenderer } from "fela";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
+		import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		const renderer = createRenderer();
 		export const card = css.class({ "color": "#2563eb" });",
 		      "converted": 1,
@@ -463,8 +465,8 @@ test("fela -> authored-css -> fela: preserves concrete theme and project context
 		      "changed": false,
 		      "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
 		import { createRenderer } from "fela";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
+		import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		const renderer = createRenderer();
 		export const card = css.class({ "color": "#2563eb" });",
 		      "converted": 0,
@@ -562,8 +564,8 @@ test("fela -> authored-css -> fela: resolves token values across both concrete l
 		  "forward": {
 		    "changed": true,
 		    "code": "import { createRenderer } from "fela";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
+		import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		const renderer = createRenderer();
 		export const card = css.class({ "color": "#2563eb" });",
 		    "converted": 1,
@@ -602,8 +604,8 @@ test("fela -> authored-css -> fela: resolves token values across both concrete l
 		    "changed": false,
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
 		import { createRenderer } from "fela";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
+		import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 		const renderer = createRenderer();
 		export const card = css.class({ "color": "#2563eb" });",
 		    "converted": 0,

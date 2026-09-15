@@ -29,8 +29,8 @@ describe("Vanilla Extract source adapter", () => {
 		expect(result).toMatchInlineSnapshot(`
 			{
 			  "changed": true,
-			  "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
+			  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const tone = { "regular": css.class({ color: "red" }), "quiet": css.class({ color: "gray" }) };",
 			  "converted": 1,
 			  "dependencies": [

@@ -48,10 +48,10 @@ test("vue-styled -> pandwind: migrates concrete vue-styled syntax to pandwind", 
 		{
 		  "changed": true,
 		  "code": "import { defineComponent, h } from "vue";
-		import { createCss } from "pandwind/css";
+		import { createUnsafeCss } from "pandwind/unsafe/css";
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		const css = createCss();
+		const css = createUnsafeCss();
 		export const Card = defineComponent({ setup(_props, { attrs, slots }) { const style = css.class({ padding: "1rem", color: "red" }); return () => h("div", { ...attrs, class: cx(style, attrs.class) }, slots.default?.()); } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -95,10 +95,10 @@ test("vue-styled -> pandwind: carries a documented secondary vue-styled API expl
 		{
 		  "changed": true,
 		  "code": "import { defineComponent, h } from "vue";
-		import { createCss } from "pandwind/css";
+		import { createUnsafeCss } from "pandwind/unsafe/css";
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		const css = createCss();
+		const css = createUnsafeCss();
 		export const Card = defineComponent({ setup(_props, { attrs, slots }) { const style = css.class({ padding: "1rem", color: "red" }); return () => h("div", { ...attrs, class: cx(style, attrs.class) }, slots.default?.()); } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -151,10 +151,10 @@ test("vue-styled -> pandwind: loads concrete theme and project context variants"
 		  "amber": {
 		    "changed": true,
 		    "code": "import { defineComponent, h } from "vue";
-		import { createCss } from "pandwind/css";
+		import { createUnsafeCss } from "pandwind/unsafe/css";
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		const css = createCss();
+		const css = createUnsafeCss();
 		export const Card = defineComponent({ setup(_props, { attrs, slots }) { const style = css.class({ padding: "1rem", color: "#2563eb" }); return () => h("div", { ...attrs, class: cx(style, attrs.class) }, slots.default?.()); } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -189,10 +189,10 @@ test("vue-styled -> pandwind: loads concrete theme and project context variants"
 		  "blue": {
 		    "changed": true,
 		    "code": "import { defineComponent, h } from "vue";
-		import { createCss } from "pandwind/css";
+		import { createUnsafeCss } from "pandwind/unsafe/css";
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		const css = createCss();
+		const css = createUnsafeCss();
 		export const Card = defineComponent({ setup(_props, { attrs, slots }) { const style = css.class({ padding: "1rem", color: "brand" }); return () => h("div", { ...attrs, class: cx(style, attrs.class) }, slots.default?.()); } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -239,10 +239,10 @@ test("vue-styled -> pandwind: resolves concrete token values with project contex
 		{
 		  "changed": true,
 		  "code": "import { defineComponent, h } from "vue";
-		import { createCss } from "pandwind/css";
+		import { createUnsafeCss } from "pandwind/unsafe/css";
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		const css = createCss();
+		const css = createUnsafeCss();
 		export const Card = defineComponent({ setup(_props, { attrs, slots }) { const style = css.class({ padding: "1rem", color: "brand" }); return () => h("div", { ...attrs, class: cx(style, attrs.class) }, slots.default?.()); } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -286,10 +286,10 @@ test("vue-styled -> pandwind: preserves malformed concrete vue-styled input", ()
 		{
 		  "changed": true,
 		  "code": "import { defineComponent, h } from "vue";
-		import { createCss } from "pandwind/css";
+		import { createUnsafeCss } from "pandwind/unsafe/css";
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		const css = createCss();
+		const css = createUnsafeCss();
 		export const Card = defineComponent({ setup(_props, { attrs, slots }) { const style = css.class({ padding: "1rem", color: "red" }); return () => h("div", { ...attrs, class: cx(style, attrs.class) }, slots.default?.()); } });
 		const unfinished = { /* unfinished vue-styled */",
 		  "converted": 1,

@@ -16,6 +16,8 @@ function identifier(id: CodemodAdapterId): string {
 			return "CodemodAdapterId.Panda";
 		case CodemodAdapterId.StyleX:
 			return "CodemodAdapterId.StyleX";
+		case CodemodAdapterId.ReactStrictDom:
+			return "CodemodAdapterId.ReactStrictDom";
 		case CodemodAdapterId.Emotion:
 			return "CodemodAdapterId.Emotion";
 		case CodemodAdapterId.StyledComponents:

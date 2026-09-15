@@ -81,7 +81,10 @@ describe("PortableStyleArtifact", () => {
 		const staticEmission = PortableStyleArtifact.emission(staticProgram);
 		expect(staticEmission).toEqual({
 			text: 'css.class({ "color": "red" })',
-			imports: ['import { createCss } from "pandwind/css";', "const css = createCss();"],
+			imports: [
+				'import { createUnsafeCss } from "pandwind/unsafe/css";',
+				"const css = createUnsafeCss();",
+			],
 		});
 
 		const dynamicEmission = PortableStyleArtifact.emission(
@@ -90,7 +93,9 @@ describe("PortableStyleArtifact", () => {
 			]),
 		);
 		expect(dynamicEmission.text).toContain("css.vars");
-		expect(dynamicEmission.imports).toContain('import { createCss } from "pandwind/css";');
+		expect(dynamicEmission.imports).toContain(
+			'import { createUnsafeCss } from "pandwind/unsafe/css";',
+		);
 		expect(dynamicEmission.imports).not.toContain(
 			'import { createRuntimeCss } from "pandwind/css/runtime";',
 		);
