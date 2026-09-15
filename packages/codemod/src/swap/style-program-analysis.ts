@@ -10,7 +10,6 @@ import {
 import { StyleDynamicExpressionKind } from "./identifiers.ts";
 
 const finiteStaticStyleExpression = (value: StyleDynamicValue): boolean => {
-	if (value.expressionKind !== StyleDynamicExpressionKind.Conditional) return false;
 	try {
 		const parsed = SOURCE_SCANNER_SERVICE.parse({
 			file: "pandwind-dynamic-style-expression.tsx",
@@ -29,13 +28,18 @@ const finiteStaticStyleExpression = (value: StyleDynamicValue): boolean => {
 		return (
 			values !== undefined &&
 			values.values.length > 0 &&
-			values.values.every(
-				(candidate) => typeof candidate === "string" || typeof candidate === "number",
-			)
+			values.values.every(isFiniteStaticStyleValue)
 		);
 	} catch {
 		return false;
 	}
+};
+
+const isFiniteStaticStyleValue = (value: unknown): boolean => {
+	if (typeof value === "string" || typeof value === "number") return true;
+	if (Array.isArray(value)) return value.every(isFiniteStaticStyleValue);
+	if (value === null || typeof value !== "object") return false;
+	return Object.values(value).every(isFiniteStaticStyleValue);
 };
 
 /** Read-only semantic queries shared by lowering and adapter projections. */
