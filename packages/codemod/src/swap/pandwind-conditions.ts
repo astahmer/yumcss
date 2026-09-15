@@ -25,8 +25,13 @@ export const canonicalPandwindConditionName = (name: string): string =>
 export const isPandwindConditionName = (name: string): boolean =>
 	Object.hasOwn(presetConditions, canonicalPandwindConditionName(name));
 
-export const pandwindConditionNameForSelector = (selector: string): string | undefined =>
-	selectorConditionAliases.get(selector);
+export const pandwindConditionNameForSelector = (selector: string): string | undefined => {
+	const direct = selectorConditionAliases.get(selector);
+	if (direct !== undefined) return direct;
+	const normalized = selector.replaceAll('"', "").replaceAll("'", "");
+	const direction = /^&:where\(\[dir=(ltr|rtl)\]\s+\*\)$/u.exec(normalized)?.[1];
+	return direction === undefined ? undefined : `_${direction}`;
+};
 
 /** Keep built-in Pandwind conditions on their underscore spelling. */
 export const canonicalizePandwindConditions = (

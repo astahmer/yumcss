@@ -577,6 +577,12 @@ const conditionCatalogValue = (
 	entries: readonly [string, string][],
 ): string | undefined => entries.find(([candidate]) => candidate === name)?.[1];
 
+const isSafeNestedSelector = (condition: StyleCondition): boolean => {
+	if (condition.kind !== SemanticConditionKindTag.Selector) return false;
+	const selector = condition.value ?? condition.raw ?? condition.name;
+	return selector.trim() !== "";
+};
+
 type PandwindConditionResult = {
 	readonly condition?: StyleCondition;
 	readonly residual?: StyleProgram["residuals"][number];
@@ -590,8 +596,9 @@ const pandwindCondition = (
 		const preserveResolvedValue = condition.kind !== SemanticConditionKindTag.Named;
 		const catalogValue = conditionCatalogValue(name, entries);
 		const value = preserveResolvedValue
-			? condition.value ??
-				(catalogValue?.replace(/^@(media|container|supports)\s+/u, "") ?? condition.name)
+			? (condition.value ??
+				catalogValue?.replace(/^@(media|container|supports)\s+/u, "") ??
+				condition.name)
 			: undefined;
 		return {
 			kind: preserveResolvedValue ? condition.kind : SemanticConditionKindTag.Named,
@@ -602,8 +609,7 @@ const pandwindCondition = (
 	if (condition.kind === SemanticConditionKindTag.Named && condition.name === "base") return {};
 	const authoredName = condition.raw ?? condition.name;
 	const canonicalName = canonicalPandwindConditionName(authoredName);
-	if (isPandwindConditionName(canonicalName))
-		return { condition: named(canonicalName) };
+	if (isPandwindConditionName(canonicalName)) return { condition: named(canonicalName) };
 	if (
 		condition.kind === SemanticConditionKindTag.Selector ||
 		condition.kind === SemanticConditionKindTag.Pseudo
@@ -612,12 +618,17 @@ const pandwindCondition = (
 		const selectorName = pandwindConditionNameForSelector(
 			selector.startsWith("&") ? selector : `&${selector}`,
 		);
-		if (selectorName !== undefined)
-			return { condition: named(selectorName) };
+		if (selectorName !== undefined) return { condition: named(selectorName) };
 	}
 	const match = conditionCatalogMatch(condition, entries);
-	if (match !== undefined)
-		return { condition: named(match) };
+	if (match !== undefined) return { condition: named(match) };
+	if (
+		condition.kind === SemanticConditionKindTag.Media ||
+		condition.kind === SemanticConditionKindTag.Container ||
+		condition.kind === SemanticConditionKindTag.Supports
+	)
+		return { condition };
+	if (isSafeNestedSelector(condition)) return { condition };
 	return {
 		residual: {
 			kind: StyleProgramResidualKindTag.Capability,

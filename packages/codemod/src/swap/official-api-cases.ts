@@ -972,7 +972,7 @@ export function officialApiFamilyCases(): readonly OfficialApiFamilyCase[] {
 		{
 			adapter: CodemodAdapterId.Tokenami,
 			name: "alias and custom property selector",
-			expectation: "residual",
+			expectation: "converted",
 			file: "styles.ts",
 			source:
 				'import { css } from "@tokenami/css";\nexport const card = css({ "--card-color": "red", "&[data-state=active]": { color: "var(--card-color)" } });',

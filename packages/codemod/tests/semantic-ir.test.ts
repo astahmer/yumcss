@@ -232,6 +232,28 @@ describe("versioned semantic style-program IR", () => {
 		]);
 	});
 
+	test("keeps nested media and selector objects as CSS conditions", () => {
+		const program = styleProgramFromSourceObject(
+			`"@media (prefers-reduced-motion: reduce)": { "& [data-part='content']": { animationPlayState: "paused" } }`,
+			{ propertyValueConditions: true },
+		);
+
+		expect(program.residuals).toEqual([]);
+		expect(program.declarations).toEqual([
+			{
+				property: "animationPlayState",
+				value: { kind: "literal", value: "paused" },
+				conditions: [
+					{
+						kind: "media",
+						name: "@media (prefers-reduced-motion: reduce)",
+					},
+					{ kind: "selector", name: "& [data-part='content']" },
+				],
+			},
+		]);
+	});
+
 	test("preserves rule-level CSS constructs and canonical ordering", () => {
 		const program = styleProgramFromRules([
 			{

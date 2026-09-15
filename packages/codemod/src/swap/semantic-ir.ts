@@ -1019,6 +1019,12 @@ function looksLikePropertyValueConditions(
 ): boolean {
 	if (
 		options.propertyValueConditions !== true ||
+		name === "base" ||
+		name.startsWith("_") ||
+		name.startsWith("&") ||
+		name.startsWith(":") ||
+		name.startsWith("@") ||
+		PSEUDO_CONDITIONS.has(name.replace(/^:/, "")) ||
 		!sourceObject(value) ||
 		(options.propertyValueConditionNames !== undefined &&
 			!options.propertyValueConditionNames.has(name))

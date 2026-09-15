@@ -20,6 +20,7 @@ import {
 import type {
 	AdapterDependencies,
 	AdapterGeneratedFile,
+	AdapterProjectConfig,
 	AdapterValidationResult,
 } from "./adapter-contract.ts";
 import type { StyleLoweringPlan } from "./lowering.ts";
@@ -87,6 +88,20 @@ const sourceModuleOwnership = (
 		matchers: adapter.sourceModuleMatchers,
 	};
 
+const targetConfigForMigration = (
+	targetConfig: AdapterProjectConfig,
+	project: AdapterMigrationOptions["project"],
+): AdapterProjectConfig =>
+	project?.conditionCatalog === undefined
+		? targetConfig
+		: {
+				...targetConfig,
+				conditionCatalog: {
+					...targetConfig.conditionCatalog,
+					...project.conditionCatalog,
+				},
+			};
+
 const canonicalizeGeneratedCssBinding = (
 	emission: { text: string; imports: readonly string[] },
 	binding: string,
@@ -110,13 +125,14 @@ async function runAdapterMigrationAsyncInternal(
 	if (isMigrationResult(preparation)) return preparation;
 	const fileMigration = preparation.sourceAdapter.migration?.file;
 	if (fileMigration?.runAsync !== undefined) {
+		const targetConfig = targetConfigForMigration(preparation.targetConfig, options.project);
 		const result = await fileMigration.runAsync({
 			source,
 			file: options.file,
 			root: options.root,
 			target: preparation.targetAdapter,
 			sourceConfig: preparation.sourceConfig,
-			targetConfig: preparation.targetConfig,
+			targetConfig,
 			readFile: options.readFile,
 			listFiles: options.listFiles,
 		});
@@ -135,16 +151,7 @@ function runAdapterMigrationInternal(
 	const preparation = prepared ?? prepareMigration(source, options, ports);
 	if (isMigrationResult(preparation)) return preparation;
 	const { sourceAdapter, targetAdapter, context, sourceConfig: config } = preparation;
-	const targetConfig =
-		options.project?.conditionCatalog === undefined
-			? preparation.targetConfig
-			: {
-					...preparation.targetConfig,
-					conditionCatalog: {
-						...preparation.targetConfig.conditionCatalog,
-						...options.project.conditionCatalog,
-					},
-				};
+	const targetConfig = targetConfigForMigration(preparation.targetConfig, options.project);
 	const readFile = context.readFile;
 	const fileMigration = sourceAdapter.migration?.file;
 	if (fileMigration !== undefined) {

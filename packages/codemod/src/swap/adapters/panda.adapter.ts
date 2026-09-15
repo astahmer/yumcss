@@ -1,10 +1,12 @@
 import { CodemodCallPatternFormTag } from "../identifiers.ts";
 import {
+	SemanticConditionKindTag,
 	StyleDynamicLoweringTag,
 	StyleProgramResidualKindTag,
 	StyleValueKindTag,
 	inferSemanticConditionKind,
 	type SemanticConditionKind,
+	type StyleCondition,
 } from "../semantic-ir.ts";
 import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
 import type { AdapterConfigContext, AdapterProjectConfig } from "../adapter-contract.ts";
@@ -76,6 +78,29 @@ const pandaTokenGroup = (property: string): string | undefined => {
 };
 
 const PANDA_TOKEN_POLICY = createTokenPolicy(pandaTokenGroup, (match) => match.ref);
+
+const preservePandaConditionKey = (condition: StyleCondition): StyleCondition =>
+	condition.raw?.startsWith("_") === true
+		? { kind: SemanticConditionKindTag.Named, name: condition.raw }
+		: condition;
+
+const preservePandaConditionKeys = (program: StyleProgram): StyleProgram => {
+	const declaration = (value: StyleProgram["declarations"][number]) => ({
+		...value,
+		conditions: value.conditions.map(preservePandaConditionKey),
+	});
+	const rule = (value: StyleProgram["rules"][number]): StyleProgram["rules"][number] => ({
+		...value,
+		conditions: value.conditions.map(preservePandaConditionKey),
+		declarations: value.declarations.map(declaration),
+		children: value.children.map(rule),
+	});
+	return {
+		...program,
+		declarations: program.declarations.map(declaration),
+		rules: program.rules.map(rule),
+	};
+};
 
 function pandaSourceValue(
 	value: StyleValue,
@@ -372,24 +397,25 @@ export function createPandaAdapter(options: PandaAdapterOptions = {}) {
 			},
 		}),
 		emit(program, renderers) {
+			const outputProgram = preservePandaConditionKeys(program);
 			if (program.source?.pattern === CodemodPatternId.PandwindRecipe) {
 				return {
-					text: `cva(${recipeDefinitionObject(program, renderers.declarationsObject)})`,
+					text: `cva(${recipeDefinitionObject(outputProgram, renderers.declarationsObject)})`,
 					imports: ['import { cva } from "styled-system/recipes";'],
-					semantic: program,
+					semantic: outputProgram,
 				};
 			}
 			if (program.source?.pattern === CodemodPatternId.PandwindSlotRecipe) {
 				return {
-					text: `sva(${pandaSlotRecipeDefinitionObject(program, renderers.declarationsObject)})`,
+					text: `sva(${pandaSlotRecipeDefinitionObject(outputProgram, renderers.declarationsObject)})`,
 					imports: ['import { sva } from "styled-system/recipes";'],
-					semantic: program,
+					semantic: outputProgram,
 				};
 			}
 			return {
-				text: `css(${renderers.programObject(program)})`,
+				text: `css(${renderers.programObject(outputProgram)})`,
 				imports: ['import { css } from "styled-system/css";'],
-				semantic: program,
+				semantic: outputProgram,
 			};
 		},
 	});

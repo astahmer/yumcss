@@ -674,8 +674,10 @@ function parseCalls(
 				sourceObjectOptions: {
 					...resolvedObjectOptions,
 					...patternObjectOptions,
-					...(pattern.objectKind === undefined ? {} : { nestedObjectKind: pattern.objectKind }),
-					...(pattern.functionCall.sourceObjectOptions ?? {}),
+					...(pattern.objectKind === undefined
+						? undefined
+						: { nestedObjectKind: pattern.objectKind }),
+					...pattern.functionCall.sourceObjectOptions,
 				},
 			});
 			matches.push(...parsed.matches);
@@ -808,6 +810,9 @@ function parseCalls(
 						continue;
 					}
 					const program = styleProgramFromSourceObject(block.body, {
+						...resolvedObjectOptions,
+						...patternObjectOptions,
+						...(pattern.objectKind === undefined ? {} : { nestedObjectKind: pattern.objectKind }),
 						source: {
 							file: context.file,
 							start,
@@ -815,7 +820,6 @@ function parseCalls(
 							adapter: context.config.adapter,
 						},
 						sourceOffset: open + 1,
-						nestedObjectKind: "named",
 					});
 					matches.push({
 						start,

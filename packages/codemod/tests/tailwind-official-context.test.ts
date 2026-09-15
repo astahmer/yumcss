@@ -143,7 +143,7 @@ describe("Tailwind official CSS context", () => {
 		expect(result.converted).toBe(1);
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
-		expect(result.code).toContain('"&:where([dir=\\"rtl\\"] *)"');
+		expect(result.code).toContain("_rtl");
 		expect(result.code).toContain('rotate: "180deg"');
 	});
 

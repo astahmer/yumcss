@@ -117,7 +117,25 @@ test("Pandwind emission reuses preset condition keys for stylesheet sources", ()
 	});
 
 	expect(media.residuals).toEqual([]);
-	expect(media.code).toContain("_osDark: { color: \"white\" }");
+	expect(media.code).toContain('_osDark: { color: "white" }');
 	expect(pseudo.residuals).toEqual([]);
 	expect(pseudo.code).toContain('_hover: { color: "red" }');
+});
+
+test("Panda emission keeps Pandwind preset condition keys", () => {
+	const result = runAdapterMigration(
+		'import { createCss } from "pandwind/css";\n' +
+			"const css = createCss();\n" +
+			'export const card = css.class({ _hover: { color: "blue.300" } });',
+		{
+			from: CodemodAdapterId.Pandwind,
+			to: CodemodAdapterId.Panda,
+			file: "styles.ts",
+			mode: "safe",
+		},
+	);
+
+	expect(result.residuals).toEqual([]);
+	expect(result.code).toContain('_hover: { color: "blue.300" }');
+	expect(result.code).not.toContain('"&:is(:hover');
 });
