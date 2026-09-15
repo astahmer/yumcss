@@ -2371,13 +2371,17 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 				const programObjectText = renderProgramObject(
 					hasFunctionDynamic ? mapRuntimeProps(outputProgram, "undefined") : outputProgram,
 				);
+				const dynamicVarsExpression = dynamicHost ? `css.vars(${programObjectText})` : undefined;
 				const rendered = JsxStyleHost.render(
 					host.hostOpenTag,
 					host.hostStyleAttributes,
-					dynamicHost ? `css.vars(${programObjectText}).class` : `css.class(${programObjectText})`,
+					dynamicVarsExpression === undefined
+						? `css.class(${programObjectText})`
+						: `${dynamicVarsExpression}.class`,
 					framework,
-					dynamicHost ? `css.vars(${programObjectText}).style` : undefined,
+					dynamicVarsExpression === undefined ? undefined : `${dynamicVarsExpression}.style`,
 					host.hostTag,
+					dynamicVarsExpression,
 				);
 				return finalize({
 					text: rendered.text,

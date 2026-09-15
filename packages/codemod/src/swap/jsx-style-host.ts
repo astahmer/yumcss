@@ -37,6 +37,11 @@ const classNameExpression = (expression: string): string => {
 	return match === null ? expression : `${match[1]}?.className`;
 };
 
+const hostClassExpression = (binding: string, attribute: "className" | "class"): string =>
+	attribute === "className"
+		? classNameExpression(`${binding}.${attribute}`)
+		: `${binding}?.${attribute}`;
+
 const canCarryClassName = (binding: string): boolean =>
 	/^(?:props|rest|attrs|[A-Za-z_$][\w$]*(?:Props|Attributes|attrs))$/u.test(binding);
 
@@ -119,6 +124,7 @@ export class JsxStyleHost {
 		framework: string | undefined,
 		styleExpression?: string,
 		hostTag?: string,
+		varsExpression?: string,
 	): JsxStyleHostRenderResult {
 		let text =
 			hostTag === undefined
@@ -147,11 +153,118 @@ export class JsxStyleHost {
 		};
 		const existing = classPattern.exec(text);
 		const spread = [...text.matchAll(/\{\s*\.\.\.([A-Za-z_$][\w$]*)\s*\}/g)].at(-1);
+		const spreadExpression =
+			varsExpression === undefined
+				? undefined
+				: attribute === "className"
+					? `css.props(${varsExpression})`
+					: varsExpression;
+		const canSpreadProps =
+			spreadExpression !== undefined &&
+			existing === null &&
+			spread === undefined &&
+			this.attributes(text).every((candidate) => candidate.name !== "style") &&
+			(host === undefined || host.syntax === "jsx");
+		const insertSpread = (expression: string): void => {
+			const selfClosing = text.endsWith("/>");
+			const insertion = selfClosing ? text.length - 2 : text.length - 1;
+			const prefix = text.slice(0, insertion).trimEnd();
+			text = `${prefix} {...${expression}}${selfClosing ? " />" : ">"}`;
+		};
+		if (spreadExpression !== undefined && canSpreadProps) {
+			insertSpread(spreadExpression);
+			text = text.replace(/^([\s\S]*?<\s*[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)?)\s{2,}/u, "$1 ");
+			if (hostTag !== undefined) text = text.replace(/\s*\/>$/u, " />");
+			return { text, needsCx };
+		}
+		const styleAttribute = this.attributes(text).find((candidate) => candidate.name === "style");
+		const styleValue =
+			styleAttribute?.expression === true && typeof styleAttribute.value === "string"
+				? styleAttribute.value.trim()
+				: undefined;
+		const classInputs = [
+			...(existing === null
+				? []
+				: [
+						{
+							index: existing.index,
+							value: existing[4]?.trim() ?? JSON.stringify(existing[2] ?? existing[3] ?? ""),
+						},
+					]),
+			...(spread !== undefined && canCarryClassName(spread[1]!)
+				? [
+						{
+							index: spread.index,
+							value: hostClassExpression(spread[1]!, attribute),
+						},
+					]
+				: []),
+		]
+			.toSorted((left, right) => left.index - right.index)
+			.map((entry) => entry.value);
+		const styleInputs = [
+			...(styleAttribute === undefined || styleValue === undefined
+				? []
+				: [
+						{
+							index: text.indexOf(styleAttribute.raw),
+							value: styleValue,
+						},
+					]),
+			...(spread !== undefined && canCarryClassName(spread[1]!)
+				? [
+						{
+							index: spread.index,
+							value: `${spread[1]}?.style`,
+						},
+					]
+				: []),
+		]
+			.toSorted((left, right) => left.index - right.index)
+			.map((entry) => entry.value);
+		const canReuseVars =
+			varsExpression !== undefined &&
+			(host === undefined || host.syntax === "jsx") &&
+			(styleAttribute === undefined || styleValue !== undefined) &&
+			(spread === undefined || canCarryClassName(spread[1]!));
+		if (canReuseVars) {
+			const variable = "__pandwindVars";
+			const styleObject =
+				styleInputs.length === 0
+					? undefined
+					: `{ ${styleInputs.map((value) => `...(${value} ?? {})`).join(", ")}, ...${variable}.style }`;
+			const carrier =
+				attribute === "className"
+					? `css.props(${variable}${classInputs.length > 0 ? `, ${classInputs.join(", ")}` : ""})`
+					: classInputs.length === 0
+						? variable
+						: `{ ...${variable}, class: [${variable}.class, ${classInputs.join(", ")}].filter(Boolean).join(" ") }`;
+			const returnExpression =
+				styleObject === undefined ? carrier : `{ ...${carrier}, style: ${styleObject} }`;
+			const localCarrier = `(() => { const ${variable} = ${varsExpression}; return ${returnExpression}; })()`;
+			const removals = [
+				...(existing === null ? [] : [{ index: existing.index, length: existing[0].length }]),
+				...(styleAttribute === undefined
+					? []
+					: [{ index: text.indexOf(styleAttribute.raw), length: styleAttribute.raw.length }]),
+			].toSorted((left, right) => right.index - left.index);
+			for (const removal of removals) {
+				const start =
+					removal.index > 0 && /\s/.test(text[removal.index - 1]!)
+						? removal.index - 1
+						: removal.index;
+				text = `${text.slice(0, start)}${text.slice(removal.index + removal.length)}`;
+			}
+			insertSpread(localCarrier);
+			text = text.replace(/^([\s\S]*?<\s*[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)?)\s{2,}/u, "$1 ");
+			if (hostTag !== undefined) text = text.replace(/\s*\/>$/u, " />");
+			return { text, needsCx };
+		}
 		if (existing !== null) {
 			const value = existing[4] ?? JSON.stringify(existing[2] ?? existing[3] ?? "");
 			const spreadClass =
 				spread !== undefined && spread.index > existing.index && canCarryClassName(spread[1]!)
-					? `, ${classNameExpression(spread[1]! + ".className")}`
+					? `, ${hostClassExpression(spread[1]!, attribute)}`
 					: "";
 			const merged = mergeClassExpression(
 				classExpression,
@@ -170,7 +283,7 @@ export class JsxStyleHost {
 		} else if (spread !== undefined && canCarryClassName(spread[1]!)) {
 			const merged = mergeClassExpression(
 				classExpression,
-				classNameExpression(spread[1]! + ".className"),
+				hostClassExpression(spread[1]!, attribute),
 			);
 			const rendered = ` ${attribute}={${merged.expression}}`;
 			insertAttribute(hostTag === undefined ? rendered : rendered.trimStart());
