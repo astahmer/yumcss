@@ -4,6 +4,15 @@ All notable changes to `pandwind` are documented here. The project has no
 released version yet — entries group the development waves that produced the
 current `0.1.0` state.
 
+## Unreleased — 2026-09-15 canonical condition names
+
+### API / codemod
+
+- Use underscore-prefixed names for Pandwind's built-in state, selector, and
+  mode conditions. Generated Panda and project presets collapse bare aliases
+  to that canonical spelling while leaving responsive and custom conditions
+  unchanged. Source revision: `snuqwnpr`.
+
 ## Unreleased — 2026-09-15 explicit runtime CSS carrier
 
 ### Fixes

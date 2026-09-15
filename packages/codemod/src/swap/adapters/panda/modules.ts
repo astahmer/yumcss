@@ -25,6 +25,7 @@ import {
 } from "./properties.ts";
 import type { PandaTheme } from "./theme.ts";
 import { presetConditions } from "pandwind/preset";
+import { canonicalizePandwindConditions } from "../../pandwind-conditions.ts";
 import {
 	formatTokenPath,
 	TokenReferenceFormat,
@@ -404,7 +405,7 @@ export function renderPandaPreset(
 		if (sources.length === 1) return `\t${JSON.stringify(group)}: ${sources[0]},`;
 		return `\t${JSON.stringify(group)}: { ...${sources.join(", ...")} },`;
 	});
-	const conditions: Record<string, string | string[]> = { ...theme.conditions };
+	const conditions = canonicalizePandwindConditions(theme.conditions);
 	for (const [name, selector] of Object.entries(conditions)) {
 		if (name.endsWith("Down") || typeof selector !== "string") continue;
 		const match = /^@media \(min-width: ([^)]+)\)$/.exec(selector);
@@ -418,18 +419,13 @@ export function renderPandaPreset(
 	const rawTokenJson = JSON.stringify(formatRawGroups, null, "\t");
 	const semanticTokenJson = JSON.stringify(formatSemanticGroups, null, "\t");
 	const componentTokenJson = JSON.stringify(formatComponentTokenGroups, null, "\t");
-	const conditionValues: Record<string, string | string[]> = {
+	const conditionValues = {
 		base: "",
 		...presetConditions,
 		current: "&:is([aria-current=true], [data-current])",
 		icon: "& :where(svg)",
 		...conditions,
 	};
-	for (const [name, selector] of Object.entries(conditionValues)) {
-		if (name === "base") continue;
-		if (name.startsWith("_")) conditionValues[name.slice(1)] = selector;
-		else conditionValues[`_${name}`] = selector;
-	}
 	const conditionJson = JSON.stringify(conditionValues, null, "\t");
 	const propertyDefinitions: Record<string, true | { $tokens: string; $strictness: "inherits" }> = {
 		...PANDWIND_RAW_PROPERTIES,

@@ -27,6 +27,7 @@ import {
 	type HostFileChange,
 } from "./host-integration.ts";
 import { PANDWIND_RAW_PROPERTIES, PANDWIND_TOKEN_PROPERTIES } from "./adapters/panda/properties.ts";
+import { canonicalizePandwindConditions } from "./pandwind-conditions.ts";
 
 export interface ProjectBootstrapRequest {
 	readonly root: string;
@@ -734,11 +735,11 @@ function presetSource(
 	const appSemanticGroups = Object.keys(appSemanticTokens);
 	const componentGroups = Object.keys(componentTokens);
 	const semanticGroups = [...new Set([...appSemanticGroups, ...componentGroups])];
-	const presetConditions: AdapterConditionCatalog = {
+	const presetConditions = canonicalizePandwindConditions({
 		base: "",
 		...config.conditionCatalog,
 		...conditions,
-	};
+	});
 	const hasSemanticTokens = semanticGroups.length > 0;
 	const semanticTokenImport = hasSemanticTokens ? ", defineSemanticTokens" : "";
 	const semanticTokenTypeImport = hasSemanticTokens ? ", type SemanticTokenLayer" : "";
