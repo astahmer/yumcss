@@ -596,8 +596,17 @@ function normalizePandwindConditions(
 ): StyleProgram {
 	const entries = conditionCatalogEntries(context);
 	if (entries.length === 0) return program;
+	const preservedConditionPrefix =
+		program.compositions?.some(
+			(composition) =>
+				composition.kind === StyleProgramCompositionKind.Recipe ||
+				composition.kind === StyleProgramCompositionKind.Slot,
+		) === true
+			? 2
+			: 0;
 	const normalize = (conditions: readonly StyleCondition[]): readonly StyleCondition[] =>
-		conditions.flatMap((condition) => {
+		conditions.flatMap((condition, index) => {
+			if (index < preservedConditionPrefix) return [condition];
 			const normalized = pandwindCondition(condition, entries);
 			if (normalized.residual !== undefined) onResidual?.(normalized.residual);
 			return normalized.condition === undefined ? [] : [normalized.condition];
