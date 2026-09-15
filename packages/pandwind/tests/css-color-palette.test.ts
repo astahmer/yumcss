@@ -59,6 +59,13 @@ test("emits one static palette rule with virtual custom-property assignments", (
 	expect(output).not.toContain("color-palette: blue");
 });
 
+test("omits unused palette mappings from used-token output", () => {
+	const stylesheet = createStylesheet(preset, {}, { tokens: "used" });
+	const output = stylesheet.generate([{ color: "blue.500" }]);
+
+	expect(output).not.toContain("colorPalette");
+});
+
 test("keeps palette aliases and their token references on the same virtual variables", () => {
 	const stylesheet = createStylesheet(preset, { debug: true });
 	const output = stylesheet.generate([
