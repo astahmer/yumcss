@@ -1,4 +1,4 @@
-import { createCss } from "../css/create-css.ts";
+import { createUnsafeCss } from "../unsafe/css.ts";
 import { resolveDesignStyle } from "../design/resolve.ts";
 import { evalLiteral, type OxcNode, walk, walkWithParent } from "../tw/literal.ts";
 import type { ClassNameStrategy } from "../css/class-name-strategy.ts";
@@ -70,7 +70,7 @@ export class StaticCssCallRewriter implements CssCallRewriter {
 	inline(code: string, id: string, names: ReadonlySet<string>): InlineCssResult {
 		this.varKeys.clear();
 		if (names.size === 0) return { code, inlined: 0, varKeys: [] };
-		const engine = createCss({
+		const engine = createUnsafeCss({
 			conditions: this.preset.conditions,
 			className: this.className,
 			namespace: this.namespace,
@@ -417,7 +417,7 @@ const literalGroup = (argument: unknown): Record<string, StyleObject> | undefine
 		: undefined;
 };
 
-const CSS_FACTORY_NAMES = new Set(["createCss"]);
+const CSS_FACTORY_NAMES = new Set(["createCss", "createUnsafeCss"]);
 
 function findUnusedCssFactoryCalls(code: string, id: string, names: ReadonlySet<string>): number[] {
 	const result: number[] = [];

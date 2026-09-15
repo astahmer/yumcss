@@ -41,7 +41,7 @@ describe("CSS runtime codegen registry", () => {
 		expect(source).toContain('import { attachClass } from "pandwind/_runtime/css-class";');
 		expect(source).not.toContain("pandwind/_runtime/css-vars");
 		expect(source).toContain('Pick<CssFn<TStyles>, "class">');
-		expect(source).toContain("export function createCss<TPreset extends TypedPreset>");
+		expect(source).toContain("export const createUnsafeCss");
 		expect(source).not.toContain("[ATTACHMENTS]");
 	});
 });

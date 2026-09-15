@@ -69,6 +69,7 @@ const workspaceResolutionRoots = [
 const entryExportKeys = [
 	".",
 	"./css",
+	"./unsafe/css",
 	"./design",
 	"./tw",
 	"./cx",

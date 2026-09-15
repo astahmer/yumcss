@@ -1,8 +1,8 @@
-import { createCss } from "../../src/css/index.ts";
+import { createUnsafeCss } from "../../src/unsafe/css.ts";
 import { createCx } from "../../src/cx/index.ts";
 import { createTw } from "../../src/tw/index.ts";
 
-const css = createCss();
+const css = createUnsafeCss();
 const tw = createTw<Record<string, unknown>>({});
 const cx = createCx({ css });
 

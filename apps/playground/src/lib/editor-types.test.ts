@@ -6,6 +6,9 @@ describe("playground editor declarations", () => {
 		const cssTypes = EDITOR_TYPE_LIBRARIES.find((library) =>
 			library.filePath.endsWith("/pandwind/css/index.d.ts"),
 		);
+		const unsafeCssTypes = EDITOR_TYPE_LIBRARIES.find((library) =>
+			library.filePath.endsWith("/pandwind/unsafe/css.d.ts"),
+		);
 		const cxTypes = EDITOR_TYPE_LIBRARIES.find((library) =>
 			library.filePath.endsWith("/pandwind/cx/index.d.ts"),
 		);
@@ -22,12 +25,18 @@ describe("playground editor declarations", () => {
 			(library) => library.filePath === "file:///pandwind/playground/modules.d.ts",
 		);
 
-		expect(cssTypes?.content).toContain('export * from "./create-css.d.ts";');
+		expect(cssTypes?.content).toContain('export { createCss } from "./create-css.d.ts";');
+		expect(unsafeCssTypes?.content).toContain(
+			'export { createUnsafeCss } from "../css/create-css.d.ts";',
+		);
 		expect(cxTypes?.content).toContain("export interface CxFn");
 		expect(presetTypes?.content).toContain('export * from "../types/define-preset.d.ts";');
 		expect(definePresetTypes?.content).toContain("definePreset");
 		expect(selectorTypes?.content).toContain("AnySelector");
 		expect(PANDWIND_EDITOR_MODULE_PATHS["pandwind/css"]).toBe("generated/pandwind/css/index.d.ts");
+		expect(PANDWIND_EDITOR_MODULE_PATHS["pandwind/unsafe/css"]).toBe(
+			"generated/pandwind/unsafe/css.d.ts",
+		);
 		expect(PANDWIND_EDITOR_MODULE_PATHS["pandwind/preset"]).toBe(
 			"generated/pandwind/preset/index.d.ts",
 		);

@@ -195,7 +195,7 @@ export function DynamicApp() {
 					css.vars() keeps the selected color in an inline custom property.
 				</p>
 				<DynamicInputButton background={accent} padding={`${padding}px ${padding * 2}px`}>
-					createCss() typed input group
+					createCss(preset) typed input group
 				</DynamicInputButton>
 				<CompilerCarrierExamples accent={accent} />
 			</div>

@@ -1,6 +1,7 @@
 /** Type-checks the examples in the public API JSDoc. */
 import { expect, test } from "tstyche";
 import { createCss } from "../src/css/index.ts";
+import { createUnsafeCss } from "../src/unsafe/css.ts";
 import { createCx } from "../src/cx/index.ts";
 import { createDesignCss } from "../src/design/index.ts";
 import { createTw, type TwOptions } from "../src/tw/index.ts";
@@ -26,7 +27,7 @@ test("createCss JSDoc examples use the preset for token references", () => {
 });
 
 test("CssFn JSDoc examples cover groups and runtime inputs", () => {
-	const css = createCss();
+	const css = createUnsafeCss();
 	const composed = css({ display: "flex", padding: 8 }, { padding: 12 });
 	const styles = css.group({
 		card: { borderRadius: 8, padding: 16 },
@@ -249,7 +250,7 @@ test("createDesignCss JSDoc example uses the design modules", () => {
 });
 
 test("createCx JSDoc example composes CSS atoms and conditionals", () => {
-	const css = createCss();
+	const css = createUnsafeCss();
 	const cx = createCx({ css });
 	const isPrimary = true;
 

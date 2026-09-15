@@ -79,10 +79,10 @@ const hypenateProperty = (property: string): string => {
  * @example
  *
  * ```ts
- * import { createCss } from "pandwind/css";
+ * import { createUnsafeCss } from "pandwind/unsafe/css";
  * import { createPandaAdapter } from "pandwind/css/panda";
  *
- * const css = createCss({
+ * const css = createUnsafeCss({
  *   className: createPandaAdapter({
  *     propClasses: { backgroundColor: "bg" },
  *   }),
@@ -119,7 +119,7 @@ export const createPandaAdapter = (options: PandaAdapterOptions = {}): ClassName
 			if (value.startsWith("input>$")) {
 				throw new Error(
 					"pandwind: the panda adapter does not support '$input' dynamics — " +
-						"use the atomic engine (createCss() without a className strategy) for dynamic values",
+						"use the atomic engine (createUnsafeCss() without a className strategy) for dynamic values",
 				);
 			}
 

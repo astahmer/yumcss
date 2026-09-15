@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
-import { createCss } from "../src/css/create-css.ts";
+import { createUnsafeCss } from "../src/unsafe/css.ts";
 import { createDesignCss } from "../src/design/index.ts";
 import { createCx } from "../src/cx/index.ts";
 import { examplePreset } from "@pandwind/example-preset";
@@ -14,7 +14,7 @@ const twSource = readFileSync(
 );
 const real = extractTwConfig(twSource)!;
 
-const css = createCss();
+const css = createUnsafeCss();
 const dss = createDesignCss(examplePreset);
 
 const cx = createCx({

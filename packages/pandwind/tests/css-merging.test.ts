@@ -1,9 +1,8 @@
 import { expect, test } from "vitest";
-import { createCss } from "../src/css/create-css.ts";
-import type { examplePreset } from "@pandwind/example-preset";
+import { createUnsafeCss } from "../src/unsafe/css.ts";
 
 test("css merging simple prop", () => {
-	const _css = createCss<typeof examplePreset>({ debug: true });
+	const _css = createUnsafeCss({ debug: true });
 	const css = (...args: Parameters<typeof _css>) => ({
 		css: _css(...args),
 		class: _css.class(...args),
@@ -32,7 +31,7 @@ test("css merging simple prop", () => {
 });
 
 test("css merging in condition", () => {
-	const _css = createCss<typeof examplePreset>({ debug: true });
+	const _css = createUnsafeCss({ debug: true });
 	const css = (...args: Parameters<typeof _css>) => ({
 		css: _css(...args),
 		class: _css.class(...args),
@@ -65,7 +64,7 @@ test("css merging in condition", () => {
 });
 
 test("css merging in nested condition", () => {
-	const _css = createCss<typeof examplePreset>({ debug: true });
+	const _css = createUnsafeCss({ debug: true });
 	const css = (...args: Parameters<typeof _css>) => ({
 		css: _css(...args),
 		class: _css.class(...args),

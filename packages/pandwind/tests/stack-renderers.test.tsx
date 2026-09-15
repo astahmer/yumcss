@@ -3,7 +3,7 @@ import { describe, expect, test } from "vitest";
 import { h } from "preact";
 import renderPreactToString from "preact-render-to-string";
 import { renderToString } from "solid-js/web";
-import { createCss } from "../src/css/create-css.ts";
+import { createUnsafeCss } from "../src/unsafe/css.ts";
 import { createNamedAtomsStrategy } from "../src/css/named-atoms-strategy.ts";
 import { createStack as createPreactStack, Stack as PreactStack } from "../src/stack/preact.ts";
 import { createStack as createReactStack, Stack as ReactStack } from "../src/stack/react.tsx";
@@ -18,7 +18,7 @@ const stackInput = {
 	justify: "between" as const,
 };
 
-const configuredCss = createCss({
+const configuredCss = createUnsafeCss({
 	className: createNamedAtomsStrategy("app"),
 });
 const configuredInput = { ...stackInput, gap: 4, padding: "1rem" };

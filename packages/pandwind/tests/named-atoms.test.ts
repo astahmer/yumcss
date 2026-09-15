@@ -18,7 +18,7 @@ import { resolve } from "node:path";
 import { parse, type Rule, type Root } from "postcss";
 import { describe, expect, test } from "vitest";
 import { ATOM_REGISTRY } from "../src/css/atoms.ts";
-import { createCss } from "../src/css/create-css.ts";
+import { createUnsafeCss } from "../src/unsafe/css.ts";
 import { createNamedAtomsStrategy } from "../src/css/named-atoms-strategy.ts";
 import { createStylesheet } from "../src/css/create-stylesheet.ts";
 import { escapeIdentifier } from "../src/css/hash.ts";
@@ -90,7 +90,7 @@ describe("sheet-backed contract", () => {
 	test("condition nesting order collapses to one canonical class", () => {
 		// Raw-engine level: both nesting orders flatten to different part
 		// orders, the strategy's canonicalization must collapse them.
-		const css = createCss({ className: strategy });
+		const css = createUnsafeCss({ className: strategy });
 		const a = css.class({ _hover: { color: "red" } });
 		const b = css.class({ color: { _hover: "red" } });
 		expect(a).toBe(b);
@@ -142,8 +142,8 @@ describe("cx() merging survives the mode switch", () => {
 	});
 });
 
-	test("plain engine (createCss) supports the strategy too", () => {
-	const css = createCss({ className: strategy });
+test("plain engine (createCss) supports the strategy too", () => {
+	const css = createUnsafeCss({ className: strategy });
 	expect(css.class({ color: "red", backgroundColor: "$blue-500" })).toBe(
 		"pw-color-red pw-backgroundColor-$blue-500",
 	);

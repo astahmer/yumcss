@@ -1,9 +1,8 @@
 import { expect, test } from "vitest";
-import { createCss } from "../src/css/create-css.ts";
-import type { examplePreset } from "@pandwind/example-preset";
+import { createUnsafeCss } from "../src/unsafe/css.ts";
 
 test("css props simple prop", () => {
-	const css = createCss<typeof examplePreset>({ debug: true });
+	const css = createUnsafeCss({ debug: true });
 
 	expect(
 		css.props(
@@ -26,7 +25,7 @@ test("css props simple prop", () => {
 });
 
 test("css props in condition", () => {
-	const css = createCss<typeof examplePreset>({ debug: true });
+	const css = createUnsafeCss({ debug: true });
 
 	expect(
 		css.props(
@@ -52,7 +51,7 @@ test("css props in condition", () => {
 });
 
 test("css props in nested condition", () => {
-	const css = createCss<typeof examplePreset>({ debug: true });
+	const css = createUnsafeCss({ debug: true });
 
 	expect(
 		css.props(
@@ -93,7 +92,7 @@ test("css props in nested condition", () => {
 });
 
 test("css props ignores conditional falsy style arguments", () => {
-	const css = createCss({ debug: true });
+	const css = createUnsafeCss({ debug: true });
 
 	expect(css.props(css({ color: "red" }), false, undefined, null)).toEqual({
 		className: "color__red",
@@ -102,7 +101,7 @@ test("css props ignores conditional falsy style arguments", () => {
 });
 
 test("css props flattens nested style arrays", () => {
-	const css = createCss({ debug: true });
+	const css = createUnsafeCss({ debug: true });
 
 	expect(css.props([css({ color: "red" }), [false, css({ backgroundColor: "blue" })]])).toEqual({
 		className: "color__red backgroundColor__blue",
@@ -111,7 +110,7 @@ test("css props flattens nested style arrays", () => {
 });
 
 test("css with dynamic styles", () => {
-	const css = createCss<typeof examplePreset>({ debug: true });
+	const css = createUnsafeCss({ debug: true });
 
 	const styles = css.group({
 		rounded: {

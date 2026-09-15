@@ -11,7 +11,7 @@ describe("runtime pruning", () => {
 	test("selects the callable core for aliased call-only factories", () => {
 		const pruner = createRuntimePruningTransform();
 		const result = pruner.transform(
-			'import { createCss as makeCss } from "pandwind/css";\nconst css = makeCss();\nexport const styles = css({ color: "red" });',
+			'import { createUnsafeCss as makeCss } from "pandwind/unsafe/css";\nconst css = makeCss();\nexport const styles = css({ color: "red" });',
 			ID,
 		);
 
@@ -19,7 +19,7 @@ describe("runtime pruning", () => {
 		// The inline snapshot intentionally contains quoted source-code strings.
 		/* oxlint-disable no-useless-escape */
 		expect(result?.code).toMatchInlineSnapshot(`
-		"import { createCss as makeCss } from \"pandwind:runtime/css?methods=\";\nconst css = makeCss();\nexport const styles = css({ color: \"red\" });"
+		"import { createUnsafeCss as makeCss } from \"pandwind:runtime/css?methods=\";\nconst css = makeCss();\nexport const styles = css({ color: \"red\" });"
 	`);
 		/* oxlint-enable no-useless-escape */
 		expect(result?.code).toContain('methods="');
@@ -28,7 +28,7 @@ describe("runtime pruning", () => {
 	test("keeps only the methods that are used and includes group dependencies", () => {
 		const pruner = createRuntimePruningTransform();
 		const result = pruner.transform(
-			'import { createCss } from "pandwind/css";\nconst css = createCss();\nexport const styles = css.group({ button: { color: "red" }, dynamic: (value: { color: string }) => ({ color: value.color }) });',
+			'import { createUnsafeCss } from "pandwind/unsafe/css";\nconst css = createUnsafeCss();\nexport const styles = css.group({ button: { color: "red" }, dynamic: (value: { color: string }) => ({ color: value.color }) });',
 			ID,
 		);
 
@@ -45,21 +45,30 @@ describe("runtime pruning", () => {
 
 	test("does not optimize factories that escape their module", () => {
 		const pruner = createRuntimePruningTransform();
-		const source = 'import { createCss } from "pandwind/css";\nexport const css = createCss();';
+		const source =
+			'import { createUnsafeCss } from "pandwind/unsafe/css";\nexport const css = createUnsafeCss();';
 
 		expect(pruner.transform(source, ID)).toBeNull();
 		expect(
 			pruner.transform(
-				'import { createCss } from "pandwind/css";\nconst css = createCss();\nuse(css);',
+				'import { createUnsafeCss } from "pandwind/unsafe/css";\nconst css = createUnsafeCss();\nuse(css);',
 				ID,
 			),
 		).toBeNull();
 	});
 
+	test("does not replace preset-bound createCss with an unbound runtime", () => {
+		const pruner = createRuntimePruningTransform();
+		const source =
+			'import { createCss } from "pandwind/css";\nconst css = createCss(preset);\nexport const styles = css({ color: runtimeColor });';
+
+		expect(pruner.transform(source, ID)).toBeNull();
+	});
+
 	test("is wired into the bundler-agnostic css plugin", () => {
 		const core = createCssExtractorPluginCore(examplePreset, { root: "/project" });
 		const result = core.transform(
-			'import { createCss } from "pandwind/css";\nconst css = createCss();\nexport const styles = css({ color: window.location.href });',
+			'import { createUnsafeCss } from "pandwind/unsafe/css";\nconst css = createUnsafeCss();\nexport const styles = css({ color: window.location.href });',
 			ID,
 		);
 
@@ -72,7 +81,7 @@ describe("runtime pruning", () => {
 	test("is also available from the general Vite plugin", async () => {
 		const core = createInlineTwPluginCore();
 		const result = await core.transform(
-			'import { createCss } from "pandwind/css";\nconst css = createCss();\nexport const styles = css({ color: window.location.href });',
+			'import { createUnsafeCss } from "pandwind/unsafe/css";\nconst css = createUnsafeCss();\nexport const styles = css({ color: window.location.href });',
 			ID,
 		);
 

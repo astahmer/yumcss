@@ -25,7 +25,7 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
-import { createCss } from "../src/css/create-css.ts";
+import { createUnsafeCss } from "../src/unsafe/css.ts";
 import { createCx } from "../src/cx/index.ts";
 import type { CxInput } from "../src/cx/index.ts";
 import { extractTwConfig } from "../src/vite/inline.ts";
@@ -149,7 +149,7 @@ export function randomArgs(
 // Instances
 // ---------------------------------------------------------------------------
 
-const css = createCss();
+const css = createUnsafeCss();
 export const cx = createCx({
 	css,
 	variants: real.variants,
@@ -160,7 +160,7 @@ export const cx = createCx({
 /** Fresh instance with a cold cache — the differential oracle. */
 function coldCx(): ReturnType<typeof createCx> {
 	return createCx({
-		css: createCss(),
+		css: createUnsafeCss(),
 		variants: real.variants,
 		conflicts: real.conflicts,
 		compose: real.compose,

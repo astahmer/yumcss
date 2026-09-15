@@ -1,5 +1,5 @@
 import { expect, test } from "vitest";
-import { createCss } from "../src/css/create-css.ts";
+import { createUnsafeCss } from "../src/unsafe/css.ts";
 import { createStylesheet } from "../src/css/create-stylesheet.ts";
 import { examplePreset } from "@pandwind/example-preset";
 
@@ -10,7 +10,7 @@ test("can emit only token declarations referenced by extracted styles", () => {
 		strict: true,
 		tokens: { colors: { $brand: "#123456", $unused: "#abcdef" } },
 	} as never;
-	const css = createCss();
+	const css = createUnsafeCss();
 	const used = createStylesheet(preset, {}, { tokens: "used" });
 	used.process([css.raw({ color: "$brand" })]);
 
@@ -37,7 +37,7 @@ test("emits a used token declaration for every accepted token spelling", () => {
 
 test("css gen simple prop", () => {
 	const sheet = createStylesheet(examplePreset, { debug: false });
-	const css = createCss<typeof examplePreset>({ debug: false });
+	const css = createUnsafeCss({ debug: false });
 
 	const styles = [
 		css.raw({
@@ -73,14 +73,14 @@ test("stylesheet lowering accepts substituted serializer and ordering policies",
 			},
 		},
 	);
-	const css = createCss<typeof examplePreset>({ debug: false });
+	const css = createUnsafeCss({ debug: false });
 	const rules = sheet.process([css.raw({ color: "$red-700" })]);
 	expect(rules.get("color__$red-700")?.css).toContain("/* substituted */");
 });
 
 test("css gen prop in known pseudo selector", () => {
 	const sheet = createStylesheet(examplePreset, { debug: false });
-	const css = createCss<typeof examplePreset>({ debug: false });
+	const css = createUnsafeCss({ debug: false });
 
 	expect(
 		sheet.process([
@@ -103,7 +103,7 @@ test("css gen prop in known pseudo selector", () => {
 
 test("css gen prop in arbitrary pseudo selector", () => {
 	const sheet = createStylesheet(examplePreset, { debug: false });
-	const css = createCss<typeof examplePreset>({ debug: false });
+	const css = createUnsafeCss({ debug: false });
 
 	expect(
 		sheet.process([
@@ -126,7 +126,7 @@ test("css gen prop in arbitrary pseudo selector", () => {
 
 test("css gen prop preserves class specificity inside zero-specificity selectors", () => {
 	const sheet = createStylesheet(examplePreset, { debug: false });
-	const css = createCss<typeof examplePreset>({ debug: false });
+	const css = createUnsafeCss({ debug: false });
 
 	expect(
 		sheet.process([
@@ -149,7 +149,7 @@ test("css gen prop preserves class specificity inside zero-specificity selectors
 
 test("css gen prop in arbitrary descendant selector", () => {
 	const sheet = createStylesheet(examplePreset, { debug: false });
-	const css = createCss<typeof examplePreset>({ debug: false });
+	const css = createUnsafeCss({ debug: false });
 
 	expect(
 		sheet.process([
@@ -172,7 +172,7 @@ test("css gen prop in arbitrary descendant selector", () => {
 
 test("css gen prop in known at rule", () => {
 	const sheet = createStylesheet(examplePreset, { debug: false });
-	const css = createCss<typeof examplePreset>({ debug: false });
+	const css = createUnsafeCss({ debug: false });
 
 	expect(
 		sheet.process([
@@ -197,7 +197,7 @@ test("css gen prop in known at rule", () => {
 
 test("css gen prop in unknown at rule", () => {
 	const sheet = createStylesheet(examplePreset, { debug: false });
-	const css = createCss<typeof examplePreset>({ debug: false });
+	const css = createUnsafeCss({ debug: false });
 
 	expect(
 		sheet.process([
@@ -222,7 +222,7 @@ test("css gen prop in unknown at rule", () => {
 
 test("css gen prop in a container at rule", () => {
 	const sheet = createStylesheet(examplePreset, { debug: false });
-	const css = createCss<typeof examplePreset>({ debug: false });
+	const css = createUnsafeCss({ debug: false });
 	const rules = sheet.process([
 		css.raw({
 			"@container (min-width: 28rem)": {
@@ -239,7 +239,7 @@ test("css gen prop in a container at rule", () => {
 
 test("css gen prop in unknown at rule in pseudo selector", () => {
 	const sheet = createStylesheet(examplePreset, { debug: false });
-	const css = createCss<typeof examplePreset>({ debug: false });
+	const css = createUnsafeCss({ debug: false });
 
 	expect(
 		sheet.process([
@@ -266,7 +266,7 @@ test("css gen prop in unknown at rule in pseudo selector", () => {
 
 test("css gen prop in selector list", () => {
 	const sheet = createStylesheet(examplePreset, { debug: false });
-	const css = createCss<typeof examplePreset>({ debug: false });
+	const css = createUnsafeCss({ debug: false });
 
 	expect(
 		sheet.process([
@@ -291,7 +291,7 @@ test("css gen prop in selector list", () => {
 
 test("css gen prop with multiple selectors in :is", () => {
 	const sheet = createStylesheet(examplePreset, { debug: false });
-	const css = createCss<typeof examplePreset>({ debug: false });
+	const css = createUnsafeCss({ debug: false });
 
 	expect(
 		sheet.process([
@@ -316,7 +316,7 @@ test("css gen prop with multiple selectors in :is", () => {
 
 test("css gen prop with multiple selectors in :is also in selector list", () => {
 	const sheet = createStylesheet(examplePreset, { debug: false });
-	const css = createCss<typeof examplePreset>({ debug: false });
+	const css = createUnsafeCss({ debug: false });
 
 	expect(
 		sheet.process([
@@ -343,7 +343,7 @@ test("css gen prop with multiple selectors in :is also in selector list", () => 
 
 test("css gen prop in nested unknown at rule in pseudo selector", () => {
 	const sheet = createStylesheet(examplePreset, { debug: false });
-	const css = createCss<typeof examplePreset>({ debug: false });
+	const css = createUnsafeCss({ debug: false });
 
 	expect(
 		sheet.process([
@@ -374,7 +374,7 @@ test("css gen prop in nested unknown at rule in pseudo selector", () => {
 
 test("css property-based conditionals", () => {
 	const sheet = createStylesheet(examplePreset);
-	const css = createCss<typeof examplePreset>({ debug: true });
+	const css = createUnsafeCss({ debug: true });
 
 	expect(
 		sheet.process([

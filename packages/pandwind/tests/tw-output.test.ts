@@ -1,6 +1,6 @@
 import type { StandardProperties } from "csstype";
 import { describe, expect, test } from "vitest";
-import { createCss } from "../src/css/create-css.ts";
+import { createUnsafeCss } from "../src/unsafe/css.ts";
 import { createStylesheet, decodeAtomicPath } from "../src/css/create-stylesheet.ts";
 import { pairs } from "../src/lib/utils.ts";
 import { definePreset, defineTokens } from "../src/types/define-preset.ts";
@@ -142,7 +142,7 @@ describe("css with custom tailwind hashFn", () => {
 			debug: true,
 			hashFn: tailwindHashFn,
 		});
-		const css = createCss<typeof preset>({
+		const css = createUnsafeCss({
 			debug: true,
 			hashFn: tailwindHashFn,
 		});
@@ -208,7 +208,7 @@ describe("css with custom tailwind hashFn", () => {
 			debug: true,
 			hashFn: tailwindHashFn,
 		});
-		const css = createCss<typeof preset>({
+		const css = createUnsafeCss({
 			debug: true,
 			hashFn: tailwindHashFn,
 		});
@@ -231,7 +231,7 @@ describe("css with custom tailwind hashFn", () => {
 			debug: true,
 			hashFn: tailwindHashFn,
 		});
-		const css = createCss<typeof preset>({
+		const css = createUnsafeCss({
 			debug: true,
 			hashFn: tailwindHashFn,
 		});
@@ -254,7 +254,7 @@ describe("css with custom tailwind hashFn", () => {
 			debug: true,
 			hashFn: tailwindHashFn,
 		});
-		const css = createCss<typeof preset>({
+		const css = createUnsafeCss({
 			debug: true,
 			hashFn: tailwindHashFn,
 		});
@@ -279,7 +279,7 @@ describe("css with custom tailwind hashFn", () => {
 			debug: true,
 			hashFn: tailwindHashFn,
 		});
-		const css = createCss<typeof preset>({
+		const css = createUnsafeCss({
 			debug: true,
 			hashFn: tailwindHashFn,
 		});
@@ -300,7 +300,7 @@ describe("css with custom tailwind hashFn", () => {
 			debug: true,
 			hashFn: tailwindHashFn,
 		});
-		const css = createCss<typeof preset>({
+		const css = createUnsafeCss({
 			debug: true,
 			hashFn: tailwindHashFn,
 		});
@@ -327,7 +327,7 @@ describe("css with custom tailwind hashFn", () => {
 			debug: true,
 			hashFn: tailwindHashFn,
 		});
-		const css = createCss<typeof preset>({
+		const css = createUnsafeCss({
 			debug: true,
 			hashFn: tailwindHashFn,
 		});

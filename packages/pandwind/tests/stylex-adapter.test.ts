@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { createCss } from "../src/css/create-css.ts";
+import { createUnsafeCss } from "../src/unsafe/css.ts";
 import { createStyleXAdapter } from "../src/css/stylex-adapter.ts";
 import { createStylesheet } from "../src/css/create-stylesheet.ts";
 import { examplePreset } from "@pandwind/example-preset";
@@ -7,7 +7,7 @@ import { examplePreset } from "@pandwind/example-preset";
 describe("StyleX class-name adapter", () => {
 	test("emits StyleX-shaped atomic names for static declarations", () => {
 		const adapter = createStyleXAdapter();
-		const css = createCss({ className: adapter });
+		const css = createUnsafeCss({ className: adapter });
 		const result = css.class({ color: "red", margin: 8 });
 
 		expect(result).toMatchInlineSnapshot(`"x1e2nbdu xkib98w"`);
@@ -22,7 +22,7 @@ describe("StyleX class-name adapter", () => {
 				_supportHover: ["@media (hover: hover)", "&:hover"],
 			},
 		});
-		const css = createCss({ className: adapter });
+		const css = createUnsafeCss({ className: adapter });
 		const result = css.class({ _night: { color: "red" } });
 		const reordered = css.class({ color: { _night: "red" } });
 
@@ -33,7 +33,7 @@ describe("StyleX class-name adapter", () => {
 
 	test("keeps custom conditions deterministic without a condition catalog", () => {
 		const adapter = createStyleXAdapter();
-		const css = createCss({ className: adapter });
+		const css = createUnsafeCss({ className: adapter });
 		const result = css.class({ _customState: { color: "red" } });
 
 		expect(result).toMatchInlineSnapshot(`"x2hy8o5"`);
@@ -42,7 +42,7 @@ describe("StyleX class-name adapter", () => {
 
 	test("registers StyleX-shaped names in the Pandwind stylesheet", () => {
 		const adapter = createStyleXAdapter({ conditions: examplePreset.conditions });
-		const css = createCss({ className: adapter });
+		const css = createUnsafeCss({ className: adapter });
 		const className = css.class({ _hover: { color: "red" } });
 		const sheet = createStylesheet(examplePreset, { className: adapter });
 		const output = sheet.process([{ _hover: { color: "red" } }] as never);

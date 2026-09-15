@@ -1,4 +1,5 @@
 import { createCss } from "pandwind/css";
+import { createUnsafeCss } from "pandwind/unsafe/css";
 import { createRuntimeCss } from "pandwind/css/runtime";
 import { examplePreset } from "@pandwind/example-preset";
 
@@ -24,5 +25,5 @@ export const runtimeCss = createRuntimeCss(examplePreset);
 const relaxedPreset = { ...examplePreset, strict: false as const };
 export const relaxedCss = createCss(relaxedPreset);
 
-/** Untyped convenience form for deliberately open-ended CSS objects. */
-export const untypedCss = createCss();
+/** Explicit unsafe lane for deliberately open-ended CSS objects. */
+export const untypedCss = createUnsafeCss();

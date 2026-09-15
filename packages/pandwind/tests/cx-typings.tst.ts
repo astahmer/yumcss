@@ -3,10 +3,10 @@
  * maps, nested arrays and falsey values; always returns a class string.
  */
 import { expect, test } from "tstyche";
-import { createCss } from "../src/css/create-css.ts";
+import { createUnsafeCss } from "../src/unsafe/css.ts";
 import { createCx } from "../src/cx/index.ts";
 
-const css = createCss();
+const css = createUnsafeCss();
 const cx = createCx({ css });
 
 test("cx accepts every input shape", () => {

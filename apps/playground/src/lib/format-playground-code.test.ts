@@ -4,12 +4,12 @@ import { formatPlaygroundCode } from "./format-playground-code.ts";
 describe("formatPlaygroundCode", () => {
 	test("formats emitted TSX with the playground formatter", async () => {
 		const formatted = await formatPlaygroundCode(
-			'import { createCss } from "pandwind/css";\nexport const Card=()=>{const css=createCss();return <div className={css.class({color:"red"})} />;};',
+			'import { createUnsafeCss } from "pandwind/unsafe/css";\nexport const Card=()=>{const css=createUnsafeCss();return <div className={css.class({color:"red"})} />;};',
 		);
 
-		expect(formatted).toContain('import { createCss } from "pandwind/css";');
+		expect(formatted).toContain('import { createUnsafeCss } from "pandwind/unsafe/css";');
 		expect(formatted).toContain("export const Card = () => {");
-		expect(formatted).toContain("\n\tconst css = createCss();");
+		expect(formatted).toContain("\n\tconst css = createUnsafeCss();");
 		expect(formatted).toContain("\n};\n");
 	});
 

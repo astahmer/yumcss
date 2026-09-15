@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { createCss } from "../src/css/create-css.ts";
+import { createUnsafeCss } from "../src/unsafe/css.ts";
 import { pandaShared } from "./helpers/panda-oracle.ts";
 import { createPandaAdapter } from "../src/css/panda-adapter.ts";
 import { examplePreset } from "@pandwind/example-preset";
@@ -95,7 +95,7 @@ describe("Panda class-name adapter", () => {
 
 	test("integrates with the css() engine", () => {
 		const adapter = createPandaAdapter({ propClasses });
-		const css = createCss({ className: adapter });
+		const css = createUnsafeCss({ className: adapter });
 		expect(css.class({ color: "red.500", margin: 8 })).toBe("text-red.500 m-8px");
 	});
 });

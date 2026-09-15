@@ -32,7 +32,7 @@ import { parse, type Rule, type Root } from "postcss";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
-import { createCss } from "../src/css/create-css.ts";
+import { createUnsafeCss } from "../src/unsafe/css.ts";
 import { createNamedAtomsStrategy } from "../src/css/named-atoms-strategy.ts";
 import { createStylesheet } from "../src/css/create-stylesheet.ts";
 import { escapeIdentifier } from "../src/css/hash.ts";
@@ -83,7 +83,7 @@ const CX_SCENARIOS: Array<{
 ];
 
 function makeMode(strategy: (typeof MODES)[number]["strategy"]) {
-	const css = createCss({ className: strategy });
+	const css = createUnsafeCss({ className: strategy });
 	const sheet = createStylesheet(examplePreset, { className: strategy });
 
 	const twSource = readFileSync(

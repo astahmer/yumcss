@@ -16,6 +16,7 @@ import {
 	createStyleXAdapter,
 	type ClassNameStrategy,
 } from "pandwind/css";
+import { createUnsafeCss } from "pandwind/unsafe/css";
 import { resolveDesignStyle } from "pandwind/design/resolve";
 import { examplePreset } from "@pandwind/example-preset";
 import { SANDBOX_MODULES } from "./sandbox-modules.ts";
@@ -32,6 +33,7 @@ function makeInput(
 		css: dss as unknown as ((...args: Array<unknown>) => unknown) & Record<string, unknown>,
 		cx: cx as unknown as (...inputs: Array<never>) => string,
 		createCss: createCss as unknown as (...args: Array<unknown>) => unknown,
+		createUnsafeCss: createUnsafeCss as unknown as (...args: Array<unknown>) => unknown,
 		moduleBindings:
 			moduleBindings === undefined ? SANDBOX_MODULES : { ...SANDBOX_MODULES, ...moduleBindings },
 		classNameStrategy,

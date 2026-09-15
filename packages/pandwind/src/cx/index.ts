@@ -8,11 +8,11 @@
  *
  * ```ts
  * import { createTw } from "pandwind/tw";
- * import { createCss } from "pandwind/css";
+ * import { createUnsafeCss } from "pandwind/unsafe/css";
  * import { createCx } from "pandwind/cx";
  *
  * const tw = createTw<WindVariants>({ variants, conflicts, compose });
- * const css = createCss();
+ * const css = createUnsafeCss();
  * const cx = createCx({ css, variants, conflicts, compose });
  *
  * cx(tw({ bg: "red-500" }), "px-4", css.class({ color: "blue" }), "bg-blue-500");
@@ -57,10 +57,10 @@ import type { TwComposeMeta, TwConflictsMeta, TwVariantsMeta } from "../tw/compi
  *
  * @example
  * ```ts
- * import { createCss } from "pandwind/css";
+ * import { createUnsafeCss } from "pandwind/unsafe/css";
  * import { createCx } from "pandwind/cx";
  *
- * const css = createCss();
+ * const css = createUnsafeCss();
  * const cx = createCx({ css });
  *
  * cx("rounded", css.class({ color: "tomato" }));
@@ -435,10 +435,10 @@ export interface CxFn {
 	 *
 	 * @example
 	 * ```ts
-	 * import { createCss } from "pandwind/css";
+	 * import { createUnsafeCss } from "pandwind/unsafe/css";
 	 * import { createCx } from "pandwind/cx";
 	 *
-	 * const css = createCss();
+	 * const css = createUnsafeCss();
 	 * const cx = createCx({ css });
 	 * const isPrimary = true;
 	 * const className = cx(
@@ -456,10 +456,10 @@ export interface CxFn {
 	 *
 	 * @example
 	 * ```ts
-	 * import { createCss } from "pandwind/css";
+	 * import { createUnsafeCss } from "pandwind/unsafe/css";
 	 * import { createCx } from "pandwind/cx";
 	 *
-	 * const css = createCss();
+	 * const css = createUnsafeCss();
 	 * const cx = createCx({ css });
 	 * const runtimeColor = "tomato";
 	 * const className = cx.vars(
@@ -480,10 +480,10 @@ export interface CxFn {
  *
  * @example
  * ```ts
- * import { createCss } from "pandwind/css";
+ * import { createUnsafeCss } from "pandwind/unsafe/css";
  * import { createCx } from "pandwind/cx";
  *
- * const css = createCss();
+ * const css = createUnsafeCss();
  * const cx = createCx({ css });
  * const disabled = false;
  *

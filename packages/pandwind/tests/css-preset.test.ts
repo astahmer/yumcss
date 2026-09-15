@@ -1,14 +1,24 @@
 import { expect, test } from "vitest";
 import { createCss } from "../src/css/create-css.ts";
 import { createStylesheet } from "../src/css/create-stylesheet.ts";
+import { createUnsafeCss } from "../src/unsafe/css.ts";
 import { presetConditions } from "../src/preset/conditions.ts";
 import { examplePreset } from "@pandwind/example-preset";
 
 test("preset-bound createCss keeps the same runtime class contract", () => {
 	const bound = createCss(examplePreset);
-	const loose = createCss();
+	const loose = createUnsafeCss();
 
 	expect(bound({ color: "$red-500" })).toEqual(loose({ color: "$red-500" }));
+});
+
+test("createCss rejects unbound runtime calls with the unsafe entrypoint", () => {
+	expect(() => Reflect.apply(createCss, undefined, [])).toThrow(
+		"pandwind/css: createCss requires a preset",
+	);
+	expect(() => Reflect.apply(createCss, undefined, [{ debug: true }])).toThrow(
+		"pandwind/unsafe/css",
+	);
 });
 
 test("stylesheet resolution accepts dot-delimited aliases for legacy token keys", () => {

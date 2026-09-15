@@ -1,6 +1,6 @@
 import type { StandardLonghandProperties } from "csstype";
 import { expect, test } from "vitest";
-import { createCss } from "../src/css/create-css.ts";
+import { createUnsafeCss } from "../src/unsafe/css.ts";
 import { createStylesheet } from "../src/css/create-stylesheet.ts";
 import { definePreset } from "../src/types/define-preset.ts";
 
@@ -39,10 +39,9 @@ test("css gen simple prop", () => {
 		},
 	);
 	const sheet = createStylesheet(preset, { debug: true });
-	const css = createCss<typeof preset>({ debug: true });
+	const css = createUnsafeCss({ debug: true });
 
 	const styles = css.raw({
-		// @ts-expect-error
 		border: "1px solid red",
 
 		color: "blue.300",
@@ -139,7 +138,7 @@ test("keeps authored aliases literal by default", () => {
 		{ config: {} as StandardLonghandProperties, tokens: {} },
 		{ strict: true, properties: { $all: true }, conditions: {} },
 	);
-	const css = createCss<typeof preset>({ debug: true });
+	const css = createUnsafeCss({ debug: true });
 	const output = createStylesheet(preset, { debug: true }).generate([
 		css.raw({ bg: "red", px: 2, minH: 10 } as never),
 	]);
@@ -157,7 +156,7 @@ test("can opt into StyleX-like priority specificity for host precedence", () => 
 		{ config: {} as StandardLonghandProperties, tokens: {} },
 		{ strict: true, properties: { $all: true }, conditions: { _hover: "&:hover" } },
 	);
-	const css = createCss<typeof preset>({ debug: true });
+	const css = createUnsafeCss({ debug: true });
 	const output = createStylesheet(preset, { debug: true, cascade: "specificity" }).generate([
 		css.raw({ display: "none", _hover: { display: "block" } } as never),
 	]);
@@ -172,7 +171,7 @@ test("can opt into a native Pandwind cascade layer", () => {
 		{ config: {} as StandardLonghandProperties, tokens: {} },
 		{ strict: true, properties: { $all: true }, conditions: {} },
 	);
-	const css = createCss<typeof preset>({ debug: true });
+	const css = createUnsafeCss({ debug: true });
 	const output = createStylesheet(preset, { debug: true, cascade: "layers" }).generate([
 		css.raw({ display: "none" } as never),
 	]);
@@ -185,7 +184,7 @@ test("keeps vendor-prefixed line clamp unitless", () => {
 		{ config: {} as StandardLonghandProperties, tokens: {} },
 		{ strict: true, properties: { $all: true }, conditions: {} },
 	);
-	const css = createCss<typeof preset>({ debug: true });
+	const css = createUnsafeCss({ debug: true });
 	const output = createStylesheet(preset, { debug: true }).generate([
 		css.raw({ WebkitLineClamp: 2 } as Parameters<typeof css.raw>[0]),
 	]);

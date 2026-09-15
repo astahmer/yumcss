@@ -114,10 +114,10 @@ const arbitraryVariants = (selector: string | readonly string[]): string | null 
  *
  * @example
  * ```ts
- * import { createCss } from "pandwind/css";
+ * import { createUnsafeCss } from "pandwind/unsafe/css";
  * import { createUnoCssAdapter } from "pandwind/css/unocss";
  *
- * const css = createCss({ className: createUnoCssAdapter() });
+ * const css = createUnsafeCss({ className: createUnoCssAdapter() });
  * css.class({ color: "red", width: "3.5rem" });
  * ```
  *
@@ -155,7 +155,7 @@ export const createUnoCssAdapter = (options: UnoCssAdapterOptions = {}): ClassNa
 			if (value.startsWith("input>$")) {
 				throw new Error(
 					"pandwind: the unocss adapter does not support '$input' dynamics — " +
-						"use the atomic engine (createCss() without a className strategy) for dynamic values",
+						"use the atomic engine (createUnsafeCss() without a className strategy) for dynamic values",
 				);
 			}
 

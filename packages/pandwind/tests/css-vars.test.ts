@@ -14,13 +14,14 @@ import { describe, expect, test } from "vitest";
 import { createCss } from "../src/css/create-css.ts";
 import { createStylesheet } from "../src/css/create-stylesheet.ts";
 import { VARS_ATOMS } from "../src/css/var-compiler.ts";
+import { createUnsafeCss } from "../src/unsafe/css.ts";
 import { createCx } from "../src/cx/index.ts";
 import { createDesignCss } from "../src/design/index.ts";
 import { definePreset } from "../src/types/define-preset.ts";
 import { createCssSourceScanner } from "../src/vite/css-extract.ts";
 
-const css = createCss();
-const responsiveCss = createCss({
+const css = createUnsafeCss();
+const responsiveCss = createUnsafeCss({
 	conditions: { md: "@media (min-width: 768px)" },
 } as never);
 const responsivePreset = {
@@ -66,7 +67,7 @@ describe("css.vars — encoding", () => {
 	});
 
 	test("uses an explicit namespace for carriers and custom properties", () => {
-		const namespaced = createCss({ namespace: "checkout" });
+		const namespaced = createUnsafeCss({ namespace: "checkout" });
 		const out = namespaced.vars({ color: "red", _hover: { color: "blue" } });
 
 		expect(out.class).toBe("checkout-hover:color checkout-color");
@@ -77,7 +78,7 @@ describe("css.vars — encoding", () => {
 	});
 
 	test("does not rewrite caller-owned class-name strategies", () => {
-		const css = createCss({
+		const css = createUnsafeCss({
 			namespace: "checkout",
 			className: {
 				name: "owned",

@@ -1,9 +1,8 @@
 import { expect, test } from "vitest";
-import { createCss } from "../src/css/create-css.ts";
-import type { examplePreset } from "@pandwind/example-preset";
+import { createUnsafeCss } from "../src/unsafe/css.ts";
 
 test("css group", () => {
-	const css = createCss<typeof examplePreset>({ debug: true });
+	const css = createUnsafeCss({ debug: true });
 	const styles = css.group({
 		header: {
 			color: "$blue-300",
@@ -73,7 +72,7 @@ test("css group", () => {
 });
 
 test("css group accepts precompiled class strings", () => {
-	const css = createCss();
+	const css = createUnsafeCss();
 	const styles = css.group({ button: css.class({ color: "red" }) });
 
 	expect(styles.button).toMatch(/^\S+$/);
@@ -81,7 +80,7 @@ test("css group accepts precompiled class strings", () => {
 });
 
 test("compiled groups expose the StyleX host interop marker without polluting props", () => {
-	const css = createCss();
+	const css = createUnsafeCss();
 	const styles = css.group({ button: { display: "flex" } });
 	const compiled = styles.button as Record<string, unknown>;
 
@@ -91,7 +90,7 @@ test("compiled groups expose the StyleX host interop marker without polluting pr
 });
 
 test("css group function values can be passed directly to props", () => {
-	const css = createCss();
+	const css = createUnsafeCss();
 	const styles = css.group({ item: ((padding: number) => ({ padding })) as any });
 
 	const result = css.props((styles.item as any)(8));
@@ -101,7 +100,7 @@ test("css group function values can be passed directly to props", () => {
 });
 
 test("css group preserves null reset declarations for composed styles", () => {
-	const css = createCss({ debug: true });
+	const css = createUnsafeCss({ debug: true });
 	const styles = css.group({
 		base: css.class({ borderTopWidth: 1 }),
 		withoutBorder: css.class({ borderTopWidth: null }),

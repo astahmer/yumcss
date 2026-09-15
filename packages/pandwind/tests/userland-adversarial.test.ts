@@ -1,6 +1,7 @@
 import type { StandardProperties } from "csstype";
 import { describe, expect, test } from "vitest";
 import { createCss } from "../src/css/create-css.ts";
+import { createUnsafeCss } from "../src/unsafe/css.ts";
 import { createStylesheet } from "../src/css/create-stylesheet.ts";
 import { createRuntimeCss } from "../src/css/runtime.ts";
 import { createRuntimeSheet, type RuntimeSemanticRule } from "../src/css/runtime-sheet.ts";
@@ -67,10 +68,9 @@ describe("userland adversarial contracts", () => {
 	});
 
 	test("base conditions use the same carrier class as the base sheet rule", () => {
-		const preset = {
-			conditions: { base: "", md: "@media (min-width: 768px)" },
-		} as never;
-		const css = createCss(preset);
+		const conditions = { base: "", md: "@media (min-width: 768px)" };
+		const preset = { conditions } as never;
+		const css = createUnsafeCss({ conditions });
 		const output = css.vars({ padding: { base: "4px", md: "12px" } } as never);
 		const sheet = createStylesheet(preset);
 
@@ -99,7 +99,7 @@ describe("userland adversarial contracts", () => {
 	});
 
 	test("cx.vars outputs remain composable and serialized carriers remain safe", () => {
-		const css = createCss();
+		const css = createUnsafeCss();
 		const cx = createCx({ css });
 		const first = css.vars({ color: "red" });
 		const second = css.vars({ backgroundColor: "blue" });
@@ -123,7 +123,7 @@ describe("userland adversarial contracts", () => {
 	});
 
 	test("props does not mistake compiled CSS properties named class and style for a vars carrier", () => {
-		const css = createCss({ debug: true });
+		const css = createUnsafeCss({ debug: true });
 		const output = css.props(css({ class: "alpha", style: "beta" } as never));
 
 		expect(output).toEqual({
@@ -133,7 +133,7 @@ describe("userland adversarial contracts", () => {
 	});
 
 	test("props ignores unsupported primitive inputs instead of using `in` on them", () => {
-		const css = createCss({ debug: true });
+		const css = createUnsafeCss({ debug: true });
 
 		expect(css.props(42 as never, Symbol("ignored") as never, css.class({ color: "red" }))).toEqual(
 			{
@@ -144,7 +144,7 @@ describe("userland adversarial contracts", () => {
 	});
 
 	test("style projections fail closed for malformed top-level values", () => {
-		const css = createCss({ debug: true });
+		const css = createUnsafeCss({ debug: true });
 
 		expect(css(null as never)).toEqual({});
 		expect(css.class(null as never)).toBe("");
@@ -154,7 +154,7 @@ describe("userland adversarial contracts", () => {
 	});
 
 	test("cyclic style objects terminate without recursive overflow", () => {
-		const css = createCss({ debug: true });
+		const css = createUnsafeCss({ debug: true });
 		const style = { color: "red" } as Record<string, unknown>;
 		style.nested = style;
 
@@ -163,7 +163,7 @@ describe("userland adversarial contracts", () => {
 	});
 
 	test("vars carriers require own host fields", () => {
-		const css = createCss();
+		const css = createUnsafeCss();
 		const cx = createCx({ css });
 		const inherited = Object.create({
 			class: "inherited-class",
@@ -179,7 +179,7 @@ describe("userland adversarial contracts", () => {
 
 	test("empty CSS values fail closed across static and stylesheet paths", () => {
 		const style = { color: "", padding: 4 } as never;
-		const css = createCss({ debug: true });
+		const css = createUnsafeCss({ debug: true });
 		const sheet = createStylesheet(
 			{
 				conditions: {},
@@ -242,7 +242,7 @@ describe("userland adversarial contracts", () => {
 	});
 
 	test("css props flatten nested and cyclic carriers safely", () => {
-		const css = createCss();
+		const css = createUnsafeCss();
 		const colorClass = css.class({ color: "red" });
 		const paddingClass = css.class({ padding: 4 });
 		const nested: unknown[] = [colorClass, [paddingClass]];
@@ -339,7 +339,7 @@ describe("userland adversarial contracts", () => {
 	});
 
 	test("multi-argument styles merge sibling condition branches", () => {
-		const css = createCss({ debug: true });
+		const css = createUnsafeCss({ debug: true });
 
 		expect(
 			css.class(
@@ -350,7 +350,7 @@ describe("userland adversarial contracts", () => {
 	});
 
 	test("cx treats inverted and canonical condition nesting as the same atom", () => {
-		const css = createCss();
+		const css = createUnsafeCss();
 		const cx = createCx({ css });
 		const inverted = css.class({ color: { _hover: "red" } } as never);
 		const canonical = css.class({ _hover: { color: "blue" } } as never);
@@ -361,7 +361,7 @@ describe("userland adversarial contracts", () => {
 
 	test("custom condition names remain mergeable when they sort after the property", () => {
 		const customConditions = { z: "&:hover" } as const;
-		const css = createCss({ conditions: customConditions, debug: true });
+		const css = createUnsafeCss({ conditions: customConditions, debug: true });
 		const cx = createCx({ css });
 		const first = css.class({ z: { color: "red" } } as never);
 		const second = css.class({ z: { color: "blue" } } as never);
@@ -377,7 +377,7 @@ describe("userland adversarial contracts", () => {
 	});
 
 	test("cx does not alias cached class strings containing the cache delimiter", () => {
-		const css = createCss();
+		const css = createUnsafeCss();
 		const cx = createCx({ css });
 		const first = cx("a\u0000b", "c");
 		const second = cx("a", "b\u0000c");
@@ -401,7 +401,7 @@ describe("userland adversarial contracts", () => {
 			strict: true,
 			tokens: {},
 		} as never;
-		const css = createCss({ debug: true, conditions });
+		const css = createUnsafeCss({ debug: true, conditions });
 		const sheet = createStylesheet(preset, { debug: true });
 		const rules = sheet.process([css.raw({ state: { color: "red" } } as never)]);
 
@@ -418,7 +418,7 @@ describe("userland adversarial contracts", () => {
 			tokens: {},
 		} as never;
 		const style = { border: "1px solid red" } as never;
-		const css = createCss({ debug: true });
+		const css = createUnsafeCss({ debug: true });
 		const className = css.class(style);
 		const sheet = createStylesheet(preset, { debug: true });
 
@@ -437,7 +437,7 @@ describe("userland adversarial contracts", () => {
 		} as never;
 		const first = { _hover: { color: "zactive__blue" } } as never;
 		const second = { _hover: { zactive: { color: "blue" } } } as never;
-		const css = createCss({ debug: false, conditions });
+		const css = createUnsafeCss({ debug: false, conditions });
 		const firstClass = css.class(first);
 		const secondClass = css.class(second);
 		const sheet = createStylesheet(preset);
@@ -465,7 +465,7 @@ describe("userland adversarial contracts", () => {
 			width: Number.POSITIVE_INFINITY,
 			zIndex: Number.NEGATIVE_INFINITY,
 		} as never;
-		const css = createCss({ debug: true });
+		const css = createUnsafeCss({ debug: true });
 		const sheet = createStylesheet(preset, { debug: true });
 
 		expect(css(style)).toEqual({});
@@ -484,7 +484,7 @@ describe("userland adversarial contracts", () => {
 			visibility: true,
 			content: Symbol("runtime"),
 		} as never;
-		const css = createCss({ debug: true });
+		const css = createUnsafeCss({ debug: true });
 		const sheet = createStylesheet(preset, { debug: true });
 
 		expect(css(style)).toEqual({});
@@ -498,7 +498,7 @@ describe("userland adversarial contracts", () => {
 			strict: true,
 			tokens: {},
 		} as never;
-		const css = createCss({ debug: true });
+		const css = createUnsafeCss({ debug: true });
 		const sheet = createStylesheet(preset, { debug: true });
 
 		expect(css({ background__color: "red" } as never)).toEqual({});
@@ -520,7 +520,7 @@ describe("userland adversarial contracts", () => {
 		});
 		Object.defineProperty(style, "constructor", { enumerable: true, value: "blue" });
 
-		const css = createCss({ debug: true });
+		const css = createUnsafeCss({ debug: true });
 		const compiled = css(style as never);
 		const raw = css.raw(style as never);
 
@@ -533,7 +533,7 @@ describe("userland adversarial contracts", () => {
 	});
 
 	test("group compilation ignores unsupported static values like the main compiler", () => {
-		const css = createCss({ debug: true });
+		const css = createUnsafeCss({ debug: true });
 		const groups = css.group({
 			button: {
 				padding: 4,
@@ -546,7 +546,7 @@ describe("userland adversarial contracts", () => {
 	});
 
 	test("dynamic group inputs stay within the declared CSS-variable contract", () => {
-		const css = createCss({ debug: true });
+		const css = createUnsafeCss({ debug: true });
 		expect(() => css.input("" as never)).toThrow(/CSS-safe identifiers/);
 		expect(() => css.input("bad name" as never)).toThrow(/CSS-safe identifiers/);
 
@@ -565,7 +565,7 @@ describe("userland adversarial contracts", () => {
 	});
 
 	test("group definitions tolerate hostile names and malformed runtime values", () => {
-		const css = createCss({ debug: true });
+		const css = createUnsafeCss({ debug: true });
 		const groups = Object.create(null) as Record<string, unknown>;
 		Object.defineProperty(groups, "__proto__", {
 			enumerable: true,
@@ -607,7 +607,7 @@ describe("userland adversarial contracts", () => {
 			strict: true,
 			tokens: {},
 		} as never;
-		const css = createCss({ conditions });
+		const css = createUnsafeCss({ conditions });
 		const output = css.vars({ color: { "&:hover": "red" } } as never);
 		const sheet = createStylesheet(preset);
 		sheet.processVarKey("color__&:hover");
@@ -655,7 +655,7 @@ describe("userland adversarial contracts", () => {
 			strict: true,
 			tokens: {},
 		} as never;
-		const css = createCss({ conditions });
+		const css = createUnsafeCss({ conditions });
 		const styles = css.raw({ default: { color: "red" }, root: { padding: 4 } } as never);
 
 		expect(() => createStylesheet(preset).generate([styles])).not.toThrow();
@@ -680,7 +680,7 @@ describe("userland adversarial contracts", () => {
 			strict: true,
 			tokens: {},
 		} as never;
-		const css = createCss({ conditions });
+		const css = createUnsafeCss({ conditions });
 		const styles = { sm: { lineHeight: 1.2, opacity: 0.5 } } as never;
 		const staticOutput = createStylesheet(preset).generate([css.raw(styles)]);
 
@@ -698,7 +698,7 @@ describe("userland adversarial contracts", () => {
 	test("inherited style properties are not compiled as authored declarations", () => {
 		const inherited = { color: "red" };
 		const style = Object.assign(Object.create(inherited), { padding: 4 }) as never;
-		const css = createCss({ debug: true });
+		const css = createUnsafeCss({ debug: true });
 
 		expect(css(style)).toEqual({ padding: "padding__4px" });
 	});
@@ -728,7 +728,7 @@ describe("userland adversarial contracts", () => {
 		} as never;
 		const strategy = createNamedAtomsStrategy();
 		const style = { color: "$blue-500" } as never;
-		const css = createCss({ className: strategy });
+		const css = createUnsafeCss({ className: strategy });
 		const className = css.class(style);
 		const sheet = createStylesheet(preset, { className: strategy });
 
@@ -745,7 +745,7 @@ describe("userland adversarial contracts", () => {
 			sheetBacked: true,
 			toClassName: () => undefined,
 		};
-		const css = createCss({ className: strategy as never });
+		const css = createUnsafeCss({ className: strategy as never });
 		const className = css.class({ color: "red" });
 
 		expect(className).toMatch(/^[a-z0-9]+$/);

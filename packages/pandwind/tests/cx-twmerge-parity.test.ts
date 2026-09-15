@@ -13,7 +13,7 @@
  */
 import { describe, expect, test } from "vitest";
 import { twMerge } from "tailwind-merge";
-import { createCss } from "../src/css/create-css.ts";
+import { createUnsafeCss } from "../src/unsafe/css.ts";
 import { createCx } from "../src/cx/index.ts";
 import { extractTwConfig } from "../src/vite/inline.ts";
 import { readFileSync } from "node:fs";
@@ -25,7 +25,7 @@ const twSource = readFileSync(
 );
 const real = extractTwConfig(twSource)!;
 
-const css = createCss();
+const css = createUnsafeCss();
 const cx = createCx({
 	css,
 	variants: real.variants,

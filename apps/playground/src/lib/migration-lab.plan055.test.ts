@@ -29,10 +29,10 @@ describe("migration lab plan 055 adapters", () => {
 		expect(result.code).toContain('css.class({ padding: 16, color: "red" })');
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { View } from "tamagui";
-			import { createCss } from "pandwind/css";
+			import { createUnsafeCss } from "pandwind/unsafe/css";
 			import { createCx } from "pandwind/cx";
 			const cx = createCx();
-			const css = createCss();
+			const css = createUnsafeCss();
 			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Component {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
 
 			export const Card = __pandwindSlot({ defaultComponent: (View), style: css.class({ padding: 16, color: "red" }), stableClass: "pw-1l0hnhk", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });"
@@ -53,8 +53,8 @@ describe("migration lab plan 055 adapters", () => {
 		expect(result.residuals).toEqual([]);
 		expect(result.code).toContain('css.class({ padding: "1rem", color: "red" })');
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { createCss } from "pandwind/css";
-			const css = createCss();
+			"import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const styles = { "card": css.class({ padding: "1rem", color: "red" }) };
 			export default styles;"
 		`);
@@ -74,8 +74,8 @@ describe("migration lab plan 055 adapters", () => {
 		expect(result.residuals).toEqual([]);
 		expect(result.code).toContain('css.class({ padding: "1rem", color: "red" })');
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { createCss } from "pandwind/css";
-			const css = createCss();
+			"import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const styles = { "card": css.class({ padding: "1rem", color: "red" }) };
 			export default styles;"
 		`);
@@ -95,8 +95,8 @@ describe("migration lab plan 055 adapters", () => {
 		expect(result.residuals).toEqual([]);
 		expect(result.code).toContain('css.class({ padding: "1rem", color: "red" })');
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { createCss } from "pandwind/css";
-			const css = createCss();
+			"import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const styles = { "card": css.class({ padding: "1rem", color: "red" }) };
 			export default styles;"
 		`);
@@ -116,8 +116,8 @@ describe("migration lab plan 055 adapters", () => {
 		expect(result.residuals).toEqual([]);
 		expect(result.code).toContain('css.class({ padding: "1rem", color: "red" })');
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { createCss } from "pandwind/css";
-			const css = createCss();
+			"import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const styles = { "card": css.class({ padding: "1rem", color: "red" }) };
 			export default styles;"
 		`);

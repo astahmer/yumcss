@@ -5,6 +5,7 @@
  */
 import { expect, test } from "tstyche";
 import { createCss } from "../src/css/create-css.ts";
+import { createUnsafeCss } from "../src/unsafe/css.ts";
 import { createDesignCss } from "../src/design/index.ts";
 import type { StackComponentProps as PreactStackProps } from "../src/stack/preact.ts";
 import type { StackComponentProps as ReactStackProps } from "../src/stack/react.tsx";
@@ -17,8 +18,8 @@ import { createStack as createVueStack } from "../src/stack/vue.ts";
 import { createStackClassName, stackClasses, type StackProps } from "../src/stack/index.ts";
 import { examplePreset } from "@pandwind/example-preset";
 
-const css = createCss();
-const looseCss = createCss();
+const css = createUnsafeCss();
+const looseCss = createUnsafeCss();
 const typedCss = createCss(examplePreset);
 const typedDesignCss = createDesignCss(examplePreset);
 const typedReactStack = createReactStack(typedCss);

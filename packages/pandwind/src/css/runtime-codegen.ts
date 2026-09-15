@@ -6,7 +6,7 @@
  * specialization paths cannot drift apart.
  */
 
-/** Runtime methods that can be attached to a `createCss` callable. */
+/** Runtime methods that can be attached to a CSS factory callable. */
 export const CssRuntimeMethodTag = {
 	Class: "class",
 	Vars: "vars",
@@ -54,7 +54,7 @@ export const normalizeCssRuntimeMethods = (methods: readonly string[]): CssRunti
 };
 
 export interface RenderCssRuntimeModuleOptions {
-	/** Add the typed `createCss` overloads used by explicit generated files. */
+	/** Add the typed `createUnsafeCss` contract used by explicit generated files. */
 	readonly typed?: boolean;
 }
 
@@ -66,35 +66,23 @@ const renderRuntimeImports = (methods: readonly CssRuntimeMethod[]): string[] =>
 ];
 
 const renderRuntimeFactory = (methods: readonly CssRuntimeMethod[]): string =>
-	`export const createCss = (presetOrOptions, options) => createCssRuntime(presetOrOptions, options, [${methods.map(attachmentName).join(", ")}]);`;
+	`export const createUnsafeCss = (options) => createCssRuntime(options, {}, [${methods.map(attachmentName).join(", ")}]);`;
 
 const renderTypedRuntime = (methods: readonly CssRuntimeMethod[]): string[] => {
 	const methodType =
 		methods.length === 0 ? "never" : methods.map((method) => `"${method}"`).join(" | ");
 	return [
-		'import type { CssFn, CreateCssOptions } from "pandwind/css";',
-		'import type { AnyCssConfig, AnyTokens, CssConfigReturn, DefinePresetOptions, StyleObject, TypedStyleObject } from "pandwind/types/typings";',
-		"",
-		"type TypedPreset = CssConfigReturn<DefinePresetOptions<AnyCssConfig, AnyTokens>>;",
+		'import type { CssFn, CreateCssOptions } from "pandwind/unsafe/css";',
+		'import type { StyleObject } from "pandwind/types/typings";',
 		"",
 		`type GeneratedCssFn<TStyles extends StyleObject> = ((...styles: Array<TStyles>) => ReturnType<CssFn<TStyles>>) & Pick<CssFn<TStyles>, ${methodType}>;`,
 		"",
-		"export function createCss<TPreset extends TypedPreset>(",
-		"	preset: TPreset,",
-		"	options?: CreateCssOptions,",
-		'): GeneratedCssFn<TypedStyleObject<TPreset["_config"], TPreset["tokens"], TPreset>>;',
-		"export function createCss(options?: CreateCssOptions): GeneratedCssFn<StyleObject>;",
-		"",
-		"export function createCss(",
-		"	presetOrOptions: CreateCssOptions | TypedPreset = {},",
-		"	options: CreateCssOptions = {},",
-		"): GeneratedCssFn<StyleObject> {",
-		"\treturn createCssRuntime(presetOrOptions, options, [ATTACHMENTS]) as unknown as GeneratedCssFn<StyleObject>;",
-		"}",
+		"export const createUnsafeCss = (options: CreateCssOptions = {}): GeneratedCssFn<StyleObject> =>",
+		"	createCssRuntime(options, {}, [ATTACHMENTS]) as unknown as GeneratedCssFn<StyleObject>;",
 	];
 };
 
-/** Render a deterministic specialized `createCss` module. */
+/** Render a deterministic specialized `createUnsafeCss` module. */
 export const renderCssRuntimeModule = (
 	methods: readonly string[],
 	options: RenderCssRuntimeModuleOptions = {},

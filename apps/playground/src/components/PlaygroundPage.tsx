@@ -557,6 +557,8 @@ function makeInput(
 			Record<string, unknown>,
 		cx: cx as unknown as (...inputs: Array<never>) => string,
 		createCss: createPlaygroundCss,
+		createUnsafeCss: (options: unknown = {}) =>
+			createRuntimeCss(examplePreset, runtimeOptions(strategy, options)),
 		classNameStrategy: strategy,
 		moduleBindings:
 			moduleBindings === undefined ? SANDBOX_MODULES : { ...SANDBOX_MODULES, ...moduleBindings },

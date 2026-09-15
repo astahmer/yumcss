@@ -11,7 +11,8 @@ import { identifierName, memberName as genericMemberName } from "./ast-walk.ts";
 
 const VIRTUAL_PREFIX = "pandwind:runtime/css";
 const VIRTUAL_ID_PREFIX = `\0${VIRTUAL_PREFIX}?methods=`;
-const CSS_RUNTIME_SOURCES = /(?:^|\/)pandwind\/css(?:\/(?:index|create-css))?(?:\.[cm]?[jt]s)?$/;
+const CSS_RUNTIME_SOURCES =
+	/(?:^|\/)pandwind\/(?:css(?:\/(?:index|create-css))?|unsafe\/css)(?:\.[cm]?[jt]s)?$/;
 
 interface ImportSpecifierNode {
 	type?: string;
@@ -62,7 +63,7 @@ const isCreateCssImport = (specifier: ImportSpecifierNode, declaration: ImportNo
 	declaration.importKind !== ImportKindTag.Type &&
 	specifier.importKind !== ImportKindTag.Type &&
 	specifier.type === NodeKind.ImportSpecifier &&
-	specifier.imported?.name === "createCss" &&
+	specifier.imported?.name === "createUnsafeCss" &&
 	specifier.local?.name !== undefined;
 
 const isCssRuntimeSource = (source: string): boolean => CSS_RUNTIME_SOURCES.test(source);

@@ -41,6 +41,7 @@ const dependencyTypeLibraries = Object.entries(generatedDependencyTypes).map(([p
 export const PANDWIND_EDITOR_MODULE_PATHS = {
 	pandwind: "generated/pandwind/index.d.ts",
 	"pandwind/css": "generated/pandwind/css/index.d.ts",
+	"pandwind/unsafe/css": "generated/pandwind/unsafe/css.d.ts",
 	"pandwind/design": "generated/pandwind/design/index.d.ts",
 	"pandwind/tw": "generated/pandwind/tw/index.d.ts",
 	"pandwind/cx": "generated/pandwind/cx/index.d.ts",

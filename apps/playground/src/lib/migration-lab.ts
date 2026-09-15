@@ -105,9 +105,9 @@ const card = css({
 	color: "red.500",
 	padding: "4",
 });`,
-	[CodemodAdapterId.Pandwind]: `import { createCss } from "pandwind/css";
+	[CodemodAdapterId.Pandwind]: `import { createUnsafeCss } from "pandwind/unsafe/css";
 
-const css = createCss();
+const css = createUnsafeCss();
 const card = css.class({ color: "red", padding: "1rem" });`,
 	[CodemodAdapterId.StyledComponents]: `import styled from "styled-components";
 

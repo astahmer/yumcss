@@ -1,9 +1,8 @@
 import { expect, test } from "vitest";
-import { createCss } from "../src/css/create-css.ts";
-import type { examplePreset } from "@pandwind/example-preset";
+import { createUnsafeCss } from "../src/unsafe/css.ts";
 
 test("css fn simple prop", () => {
-	const _css = createCss<typeof examplePreset>({ debug: false });
+	const _css = createUnsafeCss({ debug: false });
 	const css = (...args: Parameters<typeof _css>) => ({
 		css: _css(...args),
 		class: _css.class(...args),
@@ -24,7 +23,7 @@ test("css fn simple prop", () => {
 });
 
 test("css fn prop in known pseudo selector", () => {
-	const _css = createCss<typeof examplePreset>({ debug: false });
+	const _css = createUnsafeCss({ debug: false });
 	const css = (...args: Parameters<typeof _css>) => ({
 		css: _css(...args),
 		class: _css.class(...args),
@@ -47,7 +46,7 @@ test("css fn prop in known pseudo selector", () => {
 });
 
 test("css fn prop in arbitrary pseudo selector", () => {
-	const _css = createCss<typeof examplePreset>({ debug: false });
+	const _css = createUnsafeCss({ debug: false });
 	const css = (...args: Parameters<typeof _css>) => ({
 		css: _css(...args),
 		class: _css.class(...args),
@@ -70,7 +69,7 @@ test("css fn prop in arbitrary pseudo selector", () => {
 });
 
 test("css fn prop in arbitrary descendant selector", () => {
-	const _css = createCss<typeof examplePreset>({ debug: false });
+	const _css = createUnsafeCss({ debug: false });
 	const css = (...args: Parameters<typeof _css>) => ({
 		css: _css(...args),
 		class: _css.class(...args),
@@ -93,7 +92,7 @@ test("css fn prop in arbitrary descendant selector", () => {
 });
 
 test("css fn prop in known at rule", () => {
-	const _css = createCss<typeof examplePreset>({ debug: false });
+	const _css = createUnsafeCss({ debug: false });
 	const css = (...args: Parameters<typeof _css>) => ({
 		css: _css(...args),
 		class: _css.class(...args),
@@ -118,7 +117,7 @@ test("css fn prop in known at rule", () => {
 });
 
 test("css fn prop in unknown at rule", () => {
-	const _css = createCss<typeof examplePreset>({ debug: false });
+	const _css = createUnsafeCss({ debug: false });
 	const css = (...args: Parameters<typeof _css>) => ({
 		css: _css(...args),
 		class: _css.class(...args),
@@ -143,7 +142,7 @@ test("css fn prop in unknown at rule", () => {
 });
 
 test("css fn prop in unknown at rule in pseudo selector", () => {
-	const _css = createCss<typeof examplePreset>({ debug: false });
+	const _css = createUnsafeCss({ debug: false });
 	const css = (...args: Parameters<typeof _css>) => ({
 		css: _css(...args),
 		class: _css.class(...args),
@@ -170,7 +169,7 @@ test("css fn prop in unknown at rule in pseudo selector", () => {
 });
 
 test("css fn prop in selector list", () => {
-	const _css = createCss<typeof examplePreset>({ debug: false });
+	const _css = createUnsafeCss({ debug: false });
 	const css = (...args: Parameters<typeof _css>) => ({
 		css: _css(...args),
 		class: _css.class(...args),
@@ -195,7 +194,7 @@ test("css fn prop in selector list", () => {
 });
 
 test("css fn prop with multiple selectors in :is", () => {
-	const _css = createCss<typeof examplePreset>({ debug: false });
+	const _css = createUnsafeCss({ debug: false });
 	const css = (...args: Parameters<typeof _css>) => ({
 		css: _css(...args),
 		class: _css.class(...args),
@@ -220,7 +219,7 @@ test("css fn prop with multiple selectors in :is", () => {
 });
 
 test("css fn prop with multiple selectors in :is also in selector list", () => {
-	const _css = createCss<typeof examplePreset>({ debug: false });
+	const _css = createUnsafeCss({ debug: false });
 	const css = (...args: Parameters<typeof _css>) => ({
 		css: _css(...args),
 		class: _css.class(...args),
@@ -247,7 +246,7 @@ test("css fn prop with multiple selectors in :is also in selector list", () => {
 });
 
 test("css fn prop in nested unknown at rule in pseudo selector", () => {
-	const _css = createCss<typeof examplePreset>({ debug: false });
+	const _css = createUnsafeCss({ debug: false });
 	const css = (...args: Parameters<typeof _css>) => ({
 		css: _css(...args),
 		class: _css.class(...args),

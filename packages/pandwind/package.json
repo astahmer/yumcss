@@ -27,6 +27,12 @@
 			"import": "./dist/css/index.js",
 			"default": "./dist/css/index.js"
 		},
+		"./unsafe/css": {
+			"pandwind": "./src/unsafe/css.ts",
+			"types": "./dist/unsafe/css.d.ts",
+			"import": "./dist/unsafe/css.js",
+			"default": "./dist/unsafe/css.js"
+		},
 		"./css/runtime": {
 			"pandwind": "./src/css/runtime.ts",
 			"types": "./dist/css/runtime.d.ts",

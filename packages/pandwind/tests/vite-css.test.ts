@@ -3,7 +3,7 @@ import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { expect, test } from "vitest";
 import { createTwAdapter } from "../src/tw/adapter.ts";
-import { createCss } from "../src/css/create-css.ts";
+import { createUnsafeCss } from "../src/unsafe/css.ts";
 import { createNamedAtomsStrategy } from "../src/css/named-atoms-strategy.ts";
 import { createStyleXAdapter } from "../src/css/stylex-adapter.ts";
 import { examplePreset } from "@pandwind/example-preset";
@@ -583,7 +583,8 @@ const makeProject = (files: Record<string, string>): string => {
 
 test("static extraction retains the virtual stylesheet side effect", () => {
 	const dir = makeProject({
-		"src/css.ts": 'import { createCss } from "pandwind/css"; export const css = createCss();',
+		"src/css.ts":
+			'import { createUnsafeCss } from "pandwind/unsafe/css"; export const css = createUnsafeCss();',
 		"src/app.tsx": 'import { css } from "./css"; export const card = css.class({ color: "red" });',
 	});
 	try {
@@ -615,7 +616,7 @@ test("pandwindCssVite folds responsive CSS calls with preset conditions", () => 
 		const transformed = (
 			plugin.transform as (code: string, id: string) => { code: string } | null
 		).call(null, source, join(dir, "src/app.ts"));
-		const expectedClasses = createCss({ conditions: examplePreset.conditions }).class({
+		const expectedClasses = createUnsafeCss({ conditions: examplePreset.conditions }).class({
 			position: { sm: "fixed", md: "absolute" },
 			top: { sm: "0", md: "100%" },
 		});
@@ -636,7 +637,8 @@ test.each([
 	["layers", "@layer pandwind{"],
 ] as const)("pandwindCssVite applies the %s cascade mode", (cascade, marker) => {
 	const dir = makeProject({
-		"src/css.ts": 'import { createCss } from "pandwind/css"; export const css = createCss();',
+		"src/css.ts":
+			'import { createUnsafeCss } from "pandwind/unsafe/css"; export const css = createUnsafeCss();',
 		"src/app.tsx": 'import { css } from "./css"; export const card = css.class({ color: "red" });',
 	});
 	try {
@@ -719,7 +721,7 @@ const relevantCss = (css: string, markers: readonly string[]): string =>
 test("pandwindCssVite extracts carriers exported under non-css names", () => {
 	const dir = makeProject({
 		"src/css.ts":
-			'import { createCss } from "pandwind/css"; export const untypedCss = createCss();',
+			'import { createUnsafeCss } from "pandwind/unsafe/css"; export const untypedCss = createUnsafeCss();',
 		"src/app.tsx": `
 			import { untypedCss } from "./css";
 			export const text = untypedCss.class({
@@ -824,7 +826,8 @@ test("default stylesheet mode rewrites literal css calls", () => {
 
 test("static extraction includes and rewrites literal css groups", () => {
 	const dir = makeProject({
-		"src/css.ts": 'import { createCss } from "pandwind/css"; export const css = createCss();',
+		"src/css.ts":
+			'import { createUnsafeCss } from "pandwind/unsafe/css"; export const css = createUnsafeCss();',
 		"src/app.tsx": `
 			import { css } from "./css";
 			import "pandwind:css";
@@ -870,7 +873,8 @@ test("static extraction includes and rewrites literal css groups", () => {
 
 test("static extraction emits css.input group rules for createCss", () => {
 	const dir = makeProject({
-		"src/css.ts": 'import { createCss } from "pandwind/css"; export const css = createCss();',
+		"src/css.ts":
+			'import { createUnsafeCss } from "pandwind/unsafe/css"; export const css = createUnsafeCss();',
 		"src/app.tsx": `
 			import { css } from "./css";
 			type ButtonInput = { background: string };
@@ -907,20 +911,20 @@ test("static extraction emits css.input group rules for createCss", () => {
 
 test("static direct factory calls are marked pure for bundler elimination", () => {
 	const code = `
-		import { createCss } from "../../src/css/index.ts";
-		const css = createCss();
+		import { createUnsafeCss } from "../../src/unsafe/css.ts";
+		const css = createUnsafeCss();
 		const card = css.class({ color: "red" });
 	`;
 	const result = extract().inline(code, "app.ts", new Set(["css"]));
 
 	expect(result.inlined).toBe(1);
-	expect(result.code).toContain("/* @__PURE__ */ createCss()");
+	expect(result.code).toContain("/* @__PURE__ */ createUnsafeCss()");
 });
 
 test("dynamic css calls keep the runtime fallback", () => {
 	const code = `
-		import { createCss } from "../../src/css/index.ts";
-		const css = createCss();
+		import { createUnsafeCss } from "../../src/unsafe/css.ts";
+		const css = createUnsafeCss();
 		const color = getColor();
 		const card = css.class({ color });
 	`;

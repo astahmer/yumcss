@@ -17,7 +17,7 @@ import { describe, expect, test } from "vitest";
 import { createCssBackend } from "../src/backends/css.ts";
 import type { FlatStyleIR } from "../src/backends/types.ts";
 import { ATOM_REGISTRY } from "../src/css/atoms.ts";
-import { createCss } from "../src/css/create-css.ts";
+import { createUnsafeCss } from "../src/unsafe/css.ts";
 import { createNamedAtomsStrategy } from "../src/css/named-atoms-strategy.ts";
 import { flattenStyle } from "../src/lib/utils.ts";
 import { createCx } from "../src/cx/index.ts";
@@ -89,7 +89,7 @@ describe("css backend", () => {
 	});
 
 	test("createCss rides the backend: registry lands on the css fn for cx", () => {
-		const css = createCss();
+		const css = createUnsafeCss();
 		const compiled = css({ color: "red" });
 		const atom = compiled.color!;
 		const registry = (css as unknown as { [ATOM_REGISTRY]?: Map<string, string> })[ATOM_REGISTRY];

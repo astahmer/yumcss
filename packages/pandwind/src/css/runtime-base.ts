@@ -95,7 +95,7 @@ const isFlatStyle = (style: unknown): style is StyleObject => {
 	return true;
 };
 
-const isPreset = (value: CreateCssOptions | TypedPreset): value is TypedPreset =>
+export const isPreset = (value: CreateCssOptions | TypedPreset): value is TypedPreset =>
 	typeof value === "object" &&
 	value !== null &&
 	"conditions" in value &&

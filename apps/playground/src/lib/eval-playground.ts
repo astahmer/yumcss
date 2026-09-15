@@ -549,7 +549,7 @@ function prepare(code: string, mode: EvalMode): Prepared {
 	};
 	const statements = program.body ?? [];
 	// Module-declared names shadow the sandbox builtins: an example that
-	// says `const css = createCss()` must receive its own css, not the
+	// says `const css = createUnsafeCss()` must receive its own css, not the
 	// prebuilt binding injected under the same identifier.
 	const declaredNames: Array<string> = [];
 	for (const statement of statements) {
@@ -893,8 +893,10 @@ export interface EvalInput {
 	tw: (...args: Array<unknown>) => unknown;
 	css: ((...args: Array<unknown>) => unknown) & Record<string, unknown>;
 	cx: (...inputs: Array<never>) => string;
-	/** Loose engine css() available as createCss() inside evaluated code. */
+	/** Safe preset-bound factory used when resolving `pandwind/css` imports. */
 	createCss?: (...args: Array<unknown>) => unknown;
+	/** Explicit unsafe engine used when resolving `pandwind/unsafe/css` imports. */
+	createUnsafeCss?: (...args: Array<unknown>) => unknown;
 	/** Explicit playground adapter; null selects Pandwind's default atomic output. */
 	classNameStrategy?: ClassNameStrategy | null;
 	/**
@@ -1071,7 +1073,7 @@ export function evalPlayground(input: EvalInput): PlaygroundResult {
 }
 
 /** Builtins the sandbox injects; a module-local declaration shadows them. */
-const SANDBOX_BUILTINS = ["tw", "css", "cx", "createCx", "createCss"] as const;
+const SANDBOX_BUILTINS = ["tw", "css", "cx", "createCx", "createUnsafeCss"] as const;
 
 function sandboxNames(prepared: Prepared, input?: EvalInput): string[] {
 	return dedupe([
@@ -1110,7 +1112,7 @@ function evalGuarded(input: EvalInput, mode: EvalMode): PlaygroundResult {
 /**
  * The pandwind public API surface the sandbox can resolve imports against.
  * Kept as a function so the record reflects the exact bindings this input
- * carries (createCss may be absent).
+ * carries the safe and unsafe CSS factories when available.
  */
 function pandwindBuiltins(input: EvalInput): Record<string, unknown> {
 	return {
@@ -1119,6 +1121,7 @@ function pandwindBuiltins(input: EvalInput): Record<string, unknown> {
 		cx: input.cx,
 		createCx: () => input.cx,
 		createCss: input.createCss,
+		createUnsafeCss: input.createUnsafeCss,
 	};
 }
 
@@ -1143,6 +1146,7 @@ function buildSandbox(
 		cx,
 		createCx: () => cx,
 		createCss: input.createCss,
+		createUnsafeCss: input.createUnsafeCss,
 		jsx: createPlaygroundJsx,
 		Fragment: PLAYGROUND_FRAGMENT,
 	};
@@ -1152,6 +1156,7 @@ function buildSandbox(
 		cx,
 		createCx: () => cx,
 		createCss: input.createCss,
+		createUnsafeCss: input.createUnsafeCss,
 	};
 	if (input.props !== undefined) {
 		sandbox.props = input.props;
@@ -1167,6 +1172,8 @@ function buildSandbox(
 					? pandwindBuiltins(input)[imp.imported]
 					: undefined);
 			const isCssFactory = imp.source === "pandwind/css" && imp.imported === "createCss";
+			const isUnsafeCssFactory =
+				imp.source === "pandwind/unsafe/css" && imp.imported === "createUnsafeCss";
 			const isDesignFactory =
 				imp.source === "pandwind/design" && imp.imported === "createDesignCss";
 			const isRuntimeFactory =
@@ -1174,6 +1181,7 @@ function buildSandbox(
 				((imp.source === "pandwind/css/runtime" &&
 					(imp.imported === "createRuntimeCss" || imp.imported === "createRuntimeDesignCss")) ||
 					isCssFactory ||
+					isUnsafeCssFactory ||
 					isDesignFactory);
 			if (isRuntimeFactory) {
 				sandbox[imp.local] = (...args: Array<unknown>) => {
@@ -1187,7 +1195,13 @@ function buildSandbox(
 						"conditions" in firstArgument &&
 						"properties" in firstArgument &&
 						"strict" in firstArgument;
-					const optionArgument = isCssFactory ? (isPresetArgument ? args[1] : args[0]) : args[1];
+					const optionArgument = isCssFactory
+						? isPresetArgument
+							? args[1]
+							: args[0]
+						: isUnsafeCssFactory
+							? args[0]
+							: args[1];
 					const authoredOptions =
 						optionArgument !== null && typeof optionArgument === "object"
 							? (optionArgument as Record<string, unknown>)
@@ -1212,13 +1226,15 @@ function buildSandbox(
 						? isPresetArgument
 							? [args[0], runtimeOptions]
 							: [runtimeOptions]
-						: [
-								args[0],
-								{
-									...effectiveOptions,
-									sheetOptions: { ...authoredSheetOptions, autoMount: false },
-								},
-							];
+						: isUnsafeCssFactory
+							? [runtimeOptions]
+							: [
+									args[0],
+									{
+										...effectiveOptions,
+										sheetOptions: { ...authoredSheetOptions, autoMount: false },
+									},
+								];
 					const instance = (resolvedImport as (...values: Array<unknown>) => unknown)(
 						...factoryArgs,
 					) as RuntimeCssInstance | undefined;
@@ -1261,8 +1277,9 @@ function buildSandbox(
 			if (imp.imported !== undefined) {
 				sandbox[imp.local] = instrumentedBuiltins[imp.imported];
 			} else {
-				// Default import: the css entry's default is the loose engine.
-				sandbox[imp.local] = imp.source === "pandwind" ? instrumentedBuiltins : input.createCss;
+				// Default imports are not part of the supported Pandwind entrypoints.
+				sandbox[imp.local] =
+					imp.source === "pandwind" ? instrumentedBuiltins : input.createUnsafeCss;
 			}
 			continue;
 		}
@@ -1281,6 +1298,7 @@ function buildSandbox(
 			local === "createCx" ||
 			local === "props" ||
 			local === "createCss" ||
+			local === "createUnsafeCss" ||
 			local === "jsx" ||
 			local === "Fragment"
 		)

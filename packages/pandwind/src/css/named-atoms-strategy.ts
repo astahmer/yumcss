@@ -32,9 +32,10 @@ import { createHashFn } from "./hash.ts";
  *
  * @example
  * ```ts
- * import { createCss, createNamedAtomsStrategy } from "pandwind/css";
+ * import { createNamedAtomsStrategy } from "pandwind/css";
+ * import { createUnsafeCss } from "pandwind/unsafe/css";
  *
- * const css = createCss({ className: createNamedAtomsStrategy("app") });
+ * const css = createUnsafeCss({ className: createNamedAtomsStrategy("app") });
  * const className = css.class({ color: "tomato" });
  * ```
  *

@@ -67,11 +67,12 @@ const designClassName = dss.class({
 });
 
 const setupCode = `import { createCss } from "pandwind/css";
+import { createUnsafeCss } from "pandwind/unsafe/css";
 import { definePreset } from "pandwind/preset";
 
 const preset = definePreset(theme, { conditions, properties });
 const css = createCss(preset);
-const openCss = createCss();`;
+const openCss = createUnsafeCss();`;
 
 const buildCode = `import { pandwindCssVite } from "pandwind/vite";
 
@@ -237,7 +238,7 @@ export function ApiCatalogApp() {
 				</ApiCard>
 
 				<ApiCard
-					name="createCss() + input()"
+					name="createUnsafeCss() + input()"
 					call={`css.group({ button: { $input, padding: css.input("padding") } })`}
 					detail="a typed input group keeps its class stable; pandwindCssVite extracts its structural var rules"
 				>
@@ -292,7 +293,7 @@ export function ApiCatalogApp() {
 				</ApiCard>
 
 				<ApiCard
-					name="createCss() / definePreset()"
+					name="createCss(preset) / createUnsafeCss()"
 					call={setupCode}
 					detail="bind a project preset for strict tokens, conditions, and property values"
 				>

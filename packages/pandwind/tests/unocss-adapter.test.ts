@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
 import { createGenerator } from "@unocss/core";
-import { createCss } from "../src/css/create-css.ts";
+import { createUnsafeCss } from "../src/unsafe/css.ts";
 import { unoPresetMini } from "./helpers/unocss-oracle.ts";
 import { createUnoCssAdapter } from "../src/css/unocss-adapter.ts";
 import { examplePreset } from "@pandwind/example-preset";
@@ -71,7 +71,7 @@ describe("UnoCSS class-name adapter", () => {
 
 	test("falls back to atomic classes for unrepresentable declarations", () => {
 		const adapter = createUnoCssAdapter();
-		const css = createCss({ className: adapter });
+		const css = createUnsafeCss({ className: adapter });
 		const className = css.class({ color: "bg-red-500" });
 		expect(className).not.toBeNull();
 	});

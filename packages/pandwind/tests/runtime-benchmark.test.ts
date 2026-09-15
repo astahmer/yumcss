@@ -8,15 +8,15 @@ import { readFileSync } from "node:fs";
 import { performance } from "node:perf_hooks";
 import { resolve } from "node:path";
 import { expect, test } from "vitest";
-import { createCss } from "../src/css/create-css.ts";
+import { createUnsafeCss } from "../src/unsafe/css.ts";
 import { createCx } from "../src/cx/index.ts";
 import { createRuntimeCss, createRuntimeSheet } from "../src/css/runtime.ts";
 import { compileStyles } from "../src/tw/compile.ts";
 import { examplePreset } from "@pandwind/example-preset";
 
 const SNAPSHOT = resolve(import.meta.dirname, "snapshots", "runtime-benchmark.json.snap");
-const css = createCss();
-const nestedCss = createCss({
+const css = createUnsafeCss();
+const nestedCss = createUnsafeCss({
 	conditions: { _hover: "&:hover", md: "@media (min-width: 768px)" },
 });
 const cx = createCx();

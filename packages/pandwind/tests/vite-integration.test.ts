@@ -470,16 +470,16 @@ describe("build", () => {
 
 		// Root lane is tw+cx only (see src/index.ts); css comes via its subpath.
 		const cssOnly = await buildApp(`
-			import { createCss } from "pandwind/css";
-			const css = createCss();
+			import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
 			export const a = css.class({ color: "red", bg: "blue" });
 			console.log(a);
 		`);
 		const allThree = await buildApp(`
-			import { createCss } from "pandwind/css";
+			import { createUnsafeCss } from "pandwind/unsafe/css";
 			import { createCx } from "pandwind/cx";
 			import { createTw } from "pandwind/tw";
-			const css = createCss();
+			const css = createUnsafeCss();
 			const cx = createCx({ css });
 			const tw = createTw({});
 			console.log(cx(tw({ bg: "red-500" }), css.class({ color: "red" })));

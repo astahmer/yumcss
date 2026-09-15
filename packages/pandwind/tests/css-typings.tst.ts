@@ -1,5 +1,6 @@
 import { expect, test } from "tstyche";
 import { createCss, type AtomicStyleProps } from "../src/css/index.ts";
+import { createUnsafeCss } from "../src/unsafe/css.ts";
 import {
 	definePreset,
 	defineTokens,
@@ -93,13 +94,18 @@ test("PandwindProperties exposes a curated CSS contract with an explicit csstype
 	expect(full).type.toBe<CsstypeStandardProperties>();
 });
 
-test("the untyped convenience form remains available", () => {
-	const loose = createCss();
+test("createCss requires a preset while the unsafe lane stays explicit", () => {
+	// @ts-expect-error Expected 1-2 arguments, but got 0.
+	createCss();
+	// @ts-expect-error Object literal may only specify known properties
+	createCss({ debug: true });
+
+	const loose = createUnsafeCss();
 	expect(loose({ arbitraryProperty: "value" })).type.toBe<Compiled>();
 });
 
 test("AtomicStyleProps preserves the selected CssFn style vocabulary", () => {
-	const loose = createCss();
+	const loose = createUnsafeCss();
 	const typed = createCss(examplePreset);
 
 	const openStyles: AtomicStyleProps<typeof loose> = { arbitraryProperty: "value" };

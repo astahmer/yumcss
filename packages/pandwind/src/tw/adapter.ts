@@ -81,7 +81,7 @@ function arbitraryValue(value: string): string {
  *
  * @example
  * ```ts
- * import { createCss } from "pandwind/css";
+ * import { createUnsafeCss } from "pandwind/unsafe/css";
  * import { createTwAdapter } from "pandwind/tw";
  *
  * const adapter = createTwAdapter({
@@ -91,7 +91,7 @@ function arbitraryValue(value: string): string {
  *   },
  * });
  *
- * const css = createCss({ className: adapter });
+ * const css = createUnsafeCss({ className: adapter });
  * css.class({ backgroundColor: "#3182ce" });
  * // "bg-blue-500"
  * ```
@@ -149,7 +149,7 @@ export function createTwAdapter(options: TwAdapterOptions): ClassNameStrategy {
 			if (value.startsWith("input>$")) {
 				throw new Error(
 					"pandwind: the tailwind adapter does not support `$input` dynamics — " +
-						"use the atomic engine (`createCss()` without a className strategy) for dynamic values",
+						"use the atomic engine (`createUnsafeCss()` without a className strategy) for dynamic values",
 				);
 			}
 

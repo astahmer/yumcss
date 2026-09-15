@@ -1,4 +1,4 @@
-import { type CreateCssOptions, type CssFn, createCss } from "../css/create-css.ts";
+import { createUnsafeCss, type CreateCssOptions, type CssFn } from "../unsafe/css.ts";
 import { ATOM_REGISTRY, type AtomRegistry } from "../css/atoms.ts";
 import { attachCssFactoryMetadata, CssFactoryKind } from "../css/factory-metadata.ts";
 import { assign } from "../lib/utils.ts";
@@ -58,7 +58,10 @@ export const createDesignCss = <TPreset extends DesignPreset>(
 	preset: TPreset,
 	options: CreateCssOptions = {},
 ): CssFn<DesignStyleObject<TPreset>> => {
-	const engine = createCss({ ...options, conditions: preset.conditions }) as CssFn<StyleObject>;
+	const engine = createUnsafeCss({
+		...options,
+		conditions: preset.conditions,
+	}) as CssFn<StyleObject>;
 	type Design = DesignStyleObject<TPreset>;
 
 	const resolve = (style: Design): StyleObject =>

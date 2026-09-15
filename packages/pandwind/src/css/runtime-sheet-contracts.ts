@@ -1,5 +1,7 @@
 import type { CssCascadeMode } from "./cascade.ts";
 
+/** Runtime sheets are created with `createRuntimeSheet` from `pandwind/css/runtime`. */
+
 /** Flat rule after semantic lowering and CSS serialization. */
 export interface RuntimeRule {
 	readonly id: string;

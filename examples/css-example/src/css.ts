@@ -1,4 +1,4 @@
-import { createCss } from "pandwind/css";
+import { createUnsafeCss } from "pandwind/unsafe/css";
 
 /**
  * Atomic css() — plain style objects on the app preset, separate from the
@@ -10,4 +10,4 @@ import { createCss } from "pandwind/css";
  * `css`/`design` — a file-local const does not qualify (see src/card-b.ts
  * for the working call site).
  */
-export const css = createCss();
+export const css = createUnsafeCss();

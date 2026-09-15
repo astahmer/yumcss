@@ -7,6 +7,7 @@
  */
 import { describe, expect, test } from "vitest";
 import { createCss } from "../src/css/create-css.ts";
+import { createUnsafeCss } from "../src/unsafe/css.ts";
 import { createStylesheet } from "../src/css/create-stylesheet.ts";
 import { examplePreset } from "@pandwind/example-preset";
 
@@ -73,7 +74,7 @@ describe("SSR dynamic-value routing (plan-057 T9)", () => {
 	});
 
 	test("responsive conditions resolve through the same carrier contract", () => {
-		const responsiveCss = createCss({
+		const responsiveCss = createUnsafeCss({
 			conditions: { md: "@media (min-width: 768px)" },
 		} as never);
 		const out = responsiveCss.vars({ padding: { base: "4px", md: "12px" } } as never);

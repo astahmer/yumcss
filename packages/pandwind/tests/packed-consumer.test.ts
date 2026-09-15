@@ -60,7 +60,10 @@ describe("packed Pandwind consumer", () => {
 			);
 			writeFileSync(
 				join(consumerDir, "src/css.js"),
-				['import { createCss } from "pandwind/css";', "export const css = createCss();"].join("\n"),
+				[
+					'import { createUnsafeCss } from "pandwind/unsafe/css";',
+					"export const css = createUnsafeCss();",
+				].join("\n"),
 			);
 			writeFileSync(
 				join(consumerDir, "src/main.js"),

@@ -1,5 +1,6 @@
 import { expect, test } from "tstyche";
 import { createCss } from "../src/css/create-css.ts";
+import { createUnsafeCss } from "../src/unsafe/css.ts";
 import {
 	createNamedAtomsStrategy,
 	createPandaAdapter,
@@ -251,7 +252,7 @@ test("tw factory, compiler metadata, and adapter types stay composable", () => {
 });
 
 test("root tw, cx vars, theme helpers, and Stack helpers retain their contracts", () => {
-	const css = createCss();
+	const css = createUnsafeCss();
 	const cxOptions: CxOptions = { css, variants: { sm: {} }, compose: ["scale"] };
 	const cx = createCx(cxOptions);
 	const vars = css.vars({ color: "tomato" });

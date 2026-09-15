@@ -9,6 +9,7 @@ import type {
 } from "../types/typings.ts";
 import {
 	createCssRuntime,
+	isPreset,
 	type CompiledStyles,
 	type CreateCssOptions,
 	type AnyInput,
@@ -44,14 +45,13 @@ const ALL_RUNTIME_METHODS = [
  *
  * A preset supplies the token and condition vocabulary; the returned callable
  * compiles style objects and exposes the projections documented by `CssFn`.
- * Pass a preset whenever a style references a token or condition. The
- * no-argument form stays open-ended for raw CSS and generated styles whose
- * vocabulary is known only at runtime.
+ * The preset is required so token and condition references cannot silently
+ * fall back to raw CSS.
  *
  * @remarks
  * The same preset must be supplied to the stylesheet/runtime compiler that
- * resolves token references. With bare `createCss()`, a value such as
- * `"$blue-500"` is ordinary raw CSS; it is not looked up as a token.
+ * resolves token references. For unbound or runtime-discovered styles, use
+ * `createUnsafeCss` from `pandwind/unsafe/css`.
  *
  * @example
  * ```ts
@@ -67,7 +67,7 @@ const ALL_RUNTIME_METHODS = [
  * const cardClass = css.class({ backgroundColor: "$blue-500", padding: 4 });
  * ```
  *
- * @param preset - Preset metadata, or CSS options in the open-ended overload.
+ * @param preset - Preset metadata defining the token and condition vocabulary.
  * @param options - CSS backend options.
  * @returns A callable compiler with `class`, `vars`, `raw`, `props`, and `group`.
  * @category factories
@@ -77,22 +77,28 @@ export function createCss<TPreset extends TypedPreset>(
 	preset: TPreset,
 	options?: CreateCssOptions,
 ): CssFn<TypedStyleObject<TPreset["_config"], TPreset["tokens"], TPreset>>;
-export function createCss(options?: CreateCssOptions): CssFn<StyleObject>;
-export function createCss<
-	TPreset extends CssConfigReturn<DefinePresetOptions<AnyCssConfig, AnyTokens>>,
->(
-	options?: CreateCssOptions,
-): CssFn<TypedStyleObject<TPreset["_config"], TPreset["tokens"], TPreset>>;
-export function createCss(
-	presetOrOptions: CreateCssOptions | TypedPreset = {},
-	options: CreateCssOptions = {},
-): CssFn<StyleObject> {
-	return createCssRuntime(
-		presetOrOptions,
-		options,
-		ALL_RUNTIME_METHODS,
-	) as unknown as CssFn<StyleObject>;
+export function createCss(preset: TypedPreset, options: CreateCssOptions = {}): CssFn<StyleObject> {
+	if (!isPreset(preset)) {
+		throw new Error(
+			'pandwind/css: createCss requires a preset. For unbound or runtime-discovered styles, import createUnsafeCss from "pandwind/unsafe/css".',
+		);
+	}
+	return createCssRuntime(preset, options, ALL_RUNTIME_METHODS) as unknown as CssFn<StyleObject>;
 }
+
+/**
+ * Create an open-ended CSS function for unbound or runtime-discovered styles.
+ *
+ * This escape hatch intentionally has no preset-derived token or condition
+ * vocabulary. Prefer `createCss(preset)` for application code.
+ *
+ * @param options - CSS backend options.
+ * @returns An unconstrained callable compiler with the complete CSS surface.
+ * @category factories
+ * @since 0.1.0
+ */
+export const createUnsafeCss = (options: CreateCssOptions = {}): CssFn<StyleObject> =>
+	createCssRuntime(options, {}, ALL_RUNTIME_METHODS) as unknown as CssFn<StyleObject>;
 
 interface PropsReturn {
 	style: Record<string, string> | undefined;

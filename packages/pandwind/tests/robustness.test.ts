@@ -14,14 +14,14 @@
  */
 import { describe, expect, test } from "vitest";
 import { createCx } from "../src/cx/index.ts";
-import { createCss } from "../src/css/index.ts";
+import { createUnsafeCss } from "../src/unsafe/css.ts";
 import { createStylesheet } from "../src/css/create-stylesheet.ts";
 import { examplePreset } from "@pandwind/example-preset";
 import { createTwAdapter } from "../src/tw/adapter.ts";
 import { compileStyles, type TwConflictsMeta, type TwNestedStyles } from "../src/tw/compile.ts";
 import { compileClasses, rulesForClass } from "./helpers/tailwind-proof.ts";
 
-const css = createCss();
+const css = createUnsafeCss();
 const cx = createCx({ css });
 const tw = (styles: TwNestedStyles) => compileStyles(styles, {});
 
@@ -134,7 +134,7 @@ describe("cx() never crashes and never drops unknown classes", () => {
 				"background-color": { "#3182ce": "bg-blue-500", "#E53E3E": "bg-red-500" },
 			},
 		});
-		const twCss = createCss({ className: adapter });
+		const twCss = createUnsafeCss({ className: adapter });
 		const cxAdapter = createCx({ css: twCss, variants, conflicts, compose });
 		const merged = cxAdapter(
 			compileStyles({ bg: "red-500" }, variants, conflicts, compose),
@@ -151,7 +151,7 @@ describe("tailwind adapter arbitrary fallbacks always compile", () => {
 		variants: { hover: { join: ":" }, sm: { join: ":" } },
 		bridge: {},
 	});
-	const twCss = createCss({ className: adapter });
+	const twCss = createUnsafeCss({ className: adapter });
 
 	test("unmatched values become valid arbitrary-property classes", async () => {
 		const classes = [

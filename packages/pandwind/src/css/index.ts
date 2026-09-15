@@ -5,7 +5,8 @@
  */
 export * from "./class-name-strategy.ts";
 export type { CssCascadeMode } from "./cascade.ts";
-export * from "./create-css.ts";
+export { createCss } from "./create-css.ts";
+export type { AtomicStyleProps, ClassNameStrategy, CssFn, CreateCssOptions } from "./create-css.ts";
 export * from "./named-atoms-strategy.ts";
 export * from "./panda-adapter.ts";
 export * from "./stylex-adapter.ts";

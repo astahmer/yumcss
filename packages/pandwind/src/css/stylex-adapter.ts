@@ -34,10 +34,10 @@ const modifierFor = (part: string, conditions: StyleXAdapterOptions["conditions"
  *
  * @example
  * ```ts
- * import { createCss } from "pandwind/css";
+ * import { createUnsafeCss } from "pandwind/unsafe/css";
  * import { createStyleXAdapter } from "pandwind/css/stylex";
  *
- * const css = createCss({
+ * const css = createUnsafeCss({
  *   className: createStyleXAdapter({ debug: true, enableDebugClassNames: true }),
  * });
  *

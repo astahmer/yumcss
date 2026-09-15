@@ -12,6 +12,7 @@ const packageManifest = JSON.parse(
 
 const entries = [
 	"pandwind/css",
+	"pandwind/unsafe/css",
 	"pandwind/tw",
 	"pandwind/cx",
 	"pandwind/preset",
@@ -40,11 +41,17 @@ describe("pandwind package boundary", () => {
 
 	test("does not expose CSS compiler internals from the public css lane", async () => {
 		const cssApi = await import("pandwind/css");
+		expect("createUnsafeCss" in cssApi).toBe(false);
 		expect("createCssOpen" in cssApi).toBe(false);
 		expect("createHashFn" in cssApi).toBe(false);
 		expect("hashCssVar" in cssApi).toBe(false);
 		expect("createVarCompiler" in cssApi).toBe(false);
 		expect("VARS_ATOMS" in cssApi).toBe(false);
+	});
+
+	test("exposes the open CSS compiler only through the unsafe lane", async () => {
+		const unsafeApi = await import("pandwind/unsafe/css");
+		expect(unsafeApi.createUnsafeCss).toBeTypeOf("function");
 	});
 
 	test("exposes token composers on catalogs instead of standalone helpers", async () => {
