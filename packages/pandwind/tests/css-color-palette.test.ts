@@ -42,13 +42,12 @@ test("compiles colorPalette assignment and virtual color references as static at
 
 	expect(css.class({ colorPalette: "blue" })).toBe("colorPalette__blue");
 	expect(css.class({ color: "colorPalette.500" })).toBe("color__colorPalette.500");
-	expect(
-		css.class({ colorPalette: "brand", color: "colorPalette.solid" }),
-	).toBe("colorPalette__brand color__colorPalette.solid");
+	expect(css.class({ colorPalette: "brand", color: "colorPalette.solid" })).toBe(
+		"colorPalette__brand color__colorPalette.solid",
+	);
 });
 
 test("emits one static palette rule with virtual custom-property assignments", () => {
-	const css = createCss(preset, { debug: true });
 	const stylesheet = createStylesheet(preset, { debug: true });
 	const output = stylesheet.generate([
 		{
@@ -78,6 +77,9 @@ test("keeps palette aliases and their token references on the same virtual varia
 	expect(output).toContain(".colorPalette__brand{");
 	expect(output).toContain("color__colorPalette\\.solid{");
 	expect(output).toContain("backgroundColor__colorPalette\\.contrast{");
-	const paletteRule = output.slice(output.indexOf(".colorPalette__brand{"), output.indexOf(".colorPalette__brand{") + 500);
+	const paletteRule = output.slice(
+		output.indexOf(".colorPalette__brand{"),
+		output.indexOf(".colorPalette__brand{") + 500,
+	);
 	expect(paletteRule).toContain("var(--");
 });

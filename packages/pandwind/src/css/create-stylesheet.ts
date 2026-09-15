@@ -11,6 +11,7 @@ import {
 	resolveTokenValue,
 	tokenDependencyPaths,
 } from "./tokens.ts";
+import { buildColorPaletteMaps } from "./color-palettes.ts";
 import { isSelfSelector } from "./stylesheet-lowering.ts";
 import { decorateCascadeRules, wrapCascadeLayer } from "./cascade.ts";
 import {
@@ -149,6 +150,7 @@ export const createStylesheet = (
 	const cssVars = new Map<string, TokenDeclaration>();
 
 	const tokenMaps = buildTokenMaps(preset, debug);
+	const colorPaletteMaps = buildColorPaletteMaps(preset, tokenMaps.flatTokens, debug);
 	const usedTokenPaths = new Set<string>();
 	let tokensCache: string | undefined;
 
@@ -240,7 +242,7 @@ export const createStylesheet = (
 		const atomic = decoder.decode(preset.conditions, pairId);
 		const property = cssPropertyFromKey(atomic.prop!, preset.conditions, options.propertyAliases);
 		if (property === "colorPalette") {
-			const assignments = tokenMaps.colorPalettes.get(normalizedValue);
+			const assignments = colorPaletteMaps.palettes.get(normalizedValue);
 			if (assignments === undefined) return;
 			for (const assignment of assignments) {
 				for (const dependency of tokenDependencyPaths(tokenMaps, assignment.tokenPath)) {
@@ -283,7 +285,11 @@ export const createStylesheet = (
 				}
 			}
 		}
-		const value = resolveTokenValue(tokenMaps, property, normalizedValue);
+		const colorPaletteValue =
+			tokenMaps.groupByProp.get(property) === "colors"
+				? colorPaletteMaps.values.get(normalizedValue)
+				: undefined;
+		const value = colorPaletteValue ?? resolveTokenValue(tokenMaps, property, normalizedValue);
 		const className =
 			preparedClassName !== undefined && isSafeClassName(preparedClassName)
 				? preparedClassName
