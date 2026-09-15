@@ -31,8 +31,10 @@ Source revisions: `qqyulusz`, `rrxooprr`, `uspqzmlu`, `zwtzvqvk`, `nqoyxvkq`,
   catalog even without a loaded project config, so migrated `_hover`, authored
   underscore conditions, and common raw pseudo selectors stay on typed preset
   keys instead of becoming arbitrary selector properties.
+- Fail closed for undeclared custom conditions: preserve the source with a
+  typed capability residual instead of emitting an unverified selector.
 
-Source revisions: `snuqwnpr`, `aad9c82d`, `83421402`, `e4caec1f`.
+Source revisions: `snuqwnpr`, `aad9c82d`, `83421402`, `e4caec1f`, `11be10fd`.
 
 ## Unreleased — 2026-09-15 explicit runtime CSS carrier
 
