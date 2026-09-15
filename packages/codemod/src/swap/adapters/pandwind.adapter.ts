@@ -521,8 +521,13 @@ const conditionCatalogMatch = (
 	entries: readonly [string, string][],
 ): string | undefined => {
 	if (condition.kind === SemanticConditionKindTag.Named) {
-		if (entries.some(([name]) => name === condition.name)) return condition.name;
-		return undefined;
+		const authoredNames = new Set([
+			condition.name,
+			condition.raw,
+			canonicalPandwindConditionName(condition.name),
+			condition.raw === undefined ? undefined : canonicalPandwindConditionName(condition.raw),
+		]);
+		return entries.find(([name]) => authoredNames.has(name))?.[0];
 	}
 	const authored = condition.value ?? condition.raw ?? condition.name;
 	const expected =
@@ -549,39 +554,53 @@ const conditionCatalogMatch = (
 	return candidates[0]?.[0];
 };
 
+type PandwindConditionResult = {
+	readonly condition?: StyleCondition;
+	readonly residual?: StyleProgram["residuals"][number];
+};
+
 const pandwindCondition = (
 	condition: StyleCondition,
 	entries: readonly [string, string][],
-): StyleCondition | undefined => {
+): PandwindConditionResult => {
 	if (condition.kind === SemanticConditionKindTag.Named && condition.name === "base")
-		return undefined;
+		return {};
 	const authoredName = condition.raw ?? condition.name;
 	const canonicalName = canonicalPandwindConditionName(authoredName);
 	if (
-		condition.raw?.startsWith("_") === true ||
-		(canonicalName !== authoredName && isPandwindConditionName(authoredName))
+		isPandwindConditionName(canonicalName) &&
+		(canonicalName === authoredName || canonicalName !== condition.name)
 	)
-		return { kind: SemanticConditionKindTag.Named, name: canonicalName };
+		return { condition: { kind: SemanticConditionKindTag.Named, name: canonicalName } };
 	if (condition.kind === SemanticConditionKindTag.Selector) {
 		const selectorName = pandwindConditionNameForSelector(condition.value ?? condition.name);
 		if (selectorName !== undefined)
-			return { kind: SemanticConditionKindTag.Named, name: selectorName };
+			return { condition: { kind: SemanticConditionKindTag.Named, name: selectorName } };
 	}
 	const match = conditionCatalogMatch(condition, entries);
-	if (match === undefined) return condition;
-	return { kind: SemanticConditionKindTag.Named, name: match };
+	if (match !== undefined)
+		return { condition: { kind: SemanticConditionKindTag.Named, name: match } };
+	return {
+		residual: {
+			kind: StyleProgramResidualKindTag.Capability,
+			text: condition.raw ?? condition.value ?? condition.name,
+			hint: "condition is not declared by the Pandwind preset or project condition catalog",
+		},
+	};
 };
 
 function normalizePandwindConditions(
 	program: StyleProgram,
 	context: AdapterEmitContext | undefined,
+	onResidual?: (residual: StyleProgram["residuals"][number]) => void,
 ): StyleProgram {
 	const entries = conditionCatalogEntries(context);
 	if (entries.length === 0) return program;
 	const normalize = (conditions: readonly StyleCondition[]): readonly StyleCondition[] =>
 		conditions.flatMap((condition) => {
 			const normalized = pandwindCondition(condition, entries);
-			return normalized === undefined ? [] : [normalized];
+			if (normalized.residual !== undefined) onResidual?.(normalized.residual);
+			return normalized.condition === undefined ? [] : [normalized.condition];
 		});
 	const declaration = (item: StyleProgram["declarations"][number]) => ({
 		...item,
@@ -2250,19 +2269,38 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 					) || rule.children.some(containsFunction)
 				);
 			});
+			const conditionResiduals: Array<StyleProgram["residuals"][number]> = [];
+			const recordConditionResidual = (residual: StyleProgram["residuals"][number]) => {
+				if (
+					conditionResiduals.some(
+						(existing) =>
+							existing.kind === residual.kind &&
+							existing.text === residual.text &&
+							existing.hint === residual.hint,
+					)
+				)
+					return;
+				conditionResiduals.push(residual);
+			};
+			const normalizeOutput = (value: StyleProgram): StyleProgram =>
+				normalizePandwindConditions(
+					preserveKnownPresetTokens(value, context),
+					context,
+					recordConditionResidual,
+				);
 			const outputProgram = normalizePandwindConditions(
 				preserveKnownPresetTokens(program, context),
 				context,
+				recordConditionResidual,
 			);
 			const renderProgramObject = (value: StyleProgram): string =>
-				programObject(
-					normalizePandwindConditions(preserveKnownPresetTokens(value, context), context),
-				);
+				programObject(normalizeOutput(value));
 			const finalize = (emission: {
 				text: string;
 				imports: readonly string[];
 				generatedStatements?: readonly string[];
 				generatedFiles?: readonly AdapterGeneratedFile[];
+				residuals?: readonly StyleProgram["residuals"][number][];
 			}) => ({
 				...useProjectBindings(
 					renameGeneratedCssBinding(emission, cssBinding),
@@ -2276,6 +2314,7 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 				...(emission.generatedFiles === undefined
 					? {}
 					: { generatedFiles: emission.generatedFiles }),
+				residuals: [...conditionResiduals, ...(emission.residuals ?? [])],
 				// The target object syntax is intentionally a projection of the
 				// versioned program. Keep the program attached for validation and
 				// downstream tools so nested conditions, rule kinds, and provenance are
