@@ -369,8 +369,7 @@ describe("custom design-system context resolution", () => {
 		expect(source.code).toMatchInlineSnapshot(`
 			"import { createCss } from "pandwind/css";
 			const css = createCss();
-			const staticClassName1 = css.class({ backgroundColor: "#123456", color: "#123456" });
-			export const App = () => <div className={staticClassName1}/>;"
+			export const App = () => <div className={css.class({ backgroundColor: "#123456", color: "#123456" })}/>;"
 		`);
 	});
 
@@ -440,8 +439,7 @@ describe("custom design-system context resolution", () => {
 		expect(source.code).toMatchInlineSnapshot(`
 			"import { createCss } from "pandwind/css";
 			const css = createCss();
-			const staticClassName1 = css.class({ backgroundColor: "#123456", color: "#123456" });
-			export const App = () => <div className={staticClassName1}/>;"
+			export const App = () => <div className={css.class({ backgroundColor: "#123456", color: "#123456" })}/>;"
 		`);
 	});
 

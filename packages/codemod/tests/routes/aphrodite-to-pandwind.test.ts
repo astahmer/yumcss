@@ -93,8 +93,8 @@ test("aphrodite -> pandwind: carries a documented secondary aphrodite API explic
 		  "changed": true,
 		  "code": "import { createRuntimeCss } from "pandwind/css/runtime";
 		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
-		export const styles = { "fonts": (css.sheet.registerSemanticRules([{ kind: "font-face", declarations: [{ property: "fontFamily", value: "Inter" }, { property: "src", value: "url(inter.woff2)" } ] }]), css.group({  })) };",
+		const runtimeCss = createRuntimeCss(pandwindPreset);
+		export const styles = { "fonts": (runtimeCss.sheet.registerSemanticRules([{ kind: "font-face", declarations: [{ property: "fontFamily", value: "Inter" }, { property: "src", value: "url(inter.woff2)" } ] }]), runtimeCss.group({  })) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [

@@ -94,9 +94,8 @@ describe("UnoCSS official extraction context", () => {
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { createCss } from "pandwind/css";
 			const css = createCss();
-			const staticClassName1 = css.class({ borderWidth: "2px" });
 			const classes = "badge-brand";
-			export const App = () => <div data-x={classes}  className={staticClassName1}/>;"
+			export const App = () => <div data-x={classes}  className={css.class({ borderWidth: "2px" })}/>;"
 		`);
 	});
 
@@ -120,8 +119,7 @@ describe("UnoCSS official extraction context", () => {
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { createCss } from "pandwind/css";
 			const css = createCss();
-			const staticClassName1 = css.class({ backgroundColor: "#123456", "@media (min-width: 48rem)": { "&:hover": { color: "#fff" } } });
-			export const App = () => <div className={staticClassName1}/>;"
+			export const App = () => <div className={css.class({ backgroundColor: "#123456", "@media (min-width: 48rem)": { "&:hover": { color: "#fff" } } })}/>;"
 		`);
 	});
 });

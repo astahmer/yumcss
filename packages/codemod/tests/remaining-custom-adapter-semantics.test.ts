@@ -100,8 +100,10 @@ describe("remaining adapter-owned custom semantics", () => {
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { createRuntimeCss } from "pandwind/css/runtime";
 			import { pandwindPreset } from "pandwind/preset";
-			const css = createRuntimeCss(pandwindPreset);
-			export const theme = (css.sheet.registerSemanticRules([{ kind: "global", selector: ":root", declarations: [{ property: "--brand", value: "#123456" }] }]), { "brand": "var(--brand)" });
+			import { createCss } from "pandwind/css";
+			const css = createCss();
+			const runtimeCss = createRuntimeCss(pandwindPreset);
+			export const theme = (runtimeCss.sheet.registerSemanticRules([{ kind: "global", selector: ":root", declarations: [{ property: "--brand", value: "#123456" }] }]), { "brand": "var(--brand)" });
 			export const card = { "root": css.class({ color: "var(--brand)" }) };"
 		`);
 	});
@@ -151,12 +153,12 @@ describe("remaining adapter-owned custom semantics", () => {
 			"import { createTheme, createThemeContract } from "@vanilla-extract/css";
 			import { createRuntimeCss } from "pandwind/css/runtime";
 			import { pandwindPreset } from "pandwind/preset";
-			const css = createRuntimeCss(pandwindPreset);
+			const runtimeCss = createRuntimeCss(pandwindPreset);
 			export const contract = // pandwind:migrate-skip (route: vanilla-extract -> pandwind | parse-residual: configuration | available: named-map, residual)
 			createThemeContract({ colors: { brand: null } });
 			export const theme = // pandwind:migrate-skip (route: vanilla-extract -> pandwind | parse-residual: configuration | available: named-map, residual)
 			createTheme(contract, { colors: { brand: "#123456" } });
-			export const card = css.class({ color: contract.colors.brand });"
+			export const card = runtimeCss.class({ color: contract.colors.brand });"
 		`);
 	});
 
@@ -200,12 +202,12 @@ describe("remaining adapter-owned custom semantics", () => {
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
 		expect(result.code).toContain("(theme) => theme.colors.brand");
-		expect(result.code).toContain("css.group");
+		expect(result.code).toContain("runtimeCss.group");
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { createRuntimeCss } from "pandwind/css/runtime";
 			import { pandwindPreset } from "pandwind/preset";
-			const css = createRuntimeCss(pandwindPreset);
-			export const useStyles = { "card": css.group({ color: (theme) => theme.colors.brand }) };"
+			const runtimeCss = createRuntimeCss(pandwindPreset);
+			export const useStyles = { "card": runtimeCss.group({ color: (theme) => theme.colors.brand }) };"
 		`);
 	});
 
@@ -270,9 +272,9 @@ describe("remaining adapter-owned custom semantics", () => {
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { createRuntimeCss } from "pandwind/css/runtime";
 			import { pandwindPreset } from "pandwind/preset";
-			const css = createRuntimeCss(pandwindPreset);
+			const runtimeCss = createRuntimeCss(pandwindPreset);
 			import { createTheme } from "treat"; export const theme = // pandwind:migrate-skip (route: treat -> pandwind | parse-residual: configuration | available: named-map, residual)
-			createTheme({ color: "#123456" }); export const card = css.class({ color: theme.color });"
+			createTheme({ color: "#123456" }); export const card = runtimeCss.class({ color: theme.color });"
 		`);
 	});
 

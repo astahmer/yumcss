@@ -427,7 +427,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
 		expect(result.code).toContain('import { createRuntimeCss } from "pandwind/css/runtime";');
-		expect(result.code).toContain("targetCss.sheet.register");
+		expect(result.code).toContain("runtimeCss.sheet.register");
 		expect(result.code).toContain("className=");
 		expect(result.code).not.toContain('from "next-yak"');
 	});
@@ -670,9 +670,9 @@ describe("CSS-in-JS adapter contract v2", () => {
 			"import { createCx } from "pandwind/cx";
 			import { createRuntimeCss } from "pandwind/css/runtime";
 			import { pandwindPreset } from "pandwind/preset";
-			const css = createRuntimeCss(pandwindPreset);
+			const runtimeCss = createRuntimeCss(pandwindPreset);
 			const cx = createCx();
-			const Div = (props) => <div {...props} class={cx((props) => { const style = css.vars({ border: (({ border = 1, color = "gainsboro" }) => \`\${border}px solid \${color}\`)(props), color: "steelblue", fontWeight: (({ bold = false }) => (bold ? "bold" : 100))(props) }); const Component = props.as ?? "div"; const { as: _as, ...rest } = props; const attrs = {}; return <Component {...attrs} {...rest} class={css.props(style, props.class).className} style={{ ...props.style, ...style.style }} />; }, props.class)} />;
+			const Div = (props) => <div {...props} class={cx((props) => { const style = runtimeCss.vars({ border: (({ border = 1, color = "gainsboro" }) => \`\${border}px solid \${color}\`)(props), color: "steelblue", fontWeight: (({ bold = false }) => (bold ? "bold" : 100))(props) }); const Component = props.as ?? "div"; const { as: _as, ...rest } = props; const attrs = {}; return <Component {...attrs} {...rest} class={runtimeCss.props(style, props.class).className} style={{ ...props.style, ...style.style }} />; }, props.class)} />;
 			export const App = () => <Div bold={true} border={1} color="whitesmoke" />;"
 		`);
 	});
@@ -727,8 +727,8 @@ describe("CSS-in-JS adapter contract v2", () => {
 		);
 		expect(result.code).not.toContain("@emotion/css");
 		expect(result.code).toContain('import { createRuntimeCss } from "pandwind/css/runtime";');
-		expect(result.code).toContain("const css = createRuntimeCss(pandwindPreset);");
-		expect(result.code).toContain('css.sheet.registerSemanticRules([{ kind: "keyframes"');
+		expect(result.code).toContain("const runtimeCss = createRuntimeCss(pandwindPreset);");
+		expect(result.code).toContain('runtimeCss.sheet.registerSemanticRules([{ kind: "keyframes"');
 		expect(result.code).toContain('{ kind: "style", selector: "from"');
 	});
 
@@ -1458,7 +1458,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.converted).toBe(1);
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
-		expect(result.code).toContain("css.vars(");
+		expect(result.code).toContain("runtimeCss.vars(");
 		expect(result.code).toContain("createRuntimeCss");
 		expect(
 			result.dependencies.some((dependency) =>
@@ -1467,6 +1467,35 @@ describe("CSS-in-JS adapter contract v2", () => {
 				),
 			),
 		).toBe(true);
+	});
+
+	test("keeps configured static and runtime CSS bindings distinct", () => {
+		const result = runAdapterMigration(
+			'import { css as appCss } from "./pandwind/css";\n' +
+				'import { css } from "next-yak";\n' +
+				'const desktop = "@media (min-width: 992px)";\n' +
+				'const staticClass = appCss.class({ color: "red" });\n' +
+				"export const App = () => <button className={staticClass} css={css`color: red; ${desktop} { color: blue; }`} />;",
+			{
+				from: "next-yak",
+				to: "pandwind",
+				file: "src/App.tsx",
+				mode: "safe",
+				project: {
+					cssModule: "src/pandwind/css.ts",
+					runtimeCssModule: "src/pandwind/runtime.ts",
+					runtimeCssBinding: "runtimeCss",
+				},
+				semantic: { source: { file: "src/App.tsx", framework: "react" } },
+			},
+		);
+
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain('import { css as appCss } from "./pandwind/css";');
+		expect(result.code).toContain('import { runtimeCss } from "./pandwind/runtime";');
+		expect(result.code).not.toContain('import { css } from "./pandwind/runtime";');
+		expect(result.code).not.toContain("const css = createRuntimeCss");
 	});
 
 	test("loads package/config evidence and migrates static tagged templates", () => {
@@ -1941,7 +1970,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(vue.converted).toBe(1);
 		expect(vue.residuals).toEqual([]);
 		expect(vue.code).toContain(
-			"computed(() => css.vars({ color: ((props) => props.color)(attrs) }))",
+			"computed(() => runtimeCss.vars({ color: ((props) => props.color)(attrs) }))",
 		);
 		expect(vue.code).toContain('import { computed, defineComponent, h } from "vue";');
 	});
@@ -1981,7 +2010,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.converted).toBe(2);
 		expect(result.residuals).toEqual([]);
 		expect(result.code).toContain("<Base {...props} class={cx(");
-		expect(result.code).toContain("css.vars({ color:");
+		expect(result.code).toContain("runtimeCss.vars({ color:");
 		expect(result.code).toContain(")(props) });");
 	});
 

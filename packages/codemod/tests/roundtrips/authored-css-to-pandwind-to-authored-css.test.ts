@@ -137,10 +137,12 @@ test("authored-css -> pandwind -> authored-css: retains the documented secondary
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+		    "code": "import { createCss } from "pandwind/css";
+		import { createRuntimeCss } from "pandwind/css/runtime";
 		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
-		export const styles = { "card": css.class({ "@media (prefers-color-scheme: dark)": { color: "white" } }), "pulse": (() => { const name = "pw-kf-pulse"; css.sheet.registerSemanticRules([{ kind: "keyframes", name, children: [{ kind: "style", selector: "from", declarations: [{ property: "opacity", value: "0" }] }, { kind: "style", selector: "to", declarations: [{ property: "opacity", value: "1" }] }] }]); return name; })() };
+		const css = createCss();
+		const runtimeCss = createRuntimeCss(pandwindPreset);
+		export const styles = { "card": css.class({ "@media (prefers-color-scheme: dark)": { color: "white" } }), "pulse": (() => { const name = "pw-kf-pulse"; runtimeCss.sheet.registerSemanticRules([{ kind: "keyframes", name, children: [{ kind: "style", selector: "from", declarations: [{ property: "opacity", value: "0" }] }, { kind: "style", selector: "to", declarations: [{ property: "opacity", value: "1" }] }] }]); return name; })() };
 		export default styles;",
 		    "converted": 2,
 		    "generatedFiles": [],
@@ -197,9 +199,9 @@ test("authored-css -> pandwind -> authored-css: retains the documented secondary
 		import { pandwindPreset } from "pandwind/preset";
 		import { createCss } from "pandwind/css";
 		const css = createCss();
-		const css = createRuntimeCss(pandwindPreset);
+		const runtimeCss = createRuntimeCss(pandwindPreset);
 		export const styles = { "card": css.class({ "@media (prefers-color-scheme: dark)": { "color": "white" } }), "pulse": // pandwind:migrate-skip (route: pandwind -> authored-css | capability-blocked: nesting: keyframes nested rules | available: static, residual)
-		(() => { const name = "pw-kf-pulse"; css.sheet.registerSemanticRules([{ kind: "keyframes", name, children: [{ kind: "style", selector: "from", declarations: [{ property: "opacity", value: "0" }] }, { kind: "style", selector: "to", declarations: [{ property: "opacity", value: "1" }] }] }]); return name; })() };
+		(() => { const name = "pw-kf-pulse"; runtimeCss.sheet.registerSemanticRules([{ kind: "keyframes", name, children: [{ kind: "style", selector: "from", declarations: [{ property: "opacity", value: "0" }] }, { kind: "style", selector: "to", declarations: [{ property: "opacity", value: "1" }] }] }]); return name; })() };
 		export default styles;",
 		    "converted": 1,
 		    "generatedFiles": [],

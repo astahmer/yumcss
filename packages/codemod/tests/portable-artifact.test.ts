@@ -90,9 +90,9 @@ describe("PortableStyleArtifact", () => {
 			]),
 		);
 		expect(dynamicEmission.text).toContain("css.vars");
-		expect(dynamicEmission.imports).toContain(
+		expect(dynamicEmission.imports).toContain('import { createCss } from "pandwind/css";');
+		expect(dynamicEmission.imports).not.toContain(
 			'import { createRuntimeCss } from "pandwind/css/runtime";',
 		);
-		expect(dynamicEmission.imports).not.toContain('import { createCss } from "pandwind/css";');
 	});
 });

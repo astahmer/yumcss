@@ -19,6 +19,11 @@ describe("Pandwind project bootstrap", () => {
 		expect(support.files.map((file) => file.path)).not.toContain("pandwind/tw.ts");
 		expect(support.bindings.twModule).toBeUndefined();
 		expect(support.bindings.cssModule).toBe("pandwind/css.ts");
+		expect(support.bindings.runtimeCssModule).toBe("pandwind/runtime.ts");
+		expect(support.bindings.runtimeCssBinding).toBe("runtimeCss");
+		expect(support.files.find((file) => file.path === "pandwind/runtime.ts")?.content).toContain(
+			"export const runtimeCss = createRuntimeCss(pandwindPreset);",
+		);
 		expect(support.files.map((file) => file.path)).not.toContain("pandwind/dss.ts");
 		expect(support.files.find((file) => file.path === "pandwind/css.ts")?.content).toContain(
 			'import "pandwind:css";',

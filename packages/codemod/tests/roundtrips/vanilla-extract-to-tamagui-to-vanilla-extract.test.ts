@@ -169,9 +169,8 @@ test("vanilla-extract -> tamagui -> vanilla-extract: retains the documented seco
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { View } from "@tamagui/core";
-		import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
+		import { createCss } from "pandwind/css";
+		const css = createCss();
 		css.vars({ "body": { margin: 0 } });",
 		    "converted": 1,
 		    "generatedFiles": [],

@@ -93,8 +93,8 @@ test("vanilla-extract -> pandwind: carries a documented secondary vanilla-extrac
 		  "changed": true,
 		  "code": "import { createRuntimeCss } from "pandwind/css/runtime";
 		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
-		(css.sheet.registerSemanticRules([{ kind: "global", selector: "body", conditions: [], declarations: [{ property: "margin", value: 0 }], children: [] }]), null);",
+		const runtimeCss = createRuntimeCss(pandwindPreset);
+		(runtimeCss.sheet.registerSemanticRules([{ kind: "global", selector: "body", conditions: [], declarations: [{ property: "margin", value: 0 }], children: [] }]), null);",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [

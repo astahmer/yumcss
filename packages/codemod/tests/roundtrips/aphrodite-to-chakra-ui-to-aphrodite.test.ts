@@ -167,9 +167,8 @@ test("aphrodite -> chakra-ui -> aphrodite: retains the documented secondary API 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
+		    "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
 		export const styles = { "fonts": css.vars({ "font-face": { fontFamily: "Inter", src: "url(inter.woff2)" } }) };",
 		    "converted": 1,
 		    "generatedFiles": [],

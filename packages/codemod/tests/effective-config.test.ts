@@ -312,8 +312,7 @@ export const Button = () => <styled.button brandShadow="soft" data-testid="butto
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { createCss } from "pandwind/css";
 			const css = createCss();
-			const staticClassName1 = css.class({ brandShadow: "soft" });
-			export const Button = () => <button data-testid="button" className={staticClassName1} />;"
+			export const Button = () => <button data-testid="button" className={css.class({ brandShadow: "soft" })} />;"
 		`);
 	});
 

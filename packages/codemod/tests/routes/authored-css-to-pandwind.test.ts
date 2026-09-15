@@ -92,10 +92,12 @@ test("authored-css -> pandwind: carries a documented secondary authored-css API 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+		  "code": "import { createCss } from "pandwind/css";
+		import { createRuntimeCss } from "pandwind/css/runtime";
 		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
-		export const styles = { "card": css.class({ "@media (prefers-color-scheme: dark)": { color: "white" } }), "pulse": (() => { const name = "pw-kf-pulse"; css.sheet.registerSemanticRules([{ kind: "keyframes", name, children: [{ kind: "style", selector: "from", declarations: [{ property: "opacity", value: "0" }] }, { kind: "style", selector: "to", declarations: [{ property: "opacity", value: "1" }] }] }]); return name; })() };
+		const css = createCss();
+		const runtimeCss = createRuntimeCss(pandwindPreset);
+		export const styles = { "card": css.class({ "@media (prefers-color-scheme: dark)": { color: "white" } }), "pulse": (() => { const name = "pw-kf-pulse"; runtimeCss.sheet.registerSemanticRules([{ kind: "keyframes", name, children: [{ kind: "style", selector: "from", declarations: [{ property: "opacity", value: "0" }] }, { kind: "style", selector: "to", declarations: [{ property: "opacity", value: "1" }] }] }]); return name; })() };
 		export default styles;",
 		  "converted": 2,
 		  "generatedFiles": [],

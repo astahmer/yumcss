@@ -121,7 +121,7 @@ describe("target adapter emission contract", () => {
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
 		expect(result.code).toContain("export const pulse = (() =>");
-		expect(result.code).toContain("css.sheet.registerSemanticRules");
+		expect(result.code).toContain("runtimeCss.sheet.registerSemanticRules");
 		expect(result.code).toContain("return name; })();");
 		expect(result.code).toContain("export const animationName = pulse;");
 		expect(result.code).not.toContain(']), "pw-kf-pulse")');
@@ -241,7 +241,7 @@ describe("target adapter emission contract", () => {
 
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
-		expect(result.code).toContain('import { createRuntimeCss } from "pandwind/css/runtime";');
+		expect(result.code).toContain('import { createCss } from "pandwind/css";');
 		expect(result.code).toContain("theme.foreground");
 		expect(result.code).toContain("css.vars({");
 		expect(result.outcomes).toMatchObject([
@@ -266,11 +266,10 @@ describe("target adapter emission contract", () => {
 
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
-		expect(result.code).toContain("const css = createRuntimeCss(pandwindPreset);");
+		expect(result.code).toContain("const css = createCss();");
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { createRuntimeCss } from "pandwind/css/runtime";
-			import { pandwindPreset } from "pandwind/preset";
-			const css = createRuntimeCss(pandwindPreset);
+			"import { createCss } from "pandwind/css";
+			const css = createCss();
 			const card = css.vars({ "padding": "0.5em 1em", "color": theme.foreground });"
 		`);
 	});
@@ -803,7 +802,7 @@ describe("target adapter emission contract", () => {
 			{ outcome: "portable-artifact", representation: "portable-artifact" },
 		]);
 		expect(result.loweringPlans[0]?.availableRepresentations).toContain("portable-artifact");
-		expect(result.code).toContain('import { createRuntimeCss } from "pandwind/css/runtime"');
+		expect(result.code).toContain('import { createCss } from "pandwind/css"');
 		expect(result.code).toContain("css.vars({");
 		expect(result.code).toMatch(/["']color["']:\s*theme\.foreground/);
 	});
