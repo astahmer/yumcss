@@ -1,6 +1,7 @@
 import { CodemodCallPatternFormTag } from "../identifiers.ts";
 import {
 	StyleProgramResidualKindTag,
+	StyleDynamicLoweringTag,
 	inferSemanticConditionKind,
 	StyleRuleKindTag,
 	StyleValueKindTag,
@@ -962,6 +963,12 @@ function chakraOfficialValue(
 	context: AdapterParseContext,
 ): StyleValue {
 	const fallback = chakraValue(property, value, context.targetId);
+	if (
+		context.targetId === CodemodAdapterId.Pandwind &&
+		property === "colorPalette" &&
+		value.kind === StyleValueKindTag.Dynamic
+	)
+		return { ...value, lowering: StyleDynamicLoweringTag.StaticOnly };
 	if (
 		context.targetId === CodemodAdapterId.Pandwind &&
 		property === "gridTemplateColumns" &&

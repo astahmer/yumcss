@@ -1,4 +1,4 @@
-import { StyleValueKindTag, SwapResidualKindTag } from "./semantic-ir.ts";
+import { StyleDynamicLoweringTag, StyleValueKindTag, SwapResidualKindTag } from "./semantic-ir.ts";
 import { AdapterCapabilityLevelTag } from "./capabilities.ts";
 import type {
 	AdapterComponentRewriteResult,
@@ -219,6 +219,14 @@ function hasPortableDynamicResiduals(program: import("./semantic-ir.ts").StylePr
 	);
 }
 
+function hasStaticOnlyDynamicValue(program: import("./semantic-ir.ts").StyleProgram): boolean {
+	return StyleProgramAnalysis.declarations(program).some(
+		({ value }) =>
+			value.kind === StyleValueKindTag.Dynamic &&
+			value.lowering === StyleDynamicLoweringTag.StaticOnly,
+	);
+}
+
 /**
  * Give every target a last-resort carrier for hostless dynamic values. Native
  * and target-runtime representations are selected first; this only preserves
@@ -253,6 +261,7 @@ export function projectPortableDynamicMigration(
 					context.hasHostContext ||
 					context.program.source?.subject !== undefined ||
 					context.program.rules.some((rule) => rule.name !== undefined) ||
+					hasStaticOnlyDynamicValue(context.program) ||
 					!hasPortableDynamicValue(context.program) ||
 					!hasPortableDynamicResiduals(context.program)
 				)

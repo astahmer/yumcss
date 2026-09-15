@@ -1,5 +1,6 @@
 import { CodemodCallPatternFormTag } from "../identifiers.ts";
 import {
+	StyleDynamicLoweringTag,
 	StyleProgramResidualKindTag,
 	StyleValueKindTag,
 	inferSemanticConditionKind,
@@ -81,6 +82,8 @@ function pandaSourceValue(
 	property: string,
 	context: import("../adapter-contract.ts").AdapterParseContext,
 ): StyleValue {
+	if (property === "colorPalette" && value.kind === StyleValueKindTag.Dynamic)
+		return { ...value, lowering: StyleDynamicLoweringTag.StaticOnly };
 	if (value.kind !== StyleValueKindTag.Literal || typeof value.value !== "string") return value;
 	const theme = context.config.values.pandaTheme as PandaTheme | undefined;
 	const canonicalProperty = theme?.utilityCatalog.resolveProperty(property) ?? property;

@@ -1,4 +1,8 @@
-import { StyleProgramResidualKindTag, StyleValueKindTag } from "./semantic-ir.ts";
+import {
+	StyleDynamicLoweringTag,
+	StyleProgramResidualKindTag,
+	StyleValueKindTag,
+} from "./semantic-ir.ts";
 import type {
 	AdapterCapabilities,
 	AdapterCapability,
@@ -166,6 +170,17 @@ const dynamicAndThemes: StyleLowering = {
 		const transform = (declaration: StyleDeclaration): StyleDeclaration => {
 			const value = declaration.value;
 			if (value.kind !== StyleValueKindTag.Dynamic) return declaration;
+			if (
+				value.lowering === StyleDynamicLoweringTag.StaticOnly &&
+				!StyleProgramAnalysis.isFiniteStaticExpression(value)
+			) {
+				residuals.push({
+					kind: StyleProgramResidualKindTag.Dynamic,
+					text: value.expression,
+					hint: `${declaration.property} requires a statically known value for this target`,
+				});
+				return declaration;
+			}
 			// A function-valued style is not a scalar runtime value. Replacing it
 			// with a custom property would stringify the function and silently lose
 			// its props/theme evaluation. Only a target-native function carrier or a

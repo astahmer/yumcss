@@ -58,6 +58,10 @@ export class StyleProgramAnalysis {
 		});
 	}
 
+	static isFiniteStaticExpression(value: StyleDynamicValue): boolean {
+		return finiteStaticStyleExpression(value);
+	}
+
 	static hasDynamic(program: StyleProgram): boolean {
 		if (program.rules.length === 0) {
 			return StyleProgramAnalysis.declarations(program).some(

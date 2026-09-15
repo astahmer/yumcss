@@ -170,6 +170,45 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(toPanda.residuals).toEqual([]);
 		expect(toPanda.code).toContain('import { css } from "styled-system/css";');
 		expect(toPanda.code).toContain("css({");
+
+		const dynamicPalette = runAdapterMigration(
+			'import { css } from "styled-system/css";\nconst card = css({ colorPalette: palette });',
+			{
+				from: "panda",
+				to: "pandwind",
+				file: "Palette.tsx",
+				mode: "safe",
+				adapterRegistry: catalog.registry,
+			},
+		);
+		expect(dynamicPalette.skipped).toBe(1);
+		expect(dynamicPalette.residuals).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({
+					kind: "dynamic",
+					hint: "colorPalette requires a statically known value for this target",
+				}),
+			]),
+		);
+		expect(dynamicPalette.code).toContain("colorPalette: palette");
+		expect(dynamicPalette.code).not.toContain("css.vars");
+
+		const conditionalPalette = runAdapterMigration(
+			'import { css } from "styled-system/css";\n' +
+				'const card = css({ colorPalette: enabled ? "blue" : "red" });',
+			{
+				from: "panda",
+				to: "pandwind",
+				file: "ConditionalPalette.tsx",
+				mode: "safe",
+				adapterRegistry: catalog.registry,
+			},
+		);
+		expect(conditionalPalette.skipped).toBe(0);
+		expect(conditionalPalette.residuals).toEqual([]);
+		expect(conditionalPalette.code).toContain("css.class");
+		expect(conditionalPalette.code).toContain('colorPalette: enabled ? "blue" : "red"');
+		expect(conditionalPalette.code).not.toContain("css.vars");
 	});
 
 	test("reports unsupported Panda stylesheet rules by semantic kind", () => {
@@ -2108,8 +2147,17 @@ describe("CSS-in-JS adapter contract v2", () => {
 				'export const App = ({ color }) => <VStack colorPalette={color}><Text color="colorPalette.fg">Label</Text></VStack>;',
 			{ from: "chakra-ui", to: "pandwind", file: "Palette.tsx", mode: "safe" },
 		);
-		expect(palette.residuals).toEqual([]);
-		expect(palette.code).toContain("css.vars({ colorPalette: color");
+		expect(palette.skipped).toBeGreaterThan(0);
+		expect(palette.residuals).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({
+					kind: "dynamic",
+					hint: "colorPalette requires a statically known value for this target",
+				}),
+			]),
+		);
+		expect(palette.code).toContain("colorPalette={color}");
+		expect(palette.code).not.toContain("css.vars({ colorPalette: color");
 		expect(palette.code).toContain('color: "colorPalette.fg"');
 		expect(palette.code).toContain("<p className");
 		expect(palette.code).toContain("</p>");
@@ -2121,6 +2169,16 @@ describe("CSS-in-JS adapter contract v2", () => {
 		);
 		expect(staticPalette.residuals).toEqual([]);
 		expect(staticPalette.code).toContain('css.class({ colorPalette: "blue" })');
+
+		const conditionalPalette = runAdapterMigration(
+			'import { Box } from "@chakra-ui/react";\n' +
+				'export const App = ({ enabled }) => <Box colorPalette={enabled ? "blue" : "red"} />;',
+			{ from: "chakra-ui", to: "pandwind", file: "ConditionalPalette.tsx", mode: "safe" },
+		);
+		expect(conditionalPalette.skipped).toBe(0);
+		expect(conditionalPalette.residuals).toEqual([]);
+		expect(conditionalPalette.code).toContain('colorPalette: enabled ? "blue" : "red"');
+		expect(conditionalPalette.code).not.toContain("css.vars");
 
 		const mui = runAdapterMigration(
 			'import { Box } from "@mui/material";\nexport const App = () => <Box sx={{ m: 2, p: 1, color: "red" }} />;',

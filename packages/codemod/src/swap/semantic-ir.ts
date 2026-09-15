@@ -66,6 +66,7 @@ type StyleDynamicKind = `${StyleValueKindTag.Dynamic}`;
 export const enum StyleDynamicLoweringTag {
 	Runtime = "runtime",
 	CustomProperty = "custom-property",
+	StaticOnly = "static-only",
 	Residual = "residual",
 }
 
