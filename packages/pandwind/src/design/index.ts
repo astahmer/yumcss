@@ -1,10 +1,10 @@
-import { createUnsafeCss, type CreateCssOptions, type CssFn } from "../unsafe/css.ts";
+import { createCss, type CreateCssOptions, type CssFn } from "../css/create-css.ts";
 import { ATOM_REGISTRY, type AtomRegistry } from "../css/atoms.ts";
 import { attachCssFactoryMetadata, CssFactoryKind } from "../css/factory-metadata.ts";
 import { assign } from "../lib/utils.ts";
-import type { StyleObject } from "../types/typings.ts";
+import type { DynamicStyleObject, StyleObject } from "../types/typings.ts";
 import { resolveDesignStyle } from "./resolve.ts";
-import type { DesignPreset, DesignStyleObject } from "./types.ts";
+import type { DesignDynamicStyleObject, DesignPreset, DesignStyleObject } from "./types.ts";
 
 /**
  * Intent-oriented CSS factory and style types for `pandwind/design`.
@@ -57,11 +57,8 @@ type Maybe<T> = T | undefined | null | false;
 export const createDesignCss = <TPreset extends DesignPreset>(
 	preset: TPreset,
 	options: CreateCssOptions = {},
-): CssFn<DesignStyleObject<TPreset>> => {
-	const engine = createUnsafeCss({
-		...options,
-		conditions: preset.conditions,
-	}) as CssFn<StyleObject>;
+): CssFn<DesignStyleObject<TPreset>, DesignDynamicStyleObject<TPreset>> => {
+	const engine = createCss(preset, options) as unknown as CssFn<StyleObject, DynamicStyleObject>;
 	type Design = DesignStyleObject<TPreset>;
 
 	const resolve = (style: Design): StyleObject =>
@@ -114,7 +111,7 @@ export const createDesignCss = <TPreset extends DesignPreset>(
 		options,
 	});
 
-	return dss as CssFn<Design>;
+	return dss as CssFn<Design, DesignDynamicStyleObject<TPreset>>;
 };
 
-export type { DesignPreset, DesignStyleObject } from "./types.ts";
+export type { DesignDynamicStyleObject, DesignPreset, DesignStyleObject } from "./types.ts";

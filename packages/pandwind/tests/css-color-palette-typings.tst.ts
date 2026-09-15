@@ -1,5 +1,7 @@
 import { expect, test } from "tstyche";
-import { createCss } from "../src/css/create-css.ts";
+import { createCss, createUnsafeCss } from "../src/css/create-css.ts";
+import { createRuntimeCss, createRuntimeDesignCss } from "../src/css/runtime.ts";
+import { createDesignCss } from "../src/design/index.ts";
 import { define } from "../src/preset/index.ts";
 
 const tokens = define.tokens({
@@ -28,6 +30,25 @@ const preset = define.preset(
 
 const css = createCss(preset);
 
+const noPalettePreset = define.preset(
+	{ config: {}, tokens },
+	{
+		strict: true,
+		conditions: { base: "" },
+		properties: define.properties({ $all: true }),
+	},
+);
+
+const noPaletteCss = createCss(noPalettePreset);
+const noPaletteDesignCss = createDesignCss(noPalettePreset);
+const noPaletteRuntimeCss = createRuntimeCss(noPalettePreset, {
+	sheetOptions: { autoMount: false },
+});
+const noPaletteRuntimeDesignCss = createRuntimeDesignCss(noPalettePreset, {
+	sheetOptions: { autoMount: false },
+});
+const unsafeCss = createUnsafeCss();
+
 test("color palettes expose only declared palette and virtual token names", () => {
 	expect(css.class({ colorPalette: "brand", color: "colorPalette.solid" })).type.toBe<string>();
 
@@ -54,4 +75,77 @@ test("color palette sources are checked against the preset color tokens", () => 
 			solid: "colors.missing",
 		},
 	});
+});
+
+test("preset-bound surfaces reserve colorPalette without configured palettes", () => {
+	noPaletteCss({
+		// @ts-expect-error not assignable
+		colorPalette: "brand",
+	});
+	noPaletteCss.class({
+		// @ts-expect-error not assignable
+		colorPalette: "brand",
+	});
+	noPaletteCss.vars({
+		// @ts-expect-error not assignable
+		colorPalette: "brand",
+	});
+	noPaletteCss.raw({
+		// @ts-expect-error not assignable
+		colorPalette: "brand",
+	});
+	noPaletteCss.group({
+		card: {
+			// @ts-expect-error not assignable
+			colorPalette: "brand",
+		},
+	});
+	noPaletteCss.class({
+		_dark: {
+			// @ts-expect-error may only specify known properties
+			colorPalette: "brand",
+		},
+	});
+	noPaletteDesignCss.raw({
+		$raw: {
+			// @ts-expect-error not assignable
+			colorPalette: "brand",
+		},
+	});
+	noPaletteDesignCss.raw({
+		$raw: {
+			// @ts-expect-error not assignable
+			_dark: {
+				colorPalette: "brand",
+			},
+		},
+	});
+	noPaletteDesignCss.vars({
+		$raw: {
+			// @ts-expect-error not assignable
+			colorPalette: "brand",
+		},
+	});
+	noPaletteRuntimeCss.class({
+		// @ts-expect-error not assignable
+		colorPalette: "brand",
+	});
+	noPaletteRuntimeCss.vars({
+		// @ts-expect-error not assignable
+		colorPalette: "brand",
+	});
+	noPaletteRuntimeCss.raw({
+		// @ts-expect-error not assignable
+		colorPalette: "brand",
+	});
+	noPaletteRuntimeDesignCss.raw({
+		$raw: {
+			// @ts-expect-error not assignable
+			colorPalette: "brand",
+		},
+	});
+});
+
+test("unsafe CSS keeps the intentionally open palette escape hatch", () => {
+	expect(unsafeCss.class({ colorPalette: "brand" })).type.toBe<string>();
 });

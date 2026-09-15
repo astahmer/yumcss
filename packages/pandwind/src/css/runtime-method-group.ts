@@ -45,7 +45,7 @@ export const attachGroup: RuntimeCssAttachment = (css, context) => {
 					else if (inputProperties.get(inputName) !== property)
 						inputProperties.set(inputName, undefined);
 				}
-				compiled[key] = context.backend.declare(
+				compiled[key] = context.declare(
 					key,
 					inputName === undefined ? value : `var(${cssVar(inputName)})`,
 				);

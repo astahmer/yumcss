@@ -5,6 +5,7 @@ import type {
 	DefinePresetOptions,
 	DynamicStyleObject,
 	StyleObject,
+	TypedDynamicStyleObject,
 	TypedStyleObject,
 } from "../types/typings.ts";
 import {
@@ -25,6 +26,7 @@ import { attachRaw } from "./runtime-method-raw.ts";
 import { attachVars } from "./runtime-method-vars.ts";
 import type { ClassNameStrategy } from "./class-name-strategy.ts";
 import type { VarsOutput } from "./var-compiler.ts";
+import { validateColorPaletteValue } from "./color-palette-validation.ts";
 
 export type { ClassNameStrategy };
 export type { CreateCssOptions } from "./runtime-base.ts";
@@ -76,14 +78,22 @@ const ALL_RUNTIME_METHODS = [
 export function createCss<TPreset extends TypedPreset>(
 	preset: TPreset,
 	options?: CreateCssOptions,
-): CssFn<TypedStyleObject<TPreset["_config"], TPreset["tokens"], TPreset>>;
+): CssFn<
+	TypedStyleObject<TPreset["_config"], TPreset["tokens"], TPreset>,
+	TypedDynamicStyleObject<TPreset>
+>;
 export function createCss(preset: TypedPreset, options: CreateCssOptions = {}): CssFn<StyleObject> {
 	if (!isPreset(preset)) {
 		throw new Error(
 			'pandwind/css: createCss requires a preset. For unbound or runtime-discovered styles, import createUnsafeCss from "pandwind/unsafe/css".',
 		);
 	}
-	return createCssRuntime(preset, options, ALL_RUNTIME_METHODS) as unknown as CssFn<StyleObject>;
+	return createCssRuntime(
+		preset,
+		options,
+		ALL_RUNTIME_METHODS,
+		validateColorPaletteValue,
+	) as unknown as CssFn<StyleObject>;
 }
 
 /**
@@ -122,7 +132,10 @@ type PropsInput =
  * @category styling
  * @since 0.1.0
  */
-export interface CssFn<TStyles extends StyleObject = StyleObject> {
+export interface CssFn<
+	TStyles extends StyleObject = StyleObject,
+	TDynamicStyles = DynamicStyleObject,
+> {
 	/**
 	 * Compose authored style objects into an atomic declaration map.
 	 * Later objects win through ordinary object-key precedence. Use `.class`
@@ -161,7 +174,7 @@ export interface CssFn<TStyles extends StyleObject = StyleObject> {
 	 * const props = css.props(css.vars({ color: tone }));
 	 * ```
 	 */
-	vars: (...styles: Array<TStyles | DynamicStyleObject>) => VarsOutput;
+	vars: (...styles: Array<TStyles | TDynamicStyles>) => VarsOutput;
 	/**
 	 * Merge style objects without compiling them.
 	 * This is useful when a stylesheet consumer or adapter needs the resolved

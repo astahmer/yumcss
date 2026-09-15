@@ -7,7 +7,7 @@ import type {
 	StyleObject,
 	TypedStyleObject,
 } from "../types/typings.ts";
-import { createCssBackend, type CssBackendOptions } from "../backends/css.ts";
+import { createCssBackend, cssPropertyFromKey, type CssBackendOptions } from "../backends/css.ts";
 import { ATOM_REGISTRY, type AtomRegistry } from "./atoms.ts";
 import { createTokenResolver } from "./tokens.ts";
 import { isSafeCssValue } from "./value-normalization.ts";
@@ -21,6 +21,7 @@ import { isSafeCssValue } from "./value-normalization.ts";
 export interface CreateCssOptions extends CssBackendOptions {}
 
 type TypedPreset = CssConfigReturn<DefinePresetOptions<AnyCssConfig, AnyTokens>>;
+type RuntimeStyleValidator = (preset: TypedPreset, value: unknown) => void;
 
 /** Atomic declaration names mapped to emitted class names. */
 export type CompiledStyles = Record<string, string>;
@@ -66,6 +67,8 @@ export interface RuntimeCssContext {
 	readonly backendOptions: CreateCssOptions;
 	readonly backend: ReturnType<typeof createCssBackend>;
 	readonly atoms: AtomRegistry;
+	readonly declare: (key: string, value: string | number) => string;
+	readonly validate: (key: string, value: unknown) => void;
 	readonly compileStyles: (...styles: Array<StyleObject>) => CompiledStyles;
 	readonly compileClass: (...styles: Array<StyleObject>) => string;
 	readonly flatten: (style: StyleObject) => FlatStyles;
@@ -120,6 +123,7 @@ export function createCssRuntime(
 	presetOrOptions: CreateCssOptions | TypedPreset = {},
 	options: CreateCssOptions = {},
 	attachments: readonly RuntimeCssAttachment[] = [],
+	validateValue?: RuntimeStyleValidator,
 ): RuntimeCssFunction {
 	const preset = isPreset(presetOrOptions) ? presetOrOptions : undefined;
 	const backendOptions = isPreset(presetOrOptions)
@@ -131,13 +135,20 @@ export function createCssRuntime(
 			: createRuntimeValueResolver(preset, Boolean(backendOptions.debug));
 	const backend = createCssBackend(backendOptions);
 	const atoms = backend.atoms;
-
+	const validate = (key: string, value: unknown): void => {
+		if (preset === undefined || validateValue === undefined) return;
+		if (cssPropertyFromKey(key, preset.conditions) === "colorPalette") validateValue(preset, value);
+	};
+	const declare = (key: string, value: string | number): string => {
+		validate(key, value);
+		return backend.declare(key, value);
+	};
 	const compileStyles = (...styles: Array<StyleObject>): CompiledStyles => {
 		if (styles.length === 1 && isFlatStyle(styles[0])) {
 			const compiled = Object.create(null) as CompiledStyles;
 			for (const key of Object.keys(styles[0])) {
 				const value = styles[0][key];
-				if (isSafeCssValue(value)) compiled[key] = backend.declare(key, value);
+				if (isSafeCssValue(value)) compiled[key] = declare(key, value);
 			}
 			Object.defineProperty(compiled, "$$css", { value: true, enumerable: false });
 			return compiled;
@@ -152,7 +163,7 @@ export function createCssRuntime(
 		const compiled = Object.create(null) as CompiledStyles;
 		for (const key of Object.keys(flat)) {
 			const value = flat[key];
-			if (isSafeCssValue(value)) compiled[key] = backend.declare(key, value);
+			if (isSafeCssValue(value)) compiled[key] = declare(key, value);
 		}
 		Object.defineProperty(compiled, "$$css", { value: true, enumerable: false });
 		return compiled;
@@ -164,7 +175,7 @@ export function createCssRuntime(
 				const value = styles[0][key];
 				if (!isSafeCssValue(value)) continue;
 				if (className) className += " ";
-				className += backend.declare(key, value);
+				className += declare(key, value);
 			}
 			return className;
 		}
@@ -181,6 +192,8 @@ export function createCssRuntime(
 		backendOptions,
 		backend,
 		atoms,
+		declare,
+		validate,
 		compileStyles,
 		compileClass,
 		flatten: (style) => flattenStyle(style, true),

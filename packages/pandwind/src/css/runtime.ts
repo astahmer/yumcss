@@ -23,13 +23,20 @@ export { RuntimeSemanticRuleKindTag } from "./runtime-sheet-contracts.ts";
 import type { VarAtom } from "./var-compiler.ts";
 import { VARS_ATOMS } from "./vars-carrier.ts";
 import type { ClassNameStrategy } from "./class-name-strategy.ts";
-import { createDesignCss, type DesignPreset, type DesignStyleObject } from "../design/index.ts";
+import {
+	createDesignCss,
+	type DesignDynamicStyleObject,
+	type DesignPreset,
+	type DesignStyleObject,
+} from "../design/index.ts";
 import type {
 	AnyCssConfig,
 	AnyTokens,
 	CssConfigReturn,
 	DefinePresetOptions,
+	DynamicStyleObject,
 	StyleObject,
+	TypedDynamicStyleObject,
 	TypedStyleObject,
 } from "../types/typings.ts";
 
@@ -51,19 +58,46 @@ export interface RuntimeCssOptions extends CreateCssOptions {
 	readonly sheetOptions?: RuntimeSheetOptions;
 }
 
+type OpenRuntimeStyleValue =
+	| string
+	| number
+	| null
+	| undefined
+	| OpenRuntimeStyleObject
+	| readonly OpenRuntimeStyleValue[];
+type OpenRuntimeStyleObject = {
+	readonly [property: string]: OpenRuntimeStyleValue;
+} & { readonly colorPalette?: never };
+type OpenRuntimeDynamicStyleValue =
+	| string
+	| number
+	| boolean
+	| null
+	| undefined
+	| OpenRuntimeDynamicStyleObject
+	| readonly OpenRuntimeDynamicStyleValue[];
+type OpenRuntimeDynamicStyleObject = {
+	readonly [property: string]: OpenRuntimeDynamicStyleValue;
+} & { readonly colorPalette?: never };
+
 /**
  * Complete runtime CSS surface, including its attached stylesheet.
  *
  * Runtime styles can use the preset-aware surface as well as the open
- * `StyleObject` overload used by migration output and runtime-discovered
- * values.
+ * non-palette `StyleObject` overload used by migration output and
+ * runtime-discovered values.
  *
  * @typeParam TStyles - The style-object type accepted by the callable surface.
  * @category runtime
  * @since 0.1.0
  */
-export type RuntimeCssFn<TStyles extends StyleObject = StyleObject> = CssFn<TStyles> &
-	CssFn<StyleObject> & {
+export type RuntimeCssFn<
+	TStyles extends StyleObject = StyleObject,
+	TDynamicStyles = DynamicStyleObject,
+	TOpenStyles extends StyleObject = OpenRuntimeStyleObject,
+	TOpenDynamicStyles = OpenRuntimeDynamicStyleObject,
+> = CssFn<TStyles, TDynamicStyles> &
+	CssFn<TOpenStyles, TOpenDynamicStyles> & {
 		readonly sheet: RuntimeSheet;
 	};
 
@@ -252,7 +286,10 @@ export function createRuntimeCss<
 >(
 	preset: TPreset,
 	options: RuntimeCssOptions = {},
-): RuntimeCssFn<TypedStyleObject<TPreset["_config"], TPreset["tokens"], TPreset>> {
+): RuntimeCssFn<
+	TypedStyleObject<TPreset["_config"], TPreset["tokens"], TPreset>,
+	TypedDynamicStyleObject<TPreset>
+> {
 	const runtime = runtimeOptions(preset, options);
 	const css = createCss(preset, runtime.cssOptions) as CssFn<
 		TypedStyleObject<TPreset["_config"], TPreset["tokens"], TPreset>
@@ -260,7 +297,8 @@ export function createRuntimeCss<
 	runtime.registerVars(css as unknown as CssFn<StyleObject>);
 	const flushed = withRuntimeFlush(css as unknown as CssFn<StyleObject>, runtime);
 	return Object.assign(flushed, { sheet: runtime.sheet }) as RuntimeCssFn<
-		TypedStyleObject<TPreset["_config"], TPreset["tokens"], TPreset>
+		TypedStyleObject<TPreset["_config"], TPreset["tokens"], TPreset>,
+		TypedDynamicStyleObject<TPreset>
 	>;
 }
 
@@ -290,13 +328,21 @@ export function createRuntimeCss<
 export function createRuntimeDesignCss<TPreset extends DesignPreset>(
 	preset: TPreset,
 	options: RuntimeCssOptions = {},
-): RuntimeCssFn<DesignStyleObject<TPreset>> {
+): RuntimeCssFn<
+	DesignStyleObject<TPreset>,
+	DesignDynamicStyleObject<TPreset>,
+	DesignStyleObject<TPreset>,
+	DesignDynamicStyleObject<TPreset>
+> {
 	const runtime = runtimeOptions(preset, options);
 	const dss = createDesignCss(preset, runtime.cssOptions) as CssFn<DesignStyleObject<TPreset>>;
 	runtime.registerVars(dss as unknown as CssFn<StyleObject>);
 	const flushed = withRuntimeFlush(dss as unknown as CssFn<StyleObject>, runtime);
 	return Object.assign(flushed, { sheet: runtime.sheet }) as RuntimeCssFn<
-		DesignStyleObject<TPreset>
+		DesignStyleObject<TPreset>,
+		DesignDynamicStyleObject<TPreset>,
+		DesignStyleObject<TPreset>,
+		DesignDynamicStyleObject<TPreset>
 	>;
 }
 

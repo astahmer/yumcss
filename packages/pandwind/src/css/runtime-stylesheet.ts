@@ -15,6 +15,10 @@ import {
 	resolveRuntimeTokenAliasValue,
 	resolveRuntimeTokenValue,
 } from "./runtime-token-maps.ts";
+import {
+	assertColorPaletteResolved,
+	assertColorPaletteConfigured,
+} from "./color-palette-validation.ts";
 import { buildRuntimeColorPaletteMaps } from "./runtime-color-palettes.ts";
 import { isSafeCssValue, normalizeCssValue } from "./value-normalization.ts";
 import {
@@ -169,7 +173,10 @@ export const createRuntimeStylesheet = (
 		const property = cssPropertyFromKey(atomic.prop, preset.conditions);
 		if (property === "colorPalette") {
 			const assignments = colorPaletteMaps?.palettes.get(normalizedValue);
-			if (assignments === undefined) return;
+			if (assignments === undefined || assignments.length === 0) {
+				assertColorPaletteResolved(preset, normalizedValue, false);
+				return;
+			}
 			const declaration = assignments
 				.map((assignment) => cssVar.declaration(assignment.cssVar, assignment.value))
 				.join("");
@@ -231,6 +238,12 @@ export const createRuntimeStylesheet = (
 
 		// The canonical key always stores conditions before the property.
 		const prop = dashCase(cssPropertyFromKey(propPart, preset.conditions));
+		if (prop === "color-palette") {
+			assertColorPaletteConfigured(preset);
+			throw new Error(
+				"pandwind: colorPalette is a static palette selector and cannot be used with css.vars.",
+			);
+		}
 		const condParts = orderedConditions.map(varConditionPart);
 		let declaration = `var(--${namespace}-c-${prop})`;
 		for (let i = 1; i <= condParts.length; i++) {

@@ -3,10 +3,11 @@ import type { CssConfigReturn } from "../../src/types/typings.ts";
 
 const preset = {
 	conditions: {},
-	properties: {},
+	properties: { $all: true },
 	strict: true,
 	tokens: {},
-} as CssConfigReturn;
+	_config: {},
+} satisfies CssConfigReturn;
 
 const css = createRuntimeCss(preset);
 

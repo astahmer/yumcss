@@ -126,6 +126,10 @@ test("an open preset config keeps arbitrary CSS properties typed", () => {
 	);
 	const generated = createCss(preset);
 	expect(generated.class({ backgroundColor: "var(--brand)", color: "white" })).type.toBe<string>();
+	generated.class({
+		// @ts-expect-error not assignable
+		colorPalette: "brand",
+	});
 });
 
 test("semantic token references are checked against the supplied catalog", () => {

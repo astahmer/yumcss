@@ -1,8 +1,11 @@
 import { expect, test } from "vitest";
-import { createCss } from "../src/css/create-css.ts";
+import { createCss, createUnsafeCss } from "../src/css/create-css.ts";
 import { createStylesheet } from "../src/css/create-stylesheet.ts";
-import { createRuntimeCss } from "../src/css/runtime.ts";
+import { createRuntimeCss, createRuntimeDesignCss } from "../src/css/runtime.ts";
+import { createRuntimeStylesheet } from "../src/css/runtime-stylesheet.ts";
+import { createDesignCss } from "../src/design/index.ts";
 import { define } from "../src/preset/index.ts";
+import type { StyleObject } from "../src/types/typings.ts";
 
 const tokens = define.tokens({
 	colors: {
@@ -43,6 +46,15 @@ const explicitColorPreset = define.preset(
 			backgroundColor: tokens.colors,
 		},
 		colorPalettes,
+	},
+);
+
+const noPalettePreset = define.preset(
+	{ config: {}, tokens },
+	{
+		strict: true,
+		conditions: { base: "" },
+		properties: define.properties({ $all: true }),
 	},
 );
 
@@ -136,6 +148,57 @@ test("palette colors resolve with explicit color property maps", () => {
 	expect(output).toContain("background-color:var(--");
 	expect(output).toContain("color:var(--");
 	expect(output).not.toContain("background-color:colorPalette.contrast");
+});
+
+test("preset-bound CSS rejects undeclared palette assignments before atom registration", () => {
+	const css = createCss(noPalettePreset);
+	const invalidStyle: StyleObject = { colorPalette: "brand" };
+
+	for (const method of [css, css.class, css.vars, css.raw]) {
+		expect(() => Reflect.apply(method, css, [invalidStyle])).toThrow(/colorPalette.*colorPalettes/);
+	}
+	expect(() => Reflect.apply(css.group, css, [{ card: invalidStyle }])).toThrow(
+		/colorPalette.*colorPalettes/,
+	);
+
+	const designCss = createDesignCss(noPalettePreset);
+	const designStyle = { $raw: invalidStyle };
+	expect(() => Reflect.apply(designCss.class, designCss, [designStyle])).toThrow(
+		/colorPalette.*colorPalettes/,
+	);
+	const runtimeDesignCss = createRuntimeDesignCss(noPalettePreset, {
+		sheetOptions: { autoMount: false },
+	});
+	expect(() => Reflect.apply(runtimeDesignCss.class, runtimeDesignCss, [designStyle])).toThrow(
+		/colorPalette.*colorPalettes/,
+	);
+
+	const unsafeCss = createUnsafeCss();
+	expect(unsafeCss.class(invalidStyle)).toMatch(/\S/);
+});
+
+test("static stylesheet extraction reports an unresolved palette instead of dropping its rule", () => {
+	const stylesheet = createStylesheet(noPalettePreset, { debug: true });
+
+	expect(() => stylesheet.generate([{ colorPalette: "brand" }])).toThrow(
+		/colorPalette.*colorPalettes/,
+	);
+	expect(() => stylesheet.processVarKey("colorPalette")).toThrow(/colorPalette.*colorPalettes/);
+});
+
+test("runtime stylesheet extraction reports an unresolved palette", () => {
+	const css = createRuntimeCss(noPalettePreset, { sheetOptions: { autoMount: false } });
+
+	expect(() => Reflect.apply(css.class, css, [{ colorPalette: "brand" }])).toThrow(
+		/colorPalette.*colorPalettes/,
+	);
+	const stylesheet = createRuntimeStylesheet(noPalettePreset);
+	expect(() => stylesheet.processPrepared([{ key: "colorPalette", value: "brand" }])).toThrow(
+		/colorPalette.*colorPalettes/,
+	);
+	expect(() => stylesheet.processVarKey("colorPalette")).toThrow(/colorPalette.*colorPalettes/);
+	const output = css.sheet.css();
+	expect(output).not.toContain("colorPalette");
 });
 
 test("token composers remain non-enumerable and compose immutable catalogs", () => {

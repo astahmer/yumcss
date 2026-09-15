@@ -112,7 +112,7 @@ type PropConfigValues<
  * @since 0.1.0
  */
 export type AnyPresetProperties<TConfig extends object, TTokens> = {
-	[PropName in keyof TConfig]?: PropConfigValues<
+	[PropName in Exclude<keyof TConfig, "colorPalette">]?: PropConfigValues<
 		TConfig,
 		PropName,
 		CssValuesOf<TConfig, PropName>,
@@ -324,11 +324,13 @@ type ExplicitTokenNames<Value> = Extract<
 	AuthoredValueName
 >;
 
-type ColorPaletteConfig<TPreset> = NonNullable<
-	TPreset extends { colorPalettes?: infer TColorPalettes } ? TColorPalettes : never
->;
+type ColorPaletteConfig<TPreset> = TPreset extends { colorPalettes: infer TColorPalettes }
+	? NonNullable<TColorPalettes>
+	: never;
 
-type ColorPaletteNames<TPreset> = Extract<keyof ColorPaletteConfig<TPreset>, string>;
+type ColorPaletteNames<TPreset> = [ColorPaletteConfig<TPreset>] extends [never]
+	? never
+	: Extract<keyof ColorPaletteConfig<TPreset>, string>;
 
 type ColorPaletteSuffixes<
 	TTokens extends AnyTokens,
@@ -363,6 +365,44 @@ type ColorPaletteValue<
 	TTokens extends AnyTokens,
 	TPreset,
 > = TName extends ColorPropertyName ? ColorPaletteVirtualNames<TTokens, TPreset> : never;
+
+type ColorPaletteReference<TPreset> = [ColorPaletteNames<TPreset>] extends [never]
+	? never
+	:
+			| ColorPaletteNames<TPreset>
+			| {
+					readonly [condition: string]: ColorPaletteReference<TPreset>;
+			  };
+
+type TypedRawStyleValue<TPreset extends CssPreset> =
+	| string
+	| number
+	| null
+	| undefined
+	| TypedRawStyleObject<TPreset>
+	| readonly TypedRawStyleValue<TPreset>[];
+
+/** Raw CSS style objects with preset palette assignments checked when present. */
+export type TypedRawStyleObject<TPreset extends CssPreset> = {
+	readonly [property: string]: TypedRawStyleValue<TPreset>;
+	readonly colorPalette?: ColorPaletteReference<TPreset>;
+};
+
+type TypedDynamicStyleValue<TPreset extends CssPreset> =
+	| string
+	| number
+	| boolean
+	| null
+	| undefined
+	| TypedDynamicStyleObject<TPreset>
+	| readonly TypedDynamicStyleValue<TPreset>[];
+
+/** Dynamic style objects with preset palette assignments checked when present. */
+export type TypedDynamicStyleObject<TPreset extends CssPreset> = {
+	readonly [property: string]: TypedDynamicStyleValue<TPreset>;
+} & {
+	readonly colorPalette?: ColorPaletteReference<TPreset>;
+};
 
 type InferPropValues<TTokens extends AnyTokens, Value> = Value extends {
 	$tokens: infer TTokenName;
@@ -462,12 +502,15 @@ export type TypedStyleObject<
 	TPreset extends CssPreset<TConfig>,
 	TConds extends string = ThemeConds<TConfig, TPreset>,
 	TAll = TPreset["properties"] extends { $all: true } ? true : false,
-	TList extends string = Exclude<Extract<keyof TPreset["properties"], string>, "$all">,
+	TList extends string = Exclude<
+		Extract<keyof TPreset["properties"], string>,
+		"$all" | "colorPalette"
+	>,
 	TPaletteList extends string = [ColorPaletteNames<TPreset>] extends [never]
 		? never
 		: "colorPalette",
 	TPropList extends string = TAll extends true
-		? ConfigPropertyNames<TConfig> | TList | TPaletteList
+		? Exclude<ConfigPropertyNames<TConfig>, "colorPalette"> | TList | TPaletteList
 		: TList | TPaletteList,
 > = Nested<
 	{
@@ -490,6 +533,10 @@ export type TypedStyleObject<
 				: "Not a part of the `TConfig` interface" & {
 						_error: typeof ErrorSymbol;
 					};
+	} & {
+		colorPalette?: [ColorPaletteNames<TPreset>] extends [never]
+			? never
+			: ConditionalValue<ColorPaletteNames<TPreset>, TConds>;
 	},
 	TConds
 >;

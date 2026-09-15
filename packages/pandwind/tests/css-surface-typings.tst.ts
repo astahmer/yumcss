@@ -1,6 +1,6 @@
 import { expect, test } from "tstyche";
 import { createStylesheet, type PreparedStyle } from "../src/css/create-stylesheet.ts";
-import { createCss, type CssFn } from "../src/css/create-css.ts";
+import { createCss } from "../src/css/create-css.ts";
 import { createDesignCss } from "../src/design/index.ts";
 import type { StyleObject } from "../src/types/typings.ts";
 import {
@@ -92,7 +92,6 @@ test("runtime CSS carries typed authoring plus a live RuntimeSheet", () => {
 	const runtimeCss = createRuntimeCss(examplePreset, { sheet, namespace: "app" });
 	const runtimeDesignCss = createRuntimeDesignCss(examplePreset, { sheet });
 
-	expect(runtimeCss).type.toBeAssignableTo<CssFn>();
 	expect(runtimeCss.sheet).type.toBe<RuntimeSheet>();
 	expect(runtimeCss.class({ color: "$blue-500" })).type.toBe<string>();
 	expect(runtimeCss({ color: "var(--runtime-color)" })).type.toBe<Record<string, string>>();

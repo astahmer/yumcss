@@ -4,8 +4,10 @@ import type {
 	AnyTokens,
 	CssConfigReturn,
 	DefinePresetOptions,
-	StyleObject,
+	DynamicStyleObject,
 	TokenGroup,
+	TypedDynamicStyleObject,
+	TypedRawStyleObject,
 } from "../types/typings.ts";
 
 /* ---------------------------------------------------------------------------
@@ -216,6 +218,12 @@ interface TextProps<TTokens extends AnyTokens> {
  */
 export type DesignPreset = CssConfigReturn<DefinePresetOptions<AnyCssConfig, AnyTokens>>;
 
+/** Dynamic design styles keep raw CSS and palette assignments preset-aware. */
+export type DesignDynamicStyleObject<TPreset extends DesignPreset> = DynamicStyleObject &
+	Pick<TypedDynamicStyleObject<TPreset>, "colorPalette"> & {
+		readonly $raw?: TypedRawStyleObject<TPreset>;
+	};
+
 /**
  * Design style object with `$frame`, `$layout`, `$text`, and `$raw` modules.
  *
@@ -246,7 +254,7 @@ export type DesignStyleObject<TPreset extends DesignPreset> = {
 	/** The type: font, size, weight, color, case, decoration, truncate ... */
 	$text?: TextProps<TPreset["tokens"]>;
 	/** Raw CSS escape hatch — passed through verbatim. */
-	$raw?: StyleObject;
+	$raw?: TypedRawStyleObject<TPreset>;
 } & {
 	[K in keyof TPreset["conditions"] | AnySelector]?: DesignStyleObject<TPreset>;
 };

@@ -15,6 +15,7 @@ export const attachVars: RuntimeCssAttachment = (css, context) => {
 	);
 	css.vars = (...styles: Array<StyleObject>): VarsOutput => {
 		const flat = context.flatten(context.assign(...styles));
+		for (const key of Object.keys(flat)) context.validate(key, flat[key]);
 		const { atoms, style } = compiler.encode(flat);
 		const output: VarsOutput = {
 			class: atoms.map((atom) => atom.cls).join(" "),

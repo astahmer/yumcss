@@ -17,6 +17,10 @@ import {
 	tokenDependencyPaths,
 } from "./tokens.ts";
 import { buildColorPaletteMaps } from "./color-palettes.ts";
+import {
+	assertColorPaletteConfigured,
+	assertColorPaletteResolved,
+} from "./color-palette-validation.ts";
 import { isSelfSelector } from "./stylesheet-lowering.ts";
 import { decorateCascadeRules, wrapCascadeLayer } from "./cascade.ts";
 import {
@@ -249,7 +253,10 @@ export const createStylesheet = (
 		const property = cssPropertyFromKey(atomic.prop!, preset.conditions);
 		if (property === "colorPalette") {
 			const assignments = colorPaletteMaps.palettes.get(normalizedValue);
-			if (assignments === undefined) return;
+			if (assignments === undefined || assignments.length === 0) {
+				assertColorPaletteResolved(preset, normalizedValue, false);
+				return;
+			}
 			for (const assignment of assignments) {
 				for (const dependency of tokenDependencyPaths(tokenMaps, assignment.tokenPath)) {
 					if (usedTokenPaths.has(dependency)) continue;
@@ -361,6 +368,12 @@ export const createStylesheet = (
 		if (orderedKey === "" || varCache.has(orderedKey)) return;
 		// The canonical key always stores conditions before the property.
 		const prop = dashCase(cssPropertyFromKey(propPart, preset.conditions));
+		if (prop === "color-palette") {
+			assertColorPaletteConfigured(preset);
+			throw new Error(
+				"pandwind: colorPalette is a static palette selector and cannot be used with css.vars.",
+			);
+		}
 		const condParts = orderedConditions.map(varConditionPart);
 		let declaration = `var(--${namespace}-c-${prop})`;
 		for (let i = 1; i <= condParts.length; i++) {
