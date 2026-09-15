@@ -6,7 +6,6 @@ import { createTwAdapter } from "../src/tw/adapter.ts";
 import { createCss } from "../src/css/create-css.ts";
 import { createNamedAtomsStrategy } from "../src/css/named-atoms-strategy.ts";
 import { createStyleXAdapter } from "../src/css/stylex-adapter.ts";
-import { cssShorthands } from "../src/css/shorthands.ts";
 import { examplePreset } from "@pandwind/example-preset";
 import { pandwindCssVite } from "../src/vite/css.ts";
 import { createPandwindEngineContext } from "../src/vite/engine-context.ts";
@@ -597,33 +596,6 @@ test("static extraction retains the virtual stylesheet side effect", () => {
 
 		expect(transformed?.code).toContain('import "pandwind:css";');
 		expect(transformed?.code).not.toContain("css.class(");
-	} finally {
-		rmSync(dir, { recursive: true, force: true });
-	}
-});
-
-test("pandwindCssVite applies explicit property aliases to folded CSS", () => {
-	const dir = makeProject({
-		"src/css.ts": [
-			'import { createCss } from "pandwind/css";',
-			'import { cssShorthands } from "pandwind/css/shorthands";',
-			"export const css = createCss({ propertyAliases: cssShorthands });",
-		].join("\n"),
-		"src/app.tsx": 'import { css } from "./css"; export const card = css.class({ bg: "blue" });',
-	});
-	try {
-		const plugin = pandwindCssVite(examplePreset, {
-			root: dir,
-			propertyAliases: cssShorthands,
-		});
-		const source = readFileSync(join(dir, "src/app.tsx"), "utf8");
-		const transformed = (plugin.transform as (code: string, id: string) => { code: string } | null)(
-			source,
-			join(dir, "src/app.tsx"),
-		);
-
-		expect(transformed?.code).not.toContain("css.class(");
-		expect(loadGenerated(plugin)).toContain("background:blue");
 	} finally {
 		rmSync(dir, { recursive: true, force: true });
 	}

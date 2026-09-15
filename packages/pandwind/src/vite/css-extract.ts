@@ -103,7 +103,6 @@ export function createCssExtractionService(
 		options.rewriter ??
 		new StaticCssCallRewriter(options.preset, options.className, {
 			namespace: options.namespace,
-			propertyAliases: options.propertyAliases,
 		});
 	return new ComposedCssExtractionService(scanner, artifacts, diagnostics, rewriter);
 }

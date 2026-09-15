@@ -25,7 +25,6 @@ export interface LiteralStyleCompilerOptions {
 	readonly preset: CssPreset;
 	readonly className?: ClassNameStrategy;
 	readonly debug?: boolean;
-	readonly propertyAliases?: Readonly<Record<string, string>>;
 }
 
 class PandwindLiteralStyleCompiler implements LiteralStyleCompiler {
@@ -64,11 +63,7 @@ class PandwindLiteralStyleCompiler implements LiteralStyleCompiler {
 					.filter((part) => part !== this.emptyCondition)
 					.toSorted(),
 			);
-			const property = cssPropertyFromKey(
-				orderedKey,
-				this.options.preset.conditions,
-				this.options.propertyAliases,
-			);
+			const property = cssPropertyFromKey(orderedKey, this.options.preset.conditions);
 			merged.set(orderedKey, normalizeCssValue(property, rawValue));
 		}
 

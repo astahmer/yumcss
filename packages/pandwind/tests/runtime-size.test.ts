@@ -181,7 +181,6 @@ test("runtime entries stay stylex-sized", async () => {
 		// the other engines were not tree-shaken away, these would be as big
 		// as the "all" bundle.
 		"root barrel, css only": bundle("tree-shake-css.ts"),
-		"css, optional shorthands": bundle("runtime-css-shorthands.ts"),
 		"root barrel, tw only": bundle("tree-shake-tw.ts"),
 		"root barrel, cx only": bundle("tree-shake-cx.ts"),
 	};
@@ -274,9 +273,4 @@ test("runtime entries stay stylex-sized", async () => {
 	// while a dynamic value deliberately keeps the fallback engine.
 	expect(sizes["css, all static calls"].gz).toBeLessThan(200);
 	expect(sizes["css, all static calls"].gz).toBeLessThan(sizes["css, dynamic fallback"].gz);
-
-	// The default CSS entry must not retain the optional alias catalog, while
-	// the dedicated opt-in entry must include it when passed to the factory.
-	expect(bundleCode("tree-shake-css.ts")).not.toContain("insetInline");
-	expect(bundleCode("runtime-css-shorthands.ts")).toContain("insetInline");
 });

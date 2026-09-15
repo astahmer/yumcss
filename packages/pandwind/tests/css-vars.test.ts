@@ -13,7 +13,6 @@ import type { StandardProperties } from "csstype";
 import { describe, expect, test } from "vitest";
 import { createCss, createCssOpen } from "../src/css/create-css.ts";
 import { createStylesheet } from "../src/css/create-stylesheet.ts";
-import { cssShorthands } from "../src/css/shorthands.ts";
 import { VARS_ATOMS } from "../src/css/var-compiler.ts";
 import { createCx } from "../src/cx/index.ts";
 import { createDesignCss } from "../src/design/index.ts";
@@ -21,7 +20,6 @@ import { definePreset } from "../src/types/define-preset.ts";
 import { createCssSourceScanner } from "../src/vite/css-extract.ts";
 
 const css = createCss();
-const shorthandCss = createCss({ propertyAliases: cssShorthands });
 const responsiveCss = createCss({
 	conditions: { md: "@media (min-width: 768px)" },
 } as never);
@@ -111,13 +109,6 @@ describe("css.vars — encoding", () => {
 		const out = css.vars({ backgroundColor: "#123456" });
 		expect(out.class).toBe("pw-background-color");
 		expect(out.style).toEqual({ "--pw-c-background-color": "#123456" });
-	});
-
-	test("configured aliases normalize variable carriers", () => {
-		const out = shorthandCss.vars({ bg: "red" });
-
-		expect(out.class).toBe("pw-background");
-		expect(out.style).toEqual({ "--pw-c-background": "red" });
 	});
 
 	test("nested conditions encode into the class and suffixed props", () => {
@@ -241,15 +232,6 @@ describe("sheet generation", () => {
 		sheet.processVarKey("padding-left__md");
 		expect(sheet.gen.varRules()).toContain(
 			"@media (min-width: 768px){.pw-md\\:padding-left{padding-left:",
-		);
-	});
-
-	test("configured aliases normalize variable toggle declarations", () => {
-		const sheet = createStylesheet(examplePreset as never, { propertyAliases: cssShorthands });
-		sheet.processVarKey("_hover__bg");
-
-		expect(sheet.gen.varRules()).toContain(
-			"background: var(--pw-c-background_hover, var(--pw-c-background))",
 		);
 	});
 

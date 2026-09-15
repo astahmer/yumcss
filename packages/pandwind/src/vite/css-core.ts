@@ -98,7 +98,6 @@ export function createCssExtractorPluginCore(
 		rewriter: new StaticCssCallRewriter(preset, className, {
 			transformDynamicClassName: options.transformDynamicClassName === true,
 			namespace,
-			propertyAliases: options.propertyAliases,
 		}),
 	});
 	const runtimePruner = createRuntimePruningTransform();
@@ -210,15 +209,7 @@ export function createCssExtractorPluginCore(
 
 	/** Re-scan changed files and return a fresh stylesheet with every rule. */
 	const collect = (files: Array<string> = workspace.files()) => {
-		const sheet = createStylesheet(
-			preset,
-			{
-				className,
-				namespace,
-				propertyAliases: options.propertyAliases,
-			},
-			{ tokens: "used" },
-		);
+		const sheet = createStylesheet(preset, { className, namespace }, { tokens: "used" });
 		const seen = new Set(files);
 
 		for (const file of files) {
@@ -251,15 +242,7 @@ export function createCssExtractorPluginCore(
 
 	/** Build a sheet from ONLY the given files and list its rule identities. */
 	const buildBucket = (files: Array<string>): BucketSheet => {
-		const sheet = createStylesheet(
-			preset,
-			{
-				className,
-				namespace,
-				propertyAliases: options.propertyAliases,
-			},
-			{ tokens: "used" },
-		);
+		const sheet = createStylesheet(preset, { className, namespace }, { tokens: "used" });
 		for (const file of files) {
 			const entry = scanFile(file);
 			for (const { style } of entry.sources) sheet.process([style]);

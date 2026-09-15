@@ -63,20 +63,17 @@ class DefaultVarCompiler implements VarCompiler {
 	private readonly conditions: ReadonlySet<string>;
 	private readonly emptyConditions: ReadonlySet<string>;
 	private readonly prefix: string;
-	private readonly propertyAliases: Readonly<Record<string, string>> | undefined;
 	private readonly resolveRuntimeValue: RuntimeValueResolver | undefined;
 
 	constructor(
 		conditionNames: Iterable<string> = [],
 		emptyConditionNames: Iterable<string> = [],
 		namespace?: string,
-		propertyAliases?: Readonly<Record<string, string>>,
 		resolveRuntimeValue?: RuntimeValueResolver,
 	) {
 		this.conditions = new Set(conditionNames);
 		this.emptyConditions = new Set(emptyConditionNames);
 		this.prefix = `${namespace ?? "pw"}-`;
-		this.propertyAliases = propertyAliases;
 		this.resolveRuntimeValue = resolveRuntimeValue;
 	}
 
@@ -95,8 +92,8 @@ class DefaultVarCompiler implements VarCompiler {
 		const rawProp = propertyFirst ? first : last;
 		const rawConditions = propertyFirst ? parts.slice(1) : parts.slice(0, -1);
 		return {
-			property: cssPropertyFromKey(rawProp, {}, this.propertyAliases),
-			prop: dashCase(cssPropertyFromKey(rawProp, {}, this.propertyAliases)),
+			property: cssPropertyFromKey(rawProp),
+			prop: dashCase(cssPropertyFromKey(rawProp)),
 			canonical: pairs.join(
 				rawConditions
 					.filter((condition) => !this.emptyConditions.has(condition))
@@ -139,7 +136,7 @@ class DefaultVarCompiler implements VarCompiler {
 		if (keys.length === 1 && singleKey !== undefined && !singleKey.includes("__")) {
 			const raw = flat[singleKey];
 			if (!isSafeCssValue(raw) || raw === "") return { atoms: [], style: {} };
-			const property = cssPropertyFromKey(singleKey, {}, this.propertyAliases);
+			const property = cssPropertyFromKey(singleKey);
 			const prop = dashCase(property);
 			const value =
 				typeof raw === "string" && this.resolveRuntimeValue !== undefined
@@ -176,7 +173,6 @@ class DefaultVarCompiler implements VarCompiler {
  * @param emptyConditionNames - Conditions that use the base carrier.
  * @param namespace - Prefix for carrier classes and custom properties.
  *   Defaults to `pw`.
- * @param propertyAliases - Optional authored property aliases.
  * @returns A compiler used by `css.vars` and runtime stylesheet generation.
  * @category styling
  * @since 0.1.0
@@ -185,13 +181,6 @@ export const createVarCompiler = (
 	conditionNames?: Iterable<string>,
 	emptyConditionNames?: Iterable<string>,
 	namespace?: string,
-	propertyAliases?: Readonly<Record<string, string>>,
 	resolveRuntimeValue?: RuntimeValueResolver,
 ): VarCompiler =>
-	new DefaultVarCompiler(
-		conditionNames,
-		emptyConditionNames,
-		namespace,
-		propertyAliases,
-		resolveRuntimeValue,
-	);
+	new DefaultVarCompiler(conditionNames, emptyConditionNames, namespace, resolveRuntimeValue);

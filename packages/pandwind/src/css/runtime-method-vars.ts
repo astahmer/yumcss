@@ -11,7 +11,6 @@ export const attachVars: RuntimeCssAttachment = (css, context) => {
 		conditionNames,
 		conditionNames?.filter((name) => !conditions?.[name]),
 		context.backendOptions.namespace,
-		context.backendOptions.propertyAliases,
 		context.resolveRuntimeValue,
 	);
 	css.vars = (...styles: Array<StyleObject>): VarsOutput => {

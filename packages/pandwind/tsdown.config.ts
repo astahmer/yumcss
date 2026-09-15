@@ -4,7 +4,6 @@ export default defineConfig({
 	entry: [
 		"src/index.ts",
 		"src/css/index.ts",
-		"src/css/shorthands.ts",
 		"src/css/runtime.ts",
 		"src/css/selector-scan.ts",
 		"src/css/stylex-adapter.ts",

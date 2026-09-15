@@ -18,10 +18,8 @@ atomic declaration map, while `css.class(...)` returns the joined class string
 for a host that wants one `className`. Choose the return shape that fits the
 boundary. Use `cx(...)` only when the inputs may be strings, compiled maps,
 variable carriers, or values from more than one styling system.
-`createCssOpen(preset)` keeps the same preset-aware runtime behavior while
-accepting an open style-object surface for applications that discover
-properties or aliases at runtime. `createCss()` remains available as an
-intentionally loose convenience form without preset token resolution.
+`createCss()` remains available as an intentionally loose convenience form
+without preset token resolution when properties are discovered at runtime.
 
 ```ts
 import { createCss } from "pandwind/css";
@@ -53,18 +51,16 @@ const cardProps = css.props(cardStyles);
 const cardClass = css.class({ backgroundColor: "$brand-500", padding: 4 });
 ```
 
-Use `createCssOpen` when the preset should still resolve token names in
-`css.vars()` but the caller needs open runtime properties:
+Use a preset-bound factory when runtime values still need preset token
+resolution:
 
 ```ts
-import { createCssOpen } from "pandwind/css";
-import { cssShorthands } from "pandwind/css/shorthands";
+import { createCss } from "pandwind/css";
 
-const css = createCssOpen(preset, { propertyAliases: cssShorthands });
+const css = createCss(preset);
 const output = css.vars({ color: "$brand-500", customProperty: runtimeValue });
 ```
 
-This is a factory choice, not a second runtime or a wrapper around `css.vars`.
 Use `css()` when a mergeable declaration map is useful, `css.class()` when the
 host wants a direct class string, and reserve `css.vars()` for values that are
 only known at runtime. Neither CSS projection is generally preferred.
@@ -94,24 +90,6 @@ Neither projection is the default. Use `css()` for known style-object
 composition when the declaration map is useful, `css.class()` when a direct
 class string is the useful result, and `css.props()` when compiled values must
 cross a host boundary. `cx()` is for a genuinely mixed or unknown class input.
-
-### Optional property shorthands
-
-The CSS lane preserves authored property names by default. If an application
-uses aliases such as `bg`, `px`, or `rounded`, opt into the separate catalog:
-
-```ts
-import { createCss } from "pandwind/css";
-import { cssShorthands } from "pandwind/css/shorthands";
-
-const css = createCss(preset, { propertyAliases: cssShorthands });
-const card = css.class({ bg: "red", px: 4 });
-```
-
-The same `propertyAliases` map must be passed to `pandwindCssVite()` when
-static extraction is enabled. Spread `cssShorthands` with application-specific
-aliases when needed; applications that do not import this entry point do not
-ship its alias table.
 
 ### Host stylesheet precedence
 

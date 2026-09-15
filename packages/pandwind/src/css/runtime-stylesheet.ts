@@ -44,7 +44,6 @@ export const createRuntimeStylesheet = (
 		conditionNames,
 		conditionNames.filter((name) => isEmptyCondition(name, preset.conditions)),
 		namespace,
-		options.propertyAliases,
 	);
 	const hashFn = options.hashFn ?? createHashFn(Boolean(options.debug));
 	const debug = Boolean(options.debug);
@@ -155,7 +154,7 @@ export const createRuntimeStylesheet = (
 		if (cache.has(pairId)) return;
 
 		const atomic = decodeAtomicPath(preset.conditions, pairId);
-		const property = cssPropertyFromKey(atomic.prop, preset.conditions, options.propertyAliases);
+		const property = cssPropertyFromKey(atomic.prop, preset.conditions);
 		const value = resolveRuntimeTokenValue(tokenMaps, property, normalizedValue);
 		const declaration = [dashCase(property), value].join(":");
 		const css = genCSSRule(declaration, {
@@ -173,7 +172,7 @@ export const createRuntimeStylesheet = (
 			if (typeof key !== "string" || key.length === 0 || key.includes("\u0000")) continue;
 			if (!isSafeCssValue(value)) continue;
 			const orderedKey = canonicalStyleKey(key, preset.conditions);
-			const property = cssPropertyFromKey(orderedKey, preset.conditions, options.propertyAliases);
+			const property = cssPropertyFromKey(orderedKey, preset.conditions);
 			processNormalizedStyle(orderedKey, normalizeCssValue(property, value), localCache);
 		}
 		return localCache;
@@ -200,7 +199,7 @@ export const createRuntimeStylesheet = (
 		if (orderedKey === "" || varCache.has(orderedKey)) return;
 
 		// The canonical key always stores conditions before the property.
-		const prop = dashCase(cssPropertyFromKey(propPart, preset.conditions, options.propertyAliases));
+		const prop = dashCase(cssPropertyFromKey(propPart, preset.conditions));
 		const condParts = orderedConditions.map(varConditionPart);
 		let declaration = `var(--${namespace}-c-${prop})`;
 		for (let i = 1; i <= condParts.length; i++) {

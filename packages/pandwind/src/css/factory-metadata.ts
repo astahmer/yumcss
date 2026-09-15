@@ -10,10 +10,7 @@ export type CssFactoryKind = (typeof CssFactoryKind)[keyof typeof CssFactoryKind
 export interface CssFactoryMetadata {
 	readonly kind: CssFactoryKind;
 	readonly preset: object;
-	readonly options: Pick<
-		CreateCssOptions,
-		"debug" | "className" | "cascade" | "namespace" | "propertyAliases"
-	>;
+	readonly options: Pick<CreateCssOptions, "debug" | "className" | "cascade" | "namespace">;
 }
 
 const CSS_FACTORY_METADATA = Symbol.for("pandwind.css-factory");

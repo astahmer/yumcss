@@ -94,7 +94,6 @@ function runtimeSheetFor(preset: CssConfigReturn, options: RuntimeCssOptions): R
 		options.className !== undefined ||
 		options.debug !== undefined ||
 		options.hashFn !== undefined ||
-		options.propertyAliases !== undefined ||
 		options.cascade !== undefined
 	)
 		return createRuntimeSheet({ cascade: options.cascade });

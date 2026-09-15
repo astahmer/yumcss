@@ -94,11 +94,6 @@ export interface PandwindCssViteOptions {
 	 */
 	namespace?: string;
 	/**
-	 * Optional authored property aliases. Keep this equal to the map passed to
-	 * the CSS factory so folded calls and generated declarations agree.
-	 */
-	propertyAliases?: Readonly<Record<string, string>>;
-	/**
 	 * Opt-in JSX rewrite for mixed `className={css.class({ ... })}` calls.
 	 * Scalar dynamic declarations move to `css.vars()` and literal
 	 * declarations stay in `css.class()`, with the host changed to a
@@ -381,9 +376,6 @@ export function pandwindCssVite(input: CssViteInput, options: PandwindCssViteOpt
 				preset: nextMetadata.preset,
 				className: options.engine.className,
 				...(nextOptions.debug === undefined ? {} : { debug: nextOptions.debug }),
-				...(nextOptions.propertyAliases === undefined
-					? {}
-					: { propertyAliases: nextOptions.propertyAliases }),
 			});
 			if (!refreshed) {
 				throw new Error("pandwindCssVite: the shared engine cannot refresh its preset during HMR");

@@ -6,7 +6,6 @@ import {
 	createRuntimeSheet,
 } from "../src/css/runtime.ts";
 import { createStylesheet } from "../src/css/create-stylesheet.ts";
-import { cssShorthands } from "../src/css/shorthands.ts";
 import { createNamedAtomsStrategy } from "../src/css/named-atoms-strategy.ts";
 import { createStyleXAdapter } from "../src/css/stylex-adapter.ts";
 import { escapeIdentifier } from "../src/css/hash.ts";
@@ -230,21 +229,6 @@ describe("runtime CSS-in-JS sheet", () => {
 		]);
 
 		expect(sheet.css()).toBe("@font-face{font-family:Inter;src:url(inter.woff2)}");
-	});
-
-	test("runtime aliases are opt-in and share the configured stylesheet mapping", () => {
-		const sheet = createRuntimeSheet({ autoMount: false });
-		const css = createRuntimeCss(examplePreset, {
-			sheet,
-			propertyAliases: cssShorthands,
-		});
-
-		css.class({ bg: "red" } as never);
-		css.vars({ bg: "blue" } as never);
-
-		const output = sheet.css();
-		expect(output).toContain("background:red");
-		expect(output).toContain("background: var(--pw-c-background)");
 	});
 
 	test("returns the same classes that sheet-backed strategies emit", () => {

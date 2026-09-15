@@ -36,7 +36,6 @@ export interface PandwindEngineContextOptions {
 	preset: CssPreset;
 	className?: ClassNameStrategy;
 	debug?: boolean;
-	propertyAliases?: Readonly<Record<string, string>>;
 }
 
 export interface PandwindEngineContext {
@@ -83,12 +82,10 @@ export function createPandwindEngineContext(
 	let preset = options.preset;
 	let className = options.className;
 	let debug = options.debug;
-	let propertyAliases = options.propertyAliases;
 	const compiler = createLiteralStyleCompiler({
 		preset,
 		...(className === undefined ? {} : { className }),
 		...(debug === undefined ? {} : { debug }),
-		...(propertyAliases === undefined ? {} : { propertyAliases }),
 	});
 	const context: PandwindEngineContext = {
 		get preset() {
@@ -106,12 +103,10 @@ export function createPandwindEngineContext(
 		preset = nextOptions.preset;
 		className = nextOptions.className;
 		debug = nextOptions.debug ?? debug;
-		propertyAliases = nextOptions.propertyAliases ?? propertyAliases;
 		compiler.refresh({
 			preset,
 			...(className === undefined ? {} : { className }),
 			...(debug === undefined ? {} : { debug }),
-			...(propertyAliases === undefined ? {} : { propertyAliases }),
 		});
 	});
 	return context;
