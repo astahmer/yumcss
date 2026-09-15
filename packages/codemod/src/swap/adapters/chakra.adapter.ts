@@ -1135,8 +1135,10 @@ function chakraSourceVocabulary(context: AdapterParseContext): {
 			? Object.keys(CSS_RAW_PROPERTIES).filter((property) => property !== "content")
 			: [];
 	const sourceConditionNames = new Set(Object.keys(context.config.conditionCatalog ?? {}));
+	const targetStyleProps =
+		context.targetId === CodemodAdapterId.Pandwind ? [...styleProps, "colorPalette"] : styleProps;
 	const knownProperties = new Set<string>([
-		...styleProps,
+		...targetStyleProps,
 		...sourceValueProperties,
 		...(system?.properties ?? []),
 	]);
@@ -1601,7 +1603,9 @@ const hasChakraNativeHostBlockedProp = (
 	const blocked = new Set(CHAKRA_NATIVE_HOST_BLOCKED_PROPS[component] ?? []);
 	return host.attributes.some(
 		(attribute) =>
-			blocked.has(attribute.name) && !(attribute.name === "as" && !attribute.expression),
+			blocked.has(attribute.name) &&
+			!(attribute.name === "as" && !attribute.expression) &&
+			!(context.targetId === CodemodAdapterId.Pandwind && attribute.name === "colorPalette"),
 	);
 };
 

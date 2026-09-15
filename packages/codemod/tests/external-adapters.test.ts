@@ -2108,9 +2108,18 @@ describe("CSS-in-JS adapter contract v2", () => {
 			{ from: "chakra-ui", to: "pandwind", file: "Palette.tsx", mode: "safe" },
 		);
 		expect(palette.residuals).toEqual([]);
+		expect(palette.code).toContain("css.vars({ colorPalette: color");
 		expect(palette.code).toContain('color: "colorPalette.fg"');
 		expect(palette.code).toContain("<p className");
 		expect(palette.code).toContain("</p>");
+
+		const staticPalette = runAdapterMigration(
+			'import { Box } from "@chakra-ui/react";\n' +
+				'export const App = () => <Box colorPalette="blue" />;',
+			{ from: "chakra-ui", to: "pandwind", file: "StaticPalette.tsx", mode: "safe" },
+		);
+		expect(staticPalette.residuals).toEqual([]);
+		expect(staticPalette.code).toContain('css.class({ colorPalette: "blue" })');
 
 		const mui = runAdapterMigration(
 			'import { Box } from "@mui/material";\nexport const App = () => <Box sx={{ m: 2, p: 1, color: "red" }} />;',
