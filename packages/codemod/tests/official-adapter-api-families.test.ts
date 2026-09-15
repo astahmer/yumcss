@@ -270,7 +270,7 @@ describe("official adapter API families", () => {
 			import { pandwindPreset } from "pandwind/preset";
 			const css = createCss();
 			const runtimeCss = createRuntimeCss(pandwindPreset);
-			export const styles = { "card": css.class({ "@media (prefers-color-scheme: dark)": { color: "white" } }), "pulse": (() => { const name = "pw-kf-pulse"; runtimeCss.sheet.registerSemanticRules([{ kind: "keyframes", name, children: [{ kind: "style", selector: "from", declarations: [{ property: "opacity", value: "0" }] }, { kind: "style", selector: "to", declarations: [{ property: "opacity", value: "1" }] }] }]); return name; })() };
+			export const styles = { "card": css.class({ _osDark: { color: "white" } }), "pulse": (() => { const name = "pw-kf-pulse"; runtimeCss.sheet.registerSemanticRules([{ kind: "keyframes", name, children: [{ kind: "style", selector: "from", declarations: [{ property: "opacity", value: "0" }] }, { kind: "style", selector: "to", declarations: [{ property: "opacity", value: "1" }] }] }]); return name; })() };
 			export default styles;",
 			    "converted": 2,
 			    "generatedFiles": [],
@@ -881,7 +881,7 @@ describe("official adapter API families", () => {
 			    "changed": true,
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
-			export const styles = { "card": css.class({ "&:hover": { color: "red" } }) };
+			export const styles = { "card": css.class({ _hover: { color: "red" } }) };
 			export default styles;",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -3348,10 +3348,9 @@ describe("official adapter API families", () => {
 			  },
 			  "tailwind/arbitrary utility": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
-			export const App = () => <div className={css.class({ color: "rebeccapurple", md: { display: "flex" } })}/>;",
-			    "converted": 1,
+			    "code": "export const App = () => // pandwind:migrate-skip (route: tailwind -> pandwind | lowering-residual: capability, validation)
+			<div className="[color:rebeccapurple] md:[display:flex]" />;",
+			    "converted": 0,
 			    "generatedFiles": [],
 			    "loweringPlans": [
 			      {
@@ -3367,17 +3366,30 @@ describe("official adapter API families", () => {
 			    ],
 			    "outcomes": [
 			      {
-			        "outcome": "static",
+			        "outcome": "residual",
 			        "representation": "static",
 			      },
 			    ],
-			    "residuals": [],
-			    "skipped": 0,
+			    "residuals": [
+			      {
+			        "hint": "condition is not declared by the Pandwind preset or project condition catalog",
+			        "kind": "capability",
+			        "preserved": undefined,
+			      },
+			      {
+			        "hint": "1 residual conversion(s)",
+			        "kind": "validation",
+			        "preserved": undefined,
+			      },
+			    ],
+			    "skipped": 1,
 			    "validations": [
 			      {
-			        "differences": [],
-			        "lossiness": "lossless",
-			        "valid": true,
+			        "differences": [
+			          "1 residual conversion(s)",
+			        ],
+			        "lossiness": "lossy",
+			        "valid": false,
 			      },
 			    ],
 			  },
@@ -3398,10 +3410,9 @@ describe("official adapter API families", () => {
 			  },
 			  "tailwind/custom variant candidate": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
-			export const App = () => <div className={css.class({ "[&[data-state=active]]": { color: "red" } })}/>;",
-			    "converted": 1,
+			    "code": "export const App = () => // pandwind:migrate-skip (route: tailwind -> pandwind | lowering-residual: capability, validation)
+			<div className="[&[data-state=active]]:[color:red]" />;",
+			    "converted": 0,
 			    "generatedFiles": [],
 			    "loweringPlans": [
 			      {
@@ -3417,17 +3428,30 @@ describe("official adapter API families", () => {
 			    ],
 			    "outcomes": [
 			      {
-			        "outcome": "static",
+			        "outcome": "residual",
 			        "representation": "static",
 			      },
 			    ],
-			    "residuals": [],
-			    "skipped": 0,
+			    "residuals": [
+			      {
+			        "hint": "condition is not declared by the Pandwind preset or project condition catalog",
+			        "kind": "capability",
+			        "preserved": undefined,
+			      },
+			      {
+			        "hint": "1 residual conversion(s)",
+			        "kind": "validation",
+			        "preserved": undefined,
+			      },
+			    ],
+			    "skipped": 1,
 			    "validations": [
 			      {
-			        "differences": [],
-			        "lossiness": "lossless",
-			        "valid": true,
+			        "differences": [
+			          "1 residual conversion(s)",
+			        ],
+			        "lossiness": "lossy",
+			        "valid": false,
 			      },
 			    ],
 			  },
@@ -3529,10 +3553,10 @@ describe("official adapter API families", () => {
 			  },
 			  "tokenami/alias and custom property selector": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
-			export const card = css.class({ cardColor: "red", "&[data-state=active]": { color: "var(--card-color)" } });",
-			    "converted": 1,
+			    "code": "import { css } from "@tokenami/css";
+			export const card = // pandwind:migrate-skip (route: tokenami -> pandwind | lowering-residual: capability, validation)
+			css({ "--card-color": "red", "&[data-state=active]": { color: "var(--card-color)" } });",
+			    "converted": 0,
 			    "generatedFiles": [],
 			    "loweringPlans": [
 			      {
@@ -3548,17 +3572,30 @@ describe("official adapter API families", () => {
 			    ],
 			    "outcomes": [
 			      {
-			        "outcome": "static",
+			        "outcome": "residual",
 			        "representation": "static",
 			      },
 			    ],
-			    "residuals": [],
-			    "skipped": 0,
+			    "residuals": [
+			      {
+			        "hint": "condition is not declared by the Pandwind preset or project condition catalog",
+			        "kind": "capability",
+			        "preserved": undefined,
+			      },
+			      {
+			        "hint": "1 residual conversion(s)",
+			        "kind": "validation",
+			        "preserved": undefined,
+			      },
+			    ],
+			    "skipped": 1,
 			    "validations": [
 			      {
-			        "differences": [],
-			        "lossiness": "lossless",
-			        "valid": true,
+			        "differences": [
+			          "1 residual conversion(s)",
+			        ],
+			        "lossiness": "lossy",
+			        "valid": false,
 			      },
 			    ],
 			  },
@@ -3726,10 +3763,9 @@ describe("official adapter API families", () => {
 			  },
 			  "unocss/variant utility": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
-			const css = createCss();
-			export const App = () => <div className={css.class({ hover: { backgroundColor: "black" }, md: { display: "flex" } })}/>;",
-			    "converted": 1,
+			    "code": "export const App = () => // pandwind:migrate-skip (route: unocss -> pandwind | lowering-residual: capability, validation)
+			<div className="hover:[background-color:black] md:[display:flex]" />;",
+			    "converted": 0,
 			    "generatedFiles": [],
 			    "loweringPlans": [
 			      {
@@ -3745,17 +3781,30 @@ describe("official adapter API families", () => {
 			    ],
 			    "outcomes": [
 			      {
-			        "outcome": "static",
+			        "outcome": "residual",
 			        "representation": "static",
 			      },
 			    ],
-			    "residuals": [],
-			    "skipped": 0,
+			    "residuals": [
+			      {
+			        "hint": "condition is not declared by the Pandwind preset or project condition catalog",
+			        "kind": "capability",
+			        "preserved": undefined,
+			      },
+			      {
+			        "hint": "1 residual conversion(s)",
+			        "kind": "validation",
+			        "preserved": undefined,
+			      },
+			    ],
+			    "skipped": 1,
 			    "validations": [
 			      {
-			        "differences": [],
-			        "lossiness": "lossless",
-			        "valid": true,
+			        "differences": [
+			          "1 residual conversion(s)",
+			        ],
+			        "lossiness": "lossy",
+			        "valid": false,
 			      },
 			    ],
 			  },
