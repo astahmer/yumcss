@@ -42,7 +42,8 @@ export class SourcePass {
 
 	static markerText(source: string, file: string, index: number, marker: string): string {
 		const markerBody = marker.replace(/^\/\/\s?/u, "");
-		if (isJsxChildInsertion(source, file, index)) return `{/* ${markerBody} */}`;
+		const lineStart = source.lastIndexOf("\n", Math.max(0, index - 1)) + 1;
+		if (isJsxChildInsertion(source, file, lineStart)) return `{/* ${markerBody} */}`;
 		if (/\.(?:css|pcss|scss|sass|less)$/iu.test(file)) return `/* ${markerBody} */`;
 		return marker;
 	}
