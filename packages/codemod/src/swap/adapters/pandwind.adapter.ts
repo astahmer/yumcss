@@ -41,8 +41,14 @@ import {
 	StyleNamedRuleStrategy,
 } from "../identifiers.ts";
 import { SourceBindingKind } from "pandwind/source";
+import { presetConditions } from "pandwind/preset";
 import { JsxStyleHost } from "../jsx-style-host.ts";
 import { BuiltinHostFramework } from "../host-adapters.ts";
+import {
+	canonicalPandwindConditionName,
+	isPandwindConditionName,
+	pandwindConditionNameForSelector,
+} from "../pandwind-conditions.ts";
 import {
 	componentAttrsExpressionForSubject,
 	componentExpressionForSubject,
@@ -497,7 +503,7 @@ const conditionQuery = (kind: string, value: string): string => {
 const conditionCatalogEntries = (
 	context: AdapterEmitContext | undefined,
 ): readonly [string, string][] => {
-	const catalogs = [context?.config.conditionCatalog];
+	const catalogs = [presetConditions, context?.config.conditionCatalog];
 	const entries = new Map<string, string>();
 	for (const catalog of catalogs) {
 		if (catalog === undefined) continue;
@@ -549,9 +555,21 @@ const pandwindCondition = (
 ): StyleCondition | undefined => {
 	if (condition.kind === SemanticConditionKindTag.Named && condition.name === "base")
 		return undefined;
+	const authoredName = condition.raw ?? condition.name;
+	const canonicalName = canonicalPandwindConditionName(authoredName);
+	if (
+		condition.raw?.startsWith("_") === true ||
+		(canonicalName !== authoredName && isPandwindConditionName(authoredName))
+	)
+		return { kind: SemanticConditionKindTag.Named, name: canonicalName };
+	if (condition.kind === SemanticConditionKindTag.Selector) {
+		const selectorName = pandwindConditionNameForSelector(condition.value ?? condition.name);
+		if (selectorName !== undefined)
+			return { kind: SemanticConditionKindTag.Named, name: selectorName };
+	}
 	const match = conditionCatalogMatch(condition, entries);
 	if (match === undefined) return condition;
-	return { kind: SemanticConditionKindTag.Named, name: match, raw: match };
+	return { kind: SemanticConditionKindTag.Named, name: match };
 };
 
 function normalizePandwindConditions(

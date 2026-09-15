@@ -8,8 +8,25 @@ const builtInConditionAliases = new Set(
 		.map((name) => name.slice(1)),
 );
 
-const canonicalConditionName = (name: string): string =>
+const selectorConditionAliases = new Map<string, string>();
+for (const [name, selector] of Object.entries(presetConditions)) {
+	if (typeof selector !== "string") continue;
+	for (const match of selector.matchAll(/(::?)([a-z][a-z-]*)/gu)) {
+		const pseudo = match[2]!;
+		if (pseudo === "is" || pseudo === "not" || pseudo === "where" || pseudo === "has") continue;
+		const candidate = `&${match[1]}${pseudo}`;
+		if (!selectorConditionAliases.has(candidate)) selectorConditionAliases.set(candidate, name);
+	}
+}
+
+export const canonicalPandwindConditionName = (name: string): string =>
 	name.startsWith("_") || !builtInConditionAliases.has(name) ? name : `_${name}`;
+
+export const isPandwindConditionName = (name: string): boolean =>
+	Object.hasOwn(presetConditions, canonicalPandwindConditionName(name));
+
+export const pandwindConditionNameForSelector = (selector: string): string | undefined =>
+	selectorConditionAliases.get(selector);
 
 /** Keep built-in Pandwind conditions on their underscore spelling. */
 export const canonicalizePandwindConditions = (
@@ -17,7 +34,7 @@ export const canonicalizePandwindConditions = (
 ): Record<string, PandwindConditionValue> => {
 	const canonical: Record<string, PandwindConditionValue> = {};
 	for (const [name, value] of Object.entries(conditions)) {
-		const canonicalName = canonicalConditionName(name);
+		const canonicalName = canonicalPandwindConditionName(name);
 		if (Object.hasOwn(canonical, canonicalName) && !name.startsWith("_")) continue;
 		canonical[canonicalName] = value;
 	}
