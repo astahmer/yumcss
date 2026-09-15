@@ -2367,7 +2367,7 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 					host.framework ??
 					context?.document?.framework ??
 					(/\.(?:jsx|tsx|mdx)$/.test(context?.file ?? "") ? "react" : undefined);
-				const dynamicHost = StyleProgramAnalysis.hasDynamic(program);
+				const dynamicHost = StyleProgramAnalysis.hasRuntimeDynamic(program);
 				const programObjectText = renderProgramObject(
 					hasFunctionDynamic ? mapRuntimeProps(outputProgram, "undefined") : outputProgram,
 				);
@@ -2444,13 +2444,7 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 			// class-string style call. A group is only required when the source
 			// actually authored named style members (for example `{ card: {...} }`).
 			const authoredNamed = program.rules.some((rule) => rule.name !== undefined);
-			const dynamic = program.rules.some(function containsDynamic(rule): boolean {
-				return (
-					rule.declarations.some(
-						(declaration) => declaration.value.kind === StyleValueKindTag.Dynamic,
-					) || rule.children.some(containsDynamic)
-				);
-			});
+			const dynamic = StyleProgramAnalysis.hasRuntimeDynamic(program);
 			const runtimeStandalone =
 				dynamic &&
 				(kind === StyleRuleKindTag.Style || kind === undefined) &&
