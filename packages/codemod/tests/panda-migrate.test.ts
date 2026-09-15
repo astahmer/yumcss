@@ -253,6 +253,23 @@ describe("supporting migration primitives", () => {
 		expect(recipe).not.toContain(": any");
 	});
 
+	it("emits one canonical underscore condition for built-in aliases", () => {
+		const theme: PandaTheme = {
+			...emptyPandaTheme,
+			conditions: {
+				hover: "&:hover",
+				_hover: "&:focus-visible",
+				md: "@media (min-width: 768px)",
+			},
+		};
+		const preset = renderPandaPreset(theme);
+
+		expect(preset).toContain('\n\t"_hover": "&:focus-visible",');
+		expect(preset).not.toContain('\n\t"hover":');
+		expect(preset).toContain('\n\t"md": "@media (min-width: 768px)",');
+		expect(preset).not.toContain('\n\t"_md":');
+	});
+
 	it("typechecks the emitted preset and reusable modules", () => {
 		const theme: PandaTheme = {
 			...emptyPandaTheme,

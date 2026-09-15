@@ -88,6 +88,34 @@ describe("Pandwind project bootstrap", () => {
 		expect(preset).toContain('"midnight": "[data-theme=midnight] &"');
 	});
 
+	test("canonicalizes built-in condition aliases without changing custom names", async () => {
+		const root = "/project";
+		const files = new Map<string, string>([
+			[
+				`${root}/panda.config.ts`,
+				[
+					"export default {",
+					"\tconditions: { extend: { hover: '&:hover', _hover: '&:focus-visible', midnight: '[data-theme=midnight] &' } },",
+					"};",
+				].join("\n"),
+			],
+		]);
+		const support = await createPandwindProjectSupport({
+			root,
+			sourceAdapter: CodemodAdapterId.Panda,
+			targetAdapter: CodemodAdapterId.Pandwind,
+			outputDirectory: "pandwind",
+			readFile: (file) => files.get(file),
+			listFiles: () => [...files.keys()],
+		});
+
+		const preset = support.files.find((file) => file.path === "pandwind/preset.ts")?.content;
+		expect(preset).toContain('\n\t"_hover": "&:focus-visible",');
+		expect(preset).not.toContain('\n\t"hover":');
+		expect(preset).toContain('"midnight": "[data-theme=midnight] &"');
+		expect(preset).not.toContain('"_midnight":');
+	});
+
 	test("maps generated token groups to the properties that can consume them", async () => {
 		const support = await createPandwindProjectSupport({
 			root: "/project",
