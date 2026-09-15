@@ -9,7 +9,53 @@ import {
 } from "./semantic-ir.ts";
 import { StyleDynamicExpressionKind } from "./identifiers.ts";
 
+const standardResponsiveConditionNames = new Set([
+	"xs",
+	"sm",
+	"md",
+	"lg",
+	"xl",
+	"2xl",
+	"3xl",
+	"4xl",
+	"5xl",
+]);
+
+const isStaticStyleConditionName = (name: string): boolean =>
+	name === "base" ||
+	name === "default" ||
+	standardResponsiveConditionNames.has(name) ||
+	name.startsWith("_") ||
+	name.startsWith(":") ||
+	name.startsWith("&") ||
+	name.startsWith("[") ||
+	name.startsWith("@");
+
+const isFiniteStaticScalar = (value: unknown): boolean =>
+	typeof value === "string" || typeof value === "number";
+
+const isFiniteStaticStyleLeaf = (value: unknown): boolean =>
+	isFiniteStaticScalar(value) ||
+	(Array.isArray(value) && value.length > 0 && value.every(isFiniteStaticStyleLeaf));
+
+const isFiniteStaticStyleConditionObject = (value: unknown): boolean => {
+	if (value === null || typeof value !== "object" || Array.isArray(value)) return false;
+	const entries = Object.entries(value);
+	return (
+		entries.length > 0 &&
+		entries.every(
+			([name, nestedValue]) =>
+				isStaticStyleConditionName(name) && isFiniteStaticStyleLeaf(nestedValue),
+		)
+	);
+};
+
 const finiteStaticStyleExpression = (value: StyleDynamicValue): boolean => {
+	if (
+		value.expressionKind !== StyleDynamicExpressionKind.Conditional &&
+		value.expressionKind !== StyleDynamicExpressionKind.Object
+	)
+		return false;
 	try {
 		const parsed = SOURCE_SCANNER_SERVICE.parse({
 			file: "pandwind-dynamic-style-expression.tsx",
@@ -28,18 +74,13 @@ const finiteStaticStyleExpression = (value: StyleDynamicValue): boolean => {
 		return (
 			values !== undefined &&
 			values.values.length > 0 &&
-			values.values.every(isFiniteStaticStyleValue)
+			(value.expressionKind === StyleDynamicExpressionKind.Object
+				? values.values.every(isFiniteStaticStyleConditionObject)
+				: values.values.every(isFiniteStaticScalar))
 		);
 	} catch {
 		return false;
 	}
-};
-
-const isFiniteStaticStyleValue = (value: unknown): boolean => {
-	if (typeof value === "string" || typeof value === "number") return true;
-	if (Array.isArray(value)) return value.every(isFiniteStaticStyleValue);
-	if (value === null || typeof value !== "object") return false;
-	return Object.values(value).every(isFiniteStaticStyleValue);
 };
 
 /** Read-only semantic queries shared by lowering and adapter projections. */
