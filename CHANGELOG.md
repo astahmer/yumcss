@@ -12,7 +12,7 @@ current `0.1.0` state.
   values, as static Pandwind styles. Migrations now emit one `css.class()` call
   instead of wrapping those values in `css.props(css.vars(...))`; unresolved
   expressions still stay on the runtime carrier path. Source revisions:
-  `d29997b3`, `70e0f374`.
+  `d29997b3`, `70e0f374`, `290bf570`, `6a18667a`.
 
 ## Unreleased — 2026-09-15 static color palettes
 
