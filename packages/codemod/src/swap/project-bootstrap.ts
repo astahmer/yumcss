@@ -734,24 +734,19 @@ function presetSource(
 	);
 	const appSemanticGroups = Object.keys(appSemanticTokens);
 	const componentGroups = Object.keys(componentTokens);
-	const semanticGroups = [...new Set([...appSemanticGroups, ...componentGroups])];
 	const presetConditions = canonicalizePandwindConditions({
 		base: "",
 		...config.conditionCatalog,
 		...conditions,
 	});
-	const hasSemanticTokens = semanticGroups.length > 0;
-	const semanticTokenImport = hasSemanticTokens ? ", defineSemanticTokens" : "";
-	const semanticTokenTypeImport = hasSemanticTokens ? ", type SemanticTokenLayer" : "";
 	const typeImports = typescript ? ", type PandwindProperties" : "";
 	const colorPaletteEntries = Object.entries(config.colorPalettes ?? {}).toSorted(
 		([left], [right]) => left.localeCompare(right),
 	);
-	const colorPaletteImport = colorPaletteEntries.length === 0 ? "" : ", defineColorPalettes";
 	const colorPaletteDeclaration =
 		colorPaletteEntries.length === 0
 			? ""
-			: `\nconst colorPalettes = defineColorPalettes(${JSON.stringify(
+			: `\nconst colorPalettes = tokens.defineColorPalettes(${JSON.stringify(
 					Object.fromEntries(colorPaletteEntries),
 					null,
 					"\t",
@@ -759,47 +754,33 @@ function presetSource(
 	const colorPaletteProperty = colorPaletteEntries.length === 0 ? "" : "\n\t\tcolorPalettes,";
 	const configDeclaration = typescript ? "\nconst cssConfig: PandwindProperties = {};\n" : "";
 	const configReference = typescript ? "cssConfig" : "{}";
-	const semanticTokenCatalogDeclaration = hasSemanticTokens
-		? `type SemanticTokenCatalog = typeof appTokens${
-				appSemanticGroups.length === 0 ? "" : " & typeof appSemanticTokenDefinitions"
-			} ;\n`
-		: "";
 	const appSemanticDeclaration =
 		appSemanticGroups.length === 0
 			? ""
-			: `const appSemanticTokenDefinitions = ${JSON.stringify(appSemanticTokens, null, "\t")} as const;
-const appSemanticTokens = defineSemanticTokens(
+			: `const appSemanticTokens = appTokens.defineSemanticTokens(
 	conditions,
-	appSemanticTokenDefinitions satisfies SemanticTokenLayer<typeof conditions, SemanticTokenCatalog>,
+	${JSON.stringify(appSemanticTokens, null, "\t")} as const,
 );
 `;
 	const componentDeclaration =
 		componentGroups.length === 0
 			? ""
-			: `const componentTokenDefinitions = ${JSON.stringify(componentTokens, null, "\t")} as const;
-const componentTokens = defineSemanticTokens(
+			: `const componentTokens = ${appSemanticGroups.length > 0 ? "appSemanticTokens" : "appTokens"}.defineSemanticTokens(
 	conditions,
-	componentTokenDefinitions satisfies SemanticTokenLayer<typeof conditions, SemanticTokenCatalog>,
+	${JSON.stringify(componentTokens, null, "\t")} as const,
 );
 `;
-	const mergedTokenLines = semanticGroups.map((group) => {
-		const references = [
-			...(Object.hasOwn(appTokens, group) ? [`...appTokens[${JSON.stringify(group)}]`] : []),
-			...(appSemanticGroups.includes(group)
-				? [`...appSemanticTokens[${JSON.stringify(group)}]`]
-				: []),
-			...(componentGroups.includes(group) ? [`...componentTokens[${JSON.stringify(group)}]`] : []),
-		];
-		return `\t${JSON.stringify(group)}: { ${references.join(", ")} },`;
-	});
-	const tokenDeclaration = !hasSemanticTokens
-		? "const tokens = appTokens;"
-		: `const tokens = {\n\t...appTokens,\n${mergedTokenLines.join("\n")}\n};`;
-	return `import { defineConditions, definePreset, defineProperties, defineTokens${colorPaletteImport}${semanticTokenImport}${typeImports}${semanticTokenTypeImport} } from "pandwind/preset";
+	const tokenDeclaration =
+		componentGroups.length > 0
+			? "const tokens = componentTokens;"
+			: appSemanticGroups.length > 0
+				? "const tokens = appSemanticTokens;"
+				: "const tokens = appTokens;";
+	return `import { defineConditions, definePreset, defineProperties, defineTokens${typeImports} } from "pandwind/preset";
 
 const conditions = defineConditions(${JSON.stringify(presetConditions, null, "\t")} as const);
 const appTokens = defineTokens(${JSON.stringify(appTokens, null, "\t")} as const);
-${semanticTokenCatalogDeclaration}${appSemanticDeclaration}${componentDeclaration}${configDeclaration}
+${appSemanticDeclaration}${componentDeclaration}${configDeclaration}
 const properties = defineProperties(${presetPropertiesSource(rawSourceTokens)} as const);
 ${tokenDeclaration}${colorPaletteDeclaration}
 

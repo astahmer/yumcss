@@ -8,7 +8,7 @@ import { createDesignCss } from "../src/design/index.ts";
 import { createCx } from "../src/cx/index.ts";
 import { createHashFn, escapeIdentifier } from "../src/css/hash.ts";
 import { createNamedAtomsStrategy } from "../src/css/named-atoms-strategy.ts";
-import { definePreset, defineSemanticTokens, defineTokens } from "../src/types/define-preset.ts";
+import { definePreset, defineTokens } from "../src/types/define-preset.ts";
 import { examplePreset } from "@pandwind/example-preset";
 
 const conditions = { base: "", _dark: ".dark &" } as const;
@@ -20,7 +20,7 @@ const tokenPreset = (() => {
 			"$blue-700": "#2c5282",
 		},
 	});
-	const semantic = defineSemanticTokens(conditions, {
+	const semantic = raw.defineSemanticTokens(conditions, {
 		semantic: {
 			"bg.primary": {
 				base: raw.colors["$blue-600"],

@@ -52,11 +52,13 @@ export function buildTokenMaps(
 	const presetTokens = preset.tokens ?? {};
 	const presetProperties = preset.properties ?? {};
 	for (const group of Object.keys(presetTokens)) {
+		const groupTokenValues = presetTokens[group];
+		if (groupTokenValues === undefined || typeof groupTokenValues === "function") continue;
 		const tokenList = new Set<string>();
 		tokensByGroup.set(group, tokenList);
 
-		for (const tokenName of Object.keys(presetTokens[group]!)) {
-			const tokenValue = presetTokens[group]![tokenName];
+		for (const tokenName of Object.keys(groupTokenValues)) {
+			const tokenValue = groupTokenValues[tokenName];
 			if (tokenValue === undefined) continue;
 			const hash = pairs.join([group, tokenName]);
 			const cssVarHash = hashCssVar(pairs.join([group, tokenName]), debug);

@@ -2,10 +2,8 @@ import { expect, test } from "tstyche";
 import { createCss, type AtomicStyleProps } from "../src/css/index.ts";
 import {
 	definePreset,
-	defineSemanticTokens,
 	defineTokens,
 	type AnyCssConfig,
-	type SemanticTokenLayer,
 	type PandwindProperties,
 } from "../src/preset/index.ts";
 import type { StandardProperties as CsstypeStandardProperties } from "csstype";
@@ -138,20 +136,34 @@ test("semantic token references are checked against the supplied catalog", () =>
 	});
 	const conditions = { base: "", _dark: ".dark &" };
 
-	const semanticTokens = defineSemanticTokens(conditions, {
-		colors: {
+	const themedTokens = tokens.defineSemanticTokens(conditions, {
+		semantic: {
 			button: { base: "colors.brand", _dark: "colors.muted" },
 		},
-	} satisfies SemanticTokenLayer<typeof conditions, typeof tokens>);
+	});
 
-	expect(semanticTokens).type.toHaveProperty("colors");
+	expect(themedTokens).type.toHaveProperty("semantic");
 
-	defineSemanticTokens(conditions, {
-		colors: {
+	tokens.defineSemanticTokens(conditions, {
+		semantic: {
 			button: {
 				// @ts-expect-error not assignable
 				base: "colors.unknown",
+				// @ts-expect-error not assignable
+				_missing: "colors.brand",
 			},
 		},
-	} satisfies SemanticTokenLayer<typeof conditions, typeof tokens>);
+	});
+
+	const componentTokens = themedTokens.defineSemanticTokens(conditions, {
+		component: {
+			button: {
+				base: "colors.brand",
+				_dark: "colors.muted",
+			},
+		},
+	});
+
+	expect(componentTokens).type.toHaveProperty("colors");
+	expect(componentTokens).type.toHaveProperty("component");
 });

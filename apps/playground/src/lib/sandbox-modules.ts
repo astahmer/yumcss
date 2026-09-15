@@ -1,7 +1,7 @@
 import { createNamedAtomsStrategy } from "pandwind/css";
 import { createRuntimeCss, createRuntimeDesignCss } from "pandwind/css/runtime";
 import { createCx } from "pandwind/cx";
-import { definePreset, defineSemanticTokens, defineTheme, defineTokens } from "pandwind/preset";
+import { definePreset, defineTheme, defineTokens } from "pandwind/preset";
 import { examplePreset } from "@pandwind/example-preset";
 
 const isPreset = (value: unknown): value is typeof examplePreset =>
@@ -34,14 +34,12 @@ export const SANDBOX_MODULES = {
 	"pandwind/cx": { createCx },
 	"pandwind/preset": {
 		definePreset,
-		defineSemanticTokens,
 		defineTheme,
 		defineTokens,
 	},
 	"@pandwind/example-preset": {
 		examplePreset,
 		definePreset,
-		defineSemanticTokens,
 		defineTheme,
 		defineTokens,
 	},

@@ -1,12 +1,6 @@
 import { expect, test } from "tstyche";
 import { createCss } from "../src/css/create-css.ts";
-import {
-	defineColorPalettes,
-	definePreset,
-	defineProperties,
-	defineTokens,
-	type ColorPaletteDefinitions,
-} from "../src/preset/index.ts";
+import { definePreset, defineProperties, defineTokens } from "../src/preset/index.ts";
 
 const tokens = defineTokens({
 	colors: {
@@ -15,7 +9,7 @@ const tokens = defineTokens({
 	},
 });
 
-const palettes = defineColorPalettes({
+const palettes = tokens.defineColorPalettes({
 	brand: {
 		contrast: "colors.gray.500",
 		solid: "colors.blue.500",
@@ -48,15 +42,16 @@ test("color palettes expose only declared palette and virtual token names", () =
 });
 
 test("color palette sources are checked against the preset color tokens", () => {
-	const valid = {
+	const valid = tokens.defineColorPalettes({
 		brand: "colors.blue",
-	} satisfies ColorPaletteDefinitions<typeof tokens>;
+	});
 
 	expect(valid).type.toBe<{ brand: "colors.blue" }>();
 
-	const invalid = {
-		// @ts-expect-error not assignable
-		brand: "colors.missing",
-	} satisfies ColorPaletteDefinitions<typeof tokens>;
-	void invalid;
+	tokens.defineColorPalettes({
+		brand: {
+			// @ts-expect-error not assignable
+			solid: "colors.missing",
+		},
+	});
 });

@@ -134,14 +134,15 @@ Source revision: `c05a1b28`, `c05a1b28`
 
 Source revision: `c756d727d606533b6efdfdf9420c2ea3587cb65e`
 
-## Unreleased — 2026-09-13 typed token references
+## Unreleased — 2026-09-15 composable token catalogs
 
 ### API
 
-- Export `TokenReference` and `SemanticTokenLayer` type helpers for zero-runtime
-  validation of semantic token values against an app-owned `group.path`
-  catalog. This keeps token aliases autocomplete-safe without introducing a
-  runtime reference helper.
+- Make token catalogs composable through non-enumerable
+  `tokens.defineSemanticTokens(conditions, layer)` and
+  `tokens.defineColorPalettes(palettes)` methods. Semantic layers merge into a
+  new catalog, so raw, semantic, and component token groups can be chained
+  without a public type witness or standalone composer imports.
 
 ## Unreleased — 2026-09-13 static-first codemod output
 

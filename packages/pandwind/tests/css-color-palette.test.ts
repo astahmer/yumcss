@@ -1,12 +1,7 @@
 import { expect, test } from "vitest";
 import { createCss } from "../src/css/create-css.ts";
 import { createStylesheet } from "../src/css/create-stylesheet.ts";
-import {
-	defineColorPalettes,
-	definePreset,
-	defineProperties,
-	defineTokens,
-} from "../src/preset/index.ts";
+import { definePreset, defineProperties, defineTokens } from "../src/preset/index.ts";
 
 const tokens = defineTokens({
 	colors: {
@@ -16,7 +11,7 @@ const tokens = defineTokens({
 	},
 });
 
-const colorPalettes = defineColorPalettes({
+const colorPalettes = tokens.defineColorPalettes({
 	blue: "colors.blue",
 	brand: {
 		contrast: "colors.gray.500",
@@ -82,4 +77,27 @@ test("keeps palette aliases and their token references on the same virtual varia
 		output.indexOf(".colorPalette__brand{") + 500,
 	);
 	expect(paletteRule).toContain("var(--");
+});
+
+test("token composers remain non-enumerable and compose immutable catalogs", () => {
+	const conditions = { base: "", _dark: ".dark &" };
+	const themedTokens = tokens.defineSemanticTokens(conditions, {
+		colors: {
+			surface: {
+				base: "colors.blue.500",
+				_dark: "colors.gray.500",
+			},
+		},
+	});
+
+	expect(Object.keys(tokens)).toEqual(["colors"]);
+	expect(Object.keys(themedTokens)).toEqual(["colors"]);
+	expect(themedTokens.colors).toMatchObject({
+		"blue.500": "#3182ce",
+		surface: { base: "colors.blue.500", _dark: "colors.gray.500" },
+	});
+	expect(Object.prototype.propertyIsEnumerable.call(tokens, "defineSemanticTokens")).toBe(false);
+	expect(Object.prototype.propertyIsEnumerable.call(tokens, "defineColorPalettes")).toBe(false);
+	expect(tokens).not.toHaveProperty("semantic");
+	expect(themedTokens).toHaveProperty("colors.surface");
 });

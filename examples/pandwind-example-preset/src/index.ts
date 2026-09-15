@@ -1,12 +1,6 @@
-import {
-	definePreset,
-	defineSemanticTokens,
-	defineTheme,
-	defineTokens,
-	type PandwindProperties,
-} from "pandwind/preset";
+import { definePreset, defineTheme, defineTokens, type PandwindProperties } from "pandwind/preset";
 
-const tokens = defineTokens({
+const rawTokens = defineTokens({
 	colors: {
 		$white: "#ffffff",
 		$black: "#000000",
@@ -109,25 +103,33 @@ const tokens = defineTokens({
 	},
 });
 
-const semanticTokens = defineTokens({
+const tokens = defineTokens({
 	colors: {
-		brand: tokens.colors["$blue-600"],
-		success: tokens.colors["$green-500"],
-		error: tokens.colors["$red-500"],
+		...rawTokens.colors,
+		brand: rawTokens.colors["$blue-600"],
+		success: rawTokens.colors["$green-500"],
+		error: rawTokens.colors["$red-500"],
 	},
 	spacing: {
-		"button.padding": tokens.spacing["20"],
+		...rawTokens.spacing,
+		"button.padding": rawTokens.spacing["20"],
 	},
+	radii: rawTokens.radii,
+	fonts: rawTokens.fonts,
+	fontSizes: rawTokens.fontSizes,
+	fontWeights: rawTokens.fontWeights,
+	lineHeights: rawTokens.lineHeights,
+	letterSpacings: rawTokens.letterSpacings,
 });
 
 // Condition-bound tokens live in their own group and use
-// defineSemanticTokens (values keyed by preset condition names). They bridge
+// tokens.defineSemanticTokens (values keyed by preset condition names). They bridge
 // into @theme as --color-surface plus a `.dark` override rule.
-const conditionBoundTokens = defineSemanticTokens(
-	{ _dark: ".dark &" },
+const themedTokens = tokens.defineSemanticTokens(
+	{ base: "", _dark: ".dark &" },
 	{
 		semantic: {
-			surface: { base: tokens.colors["$gray-50"], _dark: tokens.colors["$gray-900"] },
+			surface: { base: "colors.$gray-50", _dark: "colors.$gray-900" },
 		},
 	},
 );
@@ -136,25 +138,7 @@ const cssConfig: PandwindProperties = {};
 
 const theme = defineTheme({
 	config: cssConfig,
-	tokens: {
-		colors: {
-			...tokens.colors,
-			...semanticTokens.colors,
-		},
-		semantic: {
-			...conditionBoundTokens.semantic,
-		},
-		spacing: {
-			...tokens.spacing,
-			...semanticTokens.spacing,
-		},
-		radii: tokens.radii,
-		fonts: tokens.fonts,
-		fontSizes: tokens.fontSizes,
-		fontWeights: tokens.fontWeights,
-		lineHeights: tokens.lineHeights,
-		letterSpacings: tokens.letterSpacings,
-	},
+	tokens: themedTokens,
 });
 
 export const examplePreset = definePreset(theme, {
@@ -188,14 +172,12 @@ export const examplePreset = definePreset(theme, {
 		color: {
 			$strictness: "inherits",
 			...tokens.colors,
-			...semanticTokens.colors,
 		},
 		backgroundColor: tokens.colors,
 		borderColor: tokens.colors,
 		borderRadius: tokens.radii,
 		padding: {
 			...tokens.spacing,
-			...semanticTokens.spacing,
 		},
 		marginTop: {
 			// $strictness: "inherits",

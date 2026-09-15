@@ -141,15 +141,15 @@ Put light/dark behavior in conditions and semantic tokens rather than
 duplicating component styles:
 
 ```ts
-import { defineSemanticTokens } from "pandwind/preset";
+import { defineConditions } from "pandwind/preset";
 
-const semanticConditions = {
+const semanticConditions = defineConditions({
 	base: "",
 	_dark: ".dark &",
 	_highContrast: "@media (prefers-contrast: more)",
-};
+});
 
-const semanticTokens = defineSemanticTokens(semanticConditions, {
+const themedTokens = tokens.defineSemanticTokens(semanticConditions, {
 	semantic: {
 		"bg.muted": { base: tokens.colors.$canvas, _dark: tokens.colors.$ink },
 		"fg.error": { base: "#b91c1c", _dark: "#fca5a5" },
@@ -167,7 +167,7 @@ const semanticTokens = defineSemanticTokens(semanticConditions, {
 export const preset = definePreset(
 	{
 		...theme,
-		tokens: { ...tokens, semantic: semanticTokens.semantic },
+		tokens: themedTokens,
 	},
 	{
 		strict: true,

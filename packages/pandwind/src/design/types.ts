@@ -5,6 +5,7 @@ import type {
 	CssConfigReturn,
 	DefinePresetOptions,
 	StyleObject,
+	TokenGroup,
 } from "../types/typings.ts";
 
 /* ---------------------------------------------------------------------------
@@ -17,12 +18,9 @@ import type {
  * intent, and the compiler is the contract.
  * -------------------------------------------------------------------------*/
 
-type TokenNames<TTokens, TGroup extends string> =
-	TTokens extends Record<string, Record<string, unknown>>
-		? TGroup extends keyof TTokens
-			? StringValuedKeys<TTokens[TGroup]>
-			: never
-		: never;
+type TokenNames<TTokens, TGroup extends string> = [TokenGroup<TTokens, TGroup>] extends [never]
+	? never
+	: StringValuedKeys<TokenGroup<TTokens, TGroup>>;
 
 /**
  * Keys whose token value is a plain string. Condition-bound tokens

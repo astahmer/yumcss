@@ -273,7 +273,7 @@ to the theme. A component token can point at one semantic token by string
 reference, or choose different semantic tokens for different conditions:
 
 ```ts
-import { defineSemanticTokens } from "pandwind/preset";
+import { defineTokens } from "pandwind/preset";
 import { tokens } from "./tokens";
 
 const conditions = {
@@ -281,14 +281,22 @@ const conditions = {
 	_dark: ".dark &",
 };
 
-const semantic = defineSemanticTokens(conditions, {
-	colors: {
-		surface: { base: tokens.colors["$surface"], _dark: "#111827" },
-		inverseSurface: { base: "#111827", _dark: tokens.colors["$surface"] },
+const baseTokens = defineTokens({
+	colors: tokens.colors,
+	component: {
+		"component.card.background": "semantic.surface",
 	},
 });
 
-const component = defineSemanticTokens(conditions, {
+
+const semanticTokens = baseTokens.defineSemanticTokens(conditions, {
+	semantic: {
+		surface: { base: "colors.$surface", _dark: "#111827" },
+		inverseSurface: { base: "#111827", _dark: "colors.$surface" },
+	},
+});
+
+const themedTokens = semanticTokens.defineSemanticTokens(conditions, {
 	component: {
 		"component.card.interactiveBackground": {
 			base: "semantic.surface",
@@ -297,14 +305,6 @@ const component = defineSemanticTokens(conditions, {
 	},
 });
 
-const themedTokens = {
-	...tokens,
-	semantic: semantic.colors,
-	component: {
-		"component.card.background": "semantic.surface",
-		...component.component,
-	},
-};
 ```
 
 The component can bind `backgroundColor` to `component` and write either
@@ -315,7 +315,7 @@ roles. The component does not choose a light or dark literal in JavaScript;
 the active theme scope changes the component variable's semantic reference.
 See [Theming](/api/theming/) for the full component-contract example.
 
-Here the empty `base` condition is needed because `defineSemanticTokens` uses
+Here the empty `base` condition is needed because `.defineSemanticTokens` uses
 `base` as a typed default branch. An ordinary preset condition map does not
 need a `base: ""` entry: top-level styles already use the base scope.
 

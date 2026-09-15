@@ -8,7 +8,6 @@ import {
 	defineConditions,
 	definePreset,
 	defineProperties,
-	defineSemanticTokens,
 	defineTokens,
 	type PandwindProperties,
 } from "../src/preset/index.ts";
@@ -64,7 +63,7 @@ test("definePreset JSDoc example preserves a custom typed vocabulary", () => {
 		spacing: { 4: "1rem" },
 	});
 	const conditions = defineConditions({ _hover: "&:hover", _dark: ".dark &" });
-	const semantic = defineSemanticTokens(conditions, {
+	const semantic = tokens.defineSemanticTokens(conditions, {
 		colors: { surface: { _dark: "#111827" } },
 	});
 	void semantic;
@@ -189,13 +188,13 @@ test("preset docs keep semantic and component token refs as strings", () => {
 		spacing: { 4: "1rem" },
 	});
 	const conditions = defineConditions({ base: "", _dark: ".dark &" });
-	const semanticTokens = defineSemanticTokens(conditions, {
+	const semanticTokens = rawTokens.defineSemanticTokens(conditions, {
 		semantic: {
 			"bg.surface": { base: rawTokens.colors["$surface"], _dark: "#111827" },
 			"bg.inverse": { base: "#111827", _dark: rawTokens.colors["$surface"] },
 		},
 	});
-	const componentTokens = defineSemanticTokens(conditions, {
+	const componentTokens = semanticTokens.defineSemanticTokens(conditions, {
 		component: {
 			"component.card.backgroundByMode": {
 				base: "semantic.bg.surface",

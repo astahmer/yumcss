@@ -157,8 +157,10 @@ export const createStylesheet = (
 	// Pre-compute the `:root` token declarations (the class-value maps live
 	// in the shared `buildTokenMaps`).
 	for (const group of Object.keys(presetTokens)) {
-		for (const tokenName of Object.keys(presetTokens[group]!)) {
-			const tokenValue = presetTokens[group]![tokenName];
+		const groupTokens = presetTokens[group];
+		if (groupTokens === undefined || typeof groupTokens === "function") continue;
+		for (const tokenName of Object.keys(groupTokens)) {
+			const tokenValue = groupTokens[tokenName];
 			if (tokenValue === undefined) continue;
 			const cssVarHash = hashCssVar(pairs.join([group, tokenName]), debug);
 			const tokenPath = `${group}.${tokenName}`;

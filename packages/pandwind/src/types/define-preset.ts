@@ -3,8 +3,10 @@ import type {
 	AnyTokens,
 	AnySemanticTokens,
 	AnySimpleTokens,
+	ColorPaletteDefinitions,
 	CssPreset,
 	DefinePresetOptions,
+	TokenCatalog,
 } from "./typings.ts";
 
 export * from "./typings.ts";
@@ -121,82 +123,69 @@ export function definePreset<
  *
  * @typeParam T - The inferred token groups and names.
  * @param tokens - String-valued token groups.
- * @returns The same token object, with literal keys preserved.
+ * @returns A token catalog with literal keys and non-enumerable composition methods.
  * @category tokens
  * @since 0.1.0
  */
-export const defineTokens = <T extends AnySimpleTokens>(tokens: T) => tokens;
+const createTokenCatalog = <T extends AnyTokens>(tokens: T): TokenCatalog<T> => {
+	const catalog = { ...tokens };
+	Object.defineProperties(catalog, {
+		defineSemanticTokens: {
+			enumerable: false,
+			value: (_conditions: AnyConditions, semanticTokens: AnySemanticTokens<string>) => {
+				const composed: AnyTokens = { ...catalog };
+				for (const [group, groupTokens] of Object.entries(semanticTokens)) {
+					const existingGroup = composed[group];
+					composed[group] =
+						existingGroup === undefined || typeof existingGroup === "function"
+							? (groupTokens as Record<string, string | Record<string, string>>)
+							: ({ ...existingGroup, ...groupTokens } as Record<
+									string,
+									string | Record<string, string>
+								>);
+				}
+				return createTokenCatalog(composed);
+			},
+		},
+		defineColorPalettes: {
+			enumerable: false,
+			value: (palettes: ColorPaletteDefinitions) => palettes,
+		},
+	});
+	return catalog as TokenCatalog<T>;
+};
 
 /**
- * Preserve named static color palette assignments for a preset.
+ * Preserve literal token names and return a composable token catalog.
  *
- * A string source exposes every suffix below a color-token root. An object
- * source gives a palette stable names whose values point at the project's own
- * color tokens. The stylesheet compiler turns either form into one class with
- * custom-property assignments; no runtime color map is required.
+ * Semantic layers are merged into a new catalog and can be chained. Color
+ * palettes remain separate preset metadata, but their token references are
+ * checked against this catalog.
  *
  * @example
  * ```ts
- * import { defineColorPalettes } from "pandwind/preset";
+ * import { defineConditions, defineTokens } from "pandwind/preset";
  *
- * const colorPalettes = defineColorPalettes({
- *   blue: "colors.blue",
- *   brand: {
- *     solid: "colors.blue.500",
- *     contrast: "colors.gray.50",
+ * const conditions = defineConditions({ base: "", _dark: ".dark &" });
+ * const tokens = defineTokens({ colors: { white: "#fff", black: "#000" } });
+ * const themedTokens = tokens.defineSemanticTokens(conditions, {
+ *   semantic: {
+ *     surface: { base: "colors.white", _dark: "colors.black" },
  *   },
+ * });
+ * const colorPalettes = themedTokens.defineColorPalettes({
+ *   brand: { solid: "colors.white" },
  * });
  * ```
  *
- * @typeParam T - The inferred palette names and token references.
- * @param palettes - Static palette roots or named token-reference maps.
- * @returns The same palette object, with its literal keys preserved.
+ * @typeParam T - The inferred token groups and names.
+ * @param tokens - String-valued token groups.
+ * @returns A token catalog with non-enumerable composition methods.
  * @category tokens
  * @since 0.1.0
  */
-export const defineColorPalettes = <
-	const T extends Record<string, string | Record<string, string>>,
->(
-	palettes: T,
-) => palettes;
-
-/**
- * Define token values that change under preset conditions such as `_dark`.
- *
- * Condition keys must exist in the condition map and are kept as branches
- * rather than flattened into one static value.
- * When semantic values are token paths, use the zero-runtime
- * {@link SemanticTokenLayer} witness with `satisfies` so references are
- * checked against the project's own token catalog.
- *
- * @example
- * ```ts
- * import { defineSemanticTokens, defineTokens, type SemanticTokenLayer } from "pandwind/preset";
- *
- * const tokens = defineTokens({ colors: { white: "#ffffff", black: "#000000" } });
- * const conditions = { base: "", _dark: ".dark &" };
- * const semanticTokens = defineSemanticTokens(conditions, {
- *   colors: {
- *     surface: { base: "colors.white", _dark: "colors.black" },
- *   },
- * } satisfies SemanticTokenLayer<typeof conditions, typeof tokens>);
- * ```
- *
- * @typeParam TConditions - The condition map used by the token values.
- * @typeParam TTokens - The inferred semantic token groups and names.
- * @param _conditions - Conditions available to the token values.
- * @param tokens - Token values keyed by those conditions.
- * @returns The same semantic token object, with literal keys preserved.
- * @category tokens
- * @since 0.1.0
- */
-export const defineSemanticTokens = <
-	TConditions extends AnyConditions,
-	TTokens extends AnySemanticTokens<keyof TConditions & string>,
->(
-	_conditions: TConditions,
-	tokens: TTokens,
-) => tokens;
+export const defineTokens = <T extends AnySimpleTokens>(tokens: T): TokenCatalog<T> =>
+	createTokenCatalog(tokens);
 
 /**
  * Preserve a condition map as typed preset metadata.

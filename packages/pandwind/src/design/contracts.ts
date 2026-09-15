@@ -31,6 +31,7 @@ export const createTokenLookup =
 	(group, value) => {
 		if (typeof value === "number") return Number.isFinite(value) ? String(value) : "";
 		const groupTokens = tokens?.[group];
+		if (typeof groupTokens === "function") return value;
 		if (groupTokens !== undefined && Object.hasOwn(groupTokens, value)) {
 			const tokenValue = groupTokens[value];
 			return typeof tokenValue === "string" ||

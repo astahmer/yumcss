@@ -640,7 +640,7 @@ export default <TokenCard />`,
 					},
 					{
 						name: "tokens.ts",
-						code: `import { definePreset, defineSemanticTokens, defineTokens } from "pandwind/preset";
+						code: `import { definePreset, defineTokens } from "pandwind/preset";
 
 const rawTokens = defineTokens({
 	colors: {
@@ -656,10 +656,19 @@ const rawTokens = defineTokens({
 	radii: { md: "0.375rem" },
 });
 
-const semanticTokens = defineSemanticTokens(
-	{ _dark: '[data-theme="dark"] &' },
+const baseTokens = defineTokens({
+	colors: rawTokens.colors,
+	spacing: {
+		...rawTokens.spacing,
+		"card.padding": rawTokens.spacing["20"],
+	},
+	radii: { ...rawTokens.radii, "card.radius": rawTokens.radii.md },
+});
+
+const tokens = baseTokens.defineSemanticTokens(
+	{ base: "", _dark: '[data-theme="dark"] &' },
 	{
-		colors: {
+		semantic: {
 			"bg.primary": { base: rawTokens.colors["$blue-600"], _dark: rawTokens.colors["$blue-700"] },
 			"bg.muted": { base: rawTokens.colors["$gray-200"], _dark: rawTokens.colors["$gray-700"] },
 			"fg.on-primary": { base: rawTokens.colors["$white"], _dark: rawTokens.colors["$white"] },
@@ -667,18 +676,6 @@ const semanticTokens = defineSemanticTokens(
 		},
 	},
 );
-
-const componentValues = defineTokens({
-	spacing: { "card.padding": rawTokens.spacing["20"] },
-	radii: { "card.radius": rawTokens.radii.md },
-});
-
-const tokens = {
-	colors: rawTokens.colors,
-	semantic: semanticTokens.colors,
-	spacing: rawTokens.spacing,
-	radii: { ...rawTokens.radii, ...componentValues.radii },
-};
 
 export const componentTokens = {
 	card: {
@@ -699,8 +696,8 @@ export const tokenPreset = definePreset(
 		properties: {
 			backgroundColor: { $tokens: "semantic" },
 			color: { $tokens: "semantic" },
-			padding: componentValues.spacing,
-			borderRadius: componentValues.radii,
+			padding: tokens.spacing,
+			borderRadius: tokens.radii,
 		},
 	},
 );`,
@@ -760,7 +757,7 @@ export default <EmptyState />`,
 					},
 					{
 						name: "tokens.ts",
-						code: `import { definePreset, defineSemanticTokens, defineTokens } from "pandwind/preset";
+						code: `import { definePreset, defineTokens } from "pandwind/preset";
 
 const rawTokens = defineTokens({
 	colors: {
@@ -782,7 +779,27 @@ const rawTokens = defineTokens({
 
 const themeConditions = { base: "", _dark: '[data-theme="dark"] &' };
 
-const semanticTokens = defineSemanticTokens(
+const directComponentTokens = defineTokens({
+	component: {
+		"component.card.borderWidth": "semantic.border.width.default",
+		"component.card.border": "semantic.border.default",
+		"component.card.radius": "semantic.radius.card",
+		"component.card.shadow": "semantic.shadow.card",
+		"component.card.padding": "semantic.space.card.padding",
+		"component.state.errorText": "semantic.fg.error",
+	},
+});
+
+const baseTokens = defineTokens({
+	colors: rawTokens.colors,
+	spacing: rawTokens.spacing,
+	radii: rawTokens.radii,
+	borders: rawTokens.borders,
+	shadows: rawTokens.shadows,
+	component: directComponentTokens.component,
+});
+
+const semanticTokens = baseTokens.defineSemanticTokens(
 	themeConditions,
 	{
 		semantic: {
@@ -802,18 +819,7 @@ const semanticTokens = defineSemanticTokens(
 	},
 );
 
-const directComponentTokens = defineTokens({
-	component: {
-		"component.card.borderWidth": "semantic.border.width.default",
-		"component.card.border": "semantic.border.default",
-		"component.card.radius": "semantic.radius.card",
-		"component.card.shadow": "semantic.shadow.card",
-		"component.card.padding": "semantic.space.card.padding",
-		"component.state.errorText": "semantic.fg.error",
-	},
-});
-
-const conditionalComponentTokens = defineSemanticTokens(themeConditions, {
+const tokens = semanticTokens.defineSemanticTokens(themeConditions, {
 	component: {
 		"component.state.emptyBg": {
 			base: "semantic.bg.muted",
@@ -829,15 +835,6 @@ const conditionalComponentTokens = defineSemanticTokens(themeConditions, {
 		},
 	},
 });
-
-const tokens = {
-	colors: rawTokens.colors,
-	semantic: semanticTokens.semantic,
-	component: {
-		...directComponentTokens.component,
-		...conditionalComponentTokens.component,
-	},
-};
 
 export const tokenPreset = definePreset(
 	{ config: {} as Record<string, unknown>, tokens },

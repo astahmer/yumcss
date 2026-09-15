@@ -419,8 +419,10 @@ describe("example catalog evaluates end to end", () => {
 		expect(source).not.toContain("componentTokens");
 		const tokenSource = variant.files[1]?.code ?? "";
 		expect(tokenSource).toContain("const rawTokens = defineTokens");
-		expect(tokenSource).toContain("const semanticTokens = defineSemanticTokens");
-		expect(tokenSource).toContain("const conditionalComponentTokens = defineSemanticTokens");
+		expect(tokenSource).toContain("const semanticTokens = baseTokens.defineSemanticTokens");
+		expect(tokenSource).toContain(
+			"const tokens = semanticTokens.defineSemanticTokens(themeConditions",
+		);
 		expect(tokenSource).toContain('"component.card.borderWidth": "semantic.border.width.default"');
 		expect(tokenSource).toContain('base: "semantic.bg.muted"');
 		expect(tokenSource).toContain('_dark: "semantic.bg.primary"');

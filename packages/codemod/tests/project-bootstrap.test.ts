@@ -95,6 +95,7 @@ describe("Pandwind project bootstrap", () => {
 
 		const preset = support.files.find((file) => file.path === "pandwind/preset.ts")?.content;
 		expect(preset).toContain("defineColorPalettes");
+		expect(preset).toContain("tokens.defineColorPalettes");
 		expect(preset).toContain('"blue": "colors.blue"');
 		expect(preset).toContain("\n\t\tcolorPalettes,");
 		expect(preset).not.toContain('"button": "colors.button"');
@@ -194,7 +195,7 @@ describe("Pandwind project bootstrap", () => {
 		});
 
 		const preset = support.files.find((file) => file.path === "pandwind/preset.ts")?.content;
-		expect(preset).toContain("const componentTokens = defineSemanticTokens");
+		expect(preset).toContain("const componentTokens = appTokens.defineSemanticTokens");
 		expect(preset).toContain('"raw.component-card-border": "#654321"');
 		expect(preset).toContain(
 			'"component-card-border": {\n\t\t\t"base": "colors.raw.component-card-border"\n\t\t}',

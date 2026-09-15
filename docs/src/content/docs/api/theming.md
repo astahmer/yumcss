@@ -39,7 +39,6 @@ stable contract without importing a JavaScript token map:
 // tokens.ts — the design-system package
 import {
 	definePreset,
-	defineSemanticTokens,
 	defineTokens,
 	type PandwindProperties,
 } from "pandwind/preset";
@@ -58,7 +57,24 @@ const rawTokens = defineTokens({
 
 const themeConditions = { base: "", _dark: '[data-theme="dark"] &' };
 
-const semanticTokens = defineSemanticTokens(
+
+const baseTokens = defineTokens({
+	colors: rawTokens.colors,
+	spacing: rawTokens.spacing,
+	radii: rawTokens.radii,
+	borders: rawTokens.borders,
+	shadows: rawTokens.shadows,
+	component: {
+		"component.card.borderWidth": "semantic.border.width.default",
+		"component.card.border": "semantic.border.default",
+		"component.card.radius": "semantic.radius.card",
+		"component.card.shadow": "semantic.shadow.card",
+		"component.card.padding": "semantic.space.card.padding",
+		"component.state.errorText": "semantic.fg.error",
+	},
+});
+
+const semanticTokens = baseTokens.defineSemanticTokens(
 	themeConditions,
 	{
 		semantic: {
@@ -79,18 +95,7 @@ const semanticTokens = defineSemanticTokens(
 	},
 );
 
-const directComponentTokens = defineTokens({
-	component: {
-		"component.card.borderWidth": "semantic.border.width.default",
-		"component.card.border": "semantic.border.default",
-		"component.card.radius": "semantic.radius.card",
-		"component.card.shadow": "semantic.shadow.card",
-		"component.card.padding": "semantic.space.card.padding",
-		"component.state.errorText": "semantic.fg.error",
-	},
-});
-
-const conditionalComponentTokens = defineSemanticTokens(themeConditions, {
+const tokens = semanticTokens.defineSemanticTokens(themeConditions, {
 	component: {
 		"component.state.emptyBg": {
 			base: "semantic.bg.muted",
@@ -106,15 +111,6 @@ const conditionalComponentTokens = defineSemanticTokens(themeConditions, {
 		},
 	},
 });
-
-const tokens = {
-	...rawTokens,
-	semantic: semanticTokens.semantic,
-	component: {
-		...directComponentTokens.component,
-		...conditionalComponentTokens.component,
-	},
-};
 
 const cssConfig: PandwindProperties = {};
 

@@ -1,5 +1,5 @@
 import type { Properties } from "csstype";
-import { definePreset, defineSemanticTokens, defineTheme, defineTokens } from "pandwind/preset";
+import { definePreset, defineTheme, defineTokens } from "pandwind/preset";
 
 const rawTokens = defineTokens({
 	colors: {
@@ -68,115 +68,113 @@ const rawTokens = defineTokens({
 	},
 });
 
-const semanticTokens = defineSemanticTokens(
-	{ _light: '[data-theme="light"] &' },
-	{
-		colors: {
-			page: { base: rawTokens.colors["$page-dark"], _light: rawTokens.colors["$page-light"] },
-			surface: {
-				base: rawTokens.colors["$surface-dark"],
-				_light: rawTokens.colors["$surface-light"],
-			},
-			surfaceRaised: {
-				base: rawTokens.colors["$surface-raised-dark"],
-				_light: rawTokens.colors["$surface-raised-light"],
-			},
-			control: {
-				base: rawTokens.colors["$control-dark"],
-				_light: rawTokens.colors["$control-light"],
-			},
-			controlSelected: {
-				base: rawTokens.colors["$control-selected-dark"],
-				_light: rawTokens.colors["$control-selected-light"],
-			},
-			controlHover: {
-				base: rawTokens.colors["$control-hover-dark"],
-				_light: rawTokens.colors["$control-hover-light"],
-			},
-			text: { base: rawTokens.colors["$text-dark"], _light: rawTokens.colors["$text-light"] },
-			textStrong: {
-				base: rawTokens.colors["$text-strong-dark"],
-				_light: rawTokens.colors["$text-strong-light"],
-			},
-			textSoft: {
-				base: rawTokens.colors["$text-soft-dark"],
-				_light: rawTokens.colors["$text-soft-light"],
-			},
-			textMuted: {
-				base: rawTokens.colors["$text-muted-dark"],
-				_light: rawTokens.colors["$text-muted-light"],
-			},
-			textFaint: {
-				base: rawTokens.colors["$text-faint-dark"],
-				_light: rawTokens.colors["$text-faint-light"],
-			},
-			textDisabled: {
-				base: rawTokens.colors["$text-disabled-dark"],
-				_light: rawTokens.colors["$text-disabled-light"],
-			},
-			border: {
-				base: rawTokens.colors["$border-dark"],
-				_light: rawTokens.colors["$border-light"],
-			},
-			borderStrong: {
-				base: rawTokens.colors["$border-strong-dark"],
-				_light: rawTokens.colors["$border-strong-light"],
-			},
-			borderHover: {
-				base: rawTokens.colors["$border-hover-dark"],
-				_light: rawTokens.colors["$border-hover-light"],
-			},
-			accent: {
-				base: rawTokens.colors["$accent-dark"],
-				_light: rawTokens.colors["$accent-light"],
-			},
-			accentText: {
-				base: rawTokens.colors["$accent-text-dark"],
-				_light: rawTokens.colors["$accent-text-light"],
-			},
-			accentSoft: {
-				base: rawTokens.colors["$accent-soft-dark"],
-				_light: rawTokens.colors["$accent-soft-light"],
-			},
-			success: {
-				base: rawTokens.colors["$success-dark"],
-				_light: rawTokens.colors["$success-light"],
-			},
-			warning: {
-				base: rawTokens.colors["$warning-dark"],
-				_light: rawTokens.colors["$warning-light"],
-			},
-			info: { base: rawTokens.colors["$info-dark"], _light: rawTokens.colors["$info-light"] },
-			danger: {
-				base: rawTokens.colors["$danger-dark"],
-				_light: rawTokens.colors["$danger-light"],
-			},
-			codeSurface: {
-				base: rawTokens.colors["$code-surface-dark"],
-				_light: rawTokens.colors["$code-surface-light"],
-			},
+const themeConditions = { base: "", _light: '[data-theme="light"] &' };
+const semanticTokens = rawTokens.defineSemanticTokens(themeConditions, {
+	colors: {
+		page: { base: rawTokens.colors["$page-dark"], _light: rawTokens.colors["$page-light"] },
+		surface: {
+			base: rawTokens.colors["$surface-dark"],
+			_light: rawTokens.colors["$surface-light"],
 		},
-		shadows: {
-			menu: { base: rawTokens.shadows["$menu-dark"], _light: rawTokens.shadows["$menu-light"] },
-			focus: { base: rawTokens.shadows["$focus-dark"], _light: rawTokens.shadows["$focus-light"] },
-			glow: { base: rawTokens.shadows["$glow-dark"], _light: rawTokens.shadows["$glow-light"] },
+		surfaceRaised: {
+			base: rawTokens.colors["$surface-raised-dark"],
+			_light: rawTokens.colors["$surface-raised-light"],
 		},
-		borders: {
-			hairline: {
-				base: rawTokens.borders["$hairline-dark"],
-				_light: rawTokens.borders["$hairline-light"],
-			},
-			strong: {
-				base: rawTokens.borders["$strong-dark"],
-				_light: rawTokens.borders["$strong-light"],
-			},
-			hover: {
-				base: rawTokens.borders["$hover-dark"],
-				_light: rawTokens.borders["$hover-light"],
-			},
+		control: {
+			base: rawTokens.colors["$control-dark"],
+			_light: rawTokens.colors["$control-light"],
+		},
+		controlSelected: {
+			base: rawTokens.colors["$control-selected-dark"],
+			_light: rawTokens.colors["$control-selected-light"],
+		},
+		controlHover: {
+			base: rawTokens.colors["$control-hover-dark"],
+			_light: rawTokens.colors["$control-hover-light"],
+		},
+		text: { base: rawTokens.colors["$text-dark"], _light: rawTokens.colors["$text-light"] },
+		textStrong: {
+			base: rawTokens.colors["$text-strong-dark"],
+			_light: rawTokens.colors["$text-strong-light"],
+		},
+		textSoft: {
+			base: rawTokens.colors["$text-soft-dark"],
+			_light: rawTokens.colors["$text-soft-light"],
+		},
+		textMuted: {
+			base: rawTokens.colors["$text-muted-dark"],
+			_light: rawTokens.colors["$text-muted-light"],
+		},
+		textFaint: {
+			base: rawTokens.colors["$text-faint-dark"],
+			_light: rawTokens.colors["$text-faint-light"],
+		},
+		textDisabled: {
+			base: rawTokens.colors["$text-disabled-dark"],
+			_light: rawTokens.colors["$text-disabled-light"],
+		},
+		border: {
+			base: rawTokens.colors["$border-dark"],
+			_light: rawTokens.colors["$border-light"],
+		},
+		borderStrong: {
+			base: rawTokens.colors["$border-strong-dark"],
+			_light: rawTokens.colors["$border-strong-light"],
+		},
+		borderHover: {
+			base: rawTokens.colors["$border-hover-dark"],
+			_light: rawTokens.colors["$border-hover-light"],
+		},
+		accent: {
+			base: rawTokens.colors["$accent-dark"],
+			_light: rawTokens.colors["$accent-light"],
+		},
+		accentText: {
+			base: rawTokens.colors["$accent-text-dark"],
+			_light: rawTokens.colors["$accent-text-light"],
+		},
+		accentSoft: {
+			base: rawTokens.colors["$accent-soft-dark"],
+			_light: rawTokens.colors["$accent-soft-light"],
+		},
+		success: {
+			base: rawTokens.colors["$success-dark"],
+			_light: rawTokens.colors["$success-light"],
+		},
+		warning: {
+			base: rawTokens.colors["$warning-dark"],
+			_light: rawTokens.colors["$warning-light"],
+		},
+		info: { base: rawTokens.colors["$info-dark"], _light: rawTokens.colors["$info-light"] },
+		danger: {
+			base: rawTokens.colors["$danger-dark"],
+			_light: rawTokens.colors["$danger-light"],
+		},
+		codeSurface: {
+			base: rawTokens.colors["$code-surface-dark"],
+			_light: rawTokens.colors["$code-surface-light"],
 		},
 	},
-);
+	shadows: {
+		menu: { base: rawTokens.shadows["$menu-dark"], _light: rawTokens.shadows["$menu-light"] },
+		focus: { base: rawTokens.shadows["$focus-dark"], _light: rawTokens.shadows["$focus-light"] },
+		glow: { base: rawTokens.shadows["$glow-dark"], _light: rawTokens.shadows["$glow-light"] },
+	},
+	borders: {
+		hairline: {
+			base: rawTokens.borders["$hairline-dark"],
+			_light: rawTokens.borders["$hairline-light"],
+		},
+		strong: {
+			base: rawTokens.borders["$strong-dark"],
+			_light: rawTokens.borders["$strong-light"],
+		},
+		hover: {
+			base: rawTokens.borders["$hover-dark"],
+			_light: rawTokens.borders["$hover-light"],
+		},
+	},
+});
 
 const theme = defineTheme({
 	config: {} as Properties,
@@ -187,7 +185,7 @@ export type PlaygroundColorToken = keyof typeof semanticTokens.colors;
 
 export const playgroundPreset = definePreset(theme, {
 	strict: true,
-	conditions: { _light: '[data-theme="light"] &' },
+	conditions: themeConditions,
 	properties: {
 		backgroundColor: { $tokens: "colors", $strictness: "inherits" },
 		color: { $tokens: "colors", $strictness: "inherits" },

@@ -219,7 +219,7 @@ describe("supporting migration primitives", () => {
 		);
 		expect(preset).toContain("defineTokens");
 		expect(preset).toContain("defineSemanticTokens");
-		expect(preset).toContain("const componentTokens = defineSemanticTokens");
+		expect(preset).toContain("const componentTokens = appSemanticTokens.defineSemanticTokens");
 		expect(preset).toContain("defineProperties");
 		expect(preset).toContain('"component.card.border"');
 		expect(preset).toContain('"base": "colors.brand"');
@@ -267,6 +267,7 @@ describe("supporting migration primitives", () => {
 		const preset = renderPandaPreset(theme);
 
 		expect(preset).toContain("defineColorPalettes");
+		expect(preset).toContain("tokens.defineColorPalettes");
 		expect(preset).toContain('blue: "colors.blue"');
 		expect(preset).toContain('gray: "colors.gray"');
 		expect(preset).toContain("colorPalettes,");

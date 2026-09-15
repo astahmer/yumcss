@@ -79,8 +79,10 @@ export const createRuntimeStylesheet = (
 	// in the shared `buildTokenMaps`). Runtime sheets always emit the complete
 	// token prelude, so no used-token tracking is needed here.
 	for (const group of Object.keys(presetTokens)) {
-		for (const tokenName of Object.keys(presetTokens[group]!)) {
-			const tokenValue = presetTokens[group]![tokenName];
+		const groupTokens = presetTokens[group];
+		if (groupTokens === undefined || typeof groupTokens === "function") continue;
+		for (const tokenName of Object.keys(groupTokens)) {
+			const tokenValue = groupTokens[tokenName];
 			if (tokenValue === undefined) continue;
 			const cssVarHash = hashCssVar(pairs.join([group, tokenName]), debug);
 			const tokenPath = `${group}.${tokenName}`;

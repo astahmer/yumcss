@@ -97,7 +97,7 @@ type PropConfigValues<
 	| true
 	| (Value & {
 			$strictness?: "inherits";
-			$tokens?: keyof TTokens;
+			$tokens?: TokenGroupKey<TTokens>;
 	  });
 
 /**
@@ -152,31 +152,86 @@ export interface TokenDeclaration {
 /** The authored raw-token shape accepted by {@link defineTokens}. */
 export type AnySimpleTokens = Record<string, Record<string, string>>;
 
-/** Condition-aware token shape accepted by {@link defineSemanticTokens}. */
+/** Condition-aware token shape accepted by a token catalog's `defineSemanticTokens`. */
 export type AnySemanticTokens<TConds extends string> = Record<
 	string,
 	Record<string, Partial<Record<TConds, string>>>
 >;
 
+type TokenValue = string | Record<string, string>;
+type TokenCatalogMethod = (...args: never[]) => unknown;
+
+/** Token maps plus the non-enumerable composers returned by `defineTokens`. */
+export type AnyTokens = Record<string, Record<string, TokenValue> | TokenCatalogMethod>;
+
+/** The authored token-group keys, excluding the catalog's composer methods. */
+export type TokenGroupKey<TTokens> = string extends keyof TTokens
+	? string
+	: {
+			[TGroup in Extract<keyof TTokens, string>]: TTokens[TGroup] extends Record<string, TokenValue>
+				? TGroup
+				: never;
+		}[Extract<keyof TTokens, string>];
+
+/** The token group at one authored catalog key. */
+export type TokenGroup<TTokens, TGroup extends string> = TGroup extends keyof TTokens
+	? TTokens[TGroup] extends Record<string, TokenValue>
+		? TTokens[TGroup]
+		: never
+	: never;
+
 /** Every `group.name` path available in a token catalog. */
 export type TokenReference<TTokens> = {
-	[TGroup in Extract<keyof TTokens, string>]: `${TGroup}.${Extract<keyof TTokens[TGroup], string>}`;
-}[Extract<keyof TTokens, string>];
+	[TGroup in TokenGroupKey<TTokens>]: `${TGroup}.${Extract<
+		keyof TokenGroup<TTokens, TGroup>,
+		string
+	>}`;
+}[TokenGroupKey<TTokens>];
 
-/** A condition-aware token layer whose values must reference the catalog. */
-export type SemanticTokenLayer<TConditions extends AnyConditions, TTokens> = {
-	[TGroup in Extract<keyof TTokens, string>]?: {
-		[TTokenName: string]: Partial<
-			Record<Extract<keyof TConditions, string>, TokenReference<TTokens>>
-		>;
+type SemanticTokenValue<TTokens, TValue> = TValue extends string
+	? TValue extends TokenReference<TTokens>
+		? TValue
+		: TValue extends `${TokenGroupKey<TTokens>}.${string}`
+			? never
+			: TValue
+	: never;
+
+type ValidatedSemanticTokens<
+	TConditions extends AnyConditions,
+	TTokens,
+	TLayer extends AnySemanticTokens<Extract<keyof TConditions, string>>,
+> = {
+	[TGroup in keyof TLayer]: {
+		[TTokenName in keyof TLayer[TGroup]]: TLayer[TGroup][TTokenName] extends infer TValues
+			? TValues extends object
+				? {
+						[TCondition in keyof TValues]: TCondition extends Extract<keyof TConditions, string>
+							? SemanticTokenValue<TTokens, TValues[TCondition]>
+							: never;
+					}
+				: never
+			: never;
 	};
 };
 
 /** The normalized token shape carried by a compiled preset. */
-type TokenValue = string | Record<string, string>;
-export type AnyTokens = Record<string, Record<string, TokenValue>>;
+export type TokenCatalog<TTokens extends AnyTokens> = TTokens & {
+	readonly defineSemanticTokens: <
+		const TConditions extends AnyConditions,
+		const TLayer extends AnySemanticTokens<Extract<keyof TConditions, string>>,
+	>(
+		conditions: TConditions,
+		semanticTokens: TLayer & ValidatedSemanticTokens<TConditions, TTokens, TLayer>,
+	) => TokenCatalog<TTokens & TLayer>;
+	readonly defineColorPalettes: <TPalettes extends ColorPaletteDefinitions<TTokens>>(
+		palettes: TPalettes,
+	) => TPalettes;
+};
 
-type ColorTokenName<TTokens extends AnyTokens> = Extract<keyof TTokens["colors"], string>;
+type ColorTokenName<TTokens extends AnyTokens> = Extract<
+	keyof TokenGroup<TTokens, "colors">,
+	string
+>;
 
 type ColorPalettePrefix<TPath extends string> = TPath extends `${infer Head}.${infer Tail}`
 	? Tail extends `${string}.${string}`
@@ -311,8 +366,8 @@ type ColorPaletteValue<
 type InferPropValues<TTokens extends AnyTokens, Value> = Value extends {
 	$tokens: infer TTokenName;
 }
-	? TTokenName extends keyof TTokens
-		? Extract<keyof TTokens[TTokenName], AuthoredValueName> | ExplicitTokenNames<Value>
+	? TTokenName extends TokenGroupKey<TTokens>
+		? Extract<keyof TokenGroup<TTokens, TTokenName>, AuthoredValueName> | ExplicitTokenNames<Value>
 		: ExplicitTokenNames<Value>
 	: ExplicitTokenNames<Value>;
 
