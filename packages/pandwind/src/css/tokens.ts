@@ -24,6 +24,15 @@ export interface TokenMaps {
 	groupByProp: Map<string, string>;
 	flatTokens: Map<string, Token>;
 	tokensByGroup: Map<string, Set<string>>;
+	colorPalettes: Map<string, readonly ColorPaletteAssignment[]>;
+	colorPaletteValues: Map<string, string>;
+}
+
+export interface ColorPaletteAssignment {
+	readonly suffix: string;
+	readonly cssVar: string;
+	readonly value: string;
+	readonly tokenPath: string;
 }
 
 const cssVarRef = (key: string) => `var(--${key})`;
@@ -122,7 +131,69 @@ export function buildTokenMaps(
 		}
 	}
 
-	return { tokensByProp, groupByProp, flatTokens, tokensByGroup };
+	const colorPalettes = new Map<string, readonly ColorPaletteAssignment[]>();
+	const colorPaletteValues = new Map<string, string>();
+	const paletteSources = preset.colorPalettes ?? {};
+	for (const [paletteName, source] of Object.entries(paletteSources)) {
+		const assignments = new Map<string, ColorPaletteAssignment>();
+		if (typeof source === "string") {
+			const seenTokenPaths = new Set<string>();
+			for (const token of flatTokens.values()) {
+				if (seenTokenPaths.has(token.path)) continue;
+				seenTokenPaths.add(token.path);
+				const prefix = `${source}.`;
+				const suffix =
+					token.path === source
+						? ""
+						: token.path.startsWith(prefix)
+							? token.path.slice(prefix.length)
+							: undefined;
+				if (suffix === undefined) continue;
+				const cssVarHash = hashCssVar(pairs.join(["colors", "colorPalette", suffix]), debug);
+				const tokenVar = tokenCssVar(token);
+				if (tokenVar === undefined) continue;
+				assignments.set(suffix, {
+					suffix,
+					cssVar: cssVarHash,
+					value: tokenVar,
+					tokenPath: token.path,
+				});
+			}
+		} else if (isRecord(source)) {
+			for (const [suffix, tokenPath] of Object.entries(source)) {
+				if (typeof tokenPath !== "string") continue;
+				const token = flatTokens.get(tokenPath);
+				const tokenVar = token === undefined ? undefined : tokenCssVar(token);
+				if (token === undefined || tokenVar === undefined) continue;
+				const cssVarHash = hashCssVar(pairs.join(["colors", "colorPalette", suffix]), debug);
+				assignments.set(suffix, {
+					suffix,
+					cssVar: cssVarHash,
+					value: tokenVar,
+					tokenPath: token.path,
+				});
+			}
+		}
+
+		const orderedAssignments = Array.from(assignments.values()).toSorted((a, b) =>
+			a.suffix.localeCompare(b.suffix),
+		);
+		if (orderedAssignments.length === 0) continue;
+		colorPalettes.set(paletteName, orderedAssignments);
+		for (const assignment of orderedAssignments) {
+			const virtualName = assignment.suffix ? `colorPalette.${assignment.suffix}` : "colorPalette";
+			colorPaletteValues.set(virtualName, cssVarRef(assignment.cssVar));
+		}
+	}
+
+	return {
+		tokensByProp,
+		groupByProp,
+		flatTokens,
+		tokensByGroup,
+		colorPalettes,
+		colorPaletteValues,
+	};
 }
 
 const tokenCssVar = (token: Token): string | undefined =>
@@ -202,6 +273,10 @@ export function resolveTokenValue(
 	valueOrTokenName: string,
 	opts?: { concrete?: boolean },
 ): string {
+	if (maps.groupByProp.get(prop) === "colors") {
+		const colorPaletteValue = maps.colorPaletteValues.get(valueOrTokenName);
+		if (colorPaletteValue !== undefined) return colorPaletteValue;
+	}
 	if (!maps.tokensByProp.has(prop)) return valueOrTokenName;
 
 	const tokenList = maps.tokensByProp.get(prop)!;

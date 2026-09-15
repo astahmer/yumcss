@@ -176,6 +176,38 @@ export type SemanticTokenLayer<TConditions extends AnyConditions, TTokens> = {
 type TokenValue = string | Record<string, string>;
 export type AnyTokens = Record<string, Record<string, TokenValue>>;
 
+type ColorTokenName<TTokens extends AnyTokens> = Extract<keyof TTokens["colors"], string>;
+
+type ColorPalettePrefix<TPath extends string> = TPath extends `${infer Head}.${infer Tail}`
+	? Tail extends `${string}.${string}`
+		? Head | `${Head}.${ColorPalettePrefix<Tail>}`
+		: Head
+	: TPath;
+
+type ColorPaletteSourcePath<TTokens extends AnyTokens> =
+	ColorTokenName<TTokens> extends infer TPath
+		? TPath extends string
+			? `colors.${ColorPalettePrefix<TPath>}`
+			: never
+		: `colors.${string}`;
+
+type ColorPaletteTokenPath<TTokens extends AnyTokens> =
+	Extract<TokenReference<TTokens>, `colors.${string}`> extends infer TPath
+		? [TPath] extends [never]
+			? `colors.${string}`
+			: TPath
+		: never;
+
+/** A static color palette root or a named map of color token references. */
+export type ColorPaletteSource<TTokens extends AnyTokens = AnyTokens> =
+	| ColorPaletteSourcePath<TTokens>
+	| { readonly [TName: string]: ColorPaletteTokenPath<TTokens> };
+
+/** Color palettes accepted by a preset, keyed by the authored palette name. */
+export type ColorPaletteDefinitions<TTokens extends AnyTokens = AnyTokens> = {
+	readonly [TName: string]: ColorPaletteSource<TTokens>;
+};
+
 /** Runtime and typing metadata consumed by Pandwind CSS factories.
  *
  * @typeParam TConfig - The project's CSS property configuration.
@@ -190,6 +222,7 @@ export interface CssPreset<
 	TTokens extends AnyTokens = AnyTokens,
 	TConditions extends AnyConditions = AnyConditions,
 	TProps extends AnyPresetProperties<TConfig, TTokens> = AnyPresetProperties<TConfig, TTokens>,
+	TColorPalettes extends ColorPaletteDefinitions<TTokens> = ColorPaletteDefinitions<TTokens>,
 > {
 	/** Condition names mapped to selectors or at-rules. */
 	conditions: TConditions;
@@ -197,6 +230,8 @@ export interface CssPreset<
 	properties: TProps;
 	/** Whether mapped properties default to token-only values. */
 	strict: boolean;
+	/** Static palette assignments for the virtual `colorPalette.*` token family. */
+	colorPalettes?: TColorPalettes;
 }
 
 /** Values portion passed to {@link definePreset}. */
@@ -211,7 +246,13 @@ export interface DefinePresetOptions<
 /** Theme values combined with preset behavior. */
 export interface CssConfigReturn<
 	TTheme extends DefinePresetOptions = DefinePresetOptions,
-> extends CssPreset<TTheme["config"]> {
+> extends CssPreset<
+	TTheme["config"],
+	TTheme["tokens"],
+	AnyConditions,
+	AnyPresetProperties<TTheme["config"], TTheme["tokens"]>,
+	ColorPaletteDefinitions<TTheme["tokens"]>
+> {
 	_config: TTheme["config"];
 	tokens: TTheme["tokens"];
 }
@@ -227,7 +268,47 @@ type ExplicitTokenNames<Value> = Extract<
 	AuthoredValueName
 >;
 
-type InferPropValues<TTokens, Value> = Value extends {
+type ColorPaletteConfig<TPreset> = NonNullable<
+	TPreset extends { colorPalettes?: infer TColorPalettes } ? TColorPalettes : never
+>;
+
+type ColorPaletteNames<TPreset> = Extract<keyof ColorPaletteConfig<TPreset>, string>;
+
+type ColorPaletteSuffixes<
+	TTokens extends AnyTokens,
+	TSource,
+> = TSource extends `colors.${infer TPrefix}`
+	? ColorTokenName<TTokens> extends infer TPath
+		? TPath extends TPrefix
+			? ""
+			: TPath extends `${TPrefix}.${infer TSuffix}`
+				? TSuffix
+				: never
+		: never
+	: TSource extends { readonly [TName: string]: string }
+		? Extract<keyof TSource, string>
+		: never;
+
+type ColorPaletteVirtualNames<TTokens extends AnyTokens, TPreset> =
+	ColorPaletteNames<TPreset> extends infer TPalette
+		? TPalette extends keyof ColorPaletteConfig<TPreset>
+			? ColorPaletteSuffixes<TTokens, ColorPaletteConfig<TPreset>[TPalette]> extends infer TSuffix
+				? TSuffix extends string
+					? TSuffix extends ""
+						? "colorPalette"
+						: `colorPalette.${TSuffix}`
+					: never
+				: never
+			: never
+		: never;
+
+type ColorPaletteValue<
+	TName extends string,
+	TTokens extends AnyTokens,
+	TPreset,
+> = TName extends ColorPropertyName ? ColorPaletteVirtualNames<TTokens, TPreset> : never;
+
+type InferPropValues<TTokens extends AnyTokens, Value> = Value extends {
 	$tokens: infer TTokenName;
 }
 	? TTokenName extends keyof TTokens
@@ -235,18 +316,35 @@ type InferPropValues<TTokens, Value> = Value extends {
 		: ExplicitTokenNames<Value>
 	: ExplicitTokenNames<Value>;
 
-type StrictValue<TConfig, TTokens, TName extends string, Value> = Value extends {
+type StrictValue<
+	TConfig,
+	TTokens extends AnyTokens,
+	TName extends string,
+	Value,
+	TPreset,
+> = Value extends {
 	$strictness: "inherits";
 }
-	? MaybeColorOpacity<TName, InferPropValues<TTokens, Value>> | ConfigPropertyValue<TConfig, TName>
-	: MaybeColorOpacity<TName, InferPropValues<TTokens, Value>>;
+	?
+			| MaybeColorOpacity<
+					TName,
+					InferPropValues<TTokens, Value> | ColorPaletteValue<TName, TTokens, TPreset>
+			  >
+			| ConfigPropertyValue<TConfig, TName>
+	: MaybeColorOpacity<
+			TName,
+			InferPropValues<TTokens, Value> | ColorPaletteValue<TName, TTokens, TPreset>
+		>;
 
-type PropValue<TConfig, TTokens, TName extends string, Value, Strict> =
+type PropValue<TConfig, TTokens extends AnyTokens, TName extends string, Value, Strict, TPreset> =
 	| (Value extends boolean
 			? ConfigPropertyValue<TConfig, TName>
 			: Strict extends true | undefined
-				? StrictValue<TConfig, TTokens, TName, Value>
-				: InferPropValues<TTokens, Value> | ConfigPropertyValue<TConfig, TName>)
+				? StrictValue<TConfig, TTokens, TName, Value, TPreset>
+				:
+						| InferPropValues<TTokens, Value>
+						| ColorPaletteValue<TName, TTokens, TPreset>
+						| ConfigPropertyValue<TConfig, TName>)
 	| null;
 
 type ConditionalValue<V, TConds extends string> = [TConds] extends [never]
@@ -309,25 +407,33 @@ export type TypedStyleObject<
 	TConds extends string = ThemeConds<TConfig, TPreset>,
 	TAll = TPreset["properties"] extends { $all: true } ? true : false,
 	TList extends string = Exclude<Extract<keyof TPreset["properties"], string>, "$all">,
-	TPropList extends string = TAll extends true ? ConfigPropertyNames<TConfig> | TList : TList,
+	TPaletteList extends string = [ColorPaletteNames<TPreset>] extends [never]
+		? never
+		: "colorPalette",
+	TPropList extends string = TAll extends true
+		? ConfigPropertyNames<TConfig> | TList | TPaletteList
+		: TList | TPaletteList,
 > = Nested<
 	{
-		[PropName in TPropList]?: PropName extends ConfigPropertyNames<TConfig>
-			? PropName extends keyof TPreset["properties"]
-				? ConditionalValue<
-						PropValue<
-							TConfig,
-							TTokens,
-							PropName,
-							TPreset["properties"][PropName],
-							TPreset["strict"]
-						>,
-						TConds
-					>
-				: ConditionalValue<InitialCssTypesValues<TConfig, TAll, PropName>, TConds>
-			: "Not a part of the `TConfig` interface" & {
-					_error: typeof ErrorSymbol;
-				};
+		[PropName in TPropList]?: PropName extends "colorPalette"
+			? ConditionalValue<ColorPaletteNames<TPreset>, TConds>
+			: PropName extends ConfigPropertyNames<TConfig>
+				? PropName extends keyof TPreset["properties"]
+					? ConditionalValue<
+							PropValue<
+								TConfig,
+								TTokens,
+								PropName,
+								TPreset["properties"][PropName],
+								TPreset["strict"],
+								TPreset
+							>,
+							TConds
+						>
+					: ConditionalValue<InitialCssTypesValues<TConfig, TAll, PropName>, TConds>
+				: "Not a part of the `TConfig` interface" & {
+						_error: typeof ErrorSymbol;
+					};
 	},
 	TConds
 >;

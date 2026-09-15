@@ -128,6 +128,39 @@ export function definePreset<
 export const defineTokens = <T extends AnySimpleTokens>(tokens: T) => tokens;
 
 /**
+ * Preserve named static color palette assignments for a preset.
+ *
+ * A string source exposes every suffix below a color-token root. An object
+ * source gives a palette stable names whose values point at the project's own
+ * color tokens. The stylesheet compiler turns either form into one class with
+ * custom-property assignments; no runtime color map is required.
+ *
+ * @example
+ * ```ts
+ * import { defineColorPalettes } from "pandwind/preset";
+ *
+ * const colorPalettes = defineColorPalettes({
+ *   blue: "colors.blue",
+ *   brand: {
+ *     solid: "colors.blue.500",
+ *     contrast: "colors.gray.50",
+ *   },
+ * });
+ * ```
+ *
+ * @typeParam T - The inferred palette names and token references.
+ * @param palettes - Static palette roots or named token-reference maps.
+ * @returns The same palette object, with its literal keys preserved.
+ * @category tokens
+ * @since 0.1.0
+ */
+export const defineColorPalettes = <
+	const T extends Record<string, string | Record<string, string>>,
+>(
+	palettes: T,
+) => palettes;
+
+/**
  * Define token values that change under preset conditions such as `_dark`.
  *
  * Condition keys must exist in the condition map and are kept as branches

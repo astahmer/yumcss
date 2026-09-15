@@ -239,6 +239,32 @@ export const createStylesheet = (
 
 		const atomic = decoder.decode(preset.conditions, pairId);
 		const property = cssPropertyFromKey(atomic.prop!, preset.conditions, options.propertyAliases);
+		if (property === "colorPalette") {
+			const assignments = tokenMaps.colorPalettes.get(normalizedValue);
+			if (assignments === undefined) return;
+			for (const assignment of assignments) {
+				for (const dependency of tokenDependencyPaths(tokenMaps, assignment.tokenPath)) {
+					if (usedTokenPaths.has(dependency)) continue;
+					usedTokenPaths.add(dependency);
+					tokensCache = undefined;
+				}
+			}
+			const className =
+				preparedClassName !== undefined && isSafeClassName(preparedClassName)
+					? preparedClassName
+					: classNameFor(orderedKey, normalizedValue);
+			const declaration = assignments.map((assignment) =>
+				cssVar.declaration(assignment.cssVar, assignment.value),
+			);
+			const css = serializeStyle(declaration.join(""), {
+				...atomic.conditions,
+				className: `.${escapeIdentifier(className)}`,
+			});
+			const rule = { id: pairId, css, priority: atomic.priority };
+			cache.set(pairId, rule);
+			localCache.set(pairId, rule);
+			return;
+		}
 		const tokenGroup = tokenMaps.groupByProp.get(property);
 		const tokenNames = tokenMaps.tokensByProp.get(property);
 		if (tokenNames?.has(normalizedValue)) {

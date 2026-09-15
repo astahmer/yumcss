@@ -38,13 +38,12 @@ test("color palettes expose only declared palette and virtual token names", () =
 	expect(css.class({ colorPalette: "brand", color: "colorPalette.solid" })).type.toBe<string>();
 
 	css.class({
-		// @ts-expect-error unknown palette name
+		// @ts-expect-error not assignable
 		colorPalette: "unknown",
 	});
 	css.class({
-		color:
-			// @ts-expect-error unknown virtual palette token
-			"colorPalette.unknown",
+		// @ts-expect-error not assignable
+		color: "colorPalette.unknown",
 	});
 });
 
@@ -53,10 +52,10 @@ test("color palette sources are checked against the preset color tokens", () => 
 		brand: "colors.blue",
 	} satisfies ColorPaletteDefinitions<typeof tokens>;
 
-	expect(valid).type.toBe<ColorPaletteDefinitions<typeof tokens>>();
+	expect(valid).type.toBe<{ brand: "colors.blue" }>();
 
 	const invalid = {
-		// @ts-expect-error unknown color palette source
+		// @ts-expect-error not assignable
 		brand: "colors.missing",
 	} satisfies ColorPaletteDefinitions<typeof tokens>;
 	void invalid;
