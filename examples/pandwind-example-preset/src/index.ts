@@ -122,6 +122,19 @@ const tokens = defineTokens({
 	letterSpacings: rawTokens.letterSpacings,
 });
 
+const colorPalettes = tokens.defineColorPalettes({
+	brand: {
+		contrast: "colors.$white",
+		muted: "colors.$blue-50",
+		solid: "colors.brand",
+	},
+	danger: {
+		contrast: "colors.$white",
+		muted: "colors.$red-50",
+		solid: "colors.error",
+	},
+});
+
 // Condition-bound tokens live in their own group and use
 // tokens.defineSemanticTokens (values keyed by preset condition names). They bridge
 // into @theme as --color-surface plus a `.dark` override rule.
@@ -189,6 +202,7 @@ export const examplePreset = definePreset(theme, {
 		height: true,
 		fontSize: true,
 	},
+	colorPalettes,
 });
 
 /**

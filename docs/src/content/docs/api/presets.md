@@ -314,6 +314,62 @@ Here the empty `base` condition is needed because `.defineSemanticTokens` uses
 `base` as a typed default branch. An ordinary preset condition map does not
 need a `base: ""` entry: top-level styles already use the base scope.
 
+## Color palettes
+
+Color palettes are named roles over the preset's `colors` tokens. Define them
+on the token catalog so both palette names and token references are checked,
+then pass the returned map to `definePreset`:
+
+```ts
+import { createCss } from "pandwind/css";
+import { definePreset, defineTokens } from "pandwind/preset";
+
+const tokens = defineTokens({
+	colors: {
+		"$blue-50": "#ebf8ff",
+		"$blue-600": "#2b6cb0",
+		$white: "#ffffff",
+	},
+});
+
+const colorPalettes = tokens.defineColorPalettes({
+	brand: {
+		muted: "colors.$blue-50",
+		solid: "colors.$blue-600",
+		contrast: "colors.$white",
+	},
+});
+
+const preset = definePreset(
+	{ config: {}, tokens },
+	{
+		strict: true,
+		conditions: { base: "" },
+		properties: {
+			backgroundColor: { $tokens: "colors" },
+			color: { $tokens: "colors" },
+		},
+		colorPalettes,
+	},
+);
+
+const css = createCss(preset);
+
+css.class({
+	colorPalette: "brand",
+	backgroundColor: "colorPalette.muted",
+	color: "colorPalette.contrast",
+});
+```
+
+A string source such as `"colors.blue"` exposes every descendant color under
+that path. Use an object source when the palette should publish stable roles
+such as `muted`, `solid`, and `contrast` from unrelated color tokens. Select a
+palette on an element or ancestor with `colorPalette`; the
+`colorPalette.<role>` values then resolve through the palette's custom
+properties. Static extraction emits only the selected palette assignments, and
+the runtime-sheet API follows the same mapping.
+
 ## Keep the examples honest
 
 Static docs code blocks are syntax-highlighted by Starlight's built-in

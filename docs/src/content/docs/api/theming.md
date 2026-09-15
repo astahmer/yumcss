@@ -177,6 +177,42 @@ That is a separate convenience pattern. The component-token contract itself is
 the string layer above semantic tokens, which keeps the component from paying
 for an imported contract object.
 
+## Color palettes and theme roles
+
+Color palettes are a separate role layer for color-only APIs. Compose the
+palette definitions from the same token catalog as semantic and component
+tokens, then attach them to the preset:
+
+```ts
+const colorPalettes = tokens.defineColorPalettes({
+	brand: {
+		muted: "colors.$gray-200",
+		solid: "colors.$gray-700",
+		contrast: "colors.$gray-200",
+	},
+});
+
+export const preset = definePreset(
+	{ config: cssConfig, tokens },
+	{
+		strict: true,
+		conditions: themeConditions,
+		properties: {
+			backgroundColor: { $tokens: "colors" },
+			color: { $tokens: "colors" },
+		},
+		colorPalettes,
+	},
+);
+```
+
+Components can select `colorPalette: "brand"` on a parent and use
+`colorPalette.muted`, `colorPalette.solid`, or `colorPalette.contrast` for
+`backgroundColor` and `color`. The palette supplies stable roles while the
+theme still owns the underlying token values. See [Presets](/api/presets/#color-palettes)
+for string-source palettes that expose a whole color subtree and object-source
+palettes that map explicit roles.
+
 ## Codegen component scopes
 
 The Tailwind bridge also supports a separate `components` export for applying

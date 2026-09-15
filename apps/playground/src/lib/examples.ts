@@ -859,6 +859,49 @@ export const tokenPreset = definePreset(
 		],
 	},
 	{
+		path: "/color-palettes",
+		title: "Color palettes",
+		blurb: "bind a palette once and consume stable color roles",
+		group: "core",
+		note: "Color palettes are preset metadata. Select a palette on a parent with colorPalette, then use colorPalette.* virtual color names in descendants without repeating raw token paths.",
+		preview: makePreview(
+			"card",
+			"Brand palette",
+			"The parent selects the palette; the nested action consumes its solid and contrast roles.",
+		),
+		variants: oneVariant(
+			PlaygroundApi.Css,
+			"Example.tsx",
+			`import { createCss } from "pandwind/css";
+import { examplePreset } from "@pandwind/example-preset";
+
+const css = createCss(examplePreset);
+
+const paletteClass = css.class({
+	colorPalette: "brand",
+	backgroundColor: "colorPalette.muted",
+	color: "colorPalette.solid",
+	borderRadius: "lg",
+	padding: 16,
+});
+
+const actionClass = css.class({
+	backgroundColor: "colorPalette.solid",
+	color: "colorPalette.contrast",
+	borderRadius: "md",
+	padding: 8,
+});
+
+export default (
+	<article className={paletteClass}>
+		<strong>Brand palette</strong>
+		<p>Muted surfaces and solid text come from one named palette.</p>
+		<button className={actionClass}>Use the solid role</button>
+	</article>
+);`,
+		),
+	},
+	{
 		path: "/design-preset",
 		title: "Design presets",
 		blurb: "define your own theme, tokens, and conditions",

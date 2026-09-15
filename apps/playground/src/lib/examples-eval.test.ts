@@ -442,6 +442,29 @@ describe("example catalog evaluates end to end", () => {
 		expect(result.sheets.some((sheet) => sheet.css.includes("#374151"))).toBe(true);
 	});
 
+	it("renders color palette roles through the runtime sheet", () => {
+		const example = EXAMPLES.find((candidate) => candidate.path === "/color-palettes");
+		const variant = example?.variants[0];
+		expect(variant).toBeDefined();
+		if (variant === undefined) return;
+
+		const source = variant.files[0]!.code;
+		const result = evalPlayground(makeInput(source, siblingBindings(variant)));
+		expect(result.ok).toBe(true);
+		if (!result.ok) return;
+
+		const emittedCss = result.sheets.map((sheet) => sheet.css).join("\n");
+		expect(source).toContain('colorPalette: "brand"');
+		expect(source).toContain('backgroundColor: "colorPalette.muted"');
+		expect(source).toContain('color: "colorPalette.contrast"');
+		expect(emittedCss).toContain("background-color:var(--");
+		expect(emittedCss).toContain("color:var(--");
+		expect(emittedCss).toContain("#ebf8ff");
+		expect(emittedCss).toContain("#2b6cb0");
+		expect(emittedCss).toContain("#ffffff");
+		expect(emittedCss).not.toContain("color-palette:brand");
+	});
+
 	it("keeps composed runtime host styles available to the preview", () => {
 		const variant = EXAMPLES.find((example) => example.path === "/dynamic")?.variants[0];
 		expect(variant).toBeDefined();

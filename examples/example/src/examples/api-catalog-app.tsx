@@ -18,6 +18,13 @@ const classOutput = css.class({
 	color: "$gray-900",
 	padding: 8,
 });
+const colorPaletteClass = css.class({
+	colorPalette: "brand",
+	backgroundColor: "colorPalette.muted",
+	color: "colorPalette.contrast",
+	borderRadius: "md",
+	padding: 8,
+});
 const hostBase = css({ backgroundColor: "$blue-600", color: "$white" });
 const hostXcss = css({ borderRadius: "md", padding: 8 });
 const hostProps = css.props(hostBase, hostXcss);
@@ -181,6 +188,17 @@ export function ApiCatalogApp() {
 					detail="the same compiler projected directly to one className when that shape is useful"
 				>
 					<div className={classOutput}>The class projection is ready for a host element.</div>
+				</ApiCard>
+
+				<ApiCard
+					name="color palettes"
+					call={`css.class({ colorPalette: "brand", backgroundColor: "colorPalette.muted", color: "colorPalette.contrast" })`}
+					detail="bind a palette once, then consume stable virtual color roles"
+				>
+					<div className={colorPaletteClass}>
+						<strong>Brand palette</strong>
+						<div>Muted surfaces and contrast text come from the same named palette.</div>
+					</div>
 				</ApiCard>
 
 				<ApiCard

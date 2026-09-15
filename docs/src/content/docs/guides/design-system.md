@@ -164,6 +164,14 @@ const themedTokens = tokens.defineSemanticTokens(semanticConditions, {
 	},
 });
 
+const colorPalettes = themedTokens.defineColorPalettes({
+	brand: {
+		muted: "colors.$canvas",
+		solid: "colors.$brand",
+		contrast: "colors.$onBrand",
+	},
+});
+
 export const preset = definePreset(
 	{
 		...theme,
@@ -173,6 +181,7 @@ export const preset = definePreset(
 		strict: true,
 		conditions: semanticConditions,
 		properties,
+		colorPalettes,
 	},
 );
 ```
@@ -184,6 +193,12 @@ export const preset = definePreset(
 If a target library has a theme API, an adapter should map these references to
 that API. If it does not, lower them to custom properties or leave a
 machine-readable residual; never substitute a guessed literal.
+
+Color palettes use the same catalog and can publish stable roles such as
+`colorPalette.muted`, `colorPalette.solid`, and `colorPalette.contrast`. Select
+the palette on a parent with `colorPalette: "brand"`, then consume those roles
+from the parent or its descendants. See [the palette preset API](/api/presets/#color-palettes)
+for subtree and explicit-role definitions.
 
 ## 6. Bind component token contracts
 
