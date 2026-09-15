@@ -3,7 +3,7 @@
 This corpus exercises the pinned Astryx documentation site through three
 Pandwind authoring lanes:
 
-- `static-css`: compile-time `createCss()` extraction;
+- `static-css`: compile-time `createUnsafeCss()` extraction;
 - `runtime-css`: the same static-first lane, with runtime CSS enabled only for
   the one dynamic playground binding that cannot be proven static;
 - `design-dss`: compile-time `createDesignCss(pandwindPreset)` extraction.

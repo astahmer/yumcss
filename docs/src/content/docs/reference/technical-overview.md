@@ -86,7 +86,7 @@ must be discoverable by `pandwind-codemod tw scan` or a safelist.
 
 ```text
 createDesignCss(preset)
-  → createCss()
+  → createUnsafeCss()
   → DesignStyleResolver
       ├─ $frame adapter
       ├─ $layout adapter

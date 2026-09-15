@@ -42,23 +42,24 @@ Tailwind's own design system (`@tailwindcss/node`) and writes:
   theme scopes, semantic tokens, plus the verify commands an agent runs
   (`typecheck`, `analyze --json`, the missing-css gate).
 
-## `pandwind-codemod runtime generate` — specialized `createCss` for non-Vite builds
+## `pandwind-codemod runtime generate` — specialized `createUnsafeCss` for non-Vite builds
 
 ```
 pnpm exec pandwind-codemod runtime generate [out-file] \
   [--methods all|call|<method>[,<method>...]] [--check]
 ```
 
-This writes a typed `createCss` module for static bundlers that do not perform
+This writes a typed `createUnsafeCss` module for static bundlers that do not perform
 Pandwind's Vite usage analysis. The default output is
 `src/pandwind-runtime.ts`, and the default `all` selection preserves the full
-`pandwind/css` behavior. Use `--methods call` for the callable core only, or
+unsafe CSS behavior. Use `--methods call` for the callable core only, or
 select any comma-separated subset of `class`, `vars`, `raw`, `props`, `group`,
 and `input`. `group` automatically includes its `vars` dependency.
 
-The generated file keeps the normal preset-aware type inference but imports
+The generated file intentionally exposes the unbound/unsafe lane and imports
 only the selected runtime attachments through Pandwind's private runtime
-entries. It is version-tied generated output: do not edit it by hand, and
+entries. Use `createCss(preset)` from `pandwind/css` when preset-aware typing
+and token resolution are required. It is version-tied generated output: do not edit it by hand, and
 regenerate it after upgrading Pandwind. `--check` verifies that the file is
 present and byte-for-byte current without writing it; add that command to CI.
 Vite users already receive equivalent usage-aware virtual modules from

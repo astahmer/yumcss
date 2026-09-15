@@ -6,6 +6,7 @@
 			"exportPaths": [
 				".",
 				"./css",
+				"./unsafe/css",
 				"./css/runtime",
 				"./cx",
 				"./preset",

@@ -26,8 +26,9 @@ Keep the four responsibilities separate:
 | `createCss(preset)` | the consumer                                  | returns a CSS function whose props and values follow the preset            |
 
 The preset is the boundary between an open-ended CSS function and a design
-system. A bare `createCss()` still accepts runtime CSS values, but it cannot
-know which token names or conditions belong to your application.
+system. The safe `pandwind/css` entrypoint requires that preset. If properties
+are discovered at runtime, import `createUnsafeCss` from
+`pandwind/unsafe/css`; its lack of a catalog is then visible at the call site.
 
 Use `defineTheme` when a theme is named, exported, or composed independently.
 When the theme is only passed to one `definePreset` call, inline the

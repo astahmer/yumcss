@@ -452,14 +452,14 @@ The browser runtime is a fallback, not a tax on every static call. The CSS
 compiler scans the same source modules as the stylesheet collector, resolves
 literal `css()` and `css.class()` calls through the preset, emits their rules
 into the virtual stylesheet, and rewrites those calls to their final class
-carriers before the bundler sees them. If a local `createCss()` factory has no
+carriers before the bundler sees them. If a local `createUnsafeCss()` factory has no
 remaining references, the rewriter marks that zero-argument factory call as
 pure so normal bundler tree shaking removes the factory and its implementation.
 
 Dynamic values, unsupported helpers, and partially representable expressions
 are left untouched. They retain the complete typed API and use the runtime
 fallback, so optimization never trades correctness for size. For a locally
-contained `createCss()` factory, the Vite/unplugin optimizer analyzes the
+contained `createUnsafeCss()` factory, the Vite/unplugin optimizer analyzes the
 actual member accesses and rewrites the import to a virtual runtime module
 that imports only the required method attachments. `css()` needs only the
 callable core; `.class`, `.vars`, and other methods add their own attachments,

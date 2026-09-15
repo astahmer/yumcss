@@ -21,7 +21,7 @@ with ceilings in
 
 | entry                                      |      min |    gzip |
 | ------------------------------------------ | -------: | ------: |
-| `createCss()` fallback runtime             |  6.78 KB | 2.97 KB |
+| `createUnsafeCss()` fallback runtime       |  6.78 KB | 2.97 KB |
 | `createRuntimeCss()` + runtime sheet       | 20.91 KB | 8.42 KB |
 | `tw()` runtime                             |  2.71 KB | 1.27 KB |
 | `cx()` runtime                             | 12.71 KB | 5.31 KB |

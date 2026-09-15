@@ -76,7 +76,7 @@ ceilings are in `runtime-budget.json`.
 
 | entry                        | minified |  gzip |
 | ---------------------------- | -------: | ----: |
-| `createCss()` fallback       |    6,781 | 2,974 |
+| `createUnsafeCss()` fallback |    6,781 | 2,974 |
 | `tw()`                       |    2,711 | 1,266 |
 | `cx()` plain strings         |    6,031 | 2,671 |
 | `cx()`                       |   12,709 | 5,309 |
@@ -124,7 +124,7 @@ costs apply to dynamic or unsupported calls only.
 ## Opt-in generated runtime selections
 
 The `pandwind-codemod runtime generate` command lets non-Vite consumers choose
-the `createCss` attachments they actually use. The current generated-module
+the `createUnsafeCss` attachments they actually use. The current generated-module
 record is:
 
 | selection       | minified |  gzip |

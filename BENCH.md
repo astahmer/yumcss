@@ -177,7 +177,7 @@ ceilings are in `runtime-budget.json`. The current primary entries are:
 
 | entry                        | minified |   gzip |
 | ---------------------------- | -------: | -----: |
-| `createCss()` fallback       |   10,279 |  4,192 |
+| `createUnsafeCss()` fallback |   10,279 |  4,192 |
 | `tw()`                       |    2,800 |  1,314 |
 | `cx()`                       |   17,214 |  6,759 |
 | all direct runtime entries   |   19,909 |  7,723 |
@@ -215,7 +215,7 @@ new-rule registration remained part of the measured work:
 | repeated one-property `runtimeCss.vars()`            | ~3.41M ops/sec | ~3.02M ops/sec* | Pandwind is about 1.1× faster for this stable carrier path. |
 
 The repo-owned `createRuntimeCss()` size fixture is **20,907 bytes minified /
-8,423 gzip** with a minimal preset; the ordinary `createCss()` entry is
+8,423 gzip** with a minimal preset; the ordinary `createUnsafeCss()` entry is
 **6,781 / 2,974** in the same guard. A real application preset contributes
 its own token and condition data, so that application-specific payload is not
 part of this library baseline. The direct class projection and variable
@@ -239,7 +239,7 @@ uses CSSOM insertion for new rules and should be benchmarked separately for a
 specific host.
 
 This is why `createRuntimeCss()` is not the default application path. A normal
-Vite application should use `createCss()` with extraction; literal calls are
+Vite application should use `createCss(preset)` with extraction; literal calls are
 removed from the browser hot path. Use `css.vars()` / `css.input()` for values
 that change at runtime, and use `createRuntimeCss()` when a runtime-only or SSR
 host must own the sheet. Arbitrary runtime-created class vocabularies remain

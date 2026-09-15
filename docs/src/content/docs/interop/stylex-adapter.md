@@ -11,9 +11,9 @@ application:
 
 ```ts
 import { createStyleXAdapter } from "pandwind/css/stylex";
-import { createCss } from "pandwind/css";
+import { createUnsafeCss } from "pandwind/unsafe/css";
 
-const css = createCss({
+const css = createUnsafeCss({
 	className: createStyleXAdapter(),
 });
 
@@ -29,7 +29,7 @@ Pass the resolved preset conditions when custom selectors or at-rules should
 participate in the identity hash:
 
 ```ts
-const css = createCss({
+const css = createUnsafeCss({
 	className: createStyleXAdapter({
 		conditions: {
 			_night: ".night &",

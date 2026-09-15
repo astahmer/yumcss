@@ -18,8 +18,19 @@ atomic declaration map, while `css.class(...)` returns the joined class string
 for a host that wants one `className`. Choose the return shape that fits the
 boundary. Use `cx(...)` only when the inputs may be strings, compiled maps,
 variable carriers, or values from more than one styling system.
-`createCss()` remains available as an intentionally loose convenience form
-without preset token resolution when properties are discovered at runtime.
+The safe `pandwind/css` entrypoint requires a preset. For unbound or
+runtime-discovered properties, opt into the explicit escape hatch instead:
+
+```ts
+import { createUnsafeCss } from "pandwind/unsafe/css";
+
+const unsafeCss = createUnsafeCss();
+const style = unsafeCss({ color: runtimeColor });
+```
+
+`createUnsafeCss` has no preset token or condition vocabulary. Use it for
+generated code, adapters, and genuinely runtime-discovered styles; application
+code should normally use `createCss(preset)`.
 
 ```ts
 import { createCss } from "pandwind/css";
@@ -348,7 +359,7 @@ inline `style` objects instead of classes (React Native, opentui), or when
 you explicitly want a call to stay invisible to `pandwindCssVite`. You lose
 dedup/extraction but keep preset token resolution and typing.
 
-### `createCss()` versus `createRuntimeCss()`
+### `createCss(preset)` versus `createRuntimeCss()`
 
 Use `createCss(preset)` by default. It owns the typed style compiler and returns
 classes, declaration maps, and inline variable props, but it does not create a
@@ -392,10 +403,10 @@ const className = runtimeCss.class({ color: getColorAtRuntime() });
 const cssTextForSsr = runtimeCss.sheet.css();
 ```
 
-Without either a generated stylesheet or a runtime sheet, `createCss()` still
-returns the correct class and inline variable data, but a browser has no CSS
-rule to apply. This is why `createRuntimeCss()` exists; it is not required for
-dynamic values when the build extractor is present.
+Without either a generated stylesheet or a runtime sheet, `createCss(preset)`
+or `createUnsafeCss()` still returns the correct class and inline variable data,
+but a browser has no CSS rule to apply. This is why `createRuntimeCss()` exists;
+it is not required for dynamic values when the build extractor is present.
 
 ## Static extraction (`pandwindCssVite`)
 
