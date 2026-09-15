@@ -108,6 +108,9 @@ export function definePreset<
  * Values may be CSS values or references to another token path.
  * Keep stable semantic or component roles as references so a theme can rebind
  * the underlying raw value without changing component styles.
+ * A lookup such as `tokens.colors["$blue-500"]` reads the current JavaScript
+ * value and snapshots it; use a string such as `"colors.$blue-500"` for a
+ * catalog-checked token reference.
  *
  * @example
  * ```ts

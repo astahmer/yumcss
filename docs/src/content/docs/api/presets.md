@@ -315,6 +315,51 @@ Here the empty `base` condition is needed because `.defineSemanticTokens` uses
 `base` as a typed default branch. An ordinary preset condition map does not
 need a `base: ""` entry: top-level styles already use the base scope.
 
+### Token paths versus resolved values
+
+A token catalog exposes both its current JavaScript values and typed path
+strings. They are intentionally different inputs. Use a path string when a
+semantic, component, or palette role should keep pointing at the raw token;
+use a JavaScript lookup when you intentionally want to copy the current value
+as a literal.
+
+```ts
+import { defineConditions, defineTokens } from "pandwind/preset";
+
+const tokens = defineTokens({
+	colors: {
+		"$blue-600": "#2563eb",
+		"$blue-700": "#1d4ed8",
+	},
+});
+
+const conditions = defineConditions({ base: "", _dark: ".dark &" });
+
+const themedTokens = tokens.defineSemanticTokens(conditions, {
+	semantic: {
+		brand: {
+			base: "colors.$blue-600",
+			_dark: "colors.$blue-700",
+		},
+		snapshotBrand: {
+			base: tokens.colors["$blue-600"],
+			_dark: tokens.colors["$blue-700"],
+		},
+	},
+});
+```
+
+| Form                         | Meaning                        | Emitted semantic value                                  |
+| ---------------------------- | ------------------------------ | ------------------------------------------------------- |
+| `"colors.$blue-600"`         | Typed token-path reference     | A `var(...)` reference to the raw token custom property |
+| `tokens.colors["$blue-600"]` | Current JavaScript token value | The literal `#2563eb`                                   |
+
+The exact custom-property name may be hashed, but the distinction remains: a
+path preserves the alias and its theme/dependency relationship, while a lookup
+does not. The lookup form is useful for an intentional snapshot or a derived
+literal. For stable design-system relationships, prefer the path form; its
+group, token name, and condition keys are checked against the catalog.
+
 ## Color palettes
 
 Color palettes are named roles over the preset's `colors` tokens. Define them

@@ -183,7 +183,7 @@ test("preset docs cover strict, inherited, and open property bindings", () => {
 	expect(openCss.class({ color: "var(--brand)", padding: 4 })).type.toBe<string>();
 });
 
-test("preset docs keep semantic and component token refs as strings", () => {
+test("preset docs distinguish token paths from resolved values", () => {
 	const rawTokens = defineTokens({
 		colors: { $surface: "#ffffff" },
 		spacing: { 4: "1rem" },
@@ -191,7 +191,7 @@ test("preset docs keep semantic and component token refs as strings", () => {
 	const conditions = defineConditions({ base: "", _dark: ".dark &" });
 	const semanticTokens = rawTokens.defineSemanticTokens(conditions, {
 		semantic: {
-			"bg.surface": { base: rawTokens.colors["$surface"], _dark: "#111827" },
+			"bg.surface": { base: "colors.$surface", _dark: "#111827" },
 			"bg.inverse": { base: "#111827", _dark: rawTokens.colors["$surface"] },
 		},
 	});

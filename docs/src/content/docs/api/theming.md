@@ -177,6 +177,12 @@ That is a separate convenience pattern. The component-token contract itself is
 the string layer above semantic tokens, which keeps the component from paying
 for an imported contract object.
 
+When a layer value comes from a raw token, distinguish a token-path reference
+such as `"colors.$gray-700"` from a JavaScript lookup such as
+`rawTokens.colors["$gray-700"]`. The first preserves the alias and theme
+relationship; the second copies the current value as a literal. See
+[Token paths versus resolved values](/api/presets/#token-paths-versus-resolved-values).
+
 ## Color palettes and theme roles
 
 Color palettes are a separate role layer for color-only APIs. Compose the
