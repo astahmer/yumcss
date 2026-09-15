@@ -43,6 +43,12 @@ interface PandaCustomPattern {
 	defaultValues?: Record<string, unknown>;
 }
 
+export interface PandaColorPaletteOptions {
+	readonly enabled?: boolean;
+	readonly include?: readonly string[];
+	readonly exclude?: readonly string[];
+}
+
 export interface PandaTheme {
 	/** Flattened Panda token groups, preserving conditional semantic values. */
 	tokens: Record<string, Record<string, unknown>>;
@@ -50,6 +56,10 @@ export interface PandaTheme {
 	conditions: Record<string, string | string[]>;
 	/** Known token reference paths -> generated CSS custom property name. */
 	tokenVars: ReadonlyMap<string, string>;
+	/** Color-token roots that Panda exposes through `colorPalette.*`. */
+	readonly colorPalettes?: ReadonlyMap<string, string>;
+	/** Panda's color-palette generation policy, when configured. */
+	readonly colorPalette?: PandaColorPaletteOptions;
 	/** textStyle name -> plain declaration object (the `.value` payload). */
 	textStyles: ReadonlyMap<string, Record<string, unknown>>;
 	/** Custom pattern definitions loaded from panda.config.ts. */
@@ -151,6 +161,97 @@ const normalizeTokenReferences = (tokens: Record<string, Record<string, unknown>
 /** Traverse a Panda token tree until `{ value: ... }` leaves; collect paths. */
 const dashSegment = (segment: string): string =>
 	segment.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`);
+
+const matchesPattern = (pattern: string, value: string): boolean => {
+	const wildcard = "\u0000";
+	const source = pattern
+		.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+		.replace(/\*\*/g, wildcard)
+		.replace(/\*/g, "[^.]*")
+		.replaceAll(wildcard, ".*")
+		.replace(/\?/g, "[^.]");
+	return new RegExp(`^${source}$`, "u").test(value);
+};
+
+const normalizeColorPaletteOptions = (value: unknown): PandaColorPaletteOptions | undefined => {
+	if (!isPlainObject(value)) return undefined;
+	const include = Array.isArray(value.include)
+		? value.include.filter((item): item is string => typeof item === "string")
+		: undefined;
+	const exclude = Array.isArray(value.exclude)
+		? value.exclude.filter((item): item is string => typeof item === "string")
+		: undefined;
+	const enabled = typeof value.enabled === "boolean" ? value.enabled : undefined;
+	if (enabled === undefined && include === undefined && exclude === undefined) return undefined;
+	return {
+		...(enabled === undefined ? {} : { enabled }),
+		...(include === undefined ? {} : { include }),
+		...(exclude === undefined ? {} : { exclude }),
+	};
+};
+
+const colorPaletteOptionsFromSource = (source: string): PandaColorPaletteOptions | undefined => {
+	for (const match of source.matchAll(/\bcolorPalette\s*:\s*\{/g)) {
+		const open = (match.index ?? 0) + match[0].length - 1;
+		const block = SourcePass.matchBlock(source, open);
+		if (block === null) continue;
+		const parsed = parseObjectLiteral(block.body);
+		const plain = parsed === null ? undefined : literalToPlain(parsed);
+		const options = normalizeColorPaletteOptions(plain);
+		if (options !== undefined) return options;
+	}
+	return undefined;
+};
+
+export const collectPandaColorPalettes = (
+	tokens: Record<string, Record<string, unknown>>,
+	options?: PandaColorPaletteOptions,
+): ReadonlyMap<string, string> => {
+	if (options?.enabled === false) return new Map();
+	const colors = tokens.colors;
+	if (colors === undefined) return new Map();
+	const palettes = new Map<string, string>();
+	for (const tokenPath of Object.keys(colors)) {
+		const segments = tokenPath.split(".");
+		const colorPath = segments.length > 1 ? segments.slice(0, -1) : segments;
+		const colorPathString = colorPath.join(".");
+		if (options?.exclude?.some((pattern) => matchesPattern(pattern, colorPathString))) continue;
+		if (
+			options?.include !== undefined &&
+			options.include.length > 0 &&
+			!options.include.some((pattern) => matchesPattern(pattern, colorPathString))
+		)
+			continue;
+		for (let index = 1; index <= colorPath.length; index++) {
+			const root = colorPath.slice(0, index).join(".");
+			palettes.set(root, `colors.${root}`);
+		}
+	}
+	return palettes;
+};
+
+const addPandaColorPaletteTokenVars = (
+	tokens: Record<string, Record<string, unknown>>,
+	colorPalettes: ReadonlyMap<string, string>,
+	tokenVars: Map<string, string>,
+): void => {
+	const colors = tokens.colors;
+	if (colors === undefined) return;
+	for (const tokenPath of Object.keys(colors)) {
+		const segments = tokenPath.split(".");
+		const colorPath = segments.length > 1 ? segments.slice(0, -1) : segments;
+		for (const root of colorPalettes.keys()) {
+			const rootSegments = root.split(".");
+			if (rootSegments.some((segment, index) => colorPath[index] !== segment)) continue;
+			const suffix = segments.slice(rootSegments.length).join(".");
+			const virtualPath = suffix ? `colorPalette.${suffix}` : "colorPalette";
+			const virtualVar = suffix
+				? `--colors-color-palette-${suffix.split(".").map(dashSegment).join("-")}`
+				: "--colors-color-palette";
+			tokenVars.set(virtualPath, virtualVar);
+		}
+	}
+};
 
 function collectTokenPaths(
 	node: Record<string, unknown>,
@@ -330,6 +431,7 @@ async function loadPandaThemeByImport(configPath: string): Promise<PandaTheme> {
 function pandaThemeFromConfig(unwrapped: PandaConfigShape | undefined): PandaTheme {
 	const theme = unwrapped?.theme ?? {};
 	const extend = theme.extend ?? theme;
+	const colorPalette = normalizeColorPaletteOptions(extend.colorPalette ?? theme.colorPalette);
 	const tokens: Record<string, Record<string, unknown>> = {};
 	collectTokenValues(extend.tokens, tokens);
 	collectTokenValues(extend.semanticTokens, tokens);
@@ -352,6 +454,8 @@ function pandaThemeFromConfig(unwrapped: PandaConfigShape | undefined): PandaThe
 		const section = extend[key];
 		if (isPlainObject(section)) collectTokenPaths(section, [], null, tokenVars);
 	}
+	const colorPalettes = collectPandaColorPalettes(tokens, colorPalette);
+	addPandaColorPaletteTokenVars(tokens, colorPalettes, tokenVars);
 	const textStyles = new Map<string, Record<string, unknown>>();
 	const tsSection = extend["textStyles"];
 	if (isPlainObject(tsSection)) collectTextStyles(tsSection, [], textStyles);
@@ -378,6 +482,8 @@ function pandaThemeFromConfig(unwrapped: PandaConfigShape | undefined): PandaThe
 		tokens,
 		conditions,
 		tokenVars,
+		colorPalettes,
+		...(colorPalette === undefined ? {} : { colorPalette }),
 		textStyles,
 		customPatterns,
 		utilityCatalog,
@@ -420,10 +526,12 @@ function loadPandaThemeFromDisk(
 		| PandaJsxStylePropsModeTag
 		| undefined;
 	const outdir = pandaOutdirFromSource(configSource);
+	const colorPalette = colorPaletteOptionsFromSource(configSource);
 	return loadPandaThemeFromSource(configSource, extra, {
 		mode,
 		outdir,
 		importMap: pandaImportMapFromSource(configSource),
+		...(colorPalette === undefined ? {} : { colorPalette }),
 	});
 }
 
@@ -460,6 +568,7 @@ function loadPandaThemeFromSource(
 		readonly mode?: PandaJsxStylePropsModeTag;
 		readonly outdir?: string;
 		readonly importMap?: unknown;
+		readonly colorPalette?: PandaColorPaletteOptions;
 	} = {},
 ): PandaTheme {
 	const tokenVars = new Map<string, string>();
@@ -511,10 +620,14 @@ function loadPandaThemeFromSource(
 		}
 	}
 	normalizeTokenReferences(tokens);
+	const colorPalettes = collectPandaColorPalettes(tokens, options.colorPalette);
+	addPandaColorPaletteTokenVars(tokens, colorPalettes, tokenVars);
 	return {
 		tokens,
 		conditions,
 		tokenVars,
+		colorPalettes,
+		...(options.colorPalette === undefined ? {} : { colorPalette: options.colorPalette }),
 		textStyles,
 		customPatterns: new Map(),
 		utilityCatalog,

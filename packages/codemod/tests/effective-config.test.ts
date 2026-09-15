@@ -12,6 +12,43 @@ import type { ProjectModuleLoader } from "../src/swap/project-module-loader.ts";
 import { PandaJsxStylePropsModeTag } from "../src/swap/adapters/panda/style-props.ts";
 
 describe("effective ecosystem configuration", () => {
+	test("retains Panda color palette roots and virtual references", async () => {
+		const loader: ProjectModuleLoader = {
+			async importPackage(packageName) {
+				if (packageName !== "@pandacss/config") return undefined;
+				return {
+					loadConfig: async () => ({
+						config: {
+							theme: {
+								colorPalette: { include: ["blue"] },
+								tokens: {
+									colors: {
+										blue: {
+											500: { value: "#3182ce" },
+											700: { value: "#2c5282" },
+										},
+										button: {
+											light: { value: "#ffffff" },
+										},
+									},
+								},
+							},
+						},
+					}),
+				} as never;
+			},
+			async importFile() {
+				throw new Error("direct config import must not run");
+			},
+		};
+
+		const theme = await loadPandaTheme("/project/panda.config.ts", loader);
+
+		expect([...(theme.colorPalettes?.entries() ?? [])]).toEqual([["blue", "colors.blue"]]);
+		expect(theme.tokenVars.get("colorPalette.500")).toBe("--colors-color-palette-500");
+		expect(theme.tokenVars.has("colorPalette.light")).toBe(false);
+	});
+
 	test("does not invent Panda preset text styles when the official config removes presets", async () => {
 		const loader: ProjectModuleLoader = {
 			async importPackage(packageName) {
