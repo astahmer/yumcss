@@ -27,6 +27,12 @@ Source revisions: `qqyulusz`, `rrxooprr`, `uspqzmlu`, `zwtzvqvk`, `nqoyxvkq`,
   mode conditions. Generated Panda and project presets collapse bare aliases
   to that canonical spelling while leaving responsive and custom conditions
   unchanged. Source revision: `snuqwnpr`.
+- Make the Pandwind target adapter consume the first-party preset condition
+  catalog even without a loaded project config, so migrated `_hover`, authored
+  underscore conditions, and common raw pseudo selectors stay on typed preset
+  keys instead of becoming arbitrary selector properties.
+
+Source revisions: `snuqwnpr`, `aad9c82d`, `83421402`, `e4caec1f`.
 
 ## Unreleased — 2026-09-15 explicit runtime CSS carrier
 
