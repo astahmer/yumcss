@@ -744,6 +744,19 @@ function presetSource(
 	const semanticTokenImport = hasSemanticTokens ? ", defineSemanticTokens" : "";
 	const semanticTokenTypeImport = hasSemanticTokens ? ", type SemanticTokenLayer" : "";
 	const typeImports = typescript ? ", type PandwindProperties" : "";
+	const colorPaletteEntries = Object.entries(config.colorPalettes ?? {}).toSorted(
+		([left], [right]) => left.localeCompare(right),
+	);
+	const colorPaletteImport = colorPaletteEntries.length === 0 ? "" : ", defineColorPalettes";
+	const colorPaletteDeclaration =
+		colorPaletteEntries.length === 0
+			? ""
+			: `\nconst colorPalettes = defineColorPalettes(${JSON.stringify(
+					Object.fromEntries(colorPaletteEntries),
+					null,
+					"\t",
+				)} as const);\n`;
+	const colorPaletteProperty = colorPaletteEntries.length === 0 ? "" : "\n\t\tcolorPalettes,";
 	const configDeclaration = typescript ? "\nconst cssConfig: PandwindProperties = {};\n" : "";
 	const configReference = typescript ? "cssConfig" : "{}";
 	const semanticTokenCatalogDeclaration = hasSemanticTokens
@@ -782,18 +795,18 @@ const componentTokens = defineSemanticTokens(
 	const tokenDeclaration = !hasSemanticTokens
 		? "const tokens = appTokens;"
 		: `const tokens = {\n\t...appTokens,\n${mergedTokenLines.join("\n")}\n};`;
-	return `import { defineConditions, definePreset, defineProperties, defineTokens${semanticTokenImport}${typeImports}${semanticTokenTypeImport} } from "pandwind/preset";
+	return `import { defineConditions, definePreset, defineProperties, defineTokens${colorPaletteImport}${semanticTokenImport}${typeImports}${semanticTokenTypeImport} } from "pandwind/preset";
 
 const conditions = defineConditions(${JSON.stringify(presetConditions, null, "\t")} as const);
 const appTokens = defineTokens(${JSON.stringify(appTokens, null, "\t")} as const);
 ${semanticTokenCatalogDeclaration}${appSemanticDeclaration}${componentDeclaration}${configDeclaration}
 const properties = defineProperties(${presetPropertiesSource(rawSourceTokens)} as const);
-${tokenDeclaration}
+${tokenDeclaration}${colorPaletteDeclaration}
 
 export const pandwindPreset = definePreset(
 	{
 		config: ${configReference},
-		tokens,
+		tokens,${colorPaletteProperty}
 	},
 	{
 		strict: true,

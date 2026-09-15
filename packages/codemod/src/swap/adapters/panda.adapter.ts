@@ -195,6 +195,8 @@ async function officialPandaConfig(
 				files: [...fallback.files, path],
 				conditionCatalog: theme.conditions,
 				tokenCatalog: theme.tokenCatalog,
+				colorPalettes:
+					theme.colorPalettes === undefined ? undefined : Object.fromEntries(theme.colorPalettes),
 				...(theme.officialConfigError === undefined
 					? {}
 					: {

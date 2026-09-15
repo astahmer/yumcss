@@ -95,6 +95,8 @@ export interface AdapterProjectConfig {
 	readonly tokenCatalog?: AdapterTokenCatalog;
 	/** Authored raw and semantic token trees used to build the target preset. */
 	readonly tokenDefinitions?: AdapterTokenDefinitions;
+	/** Static color-palette metadata that a target can compile without runtime lookup. */
+	readonly colorPalettes?: AdapterColorPaletteDefinitions;
 	/** Configuration-loading failures are semantic residuals, never silent fallback. */
 	readonly residuals?: readonly StyleProgramResidual[];
 	/** Ordered evidence for how project semantics were resolved. */
@@ -166,6 +168,11 @@ export interface AdapterTokenDefinitions {
 	/** Authored semantic token tree, including condition branches. */
 	readonly semantic: Readonly<Record<string, unknown>>;
 }
+
+/** Static color-palette roots and named token maps discovered by a source adapter. */
+export type AdapterColorPaletteSource = string | Readonly<Record<string, string>>;
+
+export type AdapterColorPaletteDefinitions = Readonly<Record<string, AdapterColorPaletteSource>>;
 
 export interface AdapterConfigContext extends AdapterDetectionContext {
 	readonly readFile?: (file: string) => string | undefined;

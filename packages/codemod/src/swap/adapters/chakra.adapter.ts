@@ -725,6 +725,27 @@ interface ChakraTokenDefinitionPath {
 	readonly resolved?: string;
 }
 
+const chakraColorPaletteSources = (
+	tokens: Readonly<Record<string, unknown>>,
+): Readonly<Record<string, string>> => {
+	const paths: ChakraTokenDefinitionPath[] = [];
+	const colors = tokens.colors;
+	if (colors === undefined) return {};
+	collectChakraTokenDefinitionPaths("colors", colors, [], paths);
+	const palettes = new Map<string, string>();
+	for (const token of paths) {
+		const segments = token.path.split(".");
+		const colorPath = segments.length > 1 ? segments.slice(0, -1) : segments;
+		for (let index = 1; index <= colorPath.length; index++) {
+			const root = colorPath.slice(0, index).join(".");
+			palettes.set(root, `colors.${root}`);
+		}
+	}
+	return Object.fromEntries(
+		[...palettes.entries()].toSorted(([left], [right]) => left.localeCompare(right)),
+	);
+};
+
 function collectChakraTokenDefinitionPaths(
 	group: string,
 	value: unknown,
@@ -1252,6 +1273,7 @@ async function officialChakraConfig(
 		const sourceTheme = recordValue(sourceConfig.theme) ?? {};
 		const rawTokens = recordValue(sourceTheme.tokens) ?? {};
 		const semanticTokens = recordValue(sourceTheme.semanticTokens) ?? {};
+		const colorPalettes = chakraColorPaletteSources(mergeTokenTrees(rawTokens, semanticTokens));
 		const system =
 			existingSystem ??
 			(chakra.createSystem?.(chakra.defaultConfig ?? {}, config) as ChakraSystemLike | undefined);
@@ -1265,6 +1287,7 @@ async function officialChakraConfig(
 				raw: rawTokens,
 				semantic: semanticTokens,
 			},
+			...(Object.keys(colorPalettes).length === 0 ? {} : { colorPalettes }),
 			values: {
 				chakraConfig: sourceConfig,
 				...(system === undefined ? {} : { chakraSystem: system }),

@@ -117,6 +117,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		});
 		expect(config?.values.chakraConfig).toEqual(system._config);
 		expect(config?.values.officialConfigPackage).toBe("@chakra-ui/react");
+		expect(config?.colorPalettes).toEqual({ brand: "colors.brand" });
 		const source = '<Box color="brand.500" />';
 		const parsed = adapter.parse(source, {
 			file: "App.tsx",
