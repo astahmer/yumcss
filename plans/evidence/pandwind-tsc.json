@@ -2,7 +2,7 @@
   "schema": "pandwind.tsc-performance/1",
   "project": "packages/pandwind/tsconfig.json",
   "command": "pnpm --filter pandwind exec tsc --noEmit --extendedDiagnostics --pretty false",
-  "samples": 3,
+  "samples": 7,
   "environment": {
     "platform": "darwin",
     "arch": "arm64"
@@ -11,9 +11,9 @@
   "metrics": {
     "files": 675,
     "instantiations": 346234,
-    "memoryUsedKiB": 293230,
-    "checkTimeSeconds": 0.26,
-    "totalTimeSeconds": 0.342
+    "memoryUsedKiB": 293222,
+    "checkTimeSeconds": 0.232,
+    "totalTimeSeconds": 0.312
   },
   "tolerances": {
     "instantiations": 0.1,

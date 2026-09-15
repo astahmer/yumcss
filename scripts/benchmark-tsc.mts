@@ -1,10 +1,11 @@
 /**
- * Measure the Pandwind package typecheck and compare it with checked-in
- * compiler evidence. Instantiation counts are the primary regression signal;
- * memory and check time use wider noise-tolerant bounds.
+ * Measure a checked-in Pandwind workload and compare it with compiler evidence.
+ * Instantiation counts are the primary regression signal; memory and check time
+ * use wider noise-tolerant bounds.
  *
  * Usage:
  *   nub scripts/benchmark-tsc.mts
+ *   nub scripts/benchmark-tsc.mts --target example
  *   nub scripts/benchmark-tsc.mts --samples 5
  *   nub scripts/benchmark-tsc.mts --update
  */
@@ -13,17 +14,19 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 
 const ROOT = resolve(import.meta.dirname, "..");
-const SNAPSHOT = resolve(ROOT, "plans/evidence/pandwind-tsc.json");
-const TSC_ARGS = [
-	"--filter",
-	"pandwind",
-	"exec",
-	"tsc",
-	"--noEmit",
-	"--extendedDiagnostics",
-	"--pretty",
-	"false",
-];
+const TSC_ARGUMENTS = ["exec", "tsc", "--noEmit", "--extendedDiagnostics", "--pretty", "false"];
+const BENCHMARKS = {
+	pandwind: {
+		packageName: "pandwind",
+		project: "packages/pandwind/tsconfig.json",
+		snapshot: resolve(ROOT, "plans/evidence/pandwind-tsc.json"),
+	},
+	example: {
+		packageName: "example",
+		project: "examples/example/tsconfig.json",
+		snapshot: resolve(ROOT, "plans/evidence/pandwind-example-tsc.json"),
+	},
+} as const;
 
 type TscMetrics = {
 	files: number;
@@ -35,7 +38,7 @@ type TscMetrics = {
 
 type Snapshot = {
 	schema: "pandwind.tsc-performance/1";
-	project: "packages/pandwind/tsconfig.json";
+	project: string;
 	command: string;
 	samples: number;
 	environment: {
@@ -59,8 +62,21 @@ const option = (name: string, fallback: number): number => {
 	return Number.isInteger(value) && value! > 0 ? value! : fallback;
 };
 
-const samples = option("--samples", 3);
+const textOption = (name: string, fallback: string): string => {
+	const index = process.argv.indexOf(name);
+	const value = index < 0 ? undefined : process.argv[index + 1];
+	return value === undefined || value.startsWith("--") ? fallback : value;
+};
+
+const samples = option("--samples", 7);
 const update = process.argv.includes("--update");
+const targetName = textOption("--target", "pandwind");
+const target = Object.entries(BENCHMARKS).find(([name]) => name === targetName)?.[1];
+if (target === undefined) {
+	throw new Error(`unknown TSC benchmark target ${targetName}; choose pandwind or example`);
+}
+const tscArguments = ["--filter", target.packageName, ...TSC_ARGUMENTS];
+const command = `pnpm --filter ${target.packageName} ${TSC_ARGUMENTS.join(" ")}`;
 
 const metric = (output: string, label: string, pattern: RegExp): number => {
 	const match = output.match(pattern);
@@ -71,14 +87,14 @@ const metric = (output: string, label: string, pattern: RegExp): number => {
 };
 
 const runTsc = (): TscMetrics => {
-	const result = spawnSync("pnpm", TSC_ARGS, {
+	const result = spawnSync("pnpm", tscArguments, {
 		cwd: ROOT,
 		encoding: "utf8",
 		stdio: ["ignore", "pipe", "pipe"],
 	});
 	const output = `${result.stdout ?? ""}\n${result.stderr ?? ""}`;
 	if (result.status !== 0) {
-		throw new Error(`pandwind typecheck failed with exit code ${result.status ?? "unknown"}`);
+		throw new Error(`${targetName} typecheck failed with exit code ${result.status ?? "unknown"}`);
 	}
 	return {
 		files: metric(output, "files", /^Files:\s+(\d+)/m),
@@ -108,8 +124,8 @@ const measure = (): TscMetrics => {
 const measured = measure();
 const nextSnapshot: Snapshot = {
 	schema: "pandwind.tsc-performance/1",
-	project: "packages/pandwind/tsconfig.json",
-	command: "pnpm --filter pandwind exec tsc --noEmit --extendedDiagnostics --pretty false",
+	project: target.project,
+	command,
 	samples,
 	environment: { platform: process.platform, arch: process.arch },
 	updatedAt: new Date().toISOString().slice(0, 10),
@@ -121,11 +137,16 @@ const nextSnapshot: Snapshot = {
 	},
 };
 
-const baseline = update ? nextSnapshot : (JSON.parse(readFileSync(SNAPSHOT, "utf8")) as Snapshot);
+const baseline = update
+	? nextSnapshot
+	: (JSON.parse(readFileSync(target.snapshot, "utf8")) as Snapshot);
+if (baseline.project !== target.project) {
+	throw new Error(`TSC snapshot targets ${baseline.project}, expected ${target.project}`);
+}
 
 if (update) {
-	writeFileSync(SNAPSHOT, `${JSON.stringify(nextSnapshot, null, 2)}\n`);
-	console.log(`updated ${SNAPSHOT}`);
+	writeFileSync(target.snapshot, `${JSON.stringify(nextSnapshot, null, 2)}\n`);
+	console.log(`updated ${target.snapshot}`);
 } else {
 	const checks: RegressionCheck[] = [
 		[
@@ -169,4 +190,6 @@ if (update) {
 	}
 }
 
-console.log(JSON.stringify({ samples, measured, baseline: baseline.metrics }, null, 2));
+console.log(
+	JSON.stringify({ target: targetName, samples, measured, baseline: baseline.metrics }, null, 2),
+);

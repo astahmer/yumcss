@@ -44,8 +44,11 @@ jobs:
       - name: Typecheck
         run: pnpm run typecheck
 
-      - name: TypeScript performance snapshot
+      - name: TypeScript package performance snapshot
         run: pnpm run bench:tsc
+
+      - name: TypeScript example-app performance snapshot
+        run: pnpm run bench:tsc:example
 
       - name: Lint (oxlint)
         run: pnpm run lint

@@ -19,6 +19,7 @@ pnpm run test:all
 pnpm run test:coverage
 pnpm run typecheck
 pnpm run bench:tsc
+pnpm run bench:tsc:example
 pnpm run lint
 pnpm run format
 pnpm run knip
@@ -42,7 +43,7 @@ package falls below its checked-in threshold. Coverage directories are local
 artifacts and are ignored by Git.
 
 `bench:tsc` runs the `pandwind` package typecheck with TypeScript extended
-diagnostics and compares the median of three fresh processes with
+diagnostics and compares the median of seven fresh processes with
 `plans/evidence/pandwind-tsc.json`. Instantiation growth is checked on every
 platform; memory and check-time growth are checked when the OS and architecture
 match the recorded baseline. Refresh the record only after an intentional type
@@ -50,6 +51,16 @@ surface change:
 
 ```sh
 pnpm run bench:tsc -- --update
+```
+
+`bench:tsc:example` runs the same gate against `examples/example`, a real
+consumer that exercises `css()`, `css.props()`, `css.vars()`, `css.group()`,
+`css.input()`, `tw()`, and `dss()` through its application source. Its baseline
+is stored in `plans/evidence/pandwind-example-tsc.json` and can be refreshed
+with:
+
+```sh
+pnpm run bench:tsc:example -- --update
 ```
 
 ### Pivot proof matrix
