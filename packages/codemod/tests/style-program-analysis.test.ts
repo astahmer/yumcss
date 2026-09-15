@@ -101,6 +101,19 @@ describe("StyleProgramAnalysis", () => {
 		expect(StyleProgramAnalysis.hasRuntimeDynamic(program)).toBe(true);
 	});
 
+	test("keeps non-condition objects and arrays on the runtime path", () => {
+		for (const body of [
+			'fontFace: { fontFamily: "Inter", src: "url(inter.woff2)" }',
+			'style: [{ padding: 8 }, { backgroundColor: "red" }]',
+		]) {
+			const program = styleProgramFromSourceObject(body, {
+				source: { file: "Styles.tsx", adapter: "source" },
+			});
+
+			expect(StyleProgramAnalysis.hasRuntimeDynamic(program)).toBe(true);
+		}
+	});
+
 	test("keeps the root declaration projection for rule-less programs", () => {
 		const program = styleProgramFromRules([]);
 		const declaration = {
