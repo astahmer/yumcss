@@ -62,6 +62,44 @@ describe("Pandwind project bootstrap", () => {
 		expect(preset).not.toContain('"$all": true');
 	});
 
+	test("emits configured Panda color palettes in the owned preset", async () => {
+		const root = "/project";
+		const files = new Map<string, string>([
+			[
+				`${root}/panda.config.ts`,
+				[
+					"export default {",
+					"\ttheme: {",
+					'\t\tcolorPalette: { include: ["blue"] },',
+					"\t\ttokens: {",
+					"\t\t\tcolors: {",
+					"\t\t\t\tblue: {",
+					'\t\t\t\t\t500: { value: "#3182ce" },',
+					'\t\t\t\t\t700: { value: "#2c5282" },',
+					"\t\t\t\t},",
+					'\t\t\t\tbutton: { light: { value: "#ffffff" } },',
+					"\t\t\t},",
+					"\t},",
+					"};",
+				].join("\n"),
+			],
+		]);
+		const support = await createPandwindProjectSupport({
+			root,
+			sourceAdapter: CodemodAdapterId.Panda,
+			targetAdapter: CodemodAdapterId.Pandwind,
+			outputDirectory: "pandwind",
+			readFile: (file) => files.get(file),
+			listFiles: () => [...files.keys()],
+		});
+
+		const preset = support.files.find((file) => file.path === "pandwind/preset.ts")?.content;
+		expect(preset).toContain("defineColorPalettes");
+		expect(preset).toContain('"blue": "colors.blue"');
+		expect(preset).toContain("\n\t\tcolorPalettes,");
+		expect(preset).not.toContain('"button": "colors.button"');
+	});
+
 	test("carries source named conditions into the generated preset", async () => {
 		const root = "/project";
 		const files = new Map<string, string>([
