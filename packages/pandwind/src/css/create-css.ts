@@ -94,25 +94,6 @@ export function createCss(
 	) as unknown as CssFn<StyleObject>;
 }
 
-/**
- * Create a preset-aware CSS function with the open style-object surface.
- *
- * Use this when a caller accepts runtime-discovered properties or aliases but
- * still wants preset token resolution in `css.vars`.
- *
- * @param preset - Preset metadata used for conditions and token resolution.
- * @param options - CSS backend options.
- * @returns An open CSS compiler with preset-aware runtime values.
- * @category factories
- * @since 0.1.0
- */
-export function createCssOpen<TPreset extends TypedPreset>(
-	preset: TPreset,
-	options?: CreateCssOptions,
-): CssFn<StyleObject> {
-	return createCssRuntime(preset, options, ALL_RUNTIME_METHODS) as unknown as CssFn<StyleObject>;
-}
-
 interface PropsReturn {
 	style: Record<string, string> | undefined;
 	className: string | undefined;

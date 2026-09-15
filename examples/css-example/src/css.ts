@@ -1,5 +1,4 @@
-import { createCssOpen } from "pandwind/css";
-import { examplePreset } from "@pandwind/example-preset";
+import { createCss } from "pandwind/css";
 
 /**
  * Atomic css() — plain style objects on the app preset, separate from the
@@ -11,4 +10,4 @@ import { examplePreset } from "@pandwind/example-preset";
  * `css`/`design` — a file-local const does not qualify (see src/card-b.ts
  * for the working call site).
  */
-export const css = createCssOpen(examplePreset);
+export const css = createCss();

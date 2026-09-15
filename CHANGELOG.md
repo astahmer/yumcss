@@ -161,15 +161,6 @@ Source revision: `c756d727d606533b6efdfdf9420c2ea3587cb65e`
   declarations to native Stack props during generic and Panda migrations while
   preserving dynamic and responsive values. Source revision: `pmnvsvlx`.
 
-## Unreleased — 2026-09-13 preset-aware runtime values
-
-### API
-
-- Add `createCssOpen(preset, options)` for applications that need an open
-  style-object surface with the preset's token resolution in `css.vars()`.
-  Raw CSS values remain unchanged, and no app-level `css.vars` monkey patch is
-  required.
-
 ## Unreleased — 2026-09-14 composed CSS HMR
 
 ### Fixes
@@ -186,15 +177,6 @@ Source revision: `c756d727d606533b6efdfdf9420c2ea3587cb65e`
 - Replace declaration-wide `important` output with opt-in `cascade:
 "specificity"` (StyleX-like priority specificity) or `cascade: "layers"`
   (`@layer pandwind`). Default CSS output remains unchanged.
-
-## Unreleased — 2026-09-12 CSS alias lowering
-
-### Fixes
-
-- CSS output can lower Chakra/Panda-style aliases such as `bg`, `px`, and
-  `minH` through the optional `pandwind/css/shorthands` catalog. Default CSS
-  factories preserve authored property names, keeping the alias table out of
-  bundles that do not opt in.
 
 ## Unreleased — 2026-08-25 wave (multi-target backends)
 

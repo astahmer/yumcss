@@ -4,7 +4,7 @@
  */
 import { describe, expect, test } from "vitest";
 import { createNamedAtomsStrategy } from "../src/css/named-atoms-strategy.ts";
-import { createCssOpen } from "../src/css/create-css.ts";
+import { createCss } from "../src/css/create-css.ts";
 import { createStackClassName, stackClasses, stackStyle } from "../src/stack/index.ts";
 import { createTwAdapter } from "../src/tw/adapter.ts";
 import { createPandwindEngineContext } from "../src/vite/engine-context.ts";
@@ -50,7 +50,7 @@ describe("stackClasses — mapping table", () => {
 });
 
 test("createStackClassName delegates layout declarations to the supplied CSS compiler", () => {
-	const css = createCssOpen(examplePreset, {
+	const css = createCss({
 		className: createNamedAtomsStrategy("app"),
 	});
 	const className = createStackClassName(css)({
@@ -68,7 +68,7 @@ test("createStackClassName delegates layout declarations to the supplied CSS com
 });
 
 test("createStackClassName also delegates to the Tailwind class strategy", () => {
-	const css = createCssOpen(examplePreset, {
+	const css = createCss({
 		className: createTwAdapter({
 			preset: examplePreset,
 			variants: {},

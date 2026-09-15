@@ -11,7 +11,7 @@ import { compile } from "@tailwindcss/node";
 import { parse } from "postcss";
 import type { StandardProperties } from "csstype";
 import { describe, expect, test } from "vitest";
-import { createCss, createCssOpen } from "../src/css/create-css.ts";
+import { createCss } from "../src/css/create-css.ts";
 import { createStylesheet } from "../src/css/create-stylesheet.ts";
 import { VARS_ATOMS } from "../src/css/var-compiler.ts";
 import { createCx } from "../src/cx/index.ts";
@@ -62,16 +62,6 @@ describe("css.vars — encoding", () => {
 		expect(output.style).toMatchObject({
 			"--pw-c-width": "100%",
 			"--pw-c-color_hover": "red",
-		});
-	});
-
-	test("open preset factory keeps runtime properties while resolving preset tokens", () => {
-		const css = createCssOpen(varsPreset, { debug: true });
-		const output = css.vars({ color: "$brand", arbitraryProperty: "value" });
-
-		expect(output.style).toMatchObject({
-			"--pw-c-color": expect.stringMatching(/^var\(--/u),
-			"--pw-c-arbitrary-property": "value",
 		});
 	});
 

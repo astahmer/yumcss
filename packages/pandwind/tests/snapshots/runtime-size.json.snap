@@ -1,11 +1,11 @@
 {
   "css": {
     "min": 11976,
-    "gz": 4764
+    "gz": 4765
   },
   "css, runtime sheet": {
     "min": 30169,
-    "gz": 11282
+    "gz": 11281
   },
   "css, all static calls": {
     "min": 81,
@@ -57,11 +57,11 @@
   },
   "cx": {
     "min": 18908,
-    "gz": 7334
+    "gz": 7333
   },
   "all (css+tw+cx)": {
     "min": 21599,
-    "gz": 8297
+    "gz": 8299
   },
   "stylesheet generator (build-time only)": {
     "min": 18836,
@@ -77,6 +77,6 @@
   },
   "root barrel, cx only": {
     "min": 18906,
-    "gz": 7351
+    "gz": 7350
   }
 }

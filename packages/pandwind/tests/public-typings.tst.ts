@@ -4,7 +4,7 @@
  * to the same tstyche gate as tw/css/cx.
  */
 import { expect, test } from "tstyche";
-import { createCss, createCssOpen } from "../src/css/create-css.ts";
+import { createCss } from "../src/css/create-css.ts";
 import { createDesignCss } from "../src/design/index.ts";
 import type { StackComponentProps as PreactStackProps } from "../src/stack/preact.ts";
 import type { StackComponentProps as ReactStackProps } from "../src/stack/react.tsx";
@@ -18,7 +18,7 @@ import { createStackClassName, stackClasses, type StackProps } from "../src/stac
 import { examplePreset } from "@pandwind/example-preset";
 
 const css = createCss();
-const openCss = createCssOpen(examplePreset);
+const looseCss = createCss();
 const typedCss = createCss(examplePreset);
 const typedDesignCss = createDesignCss(examplePreset);
 const typedReactStack = createReactStack(typedCss);
@@ -43,12 +43,12 @@ test("stackClasses accepts the public stack props", () => {
 	expect(stackClasses(props)).type.toBe<string>();
 });
 
-test("createStack binds every renderer to an open CSS compiler", () => {
-	const react = createReactStack(openCss);
-	const solid = createSolidStack(openCss);
-	const vue = createVueStack(openCss);
-	const preact = createPreactStack(openCss);
-	const className = createStackClassName(openCss)({ gap: 4 });
+test("createStack binds every renderer to a loose CSS compiler", () => {
+	const react = createReactStack(looseCss);
+	const solid = createSolidStack(looseCss);
+	const vue = createVueStack(looseCss);
+	const preact = createPreactStack(looseCss);
+	const className = createStackClassName(looseCss)({ gap: 4 });
 
 	expect(react).type.toBeAssignableTo<unknown>();
 	expect(solid).type.toBeAssignableTo<unknown>();
