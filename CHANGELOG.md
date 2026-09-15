@@ -16,7 +16,8 @@ current `0.1.0` state.
   references when emitting a Pandwind preset, without importing Panda's default
   token catalog or introducing a runtime theme bridge.
 
-Source revisions: `qqyulusz`, `rrxooprr`, `uspqzmlu`, `zwtzvqvk`.
+Source revisions: `qqyulusz`, `rrxooprr`, `uspqzmlu`, `zwtzvqvk`, `nqoyxvkq`,
+`tznxumys`.
 
 ## Unreleased — 2026-09-15 canonical condition names
 
