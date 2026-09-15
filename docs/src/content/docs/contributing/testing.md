@@ -18,6 +18,7 @@ From the repository root:
 pnpm run test:all
 pnpm run test:coverage
 pnpm run typecheck
+pnpm run bench:tsc
 pnpm run lint
 pnpm run format
 pnpm run knip
@@ -39,6 +40,17 @@ experience in Chromium.
 `test:coverage` runs V8 coverage for the three core packages and fails when a
 package falls below its checked-in threshold. Coverage directories are local
 artifacts and are ignored by Git.
+
+`bench:tsc` runs the `pandwind` package typecheck with TypeScript extended
+diagnostics and compares the median of three fresh processes with
+`plans/evidence/pandwind-tsc.json`. Instantiation growth is checked on every
+platform; memory and check-time growth are checked when the OS and architecture
+match the recorded baseline. Refresh the record only after an intentional type
+surface change:
+
+```sh
+pnpm run bench:tsc -- --update
+```
 
 ### Pivot proof matrix
 

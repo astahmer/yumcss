@@ -50,6 +50,7 @@
 		"proof:docs:check": "nub scripts/check-proof-documentation.ts",
 		"pivot:migrate:reference": "nub scripts/run-migration-proof.ts run reference-repository",
 		"bench:tooling": "nub scripts/benchmark-tooling.mts",
+		"bench:tsc": "nub scripts/benchmark-tsc.mts",
 		"bench:studio": "nub scripts/benchmark-studio.mts",
 		"studio:proof:host": "nub scripts/run-studio-host-proof.mts",
 		"check": "pnpm --filter @pandwind/lint-plugin run build && pnpm exec oxlint --fix --deny-warnings --report-unused-disable-directives && pnpm exec oxfmt && pnpm run surface:check && pnpm run generated:check && pnpm run generated:budget && pnpm run proof:docs:check",
