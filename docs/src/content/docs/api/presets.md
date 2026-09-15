@@ -18,12 +18,12 @@ supplied by the application or design-system package.
 
 Keep the four responsibilities separate:
 
-| helper | owns | what it changes |
-| --- | --- | --- |
-| `defineTokens` | raw and semantic token values | preserves token groups and names |
-| `defineTheme` | values plus the CSS config type | preserves the theme's literal types; it is a zero-cost identity at runtime |
-| `definePreset` | conditions, property bindings, and strictness | adds the rules used to type and resolve style objects |
-| `createCss(preset)` | the consumer | returns a CSS function whose props and values follow the preset |
+| helper              | owns                                          | what it changes                                                            |
+| ------------------- | --------------------------------------------- | -------------------------------------------------------------------------- |
+| `defineTokens`      | raw and semantic token values                 | preserves token groups and names                                           |
+| `defineTheme`       | values plus the CSS config type               | preserves the theme's literal types; it is a zero-cost identity at runtime |
+| `definePreset`      | conditions, property bindings, and strictness | adds the rules used to type and resolve style objects                      |
+| `createCss(preset)` | the consumer                                  | returns a CSS function whose props and values follow the preset            |
 
 The preset is the boundary between an open-ended CSS function and a design
 system. A bare `createCss()` still accepts runtime CSS values, but it cannot
@@ -52,7 +52,7 @@ import {
 const tokens = defineTokens({
 	colors: {
 		"$brand-500": "#2563eb",
-		"$surface": "#ffffff",
+		$surface: "#ffffff",
 	},
 	spacing: {
 		4: "1rem",
@@ -105,10 +105,7 @@ import { createCss } from "pandwind/css";
 import { definePreset, defineTokens } from "pandwind/preset";
 import type { StandardProperties as CsstypeStandardProperties } from "csstype";
 
-type CardProperties = Pick<
-	CsstypeStandardProperties,
-	"backgroundColor" | "color" | "padding"
->;
+type CardProperties = Pick<CsstypeStandardProperties, "backgroundColor" | "color" | "padding">;
 
 const tokens = defineTokens({
 	colors: { "$brand-500": "#2563eb" },
@@ -159,12 +156,12 @@ without converting them into a Pandwind-specific CSS grammar.
 understands. `defineTheme` returns the object unchanged; an empty typed config
 does not create a runtime object full of CSS properties.
 
-| config type | use it when |
-| --- | --- |
-| `PandwindProperties` | the preset should expose Pandwind's curated common CSS surface |
-| `Pick<PandwindProperties, "color" \| "padding">` | the preset intentionally exposes an even smaller, closed CSS surface |
-| `Record<string, never>` | mapped properties should be token-only and there should be no raw CSS value vocabulary |
-| `Record<string, unknown>` | an integration boundary truly has an open record; expect weaker property/value checking |
+| config type                                      | use it when                                                                             |
+| ------------------------------------------------ | --------------------------------------------------------------------------------------- |
+| `PandwindProperties`                             | the preset should expose Pandwind's curated common CSS surface                          |
+| `Pick<PandwindProperties, "color" \| "padding">` | the preset intentionally exposes an even smaller, closed CSS surface                    |
+| `Record<string, never>`                          | mapped properties should be token-only and there should be no raw CSS value vocabulary  |
+| `Record<string, unknown>`                        | an integration boundary truly has an open record; expect weaker property/value checking |
 
 Use Pandwind's `PandwindProperties` for a normal web design system. Use `Pick`
 when the package owns a deliberately small contract. Import the full
@@ -207,7 +204,7 @@ when a preset intentionally wants to author the values beside the property:
 const properties = defineProperties({
 	color: {
 		"$brand-500": "#2563eb",
-		"$muted": "#64748b",
+		$muted: "#64748b",
 	},
 });
 ```
@@ -239,12 +236,12 @@ unrelated tokens valid for every CSS property.
 For a mapped property such as
 `backgroundColor: { $tokens: "colors" }`, the value rules are:
 
-| preset setting | accepted values |
-| --- | --- |
-| `strict: true` | token names from the mapped group (plus color opacity modifiers) |
-| `strict: false` | token names and raw values from `config` |
-| `strict: true` with `$strictness: "inherits"` | token names and raw values from `config` for that property |
-| property value `true` | raw values from `config`, regardless of `strict` |
+| preset setting                                | accepted values                                                  |
+| --------------------------------------------- | ---------------------------------------------------------------- |
+| `strict: true`                                | token names from the mapped group (plus color opacity modifiers) |
+| `strict: false`                               | token names and raw values from `config`                         |
+| `strict: true` with `$strictness: "inherits"` | token names and raw values from `config` for that property       |
+| property value `true`                         | raw values from `config`, regardless of `strict`                 |
 
 Use `strict: true` when the preset is the design-system boundary and every
 mapped value should be intentional. Use `strict: false` for an open preset or
@@ -288,7 +285,6 @@ const baseTokens = defineTokens({
 	},
 });
 
-
 const semanticTokens = baseTokens.defineSemanticTokens(conditions, {
 	semantic: {
 		surface: { base: "colors.$surface", _dark: "#111827" },
@@ -304,7 +300,6 @@ const themedTokens = semanticTokens.defineSemanticTokens(conditions, {
 		},
 	},
 });
-
 ```
 
 The component can bind `backgroundColor` to `component` and write either

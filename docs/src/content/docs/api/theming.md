@@ -37,11 +37,7 @@ stable contract without importing a JavaScript token map:
 
 ```ts
 // tokens.ts — the design-system package
-import {
-	definePreset,
-	defineTokens,
-	type PandwindProperties,
-} from "pandwind/preset";
+import { definePreset, defineTokens, type PandwindProperties } from "pandwind/preset";
 
 const rawTokens = defineTokens({
 	colors: {
@@ -56,7 +52,6 @@ const rawTokens = defineTokens({
 });
 
 const themeConditions = { base: "", _dark: '[data-theme="dark"] &' };
-
 
 const baseTokens = defineTokens({
 	colors: rawTokens.colors,
@@ -74,26 +69,23 @@ const baseTokens = defineTokens({
 	},
 });
 
-const semanticTokens = baseTokens.defineSemanticTokens(
-	themeConditions,
-	{
-		semantic: {
-			"bg.muted": { base: rawTokens.colors["$gray-200"], _dark: rawTokens.colors["$gray-700"] },
-			"fg.error": { base: rawTokens.colors["$red-500"], _dark: "#fca5a5" },
-			"border.default": {
-				base: rawTokens.colors["$gray-200"],
-				_dark: rawTokens.colors["$gray-700"],
-			},
-			"border.width.default": { base: rawTokens.borders.thin, _dark: rawTokens.borders.thin },
-			"radius.card": { base: rawTokens.radii.md, _dark: rawTokens.radii.md },
-			"shadow.card": {
-				base: rawTokens.shadows.card,
-				_dark: "0 12px 24px rgb(0 0 0 / 0.32)",
-			},
-			"space.card.padding": { base: rawTokens.spacing[4], _dark: rawTokens.spacing[4] },
+const semanticTokens = baseTokens.defineSemanticTokens(themeConditions, {
+	semantic: {
+		"bg.muted": { base: rawTokens.colors["$gray-200"], _dark: rawTokens.colors["$gray-700"] },
+		"fg.error": { base: rawTokens.colors["$red-500"], _dark: "#fca5a5" },
+		"border.default": {
+			base: rawTokens.colors["$gray-200"],
+			_dark: rawTokens.colors["$gray-700"],
 		},
+		"border.width.default": { base: rawTokens.borders.thin, _dark: rawTokens.borders.thin },
+		"radius.card": { base: rawTokens.radii.md, _dark: rawTokens.radii.md },
+		"shadow.card": {
+			base: rawTokens.shadows.card,
+			_dark: "0 12px 24px rgb(0 0 0 / 0.32)",
+		},
+		"space.card.padding": { base: rawTokens.spacing[4], _dark: rawTokens.spacing[4] },
 	},
-);
+});
 
 const tokens = semanticTokens.defineSemanticTokens(themeConditions, {
 	component: {
