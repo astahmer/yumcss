@@ -230,7 +230,7 @@ describe("remaining adapter-owned custom semantics", () => {
 			import { createCss } from "pandwind/css";
 			const css = createCss();
 			const theme = createTheme({ palette: { primary: { main: "#123456" } } });
-			export const App = () => <div className={css.vars({ color: theme.palette.primary.main }).class} style={css.vars({ color: theme.palette.primary.main }).style} />;"
+			export const App = () => <div {...css.props(css.vars({ color: theme.palette.primary.main }))} />;"
 		`);
 	});
 
@@ -253,7 +253,7 @@ describe("remaining adapter-owned custom semantics", () => {
 			import { createCss } from "pandwind/css";
 			const css = createCss();
 			const theme = createTheme({ colors: { brand: ["#123456"] } });
-			export const App = () => <div className={css.vars({ backgroundColor: theme.colors.brand[0] }).class} style={css.vars({ backgroundColor: theme.colors.brand[0] }).style} />;"
+			export const App = () => <div {...css.props(css.vars({ backgroundColor: theme.colors.brand[0] }))} />;"
 		`);
 	});
 

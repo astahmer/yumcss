@@ -2299,7 +2299,7 @@ describe("official adapter API families", () => {
 			    "code": "import { View } from "react-native";
 			import { createCss } from "pandwind/css";
 			const css = createCss();
-			export const App = () => <View className={css.vars({ style: [{ padding: 8 }, { backgroundColor: "red" }] }).class} style={css.vars({ style: [{ padding: 8 }, { backgroundColor: "red" }] }).style}/>;",
+			export const App = () => <View {...css.props(css.vars({ style: [{ padding: 8 }, { backgroundColor: "red" }] }))} />;",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
