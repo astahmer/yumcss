@@ -253,6 +253,25 @@ describe("supporting migration primitives", () => {
 		expect(recipe).not.toContain(": any");
 	});
 
+	it("emits Panda color palettes as owned static preset metadata", () => {
+		const theme: PandaTheme = {
+			...emptyPandaTheme,
+			tokens: {
+				colors: {
+					"blue.500": "#3182ce",
+					"blue.700": "#2c5282",
+					"gray.500": "#718096",
+				},
+			},
+		};
+		const preset = renderPandaPreset(theme);
+
+		expect(preset).toContain("defineColorPalettes");
+		expect(preset).toContain('blue: "colors.blue"');
+		expect(preset).toContain('gray: "colors.gray"');
+		expect(preset).toContain("colorPalettes,");
+	});
+
 	it("emits one canonical underscore condition for built-in aliases", () => {
 		const theme: PandaTheme = {
 			...emptyPandaTheme,
