@@ -1,6 +1,7 @@
 packages:
   - packages/*
   - apps/*
+  - benchmarks/*
   - examples/*
   - docs
 allowBuilds:
@@ -9,3 +10,5 @@ allowBuilds:
   esbuild: true
   msgpackr-extract: true
   sharp: true
+minimumReleaseAgeExclude:
+  - "@stylexjs/stylex@0.19.1"

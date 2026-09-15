@@ -1,0 +1,134 @@
+{
+  "schema": "pandwind.styling-tsc/1",
+  "source": "runner/generate-fixtures.mts",
+  "updatedAt": "2026-09-15",
+  "samples": 3,
+  "environment": {
+    "platform": "darwin",
+    "arch": "arm64",
+    "node": "v24.19.0",
+    "typescript": "7.0.2"
+  },
+  "packages": {
+    "@pandacss/dev": "1.12.1",
+    "@stylexjs/stylex": "0.19.1",
+    "@vanilla-extract/css": "1.21.2",
+    "@vanilla-extract/sprinkles": "1.7.1",
+    "pandwind": "workspace:*",
+    "typescript": "7.0.2"
+  },
+  "workloads": [
+    {
+      "library": "panda",
+      "scenario": "natural",
+      "project": ".generated/panda/natural/tsconfig.json",
+      "command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/panda/natural/tsconfig.json",
+      "metrics": {
+        "files": 136,
+        "instantiations": 3846,
+        "memoryUsedKiB": 61282,
+        "checkTimeSeconds": 0.016,
+        "totalTimeSeconds": 0.042
+      }
+    },
+    {
+      "library": "pandwind",
+      "scenario": "natural",
+      "project": ".generated/pandwind/natural/tsconfig.json",
+      "command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/pandwind/natural/tsconfig.json",
+      "metrics": {
+        "files": 87,
+        "instantiations": 19887,
+        "memoryUsedKiB": 34434,
+        "checkTimeSeconds": 0.008,
+        "totalTimeSeconds": 0.028
+      }
+    },
+    {
+      "library": "sprinkles",
+      "scenario": "natural",
+      "project": ".generated/sprinkles/natural/tsconfig.json",
+      "command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/sprinkles/natural/tsconfig.json",
+      "metrics": {
+        "files": 63,
+        "instantiations": 32260,
+        "memoryUsedKiB": 48849,
+        "checkTimeSeconds": 0.033,
+        "totalTimeSeconds": 0.051
+      }
+    },
+    {
+      "library": "stylex",
+      "scenario": "natural",
+      "project": ".generated/stylex/natural/tsconfig.json",
+      "command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/stylex/natural/tsconfig.json",
+      "metrics": {
+        "files": 64,
+        "instantiations": 9541,
+        "memoryUsedKiB": 28767,
+        "checkTimeSeconds": 0.006,
+        "totalTimeSeconds": 0.023
+      }
+    },
+    {
+      "library": "panda",
+      "scenario": "stress",
+      "project": ".generated/panda/stress/tsconfig.json",
+      "command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/panda/stress/tsconfig.json",
+      "metrics": {
+        "files": 136,
+        "instantiations": 3846,
+        "memoryUsedKiB": 63963,
+        "checkTimeSeconds": 0.153,
+        "totalTimeSeconds": 0.178
+      }
+    },
+    {
+      "library": "pandwind",
+      "scenario": "stress",
+      "project": ".generated/pandwind/stress/tsconfig.json",
+      "command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/pandwind/stress/tsconfig.json",
+      "metrics": {
+        "files": 87,
+        "instantiations": 36239,
+        "memoryUsedKiB": 38516,
+        "checkTimeSeconds": 0.105,
+        "totalTimeSeconds": 0.123
+      }
+    },
+    {
+      "library": "sprinkles",
+      "scenario": "stress",
+      "project": ".generated/sprinkles/stress/tsconfig.json",
+      "command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/sprinkles/stress/tsconfig.json",
+      "metrics": {
+        "files": 63,
+        "instantiations": 32708,
+        "memoryUsedKiB": 51555,
+        "checkTimeSeconds": 0.067,
+        "totalTimeSeconds": 0.084
+      }
+    },
+    {
+      "library": "stylex",
+      "scenario": "stress",
+      "project": ".generated/stylex/stress/tsconfig.json",
+      "command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/stylex/stress/tsconfig.json",
+      "metrics": {
+        "files": 64,
+        "instantiations": 32893,
+        "memoryUsedKiB": 33376,
+        "checkTimeSeconds": 0.02,
+        "totalTimeSeconds": 0.036
+      }
+    }
+  ],
+  "tolerances": {
+    "pandwind": {
+      "instantiations": 0.1,
+      "memoryUsedKiB": 0.1,
+      "checkTimeSeconds": 0.25,
+      "totalTimeSeconds": 0.25
+    }
+  }
+}
