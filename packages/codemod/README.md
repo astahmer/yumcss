@@ -169,6 +169,12 @@ pnpm exec pandwind-codemod migrate --from pandwind --to unocss src
 root when the command is run outside it. -h and --help work at the root, after
 migrate or tokens, and after a command's arguments.
 
+Static `css.class({...})` calls stay beside their JSX use by default. Pandwind's
+Vite/unplugin compiler can fold literal calls to raw class strings at build
+time, so the codemod does not need to move them to module scope for runtime
+performance. Pass `--hoist-static-styles` when the generated source should
+share module-scope static carriers instead.
+
 When the target is Pandwind, the command bootstraps shared project support in
 pandwind/ by default: an app-owned definePreset, css.ts, runtime.ts, cx.ts,
 the typed tw.ts, its optional bridge, types.d.ts, the versioned interop
@@ -285,6 +291,8 @@ stylex. Use pandwind-codemod tokens --help for the validated format list.
 - --report prints per-file counts and residual details; --report-format json is suitable for CI;
 - --meta selects existing Pandwind metadata when bootstrapping is not desired;
 - --skip-marker changes the opt-out marker, whose default is pandwind:migrate-skip;
+- static style calls stay colocated by default; --hoist-static-styles opts into
+  module-scope static carriers;
 - --safe requires the target capability contract; --partial permits partial lowering;
 - --no-install skips package-manager execution;
 - negative utilities, dynamic values, unknown utilities, and ambiguous tokens stay visible rather than being guessed.

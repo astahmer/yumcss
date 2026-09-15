@@ -8,10 +8,11 @@ current `0.1.0` state.
 
 ### Fixes
 
-- Hoist literal `css.class()` calls out of render functions into deduplicated
-  module constants, while preserving dynamic calls and removing unused `css`
-  imports. Insert generated constants after a module `css` initializer so the
-  output cannot hit the temporal dead zone.
+- Keep literal `css.class()` calls beside their JSX use by default. The
+  `--hoist-static-styles` option opts into module-scope carriers for projects
+  that prefer that source shape; the Pandwind Vite/unplugin compiler can still
+  fold colocated literal calls to raw class strings at build time. Source
+  revision: `70aa6df1`.
 - Keep existing host classes inside `css.props` when migrating StyleX props
   spreads, covering both expression and quoted `className` attributes without
   generating a second `cx` merge. The static simplifier also flattens nested
