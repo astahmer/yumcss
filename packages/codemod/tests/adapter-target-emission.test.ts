@@ -91,6 +91,24 @@ describe("target adapter emission contract", () => {
 		`);
 	});
 
+	test("keeps finite literal conditional values on the static class path", () => {
+		const result = migrate(
+			'import { Box } from "@chakra-ui/react";\n' +
+				"export const App = ({ noHistoricalData }: { noHistoricalData: boolean }) => " +
+				'<Box color={noHistoricalData ? "fg.muted" : "red"} fontSize="xs" />;',
+			CodemodAdapterId.ChakraUi,
+			CodemodAdapterId.Pandwind,
+			"SyncCell.tsx",
+		);
+
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain("css.class");
+		expect(result.code).toContain('color: noHistoricalData ? "fg.muted" : "red"');
+		expect(result.code).not.toContain("css.vars");
+		expect(result.code).not.toContain("style=");
+	});
+
 	test("preserves an exported styled component subject as a component", () => {
 		const result = migrate(
 			'import styled from "styled-components";\n' +

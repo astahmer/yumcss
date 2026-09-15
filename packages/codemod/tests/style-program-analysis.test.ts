@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
 import { StyleProgramAnalysis } from "../src/swap/style-program-analysis.ts";
-import { styleProgramFromRules } from "../src/swap/semantic-ir.ts";
+import { styleProgramFromRules, styleProgramFromSourceObject } from "../src/swap/semantic-ir.ts";
 
 describe("StyleProgramAnalysis", () => {
 	test("answers dynamic queries across nested rules without a bound receiver", () => {
@@ -70,6 +70,16 @@ describe("StyleProgramAnalysis", () => {
 
 		expect(StyleProgramAnalysis.hasScalarDynamic(program)).toBe(true);
 		expect(StyleProgramAnalysis.hasFunctionDynamic(program)).toBe(false);
+	});
+
+	test("keeps finite literal conditional values out of the runtime carrier", () => {
+		const program = styleProgramFromSourceObject('color: noHistoricalData ? "fg.muted" : "red"', {
+			source: { file: "SyncCell.tsx", adapter: "chakra" },
+		});
+
+		expect(program.declarations[0]?.value).toMatchObject({ expressionKind: "conditional" });
+		expect(StyleProgramAnalysis.hasDynamic(program)).toBe(true);
+		expect(StyleProgramAnalysis.hasRuntimeDynamic(program)).toBe(false);
 	});
 
 	test("keeps the root declaration projection for rule-less programs", () => {
