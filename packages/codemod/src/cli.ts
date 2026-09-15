@@ -245,12 +245,21 @@ const existingProjectSupport = (
 	const relativeDirectory = projectOutputDirectory(root, directory);
 	const modulePath = (name: string): string | undefined =>
 		existsSync(resolve(root, relativeDirectory, name)) ? `${relativeDirectory}/${name}` : undefined;
+	const runtimeModule = modulePath("runtime.ts");
+	const runtimeSource =
+		runtimeModule === undefined ? undefined : readFileSync(resolve(root, runtimeModule), "utf8");
+	const runtimeCssBinding = runtimeSource?.match(
+		/export\s+(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*createRuntimeCss\(/u,
+	)?.[1];
 	const bindings: AdapterProjectBindings = {
 		...(modulePath("css.ts") === undefined ? {} : { cssModule: modulePath("css.ts") }),
 		...(modulePath("stack.tsx") === undefined ? {} : { stackModule: modulePath("stack.tsx") }),
-		...(modulePath("runtime.ts") === undefined
+		...(runtimeModule === undefined
 			? {}
-			: { runtimeCssModule: modulePath("runtime.ts") }),
+			: {
+					runtimeCssModule: runtimeModule,
+					...(runtimeCssBinding === undefined ? {} : { runtimeCssBinding }),
+				}),
 		...(modulePath("dss.ts") === undefined ? {} : { dssModule: modulePath("dss.ts") }),
 		...(modulePath("tw.ts") === undefined ? {} : { twModule: modulePath("tw.ts") }),
 		...(modulePath("cx.ts") === undefined ? {} : { cxModule: modulePath("cx.ts") }),

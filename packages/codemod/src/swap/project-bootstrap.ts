@@ -838,7 +838,7 @@ function runtimeCssSource(): string {
 	return `import { createRuntimeCss } from "pandwind/css/runtime";
 import { pandwindPreset } from "./preset";
 
-export const css = createRuntimeCss(pandwindPreset);
+export const runtimeCss = createRuntimeCss(pandwindPreset);
 `;
 }
 
@@ -979,7 +979,7 @@ export async function createPandwindProjectSupport(
 				generatedFile(css, cssSource(nextIntegration.enabled), "shared extracted css() binding"),
 				generatedFile(stack, stackSource(), "shared configured Stack binding"),
 				generatedFile(viteEnv, viteEnvSource(), "Pandwind Vite virtual-module types"),
-				generatedFile(runtimeCss, runtimeCssSource(), "shared runtime css() binding"),
+				generatedFile(runtimeCss, runtimeCssSource(), "shared runtimeCss binding"),
 				...(needsDssBinding
 					? [generatedFile(dss, dssSource(), "shared design-system dss() binding")]
 					: []),
@@ -1066,6 +1066,7 @@ export async function createPandwindProjectSupport(
 						cssModule: css,
 						stackModule: stack,
 						runtimeCssModule: runtimeCss,
+						runtimeCssBinding: "runtimeCss",
 						...(canonicalPandwindTarget ? {} : { cxModule: cx }),
 						...(needsDssBinding ? { dssModule: dss } : {}),
 					}),

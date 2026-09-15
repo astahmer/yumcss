@@ -195,20 +195,31 @@ export class MigrationOutput {
 				return binding === undefined ? [] : [binding];
 			}),
 		);
+		const staticBindings = new Set(
+			input.flatMap((statement) => {
+				const binding = /\b(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*createCss\(\)/u.exec(
+					statement,
+				)?.[1];
+				return binding === undefined ? [] : [binding];
+			}),
+		);
+		const collidingBindings = new Set(
+			[...runtimeBindings].filter((binding) => staticBindings.has(binding)),
+		);
 		// A stylesheet migration can emit several rules in one generated module.
-		// If one rule requires the runtime carrier, the same binding can serve the
-		// static rules too. Keeping both initializers would declare the binding
-		// twice and make the generated module invalid.
+		// A runtime carrier is deliberately separate from the normal extracted
+		// `css` lane. Only legacy emissions that reuse the same local binding need
+		// the old single-carrier deduplication.
 		const normalized = input.filter((statement) => {
 			if (
-				runtimeBindings.size > 0 &&
+				collidingBindings.size > 0 &&
 				statement.trim() === 'import { createCss } from "pandwind/css";'
 			)
 				return false;
 			const staticBinding = /\b(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*createCss\(\)/u.exec(
 				statement,
 			)?.[1];
-			return staticBinding === undefined || !runtimeBindings.has(staticBinding);
+			return staticBinding === undefined || !collidingBindings.has(staticBinding);
 		});
 		const grouped = new Map<string, { defaultImport?: string; named: Set<string> }>();
 		const other: string[] = [];

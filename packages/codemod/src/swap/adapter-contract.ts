@@ -125,8 +125,10 @@ export interface AdapterProjectBindings {
 	readonly cssModule?: string;
 	/** Module exporting the configured React Stack binding. */
 	readonly stackModule?: string;
-	/** Module exporting the runtime `css` binding for dynamic/global rules. */
+	/** Module exporting the runtime CSS binding for dynamic/global rules. */
 	readonly runtimeCssModule?: string;
+	/** Exported name of the runtime CSS binding in `runtimeCssModule`. */
+	readonly runtimeCssBinding?: string;
 	/** Module exporting the project-configured design-system `dss` binding. */
 	readonly dssModule?: string;
 	/** Module exporting the project-configured `tw` binding. */

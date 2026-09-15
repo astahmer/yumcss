@@ -256,7 +256,7 @@ export default defineCodemodAdapter({
 				code: code
 					.replace(/<Global\s+styles=\{(?:\{[\s\S]*\}|[^{}]+)\}\s*\/>/g, "<></>")
 					.replace(
-						/(export const [A-Za-z_$][\w$]*\s*=\s*\(\)\s*=>)\s*\(\)\s*=>\s*(\(css\.sheet\.registerSemanticRules)/g,
+						/(export const [A-Za-z_$][\w$]*\s*=\s*\(\)\s*=>)\s*\(\)\s*=>\s*(\([A-Za-z_$][\w$]*\.sheet\.registerSemanticRules)/g,
 						"$1 $2",
 					),
 				residuals: [],

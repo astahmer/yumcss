@@ -75,7 +75,6 @@ import {
 	type PreparedAdapterMigration,
 } from "./adapter-migration-preparation.ts";
 
-const renamedCssBindingPattern = /\b(?:targetCss|pwCss)\s*=\s*createCss\(\)/u;
 const generatedCssBindingPattern = /\b(?:css|targetCss|pwCss)\s*=\s*createCss\(\)/u;
 const runtimeCssBindingPattern = /\b(?:css|targetCss|pwCss)\s*=\s*createRuntimeCss\(/u;
 
@@ -1500,24 +1499,18 @@ function runAdapterMigrationInternal(
 		}
 	}
 	if (imports.has('import { createRuntimeCss } from "pandwind/css/runtime";')) {
-		const hasRenamedStaticCss =
-			renamedCssBindingPattern.test(code) ||
-			[...imports].some((statement) => renamedCssBindingPattern.test(statement));
 		const runtimeUsesSameBinding = [...imports].some((statement) =>
 			runtimeCssBindingPattern.test(statement),
 		);
-		if (!hasRenamedStaticCss || runtimeUsesSameBinding) {
+		if (runtimeUsesSameBinding) {
 			imports.delete('import { createCss } from "pandwind/css";');
-			if (runtimeUsesSameBinding) {
-				for (const statement of imports)
-					if (generatedCssBindingPattern.test(statement)) imports.delete(statement);
-			} else imports.delete("const css = createCss();");
+			for (const statement of imports)
+				if (generatedCssBindingPattern.test(statement)) imports.delete(statement);
 		}
-		// A residual-carrying source module keeps its original statements; the
-		// skipped code still binds `css`. Only a fully converted document has
-		// the static binding replaced by the runtime carrier, and leaving it in
-		// place would declare `css` twice.
-		if (converted > 0 && skipped === 0 && residuals.length === 0 && !hasRenamedStaticCss)
+		// Keep the extracted `css` lane when the runtime carrier has its own
+		// binding. Remove only a legacy same-name initializer after a complete
+		// migration, where retaining it would redeclare that local.
+		if (converted > 0 && skipped === 0 && residuals.length === 0 && runtimeUsesSameBinding)
 			code = MigrationOutput.removeGeneratedStatements(code, ["const css = createCss();"]);
 	}
 	const targetUsesPandwindCss =

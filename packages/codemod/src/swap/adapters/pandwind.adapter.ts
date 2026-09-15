@@ -359,7 +359,7 @@ function runtimeSemanticRuleMatches(
 	const matches: Array<AdapterParseResult["matches"][number]> = [];
 	const residuals: Array<AdapterParseResult["residuals"][number]> = [];
 	const bindings = runtimeBindingValues(source);
-	for (const call of source.matchAll(/\bcss\.sheet\.registerSemanticRules\s*\(/gu)) {
+	for (const call of source.matchAll(/\b[A-Za-z_$][\w$]*\.sheet\.registerSemanticRules\s*\(/gu)) {
 		const callStart = call.index ?? 0;
 		const openParen = source.indexOf("(", callStart);
 		const arrayStart = source.indexOf("[", openParen);
@@ -761,7 +761,9 @@ function useProjectBindings(
 	const runtime = emission.imports.some((statement) =>
 		/from\s+["']pandwind\/css\/runtime["']/u.test(statement),
 	);
-	const cssModule = runtime ? (project.runtimeCssModule ?? project.cssModule) : project.cssModule;
+	const cssModule = runtime ? project.runtimeCssModule : project.cssModule;
+	const exportedBinding = runtime ? (project.runtimeCssBinding ?? "runtimeCss") : "css";
+	const localBinding = runtime ? "runtimeCss" : binding;
 	let text = emission.text;
 	let imports = [...emission.imports];
 	if (cssModule !== undefined) {
@@ -770,15 +772,15 @@ function useProjectBindings(
 				!/(?:from\s+["']pandwind\/css(?:\/runtime)?["']|from\s+["']pandwind\/preset["'])/u.test(
 					statement,
 				) &&
-				!new RegExp(`^const\\s+${binding}\\s*=\\s*create(?:Runtime)?Css\\(`, "u").test(
+				!new RegExp(`^const\\s+${localBinding}\\s*=\\s*create(?:Runtime)?Css\\(`, "u").test(
 					statement.trim(),
 				),
 		);
 		const specifier = projectImportSpecifier(file, cssModule);
 		imports.push(
-			binding === "css"
-				? `import { css } from "${specifier}";`
-				: `import { css as ${binding} } from "${specifier}";`,
+			exportedBinding === localBinding
+				? `import { ${exportedBinding} } from "${specifier}";`
+				: `import { ${exportedBinding} as ${localBinding} } from "${specifier}";`,
 		);
 	}
 	if (project.cxModule !== undefined) {
@@ -1117,12 +1119,12 @@ function runtimeComponent(
 	);
 	if (framework === BuiltinHostFramework.Vue) {
 		return {
-			text: `defineComponent({ setup(_props, { attrs, slots }) { const style = computed(() => css.vars(${object})); return () => h(${JSON.stringify(tag)}, { ...attrs, class: [style.value.class, attrs.class], style: [style.value.style, attrs.style] }, slots.default?.()); } })`,
+			text: `defineComponent({ setup(_props, { attrs, slots }) { const style = computed(() => runtimeCss.vars(${object})); return () => h(${JSON.stringify(tag)}, { ...attrs, class: [style.value.class, attrs.class], style: [style.value.style, attrs.style] }, slots.default?.()); } })`,
 			imports: [
 				'import { computed, defineComponent, h } from "vue";',
 				'import { createRuntimeCss } from "pandwind/css/runtime";',
 				'import { pandwindPreset } from "pandwind/preset";',
-				"const css = createRuntimeCss(pandwindPreset);",
+				"const runtimeCss = createRuntimeCss(pandwindPreset);",
 			],
 		};
 	}
@@ -1135,10 +1137,10 @@ function runtimeComponent(
 	const classAttribute = framework === BuiltinHostFramework.Solid ? "class" : "className";
 	const mergedClass =
 		inheritedClass === undefined
-			? `css.props(style, props.${classAttribute}).className`
+			? `runtimeCss.props(style, props.${classAttribute}).className`
 			: `composedCx.vars(style, ${JSON.stringify(inheritedClass)}, props.${classAttribute}).class`;
 	const composedCxBinding =
-		inheritedClass === undefined ? "" : "const composedCx = createCx({ css }); ";
+		inheritedClass === undefined ? "" : "const composedCx = createCx({ css: runtimeCss }); ";
 	if (tag === undefined) {
 		const forwardedProps =
 			componentAttrs === undefined
@@ -1147,22 +1149,22 @@ function runtimeComponent(
 					? `{...(${componentAttrs})(props), ...props}`
 					: `{...(${componentAttrs}), ...props}`;
 		return {
-			text: `(props) => { ${composedCxBinding}const style = css.vars(${object}); const Base = props.as ?? (${componentExpression}); return <Base ${forwardedProps} ${classAttribute}={${mergedClass}} style={{ ...props.style, ...style.style }} />; }`,
+			text: `(props) => { ${composedCxBinding}const style = runtimeCss.vars(${object}); const Base = props.as ?? (${componentExpression}); return <Base ${forwardedProps} ${classAttribute}={${mergedClass}} style={{ ...props.style, ...style.style }} />; }`,
 			imports: [
 				...(inheritedClass === undefined ? [] : ['import { createCx } from "pandwind/cx";']),
 				'import { createRuntimeCss } from "pandwind/css/runtime";',
 				'import { pandwindPreset } from "pandwind/preset";',
-				"const css = createRuntimeCss(pandwindPreset);",
+				"const runtimeCss = createRuntimeCss(pandwindPreset);",
 			],
 		};
 	}
 	return {
-		text: `(props) => { ${composedCxBinding}const style = css.vars(${object}); const Component = props.as ?? ${JSON.stringify(tag)}; const { as: _as, ...rest } = props; const attrs = ${componentAttrs === undefined ? "{}" : /=>|\bfunction\b/.test(componentAttrs) ? `(${componentAttrs})(props)` : `(${componentAttrs})`}; return <Component {...attrs} {...rest} ${classAttribute}={${mergedClass}} style={{ ...props.style, ...style.style }} />; }`,
+		text: `(props) => { ${composedCxBinding}const style = runtimeCss.vars(${object}); const Component = props.as ?? ${JSON.stringify(tag)}; const { as: _as, ...rest } = props; const attrs = ${componentAttrs === undefined ? "{}" : /=>|\bfunction\b/.test(componentAttrs) ? `(${componentAttrs})(props)` : `(${componentAttrs})`}; return <Component {...attrs} {...rest} ${classAttribute}={${mergedClass}} style={{ ...props.style, ...style.style }} />; }`,
 		imports: [
 			...(inheritedClass === undefined ? [] : ['import { createCx } from "pandwind/cx";']),
 			'import { createRuntimeCss } from "pandwind/css/runtime";',
 			'import { pandwindPreset } from "pandwind/preset";',
-			"const css = createRuntimeCss(pandwindPreset);",
+			"const runtimeCss = createRuntimeCss(pandwindPreset);",
 		],
 	};
 }
@@ -1591,7 +1593,7 @@ function runtimeKeyframes(program: StyleProgram, context: AdapterEmitContext | u
 				)
 				.join(", ")}] }`,
 	);
-	return `(() => { const name = ${JSON.stringify(name)}; css.sheet.registerSemanticRules([{ kind: "keyframes", name, children: [${children.join(", ")}] }]); return name; })()`;
+	return `(() => { const name = ${JSON.stringify(name)}; runtimeCss.sheet.registerSemanticRules([{ kind: "keyframes", name, children: [${children.join(", ")}] }]); return name; })()`;
 }
 
 function jssNamedClassMap(
@@ -1689,7 +1691,7 @@ function runtimeGlobalTemplate(
 	const binding = context?.host?.binding ?? String(program.source?.start ?? "template");
 	const file = context?.file ?? "template";
 	const id = `pw-global-${CodemodStyleIdentity.className(file, binding)}`;
-	return `(css.sheet.register([{ id: ${JSON.stringify(id)}, css: ${runtimeTemplateExpression(template, file)}, priority: 0 }]), null)`;
+	return `(runtimeCss.sheet.register([{ id: ${JSON.stringify(id)}, css: ${runtimeTemplateExpression(template, file)}, priority: 0 }]), null)`;
 }
 
 function runtimeTemplateExpression(template: string, file?: string, parameter = "props"): string {
@@ -1755,7 +1757,7 @@ function runtimeHostTemplateExpression(
 		`template-${host.start ?? "0"}`,
 	);
 	const cssText = `".${stableClass}{" + ${runtimeTemplateExpression(template, context?.file, "undefined")} + "}"`;
-	const classExpression = `(() => { const __compiledCss = ${cssText}; css.sheet.register([{ id: ${JSON.stringify(stableClass)} + ":" + __compiledCss, css: __compiledCss, priority: 0 }]); return ${JSON.stringify(stableClass)}; })()`;
+	const classExpression = `(() => { const __compiledCss = ${cssText}; runtimeCss.sheet.register([{ id: ${JSON.stringify(stableClass)} + ":" + __compiledCss, css: __compiledCss, priority: 0 }]); return ${JSON.stringify(stableClass)}; })()`;
 	const rendered = JsxStyleHost.render(
 		host.hostOpenTag,
 		host.hostStyleAttributes,
@@ -1769,7 +1771,7 @@ function runtimeHostTemplateExpression(
 		imports: [
 			'import { createRuntimeCss } from "pandwind/css/runtime";',
 			'import { pandwindPreset } from "pandwind/preset";',
-			"const css = createRuntimeCss(pandwindPreset);",
+			"const runtimeCss = createRuntimeCss(pandwindPreset);",
 			...(rendered.needsCx
 				? ['import { createCx } from "pandwind/cx";', "const cx = createCx();"]
 				: []),
@@ -1877,24 +1879,24 @@ function runtimeRawComponent(
 		hasComponentSelectorInterpolation(template) ||
 		liveEditorHost;
 	const needsThemeContext = hasThemeContextValues(program, source);
-	const dynamicRegistration = `const style = ${cssText}; const className = __pandwindVariantClass(${JSON.stringify(stableClass)}, style); css.sheet.register([{ id: className, css: style.replaceAll(${JSON.stringify(`.${stableClass}`)}, "." + className), priority: ${priority} }]);`;
+	const dynamicRegistration = `const style = ${cssText}; const className = __pandwindVariantClass(${JSON.stringify(stableClass)}, style); runtimeCss.sheet.register([{ id: className, css: style.replaceAll(${JSON.stringify(`.${stableClass}`)}, "." + className), priority: ${priority} }]);`;
 	const registration = dynamic
 		? dynamicRegistration
-		: `css.sheet.register([{ id: ${JSON.stringify(stableClass)}, css: ${cssText}, priority: ${priority} }]);`;
+		: `runtimeCss.sheet.register([{ id: ${JSON.stringify(stableClass)}, css: ${cssText}, priority: ${priority} }]);`;
 	const staticRegistration = dynamic
-		? `css.sheet.register([{ id: ${JSON.stringify(stableClass)}, css: ${staticCssText}, priority: ${priority} }]);`
+		? `runtimeCss.sheet.register([{ id: ${JSON.stringify(stableClass)}, css: ${staticCssText}, priority: ${priority} }]);`
 		: "";
 	const inheritedClass =
 		subject === undefined ? undefined : composedBaseClassName(subject, context);
 	const classExpression = dynamic
 		? inheritedClass === undefined
-			? `css.props(className, ${JSON.stringify(stableClass)}, props.${classAttribute}).className`
+			? `runtimeCss.props(className, ${JSON.stringify(stableClass)}, props.${classAttribute}).className`
 			: `composedCx(className, ${JSON.stringify(stableClass)}, ${JSON.stringify(inheritedClass)}, props.${classAttribute})`
 		: inheritedClass === undefined
-			? `css.props(${JSON.stringify(stableClass)}, props.${classAttribute}).className`
+			? `runtimeCss.props(${JSON.stringify(stableClass)}, props.${classAttribute}).className`
 			: `composedCx(${JSON.stringify(stableClass)}, ${JSON.stringify(inheritedClass)}, props.${classAttribute})`;
 	const composedCxBinding =
-		inheritedClass === undefined ? "" : "const composedCx = createCx({ css }); ";
+		inheritedClass === undefined ? "" : "const composedCx = createCx({ css: runtimeCss }); ";
 	const render = `const Component = props.as ?? ${defaultComponent}; const { as: _as, ...rest } = props; const attrs = ${attrsExpression}; const element = <Component {...attrs} {...rest} ${classAttribute}={${classExpression}} />; return element;`;
 	const themeContextAssignment = needsThemeContext
 		? "props = { ...props, theme: props.theme ?? usePandwindTheme() };"
@@ -1917,7 +1919,7 @@ function runtimeRawComponent(
 			...(inheritedClass === undefined ? [] : ['import { createCx } from "pandwind/cx";']),
 			'import { createRuntimeCss } from "pandwind/css/runtime";',
 			'import { pandwindPreset } from "pandwind/preset";',
-			"const css = createRuntimeCss(pandwindPreset);",
+			"const runtimeCss = createRuntimeCss(pandwindPreset);",
 			...(needsThemeContext ? ['import { usePandwindTheme } from "pandwind/theme";'] : []),
 		],
 	};
@@ -1968,7 +1970,7 @@ function runtimeGlobalVars(program: StyleProgram): string {
 	const references = variableDeclarations
 		.map(({ name, property }) => `${JSON.stringify(name)}: ${JSON.stringify(`var(${property})`)}`)
 		.join(", ");
-	return `(css.sheet.registerSemanticRules([{ kind: "global", selector: ":root", declarations: [${declarations}] }]), { ${references} })`;
+	return `(runtimeCss.sheet.registerSemanticRules([{ kind: "global", selector: ":root", declarations: [${declarations}] }]), { ${references} })`;
 }
 
 function slotRecipeDefinitionObject(
@@ -2173,7 +2175,7 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 			/\bcreateCss\s*\(/,
 			/\bcreateRuntimeCss\s*\(/,
 			/\b(?:createRecipe|createSlotRecipe)\s*\(/,
-			/\bcss\.sheet\.registerSemanticRules\s*\(/,
+			/\b[A-Za-z_$][\w$]*\.sheet\.registerSemanticRules\s*\(/,
 		],
 		sourceModules: ["pandwind/css", "pandwind/css/runtime", "pandwind/recipe"],
 		sourceModuleMatchers: [
@@ -2197,7 +2199,9 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 			targetPolicy: PANDWIND_TARGET_POLICY,
 			rewrite: ({ code, targetId, complete }) => {
 				if (targetId === CodemodAdapterId.Pandwind || !complete) return { code, residuals: [] };
-				if (!/\bconst\s+css\s*=\s*createRuntimeCss\(\s*pandwindPreset\s*\)/u.test(code))
+				if (
+					!/\bconst\s+(?:css|runtimeCss)\s*=\s*createRuntimeCss\(\s*pandwindPreset\s*\)/u.test(code)
+				)
 					return { code, residuals: [] };
 				return {
 					code: code
@@ -2205,7 +2209,10 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 							/import\s*\{\s*pandwindPreset\s*\}\s*from\s*["']pandwind\/preset["'];?\s*/gu,
 							"",
 						)
-						.replace(/\bconst\s+css\s*=\s*createRuntimeCss\(\s*pandwindPreset\s*\);?\s*/gu, ""),
+						.replace(
+							/\bconst\s+(?:css|runtimeCss)\s*=\s*createRuntimeCss\(\s*pandwindPreset\s*\);?\s*/gu,
+							"",
+						),
 					residuals: [],
 				};
 			},
@@ -2291,7 +2298,7 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 					imports: [
 						'import { createRuntimeCss } from "pandwind/css/runtime";',
 						'import { pandwindPreset } from "pandwind/preset";',
-						"const css = createRuntimeCss(pandwindPreset);",
+						"const runtimeCss = createRuntimeCss(pandwindPreset);",
 					],
 				});
 			}
@@ -2315,7 +2322,7 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 				});
 			}
 			if (program.rules.some((rule) => rule.kind === StyleRuleKindTag.Global)) {
-				const register = `css.sheet.registerSemanticRules([${runtimeGlobalRules(outputProgram)}])`;
+				const register = `runtimeCss.sheet.registerSemanticRules([${runtimeGlobalRules(outputProgram)}])`;
 				const immediate =
 					program.source?.adapter === CodemodAdapterId.VanillaExtract &&
 					program.source.pattern === CodemodPatternId.VanillaExtractGlobalStyle;
@@ -2329,11 +2336,11 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 							? immediate
 								? `(${register}, null)`
 								: `() => (${register}, null)`
-							: `() => ${template}`,
+							: template,
 					imports: [
 						'import { createRuntimeCss } from "pandwind/css/runtime";',
 						'import { pandwindPreset } from "pandwind/preset";',
-						"const css = createRuntimeCss(pandwindPreset);",
+						"const runtimeCss = createRuntimeCss(pandwindPreset);",
 					],
 				});
 			}
@@ -2416,11 +2423,11 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 						.map(withoutFontFaces),
 				};
 				return finalize({
-					text: `(css.sheet.registerSemanticRules([${runtimeFontFaces(outputProgram)}]), css.group(${renderProgramObject(styleProgram)}))`,
+					text: `(runtimeCss.sheet.registerSemanticRules([${runtimeFontFaces(outputProgram)}]), runtimeCss.group(${renderProgramObject(styleProgram)}))`,
 					imports: [
 						'import { createRuntimeCss } from "pandwind/css/runtime";',
 						'import { pandwindPreset } from "pandwind/preset";',
-						"const css = createRuntimeCss(pandwindPreset);",
+						"const runtimeCss = createRuntimeCss(pandwindPreset);",
 					],
 				});
 			}
@@ -2430,7 +2437,7 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 					imports: [
 						'import { createRuntimeCss } from "pandwind/css/runtime";',
 						'import { pandwindPreset } from "pandwind/preset";',
-						"const css = createRuntimeCss(pandwindPreset);",
+						"const runtimeCss = createRuntimeCss(pandwindPreset);",
 					],
 				});
 			// Named conditions such as Panda's `_dark` still belong to one
@@ -2475,14 +2482,15 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 				(program.emissionHints?.includes(StyleProgramEmissionHint.RuntimeFunction) === true ||
 					runtimeStandalone ||
 					functionDynamic);
+			const dynamicCssBinding = needsRuntimeCss ? "runtimeCss" : "css";
 			const hostUsesClassCarrier =
 				dynamic &&
 				program.source?.hostStyleAttributes?.some((attribute) =>
 					/\b(?:className|class)\s*=\s*/u.test(attribute),
 				);
 			const dynamicEmission = hostUsesClassCarrier
-				? `css.vars(${renderProgramObject(outputProgram)}).class`
-				: `css.vars(${renderProgramObject(outputProgram)})`;
+				? `${dynamicCssBinding}.vars(${renderProgramObject(outputProgram)}).class`
+				: `${dynamicCssBinding}.vars(${renderProgramObject(outputProgram)})`;
 			if (program.source?.pattern === CodemodPatternId.TokenamiCompose)
 				return finalize({
 					text: `() => { const className = ${cssBinding}.class(${renderProgramObject(outputProgram)}); return [(value: string | undefined) => pandwindCx(className, value), (style: Record<string, unknown> | undefined) => style ?? {}] as const; }`,
@@ -2506,9 +2514,9 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 						: named
 							? (jssClassMap ?? `css.group(${renderProgramObject(outputProgram)})`)
 							: functionDynamic
-								? `css.group(${renderProgramObject(outputProgram)})`
+								? `${dynamicCssBinding}.group(${renderProgramObject(outputProgram)})`
 								: runtimeStandalone
-									? `css.class(${renderProgramObject(outputProgram)})`
+									? `${dynamicCssBinding}.class(${renderProgramObject(outputProgram)})`
 									: dynamic
 										? dynamicEmission
 										: `css.class(${renderProgramObject(outputProgram)})`,
@@ -2528,7 +2536,7 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 							? [
 									'import { createRuntimeCss } from "pandwind/css/runtime";',
 									'import { pandwindPreset } from "pandwind/preset";',
-									"const css = createRuntimeCss(pandwindPreset);",
+									"const runtimeCss = createRuntimeCss(pandwindPreset);",
 								]
 							: ['import { createCss } from "pandwind/css";', "const css = createCss();"],
 				generatedStatements: recipe?.generatedStatements,

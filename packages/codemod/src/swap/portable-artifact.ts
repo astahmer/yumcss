@@ -77,11 +77,7 @@ export class PortableStyleArtifact {
 		return dynamic
 			? {
 					text: `css.vars(${objectText(program)})`,
-					imports: [
-						'import { createRuntimeCss } from "pandwind/css/runtime";',
-						'import { pandwindPreset } from "pandwind/preset";',
-						"const css = createRuntimeCss(pandwindPreset);",
-					],
+					imports: ['import { createCss } from "pandwind/css";', "const css = createCss();"],
 				}
 			: {
 					text: `css.class(${objectText(program)})`,
