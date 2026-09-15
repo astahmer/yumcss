@@ -4,6 +4,20 @@ All notable changes to `pandwind` are documented here. The project has no
 released version yet — entries group the development waves that produced the
 current `0.1.0` state.
 
+## Unreleased — 2026-09-15 static color palettes
+
+### API / codemod
+
+- Add typed `defineColorPalettes` preset metadata for Panda/Chakra-style
+  `colorPalette` usage. Palette assignments compile to one static class with
+  custom-property mappings, while `colorPalette.*` references resolve through
+  the app-owned color tokens.
+- Preserve Panda color-palette roots, include/exclude settings, and virtual
+  references when emitting a Pandwind preset, without importing Panda's default
+  token catalog or introducing a runtime theme bridge.
+
+Source revisions: `qqyulusz`, `rrxooprr`, `uspqzmlu`, `zwtzvqvk`.
+
 ## Unreleased — 2026-09-15 canonical condition names
 
 ### API / codemod
