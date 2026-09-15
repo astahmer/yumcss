@@ -82,6 +82,25 @@ describe("StyleProgramAnalysis", () => {
 		expect(StyleProgramAnalysis.hasRuntimeDynamic(program)).toBe(false);
 	});
 
+	test("keeps finite literal object values out of the runtime carrier", () => {
+		const program = styleProgramFromSourceObject('minWidth: { base: "full", md: "260px" }', {
+			source: { file: "Filters.tsx", adapter: "chakra" },
+		});
+
+		expect(program.declarations[0]?.value).toMatchObject({ expressionKind: "object" });
+		expect(StyleProgramAnalysis.hasDynamic(program)).toBe(true);
+		expect(StyleProgramAnalysis.hasRuntimeDynamic(program)).toBe(false);
+	});
+
+	test("keeps unresolved values inside literal objects on the runtime path", () => {
+		const program = styleProgramFromSourceObject('minWidth: { base: theme.width, md: "260px" }', {
+			source: { file: "Filters.tsx", adapter: "chakra" },
+		});
+
+		expect(program.declarations[0]?.value).toMatchObject({ expressionKind: "object" });
+		expect(StyleProgramAnalysis.hasRuntimeDynamic(program)).toBe(true);
+	});
+
 	test("keeps the root declaration projection for rule-less programs", () => {
 		const program = styleProgramFromRules([]);
 		const declaration = {

@@ -109,6 +109,24 @@ describe("target adapter emission contract", () => {
 		expect(result.code).not.toContain("style=");
 	});
 
+	test("emits literal responsive JSX styles as one static class", () => {
+		const result = migrate(
+			'import { Field } from "@chakra-ui/react";\n' +
+				'export const App = () => <Field label="Action" flex="1" minW={{ base: "full", md: "260px" }} />;',
+			CodemodAdapterId.ChakraUi,
+			CodemodAdapterId.Pandwind,
+			"Filters.tsx",
+		);
+
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain(
+			'className={css.class({ flex: "1", minWidth: { base: "full", md: "260px" } })}',
+		);
+		expect(result.code).not.toContain("css.props");
+		expect(result.code).not.toContain("css.vars");
+	});
+
 	test("preserves an exported styled component subject as a component", () => {
 		const result = migrate(
 			'import styled from "styled-components";\n' +
