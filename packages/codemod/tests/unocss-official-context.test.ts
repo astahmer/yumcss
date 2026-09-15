@@ -113,13 +113,13 @@ describe("UnoCSS official extraction context", () => {
 		expect(candidates.flat()).toEqual(expect.arrayContaining(["shortcut-brand", "bg-brand"]));
 		expect(result.converted).toBe(1);
 		expect(result.residuals).toEqual([]);
-		expect(result.code).toContain('"&:hover"');
+		expect(result.code).toContain("_hover");
 		expect(result.code).toContain('"@media (min-width: 48rem)"');
 		expect(result.code).toContain('backgroundColor: "#123456"');
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { createCss } from "pandwind/css";
 			const css = createCss();
-			export const App = () => <div className={css.class({ backgroundColor: "#123456", "@media (min-width: 48rem)": { "&:hover": { color: "#fff" } } })}/>;"
+			export const App = () => <div className={css.class({ backgroundColor: "#123456", "@media (min-width: 48rem)": { _hover: { color: "#fff" } } })}/>;"
 		`);
 	});
 });

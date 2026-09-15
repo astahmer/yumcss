@@ -646,7 +646,7 @@ export const App = () => <kbd className={styles.kbd} />;`;
 		expect(result.residuals).toEqual([]);
 		expect(result.code).toContain("kbd: css.class");
 		expect(result.code).not.toContain("kbd: css.vars");
-		expect(result.code).toContain('".dark &"');
+		expect(result.code).toContain("_dark");
 		expect(result.code).not.toContain('"&:dark"');
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
 	});
