@@ -136,7 +136,7 @@ test("unocss -> pandwind -> unocss: retains the documented secondary API without
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const App = () => <div className={css.class({ hover: { backgroundColor: "black" }, md: { display: "flex" } })}/>;",
+		export const App = () => <div className={css.class({ _hover: { backgroundColor: "black" }, md: { display: "flex" } })}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -171,7 +171,7 @@ test("unocss -> pandwind -> unocss: retains the documented secondary API without
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		export const App = () => <div className={// pandwind:migrate-skip (route: pandwind -> unocss | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
-		css.class({ hover: { backgroundColor: "black" }, md: { display: "flex" } })}/>;",
+		css.class({ _hover: { backgroundColor: "black" }, md: { display: "flex" } })}/>;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

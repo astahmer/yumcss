@@ -110,7 +110,7 @@ describe("Tailwind official CSS context", () => {
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { createCss } from "pandwind/css";
 			const css = createCss();
-			export const App = () => <div className={css.class({ tabSize: "4", "&:hover": { tabSize: "4" }, "@media (min-width: 48rem)": { maxWidth: "65ch" } })}/>;"
+			export const App = () => <div className={css.class({ tabSize: "4", _hover: { tabSize: "4" }, "@media (min-width: 48rem)": { maxWidth: "65ch" } })}/>;"
 		`);
 	});
 

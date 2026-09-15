@@ -51,7 +51,7 @@ test("panda -> pandwind -> panda: preserves an actionable concrete round trip", 
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const card = css.class({ color: "red.300", "&:hover": { color: "blue.300" } });",
+		export const card = css.class({ color: "red.300", _hover: { color: "blue.300" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -239,7 +239,7 @@ test("panda -> pandwind -> panda: preserves concrete theme and project context v
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const card = css.class({ color: "brand", "&:hover": { color: "brand" } });",
+		export const card = css.class({ color: "brand", _hover: { color: "brand" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -311,7 +311,7 @@ test("panda -> pandwind -> panda: preserves concrete theme and project context v
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const card = css.class({ color: "brand", "&:hover": { color: "brand" } });",
+		export const card = css.class({ color: "brand", _hover: { color: "brand" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -397,7 +397,7 @@ test("panda -> pandwind -> panda: resolves token values across both concrete leg
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const card = css.class({ color: "brand", "&:hover": { color: "blue.300" } });",
+		export const card = css.class({ color: "brand", _hover: { color: "blue.300" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

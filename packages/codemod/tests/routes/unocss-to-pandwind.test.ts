@@ -93,7 +93,7 @@ test("unocss -> pandwind: carries a documented secondary unocss API explicitly",
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const App = () => <div className={css.class({ hover: { backgroundColor: "black" }, md: { display: "flex" } })}/>;",
+		export const App = () => <div className={css.class({ _hover: { backgroundColor: "black" }, md: { display: "flex" } })}/>;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [

@@ -156,7 +156,8 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(toPandwind.skipped).toBe(0);
 		expect(toPandwind.residuals).toEqual([]);
 		expect(toPandwind.code).toContain("css.class");
-		expect(toPandwind.code).toContain("&:hover");
+		expect(toPandwind.code).toContain("_hover");
+		expect(toPandwind.code).not.toContain("&:hover");
 
 		const toPanda = runAdapterMigration(toPandwind.code, {
 			from: "pandwind",
@@ -2067,7 +2068,8 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(chakra.code).toContain(
 			'className={css.class({ padding: "16px", backgroundColor: "tomato"',
 		);
-		expect(chakra.code).toContain('"&:hover"');
+		expect(chakra.code).toContain("_hover");
+		expect(chakra.code).not.toContain('"&:hover"');
 
 		const intrinsicOverride = runAdapterMigration(
 			'import { Box, Heading } from "@chakra-ui/react";\n' +

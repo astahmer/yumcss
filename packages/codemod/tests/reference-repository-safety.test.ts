@@ -123,7 +123,7 @@ export const Button = () =>
 			const css = createCss();
 
 			export const Button = () =>
-					<button data-testid="button" disabled className={css.class({ backgroundColor: "tomato", color: "red", "&:hover": { color: "blue" } })} />;"
+					<button data-testid="button" disabled className={css.class({ backgroundColor: "tomato", color: "red", _hover: { color: "blue" } })} />;"
 		`);
 	});
 

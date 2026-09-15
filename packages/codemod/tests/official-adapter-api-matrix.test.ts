@@ -584,7 +584,7 @@ describe("official primary API forms", () => {
 			    "changed": true,
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
-			export const card = css.class({ color: "red.300", "&:hover": { color: "blue.300" } });",
+			export const card = css.class({ color: "red.300", _hover: { color: "blue.300" } });",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [

@@ -49,7 +49,7 @@ test("panda -> pandwind: migrates concrete panda syntax to pandwind", () => {
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const card = css.class({ color: "red.300", "&:hover": { color: "blue.300" } });",
+		export const card = css.class({ color: "red.300", _hover: { color: "blue.300" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -151,7 +151,7 @@ test("panda -> pandwind: loads concrete theme and project context variants", asy
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const card = css.class({ color: "brand", "&:hover": { color: "brand" } });",
+		export const card = css.class({ color: "brand", _hover: { color: "brand" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -186,7 +186,7 @@ test("panda -> pandwind: loads concrete theme and project context variants", asy
 		    "changed": true,
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const card = css.class({ color: "brand", "&:hover": { color: "brand" } });",
+		export const card = css.class({ color: "brand", _hover: { color: "brand" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -233,7 +233,7 @@ test("panda -> pandwind: resolves concrete token values with project context", a
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const card = css.class({ color: "brand", "&:hover": { color: "blue.300" } });",
+		export const card = css.class({ color: "brand", _hover: { color: "blue.300" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -277,7 +277,7 @@ test("panda -> pandwind: preserves malformed concrete panda input", () => {
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const card = css.class({ color: "red.300", "&:hover": { color: "blue.300" } });
+		export const card = css.class({ color: "red.300", _hover: { color: "blue.300" } });
 		const unfinished = { /* unfinished panda */",
 		  "converted": 1,
 		  "generatedFiles": [],
