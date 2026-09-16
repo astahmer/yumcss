@@ -45,12 +45,21 @@ const GROUPS: ThemeTokenGroups = {
 	},
 };
 
+const ALIASED_GROUPS: ThemeTokenGroups = {
+	colors: { "$gray-50": "#F9FAFB", "$gray-900": "#111827" },
+	semantic: { surface: { base: "colors.$gray-50", dark: "colors.$gray-900" } },
+};
+
 const THEME_BLOCK = buildThemeBlock(GROUPS, createConditionResolver(CONDITIONS));
 
 /** Compile the bridged entry with the REAL tailwindcss and parse the full sheet. */
 async function compileSheet(classes: string[]): Promise<Root> {
+	return compileSheetFrom(THEME_BLOCK, classes);
+}
+
+async function compileSheetFrom(themeBlock: string, classes: string[]): Promise<Root> {
 	const result = await compile(
-		THEME_BLOCK ? `@import "tailwindcss";\n${THEME_BLOCK}` : '@import "tailwindcss";',
+		themeBlock ? `@import "tailwindcss";\n${themeBlock}` : '@import "tailwindcss";',
 		{
 			base: import.meta.dirname,
 			onDependency: () => {},
@@ -110,6 +119,33 @@ function declsInRule(
 }
 
 describe("condition-bound tokens compile through real Tailwind", () => {
+	test("semantic token paths stay valid and resolve through the compiled var chain", async () => {
+		const block = buildThemeBlock(ALIASED_GROUPS, createConditionResolver({ dark: ".dark &" }));
+		expect(block).toContain("--color-surface: var(--color-gray-50);");
+		expect(block).toContain("--color-surface: var(--color-gray-900);");
+		expect(block).not.toContain("colors.$");
+
+		const root = await compileSheetFrom(block, ["bg-surface"]);
+		const utility = rulesForClass(root, "bg-surface")[0];
+		expect(utility).toBeDefined();
+		let utilityValue = "";
+		utility?.walkDecls((declaration) => {
+			if (declaration.prop === "background-color") utilityValue = declaration.value;
+		});
+		expect(utilityValue).toBe("var(--color-surface)");
+
+		const { resolveVar } = await import("./helpers/tailwind-proof.ts");
+		expect(
+			resolveVar(
+				utilityValue,
+				new Map([
+					["--color-surface", "var(--color-gray-50)"],
+					["--color-gray-50", "#f9fafb"],
+				]),
+			),
+		).toBe("#f9fafb");
+	});
+
 	test("utilities reference the bridged variables", async () => {
 		const root = await compileSheet(["bg-success", "bg-danger", "bg-cta"]);
 		for (const [cls, varName] of [

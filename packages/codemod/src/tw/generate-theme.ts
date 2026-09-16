@@ -73,6 +73,33 @@ function* flatGroups(groups: ThemeTokenGroups): Generator<[string, Record<string
 	}
 }
 
+const TOKEN_REFERENCE = /^[A-Za-z_][A-Za-z0-9_-]*(?:\.[A-Za-z_$][A-Za-z0-9_$-]*)+$/u;
+
+const themeTokenVariables = (groups: ThemeTokenGroups): ReadonlyMap<string, string> => {
+	const variables = new Map<string, string>();
+	for (const [groupKey, values] of flatGroups(groups)) {
+		const namespace = themeNamespaceFor(groupKey);
+		if (namespace === undefined) continue;
+		for (const tokenName of Object.keys(values)) {
+			if (values[tokenName] === undefined) continue;
+			const name = themeTokenName(tokenName);
+			if (name === "") continue;
+			variables.set(`${groupKey}.${tokenName}`, `--${namespace}-${name}`);
+		}
+	}
+	return variables;
+};
+
+const resolveThemeTokenValue = (
+	value: string,
+	variables: ReadonlyMap<string, string>,
+): string | undefined => {
+	const variable = variables.get(value);
+	if (variable !== undefined) return `var(${variable})`;
+	if (TOKEN_REFERENCE.test(value)) return undefined;
+	return normalizeThemeValue(value);
+};
+
 /**
  * Token name -> CSS/custom-property-safe identifier segment:
  * `$gray-50` -> `gray-50`, `whiteAlpha.100` -> `whiteAlpha-100`,
@@ -172,6 +199,7 @@ export function splitTokens(
 ): { flatVars: ThemeVar[]; conditionalVars: ConditionalVar[] } {
 	const flatVars: ThemeVar[] = [];
 	const conditionalVars: ConditionalVar[] = [];
+	const variables = themeTokenVariables(groups);
 	for (const [groupKey, values] of flatGroups(groups)) {
 		const namespace = themeNamespaceFor(groupKey);
 		if (namespace === undefined) continue;
@@ -182,7 +210,9 @@ export function splitTokens(
 
 			if (typeof raw === "string") {
 				if (raw !== "") {
-					flatVars.push({ name: `--${namespace}-${name}`, value: normalizeThemeValue(raw) });
+					const value = resolveThemeTokenValue(raw, variables);
+					if (value === undefined) continue;
+					flatVars.push({ name: `--${namespace}-${name}`, value });
 				}
 				continue;
 			}
@@ -202,8 +232,13 @@ export function splitTokens(
 			for (const condKey of Object.keys(raw).toSorted()) {
 				const value = (raw as Record<string, unknown>)[condKey];
 				if (typeof value !== "string" || value === "") continue;
+				const resolvedValue = resolveThemeTokenValue(value, variables);
+				if (resolvedValue === undefined) {
+					usable = false;
+					break;
+				}
 				if (condKey === "base") {
-					nextFlat.push({ name: varName, value: normalizeThemeValue(value) });
+					nextFlat.push({ name: varName, value: resolvedValue });
 					usable = true;
 					continue;
 				}
@@ -217,7 +252,7 @@ export function splitTokens(
 				}
 				nextCond.push({
 					name: varName,
-					value: normalizeThemeValue(value),
+					value: resolvedValue,
 					selectors: resolved.selectors,
 					atRules: resolved.atRules,
 				});

@@ -28,7 +28,11 @@ import {
 	themeVarsFromTokens,
 } from "../src/tw/generate-theme.ts";
 import { generateDesignSystem } from "../src/tw/generate-types.ts";
-import { resolvePresetConditions, resolveTokenGroups } from "../src/tw/codegen-theme-input.ts";
+import {
+	loadThemeBlock,
+	resolvePresetConditions,
+	resolveTokenGroups,
+} from "../src/tw/codegen-theme-input.ts";
 
 const app = resolve(import.meta.dirname, "../../../examples/example");
 const srcDir = resolve(app, "src");
@@ -91,6 +95,31 @@ describe("buildThemeBlock", () => {
 			themeVarsFromTokens({ colors: { keep: "#fff", drop: "", nested: { deep: "#000" } } }),
 		).toEqual([{ name: "--color-keep", value: "#fff" }]);
 	});
+
+	test("lowers typed token-path references to CSS variable references", () => {
+		const block = buildThemeBlock(
+			{
+				colors: { "$gray-50": "#f9fafb", "$gray-900": "#111827" },
+				semantic: {
+					surface: { base: "colors.$gray-50", dark: "colors.$gray-900" },
+				},
+			},
+			createConditionResolver({ dark: ".dark &" }),
+		);
+
+		expect(block).toContain("--color-surface: var(--color-gray-50);");
+		expect(block).toContain("--color-surface: var(--color-gray-900);");
+		expect(block).not.toContain("colors.$gray-");
+	});
+
+	test("drops unresolved token-path references instead of emitting them as CSS", () => {
+		const block = buildThemeBlock(
+			{ semantic: { surface: { base: "colors.missing", dark: "colors.$gray-900" } } },
+			createConditionResolver({ dark: ".dark &" }),
+		);
+
+		expect(block).toBe("");
+	});
 });
 
 describe("resolveTokenGroups", () => {
@@ -106,6 +135,14 @@ describe("resolveTokenGroups", () => {
 
 	test("returns undefined when nothing is bridgeable", () => {
 		expect(resolveTokenGroups({ somethingElse: { foo: "bar" } })).toBeUndefined();
+	});
+
+	test("loads the example preset with valid semantic CSS references", async () => {
+		const themeBlock = await loadThemeBlock("@pandwind/example-preset", app);
+
+		expect(themeBlock).toContain("--color-surface: var(--color-gray-50);");
+		expect(themeBlock).toContain("--color-surface: var(--color-gray-900);");
+		expect(themeBlock).not.toContain("colors.$");
 	});
 });
 
