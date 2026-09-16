@@ -48,7 +48,8 @@ import { css } from "./css.generated";
 const card = css.class({ backgroundColor: "$brand-500", padding: 4 });
 ```
 
-The generated module calls `createGeneratedCss(preset)`, so it keeps the same
+The generated module calls `createGeneratedCss(preset)` from
+`pandwind/css/generated`, so it keeps the same
 runtime behavior and all projections as `createCss(preset)`. It only replaces
 the preset-derived TypeScript computation with concrete generated unions.
 Use this opt-in path when typecheck measurements show that a large catalog is

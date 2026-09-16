@@ -1,5 +1,6 @@
 import { expect, test } from "tstyche";
-import { createGeneratedCss, firstThatWorks } from "../src/css/index.ts";
+import { firstThatWorks } from "../src/css/index.ts";
+import { createGeneratedCss } from "../src/css/generated.ts";
 import { createCx } from "../src/cx/index.ts";
 import { examplePreset } from "@pandwind/example-preset";
 import {

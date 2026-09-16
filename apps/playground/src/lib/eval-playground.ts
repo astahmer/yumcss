@@ -12,7 +12,7 @@
  * boundary and must never run third-party code.
  */
 import { parseSync } from "oxc-parser";
-import type { ClassNameStrategy } from "pandwind/css";
+import type { ClassNameStrategy } from "pandwind/css/class-name-strategy";
 import { styleProgramFromSourceObject, type StyleProgram } from "pandwind-codemod/swap/semantic-ir";
 import { flattenStyle } from "pandwind/lib/utils";
 import { collectModuleConstants } from "pandwind/vite/cx-inline";

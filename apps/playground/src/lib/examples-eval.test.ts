@@ -10,12 +10,10 @@ import {
 import { tw } from "../tw.ts";
 import { dss } from "../css.ts";
 import { cx } from "../cx.ts";
-import {
-	createCss,
-	createNamedAtomsStrategy,
-	createStyleXAdapter,
-	type ClassNameStrategy,
-} from "pandwind/css";
+import { createCss } from "pandwind/css";
+import { createNamedAtomsStrategy } from "pandwind/css/named-atoms-strategy";
+import { createStyleXAdapter } from "pandwind/css/stylex";
+import type { ClassNameStrategy } from "pandwind/css/class-name-strategy";
 import { createUnsafeCss } from "pandwind/unsafe/css";
 import { resolveDesignStyle } from "pandwind/design/resolve";
 import { examplePreset } from "@pandwind/example-preset";

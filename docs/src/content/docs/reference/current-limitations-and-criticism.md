@@ -33,7 +33,7 @@ adoption simplicity, real-world proof, and scope discipline.
   ownership, and raw/gzip budget check. Generated project files remain a real
   adoption cost.
 - "The core package is too large conceptually." The repository currently
-  exposes 84 exported paths across five packages, including experimental
+  exposes 87 exported paths across five packages, including experimental
   integrations and tooling. The runtime package no longer hard-depends on
   Tailwind's loader, Oxc, PostCSS, Unplugin, or CAC, but the product still
   asks users to understand more lanes than a focused styling library would.

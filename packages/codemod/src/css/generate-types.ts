@@ -249,7 +249,8 @@ export const generateCssTypes = (
 			: "never";
 	const source = `${GENERATED_CSS_TYPES_HEADER}
 // Regenerate after changing the preset or upgrading Pandwind.
-import { createGeneratedCss, type CssFn, type FirstThatWorksValue } from "pandwind/css";
+import { createGeneratedCss } from "pandwind/css/generated";
+import type { CssFn, FirstThatWorksValue } from "pandwind/css";
 ${importLine(options)}
 
 type GeneratedSelector = \`&\${string}\` | \`\${string}&\` | \`@\${string}\`;

@@ -4,6 +4,9 @@ export default defineConfig({
 	entry: [
 		"src/index.ts",
 		"src/css/index.ts",
+		"src/css/generated.ts",
+		"src/css/class-name-strategy.ts",
+		"src/css/named-atoms-strategy.ts",
 		"src/unsafe/css.ts",
 		"src/css/runtime.ts",
 		"src/css/selector-scan.ts",

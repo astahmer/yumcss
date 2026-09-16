@@ -12,6 +12,12 @@ const packageManifest = JSON.parse(
 
 const entries = [
 	"pandwind/css",
+	"pandwind/css/generated",
+	"pandwind/css/class-name-strategy",
+	"pandwind/css/named-atoms-strategy",
+	"pandwind/css/stylex",
+	"pandwind/css/panda",
+	"pandwind/css/unocss",
 	"pandwind/unsafe/css",
 	"pandwind/tw",
 	"pandwind/cx",
@@ -43,13 +49,31 @@ describe("pandwind package boundary", () => {
 
 	test("does not expose CSS compiler internals from the public css lane", async () => {
 		const cssApi = await import("pandwind/css");
-		expect(cssApi.createGeneratedCss).toBeTypeOf("function");
+		expect("createGeneratedCss" in cssApi).toBe(false);
+		expect("createNamedAtomsStrategy" in cssApi).toBe(false);
+		expect("createStyleXAdapter" in cssApi).toBe(false);
+		expect("createPandaAdapter" in cssApi).toBe(false);
+		expect("createUnoCssAdapter" in cssApi).toBe(false);
 		expect("createUnsafeCss" in cssApi).toBe(false);
 		expect("createCssOpen" in cssApi).toBe(false);
 		expect("createHashFn" in cssApi).toBe(false);
 		expect("hashCssVar" in cssApi).toBe(false);
 		expect("createVarCompiler" in cssApi).toBe(false);
 		expect("VARS_ATOMS" in cssApi).toBe(false);
+	});
+
+	test("exposes generated CSS and class-name strategies through dedicated lanes", async () => {
+		const generatedApi = await import("pandwind/css/generated");
+		const namedAtomsApi = await import("pandwind/css/named-atoms-strategy");
+		const stylexApi = await import("pandwind/css/stylex");
+		const pandaApi = await import("pandwind/css/panda");
+		const unocssApi = await import("pandwind/css/unocss");
+
+		expect(generatedApi.createGeneratedCss).toBeTypeOf("function");
+		expect(namedAtomsApi.createNamedAtomsStrategy).toBeTypeOf("function");
+		expect(stylexApi.createStyleXAdapter).toBeTypeOf("function");
+		expect(pandaApi.createPandaAdapter).toBeTypeOf("function");
+		expect(unocssApi.createUnoCssAdapter).toBeTypeOf("function");
 	});
 
 	test("exposes the open CSS compiler only through the unsafe lane", async () => {

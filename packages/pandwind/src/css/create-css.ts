@@ -107,7 +107,7 @@ export function createCss(preset: TypedPreset, options: CreateCssOptions = {}): 
  *
  * @example
  * ```ts
- * import { createGeneratedCss } from "pandwind/css";
+ * import { createGeneratedCss } from "pandwind/css/generated";
  * import { examplePreset } from "@pandwind/example-preset";
  * import type { GeneratedDynamicStyle, GeneratedStyle } from "./css.types";
  *

@@ -30,7 +30,13 @@
 		},
 		{
 			"packageName": "pandwind",
-			"exportPaths": ["./css/stylex", "./css/panda", "./css/unocss"],
+			"exportPaths": [
+				"./css/class-name-strategy",
+				"./css/named-atoms-strategy",
+				"./css/stylex",
+				"./css/panda",
+				"./css/unocss"
+			],
 			"owner": "integration",
 			"maturity": "experimental",
 			"dependencies": [],
@@ -40,6 +46,21 @@
 				"docs/src/content/docs/interop/css-in-js-adapters.md"
 			],
 			"note": "ClassNameStrategy integrations remain opt-in and adapter-owned."
+		},
+		{
+			"packageName": "pandwind",
+			"exportPaths": ["./css/generated"],
+			"owner": "tooling",
+			"maturity": "experimental",
+			"dependencies": ["csstype"],
+			"externalContract": true,
+			"evidence": [
+				"packages/pandwind/package.json",
+				"packages/pandwind/tests/package-exports.test.ts",
+				"docs/src/content/docs/tooling/codegen.md",
+				"docs/src/content/docs/api/css.md"
+			],
+			"note": "Opt-in generated CSS facade for large presets; codegen owns the emitted concrete types."
 		},
 		{
 			"packageName": "pandwind",

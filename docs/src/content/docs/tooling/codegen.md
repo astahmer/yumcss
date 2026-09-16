@@ -61,7 +61,7 @@ export const button = css.class({
 });
 ```
 
-The generated facade uses `createGeneratedCss` from `pandwind/css`. It has the
+The generated facade uses `createGeneratedCss` from `pandwind/css/generated`. It has the
 same runtime and complete `css`, `class`, `vars`, `raw`, `props`, `group`, and
 `input` behavior as `createCss(preset)`; only the expensive preset-derived
 type computation is replaced with concrete generated types. It is therefore

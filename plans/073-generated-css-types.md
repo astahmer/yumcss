@@ -12,7 +12,7 @@ type evaluation with a concrete local style catalog.
 ## Design
 
 - Expose `createGeneratedCss<TStyles, TDynamicStyles>(preset)` from
-  `pandwind/css`. It uses the same runtime implementation as `createCss`, but
+  `pandwind/css/generated`. It uses the same runtime implementation as `createCss`, but
   accepts the generated style contract explicitly so the preset type is not
   re-evaluated at every consumer call site.
 - Expose a `pandwind-codemod css generate` command and the corresponding

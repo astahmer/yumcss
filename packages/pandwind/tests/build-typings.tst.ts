@@ -65,7 +65,7 @@ import {
 	type PandwindUnpluginOptions,
 } from "../src/unplugin.ts";
 import { createCss } from "../src/css/create-css.ts";
-import { createNamedAtomsStrategy } from "../src/css/index.ts";
+import { createNamedAtomsStrategy } from "../src/css/named-atoms-strategy.ts";
 import { examplePreset } from "@pandwind/example-preset";
 
 test("source scanner registry contracts support custom language adapters", () => {

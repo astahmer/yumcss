@@ -84,7 +84,8 @@ When the app uses a Pandwind class-name strategy, bind the renderer to the
 same CSS compiler and pass the same engine to both build plugins:
 
 ```ts
-import { createCss, createNamedAtomsStrategy } from "pandwind/css";
+import { createCss } from "pandwind/css";
+import { createNamedAtomsStrategy } from "pandwind/css/named-atoms-strategy";
 import { createStack } from "pandwind/stack/react";
 import { createPandwindEngineContext, pandwindCssVite, stackFoldVite } from "pandwind/vite";
 

@@ -117,7 +117,7 @@ pandwind-codemod css generate [root] [out-file] \
 
 By default it reads `./src/preset.ts` (`preset` export) and writes
 `./src/css.generated.ts`. The generated module imports the preset and calls
-`createGeneratedCss` from `pandwind/css`; it has the same runtime and complete
+`createGeneratedCss` from `pandwind/css/generated`; it has the same runtime and complete
 CSS projection surface as `createCss(preset)`, while avoiding repeated
 preset-derived type evaluation at consumer call sites. This is an opt-in
 typecheck optimization, not a separate runtime or static-CSS-only mode.

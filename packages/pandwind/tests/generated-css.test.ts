@@ -1,6 +1,7 @@
 import { describe, expect, test } from "vitest";
 import { examplePreset } from "@pandwind/example-preset";
-import { createCss, createGeneratedCss, firstThatWorks } from "../src/css/index.ts";
+import { createCss, firstThatWorks } from "../src/css/index.ts";
+import { createGeneratedCss } from "../src/css/generated.ts";
 import { css as generatedCss } from "./fixtures/generated-css.ts";
 
 const baseCss = createCss(examplePreset);

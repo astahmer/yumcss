@@ -1,13 +1,11 @@
 import { expect, test } from "tstyche";
 import { createCss } from "../src/css/create-css.ts";
 import { createUnsafeCss } from "../src/unsafe/css.ts";
-import {
-	createNamedAtomsStrategy,
-	createPandaAdapter,
-	createStyleXAdapter,
-	createUnoCssAdapter,
-	type ClassNameStrategy,
-} from "../src/css/index.ts";
+import { createNamedAtomsStrategy } from "../src/css/named-atoms-strategy.ts";
+import { createPandaAdapter } from "../src/css/panda-adapter.ts";
+import { createStyleXAdapter } from "../src/css/stylex-adapter.ts";
+import { createUnoCssAdapter } from "../src/css/unocss-adapter.ts";
+import type { ClassNameStrategy } from "../src/css/class-name-strategy.ts";
 import { createCx, type CxOptions } from "../src/cx/index.ts";
 import {
 	createHostStyleRegistry,

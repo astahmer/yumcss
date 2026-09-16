@@ -57,7 +57,7 @@ Tailwind utility string.
 ## Class-name strategies — one API, swappable output
 
 The tailwind adapter is one instance of a general contract:
-`ClassNameStrategy` (see `css/class-name-strategy.ts`). A strategy decides,
+`ClassNameStrategy` (see `pandwind/css/class-name-strategy`). A strategy decides,
 per flattened declaration, which class the engine emits — or returns `null`
 to fall back to atomic hashing. Two flavors exist:
 
@@ -74,7 +74,8 @@ The bundled second mode is `createNamedAtomsStrategy()` — readable classes
 than minimal bytes:
 
 ```ts
-import { createCss, createNamedAtomsStrategy } from "pandwind/css";
+import { createCss } from "pandwind/css";
+import { createNamedAtomsStrategy } from "pandwind/css/named-atoms-strategy";
 
 const css = createCss(examplePreset, {
 	className: createNamedAtomsStrategy(),

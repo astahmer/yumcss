@@ -1,4 +1,4 @@
-import { createNamedAtomsStrategy } from "pandwind/css";
+import { createNamedAtomsStrategy } from "pandwind/css/named-atoms-strategy";
 import { createRuntimeCss, createRuntimeDesignCss } from "pandwind/css/runtime";
 import { createCx } from "pandwind/cx";
 import { define } from "pandwind/preset";
@@ -22,7 +22,8 @@ const createPlaygroundUnsafeCss = (options: Parameters<typeof createRuntimeCss>[
  * "pandwind/design"` exactly like a user project would.
  */
 export const SANDBOX_MODULES = {
-	"pandwind/css": { createCss: createPlaygroundCss, createNamedAtomsStrategy },
+	"pandwind/css": { createCss: createPlaygroundCss },
+	"pandwind/css/named-atoms-strategy": { createNamedAtomsStrategy },
 	"pandwind/unsafe/css": { createUnsafeCss: createPlaygroundUnsafeCss },
 	"pandwind/css/runtime": { createRuntimeCss, createRuntimeDesignCss },
 	"pandwind/design": { createDesignCss: createRuntimeDesignCss },
