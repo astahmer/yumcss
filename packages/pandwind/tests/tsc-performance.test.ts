@@ -50,6 +50,16 @@ const SCENARIOS = [
 		description: "define namespace, semantic tokens, palettes, and strict css",
 	},
 	{
+		name: "css.real-world.theme",
+		fixture: "tests/fixtures/tsc/real-world-theme.ts",
+		description: "complete anonymized product theme and preset construction",
+	},
+	{
+		name: "css.real-world.usage",
+		fixture: "tests/fixtures/tsc/real-world-usage.ts",
+		description: "repeated component styles using a complete product preset",
+	},
+	{
 		name: "css.dynamic",
 		fixture: "tests/fixtures/tsc/css-dynamic.ts",
 		description: "vars, props, raw, groups, and named runtime inputs",

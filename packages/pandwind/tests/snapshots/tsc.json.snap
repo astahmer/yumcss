@@ -17,13 +17,13 @@
 			"command": "pnpm exec tsc --ignoreConfig --noEmit --extendedDiagnostics --pretty false --target ES2022 --module ESNext --moduleResolution Bundler --customConditions pandwind --lib ES2023,DOM --strict --noUncheckedIndexedAccess --noImplicitOverride --isolatedModules --verbatimModuleSyntax --allowImportingTsExtensions --skipLibCheck --forceConsistentCasingInFileNames --types node tests/fixtures/tsc/css-default.ts",
 			"samples": 3,
 			"metrics": {
-				"files": 227,
-				"symbols": 76091,
-				"types": 19421,
-				"instantiations": 40048,
-				"memoryUsedKiB": 65957,
-				"checkTimeSeconds": 0.044,
-				"totalTimeSeconds": 0.069
+				"files": 228,
+				"symbols": 76272,
+				"types": 19853,
+				"instantiations": 40472,
+				"memoryUsedKiB": 66172,
+				"checkTimeSeconds": 0.051,
+				"totalTimeSeconds": 0.088
 			}
 		},
 		{
@@ -33,13 +33,45 @@
 			"command": "pnpm exec tsc --ignoreConfig --noEmit --extendedDiagnostics --pretty false --target ES2022 --module ESNext --moduleResolution Bundler --customConditions pandwind --lib ES2023,DOM --strict --noUncheckedIndexedAccess --noImplicitOverride --isolatedModules --verbatimModuleSyntax --allowImportingTsExtensions --skipLibCheck --forceConsistentCasingInFileNames --types node tests/fixtures/tsc/css-custom.ts",
 			"samples": 3,
 			"metrics": {
-				"files": 230,
-				"symbols": 81563,
-				"types": 14267,
-				"instantiations": 23623,
-				"memoryUsedKiB": 68985,
-				"checkTimeSeconds": 0.007,
-				"totalTimeSeconds": 0.034
+				"files": 231,
+				"symbols": 81335,
+				"types": 13486,
+				"instantiations": 22572,
+				"memoryUsedKiB": 68598,
+				"checkTimeSeconds": 0.02,
+				"totalTimeSeconds": 0.069
+			}
+		},
+		{
+			"name": "css.real-world.theme",
+			"fixture": "tests/fixtures/tsc/real-world-theme.ts",
+			"description": "complete anonymized product theme and preset construction",
+			"command": "pnpm exec tsc --ignoreConfig --noEmit --extendedDiagnostics --pretty false --target ES2022 --module ESNext --moduleResolution Bundler --customConditions pandwind --lib ES2023,DOM --strict --noUncheckedIndexedAccess --noImplicitOverride --isolatedModules --verbatimModuleSyntax --allowImportingTsExtensions --skipLibCheck --forceConsistentCasingInFileNames --types node tests/fixtures/tsc/real-world-theme.ts",
+			"samples": 3,
+			"metrics": {
+				"files": 204,
+				"symbols": 75408,
+				"types": 9086,
+				"instantiations": 21454,
+				"memoryUsedKiB": 62992,
+				"checkTimeSeconds": 0.01,
+				"totalTimeSeconds": 0.05
+			}
+		},
+		{
+			"name": "css.real-world.usage",
+			"fixture": "tests/fixtures/tsc/real-world-usage.ts",
+			"description": "repeated component styles using a complete product preset",
+			"command": "pnpm exec tsc --ignoreConfig --noEmit --extendedDiagnostics --pretty false --target ES2022 --module ESNext --moduleResolution Bundler --customConditions pandwind --lib ES2023,DOM --strict --noUncheckedIndexedAccess --noImplicitOverride --isolatedModules --verbatimModuleSyntax --allowImportingTsExtensions --skipLibCheck --forceConsistentCasingInFileNames --types node tests/fixtures/tsc/real-world-usage.ts",
+			"samples": 3,
+			"metrics": {
+				"files": 255,
+				"symbols": 97307,
+				"types": 27490,
+				"instantiations": 74902,
+				"memoryUsedKiB": 83783,
+				"checkTimeSeconds": 0.047,
+				"totalTimeSeconds": 0.081
 			}
 		},
 		{
@@ -49,13 +81,13 @@
 			"command": "pnpm exec tsc --ignoreConfig --noEmit --extendedDiagnostics --pretty false --target ES2022 --module ESNext --moduleResolution Bundler --customConditions pandwind --lib ES2023,DOM --strict --noUncheckedIndexedAccess --noImplicitOverride --isolatedModules --verbatimModuleSyntax --allowImportingTsExtensions --skipLibCheck --forceConsistentCasingInFileNames --types node tests/fixtures/tsc/css-dynamic.ts",
 			"samples": 3,
 			"metrics": {
-				"files": 228,
-				"symbols": 76416,
-				"types": 20027,
-				"instantiations": 40670,
-				"memoryUsedKiB": 66312,
-				"checkTimeSeconds": 0.048,
-				"totalTimeSeconds": 0.084
+				"files": 229,
+				"symbols": 76216,
+				"types": 19730,
+				"instantiations": 40374,
+				"memoryUsedKiB": 66026,
+				"checkTimeSeconds": 0.054,
+				"totalTimeSeconds": 0.093
 			}
 		},
 		{
@@ -65,13 +97,13 @@
 			"command": "pnpm exec tsc --ignoreConfig --noEmit --extendedDiagnostics --pretty false --target ES2022 --module ESNext --moduleResolution Bundler --customConditions pandwind --lib ES2023,DOM --strict --noUncheckedIndexedAccess --noImplicitOverride --isolatedModules --verbatimModuleSyntax --allowImportingTsExtensions --skipLibCheck --forceConsistentCasingInFileNames --types node tests/fixtures/tsc/design.ts",
 			"samples": 3,
 			"metrics": {
-				"files": 240,
-				"symbols": 85234,
-				"types": 17408,
-				"instantiations": 31272,
-				"memoryUsedKiB": 72110,
-				"checkTimeSeconds": 0.013,
-				"totalTimeSeconds": 0.039
+				"files": 241,
+				"symbols": 85257,
+				"types": 17545,
+				"instantiations": 31442,
+				"memoryUsedKiB": 72277,
+				"checkTimeSeconds": 0.019,
+				"totalTimeSeconds": 0.069
 			}
 		},
 		{
@@ -81,13 +113,13 @@
 			"command": "pnpm exec tsc --ignoreConfig --noEmit --extendedDiagnostics --pretty false --target ES2022 --module ESNext --moduleResolution Bundler --customConditions pandwind --lib ES2023,DOM --strict --noUncheckedIndexedAccess --noImplicitOverride --isolatedModules --verbatimModuleSyntax --allowImportingTsExtensions --skipLibCheck --forceConsistentCasingInFileNames --types node tests/fixtures/tsc/runtime.ts",
 			"samples": 3,
 			"metrics": {
-				"files": 252,
-				"symbols": 90997,
-				"types": 22082,
-				"instantiations": 42165,
-				"memoryUsedKiB": 78620,
-				"checkTimeSeconds": 0.017,
-				"totalTimeSeconds": 0.045
+				"files": 253,
+				"symbols": 90945,
+				"types": 21852,
+				"instantiations": 42010,
+				"memoryUsedKiB": 78489,
+				"checkTimeSeconds": 0.023,
+				"totalTimeSeconds": 0.067
 			}
 		},
 		{
@@ -97,13 +129,13 @@
 			"command": "pnpm exec tsc --ignoreConfig --noEmit --extendedDiagnostics --pretty false --target ES2022 --module ESNext --moduleResolution Bundler --customConditions pandwind --lib ES2023,DOM --strict --noUncheckedIndexedAccess --noImplicitOverride --isolatedModules --verbatimModuleSyntax --allowImportingTsExtensions --skipLibCheck --forceConsistentCasingInFileNames --types node tests/fixtures/tsc/composition.ts",
 			"samples": 3,
 			"metrics": {
-				"files": 233,
-				"symbols": 85057,
-				"types": 16551,
-				"instantiations": 30162,
-				"memoryUsedKiB": 71910,
-				"checkTimeSeconds": 0.01,
-				"totalTimeSeconds": 0.037
+				"files": 234,
+				"symbols": 84917,
+				"types": 16358,
+				"instantiations": 29901,
+				"memoryUsedKiB": 71684,
+				"checkTimeSeconds": 0.013,
+				"totalTimeSeconds": 0.054
 			}
 		},
 		{
@@ -117,9 +149,9 @@
 				"symbols": 68244,
 				"types": 3871,
 				"instantiations": 3395,
-				"memoryUsedKiB": 56843,
-				"checkTimeSeconds": 0.003,
-				"totalTimeSeconds": 0.028
+				"memoryUsedKiB": 56822,
+				"checkTimeSeconds": 0.004,
+				"totalTimeSeconds": 0.038
 			}
 		},
 		{
@@ -129,13 +161,13 @@
 			"command": "pnpm exec tsc --ignoreConfig --noEmit --extendedDiagnostics --pretty false --target ES2022 --module ESNext --moduleResolution Bundler --customConditions pandwind --lib ES2023,DOM --strict --noUncheckedIndexedAccess --noImplicitOverride --isolatedModules --verbatimModuleSyntax --allowImportingTsExtensions --skipLibCheck --forceConsistentCasingInFileNames --types node tests/fixtures/tsc/app.ts",
 			"samples": 3,
 			"metrics": {
-				"files": 279,
-				"symbols": 95322,
-				"types": 23513,
-				"instantiations": 43753,
-				"memoryUsedKiB": 82516,
-				"checkTimeSeconds": 0.016,
-				"totalTimeSeconds": 0.05
+				"files": 280,
+				"symbols": 95628,
+				"types": 23297,
+				"instantiations": 43590,
+				"memoryUsedKiB": 82610,
+				"checkTimeSeconds": 0.024,
+				"totalTimeSeconds": 0.06
 			}
 		}
 	],

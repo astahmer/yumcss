@@ -203,7 +203,8 @@ is a full migration run.
 The package also owns a focused API regression snapshot at
 `packages/pandwind/tests/snapshots/tsc.json.snap`. Unlike the ecosystem
 comparison, this matrix isolates Pandwind's public API shapes: default
-and custom presets, dynamic `css` projections, design and runtime CSS,
+and custom presets, a complete anonymized product theme (both construction
+and downstream usage), dynamic `css` projections, design and runtime CSS,
 composition, `tw`, and one combined app-style fixture. Every row is measured
 in three fresh TypeScript processes and records the compiler program size,
 symbols, types, instantiations, memory, check time, and total time. It runs as

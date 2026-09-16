@@ -5,5 +5,6 @@
 		"types": ["node", "vitest/globals", "react"],
 		"jsx": "react-jsx"
 	},
-	"include": ["src", "tests"]
+	"include": ["src", "tests"],
+	"exclude": ["tests/fixtures/tsc/real-world-*.ts"]
 }
