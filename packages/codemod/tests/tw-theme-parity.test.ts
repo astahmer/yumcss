@@ -126,6 +126,14 @@ describe("condition-bound tokens compile through real Tailwind", () => {
 		expect(block).not.toContain("colors.$");
 
 		const root = await compileSheetFrom(block, ["bg-surface"]);
+		const surfaceValues = findVarDecls(root, "--color-surface").map(
+			(declaration) => declaration.value,
+		);
+		expect(surfaceValues).toEqual(
+			expect.arrayContaining(["var(--color-gray-50)", "var(--color-gray-900)"]),
+		);
+		expect(root.toString()).not.toContain("colors.$");
+
 		const utility = rulesForClass(root, "bg-surface")[0];
 		expect(utility).toBeDefined();
 		let utilityValue = "";
