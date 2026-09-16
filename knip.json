@@ -8,6 +8,7 @@
 		"packages/codemod": {
 			"entry": [
 				"src/cli.ts",
+				"src/css/index.ts",
 				"src/lib/index.ts",
 				"src/runtime/index.ts",
 				"src/source-pass-utils.ts",

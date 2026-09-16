@@ -133,6 +133,12 @@
 			"import": "./dist/lib/index.js",
 			"default": "./dist/lib/index.js"
 		},
+		"./css": {
+			"pandwind": "./src/css/index.ts",
+			"types": "./dist/css/index.d.ts",
+			"import": "./dist/css/index.js",
+			"default": "./dist/css/index.js"
+		},
 		"./package.json": "./package.json"
 	},
 	"publishConfig": {

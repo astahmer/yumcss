@@ -75,11 +75,7 @@ const ALL_RUNTIME_METHODS = [
  * @category factories
  * @since 0.1.0
  */
-export function createCss<TPreset extends TypedPreset>(
-	preset: TPreset,
-	options?: CreateCssOptions,
-): CssFn<TypedStyleObject<TPreset>, TypedDynamicStyleObject<TPreset>>;
-export function createCss(preset: TypedPreset, options: CreateCssOptions = {}): CssFn<StyleObject> {
+const createPresetCss = (preset: TypedPreset, options: CreateCssOptions): CssFn<StyleObject> => {
 	if (!isPreset(preset)) {
 		throw new Error(
 			'pandwind/css: createCss requires a preset. For unbound or runtime-discovered styles, import createUnsafeCss from "pandwind/unsafe/css".',
@@ -91,6 +87,51 @@ export function createCss(preset: TypedPreset, options: CreateCssOptions = {}): 
 		ALL_RUNTIME_METHODS,
 		validateColorPaletteValue,
 	) as unknown as CssFn<StyleObject>;
+};
+
+export function createCss<TPreset extends TypedPreset>(
+	preset: TPreset,
+	options?: CreateCssOptions,
+): CssFn<TypedStyleObject<TPreset>, TypedDynamicStyleObject<TPreset>>;
+export function createCss(preset: TypedPreset, options: CreateCssOptions = {}): CssFn<StyleObject> {
+	return createPresetCss(preset, options);
+}
+
+/**
+ * Create a CSS function from a generated, concrete style contract.
+ *
+ * Use the `css.generated.ts` facade emitted by
+ * `pandwind-codemod css generate`. The generated type arguments replace the
+ * expensive preset-derived style inference at application call sites, while
+ * this factory delegates to the same runtime as {@link createCss}.
+ *
+ * @example
+ * ```ts
+ * import { createGeneratedCss } from "pandwind/css";
+ * import { examplePreset } from "@pandwind/example-preset";
+ * import type { GeneratedDynamicStyle, GeneratedStyle } from "./css.types";
+ *
+ * const css = createGeneratedCss<GeneratedStyle, GeneratedDynamicStyle>(examplePreset);
+ * css.class({ backgroundColor: "$blue-500", padding: 4 });
+ * ```
+ *
+ * @typeParam TStyles - Concrete style object generated for the preset.
+ * @typeParam TDynamicStyles - Concrete dynamic style object generated for the preset.
+ * @param preset - The same preset used by the ordinary CSS factory at runtime.
+ * @param options - CSS backend options.
+ * @returns A callable compiler with the complete {@link CssFn} surface.
+ * @category factories
+ * @since 0.1.0
+ */
+export function createGeneratedCss<
+	TStyles extends StyleObject,
+	TDynamicStyles = DynamicStyleObject,
+>(preset: TypedPreset, options?: CreateCssOptions): CssFn<TStyles, TDynamicStyles>;
+export function createGeneratedCss(
+	preset: TypedPreset,
+	options: CreateCssOptions = {},
+): CssFn<StyleObject> {
+	return createPresetCss(preset, options);
 }
 
 /**

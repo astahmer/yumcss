@@ -32,6 +32,28 @@ const style = unsafeCss({ color: runtimeColor });
 generated code, adapters, and genuinely runtime-discovered styles; application
 code should normally use `createCss(preset)`.
 
+### Large presets: generated CSS facade
+
+For a very large preset, generate a concrete type facade with:
+
+```sh
+pnpm exec pandwind-codemod css generate
+```
+
+Then import the generated `css` value in application code:
+
+```ts
+import { css } from "./css.generated";
+
+const card = css.class({ backgroundColor: "$brand-500", padding: 4 });
+```
+
+The generated module calls `createGeneratedCss(preset)`, so it keeps the same
+runtime behavior and all projections as `createCss(preset)`. It only replaces
+the preset-derived TypeScript computation with concrete generated unions.
+Use this opt-in path when typecheck measurements show that a large catalog is
+worth generating; ordinary projects should keep using `createCss(preset)`.
+
 ```ts
 import { createCss } from "pandwind/css";
 import { define, type PandwindProperties } from "pandwind/preset";

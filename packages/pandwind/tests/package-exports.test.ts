@@ -43,6 +43,7 @@ describe("pandwind package boundary", () => {
 
 	test("does not expose CSS compiler internals from the public css lane", async () => {
 		const cssApi = await import("pandwind/css");
+		expect(cssApi.createGeneratedCss).toBeTypeOf("function");
 		expect("createUnsafeCss" in cssApi).toBe(false);
 		expect("createCssOpen" in cssApi).toBe(false);
 		expect("createHashFn" in cssApi).toBe(false);

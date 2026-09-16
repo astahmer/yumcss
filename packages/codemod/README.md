@@ -106,6 +106,24 @@ Use `--report` when a CI job should collect the JSON report without failing the
 process. The same lane is available as `pandwind-codemod/tw` for scripts that
 need the typed tooling ports instead of a subprocess.
 
+## Generated CSS types
+
+For large Pandwind presets, generate a concrete CSS type facade:
+
+```sh
+pandwind-codemod css generate [root] [out-file] \
+	[--preset-import <module>] [--preset-export <name>] [--check]
+```
+
+By default it reads `./src/preset.ts` (`preset` export) and writes
+`./src/css.generated.ts`. The generated module imports the preset and calls
+`createGeneratedCss` from `pandwind/css`; it has the same runtime and complete
+CSS projection surface as `createCss(preset)`, while avoiding repeated
+preset-derived type evaluation at consumer call sites. This is an opt-in
+typecheck optimization, not a separate runtime or static-CSS-only mode.
+Commit the generated source and run `--check` in CI after changing the preset
+or upgrading Pandwind.
+
 Example budget file:
 
 ```json

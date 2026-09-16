@@ -60,6 +60,11 @@ export const card = css.class({
 The preset is the type boundary: tokens, conditions, and allowed values come
 from your project instead of a second hand-maintained vocabulary.
 
+For very large catalogs, `pandwind-codemod css generate` can emit a concrete
+`css.generated.ts` facade. It keeps the same runtime and API surface while
+reducing preset-derived type computation; ordinary projects do not need this
+step.
+
 ## Build integration
 
 Use pandwindCssVite() (or the equivalent bundler adapter) so literal calls

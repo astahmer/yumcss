@@ -1,6 +1,6 @@
 ---
 title: Codegen — commands & flags
-description: pandwind-codemod runtime and tw codegen commands, with every flag.
+description: pandwind-codemod code generation commands, with every flag.
 sidebar:
   order: 1
 ---
@@ -38,6 +38,40 @@ extraction remains available when no library is registered.
 This is a package distribution boundary, not a generated `styled-system`
 package. It does not add shorthands, recipes, patterns, JSX factories, or a
 static-CSS-only runtime.
+
+## `pandwind-codemod css generate` — concrete types for large presets
+
+```sh
+pnpm exec pandwind-codemod css generate [root] [out-file] \
+	[--preset-import <module>] [--preset-export <name>] [--check]
+```
+
+The defaults are the current directory, `src/css.generated.ts`, and a named
+`preset` export from `./src/preset.ts`. The command loads the preset, flattens
+its properties, conditions, token values, palette names, and dynamic-value
+surface into a deterministic TypeScript facade, and writes an ordinary source
+file:
+
+```ts
+import { css } from "./css.generated";
+
+export const button = css.class({
+	backgroundColor: "$blue-500",
+	padding: 4,
+});
+```
+
+The generated facade uses `createGeneratedCss` from `pandwind/css`. It has the
+same runtime and complete `css`, `class`, `vars`, `raw`, `props`, `group`, and
+`input` behavior as `createCss(preset)`; only the expensive preset-derived
+type computation is replaced with concrete generated types. It is therefore
+an opt-in typecheck optimization for large design systems, not a new styling
+runtime or a zero-JavaScript mode. `--check` verifies the file byte-for-byte
+without writing it, so it can be added to CI after the preset build is
+available.
+
+Regenerate after changing the preset or upgrading Pandwind. Generated files
+are source artifacts and should not be edited by hand.
 
 ## `pandwind-codemod tw generate` — typed runtime from your tailwind.css
 

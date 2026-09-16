@@ -179,6 +179,7 @@
 				".",
 				"./tw",
 				"./runtime",
+				"./css",
 				"./diff",
 				"./swap",
 				"./swap/semantic-ir",
@@ -207,7 +208,8 @@
 				"packages/codemod/README.md",
 				"docs/src/content/docs/tooling/codemod.md",
 				"docs/src/content/docs/tooling/codegen.md",
-				"packages/codemod/tests/runtime-cli.test.ts"
+				"packages/codemod/tests/runtime-cli.test.ts",
+				"packages/codemod/tests/css-cli.test.ts"
 			],
 			"note": "The supported migration and virtual-bundler tooling contract."
 		},

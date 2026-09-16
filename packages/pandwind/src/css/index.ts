@@ -5,7 +5,7 @@
  */
 export * from "./class-name-strategy.ts";
 export type { CssCascadeMode } from "./cascade.ts";
-export { createCss } from "./create-css.ts";
+export { createCss, createGeneratedCss } from "./create-css.ts";
 export type { AtomicStyleProps, ClassNameStrategy, CssFn, CreateCssOptions } from "./create-css.ts";
 export { firstThatWorks } from "./first-that-works.ts";
 export type { FirstThatWorksValue } from "./first-that-works.ts";

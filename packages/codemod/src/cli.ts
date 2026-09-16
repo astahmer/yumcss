@@ -21,6 +21,7 @@ import { unifiedDiff } from "./diff.ts";
 import { createTwCli } from "./tw/cli.ts";
 import { createRuntimeCli } from "./runtime/cli.ts";
 import { createLibCli } from "./lib/cli.ts";
+import { createCssCli } from "./css/cli.ts";
 import { configureMigrateCommand } from "./swap/cli-args.ts";
 import {
 	createPandwindProjectSupport,
@@ -948,6 +949,7 @@ const createCodemodCli = (): CAC => {
 	cli.command("tw [...args]", "Generate and inspect Pandwind Tailwind artifacts");
 	cli.command("runtime [...args]", "Generate a specialized Pandwind CSS runtime");
 	cli.command("lib [...args]", "Build a publishable Pandwind design-system artifact");
+	cli.command("css [...args]", "Generate concrete Pandwind CSS types");
 	return cli;
 };
 
@@ -1002,6 +1004,17 @@ async function main(argv = process.argv.slice(2)): Promise<void> {
 		} catch (error) {
 			console.error(
 				`pandwind-codemod lib: ${error instanceof Error ? error.message : String(error)}`,
+			);
+			process.exitCode = 1;
+		}
+		return;
+	}
+	if (argv[0] === "css") {
+		try {
+			await createCssCli().run(argv.slice(1));
+		} catch (error) {
+			console.error(
+				`pandwind-codemod css: ${error instanceof Error ? error.message : String(error)}`,
 			);
 			process.exitCode = 1;
 		}

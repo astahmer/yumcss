@@ -92,15 +92,16 @@ but generated declarations, compiler plugins, and build-time transforms are
 part of each library's normal consumer experience and therefore remain in the
 measurement.
 
-## Generated-types POC
+## Generated CSS type facade benchmark
 
-The generated-types POC compares the normal preset-inferred Pandwind surface
-with an opt-in declaration facade generated from the same catalog. Both lanes
-exercise the same `css()`, `css.class()`, `css.vars()`, `css.props()`,
-`css.raw()`, `css.group()`, `css.input()`, `cx()`, and `cx.vars()` workload. The generated
-lane replaces repeated preset/type-level evaluation with concrete property and
-token unions while retaining the public `CssFn` surface; it does not add a
-runtime API or browser JavaScript.
+The generated-types benchmark compares the normal preset-inferred Pandwind
+surface with the opt-in concrete facade emitted by
+`pandwind-codemod css generate`. Both lanes exercise the same `css()`,
+`css.class()`, `css.vars()`, `css.props()`, `css.raw()`, `css.group()`,
+`css.input()`, `cx()`, and `cx.vars()` workload. The generated lane replaces
+repeated preset/type-level evaluation with concrete property and token unions
+while retaining the public `CssFn` surface; it does not add a second styling
+runtime or browser JavaScript.
 
 It measures these paired catalog/app sizes and stores the evidence in
 `snapshots/generated-types-poc.json` and `snapshots/generated-types-poc.md`:
@@ -116,9 +117,11 @@ pnpm run bench:tsc:generated -- --update
 pnpm run bench:tsc:generated
 ```
 
-This is deliberately a benchmark-only POC. It models the consumer boundary
-where generated declarations are shipped alongside the runtime implementation;
-the preset authoring/generation cost is not hidden and is not part of the
-consumer typecheck measurement. Time regressions also need to exceed a 50ms
-absolute noise floor, keeping sub-50ms process jitter from making the gate
-flaky.
+The benchmark intentionally isolates the consumer boundary where generated
+types are shipped alongside the runtime implementation; preset authoring and
+generation cost is not part of the consumer typecheck measurement. The
+generated facade is an opt-in production API, while this benchmark keeps its
+declaration fixture self-contained so it can measure type cost without making
+codegen setup noise part of every run. Time regressions also need to exceed a
+50ms absolute noise floor, keeping sub-50ms process jitter from making the
+gate flaky.
