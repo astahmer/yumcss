@@ -64,6 +64,20 @@ with:
 pnpm run bench:tsc:example -- --update
 ```
 
+`pandwind` also runs `tests/tsc-performance.test.ts` as part of its normal
+package test. It measures isolated public-API fixtures for `css`, custom
+presets, dynamic values, design CSS, runtime CSS, `cx`, `tw`, and a combined
+component-style app. The checked-in
+`packages/pandwind/tests/snapshots/tsc.json.snap` records files, symbols,
+types, instantiations, memory, check time, and total time for three fresh
+TypeScript processes per scenario. Refresh it only after reviewing an
+intentional type-surface or fixture change:
+
+```sh
+pnpm --filter pandwind run test:tsc
+pnpm --filter pandwind run test:tsc -u
+```
+
 `bench:tsc:styling` runs the version-pinned ecosystem comparison under
 `benchmarks/styling-tsc`. It regenerates native Pandwind, Panda CSS, StyleX,
 and Vanilla Extract Sprinkles fixtures, runs natural and stress workloads in

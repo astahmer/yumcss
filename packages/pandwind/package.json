@@ -323,6 +323,7 @@
 		"test:coverage": "vitest run --coverage",
 		"test:watch": "vitest",
 		"test:size": "vitest run runtime-size",
+		"test:tsc": "vitest run tsc-performance",
 		"test:benchmarks": "vitest run --pool forks --maxWorkers 1 runtime-benchmark",
 		"test:types": "tstyche --target 6.0.3"
 	},

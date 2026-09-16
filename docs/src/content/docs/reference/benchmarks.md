@@ -198,6 +198,22 @@ signal: the changed file is invalidated while unchanged files remain cache
 hits. Codemod has no such stateful watcher boundary, so its incremental value
 is a full migration run.
 
+## Pandwind API typecheck snapshot
+
+The package also owns a focused API regression snapshot at
+`packages/pandwind/tests/snapshots/tsc.json.snap`. Unlike the ecosystem
+comparison, this matrix isolates Pandwind's public API shapes: default
+and custom presets, dynamic `css` projections, design and runtime CSS,
+composition, `tw`, and one combined app-style fixture. Every row is measured
+in three fresh TypeScript processes and records the compiler program size,
+symbols, types, instantiations, memory, check time, and total time. It runs as
+part of the normal Pandwind package test and can be refreshed deliberately:
+
+```sh
+pnpm --filter pandwind run test:tsc
+pnpm --filter pandwind run test:tsc -u
+```
+
 ## Styling ecosystem typecheck benchmark
 
 The standalone
