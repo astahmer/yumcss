@@ -103,7 +103,7 @@ const readJson = <T,>(path: string): T | undefined => {
 
 const integer = (value: number): string => Math.round(value).toLocaleString("en-US");
 const seconds = (value: number): string => value.toFixed(3);
-const bytes = (value: number): string => integer(value);
+const kilobytes = (value: number): string => (value / 1000).toFixed(2);
 
 const reduction = (from: number, to: number): string =>
 	from === 0 ? "n/a" : `${((1 - to / from) * 100).toFixed(1)}%`;
@@ -350,15 +350,19 @@ const renderBundleRanking = (sizes: Record<string, BundleSize> | undefined): str
 			String(index + 1),
 			name,
 			sizeKind(name),
-			bytes(size.min),
-			bytes(size.gz),
+			kilobytes(size.min),
+			kilobytes(size.gz),
 		]);
 	return [
 		"## Runtime size ranking",
 		"",
-		"Lower is smaller. Static output and build-time-only rows are included for completeness but are not browser runtime costs.",
+		"Lower is smaller. Sizes are decimal KB (1 KB = 1,000 bytes); exact byte values remain in the committed snapshot and budgets. Static output and build-time-only rows are included for completeness but are not browser runtime costs.",
 		"",
-		markdownTable(["Rank", "Entry", "Kind", "Minified (B)", "Gzip (B)"], rows, new Set([0, 3, 4])),
+		markdownTable(
+			["Rank", "Entry", "Kind", "Minified (KB)", "Gzip (KB)"],
+			rows,
+			new Set([0, 3, 4]),
+		),
 		"",
 	];
 };
@@ -370,13 +374,18 @@ const renderGeneratedRuntimeSizes = (sizes: Record<string, BundleSize> | undefin
 			([leftName, left], [rightName, right]) =>
 				left.gz - right.gz || leftName.localeCompare(rightName),
 		)
-		.map(([name, size], index) => [String(index + 1), name, bytes(size.min), bytes(size.gz)]);
+		.map(([name, size], index) => [
+			String(index + 1),
+			name,
+			kilobytes(size.min),
+			kilobytes(size.gz),
+		]);
 	return [
 		"## Generated Tailwind metadata size",
 		"",
-		"These rows are separate from the native CSS runtime: static generated calls erase the metadata, while dynamic generated tw/cx calls intentionally retain it.",
+		"These rows are separate from the native CSS runtime: static generated calls erase the metadata, while dynamic generated tw/cx calls intentionally retain it. Sizes use decimal KB; exact byte values remain in the committed snapshot.",
 		"",
-		markdownTable(["Rank", "Entry", "Minified (B)", "Gzip (B)"], rows, new Set([0, 2, 3])),
+		markdownTable(["Rank", "Entry", "Minified (KB)", "Gzip (KB)"], rows, new Set([0, 2, 3])),
 		"",
 	];
 };

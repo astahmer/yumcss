@@ -236,41 +236,41 @@ The dedicated runtime snapshot is [runtime-api-benchmark.json.snap](packages/pan
 
 ## Runtime size ranking
 
-Lower is smaller. Static output and build-time-only rows are included for completeness but are not browser runtime costs.
+Lower is smaller. Sizes are decimal KB (1 KB = 1,000 bytes); exact byte values remain in the committed snapshot and budgets. Static output and build-time-only rows are included for completeness but are not browser runtime costs.
 
-| Rank | Entry                                  | Kind               | Minified (B) | Gzip (B) |
-| ---: | -------------------------------------- | ------------------ | -----------: | -------: |
-|    1 | css, all static calls                  | static output      |           81 |       98 |
-|    2 | root barrel, tw only                   | tree-shaken barrel |        2,800 |    1,314 |
-|    3 | tw                                     | runtime            |        2,800 |    1,314 |
-|    4 | cx, plain                              | runtime            |        7,027 |    3,008 |
-|    5 | css, generated call                    | generated runtime  |        8,165 |    3,402 |
-|    6 | css, generated class                   | generated runtime  |        8,220 |    3,422 |
-|    7 | css, compiler-pruned call              | compiler-pruned    |        8,225 |    3,436 |
-|    8 | css, compiler-pruned class             | compiler-pruned    |        8,286 |    3,458 |
-|    9 | css, generated vars                    | generated runtime  |       10,512 |    4,244 |
-|   10 | css, generated class+vars              | generated runtime  |       10,568 |    4,267 |
-|   11 | css, compiler-pruned vars              | compiler-pruned    |       10,577 |    4,282 |
-|   12 | css, generated all                     | generated runtime  |       12,842 |    5,088 |
-|   13 | css, dynamic fallback                  | runtime            |       12,931 |    5,163 |
-|   14 | css                                    | runtime            |       12,943 |    5,166 |
-|   15 | root barrel, css only                  | tree-shaken barrel |       12,951 |    5,170 |
-|   16 | cx                                     | runtime            |       19,875 |    7,737 |
-|   17 | root barrel, cx only                   | tree-shaken barrel |       19,875 |    7,760 |
-|   18 | stylesheet generator (build-time only) | build-time only    |       21,087 |    8,181 |
-|   19 | all (css+tw+cx)                        | runtime            |       22,566 |    8,690 |
-|   20 | css, runtime sheet                     | runtime            |       34,318 |   12,621 |
+| Rank | Entry                                  | Kind               | Minified (KB) | Gzip (KB) |
+| ---: | -------------------------------------- | ------------------ | ------------: | --------: |
+|    1 | css, all static calls                  | static output      |          0.08 |      0.10 |
+|    2 | root barrel, tw only                   | tree-shaken barrel |          2.80 |      1.31 |
+|    3 | tw                                     | runtime            |          2.80 |      1.31 |
+|    4 | cx, plain                              | runtime            |          7.03 |      3.01 |
+|    5 | css, generated call                    | generated runtime  |          8.16 |      3.40 |
+|    6 | css, generated class                   | generated runtime  |          8.22 |      3.42 |
+|    7 | css, compiler-pruned call              | compiler-pruned    |          8.22 |      3.44 |
+|    8 | css, compiler-pruned class             | compiler-pruned    |          8.29 |      3.46 |
+|    9 | css, generated vars                    | generated runtime  |         10.51 |      4.24 |
+|   10 | css, generated class+vars              | generated runtime  |         10.57 |      4.27 |
+|   11 | css, compiler-pruned vars              | compiler-pruned    |         10.58 |      4.28 |
+|   12 | css, generated all                     | generated runtime  |         12.84 |      5.09 |
+|   13 | css, dynamic fallback                  | runtime            |         12.93 |      5.16 |
+|   14 | css                                    | runtime            |         12.94 |      5.17 |
+|   15 | root barrel, css only                  | tree-shaken barrel |         12.95 |      5.17 |
+|   16 | cx                                     | runtime            |         19.88 |      7.74 |
+|   17 | root barrel, cx only                   | tree-shaken barrel |         19.88 |      7.76 |
+|   18 | stylesheet generator (build-time only) | build-time only    |         21.09 |      8.18 |
+|   19 | all (css+tw+cx)                        | runtime            |         22.57 |      8.69 |
+|   20 | css, runtime sheet                     | runtime            |         34.32 |     12.62 |
 
 ## Generated Tailwind metadata size
 
-These rows are separate from the native CSS runtime: static generated calls erase the metadata, while dynamic generated tw/cx calls intentionally retain it.
+These rows are separate from the native CSS runtime: static generated calls erase the metadata, while dynamic generated tw/cx calls intentionally retain it. Sizes use decimal KB; exact byte values remain in the committed snapshot.
 
-| Rank | Entry                          | Minified (B) | Gzip (B) |
-| ---: | ------------------------------ | -----------: | -------: |
-|    1 | generated tw+cx (static)       |           51 |       71 |
-|    2 | generated tw (dynamic)         |        4,448 |    1,739 |
-|    3 | plain cx (no tw metadata)      |       32,331 |   11,971 |
-|    4 | explicit conflict cx (dynamic) |      291,226 |   40,566 |
+| Rank | Entry                          | Minified (KB) | Gzip (KB) |
+| ---: | ------------------------------ | ------------: | --------: |
+|    1 | generated tw+cx (static)       |          0.05 |      0.07 |
+|    2 | generated tw (dynamic)         |          4.45 |      1.74 |
+|    3 | plain cx (no tw metadata)      |         32.33 |     11.97 |
+|    4 | explicit conflict cx (dynamic) |        291.23 |     40.57 |
 
 ## Sources and refresh commands
 

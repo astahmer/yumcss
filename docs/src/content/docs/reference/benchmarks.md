@@ -75,18 +75,19 @@ Warm `cx()` matches or beats tailwind-merge exactly where class strings grow
 
 ## Current runtime size record — 2026-09-16
 
-The canonical byte table is [the size reference](/reference/size/); the
-exact record is the committed `runtime-size.json.snap` and the hard
-ceilings are in `runtime-budget.json`.
+The canonical size table is [the size reference](/reference/size/); the
+exact byte record is the committed `runtime-size.json.snap` and the hard
+ceilings are in `runtime-budget.json`. Values below use decimal KB
+(1 KB = 1,000 bytes) for readability.
 
-| entry                        | minified |   gzip |
-| ---------------------------- | -------: | -----: |
-| `createUnsafeCss()` fallback |   12,943 |  5,165 |
-| `tw()`                       |    2,800 |  1,314 |
-| `cx()` plain strings         |    7,027 |  3,008 |
-| `cx()`                       |   19,875 |  7,737 |
-| all direct runtime entries   |   22,566 |  8,690 |
-| `createRuntimeCss()` + sheet |   34,291 | 12,611 |
+| entry                        | minified |     gzip |
+| ---------------------------- | -------: | -------: |
+| `createUnsafeCss()` fallback | 12.94 KB |  5.17 KB |
+| `tw()`                       |  2.80 KB |  1.31 KB |
+| `cx()` plain strings         |  7.03 KB |  3.01 KB |
+| `cx()`                       | 19.88 KB |  7.74 KB |
+| all direct runtime entries   | 22.57 KB |  8.69 KB |
+| `createRuntimeCss()` + sheet | 34.29 KB | 12.61 KB |
 
 The combined runtime is 22.57 KB min / 8.69 KB gzip in this record. The
 fallback helper adds a small shared decoder to the dynamic CSS lane, while
