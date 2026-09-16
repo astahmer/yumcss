@@ -16,6 +16,8 @@ exact machine-readable record is
 [`runtime-size.json.snap`](https://github.com/astahmer/pandwind/blob/main/packages/pandwind/tests/snapshots/runtime-size.json.snap),
 with ceilings in
 [`runtime-budget.json`](https://github.com/astahmer/pandwind/blob/main/packages/pandwind/tests/runtime-budget.json).
+The compact snapshot-derived typecheck and size summary is in
+[`PERF.md`](https://github.com/astahmer/pandwind/blob/main/PERF.md).
 
 ## The short version
 

@@ -2,6 +2,7 @@ import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { expect, test } from "vitest";
+import { writePerformanceSummary } from "../../../scripts/render-performance-summary.mts";
 
 const ROOT = resolve(import.meta.dirname, "..");
 const SNAPSHOT = resolve(ROOT, "tests/snapshots/tsc.json.snap");
@@ -299,6 +300,7 @@ test("public API typecheck scenarios stay within the recorded evidence band", as
 	const snapshot = buildSnapshot(measured, typescriptVersion());
 	if (updatingSnapshots()) {
 		await expect(JSON.stringify(snapshot, null, "\t")).toMatchFileSnapshot(SNAPSHOT);
+		writePerformanceSummary();
 		return;
 	}
 	if (!existsSync(SNAPSHOT)) {

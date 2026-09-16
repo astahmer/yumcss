@@ -14,6 +14,10 @@ versions. See
 [BENCH.md](https://github.com/astahmer/pandwind/blob/main/BENCH.md) in the
 repo for the complete methodology and caveats.
 
+The compact snapshot-derived typecheck and bundle-size summary is in
+[`PERF.md`](https://github.com/astahmer/pandwind/blob/main/PERF.md). It keeps
+rankings per workload and metric instead of inventing one composite score.
+
 ## Competitor table
 
 Every row performs its framework's **primary runtime call** on the same

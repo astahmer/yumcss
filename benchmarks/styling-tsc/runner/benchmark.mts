@@ -8,6 +8,7 @@ import {
 	type Library,
 	type Scenario,
 } from "./generate-fixtures.mts";
+import { writePerformanceSummary } from "../../../scripts/render-performance-summary.mts";
 
 type Metrics = {
 	files: number;
@@ -187,6 +188,22 @@ const runPandaCodegen = (scenario: Scenario): void => {
 	]);
 };
 
+const runPandwindCodegen = (scenario: Scenario): void => {
+	const projectRoot = resolve(generatedRoot, "pandwind-generated", scenario);
+	runCommand([
+		"--filter",
+		benchmarkPackageName,
+		"exec",
+		"pandwind-codemod",
+		"css",
+		"generate",
+		projectRoot,
+		"src/css.generated.ts",
+		"--preset-import",
+		"./src/preset.ts",
+	]);
+};
+
 const measureWorkload = (library: Library, scenario: Scenario, samples: number): WorkloadResult => {
 	const project = ".generated/" + library + "/" + scenario + "/tsconfig.json";
 	const projectPath = resolve(benchmarkRoot, project);
@@ -348,7 +365,7 @@ const assertNoRegression = (
 		previous.environment.node === process.version;
 
 	for (const workload of measured) {
-		if (workload.library !== "pandwind") {
+		if (workload.library !== "pandwind" && workload.library !== "pandwind-generated") {
 			continue;
 		}
 		const baseline = previousByKey.get(workload.library + ":" + workload.scenario);
@@ -503,6 +520,11 @@ const main = (): void => {
 			runPandaCodegen(scenario);
 		}
 	}
+	if (selectedLibraries.includes("pandwind-generated")) {
+		for (const scenario of selectedScenarios) {
+			runPandwindCodegen(scenario);
+		}
+	}
 
 	const workloads = selectedLibraries.flatMap((library) =>
 		selectedScenarios.map((scenario) => measureWorkload(library, scenario, options.samples)),
@@ -522,6 +544,7 @@ const main = (): void => {
 	mkdirSync(resolve(benchmarkRoot, "snapshots"), { recursive: true });
 	writeFileSync(snapshotPath, JSON.stringify(snapshot, null, "\t") + "\n");
 	writeFileSync(reportPath, renderReport(snapshot));
+	writePerformanceSummary();
 	console.log(JSON.stringify(snapshot, null, 2));
 };
 

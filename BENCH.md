@@ -13,6 +13,8 @@ shows the best-of-5-pass median sample (ops/sec) plus the p10–p90 spread of
 that pass. This is local-machine evidence, not a published benchmark suite —
 numbers will vary with hardware and versions.
 
+For the compact typecheck and bundle-size summary, see [`PERF.md`](PERF.md).
+
 > **Load caveat (2026-08-22 run):** the machine was heavily loaded by
 > unrelated background work during measurement (load average 19–28 on 10
 > cores; the 2026-08-15 run below was taken on a quiet machine). Every

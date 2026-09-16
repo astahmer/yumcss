@@ -28,6 +28,7 @@
 		"jss": "10.10.0",
 		"next-yak": "9.10.0",
 		"pandwind": "workspace:*",
+		"pandwind-codemod": "workspace:*",
 		"react": "19.2.8",
 		"react-jss": "10.10.0",
 		"react-strict-dom": "0.0.55",

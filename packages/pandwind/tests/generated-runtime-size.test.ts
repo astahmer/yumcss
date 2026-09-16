@@ -4,6 +4,7 @@ import { resolve } from "node:path";
 import { buildSync } from "esbuild";
 import { expect, test } from "vitest";
 import { createInlineTwPluginCore } from "../src/vite/index.ts";
+import { writePerformanceSummary } from "../../../scripts/render-performance-summary.mts";
 
 const ROOT = resolve(import.meta.dirname, "..");
 const GENERATED_DIRECTORY = resolve(ROOT, "../../apps/playground/src");
@@ -37,6 +38,13 @@ const bundleEntry = (entry: string): BundleMeasurement => {
 
 const hasInput = (measurement: BundleMeasurement, file: string): boolean =>
 	measurement.inputs.some((input) => input.endsWith(file));
+
+const updatingSnapshots = (): boolean => {
+	const snapshotState = expect.getState() as unknown as {
+		snapshotState?: { _updateSnapshot?: string };
+	};
+	return snapshotState.snapshotState?._updateSnapshot === "all";
+};
 
 const bundleAfterGeneratedExtraction = async (): Promise<BundleMeasurement> => {
 	const generatedTwEntry = resolve(GENERATED_DIRECTORY, "tw.ts");
@@ -125,4 +133,5 @@ test("generated metadata stays out of static runtime bundles", async () => {
 			2,
 		),
 	).toMatchFileSnapshot(SNAPSHOT);
+	if (updatingSnapshots()) writePerformanceSummary();
 });

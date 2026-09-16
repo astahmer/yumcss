@@ -12,6 +12,7 @@
 import { spawnSync } from "node:child_process";
 import { readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
+import { writePerformanceSummary } from "./render-performance-summary.mts";
 
 const ROOT = resolve(import.meta.dirname, "..");
 const TSC_ARGUMENTS = ["exec", "tsc", "--noEmit", "--extendedDiagnostics", "--pretty", "false"];
@@ -146,6 +147,7 @@ if (baseline.project !== target.project) {
 
 if (update) {
 	writeFileSync(target.snapshot, `${JSON.stringify(nextSnapshot, null, 2)}\n`);
+	writePerformanceSummary();
 	console.log(`updated ${target.snapshot}`);
 } else {
 	const checks: RegressionCheck[] = [

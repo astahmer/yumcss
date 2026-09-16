@@ -30,6 +30,7 @@ import { examplePreset } from "@pandwind/example-preset";
 import { createCssExtractionService } from "../src/vite/css-extract.ts";
 import { renderCssRuntimeModule } from "../src/css/runtime-codegen.ts";
 import { createRuntimePruningTransform } from "../src/vite/runtime-pruner.ts";
+import { writePerformanceSummary } from "../../../scripts/render-performance-summary.mts";
 
 const ROOT = resolve(import.meta.dirname, "..");
 const SNAPSHOT = resolve(ROOT, "tests/snapshots", "runtime-size.json.snap");
@@ -245,6 +246,7 @@ test("runtime entries stay stylex-sized", async () => {
 
 	// 3. Exact record of truth.
 	await expect(JSON.stringify(sizes, null, 2)).toMatchFileSnapshot(SNAPSHOT);
+	if (updatingSnapshots()) writePerformanceSummary();
 
 	// The build-time generator must never ride along in the runtime entry.
 	// The postcss-selector-parser chain used to define the generator's

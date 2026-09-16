@@ -21,6 +21,7 @@ pnpm run typecheck
 pnpm run bench:tsc
 pnpm run bench:tsc:example
 pnpm run bench:tsc:styling
+pnpm run bench:summary:check
 pnpm run lint
 pnpm run format
 pnpm run knip
@@ -84,7 +85,7 @@ pnpm --filter pandwind exec vitest run tsc-performance -u
 ```
 
 `bench:tsc:styling` runs the version-pinned ecosystem comparison under
-`benchmarks/styling-tsc`. It regenerates native Pandwind, Panda CSS, StyleX,
+`benchmarks/styling-tsc`. It regenerates inferred and generated Pandwind, Panda CSS, StyleX,
 Vanilla Extract, Emotion, styled-components, Goober, Linaria, Compiled,
 Griffel, Stitches, JSS, React-JSS, Fela, Aphrodite, Style9, Treat, TypeStyle,
 next-yak, and React Strict DOM fixtures, runs natural and stress workloads in fresh
@@ -95,6 +96,12 @@ evidence:
 ```sh
 pnpm run bench:tsc:styling -- --update
 ```
+
+The styling and generated-types benchmarks refresh the compact root
+[`PERF.md`](https://github.com/astahmer/pandwind/blob/main/PERF.md) when their
+snapshots are updated. Package/example TSC and Pandwind runtime-size snapshot
+updates do the same. `bench:summary:check` verifies that the report matches
+all committed source snapshots.
 
 ### Pivot proof matrix
 

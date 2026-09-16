@@ -4,6 +4,10 @@ This is a version-pinned comparison of the typecheck cost of realistic styling
 code. It measures Pandwind against a broad set of type-dependent CSS-in-JS and
 static-CSS authoring APIs using each library's native API.
 
+The compact cross-library ranking and generated-facade result are kept in
+[`PERF.md`](../../PERF.md). Detailed machine-readable and full-table records
+remain under `snapshots/`.
+
 Run the checked-in regression gate with:
 
 ```sh
@@ -35,7 +39,7 @@ workload sizes for every library:
 - <code>stress</code>: 180 repeated component-style uses and a 128-entry token
   catalog.
 
-Pandwind's fixture exercises <code>css()</code>, <code>css.class()</code>,
+Pandwind's inferred and generated fixtures exercise <code>css()</code>, <code>css.class()</code>,
 <code>css.props()</code>, <code>css.vars()</code>, <code>css.group()</code>,
 <code>css.input()</code>, <code>createCx()</code>, tokens, semantic tokens,
 color palettes, conditions, and strict property typing. The comparison lanes
@@ -85,6 +89,11 @@ refreshing the baseline; memory and time comparisons are skipped when the
 machine environment differs. Competitor rows are descriptive rather than CI
 gates because their generated declaration graphs and dependency sets are
 owned by their pinned releases.
+
+The `pandwind-generated` row runs the same natural/stress workload after
+`pandwind-codemod css generate` materializes a concrete facade from the same
+preset. It is regression-checked alongside inferred Pandwind; the other
+libraries remain descriptive comparison rows.
 
 These numbers compare typecheck workloads, not universal library quality or
 runtime/browser performance. The source shapes express the same broad intent,

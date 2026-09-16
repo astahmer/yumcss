@@ -4,12 +4,12 @@
     "gz": 1739
   },
   "explicit conflict cx (dynamic)": {
-    "min": 291199,
-    "gz": 40557
+    "min": 291226,
+    "gz": 40566
   },
   "plain cx (no tw metadata)": {
-    "min": 32304,
-    "gz": 11963
+    "min": 32331,
+    "gz": 11971
   },
   "generated tw+cx (static)": {
     "min": 51,

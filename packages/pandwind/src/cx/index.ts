@@ -78,7 +78,7 @@ export interface CxOptions {
 	 * resolve css.class() strings to the properties they set, so they merge
 	 * against tw classes and raw strings.
 	 */
-	css?: CssFn<never>;
+	css?: CssFn<never, never>;
 }
 
 /**

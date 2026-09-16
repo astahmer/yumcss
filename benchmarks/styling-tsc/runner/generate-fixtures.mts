@@ -6,6 +6,7 @@ const generatedRoot = resolve(benchmarkRoot, ".generated");
 
 export const libraries = [
 	"pandwind",
+	"pandwind-generated",
 	"panda",
 	"stylex",
 	"sprinkles",
@@ -234,6 +235,9 @@ export const pandwindStyles = (): string => `import { createCss } from "pandwind
 import { preset } from "./preset.ts";
 
 export const css = createCss(preset);
+`;
+
+export const pandwindGeneratedStyles = (): string => `export { css } from "./css.generated.ts";
 `;
 
 const pandaTokens = (catalogCount: number): string => {
@@ -1026,12 +1030,17 @@ export const generateFixtures = (): void => {
 
 			switch (library) {
 				case "pandwind":
+				case "pandwind-generated":
 					writeFile(
 						projectRoot,
 						"src/preset.ts",
 						generatePandwindPresetSource(options.catalogCount),
 					);
-					writeFile(projectRoot, "src/styles.ts", pandwindStyles());
+					writeFile(
+						projectRoot,
+						"src/styles.ts",
+						library === "pandwind" ? pandwindStyles() : pandwindGeneratedStyles(),
+					);
 					writeFile(projectRoot, "src/app.ts", pandwindApp(options.componentCount));
 					break;
 				case "panda":

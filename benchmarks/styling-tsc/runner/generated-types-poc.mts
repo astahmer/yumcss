@@ -7,6 +7,7 @@ import {
 	pandwindStyles,
 	pandwindTokenNames,
 } from "./generate-fixtures.mts";
+import { writePerformanceSummary } from "../../../scripts/render-performance-summary.mts";
 
 type Mode = "inferred" | "generated";
 type Scenario = "minimal" | "medium" | "large" | "huge";
@@ -582,6 +583,7 @@ const main = (): void => {
 	mkdirSync(resolve(benchmarkRoot, "snapshots"), { recursive: true });
 	writeFileSync(snapshotPath, JSON.stringify(snapshot, null, "\t") + "\n");
 	writeFileSync(reportPath, renderReport(snapshot));
+	writePerformanceSummary();
 	console.log(JSON.stringify(snapshot, null, 2));
 };
 

@@ -1,5 +1,6 @@
 import { expect, test } from "tstyche";
 import { createGeneratedCss, firstThatWorks } from "../src/css/index.ts";
+import { createCx } from "../src/cx/index.ts";
 import { examplePreset } from "@pandwind/example-preset";
 import {
 	css,
@@ -17,6 +18,7 @@ type PropsResult = {
 };
 
 const directCss = createGeneratedCss<GeneratedStyle, GeneratedDynamicStyle>(examplePreset);
+const generatedCx = createCx({ css });
 
 const compiled = css({
 	color: "$blue-500",
@@ -44,6 +46,7 @@ test("generated css has the complete callable and projection surface", () => {
 	expect(
 		css.props(compiled, dynamic, "external-class", [false, null, undefined]),
 	).type.toBe<PropsResult>();
+	expect(generatedCx(css.class({ color: "$blue-500" }))).type.toBe<string>();
 });
 
 test("generated css preserves dynamic and reusable group typing", () => {

@@ -1,11 +1,11 @@
 {
   "css": {
     "min": 12943,
-    "gz": 5165
+    "gz": 5166
   },
   "css, runtime sheet": {
-    "min": 34291,
-    "gz": 12611
+    "min": 34318,
+    "gz": 12621
   },
   "css, all static calls": {
     "min": 81,
@@ -13,7 +13,7 @@
   },
   "css, dynamic fallback": {
     "min": 12931,
-    "gz": 5162
+    "gz": 5163
   },
   "css, compiler-pruned call": {
     "min": 8225,
@@ -69,7 +69,7 @@
   },
   "root barrel, css only": {
     "min": 12951,
-    "gz": 5168
+    "gz": 5170
   },
   "root barrel, tw only": {
     "min": 2800,
