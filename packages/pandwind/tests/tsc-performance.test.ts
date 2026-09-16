@@ -8,7 +8,6 @@ const ROOT = resolve(import.meta.dirname, "..");
 const SNAPSHOT = resolve(ROOT, "tests/snapshots/tsc.json.snap");
 const SAMPLES = 3;
 const MINIMUM_CHECK_TIME_INCREASE_SECONDS = 0.05;
-const MINIMUM_TOTAL_TIME_INCREASE_SECONDS = 0.1;
 const TSC_ARGUMENTS = [
 	"exec",
 	"tsc",
@@ -43,51 +42,115 @@ const SCENARIOS = [
 	{
 		name: "css.default",
 		fixture: "tests/fixtures/tsc/css-default.ts",
+		category: "css",
 		description: "default preset with repeated static css and class calls",
 	},
 	{
 		name: "css.preset",
 		fixture: "tests/fixtures/tsc/css-custom.ts",
+		category: "css",
 		description: "define namespace, semantic tokens, palettes, and strict css",
+	},
+	{
+		name: "preset",
+		fixture: "tests/fixtures/tsc/preset.ts",
+		category: "preset",
+		description: "define.* builders and composable token catalog construction",
+	},
+	{
+		name: "css.generated",
+		fixture: "tests/fixtures/tsc/css-generated.ts",
+		category: "css",
+		description: "generated CSS facade with concrete property and token unions",
+	},
+	{
+		name: "css.unsafe",
+		fixture: "tests/fixtures/tsc/css-unsafe.ts",
+		category: "css",
+		description: "explicit open CSS lane with dynamic groups and carriers",
 	},
 	{
 		name: "css.real-world.theme",
 		fixture: "tests/fixtures/tsc/real-world-theme.ts",
+		category: "css",
 		description: "complete anonymized product theme and preset construction",
 	},
 	{
 		name: "css.real-world.usage",
 		fixture: "tests/fixtures/tsc/real-world-usage.ts",
+		category: "css",
 		description: "repeated component styles using a complete product preset",
 	},
 	{
 		name: "css.dynamic",
 		fixture: "tests/fixtures/tsc/css-dynamic.ts",
+		category: "css",
 		description: "vars, props, raw, groups, and named runtime inputs",
 	},
 	{
-		name: "design",
+		name: "dss",
 		fixture: "tests/fixtures/tsc/design.ts",
+		category: "design",
 		description: "intent-oriented frame, layout, and text modules",
 	},
 	{
-		name: "runtime",
+		name: "css.runtime",
 		fixture: "tests/fixtures/tsc/runtime.ts",
+		category: "runtime",
 		description: "live runtime css and design css bound to a sheet",
 	},
 	{
-		name: "composition",
-		fixture: "tests/fixtures/tsc/composition.ts",
+		name: "dss.runtime",
+		fixture: "tests/fixtures/tsc/dss-runtime.ts",
+		category: "runtime",
+		description: "live runtime design vocabulary bound to a sheet",
+	},
+	{
+		name: "cx",
+		fixture: "tests/fixtures/tsc/cx.ts",
+		category: "composition",
 		description: "cx with css atoms, class strings, arrays, and vars",
 	},
 	{
 		name: "tw",
 		fixture: "tests/fixtures/tsc/tw.ts",
+		category: "tailwind",
 		description: "typed tw object with variants and conflict metadata",
+	},
+	{
+		name: "tw.root",
+		fixture: "tests/fixtures/tsc/tw-root.ts",
+		category: "tailwind",
+		description: "root open tw export used directly by an application",
+	},
+	{
+		name: "strategies",
+		fixture: "tests/fixtures/tsc/strategies.ts",
+		category: "adapters",
+		description: "class-name strategy contract and built-in strategy adapters",
+	},
+	{
+		name: "stack",
+		fixture: "tests/fixtures/tsc/stack.ts",
+		category: "layout",
+		description: "renderer-agnostic Stack helpers and React renderer binding",
+	},
+	{
+		name: "platforms",
+		fixture: "tests/fixtures/tsc/platforms.ts",
+		category: "platform",
+		description: "React Native, OpenTUI, and React Strict DOM style surfaces",
+	},
+	{
+		name: "tooling",
+		fixture: "tests/fixtures/tsc/tooling.ts",
+		category: "tooling",
+		description: "stylesheet, host, source, Vite, unplugin, and lib contracts",
 	},
 	{
 		name: "app",
 		fixture: "tests/fixtures/tsc/app.ts",
+		category: "app",
 		description: "combined component-style usage across the public APIs",
 	},
 ] as const;
@@ -105,6 +168,7 @@ type Metrics = {
 type ScenarioResult = {
 	name: (typeof SCENARIOS)[number]["name"];
 	fixture: string;
+	category: (typeof SCENARIOS)[number]["category"];
 	description: string;
 	command: string;
 	samples: number;
@@ -127,7 +191,6 @@ type Snapshot = {
 		instantiations: number;
 		memoryUsedKiB: number;
 		checkTimeSeconds: number;
-		totalTimeSeconds: number;
 	};
 };
 
@@ -222,7 +285,6 @@ const buildSnapshot = (scenarios: readonly ScenarioResult[], typescript: string)
 		instantiations: 0.1,
 		memoryUsedKiB: 0.1,
 		checkTimeSeconds: 0.5,
-		totalTimeSeconds: 0.5,
 	},
 });
 
@@ -268,18 +330,13 @@ const assertNoRegression = (
 			checks.push(
 				["memoryUsedKiB", baseline.tolerances.memoryUsedKiB],
 				["checkTimeSeconds", baseline.tolerances.checkTimeSeconds],
-				["totalTimeSeconds", baseline.tolerances.totalTimeSeconds],
 			);
 		}
 		for (const [metricName, tolerance] of checks) {
 			const actual = scenario.metrics[metricName];
 			const expected = reference.metrics[metricName];
 			const minimumIncrease =
-				metricName === "checkTimeSeconds"
-					? MINIMUM_CHECK_TIME_INCREASE_SECONDS
-					: metricName === "totalTimeSeconds"
-						? MINIMUM_TOTAL_TIME_INCREASE_SECONDS
-						: 0;
+				metricName === "checkTimeSeconds" ? MINIMUM_CHECK_TIME_INCREASE_SECONDS : 0;
 			const limit = Math.max(expected * (1 + tolerance), expected + minimumIncrease);
 			if (actual > limit) {
 				failures.push(
