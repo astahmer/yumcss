@@ -154,6 +154,28 @@ The join separator (`:`, `-` or none) is detected at codegen time by compiling
 sample candidates with Tailwind's own engine — whatever the variant's internal
 shape is, the engine is the source of truth.
 
+### Raw class escape hatch for unsupported variant spellings
+
+When a Tailwind variant is valid in your configured stylesheet but is not
+represented by the generated object metadata — for example, a named group
+modifier such as `group-hover/item:` — keep that class as a literal string and
+compose it at the class boundary:
+
+```tsx
+import { createCx } from "pandwind/cx";
+import { tw } from "./tw";
+
+const cx = createCx();
+const className = cx(tw({ textColor: "blue-500" }), "group-hover/item:text-blue-500");
+```
+
+This is intentionally an escape hatch: the raw class is not checked by
+Pandwind's generated TypeScript contract. Tailwind remains responsible for
+validating and compiling it, so keep the string visible to Tailwind's scanner
+or add it to `@source inline(...)` when it is constructed indirectly. Do not
+put an unknown variant key in `tw({ ... })`; Pandwind cannot safely generate
+CSS for a condition that the generated metadata does not prove.
+
 ## Conflict resolution (tailwind-merge, but generated)
 
 `tw({ px: "4", p: "6" })` emits `p-6`, not both classes. The conflict map is

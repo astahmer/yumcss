@@ -37,6 +37,23 @@ direct-property utilities that resolve against your `@theme`, so the bridge
 stays small (~36 KB for the example preset) and cannot drift from what
 Tailwind actually compiles.
 
+The adapter changes the class spelling emitted by `css()`, but it does not turn
+`css()` into a Tailwind class-string parser. If a valid Tailwind variant is not
+present in the generated metadata — such as a named-group modifier — compose
+the literal Tailwind class beside the adapter output:
+
+```ts
+import { createCx } from "pandwind/cx";
+
+const cx = createCx({ css });
+const className = cx(css.class({ color: "$blue-500" }), "group-hover/item:text-blue-500");
+```
+
+Tailwind must see the literal through its normal source scan, or through an
+explicit `@source inline(...)`/safelist entry. This fallback is specific to a
+Tailwind-owned stylesheet; the native Pandwind engine cannot compile a raw
+Tailwind utility string.
+
 ## Class-name strategies — one API, swappable output
 
 The tailwind adapter is one instance of a general contract:

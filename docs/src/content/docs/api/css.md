@@ -134,6 +134,32 @@ inline custom properties or an explicit runtime sheet. The
 [design-system guide](/guides/design-system/) shows how to share the preset
 across components.
 
+### Conditions in the native CSS engine
+
+The native `createCss(preset)` engine emits CSS declarations and does not parse
+Tailwind utility strings. A class such as
+`group-hover/item:text-blue-500` only works when Tailwind owns the stylesheet;
+do not pass it to native `css()` and expect Pandwind to compile it.
+
+For a stable relationship that is not worth naming as a preset condition, use
+an ordinary static selector in the style object. The selector is still typed,
+hashed, and extracted by Pandwind:
+
+```ts
+const itemLabel = css.class({
+	'[data-group~="item"]:hover &': {
+		color: "$blue-500",
+	},
+});
+```
+
+Prefer a static selector plus a runtime data attribute when only the state is
+dynamic. `css.vars()` can change declaration values, but it cannot safely make
+the selector or condition itself dynamic. If the selector must genuinely be
+constructed at runtime, use authored CSS or the explicit
+`RuntimeSheet.registerSemanticRules()` path; that registers a runtime rule and
+is intentionally outside static extraction.
+
 ## The everyday loop
 
 Create one preset for the application and bind one css function to it. Choose
