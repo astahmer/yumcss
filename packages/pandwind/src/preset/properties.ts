@@ -1,4 +1,4 @@
-import { define } from "../types/define-preset.ts";
+import { define } from "../types/define-preset.export.ts";
 import { tokens } from "./tokens.ts";
 
 /**

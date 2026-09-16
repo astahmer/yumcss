@@ -69,6 +69,13 @@ describe("pandwind package boundary", () => {
 		for (const builder of builders) {
 			expect(presetApi.define[builder]).toBeTypeOf("function");
 		}
+		expect(Object.keys(presetApi.define).toSorted()).toEqual([
+			"conditions",
+			"preset",
+			"properties",
+			"theme",
+			"tokens",
+		]);
 		for (const builder of [
 			"definePreset",
 			"defineTheme",

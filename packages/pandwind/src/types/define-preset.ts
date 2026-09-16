@@ -40,7 +40,7 @@ export * from "./typings.ts";
  * @category presets
  * @since 0.1.0
  */
-const defineTheme = <TTheme extends DefinePresetOptions>(theme: TTheme) => theme;
+export const theme = <TTheme extends DefinePresetOptions>(theme: TTheme) => theme;
 
 /**
  * Combine theme values with the condition and property metadata used by CSS factories.
@@ -90,7 +90,7 @@ const defineTheme = <TTheme extends DefinePresetOptions>(theme: TTheme) => theme
  * @category presets
  * @since 0.1.0
  */
-function definePreset<
+export function preset<
 	TTheme extends DefinePresetOptions<object, AnyTokens>,
 	TConfig extends TTheme["config"],
 	TTokens extends TTheme["tokens"],
@@ -190,7 +190,7 @@ const createTokenCatalog = <T extends AnyTokens>(tokens: T): TokenCatalog<T> => 
  * @category tokens
  * @since 0.1.0
  */
-const defineTokens = <T extends AnySimpleTokens>(tokens: T): TokenCatalog<T> =>
+export const tokens = <T extends AnySimpleTokens>(tokens: T): TokenCatalog<T> =>
 	createTokenCatalog(tokens);
 
 /**
@@ -215,7 +215,7 @@ const defineTokens = <T extends AnySimpleTokens>(tokens: T): TokenCatalog<T> =>
  * @category presets
  * @since 0.1.0
  */
-const defineConditions = <T extends AnyConditions>(cond: T) => cond;
+export const conditions = <T extends AnyConditions>(cond: T) => cond;
 
 /**
  * Preserve the property-to-token vocabulary used by a preset.
@@ -242,34 +242,4 @@ const defineConditions = <T extends AnyConditions>(cond: T) => cond;
  * @category presets
  * @since 0.1.0
  */
-const defineProperties = <const T extends object>(props: T) => props;
-
-/**
- * Unified namespace for the public preset builders.
- *
- * Use `define.tokens`, `define.conditions`, `define.properties`,
- * `define.theme`, and `define.preset` as the canonical preset-construction
- * API. Semantic-token and color-palette composition stays on the token
- * catalog returned by `define.tokens`.
- *
- * @example
- * ```ts
- * import { define, type PandwindProperties } from "pandwind/preset";
- *
- * const tokens = define.tokens({ colors: { white: "#fff" } });
- * const conditions = define.conditions({ base: "", _dark: ".dark &" });
- * const properties = define.properties({ $all: true });
- * const theme = define.theme({ config: {} as PandwindProperties, tokens });
- * const preset = define.preset(theme, { strict: true, conditions, properties });
- * ```
- *
- * @category presets
- * @since 0.1.0
- */
-export const define = {
-	conditions: defineConditions,
-	properties: defineProperties,
-	tokens: defineTokens,
-	theme: defineTheme,
-	preset: definePreset,
-} as const;
+export const properties = <const T extends object>(props: T) => props;

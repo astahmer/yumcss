@@ -24,6 +24,9 @@ describe("playground editor declarations", () => {
 		const defineTypes = EDITOR_TYPE_LIBRARIES.find((library) =>
 			library.filePath.endsWith("/pandwind/types/define-preset.d.ts"),
 		);
+		const defineExportTypes = EDITOR_TYPE_LIBRARIES.find((library) =>
+			library.filePath.endsWith("/pandwind/types/define-preset.export.d.ts"),
+		);
 		const selectorTypes = EDITOR_TYPE_LIBRARIES.find((library) =>
 			library.filePath.endsWith("/pandwind/types/selectors.d.ts"),
 		);
@@ -37,10 +40,15 @@ describe("playground editor declarations", () => {
 		);
 		expect(cxTypes?.content).toContain("export interface CxFn");
 		expect(presetTypes?.content).toContain('export * from "../types/typings.d.ts";');
-		expect(presetTypes?.content).toContain('export { define } from "../types/define-preset.d.ts";');
-		expect(basePresetTypes?.content).toContain("export const basePreset");
-		expect(defaultPresetTypes?.content).toContain("export const defaultPreset");
-		expect(defineTypes?.content).toContain("define");
+		expect(presetTypes?.content).toContain(
+			'export { define } from "../types/define-preset.export.d.ts";',
+		);
+		expect(basePresetTypes?.content).toContain("export declare const basePreset");
+		expect(defaultPresetTypes?.content).toContain("export declare const defaultPreset");
+		expect(defineExportTypes?.content).toContain('import * as define from "./define-preset.d.ts";');
+		expect(defineExportTypes?.content).toContain("export { define };");
+		expect(defineTypes?.content).toContain("export declare const tokens");
+		expect(defineTypes?.content).toContain("Preserve literal token names");
 		expect(selectorTypes?.content).toContain("AnySelector");
 		expect(PANDWIND_EDITOR_MODULE_PATHS["pandwind/css"]).toBe("generated/pandwind/css/index.d.ts");
 		expect(PANDWIND_EDITOR_MODULE_PATHS["pandwind/unsafe/css"]).toBe(

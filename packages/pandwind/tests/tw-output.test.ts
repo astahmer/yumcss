@@ -3,7 +3,7 @@ import { describe, expect, test } from "vitest";
 import { createUnsafeCss } from "../src/unsafe/css.ts";
 import { createStylesheet, decodeAtomicPath } from "../src/css/create-stylesheet.ts";
 import { pairs } from "../src/lib/utils.ts";
-import { define } from "../src/types/define-preset.ts";
+import { define } from "../src/types/define-preset.export.ts";
 
 const utilities: Record<string, string> = {
 	// Colors and Background

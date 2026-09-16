@@ -3,7 +3,7 @@ import { describe, expect, test } from "vitest";
 import { createCss } from "../src/css/create-css.ts";
 import { createStylesheet } from "../src/css/create-stylesheet.ts";
 import { createRuntimeCss } from "../src/css/runtime.ts";
-import { define } from "../src/types/define-preset.ts";
+import { define } from "../src/types/define-preset.export.ts";
 
 const rawTokens = define.tokens({
 	colors: {

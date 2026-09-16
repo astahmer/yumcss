@@ -2,7 +2,7 @@ import type { StandardLonghandProperties } from "csstype";
 import { expect, test } from "vitest";
 import { createUnsafeCss } from "../src/unsafe/css.ts";
 import { createStylesheet } from "../src/css/create-stylesheet.ts";
-import { define } from "../src/types/define-preset.ts";
+import { define } from "../src/types/define-preset.export.ts";
 
 test("css gen simple prop", () => {
 	const preset = define.preset(

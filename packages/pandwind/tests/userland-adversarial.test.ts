@@ -9,7 +9,7 @@ import { createDesignCss } from "../src/design/index.ts";
 import { createCx } from "../src/cx/index.ts";
 import { createHashFn, escapeIdentifier } from "../src/css/hash.ts";
 import { createNamedAtomsStrategy } from "../src/css/named-atoms-strategy.ts";
-import { define } from "../src/types/define-preset.ts";
+import { define } from "../src/types/define-preset.export.ts";
 import { examplePreset } from "@pandwind/example-preset";
 
 const conditions = { base: "", _dark: ".dark &" } as const;

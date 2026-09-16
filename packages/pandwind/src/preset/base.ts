@@ -1,5 +1,5 @@
 import type { StandardProperties } from "csstype";
-import { define } from "../types/define-preset.ts";
+import { define } from "../types/define-preset.export.ts";
 import { presetConditions } from "./conditions.ts";
 
 const baseCssConfig: StandardProperties = {};
