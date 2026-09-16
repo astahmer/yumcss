@@ -1,6 +1,6 @@
 # Feature Plan: Explicit preset layers
 
-**Status:** In progress
+**Status:** Complete
 **Created:** 2026-09-16
 **Owner:** Pandwind maintainers
 
@@ -23,7 +23,7 @@ ordinary app should have a discoverable ready-to-use preset.
 - Add a tokenless `basePreset` containing the structural property and condition
   contract.
 - Add a ready-to-use `defaultPreset` containing the existing stock Pandwind
-  token catalog and token-aware property mappings.
+  token-aware property mappings.
 - Publish both through dedicated `pandwind/preset/base` and
   `pandwind/preset/default` subpaths without creating another package.
 - Keep `examplePreset` in `@pandwind/example-preset` as a rich showcase fixture,
@@ -57,8 +57,8 @@ const appCss = createCss(defaultPreset);
 ```
 
 `basePreset` will expose the common property names with open CSS values and no
-opinionated token groups. `defaultPreset` will use the existing built-in token
-catalog and token-aware property mappings. The root `pandwind/preset` entry
+opinionated token groups. `defaultPreset` will use the existing built-in
+token-aware property mappings. The root `pandwind/preset` entry
 will expose the shared builders/catalog values and the two named presets as
 appropriate for the package's existing API shape; the dedicated subpaths are
 the canonical imports used by docs and tooling.
@@ -70,9 +70,9 @@ will be split so the base subpath does not import the default token mappings.
 ### Data model
 
 - `basePreset`: `define.preset({ config: {}, tokens: {} }, { strict: true,
-  conditions: presetConditions, properties: baseProperties })`.
-- `defaultPreset`: `define.preset({ config: {}, tokens }, { strict: true,
-  conditions: presetConditions, properties: presetProperties })`.
+conditions: presetConditions, properties: baseProperties })`.
+- `defaultPreset`: `define.preset({ config: {}, tokens: {} }, { strict: true,
+conditions: presetConditions, properties: presetProperties })`.
 - `baseProperties`: the structural property-name catalog, with no embedded
   stock token maps.
 - `presetProperties`: the existing token-aware default property catalog.
@@ -126,17 +126,17 @@ CSS behavior.
 
 ## 7. Validation and acceptance criteria
 
-- [ ] `pandwind/preset/base` exports `basePreset` and its declarations contain
-  no stock token catalog dependency.
-- [ ] `pandwind/preset/default` exports `defaultPreset` with the current
-  token-aware CSS behavior.
-- [ ] No source, docs, tests, or tooling references the removed
-  `pandwindPreset` name.
-- [ ] Base/default runtime and type tests pass, including strict token behavior.
-- [ ] README/docs/examples describe and demonstrate the three tiers.
-- [ ] Package build, package-surface, generated-type, typecheck, and focused
-  test checks pass.
-- [ ] JJ revisions are focused and the final working-copy revision is empty.
+- [x] `pandwind/preset/base` exports `basePreset` and its declarations contain
+      no stock token catalog dependency.
+- [x] `pandwind/preset/default` exports `defaultPreset` with the current
+      token-aware CSS behavior.
+- [x] No consumer source, docs, tests, or tooling references the removed
+      `pandwindPreset` name.
+- [x] Base/default runtime and type tests pass, including strict token behavior.
+- [x] README/docs/examples describe and demonstrate the three tiers.
+- [x] Package build, package-surface, generated-type, typecheck, and focused
+      test checks pass.
+- [x] JJ revisions are focused and the final working-copy revision is empty.
 
 ## 8. Open questions
 

@@ -710,8 +710,8 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { createCx } from "pandwind/cx";
 			import { createRuntimeCss } from "pandwind/css/runtime";
-			import { pandwindPreset } from "pandwind/preset";
-			const runtimeCss = createRuntimeCss(pandwindPreset);
+			import { defaultPreset } from "pandwind/preset/default";
+			const runtimeCss = createRuntimeCss(defaultPreset);
 			const cx = createCx();
 			const Div = (props) => <div {...props} class={cx((props) => { const style = runtimeCss.vars({ border: (({ border = 1, color = "gainsboro" }) => \`\${border}px solid \${color}\`)(props), color: "steelblue", fontWeight: (({ bold = false }) => (bold ? "bold" : 100))(props) }); const Component = props.as ?? "div"; const { as: _as, ...rest } = props; const attrs = {}; return <Component {...attrs} {...rest} class={runtimeCss.props(style, props.class).className} style={{ ...props.style, ...style.style }} />; }, props.class)} />;
 			export const App = () => <Div bold={true} border={1} color="whitesmoke" />;"
@@ -768,7 +768,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		);
 		expect(result.code).not.toContain("@emotion/css");
 		expect(result.code).toContain('import { createRuntimeCss } from "pandwind/css/runtime";');
-		expect(result.code).toContain("const runtimeCss = createRuntimeCss(pandwindPreset);");
+		expect(result.code).toContain("const runtimeCss = createRuntimeCss(defaultPreset);");
 		expect(result.code).toContain('runtimeCss.sheet.registerSemanticRules([{ kind: "keyframes"');
 		expect(result.code).toContain('{ kind: "style", selector: "from"');
 	});

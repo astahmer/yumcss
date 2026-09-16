@@ -40,7 +40,7 @@ async function ensureRuntimeHost(outputRoot: string): Promise<void> {
 	if (!source.includes("data-pandwind-runtime")) {
 		source = source.replace(
 			"import coverImageUrl from '@/static/img/stylex-cover-photo.png';",
-			'import coverImageUrl from \'@/static/img/stylex-cover-photo.png\';\nimport { createRuntimeCss } from "pandwind/css/runtime";\nimport { pandwindPreset } from "pandwind/preset";\n\nconst pandwindRuntime = createRuntimeCss(pandwindPreset);\n\nfunction PandwindRuntimeStyles() {\n  const css = pandwindRuntime.sheet.css().replaceAll("</style", "<\\\\/style");\n  return css === "" ? null : <style data-pandwind-runtime dangerouslySetInnerHTML={{ __html: css }} />;\n}',
+			'import coverImageUrl from \'@/static/img/stylex-cover-photo.png\';\nimport { createRuntimeCss } from "pandwind/css/runtime";\nimport { defaultPreset } from "pandwind/preset/default";\n\nconst pandwindRuntime = createRuntimeCss(defaultPreset);\n\nfunction PandwindRuntimeStyles() {\n  const css = pandwindRuntime.sheet.css().replaceAll("</style", "<\\\\/style");\n  return css === "" ? null : <style data-pandwind-runtime dangerouslySetInnerHTML={{ __html: css }} />;\n}',
 		);
 		source = source.replace(
 			"      </Provider>\n",
@@ -51,7 +51,7 @@ async function ensureRuntimeHost(outputRoot: string): Promise<void> {
 			'<style data-pandwind-sheet="pandwind" data-pandwind-runtime',
 		);
 		source = source.replace(
-			/import \{ createRuntimeCss \} from "pandwind\/css\/runtime";\nimport \{ pandwindPreset \} from "pandwind\/preset";\n\nconst pandwindRuntime = createRuntimeCss\(pandwindPreset\);\n\n/g,
+			/import \{ createRuntimeCss \} from "pandwind\/css\/runtime";\nimport \{ defaultPreset \} from "pandwind\/preset\/default";\n\nconst pandwindRuntime = createRuntimeCss\(defaultPreset\);\n\n/g,
 			"",
 		);
 		source = source.replace(
@@ -80,7 +80,7 @@ async function ensureRuntimeHost(outputRoot: string): Promise<void> {
 async function ensureRuntimeModule(outputRoot: string): Promise<void> {
 	await writeFile(
 		join(outputRoot, "src/pandwind-runtime.ts"),
-		'import { createRuntimeCss } from "pandwind/css/runtime";\nimport { pandwindPreset } from "pandwind/preset";\n\nexport const pandwindRuntime = createRuntimeCss(pandwindPreset);\n',
+		'import { createRuntimeCss } from "pandwind/css/runtime";\nimport { defaultPreset } from "pandwind/preset/default";\n\nexport const pandwindRuntime = createRuntimeCss(defaultPreset);\n',
 	);
 }
 
@@ -96,8 +96,8 @@ async function ensureRuntimeStaticCss(
 		.join("\n");
 	const factory =
 		lane === StylexDocsLane.DesignDss
-			? 'import { createRuntimeDesignCss } from "pandwind/css/runtime";\nimport { pandwindPreset } from "pandwind/preset";\nconst dss = createRuntimeDesignCss(pandwindPreset, { sheet: pandwindRuntime.sheet });'
-			: 'import { createRuntimeCss } from "pandwind/css/runtime";\nimport { pandwindPreset } from "pandwind/preset";\nconst css = createRuntimeCss(pandwindPreset, { sheet: pandwindRuntime.sheet });';
+			? 'import { createRuntimeDesignCss } from "pandwind/css/runtime";\nimport { defaultPreset } from "pandwind/preset/default";\nconst dss = createRuntimeDesignCss(defaultPreset, { sheet: pandwindRuntime.sheet });'
+			: 'import { createRuntimeCss } from "pandwind/css/runtime";\nimport { defaultPreset } from "pandwind/preset/default";\nconst css = createRuntimeCss(defaultPreset, { sheet: pandwindRuntime.sheet });';
 	const api = lane === StylexDocsLane.DesignDss ? "dss" : "css";
 	const groups = staticGroupCalls
 		.map((call) => call.replace(/^\b(?:css|dss)\.group/, `${api}.group`))
@@ -127,24 +127,24 @@ function bindRuntimeSheet(source: string, root: string, file: string): string {
 	);
 	output = output.replace(
 		"const css = createUnsafeCss();",
-		"const css = createRuntimeCss(pandwindPreset, { sheet: pandwindRuntime.sheet });",
+		"const css = createRuntimeCss(defaultPreset, { sheet: pandwindRuntime.sheet });",
 	);
 	if (!output.includes("pandwindRuntime")) {
 		output = `${runtimeModuleImport(root, file)}\n${output}`;
 	}
 	if (
 		(output.includes("createRuntimeCss") || output.includes("createRuntimeDesignCss")) &&
-		!output.includes('from "pandwind/preset"')
+		!output.includes('from "pandwind/preset/default"')
 	) {
-		output = `import { pandwindPreset } from "pandwind/preset";\n${output}`;
+		output = `import { defaultPreset } from "pandwind/preset/default";\n${output}`;
 	}
 	output = output.replace(
-		/const css = createRuntimeCss\(pandwindPreset\);/g,
-		"const css = createRuntimeCss(pandwindPreset, { sheet: pandwindRuntime.sheet });",
+		/const css = createRuntimeCss\(defaultPreset\);/g,
+		"const css = createRuntimeCss(defaultPreset, { sheet: pandwindRuntime.sheet });",
 	);
 	output = output.replace(
-		/const dss = createRuntimeDesignCss\(pandwindPreset\);/g,
-		"const dss = createRuntimeDesignCss(pandwindPreset, { sheet: pandwindRuntime.sheet });",
+		/const dss = createRuntimeDesignCss\(defaultPreset\);/g,
+		"const dss = createRuntimeDesignCss(defaultPreset, { sheet: pandwindRuntime.sheet });",
 	);
 	return output;
 }
@@ -257,14 +257,14 @@ function rewriteNamedGroups(source: string, mode: StylexDocsMode): string {
 			'import { createRuntimeDesignCss } from "pandwind/css/runtime";',
 		);
 		output = output.replaceAll(
-			/const css = create(?:Runtime)?Css\(pandwindPreset\);/g,
-			"const dss = createRuntimeDesignCss(pandwindPreset);",
+			/const css = create(?:Runtime)?Css\(defaultPreset\);/g,
+			"const dss = createRuntimeDesignCss(defaultPreset);",
 		);
 		output = output.replaceAll(/\bcss\./g, "dss.");
-		if (!output.includes('from "pandwind/preset"')) {
+		if (!output.includes('from "pandwind/preset/default"')) {
 			output = output.replace(
 				'import { createRuntimeDesignCss } from "pandwind/css/runtime";',
-				'import { createRuntimeDesignCss } from "pandwind/css/runtime";\nimport { pandwindPreset } from "pandwind/preset";',
+				'import { createRuntimeDesignCss } from "pandwind/css/runtime";\nimport { defaultPreset } from "pandwind/preset/default";',
 			);
 		}
 	}
@@ -274,8 +274,8 @@ function rewriteNamedGroups(source: string, mode: StylexDocsMode): string {
 function rewritePlaygroundTemplates(source: string, lane: StylexDocsLane): string {
 	if (!source.includes("INITIAL_INPUT_FILES")) return source;
 	let output = source.replace(
-		"const css = createRuntimeCss(pandwindPreset, { sheet: pandwindRuntime.sheet });",
-		"const css = createRuntimeCss(pandwindPreset);",
+		"const css = createRuntimeCss(defaultPreset, { sheet: pandwindRuntime.sheet });",
+		"const css = createRuntimeCss(defaultPreset);",
 	);
 	// The interactive sandbox still compiles its source with StyleX's Babel
 	// plugin. Keep migrated token literals in the token-definition shape that
@@ -288,19 +288,19 @@ function rewritePlaygroundTemplates(source: string, lane: StylexDocsLane): strin
 	if (lane === StylexDocsLane.DesignDss) {
 		output = output.replaceAll("createRuntimeCss", "createRuntimeDesignCss");
 		output = output.replace(
-			/const css = createRuntimeDesignCss\(pandwindPreset(?:, \{ sheet: pandwindRuntime\.sheet \})?\);/g,
-			"const dss = createRuntimeDesignCss(pandwindPreset);",
+			/const css = createRuntimeDesignCss\(defaultPreset(?:, \{ sheet: pandwindRuntime\.sheet \})?\);/g,
+			"const dss = createRuntimeDesignCss(defaultPreset);",
 		);
 		output = output.replace(
-			/const dss = createRuntimeDesignCss\(pandwindPreset, \{ sheet: pandwindRuntime\.sheet \}\);/g,
-			"const dss = createRuntimeDesignCss(pandwindPreset);",
+			/const dss = createRuntimeDesignCss\(defaultPreset, \{ sheet: pandwindRuntime\.sheet \}\);/g,
+			"const dss = createRuntimeDesignCss(defaultPreset);",
 		);
 		output = output.replaceAll(/\bcss\./g, "dss.");
 	}
 	if (!output.includes("/node_modules/pandwind/package.json")) {
 		const runtime = `import * as stylex from "@stylexjs/stylex";\nconst props = (...styles) => { const result = stylex.props(...styles); return result.style === undefined ? result : { ...result, style: undefined }; };\nconst css = { ...stylex, props };\nexport const createRuntimeCss = () => css;\nexport const createRuntimeDesignCss = () => css;`;
 		const index = `import * as stylex from "@stylexjs/stylex";\nconst props = (...styles) => { const result = stylex.props(...styles); return result.style === undefined ? result : { ...result, style: undefined }; };\nexport const css = { ...stylex, props };\nexport const createCss = () => css;\nexport const createRuntimeCss = () => css;\nexport const createRuntimeDesignCss = () => css;`;
-		const preset = "export const pandwindPreset = {};";
+		const preset = "export const defaultPreset = {};";
 		const virtualFiles = [
 			[
 				"  '/node_modules/pandwind/package.json': {",
@@ -313,7 +313,11 @@ function rewritePlaygroundTemplates(source: string, lane: StylexDocsLane): strin
 				`    code: ${JSON.stringify(runtime)},`,
 				"  },",
 			],
-			["  '/node_modules/pandwind/preset.js': {", `    code: ${JSON.stringify(preset)},`, "  },"],
+			[
+				"  '/node_modules/pandwind/preset/default.js': {",
+				`    code: ${JSON.stringify(preset)},`,
+				"  },",
+			],
 		]
 			.flat()
 			.join("\n");
@@ -325,8 +329,8 @@ function rewritePlaygroundTemplates(source: string, lane: StylexDocsLane): strin
 	output = output.replace(
 		'import * as stylex from "@stylexjs/stylex";\n\nexport default function Logo',
 		lane === StylexDocsLane.DesignDss
-			? 'import * as stylex from "@stylexjs/stylex";\nimport { createRuntimeDesignCss } from "pandwind/css/runtime";\nimport { pandwindPreset } from "pandwind/preset";\nconst dss = createRuntimeDesignCss(pandwindPreset);\n\nexport default function Logo'
-			: 'import * as stylex from "@stylexjs/stylex";\nimport { createRuntimeCss } from "pandwind/css/runtime";\nimport { pandwindPreset } from "pandwind/preset";\nconst css = createRuntimeCss(pandwindPreset);\n\nexport default function Logo',
+			? 'import * as stylex from "@stylexjs/stylex";\nimport { createRuntimeDesignCss } from "pandwind/css/runtime";\nimport { defaultPreset } from "pandwind/preset/default";\nconst dss = createRuntimeDesignCss(defaultPreset);\n\nexport default function Logo'
+			: 'import * as stylex from "@stylexjs/stylex";\nimport { createRuntimeCss } from "pandwind/css/runtime";\nimport { defaultPreset } from "pandwind/preset/default";\nconst css = createRuntimeCss(defaultPreset);\n\nexport default function Logo',
 	);
 	return output;
 }

@@ -48,7 +48,7 @@ function routeProjectFiles(
 			return {
 				[`${routeProjectRoot}/pandwind.interop.json`]: '{"generatedFrom":{"bridge":"bridge.ts"}}',
 				[`${routeProjectRoot}/bridge.ts`]:
-					'import { pandwindPreset } from "pandwind/preset";\nexport const bridge = { preset: pandwindPreset };',
+					'import { defaultPreset } from "pandwind/preset/default";\nexport const bridge = { preset: defaultPreset };',
 			};
 		case CodemodAdapterId.ChakraUi:
 			return {
@@ -111,9 +111,12 @@ function routeProjectLoader(
 							["color", "backgroundColor", "padding", "bg"].includes(property),
 					} as T;
 			}
-			if (hasAdapter(adapters, CodemodAdapterId.Pandwind) && packageName === "pandwind/preset")
+			if (
+				hasAdapter(adapters, CodemodAdapterId.Pandwind) &&
+				packageName === "pandwind/preset/default"
+			)
 				return {
-					pandwindPreset: {
+					defaultPreset: {
 						tokens: {
 							colors: { brand: { value: color } },
 							spacing: { card: { value: "1.125rem" } },
@@ -370,7 +373,7 @@ function officialConfigPackages(adapter: CodemodAdapterId): readonly string[] {
 		case CodemodAdapterId.Panda:
 			return ["@pandacss/config"];
 		case CodemodAdapterId.Pandwind:
-			return ["pandwind/preset"];
+			return ["pandwind/preset/default"];
 		case CodemodAdapterId.ChakraUi:
 			return ["@chakra-ui/react"];
 		case CodemodAdapterId.Mui:
@@ -557,8 +560,8 @@ export function expectActionableRoundTrip(
 	if (forward.converted > 0 && !forwardHasResidual) {
 		expect(
 			reverseActionable ||
-			forward.changed ||
-			(forwardHasPortableArtifact && reverse.code === forward.code),
+				forward.changed ||
+				(forwardHasPortableArtifact && reverse.code === forward.code),
 		).toBe(true);
 		return;
 	}

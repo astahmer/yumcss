@@ -136,8 +136,8 @@ test("stitches -> pandwind -> stitches: retains the documented secondary API wit
 		  "forward": {
 		    "changed": true,
 		    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const runtimeCss = createRuntimeCss(pandwindPreset);
+		import { defaultPreset } from "pandwind/preset/default";
+		const runtimeCss = createRuntimeCss(defaultPreset);
 		export const reset = () => (runtimeCss.sheet.registerSemanticRules([{ kind: "global", selector: "body", conditions: [], declarations: [{ property: "margin", value: 0 }], children: [] }]), null);",
 		    "converted": 1,
 		    "generatedFiles": [],

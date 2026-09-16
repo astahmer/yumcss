@@ -229,7 +229,7 @@ const sizes = {
 } as const;
 
 /**
- * Built-in token catalog used by {@link pandwindPreset}.
+ * Built-in token catalog used by {@link defaultPreset}'s property mappings.
  *
  * The raw values can also be reused as input when composing a derived preset.
  *

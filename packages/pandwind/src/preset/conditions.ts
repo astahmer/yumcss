@@ -1,5 +1,6 @@
 /**
- * Default selector and media-condition map used by {@link pandwindPreset}.
+ * Default selector and media-condition map shared by {@link basePreset} and
+ * {@link defaultPreset}.
  *
  * Its keys are the nested condition names accepted by preset-aware styles;
  * copy or extend the map when defining an application preset.

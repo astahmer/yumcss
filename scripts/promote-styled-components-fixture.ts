@@ -261,10 +261,10 @@ export async function runStyledComponentsInstalledProof(): Promise<StyledCompone
 					targetUsesPandwind: migratedApp.includes("pandwind"),
 					sourceImportRemoved: !migratedApp.includes("styled-components"),
 					generatedVitePresetImportIsExplicit: targetViteConfig.includes(
-						'import { pandwindPreset } from "./pandwind/preset.ts";',
+						'import { preset } from "./pandwind/preset.ts";',
 					),
 					generatedVitePluginPresent: targetViteConfig.includes(
-						'pandwindCssVite(pandwindPreset, { root: "." })',
+						'pandwindCssVite(preset, { root: "." })',
 					),
 				},
 				checks: {

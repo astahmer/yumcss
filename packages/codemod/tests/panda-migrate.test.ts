@@ -240,8 +240,8 @@ describe("supporting migration primitives", () => {
 		expect(preset).toContain('"borderWidth"');
 		expect(preset).toContain('"display": true');
 		expect(preset).not.toContain('"$all": true');
-		expect(preset).not.toContain("pandwindPreset.tokens");
-		expect(preset).not.toContain("pandwindPreset.properties");
+		expect(preset).not.toContain("preset.tokens");
+		expect(preset).not.toContain("preset.properties");
 		expect(preset).not.toContain(" as any");
 		expect(bootstrap).toContain("createCss(preset)");
 		expect(bootstrap).toContain("export const css");

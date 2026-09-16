@@ -253,7 +253,7 @@ export function planPandwindNextIntegration(
 
 	const outputDirectory = resolve(request.projectRoot, request.outputDirectory);
 	const presetFile = request.presetFile ?? "preset.mjs";
-	const presetBinding = request.presetBinding ?? "pandwindPreset";
+	const presetBinding = request.presetBinding ?? "preset";
 	const presetSpecifier = `./${relative(
 		dirname(next.path),
 		join(outputDirectory, presetFile),

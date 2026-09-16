@@ -153,11 +153,11 @@ function useDesignApi(source: string): string {
 	let output = wrapDesignRawObjects(source);
 	output = output.replace(
 		/import \{ createUnsafeCss \} from "pandwind\/unsafe\/css";/g,
-		'import { createDesignCss } from "pandwind/design";\nimport { pandwindPreset } from "pandwind/preset";',
+		'import { createDesignCss } from "pandwind/design";\nimport { defaultPreset } from "pandwind/preset/default";',
 	);
 	output = output.replace(
 		/((?:const|let|var)\s+[A-Za-z_$][\w$]*\s*=\s*)createUnsafeCss\(\);/g,
-		"$1createDesignCss(pandwindPreset);",
+		"$1createDesignCss(defaultPreset);",
 	);
 	return output;
 }
@@ -166,11 +166,11 @@ function useRuntimeApi(source: string): string {
 	return source
 		.replace(
 			/import \{ createUnsafeCss \} from "pandwind\/unsafe\/css";/g,
-			'import { createRuntimeCss } from "pandwind/css/runtime";\nimport { pandwindPreset } from "pandwind/preset";',
+			'import { createRuntimeCss } from "pandwind/css/runtime";\nimport { defaultPreset } from "pandwind/preset/default";',
 		)
 		.replace(
 			/((?:const|let|var)\s+[A-Za-z_$][\w$]*\s*=\s*)createUnsafeCss\(\);/g,
-			"$1createRuntimeCss({ ...pandwindPreset, _config: {} as Record<string, unknown>, strict: false, properties: { $all: true } });",
+			"$1createRuntimeCss({ ...defaultPreset, _config: {} as Record<string, unknown>, strict: false, properties: { $all: true } });",
 		);
 }
 
@@ -415,7 +415,7 @@ function installStaticExtractorConfig(outputRoot: string): Promise<void> {
 				const configFile = join(outputRoot, "next.config.mjs");
 				let config = await readFile(configFile, "utf8");
 				if (!config.includes("pandwindWebpackCss")) {
-					config = `import { pandwindWebpackCss } from "pandwind/unplugin";\nimport { pandwindPreset } from "pandwind/preset";\nconst cssPlugin = pandwindWebpackCss({ preset: pandwindPreset, root: resolve(import.meta.dirname, "../.."), cssSources: [/pandwind\\/(?:css|design)/], exclude: [/node_modules/, /(^|\\/)dist(\\/|$)/, /\\.git/, /src\\/generated\\/examples/] });\n${config}`;
+					config = `import { pandwindWebpackCss } from "pandwind/unplugin";\nimport { defaultPreset } from "pandwind/preset/default";\nconst cssPlugin = pandwindWebpackCss({ preset: defaultPreset, root: resolve(import.meta.dirname, "../.."), cssSources: [/pandwind\\/(?:css|design)/], exclude: [/node_modules/, /(^|\\/)dist(\\/|$)/, /\\.git/, /src\\/generated\\/examples/] });\n${config}`;
 					config = config.replace(
 						"    return config;",
 						"    config.plugins.push(cssPlugin);\n    return config;",

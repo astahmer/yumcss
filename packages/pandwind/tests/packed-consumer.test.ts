@@ -79,10 +79,17 @@ describe("packed Pandwind consumer", () => {
 			const consumerRequire = createRequire(join(consumerDir, "package.json"));
 			const packedVitePath = consumerRequire.resolve("pandwind/vite");
 			const packedPresetPath = consumerRequire.resolve("pandwind/preset");
-			const [{ pandwindCssVite }, { define }] = await Promise.all([
-				import(pathToFileURL(packedVitePath).href),
-				import(pathToFileURL(packedPresetPath).href),
-			]);
+			const packedBasePresetPath = consumerRequire.resolve("pandwind/preset/base");
+			const packedDefaultPresetPath = consumerRequire.resolve("pandwind/preset/default");
+			const [{ pandwindCssVite }, { define }, { basePreset }, { defaultPreset }] =
+				await Promise.all([
+					import(pathToFileURL(packedVitePath).href),
+					import(pathToFileURL(packedPresetPath).href),
+					import(pathToFileURL(packedBasePresetPath).href),
+					import(pathToFileURL(packedDefaultPresetPath).href),
+				]);
+			expect(basePreset.properties).toEqual({ $all: true });
+			expect(defaultPreset.properties).toHaveProperty("padding");
 			const preset = define.preset(
 				{ config: {}, tokens: {} },
 				{ strict: false, properties: { $all: true }, conditions: {} },

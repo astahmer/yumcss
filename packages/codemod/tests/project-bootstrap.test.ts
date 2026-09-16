@@ -22,7 +22,7 @@ describe("Pandwind project bootstrap", () => {
 		expect(support.bindings.runtimeCssModule).toBe("pandwind/runtime.ts");
 		expect(support.bindings.runtimeCssBinding).toBe("runtimeCss");
 		expect(support.files.find((file) => file.path === "pandwind/runtime.ts")?.content).toContain(
-			"export const runtimeCss = createRuntimeCss(pandwindPreset);",
+			"export const runtimeCss = createRuntimeCss(preset);",
 		);
 		expect(support.files.map((file) => file.path)).not.toContain("pandwind/dss.ts");
 		expect(support.files.find((file) => file.path === "pandwind/css.ts")?.content).toContain(
@@ -53,9 +53,9 @@ describe("Pandwind project bootstrap", () => {
 		expect(preset).toContain("const appTokens = define.tokens({");
 		expect(preset).toContain("const cssConfig: PandwindProperties = {};");
 		expect(preset).toContain("config: cssConfig");
-		expect(preset).toContain("export const pandwindPreset = define.preset(");
+		expect(preset).toContain("export const preset = define.preset(");
 		expect(preset).not.toContain("AnyCssConfig");
-		expect(preset).not.toContain("pandwindPreset.tokens");
+		expect(preset).not.toContain("preset.tokens");
 		expect(preset).toContain("const properties = define.properties({");
 		expect(preset).toContain('"display": true');
 		expect(preset).not.toContain('"$all": true');
@@ -299,9 +299,9 @@ describe("Pandwind project bootstrap", () => {
 					].join("\n"),
 					content: [
 						'import { pandwindCssVite } from "pandwind/vite";',
-						'import { pandwindPreset } from "./pandwind/preset.ts";',
+						'import { preset } from "./pandwind/preset.ts";',
 						'import { defineConfig } from "vite";',
-						'export default defineConfig({ plugins: [pandwindCssVite(pandwindPreset, { root: "." })] });',
+						'export default defineConfig({ plugins: [pandwindCssVite(preset, { root: "." })] });',
 					].join("\n"),
 				},
 				{
@@ -341,9 +341,9 @@ describe("Pandwind project bootstrap", () => {
 				].join("\n"),
 				content: [
 					'import { pandwindCssVite } from "pandwind/vite";',
-					'import { pandwindPreset } from "./pandwind/preset.ts";',
+					'import { preset } from "./pandwind/preset.ts";',
 					'import { defineConfig } from "vite";',
-					'export default defineConfig({ plugins: [pandwindCssVite(pandwindPreset, { root: "." })] });',
+					'export default defineConfig({ plugins: [pandwindCssVite(preset, { root: "." })] });',
 				].join("\n"),
 			},
 			{
@@ -408,9 +408,9 @@ describe("Pandwind project bootstrap", () => {
 		expect(support.fileChanges.find((change) => change.path === "vite.config.ts")?.content).toBe(
 			[
 				'import { pandwindCssVite } from "pandwind/vite";',
-				'import { pandwindPreset } from "./pandwind/preset.ts";',
+				'import { preset } from "./pandwind/preset.ts";',
 				'import { defineConfig } from "vite";',
-				'export default defineConfig({ plugins: [pandwindCssVite(pandwindPreset, { root: "." })] });',
+				'export default defineConfig({ plugins: [pandwindCssVite(preset, { root: "." })] });',
 			].join("\n"),
 		);
 	});
@@ -449,7 +449,7 @@ describe("Pandwind project bootstrap", () => {
 		});
 		expect(
 			support.fileChanges.find((change) => change.path === "next.config.mjs")?.content,
-		).toContain('import { pandwindPreset } from "./pandwind/preset.mjs";');
+		).toContain('import { preset } from "./pandwind/preset.mjs";');
 		expect(
 			support.fileChanges.find((change) => change.path === "next.config.mjs")?.content,
 		).toContain('virtualId: "pandwind-css.css"');

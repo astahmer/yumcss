@@ -136,8 +136,8 @@ test("aphrodite -> pandwind -> aphrodite: retains the documented secondary API w
 		  "forward": {
 		    "changed": true,
 		    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const runtimeCss = createRuntimeCss(pandwindPreset);
+		import { defaultPreset } from "pandwind/preset/default";
+		const runtimeCss = createRuntimeCss(defaultPreset);
 		export const styles = { "fonts": (runtimeCss.sheet.registerSemanticRules([{ kind: "font-face", declarations: [{ property: "fontFamily", value: "Inter" }, { property: "src", value: "url(inter.woff2)" } ] }]), runtimeCss.group({  })) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -172,8 +172,8 @@ test("aphrodite -> pandwind -> aphrodite: retains the documented secondary API w
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const runtimeCss = createRuntimeCss(pandwindPreset);
+		import { defaultPreset } from "pandwind/preset/default";
+		const runtimeCss = createRuntimeCss(defaultPreset);
 		export const styles = { "fonts": // pandwind:migrate-skip (route: pandwind -> aphrodite | capability-blocked: rule-level: 1 semantic rules; font-face: font-face rule | available: static, named-map, residual)
 		(runtimeCss.sheet.registerSemanticRules([{ kind: "font-face", declarations: [{ property: "fontFamily", value: "Inter" }, { property: "src", value: "url(inter.woff2)" } ] }]), runtimeCss.group({  })) };",
 		    "converted": 0,

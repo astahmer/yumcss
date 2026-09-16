@@ -28,18 +28,31 @@ The [repository README](../../README.md) has the five-minute setup. The
 [documentation directory](../../docs/) has the complete guides and API
 reference.
 
+## Preset layers
+
+Pandwind ships two small built-in preset layers:
+
+- `basePreset` from `pandwind/preset/base` provides structural CSS properties
+  and conditions without opinionated token scales.
+- `defaultPreset` from `pandwind/preset/default` provides the ready-to-use
+  Pandwind property and stock scale mappings.
+
+The repository's `@pandwind/example-preset` is intentionally separate: it is a
+rich semantic-token and color-palette showcase, not an implicit dependency of
+the default app path.
+
 ## A small example
 
 ```ts
 import { createCss } from "pandwind/css";
-import { preset } from "./preset";
+import { defaultPreset } from "pandwind/preset/default";
 
-const css = createCss(preset);
+const css = createCss(defaultPreset);
 
 export const card = css.class({
-	backgroundColor: "$surface",
-	color: "$ink",
-	padding: "4",
+	backgroundColor: "white",
+	color: "black",
+	padding: 4,
 	borderRadius: "lg",
 });
 ```

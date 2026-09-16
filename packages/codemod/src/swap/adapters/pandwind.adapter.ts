@@ -1223,8 +1223,8 @@ function runtimeComponent(
 			imports: [
 				'import { computed, defineComponent, h } from "vue";',
 				'import { createRuntimeCss } from "pandwind/css/runtime";',
-				'import { pandwindPreset } from "pandwind/preset";',
-				"const runtimeCss = createRuntimeCss(pandwindPreset);",
+				'import { defaultPreset } from "pandwind/preset/default";',
+				"const runtimeCss = createRuntimeCss(defaultPreset);",
 			],
 		};
 	}
@@ -1253,8 +1253,8 @@ function runtimeComponent(
 			imports: [
 				...(inheritedClass === undefined ? [] : ['import { createCx } from "pandwind/cx";']),
 				'import { createRuntimeCss } from "pandwind/css/runtime";',
-				'import { pandwindPreset } from "pandwind/preset";',
-				"const runtimeCss = createRuntimeCss(pandwindPreset);",
+				'import { defaultPreset } from "pandwind/preset/default";',
+				"const runtimeCss = createRuntimeCss(defaultPreset);",
 			],
 		};
 	}
@@ -1263,8 +1263,8 @@ function runtimeComponent(
 		imports: [
 			...(inheritedClass === undefined ? [] : ['import { createCx } from "pandwind/cx";']),
 			'import { createRuntimeCss } from "pandwind/css/runtime";',
-			'import { pandwindPreset } from "pandwind/preset";',
-			"const runtimeCss = createRuntimeCss(pandwindPreset);",
+			'import { defaultPreset } from "pandwind/preset/default";',
+			"const runtimeCss = createRuntimeCss(defaultPreset);",
 		],
 	};
 }
@@ -1870,8 +1870,8 @@ function runtimeHostTemplateExpression(
 		text: rendered.text,
 		imports: [
 			'import { createRuntimeCss } from "pandwind/css/runtime";',
-			'import { pandwindPreset } from "pandwind/preset";',
-			"const runtimeCss = createRuntimeCss(pandwindPreset);",
+			'import { defaultPreset } from "pandwind/preset/default";',
+			"const runtimeCss = createRuntimeCss(defaultPreset);",
 			...(rendered.needsCx
 				? ['import { createCx } from "pandwind/cx";', "const cx = createCx();"]
 				: []),
@@ -2018,8 +2018,8 @@ function runtimeRawComponent(
 		imports: [
 			...(inheritedClass === undefined ? [] : ['import { createCx } from "pandwind/cx";']),
 			'import { createRuntimeCss } from "pandwind/css/runtime";',
-			'import { pandwindPreset } from "pandwind/preset";',
-			"const runtimeCss = createRuntimeCss(pandwindPreset);",
+			'import { defaultPreset } from "pandwind/preset/default";',
+			"const runtimeCss = createRuntimeCss(defaultPreset);",
 			...(needsThemeContext ? ['import { usePandwindTheme } from "pandwind/theme";'] : []),
 		],
 	};
@@ -2309,17 +2309,17 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 			rewrite: ({ code, targetId, complete }) => {
 				if (targetId === CodemodAdapterId.Pandwind || !complete) return { code, residuals: [] };
 				if (
-					!/\bconst\s+(?:css|runtimeCss)\s*=\s*createRuntimeCss\(\s*pandwindPreset\s*\)/u.test(code)
+					!/\bconst\s+(?:css|runtimeCss)\s*=\s*createRuntimeCss\(\s*defaultPreset\s*\)/u.test(code)
 				)
 					return { code, residuals: [] };
 				return {
 					code: code
 						.replace(
-							/import\s*\{\s*pandwindPreset\s*\}\s*from\s*["']pandwind\/preset["'];?\s*/gu,
+							/import\s*\{\s*defaultPreset\s*\}\s*from\s*["']pandwind\/preset\/default["'];?\s*/gu,
 							"",
 						)
 						.replace(
-							/\bconst\s+(?:css|runtimeCss)\s*=\s*createRuntimeCss\(\s*pandwindPreset\s*\);?\s*/gu,
+							/\bconst\s+(?:css|runtimeCss)\s*=\s*createRuntimeCss\(\s*defaultPreset\s*\);?\s*/gu,
 							"",
 						),
 					residuals: [],
@@ -2429,8 +2429,8 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 					text: runtimeGlobalVars(outputProgram),
 					imports: [
 						'import { createRuntimeCss } from "pandwind/css/runtime";',
-						'import { pandwindPreset } from "pandwind/preset";',
-						"const runtimeCss = createRuntimeCss(pandwindPreset);",
+						'import { defaultPreset } from "pandwind/preset/default";',
+						"const runtimeCss = createRuntimeCss(defaultPreset);",
 					],
 				});
 			}
@@ -2471,8 +2471,8 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 							: template,
 					imports: [
 						'import { createRuntimeCss } from "pandwind/css/runtime";',
-						'import { pandwindPreset } from "pandwind/preset";',
-						"const runtimeCss = createRuntimeCss(pandwindPreset);",
+						'import { defaultPreset } from "pandwind/preset/default";',
+						"const runtimeCss = createRuntimeCss(defaultPreset);",
 					],
 				});
 			}
@@ -2562,8 +2562,8 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 					text: `(runtimeCss.sheet.registerSemanticRules([${runtimeFontFaces(outputProgram)}]), runtimeCss.group(${renderProgramObject(styleProgram)}))`,
 					imports: [
 						'import { createRuntimeCss } from "pandwind/css/runtime";',
-						'import { pandwindPreset } from "pandwind/preset";',
-						"const runtimeCss = createRuntimeCss(pandwindPreset);",
+						'import { defaultPreset } from "pandwind/preset/default";',
+						"const runtimeCss = createRuntimeCss(defaultPreset);",
 					],
 				});
 			}
@@ -2572,8 +2572,8 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 					text: runtimeKeyframes(outputProgram, context),
 					imports: [
 						'import { createRuntimeCss } from "pandwind/css/runtime";',
-						'import { pandwindPreset } from "pandwind/preset";',
-						"const runtimeCss = createRuntimeCss(pandwindPreset);",
+						'import { defaultPreset } from "pandwind/preset/default";',
+						"const runtimeCss = createRuntimeCss(defaultPreset);",
 					],
 				});
 			// Named conditions such as Panda's `_dark` still belong to one
@@ -2665,8 +2665,8 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 						: needsRuntimeCss
 							? [
 									'import { createRuntimeCss } from "pandwind/css/runtime";',
-									'import { pandwindPreset } from "pandwind/preset";',
-									"const runtimeCss = createRuntimeCss(pandwindPreset);",
+									'import { defaultPreset } from "pandwind/preset/default";',
+									"const runtimeCss = createRuntimeCss(defaultPreset);",
 								]
 							: [
 									'import { createUnsafeCss } from "pandwind/unsafe/css";',

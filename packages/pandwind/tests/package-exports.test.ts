@@ -16,6 +16,8 @@ const entries = [
 	"pandwind/tw",
 	"pandwind/cx",
 	"pandwind/preset",
+	"pandwind/preset/base",
+	"pandwind/preset/default",
 	"pandwind/design",
 	"pandwind/vite",
 	"pandwind/unplugin",
@@ -89,6 +91,15 @@ describe("pandwind package boundary", () => {
 		expect(themedTokens.defineColorPalettes({ brand: "colors.blue" })).toEqual({
 			brand: "colors.blue",
 		});
+	});
+
+	test("exposes explicit base and default preset subpaths", async () => {
+		const baseApi = await import("pandwind/preset/base");
+		const defaultApi = await import("pandwind/preset/default");
+
+		expect(baseApi.basePreset.properties).toEqual({ $all: true });
+		expect(defaultApi.defaultPreset.properties).toHaveProperty("padding");
+		expect("pandwindPreset" in defaultApi).toBe(false);
 	});
 
 	test("does not expose the codemod-owned recipe runtime", () => {

@@ -82,8 +82,8 @@ export type TwCommandInvocation =
 	| TwManifestCommand
 	| TwVerifyCommand;
 
-const DEFAULT_PRESET_IMPORT = "pandwind/preset";
-const DEFAULT_PRESET_EXPORT = "examplePreset";
+const DEFAULT_PRESET_IMPORT = "pandwind/preset/default";
+const DEFAULT_PRESET_EXPORT = "defaultPreset";
 
 export interface TwCliHandlers {
 	generate(command: TwGenerateCommand): Promise<void>;

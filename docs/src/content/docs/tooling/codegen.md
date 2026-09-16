@@ -19,7 +19,8 @@ pnpm exec pandwind-codemod lib build [root] [out-file] \
 ```
 
 The defaults are the current directory, `dist/pandwind.lib.json`, the
-`pandwind/preset` export `pandwindPreset`, and `css`/`design` import sources.
+`pandwind/preset/default` export `defaultPreset`, and `css`/`design` import
+sources.
 Repeat `--include` for source globs and `--css-source` for custom CSS factory
 module names. The command scans source with the shared workspace, compiles
 literal `css()`/`css.class()` calls, includes structural rules for

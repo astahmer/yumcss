@@ -19,7 +19,7 @@ import {
 import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
 import { createStylesheet } from "pandwind/css/create-stylesheet";
 import { createCssExtractionService } from "pandwind/vite/css-extract";
-import { pandwindPreset } from "pandwind/preset";
+import { defaultPreset } from "pandwind/preset/default";
 import { loadMetaFromSources, type PandwindMeta } from "pandwind-codemod/migration/meta";
 import { CodemodAdapterId, SwapSourceId } from "pandwind-codemod/swap";
 import { createReferenceWorkspace } from "../reference-workspace.ts";
@@ -191,8 +191,8 @@ function laneSource(lane: ShadcnV4MigrationLane): string {
 	if (lane === ShadcnV4MigrationLane.Tw)
 		return `import { createCx } from "pandwind/cx";\nimport { __pandwindConfig } from "./tw";\n\nexport const cx = createCx(__pandwindConfig);\n`;
 	if (lane === ShadcnV4MigrationLane.Css)
-		return `import { createCss } from "pandwind/css";\nimport { pandwindPreset } from "pandwind/preset";\n\nexport const css = createCss(pandwindPreset);\n`;
-	return `import { createDesignCss } from "pandwind/design";\nimport { pandwindPreset } from "pandwind/preset";\n\nexport const dss = createDesignCss(pandwindPreset);\n`;
+		return `import { createCss } from "pandwind/css";\nimport { defaultPreset } from "pandwind/preset/default";\n\nexport const css = createCss(defaultPreset);\n`;
+	return `import { createDesignCss } from "pandwind/design";\nimport { defaultPreset } from "pandwind/preset/default";\n\nexport const dss = createDesignCss(defaultPreset);\n`;
 }
 
 function staticStylesheetSource(
@@ -202,8 +202,8 @@ function staticStylesheetSource(
 ): string {
 	const matchers = lane === ShadcnV4MigrationLane.Css ? ["css"] : ["dss"];
 	const extractionPreset = {
-		...pandwindPreset,
-		conditions: { ...pandwindPreset.conditions, ...variantConditions },
+		...defaultPreset,
+		conditions: { ...defaultPreset.conditions, ...variantConditions },
 	};
 	const service = createCssExtractionService({ matchers, preset: extractionPreset });
 	const stylesheet = createStylesheet(extractionPreset);

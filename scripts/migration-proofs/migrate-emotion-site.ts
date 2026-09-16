@@ -263,8 +263,8 @@ async function materialize(
 		await writeFile(
 			target,
 			migrated.replaceAll(
-				"const css = createRuntimeCss(pandwindPreset);",
-				"const css = createRuntimeCss(pandwindPreset) as any;",
+				"const css = createRuntimeCss(defaultPreset);",
+				"const css = createRuntimeCss(defaultPreset) as any;",
 			),
 		);
 	}
@@ -281,7 +281,7 @@ async function materialize(
 		"pandwind/css": ["node_modules/pandwind/css"],
 		"pandwind/css/runtime": ["node_modules/pandwind/runtime"],
 		"pandwind/cx": ["node_modules/pandwind/cx"],
-		"pandwind/preset": ["node_modules/pandwind/preset"],
+		"pandwind/preset/default": ["node_modules/pandwind/preset-default"],
 	};
 	await writeFile(tsconfigFile, `${JSON.stringify(tsconfig, null, 2)}\n`);
 	const cssFile = join(outputRoot, "site/pandwind-static.css");
@@ -304,6 +304,7 @@ async function packagePandwind(outputRoot: string): Promise<void> {
 		runtime: "packages/pandwind/src/css/runtime.ts",
 		cx: "packages/pandwind/src/cx/index.ts",
 		preset: "packages/pandwind/src/preset/index.ts",
+		presetDefault: "packages/pandwind/src/preset/default.ts",
 	} as const;
 	const esbuild = resolve(
 		repositoryRoot,
@@ -335,6 +336,7 @@ async function packagePandwind(outputRoot: string): Promise<void> {
 					"./css/runtime": "./runtime.js",
 					"./cx": "./cx.js",
 					"./preset": "./preset.js",
+					"./preset/default": "./presetDefault.js",
 				},
 			},
 			null,
@@ -353,10 +355,7 @@ async function packagePandwind(outputRoot: string): Promise<void> {
 		join(packageRoot, "cx.d.ts"),
 		"export const createCx: (...args: any[]) => any;\n",
 	);
-	await writeFile(
-		join(packageRoot, "preset.d.ts"),
-		"export const pandwindPreset: any;\n",
-	);
+	await writeFile(join(packageRoot, "presetDefault.d.ts"), "export const defaultPreset: any;\n");
 }
 
 export class EmotionSiteMigration {

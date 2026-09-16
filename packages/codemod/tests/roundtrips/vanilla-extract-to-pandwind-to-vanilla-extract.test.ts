@@ -136,8 +136,8 @@ test("vanilla-extract -> pandwind -> vanilla-extract: retains the documented sec
 		  "forward": {
 		    "changed": true,
 		    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const runtimeCss = createRuntimeCss(pandwindPreset);
+		import { defaultPreset } from "pandwind/preset/default";
+		const runtimeCss = createRuntimeCss(defaultPreset);
 		(runtimeCss.sheet.registerSemanticRules([{ kind: "global", selector: "body", conditions: [], declarations: [{ property: "margin", value: 0 }], children: [] }]), null);",
 		    "converted": 1,
 		    "generatedFiles": [],

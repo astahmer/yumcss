@@ -129,7 +129,7 @@ describe("adapter migration e2e matrix", () => {
 		);
 		mkdirSync(join(directory, "pandwind"), { recursive: true });
 		const presetFile = join(directory, "pandwind/preset.ts");
-		writeFileSync(presetFile, "export const pandwindPreset = { conditions: {} };\n");
+		writeFileSync(presetFile, "export const preset = { conditions: {} };\n");
 		try {
 			execFileSync(
 				"nub",

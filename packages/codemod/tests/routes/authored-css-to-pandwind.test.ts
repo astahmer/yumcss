@@ -94,9 +94,9 @@ test("authored-css -> pandwind: carries a documented secondary authored-css API 
 		  "changed": true,
 		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
+		import { defaultPreset } from "pandwind/preset/default";
 		const css = createUnsafeCss();
-		const runtimeCss = createRuntimeCss(pandwindPreset);
+		const runtimeCss = createRuntimeCss(defaultPreset);
 		export const styles = { "card": css.class({ _osDark: { color: "white" } }), "pulse": (() => { const name = "pw-kf-pulse"; runtimeCss.sheet.registerSemanticRules([{ kind: "keyframes", name, children: [{ kind: "style", selector: "from", declarations: [{ property: "opacity", value: "0" }] }, { kind: "style", selector: "to", declarations: [{ property: "opacity", value: "1" }] }] }]); return name; })() };
 		export default styles;",
 		  "converted": 2,

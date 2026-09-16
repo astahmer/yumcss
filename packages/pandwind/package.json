@@ -75,6 +75,18 @@
 			"import": "./dist/preset/index.js",
 			"default": "./dist/preset/index.js"
 		},
+		"./preset/base": {
+			"pandwind": "./src/preset/base.ts",
+			"types": "./dist/preset/base.d.ts",
+			"import": "./dist/preset/base.js",
+			"default": "./dist/preset/base.js"
+		},
+		"./preset/default": {
+			"pandwind": "./src/preset/default.ts",
+			"types": "./dist/preset/default.d.ts",
+			"import": "./dist/preset/default.js",
+			"default": "./dist/preset/default.js"
+		},
 		"./stack": {
 			"pandwind": "./src/stack/index.ts",
 			"types": "./dist/stack/index.d.ts",

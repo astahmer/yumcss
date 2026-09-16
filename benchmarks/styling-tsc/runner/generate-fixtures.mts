@@ -58,7 +58,7 @@ const entries = (items: readonly (readonly [string, string])[]): string =>
 const objectEntries = (items: readonly (readonly [string, string])[]): string =>
 	items.map(([key, value]) => `\t${quote(key)}: ${quote(value)},`).join("\n");
 
-const pandwindPreset = (catalogCount: number): string => {
+const generatePandwindPresetSource = (catalogCount: number): string => {
 	const colors = [...colorTokens, ...extraColorTokens(catalogCount)];
 	const spacing = [...spacingTokens, ...extraSpacingTokens(catalogCount)];
 	return `import { define, type PandwindProperties } from "pandwind/preset";
@@ -451,7 +451,11 @@ export const generateFixtures = (): void => {
 
 			switch (library) {
 				case "pandwind":
-					writeFile(projectRoot, "src/preset.ts", pandwindPreset(options.catalogCount));
+					writeFile(
+						projectRoot,
+						"src/preset.ts",
+						generatePandwindPresetSource(options.catalogCount),
+					);
 					writeFile(projectRoot, "src/styles.ts", pandwindStyles());
 					writeFile(projectRoot, "src/app.ts", pandwindApp(options.componentCount));
 					break;

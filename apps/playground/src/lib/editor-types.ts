@@ -46,6 +46,8 @@ export const PANDWIND_EDITOR_MODULE_PATHS = {
 	"pandwind/tw": "generated/pandwind/tw/index.d.ts",
 	"pandwind/cx": "generated/pandwind/cx/index.d.ts",
 	"pandwind/preset": "generated/pandwind/preset/index.d.ts",
+	"pandwind/preset/base": "generated/pandwind/preset/base.d.ts",
+	"pandwind/preset/default": "generated/pandwind/preset/default.d.ts",
 	"pandwind/types/typings": "generated/pandwind/types/typings.d.ts",
 } as const;
 

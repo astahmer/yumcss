@@ -230,8 +230,8 @@ describe("official adapter API families", () => {
 			  "aphrodite/font-face array value": {
 			    "changed": true,
 			    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-			import { pandwindPreset } from "pandwind/preset";
-			const runtimeCss = createRuntimeCss(pandwindPreset);
+			import { defaultPreset } from "pandwind/preset/default";
+			const runtimeCss = createRuntimeCss(defaultPreset);
 			export const styles = { "fonts": (runtimeCss.sheet.registerSemanticRules([{ kind: "font-face", declarations: [{ property: "fontFamily", value: "Inter" }, { property: "src", value: "url(inter.woff2)" } ] }]), runtimeCss.group({  })) };",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -267,9 +267,9 @@ describe("official adapter API families", () => {
 			    "changed": true,
 			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 			import { createRuntimeCss } from "pandwind/css/runtime";
-			import { pandwindPreset } from "pandwind/preset";
+			import { defaultPreset } from "pandwind/preset/default";
 			const css = createUnsafeCss();
-			const runtimeCss = createRuntimeCss(pandwindPreset);
+			const runtimeCss = createRuntimeCss(defaultPreset);
 			export const styles = { "card": css.class({ _osDark: { color: "white" } }), "pulse": (() => { const name = "pw-kf-pulse"; runtimeCss.sheet.registerSemanticRules([{ kind: "keyframes", name, children: [{ kind: "style", selector: "from", declarations: [{ property: "opacity", value: "0" }] }, { kind: "style", selector: "to", declarations: [{ property: "opacity", value: "1" }] }] }]); return name; })() };
 			export default styles;",
 			    "converted": 2,
@@ -717,8 +717,8 @@ describe("official adapter API families", () => {
 			  "compiled/keyframes": {
 			    "changed": true,
 			    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-			import { pandwindPreset } from "pandwind/preset";
-			const runtimeCss = createRuntimeCss(pandwindPreset);
+			import { defaultPreset } from "pandwind/preset/default";
+			const runtimeCss = createRuntimeCss(defaultPreset);
 			export const pulse = (() => { const name = "pw-kf-pulse"; runtimeCss.sheet.registerSemanticRules([{ kind: "keyframes", name, children: [{ kind: "style", selector: "from", declarations: [{ property: "opacity", value: 0 }] }, { kind: "style", selector: "to", declarations: [{ property: "opacity", value: 1 }] }] }]); return name; })();",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -971,8 +971,8 @@ describe("official adapter API families", () => {
 			  "emotion/Global component": {
 			    "changed": true,
 			    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-			import { pandwindPreset } from "pandwind/preset";
-			const runtimeCss = createRuntimeCss(pandwindPreset);
+			import { defaultPreset } from "pandwind/preset/default";
+			const runtimeCss = createRuntimeCss(defaultPreset);
 			export const App = () => (runtimeCss.sheet.registerSemanticRules([{ kind: "global", selector: "body", conditions: [], declarations: [{ property: "margin", value: 0 }], children: [] }]), null);",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -1042,8 +1042,8 @@ describe("official adapter API families", () => {
 			  "emotion/injectGlobal tagged template": {
 			    "changed": true,
 			    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-			import { pandwindPreset } from "pandwind/preset";
-			const runtimeCss = createRuntimeCss(pandwindPreset);
+			import { defaultPreset } from "pandwind/preset/default";
+			const runtimeCss = createRuntimeCss(defaultPreset);
 			() => (runtimeCss.sheet.registerSemanticRules([{ kind: "global", selector: "body", conditions: [], declarations: [{ property: "margin", value: "0" }], children: [] }]), null);",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -1078,8 +1078,8 @@ describe("official adapter API families", () => {
 			  "emotion/keyframes object": {
 			    "changed": true,
 			    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-			import { pandwindPreset } from "pandwind/preset";
-			const runtimeCss = createRuntimeCss(pandwindPreset);
+			import { defaultPreset } from "pandwind/preset/default";
+			const runtimeCss = createRuntimeCss(defaultPreset);
 			export const pulse = (() => { const name = "pw-kf-pulse"; runtimeCss.sheet.registerSemanticRules([{ kind: "keyframes", name, children: [{ kind: "style", selector: "from", declarations: [{ property: "opacity", value: 0 }] }, { kind: "style", selector: "to", declarations: [{ property: "opacity", value: 1 }] }] }]); return name; })();",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -2402,8 +2402,8 @@ describe("official adapter API families", () => {
 			  "react-strict-dom/css.defineVars": {
 			    "changed": true,
 			    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-			import { pandwindPreset } from "pandwind/preset";
-			const runtimeCss = createRuntimeCss(pandwindPreset);
+			import { defaultPreset } from "pandwind/preset/default";
+			const runtimeCss = createRuntimeCss(defaultPreset);
 			export const theme = (runtimeCss.sheet.registerSemanticRules([{ kind: "global", selector: ":root", declarations: [{ property: "--accent", value: "red" }] }]), { "accent": "var(--accent)" });",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -2438,8 +2438,8 @@ describe("official adapter API families", () => {
 			  "react-strict-dom/css.keyframes": {
 			    "changed": true,
 			    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-			import { pandwindPreset } from "pandwind/preset";
-			const runtimeCss = createRuntimeCss(pandwindPreset);
+			import { defaultPreset } from "pandwind/preset/default";
+			const runtimeCss = createRuntimeCss(defaultPreset);
 			export const pulse = (() => { const name = "pw-kf-pulse"; runtimeCss.sheet.registerSemanticRules([{ kind: "keyframes", name, children: [{ kind: "style", selector: "from", declarations: [{ property: "opacity", value: 0 }] }, { kind: "style", selector: "to", declarations: [{ property: "opacity", value: 1 }] }] }]); return name; })();",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -2671,8 +2671,8 @@ describe("official adapter API families", () => {
 			  "stitches/globalCss": {
 			    "changed": true,
 			    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-			import { pandwindPreset } from "pandwind/preset";
-			const runtimeCss = createRuntimeCss(pandwindPreset);
+			import { defaultPreset } from "pandwind/preset/default";
+			const runtimeCss = createRuntimeCss(defaultPreset);
 			export const reset = () => (runtimeCss.sheet.registerSemanticRules([{ kind: "global", selector: "body", conditions: [], declarations: [{ property: "margin", value: 0 }], children: [] }]), null);",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -2707,8 +2707,8 @@ describe("official adapter API families", () => {
 			  "stitches/keyframes": {
 			    "changed": true,
 			    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-			import { pandwindPreset } from "pandwind/preset";
-			const runtimeCss = createRuntimeCss(pandwindPreset);
+			import { defaultPreset } from "pandwind/preset/default";
+			const runtimeCss = createRuntimeCss(defaultPreset);
 			export const pulse = (() => { const name = "pw-kf-pulse"; runtimeCss.sheet.registerSemanticRules([{ kind: "keyframes", name, children: [{ kind: "style", selector: "from", declarations: [{ property: "opacity", value: 0 }] }, { kind: "style", selector: "to", declarations: [{ property: "opacity", value: 1 }] }] }]); return name; })();",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -2951,8 +2951,8 @@ describe("official adapter API families", () => {
 			  "styled-components/createGlobalStyle tagged template": {
 			    "changed": true,
 			    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-			import { pandwindPreset } from "pandwind/preset";
-			const runtimeCss = createRuntimeCss(pandwindPreset);
+			import { defaultPreset } from "pandwind/preset/default";
+			const runtimeCss = createRuntimeCss(defaultPreset);
 			export const Global = () => (runtimeCss.sheet.registerSemanticRules([{ kind: "global", selector: "body", conditions: [], declarations: [{ property: "margin", value: "0" }], children: [] }]), null);",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -2987,8 +2987,8 @@ describe("official adapter API families", () => {
 			  "styled-components/keyframes tagged template": {
 			    "changed": true,
 			    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-			import { pandwindPreset } from "pandwind/preset";
-			const runtimeCss = createRuntimeCss(pandwindPreset);
+			import { defaultPreset } from "pandwind/preset/default";
+			const runtimeCss = createRuntimeCss(defaultPreset);
 			export const pulse = (() => { const name = "pw-kf-pulse"; runtimeCss.sheet.registerSemanticRules([{ kind: "keyframes", name, children: [{ kind: "style", selector: "from", declarations: [{ property: "opacity", value: "0" }] }, { kind: "style", selector: "to", declarations: [{ property: "opacity", value: "1" }] }] }]); return name; })();",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -3241,8 +3241,8 @@ describe("official adapter API families", () => {
 			  "stylex/defineVars": {
 			    "changed": true,
 			    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-			import { pandwindPreset } from "pandwind/preset";
-			const runtimeCss = createRuntimeCss(pandwindPreset);
+			import { defaultPreset } from "pandwind/preset/default";
+			const runtimeCss = createRuntimeCss(defaultPreset);
 			export const theme = (runtimeCss.sheet.registerSemanticRules([{ kind: "global", selector: ":root", declarations: [{ property: "--accent", value: "red" }] }]), { "accent": "var(--accent)" });",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -3277,8 +3277,8 @@ describe("official adapter API families", () => {
 			  "stylex/keyframes": {
 			    "changed": true,
 			    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-			import { pandwindPreset } from "pandwind/preset";
-			const runtimeCss = createRuntimeCss(pandwindPreset);
+			import { defaultPreset } from "pandwind/preset/default";
+			const runtimeCss = createRuntimeCss(defaultPreset);
 			export const pulse = (() => { const name = "pw-kf-pulse"; runtimeCss.sheet.registerSemanticRules([{ kind: "keyframes", name, children: [{ kind: "style", selector: "from", declarations: [{ property: "opacity", value: 0 }] }, { kind: "style", selector: "to", declarations: [{ property: "opacity", value: 1 }] }] }]); return name; })();",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -3866,8 +3866,8 @@ describe("official adapter API families", () => {
 			  "vanilla-extract/fontFace": {
 			    "changed": true,
 			    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-			import { pandwindPreset } from "pandwind/preset";
-			const runtimeCss = createRuntimeCss(pandwindPreset);
+			import { defaultPreset } from "pandwind/preset/default";
+			const runtimeCss = createRuntimeCss(defaultPreset);
 			export const inter = (runtimeCss.sheet.registerSemanticRules([{ kind: "font-face", declarations: [{ property: "fontFamily", value: "Inter" }, { property: "src", value: "url(inter.woff2)" } ] }]), runtimeCss.group({  }));",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -3902,8 +3902,8 @@ describe("official adapter API families", () => {
 			  "vanilla-extract/globalStyle": {
 			    "changed": true,
 			    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-			import { pandwindPreset } from "pandwind/preset";
-			const runtimeCss = createRuntimeCss(pandwindPreset);
+			import { defaultPreset } from "pandwind/preset/default";
+			const runtimeCss = createRuntimeCss(defaultPreset);
 			(runtimeCss.sheet.registerSemanticRules([{ kind: "global", selector: "body", conditions: [], declarations: [{ property: "margin", value: 0 }], children: [] }]), null);",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -3938,8 +3938,8 @@ describe("official adapter API families", () => {
 			  "vanilla-extract/keyframes": {
 			    "changed": true,
 			    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-			import { pandwindPreset } from "pandwind/preset";
-			const runtimeCss = createRuntimeCss(pandwindPreset);
+			import { defaultPreset } from "pandwind/preset/default";
+			const runtimeCss = createRuntimeCss(defaultPreset);
 			export const pulse = (() => { const name = "pw-kf-pulse"; runtimeCss.sheet.registerSemanticRules([{ kind: "keyframes", name, children: [{ kind: "style", selector: "from", declarations: [{ property: "opacity", value: 0 }] }, { kind: "style", selector: "to", declarations: [{ property: "opacity", value: 1 }] }] }]); return name; })();",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -4124,8 +4124,8 @@ describe("official adapter API families", () => {
 			    "code": "<script setup>
 			import { createCx } from "pandwind/cx";
 			import { createRuntimeCss } from "pandwind/css/runtime";
-			import { pandwindPreset } from "pandwind/preset";
-			const runtimeCss = createRuntimeCss(pandwindPreset);
+			import { defaultPreset } from "pandwind/preset/default";
+			const runtimeCss = createRuntimeCss(defaultPreset);
 			const cx = createCx();
 			const Card = (props) => <div {...props} className={cx((props) => { const style = runtimeCss.vars({ color: (props => props.color)(props) }); const Component = props.as ?? "div"; const { as: _as, ...rest } = props; const attrs = {}; return <Component {...attrs} {...rest} className={runtimeCss.props(style, props.className).className} style={{ ...props.style, ...style.style }} />; }, props.className)} />;
 			</script>

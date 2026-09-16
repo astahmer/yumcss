@@ -608,7 +608,7 @@ function rewritePandwindViteConfigs(
 			? presetSpecifier
 			: `./${presetSpecifier}`;
 		const typedPresetSpecifier = `${normalizedSpecifier}.ts`;
-		const pandwindPlugin = 'pandwindCssVite(pandwindPreset, { root: "." })';
+		const pandwindPlugin = 'pandwindCssVite(preset, { root: "." })';
 		let next: string;
 		if (
 			config.adapter === CodemodAdapterId.Tailwind &&
@@ -618,7 +618,7 @@ function rewritePandwindViteConfigs(
 			next = source
 				.replace(
 					/import\s+tailwindcss\s+from\s+["']@tailwindcss\/vite["'];?/u,
-					`import { pandwindCssVite } from "pandwind/vite";\nimport { pandwindPreset } from "${typedPresetSpecifier}";`,
+					`import { pandwindCssVite } from "pandwind/vite";\nimport { preset } from "${typedPresetSpecifier}";`,
 				)
 				.replace(/\btailwindcss\s*\(\s*\)/gu, pandwindPlugin);
 		} else if (config.adapter === CodemodAdapterId.UnoCSS) {
@@ -630,13 +630,13 @@ function rewritePandwindViteConfigs(
 			next = source
 				.replace(
 					/import\s+[A-Za-z_$][\w$]*\s+from\s+["']unocss\/vite["'];?/u,
-					`import { pandwindCssVite } from "pandwind/vite";\nimport { pandwindPreset } from "${typedPresetSpecifier}";`,
+					`import { pandwindCssVite } from "pandwind/vite";\nimport { preset } from "${typedPresetSpecifier}";`,
 				)
 				.replace(call, pandwindPlugin);
 		} else {
 			if (source.includes("pandwindCssVite(")) continue;
 			const withImports =
-				`import { pandwindCssVite } from "pandwind/vite";\nimport { pandwindPreset } from "${typedPresetSpecifier}";\n` +
+				`import { pandwindCssVite } from "pandwind/vite";\nimport { preset } from "${typedPresetSpecifier}";\n` +
 				source;
 			if (/\bplugins\s*:\s*\[\s*\]/u.test(withImports)) {
 				next = withImports.replace(/(\bplugins\s*:\s*)\[\s*\]/u, `$1[${pandwindPlugin}]`);
@@ -784,7 +784,7 @@ ${appSemanticDeclaration}${componentDeclaration}${configDeclaration}
 const properties = define.properties(${presetPropertiesSource(rawSourceTokens)} as const);
 ${tokenDeclaration}${colorPaletteDeclaration}
 
-export const pandwindPreset = define.preset(
+export const preset = define.preset(
 	{
 		config: ${configReference},
 		tokens,${colorPaletteProperty}
@@ -803,9 +803,9 @@ function cssSource(nextHost: boolean): string {
 	return `/// <reference path="./vite-env.d.ts" />
 import "${virtualId}";
 import { createCss, type AtomicStyleProps } from "pandwind/css";
-import { pandwindPreset } from "./preset";
+import { preset } from "./preset";
 
-export const css = createCss(pandwindPreset);
+export const css = createCss(preset);
 export type StyleProps = AtomicStyleProps<typeof css>;
 `;
 }
@@ -831,17 +831,17 @@ declare module "${PANDWIND_NEXT_CSS_ID}";
 
 function runtimeCssSource(): string {
 	return `import { createRuntimeCss } from "pandwind/css/runtime";
-import { pandwindPreset } from "./preset";
+import { preset } from "./preset";
 
-export const runtimeCss = createRuntimeCss(pandwindPreset);
+export const runtimeCss = createRuntimeCss(preset);
 `;
 }
 
 function dssSource(): string {
 	return `import { createDesignCss } from "pandwind/design";
-import { pandwindPreset } from "./preset";
+import { preset } from "./preset";
 
-export const dss = createDesignCss(pandwindPreset);
+export const dss = createDesignCss(preset);
 `;
 }
 
@@ -857,12 +857,12 @@ function bridgeSource(bridge: UtilityBridge, twSource: string, presetImport: str
 	const config = extractTwConfig(twSource);
 	if (config === undefined) throw new Error("codemod: generated tw config is not readable");
 	return `import { createTwAdapter } from "pandwind/tw";
-import { pandwindPreset } from "${presetImport}";
+import { preset } from "${presetImport}";
 
 export const bridge = ${JSON.stringify(bridge)} as const;
 export const variants = ${JSON.stringify(config.variants)} as const;
 export const twAdapter = createTwAdapter({
-	preset: pandwindPreset,
+	preset,
 	variants,
 	bridge,
 });

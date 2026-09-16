@@ -25,7 +25,7 @@ import { RollupOutputKind } from "./helpers/rollup-output-kind.ts";
 import { escapeIdentifier } from "../src/css/hash.ts";
 import { createCss } from "../src/css/create-css.ts";
 import { createDesignCss } from "../src/design/index.ts";
-import { pandwindPreset } from "../src/preset/index.ts";
+import { defaultPreset } from "../src/preset/default.ts";
 import { pandwindCssVite } from "../src/vite/css.ts";
 import { createPandwindEngineContext } from "../src/vite/engine-context.ts";
 import { pandwindVite } from "../src/vite/index.ts";
@@ -314,11 +314,11 @@ export const colors = { "$green-500": green500 };
 `,
 			"src/design.ts": `
 import { createCss } from "pandwind/css";
-import { pandwindPreset } from "pandwind/preset";
+import { defaultPreset } from "pandwind/preset/default";
 import { colors } from "./theme";
 
 const preset = {
-	...pandwindPreset,
+	...defaultPreset,
 	properties: { backgroundColor: { $tokens: "colors" } },
 	tokens: { colors },
 };
@@ -341,7 +341,7 @@ export const className = css.class({ backgroundColor: "$green-500" });
 		symlinkSync(PACKAGE_ROOT, join(dir, "node_modules/pandwind"), "dir");
 
 		const initialPreset = {
-			...pandwindPreset,
+			...defaultPreset,
 			properties: { backgroundColor: { $tokens: "colors" } },
 			tokens: { colors: { "$green-500": "#60A3BC" } },
 		};

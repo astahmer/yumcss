@@ -1,7 +1,7 @@
 import { createRuntimeCss } from "pandwind/css/runtime";
-import { pandwindPreset } from "pandwind/preset";
+import { defaultPreset } from "pandwind/preset/default";
 
-const css = createRuntimeCss(pandwindPreset);
+const css = createRuntimeCss(defaultPreset);
 
 /** Atomic styles for the inspector chrome and data views. */
 export const ui = {

@@ -90,8 +90,8 @@ const generateCommand = (
 		outFile: resolve(root, positionals[1] ?? "dist/pandwind.lib.json"),
 		sourcePatterns: optionStrings(options, "include", ["**/*"]),
 		cssSources: optionStrings(options, "cssSource", ["css", "design"]),
-		presetImport: optionString(options, "presetImport") ?? "pandwind/preset",
-		presetExport: optionString(options, "presetExport") ?? "pandwindPreset",
+		presetImport: optionString(options, "presetImport") ?? "pandwind/preset/default",
+		presetExport: optionString(options, "presetExport") ?? "defaultPreset",
 		...(optionString(options, "namespace") === undefined
 			? {}
 			: { namespace: optionString(options, "namespace") }),

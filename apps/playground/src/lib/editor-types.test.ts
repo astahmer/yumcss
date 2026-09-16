@@ -15,6 +15,12 @@ describe("playground editor declarations", () => {
 		const presetTypes = EDITOR_TYPE_LIBRARIES.find((library) =>
 			library.filePath.endsWith("/pandwind/preset/index.d.ts"),
 		);
+		const basePresetTypes = EDITOR_TYPE_LIBRARIES.find((library) =>
+			library.filePath.endsWith("/pandwind/preset/base.d.ts"),
+		);
+		const defaultPresetTypes = EDITOR_TYPE_LIBRARIES.find((library) =>
+			library.filePath.endsWith("/pandwind/preset/default.d.ts"),
+		);
 		const defineTypes = EDITOR_TYPE_LIBRARIES.find((library) =>
 			library.filePath.endsWith("/pandwind/types/define-preset.d.ts"),
 		);
@@ -32,6 +38,8 @@ describe("playground editor declarations", () => {
 		expect(cxTypes?.content).toContain("export interface CxFn");
 		expect(presetTypes?.content).toContain('export * from "../types/typings.d.ts";');
 		expect(presetTypes?.content).toContain('export { define } from "../types/define-preset.d.ts";');
+		expect(basePresetTypes?.content).toContain("export const basePreset");
+		expect(defaultPresetTypes?.content).toContain("export const defaultPreset");
 		expect(defineTypes?.content).toContain("define");
 		expect(selectorTypes?.content).toContain("AnySelector");
 		expect(PANDWIND_EDITOR_MODULE_PATHS["pandwind/css"]).toBe("generated/pandwind/css/index.d.ts");
@@ -40,6 +48,12 @@ describe("playground editor declarations", () => {
 		);
 		expect(PANDWIND_EDITOR_MODULE_PATHS["pandwind/preset"]).toBe(
 			"generated/pandwind/preset/index.d.ts",
+		);
+		expect(PANDWIND_EDITOR_MODULE_PATHS["pandwind/preset/base"]).toBe(
+			"generated/pandwind/preset/base.d.ts",
+		);
+		expect(PANDWIND_EDITOR_MODULE_PATHS["pandwind/preset/default"]).toBe(
+			"generated/pandwind/preset/default.d.ts",
 		);
 		expect(modules?.content).toContain("interface PlaygroundStyledFactory");
 	});

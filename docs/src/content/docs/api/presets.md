@@ -37,6 +37,40 @@ When the theme is only passed to one `define.preset` call, inline the
 `{ config, tokens }` object. Both forms are equivalent at runtime; the direct
 form keeps a small preset easy to read.
 
+## Choose a built-in preset layer
+
+Pandwind keeps its built-in choices in explicit tiers so a structural CSS
+contract does not silently become a design-token contract:
+
+| preset          | import                     | use it for                                                |
+| --------------- | -------------------------- | --------------------------------------------------------- |
+| `basePreset`    | `pandwind/preset/base`     | tokenless structural CSS with values owned by your app    |
+| `defaultPreset` | `pandwind/preset/default`  | the ordinary Pandwind app with stock scales               |
+| `examplePreset` | `@pandwind/example-preset` | the repository's rich semantic-token and palette showcase |
+
+The base preset uses the common `csstype` property grammar and default
+conditions, but its `tokens` map and property-token bindings are empty. A
+value such as `"red.500"` therefore remains authored CSS. The default preset
+keeps Pandwind's stock property mappings, so the same value can resolve through
+the built-in scale:
+
+```ts
+import { createCss } from "pandwind/css";
+import { basePreset } from "pandwind/preset/base";
+import { defaultPreset } from "pandwind/preset/default";
+
+const baseCss = createCss(basePreset);
+const defaultCss = createCss(defaultPreset);
+
+baseCss.class({ color: "red.500", padding: "1rem" });
+defaultCss.class({ color: "red.500", padding: 4 });
+```
+
+Use `basePreset` when the application or a published design system supplies its
+own token catalog. Use `defaultPreset` when you want Pandwind's ready-to-use
+values. The example package is deliberately separate and should remain a
+showcase fixture rather than an implicit default dependency.
+
 ## A complete typed preset
 
 This is a small preset with Pandwind's curated common CSS properties available,

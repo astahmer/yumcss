@@ -6,7 +6,7 @@ Pandwind authoring lanes:
 - `static-css`: compile-time `createUnsafeCss()` extraction;
 - `runtime-css`: the same static-first lane, with runtime CSS enabled only for
   the one dynamic playground binding that cannot be proven static;
-- `design-dss`: compile-time `createDesignCss(pandwindPreset)` extraction.
+- `design-dss`: compile-time `createDesignCss(defaultPreset)` extraction.
 
 The immutable upstream checkout is managed by the reference-repository
 workflow at `/Users/astahmer/.references/astryx` and is pinned at:

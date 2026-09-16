@@ -98,9 +98,9 @@ import "pandwind:css";
 ```ts
 // src/styles.ts
 import { createCss } from "pandwind/css";
-import { pandwindPreset } from "pandwind/preset";
+import { defaultPreset } from "pandwind/preset/default";
 
-export const css = createCss(pandwindPreset);
+export const css = createCss(defaultPreset);
 ```
 
 ```tsx
@@ -120,6 +120,22 @@ export function Card() {
 Use `define.preset` when the application needs its own token vocabulary and
 property contract. The [design-system guide](./docs/src/content/docs/guides/design-system.md)
 builds that contract step by step.
+
+### Choose a preset layer
+
+Pandwind has three intentionally separate preset tiers:
+
+- `basePreset` from `pandwind/preset/base` is tokenless. It supplies the
+  structural CSS and condition contract while your application owns the values.
+- `defaultPreset` from `pandwind/preset/default` is the ready-to-use Pandwind
+  layer with the stock property-to-token scales.
+- `examplePreset` from `@pandwind/example-preset` is a rich repository showcase
+  with semantic tokens, palettes, and theme scopes; it is not the default
+  application preset.
+
+Use the base layer for a deliberately BYO design system, the default layer for
+an ordinary Pandwind app, and the example package only when exploring the
+repository's complete token composition patterns.
 
 ## If you already use Tailwind: typed utility objects
 

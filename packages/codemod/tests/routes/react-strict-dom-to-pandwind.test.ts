@@ -93,8 +93,8 @@ test("react-strict-dom -> pandwind: carries a documented secondary react-strict-
 		{
 		  "changed": true,
 		  "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const runtimeCss = createRuntimeCss(pandwindPreset);
+		import { defaultPreset } from "pandwind/preset/default";
+		const runtimeCss = createRuntimeCss(defaultPreset);
 		export const pulse = (() => { const name = "pw-kf-pulse"; runtimeCss.sheet.registerSemanticRules([{ kind: "keyframes", name, children: [{ kind: "style", selector: "from", declarations: [{ property: "opacity", value: 0 }] }, { kind: "style", selector: "to", declarations: [{ property: "opacity", value: 1 }] }] }]); return name; })();",
 		  "converted": 1,
 		  "generatedFiles": [],

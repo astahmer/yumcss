@@ -29,9 +29,9 @@ making Tailwind the stylesheet engine.
 
 ```ts
 import { createCss } from "pandwind/css";
-import { pandwindPreset } from "pandwind/preset";
+import { defaultPreset } from "pandwind/preset/default";
 
-const css = createCss(pandwindPreset);
+const css = createCss(defaultPreset);
 const card = css.class({ display: "flex", flexDirection: "column", gap: "4", padding: "6" });
 ```
 

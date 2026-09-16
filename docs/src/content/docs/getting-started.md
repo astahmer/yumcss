@@ -33,30 +33,15 @@ pnpm add -D unplugin
 
 ### 2. Create a preset
 
-`createCss(preset)` is the typed form. A preset defines the tokens and values
-your application is allowed to use. The [design-system guide](/guides/design-system/)
-has a complete preset; the shape is:
+`createCss(preset)` is the typed form. For a ready-to-use Pandwind app, start
+with `defaultPreset`:
 
 ```ts
-// src/preset.ts
-import { define, type PandwindProperties } from "pandwind/preset";
+// src/styles.ts
+import { createCss } from "pandwind/css";
+import { defaultPreset } from "pandwind/preset/default";
 
-const tokens = define.tokens({
-	colors: { $surface: "#ffffff", $ink: "#111827" },
-	spacing: { 4: "16px" },
-	radii: { lg: "12px" },
-});
-
-const cssConfig: PandwindProperties = {};
-
-export const preset = define.preset(
-	{ config: cssConfig, tokens },
-	{
-		strict: true,
-		conditions: { _hover: "&:hover" },
-		properties: { $all: true },
-	},
-);
+export const css = createCss(defaultPreset);
 ```
 
 ### 3. Configure extraction
@@ -80,14 +65,6 @@ import "pandwind:css";
 
 ### 4. Author a component
 
-```ts
-// src/styles.ts
-import { createCss } from "pandwind/css";
-import { preset } from "./preset";
-
-export const css = createCss(preset);
-```
-
 ```tsx
 import { css } from "./styles";
 
@@ -95,9 +72,9 @@ export function Card() {
 	return (
 		<article
 			className={css.class({
-				backgroundColor: "$surface",
-				color: "$ink",
-				padding: "4",
+				backgroundColor: "white",
+				color: "black",
+				padding: 4,
 				borderRadius: "lg",
 			})}
 		>
