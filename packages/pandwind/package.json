@@ -337,12 +337,12 @@
 	"scripts": {
 		"build": "pnpm exec tsdown",
 		"typecheck": "tsc --noEmit",
-		"test": "vitest run --exclude tests/runtime-benchmark.test.ts --exclude tests/tsc-performance.test.ts && vitest run --pool forks --maxWorkers 1 tests/runtime-benchmark.test.ts && vitest run --pool forks --maxWorkers 1 tests/tsc-performance.test.ts",
+		"test": "vitest run --exclude tests/runtime-benchmark.test.ts --exclude tests/runtime-api-benchmark.test.ts --exclude tests/tsc-performance.test.ts && vitest run --pool forks --maxWorkers 1 tests/runtime-benchmark.test.ts tests/runtime-api-benchmark.test.ts && vitest run --pool forks --maxWorkers 1 tests/tsc-performance.test.ts",
 		"test:coverage": "vitest run --coverage",
 		"test:watch": "vitest",
 		"test:size": "vitest run runtime-size",
 		"test:tsc": "vitest run tsc-performance",
-		"test:benchmarks": "vitest run --pool forks --maxWorkers 1 runtime-benchmark",
+		"test:benchmarks": "vitest run --pool forks --maxWorkers 1 runtime-benchmark runtime-api-benchmark",
 		"test:types": "tstyche --target 6.0.3"
 	},
 	"dependencies": {

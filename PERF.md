@@ -2,9 +2,9 @@
 
 # Pandwind performance summary
 
-This compact report is derived from the committed typecheck and bundle-size snapshots. Lower is better; rankings are per workload and metric, not a universal library score.
+This compact report is derived from the committed typecheck, runtime-throughput, and bundle-size snapshots. Lower is better for typecheck/size; higher is better for throughput. Rankings are per workload and metric, not a universal library score.
 
-TypeScript measurements use fresh processes and the pinned TypeScript version in each benchmark. Runtime-size measurements are minified browser bundles with gzip level 6.
+TypeScript measurements use fresh processes and the pinned TypeScript version in each benchmark. Runtime-throughput measurements are local in-process calls. Runtime-size measurements are minified browser bundles with gzip level 6.
 
 ## Pandwind typecheck baselines
 
@@ -14,11 +14,67 @@ These are the repo-owned package, example-app, and public-API records.
 | ------------------------ | -------------: | -----------: | --------: |
 | package                  |        313,040 |      311,771 |     0.328 |
 | example app              |        172,628 |      311,726 |     0.365 |
-| API css.real-world.usage |         74,951 |       84,099 |     0.042 |
-| API app                  |         43,639 |       82,872 |     0.024 |
-| API css.dynamic          |         40,358 |       66,240 |     0.062 |
-| API composition          |         29,910 |       71,785 |     0.019 |
-| API tw                   |          3,153 |       56,870 |     0.004 |
+| API css.real-world.usage |         75,398 |       83,858 |     0.040 |
+| API app                  |         44,460 |       82,634 |     0.017 |
+| API css.dynamic          |         40,990 |       66,031 |     0.048 |
+| API css.generated        |         26,880 |       69,869 |     0.015 |
+| API css.unsafe           |         11,544 |       58,976 |     0.006 |
+| API dss                  |         31,359 |       71,979 |     0.013 |
+| API css.runtime          |         41,897 |       78,302 |     0.032 |
+| API cx                   |         29,784 |       71,380 |     0.010 |
+| API tw                   |          3,153 |       56,900 |     0.004 |
+
+## Pandwind API typecheck ranking
+
+Every first-class API lane has its own fresh-process row; lower is better. The package and app baselines above are kept separate because they include repository context beyond one API fixture.
+
+### By check time
+
+| Rank | API                  | Category    | Check (s) | Instantiations | Memory (KiB) |
+| ---: | -------------------- | ----------- | --------: | -------------: | -----------: |
+|    1 | tw                   | tailwind    |     0.004 |          3,153 |       56,900 |
+|    2 | css.unsafe           | css         |     0.006 |         11,544 |       58,976 |
+|    3 | strategies           | adapters    |     0.009 |         30,702 |       70,460 |
+|    4 | preset               | preset      |     0.010 |          9,134 |       62,316 |
+|    5 | tw.root              | tailwind    |     0.010 |         12,264 |       62,466 |
+|    6 | css.real-world.theme | css         |     0.010 |         21,586 |       63,894 |
+|    7 | cx                   | composition |     0.010 |         29,784 |       71,380 |
+|    8 | css.preset           | css         |     0.012 |         23,449 |       68,654 |
+|    9 | dss                  | design      |     0.013 |         31,359 |       71,979 |
+|   10 | platforms            | platform    |     0.014 |         28,112 |       71,054 |
+|   11 | css.generated        | css         |     0.015 |         26,880 |       69,869 |
+|   12 | app                  | app         |     0.017 |         44,460 |       82,634 |
+|   13 | dss.runtime          | runtime     |     0.018 |         40,222 |       78,283 |
+|   14 | stack                | layout      |     0.018 |         53,114 |       90,702 |
+|   15 | css.runtime          | runtime     |     0.032 |         41,897 |       78,302 |
+|   16 | css.real-world.usage | css         |     0.040 |         75,398 |       83,858 |
+|   17 | css.default          | css         |     0.046 |         41,150 |       66,204 |
+|   18 | css.dynamic          | css         |     0.048 |         40,990 |       66,031 |
+|   19 | tooling              | tooling     |     0.049 |         67,842 |      141,792 |
+
+### By type instantiations
+
+| Rank | API                  | Category    | Instantiations | Memory (KiB) | Check (s) |
+| ---: | -------------------- | ----------- | -------------: | -----------: | --------: |
+|    1 | tw                   | tailwind    |          3,153 |       56,900 |     0.004 |
+|    2 | preset               | preset      |          9,134 |       62,316 |     0.010 |
+|    3 | css.unsafe           | css         |         11,544 |       58,976 |     0.006 |
+|    4 | tw.root              | tailwind    |         12,264 |       62,466 |     0.010 |
+|    5 | css.real-world.theme | css         |         21,586 |       63,894 |     0.010 |
+|    6 | css.preset           | css         |         23,449 |       68,654 |     0.012 |
+|    7 | css.generated        | css         |         26,880 |       69,869 |     0.015 |
+|    8 | platforms            | platform    |         28,112 |       71,054 |     0.014 |
+|    9 | cx                   | composition |         29,784 |       71,380 |     0.010 |
+|   10 | strategies           | adapters    |         30,702 |       70,460 |     0.009 |
+|   11 | dss                  | design      |         31,359 |       71,979 |     0.013 |
+|   12 | dss.runtime          | runtime     |         40,222 |       78,283 |     0.018 |
+|   13 | css.dynamic          | css         |         40,990 |       66,031 |     0.048 |
+|   14 | css.default          | css         |         41,150 |       66,204 |     0.046 |
+|   15 | css.runtime          | runtime     |         41,897 |       78,302 |     0.032 |
+|   16 | app                  | app         |         44,460 |       82,634 |     0.017 |
+|   17 | stack                | layout      |         53,114 |       90,702 |     0.018 |
+|   18 | tooling              | tooling     |         67,842 |      141,792 |     0.049 |
+|   19 | css.real-world.usage | css         |         75,398 |       83,858 |     0.040 |
 
 ## Ecosystem typecheck ranking — stress workload
 
@@ -91,6 +147,93 @@ The generated lane is the same public CssFn workload with preset-derived unions 
 
 Full paired measurements: [generated-types-poc.md](benchmarks/styling-tsc/snapshots/generated-types-poc.md).
 
+## Pandwind runtime API throughput ranking
+
+Measured on darwin/arm64 with Node v24.19.0; snapshot updated 2026-09-16. Higher is better, but rows are different operations and are not a single composite score. Build-category rows measure supporting tooling and are not browser runtime costs.
+
+| Rank | API                        | Category    | Median ops/s |   P10 ops/s |   P90 ops/s |
+| ---: | -------------------------- | ----------- | -----------: | ----------: | ----------: |
+|    1 | dss.runtime.sheet          | design      |  236,744,750 | 231,152,624 | 239,510,202 |
+|    2 | dss.group                  | design      |  202,303,563 | 137,325,539 | 205,831,904 |
+|    3 | host.registry              | host        |   88,646,262 |  73,220,178 |  91,099,053 |
+|    4 | cx.plain                   | composition |   71,764,759 |  66,859,069 |  78,152,989 |
+|    5 | css.runtime.sheet          | css         |   56,828,944 |  51,079,697 |  57,841,778 |
+|    6 | stack.style                | layout      |   56,127,222 |  29,958,676 |  83,842,794 |
+|    7 | backend.registry           | backend     |   38,789,134 |  38,721,170 |  41,427,880 |
+|    8 | design.registry            | design      |   22,966,507 |  20,844,783 |  26,464,758 |
+|    9 | build.source.workspace     | build       |   21,158,424 |   9,249,445 |  26,734,966 |
+|   10 | build.source.registry      | build       |   15,874,223 |  14,114,035 |  17,708,714 |
+|   11 | backend.css                | backend     |   11,294,649 |   7,752,814 |  13,747,674 |
+|   12 | stack.classes              | layout      |    6,927,307 |   6,076,280 |   8,641,471 |
+|   13 | build.vite-core            | build       |    4,573,185 |     791,870 |   4,590,652 |
+|   14 | css.unsafe.input           | css         |    4,467,832 |   3,061,927 |   4,533,463 |
+|   15 | build.vite-plugin          | build       |    4,156,587 |   1,436,782 |   4,252,279 |
+|   16 | adapter.tailwind           | adapter     |    3,714,400 |   3,017,558 |   3,913,467 |
+|   17 | backend.react-strict-dom   | backend     |    2,607,194 |   2,203,430 |   3,585,016 |
+|   18 | preset.define              | preset      |    2,314,560 |   2,166,292 |   2,551,978 |
+|   19 | backend.rn                 | backend     |    1,981,756 |   1,787,118 |   2,051,371 |
+|   20 | css.preset.class           | css         |    1,773,683 |   1,694,142 |   1,942,942 |
+|   21 | css.runtime.props          | css         |    1,762,727 |   1,246,192 |   1,773,085 |
+|   22 | css.unsafe.props           | css         |    1,749,539 |   1,645,902 |   1,773,919 |
+|   23 | css.default.raw            | css         |    1,686,424 |   1,646,059 |   1,724,396 |
+|   24 | adapter.panda              | adapter     |    1,647,232 |   1,096,136 |   1,743,785 |
+|   25 | adapter.named-atoms        | adapter     |    1,639,232 |   1,196,954 |   1,680,645 |
+|   26 | react-strict-dom.css       | platform    |    1,625,660 |   1,417,423 |   1,689,907 |
+|   27 | adapter.stylex             | adapter     |    1,586,634 |   1,427,603 |   1,715,711 |
+|   28 | css.unsafe.group           | css         |    1,548,114 |   1,376,768 |   1,562,585 |
+|   29 | backend.opentui            | backend     |    1,531,413 |   1,398,936 |   2,237,522 |
+|   30 | adapter.unocss             | adapter     |    1,492,556 |   1,287,586 |   1,551,383 |
+|   31 | backend.registry.create    | backend     |    1,377,110 |   1,115,311 |   3,561,676 |
+|   32 | css.unsafe.raw             | css         |    1,321,973 |   1,304,500 |   1,349,350 |
+|   33 | css.default.class          | css         |    1,134,491 |     720,571 |   1,145,738 |
+|   34 | css.runtime.raw            | css         |    1,118,668 |   1,098,585 |   1,130,601 |
+|   35 | css.first-that-works       | css         |    1,079,520 |   1,015,758 |   1,090,179 |
+|   36 | react-strict-dom.create    | platform    |      992,708 |     693,426 |   1,112,064 |
+|   37 | backend.object-cx          | backend     |      984,443 |     841,483 |   1,036,658 |
+|   38 | tw.root                    | tailwind    |      909,393 |     232,709 |     923,637 |
+|   39 | css.generated.props        | css         |      889,763 |     807,709 |     898,986 |
+|   40 | stack.css                  | layout      |      880,924 |     527,960 |   1,279,163 |
+|   41 | dss.runtime.props          | design      |      851,357 |     835,713 |     856,357 |
+|   42 | backend.object             | backend     |      845,855 |     750,025 |     926,489 |
+|   43 | cx.vars                    | composition |      817,727 |     781,092 |     837,799 |
+|   44 | dss.vars                   | design      |      805,691 |     626,660 |     826,009 |
+|   45 | css.generated.raw          | css         |      782,941 |     751,043 |     848,975 |
+|   46 | react-strict-dom.native    | platform    |      754,350 |     746,039 |     763,158 |
+|   47 | backend.object-css         | backend     |      753,721 |     684,090 |     769,402 |
+|   48 | css.default.props          | css         |      749,365 |     721,240 |     777,026 |
+|   49 | dss.props                  | design      |      680,885 |     676,701 |     685,951 |
+|   50 | tw.configured              | tailwind    |      676,259 |     631,295 |     687,049 |
+|   51 | css.unsafe.vars            | css         |      675,285 |     658,815 |     703,150 |
+|   52 | react-strict-dom.native-cx | platform    |      659,309 |     367,569 |     730,984 |
+|   53 | css.unsafe.class           | css         |      640,390 |     608,604 |     641,965 |
+|   54 | css.runtime.vars           | css         |      625,122 |     595,303 |     632,830 |
+|   55 | css.generated.vars         | css         |      618,795 |     588,261 |     629,661 |
+|   56 | css.default.vars           | css         |      613,320 |     573,699 |     643,434 |
+|   57 | cx.atoms                   | composition |      593,668 |     566,546 |     601,582 |
+|   58 | react-strict-dom.cx        | platform    |      569,856 |     437,485 |   1,144,914 |
+|   59 | css.runtime.class          | css         |      473,763 |     465,531 |     474,744 |
+|   60 | build.source.scan          | build       |      411,717 |     398,904 |     569,698 |
+|   61 | css.generated.class        | css         |      386,235 |     376,225 |     388,453 |
+|   62 | build.lib-artifact         | build       |      374,067 |     307,718 |     398,668 |
+|   63 | build.css-extraction       | build       |      329,988 |     304,516 |     382,973 |
+|   64 | design.resolver            | design      |      301,703 |     285,143 |     302,802 |
+|   65 | design.resolve             | design      |      301,258 |     291,334 |     302,817 |
+|   66 | dss.raw                    | design      |      218,616 |     218,136 |     218,831 |
+|   67 | dss.runtime.raw            | design      |      217,053 |     213,919 |     221,581 |
+|   68 | dss.class                  | design      |      178,486 |     175,895 |     182,738 |
+|   69 | dss.runtime.class          | design      |      175,805 |     165,375 |     178,740 |
+|   70 | css.default.compose        | css         |      132,242 |      96,131 |     279,367 |
+|   71 | react-native.dss           | platform    |      127,854 |     120,388 |     129,784 |
+|   72 | build.stylesheet           | build       |      126,025 |     111,144 |     155,203 |
+|   73 | dss.compose                | design      |      122,099 |      58,687 |     146,867 |
+|   74 | opentui.dss                | platform    |      108,007 |      88,746 |     113,070 |
+|   75 | react-native.cx            | platform    |       95,544 |      65,141 |      96,518 |
+|   76 | opentui.cx                 | platform    |       93,922 |      57,694 |      94,521 |
+|   77 | backend.object-design-css  | backend     |       93,280 |      38,940 |      99,704 |
+|   78 | react-strict-dom.dss       | platform    |       84,666 |      52,399 |     148,520 |
+
+The dedicated runtime snapshot is [runtime-api-benchmark.json.snap](packages/pandwind/tests/snapshots/runtime-api-benchmark.json.snap); the older hot-path regression snapshot remains separate because its repeated micro-inputs and tolerance are intentionally different.
+
 ## Runtime size ranking
 
 Lower is smaller. Static output and build-time-only rows are included for completeness but are not browser runtime costs.
@@ -134,5 +277,7 @@ These rows are separate from the native CSS runtime: static generated calls eras
 - Typecheck ecosystem: `pnpm run bench:tsc:styling -- --update`
 - Generated facade comparison: `pnpm run bench:tsc:generated -- --update`
 - Package/example typecheck: `pnpm run bench:tsc -- --update` and `pnpm run bench:tsc:example -- --update`
+- Public API typecheck: `pnpm --filter pandwind run test:tsc -- -u`
 - Runtime size: `pnpm --filter pandwind exec vitest run runtime-size -u`
+- Runtime API throughput: `pnpm --filter pandwind run test:benchmarks -- -u`
 - Summary freshness: `pnpm run bench:summary:check`

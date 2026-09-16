@@ -5,7 +5,8 @@ sidebar:
   order: 3
 ---
 
-Last measured: **2026-09-10** for the runtime-size contract, **2026-08-23**
+Last measured: **2026-09-16** for the public API typecheck and runtime-throughput
+records, **2026-09-10** for the runtime-size contract, **2026-08-23**
 for `cx()` v3 (whole-input cache), **2026-08-22**
 for the competitor table. Local macOS (arm64), Node v24.19.0. Interleaved
 rotated-order rounds, best-of-5-pass median sample. This is local-machine
@@ -91,6 +92,39 @@ The combined runtime is 22.57 KB min / 8.69 KB gzip in this record. The
 fallback helper adds a small shared decoder to the dynamic CSS lane, while
 fully extracted static calls remain below 100 bytes. The root `SIZE.md` is
 only a pointer and no longer duplicates these numbers.
+
+## Public runtime API throughput snapshot
+
+The package also owns a structured runtime snapshot at
+`packages/pandwind/tests/snapshots/runtime-api-benchmark.json.snap`. It
+measures every first-class authoring lane and its important projections:
+preset-bound, generated, and unsafe `css`; `dss`; runtime CSS and runtime
+design CSS; `cx`; configured and root `tw`; Stack; React Native; OpenTUI;
+React Strict DOM; class-name strategies; backends; host adapters; and the
+supporting stylesheet, source, Vite, lib-artifact, and preset-builder paths.
+The report keeps build-category rows visible but labels them separately from
+browser runtime work. Each row records the input shape, iterations, median,
+and p10/p90 throughput. Rows are evidence for their own operation, not a
+single universal score.
+
+The generated ranking is included in
+[`PERF.md`](https://github.com/astahmer/pandwind/blob/main/PERF.md), and the
+dedicated hot-path regression harness remains separate because it uses a
+different micro-input set and slowdown tolerance. The broad public matrix uses
+a 25% of baseline floor because very short local operations are noisy; the
+snapshot remains the reviewable source for smaller changes.
+
+Refresh the runtime record with:
+
+```sh
+pnpm --filter pandwind run test:benchmarks -- -u
+pnpm run bench:summary
+```
+
+Normal benchmark runs compare each scenario with its recorded median using a
+wide 50% slowdown floor. The measurements are intentionally local-machine
+evidence; use the p10/p90 spread and the scenario description before drawing
+cross-API conclusions.
 
 ## Historical runtime hot-path pass — 2026-09-01
 
@@ -206,17 +240,21 @@ is a full migration run.
 
 The package also owns a focused API regression snapshot at
 `packages/pandwind/tests/snapshots/tsc.json.snap`. Unlike the ecosystem
-comparison, this matrix isolates Pandwind's public API shapes: default
-and custom presets, a complete anonymized product theme (both construction
-and downstream usage), dynamic `css` projections, design and runtime CSS,
-composition, `tw`, and one combined app-style fixture. Every row is measured
-in three fresh TypeScript processes and records the compiler program size,
-symbols, types, instantiations, memory, check time, and total time. It runs as
-part of the normal Pandwind package test and can be refreshed deliberately:
+comparison, this matrix isolates Pandwind's public API shapes: default,
+generated, custom, and unsafe CSS; a complete anonymized product theme (both
+construction and downstream usage); dynamic `css` projections; `dss` and
+runtime design CSS; `cx`; configured and root `tw`; preset builders; Stack;
+class-name strategies; platform backends; tooling contracts; and one combined
+app-style fixture. Every row is measured in three fresh TypeScript processes
+and records the compiler program size, symbols, types, instantiations, memory,
+check time, and total time. It runs as part of the normal Pandwind package test
+and can be refreshed deliberately. Instantiations, memory, and check time are
+the regression gates; total process time is retained for context because fresh
+process startup is noisy:
 
 ```sh
 pnpm --filter pandwind run test:tsc
-pnpm --filter pandwind run test:tsc -u
+pnpm --filter pandwind run test:tsc -- -u
 ```
 
 ## Styling ecosystem typecheck benchmark

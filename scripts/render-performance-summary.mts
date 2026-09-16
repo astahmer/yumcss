@@ -46,7 +46,28 @@ type ApiTscSnapshot = {
 	readonly updatedAt: string;
 	readonly scenarios: readonly {
 		readonly name: string;
+		readonly category?: string;
+		readonly description?: string;
 		readonly metrics: Metrics;
+	}[];
+};
+
+type RuntimeApiSnapshot = {
+	readonly updatedAt: string;
+	readonly samples: number;
+	readonly environment: {
+		readonly platform: string;
+		readonly arch: string;
+		readonly node: string;
+	};
+	readonly scenarios: readonly {
+		readonly name: string;
+		readonly category: string;
+		readonly description: string;
+		readonly iterations: number;
+		readonly median: number;
+		readonly p10: number;
+		readonly p90: number;
 	}[];
 };
 
@@ -62,6 +83,10 @@ const generatedSnapshotPath = resolve(
 const packageSnapshotPath = resolve(ROOT, "plans/evidence/pandwind-tsc.json");
 const exampleSnapshotPath = resolve(ROOT, "plans/evidence/pandwind-example-tsc.json");
 const apiSnapshotPath = resolve(ROOT, "packages/pandwind/tests/snapshots/tsc.json.snap");
+const runtimeApiSnapshotPath = resolve(
+	ROOT,
+	"packages/pandwind/tests/snapshots/runtime-api-benchmark.json.snap",
+);
 const runtimeSizeSnapshotPath = resolve(
 	ROOT,
 	"packages/pandwind/tests/snapshots/runtime-size.json.snap",
@@ -169,7 +194,17 @@ const renderPandwindBaselines = (
 	add("package", packageSnapshot);
 	add("example app", exampleSnapshot);
 	if (apiSnapshot !== undefined) {
-		for (const name of ["css.real-world.usage", "app", "css.dynamic", "composition", "tw"]) {
+		for (const name of [
+			"css.real-world.usage",
+			"app",
+			"css.dynamic",
+			"css.generated",
+			"css.unsafe",
+			"dss",
+			"css.runtime",
+			"cx",
+			"tw",
+		]) {
 			const scenario = apiSnapshot.scenarios.find((candidate) => candidate.name === name);
 			if (scenario === undefined) continue;
 			rows.push([
@@ -191,6 +226,62 @@ const renderPandwindBaselines = (
 			rows,
 			new Set([1, 2, 3]),
 		),
+		"",
+	];
+};
+
+const renderPandwindApiRanking = (snapshot: ApiTscSnapshot | undefined): string[] => {
+	if (snapshot === undefined || snapshot.scenarios.length === 0) return [];
+	const table = (metric: "checkTimeSeconds" | "instantiations"): string => {
+		const scenarios = snapshot.scenarios.toSorted(
+			(left, right) =>
+				left.metrics[metric] - right.metrics[metric] ||
+				left.metrics.memoryUsedKiB - right.metrics.memoryUsedKiB ||
+				left.name.localeCompare(right.name),
+		);
+		const rows = scenarios.map((scenario, index) =>
+			metric === "checkTimeSeconds"
+				? [
+						String(index + 1),
+						scenario.name,
+						scenario.category ?? "api",
+						seconds(scenario.metrics.checkTimeSeconds),
+						integer(scenario.metrics.instantiations),
+						integer(scenario.metrics.memoryUsedKiB),
+					]
+				: [
+						String(index + 1),
+						scenario.name,
+						scenario.category ?? "api",
+						integer(scenario.metrics.instantiations),
+						integer(scenario.metrics.memoryUsedKiB),
+						seconds(scenario.metrics.checkTimeSeconds),
+					],
+		);
+		return metric === "checkTimeSeconds"
+			? markdownTable(
+					["Rank", "API", "Category", "Check (s)", "Instantiations", "Memory (KiB)"],
+					rows,
+					new Set([0, 3, 4, 5]),
+				)
+			: markdownTable(
+					["Rank", "API", "Category", "Instantiations", "Memory (KiB)", "Check (s)"],
+					rows,
+					new Set([0, 3, 4, 5]),
+				);
+	};
+	return [
+		"## Pandwind API typecheck ranking",
+		"",
+		"Every first-class API lane has its own fresh-process row; lower is better. The package and app baselines above are kept separate because they include repository context beyond one API fixture.",
+		"",
+		"### By check time",
+		"",
+		table("checkTimeSeconds"),
+		"",
+		"### By type instantiations",
+		"",
+		table("instantiations"),
 		"",
 	];
 };
@@ -290,12 +381,46 @@ const renderGeneratedRuntimeSizes = (sizes: Record<string, BundleSize> | undefin
 	];
 };
 
+const renderRuntimeApiRanking = (snapshot: RuntimeApiSnapshot | undefined): string[] => {
+	if (snapshot === undefined || snapshot.scenarios.length === 0) return [];
+	const rows = snapshot.scenarios
+		.toSorted(
+			(left, right) =>
+				right.median - left.median ||
+				left.category.localeCompare(right.category) ||
+				left.name.localeCompare(right.name),
+		)
+		.map((scenario, index) => [
+			String(index + 1),
+			scenario.name,
+			scenario.category,
+			integer(scenario.median),
+			integer(scenario.p10),
+			integer(scenario.p90),
+		]);
+	return [
+		"## Pandwind runtime API throughput ranking",
+		"",
+		`Measured on ${snapshot.environment.platform}/${snapshot.environment.arch} with Node ${snapshot.environment.node}; snapshot updated ${snapshot.updatedAt}. Higher is better, but rows are different operations and are not a single composite score. Build-category rows measure supporting tooling and are not browser runtime costs.`,
+		"",
+		markdownTable(
+			["Rank", "API", "Category", "Median ops/s", "P10 ops/s", "P90 ops/s"],
+			rows,
+			new Set([0, 3, 4, 5]),
+		),
+		"",
+		"The dedicated runtime snapshot is [runtime-api-benchmark.json.snap](packages/pandwind/tests/snapshots/runtime-api-benchmark.json.snap); the older hot-path regression snapshot remains separate because its repeated micro-inputs and tolerance are intentionally different.",
+		"",
+	];
+};
+
 export const renderPerformanceSummary = (): string => {
 	const styling = readJson<StylingSnapshot>(stylingSnapshotPath);
 	const generated = readJson<GeneratedSnapshot>(generatedSnapshotPath);
 	const packageSnapshot = readJson<TscSnapshot>(packageSnapshotPath);
 	const exampleSnapshot = readJson<TscSnapshot>(exampleSnapshotPath);
 	const apiSnapshot = readJson<ApiTscSnapshot>(apiSnapshotPath);
+	const runtimeApiSnapshot = readJson<RuntimeApiSnapshot>(runtimeApiSnapshotPath);
 	const runtimeSizes = readJson<Record<string, BundleSize>>(runtimeSizeSnapshotPath);
 	const generatedRuntimeSizes = readJson<Record<string, BundleSize>>(
 		generatedRuntimeSizeSnapshotPath,
@@ -305,11 +430,12 @@ export const renderPerformanceSummary = (): string => {
 		"",
 		"# Pandwind performance summary",
 		"",
-		"This compact report is derived from the committed typecheck and bundle-size snapshots. Lower is better; rankings are per workload and metric, not a universal library score.",
+		"This compact report is derived from the committed typecheck, runtime-throughput, and bundle-size snapshots. Lower is better for typecheck/size; higher is better for throughput. Rankings are per workload and metric, not a universal library score.",
 		"",
-		"TypeScript measurements use fresh processes and the pinned TypeScript version in each benchmark. Runtime-size measurements are minified browser bundles with gzip level 6.",
+		"TypeScript measurements use fresh processes and the pinned TypeScript version in each benchmark. Runtime-throughput measurements are local in-process calls. Runtime-size measurements are minified browser bundles with gzip level 6.",
 		"",
 		...renderPandwindBaselines(packageSnapshot, exampleSnapshot, apiSnapshot),
+		...renderPandwindApiRanking(apiSnapshot),
 	];
 	if (styling !== undefined) {
 		lines.push(
@@ -328,6 +454,7 @@ export const renderPerformanceSummary = (): string => {
 		);
 	}
 	lines.push(...renderGeneratedComparison(generated));
+	lines.push(...renderRuntimeApiRanking(runtimeApiSnapshot));
 	lines.push(...renderBundleRanking(runtimeSizes));
 	lines.push(...renderGeneratedRuntimeSizes(generatedRuntimeSizes));
 	lines.push(
@@ -336,7 +463,9 @@ export const renderPerformanceSummary = (): string => {
 		"- Typecheck ecosystem: `pnpm run bench:tsc:styling -- --update`",
 		"- Generated facade comparison: `pnpm run bench:tsc:generated -- --update`",
 		"- Package/example typecheck: `pnpm run bench:tsc -- --update` and `pnpm run bench:tsc:example -- --update`",
+		"- Public API typecheck: `pnpm --filter pandwind run test:tsc -- -u`",
 		"- Runtime size: `pnpm --filter pandwind exec vitest run runtime-size -u`",
+		"- Runtime API throughput: `pnpm --filter pandwind run test:benchmarks -- -u`",
 		"- Summary freshness: `pnpm run bench:summary:check`",
 		"",
 	);
