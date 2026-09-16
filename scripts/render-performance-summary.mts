@@ -103,7 +103,7 @@ const readJson = <T,>(path: string): T | undefined => {
 
 const integer = (value: number): string => Math.round(value).toLocaleString("en-US");
 const seconds = (value: number): string => value.toFixed(3);
-const kilobytes = (value: number): string => (value / 1000).toFixed(2);
+const kilobytes = (value: number): string => (Math.round(value / 10) / 100).toFixed(2);
 
 const reduction = (from: number, to: number): string =>
 	from === 0 ? "n/a" : `${((1 - to / from) * 100).toFixed(1)}%`;
@@ -331,11 +331,16 @@ const renderGeneratedComparison = (snapshot: GeneratedSnapshot | undefined): str
 };
 
 const sizeKind = (name: string): string => {
-	if (name === "css, all static calls") return "static output";
+	if (name.includes("static output")) return "static output";
 	if (name === "stylesheet generator (build-time only)") return "build-time only";
 	if (name.includes("compiler-pruned")) return "compiler-pruned";
+	if (name.startsWith("createCssRuntime")) return "internal core";
+	if (name.startsWith("createCss(preset)")) return "preset-bound fallback";
+	if (name.startsWith("createRuntimeCss")) return "live sheet";
 	if (name.includes("generated")) return "generated runtime";
+	if (name.startsWith("createUnsafeCss")) return "unsafe fallback";
 	if (name.startsWith("root barrel")) return "tree-shaken barrel";
+	if (name.startsWith("unsafe css subpath")) return "tree-shaken subpath";
 	return "runtime";
 };
 

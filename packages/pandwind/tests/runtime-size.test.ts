@@ -154,18 +154,27 @@ const updatingSnapshots = (): boolean => {
 
 test("runtime entries stay stylex-sized", async () => {
 	const sizes = {
-		css: bundle("runtime-css.ts"),
-		"css, runtime sheet": bundle("runtime-css-sheet.ts"),
-		"css, all static calls": bundleAfterCssExtraction("runtime-css-static.ts"),
-		"css, dynamic fallback": bundle("runtime-css-dynamic.ts"),
-		"css, compiler-pruned call": await bundleAfterRuntimePruning("runtime-css-pruned-call.ts"),
-		"css, compiler-pruned class": await bundleAfterRuntimePruning("runtime-css-pruned-class.ts"),
-		"css, compiler-pruned vars": await bundleAfterRuntimePruning("runtime-css-pruned-vars.ts"),
-		"css, generated call": bundleGeneratedRuntime([]),
-		"css, generated class": bundleGeneratedRuntime(["class"]),
-		"css, generated vars": bundleGeneratedRuntime(["vars"]),
-		"css, generated class+vars": bundleGeneratedRuntime(["class", "vars"]),
-		"css, generated all": bundleGeneratedRuntime([
+		"createCssRuntime() core (internal)": bundle("runtime-css-base.ts"),
+		"createCss(preset), fallback": bundle("runtime-css-preset.ts"),
+		"createUnsafeCss(), fallback": bundle("runtime-css.ts"),
+		"createRuntimeCss(preset), live sheet": bundle("runtime-css-sheet.ts"),
+		"createUnsafeCss(), static output after extraction":
+			bundleAfterCssExtraction("runtime-css-static.ts"),
+		"createUnsafeCss(), dynamic fallback": bundle("runtime-css-dynamic.ts"),
+		"createUnsafeCss(), compiler-pruned call": await bundleAfterRuntimePruning(
+			"runtime-css-pruned-call.ts",
+		),
+		"createUnsafeCss(), compiler-pruned class": await bundleAfterRuntimePruning(
+			"runtime-css-pruned-class.ts",
+		),
+		"createUnsafeCss(), compiler-pruned vars": await bundleAfterRuntimePruning(
+			"runtime-css-pruned-vars.ts",
+		),
+		"createUnsafeCss(), generated call": bundleGeneratedRuntime([]),
+		"createUnsafeCss(), generated class": bundleGeneratedRuntime(["class"]),
+		"createUnsafeCss(), generated vars": bundleGeneratedRuntime(["vars"]),
+		"createUnsafeCss(), generated class+vars": bundleGeneratedRuntime(["class", "vars"]),
+		"createUnsafeCss(), generated all": bundleGeneratedRuntime([
 			"class",
 			"vars",
 			"raw",
@@ -176,14 +185,13 @@ test("runtime entries stay stylex-sized", async () => {
 		tw: bundle("runtime-tw.ts"),
 		"cx, plain": bundle("runtime-cx-plain.ts"),
 		cx: bundle("runtime-cx.ts"),
-		"all (css+tw+cx)": bundle("runtime-all.ts"),
+		"all (createUnsafeCss+tw+cx)": bundle("runtime-all.ts"),
 		"stylesheet generator (build-time only)": bundle("size-stylesheet.ts"),
-		// Same single-API imports but from the ROOT barrel (`pandwind`) — if
-		// the other engines were not tree-shaken away, these would be as big
-		// as the "all" bundle.
-		"root barrel, css only": bundle("tree-shake-css.ts"),
+		// The root barrel intentionally has no css export. This fixture keeps
+		// the CSS subpath isolated from the other root exports.
+		"unsafe css subpath only": bundle("tree-shake-css.ts"),
 		"root barrel, tw only": bundle("tree-shake-tw.ts"),
-		"root barrel, cx only": bundle("tree-shake-cx.ts"),
+		"root barrel, cx + unsafe css": bundle("tree-shake-cx.ts"),
 	};
 
 	// 1. Hard budgets — the committed "not too much" contract.
@@ -202,25 +210,25 @@ test("runtime entries stay stylex-sized", async () => {
 		);
 	}
 	for (const name of [
-		"css, compiler-pruned call",
-		"css, compiler-pruned class",
-		"css, compiler-pruned vars",
+		"createUnsafeCss(), compiler-pruned call",
+		"createUnsafeCss(), compiler-pruned class",
+		"createUnsafeCss(), compiler-pruned vars",
 	] as const) {
 		expect(sizes[name].min, `${name}: compiler pruning must reduce minified output`).toBeLessThan(
-			sizes.css.min,
+			sizes["createUnsafeCss(), fallback"].min,
 		);
 		expect(sizes[name].gz, `${name}: compiler pruning must reduce gzip output`).toBeLessThan(
-			sizes.css.gz,
+			sizes["createUnsafeCss(), fallback"].gz,
 		);
 	}
 	expect(
-		sizes["css, generated class+vars"].gz,
+		sizes["createUnsafeCss(), generated class+vars"].gz,
 		"generated class+vars runtime must be smaller than generated all",
-	).toBeLessThan(sizes["css, generated all"].gz);
+	).toBeLessThan(sizes["createUnsafeCss(), generated all"].gz);
 	expect(
-		sizes["css, generated class+vars"].min,
+		sizes["createUnsafeCss(), generated class+vars"].min,
 		"generated class+vars runtime must be smaller than generated all",
-	).toBeLessThan(sizes["css, generated all"].min);
+	).toBeLessThan(sizes["createUnsafeCss(), generated all"].min);
 
 	// 2. Regression guard vs the committed baseline (noise-tolerant).
 	if (!updatingSnapshots()) {
@@ -256,23 +264,31 @@ test("runtime entries stay stylex-sized", async () => {
 
 	// Root-barrel imports tree-shake down to the single engine: each one is
 	// within 300 gz bytes of its direct subpath import (no barrel overhead)…
-	expect(sizes["root barrel, css only"].gz).toBeLessThan(sizes.css.gz + 300);
+	expect(sizes["unsafe css subpath only"].gz).toBeLessThan(
+		sizes["createUnsafeCss(), fallback"].gz + 300,
+	);
 	expect(sizes["root barrel, tw only"].gz).toBeLessThan(sizes.tw.gz + 300);
-	expect(sizes["root barrel, cx only"].gz).toBeLessThan(sizes.cx.gz + 300);
-	// css() and tw() have no cross-dependencies: their root imports must be
-	// materially smaller than the combined bundle, proving the unused engines
-	// were dropped rather than shipped. Gzip is not additive, so a half-size
-	// assertion is brittle when the engines share minified helpers.
-	expect(sizes["root barrel, css only"].gz).toBeLessThan(sizes["all (css+tw+cx)"].gz - 300);
-	expect(sizes["root barrel, tw only"].gz).toBeLessThan(sizes["all (css+tw+cx)"].gz - 300);
-	// cx() depends on the css engine (atom registry), so its root import is
-	// near the css size — but it must still stay well under the combined
-	// bundle: tw()/preset have been shaken out.
-	expect(sizes["root barrel, cx only"].gz).toBeLessThan(sizes["all (css+tw+cx)"].gz - 400);
+	expect(sizes["root barrel, cx + unsafe css"].gz).toBeLessThan(sizes.cx.gz + 300);
+	// The isolated imports must be materially smaller than the combined bundle,
+	// proving the unused engines were dropped rather than shipped. Gzip is not
+	// additive, so a half-size assertion is brittle when helpers are shared.
+	expect(sizes["unsafe css subpath only"].gz).toBeLessThan(
+		sizes["all (createUnsafeCss+tw+cx)"].gz - 300,
+	);
+	expect(sizes["root barrel, tw only"].gz).toBeLessThan(
+		sizes["all (createUnsafeCss+tw+cx)"].gz - 300,
+	);
+	// cx() depends on the CSS engine (atom registry), so its root import is near
+	// the cx size but must still stay well under the combined bundle.
+	expect(sizes["root barrel, cx + unsafe css"].gz).toBeLessThan(
+		sizes["all (createUnsafeCss+tw+cx)"].gz - 400,
+	);
 
 	// The compiler path is the important runtime-size contract: a module made
 	// entirely from static css() calls carries only its resulting literals,
 	// while a dynamic value deliberately keeps the fallback engine.
-	expect(sizes["css, all static calls"].gz).toBeLessThan(200);
-	expect(sizes["css, all static calls"].gz).toBeLessThan(sizes["css, dynamic fallback"].gz);
+	expect(sizes["createUnsafeCss(), static output after extraction"].gz).toBeLessThan(200);
+	expect(sizes["createUnsafeCss(), static output after extraction"].gz).toBeLessThan(
+		sizes["createUnsafeCss(), dynamic fallback"].gz,
+	);
 });

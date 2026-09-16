@@ -23,16 +23,23 @@ The compact snapshot-derived typecheck and size summary is in
 
 | entry                                      |      min |     gzip |
 | ------------------------------------------ | -------: | -------: |
+| `createCss(preset)` fallback runtime       | 13.69 KB |  5.44 KB |
 | `createUnsafeCss()` fallback runtime       | 12.94 KB |  5.17 KB |
+| `createCssRuntime()` core (**internal**)   |  8.23 KB |  3.46 KB |
 | `createRuntimeCss()` + runtime sheet       | 34.29 KB | 12.61 KB |
 | `tw()` runtime                             |  2.80 KB |  1.31 KB |
 | `cx()` runtime                             | 19.88 KB |  7.74 KB |
 | all three direct runtime entries           | 22.57 KB |  8.69 KB |
 | stylesheet generator (**build-time only**) | 21.09 KB |  8.18 KB |
 
-The combined runtime is measured at 22.57 KB min / 8.69 KB gzip in this
-record. The fallback helper adds a small shared decoder to the dynamic CSS
-lane; fully extracted static calls remain below 100 bytes.
+The combined direct runtime is measured at 22.57 KB min / 8.69 KB gzip in this
+record for `createUnsafeCss()` + `tw()` + `cx()`. The preset-bound
+`createCss(preset)` fallback is measured separately because it also carries
+the preset-aware resolver. The internal `createCssRuntime()` row has no public
+method attachments and is included only to show the shared engine's base
+cost; applications should use `createCss()` or `createUnsafeCss()` instead.
+The fallback helper adds a small shared decoder to the dynamic CSS lane; fully
+extracted static calls remain below 100 bytes.
 
 The runtime-sheet row uses the minimal preset fixture. A real application
 preset also contributes its own token and condition data; that data is

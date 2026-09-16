@@ -80,19 +80,24 @@ exact byte record is the committed `runtime-size.json.snap` and the hard
 ceilings are in `runtime-budget.json`. Values below use decimal KB
 (1 KB = 1,000 bytes) for readability.
 
-| entry                        | minified |     gzip |
-| ---------------------------- | -------: | -------: |
-| `createUnsafeCss()` fallback | 12.94 KB |  5.17 KB |
-| `tw()`                       |  2.80 KB |  1.31 KB |
-| `cx()` plain strings         |  7.03 KB |  3.01 KB |
-| `cx()`                       | 19.88 KB |  7.74 KB |
-| all direct runtime entries   | 22.57 KB |  8.69 KB |
-| `createRuntimeCss()` + sheet | 34.29 KB | 12.61 KB |
+| entry                                          | minified |     gzip |
+| ---------------------------------------------- | -------: | -------: |
+| `createCssRuntime()` core (internal)           |  8.23 KB |  3.46 KB |
+| `createCss(preset)` fallback                   | 13.69 KB |  5.44 KB |
+| `createUnsafeCss()` fallback                   | 12.94 KB |  5.17 KB |
+| `tw()`                                         |  2.80 KB |  1.31 KB |
+| `cx()` plain strings                           |  7.03 KB |  3.01 KB |
+| `cx()`                                         | 19.88 KB |  7.74 KB |
+| all direct runtime entries (`unsafeCss+tw+cx`) | 22.57 KB |  8.69 KB |
+| `createRuntimeCss(preset)` + sheet             | 34.29 KB | 12.61 KB |
 
-The combined runtime is 22.57 KB min / 8.69 KB gzip in this record. The
-fallback helper adds a small shared decoder to the dynamic CSS lane, while
-fully extracted static calls remain below 100 bytes. The root `SIZE.md` is
-only a pointer and no longer duplicates these numbers.
+The combined direct runtime is 22.57 KB min / 8.69 KB gzip in this record for
+`createUnsafeCss()` + `tw()` + `cx()`. The preset-bound `createCss(preset)`
+fallback is measured separately because it also carries the preset-aware
+resolver. The internal `createCssRuntime()` row has no public method
+attachments; it is included to show the shared engine's base cost, not as an
+application entry point. Fully extracted static calls remain below 100 bytes.
+The root `SIZE.md` is only a pointer and no longer duplicates these numbers.
 
 ## Public runtime API throughput snapshot
 

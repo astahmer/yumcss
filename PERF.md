@@ -238,28 +238,30 @@ The dedicated runtime snapshot is [runtime-api-benchmark.json.snap](packages/pan
 
 Lower is smaller. Sizes are decimal KB (1 KB = 1,000 bytes); exact byte values remain in the committed snapshot and budgets. Static output and build-time-only rows are included for completeness but are not browser runtime costs.
 
-| Rank | Entry                                  | Kind               | Minified (KB) | Gzip (KB) |
-| ---: | -------------------------------------- | ------------------ | ------------: | --------: |
-|    1 | css, all static calls                  | static output      |          0.08 |      0.10 |
-|    2 | root barrel, tw only                   | tree-shaken barrel |          2.80 |      1.31 |
-|    3 | tw                                     | runtime            |          2.80 |      1.31 |
-|    4 | cx, plain                              | runtime            |          7.03 |      3.01 |
-|    5 | css, generated call                    | generated runtime  |          8.16 |      3.40 |
-|    6 | css, generated class                   | generated runtime  |          8.22 |      3.42 |
-|    7 | css, compiler-pruned call              | compiler-pruned    |          8.22 |      3.44 |
-|    8 | css, compiler-pruned class             | compiler-pruned    |          8.29 |      3.46 |
-|    9 | css, generated vars                    | generated runtime  |         10.51 |      4.24 |
-|   10 | css, generated class+vars              | generated runtime  |         10.57 |      4.27 |
-|   11 | css, compiler-pruned vars              | compiler-pruned    |         10.58 |      4.28 |
-|   12 | css, generated all                     | generated runtime  |         12.84 |      5.09 |
-|   13 | css, dynamic fallback                  | runtime            |         12.93 |      5.16 |
-|   14 | css                                    | runtime            |         12.94 |      5.17 |
-|   15 | root barrel, css only                  | tree-shaken barrel |         12.95 |      5.17 |
-|   16 | cx                                     | runtime            |         19.88 |      7.74 |
-|   17 | root barrel, cx only                   | tree-shaken barrel |         19.88 |      7.76 |
-|   18 | stylesheet generator (build-time only) | build-time only    |         21.09 |      8.18 |
-|   19 | all (css+tw+cx)                        | runtime            |         22.57 |      8.69 |
-|   20 | css, runtime sheet                     | runtime            |         34.32 |     12.62 |
+| Rank | Entry                                             | Kind                  | Minified (KB) | Gzip (KB) |
+| ---: | ------------------------------------------------- | --------------------- | ------------: | --------: |
+|    1 | createUnsafeCss(), static output after extraction | static output         |          0.08 |      0.10 |
+|    2 | root barrel, tw only                              | tree-shaken barrel    |          2.80 |      1.31 |
+|    3 | tw                                                | runtime               |          2.80 |      1.31 |
+|    4 | cx, plain                                         | runtime               |          7.03 |      3.01 |
+|    5 | createUnsafeCss(), generated call                 | generated runtime     |          8.17 |      3.40 |
+|    6 | createUnsafeCss(), generated class                | generated runtime     |          8.22 |      3.42 |
+|    7 | createUnsafeCss(), compiler-pruned call           | compiler-pruned       |          8.23 |      3.44 |
+|    8 | createCssRuntime() core (internal)                | internal core         |          8.23 |      3.46 |
+|    9 | createUnsafeCss(), compiler-pruned class          | compiler-pruned       |          8.29 |      3.46 |
+|   10 | createUnsafeCss(), generated vars                 | generated runtime     |         10.51 |      4.24 |
+|   11 | createUnsafeCss(), generated class+vars           | generated runtime     |         10.57 |      4.27 |
+|   12 | createUnsafeCss(), compiler-pruned vars           | compiler-pruned       |         10.58 |      4.28 |
+|   13 | createUnsafeCss(), generated all                  | generated runtime     |         12.84 |      5.09 |
+|   14 | createUnsafeCss(), dynamic fallback               | unsafe fallback       |         12.93 |      5.16 |
+|   15 | createUnsafeCss(), fallback                       | unsafe fallback       |         12.94 |      5.17 |
+|   16 | unsafe css subpath only                           | tree-shaken subpath   |         12.95 |      5.17 |
+|   17 | createCss(preset), fallback                       | preset-bound fallback |         13.69 |      5.44 |
+|   18 | cx                                                | runtime               |         19.88 |      7.74 |
+|   19 | root barrel, cx + unsafe css                      | tree-shaken barrel    |         19.88 |      7.76 |
+|   20 | stylesheet generator (build-time only)            | build-time only       |         21.09 |      8.18 |
+|   21 | all (createUnsafeCss+tw+cx)                       | runtime               |         22.57 |      8.69 |
+|   22 | createRuntimeCss(preset), live sheet              | live sheet            |         34.32 |     12.62 |
 
 ## Generated Tailwind metadata size
 
