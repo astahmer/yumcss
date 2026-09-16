@@ -3,7 +3,7 @@ import type { ClassNameStrategy } from "../css/class-name-strategy.ts";
 import type { CssCascadeMode } from "../css/cascade.ts";
 import { createHashFn } from "../css/hash.ts";
 import type { StyleBackend } from "./types.ts";
-import { normalizeCssValue } from "../css/value-normalization.ts";
+import { isEncodedFirstThatWorks, normalizeFirstThatWorks } from "../css/first-that-works.ts";
 
 type CssBackend = Omit<StyleBackend, "declare"> & {
 	/** Atom registry shared with the stylesheet generator and cx. */
@@ -127,7 +127,12 @@ export function createCssBackend(options: CssBackendOptions = {}): CssBackend {
 	const declare = (key: string, value: string | number): string => {
 		const orderedKey = canonicalStyleKey(key, options.conditions);
 		const property = cssPropertyFromKey(orderedKey, options.conditions);
-		const rawValue = normalizeCssValue(property, value);
+		if (isEncodedFirstThatWorks(value) && strategy !== undefined && !sheetBacked) {
+			throw new Error(
+				"pandwind: firstThatWorks requires the atomic stylesheet or a sheet-backed class-name strategy.",
+			);
+		}
+		const rawValue = normalizeFirstThatWorks(property, value);
 		let values = declarations.get(orderedKey);
 		if (values === undefined) {
 			values = new Map();

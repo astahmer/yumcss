@@ -68,25 +68,25 @@ equivalent):
 Warm `cx()` matches or beats tailwind-merge exactly where class strings grow
 — while additionally resolving css() atoms and merging across engines.
 
-## Current runtime size record — 2026-09-10
+## Current runtime size record — 2026-09-16
 
 The canonical byte table is [the size reference](/reference/size/); the
 exact record is the committed `runtime-size.json.snap` and the hard
 ceilings are in `runtime-budget.json`.
 
-| entry                        | minified |  gzip |
-| ---------------------------- | -------: | ----: |
-| `createUnsafeCss()` fallback |    6,781 | 2,974 |
-| `tw()`                       |    2,711 | 1,266 |
-| `cx()` plain strings         |    6,031 | 2,671 |
-| `cx()`                       |   12,709 | 5,309 |
-| all direct runtime entries   |   15,311 | 6,245 |
-| `createRuntimeCss()` + sheet |   20,907 | 8,423 |
+| entry                        | minified |   gzip |
+| ---------------------------- | -------: | -----: |
+| `createUnsafeCss()` fallback |   12,943 |  5,165 |
+| `tw()`                       |    2,800 |  1,314 |
+| `cx()` plain strings         |    7,027 |  3,008 |
+| `cx()`                       |   19,875 |  7,737 |
+| all direct runtime entries   |   22,566 |  8,690 |
+| `createRuntimeCss()` + sheet |   34,291 | 12,611 |
 
-The combined runtime is effectively at the supplied Emotion reference:
-both round to 15.31 KB min / 6.25 KB gzip against the supplied 15.3 KB /
-6.25 KB reference. The root `SIZE.md` is only a pointer and no longer
-duplicates these numbers.
+The combined runtime is 22.57 KB min / 8.69 KB gzip in this record. The
+fallback helper adds a small shared decoder to the dynamic CSS lane, while
+fully extracted static calls remain below 100 bytes. The root `SIZE.md` is
+only a pointer and no longer duplicates these numbers.
 
 ## Historical runtime hot-path pass — 2026-09-01
 
@@ -129,13 +129,13 @@ record is:
 
 | selection       | minified |  gzip |
 | --------------- | -------: | ----: |
-| callable core   |    3,894 | 1,755 |
-| `class`         |    3,949 | 1,776 |
-| `vars`          |    5,496 | 2,428 |
-| `class,vars`    |    5,550 | 2,450 |
-| all attachments |    6,691 | 2,914 |
+| callable core   |    8,165 | 3,402 |
+| `class`         |    8,220 | 3,422 |
+| `vars`          |   10,512 | 4,244 |
+| `class,vars`    |   10,568 | 4,267 |
+| all attachments |   12,842 | 5,088 |
 
-The `class,vars` module therefore removes **1,141 minified bytes / 464 gzip
+The `class,vars` module therefore removes **2,274 minified bytes / 821 gzip
 bytes** from the generated all-method module. This is a bundle-size saving;
 the callable core and selected attachment implementations are unchanged, so
 the optimization does not add runtime dispatch or dynamic loading. The exact

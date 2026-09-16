@@ -20,7 +20,12 @@ import {
 	assertColorPaletteConfigured,
 } from "./color-palette-validation.ts";
 import { buildRuntimeColorPaletteMaps } from "./runtime-color-palettes.ts";
-import { isSafeCssValue, normalizeCssValue } from "./value-normalization.ts";
+import {
+	decodeFirstThatWorks,
+	isCompilableCssValue,
+	normalizeFirstThatWorks,
+} from "./first-that-works.ts";
+import { normalizeCssValue } from "./value-normalization.ts";
 import {
 	createConditionsBucket,
 	decodeAtomicPath,
@@ -165,12 +170,43 @@ export const createRuntimeStylesheet = (
 		normalizedValue: string,
 		localCache: Map<string, Rule>,
 	): void => {
-		if (orderedKey === "" || !isSafeCssValue(normalizedValue)) return;
+		if (orderedKey === "" || !isCompilableCssValue(normalizedValue)) return;
 		const pairId = pairs.concat(orderedKey, normalizedValue);
 		if (cache.has(pairId)) return;
 
 		const atomic = decodeAtomicPath(preset.conditions, pairId);
 		const property = cssPropertyFromKey(atomic.prop, preset.conditions);
+		const fallbackValues = decodeFirstThatWorks(normalizedValue);
+		if (fallbackValues !== undefined) {
+			if (sheetStrategy !== undefined && sheetStrategy.sheetBacked !== true) {
+				throw new Error(
+					"pandwind: firstThatWorks requires the atomic stylesheet or a sheet-backed class-name strategy.",
+				);
+			}
+			if (property === "colorPalette") {
+				throw new Error("pandwind: firstThatWorks cannot be used with the colorPalette selector.");
+			}
+			const declaration = fallbackValues
+				.map((value) => normalizeCssValue(property, value))
+				.toReversed()
+				.map((value) => {
+					const colorPaletteValue = isColorProperty(property)
+						? colorPaletteMaps?.values.get(value)
+						: undefined;
+					const resolved =
+						colorPaletteValue ?? resolveRuntimeTokenValue(tokenMaps, property, value);
+					return [dashCase(property), resolved].join(":");
+				})
+				.join(";");
+			const css = genCSSRule(declaration, {
+				...atomic.conditions,
+				className: `.${escapeIdentifier(classNameFor(orderedKey, normalizedValue))}`,
+			});
+			const rule = { id: pairId, css, priority: atomic.priority };
+			cache.set(pairId, rule);
+			localCache.set(pairId, rule);
+			return;
+		}
 		if (property === "colorPalette") {
 			const assignments = colorPaletteMaps?.palettes.get(normalizedValue);
 			if (assignments === undefined || assignments.length === 0) {
@@ -208,10 +244,10 @@ export const createRuntimeStylesheet = (
 		const localCache = new Map<string, Rule>();
 		for (const { key, value } of styles) {
 			if (typeof key !== "string" || key.length === 0 || key.includes("\u0000")) continue;
-			if (!isSafeCssValue(value)) continue;
+			if (!isCompilableCssValue(value)) continue;
 			const orderedKey = canonicalStyleKey(key, preset.conditions);
 			const property = cssPropertyFromKey(orderedKey, preset.conditions);
-			processNormalizedStyle(orderedKey, normalizeCssValue(property, value), localCache);
+			processNormalizedStyle(orderedKey, normalizeFirstThatWorks(property, value), localCache);
 		}
 		return localCache;
 	};

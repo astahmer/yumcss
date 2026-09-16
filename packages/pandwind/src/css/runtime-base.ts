@@ -10,7 +10,7 @@ import type {
 import { createCssBackend, cssPropertyFromKey, type CssBackendOptions } from "../backends/css.ts";
 import { ATOM_REGISTRY, type AtomRegistry } from "./atoms.ts";
 import { createTokenResolver } from "./tokens.ts";
-import { isSafeCssValue } from "./value-normalization.ts";
+import { isCompilableCssValue } from "./first-that-works.ts";
 
 /**
  * Options shared by the public CSS factories.
@@ -148,7 +148,7 @@ export function createCssRuntime(
 			const compiled = Object.create(null) as CompiledStyles;
 			for (const key of Object.keys(styles[0])) {
 				const value = styles[0][key];
-				if (isSafeCssValue(value)) compiled[key] = declare(key, value);
+				if (isCompilableCssValue(value)) compiled[key] = declare(key, value);
 			}
 			Object.defineProperty(compiled, "$$css", { value: true, enumerable: false });
 			return compiled;
@@ -163,7 +163,7 @@ export function createCssRuntime(
 		const compiled = Object.create(null) as CompiledStyles;
 		for (const key of Object.keys(flat)) {
 			const value = flat[key];
-			if (isSafeCssValue(value)) compiled[key] = declare(key, value);
+			if (isCompilableCssValue(value)) compiled[key] = declare(key, value);
 		}
 		Object.defineProperty(compiled, "$$css", { value: true, enumerable: false });
 		return compiled;
@@ -173,7 +173,7 @@ export function createCssRuntime(
 			let className = "";
 			for (const key of Object.keys(styles[0])) {
 				const value = styles[0][key];
-				if (!isSafeCssValue(value)) continue;
+				if (!isCompilableCssValue(value)) continue;
 				if (className) className += " ";
 				className += declare(key, value);
 			}

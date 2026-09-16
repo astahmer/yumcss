@@ -319,7 +319,7 @@
 	"scripts": {
 		"build": "pnpm exec tsdown",
 		"typecheck": "tsc --noEmit",
-		"test": "vitest run --exclude tests/runtime-benchmark.test.ts && vitest run --pool forks --maxWorkers 1 tests/runtime-benchmark.test.ts",
+		"test": "vitest run --exclude tests/runtime-benchmark.test.ts --exclude tests/tsc-performance.test.ts && vitest run --pool forks --maxWorkers 1 tests/runtime-benchmark.test.ts && vitest run --pool forks --maxWorkers 1 tests/tsc-performance.test.ts",
 		"test:coverage": "vitest run --coverage",
 		"test:watch": "vitest",
 		"test:size": "vitest run runtime-size",

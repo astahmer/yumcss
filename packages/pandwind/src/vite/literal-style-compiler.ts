@@ -2,7 +2,11 @@ import type { ClassNameStrategy } from "../css/class-name-strategy.ts";
 import { createHashFn } from "../css/hash.ts";
 import type { AtomRegistry } from "../css/atoms.ts";
 import { cssPropertyFromKey } from "../backends/css.ts";
-import { isSafeCssValue, normalizeCssValue } from "../css/value-normalization.ts";
+import {
+	isCompilableCssValue,
+	isEncodedFirstThatWorks,
+	normalizeFirstThatWorks,
+} from "../css/first-that-works.ts";
 import { resolveDesignStyle } from "../design/resolve.ts";
 import { flattenStyle, pairs } from "../lib/utils.ts";
 import type { CssPreset } from "./css-extract.ts";
@@ -55,7 +59,7 @@ class PandwindLiteralStyleCompiler implements LiteralStyleCompiler {
 		const merged = new Map<string, string>();
 		for (const key of Object.keys(flat)) {
 			const rawValue = flat[key];
-			if (!isSafeCssValue(rawValue)) return null;
+			if (!isCompilableCssValue(rawValue)) return null;
 			if (typeof rawValue === "string" && rawValue.startsWith("input>$")) return null;
 			const orderedKey = pairs.join(
 				pairs
@@ -64,13 +68,14 @@ class PandwindLiteralStyleCompiler implements LiteralStyleCompiler {
 					.toSorted(),
 			);
 			const property = cssPropertyFromKey(orderedKey, this.options.preset.conditions);
-			merged.set(orderedKey, normalizeCssValue(property, rawValue));
+			merged.set(orderedKey, normalizeFirstThatWorks(property, rawValue));
 		}
 
 		const classes: string[] = [];
 		const prepared: PreparedStyle[] = [];
 		for (const [orderedKey, value] of merged) {
 			if (orderedKey.includes("$input")) return null;
+			if (isEncodedFirstThatWorks(value) && this.className?.sheetBacked !== true) return null;
 			let name: string | undefined;
 			if (this.className !== undefined) {
 				try {

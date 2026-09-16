@@ -76,6 +76,36 @@ Use `css()` when a mergeable declaration map is useful, `css.class()` when the
 host wants a direct class string, and reserve `css.vars()` for values that are
 only known at runtime. Neither CSS projection is generally preferred.
 
+### Progressive fallback declarations
+
+Use `firstThatWorks()` when one CSS property needs an ordered fallback chain:
+
+```ts
+import { createCss, firstThatWorks } from "pandwind/css";
+
+const css = createCss(preset);
+const cardClass = css.class({
+	position: firstThatWorks("sticky", "-webkit-sticky", "fixed"),
+});
+```
+
+The first value is the preferred value. Pandwind emits the declarations in
+reverse order under one atomic class, so later supported declarations win:
+
+```css
+.atom {
+	position: fixed;
+	position: -webkit-sticky;
+	position: sticky;
+}
+```
+
+Each value still goes through the normal preset token resolution and numeric
+normalization. The chain is one property identity, so `cx()` can merge it with
+another `position` declaration. This is a static declaration feature: use
+`css()` or `css.class()` (and keep `css.raw()` for stylesheet consumers), not
+`css.vars()`, whose values intentionally stay in inline custom properties.
+
 This lane is for ordinary CSS properties with a small production path:
 literal calls can be extracted at build time, while dynamic values can use
 inline custom properties or an explicit runtime sheet. The

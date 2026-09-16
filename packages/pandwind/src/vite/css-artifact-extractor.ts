@@ -3,6 +3,7 @@ import {
 	evalLiteral,
 	evalLiteralValues,
 	literalValueSetSize,
+	type LiteralCallEvaluator,
 	type LiteralConstantScope,
 	type OxcNode,
 	walk,
@@ -16,9 +17,11 @@ import type {
 	ExtractedCssStyle,
 } from "./css-extraction-contracts.ts";
 import type { CssSourceScanner } from "./css-extraction-contracts.ts";
-import { NodeKind, PropertyKindTag } from "../ast-node-kind.ts";
+import { NodeKind, PropertyKindTag, VariableDeclarationKindTag } from "../ast-node-kind.ts";
 import { cssVar } from "../lib/utils.ts";
 import { findReactStrictDomBindings, isReactStrictDomCreateCall } from "./css-react-strict-dom.ts";
+import { createFirstThatWorksEvaluator } from "./css-first-that-works.ts";
+import { findFirstThatWorksBindings } from "./css-source-scanner.ts";
 
 /** Resolves literal style calls into artifacts while preserving source provenance. */
 interface CallNode extends OxcNode {
@@ -80,6 +83,7 @@ const inputName = (node: OxcNode | undefined, names: ReadonlySet<string>): strin
 const evaluateInputStyle = (
 	node: OxcNode | undefined,
 	names: ReadonlySet<string>,
+	evaluateCall: LiteralCallEvaluator,
 ): EvaluatedValue | undefined => {
 	const name = inputName(node, names);
 	if (name !== undefined) {
@@ -100,14 +104,14 @@ const evaluateInputStyle = (
 			const key = propertyName(child);
 			if (key === undefined) return undefined;
 			if (key === "$input") continue;
-			const evaluated = evaluateInputStyle(child.value, names);
+			const evaluated = evaluateInputStyle(child.value, names, evaluateCall);
 			if (evaluated === undefined) return undefined;
 			hasInput ||= evaluated.hasInput;
 			value[key] = evaluated.value;
 		}
 		return { ok: true, value, hasInput };
 	}
-	const value = evalLiteral(node as never);
+	const value = evalLiteral(node as never, undefined, evaluateCall);
 	return value === undefined ? undefined : { ok: true, value, hasInput: false };
 };
 
@@ -130,37 +134,73 @@ export class DesignCssArtifactExtractor implements CssArtifactExtractor {
 		const parsed = this.parse(id, code);
 		const sources: ExtractedCssStyle[] = [];
 		const reactStrictDom = findReactStrictDomBindings(parsed);
+		const evaluateCall = createFirstThatWorksEvaluator(findFirstThatWorksBindings(parsed));
 		// Finite-candidate discovery needs same-module constants; built lazily
 		// so all-literal files never pay for the constant walk.
 		let moduleConsts: LiteralConstantScope | undefined;
+		const getModuleConsts = (): LiteralConstantScope => {
+			if (moduleConsts !== undefined) return moduleConsts;
+			const values = new Map<string, unknown>(
+				[...collectModuleConstants(parsed as unknown as OxcNode)].map(
+					([name, known]) => [name, known.value] as const,
+				),
+			);
+			for (const statement of (parsed as { body?: OxcNode[] }).body ?? []) {
+				if (
+					statement.type !== NodeKind.VariableDeclaration ||
+					(statement as { kind?: string }).kind !== VariableDeclarationKindTag.Const
+				)
+					continue;
+				for (const declaration of (statement as { declarations?: OxcNode[] }).declarations ?? []) {
+					const binding = declaration as {
+						id?: { type?: string; name?: string };
+						init?: OxcNode | null;
+					};
+					if (
+						binding.id?.type !== NodeKind.Identifier ||
+						binding.id.name === undefined ||
+						binding.init === undefined ||
+						binding.init === null ||
+						values.has(binding.id.name)
+					)
+						continue;
+					const value = evalLiteral(binding.init as never, values, evaluateCall);
+					if (value !== undefined) values.set(binding.id.name, value);
+				}
+			}
+			moduleConsts = values;
+			return values;
+		};
 		walk(parsed, (node) => {
 			if (node.type !== NodeKind.CallExpression) return;
 			const call = node as CallNode;
 			const kind = this.callKind(call.callee, names, reactStrictDom.cssNames);
 			if (kind === undefined) return;
 			if (kind === "css.create") {
-				this.extractNamedStyles(sources, code, id, call);
+				this.extractNamedStyles(sources, code, id, call, evaluateCall);
 				return;
 			}
 			for (const argument of call.arguments) {
 				if (kind === "css.group") {
-					const groupStyles = this.extractInputGroupStyles(argument, names);
+					const groupStyles = this.extractInputGroupStyles(argument, names, evaluateCall);
 					if (groupStyles !== undefined) {
 						for (const style of groupStyles) this.pushStyle(sources, code, id, call, kind, style);
 						continue;
 					}
 				}
-				const literal = evalLiteral(argument as never);
+				const literal = evalLiteral(argument as never, undefined, evaluateCall);
 				if (typeof literal !== "object" || literal === null) {
-					this.pushPartialLiteral(sources, code, id, call, kind, argument);
-					this.pushFiniteCandidates(sources, code, id, call, kind, argument, () => {
-						moduleConsts ??= new Map(
-							[...collectModuleConstants(parsed as unknown as OxcNode)].map(
-								([name, known]) => [name, known.value] as const,
-							),
-						);
-						return moduleConsts;
-					});
+					this.pushPartialLiteral(sources, code, id, call, kind, argument, evaluateCall);
+					this.pushFiniteCandidates(
+						sources,
+						code,
+						id,
+						call,
+						kind,
+						argument,
+						getModuleConsts,
+						evaluateCall,
+					);
 					continue;
 				}
 				const styles =
@@ -187,6 +227,7 @@ export class DesignCssArtifactExtractor implements CssArtifactExtractor {
 	private extractInputGroupStyles(
 		argument: unknown,
 		names: ReadonlySet<string>,
+		evaluateCall: LiteralCallEvaluator,
 	): readonly Record<string, unknown>[] | undefined {
 		const node = argument as OxcNode | undefined;
 		if (node?.type !== NodeKind.ObjectExpression) return undefined;
@@ -194,7 +235,7 @@ export class DesignCssArtifactExtractor implements CssArtifactExtractor {
 		let hasInput = false;
 		for (const property of (node as { properties?: PropertyNode[] }).properties ?? []) {
 			if (property.type !== NodeKind.Property) continue;
-			const evaluated = evaluateInputStyle(property.value, names);
+			const evaluated = evaluateInputStyle(property.value, names, evaluateCall);
 			if (
 				evaluated === undefined ||
 				typeof evaluated.value !== "object" ||
@@ -229,6 +270,7 @@ export class DesignCssArtifactExtractor implements CssArtifactExtractor {
 		call: CallNode,
 		kind: ExtractedCssStyle["provenance"]["callKind"],
 		argument: unknown,
+		evaluateCall: LiteralCallEvaluator,
 	): void {
 		if (kind === "css.group" || kind === "css.raw") return;
 		const node = argument as { type?: string; properties?: unknown[] } | null;
@@ -240,10 +282,12 @@ export class DesignCssArtifactExtractor implements CssArtifactExtractor {
 				key?: { name?: string; value?: { value?: string } };
 				value?: { type?: string; value?: unknown };
 			};
-			if (entry?.type !== NodeKind.Property || entry.value?.type !== NodeKind.Literal) continue;
+			if (entry?.type !== NodeKind.Property) continue;
 			const key = entry.key?.name ?? entry.key?.value?.value;
 			if (typeof key !== "string") continue;
-			partial[key] = entry.value.value;
+			const value = evalLiteral(entry.value as never, undefined, evaluateCall);
+			if (value === undefined) continue;
+			partial[key] = value;
 		}
 		if (Object.keys(partial).length === 0) return;
 		this.pushStyle(sources, code, id, call, kind, partial);
@@ -266,10 +310,11 @@ export class DesignCssArtifactExtractor implements CssArtifactExtractor {
 		kind: ExtractedCssStyle["provenance"]["callKind"],
 		argument: unknown,
 		moduleConsts: () => LiteralConstantScope,
+		evaluateCall: LiteralCallEvaluator,
 	): void {
 		if (kind === "css.raw") return;
 		if ((argument as { type?: string } | null)?.type === NodeKind.SpreadElement) return;
-		const valueSet = evalLiteralValues(argument as never, moduleConsts());
+		const valueSet = evalLiteralValues(argument as never, moduleConsts(), evaluateCall);
 		if (valueSet === undefined || literalValueSetSize(valueSet) === 0) return;
 		for (const value of valueSet.values) {
 			if (typeof value !== "object" || value === null) continue;
@@ -333,6 +378,7 @@ export class DesignCssArtifactExtractor implements CssArtifactExtractor {
 		code: string,
 		id: string,
 		call: CallNode,
+		evaluateCall: LiteralCallEvaluator,
 	): void {
 		const argument = call.arguments[0] as { type?: string; properties?: unknown[] } | undefined;
 		if (argument?.type !== NodeKind.ObjectExpression) return;
@@ -342,7 +388,7 @@ export class DesignCssArtifactExtractor implements CssArtifactExtractor {
 				value?: OxcNode;
 			};
 			if (entry.type !== NodeKind.Property || entry.value === undefined) continue;
-			const literal = evalLiteral(entry.value as never);
+			const literal = evalLiteral(entry.value as never, undefined, evaluateCall);
 			if (typeof literal === "object" && literal !== null && !Array.isArray(literal)) {
 				this.pushStyle(sources, code, id, call, "css.create", literal as Record<string, unknown>);
 				continue;
@@ -353,7 +399,7 @@ export class DesignCssArtifactExtractor implements CssArtifactExtractor {
 					? (entry.value as { body?: OxcNode }).body
 					: undefined;
 			if (body?.type === NodeKind.ObjectExpression)
-				this.pushPartialLiteral(sources, code, id, call, "css.create", body);
+				this.pushPartialLiteral(sources, code, id, call, "css.create", body, evaluateCall);
 		}
 	}
 }

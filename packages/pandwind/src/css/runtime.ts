@@ -192,7 +192,7 @@ function runtimeOptions(preset: CssConfigReturn, options: RuntimeCssOptions): Ru
 	const authoredStrategy = cssOptions.className;
 	const runtimeStrategy: ClassNameStrategy = {
 		name: authoredStrategy?.name ?? "runtime",
-		sheetBacked: authoredStrategy?.sheetBacked,
+		sheetBacked: authoredStrategy?.sheetBacked ?? true,
 		toClassName: (key, value) => {
 			const custom = authoredStrategy?.toClassName(key, value);
 			const hasCustomClass =

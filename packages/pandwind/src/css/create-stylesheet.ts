@@ -33,7 +33,12 @@ import {
 	type RuleSerializerPolicy,
 	type StylesheetOrderingPolicy,
 } from "./stylesheet-policies.ts";
-import { isSafeCssValue, normalizeCssValue } from "./value-normalization.ts";
+import {
+	decodeFirstThatWorks,
+	isCompilableCssValue,
+	normalizeFirstThatWorks,
+} from "./first-that-works.ts";
+import { normalizeCssValue } from "./value-normalization.ts";
 
 export { decodeAtomicPath } from "./stylesheet-lowering.ts";
 export { getPropertyPriority } from "./property-priorities.ts";
@@ -226,13 +231,13 @@ export const createStylesheet = (
 		const localCache = new Map<string, Rule>();
 		for (const key of Object.keys(style)) {
 			const rawValue = style[key];
-			if (!isSafeCssValue(rawValue)) continue;
+			if (!isCompilableCssValue(rawValue)) continue;
 			// By sorting the atomic path, we ensure different atomic paths leading to the same CSS
 			// will always have the same hash
 			// ex: `css({ _hover: { color: "red" } })` === `css({ color: { _hover: "red" }  })`
 			const orderedKey = canonicalStyleKey(key, preset.conditions);
 			const property = cssPropertyFromKey(orderedKey, preset.conditions);
-			const normalizedValue = normalizeCssValue(property, rawValue);
+			const normalizedValue = normalizeFirstThatWorks(property, rawValue);
 			processNormalizedStyle(orderedKey, normalizedValue, localCache);
 		}
 
@@ -245,12 +250,60 @@ export const createStylesheet = (
 		localCache: Map<string, Rule>,
 		preparedClassName?: string,
 	): void => {
-		if (orderedKey === "" || !isSafeCssValue(normalizedValue)) return;
+		if (orderedKey === "" || !isCompilableCssValue(normalizedValue)) return;
 		const pairId = pairs.concat(orderedKey, normalizedValue);
 		if (cache.has(pairId)) return;
 
 		const atomic = decoder.decode(preset.conditions, pairId);
 		const property = cssPropertyFromKey(atomic.prop!, preset.conditions);
+		const fallbackValues = decodeFirstThatWorks(normalizedValue);
+		if (fallbackValues !== undefined) {
+			if (sheetStrategy !== undefined && sheetStrategy.sheetBacked !== true) {
+				throw new Error(
+					"pandwind: firstThatWorks requires the atomic stylesheet or a sheet-backed class-name strategy.",
+				);
+			}
+			if (property === "colorPalette") {
+				throw new Error("pandwind: firstThatWorks cannot be used with the colorPalette selector.");
+			}
+			const declaration = fallbackValues
+				.map((value) => normalizeCssValue(property, value))
+				.toReversed()
+				.map((value) => {
+					const tokenGroup = tokenMaps.groupByProp.get(property);
+					const tokenNames = tokenMaps.tokensByProp.get(property);
+					if (tokenNames?.has(value)) {
+						const tokenPath = tokenMaps.flatTokens.get(
+							`${tokenGroup ?? atomic.prop!}.${value}`,
+						)?.path;
+						if (tokenPath !== undefined) {
+							for (const dependency of tokenDependencyPaths(tokenMaps, tokenPath)) {
+								if (usedTokenPaths.has(dependency)) continue;
+								usedTokenPaths.add(dependency);
+								tokensCache = undefined;
+							}
+						}
+					}
+					const colorPaletteValue = isColorProperty(property)
+						? colorPaletteMaps.values.get(value)
+						: undefined;
+					const resolved = colorPaletteValue ?? resolveTokenValue(tokenMaps, property, value);
+					return [dashCase(property), resolved].join(":");
+				})
+				.join(";");
+			const className =
+				preparedClassName !== undefined && isSafeClassName(preparedClassName)
+					? preparedClassName
+					: classNameFor(orderedKey, normalizedValue);
+			const css = serializeStyle(declaration, {
+				...atomic.conditions,
+				className: `.${escapeIdentifier(className)}`,
+			});
+			const rule = { id: pairId, css, priority: atomic.priority };
+			cache.set(pairId, rule);
+			localCache.set(pairId, rule);
+			return;
+		}
 		if (property === "colorPalette") {
 			const assignments = colorPaletteMaps.palettes.get(normalizedValue);
 			if (assignments === undefined || assignments.length === 0) {
@@ -321,12 +374,12 @@ export const createStylesheet = (
 		const localCache = new Map<string, Rule>();
 		for (const { key, value, className: preparedClassName } of styles) {
 			if (typeof key !== "string" || key.length === 0 || key.includes("\u0000")) continue;
-			if (!isSafeCssValue(value)) continue;
+			if (!isCompilableCssValue(value)) continue;
 			const orderedKey = canonicalStyleKey(key, preset.conditions);
 			const property = cssPropertyFromKey(orderedKey, preset.conditions);
 			processNormalizedStyle(
 				orderedKey,
-				normalizeCssValue(property, value),
+				normalizeFirstThatWorks(property, value),
 				localCache,
 				preparedClassName,
 			);

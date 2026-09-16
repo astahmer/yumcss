@@ -8,6 +8,7 @@ import {
 	type RuntimeCssAttachment,
 } from "./runtime-base.ts";
 import type { VarsOutput } from "./var-compiler.ts";
+import { isCompilableCssValue } from "./first-that-works.ts";
 import { isSafeCssValue, normalizeCssValue } from "./value-normalization.ts";
 import { cssPropertyFromKey } from "../backends/css.ts";
 
@@ -33,7 +34,7 @@ export const attachGroup: RuntimeCssAttachment = (css, context) => {
 			const compiled = Object.create(null) as Record<string, string>;
 			const inputProperties = new Map<string, string | undefined>();
 			for (const [key, value] of Object.entries(flat)) {
-				if (!isSafeCssValue(value)) continue;
+				if (!isCompilableCssValue(value)) continue;
 				const inputName =
 					typeof value === "string" && value.startsWith("input>$")
 						? value.slice("input>$".length)

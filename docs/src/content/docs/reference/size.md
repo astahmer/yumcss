@@ -5,7 +5,7 @@ sidebar:
   order: 2
 ---
 
-Last measured: **2026-09-10** for the Pandwind runtime byte record. The
+Last measured: **2026-09-16** for the Pandwind runtime byte record. The
 competitor rows retain the supplied reference measurements for the named
 versions. The environment was local macOS (arm64), Node v24.19.0, esbuild
 0.28.2. Pandwind numbers come from real browser-targeted esbuild bundles
@@ -19,19 +19,18 @@ with ceilings in
 
 ## The short version
 
-| entry                                      |      min |    gzip |
-| ------------------------------------------ | -------: | ------: |
-| `createUnsafeCss()` fallback runtime       |  6.78 KB | 2.97 KB |
-| `createRuntimeCss()` + runtime sheet       | 20.91 KB | 8.42 KB |
-| `tw()` runtime                             |  2.71 KB | 1.27 KB |
-| `cx()` runtime                             | 12.71 KB | 5.31 KB |
-| all three direct runtime entries           | 15.31 KB | 6.25 KB |
-| stylesheet generator (**build-time only**) | 12.71 KB | 5.41 KB |
+| entry                                      |      min |     gzip |
+| ------------------------------------------ | -------: | -------: |
+| `createUnsafeCss()` fallback runtime       | 12.94 KB |  5.17 KB |
+| `createRuntimeCss()` + runtime sheet       | 34.29 KB | 12.61 KB |
+| `tw()` runtime                             |  2.80 KB |  1.31 KB |
+| `cx()` runtime                             | 19.88 KB |  7.74 KB |
+| all three direct runtime entries           | 22.57 KB |  8.69 KB |
+| stylesheet generator (**build-time only**) | 21.09 KB |  8.18 KB |
 
-The combined runtime is effectively at the supplied Emotion reference
-(15.3 KB min / 6.25 KB gzip): both round to 15.31 KB min / 6.25 KB gzip in
-this record. The old 10.51 KB / 4.38 KB row was an obsolete pre-feature
-snapshot and is intentionally no longer quoted.
+The combined runtime is measured at 22.57 KB min / 8.69 KB gzip in this
+record. The fallback helper adds a small shared decoder to the dynamic CSS
+lane; fully extracted static calls remain below 100 bytes.
 
 The runtime-sheet row uses the minimal preset fixture. A real application
 preset also contributes its own token and condition data; that data is
@@ -44,36 +43,36 @@ free. The same size gate checks these tree-shaken entry points:
 
 | fixture / import                        |      min |    gzip |
 | --------------------------------------- | -------: | ------: |
-| `pandwind/css` — css() only             |  6.78 KB | 2.97 KB |
-| `pandwind/tw` — tw() only               |  2.71 KB | 1.27 KB |
-| `pandwind/cx` — cx() plain strings      |  6.03 KB | 2.67 KB |
-| `pandwind/cx` — cx() with atom registry | 12.71 KB | 5.31 KB |
-| root barrel, css only                   |  6.78 KB | 2.97 KB |
-| root barrel, tw only                    |  2.71 KB | 1.27 KB |
-| root barrel, cx only                    | 12.71 KB | 5.31 KB |
+| `pandwind/css` — css() only             | 12.94 KB | 5.17 KB |
+| `pandwind/tw` — tw() only               |  2.80 KB | 1.31 KB |
+| `pandwind/cx` — cx() plain strings      |  7.03 KB | 3.01 KB |
+| `pandwind/cx` — cx() with atom registry | 19.88 KB | 7.74 KB |
+| root barrel, css only                   | 12.95 KB | 5.17 KB |
+| root barrel, tw only                    |  2.80 KB | 1.31 KB |
+| root barrel, cx only                    | 19.88 KB | 7.76 KB |
 
 Compiler-pruned and static fixtures are smaller still:
 
-| fixture                            |     min |    gzip |
-| ---------------------------------- | ------: | ------: |
-| all static `css()` calls           |    81 B |    98 B |
-| compiler-pruned `css()` call       | 3.95 KB | 1.80 KB |
-| compiler-pruned `css.class()` call | 4.00 KB | 1.82 KB |
-| compiler-pruned `css.vars()` call  | 5.55 KB | 2.47 KB |
+| fixture                            |      min |    gzip |
+| ---------------------------------- | -------: | ------: |
+| all static `css()` calls           |     81 B |    98 B |
+| compiler-pruned `css()` call       |  8.23 KB | 3.44 KB |
+| compiler-pruned `css.class()` call |  8.29 KB | 3.46 KB |
+| compiler-pruned `css.vars()` call  | 10.58 KB | 4.28 KB |
 
 The opt-in `pandwind-codemod runtime generate` path has the same callable
 core, but can omit attachments that an application never uses:
 
-| generated selection |     min |    gzip |
-| ------------------- | ------: | ------: |
-| callable core       | 3.89 KB | 1.76 KB |
-| `class`             | 3.95 KB | 1.78 KB |
-| `vars`              | 5.50 KB | 2.43 KB |
-| `class,vars`        | 5.55 KB | 2.45 KB |
-| all attachments     | 6.69 KB | 2.91 KB |
+| generated selection |      min |    gzip |
+| ------------------- | -------: | ------: |
+| callable core       |  8.17 KB | 3.40 KB |
+| `class`             |  8.22 KB | 3.42 KB |
+| `vars`              | 10.51 KB | 4.24 KB |
+| `class,vars`        | 10.57 KB | 4.27 KB |
+| all attachments     | 12.84 KB | 5.09 KB |
 
-For the common `class,vars` selection, that is approximately **1.14 KB min /
-464 B gzip** less than the generated all-method runtime (17% / 16%), with no
+For the common `class,vars` selection, that is approximately **2.27 KB min /
+821 B gzip** less than the generated all-method runtime (18% / 16%), with no
 alternate runtime implementation or per-call dispatch layer. The generated
 module is statically imported and retains only the selected typed methods;
 `group` automatically adds its required `vars` attachment. These figures are
@@ -90,7 +89,7 @@ Pandwind row includes `css()` + `tw()` + cross-engine `cx()`.
 
 | runtime                                    |      min |    gzip | what ships                              |
 | ------------------------------------------ | -------: | ------: | --------------------------------------- |
-| pandwind `css()` + `tw()` + `cx()`         | 15.31 KB | 6.25 KB | current combined runtime                |
+| pandwind `css()` + `tw()` + `cx()`         | 22.57 KB | 8.69 KB | current combined runtime                |
 | `@stylexjs/stylex` 0.19.0                  |  4.06 KB | 1.74 KB | runtime only (compile happens in babel) |
 | `@pandacss/core` 1.12.0 generated `css()`  |  13.4 KB | 5.31 KB | panda runtime engine + tokens           |
 | `@emotion/css` 11.13.5                     |  15.3 KB | 6.25 KB | emotion core (chakra's engine)          |

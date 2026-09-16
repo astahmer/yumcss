@@ -96,6 +96,9 @@ export function walkWithParent(node: unknown, visit: OxcParentVisitor): void {
  */
 export type LiteralConstantScope = ReadonlyMap<string, unknown>;
 
+/** Optional evaluator for a whitelisted pure call in CSS/build-time lanes. */
+export type LiteralCallEvaluator = (node: Expression, consts?: LiteralConstantScope) => unknown;
+
 /** Result of finite set evaluation: every value the expression may take. */
 export interface LiteralValueSet {
 	/** All values the expression can statically produce. */
@@ -111,9 +114,14 @@ export interface LiteralValueSet {
  * With `consts`, module-level constant bindings participate: Identifier
  * references resolve through the scope, and template interpolations / `+
  * concatenations of known strings fold accordingly. Unknown identifiers
- * still return `undefined`.
+ * still return `undefined`. A caller may additionally provide an evaluator
+ * for explicitly whitelisted pure calls.
  */
-export function evalLiteral(node: Expression | undefined, consts?: LiteralConstantScope): unknown {
+export function evalLiteral(
+	node: Expression | undefined,
+	consts?: LiteralConstantScope,
+	evaluateCall?: LiteralCallEvaluator,
+): unknown {
 	if (!node) return undefined;
 	switch (node.type) {
 		case NodeKind.Literal:
@@ -132,7 +140,7 @@ export function evalLiteral(node: Expression | undefined, consts?: LiteralConsta
 			if (node.quasis.length !== node.expressions.length + 1) return undefined;
 			let out = node.quasis[0]?.value.cooked ?? node.quasis[0]?.value.raw ?? "";
 			for (let i = 0; i < node.expressions.length; i++) {
-				const value = evalLiteral(node.expressions[i], consts);
+				const value = evalLiteral(node.expressions[i], consts, evaluateCall);
 				if (typeof value !== "string") return undefined;
 				out += value;
 				out += node.quasis[i + 1]?.value.cooked ?? node.quasis[i + 1]?.value.raw ?? "";
@@ -141,9 +149,9 @@ export function evalLiteral(node: Expression | undefined, consts?: LiteralConsta
 		}
 		case NodeKind.BinaryExpression: {
 			if (consts === undefined || node.operator !== "+") return undefined;
-			const left = evalLiteral(node.left, consts);
+			const left = evalLiteral(node.left, consts, evaluateCall);
 			if (typeof left !== "string") return undefined;
-			const right = evalLiteral(node.right, consts);
+			const right = evalLiteral(node.right, consts, evaluateCall);
 			if (typeof right !== "string") return undefined;
 			return left + right;
 		}
@@ -160,7 +168,7 @@ export function evalLiteral(node: Expression | undefined, consts?: LiteralConsta
 				if (element === null || element.type === NodeKind.SpreadElement) {
 					return undefined;
 				}
-				const value = evalLiteral(element, consts);
+				const value = evalLiteral(element, consts, evaluateCall);
 				if (value === undefined) return undefined;
 				values.push(value);
 			}
@@ -186,12 +194,14 @@ export function evalLiteral(node: Expression | undefined, consts?: LiteralConsta
 							? key.value
 							: undefined;
 				if (name === undefined) return undefined;
-				const value = evalLiteral(property.value, consts);
+				const value = evalLiteral(property.value, consts, evaluateCall);
 				if (value === undefined) return undefined;
 				styles[name] = value;
 			}
 			return styles;
 		}
+		case NodeKind.CallExpression:
+			return evaluateCall?.(node, consts);
 		default:
 			return undefined;
 	}
@@ -210,8 +220,9 @@ export function evalLiteral(node: Expression | undefined, consts?: LiteralConsta
 export function evalLiteralValues(
 	node: Expression | undefined,
 	consts?: LiteralConstantScope,
+	evaluateCall?: LiteralCallEvaluator,
 ): LiteralValueSet | undefined {
-	const set = collectValueSet(evalSetNode(node, consts));
+	const set = collectValueSet(evalSetNode(node, consts, evaluateCall));
 	if (set === undefined) return undefined;
 	return { values: set };
 }
@@ -236,7 +247,11 @@ type ValueNode = { sets: unknown[] } | { single: unknown };
  * either a single proven value or a finite list of alternatives. Leaves use
  * the same literal rules as evalLiteral; combinator nodes enumerate.
  */
-function evalSetNode(node: unknown, consts: LiteralConstantScope | undefined): ValueNode {
+function evalSetNode(
+	node: unknown,
+	consts: LiteralConstantScope | undefined,
+	evaluateCall?: LiteralCallEvaluator,
+): ValueNode {
 	if (node === null || node === undefined) return { single: undefined };
 	const type = (node as OxcNode).type;
 	switch (type) {
@@ -249,6 +264,10 @@ function evalSetNode(node: unknown, consts: LiteralConstantScope | undefined): V
 			}
 			return { sets: [] };
 		}
+		case NodeKind.CallExpression: {
+			const value = evaluateCall?.(node as Expression, consts);
+			return value === undefined ? { sets: [] } : { single: value };
+		}
 		case NodeKind.TemplateLiteral: {
 			const template = node as unknown as {
 				quasis: Array<{ value: { cooked: string | null; raw: string } }>;
@@ -259,7 +278,7 @@ function evalSetNode(node: unknown, consts: LiteralConstantScope | undefined): V
 				template.quasis[0]?.value.cooked ?? template.quasis[0]?.value.raw ?? "",
 			];
 			for (let i = 0; i < template.expressions.length; i++) {
-				const part = collectValueSet(evalSetNode(template.expressions[i], consts));
+				const part = collectValueSet(evalSetNode(template.expressions[i], consts, evaluateCall));
 				if (part === undefined) return { sets: [] };
 				const tail =
 					template.quasis[i + 1]?.value.cooked ?? template.quasis[i + 1]?.value.raw ?? "";
@@ -278,9 +297,9 @@ function evalSetNode(node: unknown, consts: LiteralConstantScope | undefined): V
 		case NodeKind.BinaryExpression: {
 			const binary = node as unknown as { operator: string; left: Expression; right: Expression };
 			if (binary.operator !== "+") return { sets: [] };
-			const left = collectValueSet(evalSetNode(binary.left, consts));
+			const left = collectValueSet(evalSetNode(binary.left, consts, evaluateCall));
 			if (left === undefined) return { sets: [] };
-			const right = collectValueSet(evalSetNode(binary.right, consts));
+			const right = collectValueSet(evalSetNode(binary.right, consts, evaluateCall));
 			if (right === undefined) return { sets: [] };
 			const out: string[] = [];
 			for (const l of left) {
@@ -294,7 +313,7 @@ function evalSetNode(node: unknown, consts: LiteralConstantScope | undefined): V
 		case NodeKind.UnaryExpression: {
 			const unary = node as unknown as { operator: string; argument: Expression };
 			if (unary.operator !== "-") return { sets: [] };
-			const inner = evalSetNode(unary.argument, consts);
+			const inner = evalSetNode(unary.argument, consts, evaluateCall);
 			if (inner === undefined || !("single" in inner)) return { sets: [] };
 			const value = inner.single;
 			return typeof value === "number" ? { single: -value } : { sets: [] };
@@ -305,18 +324,18 @@ function evalSetNode(node: unknown, consts: LiteralConstantScope | undefined): V
 				consequent: Expression;
 				alternate: Expression | undefined;
 			};
-			const test = collectValueSet(evalSetNode(conditional.test, consts));
+			const test = collectValueSet(evalSetNode(conditional.test, consts, evaluateCall));
 			if (test !== undefined && (test.includes(true) || test.includes(false))) {
 				const chosen = test.includes(true) ? conditional.consequent : conditional.alternate;
-				return evalBranchUnion([chosen], consts);
+				return evalBranchUnion([chosen], consts, evaluateCall);
 			}
-			return evalBranchUnion([conditional.consequent, conditional.alternate], consts);
+			return evalBranchUnion([conditional.consequent, conditional.alternate], consts, evaluateCall);
 		}
 		case NodeKind.LogicalExpression: {
 			const logical = node as unknown as { operator: string; left: Expression; right: Expression };
-			const left = collectValueSet(evalSetNode(logical.left, consts));
+			const left = collectValueSet(evalSetNode(logical.left, consts, evaluateCall));
 			if (left === undefined) return { sets: [] };
-			const right = collectValueSet(evalSetNode(logical.right, consts));
+			const right = collectValueSet(evalSetNode(logical.right, consts, evaluateCall));
 			if (right === undefined) return { sets: [] };
 			const values: unknown[] = [];
 			if (logical.operator === "&&") {
@@ -361,7 +380,7 @@ function evalSetNode(node: unknown, consts: LiteralConstantScope | undefined): V
 				if (element === null || (element as { type: string }).type === NodeKind.SpreadElement) {
 					return { sets: [] };
 				}
-				const valueSet = collectValueSet(evalSetNode(element, consts));
+				const valueSet = collectValueSet(evalSetNode(element, consts, evaluateCall));
 				if (valueSet === undefined) return { sets: [] };
 				entries.push(valueSet);
 			}
@@ -410,7 +429,7 @@ function evalSetNode(node: unknown, consts: LiteralConstantScope | undefined): V
 							? (key.value as string)
 							: undefined;
 				if (name === undefined) return { sets: [] };
-				const valueSet = collectValueSet(evalSetNode(prop.value, consts));
+				const valueSet = collectValueSet(evalSetNode(prop.value, consts, evaluateCall));
 				if (valueSet === undefined) return { sets: [] };
 				keys.push(name);
 				entries.push(valueSet);
@@ -437,10 +456,11 @@ function evalSetNode(node: unknown, consts: LiteralConstantScope | undefined): V
 function evalBranchUnion(
 	branches: Array<Expression | undefined>,
 	consts: LiteralConstantScope | undefined,
+	evaluateCall?: LiteralCallEvaluator,
 ): ValueNode {
 	const values: unknown[] = [];
 	for (const branch of branches) {
-		const branchValues = collectValueSet(evalSetNode(branch, consts));
+		const branchValues = collectValueSet(evalSetNode(branch, consts, evaluateCall));
 		if (branchValues === undefined) return { sets: [] };
 		values.push(...branchValues);
 	}

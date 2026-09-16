@@ -15,6 +15,7 @@ import {
 	isReactStrictDomCreateCall,
 	type ReactStrictDomBindings,
 } from "./css-react-strict-dom.ts";
+import { createFirstThatWorksEvaluator } from "./css-first-that-works.ts";
 
 /**
  * Language-aware source observations for the CSS extraction façade.
@@ -36,6 +37,29 @@ interface OxcSpecifier {
 	local?: { name?: string };
 	importKind?: string;
 }
+
+const FIRST_THAT_WORKS_SOURCE = "pandwind/css";
+
+const isFirstThatWorksImport = (declaration: ImportNode, specifier: OxcSpecifier): boolean =>
+	declaration.source?.value === FIRST_THAT_WORKS_SOURCE &&
+	declaration.importKind !== ImportKindTag.Type &&
+	specifier.importKind !== ImportKindTag.Type &&
+	specifier.type === NodeKind.ImportSpecifier &&
+	specifier.imported?.name === "firstThatWorks";
+
+export const findFirstThatWorksBindings = (program: OxcNode): ReadonlySet<string> => {
+	const names = new Set<string>();
+	walk(program, (node) => {
+		if (node.type !== NodeKind.ImportDeclaration) return;
+		const declaration = node as ImportNode;
+		for (const specifier of declaration.specifiers ?? []) {
+			if (!isFirstThatWorksImport(declaration, specifier)) continue;
+			const local = specifier.local?.name;
+			if (typeof local === "string") names.add(local);
+		}
+	});
+	return names;
+};
 
 interface CallNode extends OxcNode {
 	start: number;
@@ -105,8 +129,11 @@ const callKind = (
 	return member === "class" || member === "raw" || member === "group" ? `css.${member}` : undefined;
 };
 
-const isObjectLiteral = (argument: unknown): boolean => {
-	const literal = evalLiteral(argument as never);
+const isObjectLiteral = (
+	argument: unknown,
+	evaluateCall: ReturnType<typeof createFirstThatWorksEvaluator>,
+): boolean => {
+	const literal = evalLiteral(argument as never, undefined, evaluateCall);
 	return typeof literal === "object" && literal !== null;
 };
 
@@ -168,12 +195,15 @@ const findCallSites = (
 	if (names.size === 0) return [];
 	const sites: CssCallSite[] = [];
 	const reactStrictDom = findReactStrictDomBindings(program);
+	const evaluateCall = createFirstThatWorksEvaluator(findFirstThatWorksBindings(program));
 	walk(program, (node) => {
 		if (node.type !== NodeKind.CallExpression) return;
 		const call = node as CallNode;
 		const kind = callKind(call.callee, names, reactStrictDom);
 		if (kind === undefined) return;
-		const staticArguments = call.arguments.filter(isObjectLiteral).length;
+		const staticArguments = call.arguments.filter((argument) =>
+			isObjectLiteral(argument, evaluateCall),
+		).length;
 		sites.push({
 			file: id,
 			start: call.start,
@@ -382,6 +412,7 @@ export class CssDiagnosticScanner implements CssDiagnosticReporter {
 				language: this.sourceScanner.languageForFile(id),
 			}).program as unknown as OxcNode);
 		const reactStrictDom = findReactStrictDomBindings(parsed);
+		const evaluateCall = createFirstThatWorksEvaluator(findFirstThatWorksBindings(parsed));
 		walk(parsed, (node) => {
 			if (node.type !== NodeKind.CallExpression) return;
 			const call = node as CallNode;
@@ -410,7 +441,9 @@ export class CssDiagnosticScanner implements CssDiagnosticReporter {
 			}
 			const kind = callKind(call.callee, names, reactStrictDom);
 			if (kind === undefined) return;
-			const staticArguments = call.arguments.filter(isObjectLiteral).length;
+			const staticArguments = call.arguments.filter((argument) =>
+				isObjectLiteral(argument, evaluateCall),
+			).length;
 			if (call.arguments.length === 0 || staticArguments !== call.arguments.length) {
 				diagnostics.push({
 					kind: "missing-extraction",

@@ -1,11 +1,19 @@
 import { createUnsafeCss } from "../unsafe/css.ts";
 import { resolveDesignStyle } from "../design/resolve.ts";
-import { evalLiteral, type OxcNode, walk, walkWithParent } from "../tw/literal.ts";
+import {
+	evalLiteral,
+	type LiteralCallEvaluator,
+	type OxcNode,
+	walk,
+	walkWithParent,
+} from "../tw/literal.ts";
 import type { ClassNameStrategy } from "../css/class-name-strategy.ts";
 import type { CssCallRewriter, CssPreset, InlineCssResult } from "./css-extraction-contracts.ts";
 import { SOURCE_SCANNER_SERVICE } from "../source-scanner.ts";
 import type { StyleObject } from "../types/typings.ts";
 import { NodeKind, PropertyKindTag } from "../ast-node-kind.ts";
+import { createFirstThatWorksEvaluator } from "./css-first-that-works.ts";
+import { findFirstThatWorksBindings } from "./css-source-scanner.ts";
 
 /** Static rewrite port; unsupported or dynamic calls remain untouched. */
 interface CallNode extends OxcNode {
@@ -75,6 +83,16 @@ export class StaticCssCallRewriter implements CssCallRewriter {
 			className: this.className,
 			namespace: this.namespace,
 		});
+		const parsed = SOURCE_SCANNER_SERVICE.parse({
+			file: id,
+			source: code,
+			language: SOURCE_SCANNER_SERVICE.languageForFile(id),
+		}).program;
+		const evaluateCall = createFirstThatWorksEvaluator(
+			findFirstThatWorksBindings(parsed as unknown as OxcNode),
+		);
+		const evaluateCssLiteral = (node: Parameters<LiteralCallEvaluator>[0] | undefined) =>
+			evalLiteral(node, undefined, evaluateCall);
 		const compileStaticArguments = (
 			propertySets: readonly (readonly PropertyNode[])[],
 		): string | null => {
@@ -83,7 +101,7 @@ export class StaticCssCallRewriter implements CssCallRewriter {
 				const literal: Record<string, unknown> = {};
 				for (const property of properties) {
 					const name = stylePropertyName(property);
-					const value = evalLiteral(property.value as never);
+					const value = evaluateCssLiteral(property.value as never);
 					if (name === undefined || value === undefined) return null;
 					literal[name] = value;
 				}
@@ -136,7 +154,13 @@ export class StaticCssCallRewriter implements CssCallRewriter {
 						? directClassNameHost(parent, ancestors)
 						: undefined;
 				if (classNameHost !== undefined) {
-					const carrier = dynamicHostCarrier(code, call, carrierName!, compileStaticArguments);
+					const carrier = dynamicHostCarrier(
+						code,
+						call,
+						carrierName!,
+						compileStaticArguments,
+						evaluateCall,
+					);
 					if (carrier !== undefined) {
 						edits.push({
 							start: classNameHost.attribute.start!,
@@ -155,7 +179,7 @@ export class StaticCssCallRewriter implements CssCallRewriter {
 					objectArguments.length > 0 &&
 					objectArguments.length === call.arguments.length &&
 					call.arguments.every((argument) => hasLiteralProperty(argument as OxcNode)) &&
-					call.arguments.some((argument) => evalLiteral(argument as never) === undefined)
+					call.arguments.some((argument) => evaluateCssLiteral(argument as never) === undefined)
 				) {
 					// The carrier's host-prop result shape ({style, className}) is
 					// only equivalent to the css() call result when spread onto a
@@ -164,7 +188,13 @@ export class StaticCssCallRewriter implements CssCallRewriter {
 					// vars atoms never collide with stylesheet rules for the same keys.
 					const isJsxPosition = parent?.type === NodeKind.JSXSpreadAttribute;
 					if (isJsxPosition && carrierName !== undefined) {
-						const carrier = dynamicHostCarrier(code, call, carrierName, compileStaticArguments);
+						const carrier = dynamicHostCarrier(
+							code,
+							call,
+							carrierName,
+							compileStaticArguments,
+							evaluateCall,
+						);
 						if (carrier !== undefined) {
 							edits.push({ start: call.start, end: call.end, text: carrier.text });
 							for (const key of carrier.varKeys) this.varKeys.add(key);
@@ -184,7 +214,7 @@ export class StaticCssCallRewriter implements CssCallRewriter {
 					}
 				}
 				if (kind === "group") {
-					const group = literalGroup(call.arguments[0]);
+					const group = literalGroup(call.arguments[0], evaluateCall);
 					if (group === undefined) return;
 					try {
 						edits.push({
@@ -198,7 +228,7 @@ export class StaticCssCallRewriter implements CssCallRewriter {
 					return;
 				}
 				const styles = call.arguments.flatMap((argument) => {
-					const literal = evalLiteral(argument as never);
+					const literal = evaluateCssLiteral(argument as never);
 					return typeof literal === "object" && literal !== null
 						? [resolveDesignStyle(literal as Record<string, unknown>, this.preset.tokens)]
 						: [];
@@ -280,7 +310,11 @@ const stylePropertyName = (property: PropertyNode): string | undefined => {
 };
 
 /** Split one flat style object without changing any runtime value expression. */
-const splitStyleArgument = (code: string, argument: unknown): SplitStyleArgument | undefined => {
+const splitStyleArgument = (
+	code: string,
+	argument: unknown,
+	evaluateCall: LiteralCallEvaluator,
+): SplitStyleArgument | undefined => {
 	const node = argument as (OxcNode & { properties?: readonly PropertyNode[] }) | undefined;
 	if (node?.type !== NodeKind.ObjectExpression) return undefined;
 	const staticProperties: PropertyNode[] = [];
@@ -308,7 +342,7 @@ const splitStyleArgument = (code: string, argument: unknown): SplitStyleArgument
 			value === null
 		)
 			return undefined;
-		if (evalLiteral(value as never) !== undefined) {
+		if (evalLiteral(value as never, undefined, evaluateCall) !== undefined) {
 			staticProperties.push(property);
 			continue;
 		}
@@ -355,8 +389,9 @@ const dynamicHostCarrier = (
 	call: CallNode,
 	carrierName: string,
 	compileStatic: (propertySets: readonly (readonly PropertyNode[])[]) => string | null,
+	evaluateCall: LiteralCallEvaluator,
 ): { readonly text: string; readonly varKeys: readonly string[] } | undefined => {
-	const splits = call.arguments.map((argument) => splitStyleArgument(code, argument));
+	const splits = call.arguments.map((argument) => splitStyleArgument(code, argument, evaluateCall));
 	if (splits.some((split): split is undefined => split === undefined)) return undefined;
 	const resolved = splits as SplitStyleArgument[];
 	const staticPropertySets = resolved
@@ -406,8 +441,11 @@ const hasLiteralProperty = (node: OxcNode): boolean =>
 		return typeof (entry.key?.name ?? entry.key?.value?.value) === "string";
 	});
 
-const literalGroup = (argument: unknown): Record<string, StyleObject> | undefined => {
-	const value = evalLiteral(argument as never);
+const literalGroup = (
+	argument: unknown,
+	evaluateCall: LiteralCallEvaluator,
+): Record<string, StyleObject> | undefined => {
+	const value = evalLiteral(argument as never, undefined, evaluateCall);
 	if (typeof value !== "object" || value === null || Array.isArray(value)) return undefined;
 	const entries = Object.entries(value).filter(
 		(entry): entry is [string, object] => typeof entry[1] === "object" && entry[1] !== null,

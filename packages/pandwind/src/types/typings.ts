@@ -1,4 +1,5 @@
 import type { AnySelector } from "./selectors.d.ts";
+import type { FirstThatWorksValue } from "../css/first-that-works.ts";
 
 /** A value accepted in a Pandwind style object, including nested conditions. */
 export type StyleValue = string | number | null | StyleObject | readonly StyleValue[] | undefined;
@@ -454,6 +455,7 @@ type StrictValue<
 		>;
 
 type PropValue<TConfig, TTokens extends AnyTokens, TName extends string, Value, Strict, TPreset> =
+	| FirstThatWorksValue
 	| (Value extends boolean
 			? ConfigPropertyValue<TConfig, TName>
 			: Strict extends true | undefined

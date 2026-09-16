@@ -1,51 +1,51 @@
 {
 	"css": {
-		"min": 12600,
-		"gz": 5000
+		"min": 13500,
+		"gz": 5400
 	},
 	"css, runtime sheet": {
-		"min": 33400,
-		"gz": 12400
+		"min": 36000,
+		"gz": 13200
 	},
 	"css, all static calls": {
 		"min": 100,
 		"gz": 120
 	},
 	"css, dynamic fallback": {
-		"min": 12600,
-		"gz": 5000
+		"min": 13500,
+		"gz": 5400
 	},
 	"css, compiler-pruned call": {
-		"min": 7700,
-		"gz": 3300
+		"min": 8500,
+		"gz": 3600
 	},
 	"css, compiler-pruned class": {
-		"min": 7800,
-		"gz": 3300
+		"min": 8600,
+		"gz": 3600
 	},
 	"css, compiler-pruned vars": {
-		"min": 10100,
-		"gz": 4100
+		"min": 11000,
+		"gz": 4500
 	},
 	"css, generated call": {
-		"min": 7700,
-		"gz": 3250
+		"min": 8500,
+		"gz": 3600
 	},
 	"css, generated class": {
-		"min": 7700,
-		"gz": 3250
+		"min": 8600,
+		"gz": 3600
 	},
 	"css, generated vars": {
-		"min": 10000,
-		"gz": 4100
+		"min": 11000,
+		"gz": 4500
 	},
 	"css, generated class+vars": {
-		"min": 10100,
-		"gz": 4100
+		"min": 11000,
+		"gz": 4500
 	},
 	"css, generated all": {
-		"min": 12400,
-		"gz": 5000
+		"min": 13500,
+		"gz": 5350
 	},
 	"tw": {
 		"min": 3200,
@@ -56,27 +56,27 @@
 		"gz": 3300
 	},
 	"cx": {
-		"min": 19800,
-		"gz": 7700
+		"min": 21000,
+		"gz": 8100
 	},
 	"all (css+tw+cx)": {
-		"min": 22500,
-		"gz": 8700
+		"min": 24000,
+		"gz": 9100
 	},
 	"root barrel, css only": {
-		"min": 12600,
-		"gz": 5000
+		"min": 13500,
+		"gz": 5400
 	},
 	"root barrel, tw only": {
 		"min": 3200,
 		"gz": 1500
 	},
 	"root barrel, cx only": {
-		"min": 19800,
-		"gz": 7700
+		"min": 21000,
+		"gz": 8100
 	},
 	"stylesheet generator (build-time only)": {
-		"min": 19700,
-		"gz": 7700
+		"min": 22000,
+		"gz": 8600
 	}
 }

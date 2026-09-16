@@ -487,7 +487,10 @@ describe("build", () => {
 
 		expect(cssOnly).not.toContain("createTw");
 		expect(cssOnly).not.toContain("createCx");
-		expect(cssOnly.length).toBeLessThan(allThree.length * 0.56);
+		// The CSS runtime includes the small firstThatWorks fallback decoder, so
+		// keep the single-engine assertion slightly wider while preserving the
+		// proof that the other engines are shaken out.
+		expect(cssOnly.length).toBeLessThan(allThree.length * 0.58);
 	});
 });
 

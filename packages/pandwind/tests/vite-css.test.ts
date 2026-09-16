@@ -4,6 +4,7 @@ import { dirname, join, resolve } from "node:path";
 import { expect, test } from "vitest";
 import { createTwAdapter } from "../src/tw/adapter.ts";
 import { createUnsafeCss } from "../src/unsafe/css.ts";
+import { firstThatWorks } from "../src/css/index.ts";
 import { createNamedAtomsStrategy } from "../src/css/named-atoms-strategy.ts";
 import { createStyleXAdapter } from "../src/css/stylex-adapter.ts";
 import { examplePreset } from "@pandwind/example-preset";
@@ -627,6 +628,79 @@ test("pandwindCssVite folds responsive CSS calls with preset conditions", () => 
 		expect(generated).toContain("position:absolute");
 		expect(generated).toContain("top:0");
 		expect(generated).toContain("top:100%");
+	} finally {
+		rmSync(dir, { recursive: true, force: true });
+	}
+});
+
+test("pandwindCssVite extracts firstThatWorks fallback declarations", () => {
+	const dir = makeProject({
+		"src/app.ts": [
+			'import { firstThatWorks } from "pandwind/css";',
+			'import { css } from "./design";',
+			'export const menu = css.class({ display: firstThatWorks("flex", "-webkit-box", "block") });',
+		].join("\n"),
+		"src/design.ts": "export const css = { class: (styles: unknown) => styles };",
+	});
+	try {
+		const plugin = pandwindCssVite(examplePreset, { root: dir });
+		const source = readFileSync(join(dir, "src/app.ts"), "utf8");
+		const transformed = (
+			plugin.transform as (code: string, id: string) => { code: string } | null
+		).call(null, source, join(dir, "src/app.ts"));
+		const expectedClasses = createUnsafeCss({ conditions: examplePreset.conditions }).class({
+			display: firstThatWorks("flex", "-webkit-box", "block"),
+		} as never);
+
+		expect(transformed?.code).toContain(`const menu = ${JSON.stringify(expectedClasses)}`);
+		expect(loadGenerated(plugin)).toContain("display:block;display:-webkit-box;display:flex");
+	} finally {
+		rmSync(dir, { recursive: true, force: true });
+	}
+});
+
+test("pandwindCssVite extracts reusable firstThatWorks constants", () => {
+	const dir = makeProject({
+		"src/app.ts": [
+			'import { firstThatWorks } from "pandwind/css";',
+			'import { css } from "./design";',
+			'const displayFallback = firstThatWorks("flex", "-webkit-box", "block");',
+			"export const menu = css.class({ display: displayFallback });",
+		].join("\n"),
+		"src/design.ts": "export const css = { class: (styles: unknown) => styles };",
+	});
+	try {
+		const plugin = pandwindCssVite(examplePreset, { root: dir });
+		const source = readFileSync(join(dir, "src/app.ts"), "utf8");
+		const transformed = (
+			plugin.transform as (code: string, id: string) => { code: string } | null
+		).call(null, source, join(dir, "src/app.ts"));
+
+		expect(transformed?.code).toContain("displayFallback");
+		expect(loadGenerated(plugin)).toContain("display:block;display:-webkit-box;display:flex");
+	} finally {
+		rmSync(dir, { recursive: true, force: true });
+	}
+});
+
+test("pandwindCssVite does not evaluate same-named local fallback helpers", () => {
+	const dir = makeProject({
+		"src/app.ts": [
+			'import { css } from "./design";',
+			"const firstThatWorks = (...values: string[]) => values[0];",
+			'export const menu = css.class({ display: firstThatWorks("flex", "block") });',
+		].join("\n"),
+		"src/design.ts": "export const css = { class: (styles: unknown) => styles };",
+	});
+	try {
+		const plugin = pandwindCssVite(examplePreset, { root: dir });
+		const source = readFileSync(join(dir, "src/app.ts"), "utf8");
+		const transformed = (
+			plugin.transform as (code: string, id: string) => { code: string } | null
+		).call(null, source, join(dir, "src/app.ts"));
+
+		expect(transformed?.code).toContain('firstThatWorks("flex", "block")');
+		expect(loadGenerated(plugin)).not.toContain("display:flex");
 	} finally {
 		rmSync(dir, { recursive: true, force: true });
 	}
