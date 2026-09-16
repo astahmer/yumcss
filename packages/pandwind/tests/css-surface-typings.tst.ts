@@ -22,6 +22,7 @@ const css = createCss(examplePreset);
 const designCss = createDesignCss(examplePreset);
 const compiled = css({ color: "$blue-500", padding: 4 });
 const vars = css.vars({ color: "var(--runtime-color)" });
+const dynamicBoolean = css.vars({ "--runtime-flag": true });
 const props = css.props(compiled, vars, "external-class", [false, null, undefined]);
 type PropsResult = {
 	style: Record<string, string> | undefined;
@@ -35,6 +36,7 @@ test("CssFn callable and projections preserve their public result shapes", () =>
 	expect(css.class({ color: "$blue-500" })).type.toBe<string>();
 	expect(css.raw({ color: "$blue-500" })).type.toBeAssignableTo<StyleObject>();
 	expect(vars).type.toBeAssignableTo<{ class: string; style: Record<string, string> }>();
+	expect(dynamicBoolean).type.toBeAssignableTo<{ class: string; style: Record<string, string> }>();
 	expect(props).type.toBe<PropsResult>();
 });
 

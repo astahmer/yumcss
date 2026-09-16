@@ -40,8 +40,6 @@ export interface DynamicStyleObject extends Record<string, DynamicStyleValue> {}
 /** A CSS property configuration supplied by the project's type vocabulary. */
 export type AnyCssConfig = object;
 
-type CssValuesOf<TConfig, TName extends keyof TConfig> = Record<string, TConfig[TName]>;
-
 type ColorPropertyName =
 	| "color"
 	| "background"
@@ -81,21 +79,18 @@ type OpacityModifier =
 	| "100";
 
 type WithOpacityModifiers<Value> = Value extends string
-	? Value | `${Value}/${OpacityModifier}`
+	? string extends Value
+		? Value
+		: Value | `${Value}/${OpacityModifier}`
 	: Value;
 
 type MaybeColorOpacity<TName, Value> = TName extends ColorPropertyName
 	? WithOpacityModifiers<Value>
 	: Value;
 
-type PropConfigValues<
-	TConfig,
-	TName extends keyof TConfig,
-	Value extends CssValuesOf<TConfig, TName>,
-	TTokens,
-> =
+type PropConfigValues<TConfig, TName extends keyof TConfig, TTokens> =
 	| true
-	| (Value & {
+	| (Record<string, TConfig[TName]> & {
 			$strictness?: "inherits";
 			$tokens?: TokenGroupKey<TTokens>;
 	  });
@@ -115,7 +110,6 @@ export type AnyPresetProperties<TConfig extends object, TTokens> = {
 	[PropName in Exclude<keyof TConfig, "colorPalette">]?: PropConfigValues<
 		TConfig,
 		PropName,
-		CssValuesOf<TConfig, PropName>,
 		TTokens
 	>;
 } & {
@@ -374,35 +368,28 @@ type ColorPaletteReference<TPreset> = [ColorPaletteNames<TPreset>] extends [neve
 					readonly [condition: string]: ColorPaletteReference<TPreset>;
 			  };
 
-type TypedRawStyleValue<TPreset extends CssPreset> =
+type PresetStyleValue<TPreset extends CssPreset, TAdditionalValue> =
 	| string
 	| number
+	| TAdditionalValue
 	| null
 	| undefined
-	| TypedRawStyleObject<TPreset>
-	| readonly TypedRawStyleValue<TPreset>[];
+	| PresetStyleObject<TPreset, TAdditionalValue>
+	| readonly PresetStyleValue<TPreset, TAdditionalValue>[];
+
+type PresetStyleObject<TPreset extends CssPreset, TAdditionalValue> = {
+	readonly [property: string]: PresetStyleValue<TPreset, TAdditionalValue>;
+	readonly colorPalette?: ColorPaletteReference<TPreset>;
+};
 
 /** Raw CSS style objects with preset palette assignments checked when present. */
-export type TypedRawStyleObject<TPreset extends CssPreset> = {
-	readonly [property: string]: TypedRawStyleValue<TPreset>;
-	readonly colorPalette?: ColorPaletteReference<TPreset>;
-};
-
-type TypedDynamicStyleValue<TPreset extends CssPreset> =
-	| string
-	| number
-	| boolean
-	| null
-	| undefined
-	| TypedDynamicStyleObject<TPreset>
-	| readonly TypedDynamicStyleValue<TPreset>[];
+export type TypedRawStyleObject<TPreset extends CssPreset> = PresetStyleObject<TPreset, never>;
 
 /** Dynamic style objects with preset palette assignments checked when present. */
-export type TypedDynamicStyleObject<TPreset extends CssPreset> = {
-	readonly [property: string]: TypedDynamicStyleValue<TPreset>;
-} & {
-	readonly colorPalette?: ColorPaletteReference<TPreset>;
-};
+export type TypedDynamicStyleObject<TPreset extends CssPreset> = PresetStyleObject<
+	TPreset,
+	boolean
+>;
 
 type InferPropValues<TTokens extends AnyTokens, Value> = Value extends {
 	$tokens: infer TTokenName;

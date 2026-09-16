@@ -9,11 +9,11 @@
   },
   "updatedAt": "2026-09-16",
   "metrics": {
-    "files": 835,
-    "instantiations": 218037,
-    "memoryUsedKiB": 316015,
-    "checkTimeSeconds": 0.218,
-    "totalTimeSeconds": 0.291
+    "files": 901,
+    "instantiations": 205912,
+    "memoryUsedKiB": 340482,
+    "checkTimeSeconds": 0.199,
+    "totalTimeSeconds": 0.292
   },
   "tolerances": {
     "instantiations": 0.1,
