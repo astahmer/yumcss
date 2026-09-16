@@ -49,15 +49,17 @@ const THEME_ENTRY = `
 
 async function setUp() {
 	const bridge = await generateUtilityBridge(THEME_ENTRY, BASE);
-	const { twTs, twRuntimeTs, twBuildTs } = await generateDesignSystem(THEME_ENTRY, BASE);
-	const config = extractTwConfigFromSources([twTs, twRuntimeTs, twBuildTs])!;
+	const { twTs, twRuntimeTs, twConflictsTs, twBuildTs } = await generateDesignSystem(
+		THEME_ENTRY,
+		BASE,
+	);
+	const config = extractTwConfigFromSources([twTs, twRuntimeTs, twConflictsTs, twBuildTs])!;
 	const adapter = createTwAdapter({ preset: examplePreset, variants: config.variants, bridge });
 	const css = createCss(examplePreset, { className: adapter });
 	const unsafeCss = createUnsafeCss({ className: adapter });
 	const dss = createDesignCss(examplePreset, { className: adapter });
 	const cx = createCx({
 		css,
-		variants: config.variants,
 		conflicts: config.conflicts,
 		compose: config.compose,
 	});

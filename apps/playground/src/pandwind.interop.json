@@ -26456,6 +26456,12 @@
 				"auto": [
 					"background-size"
 				],
+				"contain": [
+					"background-size"
+				],
+				"cover": [
+					"background-size"
+				],
 				"blend-color": [
 					"background-blend-mode"
 				],
@@ -26516,6 +26522,33 @@
 				"center": [
 					"background-position"
 				],
+				"left": [
+					"background-position"
+				],
+				"left-bottom": [
+					"background-position"
+				],
+				"left-top": [
+					"background-position"
+				],
+				"right": [
+					"background-position"
+				],
+				"right-bottom": [
+					"background-position"
+				],
+				"right-top": [
+					"background-position"
+				],
+				"top": [
+					"background-position"
+				],
+				"top-left": [
+					"background-position"
+				],
+				"top-right": [
+					"background-position"
+				],
 				"clip-border": [
 					"background-clip"
 				],
@@ -26528,13 +26561,13 @@
 				"clip-text": [
 					"background-clip"
 				],
-				"contain": [
-					"background-size"
-				],
-				"cover": [
-					"background-size"
-				],
 				"fixed": [
+					"background-attachment"
+				],
+				"local": [
+					"background-attachment"
+				],
+				"scroll": [
 					"background-attachment"
 				],
 				"gradient-to-b": [
@@ -26561,32 +26594,11 @@
 				"gradient-to-tr": [
 					"background-image"
 				],
-				"left": [
-					"background-position"
-				],
-				"left-bottom": [
-					"background-position"
-				],
-				"left-top": [
-					"background-position"
-				],
-				"local": [
-					"background-attachment"
-				],
-				"no-repeat": [
-					"background-repeat"
-				],
 				"none": [
 					"background-image"
 				],
-				"origin-border": [
-					"background-origin"
-				],
-				"origin-content": [
-					"background-origin"
-				],
-				"origin-padding": [
-					"background-origin"
+				"no-repeat": [
+					"background-repeat"
 				],
 				"repeat": [
 					"background-repeat"
@@ -26603,26 +26615,14 @@
 				"repeat-y": [
 					"background-repeat"
 				],
-				"right": [
-					"background-position"
+				"origin-border": [
+					"background-origin"
 				],
-				"right-bottom": [
-					"background-position"
+				"origin-content": [
+					"background-origin"
 				],
-				"right-top": [
-					"background-position"
-				],
-				"scroll": [
-					"background-attachment"
-				],
-				"top": [
-					"background-position"
-				],
-				"top-left": [
-					"background-position"
-				],
-				"top-right": [
-					"background-position"
+				"origin-padding": [
+					"background-origin"
 				]
 			},
 			"bg-conic": {
@@ -27024,9 +27024,6 @@
 					"border-right-color",
 					"border-top-color"
 				],
-				"collapse": [
-					"border-collapse"
-				],
 				"current": [
 					"border-bottom-color",
 					"border-left-color",
@@ -27098,24 +27095,6 @@
 					"border-left-color",
 					"border-right-color",
 					"border-top-color"
-				],
-				"dashed": [
-					"border-bottom-style",
-					"border-left-style",
-					"border-right-style",
-					"border-top-style"
-				],
-				"dotted": [
-					"border-bottom-style",
-					"border-left-style",
-					"border-right-style",
-					"border-top-style"
-				],
-				"double": [
-					"border-bottom-style",
-					"border-left-style",
-					"border-right-style",
-					"border-top-style"
 				],
 				"emerald-100": [
 					"border-bottom-color",
@@ -27386,12 +27365,6 @@
 					"border-left-color",
 					"border-right-color",
 					"border-top-color"
-				],
-				"hidden": [
-					"border-bottom-style",
-					"border-left-style",
-					"border-right-style",
-					"border-top-style"
 				],
 				"indigo-100": [
 					"border-bottom-color",
@@ -27728,12 +27701,6 @@
 					"border-left-color",
 					"border-right-color",
 					"border-top-color"
-				],
-				"none": [
-					"border-bottom-style",
-					"border-left-style",
-					"border-right-style",
-					"border-top-style"
 				],
 				"olive-100": [
 					"border-bottom-color",
@@ -28131,9 +28098,6 @@
 					"border-right-color",
 					"border-top-color"
 				],
-				"separate": [
-					"border-collapse"
-				],
 				"sky-100": [
 					"border-bottom-color",
 					"border-left-color",
@@ -28265,12 +28229,6 @@
 					"border-left-color",
 					"border-right-color",
 					"border-top-color"
-				],
-				"solid": [
-					"border-bottom-style",
-					"border-left-style",
-					"border-right-style",
-					"border-top-style"
 				],
 				"stone-100": [
 					"border-bottom-color",
@@ -28691,6 +28649,48 @@
 					"border-left-color",
 					"border-right-color",
 					"border-top-color"
+				],
+				"collapse": [
+					"border-collapse"
+				],
+				"separate": [
+					"border-collapse"
+				],
+				"dashed": [
+					"border-bottom-style",
+					"border-left-style",
+					"border-right-style",
+					"border-top-style"
+				],
+				"dotted": [
+					"border-bottom-style",
+					"border-left-style",
+					"border-right-style",
+					"border-top-style"
+				],
+				"double": [
+					"border-bottom-style",
+					"border-left-style",
+					"border-right-style",
+					"border-top-style"
+				],
+				"hidden": [
+					"border-bottom-style",
+					"border-left-style",
+					"border-right-style",
+					"border-top-style"
+				],
+				"none": [
+					"border-bottom-style",
+					"border-left-style",
+					"border-right-style",
+					"border-top-style"
+				],
+				"solid": [
+					"border-bottom-style",
+					"border-left-style",
+					"border-right-style",
+					"border-top-style"
 				]
 			},
 			"border-b": {
@@ -38421,10 +38421,6 @@
 				"brand": [
 					"text-decoration-color"
 				],
-				"clone": [
-					"-webkit-box-decoration-break",
-					"box-decoration-break"
-				],
 				"current": [
 					"text-decoration-color"
 				],
@@ -38460,15 +38456,6 @@
 				],
 				"cyan-950": [
 					"text-decoration-color"
-				],
-				"dashed": [
-					"text-decoration-style"
-				],
-				"dotted": [
-					"text-decoration-style"
-				],
-				"double": [
-					"text-decoration-style"
 				],
 				"emerald-100": [
 					"text-decoration-color"
@@ -39037,13 +39024,6 @@
 				"slate-950": [
 					"text-decoration-color"
 				],
-				"slice": [
-					"-webkit-box-decoration-break",
-					"box-decoration-break"
-				],
-				"solid": [
-					"text-decoration-style"
-				],
 				"stone-100": [
 					"text-decoration-color"
 				],
@@ -39185,9 +39165,6 @@
 				"violet-950": [
 					"text-decoration-color"
 				],
-				"wavy": [
-					"text-decoration-style"
-				],
 				"white": [
 					"text-decoration-color"
 				],
@@ -39256,6 +39233,29 @@
 				],
 				"zinc-950": [
 					"text-decoration-color"
+				],
+				"clone": [
+					"-webkit-box-decoration-break",
+					"box-decoration-break"
+				],
+				"slice": [
+					"-webkit-box-decoration-break",
+					"box-decoration-break"
+				],
+				"dashed": [
+					"text-decoration-style"
+				],
+				"dotted": [
+					"text-decoration-style"
+				],
+				"double": [
+					"text-decoration-style"
+				],
+				"solid": [
+					"text-decoration-style"
+				],
+				"wavy": [
+					"text-decoration-style"
 				]
 			},
 			"delay": {
@@ -39780,26 +39780,26 @@
 				"auto": [
 					"flex"
 				],
-				"col": [
-					"flex-direction"
-				],
-				"col-reverse": [
-					"flex-direction"
-				],
 				"initial": [
 					"flex"
 				],
 				"none": [
 					"flex"
 				],
-				"nowrap": [
-					"flex-wrap"
+				"col": [
+					"flex-direction"
+				],
+				"col-reverse": [
+					"flex-direction"
 				],
 				"row": [
 					"flex-direction"
 				],
 				"row-reverse": [
 					"flex-direction"
+				],
+				"nowrap": [
+					"flex-wrap"
 				],
 				"wrap": [
 					"flex-wrap"
@@ -40901,11 +40901,11 @@
 				"inside": [
 					"list-style-position"
 				],
-				"item": [
-					"display"
-				],
 				"outside": [
 					"list-style-position"
+				],
+				"item": [
+					"display"
 				]
 			},
 			"list-image": {
@@ -40933,7 +40933,19 @@
 				"alpha": [
 					"mask-mode"
 				],
+				"luminance": [
+					"mask-mode"
+				],
+				"match": [
+					"mask-mode"
+				],
 				"auto": [
+					"mask-size"
+				],
+				"contain": [
+					"mask-size"
+				],
+				"cover": [
 					"mask-size"
 				],
 				"bottom": [
@@ -40948,7 +40960,23 @@
 				"center": [
 					"mask-position"
 				],
+				"left": [
+					"mask-position"
+				],
+				"right": [
+					"mask-position"
+				],
+				"top": [
+					"mask-position"
+				],
+				"top-left": [
+					"mask-position"
+				],
+				"top-right": [
+					"mask-position"
+				],
 				"circle": [],
+				"ellipse": [],
 				"clip-border": [
 					"mask-clip"
 				],
@@ -40967,26 +40995,25 @@
 				"clip-view": [
 					"mask-clip"
 				],
-				"contain": [
-					"mask-size"
-				],
-				"cover": [
-					"mask-size"
-				],
-				"ellipse": [],
-				"left": [
-					"mask-position"
-				],
-				"luminance": [
-					"mask-mode"
-				],
-				"match": [
-					"mask-mode"
-				],
 				"no-clip": [
 					"mask-clip"
 				],
 				"no-repeat": [
+					"mask-repeat"
+				],
+				"repeat": [
+					"mask-repeat"
+				],
+				"repeat-round": [
+					"mask-repeat"
+				],
+				"repeat-space": [
+					"mask-repeat"
+				],
+				"repeat-x": [
+					"mask-repeat"
+				],
+				"repeat-y": [
 					"mask-repeat"
 				],
 				"none": [
@@ -41009,33 +41036,6 @@
 				],
 				"origin-view": [
 					"mask-origin"
-				],
-				"repeat": [
-					"mask-repeat"
-				],
-				"repeat-round": [
-					"mask-repeat"
-				],
-				"repeat-space": [
-					"mask-repeat"
-				],
-				"repeat-x": [
-					"mask-repeat"
-				],
-				"repeat-y": [
-					"mask-repeat"
-				],
-				"right": [
-					"mask-position"
-				],
-				"top": [
-					"mask-position"
-				],
-				"top-left": [
-					"mask-position"
-				],
-				"top-right": [
-					"mask-position"
 				],
 				"type-alpha": [
 					"mask-type"
@@ -41472,15 +41472,6 @@
 				"cyan-950": [
 					"outline-color"
 				],
-				"dashed": [
-					"outline-style"
-				],
-				"dotted": [
-					"outline-style"
-				],
-				"double": [
-					"outline-style"
-				],
 				"emerald-100": [
 					"outline-color"
 				],
@@ -41615,11 +41606,6 @@
 				],
 				"green-950": [
 					"outline-color"
-				],
-				"hidden": [
-					"outline",
-					"outline-offset",
-					"outline-style"
 				],
 				"indigo-100": [
 					"outline-color"
@@ -41788,9 +41774,6 @@
 				],
 				"neutral-950": [
 					"outline-color"
-				],
-				"none": [
-					"outline-style"
 				],
 				"olive-100": [
 					"outline-color"
@@ -42056,9 +42039,6 @@
 				"slate-950": [
 					"outline-color"
 				],
-				"solid": [
-					"outline-style"
-				],
 				"stone-100": [
 					"outline-color"
 				],
@@ -42268,6 +42248,26 @@
 				],
 				"zinc-950": [
 					"outline-color"
+				],
+				"dashed": [
+					"outline-style"
+				],
+				"dotted": [
+					"outline-style"
+				],
+				"double": [
+					"outline-style"
+				],
+				"none": [
+					"outline-style"
+				],
+				"solid": [
+					"outline-style"
+				],
+				"hidden": [
+					"outline",
+					"outline-offset",
+					"outline-style"
 				]
 			},
 			"outline-offset": {
@@ -43387,23 +43387,23 @@
 				"always": [
 					"scroll-snap-stop"
 				],
-				"both": [
-					"scroll-snap-type"
-				],
-				"mandatory": [],
-				"none": [
-					"scroll-snap-type"
-				],
 				"normal": [
 					"scroll-snap-stop"
 				],
-				"proximity": [],
+				"both": [
+					"scroll-snap-type"
+				],
+				"none": [
+					"scroll-snap-type"
+				],
 				"x": [
 					"scroll-snap-type"
 				],
 				"y": [
 					"scroll-snap-type"
-				]
+				],
+				"mandatory": [],
+				"proximity": []
 			},
 			"space-x": {
 				"*": [
@@ -44419,9 +44419,6 @@
 				"amber-950": [
 					"color"
 				],
-				"balance": [
-					"text-wrap"
-				],
 				"black": [
 					"color"
 				],
@@ -44461,12 +44458,6 @@
 				"brand": [
 					"color"
 				],
-				"center": [
-					"text-align"
-				],
-				"clip": [
-					"text-overflow"
-				],
 				"current": [
 					"color"
 				],
@@ -44503,9 +44494,6 @@
 				"cyan-950": [
 					"color"
 				],
-				"ellipsis": [
-					"text-overflow"
-				],
 				"emerald-100": [
 					"color"
 				],
@@ -44538,9 +44526,6 @@
 				],
 				"emerald-950": [
 					"color"
-				],
-				"end": [
-					"text-align"
 				],
 				"error": [
 					"color"
@@ -44680,12 +44665,6 @@
 				"inherit": [
 					"color"
 				],
-				"justify": [
-					"text-align"
-				],
-				"left": [
-					"text-align"
-				],
 				"lime-100": [
 					"color"
 				],
@@ -44818,9 +44797,6 @@
 				"neutral-950": [
 					"color"
 				],
-				"nowrap": [
-					"text-wrap"
-				],
 				"olive-100": [
 					"color"
 				],
@@ -44920,9 +44896,6 @@
 				"pink-950": [
 					"color"
 				],
-				"pretty": [
-					"text-wrap"
-				],
 				"purple-100": [
 					"color"
 				],
@@ -44988,9 +44961,6 @@
 				],
 				"red-950": [
 					"color"
-				],
-				"right": [
-					"text-align"
 				],
 				"rose-100": [
 					"color"
@@ -45090,9 +45060,6 @@
 				],
 				"slate-950": [
 					"color"
-				],
-				"start": [
-					"text-align"
 				],
 				"stone-100": [
 					"color"
@@ -45238,9 +45205,6 @@
 				"white": [
 					"color"
 				],
-				"wrap": [
-					"text-wrap"
-				],
 				"yellow-100": [
 					"color"
 				],
@@ -45306,6 +45270,42 @@
 				],
 				"zinc-950": [
 					"color"
+				],
+				"balance": [
+					"text-wrap"
+				],
+				"nowrap": [
+					"text-wrap"
+				],
+				"pretty": [
+					"text-wrap"
+				],
+				"wrap": [
+					"text-wrap"
+				],
+				"center": [
+					"text-align"
+				],
+				"end": [
+					"text-align"
+				],
+				"justify": [
+					"text-align"
+				],
+				"left": [
+					"text-align"
+				],
+				"right": [
+					"text-align"
+				],
+				"start": [
+					"text-align"
+				],
+				"clip": [
+					"text-overflow"
+				],
+				"ellipsis": [
+					"text-overflow"
 				]
 			},
 			"text-shadow": {
@@ -45639,6 +45639,9 @@
 				"3d": [
 					"transform-style"
 				],
+				"flat": [
+					"transform-style"
+				],
 				"border": [
 					"transform-box"
 				],
@@ -45647,9 +45650,6 @@
 				],
 				"fill": [
 					"transform-box"
-				],
-				"flat": [
-					"transform-style"
 				],
 				"stroke": [
 					"transform-box"
@@ -45667,11 +45667,11 @@
 				"discrete": [
 					"transition-behavior"
 				],
-				"none": [
-					"transition-property"
-				],
 				"normal": [
 					"transition-behavior"
+				],
+				"none": [
+					"transition-property"
 				]
 			},
 			"translate": {

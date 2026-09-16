@@ -245,7 +245,7 @@ test("tw factory, compiler metadata, and adapter types stay composable", () => {
 
 test("root tw, cx vars, theme helpers, and Stack helpers retain their contracts", () => {
 	const css = createUnsafeCss();
-	const cxOptions: CxOptions = { css, variants: { sm: {} }, compose: ["scale"] };
+	const cxOptions: CxOptions = { css, compose: ["scale"] };
 	const cx = createCx(cxOptions);
 	const vars = css.vars({ color: "tomato" });
 	const style = stackStyle({ direction: "column", gap: 4, align: "center" });

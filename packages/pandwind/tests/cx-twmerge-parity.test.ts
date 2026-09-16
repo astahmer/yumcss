@@ -23,7 +23,6 @@ const real = readGeneratedTwConfig(resolve(import.meta.dirname, "../../../exampl
 const css = createUnsafeCss();
 const cx = createCx({
 	css,
-	variants: real.variants,
 	conflicts: real.conflicts,
 	compose: real.compose,
 });

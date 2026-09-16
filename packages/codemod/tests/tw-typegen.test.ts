@@ -4,6 +4,7 @@ import { __unstable__loadDesignSystem } from "@tailwindcss/node";
 import { describe, expect, test } from "vitest";
 import { createDesignSystemCodegen, generateDesignSystem } from "../src/tw/generate-types.ts";
 import { UTILITY_SUBKEYS } from "pandwind/tw/compile";
+import { extractTwConfigFromSources } from "pandwind/vite/inline";
 
 const app = resolve(import.meta.dirname, "../../../examples/example");
 const css = readFileSync(resolve(app, "src/tailwind.css"), "utf8");
@@ -33,19 +34,25 @@ describe("typegen", () => {
 			emitter: {
 				utilities: () => "utilities",
 				variants: () => "variants",
-				runtime: () => ({ entry: "runtime", runtime: "runtime metadata", build: "build metadata" }),
+				runtime: () => ({
+					entry: "runtime",
+					runtime: "runtime metadata",
+					conflicts: "conflict metadata",
+					build: "build metadata",
+				}),
 			},
 		});
 		const output = await generator.generate("", ".");
 		expect(output.typesDts).toContain("utilities");
 		expect(output.twTs).toBe("runtime");
 		expect(output.twRuntimeTs).toBe("runtime metadata");
+		expect(output.twConflictsTs).toBe("conflict metadata");
 		expect(output.twBuildTs).toBe("build metadata");
 		expect(calls).toEqual(["conflicts", "expand", "modifiers"]);
 	});
 
 	test("generates utilities, variants and runtime metadata", async () => {
-		const { typesDts, twTs, twRuntimeTs, twBuildTs, utilityCount, variantCount } =
+		const { typesDts, twTs, twRuntimeTs, twConflictsTs, twBuildTs, utilityCount, variantCount } =
 			await generateDesignSystem(css, resolve(app, "src"));
 
 		expect(utilityCount).toBeGreaterThan(200);
@@ -101,8 +108,14 @@ describe("typegen", () => {
 		expect(twRuntimeTs).toContain('"@": { join: "" }');
 		expect(twRuntimeTs).toContain("export const __pandwindRuntimeConfig");
 		expect(twRuntimeTs).not.toContain("wildcardValues");
+		expect(twRuntimeTs).toContain("JSON.parse");
+		expect(twRuntimeTs).not.toContain("__pandwindConflictConfig");
+		expect(twConflictsTs).toContain("export const __pandwindConflictConfig");
+		expect(twConflictsTs).toContain("JSON.parse");
 		expect(twBuildTs).toContain("export const __pandwindBuildMetadata");
 		expect(twBuildTs).toContain("wildcardValues");
+		const extracted = extractTwConfigFromSources([twTs, twRuntimeTs, twConflictsTs, twBuildTs]);
+		expect(extracted?.conflicts?.bg).toBeDefined();
 		// Every variant is emitted now (default `:` joins included) so the
 		// tailwind css() adapter can look any condition up.
 		const variantsBlock = twRuntimeTs.slice(0, twRuntimeTs.indexOf("conflicts:"));

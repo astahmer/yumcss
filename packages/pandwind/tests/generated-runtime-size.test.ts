@@ -103,7 +103,8 @@ test("generated metadata stays out of static runtime bundles", async () => {
 	expect(hasInput(generatedTw, "tw.build.ts")).toBe(false);
 	expect(hasInput(plainCx, "tw.runtime.ts")).toBe(false);
 	expect(hasInput(plainCx, "tw.build.ts")).toBe(false);
-	expect(hasInput(generatedCx, "tw.runtime.ts")).toBe(true);
+	expect(hasInput(generatedCx, "tw.conflicts.ts")).toBe(true);
+	expect(hasInput(generatedCx, "tw.runtime.ts")).toBe(false);
 	expect(hasInput(generatedCx, "tw.build.ts")).toBe(false);
 	expect(hasInput(generatedStatic, "tw.runtime.ts")).toBe(false);
 	expect(hasInput(generatedStatic, "tw.build.ts")).toBe(false);
@@ -120,7 +121,7 @@ test("generated metadata stays out of static runtime bundles", async () => {
 					min: generatedCx.min,
 					gz: generatedCx.gz,
 				},
-				"plain cx (no tw metadata)": {
+				"example dss+cx (no tw metadata)": {
 					min: plainCx.min,
 					gz: plainCx.gz,
 				},

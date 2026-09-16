@@ -1,0 +1,17 @@
+{
+	"compilerOptions": {
+		"allowImportingTsExtensions": true,
+		"exactOptionalPropertyTypes": true,
+		"lib": ["ES2023", "DOM"],
+		"module": "ESNext",
+		"moduleResolution": "Bundler",
+		"noEmit": true,
+		"noErrorTruncation": true,
+		"skipLibCheck": true,
+		"strict": true,
+		"target": "ES2022",
+		"types": ["node"],
+		"verbatimModuleSyntax": true
+	},
+	"include": ["*.mts"]
+}

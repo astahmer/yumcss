@@ -6,7 +6,7 @@
  *
  * - `types.d.ts` — the tw() object keys (interface entries) and each named
  *   value union's literal members;
- * - `tw.ts` + `tw.runtime.ts` + `tw.build.ts` — variant names + join
+ * - `tw.ts` + `tw.runtime.ts` + `tw.conflicts.ts` + `tw.build.ts` — variant names + join
  *   separators, the conflict map whose
  *   per-value CSS property lists are the ground truth for disambiguating
  *   overloaded utilities (`text-blue-500` -> ["color"] -> `textColor`,
@@ -211,10 +211,14 @@ export function loadMetaFromSources(options: LoadMetaOptions): PandwindMeta {
 		options.typesDtsPath === undefined ? undefined : readFileSync(options.typesDtsPath, "utf8");
 	const twTs = options.twTsPath === undefined ? undefined : readFileSync(options.twTsPath, "utf8");
 	const twRuntimePath = resolve(metadataDir, "tw.runtime.ts");
+	const twConflictsPath = resolve(metadataDir, "tw.conflicts.ts");
 	const twBuildPath = resolve(metadataDir, "tw.build.ts");
 	const twRuntimeTs = existsSync(twRuntimePath) ? readFileSync(twRuntimePath, "utf8") : undefined;
+	const twConflictsTs = existsSync(twConflictsPath)
+		? readFileSync(twConflictsPath, "utf8")
+		: undefined;
 	const twBuildTs = existsSync(twBuildPath) ? readFileSync(twBuildPath, "utf8") : undefined;
-	const twSources = [twTs, twRuntimeTs, twBuildTs].flatMap((source) =>
+	const twSources = [twTs, twRuntimeTs, twConflictsTs, twBuildTs].flatMap((source) =>
 		source === undefined ? [] : [source],
 	);
 	if (interop === undefined && (typesDts === undefined || twTs === undefined)) {

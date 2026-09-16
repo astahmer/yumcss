@@ -25151,6 +25151,8 @@
 			"bg": {
 				"*": ["background-color"],
 				"auto": ["background-size"],
+				"contain": ["background-size"],
+				"cover": ["background-size"],
 				"blend-color": ["background-blend-mode"],
 				"blend-color-burn": ["background-blend-mode"],
 				"blend-color-dodge": ["background-blend-mode"],
@@ -25171,13 +25173,22 @@
 				"bottom-left": ["background-position"],
 				"bottom-right": ["background-position"],
 				"center": ["background-position"],
+				"left": ["background-position"],
+				"left-bottom": ["background-position"],
+				"left-top": ["background-position"],
+				"right": ["background-position"],
+				"right-bottom": ["background-position"],
+				"right-top": ["background-position"],
+				"top": ["background-position"],
+				"top-left": ["background-position"],
+				"top-right": ["background-position"],
 				"clip-border": ["background-clip"],
 				"clip-content": ["background-clip"],
 				"clip-padding": ["background-clip"],
 				"clip-text": ["background-clip"],
-				"contain": ["background-size"],
-				"cover": ["background-size"],
 				"fixed": ["background-attachment"],
+				"local": ["background-attachment"],
+				"scroll": ["background-attachment"],
 				"gradient-to-b": ["background-image"],
 				"gradient-to-bl": ["background-image"],
 				"gradient-to-br": ["background-image"],
@@ -25186,27 +25197,16 @@
 				"gradient-to-t": ["background-image"],
 				"gradient-to-tl": ["background-image"],
 				"gradient-to-tr": ["background-image"],
-				"left": ["background-position"],
-				"left-bottom": ["background-position"],
-				"left-top": ["background-position"],
-				"local": ["background-attachment"],
-				"no-repeat": ["background-repeat"],
 				"none": ["background-image"],
-				"origin-border": ["background-origin"],
-				"origin-content": ["background-origin"],
-				"origin-padding": ["background-origin"],
+				"no-repeat": ["background-repeat"],
 				"repeat": ["background-repeat"],
 				"repeat-round": ["background-repeat"],
 				"repeat-space": ["background-repeat"],
 				"repeat-x": ["background-repeat"],
 				"repeat-y": ["background-repeat"],
-				"right": ["background-position"],
-				"right-bottom": ["background-position"],
-				"right-top": ["background-position"],
-				"scroll": ["background-attachment"],
-				"top": ["background-position"],
-				"top-left": ["background-position"],
-				"top-right": ["background-position"]
+				"origin-border": ["background-origin"],
+				"origin-content": ["background-origin"],
+				"origin-padding": ["background-origin"]
 			},
 			"bg-conic": {
 				"*": ["background-image"]
@@ -25455,7 +25455,6 @@
 					"border-right-color",
 					"border-top-color"
 				],
-				"collapse": ["border-collapse"],
 				"current": [
 					"border-bottom-color",
 					"border-left-color",
@@ -25527,24 +25526,6 @@
 					"border-left-color",
 					"border-right-color",
 					"border-top-color"
-				],
-				"dashed": [
-					"border-bottom-style",
-					"border-left-style",
-					"border-right-style",
-					"border-top-style"
-				],
-				"dotted": [
-					"border-bottom-style",
-					"border-left-style",
-					"border-right-style",
-					"border-top-style"
-				],
-				"double": [
-					"border-bottom-style",
-					"border-left-style",
-					"border-right-style",
-					"border-top-style"
 				],
 				"emerald-100": [
 					"border-bottom-color",
@@ -25815,12 +25796,6 @@
 					"border-left-color",
 					"border-right-color",
 					"border-top-color"
-				],
-				"hidden": [
-					"border-bottom-style",
-					"border-left-style",
-					"border-right-style",
-					"border-top-style"
 				],
 				"indigo-100": [
 					"border-bottom-color",
@@ -26157,12 +26132,6 @@
 					"border-left-color",
 					"border-right-color",
 					"border-top-color"
-				],
-				"none": [
-					"border-bottom-style",
-					"border-left-style",
-					"border-right-style",
-					"border-top-style"
 				],
 				"olive-100": [
 					"border-bottom-color",
@@ -26560,7 +26529,6 @@
 					"border-right-color",
 					"border-top-color"
 				],
-				"separate": ["border-collapse"],
 				"sky-100": [
 					"border-bottom-color",
 					"border-left-color",
@@ -26692,12 +26660,6 @@
 					"border-left-color",
 					"border-right-color",
 					"border-top-color"
-				],
-				"solid": [
-					"border-bottom-style",
-					"border-left-style",
-					"border-right-style",
-					"border-top-style"
 				],
 				"stone-100": [
 					"border-bottom-color",
@@ -27118,6 +27080,44 @@
 					"border-left-color",
 					"border-right-color",
 					"border-top-color"
+				],
+				"collapse": ["border-collapse"],
+				"separate": ["border-collapse"],
+				"dashed": [
+					"border-bottom-style",
+					"border-left-style",
+					"border-right-style",
+					"border-top-style"
+				],
+				"dotted": [
+					"border-bottom-style",
+					"border-left-style",
+					"border-right-style",
+					"border-top-style"
+				],
+				"double": [
+					"border-bottom-style",
+					"border-left-style",
+					"border-right-style",
+					"border-top-style"
+				],
+				"hidden": [
+					"border-bottom-style",
+					"border-left-style",
+					"border-right-style",
+					"border-top-style"
+				],
+				"none": [
+					"border-bottom-style",
+					"border-left-style",
+					"border-right-style",
+					"border-top-style"
+				],
+				"solid": [
+					"border-bottom-style",
+					"border-left-style",
+					"border-right-style",
+					"border-top-style"
 				]
 			},
 			"border-b": {
@@ -30209,7 +30209,6 @@
 				"blue-900": ["text-decoration-color"],
 				"blue-950": ["text-decoration-color"],
 				"brand": ["text-decoration-color"],
-				"clone": ["-webkit-box-decoration-break", "box-decoration-break"],
 				"current": ["text-decoration-color"],
 				"cyan-100": ["text-decoration-color"],
 				"cyan-200": ["text-decoration-color"],
@@ -30222,9 +30221,6 @@
 				"cyan-800": ["text-decoration-color"],
 				"cyan-900": ["text-decoration-color"],
 				"cyan-950": ["text-decoration-color"],
-				"dashed": ["text-decoration-style"],
-				"dotted": ["text-decoration-style"],
-				"double": ["text-decoration-style"],
 				"emerald-100": ["text-decoration-color"],
 				"emerald-200": ["text-decoration-color"],
 				"emerald-300": ["text-decoration-color"],
@@ -30414,8 +30410,6 @@
 				"slate-800": ["text-decoration-color"],
 				"slate-900": ["text-decoration-color"],
 				"slate-950": ["text-decoration-color"],
-				"slice": ["-webkit-box-decoration-break", "box-decoration-break"],
-				"solid": ["text-decoration-style"],
 				"stone-100": ["text-decoration-color"],
 				"stone-200": ["text-decoration-color"],
 				"stone-300": ["text-decoration-color"],
@@ -30463,7 +30457,6 @@
 				"violet-800": ["text-decoration-color"],
 				"violet-900": ["text-decoration-color"],
 				"violet-950": ["text-decoration-color"],
-				"wavy": ["text-decoration-style"],
 				"white": ["text-decoration-color"],
 				"yellow-100": ["text-decoration-color"],
 				"yellow-200": ["text-decoration-color"],
@@ -30486,7 +30479,14 @@
 				"zinc-700": ["text-decoration-color"],
 				"zinc-800": ["text-decoration-color"],
 				"zinc-900": ["text-decoration-color"],
-				"zinc-950": ["text-decoration-color"]
+				"zinc-950": ["text-decoration-color"],
+				"clone": ["-webkit-box-decoration-break", "box-decoration-break"],
+				"slice": ["-webkit-box-decoration-break", "box-decoration-break"],
+				"dashed": ["text-decoration-style"],
+				"dotted": ["text-decoration-style"],
+				"double": ["text-decoration-style"],
+				"solid": ["text-decoration-style"],
+				"wavy": ["text-decoration-style"]
 			},
 			"delay": {
 				"*": ["transition-delay"]
@@ -30897,13 +30897,13 @@
 				"8/12": ["flex"],
 				"9/12": ["flex"],
 				"auto": ["flex"],
-				"col": ["flex-direction"],
-				"col-reverse": ["flex-direction"],
 				"initial": ["flex"],
 				"none": ["flex"],
-				"nowrap": ["flex-wrap"],
+				"col": ["flex-direction"],
+				"col-reverse": ["flex-direction"],
 				"row": ["flex-direction"],
 				"row-reverse": ["flex-direction"],
+				"nowrap": ["flex-wrap"],
 				"wrap": ["flex-wrap"],
 				"wrap-reverse": ["flex-wrap"]
 			},
@@ -31728,8 +31728,8 @@
 			"list": {
 				"*": ["list-style-type"],
 				"inside": ["list-style-position"],
-				"item": ["display"],
-				"outside": ["list-style-position"]
+				"outside": ["list-style-position"],
+				"item": ["display"]
 			},
 			"list-image": {
 				"*": ["list-style-image"]
@@ -31743,26 +31743,35 @@
 			"mask": {
 				"*": ["mask-composite"],
 				"alpha": ["mask-mode"],
+				"luminance": ["mask-mode"],
+				"match": ["mask-mode"],
 				"auto": ["mask-size"],
+				"contain": ["mask-size"],
+				"cover": ["mask-size"],
 				"bottom": ["mask-position"],
 				"bottom-left": ["mask-position"],
 				"bottom-right": ["mask-position"],
 				"center": ["mask-position"],
+				"left": ["mask-position"],
+				"right": ["mask-position"],
+				"top": ["mask-position"],
+				"top-left": ["mask-position"],
+				"top-right": ["mask-position"],
 				"circle": [],
+				"ellipse": [],
 				"clip-border": ["mask-clip"],
 				"clip-content": ["mask-clip"],
 				"clip-fill": ["mask-clip"],
 				"clip-padding": ["mask-clip"],
 				"clip-stroke": ["mask-clip"],
 				"clip-view": ["mask-clip"],
-				"contain": ["mask-size"],
-				"cover": ["mask-size"],
-				"ellipse": [],
-				"left": ["mask-position"],
-				"luminance": ["mask-mode"],
-				"match": ["mask-mode"],
 				"no-clip": ["mask-clip"],
 				"no-repeat": ["mask-repeat"],
+				"repeat": ["mask-repeat"],
+				"repeat-round": ["mask-repeat"],
+				"repeat-space": ["mask-repeat"],
+				"repeat-x": ["mask-repeat"],
+				"repeat-y": ["mask-repeat"],
 				"none": ["mask-image"],
 				"origin-border": ["mask-origin"],
 				"origin-content": ["mask-origin"],
@@ -31770,15 +31779,6 @@
 				"origin-padding": ["mask-origin"],
 				"origin-stroke": ["mask-origin"],
 				"origin-view": ["mask-origin"],
-				"repeat": ["mask-repeat"],
-				"repeat-round": ["mask-repeat"],
-				"repeat-space": ["mask-repeat"],
-				"repeat-x": ["mask-repeat"],
-				"repeat-y": ["mask-repeat"],
-				"right": ["mask-position"],
-				"top": ["mask-position"],
-				"top-left": ["mask-position"],
-				"top-right": ["mask-position"],
 				"type-alpha": ["mask-type"],
 				"type-luminance": ["mask-type"]
 			},
@@ -32003,9 +32003,6 @@
 				"cyan-800": ["outline-color"],
 				"cyan-900": ["outline-color"],
 				"cyan-950": ["outline-color"],
-				"dashed": ["outline-style"],
-				"dotted": ["outline-style"],
-				"double": ["outline-style"],
 				"emerald-100": ["outline-color"],
 				"emerald-200": ["outline-color"],
 				"emerald-300": ["outline-color"],
@@ -32051,7 +32048,6 @@
 				"green-800": ["outline-color"],
 				"green-900": ["outline-color"],
 				"green-950": ["outline-color"],
-				"hidden": ["outline", "outline-offset", "outline-style"],
 				"indigo-100": ["outline-color"],
 				"indigo-200": ["outline-color"],
 				"indigo-300": ["outline-color"],
@@ -32108,7 +32104,6 @@
 				"neutral-800": ["outline-color"],
 				"neutral-900": ["outline-color"],
 				"neutral-950": ["outline-color"],
-				"none": ["outline-style"],
 				"olive-100": ["outline-color"],
 				"olive-200": ["outline-color"],
 				"olive-300": ["outline-color"],
@@ -32197,7 +32192,6 @@
 				"slate-800": ["outline-color"],
 				"slate-900": ["outline-color"],
 				"slate-950": ["outline-color"],
-				"solid": ["outline-style"],
 				"stone-100": ["outline-color"],
 				"stone-200": ["outline-color"],
 				"stone-300": ["outline-color"],
@@ -32267,7 +32261,13 @@
 				"zinc-700": ["outline-color"],
 				"zinc-800": ["outline-color"],
 				"zinc-900": ["outline-color"],
-				"zinc-950": ["outline-color"]
+				"zinc-950": ["outline-color"],
+				"dashed": ["outline-style"],
+				"dotted": ["outline-style"],
+				"double": ["outline-style"],
+				"none": ["outline-style"],
+				"solid": ["outline-style"],
+				"hidden": ["outline", "outline-offset", "outline-style"]
 			},
 			"outline-offset": {
 				"*": ["outline-offset"]
@@ -33169,13 +33169,13 @@
 			"snap": {
 				"*": ["scroll-snap-align"],
 				"always": ["scroll-snap-stop"],
-				"both": ["scroll-snap-type"],
-				"mandatory": [],
-				"none": ["scroll-snap-type"],
 				"normal": ["scroll-snap-stop"],
-				"proximity": [],
+				"both": ["scroll-snap-type"],
+				"none": ["scroll-snap-type"],
 				"x": ["scroll-snap-type"],
-				"y": ["scroll-snap-type"]
+				"y": ["scroll-snap-type"],
+				"mandatory": [],
+				"proximity": []
 			},
 			"space-x": {
 				"*": ["margin-left", "margin-right"],
@@ -33545,7 +33545,6 @@
 				"amber-800": ["color"],
 				"amber-900": ["color"],
 				"amber-950": ["color"],
-				"balance": ["text-wrap"],
 				"black": ["color"],
 				"blue-100": ["color"],
 				"blue-200": ["color"],
@@ -33559,8 +33558,6 @@
 				"blue-900": ["color"],
 				"blue-950": ["color"],
 				"brand": ["color"],
-				"center": ["text-align"],
-				"clip": ["text-overflow"],
 				"current": ["color"],
 				"cyan-100": ["color"],
 				"cyan-200": ["color"],
@@ -33573,7 +33570,6 @@
 				"cyan-800": ["color"],
 				"cyan-900": ["color"],
 				"cyan-950": ["color"],
-				"ellipsis": ["text-overflow"],
 				"emerald-100": ["color"],
 				"emerald-200": ["color"],
 				"emerald-300": ["color"],
@@ -33585,7 +33581,6 @@
 				"emerald-800": ["color"],
 				"emerald-900": ["color"],
 				"emerald-950": ["color"],
-				"end": ["text-align"],
 				"error": ["color"],
 				"fuchsia-100": ["color"],
 				"fuchsia-200": ["color"],
@@ -33632,8 +33627,6 @@
 				"indigo-900": ["color"],
 				"indigo-950": ["color"],
 				"inherit": ["color"],
-				"justify": ["text-align"],
-				"left": ["text-align"],
 				"lime-100": ["color"],
 				"lime-200": ["color"],
 				"lime-300": ["color"],
@@ -33678,7 +33671,6 @@
 				"neutral-800": ["color"],
 				"neutral-900": ["color"],
 				"neutral-950": ["color"],
-				"nowrap": ["text-wrap"],
 				"olive-100": ["color"],
 				"olive-200": ["color"],
 				"olive-300": ["color"],
@@ -33712,7 +33704,6 @@
 				"pink-800": ["color"],
 				"pink-900": ["color"],
 				"pink-950": ["color"],
-				"pretty": ["text-wrap"],
 				"purple-100": ["color"],
 				"purple-200": ["color"],
 				"purple-300": ["color"],
@@ -33735,7 +33726,6 @@
 				"red-800": ["color"],
 				"red-900": ["color"],
 				"red-950": ["color"],
-				"right": ["text-align"],
 				"rose-100": ["color"],
 				"rose-200": ["color"],
 				"rose-300": ["color"],
@@ -33769,7 +33759,6 @@
 				"slate-800": ["color"],
 				"slate-900": ["color"],
 				"slate-950": ["color"],
-				"start": ["text-align"],
 				"stone-100": ["color"],
 				"stone-200": ["color"],
 				"stone-300": ["color"],
@@ -33818,7 +33807,6 @@
 				"violet-900": ["color"],
 				"violet-950": ["color"],
 				"white": ["color"],
-				"wrap": ["text-wrap"],
 				"yellow-100": ["color"],
 				"yellow-200": ["color"],
 				"yellow-300": ["color"],
@@ -33840,7 +33828,19 @@
 				"zinc-700": ["color"],
 				"zinc-800": ["color"],
 				"zinc-900": ["color"],
-				"zinc-950": ["color"]
+				"zinc-950": ["color"],
+				"balance": ["text-wrap"],
+				"nowrap": ["text-wrap"],
+				"pretty": ["text-wrap"],
+				"wrap": ["text-wrap"],
+				"center": ["text-align"],
+				"end": ["text-align"],
+				"justify": ["text-align"],
+				"left": ["text-align"],
+				"right": ["text-align"],
+				"start": ["text-align"],
+				"clip": ["text-overflow"],
+				"ellipsis": ["text-overflow"]
 			},
 			"text-shadow": {
 				"*": ["text-shadow"],
@@ -34159,18 +34159,18 @@
 			"transform": {
 				"*": ["transform"],
 				"3d": ["transform-style"],
+				"flat": ["transform-style"],
 				"border": ["transform-box"],
 				"content": ["transform-box"],
 				"fill": ["transform-box"],
-				"flat": ["transform-style"],
 				"stroke": ["transform-box"],
 				"view": ["transform-box"]
 			},
 			"transition": {
 				"*": ["transition-duration", "transition-property", "transition-timing-function"],
 				"discrete": ["transition-behavior"],
-				"none": ["transition-property"],
-				"normal": ["transition-behavior"]
+				"normal": ["transition-behavior"],
+				"none": ["transition-property"]
 			},
 			"translate": {
 				"*": ["translate"]

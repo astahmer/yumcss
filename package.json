@@ -54,6 +54,7 @@
 		"bench:tsc:example": "nub scripts/benchmark-tsc.mts --target example",
 		"bench:tsc:styling": "nub benchmarks/styling-tsc/runner/benchmark.mts",
 		"bench:tsc:generated": "nub benchmarks/styling-tsc/runner/generated-types-poc.mts",
+		"bench:size:ecosystem": "nub benchmarks/styling-size/runner/benchmark.mts",
 		"bench:summary": "nub scripts/render-performance-summary.mts",
 		"bench:summary:check": "nub scripts/render-performance-summary.mts --check",
 		"bench:studio": "nub scripts/benchmark-studio.mts",

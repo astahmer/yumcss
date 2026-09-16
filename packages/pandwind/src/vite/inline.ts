@@ -74,6 +74,34 @@ function normalizeWildcardValues(raw: unknown): Record<string, ReadonlySet<strin
 	return entries > 0 ? out : undefined;
 }
 
+interface PackedTwConflicts {
+	readonly s: readonly string[];
+	readonly p: readonly (readonly number[])[];
+	readonly c: readonly (readonly [number, readonly (readonly [number, readonly number[]])[]])[];
+}
+
+const decodePackedConflicts = (raw: unknown): TwConflictsMeta | undefined => {
+	if (typeof raw !== "object" || raw === null) return undefined;
+	const packed = raw as Partial<PackedTwConflicts>;
+	const strings = packed.s;
+	const propertyLists = packed.p;
+	if (!Array.isArray(strings) || !Array.isArray(propertyLists) || !Array.isArray(packed.c)) return;
+	const entries = packed.c as PackedTwConflicts["c"];
+	return Object.fromEntries(
+		entries.map(([utility, groups]) => [
+			strings[utility]!,
+			Object.fromEntries(
+				groups.flatMap(([properties, values]) =>
+					values.map((value) => [
+						strings[value]!,
+						propertyLists[properties]!.map((property: number) => strings[property]!),
+					]),
+				),
+			),
+		]),
+	);
+};
+
 /**
  * Extract the `createTw({ variants, conflicts, compose })` config from
  * generated tw entry and companion sources. The generated shape is stable,
@@ -122,19 +150,53 @@ export function extractTwConfigFromSources(sources: readonly string[]): TwConfig
 	// accepts the compact generated form as well as a fully inline object.
 	const constantValues = new Map<string, unknown>();
 	const resolving = new Set<string>();
-	const resolveConstant = (name: string): unknown => {
+	let resolveConstant: (name: string) => unknown = () => undefined;
+	const constantScope = { get: (name: string) => resolveConstant(name) } as LiteralConstantScope;
+	const evaluateCall = (node: Expression, consts?: LiteralConstantScope): unknown => {
+		if (node.type !== NodeKind.CallExpression) return undefined;
+		const call = node as unknown as CallNode;
+		const callee = call.callee;
+		if (
+			callee?.type === NodeKind.Identifier &&
+			callee.name === "__pandwindDecodeConflicts" &&
+			call.arguments.length === 1
+		)
+			return decodePackedConflicts(
+				evalLiteral(call.arguments[0] as Expression, consts, evaluateCall),
+			);
+		if (callee === null || callee.type !== NodeKind.MemberExpression) return undefined;
+		const member = callee as unknown as {
+			computed?: boolean;
+			object?: { type?: string; name?: string };
+			property?: { type?: string; name?: string };
+		};
+		if (
+			member.computed === true ||
+			member.object?.type !== NodeKind.Identifier ||
+			member.object.name !== "JSON" ||
+			member.property?.type !== NodeKind.Identifier ||
+			member.property.name !== "parse" ||
+			call.arguments.length !== 1
+		)
+			return undefined;
+		const source = evalLiteral(call.arguments[0] as Expression, consts, evaluateCall);
+		if (typeof source !== "string") return undefined;
+		try {
+			return JSON.parse(source);
+		} catch {
+			return undefined;
+		}
+	};
+	resolveConstant = (name: string): unknown => {
 		if (constantValues.has(name)) return constantValues.get(name);
 		const initializer = topLevelConsts.get(name);
 		if (initializer === undefined || resolving.has(name)) return undefined;
 		resolving.add(name);
-		const value = evalLiteral(initializer, {
-			get: resolveConstant,
-		} as LiteralConstantScope);
+		const value = evalLiteral(initializer, constantScope, evaluateCall);
 		resolving.delete(name);
 		constantValues.set(name, value);
 		return value;
 	};
-	const constantScope = { get: resolveConstant } as LiteralConstantScope;
 	const buildMetadata = resolveConstant("__pandwindBuildMetadata");
 	const buildWildcardValues =
 		typeof buildMetadata === "object" && buildMetadata !== null
@@ -145,12 +207,14 @@ export function extractTwConfigFromSources(sources: readonly string[]): TwConfig
 		const options = value as Record<string, unknown>;
 		const variants = options.variants;
 		if (typeof variants !== "object" || variants === null) return undefined;
+		const rawConflicts = options.conflicts;
 		return {
 			variants: variants as TwVariantsMeta,
 			conflicts:
-				typeof options.conflicts === "object" && options.conflicts !== null
-					? (options.conflicts as TwConflictsMeta)
-					: undefined,
+				decodePackedConflicts(rawConflicts) ??
+				(typeof rawConflicts === "object" && rawConflicts !== null
+					? (rawConflicts as TwConflictsMeta)
+					: undefined),
 			wildcardValues: normalizeWildcardValues(options.wildcardValues ?? buildWildcardValues),
 			valueTokens:
 				typeof options.valueTokens === "object" && options.valueTokens !== null

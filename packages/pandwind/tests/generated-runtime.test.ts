@@ -6,8 +6,10 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { __unstable__loadDesignSystem } from "@tailwindcss/node";
 import { describe, expect, test } from "vitest";
+import { createCx } from "../src/cx/index.ts";
 import { createTw } from "../src/tw/runtime.ts";
 import { tw } from "../../../examples/example/src/tw.ts";
+import { __pandwindConflictConfig } from "../../../examples/example/src/tw.conflicts.ts";
 import { __pandwindRuntimeConfig } from "../../../examples/example/src/tw.runtime.ts";
 import { collectTwClasses } from "../src/tw/collect.ts";
 import { createSourceWorkspace } from "../src/source-workspace.ts";
@@ -44,6 +46,13 @@ describe("generated tw runtime", () => {
 		expect(conflictTw({ border: ["2", "red-500"] })).toBe("border-2 border-red-500");
 		expect(conflictTw({ bg: ["red-500/50", "blue-500"] })).toBe("bg-blue-500");
 		expect(conflictTw({ p: "4", md: { p: "6" } })).toBe("p-4 md:p-6");
+	});
+
+	test("shares the generated conflict-only config with cx", () => {
+		const conflictCx = createCx(__pandwindConflictConfig);
+		expect(conflictCx("px-4", "p-6")).toBe("p-6");
+		expect(conflictCx("p-6", "px-4")).toBe("p-6 px-4");
+		expect(conflictCx("hover:bg-red-500", "hover:bg-blue-500")).toBe("hover:bg-blue-500");
 	});
 
 	test("safelist matches scanner output and every class compiles", async () => {

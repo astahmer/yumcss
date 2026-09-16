@@ -162,6 +162,10 @@ export function evalLiteral(
 			const value = node.argument.value;
 			return typeof value === "number" ? -value : undefined;
 		}
+		case NodeKind.TSAsExpression:
+		case NodeKind.TSSatisfiesExpression:
+		case NodeKind.TSTypeAssertion:
+			return evalLiteral(node.expression, consts, evaluateCall);
 		case NodeKind.ArrayExpression: {
 			const values: unknown[] = [];
 			for (const element of node.elements) {

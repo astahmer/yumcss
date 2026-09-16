@@ -73,6 +73,30 @@ type RuntimeApiSnapshot = {
 
 type BundleSize = { readonly min: number; readonly gz: number };
 
+type EcosystemBundleSnapshot = {
+	readonly updatedAt: string;
+	readonly samples: number;
+	readonly environment: {
+		readonly platform: string;
+		readonly arch: string;
+		readonly node: string;
+		readonly vite: string;
+		readonly esbuild: string;
+	};
+	readonly workloads: readonly {
+		readonly library: string;
+		readonly category: "static" | "runtime";
+		readonly buildMode: string;
+		readonly cssDelivery: "extracted" | "injected" | "none";
+		readonly arbitraryRuntimeValues: boolean;
+		readonly delta: {
+			readonly js: BundleSize;
+			readonly css: BundleSize;
+			readonly total: BundleSize;
+		};
+	}[];
+};
+
 type RankingMetric = "checkTimeSeconds" | "instantiations";
 
 const stylingSnapshotPath = resolve(ROOT, "benchmarks/styling-tsc/snapshots/tsc.json");
@@ -95,6 +119,10 @@ const generatedRuntimeSizeSnapshotPath = resolve(
 	ROOT,
 	"packages/pandwind/tests/snapshots/generated-runtime-size.json.snap",
 );
+const ecosystemBundleSizeSnapshotPath = resolve(
+	ROOT,
+	"benchmarks/styling-size/snapshots/bundle-size.json",
+);
 
 const readJson = <T,>(path: string): T | undefined => {
 	if (!existsSync(path)) return undefined;
@@ -104,6 +132,11 @@ const readJson = <T,>(path: string): T | undefined => {
 const integer = (value: number): string => Math.round(value).toLocaleString("en-US");
 const seconds = (value: number): string => value.toFixed(3);
 const kilobytes = (value: number): string => (Math.round(value / 10) / 100).toFixed(2);
+
+const signedKilobytes = (value: number): string => {
+	if (value === 0) return "0.00 KB";
+	return `${value < 0 ? "-" : "+"}${kilobytes(Math.abs(value))} KB`;
+};
 
 const reduction = (from: number, to: number): string =>
 	from === 0 ? "n/a" : `${((1 - to / from) * 100).toFixed(1)}%`;
@@ -395,6 +428,84 @@ const renderGeneratedRuntimeSizes = (sizes: Record<string, BundleSize> | undefin
 	];
 };
 
+const ecosystemLibrary = (library: string): string =>
+	({
+		pandwind: "Pandwind css() (static)",
+		tailwind: "Tailwind CSS",
+		panda: "Panda CSS",
+		stylex: "StyleX",
+		"vanilla-extract": "Vanilla Extract",
+		sprinkles: "Sprinkles",
+		unocss: "UnoCSS",
+		linaria: "Linaria",
+		"pandwind-css": "Pandwind css() (dynamic)",
+		"pandwind-runtime": "Pandwind createRuntimeCss()",
+		"pandwind-unsafe": "Pandwind createUnsafeCss()",
+		emotion: "Emotion",
+		"styled-components": "styled-components",
+		goober: "Goober",
+	})[library] ?? library;
+
+const renderEcosystemBundleTable = (
+	snapshot: EcosystemBundleSnapshot,
+	category: EcosystemBundleSnapshot["workloads"][number]["category"],
+): string => {
+	const rows = snapshot.workloads
+		.filter((workload) => workload.category === category)
+		.toSorted(
+			(left, right) =>
+				left.delta.total.gz - right.delta.total.gz || left.library.localeCompare(right.library),
+		)
+		.map((workload, index) => [
+			String(index + 1),
+			ecosystemLibrary(workload.library),
+			workload.buildMode,
+			`${signedKilobytes(workload.delta.js.min)} / ${signedKilobytes(workload.delta.js.gz)}`,
+			`${signedKilobytes(workload.delta.css.min)} / ${signedKilobytes(workload.delta.css.gz)}`,
+			signedKilobytes(workload.delta.total.gz),
+			workload.cssDelivery,
+			workload.arbitraryRuntimeValues ? "yes" : "no",
+		]);
+	return markdownTable(
+		[
+			"Rank",
+			"Library",
+			"Build mode",
+			"JS min / gzip",
+			"CSS min / gzip",
+			"Total gzip",
+			"CSS delivery",
+			"Runtime values",
+		],
+		rows,
+		new Set([0, 3, 4, 5, 7]),
+	);
+};
+
+const renderEcosystemBundleComparison = (
+	snapshot: EcosystemBundleSnapshot | undefined,
+): string[] => {
+	if (snapshot === undefined || snapshot.workloads.length === 0) return [];
+	return [
+		"## Ecosystem bundle-size comparison",
+		"",
+		`Measured on ${snapshot.environment.platform}/${snapshot.environment.arch} with Node ${snapshot.environment.node}, Vite ${snapshot.environment.vite}, and esbuild ${snapshot.environment.esbuild}; snapshot updated ${snapshot.updatedAt}. Each value is the styled app minus its unstyled app baseline, in decimal KB.`,
+		"",
+		"Static production output ships extracted CSS. Runtime/dynamic output keeps style creation in browser JavaScript; the CSS delivery column distinguishes injected rules from Pandwind fallback lanes that require a host stylesheet.",
+		"",
+		"### Static production output",
+		"",
+		renderEcosystemBundleTable(snapshot, "static"),
+		"",
+		"### Runtime/dynamic output",
+		"",
+		renderEcosystemBundleTable(snapshot, "runtime"),
+		"",
+		"Full styled/baseline metrics, pinned versions, and the fixture methodology: [bundle-size.md](benchmarks/styling-size/snapshots/bundle-size.md).",
+		"",
+	];
+};
+
 const renderRuntimeApiRanking = (snapshot: RuntimeApiSnapshot | undefined): string[] => {
 	if (snapshot === undefined || snapshot.scenarios.length === 0) return [];
 	const rows = snapshot.scenarios
@@ -439,6 +550,7 @@ export const renderPerformanceSummary = (): string => {
 	const generatedRuntimeSizes = readJson<Record<string, BundleSize>>(
 		generatedRuntimeSizeSnapshotPath,
 	);
+	const ecosystemBundleSizes = readJson<EcosystemBundleSnapshot>(ecosystemBundleSizeSnapshotPath);
 	const lines = [
 		"<!-- Generated by scripts/render-performance-summary.mts; do not edit. -->",
 		"",
@@ -471,6 +583,7 @@ export const renderPerformanceSummary = (): string => {
 	lines.push(...renderRuntimeApiRanking(runtimeApiSnapshot));
 	lines.push(...renderBundleRanking(runtimeSizes));
 	lines.push(...renderGeneratedRuntimeSizes(generatedRuntimeSizes));
+	lines.push(...renderEcosystemBundleComparison(ecosystemBundleSizes));
 	lines.push(
 		"## Sources and refresh commands",
 		"",
@@ -480,6 +593,7 @@ export const renderPerformanceSummary = (): string => {
 		"- Public API typecheck: `pnpm --filter pandwind run test:tsc -- -u`",
 		"- Runtime size: `pnpm --filter pandwind exec vitest run runtime-size -u`",
 		"- Runtime API throughput: `pnpm --filter pandwind run test:benchmarks -- -u`",
+		"- Ecosystem bundle-size comparison: `pnpm run bench:size:ecosystem -- --update`",
 		"- Summary freshness: `pnpm run bench:summary:check`",
 		"",
 	);

@@ -21,7 +21,7 @@
 		{
 			"path": "src/pandwind.interop.json",
 			"ownership": "build-only",
-			"hash": "ef2b452b19f76d0b4c8f1457fcd584d01c823e10f74a7a779de2e9d2ec66dbad"
+			"hash": "90123c2901273ff645ebbb725dcd9be83733c63098fb9646551b3a3c00abe7fc"
 		},
 		{
 			"path": "src/tw.build.ts",
@@ -29,9 +29,14 @@
 			"hash": "5c3f32ff21b443ba9603f11ddd4795a076efe6baafd2cc8c0bbd2f5868ec5e1c"
 		},
 		{
+			"path": "src/tw.conflicts.ts",
+			"ownership": "optional",
+			"hash": "55691540f421be830a19f93f872873451132f2da43d7044c2e76267d99ffb482"
+		},
+		{
 			"path": "src/tw.runtime.ts",
 			"ownership": "optional",
-			"hash": "86418c3bdc23a52a9246c586649e47c1738b71b32e17ed6368ffc04039640750"
+			"hash": "870d390ff8ce30460bd567349ca1749c73de90a80116e56f591d96ac2fb8ef8c"
 		},
 		{
 			"path": "src/tw.ts",

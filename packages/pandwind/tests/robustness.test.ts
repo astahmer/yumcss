@@ -135,7 +135,7 @@ describe("cx() never crashes and never drops unknown classes", () => {
 			},
 		});
 		const twCss = createUnsafeCss({ className: adapter });
-		const cxAdapter = createCx({ css: twCss, variants, conflicts, compose });
+		const cxAdapter = createCx({ css: twCss, conflicts, compose });
 		const merged = cxAdapter(
 			compileStyles({ bg: "red-500" }, variants, conflicts, compose),
 			twCss.class({ backgroundColor: "$blue-500" }),

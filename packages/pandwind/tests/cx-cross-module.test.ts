@@ -176,7 +176,6 @@ describe("inlineCxCalls folds through importedConstants", () => {
 		const dss = createDesignCss(examplePreset);
 		const real = createCx({
 			css: dss as never,
-			variants: config.variants,
 			conflicts: config.conflicts,
 			compose: config.compose,
 		});

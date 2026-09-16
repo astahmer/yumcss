@@ -243,36 +243,68 @@ Lower is smaller. Sizes are decimal KB (1 KB = 1,000 bytes); exact byte values r
 |    1 | createUnsafeCss(), static output after extraction | static output         |          0.08 |      0.10 |
 |    2 | root barrel, tw only                              | tree-shaken barrel    |          2.80 |      1.31 |
 |    3 | tw                                                | runtime               |          2.80 |      1.31 |
-|    4 | cx, plain                                         | runtime               |          7.03 |      3.01 |
-|    5 | createUnsafeCss(), generated call                 | generated runtime     |          8.17 |      3.40 |
-|    6 | createUnsafeCss(), generated class                | generated runtime     |          8.22 |      3.42 |
-|    7 | createUnsafeCss(), compiler-pruned call           | compiler-pruned       |          8.23 |      3.44 |
-|    8 | createCssRuntime() core (internal)                | internal core         |          8.23 |      3.46 |
-|    9 | createUnsafeCss(), compiler-pruned class          | compiler-pruned       |          8.29 |      3.46 |
-|   10 | createUnsafeCss(), generated vars                 | generated runtime     |         10.51 |      4.24 |
-|   11 | createUnsafeCss(), generated class+vars           | generated runtime     |         10.57 |      4.27 |
-|   12 | createUnsafeCss(), compiler-pruned vars           | compiler-pruned       |         10.58 |      4.28 |
-|   13 | createUnsafeCss(), generated all                  | generated runtime     |         12.84 |      5.09 |
-|   14 | createUnsafeCss(), dynamic fallback               | unsafe fallback       |         12.93 |      5.16 |
-|   15 | createUnsafeCss(), fallback                       | unsafe fallback       |         12.94 |      5.17 |
-|   16 | unsafe css subpath only                           | tree-shaken subpath   |         12.95 |      5.17 |
-|   17 | createCss(preset), fallback                       | preset-bound fallback |         13.69 |      5.44 |
-|   18 | cx                                                | runtime               |         19.88 |      7.74 |
-|   19 | root barrel, cx + unsafe css                      | tree-shaken barrel    |         19.88 |      7.76 |
-|   20 | stylesheet generator (build-time only)            | build-time only       |         21.09 |      8.18 |
-|   21 | all (createUnsafeCss+tw+cx)                       | runtime               |         22.57 |      8.69 |
-|   22 | createRuntimeCss(preset), live sheet              | live sheet            |         34.32 |     12.62 |
+|    4 | createUnsafeCss(), generated call                 | generated runtime     |          5.76 |      2.46 |
+|    5 | createUnsafeCss(), generated class                | generated runtime     |          5.81 |      2.48 |
+|    6 | createUnsafeCss(), compiler-pruned call           | compiler-pruned       |          5.82 |      2.50 |
+|    7 | createUnsafeCss(), compiler-pruned class          | compiler-pruned       |          5.88 |      2.52 |
+|    8 | createCssRuntime() core (internal)                | internal core         |          5.82 |      2.52 |
+|    9 | cx, plain                                         | runtime               |          7.03 |      3.01 |
+|   10 | createUnsafeCss(), generated vars                 | generated runtime     |          8.17 |      3.34 |
+|   11 | createUnsafeCss(), generated class+vars           | generated runtime     |          8.23 |      3.36 |
+|   12 | createUnsafeCss(), compiler-pruned vars           | compiler-pruned       |          8.24 |      3.38 |
+|   13 | createUnsafeCss(), generated all                  | generated runtime     |         10.50 |      4.19 |
+|   14 | createUnsafeCss(), dynamic fallback               | unsafe fallback       |         10.59 |      4.26 |
+|   15 | createUnsafeCss(), fallback                       | unsafe fallback       |         10.60 |      4.27 |
+|   16 | unsafe css subpath only                           | tree-shaken subpath   |         10.61 |      4.27 |
+|   17 | createCss(preset), fallback                       | preset-bound fallback |         13.10 |      5.19 |
+|   18 | cx                                                | runtime               |         17.54 |      6.84 |
+|   19 | root barrel, cx + unsafe css                      | tree-shaken barrel    |         17.53 |      6.86 |
+|   20 | all (createUnsafeCss+tw+cx)                       | runtime               |         20.23 |      7.80 |
+|   21 | stylesheet generator (build-time only)            | build-time only       |         21.09 |      8.18 |
+|   22 | createRuntimeCss(preset), live sheet              | live sheet            |         33.73 |     12.50 |
 
 ## Generated Tailwind metadata size
 
 These rows are separate from the native CSS runtime: static generated calls erase the metadata, while dynamic generated tw/cx calls intentionally retain it. Sizes use decimal KB; exact byte values remain in the committed snapshot.
 
-| Rank | Entry                          | Minified (KB) | Gzip (KB) |
-| ---: | ------------------------------ | ------------: | --------: |
-|    1 | generated tw+cx (static)       |          0.05 |      0.07 |
-|    2 | generated tw (dynamic)         |          4.45 |      1.74 |
-|    3 | plain cx (no tw metadata)      |         32.33 |     11.97 |
-|    4 | explicit conflict cx (dynamic) |        291.23 |     40.57 |
+| Rank | Entry                           | Minified (KB) | Gzip (KB) |
+| ---: | ------------------------------- | ------------: | --------: |
+|    1 | generated tw+cx (static)        |          0.05 |      0.07 |
+|    2 | generated tw (dynamic)          |          4.45 |      1.74 |
+|    3 | example dss+cx (no tw metadata) |         31.75 |     11.74 |
+|    4 | explicit conflict cx (dynamic)  |         80.68 |     20.29 |
+
+## Ecosystem bundle-size comparison
+
+Measured on darwin/arm64 with Node v24.20.0, Vite 8.2.2, and esbuild 0.28.2; snapshot updated 2026-09-16. Each value is the styled app minus its unstyled app baseline, in decimal KB.
+
+Static production output ships extracted CSS. Runtime/dynamic output keeps style creation in browser JavaScript; the CSS delivery column distinguishes injected rules from Pandwind fallback lanes that require a host stylesheet.
+
+### Static production output
+
+| Rank | Library                 | Build mode                    |        JS min / gzip |      CSS min / gzip | Total gzip | CSS delivery | Runtime values |
+| ---: | ----------------------- | ----------------------------- | -------------------: | ------------------: | ---------: | ------------ | -------------: |
+|    1 | Vanilla Extract         | Vanilla Extract Vite plugin   |  +0.16 KB / +0.08 KB | +1.83 KB / +0.34 KB |   +0.42 KB | extracted    |             no |
+|    2 | UnoCSS                  | UnoCSS Vite plugin            |  +1.06 KB / +0.15 KB | +0.78 KB / +0.28 KB |   +0.43 KB | extracted    |             no |
+|    3 | Linaria                 | Linaria Vite plugin           |  +0.09 KB / +0.08 KB | +2.27 KB / +0.42 KB |   +0.50 KB | extracted    |             no |
+|    4 | Tailwind CSS            | Tailwind CSS Vite plugin      |  +1.06 KB / +0.15 KB | +1.08 KB / +0.36 KB |   +0.51 KB | extracted    |             no |
+|    5 | StyleX                  | StyleX Babel transform + Vite |  +0.90 KB / +0.19 KB | +0.78 KB / +0.34 KB |   +0.53 KB | extracted    |             no |
+|    6 | Pandwind css() (static) | Vite + pandwindCssVite        |  +3.68 KB / +1.14 KB | +0.88 KB / +0.41 KB |   +1.55 KB | extracted    |             no |
+|    7 | Sprinkles               | Vanilla Extract Vite plugin   |  +6.75 KB / +1.49 KB | +1.96 KB / +0.40 KB |   +1.88 KB | extracted    |             no |
+|    8 | Panda CSS               | Panda codegen/cssgen + Vite   | +15.06 KB / +5.39 KB | +0.74 KB / +0.28 KB |   +5.67 KB | extracted    |             no |
+
+### Runtime/dynamic output
+
+| Rank | Library                     | Build mode                  |         JS min / gzip |    CSS min / gzip | Total gzip | CSS delivery | Runtime values |
+| ---: | --------------------------- | --------------------------- | --------------------: | ----------------: | ---------: | ------------ | -------------: |
+|    1 | Goober                      | Vite + goober               |   +4.00 KB / +1.23 KB | 0.00 KB / 0.00 KB |   +1.23 KB | injected     |            yes |
+|    2 | Pandwind createUnsafeCss()  | Vite + pandwind/unsafe/css  |  +12.82 KB / +4.36 KB | 0.00 KB / 0.00 KB |   +4.36 KB | none         |            yes |
+|    3 | Pandwind css() (dynamic)    | Vite + pandwind/css         |  +18.28 KB / +6.10 KB | 0.00 KB / 0.00 KB |   +6.10 KB | none         |            yes |
+|    4 | Emotion                     | Vite + emotion              |  +17.25 KB / +6.30 KB | 0.00 KB / 0.00 KB |   +6.30 KB | injected     |            yes |
+|    5 | styled-components           | Vite + styled.div           | +29.51 KB / +11.92 KB | 0.00 KB / 0.00 KB |  +11.92 KB | injected     |            yes |
+|    6 | Pandwind createRuntimeCss() | Vite + pandwind/css/runtime | +39.27 KB / +13.42 KB | 0.00 KB / 0.00 KB |  +13.42 KB | injected     |            yes |
+
+Full styled/baseline metrics, pinned versions, and the fixture methodology: [bundle-size.md](benchmarks/styling-size/snapshots/bundle-size.md).
 
 ## Sources and refresh commands
 
@@ -282,4 +314,5 @@ These rows are separate from the native CSS runtime: static generated calls eras
 - Public API typecheck: `pnpm --filter pandwind run test:tsc -- -u`
 - Runtime size: `pnpm --filter pandwind exec vitest run runtime-size -u`
 - Runtime API throughput: `pnpm --filter pandwind run test:benchmarks -- -u`
+- Ecosystem bundle-size comparison: `pnpm run bench:size:ecosystem -- --update`
 - Summary freshness: `pnpm run bench:summary:check`

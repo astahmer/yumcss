@@ -33,13 +33,7 @@
 			"import": "./dist/css/generated.js",
 			"default": "./dist/css/generated.js"
 		},
-		"./css/class-name-strategy": {
-			"pandwind": "./src/css/class-name-strategy.ts",
-			"types": "./dist/css/class-name-strategy.d.ts",
-			"import": "./dist/css/class-name-strategy.js",
-			"default": "./dist/css/class-name-strategy.js"
-		},
-		"./css/named-atoms-strategy": {
+		"./css/named": {
 			"pandwind": "./src/css/named-atoms-strategy.ts",
 			"types": "./dist/css/named-atoms-strategy.d.ts",
 			"import": "./dist/css/named-atoms-strategy.js",

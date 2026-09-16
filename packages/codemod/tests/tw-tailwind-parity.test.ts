@@ -28,7 +28,7 @@ import { parse } from "postcss";
 import { beforeAll, describe, expect, test } from "vitest";
 import { createCx } from "pandwind/cx";
 import { canonicalProps } from "../src/tw/generate-types.ts";
-import { compileStyles, type TwNestedStyles, type TwVariantsMeta } from "pandwind/tw/compile";
+import { compileStyles, type TwNestedStyles } from "pandwind/tw/compile";
 import { createTw } from "pandwind/tw";
 import { extractTwConfigFromSources } from "pandwind/vite/inline";
 import { rulesForClass, TW_ENTRY } from "./helpers/tailwind-proof.ts";
@@ -38,7 +38,7 @@ const APP_DIR = resolve(import.meta.dirname, "../../../examples/example");
 /** The committed generated config — the exact artifacts the app runs on. */
 function loadTwConfig(): NonNullable<ReturnType<typeof extractTwConfigFromSources>> {
 	const config = extractTwConfigFromSources(
-		["tw.ts", "tw.runtime.ts", "tw.build.ts"].map((file) =>
+		["tw.ts", "tw.runtime.ts", "tw.conflicts.ts", "tw.build.ts"].map((file) =>
 			readFileSync(resolve(APP_DIR, "src", file), "utf8"),
 		),
 	);
@@ -216,7 +216,6 @@ describe("cx() merge", () => {
 	// createCx/createTw read `config`, which beforeAll populates.
 	const cx = () =>
 		createCx({
-			variants: config.variants as TwVariantsMeta,
 			conflicts: config.conflicts,
 			compose: config.compose,
 		});

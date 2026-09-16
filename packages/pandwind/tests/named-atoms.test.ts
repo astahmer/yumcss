@@ -119,7 +119,6 @@ describe("cx() merging survives the mode switch", () => {
 	const real = readGeneratedTwConfig(resolve(import.meta.dirname, "../../../examples/example/src"));
 	const cx = createCx({
 		css: dss,
-		variants: real.variants,
 		conflicts: real.conflicts,
 		compose: real.compose,
 	});

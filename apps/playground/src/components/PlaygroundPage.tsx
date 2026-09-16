@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { cx } from "../cx.ts";
 import { tw } from "../tw.ts";
 import { createRuntimeCss, createRuntimeDesignCss } from "pandwind/css/runtime";
-import type { ClassNameStrategy } from "pandwind/css/class-name-strategy";
+import type { ClassNameStrategy } from "pandwind/css";
 import {
 	PlaygroundApi,
 	type ExampleDef,

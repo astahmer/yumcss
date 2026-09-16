@@ -7,9 +7,8 @@ import type {
 	StyleObject,
 	TypedStyleObject,
 } from "../types/typings.ts";
-import { createCssBackend, cssPropertyFromKey, type CssBackendOptions } from "../backends/css.ts";
+import { createCssBackend, type CssBackendOptions } from "../backends/css.ts";
 import { ATOM_REGISTRY, type AtomRegistry } from "./atoms.ts";
-import { createTokenResolver } from "./tokens.ts";
 import { isCompilableCssValue } from "./first-that-works.ts";
 
 /**
@@ -21,7 +20,6 @@ import { isCompilableCssValue } from "./first-that-works.ts";
 export interface CreateCssOptions extends CssBackendOptions {}
 
 type TypedPreset = CssConfigReturn<DefinePresetOptions<AnyCssConfig, AnyTokens>>;
-type RuntimeStyleValidator = (preset: TypedPreset, value: unknown) => void;
 
 /** Atomic declaration names mapped to emitted class names. */
 export type CompiledStyles = Record<string, string>;
@@ -98,21 +96,6 @@ const isFlatStyle = (style: unknown): style is StyleObject => {
 	return true;
 };
 
-export const isPreset = (value: CreateCssOptions | TypedPreset): value is TypedPreset =>
-	typeof value === "object" &&
-	value !== null &&
-	"conditions" in value &&
-	"properties" in value &&
-	"strict" in value;
-
-const runtimeTokenName = /^[$a-zA-Z0-9_.-]+$/u;
-
-const createRuntimeValueResolver = (preset: TypedPreset, debug: boolean) => {
-	const resolveToken = createTokenResolver(preset, debug);
-	return (property: string, value: string) =>
-		runtimeTokenName.test(value) ? resolveToken(property, value) : value;
-};
-
 /**
  * Build the callable declaration compiler and install the requested method
  * attachments. The default empty attachment list is intentional: low-level
@@ -120,24 +103,15 @@ const createRuntimeValueResolver = (preset: TypedPreset, debug: boolean) => {
  * complete public surface.
  */
 export function createCssRuntime(
-	presetOrOptions: CreateCssOptions | TypedPreset = {},
-	options: CreateCssOptions = {},
+	backendOptions: CreateCssOptions = {},
 	attachments: readonly RuntimeCssAttachment[] = [],
-	validateValue?: RuntimeStyleValidator,
+	resolveRuntimeValue?: (property: string, value: string) => string,
+	validateValue?: (key: string, value: unknown) => void,
 ): RuntimeCssFunction {
-	const preset = isPreset(presetOrOptions) ? presetOrOptions : undefined;
-	const backendOptions = isPreset(presetOrOptions)
-		? { ...options, conditions: presetOrOptions.conditions }
-		: presetOrOptions;
-	const resolveRuntimeValue =
-		preset === undefined
-			? undefined
-			: createRuntimeValueResolver(preset, Boolean(backendOptions.debug));
 	const backend = createCssBackend(backendOptions);
 	const atoms = backend.atoms;
 	const validate = (key: string, value: unknown): void => {
-		if (preset === undefined || validateValue === undefined) return;
-		if (cssPropertyFromKey(key, preset.conditions) === "colorPalette") validateValue(preset, value);
+		validateValue?.(key, value);
 	};
 	const declare = (key: string, value: string | number): string => {
 		validate(key, value);
@@ -203,11 +177,6 @@ export function createCssRuntime(
 	const css = ((...styles: Array<StyleObject>) => compileStyles(...styles)) as RuntimeCssFunction;
 	css[ATOM_REGISTRY] = atoms;
 	for (const attach of attachments) attach(css, context);
-	if (preset !== undefined) {
-		Object.defineProperty(css, Symbol.for("pandwind.css-factory"), {
-			value: { kind: "css", preset, options },
-		});
-	}
 	return css;
 }
 

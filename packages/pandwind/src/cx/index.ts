@@ -13,7 +13,7 @@
  *
  * const tw = createTw<WindVariants>({ variants, conflicts, compose });
  * const css = createUnsafeCss();
- * const cx = createCx({ css, variants, conflicts, compose });
+ * const cx = createCx({ css, conflicts, compose });
  *
  * cx(tw({ bg: "red-500" }), "px-4", css.class({ color: "blue" }), "bg-blue-500");
  * // -> "px-4 bg-blue-500 color__blue"   (bg-red-500 lost to bg-blue-500)
@@ -46,7 +46,7 @@ import type { CssFn } from "../css/create-css.ts";
 import { dashCase } from "../css/hash.ts";
 import { VARS_ATOMS } from "../css/vars-carrier.ts";
 import type { VarAtom, VarsOutput } from "../css/var-compiler.ts";
-import type { TwComposeMeta, TwConflictsMeta, TwVariantsMeta } from "../tw/compile.ts";
+import type { TwComposeMeta, TwConflictsMeta } from "../tw/compile.ts";
 
 /**
  * Metadata used by {@link createCx} to resolve utility and CSS-atom conflicts.
@@ -70,7 +70,6 @@ import type { TwComposeMeta, TwConflictsMeta, TwVariantsMeta } from "../tw/compi
  * @since 0.1.0
  */
 export interface CxOptions {
-	variants?: TwVariantsMeta;
 	conflicts?: TwConflictsMeta;
 	compose?: TwComposeMeta;
 	/**

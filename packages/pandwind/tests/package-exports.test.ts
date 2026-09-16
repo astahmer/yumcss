@@ -13,8 +13,7 @@ const packageManifest = JSON.parse(
 const entries = [
 	"pandwind/css",
 	"pandwind/css/generated",
-	"pandwind/css/class-name-strategy",
-	"pandwind/css/named-atoms-strategy",
+	"pandwind/css/named",
 	"pandwind/css/stylex",
 	"pandwind/css/panda",
 	"pandwind/css/unocss",
@@ -62,9 +61,14 @@ describe("pandwind package boundary", () => {
 		expect("VARS_ATOMS" in cssApi).toBe(false);
 	});
 
-	test("exposes generated CSS and class-name strategies through dedicated lanes", async () => {
+	test("keeps the strategy contract on the css entrypoint", async () => {
+		await import("pandwind/css");
+		expect(() => import.meta.resolve("pandwind/css/class-name-strategy")).toThrow();
+	});
+
+	test("exposes generated CSS and runtime class-name strategies through dedicated lanes", async () => {
 		const generatedApi = await import("pandwind/css/generated");
-		const namedAtomsApi = await import("pandwind/css/named-atoms-strategy");
+		const namedAtomsApi = await import("pandwind/css/named");
 		const stylexApi = await import("pandwind/css/stylex");
 		const pandaApi = await import("pandwind/css/panda");
 		const unocssApi = await import("pandwind/css/unocss");

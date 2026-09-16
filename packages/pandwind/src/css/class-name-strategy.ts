@@ -50,7 +50,7 @@ export interface ClassNameStrategy {
 	 *
 	 * @example
 	 * ```ts
-	 * import type { ClassNameStrategy } from "pandwind/css/class-name-strategy";
+	 * import type { ClassNameStrategy } from "pandwind/css";
 	 *
 	 * const strategy: ClassNameStrategy = {
 	 *   name: "named",

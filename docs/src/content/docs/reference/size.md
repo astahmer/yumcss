@@ -23,23 +23,23 @@ The compact snapshot-derived typecheck and size summary is in
 
 | entry                                      |      min |     gzip |
 | ------------------------------------------ | -------: | -------: |
-| `createCss(preset)` fallback runtime       | 13.69 KB |  5.44 KB |
-| `createUnsafeCss()` fallback runtime       | 12.94 KB |  5.17 KB |
-| `createCssRuntime()` core (**internal**)   |  8.23 KB |  3.46 KB |
-| `createRuntimeCss()` + runtime sheet       | 34.29 KB | 12.61 KB |
+| `createCss(preset)` fallback runtime       | 13.10 KB |  5.19 KB |
+| `createUnsafeCss()` fallback runtime       | 10.60 KB |  4.27 KB |
+| `createCssRuntime()` core (**internal**)   |  5.82 KB |  2.52 KB |
+| `createRuntimeCss()` + runtime sheet       | 33.73 KB | 12.50 KB |
 | `tw()` runtime                             |  2.80 KB |  1.31 KB |
-| `cx()` runtime                             | 19.88 KB |  7.74 KB |
-| all three direct runtime entries           | 22.57 KB |  8.69 KB |
+| `cx()` plain strings                       |  7.03 KB |  3.01 KB |
+| `cx()` + CSS atom registry                 | 17.54 KB |  6.84 KB |
+| all direct runtime entries                 | 20.23 KB |  7.80 KB |
 | stylesheet generator (**build-time only**) | 21.09 KB |  8.18 KB |
 
-The combined direct runtime is measured at 22.57 KB min / 8.69 KB gzip in this
+The combined direct runtime is measured at 20.23 KB min / 7.80 KB gzip in this
 record for `createUnsafeCss()` + `tw()` + `cx()`. The preset-bound
 `createCss(preset)` fallback is measured separately because it also carries
 the preset-aware resolver. The internal `createCssRuntime()` row has no public
 method attachments and is included only to show the shared engine's base
 cost; applications should use `createCss()` or `createUnsafeCss()` instead.
-The fallback helper adds a small shared decoder to the dynamic CSS lane; fully
-extracted static calls remain below 100 bytes.
+Fully extracted static calls remain below 100 bytes.
 
 The runtime-sheet row uses the minimal preset fixture. A real application
 preset also contributes its own token and condition data; that data is
@@ -52,36 +52,37 @@ free. The same size gate checks these tree-shaken entry points:
 
 | fixture / import                        |      min |    gzip |
 | --------------------------------------- | -------: | ------: |
-| `pandwind/css` — css() only             | 12.94 KB | 5.17 KB |
+| `pandwind/css` — createCss(preset)      | 13.10 KB | 5.19 KB |
+| `pandwind/unsafe/css` — createUnsafeCss | 10.60 KB | 4.27 KB |
 | `pandwind/tw` — tw() only               |  2.80 KB | 1.31 KB |
 | `pandwind/cx` — cx() plain strings      |  7.03 KB | 3.01 KB |
-| `pandwind/cx` — cx() with atom registry | 19.88 KB | 7.74 KB |
-| root barrel, css only                   | 12.95 KB | 5.17 KB |
+| `pandwind/cx` — cx() with atom registry | 17.54 KB | 6.84 KB |
+| root barrel, css only                   | 13.10 KB | 5.19 KB |
 | root barrel, tw only                    |  2.80 KB | 1.31 KB |
-| root barrel, cx only                    | 19.88 KB | 7.76 KB |
+| root barrel, cx + CSS                   | 17.53 KB | 6.86 KB |
 
 Compiler-pruned and static fixtures are smaller still:
 
-| fixture                            |      min |    gzip |
-| ---------------------------------- | -------: | ------: |
-| all static `css()` calls           |     81 B |    98 B |
-| compiler-pruned `css()` call       |  8.23 KB | 3.44 KB |
-| compiler-pruned `css.class()` call |  8.29 KB | 3.46 KB |
-| compiler-pruned `css.vars()` call  | 10.58 KB | 4.28 KB |
+| fixture                            |     min |    gzip |
+| ---------------------------------- | ------: | ------: |
+| all static `css()` calls           |    81 B |    98 B |
+| compiler-pruned `css()` call       | 5.82 KB | 2.50 KB |
+| compiler-pruned `css.class()` call | 5.88 KB | 2.52 KB |
+| compiler-pruned `css.vars()` call  | 8.24 KB | 3.38 KB |
 
 The opt-in `pandwind-codemod runtime generate` path has the same callable
 core, but can omit attachments that an application never uses:
 
 | generated selection |      min |    gzip |
 | ------------------- | -------: | ------: |
-| callable core       |  8.17 KB | 3.40 KB |
-| `class`             |  8.22 KB | 3.42 KB |
-| `vars`              | 10.51 KB | 4.24 KB |
-| `class,vars`        | 10.57 KB | 4.27 KB |
-| all attachments     | 12.84 KB | 5.09 KB |
+| callable core       |  5.76 KB | 2.46 KB |
+| `class`             |  5.81 KB | 2.48 KB |
+| `vars`              |  8.17 KB | 3.34 KB |
+| `class,vars`        |  8.23 KB | 3.36 KB |
+| all attachments     | 10.50 KB | 4.19 KB |
 
 For the common `class,vars` selection, that is approximately **2.27 KB min /
-821 B gzip** less than the generated all-method runtime (18% / 16%), with no
+827 B gzip** less than the generated all-method runtime (22% / 20%), with no
 alternate runtime implementation or per-call dispatch layer. The generated
 module is statically imported and retains only the selected typed methods;
 `group` automatically adds its required `vars` attachment. These figures are
@@ -89,6 +90,25 @@ enforced by the generated rows in `packages/pandwind/tests/runtime-size.test.ts`
 
 Literal calls are erased by the Vite compiler; these fallback numbers are
 the cost paid by dynamic or unsupported calls.
+
+## Generated Tailwind conflict metadata
+
+The ordinary generated `tw.ts` entry remains tiny because it contains only
+variant join syntax. A generated `cx()` binding imports `tw.conflicts.ts` only
+when it deliberately enables arbitrary runtime Tailwind-class merging. That
+optional lane is measured separately from native `cx()` and does not import
+the much larger `tw.runtime.ts` value-token catalog.
+
+| generated lane                     |      min |     gzip |
+| ---------------------------------- | -------: | -------: |
+| generated `tw()` (dynamic)         |  4.45 KB |  1.74 KB |
+| generated `tw()` + `cx()` (static) |  0.05 KB |  0.07 KB |
+| example `dss+cx` (no conflicts)    | 31.75 KB | 11.74 KB |
+| generated `dss+cx` with conflicts  | 80.68 KB | 20.29 KB |
+
+The conflict-aware row is an opt-in cost for synchronous merging of unknown
+Tailwind class strings. Applications that only compose Pandwind atoms can use
+`createCx({ css })` without importing the generated conflict catalog.
 
 ## Browser runtimes versus alternatives
 
@@ -98,7 +118,7 @@ Pandwind row includes `css()` + `tw()` + cross-engine `cx()`.
 
 | runtime                                    |      min |    gzip | what ships                              |
 | ------------------------------------------ | -------: | ------: | --------------------------------------- |
-| pandwind `css()` + `tw()` + `cx()`         | 22.57 KB | 8.69 KB | current combined runtime                |
+| pandwind `css()` + `tw()` + `cx()`         | 20.23 KB | 7.80 KB | current combined runtime                |
 | `@stylexjs/stylex` 0.19.0                  |  4.06 KB | 1.74 KB | runtime only (compile happens in babel) |
 | `@pandacss/core` 1.12.0 generated `css()`  |  13.4 KB | 5.31 KB | panda runtime engine + tokens           |
 | `@emotion/css` 11.13.5                     |  15.3 KB | 6.25 KB | emotion core (chakra's engine)          |

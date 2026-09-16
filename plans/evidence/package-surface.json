@@ -31,8 +31,7 @@
 		{
 			"packageName": "pandwind",
 			"exportPaths": [
-				"./css/class-name-strategy",
-				"./css/named-atoms-strategy",
+				"./css/named",
 				"./css/stylex",
 				"./css/panda",
 				"./css/unocss"
@@ -45,7 +44,7 @@
 				"packages/pandwind/package.json",
 				"docs/src/content/docs/interop/css-in-js-adapters.md"
 			],
-			"note": "ClassNameStrategy integrations remain opt-in and adapter-owned."
+			"note": "Concrete ClassNameStrategy integrations remain opt-in and adapter-owned."
 		},
 		{
 			"packageName": "pandwind",

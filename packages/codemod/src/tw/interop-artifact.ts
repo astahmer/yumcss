@@ -39,6 +39,7 @@ export interface BuildPandwindInteropArtifactOptions {
 	readonly typesDts: string;
 	readonly twTs: string;
 	readonly twRuntimeTs?: string;
+	readonly twConflictsTs?: string;
 	readonly twBuildTs?: string;
 	readonly bridge?: UtilityBridge;
 	readonly themeBlock?: string;
@@ -99,6 +100,7 @@ export function buildPandwindInteropArtifact(
 	const config = extractTwConfigFromSources([
 		options.twTs,
 		...(options.twRuntimeTs === undefined ? [] : [options.twRuntimeTs]),
+		...(options.twConflictsTs === undefined ? [] : [options.twConflictsTs]),
 		...(options.twBuildTs === undefined ? [] : [options.twBuildTs]),
 	]);
 	if (config === undefined) throw new Error("pandwind interop: could not read generated tw config");

@@ -165,6 +165,7 @@ describe("typegen integration", () => {
 		expect(explicitEmpty.typesDts).toBe(without.typesDts);
 		expect(explicitEmpty.twTs).toBe(without.twTs);
 		expect(explicitEmpty.twRuntimeTs).toBe(without.twRuntimeTs);
+		expect(explicitEmpty.twConflictsTs).toBe(without.twConflictsTs);
 		expect(explicitEmpty.twBuildTs).toBe(without.twBuildTs);
 	});
 
@@ -174,6 +175,7 @@ describe("typegen integration", () => {
 		expect(a.typesDts).toBe(b.typesDts);
 		expect(a.twTs).toBe(b.twTs);
 		expect(a.twRuntimeTs).toBe(b.twRuntimeTs);
+		expect(a.twConflictsTs).toBe(b.twConflictsTs);
 		expect(a.twBuildTs).toBe(b.twBuildTs);
 	});
 });

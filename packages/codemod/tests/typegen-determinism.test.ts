@@ -17,13 +17,14 @@ describe("typegen determinism", () => {
 		expect(first.typesDts).toBe(second.typesDts);
 		expect(first.twTs).toBe(second.twTs);
 		expect(first.twRuntimeTs).toBe(second.twRuntimeTs);
+		expect(first.twConflictsTs).toBe(second.twConflictsTs);
 		expect(first.twBuildTs).toBe(second.twBuildTs);
 		expect(first.utilityCount).toBe(second.utilityCount);
 		expect(first.variantCount).toBe(second.variantCount);
 	});
 
 	test("generated output matches the committed artifacts", async () => {
-		const { typesDts, twTs, twRuntimeTs, twBuildTs } = await generateDesignSystem(
+		const { typesDts, twTs, twRuntimeTs, twConflictsTs, twBuildTs } = await generateDesignSystem(
 			css,
 			resolve(app, "src"),
 		);
@@ -35,6 +36,9 @@ describe("typegen determinism", () => {
 		expect(
 			(await format("tw.runtime.ts", twRuntimeTs, { printWidth: 100, useTabs: true })).code,
 		).toBe(readFileSync(resolve(app, "src/tw.runtime.ts"), "utf8"));
+		expect(
+			(await format("tw.conflicts.ts", twConflictsTs, { printWidth: 100, useTabs: true })).code,
+		).toBe(readFileSync(resolve(app, "src/tw.conflicts.ts"), "utf8"));
 		expect((await format("tw.build.ts", twBuildTs, { printWidth: 100, useTabs: true })).code).toBe(
 			readFileSync(resolve(app, "src/tw.build.ts"), "utf8"),
 		);

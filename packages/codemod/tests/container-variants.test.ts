@@ -29,11 +29,16 @@ const CSS = `@import "tailwindcss";
 
 async function makeEngine() {
 	const gen = await generateDesignSystem(CSS, import.meta.dirname);
-	const cfg = extractTwConfigFromSources([gen.twTs, gen.twRuntimeTs, gen.twBuildTs])!;
+	const cfg = extractTwConfigFromSources([
+		gen.twTs,
+		gen.twRuntimeTs,
+		gen.twConflictsTs,
+		gen.twBuildTs,
+	])!;
 	return {
 		gen,
 		tw: createTw({ variants: cfg.variants, conflicts: cfg.conflicts, compose: cfg.compose }),
-		cx: createCx({ variants: cfg.variants, conflicts: cfg.conflicts, compose: cfg.compose }),
+		cx: createCx({ conflicts: cfg.conflicts, compose: cfg.compose }),
 	};
 }
 

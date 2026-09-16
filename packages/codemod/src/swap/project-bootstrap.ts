@@ -909,7 +909,7 @@ function loadGeneratedMeta(
 	try {
 		for (const file of files) {
 			if (
-				!/\/(?:types\.d\.ts|tw\.ts|tw\.runtime\.ts|tw\.build\.ts|bridge\.ts|pandwind\.interop\.json)$/u.test(
+				!/\/(?:types\.d\.ts|tw\.ts|tw\.runtime\.ts|tw\.conflicts\.ts|tw\.build\.ts|bridge\.ts|pandwind\.interop\.json)$/u.test(
 					`/${file.path}`,
 				)
 			)
@@ -1027,6 +1027,7 @@ export async function createPandwindProjectSupport(
 		const types = projectFile(directory, "types.d.ts");
 		const tw = projectFile(directory, "tw.ts");
 		const twRuntime = projectFile(directory, "tw.runtime.ts");
+		const twConflicts = projectFile(directory, "tw.conflicts.ts");
 		const twBuild = projectFile(directory, "tw.build.ts");
 		const bridgeFile = projectFile(directory, "bridge.ts");
 		const theme = buildThemeBlock(sourceConfig.tokenCatalog?.groups ?? {});
@@ -1034,6 +1035,7 @@ export async function createPandwindProjectSupport(
 			typesDts: generated.typesDts,
 			twTs: generated.twTs,
 			twRuntimeTs: generated.twRuntimeTs,
+			twConflictsTs: generated.twConflictsTs,
 			twBuildTs: generated.twBuildTs,
 			bridge,
 			...(theme === "" ? {} : { themeBlock: theme }),
@@ -1041,10 +1043,11 @@ export async function createPandwindProjectSupport(
 		derivedFiles.push(
 			generatedFile(types, generated.typesDts, "Tailwind-derived typed tw() metadata"),
 			generatedFile(tw, generated.twTs, "Tailwind-derived tw() runtime entry"),
+			generatedFile(twRuntime, generated.twRuntimeTs, "Tailwind-derived optional runtime metadata"),
 			generatedFile(
-				twRuntime,
-				generated.twRuntimeTs,
-				"Tailwind-derived optional conflict metadata",
+				twConflicts,
+				generated.twConflictsTs,
+				"Tailwind-derived optional cx conflict metadata",
 			),
 			generatedFile(twBuild, generated.twBuildTs, "Tailwind-derived build metadata"),
 			generatedFile(

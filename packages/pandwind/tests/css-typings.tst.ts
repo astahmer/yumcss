@@ -1,5 +1,5 @@
 import { expect, test } from "tstyche";
-import { createCss, type AtomicStyleProps } from "../src/css/index.ts";
+import { createCss, type AtomicStyleProps, type ClassNameStrategy } from "../src/css/index.ts";
 import { createUnsafeCss } from "../src/unsafe/css.ts";
 import { define, type AnyCssConfig, type PandwindProperties } from "../src/preset/index.ts";
 import type { StandardProperties as CsstypeStandardProperties } from "csstype";
@@ -7,6 +7,15 @@ import { examplePreset } from "@pandwind/example-preset";
 
 const css = createCss(examplePreset);
 type Compiled = Record<string, string>;
+
+test("css exposes the class-name strategy contract as a type", () => {
+	const strategy: ClassNameStrategy = {
+		name: "custom",
+		toClassName: (key, value) => `custom-${key}-${value}`,
+	};
+
+	expect(strategy).type.toBe<ClassNameStrategy>();
+});
 
 test("createCss binds ordinary properties and preset token values", () => {
 	expect(

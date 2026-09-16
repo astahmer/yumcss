@@ -1,6 +1,6 @@
 import { createCss } from "pandwind/css";
-import { createNamedAtomsStrategy } from "pandwind/css/named-atoms-strategy";
-import type { ClassNameStrategy } from "pandwind/css/class-name-strategy";
+import { createNamedAtomsStrategy } from "pandwind/css/named";
+import type { ClassNameStrategy } from "pandwind/css";
 import { createPandaAdapter } from "pandwind/css/panda";
 import { createStyleXAdapter } from "pandwind/css/stylex";
 import { createUnoCssAdapter } from "pandwind/css/unocss";

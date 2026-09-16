@@ -147,7 +147,6 @@ export function randomArgs(
 const css = createUnsafeCss();
 export const cx = createCx({
 	css,
-	variants: real.variants,
 	conflicts: real.conflicts,
 	compose: real.compose,
 });
@@ -156,7 +155,6 @@ export const cx = createCx({
 function coldCx(): ReturnType<typeof createCx> {
 	return createCx({
 		css: createUnsafeCss(),
-		variants: real.variants,
 		conflicts: real.conflicts,
 		compose: real.compose,
 	});

@@ -9,6 +9,7 @@ scripts/**/*.d.ts
 .jj/
 apps/playground/src/generated/
 benchmarks/styling-tsc/.generated/
+benchmarks/styling-size/.generated/
 
 # studio run history (local snapshots)
 apps/inspector/.studio-history/

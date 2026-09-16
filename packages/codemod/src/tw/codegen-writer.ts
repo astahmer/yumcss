@@ -13,6 +13,7 @@ export interface GeneratedDesignSystem {
 	readonly typesDts: string;
 	readonly twTs: string;
 	readonly twRuntimeTs: string;
+	readonly twConflictsTs: string;
 	readonly twBuildTs: string;
 	readonly themeBlock: string;
 	readonly utilityCount: number;
@@ -31,6 +32,7 @@ export class CodegenArtifactWriter {
 		writeFileSync(resolve(options.outDir, "types.d.ts"), artifacts.typesDts);
 		writeFileSync(resolve(options.outDir, "tw.ts"), artifacts.twTs);
 		writeFileSync(resolve(options.outDir, "tw.runtime.ts"), artifacts.twRuntimeTs);
+		writeFileSync(resolve(options.outDir, "tw.conflicts.ts"), artifacts.twConflictsTs);
 		writeFileSync(resolve(options.outDir, "tw.build.ts"), artifacts.twBuildTs);
 		writeFileSync(
 			resolve(options.outDir, "pandwind.interop.json"),
@@ -39,6 +41,7 @@ export class CodegenArtifactWriter {
 					typesDts: artifacts.typesDts,
 					twTs: artifacts.twTs,
 					twRuntimeTs: artifacts.twRuntimeTs,
+					twConflictsTs: artifacts.twConflictsTs,
 					twBuildTs: artifacts.twBuildTs,
 					themeBlock: artifacts.themeBlock,
 				}),
@@ -78,6 +81,7 @@ export class CodegenArtifactWriter {
 			["types.d.ts", GeneratedArtifactOwnershipTag.Editor],
 			["tw.ts", GeneratedArtifactOwnershipTag.Runtime],
 			["tw.runtime.ts", GeneratedArtifactOwnershipTag.Optional],
+			["tw.conflicts.ts", GeneratedArtifactOwnershipTag.Optional],
 			["tw.build.ts", GeneratedArtifactOwnershipTag.BuildOnly],
 			["pandwind.interop.json", GeneratedArtifactOwnershipTag.BuildOnly],
 			["pandwind-theme.css", GeneratedArtifactOwnershipTag.Runtime],

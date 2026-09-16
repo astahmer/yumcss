@@ -154,6 +154,7 @@ async function generatedMetadata(referenceRoot: string): Promise<GeneratedMetada
 			typesDts: generated.typesDts,
 			twTs: generated.twTs,
 			twRuntimeTs: generated.twRuntimeTs,
+			twConflictsTs: generated.twConflictsTs,
 			twBuildTs: generated.twBuildTs,
 			bridge,
 		});

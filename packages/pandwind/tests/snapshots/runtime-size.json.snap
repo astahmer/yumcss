@@ -1,59 +1,59 @@
 {
   "createCssRuntime() core (internal)": {
-    "min": 8227,
-    "gz": 3457
+    "min": 5817,
+    "gz": 2522
   },
   "createCss(preset), fallback": {
-    "min": 13691,
-    "gz": 5435
+    "min": 13099,
+    "gz": 5187
   },
   "createUnsafeCss(), fallback": {
-    "min": 12943,
-    "gz": 5166
+    "min": 10599,
+    "gz": 4266
   },
   "createRuntimeCss(preset), live sheet": {
-    "min": 34318,
-    "gz": 12621
+    "min": 33733,
+    "gz": 12498
   },
   "createUnsafeCss(), static output after extraction": {
     "min": 81,
     "gz": 98
   },
   "createUnsafeCss(), dynamic fallback": {
-    "min": 12931,
-    "gz": 5163
+    "min": 10587,
+    "gz": 4263
   },
   "createUnsafeCss(), compiler-pruned call": {
-    "min": 8225,
-    "gz": 3436
+    "min": 5817,
+    "gz": 2496
   },
   "createUnsafeCss(), compiler-pruned class": {
-    "min": 8286,
-    "gz": 3458
+    "min": 5878,
+    "gz": 2517
   },
   "createUnsafeCss(), compiler-pruned vars": {
-    "min": 10577,
-    "gz": 4282
+    "min": 8238,
+    "gz": 3375
   },
   "createUnsafeCss(), generated call": {
-    "min": 8165,
-    "gz": 3402
+    "min": 5757,
+    "gz": 2463
   },
   "createUnsafeCss(), generated class": {
-    "min": 8220,
-    "gz": 3422
+    "min": 5812,
+    "gz": 2481
   },
   "createUnsafeCss(), generated vars": {
-    "min": 10512,
-    "gz": 4244
+    "min": 8173,
+    "gz": 3343
   },
   "createUnsafeCss(), generated class+vars": {
-    "min": 10568,
-    "gz": 4267
+    "min": 8229,
+    "gz": 3360
   },
   "createUnsafeCss(), generated all": {
-    "min": 12842,
-    "gz": 5088
+    "min": 10502,
+    "gz": 4187
   },
   "tw": {
     "min": 2800,
@@ -64,27 +64,27 @@
     "gz": 3008
   },
   "cx": {
-    "min": 19875,
-    "gz": 7737
+    "min": 17537,
+    "gz": 6837
   },
   "all (createUnsafeCss+tw+cx)": {
-    "min": 22566,
-    "gz": 8690
+    "min": 20227,
+    "gz": 7801
   },
   "stylesheet generator (build-time only)": {
     "min": 21087,
     "gz": 8181
   },
   "unsafe css subpath only": {
-    "min": 12951,
-    "gz": 5170
+    "min": 10607,
+    "gz": 4270
   },
   "root barrel, tw only": {
     "min": 2800,
     "gz": 1314
   },
   "root barrel, cx + unsafe css": {
-    "min": 19875,
-    "gz": 7760
+    "min": 17533,
+    "gz": 6856
   }
 }

@@ -7,7 +7,7 @@ import { cx } from "../cx.ts";
 import { dss } from "../css.ts";
 import { resolveDesignStyle } from "pandwind/design/resolve";
 import { examplePreset } from "@pandwind/example-preset";
-import { createNamedAtomsStrategy } from "pandwind/css/named-atoms-strategy";
+import { createNamedAtomsStrategy } from "pandwind/css/named";
 import { createUnoCssAdapter } from "pandwind/css/unocss";
 import { createRuntimeCss } from "pandwind/css/runtime";
 import { StyleValueKindTag } from "pandwind-codemod/swap/semantic-ir";
@@ -319,7 +319,7 @@ describe("evalPlayground", () => {
 		const result = run(
 			[
 				'import { createRuntimeCss } from "pandwind/css/runtime";',
-				'import { createNamedAtomsStrategy } from "pandwind/css/named-atoms-strategy";',
+				'import { createNamedAtomsStrategy } from "pandwind/css/named";',
 				'import { examplePreset } from "@pandwind/example-preset";',
 				"",
 				'const css = createRuntimeCss(examplePreset, { className: createNamedAtomsStrategy("demo") });',
@@ -328,7 +328,7 @@ describe("evalPlayground", () => {
 			undefined,
 			{
 				"pandwind/css/runtime": { createRuntimeCss },
-				"pandwind/css/named-atoms-strategy": { createNamedAtomsStrategy },
+				"pandwind/css/named": { createNamedAtomsStrategy },
 				"@pandwind/example-preset": { examplePreset },
 			},
 		);
@@ -387,7 +387,7 @@ describe("evalPlayground", () => {
 		const result = run(
 			[
 				'import { createRuntimeCss } from "pandwind/css/runtime";',
-				'import { createNamedAtomsStrategy } from "pandwind/css/named-atoms-strategy";',
+				'import { createNamedAtomsStrategy } from "pandwind/css/named";',
 				'import { examplePreset } from "@pandwind/example-preset";',
 				"",
 				'const css = createRuntimeCss(examplePreset, { className: createNamedAtomsStrategy("demo") });',
@@ -396,7 +396,7 @@ describe("evalPlayground", () => {
 			undefined,
 			{
 				"pandwind/css/runtime": { createRuntimeCss },
-				"pandwind/css/named-atoms-strategy": { createNamedAtomsStrategy },
+				"pandwind/css/named": { createNamedAtomsStrategy },
 				"@pandwind/example-preset": { examplePreset },
 			},
 		);

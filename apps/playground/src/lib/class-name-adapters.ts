@@ -1,8 +1,8 @@
-import { createNamedAtomsStrategy } from "pandwind/css/named-atoms-strategy";
+import { createNamedAtomsStrategy } from "pandwind/css/named";
 import { createPandaAdapter } from "pandwind/css/panda";
 import { createStyleXAdapter } from "pandwind/css/stylex";
 import { createUnoCssAdapter } from "pandwind/css/unocss";
-import type { ClassNameStrategy } from "pandwind/css/class-name-strategy";
+import type { ClassNameStrategy } from "pandwind/css";
 import { examplePreset } from "@pandwind/example-preset";
 import { twAdapter } from "../bridge.ts";
 

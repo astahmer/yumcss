@@ -88,7 +88,6 @@ function makeMode(strategy: (typeof MODES)[number]["strategy"]) {
 	const real = readGeneratedTwConfig(resolve(import.meta.dirname, "../../../examples/example/src"));
 	const cx = createCx({
 		css: css as never,
-		variants: real.variants,
 		conflicts: real.conflicts,
 		compose: real.compose,
 	});

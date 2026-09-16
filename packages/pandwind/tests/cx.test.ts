@@ -14,14 +14,12 @@ const dss = createDesignCss(examplePreset);
 
 const cx = createCx({
 	css,
-	variants: real.variants,
 	conflicts: real.conflicts,
 	compose: real.compose,
 });
 
 const designCx = createCx({
 	css: dss,
-	variants: real.variants,
 	conflicts: real.conflicts,
 	compose: real.compose,
 });

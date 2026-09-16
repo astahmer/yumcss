@@ -66,7 +66,7 @@ const renderRuntimeImports = (methods: readonly CssRuntimeMethod[]): string[] =>
 ];
 
 const renderRuntimeFactory = (methods: readonly CssRuntimeMethod[]): string =>
-	`export const createUnsafeCss = (options) => createCssRuntime(options, {}, [${methods.map(attachmentName).join(", ")}]);`;
+	`export const createUnsafeCss = (options) => createCssRuntime(options, [${methods.map(attachmentName).join(", ")}]);`;
 
 const renderTypedRuntime = (methods: readonly CssRuntimeMethod[]): string[] => {
 	const methodType =
@@ -78,7 +78,7 @@ const renderTypedRuntime = (methods: readonly CssRuntimeMethod[]): string[] => {
 		`type GeneratedCssFn<TStyles extends StyleObject> = ((...styles: Array<TStyles>) => ReturnType<CssFn<TStyles>>) & Pick<CssFn<TStyles>, ${methodType}>;`,
 		"",
 		"export const createUnsafeCss = (options: CreateCssOptions = {}): GeneratedCssFn<StyleObject> =>",
-		"	createCssRuntime(options, {}, [ATTACHMENTS]) as unknown as GeneratedCssFn<StyleObject>;",
+		"	createCssRuntime(options, [ATTACHMENTS]) as unknown as GeneratedCssFn<StyleObject>;",
 	];
 };
 

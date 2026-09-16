@@ -45,9 +45,52 @@ const modifierTypes =
 
 type WithOpacityModifiers<T extends string> = T | \`\${T}/\${OpacityModifier}\`;`;
 
+const serializeConflicts = (conflicts: Record<string, Record<string, string[]>>): string => {
+	const strings: string[] = [];
+	const stringIndexes = new Map<string, number>();
+	const propertyLists: number[][] = [];
+	const propertyListIndexes = new Map<string, number>();
+	const intern = (value: string): number => {
+		const existing = stringIndexes.get(value);
+		if (existing !== undefined) return existing;
+		const index = strings.length;
+		stringIndexes.set(value, index);
+		strings.push(value);
+		return index;
+	};
+	const propertyList = (properties: readonly string[]): number => {
+		const key = JSON.stringify(properties);
+		const existing = propertyListIndexes.get(key);
+		if (existing !== undefined) return existing;
+		const index = propertyLists.length;
+		propertyListIndexes.set(key, index);
+		propertyLists.push(properties.map(intern));
+		return index;
+	};
+	const entries = Object.entries(conflicts)
+		.toSorted(([a], [b]) => a.localeCompare(b, "en"))
+		.map(([utility, values]) => {
+			const byProperties = new Map<number, number[]>();
+			for (const [value, properties] of Object.entries(values).toSorted(([a], [b]) =>
+				a.localeCompare(b, "en"),
+			)) {
+				const propertiesIndex = propertyList(properties);
+				const valuesForProperties = byProperties.get(propertiesIndex);
+				if (valuesForProperties === undefined) {
+					byProperties.set(propertiesIndex, [intern(value)]);
+				} else {
+					valuesForProperties.push(intern(value));
+				}
+			}
+			return [intern(utility), [...byProperties]];
+		});
+	return JSON.stringify({ s: strings, p: propertyLists, c: entries });
+};
+
 export interface GeneratedTwSources {
 	readonly entry: string;
 	readonly runtime: string;
+	readonly conflicts: string;
 	readonly build: string;
 }
 
@@ -136,23 +179,10 @@ ${lines.toSorted((a, b) => a.localeCompare(b, "en", { ignorePunctuation: true })
 	): GeneratedTwSources {
 		const runtimeDeclarations: string[] = [];
 		const buildDeclarations: string[] = [];
-		const propReferences = new Map<string, string>();
 		const arrayReferences = new Map<string, string>();
 		const tokenReferences = new Map<string, string>();
-		let propIndex = 0;
 		let arrayIndex = 0;
 		let tokenIndex = 0;
-		const sharedProps = (props: readonly string[]): string => {
-			const key = JSON.stringify(props);
-			const existing = propReferences.get(key);
-			if (existing !== undefined) return existing;
-			const name = `__pandwindConflictProps${propIndex++}`;
-			propReferences.set(key, name);
-			runtimeDeclarations.push(
-				`const ${name}: string[] = [${props.map((prop) => JSON.stringify(prop)).join(", ")}];`,
-			);
-			return name;
-		};
 		const sharedArray = (values: readonly string[]): string => {
 			const key = JSON.stringify(values);
 			const existing = arrayReferences.get(key);
@@ -164,6 +194,20 @@ ${lines.toSorted((a, b) => a.localeCompare(b, "en", { ignorePunctuation: true })
 			);
 			return name;
 		};
+		const serializedConflicts =
+			Object.keys(conflicts).length === 0 ? undefined : serializeConflicts(conflicts);
+		const conflictDeclaration =
+			serializedConflicts === undefined
+				? ""
+				: `const __pandwindDecodeConflicts = (packed: { s: string[]; p: number[][]; c: Array<[number, Array<[number, number[]]>]> }) =>
+	Object.fromEntries(packed.c.map(([utility, groups]) => [
+		packed.s[utility]!,
+		Object.fromEntries(groups.flatMap(([properties, values]) => values.map((value) => [
+			packed.s[value]!,
+			packed.p[properties]!.map((property) => packed.s[property]!),
+		]))),
+	]));
+const __pandwindConflicts = __pandwindDecodeConflicts(JSON.parse(${JSON.stringify(serializedConflicts)}));`;
 		const sharedTokens = (values: Readonly<Record<string, string>>): string => {
 			const entries = Object.entries(values).toSorted(([a], [b]) => a.localeCompare(b, "en"));
 			const key = JSON.stringify(entries);
@@ -182,17 +226,19 @@ ${lines.toSorted((a, b) => a.localeCompare(b, "en", { ignorePunctuation: true })
 			({ name, join }) =>
 				`\t\t${tsKey(this.camelCaseProperty(name))}: { join: ${JSON.stringify(join)} },`,
 		);
-		const conflictEntries = Object.entries(conflicts)
-			.toSorted(([a], [b]) => a.localeCompare(b, "en"))
-			.map(
-				([utility, values]) =>
-					`\t\t${JSON.stringify(utility)}: { ${Object.entries(values)
-						.map(([value, props]) => `${JSON.stringify(value)}: ${sharedProps(props)}`)
-						.join(", ")} },`,
-			);
+		const variantDeclaration = `const __pandwindVariants: TwOptions["variants"] = {
+${variantEntries.join("\n")}
+};`;
 		const composeEntries = compose.length
 			? `\tcompose: [\n${compose.map((key) => `\t\t${JSON.stringify(key)},`).join("\n")}\n\t],`
 			: "";
+		const runtimeConfigEntries = [
+			"\tvariants: __pandwindVariants,",
+			conflictDeclaration ? "\tconflicts: __pandwindConflicts," : "",
+			composeEntries,
+		]
+			.filter(Boolean)
+			.join("\n");
 		const wildcardEntries = Object.entries(wildcardValues)
 			.toSorted(([a], [b]) => a.localeCompare(b, "en"))
 			.map(
@@ -206,18 +252,35 @@ ${lines.toSorted((a, b) => a.localeCompare(b, "en", { ignorePunctuation: true })
 			? "\tvalueTokens: {\n" + valueTokenEntries.join("\n") + "\n},"
 			: "";
 		const runtime = `// Generated by pandwind — do not edit. Regenerate with pandwind-codemod tw generate.
-// Optional conflict metadata for arbitrary runtime tw() and cx() calls. The
-// generated tw.ts entry does not import this file; Vite and codemod tooling
-// read it to fold calls and register finite candidates.
+// Optional runtime metadata for arbitrary tw() calls. The generated tw.ts
+// entry does not import this file; Vite and codemod tooling read it to fold
+// calls and register finite candidates.
 import type { TwOptions } from "pandwind/tw";
 
-${runtimeDeclarations.join("\n")}
+${conflictDeclaration}${runtimeDeclarations.length > 0 ? `\n${runtimeDeclarations.join("\n")}` : ""}
 
+${variantDeclaration}
 export const __pandwindRuntimeConfig: TwOptions = {
-	variants: {
-${variantEntries.join("\n")}
-	},
-${conflictEntries.length ? `\tconflicts: {\n${conflictEntries.join("\n")}\n\t},\n` : ""}${composeEntries ? `${composeEntries}\n` : ""}${valueTokenBlock ? `${valueTokenBlock}\n` : ""}};
+${runtimeConfigEntries}
+${valueTokenBlock ? `${valueTokenBlock}\n` : ""}};
+`;
+		const conflictConfigEntries = [
+			conflictDeclaration ? "\tconflicts: __pandwindConflicts," : "",
+			composeEntries,
+		]
+			.filter(Boolean)
+			.join("\n");
+		const conflictsSource = `// Generated by pandwind — do not edit. Regenerate with pandwind-codemod tw generate.
+// Optional conflict metadata for arbitrary runtime cx() calls. This module is
+// separate from tw.runtime.ts so importing it cannot pull value-token metadata
+// into the browser bundle.
+import type { TwOptions } from "pandwind/tw";
+
+${conflictDeclaration}
+
+export const __pandwindConflictConfig: Pick<TwOptions, "conflicts" | "compose"> = {
+${conflictConfigEntries}
+};
 `;
 		const build = `// Generated by pandwind — do not edit. Regenerate with pandwind-codemod tw generate.
 // Build-only candidate metadata. This file must never be imported by runtime
@@ -245,6 +308,6 @@ ${variantEntries.join("\n")}
 	},
 });
 `;
-		return { entry, runtime, build };
+		return { entry, runtime, conflicts: conflictsSource, build };
 	}
 }

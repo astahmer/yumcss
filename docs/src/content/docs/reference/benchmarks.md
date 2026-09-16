@@ -5,8 +5,8 @@ sidebar:
   order: 3
 ---
 
-Last measured: **2026-09-16** for the public API typecheck and runtime-throughput
-records, **2026-09-10** for the runtime-size contract, **2026-08-23**
+Last measured: **2026-09-16** for the public API typecheck, runtime-throughput,
+and runtime-size records, **2026-08-23**
 for `cx()` v3 (whole-input cache), **2026-08-22**
 for the competitor table. Local macOS (arm64), Node v24.19.0. Interleaved
 rotated-order rounds, best-of-5-pass median sample. This is local-machine
@@ -82,21 +82,26 @@ ceilings are in `runtime-budget.json`. Values below use decimal KB
 
 | entry                                          | minified |     gzip |
 | ---------------------------------------------- | -------: | -------: |
-| `createCssRuntime()` core (internal)           |  8.23 KB |  3.46 KB |
-| `createCss(preset)` fallback                   | 13.69 KB |  5.44 KB |
-| `createUnsafeCss()` fallback                   | 12.94 KB |  5.17 KB |
+| `createCssRuntime()` core (internal)           |  5.82 KB |  2.52 KB |
+| `createCss(preset)` fallback                   | 13.10 KB |  5.19 KB |
+| `createUnsafeCss()` fallback                   | 10.60 KB |  4.27 KB |
 | `tw()`                                         |  2.80 KB |  1.31 KB |
 | `cx()` plain strings                           |  7.03 KB |  3.01 KB |
-| `cx()`                                         | 19.88 KB |  7.74 KB |
-| all direct runtime entries (`unsafeCss+tw+cx`) | 22.57 KB |  8.69 KB |
-| `createRuntimeCss(preset)` + sheet             | 34.29 KB | 12.61 KB |
+| `cx()` + CSS atom registry                     | 17.54 KB |  6.84 KB |
+| all direct runtime entries (`unsafeCss+tw+cx`) | 20.23 KB |  7.80 KB |
+| `createRuntimeCss(preset)` + sheet             | 33.73 KB | 12.50 KB |
 
-The combined direct runtime is 22.57 KB min / 8.69 KB gzip in this record for
+The combined direct runtime is 20.23 KB min / 7.80 KB gzip in this record for
 `createUnsafeCss()` + `tw()` + `cx()`. The preset-bound `createCss(preset)`
 fallback is measured separately because it also carries the preset-aware
 resolver. The internal `createCssRuntime()` row has no public method
 attachments; it is included to show the shared engine's base cost, not as an
 application entry point. Fully extracted static calls remain below 100 bytes.
+
+Generated Tailwind conflict metadata is a separate opt-in lane: the current
+generated `dss+cx` bundle is **80.68 KB min / 20.29 KB gzip**, down from the
+pre-pass bundle's 291.23 KB min / 40.57 KB gzip because it no longer imports
+`tw.runtime.ts`. Native Pandwind-only `cx()` does not pay for that catalog.
 The root `SIZE.md` is only a pointer and no longer duplicates these numbers.
 
 ## Public runtime API throughput snapshot

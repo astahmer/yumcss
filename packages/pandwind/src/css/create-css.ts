@@ -10,7 +10,6 @@ import type {
 } from "../types/typings.ts";
 import {
 	createCssRuntime,
-	isPreset,
 	type CompiledStyles,
 	type CreateCssOptions,
 	type AnyInput,
@@ -27,11 +26,28 @@ import { attachVars } from "./runtime-method-vars.ts";
 import type { ClassNameStrategy } from "./class-name-strategy.ts";
 import type { VarsOutput } from "./var-compiler.ts";
 import { validateColorPaletteValue } from "./color-palette-validation.ts";
+import { cssPropertyFromKey } from "../backends/css.ts";
+import { createRuntimeTokenResolver } from "./runtime-token-resolver.ts";
 
 export type { ClassNameStrategy };
 export type { CreateCssOptions } from "./runtime-base.ts";
 
 type TypedPreset = CssConfigReturn<DefinePresetOptions<AnyCssConfig, AnyTokens>>;
+
+const isPreset = (value: CreateCssOptions | TypedPreset): value is TypedPreset =>
+	typeof value === "object" &&
+	value !== null &&
+	"conditions" in value &&
+	"properties" in value &&
+	"strict" in value;
+
+const runtimeTokenName = /^[$a-zA-Z0-9_.-]+$/u;
+
+const createRuntimeValueResolver = (preset: TypedPreset, debug: boolean) => {
+	const resolveToken = createRuntimeTokenResolver(preset, debug);
+	return (property: string, value: string) =>
+		runtimeTokenName.test(value) ? resolveToken(property, value) : value;
+};
 
 const ALL_RUNTIME_METHODS = [
 	attachVars,
@@ -81,12 +97,19 @@ const createPresetCss = (preset: TypedPreset, options: CreateCssOptions): CssFn<
 			'pandwind/css: createCss requires a preset. For unbound or runtime-discovered styles, import createUnsafeCss from "pandwind/unsafe/css".',
 		);
 	}
-	return createCssRuntime(
-		preset,
-		options,
+	const css = createCssRuntime(
+		{ ...options, conditions: preset.conditions },
 		ALL_RUNTIME_METHODS,
-		validateColorPaletteValue,
-	) as unknown as CssFn<StyleObject>;
+		createRuntimeValueResolver(preset, Boolean(options.debug)),
+		(key, value) => {
+			if (cssPropertyFromKey(key, preset.conditions) === "colorPalette")
+				validateColorPaletteValue(preset, value);
+		},
+	);
+	Object.defineProperty(css, Symbol.for("pandwind.css-factory"), {
+		value: { kind: "css", preset, options },
+	});
+	return css as unknown as CssFn<StyleObject>;
 };
 
 export function createCss<TPreset extends TypedPreset>(
@@ -146,7 +169,7 @@ export function createGeneratedCss(
  * @since 0.1.0
  */
 export const createUnsafeCss = (options: CreateCssOptions = {}): CssFn<StyleObject> =>
-	createCssRuntime(options, {}, ALL_RUNTIME_METHODS) as unknown as CssFn<StyleObject>;
+	createCssRuntime(options, ALL_RUNTIME_METHODS) as unknown as CssFn<StyleObject>;
 
 interface PropsReturn {
 	style: Record<string, string> | undefined;

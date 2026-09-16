@@ -30,6 +30,7 @@ export interface GenerateTwBridgeOptions {
 	readonly cssEntry: string;
 	readonly twFile: string;
 	readonly twRuntimeFile?: string;
+	readonly twConflictsFile?: string;
 	readonly twBuildFile?: string;
 	readonly outFile: string;
 	readonly presetImport: string;
@@ -71,13 +72,19 @@ class DefaultTwBridgeGenerator implements TwBridgeGenerator {
 		});
 
 		const runtimeFile = options.twRuntimeFile ?? resolve(dirname(options.twFile), "tw.runtime.ts");
+		const conflictsFile =
+			options.twConflictsFile ?? resolve(dirname(options.twFile), "tw.conflicts.ts");
 		const buildFile = options.twBuildFile ?? resolve(dirname(options.twFile), "tw.build.ts");
 		const twSource = readFileSync(options.twFile, "utf8");
 		const twRuntimeSource = existsSync(runtimeFile) ? readFileSync(runtimeFile, "utf8") : undefined;
+		const twConflictsSource = existsSync(conflictsFile)
+			? readFileSync(conflictsFile, "utf8")
+			: undefined;
 		const twBuildSource = existsSync(buildFile) ? readFileSync(buildFile, "utf8") : undefined;
 		const twSources = [
 			twSource,
 			...(twRuntimeSource === undefined ? [] : [twRuntimeSource]),
+			...(twConflictsSource === undefined ? [] : [twConflictsSource]),
 			...(twBuildSource === undefined ? [] : [twBuildSource]),
 		];
 		const config = extractTwConfigFromSources(twSources);
@@ -116,6 +123,7 @@ export const twAdapter = createTwAdapter({
 				typesDts: readFileSync(typesPath, "utf8"),
 				twTs: twSource,
 				twRuntimeTs: twRuntimeSource,
+				twConflictsTs: twConflictsSource,
 				twBuildTs: twBuildSource,
 				bridge,
 				themeBlock: existsSync(themePath) ? readFileSync(themePath, "utf8") : "",

@@ -11,6 +11,7 @@
  * - `tw.ts` — the small typed `tw` entry;
  * - `tw.runtime.ts` — optional conflict metadata for exact arbitrary-runtime
  *   `tw()` and `cx()` merging;
+ * - `tw.conflicts.ts` — the smaller conflict-only runtime artifact for `cx()`;
  * - `tw.build.ts` — build-only wildcard candidate metadata.
  *
  */
@@ -55,6 +56,7 @@ export interface GeneratedDesignSystemSource {
 	readonly typesDts: string;
 	readonly twTs: string;
 	readonly twRuntimeTs: string;
+	readonly twConflictsTs: string;
 	readonly twBuildTs: string;
 	/**
 	 * Selectors supplied by Tailwind's own variant registry. Consumers that
@@ -172,6 +174,7 @@ ${this.emitter.variants(variants, utilityKeyNames)}
 `,
 			twTs: twSources.entry,
 			twRuntimeTs: twSources.runtime,
+			twConflictsTs: twSources.conflicts,
 			twBuildTs: twSources.build,
 			variantConditions: collectVariantConditions(system),
 			utilityCount: types.size,

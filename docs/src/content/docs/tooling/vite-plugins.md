@@ -85,7 +85,7 @@ same CSS compiler and pass the same engine to both build plugins:
 
 ```ts
 import { createCss } from "pandwind/css";
-import { createNamedAtomsStrategy } from "pandwind/css/named-atoms-strategy";
+import { createNamedAtomsStrategy } from "pandwind/css/named";
 import { createStack } from "pandwind/stack/react";
 import { createPandwindEngineContext, pandwindCssVite, stackFoldVite } from "pandwind/vite";
 

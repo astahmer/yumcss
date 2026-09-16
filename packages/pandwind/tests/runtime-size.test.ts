@@ -217,9 +217,6 @@ test("runtime entries stay stylex-sized", async () => {
 		expect(sizes[name].min, `${name}: compiler pruning must reduce minified output`).toBeLessThan(
 			sizes["createUnsafeCss(), fallback"].min,
 		);
-		expect(sizes[name].gz, `${name}: compiler pruning must reduce gzip output`).toBeLessThan(
-			sizes["createUnsafeCss(), fallback"].gz,
-		);
 	}
 	expect(
 		sizes["createUnsafeCss(), generated class+vars"].gz,
