@@ -1,7 +1,7 @@
 {
 	"schema": "pandwind.styling-tsc/1",
 	"source": "runner/generate-fixtures.mts",
-	"updatedAt": "2026-09-15",
+	"updatedAt": "2026-09-16",
 	"samples": 5,
 	"environment": {
 		"platform": "darwin",
@@ -10,14 +10,182 @@
 		"typescript": "7.0.2"
 	},
 	"packages": {
+		"@compiled/react": "2.0.0",
+		"@emotion/css": "11.13.5",
+		"@emotion/react": "11.14.0",
+		"@emotion/styled": "11.14.1",
+		"@griffel/react": "1.7.7",
+		"@linaria/core": "8.2.0",
+		"@linaria/react": "8.2.0",
 		"@pandacss/dev": "1.12.1",
+		"@stitches/react": "1.2.8",
 		"@stylexjs/stylex": "0.19.1",
+		"@types/aphrodite": "2.0.4",
+		"@types/react": "19.2.18",
 		"@vanilla-extract/css": "1.21.2",
+		"@vanilla-extract/recipes": "0.5.7",
 		"@vanilla-extract/sprinkles": "1.7.1",
+		"aphrodite": "2.4.0",
+		"csstype": "3.2.3",
+		"fela": "12.2.1",
+		"goober": "2.1.19",
+		"jss": "10.10.0",
+		"next-yak": "9.10.0",
 		"pandwind": "workspace:*",
+		"react": "19.2.8",
+		"react-jss": "10.10.0",
+		"react-strict-dom": "0.0.55",
+		"style9": "0.18.2",
+		"styled-components": "6.5.3",
+		"treat": "2.0.4",
+		"typestyle": "2.4.0",
 		"typescript": "7.0.2"
 	},
 	"workloads": [
+		{
+			"library": "aphrodite",
+			"scenario": "natural",
+			"samples": 5,
+			"project": ".generated/aphrodite/natural/tsconfig.json",
+			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/aphrodite/natural/tsconfig.json",
+			"metrics": {
+				"files": 62,
+				"symbols": 33145,
+				"types": 2115,
+				"instantiations": 31,
+				"memoryUsedKiB": 26015,
+				"checkTimeSeconds": 0.002,
+				"totalTimeSeconds": 0.019
+			}
+		},
+		{
+			"library": "compiled",
+			"scenario": "natural",
+			"samples": 5,
+			"project": ".generated/compiled/natural/tsconfig.json",
+			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/compiled/natural/tsconfig.json",
+			"metrics": {
+				"files": 76,
+				"symbols": 52636,
+				"types": 9417,
+				"instantiations": 10867,
+				"memoryUsedKiB": 41527,
+				"checkTimeSeconds": 0.032,
+				"totalTimeSeconds": 0.05
+			}
+		},
+		{
+			"library": "emotion",
+			"scenario": "natural",
+			"samples": 5,
+			"project": ".generated/emotion/natural/tsconfig.json",
+			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/emotion/natural/tsconfig.json",
+			"metrics": {
+				"files": 92,
+				"symbols": 45537,
+				"types": 3050,
+				"instantiations": 2601,
+				"memoryUsedKiB": 36717,
+				"checkTimeSeconds": 0.009,
+				"totalTimeSeconds": 0.028
+			}
+		},
+		{
+			"library": "fela",
+			"scenario": "natural",
+			"samples": 5,
+			"project": ".generated/fela/natural/tsconfig.json",
+			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/fela/natural/tsconfig.json",
+			"metrics": {
+				"files": 61,
+				"symbols": 39313,
+				"types": 1555,
+				"instantiations": 234,
+				"memoryUsedKiB": 32330,
+				"checkTimeSeconds": 0.006,
+				"totalTimeSeconds": 0.024
+			}
+		},
+		{
+			"library": "goober",
+			"scenario": "natural",
+			"samples": 5,
+			"project": ".generated/goober/natural/tsconfig.json",
+			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/goober/natural/tsconfig.json",
+			"metrics": {
+				"files": 61,
+				"symbols": 38652,
+				"types": 8708,
+				"instantiations": 1700,
+				"memoryUsedKiB": 34432,
+				"checkTimeSeconds": 0.018,
+				"totalTimeSeconds": 0.035
+			}
+		},
+		{
+			"library": "griffel",
+			"scenario": "natural",
+			"samples": 5,
+			"project": ".generated/griffel/natural/tsconfig.json",
+			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/griffel/natural/tsconfig.json",
+			"metrics": {
+				"files": 137,
+				"symbols": 44355,
+				"types": 2658,
+				"instantiations": 3125,
+				"memoryUsedKiB": 36982,
+				"checkTimeSeconds": 0.012,
+				"totalTimeSeconds": 0.032
+			}
+		},
+		{
+			"library": "jss",
+			"scenario": "natural",
+			"samples": 5,
+			"project": ".generated/jss/natural/tsconfig.json",
+			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/jss/natural/tsconfig.json",
+			"metrics": {
+				"files": 61,
+				"symbols": 39480,
+				"types": 3428,
+				"instantiations": 1798,
+				"memoryUsedKiB": 32217,
+				"checkTimeSeconds": 0.009,
+				"totalTimeSeconds": 0.026
+			}
+		},
+		{
+			"library": "linaria",
+			"scenario": "natural",
+			"samples": 5,
+			"project": ".generated/linaria/natural/tsconfig.json",
+			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/linaria/natural/tsconfig.json",
+			"metrics": {
+				"files": 82,
+				"symbols": 41186,
+				"types": 712,
+				"instantiations": 115,
+				"memoryUsedKiB": 34587,
+				"checkTimeSeconds": 0.001,
+				"totalTimeSeconds": 0.019
+			}
+		},
+		{
+			"library": "next-yak",
+			"scenario": "natural",
+			"samples": 5,
+			"project": ".generated/next-yak/natural/tsconfig.json",
+			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/next-yak/natural/tsconfig.json",
+			"metrics": {
+				"files": 63,
+				"symbols": 40359,
+				"types": 708,
+				"instantiations": 129,
+				"memoryUsedKiB": 33930,
+				"checkTimeSeconds": 0.001,
+				"totalTimeSeconds": 0.02
+			}
+		},
 		{
 			"library": "panda",
 			"scenario": "natural",
@@ -29,9 +197,9 @@
 				"symbols": 73275,
 				"types": 4760,
 				"instantiations": 3846,
-				"memoryUsedKiB": 61292,
+				"memoryUsedKiB": 61338,
 				"checkTimeSeconds": 0.016,
-				"totalTimeSeconds": 0.047
+				"totalTimeSeconds": 0.042
 			}
 		},
 		{
@@ -41,13 +209,45 @@
 			"project": ".generated/pandwind/natural/tsconfig.json",
 			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/pandwind/natural/tsconfig.json",
 			"metrics": {
-				"files": 87,
-				"symbols": 47280,
-				"types": 5537,
-				"instantiations": 19887,
-				"memoryUsedKiB": 34435,
+				"files": 89,
+				"symbols": 52133,
+				"types": 5618,
+				"instantiations": 21639,
+				"memoryUsedKiB": 40352,
 				"checkTimeSeconds": 0.008,
 				"totalTimeSeconds": 0.027
+			}
+		},
+		{
+			"library": "react-jss",
+			"scenario": "natural",
+			"samples": 5,
+			"project": ".generated/react-jss/natural/tsconfig.json",
+			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/react-jss/natural/tsconfig.json",
+			"metrics": {
+				"files": 65,
+				"symbols": 43630,
+				"types": 3630,
+				"instantiations": 357,
+				"memoryUsedKiB": 35545,
+				"checkTimeSeconds": 0.01,
+				"totalTimeSeconds": 0.03
+			}
+		},
+		{
+			"library": "react-strict-dom",
+			"scenario": "natural",
+			"samples": 5,
+			"project": ".generated/react-strict-dom/natural/tsconfig.json",
+			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/react-strict-dom/natural/tsconfig.json",
+			"metrics": {
+				"files": 81,
+				"symbols": 46699,
+				"types": 3646,
+				"instantiations": 12543,
+				"memoryUsedKiB": 38551,
+				"checkTimeSeconds": 0.007,
+				"totalTimeSeconds": 0.026
 			}
 		},
 		{
@@ -61,9 +261,57 @@
 				"symbols": 48437,
 				"types": 33990,
 				"instantiations": 32260,
-				"memoryUsedKiB": 48817,
-				"checkTimeSeconds": 0.033,
+				"memoryUsedKiB": 48830,
+				"checkTimeSeconds": 0.035,
+				"totalTimeSeconds": 0.052
+			}
+		},
+		{
+			"library": "stitches",
+			"scenario": "natural",
+			"samples": 5,
+			"project": ".generated/stitches/natural/tsconfig.json",
+			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/stitches/natural/tsconfig.json",
+			"metrics": {
+				"files": 70,
+				"symbols": 53398,
+				"types": 7298,
+				"instantiations": 72261,
+				"memoryUsedKiB": 42084,
+				"checkTimeSeconds": 0.032,
 				"totalTimeSeconds": 0.051
+			}
+		},
+		{
+			"library": "style9",
+			"scenario": "natural",
+			"samples": 5,
+			"project": ".generated/style9/natural/tsconfig.json",
+			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/style9/natural/tsconfig.json",
+			"metrics": {
+				"files": 62,
+				"symbols": 39367,
+				"types": 2135,
+				"instantiations": 2708,
+				"memoryUsedKiB": 32103,
+				"checkTimeSeconds": 0.005,
+				"totalTimeSeconds": 0.024
+			}
+		},
+		{
+			"library": "styled-components",
+			"scenario": "natural",
+			"samples": 5,
+			"project": ".generated/styled-components/natural/tsconfig.json",
+			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/styled-components/natural/tsconfig.json",
+			"metrics": {
+				"files": 92,
+				"symbols": 50946,
+				"types": 3991,
+				"instantiations": 11330,
+				"memoryUsedKiB": 39947,
+				"checkTimeSeconds": 0.018,
+				"totalTimeSeconds": 0.037
 			}
 		},
 		{
@@ -77,9 +325,201 @@
 				"symbols": 37408,
 				"types": 3655,
 				"instantiations": 9541,
-				"memoryUsedKiB": 28809,
+				"memoryUsedKiB": 28790,
 				"checkTimeSeconds": 0.006,
-				"totalTimeSeconds": 0.023
+				"totalTimeSeconds": 0.024
+			}
+		},
+		{
+			"library": "treat",
+			"scenario": "natural",
+			"samples": 5,
+			"project": ".generated/treat/natural/tsconfig.json",
+			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/treat/natural/tsconfig.json",
+			"metrics": {
+				"files": 68,
+				"symbols": 41957,
+				"types": 1526,
+				"instantiations": 357,
+				"memoryUsedKiB": 33442,
+				"checkTimeSeconds": 0.011,
+				"totalTimeSeconds": 0.03
+			}
+		},
+		{
+			"library": "typestyle",
+			"scenario": "natural",
+			"samples": 5,
+			"project": ".generated/typestyle/natural/tsconfig.json",
+			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/typestyle/natural/tsconfig.json",
+			"metrics": {
+				"files": 64,
+				"symbols": 38862,
+				"types": 1911,
+				"instantiations": 257,
+				"memoryUsedKiB": 31410,
+				"checkTimeSeconds": 0.003,
+				"totalTimeSeconds": 0.02
+			}
+		},
+		{
+			"library": "vanilla-extract",
+			"scenario": "natural",
+			"samples": 5,
+			"project": ".generated/vanilla-extract/natural/tsconfig.json",
+			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/vanilla-extract/natural/tsconfig.json",
+			"metrics": {
+				"files": 62,
+				"symbols": 42769,
+				"types": 12387,
+				"instantiations": 13178,
+				"memoryUsedKiB": 38294,
+				"checkTimeSeconds": 0.032,
+				"totalTimeSeconds": 0.051
+			}
+		},
+		{
+			"library": "aphrodite",
+			"scenario": "stress",
+			"samples": 5,
+			"project": ".generated/aphrodite/stress/tsconfig.json",
+			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/aphrodite/stress/tsconfig.json",
+			"metrics": {
+				"files": 62,
+				"symbols": 40145,
+				"types": 4635,
+				"instantiations": 31,
+				"memoryUsedKiB": 28781,
+				"checkTimeSeconds": 0.011,
+				"totalTimeSeconds": 0.028
+			}
+		},
+		{
+			"library": "compiled",
+			"scenario": "stress",
+			"samples": 5,
+			"project": ".generated/compiled/stress/tsconfig.json",
+			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/compiled/stress/tsconfig.json",
+			"metrics": {
+				"files": 76,
+				"symbols": 62996,
+				"types": 12217,
+				"instantiations": 10867,
+				"memoryUsedKiB": 45269,
+				"checkTimeSeconds": 0.101,
+				"totalTimeSeconds": 0.12
+			}
+		},
+		{
+			"library": "emotion",
+			"scenario": "stress",
+			"samples": 5,
+			"project": ".generated/emotion/stress/tsconfig.json",
+			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/emotion/stress/tsconfig.json",
+			"metrics": {
+				"files": 92,
+				"symbols": 53545,
+				"types": 6914,
+				"instantiations": 2601,
+				"memoryUsedKiB": 39774,
+				"checkTimeSeconds": 0.06,
+				"totalTimeSeconds": 0.081
+			}
+		},
+		{
+			"library": "fela",
+			"scenario": "stress",
+			"samples": 5,
+			"project": ".generated/fela/stress/tsconfig.json",
+			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/fela/stress/tsconfig.json",
+			"metrics": {
+				"files": 61,
+				"symbols": 46201,
+				"types": 3627,
+				"instantiations": 1242,
+				"memoryUsedKiB": 36171,
+				"checkTimeSeconds": 0.033,
+				"totalTimeSeconds": 0.052
+			}
+		},
+		{
+			"library": "goober",
+			"scenario": "stress",
+			"samples": 5,
+			"project": ".generated/goober/stress/tsconfig.json",
+			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/goober/stress/tsconfig.json",
+			"metrics": {
+				"files": 61,
+				"symbols": 44308,
+				"types": 11956,
+				"instantiations": 1700,
+				"memoryUsedKiB": 37016,
+				"checkTimeSeconds": 0.06,
+				"totalTimeSeconds": 0.077
+			}
+		},
+		{
+			"library": "griffel",
+			"scenario": "stress",
+			"samples": 5,
+			"project": ".generated/griffel/stress/tsconfig.json",
+			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/griffel/stress/tsconfig.json",
+			"metrics": {
+				"files": 137,
+				"symbols": 53763,
+				"types": 5122,
+				"instantiations": 4805,
+				"memoryUsedKiB": 40846,
+				"checkTimeSeconds": 0.08,
+				"totalTimeSeconds": 0.099
+			}
+		},
+		{
+			"library": "jss",
+			"scenario": "stress",
+			"samples": 5,
+			"project": ".generated/jss/stress/tsconfig.json",
+			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/jss/stress/tsconfig.json",
+			"metrics": {
+				"files": 61,
+				"symbols": 49168,
+				"types": 14852,
+				"instantiations": 15798,
+				"memoryUsedKiB": 36204,
+				"checkTimeSeconds": 0.067,
+				"totalTimeSeconds": 0.084
+			}
+		},
+		{
+			"library": "linaria",
+			"scenario": "stress",
+			"samples": 5,
+			"project": ".generated/linaria/stress/tsconfig.json",
+			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/linaria/stress/tsconfig.json",
+			"metrics": {
+				"files": 82,
+				"symbols": 41186,
+				"types": 712,
+				"instantiations": 115,
+				"memoryUsedKiB": 34751,
+				"checkTimeSeconds": 0.001,
+				"totalTimeSeconds": 0.02
+			}
+		},
+		{
+			"library": "next-yak",
+			"scenario": "stress",
+			"samples": 5,
+			"project": ".generated/next-yak/stress/tsconfig.json",
+			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/next-yak/stress/tsconfig.json",
+			"metrics": {
+				"files": 63,
+				"symbols": 40359,
+				"types": 708,
+				"instantiations": 129,
+				"memoryUsedKiB": 34110,
+				"checkTimeSeconds": 0.001,
+				"totalTimeSeconds": 0.02
 			}
 		},
 		{
@@ -93,9 +533,9 @@
 				"symbols": 78483,
 				"types": 6773,
 				"instantiations": 3846,
-				"memoryUsedKiB": 64003,
-				"checkTimeSeconds": 0.159,
-				"totalTimeSeconds": 0.187
+				"memoryUsedKiB": 63973,
+				"checkTimeSeconds": 0.151,
+				"totalTimeSeconds": 0.177
 			}
 		},
 		{
@@ -105,13 +545,45 @@
 			"project": ".generated/pandwind/stress/tsconfig.json",
 			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/pandwind/stress/tsconfig.json",
 			"metrics": {
-				"files": 87,
-				"symbols": 53552,
-				"types": 11361,
-				"instantiations": 36239,
-				"memoryUsedKiB": 38508,
-				"checkTimeSeconds": 0.107,
-				"totalTimeSeconds": 0.127
+				"files": 89,
+				"symbols": 58405,
+				"types": 11442,
+				"instantiations": 37991,
+				"memoryUsedKiB": 44492,
+				"checkTimeSeconds": 0.105,
+				"totalTimeSeconds": 0.123
+			}
+		},
+		{
+			"library": "react-jss",
+			"scenario": "stress",
+			"samples": 5,
+			"project": ".generated/react-jss/stress/tsconfig.json",
+			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/react-jss/stress/tsconfig.json",
+			"metrics": {
+				"files": 65,
+				"symbols": 53374,
+				"types": 18694,
+				"instantiations": 357,
+				"memoryUsedKiB": 39518,
+				"checkTimeSeconds": 0.08,
+				"totalTimeSeconds": 0.099
+			}
+		},
+		{
+			"library": "react-strict-dom",
+			"scenario": "stress",
+			"samples": 5,
+			"project": ".generated/react-strict-dom/stress/tsconfig.json",
+			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/react-strict-dom/stress/tsconfig.json",
+			"metrics": {
+				"files": 81,
+				"symbols": 62379,
+				"types": 8406,
+				"instantiations": 57905,
+				"memoryUsedKiB": 46085,
+				"checkTimeSeconds": 0.029,
+				"totalTimeSeconds": 0.049
 			}
 		},
 		{
@@ -125,9 +597,57 @@
 				"symbols": 54597,
 				"types": 36286,
 				"instantiations": 32708,
-				"memoryUsedKiB": 51512,
-				"checkTimeSeconds": 0.067,
-				"totalTimeSeconds": 0.085
+				"memoryUsedKiB": 51555,
+				"checkTimeSeconds": 0.066,
+				"totalTimeSeconds": 0.083
+			}
+		},
+		{
+			"library": "stitches",
+			"scenario": "stress",
+			"samples": 5,
+			"project": ".generated/stitches/stress/tsconfig.json",
+			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/stitches/stress/tsconfig.json",
+			"metrics": {
+				"files": 70,
+				"symbols": 156942,
+				"types": 13682,
+				"instantiations": 777189,
+				"memoryUsedKiB": 73420,
+				"checkTimeSeconds": 0.28,
+				"totalTimeSeconds": 0.3
+			}
+		},
+		{
+			"library": "style9",
+			"scenario": "stress",
+			"samples": 5,
+			"project": ".generated/style9/stress/tsconfig.json",
+			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/style9/stress/tsconfig.json",
+			"metrics": {
+				"files": 62,
+				"symbols": 46367,
+				"types": 3255,
+				"instantiations": 2708,
+				"memoryUsedKiB": 34597,
+				"checkTimeSeconds": 0.026,
+				"totalTimeSeconds": 0.043
+			}
+		},
+		{
+			"library": "styled-components",
+			"scenario": "stress",
+			"samples": 5,
+			"project": ".generated/styled-components/stress/tsconfig.json",
+			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/styled-components/stress/tsconfig.json",
+			"metrics": {
+				"files": 92,
+				"symbols": 58954,
+				"types": 8197,
+				"instantiations": 11330,
+				"memoryUsedKiB": 43461,
+				"checkTimeSeconds": 0.099,
+				"totalTimeSeconds": 0.118
 			}
 		},
 		{
@@ -141,9 +661,57 @@
 				"symbols": 46760,
 				"types": 7351,
 				"instantiations": 32893,
-				"memoryUsedKiB": 33402,
+				"memoryUsedKiB": 33372,
 				"checkTimeSeconds": 0.02,
 				"totalTimeSeconds": 0.037
+			}
+		},
+		{
+			"library": "treat",
+			"scenario": "stress",
+			"samples": 5,
+			"project": ".generated/treat/stress/tsconfig.json",
+			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/treat/stress/tsconfig.json",
+			"metrics": {
+				"files": 68,
+				"symbols": 49629,
+				"types": 3318,
+				"instantiations": 917,
+				"memoryUsedKiB": 36763,
+				"checkTimeSeconds": 0.081,
+				"totalTimeSeconds": 0.099
+			}
+		},
+		{
+			"library": "typestyle",
+			"scenario": "stress",
+			"samples": 5,
+			"project": ".generated/typestyle/stress/tsconfig.json",
+			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/typestyle/stress/tsconfig.json",
+			"metrics": {
+				"files": 64,
+				"symbols": 44966,
+				"types": 2751,
+				"instantiations": 817,
+				"memoryUsedKiB": 33724,
+				"checkTimeSeconds": 0.019,
+				"totalTimeSeconds": 0.037
+			}
+		},
+		{
+			"library": "vanilla-extract",
+			"scenario": "stress",
+			"samples": 5,
+			"project": ".generated/vanilla-extract/stress/tsconfig.json",
+			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/vanilla-extract/stress/tsconfig.json",
+			"metrics": {
+				"files": 62,
+				"symbols": 49097,
+				"types": 13955,
+				"instantiations": 13178,
+				"memoryUsedKiB": 41089,
+				"checkTimeSeconds": 0.095,
+				"totalTimeSeconds": 0.114
 			}
 		}
 	],
