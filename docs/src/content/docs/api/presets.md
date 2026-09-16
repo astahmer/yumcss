@@ -397,6 +397,11 @@ Color palettes are named roles over the preset's `colors` tokens. Define them
 on the token catalog so both palette names and token references are checked,
 then pass the returned map to `define.preset`:
 
+This is intentionally a color-specific layer: string sources must select a
+subtree under `colors.*`, and explicit role maps must point each role to a
+`colors.*` token path. `colorPalette` does not alias arbitrary token groups;
+use ordinary token references for groups such as `spacing` and `radii`.
+
 ```ts
 import { createCss } from "pandwind/css";
 import { define } from "pandwind/preset";

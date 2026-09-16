@@ -217,7 +217,14 @@ export type TokenCatalog<TTokens extends AnyTokens> = TTokens & {
 		conditions: TConditions,
 		semanticTokens: TLayer & ValidatedSemanticTokens<TConditions, TTokens, TLayer>,
 	) => TokenCatalog<TTokens & TLayer>;
-	/** Define named color roles checked against this token catalog. */
+	/**
+	 * Define named color roles checked against this token catalog.
+	 *
+	 * Palette sources are intentionally rooted in the `colors` token group. A
+	 * string source selects a `colors.*` subtree, while an explicit role map
+	 * points each role to a `colors.*` token path. This is not a generic alias
+	 * mechanism for arbitrary token groups.
+	 */
 	readonly defineColorPalettes: <TPalettes extends ColorPaletteDefinitions<TTokens>>(
 		palettes: TPalettes,
 	) => TPalettes;
@@ -248,12 +255,24 @@ type ColorPaletteTokenPath<TTokens extends AnyTokens> =
 			: TPath
 		: never;
 
-/** A static color subtree or a named map of color token references. */
+/**
+ * A static color subtree or a named map of color token references.
+ *
+ * @remarks
+ * Both forms are color-specific: sources must resolve under the `colors`
+ * token group. Use ordinary token references for groups such as `spacing` or
+ * `radii`; this type does not turn those groups into palette roles.
+ */
 export type ColorPaletteSource<TTokens extends AnyTokens = AnyTokens> =
 	| ColorPaletteSourcePath<TTokens>
 	| { readonly [TName: string]: ColorPaletteTokenPath<TTokens> };
 
-/** Color palettes accepted by a preset, keyed by the authored palette name. */
+/**
+ * Color palettes accepted by a preset, keyed by the authored palette name.
+ *
+ * Every palette source is rooted in the preset's `colors` token group. The
+ * palette layer is intentionally not a generic token-group alias mechanism.
+ */
 export type ColorPaletteDefinitions<TTokens extends AnyTokens = AnyTokens> = {
 	readonly [TName: string]: ColorPaletteSource<TTokens>;
 };
@@ -280,7 +299,13 @@ export interface CssPreset<
 	properties: TProps;
 	/** Whether mapped properties default to token-only values. */
 	strict: boolean;
-	/** Static palette assignments for the virtual `colorPalette.*` token family. */
+	/**
+	 * Static palette assignments for the virtual `colorPalette.*` token family.
+	 *
+	 * Palette sources must point into the `colors` token group. This is a
+	 * color-specific role layer, not a generic way to alias `spacing`, `radii`,
+	 * or other token groups.
+	 */
 	colorPalettes?: TColorPalettes;
 }
 
@@ -379,6 +404,15 @@ type PresetStyleValue<TPreset extends CssPreset, TAdditionalValue> =
 
 type PresetStyleObject<TPreset extends CssPreset, TAdditionalValue> = {
 	readonly [property: string]: PresetStyleValue<TPreset, TAdditionalValue>;
+	/**
+	 * Select a palette declared by the preset for this element and its
+	 * descendants.
+	 *
+	 * `colorPalette` is available only when the preset declares `colorPalettes`.
+	 * Its `colorPalette.<role>` values are reserved for color properties, and
+	 * palette definitions must resolve from the preset's `colors` token group;
+	 * this is not a generic arbitrary-token-group alias.
+	 */
 	readonly colorPalette?: ColorPaletteReference<TPreset>;
 };
 
@@ -495,6 +529,10 @@ declare const ErrorSymbol: unique symbol;
  *
  * @typeParam TPreset - The complete preset metadata.
  * @typeParam TConds - The condition keys accepted by nested styles.
+ * @remarks
+ * `colorPalette` selects a declared palette only. Palette sources must use
+ * `colors.*` token paths, and `colorPalette.<role>` references are accepted
+ * only by color properties; other token groups use ordinary token paths.
  * @category styling
  * @since 0.1.0
  */

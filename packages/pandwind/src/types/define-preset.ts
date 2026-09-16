@@ -49,6 +49,8 @@ export const theme = <TTheme extends DefinePresetOptions>(theme: TTheme) => them
  * allows the property's raw CSS values.
  * `colorPalettes` adds named color roles that can be selected with
  * `colorPalette` and consumed as `colorPalette.<role>` values.
+ * Palette sources are intentionally rooted in the `colors` token group; they
+ * do not provide generic aliases for other token groups.
  * Use the resulting preset with `createCss`, `createDesignCss`, or the
  * stylesheet compiler. `$all` adds configured property names but does not bind
  * every token group to every property.
@@ -167,6 +169,8 @@ const createTokenCatalog = <T extends AnyTokens>(tokens: T): TokenCatalog<T> => 
  * palettes remain separate preset metadata, but their token references are
  * checked against this catalog; pass the returned palette map to
  * `define.preset` as `colorPalettes`.
+ * Palette sources are intentionally rooted in the `colors` token group; this
+ * composer is not a generic alias mechanism for arbitrary token groups.
  *
  * @example
  * ```ts
