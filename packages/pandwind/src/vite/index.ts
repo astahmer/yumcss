@@ -249,6 +249,7 @@ export function createInlineTwPluginCore(options: PandwindViteOptions = {}): Inl
 			.read([
 				resolved.id,
 				resolve(dirname(resolved.id), "tw.runtime.ts"),
+				resolve(dirname(resolved.id), "tw.conflicts.ts"),
 				resolve(dirname(resolved.id), "tw.build.ts"),
 			])
 			.map(({ source }) => source);

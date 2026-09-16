@@ -10,7 +10,7 @@ const config = readGeneratedTwConfig(generatedDirectory);
 
 describe("extractTwConfig", () => {
 	test("keeps the runtime entry separate from companion metadata", () => {
-		expect(generatedSources).toHaveLength(3);
+		expect(generatedSources).toHaveLength(4);
 		const entryConfig = extractTwConfig(generatedSources[0]!);
 		expect(entryConfig).toBeDefined();
 		expect(entryConfig?.conflicts).toBeUndefined();

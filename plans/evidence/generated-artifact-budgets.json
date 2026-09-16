@@ -8,6 +8,7 @@
 			"manifest": "src/pandwind.generated.json",
 			"artifacts": {
 				"src/types.d.ts": { "ownership": "editor", "maxRawBytes": 160000, "maxGzipBytes": 12000 },
+				"src/tw.conflicts.ts": { "ownership": "optional", "maxRawBytes": 40000, "maxGzipBytes": 9000 },
 				"src/tw.runtime.ts": { "ownership": "optional", "maxRawBytes": 520000, "maxGzipBytes": 38000 },
 				"src/tw.build.ts": { "ownership": "build-only", "maxRawBytes": 70000, "maxGzipBytes": 7000 },
 				"src/tw.ts": { "ownership": "runtime", "maxRawBytes": 8000, "maxGzipBytes": 3000 },
@@ -22,6 +23,7 @@
 			"manifest": "src/pandwind.generated.json",
 			"artifacts": {
 				"src/types.d.ts": { "ownership": "editor", "maxRawBytes": 170000, "maxGzipBytes": 13000 },
+				"src/tw.conflicts.ts": { "ownership": "optional", "maxRawBytes": 40000, "maxGzipBytes": 9000 },
 				"src/tw.runtime.ts": { "ownership": "optional", "maxRawBytes": 520000, "maxGzipBytes": 38000 },
 				"src/tw.build.ts": { "ownership": "build-only", "maxRawBytes": 70000, "maxGzipBytes": 7000 },
 				"src/tw.ts": { "ownership": "runtime", "maxRawBytes": 8000, "maxGzipBytes": 3000 },

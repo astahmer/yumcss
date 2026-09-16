@@ -9,9 +9,9 @@
  * - `types.d.ts` — `WindVariants`: one key per utility + recursive variant keys,
  *   with literal value unions so the editor autocompletes real Tailwind classes.
  * - `tw.ts` — the small typed `tw` entry;
- * - `tw.runtime.ts` — optional conflict metadata for exact arbitrary-runtime
- *   `tw()` and `cx()` merging;
- * - `tw.conflicts.ts` — the smaller conflict-only runtime artifact for `cx()`;
+ * - `tw.runtime.ts` — optional runtime metadata for arbitrary `tw()` calls;
+ * - `tw.conflicts.ts` — the conflict-only runtime artifact shared by `tw()`
+ *   and `cx()` when exact arbitrary-runtime merging is enabled;
  * - `tw.build.ts` — build-only wildcard candidate metadata.
  *
  */
@@ -111,7 +111,35 @@ export interface GenerateDesignSystemOptions {
 	 * behavior.
 	 */
 	themeBlock?: string;
+	/**
+	 * Restrict the optional runtime conflict catalog to these Tailwind utility
+	 * prefixes. Omitted means the complete catalog; an empty list disables it.
+	 * This is safe only when every arbitrary runtime class is covered by the
+	 * selected prefixes.
+	 */
+	conflictUtilities?: readonly string[];
 }
+
+const selectConflictUtilities = (
+	metadata: ReturnType<typeof buildConflicts>,
+	utilities: readonly string[] | undefined,
+): ReturnType<typeof buildConflicts> => {
+	if (utilities === undefined) return metadata;
+	const selected = new Set(utilities);
+	const unknown = utilities.filter((utility) => metadata.conflicts[utility] === undefined);
+	if (unknown.length > 0)
+		throw new Error(
+			`pandwind-codemod tw generate: unknown conflict utility prefix(es): ${unknown.join(", ")}`,
+		);
+	const conflicts = Object.fromEntries(
+		Object.entries(metadata.conflicts).filter(([utility]) => selected.has(utility)),
+	);
+	return {
+		...metadata,
+		conflicts,
+		compose: metadata.compose.filter((utility) => selected.has(utility)),
+	};
+};
 
 /**
  * Generate the generated artifact files for a CSS entry. Exported so tests and
@@ -143,12 +171,12 @@ class DefaultDesignSystemCodegen implements DesignSystemCodegen {
 		const system = await this.loader(effectiveCss, { base });
 		const functionalKeys = system.utilities.keys("functional");
 		const types = this.catalog.collect(system);
-		const { conflicts, compose, wildcardValues, valueTokens } = this.buildConflicts(
-			system,
-			types,
-			functionalKeys,
+		const allMetadata = this.buildConflicts(system, types, functionalKeys);
+		this.catalog.expand(types, allMetadata.conflicts);
+		const { conflicts, compose, wildcardValues, valueTokens } = selectConflictUtilities(
+			allMetadata,
+			options.conflictUtilities,
 		);
-		this.catalog.expand(types, conflicts);
 		const modifierCapable = this.detectModifiers(system, types);
 		const variants: Array<{ name: string; join: ":" | "-" | "" }> = [];
 		for (const variant of system.getVariants()) {

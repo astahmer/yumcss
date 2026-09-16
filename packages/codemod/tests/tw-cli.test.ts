@@ -12,6 +12,8 @@ describe("pandwind-codemod tw command router", () => {
 				"generated",
 				"--tokens",
 				"./preset.ts",
+				"--conflicts",
+				"bg,p,text",
 				"--agents",
 				"--bridge",
 				"--bridge-file",
@@ -30,6 +32,11 @@ describe("pandwind-codemod tw command router", () => {
 			  "bridge": true,
 			  "bridgeFile": "/fixture/project/generated/tw-bridge.ts",
 			  "command": "generate",
+			  "conflictUtilities": [
+			    "bg",
+			    "p",
+			    "text",
+			  ],
 			  "cssEntry": "/fixture/project/config/tailwind.css",
 			  "cwd": "/fixture/project",
 			  "outDir": "/fixture/project/generated",
@@ -42,7 +49,16 @@ describe("pandwind-codemod tw command router", () => {
 		if (command.command === TwCommand.Generate) {
 			expect(command.bridge).toBe(true);
 			expect(command.tokensModule).toBe("./preset.ts");
+			expect(command.conflictUtilities).toEqual(["bg", "p", "text"]);
 		}
+	});
+
+	test("supports explicit full and disabled conflict scopes", () => {
+		const all = parseTwCommand([TwCommand.Generate, "--conflicts", "all"], cwd);
+		const none = parseTwCommand([TwCommand.Generate, "--conflicts", "none"], cwd);
+
+		expect(all).not.toHaveProperty("conflictUtilities");
+		expect(none).toHaveProperty("conflictUtilities", []);
 	});
 
 	test("uses stable defaults for scan and prune", () => {

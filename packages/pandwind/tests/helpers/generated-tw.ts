@@ -6,6 +6,7 @@ export const readGeneratedTwSources = (directory: string): readonly string[] =>
 	[
 		resolve(directory, "tw.ts"),
 		resolve(directory, "tw.runtime.ts"),
+		resolve(directory, "tw.conflicts.ts"),
 		resolve(directory, "tw.build.ts"),
 	].flatMap((path) => (existsSync(path) ? [readFileSync(path, "utf8")] : []));
 

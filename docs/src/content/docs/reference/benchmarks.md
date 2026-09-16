@@ -98,11 +98,18 @@ resolver. The internal `createCssRuntime()` row has no public method
 attachments; it is included to show the shared engine's base cost, not as an
 application entry point. Fully extracted static calls remain below 100 bytes.
 
-Generated Tailwind conflict metadata is a separate opt-in lane: the current
-generated `dss+cx` bundle is **80.68 KB min / 20.29 KB gzip**, down from the
-pre-pass bundle's 291.23 KB min / 40.57 KB gzip because it no longer imports
-`tw.runtime.ts`. Native Pandwind-only `cx()` does not pay for that catalog.
-The root `SIZE.md` is only a pointer and no longer duplicates these numbers.
+Generated Tailwind conflict metadata is a separate opt-in lane. The compact
+conflict artifact itself is **22.37 KB min / 7.23 KB gzip**; a conflict-only
+`createCx()` bundle is **29.37 KB min / 10.18 KB gzip**, and the measured
+example `dss+cx` bundle is **54.07 KB min / 18.88 KB gzip**. These rows are
+lower than the previous 55.96 KB / 11.54 KB conflict-only and 80.68 KB /
+20.29 KB `dss+cx` bundles because the generated catalog is packed, decoded
+lazily, and shared between the optional `tw.runtime.ts` and `cx` paths. Native
+Pandwind-only `cx()` does not pay for that catalog. For larger apps,
+`tw generate --conflicts bg,p,text` narrows the catalog further; this is safe
+only when every arbitrary runtime class that must merge belongs to a selected
+prefix. The root `SIZE.md` is only a pointer and no longer duplicates these
+numbers.
 
 ## Public runtime API throughput snapshot
 

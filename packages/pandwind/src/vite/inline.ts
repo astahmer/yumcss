@@ -77,7 +77,8 @@ function normalizeWildcardValues(raw: unknown): Record<string, ReadonlySet<strin
 interface PackedTwConflicts {
 	readonly s: readonly string[];
 	readonly p: readonly (readonly number[])[];
-	readonly c: readonly (readonly [number, readonly (readonly [number, readonly number[]])[]])[];
+	readonly v: readonly (readonly number[])[];
+	readonly c: readonly (readonly [number, number, readonly (readonly [number, number])[]])[];
 }
 
 const decodePackedConflicts = (raw: unknown): TwConflictsMeta | undefined => {
@@ -85,20 +86,43 @@ const decodePackedConflicts = (raw: unknown): TwConflictsMeta | undefined => {
 	const packed = raw as Partial<PackedTwConflicts>;
 	const strings = packed.s;
 	const propertyLists = packed.p;
-	if (!Array.isArray(strings) || !Array.isArray(propertyLists) || !Array.isArray(packed.c)) return;
+	const valueLists = packed.v;
+	if (
+		!Array.isArray(strings) ||
+		!Array.isArray(propertyLists) ||
+		!Array.isArray(valueLists) ||
+		!Array.isArray(packed.c)
+	)
+		return;
 	const entries = packed.c as PackedTwConflicts["c"];
+	const decodeProperties = (index: number): string[] =>
+		propertyLists[index]!.map((property: number) => strings[property]!);
+	const decodeValues = (encoded: readonly number[]): string[] => {
+		const values: string[] = [];
+		for (let index = 0; index < encoded.length; index++) {
+			const marker = encoded[index]!;
+			if (marker >= 0) {
+				values.push(strings[marker]!);
+				continue;
+			}
+			const start = -marker - 1;
+			const end = encoded[++index]!;
+			for (let value = start; value <= end; value++) values.push(strings[value]!);
+		}
+		return values;
+	};
 	return Object.fromEntries(
-		entries.map(([utility, groups]) => [
-			strings[utility]!,
-			Object.fromEntries(
-				groups.flatMap(([properties, values]) =>
-					values.map((value) => [
-						strings[value]!,
-						propertyLists[properties]!.map((property: number) => strings[property]!),
-					]),
-				),
-			),
-		]),
+		entries.map(([utility, wildcard, groups]) => {
+			const decoded: Record<string, string[]> = {};
+			if (wildcard >= 0) decoded["*"] = decodeProperties(wildcard);
+			for (const [properties, values] of groups) {
+				const propertyValues = decodeProperties(properties);
+				for (const value of decodeValues(valueLists[values]!)) {
+					decoded[value] = propertyValues;
+				}
+			}
+			return [strings[utility]!, decoded];
+		}),
 	);
 };
 

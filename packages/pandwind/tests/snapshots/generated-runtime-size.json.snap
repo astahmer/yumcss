@@ -3,9 +3,21 @@
     "min": 4448,
     "gz": 1739
   },
+  "generated tw runtime metadata (opt-in)": {
+    "min": 177065,
+    "gz": 19431
+  },
+  "generated conflict metadata (opt-in)": {
+    "min": 22374,
+    "gz": 7227
+  },
+  "generated conflict cx (dynamic, no css)": {
+    "min": 29370,
+    "gz": 10182
+  },
   "explicit conflict cx (dynamic)": {
-    "min": 80679,
-    "gz": 20291
+    "min": 54069,
+    "gz": 18884
   },
   "example dss+cx (no tw metadata)": {
     "min": 31748,

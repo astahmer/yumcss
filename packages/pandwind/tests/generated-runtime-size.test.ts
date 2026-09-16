@@ -36,6 +36,30 @@ const bundleEntry = (entry: string): BundleMeasurement => {
 	};
 };
 
+const bundleSource = (source: string, resolveDir: string): BundleMeasurement => {
+	const result = buildSync({
+		stdin: {
+			contents: source,
+			loader: "ts",
+			resolveDir,
+			sourcefile: "generated-runtime-size.ts",
+		},
+		bundle: true,
+		minify: true,
+		format: "esm",
+		platform: "browser",
+		write: false,
+		metafile: true,
+		logLevel: "silent",
+	});
+	const code = result.outputFiles[0]!.text;
+	return {
+		min: code.length,
+		gz: gzipSync(code).byteLength,
+		inputs: Object.keys(result.metafile?.inputs ?? {}),
+	};
+};
+
 const hasInput = (measurement: BundleMeasurement, file: string): boolean =>
 	measurement.inputs.some((input) => input.endsWith(file));
 
@@ -64,32 +88,26 @@ const bundleAfterGeneratedExtraction = async (): Promise<BundleMeasurement> => {
 		},
 	);
 	if (transformed === null) throw new Error("generated tw source was not transformed");
-	const result = buildSync({
-		stdin: {
-			contents: transformed.code,
-			loader: "ts",
-			resolveDir: ROOT,
-			sourcefile: "generated-tw-static.ts",
-		},
-		bundle: true,
-		minify: true,
-		format: "esm",
-		platform: "browser",
-		write: false,
-		metafile: true,
-		logLevel: "silent",
-	});
-	const code = result.outputFiles[0]!.text;
-	return {
-		min: code.length,
-		gz: gzipSync(code).byteLength,
-		inputs: Object.keys(result.metafile?.inputs ?? {}),
-	};
+	return bundleSource(transformed.code, ROOT);
 };
+
+const bundleGeneratedConflictOnly = (): BundleMeasurement =>
+	bundleSource(
+		[
+			'import { createCx } from "pandwind/cx";',
+			`import { __pandwindConflictConfig } from ${JSON.stringify(resolve(GENERATED_DIRECTORY, "tw.conflicts.ts"))};`,
+			"export const cx = createCx(__pandwindConflictConfig);",
+			'export const value = cx("bg-red-500", "bg-blue-500");',
+		].join("\n"),
+		GENERATED_DIRECTORY,
+	);
 
 test("generated metadata stays out of static runtime bundles", async () => {
 	const generatedEntrySource = readFileSync(resolve(GENERATED_DIRECTORY, "tw.ts"), "utf8");
 	const generatedTw = bundleEntry(resolve(GENERATED_DIRECTORY, "tw.ts"));
+	const generatedRuntime = bundleEntry(resolve(GENERATED_DIRECTORY, "tw.runtime.ts"));
+	const generatedConflicts = bundleEntry(resolve(GENERATED_DIRECTORY, "tw.conflicts.ts"));
+	const generatedConflictOnly = bundleGeneratedConflictOnly();
 	const generatedCx = bundleEntry(resolve(GENERATED_DIRECTORY, "cx.ts"));
 	const plainCx = bundleEntry(resolve(EXAMPLE_DIRECTORY, "cx.ts"));
 	const generatedStatic = await bundleAfterGeneratedExtraction();
@@ -101,6 +119,13 @@ test("generated metadata stays out of static runtime bundles", async () => {
 	expect(generatedEntrySource).not.toContain("__pandwindBuildMetadata");
 	expect(hasInput(generatedTw, "tw.runtime.ts")).toBe(false);
 	expect(hasInput(generatedTw, "tw.build.ts")).toBe(false);
+	expect(hasInput(generatedRuntime, "tw.conflicts.ts")).toBe(true);
+	expect(hasInput(generatedRuntime, "tw.build.ts")).toBe(false);
+	expect(hasInput(generatedConflicts, "tw.runtime.ts")).toBe(false);
+	expect(hasInput(generatedConflicts, "tw.build.ts")).toBe(false);
+	expect(hasInput(generatedConflictOnly, "tw.conflicts.ts")).toBe(true);
+	expect(hasInput(generatedConflictOnly, "tw.runtime.ts")).toBe(false);
+	expect(hasInput(generatedConflictOnly, "tw.build.ts")).toBe(false);
 	expect(hasInput(plainCx, "tw.runtime.ts")).toBe(false);
 	expect(hasInput(plainCx, "tw.build.ts")).toBe(false);
 	expect(hasInput(generatedCx, "tw.conflicts.ts")).toBe(true);
@@ -116,6 +141,18 @@ test("generated metadata stays out of static runtime bundles", async () => {
 				"generated tw (dynamic)": {
 					min: generatedTw.min,
 					gz: generatedTw.gz,
+				},
+				"generated tw runtime metadata (opt-in)": {
+					min: generatedRuntime.min,
+					gz: generatedRuntime.gz,
+				},
+				"generated conflict metadata (opt-in)": {
+					min: generatedConflicts.min,
+					gz: generatedConflicts.gz,
+				},
+				"generated conflict cx (dynamic, no css)": {
+					min: generatedConflictOnly.min,
+					gz: generatedConflictOnly.gz,
 				},
 				"explicit conflict cx (dynamic)": {
 					min: generatedCx.min,

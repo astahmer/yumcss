@@ -50,6 +50,8 @@ const serializeConflicts = (conflicts: Record<string, Record<string, string[]>>)
 	const stringIndexes = new Map<string, number>();
 	const propertyLists: number[][] = [];
 	const propertyListIndexes = new Map<string, number>();
+	const valueLists: number[][] = [];
+	const valueListIndexes = new Map<string, number>();
 	const intern = (value: string): number => {
 		const existing = stringIndexes.get(value);
 		if (existing !== undefined) return existing;
@@ -67,14 +69,43 @@ const serializeConflicts = (conflicts: Record<string, Record<string, string[]>>)
 		propertyLists.push(properties.map(intern));
 		return index;
 	};
+	const valueList = (values: readonly number[]): number => {
+		const key = JSON.stringify(values);
+		const existing = valueListIndexes.get(key);
+		if (existing !== undefined) return existing;
+		const index = valueLists.length;
+		valueListIndexes.set(key, index);
+		valueLists.push([...values]);
+		return index;
+	};
+	const encodeValueList = (values: readonly number[]): number[] => {
+		const encoded: number[] = [];
+		for (let index = 0; index < values.length;) {
+			const start = values[index]!;
+			let end = start;
+			index++;
+			while (index < values.length && values[index] === end + 1) {
+				end = values[index]!;
+				index++;
+			}
+			if (start === end) encoded.push(start);
+			else encoded.push(-start - 1, end);
+		}
+		return encoded;
+	};
 	const entries = Object.entries(conflicts)
 		.toSorted(([a], [b]) => a.localeCompare(b, "en"))
 		.map(([utility, values]) => {
+			let wildcardProperties = -1;
 			const byProperties = new Map<number, number[]>();
 			for (const [value, properties] of Object.entries(values).toSorted(([a], [b]) =>
 				a.localeCompare(b, "en"),
 			)) {
 				const propertiesIndex = propertyList(properties);
+				if (value === "*") {
+					wildcardProperties = propertiesIndex;
+					continue;
+				}
 				const valuesForProperties = byProperties.get(propertiesIndex);
 				if (valuesForProperties === undefined) {
 					byProperties.set(propertiesIndex, [intern(value)]);
@@ -82,9 +113,18 @@ const serializeConflicts = (conflicts: Record<string, Record<string, string[]>>)
 					valuesForProperties.push(intern(value));
 				}
 			}
-			return [intern(utility), [...byProperties]];
+			return [
+				intern(utility),
+				wildcardProperties,
+				[...byProperties].map(([properties, exactValues]) => [properties, valueList(exactValues)]),
+			];
 		});
-	return JSON.stringify({ s: strings, p: propertyLists, c: entries });
+	return JSON.stringify({
+		s: strings,
+		p: propertyLists,
+		v: valueLists.map(encodeValueList),
+		c: entries,
+	});
 };
 
 export interface GeneratedTwSources {
@@ -199,15 +239,61 @@ ${lines.toSorted((a, b) => a.localeCompare(b, "en", { ignorePunctuation: true })
 		const conflictDeclaration =
 			serializedConflicts === undefined
 				? ""
-				: `const __pandwindDecodeConflicts = (packed: { s: string[]; p: number[][]; c: Array<[number, Array<[number, number[]]>]> }) =>
-	Object.fromEntries(packed.c.map(([utility, groups]) => [
-		packed.s[utility]!,
-		Object.fromEntries(groups.flatMap(([properties, values]) => values.map((value) => [
-			packed.s[value]!,
-			packed.p[properties]!.map((property) => packed.s[property]!),
-		]))),
-	]));
-const __pandwindConflicts = __pandwindDecodeConflicts(JSON.parse(${JSON.stringify(serializedConflicts)}));`;
+				: `type __pandwindPackedConflicts = {
+	s: string[];
+	p: number[][];
+	v: number[][];
+	c: Array<[number, number, Array<[number, number]>]>;
+};
+
+const __pandwindDecodeConflicts = (packed: __pandwindPackedConflicts) => {
+	const entries = new Map<string, [number, Array<[number, number]>]>();
+	for (const [utility, wildcard, groups] of packed.c) {
+		entries.set(packed.s[utility]!, [wildcard, groups]);
+	}
+	const cache = new Map<string, Record<string, string[]>>();
+	const properties = (index: number): string[] =>
+		packed.p[index]!.map((property) => packed.s[property]!);
+	const values = (encoded: readonly number[]): string[] => {
+		const output: string[] = [];
+		for (let index = 0; index < encoded.length; index++) {
+			const marker = encoded[index]!;
+			if (marker >= 0) {
+				output.push(packed.s[marker]!);
+				continue;
+			}
+			const start = -marker - 1;
+			const end = encoded[++index]!;
+			for (let value = start; value <= end; value++) output.push(packed.s[value]!);
+		}
+		return output;
+	};
+	return new Proxy(Object.create(null) as Record<string, Record<string, string[]>>, {
+		get: (_target, property: string | symbol) => {
+			if (typeof property !== "string") return undefined;
+			const cached = cache.get(property);
+			if (cached !== undefined) return cached;
+			const entry = entries.get(property);
+			if (entry === undefined) return undefined;
+			const [wildcard, groups] = entry;
+			const decoded: Record<string, string[]> = {};
+			if (wildcard >= 0) decoded["*"] = properties(wildcard);
+			for (const [propertyIndex, valueIndex] of groups) {
+				const propertyValues = properties(propertyIndex);
+				for (const value of values(packed.v[valueIndex]!)) decoded[value] = propertyValues;
+			}
+			cache.set(property, decoded);
+			return decoded;
+		},
+		ownKeys: () => [...entries.keys()],
+		getOwnPropertyDescriptor: () => ({ enumerable: true, configurable: true }),
+	});
+};
+export const __pandwindConflicts = __pandwindDecodeConflicts(JSON.parse(${JSON.stringify(serializedConflicts)}));`;
+		const conflictImport =
+			serializedConflicts === undefined
+				? ""
+				: 'import { __pandwindConflicts } from "./tw.conflicts.ts";';
 		const sharedTokens = (values: Readonly<Record<string, string>>): string => {
 			const entries = Object.entries(values).toSorted(([a], [b]) => a.localeCompare(b, "en"));
 			const key = JSON.stringify(entries);
@@ -234,7 +320,7 @@ ${variantEntries.join("\n")}
 			: "";
 		const runtimeConfigEntries = [
 			"\tvariants: __pandwindVariants,",
-			conflictDeclaration ? "\tconflicts: __pandwindConflicts," : "",
+			serializedConflicts !== undefined ? "\tconflicts: __pandwindConflicts," : "",
 			composeEntries,
 		]
 			.filter(Boolean)
@@ -256,8 +342,9 @@ ${variantEntries.join("\n")}
 // entry does not import this file; Vite and codemod tooling read it to fold
 // calls and register finite candidates.
 import type { TwOptions } from "pandwind/tw";
+${conflictImport ? `\n${conflictImport}` : ""}
 
-${conflictDeclaration}${runtimeDeclarations.length > 0 ? `\n${runtimeDeclarations.join("\n")}` : ""}
+${runtimeDeclarations.length > 0 ? runtimeDeclarations.join("\n") : ""}
 
 ${variantDeclaration}
 export const __pandwindRuntimeConfig: TwOptions = {
@@ -265,7 +352,7 @@ ${runtimeConfigEntries}
 ${valueTokenBlock ? `${valueTokenBlock}\n` : ""}};
 `;
 		const conflictConfigEntries = [
-			conflictDeclaration ? "\tconflicts: __pandwindConflicts," : "",
+			serializedConflicts !== undefined ? "\tconflicts: __pandwindConflicts," : "",
 			composeEntries,
 		]
 			.filter(Boolean)

@@ -38,6 +38,7 @@ export interface TwGenerateCommand {
 	readonly outDir: string;
 	readonly cwd: string;
 	readonly tokensModule?: string;
+	readonly conflictUtilities?: readonly string[];
 	readonly agents: boolean;
 	readonly bridge: boolean;
 	readonly bridgeFile: string;
@@ -109,6 +110,15 @@ const optionBoolean = (options: CliOptions, name: string): boolean => options[na
 const actionPositionals = (args: readonly unknown[]): string[] =>
 	args.filter((value): value is string => typeof value === "string");
 
+const parseConflictUtilities = (value: string | undefined): readonly string[] | undefined => {
+	if (value === undefined || value === "all") return undefined;
+	if (value === "none") return [];
+	const utilities = value.split(",").map((utility) => utility.trim());
+	if (utilities.some((utility) => utility === ""))
+		throw new Error("--conflicts expects `all`, `none`, or a comma-separated utility list");
+	return [...new Set(utilities)];
+};
+
 const generateCommand = (
 	cwd: string,
 	positionals: readonly string[],
@@ -117,6 +127,7 @@ const generateCommand = (
 	const cssEntry = positionals[0] ?? "src/tailwind.css";
 	const outDir = positionals[1] ?? "src";
 	const bridgeFile = optionString(options, "bridgeFile");
+	const conflictUtilities = parseConflictUtilities(optionString(options, "conflicts"));
 	return {
 		command: TwCommand.Generate,
 		cssEntry: resolve(cwd, cssEntry),
@@ -125,6 +136,7 @@ const generateCommand = (
 		...(optionString(options, "tokens") === undefined
 			? {}
 			: { tokensModule: optionString(options, "tokens") }),
+		...(conflictUtilities === undefined ? {} : { conflictUtilities }),
 		agents: optionBoolean(options, "agents"),
 		bridge: optionBoolean(options, "bridge") || bridgeFile !== undefined,
 		bridgeFile: resolve(cwd, bridgeFile ?? `${outDir}/bridge.ts`),
@@ -176,6 +188,10 @@ const verifyCommand = (
 const configureGenerate = (command: Command): void => {
 	command
 		.option("--tokens <module>", "Token module to bridge into the generated theme")
+		.option(
+			"--conflicts <scope>",
+			"Conflict metadata scope: all, none, or a comma-separated utility list",
+		)
 		.option("--agents", "Write the machine-readable pandwind.agents.json artifact")
 		.option("--bridge", "Generate the css() bridge and refresh interop metadata")
 		.option("--bridge-file <path>", "Output path for the generated bridge module")
@@ -280,7 +296,10 @@ const defaultHandlers: TwCliHandlers = {
 		const source = await generateDesignSystem(
 			readFileSync(command.cssEntry, "utf8"),
 			dirname(command.cssEntry),
-			{ themeBlock },
+			{
+				themeBlock,
+				conflictUtilities: command.conflictUtilities,
+			},
 		);
 		new CodegenArtifactWriter().write(
 			{ ...source, themeBlock },

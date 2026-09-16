@@ -6,7 +6,7 @@
 	"environment": {
 		"platform": "darwin",
 		"arch": "arm64",
-		"node": "v24.19.0",
+		"node": "v24.20.0",
 		"typescript": "7.0.2"
 	},
 	"scenarios": [
@@ -19,12 +19,12 @@
 			"samples": 3,
 			"metrics": {
 				"files": 225,
-				"symbols": 76465,
-				"types": 20240,
-				"instantiations": 41150,
-				"memoryUsedKiB": 66204,
-				"checkTimeSeconds": 0.046,
-				"totalTimeSeconds": 0.078
+				"symbols": 75180,
+				"types": 18558,
+				"instantiations": 38213,
+				"memoryUsedKiB": 64959,
+				"checkTimeSeconds": 0.091,
+				"totalTimeSeconds": 0.136
 			}
 		},
 		{
@@ -36,12 +36,12 @@
 			"samples": 3,
 			"metrics": {
 				"files": 228,
-				"symbols": 81527,
-				"types": 14056,
-				"instantiations": 23449,
-				"memoryUsedKiB": 68654,
-				"checkTimeSeconds": 0.012,
-				"totalTimeSeconds": 0.039
+				"symbols": 80241,
+				"types": 12177,
+				"instantiations": 20312,
+				"memoryUsedKiB": 67504,
+				"checkTimeSeconds": 0.014,
+				"totalTimeSeconds": 0.058
 			}
 		},
 		{
@@ -56,9 +56,9 @@
 				"symbols": 73422,
 				"types": 7651,
 				"instantiations": 9134,
-				"memoryUsedKiB": 62316,
-				"checkTimeSeconds": 0.01,
-				"totalTimeSeconds": 0.14
+				"memoryUsedKiB": 62248,
+				"checkTimeSeconds": 0.008,
+				"totalTimeSeconds": 0.039
 			}
 		},
 		{
@@ -70,12 +70,12 @@
 			"samples": 3,
 			"metrics": {
 				"files": 231,
-				"symbols": 83044,
-				"types": 15437,
-				"instantiations": 26880,
-				"memoryUsedKiB": 69869,
-				"checkTimeSeconds": 0.015,
-				"totalTimeSeconds": 0.042
+				"symbols": 81760,
+				"types": 14056,
+				"instantiations": 24229,
+				"memoryUsedKiB": 68755,
+				"checkTimeSeconds": 0.011,
+				"totalTimeSeconds": 0.045
 			}
 		},
 		{
@@ -87,12 +87,12 @@
 			"samples": 3,
 			"metrics": {
 				"files": 218,
-				"symbols": 70922,
-				"types": 7584,
-				"instantiations": 11544,
-				"memoryUsedKiB": 58976,
-				"checkTimeSeconds": 0.006,
-				"totalTimeSeconds": 0.037
+				"symbols": 70475,
+				"types": 6937,
+				"instantiations": 10049,
+				"memoryUsedKiB": 58433,
+				"checkTimeSeconds": 0.007,
+				"totalTimeSeconds": 0.04
 			}
 		},
 		{
@@ -107,9 +107,9 @@
 				"symbols": 76150,
 				"types": 9522,
 				"instantiations": 21586,
-				"memoryUsedKiB": 63894,
+				"memoryUsedKiB": 63893,
 				"checkTimeSeconds": 0.01,
-				"totalTimeSeconds": 0.049
+				"totalTimeSeconds": 0.046
 			}
 		},
 		{
@@ -121,12 +121,12 @@
 			"samples": 3,
 			"metrics": {
 				"files": 252,
-				"symbols": 97402,
-				"types": 27726,
-				"instantiations": 75398,
-				"memoryUsedKiB": 83858,
-				"checkTimeSeconds": 0.04,
-				"totalTimeSeconds": 0.073
+				"symbols": 96595,
+				"types": 26978,
+				"instantiations": 74340,
+				"memoryUsedKiB": 83119,
+				"checkTimeSeconds": 0.047,
+				"totalTimeSeconds": 0.082
 			}
 		},
 		{
@@ -138,12 +138,12 @@
 			"samples": 3,
 			"metrics": {
 				"files": 226,
-				"symbols": 76406,
-				"types": 20065,
-				"instantiations": 40990,
-				"memoryUsedKiB": 66031,
-				"checkTimeSeconds": 0.048,
-				"totalTimeSeconds": 0.08
+				"symbols": 75373,
+				"types": 18705,
+				"instantiations": 38371,
+				"memoryUsedKiB": 65141,
+				"checkTimeSeconds": 0.05,
+				"totalTimeSeconds": 0.091
 			}
 		},
 		{
@@ -155,12 +155,12 @@
 			"samples": 3,
 			"metrics": {
 				"files": 238,
-				"symbols": 85131,
-				"types": 17381,
-				"instantiations": 31359,
-				"memoryUsedKiB": 71979,
-				"checkTimeSeconds": 0.013,
-				"totalTimeSeconds": 0.047
+				"symbols": 84686,
+				"types": 16765,
+				"instantiations": 29761,
+				"memoryUsedKiB": 71367,
+				"checkTimeSeconds": 0.014,
+				"totalTimeSeconds": 0.063
 			}
 		},
 		{
@@ -172,12 +172,12 @@
 			"samples": 3,
 			"metrics": {
 				"files": 250,
-				"symbols": 90891,
-				"types": 21691,
-				"instantiations": 41897,
-				"memoryUsedKiB": 78302,
-				"checkTimeSeconds": 0.032,
-				"totalTimeSeconds": 0.104
+				"symbols": 90730,
+				"types": 21580,
+				"instantiations": 41549,
+				"memoryUsedKiB": 78065,
+				"checkTimeSeconds": 0.043,
+				"totalTimeSeconds": 0.08
 			}
 		},
 		{
@@ -189,12 +189,12 @@
 			"samples": 3,
 			"metrics": {
 				"files": 249,
-				"symbols": 90966,
-				"types": 21537,
-				"instantiations": 40222,
-				"memoryUsedKiB": 78283,
-				"checkTimeSeconds": 0.018,
-				"totalTimeSeconds": 0.047
+				"symbols": 90761,
+				"types": 21432,
+				"instantiations": 39953,
+				"memoryUsedKiB": 77927,
+				"checkTimeSeconds": 0.026,
+				"totalTimeSeconds": 0.062
 			}
 		},
 		{
@@ -206,12 +206,12 @@
 			"samples": 3,
 			"metrics": {
 				"files": 231,
-				"symbols": 85010,
-				"types": 16159,
-				"instantiations": 29784,
-				"memoryUsedKiB": 71380,
-				"checkTimeSeconds": 0.01,
-				"totalTimeSeconds": 0.04
+				"symbols": 84048,
+				"types": 15438,
+				"instantiations": 28383,
+				"memoryUsedKiB": 70751,
+				"checkTimeSeconds": 0.014,
+				"totalTimeSeconds": 0.052
 			}
 		},
 		{
@@ -226,9 +226,9 @@
 				"symbols": 68081,
 				"types": 3726,
 				"instantiations": 3153,
-				"memoryUsedKiB": 56900,
+				"memoryUsedKiB": 56872,
 				"checkTimeSeconds": 0.004,
-				"totalTimeSeconds": 0.029
+				"totalTimeSeconds": 0.044
 			}
 		},
 		{
@@ -239,13 +239,13 @@
 			"command": "pnpm exec tsc --ignoreConfig --noEmit --extendedDiagnostics --pretty false --target ES2022 --module ESNext --moduleResolution Bundler --customConditions pandwind --lib ES2023,DOM --strict --noUncheckedIndexedAccess --noImplicitOverride --isolatedModules --verbatimModuleSyntax --allowImportingTsExtensions --skipLibCheck --forceConsistentCasingInFileNames --types node tests/fixtures/tsc/tw-root.ts",
 			"samples": 3,
 			"metrics": {
-				"files": 244,
-				"symbols": 74591,
-				"types": 8448,
-				"instantiations": 12264,
-				"memoryUsedKiB": 62466,
+				"files": 245,
+				"symbols": 74723,
+				"types": 8638,
+				"instantiations": 11801,
+				"memoryUsedKiB": 62592,
 				"checkTimeSeconds": 0.01,
-				"totalTimeSeconds": 0.037
+				"totalTimeSeconds": 0.049
 			}
 		},
 		{
@@ -257,12 +257,12 @@
 			"samples": 3,
 			"metrics": {
 				"files": 233,
-				"symbols": 83022,
-				"types": 16878,
-				"instantiations": 30702,
-				"memoryUsedKiB": 70460,
-				"checkTimeSeconds": 0.009,
-				"totalTimeSeconds": 0.037
+				"symbols": 81893,
+				"types": 15165,
+				"instantiations": 27498,
+				"memoryUsedKiB": 69324,
+				"checkTimeSeconds": 0.014,
+				"totalTimeSeconds": 0.056
 			}
 		},
 		{
@@ -274,12 +274,12 @@
 			"samples": 3,
 			"metrics": {
 				"files": 240,
-				"symbols": 107186,
-				"types": 24121,
-				"instantiations": 53114,
-				"memoryUsedKiB": 90702,
-				"checkTimeSeconds": 0.018,
-				"totalTimeSeconds": 0.051
+				"symbols": 105978,
+				"types": 22862,
+				"instantiations": 50621,
+				"memoryUsedKiB": 89687,
+				"checkTimeSeconds": 0.037,
+				"totalTimeSeconds": 0.075
 			}
 		},
 		{
@@ -294,9 +294,9 @@
 				"symbols": 85023,
 				"types": 16067,
 				"instantiations": 28112,
-				"memoryUsedKiB": 71054,
-				"checkTimeSeconds": 0.014,
-				"totalTimeSeconds": 0.039
+				"memoryUsedKiB": 71013,
+				"checkTimeSeconds": 0.015,
+				"totalTimeSeconds": 0.054
 			}
 		},
 		{
@@ -307,13 +307,13 @@
 			"command": "pnpm exec tsc --ignoreConfig --noEmit --extendedDiagnostics --pretty false --target ES2022 --module ESNext --moduleResolution Bundler --customConditions pandwind --lib ES2023,DOM --strict --noUncheckedIndexedAccess --noImplicitOverride --isolatedModules --verbatimModuleSyntax --allowImportingTsExtensions --skipLibCheck --forceConsistentCasingInFileNames --types node tests/fixtures/tsc/tooling.ts",
 			"samples": 3,
 			"metrics": {
-				"files": 500,
-				"symbols": 173065,
-				"types": 30658,
-				"instantiations": 67842,
-				"memoryUsedKiB": 141792,
-				"checkTimeSeconds": 0.049,
-				"totalTimeSeconds": 0.123
+				"files": 501,
+				"symbols": 173958,
+				"types": 30855,
+				"instantiations": 68395,
+				"memoryUsedKiB": 142634,
+				"checkTimeSeconds": 0.041,
+				"totalTimeSeconds": 0.118
 			}
 		},
 		{
@@ -324,13 +324,13 @@
 			"command": "pnpm exec tsc --ignoreConfig --noEmit --extendedDiagnostics --pretty false --target ES2022 --module ESNext --moduleResolution Bundler --customConditions pandwind --lib ES2023,DOM --strict --noUncheckedIndexedAccess --noImplicitOverride --isolatedModules --verbatimModuleSyntax --allowImportingTsExtensions --skipLibCheck --forceConsistentCasingInFileNames --types node tests/fixtures/tsc/app.ts",
 			"samples": 3,
 			"metrics": {
-				"files": 277,
-				"symbols": 95766,
-				"types": 23821,
-				"instantiations": 44460,
-				"memoryUsedKiB": 82634,
-				"checkTimeSeconds": 0.017,
-				"totalTimeSeconds": 0.047
+				"files": 278,
+				"symbols": 94875,
+				"types": 22931,
+				"instantiations": 43021,
+				"memoryUsedKiB": 82275,
+				"checkTimeSeconds": 0.023,
+				"totalTimeSeconds": 0.064
 			}
 		}
 	],

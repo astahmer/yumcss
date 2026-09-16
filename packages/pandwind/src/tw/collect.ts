@@ -61,6 +61,7 @@ class DefaultTwClassCollector implements TwClassCollector {
 		const generatedSources = [
 			twEntry,
 			resolve(dirname(twEntry), "tw.runtime.ts"),
+			resolve(dirname(twEntry), "tw.conflicts.ts"),
 			resolve(dirname(twEntry), "tw.build.ts"),
 		].flatMap((path) => (existsSync(path) ? [readFileSync(path, "utf8")] : []));
 		const config = extractTwConfigFromSources(generatedSources);

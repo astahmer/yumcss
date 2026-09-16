@@ -78,6 +78,7 @@ are source artifacts and should not be edited by hand.
 ```
 pnpm exec pandwind-codemod tw generate <css-entry> <out-dir> [--tokens <module>] [--agents]
                          [--bridge] [--bridge-file <path>]
+                         [--conflicts <all|none|utility,...>]
                          [--preset-import <module>] [--preset-export <name>]
 ```
 
@@ -88,10 +89,14 @@ Tailwind's own design system (`@tailwindcss/node`) and writes:
   (including opacity modifiers), recursive variant nesting, `(string & {})`
   escape hatch.
 - `<out-dir>/tw.ts` — the small typed `tw` runtime entry; marked `@__PURE__`.
-- `<out-dir>/tw.runtime.ts` — optional variant, conflict, composition and
-  token-remap metadata for applications that explicitly need exact merging of
-  arbitrary runtime Tailwind strings. The generated `tw.ts` entry does not
-  import this catalog.
+- `<out-dir>/tw.runtime.ts` — optional variant, composition and token-remap
+  metadata for applications that explicitly need dynamic Tailwind behavior.
+  When conflict merging is enabled, it imports the separate
+  `<out-dir>/tw.conflicts.ts` artifact. The generated `tw.ts` entry does not
+  import either artifact.
+- `<out-dir>/tw.conflicts.ts` — compact, lazily decoded conflict metadata for
+  arbitrary runtime Tailwind class merging. It is only paid for when an app
+  explicitly imports the generated conflict configuration.
 - `<out-dir>/tw.build.ts` — build-only wildcard candidate metadata read by Vite
   and codemod tooling; runtime bindings never import it.
 - With `--tokens <module-path>` — also emits `pandwind-theme.css` (the DTCG →
@@ -105,6 +110,13 @@ Tailwind's own design system (`@tailwindcss/node`) and writes:
   output for `createDesignCss` or `pandwindCssVite`; otherwise it remains
   build-time/migration metadata. `--bridge` can be combined with
   `--bridge-file`, `--preset-import`, and `--preset-export`.
+- With `--conflicts <scope>` — controls the optional conflict catalog. The
+  default is `all`; `none` disables conflict metadata, while a comma-separated
+  list such as `bg,p,text` keeps only those utility prefixes. This does not
+  change generated types, static extraction, or `tw.build.ts`. A narrowed
+  catalog is safe only when every arbitrary runtime class that must merge is
+  covered by the selected prefixes; unknown classes remain opaque instead of
+  being guessed.
 - With `--agents` — additionally writes `pandwind.agents.json`, the
   machine-readable capability file: every utility key with its literal value
   union (capped, with counts), variant set, conflict families, compose list,

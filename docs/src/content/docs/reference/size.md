@@ -103,12 +103,17 @@ the much larger `tw.runtime.ts` value-token catalog.
 | ---------------------------------- | -------: | -------: |
 | generated `tw()` (dynamic)         |  4.45 KB |  1.74 KB |
 | generated `tw()` + `cx()` (static) |  0.05 KB |  0.07 KB |
+| generated conflict metadata (all)  | 22.37 KB |  7.23 KB |
+| conflict-only `createCx()`         | 29.37 KB | 10.18 KB |
 | example `dss+cx` (no conflicts)    | 31.75 KB | 11.74 KB |
-| generated `dss+cx` with conflicts  | 80.68 KB | 20.29 KB |
+| generated `dss+cx` with conflicts  | 54.07 KB | 18.88 KB |
 
 The conflict-aware row is an opt-in cost for synchronous merging of unknown
 Tailwind class strings. Applications that only compose Pandwind atoms can use
-`createCx({ css })` without importing the generated conflict catalog.
+`createCx({ css })` without importing the generated conflict catalog. The
+codegen-only `--conflicts bg,p,text` scope can reduce the conflict-only lane to
+about **12.83 KB min / 4.80 KB gzip** in the current example, but it must cover
+every arbitrary class that the application expects to merge.
 
 ## Browser runtimes versus alternatives
 

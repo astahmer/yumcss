@@ -25,9 +25,9 @@ the uncommon case where arbitrary runtime Tailwind strings need exact
 last-wins merging, pass the generated conflict metadata explicitly:
 
 ```ts
-import { __pandwindRuntimeConfig } from "./tw.runtime";
+import { __pandwindConflictConfig } from "./tw.conflicts";
 
-const conflictAwareCx = createCx({ css, ...__pandwindRuntimeConfig });
+const conflictAwareCx = createCx({ css, ...__pandwindConflictConfig });
 ```
 
 `createCx({ css, variants, conflicts, compose })` merges raw class strings,
@@ -40,10 +40,10 @@ import { createCx } from "pandwind/cx";
 
 import { examplePreset } from "@pandwind/example-preset";
 import { tw } from "./tw";
-import { __pandwindRuntimeConfig } from "./tw.runtime";
+import { __pandwindConflictConfig } from "./tw.conflicts";
 
 const css = createCss(examplePreset);
-const cx = createCx({ css, ...__pandwindRuntimeConfig });
+const cx = createCx({ css, ...__pandwindConflictConfig });
 
 const knownStyles = css({ color: "blue", padding: 4 }, { color: "navy" });
 const knownProps = css.props(knownStyles);
@@ -53,12 +53,23 @@ cx(tw({ bg: "red-500" }), "px-4", knownStyles, directClass, "bg-blue-500");
 // "px-4 bg-blue-500 <color atom>" — bg-red-500 lost to bg-blue-500
 ```
 
-`tw.runtime.ts` is an optional generated conflict catalog. The generated
+`tw.conflicts.ts` is the optional generated conflict catalog. The generated
 `tw.ts` entry does not import it, and plain `createCx({ css })` does not import
-it either. `tw.build.ts` is tooling-only and is never a runtime import. When
-`pandwindVite()` folds all calls to literals, all generated metadata is removed
-from the browser bundle. Only the explicit conflict-aware form above pays for
-the catalog needed to preserve arbitrary runtime conflict semantics.
+it either. `tw.runtime.ts` contains the separate optional dynamic `tw()`
+metadata, while `tw.build.ts` is tooling-only and is never a runtime import.
+When `pandwindVite()` folds all calls to literals, all generated metadata is
+removed from the browser bundle. Only the explicit conflict-aware form above
+pays for the catalog needed to preserve arbitrary runtime conflict semantics.
+
+For a smaller known-vocabulary catalog, pass a scope during generation:
+
+```sh
+pnpm exec pandwind-codemod tw generate src/tailwind.css src --conflicts bg,p,text
+```
+
+This keeps only those conflict prefixes. Use it only when arbitrary runtime
+classes outside that list do not need last-wins merging; unsupported prefixes
+stay opaque and are preserved.
 
 Tailwind classes are parsed against the generated conflict map (variant
 scoped, compose-aware, last-wins per canonical CSS property — never a

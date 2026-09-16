@@ -108,10 +108,12 @@ describe("typegen", () => {
 		expect(twRuntimeTs).toContain('"@": { join: "" }');
 		expect(twRuntimeTs).toContain("export const __pandwindRuntimeConfig");
 		expect(twRuntimeTs).not.toContain("wildcardValues");
-		expect(twRuntimeTs).toContain("JSON.parse");
+		expect(twRuntimeTs).toContain('from "./tw.conflicts.ts"');
 		expect(twRuntimeTs).not.toContain("__pandwindConflictConfig");
 		expect(twConflictsTs).toContain("export const __pandwindConflictConfig");
 		expect(twConflictsTs).toContain("JSON.parse");
+		expect(twConflictsTs).toContain("new Proxy");
+		expect(twConflictsTs).toContain("v: number[][]");
 		expect(twBuildTs).toContain("export const __pandwindBuildMetadata");
 		expect(twBuildTs).toContain("wildcardValues");
 		const extracted = extractTwConfigFromSources([twTs, twRuntimeTs, twConflictsTs, twBuildTs]);
@@ -124,6 +126,25 @@ describe("typegen", () => {
 		// `before` stays out of the variants block (pseudo-element, not a
 		// variant) — it can only appear in the conflict map / compose keys.
 		expect(variantsBlock).not.toContain('"before"');
+	});
+
+	test("can scope optional conflict metadata without shrinking generated types", async () => {
+		const full = await generateDesignSystem(css, resolve(app, "src"));
+		const scoped = await generateDesignSystem(css, resolve(app, "src"), {
+			conflictUtilities: ["bg", "p", "text"],
+		});
+
+		expect(scoped.typesDts).toBe(full.typesDts);
+		expect(scoped.twTs).toBe(full.twTs);
+		const extracted = extractTwConfigFromSources([
+			scoped.twTs,
+			scoped.twRuntimeTs,
+			scoped.twConflictsTs,
+			scoped.twBuildTs,
+		]);
+		expect(Object.keys(extracted?.conflicts ?? {}).toSorted()).toEqual(["bg", "p", "text"]);
+		expect(extracted?.compose).toBeUndefined();
+		expect(scoped.twConflictsTs.length).toBeLessThan(full.twConflictsTs.length);
 	});
 });
 
