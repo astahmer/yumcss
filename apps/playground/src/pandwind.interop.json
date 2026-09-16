@@ -47492,7 +47492,7 @@
 			"--radius-none": "0",
 			"--radius-sm": "0.125rem",
 			"--radius-xl": "0.75rem",
-			"--color-surface": "colors.$gray-50"
+			"--color-surface": "var(--color-gray-50)"
 		},
 		"scopes": [
 			"[data-theme=\"forest\"]",
