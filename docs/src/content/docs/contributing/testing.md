@@ -80,8 +80,10 @@ pnpm --filter pandwind run test:tsc -u
 
 `bench:tsc:styling` runs the version-pinned ecosystem comparison under
 `benchmarks/styling-tsc`. It regenerates native Pandwind, Panda CSS, StyleX,
-and Vanilla Extract Sprinkles fixtures, runs natural and stress workloads in
-fresh TypeScript processes, and compares the Pandwind rows with the committed
+Vanilla Extract, Emotion, styled-components, Goober, Linaria, Compiled,
+Griffel, Stitches, JSS, React-JSS, Fela, Aphrodite, Style9, Treat, TypeStyle,
+next-yak, and React Strict DOM fixtures, runs natural and stress workloads in fresh
+TypeScript processes, and compares the Pandwind rows with the committed
 baseline. Use `--update` only after reviewing the resulting JSON and Markdown
 evidence:
 

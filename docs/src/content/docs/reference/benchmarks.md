@@ -218,10 +218,13 @@ pnpm --filter pandwind run test:tsc -u
 
 The standalone
 [styling TypeScript benchmark](https://github.com/astahmer/pandwind/tree/main/benchmarks/styling-tsc)
-compares realistic consumer typecheck cost across Pandwind, Panda CSS, StyleX,
-and Vanilla Extract Sprinkles. It uses native APIs for each library and records
-the compiler program size, symbols, types, type instantiations, memory, check
-time, and total time for fresh TypeScript processes.
+compares realistic consumer typecheck cost across Pandwind and a broad set of
+type-dependent styling APIs. It includes Panda CSS, StyleX, Vanilla Extract
+(core, recipes, and Sprinkles), Emotion, styled-components, Goober, Linaria,
+Compiled, Griffel, Stitches, JSS, React-JSS, Fela, Aphrodite, Style9, Treat,
+TypeStyle, next-yak, and React Strict DOM. It uses native APIs for each library
+and records the compiler program size, symbols, types, type instantiations,
+memory, check time, and total time for fresh TypeScript processes.
 
 The first matrix has two workload sizes:
 
@@ -231,10 +234,13 @@ The first matrix has two workload sizes:
   catalog.
 
 Pandwind's fixture covers the callable css API, class and props projections,
-variables, groups and inputs, class composition, tokens, semantic tokens,
-color palettes, conditions, and strict property typing. The comparison
-fixtures use Panda's generated css/cva API, StyleX's vars/create/props API,
-and Sprinkles' generated helper.
+variables, groups and inputs, class composition, tokens, semantic tokens, color
+palettes, conditions, and strict property typing. The comparison fixtures use
+each library's native object, template, styled-component, variant, generated,
+or static-style API. Stitches is retained as a historical reference because
+it is no longer maintained; legacy lanes are evidence about type-surface cost,
+not recommendations. Component suites such as MUI and Chakra are excluded
+because their type costs are inseparable from their larger component systems.
 
 Run the comparison from the repository root:
 

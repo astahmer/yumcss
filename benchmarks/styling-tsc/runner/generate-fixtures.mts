@@ -4,7 +4,29 @@ import { resolve } from "node:path";
 const benchmarkRoot = resolve(import.meta.dirname, "..");
 const generatedRoot = resolve(benchmarkRoot, ".generated");
 
-export const libraries = ["pandwind", "panda", "stylex", "sprinkles"] as const;
+export const libraries = [
+	"pandwind",
+	"panda",
+	"stylex",
+	"sprinkles",
+	"emotion",
+	"styled-components",
+	"goober",
+	"griffel",
+	"linaria",
+	"compiled",
+	"vanilla-extract",
+	"stitches",
+	"jss",
+	"react-jss",
+	"fela",
+	"aphrodite",
+	"style9",
+	"treat",
+	"typestyle",
+	"next-yak",
+	"react-strict-dom",
+] as const;
 export const scenarios = ["natural", "stress"] as const;
 
 export type Library = (typeof libraries)[number];
@@ -423,10 +445,529 @@ export const workload = { componentStyles };
 `;
 };
 
+const externalStyleObject = (index: number, conditions = true): string => {
+	const padding = ["0.25rem", "0.5rem", "1rem", "1.5rem", "2rem"][index % 5]!;
+	const color = index % 2 === 0 ? "#2563eb" : "#111827";
+	const backgroundColor = index % 3 === 0 ? "#f9fafb" : "#ffffff";
+	const declarations = `
+		display: ${quote(index % 2 === 0 ? "flex" : "grid")},
+		color: ${quote(color)},
+		backgroundColor: ${quote(backgroundColor)},
+		padding: ${quote(padding)},
+		gap: ${quote(padding)},
+		borderRadius: ${quote(index % 2 === 0 ? "0.375rem" : "0.5rem")},`;
+	if (!conditions)
+		return `{${declarations}
+}`;
+	return `{${declarations}
+		"&:hover": { color: "#1d4ed8" },
+		"@media (min-width: 768px)": { padding: "2rem" },
+	}`;
+};
+
+const basicExternalStyleObject = (index: number): string => externalStyleObject(index, false);
+
+const griffelStyleObject = (index: number): string => {
+	const style = externalStyleObject(index, false);
+	return (
+		style.slice(0, -2) +
+		`
+	":hover": { color: "#1d4ed8" },
+	"@media (min-width: 768px)": { padding: "2rem" },
+}`
+	);
+};
+
+const vanillaStyleObject = (index: number): string => {
+	const style = externalStyleObject(index, false);
+	return (
+		style.slice(0, -2) +
+		`
+	":hover": { color: "#1d4ed8" },
+	"@media": { "screen and (min-width: 768px)": { padding: "2rem" } },
+}`
+	);
+};
+
+const typeStyleObject = (index: number): string => {
+	const style = externalStyleObject(index, false);
+	return (
+		style.slice(0, -2) +
+		`
+	"$nest": { "&:hover": { color: "#1d4ed8" } },
+}`
+	);
+};
+
+const stylexStyleObject = (index: number): string => {
+	const padding = [4, 8, 16, 24, 32][index % 5]!;
+	const color = index % 2 === 0 ? "vars.blue500" : "vars.gray900";
+	return `{
+		display: ${quote(index % 2 === 0 ? "flex" : "grid")},
+		color: { default: ${color}, ":hover": vars.blue600 },
+		backgroundColor: { default: vars.gray50, "@media (prefers-color-scheme: dark)": vars.gray900 },
+		padding: { default: ${String(padding)}, "@media (min-width: 768px)": 32 },
+		borderRadius: ${index % 2 === 0 ? 6 : 8},
+	}`;
+};
+
+const stitchesStyleObject = (index: number): string => {
+	const padding = ["$1", "$2", "$4", "$6", "$8"][index % 5]!;
+	const color = index % 2 === 0 ? "$blue500" : "$gray900";
+	return `{
+		display: ${quote(index % 2 === 0 ? "flex" : "grid")},
+		color: ${quote(color)},
+		backgroundColor: ${quote(index % 3 === 0 ? "$gray50" : "$white")},
+		padding: ${quote(padding)},
+		gap: ${quote(padding)},
+		borderRadius: ${quote(index % 2 === 0 ? "$md" : "$lg")},
+		"&:hover": { color: "$blue600" },
+	}`;
+};
+
+const generatedExpressions = (count: number, expression: (index: number) => string): string =>
+	Array.from({ length: count }, (_, index) => expression(index)).join("\n");
+
+const emotionApp = (
+	componentCount: number,
+	catalogCount: number,
+): string => `import { css as classCss, cx } from "@emotion/css";
+import { css as emotionCss } from "@emotion/react";
+import styled from "@emotion/styled";
+
+type CardProps = { $tone: "brand" | "neutral"; $compact?: boolean };
+
+const Card = styled.div<CardProps>((props) => ({
+	color: props.$tone === "brand" ? "#2563eb" : "#111827",
+	padding: props.$compact ? "0.5rem" : "1rem",
+}));
+const className = classCss(${externalStyleObject(0)});
+const emotionStyles = emotionCss(${externalStyleObject(1)});
+const composed = cx(className, classCss(${basicExternalStyleObject(2)}));
+const cardProps: CardProps = { $tone: "brand", $compact: true };
+
+const componentStyles = [
+${generatedExpressions(componentCount, (index) => `\tclassCss(${externalStyleObject(index)}),`)}
+];
+const catalogStyles = [
+${generatedExpressions(catalogCount, (index) => `\tclassCss(${basicExternalStyleObject(index)}),`)}
+];
+
+export const workload = { Card, cardProps, className, emotionStyles, composed, componentStyles, catalogStyles };
+`;
+
+const griffelApp = (
+	componentCount: number,
+	catalogCount: number,
+): string => `import { makeStyles, mergeClasses } from "@griffel/react";
+
+const useStyles = makeStyles({
+	card: ${griffelStyleObject(0)},
+${generatedExpressions(componentCount, (index) => `	component${String(index).padStart(3, "0")}: ${griffelStyleObject(index)},`)}
+${generatedExpressions(catalogCount, (index) => `	catalog${String(index).padStart(3, "0")}: ${basicExternalStyleObject(index)},`)}
+});
+const classes = useStyles();
+const componentStyles = [
+	classes.card,
+${generatedExpressions(componentCount, (index) => `	mergeClasses(classes.card, classes.component${String(index).padStart(3, "0")}),`)}
+];
+const catalogStyles = [
+${generatedExpressions(catalogCount, (index) => `	classes.catalog${String(index).padStart(3, "0")},`)}
+];
+
+export const workload = { classes, componentStyles, catalogStyles };
+`;
+
+const styledComponentsApp = (
+	componentCount: number,
+	catalogCount: number,
+): string => `import type { ComponentProps } from "react";
+import styled, { css } from "styled-components";
+
+type CardProps = { $tone: "brand" | "neutral"; $compact?: boolean };
+
+const Card = styled.button<CardProps>(${externalStyleObject(0)});
+const cardProps: ComponentProps<typeof Card> = { $tone: "brand", $compact: true, type: "button" };
+const fragment = css\`color: #2563eb; padding: 1rem;\`;
+
+const componentStyles = [
+\tCard,
+${generatedExpressions(componentCount, (index) => `\tstyled.div(${externalStyleObject(index)}),`)}
+];
+const catalogStyles = [
+${generatedExpressions(catalogCount, (index) => `\tstyled.span(${basicExternalStyleObject(index)}),`)}
+];
+
+export const workload = { Card, cardProps, fragment, componentStyles, catalogStyles };
+`;
+
+const gooberApp = (
+	componentCount: number,
+	catalogCount: number,
+): string => `import { css } from "goober";
+
+const componentStyles = [
+${generatedExpressions(componentCount, (index) => `\tcss(${externalStyleObject(index)}),`)}
+];
+const catalogStyles = [
+${generatedExpressions(catalogCount, (index) => `\tcss(${basicExternalStyleObject(index)}),`)}
+];
+
+export const workload = { componentStyles, catalogStyles };
+`;
+
+const linariaApp = (
+	componentCount: number,
+	catalogCount: number,
+): string => `import { css } from "@linaria/core";
+import type { CSSProperties } from "@linaria/core";
+import { styled } from "@linaria/react";
+
+type CardProps = { $tone: "brand" | "neutral"; $compact?: boolean };
+const interpolatedProperties: CSSProperties = { color: "#2563eb", padding: "1rem" };
+const Card = styled.button<CardProps>\`
+\tdisplay: flex;
+\tcolor: \${(props) => (props.$tone === "brand" ? "#2563eb" : "#111827")};
+\tpadding: \${(props) => (props.$compact ? "0.5rem" : "1rem")};
+\`;
+const interpolated = css\`
+\t\${interpolatedProperties}
+\t&:hover { color: #1d4ed8; }
+\`;
+
+const componentStyles = [
+\tinterpolated,
+${generatedExpressions(componentCount, (index) => `\tcss\`display: flex; color: ${index % 2 === 0 ? "#2563eb" : "#111827"}; padding: ${["0.25rem", "0.5rem", "1rem", "1.5rem", "2rem"][index % 5]!};\`,`)}
+];
+const catalogStyles = [
+${generatedExpressions(catalogCount, (index) => `\tcss\`color: hsl(${index} 60% 50%); padding: 1rem;\`,`)}
+];
+
+export const workload = { Card, interpolated, componentStyles, catalogStyles };
+`;
+
+const compiledApp = (
+	componentCount: number,
+	catalogCount: number,
+): string => `import { css, cssMap, styled } from "@compiled/react";
+
+const styleMap = cssMap({
+	card: ${basicExternalStyleObject(0)},
+	primary: ${basicExternalStyleObject(1)},
+});
+const componentStyles = [
+\tcss(${externalStyleObject(0)}),
+\tstyleMap.card,
+\tstyleMap.primary,
+\tstyled.div(${basicExternalStyleObject(1)}),
+${generatedExpressions(componentCount, (index) => `\tcss(${externalStyleObject(index)}),`)}
+];
+const catalogStyles = [
+${generatedExpressions(catalogCount, (index) => `\tcss(${basicExternalStyleObject(index)}),`)}
+];
+
+export const workload = { styleMap, componentStyles, catalogStyles };
+`;
+
+const vanillaExtractApp = (
+	componentCount: number,
+	catalogCount: number,
+): string => `import { createTheme, style } from "@vanilla-extract/css";
+import { recipe } from "@vanilla-extract/recipes";
+
+const themeClass = createTheme({
+\tcolors: { brand: "#2563eb", neutral: "#111827" },
+\tspacing: { small: "0.5rem", medium: "1rem", large: "2rem" },
+});
+const button = recipe({
+\tbase: ${vanillaStyleObject(0)},
+\tvariants: {
+\t\ttone: {
+\t\t\tbrand: { background: "#2563eb" },
+\t\t\tneutral: { background: "#111827" },
+\t\t},
+\t\tsize: {
+\t\t\tsm: { padding: "0.5rem" },
+\t\t\tlg: { padding: "2rem" },
+\t\t},
+\t},
+\tdefaultVariants: { tone: "brand", size: "sm" },
+});
+const componentStyles = [
+\tthemeClass,
+\tstyle(${vanillaStyleObject(1)}),
+\tbutton({ tone: "brand", size: "sm" }),
+${generatedExpressions(componentCount, (index) => `\tstyle(${vanillaStyleObject(index)}),`)}
+];
+const catalogStyles = [
+${generatedExpressions(catalogCount, (index) => `\tstyle(${basicExternalStyleObject(index)}),`)}
+];
+
+export const workload = { themeClass, button, componentStyles, catalogStyles };
+`;
+
+const stitchesApp = (componentCount: number, catalogCount: number): string => {
+	const catalogTokens = Array.from(
+		{ length: catalogCount },
+		(_, index) =>
+			`\t\tcatalog${String(index).padStart(3, "0")}: ${quote(`hsl(${index} 60% 50%)`)},`,
+	).join("\n");
+	return `import { createStitches } from "@stitches/react";
+
+const { css, styled } = createStitches({
+	theme: {
+		colors: {
+			blue500: "#2563eb",
+			blue600: "#1d4ed8",
+			gray50: "#f9fafb",
+			gray900: "#111827",
+			white: "#ffffff",
+${catalogTokens}
+		},
+		space: { 1: "0.25rem", 2: "0.5rem", 4: "1rem", 6: "1.5rem", 8: "2rem" },
+		radii: { md: "0.375rem", lg: "0.5rem" },
+	},
+	media: { md: "(min-width: 768px)" },
+});
+
+const button = css({
+	display: "flex",
+	color: "$blue500",
+	backgroundColor: "$gray50",
+	padding: "$4",
+	borderRadius: "$md",
+	"&:hover": { color: "$blue600" },
+	variants: {
+		tone: {
+			brand: { color: "$blue600" },
+			neutral: { color: "$gray900" },
+		},
+		size: {
+			sm: { padding: "$2" },
+			lg: { padding: "$8" },
+		},
+	},
+	defaultVariants: { tone: "brand", size: "sm" },
+	compoundVariants: [{ css: { backgroundColor: "$white" }, tone: "neutral", size: "lg" }],
+});
+const Card = styled("button", {
+	color: "$blue500",
+	padding: "$4",
+	});
+const componentStyles = [
+	button({ tone: "brand", size: "sm" }),
+	button({ tone: "neutral", size: "lg" }),
+	Card,
+${generatedExpressions(componentCount, (index) => `\tcss(${stitchesStyleObject(index)})({ tone: ${quote(index % 2 === 0 ? "brand" : "neutral")} }),`)}
+];
+
+export const workload = { button, Card, componentStyles };
+`;
+};
+
+const jssApp = (componentCount: number, catalogCount: number): string => `import jss from "jss";
+
+const sheet = jss.createStyleSheet({
+	card: ${externalStyleObject(0)},
+${generatedExpressions(componentCount, (index) => `\tcomponent${String(index).padStart(3, "0")}: ${externalStyleObject(index)},`)}
+${generatedExpressions(catalogCount, (index) => `\tcatalog${String(index).padStart(3, "0")}: ${basicExternalStyleObject(index)},`)}
+});
+const classes = sheet.attach().classes;
+const componentStyles = [
+	classes.card,
+${generatedExpressions(componentCount, (index) => `\tclasses.component${String(index).padStart(3, "0")},`)}
+];
+const catalogStyles = [
+${generatedExpressions(catalogCount, (index) => `\tclasses.catalog${String(index).padStart(3, "0")},`)}
+];
+
+export const workload = { classes, componentStyles, catalogStyles };
+`;
+
+const reactJssApp = (
+	componentCount: number,
+	catalogCount: number,
+): string => `import { createUseStyles } from "react-jss";
+
+type CardProps = { tone: "brand" | "neutral"; compact?: boolean };
+const useStyles = createUseStyles<string, CardProps>({
+	card: {
+		color: (props) => (props.tone === "brand" ? "#2563eb" : "#111827"),
+		padding: (props) => (props.compact ? "0.5rem" : "1rem"),
+		"&:hover": { color: "#1d4ed8" },
+	},
+${generatedExpressions(componentCount, (index) => `\tcomponent${String(index).padStart(3, "0")}: ${externalStyleObject(index)},`)}
+${generatedExpressions(catalogCount, (index) => `\tcatalog${String(index).padStart(3, "0")}: ${basicExternalStyleObject(index)},`)}
+});
+const resolveStyles = (props: CardProps) => useStyles(props);
+
+export const workload = { resolveStyles };
+`;
+
+const felaStyleObject = (index: number): string => {
+	const padding = ["0.25rem", "0.5rem", "1rem", "1.5rem", "2rem"][index % 5]!;
+	return `{
+	\tdisplay: ${quote(index % 2 === 0 ? "flex" : "grid")},
+	\tcolor: ${quote(index % 2 === 0 ? "#2563eb" : "#111827")},
+	\tbackgroundColor: ${quote(index % 3 === 0 ? "#f9fafb" : "#ffffff")},
+	\tpadding: ${quote(padding)},
+	\tgap: ${quote(padding)},
+	\tborderRadius: ${quote(index % 2 === 0 ? "0.375rem" : "0.5rem")},
+	}`;
+};
+
+const felaApp = (
+	componentCount: number,
+	catalogCount: number,
+): string => `import { createRenderer } from "fela";
+
+type CardProps = { tone: "brand" | "neutral" };
+const renderer = createRenderer();
+const render = (props: CardProps) => renderer.renderRule(
+	(input: CardProps) => ({ color: input.tone === "brand" ? "#2563eb" : "#111827" }),
+	props,
+);
+const componentStyles = [
+${generatedExpressions(componentCount, (index) => `\trenderer.renderRule((props: CardProps) => (${felaStyleObject(index)}), { tone: ${quote(index % 2 === 0 ? "brand" : "neutral")} }),`)}
+];
+const catalogStyles = [
+${generatedExpressions(catalogCount, (index) => `\trenderer.renderRule(() => (${felaStyleObject(index)}), {}),`)}
+];
+
+export const workload = { render, componentStyles, catalogStyles };
+`;
+
+const aphroditeApp = (
+	componentCount: number,
+	catalogCount: number,
+): string => `import { css, StyleSheet } from "aphrodite";
+
+const styles = StyleSheet.create({
+	card: ${basicExternalStyleObject(0)},
+${generatedExpressions(componentCount, (index) => `\tcomponent${String(index).padStart(3, "0")}: ${basicExternalStyleObject(index)},`)}
+${generatedExpressions(catalogCount, (index) => `\tcatalog${String(index).padStart(3, "0")}: ${basicExternalStyleObject(index)},`)}
+});
+const componentStyles = [
+	css(styles.card),
+${generatedExpressions(componentCount, (index) => `\tcss(styles.component${String(index).padStart(3, "0")}),`)}
+];
+const catalogStyles = [
+${generatedExpressions(catalogCount, (index) => `\tcss(styles.catalog${String(index).padStart(3, "0")}),`)}
+];
+
+export const workload = { styles, componentStyles, catalogStyles };
+`;
+
+const style9App = (
+	componentCount: number,
+	catalogCount: number,
+): string => `import style9 from "style9";
+
+const styles = style9.create({
+	card: ${basicExternalStyleObject(0)},
+${generatedExpressions(componentCount, (index) => `\tcomponent${String(index).padStart(3, "0")}: ${basicExternalStyleObject(index)},`)}
+${generatedExpressions(catalogCount, (index) => `\tcatalog${String(index).padStart(3, "0")}: ${basicExternalStyleObject(index)},`)}
+});
+const componentStyles = [
+	styles("card"),
+${generatedExpressions(componentCount, (index) => `\tstyles("component${String(index).padStart(3, "0")}"),`)}
+];
+const catalogStyles = [
+${generatedExpressions(catalogCount, (index) => `\tstyles("catalog${String(index).padStart(3, "0")}"),`)}
+];
+
+export const workload = { styles, componentStyles, catalogStyles };
+`;
+
+const treatApp = (
+	componentCount: number,
+	catalogCount: number,
+): string => `import { style, styleMap } from "treat";
+
+const componentStyles = [
+${generatedExpressions(componentCount, (index) => `\tstyle(${vanillaStyleObject(index)}),`)}
+];
+const catalogStyles = styleMap({
+${generatedExpressions(catalogCount, (index) => `\tcatalog${String(index).padStart(3, "0")}: ${basicExternalStyleObject(index)},`)}
+});
+
+export const workload = { componentStyles, catalogStyles };
+`;
+
+const typestyleApp = (
+	componentCount: number,
+	catalogCount: number,
+): string => `import { style, stylesheet } from "typestyle";
+
+const componentStyles = [
+${generatedExpressions(componentCount, (index) => `\tstyle(${typeStyleObject(index)}),`)}
+];
+const catalogStyles = stylesheet({
+${generatedExpressions(catalogCount, (index) => `\tcatalog${String(index).padStart(3, "0")}: ${basicExternalStyleObject(index)},`)}
+});
+
+export const workload = { componentStyles, catalogStyles };
+`;
+
+const nextYakApp = (
+	componentCount: number,
+	catalogCount: number,
+): string => `import { css, styled } from "next-yak";
+
+type CardProps = { $tone: "brand" | "neutral"; $compact?: boolean };
+const Card = styled.button<CardProps>\`
+\tdisplay: flex;
+\tcolor: \${(props) => (props.$tone === "brand" ? "#2563eb" : "#111827")};
+\tpadding: \${(props) => (props.$compact ? "0.5rem" : "1rem")};
+\`;
+const cardStyle = css<CardProps>\`
+\tcolor: \${(props) => (props.$tone === "brand" ? "#2563eb" : "#111827")};
+\t&:hover { color: #1d4ed8; }
+\`;
+const componentStyles = [
+\tCard,
+\tcardStyle,
+${generatedExpressions(componentCount, (index) => `\tcss\`display: flex; color: ${index % 2 === 0 ? "#2563eb" : "#111827"}; padding: ${["0.25rem", "0.5rem", "1rem", "1.5rem", "2rem"][index % 5]!};\`,`)}
+];
+const catalogStyles = [
+${generatedExpressions(catalogCount, (index) => `\tcss\`color: hsl(${index} 60% 50%); padding: 1rem;\`,`)}
+];
+
+export const workload = { Card, cardStyle, componentStyles, catalogStyles };
+`;
+
+const reactStrictDomApp = (
+	componentCount: number,
+	catalogCount: number,
+): string => `import { css } from "react-strict-dom";
+
+const vars = css.defineVars({
+	blue500: "#2563eb",
+	blue600: "#1d4ed8",
+	gray50: "#f9fafb",
+	gray900: "#111827",
+});
+const styles = css.create({
+	card: ${stylexStyleObject(0)},
+${generatedExpressions(componentCount, (index) => `\tcomponent${String(index).padStart(3, "0")}: ${stylexStyleObject(index)},`)}
+${generatedExpressions(catalogCount, (index) => `\tcatalog${String(index).padStart(3, "0")}: ${stylexStyleObject(index)},`)}
+});
+const componentStyles = [
+\tstyles.card,
+${generatedExpressions(componentCount, (index) => `\tstyles.component${String(index).padStart(3, "0")},`)}
+];
+const catalogStyles = [
+${generatedExpressions(catalogCount, (index) => `\tstyles.catalog${String(index).padStart(3, "0")},`)}
+];
+
+export const workload = { styles, componentStyles, catalogStyles };
+`;
+
 const tsconfig = (): string =>
 	JSON.stringify(
 		{
 			extends: "../../../tsconfig.base.json",
+			compilerOptions: { types: [] },
 			include: ["src/**/*.ts", "styled-system/**/*.ts"],
 		},
 		null,
@@ -477,6 +1018,125 @@ export const generateFixtures = (): void => {
 						`import { createSprinkles, defineProperties } from "@vanilla-extract/sprinkles";\n\n${sprinklesSetup(options.catalogCount)}`,
 					);
 					writeFile(projectRoot, "src/app.ts", sprinklesApp(options.componentCount));
+					break;
+				case "emotion":
+					writeFile(
+						projectRoot,
+						"src/app.ts",
+						emotionApp(options.componentCount, options.catalogCount),
+					);
+					break;
+				case "styled-components":
+					writeFile(
+						projectRoot,
+						"src/app.ts",
+						styledComponentsApp(options.componentCount, options.catalogCount),
+					);
+					break;
+				case "goober":
+					writeFile(
+						projectRoot,
+						"src/app.ts",
+						gooberApp(options.componentCount, options.catalogCount),
+					);
+					break;
+				case "griffel":
+					writeFile(
+						projectRoot,
+						"src/app.ts",
+						griffelApp(options.componentCount, options.catalogCount),
+					);
+					break;
+				case "linaria":
+					writeFile(
+						projectRoot,
+						"src/app.ts",
+						linariaApp(options.componentCount, options.catalogCount),
+					);
+					break;
+				case "compiled":
+					writeFile(
+						projectRoot,
+						"src/app.ts",
+						compiledApp(options.componentCount, options.catalogCount),
+					);
+					break;
+				case "vanilla-extract":
+					writeFile(
+						projectRoot,
+						"src/app.ts",
+						vanillaExtractApp(options.componentCount, options.catalogCount),
+					);
+					break;
+				case "stitches":
+					writeFile(
+						projectRoot,
+						"src/app.ts",
+						stitchesApp(options.componentCount, options.catalogCount),
+					);
+					break;
+				case "jss":
+					writeFile(
+						projectRoot,
+						"src/app.ts",
+						jssApp(options.componentCount, options.catalogCount),
+					);
+					break;
+				case "react-jss":
+					writeFile(
+						projectRoot,
+						"src/app.ts",
+						reactJssApp(options.componentCount, options.catalogCount),
+					);
+					break;
+				case "fela":
+					writeFile(
+						projectRoot,
+						"src/app.ts",
+						felaApp(options.componentCount, options.catalogCount),
+					);
+					break;
+				case "aphrodite":
+					writeFile(
+						projectRoot,
+						"src/app.ts",
+						aphroditeApp(options.componentCount, options.catalogCount),
+					);
+					break;
+				case "style9":
+					writeFile(
+						projectRoot,
+						"src/app.ts",
+						style9App(options.componentCount, options.catalogCount),
+					);
+					break;
+				case "treat":
+					writeFile(
+						projectRoot,
+						"src/app.ts",
+						treatApp(options.componentCount, options.catalogCount),
+					);
+					break;
+				case "typestyle":
+					writeFile(
+						projectRoot,
+						"src/app.ts",
+						typestyleApp(options.componentCount, options.catalogCount),
+					);
+					break;
+				case "next-yak":
+					writeFile(
+						projectRoot,
+						"src/app.ts",
+						nextYakApp(options.componentCount, options.catalogCount),
+					);
+					break;
+				case "react-strict-dom":
+					writeFile(
+						projectRoot,
+						"src/app.ts",
+						reactStrictDomApp(options.componentCount, options.catalogCount),
+					);
 					break;
 			}
 		}

@@ -1,8 +1,8 @@
 # Styling TypeScript benchmark
 
 This is a version-pinned comparison of the typecheck cost of realistic styling
-code. It measures Pandwind against Panda CSS, StyleX, and Vanilla Extract
-Sprinkles using each library's native authoring API.
+code. It measures Pandwind against a broad set of type-dependent CSS-in-JS and
+static-CSS authoring APIs using each library's native API.
 
 Run the checked-in regression gate with:
 
@@ -16,10 +16,10 @@ Establish or intentionally refresh the descriptive comparison snapshot with:
 pnpm run bench:tsc:styling -- --update
 ```
 
-The runner accepts <code>--samples N</code>,
-<code>--library pandwind|panda|stylex|sprinkles</code>, and
-<code>--scenario natural|stress</code>. The benchmark package and its runner
-can be typechecked independently:
+The runner accepts <code>--samples N</code>, <code>--library NAME</code>, and
+<code>--scenario natural|stress</code>. Run it with <code>--help</code> for the
+complete library list. The benchmark package and its runner can be typechecked
+independently:
 
 ```sh
 pnpm --filter pandwind-styling-tsc-benchmark run typecheck
@@ -38,10 +38,25 @@ workload sizes for every library:
 Pandwind's fixture exercises <code>css()</code>, <code>css.class()</code>,
 <code>css.props()</code>, <code>css.vars()</code>, <code>css.group()</code>,
 <code>css.input()</code>, <code>createCx()</code>, tokens, semantic tokens,
-color palettes, conditions, and strict property typing. The other fixtures
-use Panda's generated <code>css()</code> and <code>cva()</code>, StyleX's
-<code>defineVars()</code>/<code>create()</code>/<code>props()</code>, and
-Sprinkles' generated <code>createSprinkles()</code> helper.
+color palettes, conditions, and strict property typing. The comparison lanes
+cover:
+
+- Panda CSS, StyleX, and Vanilla Extract Sprinkles as generated design-system
+  APIs;
+- Emotion, styled-components, Goober, Griffel, Linaria, Compiled, and next-yak as
+  object, template, styled-component, or compile-time CSS-in-JS APIs;
+- Vanilla Extract core and Treat as typed static style declarations;
+- Stitches as a typed theme/variant API;
+- JSS, React-JSS, Fela, Aphrodite, Style9, and TypeStyle as established
+  object-style APIs;
+- React Strict DOM as a typed StyleX-compatible API.
+
+Stitches is retained as a historical type-surface reference because its
+official site says it is no longer maintained. Aphrodite, Treat, and some
+legacy declaration packages are similarly reference lanes, not package
+recommendations. Component libraries such as MUI or Chakra are intentionally
+not included: their styling APIs are coupled to much larger component and
+theme contracts rather than being comparable standalone styling primitives.
 
 Each workload is checked in a fresh TypeScript process with extended
 diagnostics. The recorded median includes:
