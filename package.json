@@ -53,6 +53,7 @@
 		"bench:tsc": "nub scripts/benchmark-tsc.mts",
 		"bench:tsc:example": "nub scripts/benchmark-tsc.mts --target example",
 		"bench:tsc:styling": "nub benchmarks/styling-tsc/runner/benchmark.mts",
+		"bench:tsc:generated": "nub benchmarks/styling-tsc/runner/generated-types-poc.mts",
 		"bench:studio": "nub scripts/benchmark-studio.mts",
 		"studio:proof:host": "nub scripts/run-studio-host-proof.mts",
 		"check": "pnpm --filter @pandwind/lint-plugin run build && pnpm exec oxlint --fix --deny-warnings --report-unused-disable-directives && pnpm exec oxfmt && pnpm run surface:check && pnpm run generated:check && pnpm run generated:budget && pnpm run proof:docs:check",

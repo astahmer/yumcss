@@ -1,0 +1,153 @@
+{
+	"schema": "pandwind.generated-types-poc/1",
+	"source": "runner/generated-types-poc.mts",
+	"updatedAt": "2026-09-16",
+	"samples": 3,
+	"environment": {
+		"platform": "darwin",
+		"arch": "arm64",
+		"node": "v24.19.0",
+		"typescript": "7.0.2"
+	},
+	"workloads": [
+		{
+			"mode": "generated",
+			"scenario": "huge",
+			"samples": 3,
+			"project": ".generated/generated-types-poc/generated/huge/tsconfig.json",
+			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/generated-types-poc/generated/huge/tsconfig.json",
+			"metrics": {
+				"files": 80,
+				"symbols": 47636,
+				"types": 6763,
+				"instantiations": 221,
+				"memoryUsedKiB": 32734,
+				"checkTimeSeconds": 0.167,
+				"totalTimeSeconds": 0.21
+			},
+			"generatedDeclarationBytes": 35250
+		},
+		{
+			"mode": "inferred",
+			"scenario": "huge",
+			"samples": 3,
+			"project": ".generated/generated-types-poc/inferred/huge/tsconfig.json",
+			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/generated-types-poc/inferred/huge/tsconfig.json",
+			"metrics": {
+				"files": 89,
+				"symbols": 80745,
+				"types": 54087,
+				"instantiations": 171531,
+				"memoryUsedKiB": 64024,
+				"checkTimeSeconds": 2.361,
+				"totalTimeSeconds": 2.389
+			}
+		},
+		{
+			"mode": "generated",
+			"scenario": "large",
+			"samples": 3,
+			"project": ".generated/generated-types-poc/generated/large/tsconfig.json",
+			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/generated-types-poc/generated/large/tsconfig.json",
+			"metrics": {
+				"files": 80,
+				"symbols": 36692,
+				"types": 2155,
+				"instantiations": 221,
+				"memoryUsedKiB": 27547,
+				"checkTimeSeconds": 0.01,
+				"totalTimeSeconds": 0.033
+			},
+			"generatedDeclarationBytes": 9858
+		},
+		{
+			"mode": "inferred",
+			"scenario": "large",
+			"samples": 3,
+			"project": ".generated/generated-types-poc/inferred/large/tsconfig.json",
+			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/generated-types-poc/inferred/large/tsconfig.json",
+			"metrics": {
+				"files": 89,
+				"symbols": 59049,
+				"types": 17223,
+				"instantiations": 57867,
+				"memoryUsedKiB": 46190,
+				"checkTimeSeconds": 0.173,
+				"totalTimeSeconds": 0.204
+			}
+		},
+		{
+			"mode": "generated",
+			"scenario": "medium",
+			"samples": 3,
+			"project": ".generated/generated-types-poc/generated/medium/tsconfig.json",
+			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/generated-types-poc/generated/medium/tsconfig.json",
+			"metrics": {
+				"files": 80,
+				"symbols": 33956,
+				"types": 1003,
+				"instantiations": 221,
+				"memoryUsedKiB": 26220,
+				"checkTimeSeconds": 0.002,
+				"totalTimeSeconds": 0.023
+			},
+			"generatedDeclarationBytes": 3522
+		},
+		{
+			"mode": "inferred",
+			"scenario": "medium",
+			"samples": 3,
+			"project": ".generated/generated-types-poc/inferred/medium/tsconfig.json",
+			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/generated-types-poc/inferred/medium/tsconfig.json",
+			"metrics": {
+				"files": 89,
+				"symbols": 53625,
+				"types": 8007,
+				"instantiations": 29451,
+				"memoryUsedKiB": 41727,
+				"checkTimeSeconds": 0.036,
+				"totalTimeSeconds": 0.071
+			}
+		},
+		{
+			"mode": "generated",
+			"scenario": "minimal",
+			"samples": 3,
+			"project": ".generated/generated-types-poc/generated/minimal/tsconfig.json",
+			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/generated-types-poc/generated/minimal/tsconfig.json",
+			"metrics": {
+				"files": 80,
+				"symbols": 33272,
+				"types": 715,
+				"instantiations": 221,
+				"memoryUsedKiB": 25917,
+				"checkTimeSeconds": 0.001,
+				"totalTimeSeconds": 0.021
+			},
+			"generatedDeclarationBytes": 1938
+		},
+		{
+			"mode": "inferred",
+			"scenario": "minimal",
+			"samples": 3,
+			"project": ".generated/generated-types-poc/inferred/minimal/tsconfig.json",
+			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/generated-types-poc/inferred/minimal/tsconfig.json",
+			"metrics": {
+				"files": 89,
+				"symbols": 52269,
+				"types": 5703,
+				"instantiations": 22347,
+				"memoryUsedKiB": 40432,
+				"checkTimeSeconds": 0.01,
+				"totalTimeSeconds": 0.045
+			}
+		}
+	],
+	"tolerances": {
+		"instantiations": 0.1,
+		"memoryUsedKiB": 0.1,
+		"checkTimeSeconds": 0.5,
+		"totalTimeSeconds": 0.5,
+		"timingNoiseFloorSeconds": 0.05
+	}
+}

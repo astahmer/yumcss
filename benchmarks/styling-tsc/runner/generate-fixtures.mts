@@ -74,13 +74,19 @@ const extraSpacingTokens = (count: number): readonly (readonly [string, string])
 		(_, index) => [`catalog-${String(index).padStart(3, "0")}`, `${index + 1}px`] as const,
 	);
 
+export const pandwindTokenNames = (catalogCount: number) => ({
+	colors: [...colorTokens, ...extraColorTokens(catalogCount)].map(([name]) => name),
+	spacing: [...spacingTokens, ...extraSpacingTokens(catalogCount)].map(([name]) => name),
+	radii: radiiTokens.map(([name]) => name),
+});
+
 const entries = (items: readonly (readonly [string, string])[]): string =>
 	items.map(([key, value]) => `\t\t${quote(key)}: ${quote(value)},`).join("\n");
 
 const objectEntries = (items: readonly (readonly [string, string])[]): string =>
 	items.map(([key, value]) => `\t${quote(key)}: ${quote(value)},`).join("\n");
 
-const generatePandwindPresetSource = (catalogCount: number): string => {
+export const generatePandwindPresetSource = (catalogCount: number): string => {
 	const colors = [...colorTokens, ...extraColorTokens(catalogCount)];
 	const spacing = [...spacingTokens, ...extraSpacingTokens(catalogCount)];
 	return `import { define, type PandwindProperties } from "pandwind/preset";
@@ -140,14 +146,30 @@ export const preset = define.preset(theme, {
 `;
 };
 
-const pandwindApp = (componentCount: number): string => {
+type PandwindAppOptions = {
+	readonly includeRaw?: boolean;
+	readonly includeColorPalette?: boolean;
+	readonly includeCxVars?: boolean;
+};
+
+export const pandwindApp = (componentCount: number, options: PandwindAppOptions = {}): string => {
 	const styles = Array.from({ length: componentCount }, (_, index) => {
 		const padding = ["1", "2", "4", "6", "8"][index % 5]!;
-		const color = index % 2 === 0 ? "$blue-500" : "$gray-900";
-		const backgroundColor = index % 3 === 0 ? "$gray-50" : "$white";
+		const useColorPalette = options.includeColorPalette === true && index % 4 === 0;
+		const color = useColorPalette
+			? "colorPalette.contrast"
+			: index % 2 === 0
+				? "$blue-500"
+				: "$gray-900";
+		const backgroundColor = useColorPalette
+			? "colorPalette.solid"
+			: index % 3 === 0
+				? "$gray-50"
+				: "$white";
+		const colorPalette = useColorPalette ? '\t\tcolorPalette: "brand",\n' : "";
 		return `\tcss.class({
 \t\tdisplay: ${quote(index % 2 === 0 ? "flex" : "grid")},
-\t\tcolor: ${quote(color)},
+${colorPalette}\t\tcolor: ${quote(color)},
 \t\tbackgroundColor: ${quote(backgroundColor)},
 \t\tpadding: ${quote(padding)},
 \t\tgap: ${quote(padding)},
@@ -157,6 +179,16 @@ const pandwindApp = (componentCount: number): string => {
 \t\tsm: { padding: ${quote("4")} },
 \t}),`;
 	}).join("\n");
+	const rawDeclaration =
+		options.includeRaw === true
+			? 'const raw = css.raw({ margin: "2" }, { _hover: { color: "$gray-900" } });'
+			: "";
+	const rawWorkload = options.includeRaw === true ? "\traw,\n" : "";
+	const composedVarsDeclaration =
+		options.includeCxVars === true
+			? 'const composedVars = cx.vars(css.vars({ color: "var(--composed-color)" }), composed);'
+			: "";
+	const composedVarsWorkload = options.includeCxVars === true ? "\tcomposedVars,\n" : "";
 
 	return `import { createCx } from "pandwind/cx";
 import { css } from "./styles.ts";
@@ -179,8 +211,10 @@ const dynamicGroup = css.group({
 const dynamicProps = css.props(
 \tdynamicGroup.button({ backgroundColor: "var(--button-color)", padding: "12px" }),
 );
+${rawDeclaration}
 const cx = createCx({ css });
 const composed = cx(css.class({ color: "$blue-500" }), "external-class");
+${composedVarsDeclaration}
 
 export const componentStyles = [
 ${styles}
@@ -191,12 +225,12 @@ export const workload = {
 \tvariableProps,
 \tdynamicProps,
 \tcomposed,
-\tcomponentStyles,
+${composedVarsWorkload}${rawWorkload}\tcomponentStyles,
 };
 `;
 };
 
-const pandwindStyles = (): string => `import { createCss } from "pandwind/css";
+export const pandwindStyles = (): string => `import { createCss } from "pandwind/css";
 import { preset } from "./preset.ts";
 
 export const css = createCss(preset);

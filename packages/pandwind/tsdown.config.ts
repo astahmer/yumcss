@@ -53,6 +53,7 @@ export default defineConfig({
 	],
 	deps: { neverBundle: true, dts: { neverBundle: true } },
 	dts: true,
+	tsconfig: "tsconfig.build.json",
 	format: "es",
 	outDir: "dist",
 	outExtensions: () => ({ js: ".js" }),

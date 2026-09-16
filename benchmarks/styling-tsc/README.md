@@ -91,3 +91,34 @@ runtime/browser performance. The source shapes express the same broad intent,
 but generated declarations, compiler plugins, and build-time transforms are
 part of each library's normal consumer experience and therefore remain in the
 measurement.
+
+## Generated-types POC
+
+The generated-types POC compares the normal preset-inferred Pandwind surface
+with an opt-in declaration facade generated from the same catalog. Both lanes
+exercise the same `css()`, `css.class()`, `css.vars()`, `css.props()`,
+`css.raw()`, `css.group()`, `css.input()`, `cx()`, and `cx.vars()` workload. The generated
+lane replaces repeated preset/type-level evaluation with concrete property and
+token unions while retaining the public `CssFn` surface; it does not add a
+runtime API or browser JavaScript.
+
+It measures these paired catalog/app sizes and stores the evidence in
+`snapshots/generated-types-poc.json` and `snapshots/generated-types-poc.md`:
+
+- `minimal`: 8 component styles and 16 generated catalog entries;
+- `medium`: 32 component styles and 64 generated catalog entries;
+- `large`: 128 component styles and 256 generated catalog entries;
+- `huge`: 512 component styles and 1024 generated catalog entries.
+
+```sh
+pnpm --filter pandwind run build
+pnpm run bench:tsc:generated -- --update
+pnpm run bench:tsc:generated
+```
+
+This is deliberately a benchmark-only POC. It models the consumer boundary
+where generated declarations are shipped alongside the runtime implementation;
+the preset authoring/generation cost is not hidden and is not part of the
+consumer typecheck measurement. Time regressions also need to exceed a 50ms
+absolute noise floor, keeping sub-50ms process jitter from making the gate
+flaky.
