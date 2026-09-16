@@ -26,10 +26,12 @@ If you already use Tailwind, generate the typed helper instead:
 pnpm exec pandwind-codemod tw generate ./src/tailwind.css ./src
 ```
 
-That creates project-owned `tw.ts`, `tw.runtime.ts`, and `tw.build.ts` artifacts;
-they are runtime code only when your application leaves dynamic `tw()` or
-generated conflict-aware `cx()` calls. The build-only artifact is never imported
-by runtime bindings. The main [migration guide](../../docs/src/content/docs/guides/migrations.md)
+That creates project-owned `tw.ts`, `tw.runtime.ts`, and `tw.build.ts` artifacts.
+The small `tw.ts` entry does not import the optional `tw.runtime.ts` conflict
+catalog; plain generated `tw()` and `cx()` usage therefore do not pull it into
+the browser bundle. Import the catalog explicitly only when arbitrary runtime
+Tailwind strings need exact conflict merging. The build-only artifact is never
+imported by runtime bindings. The main [migration guide](../../docs/src/content/docs/guides/migrations.md)
 explains how to choose a route and handle dynamic behavior.
 
 ## What the tool promises
@@ -80,9 +82,10 @@ pandwind-codemod tw verify [project-root] [--manifest <path>] [--budget <path>]
 `generate` emits the typed `tw.ts` entry, declarations, split runtime/build
 metadata, the optional preset theme bridge, and the optional `css()` bridge.
 `tw.ts` is a project-owned runtime binding: Pandwind does not import it
-automatically, and static calls are folded away by the Vite plugin. Dynamic
-`tw()` and generated `cx()` calls pay for `tw.runtime.ts`, which contains only
-the conflict, variant, composition, and token-remap data they need.
+automatically, and static calls are folded away by the Vite plugin. The entry
+contains only variant-join metadata. `tw.runtime.ts` is an optional conflict
+catalog for the explicit exact-merge path; ordinary dynamic `tw()` and plain
+`cx()` calls do not import it.
 `tw.build.ts` contains the wildcard candidate catalog for Vite and codemod
 tooling; runtime bindings never import it.
 

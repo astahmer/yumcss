@@ -77,9 +77,11 @@ tw(style object)
 ```
 
 `tw.build.ts` is a separate build-only catalog consumed by Vite and codemod
-tooling; it never enters the runtime graph. Static calls are folded before
-bundling, while dynamic calls retain the generated runtime metadata needed for
-their conflict semantics.
+tooling; it never enters the runtime graph. The generated `tw.ts` entry is
+small and does not import the optional `tw.runtime.ts` conflict catalog. Static
+calls are folded before bundling; plain dynamic composition stays on the small
+class assembler, while exact arbitrary-runtime conflict semantics require an
+explicit metadata import.
 
 The generated runtime is produced by the codegen pipeline, not hand-written by
 the application. Use this compatibility lane when Tailwind already owns the

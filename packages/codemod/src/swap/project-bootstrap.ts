@@ -1041,7 +1041,11 @@ export async function createPandwindProjectSupport(
 		derivedFiles.push(
 			generatedFile(types, generated.typesDts, "Tailwind-derived typed tw() metadata"),
 			generatedFile(tw, generated.twTs, "Tailwind-derived tw() runtime entry"),
-			generatedFile(twRuntime, generated.twRuntimeTs, "Tailwind-derived dynamic tw() metadata"),
+			generatedFile(
+				twRuntime,
+				generated.twRuntimeTs,
+				"Tailwind-derived optional conflict metadata",
+			),
 			generatedFile(twBuild, generated.twBuildTs, "Tailwind-derived build metadata"),
 			generatedFile(
 				bridgeFile,

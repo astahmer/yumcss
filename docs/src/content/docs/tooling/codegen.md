@@ -54,9 +54,10 @@ Tailwind's own design system (`@tailwindcss/node`) and writes:
   (including opacity modifiers), recursive variant nesting, `(string & {})`
   escape hatch.
 - `<out-dir>/tw.ts` — the small typed `tw` runtime entry; marked `@__PURE__`.
-- `<out-dir>/tw.runtime.ts` — runtime variant, conflict, composition and
-  token-remap metadata used by dynamic `tw()`/generated conflict-aware
-  `cx()` calls.
+- `<out-dir>/tw.runtime.ts` — optional variant, conflict, composition and
+  token-remap metadata for applications that explicitly need exact merging of
+  arbitrary runtime Tailwind strings. The generated `tw.ts` entry does not
+  import this catalog.
 - `<out-dir>/tw.build.ts` — build-only wildcard candidate metadata read by Vite
   and codemod tooling; runtime bindings never import it.
 - With `--tokens <module-path>` — also emits `pandwind-theme.css` (the DTCG →

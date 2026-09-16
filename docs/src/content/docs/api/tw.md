@@ -44,13 +44,14 @@ Pandwind does not hide a second Tailwind theme behind it.
     opacity modifiers like `bg-red-500/50`), recursive variant nesting, and
     the open-ended `(string & {})` escape hatch for arbitrary values.
   - `tw.ts` — the small typed runtime entry imported by application code.
-  - `tw.runtime.ts` — runtime-only variant, conflict, composition, and token-remap metadata for
-    dynamic `tw()` and generated conflict-aware `cx()` calls.
+  - `tw.runtime.ts` — optional variant, conflict, composition, and token-remap metadata for
+    applications that explicitly need exact runtime conflict merging. The small `tw.ts` entry
+    does not import it; Vite and codemod tooling read it as a companion artifact.
   - `tw.build.ts` — build-only wildcard candidate metadata read by Vite and codemod tooling; it
     is never imported by runtime bindings. Pandwind does not import these generated modules
     automatically. Static calls folded by `pandwindVite()` remove the entry and both companions
-    from the browser graph; genuinely dynamic `tw()`/generated `cx()` calls opt into the runtime
-    metadata they need.
+    from the browser graph. A genuinely arbitrary runtime conflict merge is an explicit opt-in;
+    ordinary generated `tw()` and plain `cx()` do not pull the large catalog into the bundle.
   - `bridge.ts` when `--bridge` is enabled — an optional build-time and
     migration artifact for the Tailwind `ClassNameStrategy`. Pandwind does not
     import it automatically; it enters the runtime graph only when the project
@@ -76,7 +77,7 @@ Pandwind does not hide a second Tailwind theme behind it.
   literal arguments into plain class strings before Tailwind's scanner sees
   them. The runtime cost becomes zero and the generated runtime entry plus
   metadata tree-shake out of the bundle (the generated `tw.ts` is marked
-  `@__PURE__`). Dynamic calls keep working through the runtime, with the same
+  `@__PURE__`). Dynamic calls keep working through the small entry, with the same
   verification-gate behavior: finite candidates are collected for the
   scanner, unverified tokens surface through the plugin's `onUnresolved`
   lane instead of silently disappearing.
@@ -168,7 +169,13 @@ families — `scale-x` + `scale-y`, `translate-x` + `translate-y`, `blur` +
 `brightness` — merge only within the same key, never across.
 
 The vite plugin performs the same merge at compile time for literal calls, so
-the bundled class strings are already conflict-free.
+the bundled class strings are already conflict-free. The generated `tw.ts`
+entry intentionally omits this full catalog: unbounded runtime objects use the
+small class assembler, while applications that require exact runtime
+last-wins merging must explicitly import and pass the generated
+`__pandwindRuntimeConfig` from `tw.runtime.ts`. Prefer finite values that the
+Vite plugin can verify, or `css.vars()` for genuinely arbitrary values, when
+the full catalog is not worth the runtime cost.
 
 ## DTCG design tokens → `@theme`
 

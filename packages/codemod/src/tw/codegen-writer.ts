@@ -77,7 +77,7 @@ export class CodegenArtifactWriter {
 		const files = [
 			["types.d.ts", GeneratedArtifactOwnershipTag.Editor],
 			["tw.ts", GeneratedArtifactOwnershipTag.Runtime],
-			["tw.runtime.ts", GeneratedArtifactOwnershipTag.Runtime],
+			["tw.runtime.ts", GeneratedArtifactOwnershipTag.Optional],
 			["tw.build.ts", GeneratedArtifactOwnershipTag.BuildOnly],
 			["pandwind.interop.json", GeneratedArtifactOwnershipTag.BuildOnly],
 			["pandwind-theme.css", GeneratedArtifactOwnershipTag.Runtime],

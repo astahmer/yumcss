@@ -117,10 +117,12 @@ pnpm exec pandwind-codemod tw generate ./src/tailwind.css ./src
 
 The command reads the Tailwind design system and writes `src/tw.ts`,
 `src/tw.runtime.ts`, `src/tw.build.ts`, and `src/types.d.ts`. The entry is
-small; runtime metadata is needed only by dynamic `tw()`/generated `cx()` calls,
-while the build metadata is read by tooling and never imported by runtime code.
-Those generated files are the source of autocomplete and build integration in
-your editor. Regenerate them when the Tailwind input or theme changes.
+small; `tw.runtime.ts` is an optional conflict catalog for an explicit
+conflict-aware runtime path, while the build metadata is read by tooling and
+never imported by runtime code. Ordinary generated `tw()` and plain `cx()` do
+not pay for that catalog. Those generated files are the source of autocomplete
+and build integration in your editor. Regenerate them when the Tailwind input
+or theme changes.
 
 ### 4. Add the Vite plugin
 

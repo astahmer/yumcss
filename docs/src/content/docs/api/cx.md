@@ -19,6 +19,17 @@ the host projection receives compiled style values. Pandwind lets the caller
 choose either the declaration-map `css(...)` path or the direct class-string
 `css.class(...)` path before using `css.props(...)` where host props are useful.
 
+`createCx({ css })` is the ordinary composition path: it merges carriers and
+keeps opaque class strings without shipping a Tailwind conflict catalog. For
+the uncommon case where arbitrary runtime Tailwind strings need exact
+last-wins merging, pass the generated conflict metadata explicitly:
+
+```ts
+import { __pandwindRuntimeConfig } from "./tw.runtime";
+
+const conflictAwareCx = createCx({ css, ...__pandwindRuntimeConfig });
+```
+
 `createCx({ css, variants, conflicts, compose })` merges raw class strings,
 `tw()` output and css atoms into one className with the same conflict
 semantics as a single `tw()` call:
@@ -42,11 +53,12 @@ cx(tw({ bg: "red-500" }), "px-4", knownStyles, directClass, "bg-blue-500");
 // "px-4 bg-blue-500 <color atom>" — bg-red-500 lost to bg-blue-500
 ```
 
-`tw.runtime.ts` is the generated conflict metadata used by dynamic `tw()`
-and conflict-aware `cx()` calls. `tw.build.ts` is tooling-only and is never a
-runtime import. When `pandwindVite()` folds all calls to literals, both
-generated metadata files are removed from the browser bundle; a genuinely
-dynamic call pays for the metadata needed to preserve its runtime semantics.
+`tw.runtime.ts` is an optional generated conflict catalog. The generated
+`tw.ts` entry does not import it, and plain `createCx({ css })` does not import
+it either. `tw.build.ts` is tooling-only and is never a runtime import. When
+`pandwindVite()` folds all calls to literals, all generated metadata is removed
+from the browser bundle. Only the explicit conflict-aware form above pays for
+the catalog needed to preserve arbitrary runtime conflict semantics.
 
 Tailwind classes are parsed against the generated conflict map (variant
 scoped, compose-aware, last-wins per canonical CSS property — never a

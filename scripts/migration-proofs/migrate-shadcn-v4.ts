@@ -135,6 +135,8 @@ async function generatedMetadata(referenceRoot: string): Promise<GeneratedMetada
 	const interop = buildPandwindInteropArtifact({
 		typesDts: generated.typesDts,
 		twTs: generated.twTs,
+		twRuntimeTs: generated.twRuntimeTs,
+		twBuildTs: generated.twBuildTs,
 		bridge,
 	});
 	const metadataRoot = await mkdtemp(join(tmpdir(), "pandwind-shadcn-v4-metadata-"));

@@ -23,11 +23,11 @@ adoption simplicity, real-world proof, and scope discipline.
   Globals, keyframes, fonts, layers, and complex selectors often remain
   authored CSS or runtime rules. The limitations are documented in
   `docs/src/content/docs/reference/limitations.md` and the CSS scorecard.
-- "The setup is too dependent on generated files." A normal Tailwind lane needs
-  generated `tw.ts`, `tw.runtime.ts`, `tw.build.ts`, `types.d.ts`, and theme
-  artifacts; `bridge.ts` is optional and is only a runtime dependency when the
-  project explicitly selects its `twAdapter`. Stale or missing generated output
-  can break the editor or build.
+- "The setup is too dependent on generated files." A normal Tailwind lane
+  generates `tw.ts`, `tw.runtime.ts`, `tw.build.ts`, `types.d.ts`, and theme
+  artifacts; the large conflict catalog is optional at runtime, and `bridge.ts`
+  is only a runtime dependency when the project explicitly selects its
+  `twAdapter`. Stale or missing generated output can break the editor or build.
   `generated:check` catches drift for the checked-in example and Playground, and
   `pandwind-codemod tw verify` gives consumer projects a copyable freshness,
   ownership, and raw/gzip budget check. Generated project files remain a real

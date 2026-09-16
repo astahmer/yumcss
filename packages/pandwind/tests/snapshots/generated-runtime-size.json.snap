@@ -1,11 +1,15 @@
 {
   "generated tw (dynamic)": {
-    "min": 261354,
-    "gz": 30219
+    "min": 4448,
+    "gz": 1739
   },
-  "generated cx (dynamic)": {
+  "explicit conflict cx (dynamic)": {
     "min": 291199,
     "gz": 40557
+  },
+  "plain cx (no tw metadata)": {
+    "min": 32304,
+    "gz": 11963
   },
   "generated tw+cx (static)": {
     "min": 51,

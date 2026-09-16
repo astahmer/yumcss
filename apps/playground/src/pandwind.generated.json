@@ -30,13 +30,13 @@
 		},
 		{
 			"path": "src/tw.runtime.ts",
-			"ownership": "runtime",
-			"hash": "8716dbd7ed70471956725f457414b9ffc2240e04829766d7ae80e1e6d2e24e5e"
+			"ownership": "optional",
+			"hash": "86418c3bdc23a52a9246c586649e47c1738b71b32e17ed6368ffc04039640750"
 		},
 		{
 			"path": "src/tw.ts",
 			"ownership": "runtime",
-			"hash": "84b801cb92489db2947fc78c504b7e979c6bcfd36732a763b0783490c1f9a423"
+			"hash": "84a689b71b54d44f0e7fc11862ab2af96b038b4373dd61c9ebb86e8fd8f39bbc"
 		},
 		{
 			"path": "src/types.d.ts",

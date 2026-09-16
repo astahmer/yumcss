@@ -153,6 +153,8 @@ async function generatedMetadata(referenceRoot: string): Promise<GeneratedMetada
 		const interop = buildPandwindInteropArtifact({
 			typesDts: generated.typesDts,
 			twTs: generated.twTs,
+			twRuntimeTs: generated.twRuntimeTs,
+			twBuildTs: generated.twBuildTs,
 			bridge,
 		});
 		await writeFile(join(tempRoot, "pandwind.interop.json"), `${JSON.stringify(interop)}\n`);

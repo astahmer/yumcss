@@ -30,24 +30,27 @@ import { createCx } from "pandwind/cx";
 import { canonicalProps } from "../src/tw/generate-types.ts";
 import { compileStyles, type TwNestedStyles, type TwVariantsMeta } from "pandwind/tw/compile";
 import { createTw } from "pandwind/tw";
-import { extractTwConfig } from "pandwind/vite/inline";
+import { extractTwConfigFromSources } from "pandwind/vite/inline";
 import { rulesForClass, TW_ENTRY } from "./helpers/tailwind-proof.ts";
 
 const APP_DIR = resolve(import.meta.dirname, "../../../examples/example");
 
-/** The committed generated config — the exact artifact the app runs on. */
-function loadTwConfig(): NonNullable<ReturnType<typeof extractTwConfig>> {
-	const source = readFileSync(resolve(APP_DIR, "src/tw.ts"), "utf8");
-	const config = extractTwConfig(source);
+/** The committed generated config — the exact artifacts the app runs on. */
+function loadTwConfig(): NonNullable<ReturnType<typeof extractTwConfigFromSources>> {
+	const config = extractTwConfigFromSources(
+		["tw.ts", "tw.runtime.ts", "tw.build.ts"].map((file) =>
+			readFileSync(resolve(APP_DIR, "src", file), "utf8"),
+		),
+	);
 	if (config === undefined)
-		throw new Error("could not extract tw config from examples/example/src/tw.ts");
+		throw new Error("could not extract tw config from examples/example/src generated tw artifacts");
 	return config;
 }
 
 /** Longest generated utility key that prefixes the candidate (`-col-start-1` -> `-col-start`). */
 function decompose(
 	className: string,
-	conflicts: NonNullable<ReturnType<typeof extractTwConfig>>["conflicts"],
+	conflicts: NonNullable<ReturnType<typeof extractTwConfigFromSources>>["conflicts"],
 ): { utility: string; value: string } | null {
 	if (conflicts === undefined) return null;
 	let best: string | undefined;
@@ -67,7 +70,7 @@ function decompose(
 function expectedProps(
 	utility: string,
 	value: string,
-	conflicts: NonNullable<ReturnType<typeof extractTwConfig>>["conflicts"],
+	conflicts: NonNullable<ReturnType<typeof extractTwConfigFromSources>>["conflicts"],
 ): string[] {
 	if (conflicts === undefined) return [];
 	const byValue = conflicts[utility];

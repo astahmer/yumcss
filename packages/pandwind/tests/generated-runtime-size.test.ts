@@ -7,6 +7,7 @@ import { createInlineTwPluginCore } from "../src/vite/index.ts";
 
 const ROOT = resolve(import.meta.dirname, "..");
 const GENERATED_DIRECTORY = resolve(ROOT, "../../apps/playground/src");
+const EXAMPLE_DIRECTORY = resolve(ROOT, "../../examples/example/src");
 const SNAPSHOT = resolve(ROOT, "tests/snapshots", "generated-runtime-size.json.snap");
 
 interface BundleMeasurement {
@@ -82,14 +83,18 @@ test("generated metadata stays out of static runtime bundles", async () => {
 	const generatedEntrySource = readFileSync(resolve(GENERATED_DIRECTORY, "tw.ts"), "utf8");
 	const generatedTw = bundleEntry(resolve(GENERATED_DIRECTORY, "tw.ts"));
 	const generatedCx = bundleEntry(resolve(GENERATED_DIRECTORY, "cx.ts"));
+	const plainCx = bundleEntry(resolve(EXAMPLE_DIRECTORY, "cx.ts"));
 	const generatedStatic = await bundleAfterGeneratedExtraction();
 
-	expect(Buffer.byteLength(generatedEntrySource)).toBeLessThan(2_000);
+	expect(Buffer.byteLength(generatedEntrySource)).toBeLessThan(4_000);
+	expect(generatedTw.gz).toBeLessThan(3_000);
 	expect(generatedEntrySource).not.toContain("conflicts:");
 	expect(generatedEntrySource).not.toContain("wildcardValues");
 	expect(generatedEntrySource).not.toContain("__pandwindBuildMetadata");
-	expect(hasInput(generatedTw, "tw.runtime.ts")).toBe(true);
+	expect(hasInput(generatedTw, "tw.runtime.ts")).toBe(false);
 	expect(hasInput(generatedTw, "tw.build.ts")).toBe(false);
+	expect(hasInput(plainCx, "tw.runtime.ts")).toBe(false);
+	expect(hasInput(plainCx, "tw.build.ts")).toBe(false);
 	expect(hasInput(generatedCx, "tw.runtime.ts")).toBe(true);
 	expect(hasInput(generatedCx, "tw.build.ts")).toBe(false);
 	expect(hasInput(generatedStatic, "tw.runtime.ts")).toBe(false);
@@ -103,9 +108,13 @@ test("generated metadata stays out of static runtime bundles", async () => {
 					min: generatedTw.min,
 					gz: generatedTw.gz,
 				},
-				"generated cx (dynamic)": {
+				"explicit conflict cx (dynamic)": {
 					min: generatedCx.min,
 					gz: generatedCx.gz,
+				},
+				"plain cx (no tw metadata)": {
+					min: plainCx.min,
+					gz: plainCx.gz,
 				},
 				"generated tw+cx (static)": {
 					min: generatedStatic.min,

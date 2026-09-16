@@ -6,7 +6,9 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { __unstable__loadDesignSystem } from "@tailwindcss/node";
 import { describe, expect, test } from "vitest";
+import { createTw } from "../src/tw/runtime.ts";
 import { tw } from "../../../examples/example/src/tw.ts";
+import { __pandwindRuntimeConfig } from "../../../examples/example/src/tw.runtime.ts";
 import { collectTwClasses } from "../src/tw/collect.ts";
 import { createSourceWorkspace } from "../src/source-workspace.ts";
 
@@ -31,14 +33,17 @@ describe("generated tw runtime", () => {
 		);
 	});
 
-	test("merges conflicting utilities from the generated conflict map", () => {
-		expect(tw({ px: "4", p: "6" })).toBe("p-6");
-		expect(tw({ p: "6", px: "4" })).toBe("p-6 px-4");
-		expect(tw({ p: "6", pb: "10" })).toBe("p-6 pb-10");
-		expect(tw({ text: ["2xl", "gray-900", "center"] })).toBe("text-2xl text-gray-900 text-center");
-		expect(tw({ border: ["2", "red-500"] })).toBe("border-2 border-red-500");
-		expect(tw({ bg: ["red-500/50", "blue-500"] })).toBe("bg-blue-500");
-		expect(tw({ p: "4", md: { p: "6" } })).toBe("p-4 md:p-6");
+	test("merges conflicts only with an explicit generated conflict map", () => {
+		const conflictTw = createTw(__pandwindRuntimeConfig);
+		expect(conflictTw({ px: "4", p: "6" })).toBe("p-6");
+		expect(conflictTw({ p: "6", px: "4" })).toBe("p-6 px-4");
+		expect(conflictTw({ p: "6", pb: "10" })).toBe("p-6 pb-10");
+		expect(conflictTw({ text: ["2xl", "gray-900", "center"] })).toBe(
+			"text-2xl text-gray-900 text-center",
+		);
+		expect(conflictTw({ border: ["2", "red-500"] })).toBe("border-2 border-red-500");
+		expect(conflictTw({ bg: ["red-500/50", "blue-500"] })).toBe("bg-blue-500");
+		expect(conflictTw({ p: "4", md: { p: "6" } })).toBe("p-4 md:p-6");
 	});
 
 	test("safelist matches scanner output and every class compiles", async () => {

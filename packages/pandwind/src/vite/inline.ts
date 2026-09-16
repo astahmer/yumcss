@@ -140,18 +140,12 @@ export function extractTwConfigFromSources(sources: readonly string[]): TwConfig
 		typeof buildMetadata === "object" && buildMetadata !== null
 			? (buildMetadata as { wildcardValues?: unknown }).wildcardValues
 			: undefined;
-	walk(result.program, (node) => {
-		if (config !== undefined || node.type !== NodeKind.CallExpression) return;
-		const callee = node.callee as OxcNode | null;
-		if (callee?.type !== NodeKind.Identifier || callee.name !== "createTw") return;
-		const argument = (node.arguments as Expression[])[0];
-		if (argument === undefined || argument === null) return;
-		const literal = evalLiteral(argument, constantScope);
-		if (typeof literal !== "object" || literal === null) return;
-		const options = literal as Record<string, unknown>;
+	const configFromOptions = (value: unknown): TwConfig | undefined => {
+		if (typeof value !== "object" || value === null) return undefined;
+		const options = value as Record<string, unknown>;
 		const variants = options.variants;
-		if (typeof variants !== "object" || variants === null) return;
-		config = {
+		if (typeof variants !== "object" || variants === null) return undefined;
+		return {
 			variants: variants as TwVariantsMeta,
 			conflicts:
 				typeof options.conflicts === "object" && options.conflicts !== null
@@ -164,6 +158,28 @@ export function extractTwConfigFromSources(sources: readonly string[]): TwConfig
 					: undefined,
 			compose: Array.isArray(options.compose) ? (options.compose as string[]) : undefined,
 		};
+	};
+	// The generated entry is intentionally cheap and contains only variant
+	// joins. Its companion exports the complete config without calling
+	// createTw, so read that named artifact directly instead of making the
+	// runtime entry import the large conflict catalog.
+	config = configFromOptions(resolveConstant("__pandwindRuntimeConfig"));
+	walk(result.program, (node) => {
+		if (node.type !== NodeKind.CallExpression) return;
+		const callee = node.callee as OxcNode | null;
+		if (callee?.type !== NodeKind.Identifier || callee.name !== "createTw") return;
+		const argument = (node.arguments as Expression[])[0];
+		if (argument === undefined || argument === null) return;
+		const literal = evalLiteral(argument, constantScope);
+		const candidate = configFromOptions(literal);
+		if (candidate === undefined) return;
+		// Prefer a complete companion config when the cheap generated entry and
+		// an explicit createTw call are both present in the source set.
+		if (
+			config === undefined ||
+			(config.conflicts === undefined && candidate.conflicts !== undefined)
+		)
+			config = candidate;
 	});
 
 	return config;

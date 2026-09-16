@@ -91,8 +91,9 @@ describe("typegen", () => {
 			expect(typesDts, `missing generated type for sub-key ${key}`).toContain(`"${key}"?:`);
 		}
 
-		expect(twTs).toContain('from "./tw.runtime.ts"');
+		expect(twTs).not.toContain('from "./tw.runtime.ts"');
 		expect(twTs).toContain("createTw");
+		expect(twTs).toContain('group: { join: "-" }');
 		expect(twTs).not.toContain("conflicts");
 		expect(twTs).not.toContain("wildcardValues");
 		expect(twTs).not.toContain("__pandwindBuildMetadata");

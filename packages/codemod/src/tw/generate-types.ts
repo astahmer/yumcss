@@ -9,7 +9,8 @@
  * - `types.d.ts` — `WindVariants`: one key per utility + recursive variant keys,
  *   with literal value unions so the editor autocompletes real Tailwind classes.
  * - `tw.ts` — the small typed `tw` entry;
- * - `tw.runtime.ts` — runtime metadata for dynamic `tw()` and `cx()` calls;
+ * - `tw.runtime.ts` — optional conflict metadata for exact arbitrary-runtime
+ *   `tw()` and `cx()` merging;
  * - `tw.build.ts` — build-only wildcard candidate metadata.
  *
  */

@@ -154,6 +154,8 @@
 		"**/src/bridge.ts",
 		"examples/example/src/tw.ts",
 		"apps/playground/src/tw.ts",
+		"examples/example/src/tw.build.ts",
+		"apps/playground/src/tw.build.ts",
 		"**/src/generated/**",
 		"**/*.bench.{ts,mts}"
 	]
