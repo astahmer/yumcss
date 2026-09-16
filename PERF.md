@@ -257,11 +257,14 @@ Lower is smaller. Sizes are decimal KB (1 KB = 1,000 bytes); exact byte values r
 |   15 | createUnsafeCss(), fallback                       | unsafe fallback       |         10.60 |      4.27 |
 |   16 | unsafe css subpath only                           | tree-shaken subpath   |         10.61 |      4.27 |
 |   17 | createCss(preset), fallback                       | preset-bound fallback |         13.10 |      5.19 |
-|   18 | cx                                                | runtime               |         17.54 |      6.84 |
-|   19 | root barrel, cx + unsafe css                      | tree-shaken barrel    |         17.53 |      6.86 |
-|   20 | all (createUnsafeCss+tw+cx)                       | runtime               |         20.23 |      7.80 |
-|   21 | stylesheet generator (build-time only)            | build-time only       |         21.09 |      8.18 |
-|   22 | createRuntimeCss(preset), live sheet              | live sheet            |         33.73 |     12.50 |
+|   18 | createCss(preset) + tw()                          | preset-bound fallback |         15.79 |      6.17 |
+|   19 | cx                                                | runtime               |         17.54 |      6.84 |
+|   20 | root barrel, cx + unsafe css                      | tree-shaken barrel    |         17.53 |      6.86 |
+|   21 | createCss(preset) + cx()                          | preset-bound fallback |         20.03 |      7.77 |
+|   22 | all (createUnsafeCss+tw+cx)                       | runtime               |         20.23 |      7.80 |
+|   23 | stylesheet generator (build-time only)            | build-time only       |         21.09 |      8.18 |
+|   24 | createCss(preset) + tw() + cx()                   | preset-bound fallback |         22.72 |      8.74 |
+|   25 | createRuntimeCss(preset), live sheet              | live sheet            |         33.73 |     12.50 |
 
 ## Generated Tailwind metadata size
 

@@ -156,6 +156,9 @@ test("runtime entries stay stylex-sized", async () => {
 	const sizes = {
 		"createCssRuntime() core (internal)": bundle("runtime-css-base.ts"),
 		"createCss(preset), fallback": bundle("runtime-css-preset.ts"),
+		"createCss(preset) + tw()": bundle("runtime-preset-tw.ts"),
+		"createCss(preset) + cx()": bundle("runtime-preset-cx.ts"),
+		"createCss(preset) + tw() + cx()": bundle("runtime-preset-all.ts"),
 		"createUnsafeCss(), fallback": bundle("runtime-css.ts"),
 		"createRuntimeCss(preset), live sheet": bundle("runtime-css-sheet.ts"),
 		"createUnsafeCss(), static output after extraction":

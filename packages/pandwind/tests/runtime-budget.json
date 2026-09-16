@@ -7,6 +7,18 @@
 		"min": 14500,
 		"gz": 5700
 	},
+	"createCss(preset) + tw()": {
+		"min": 18200,
+		"gz": 7100
+	},
+	"createCss(preset) + cx()": {
+		"min": 23100,
+		"gz": 8950
+	},
+	"createCss(preset) + tw() + cx()": {
+		"min": 26200,
+		"gz": 10100
+	},
 	"createUnsafeCss(), fallback": {
 		"min": 13500,
 		"gz": 5400

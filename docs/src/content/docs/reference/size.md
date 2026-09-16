@@ -5,7 +5,7 @@ sidebar:
   order: 2
 ---
 
-Last measured: **2026-09-16** for the Pandwind runtime byte record. The
+Last measured: **2026-09-17** for the Pandwind runtime byte record. The
 competitor rows retain the supplied reference measurements for the named
 versions. The environment was local macOS (arm64), Node v24.19.0, esbuild
 0.28.2. Pandwind numbers come from real browser-targeted esbuild bundles
@@ -118,22 +118,39 @@ every arbitrary class that the application expects to merge.
 ## Browser runtimes versus alternatives
 
 The comparison below is directional, not an identical API contract: StyleX
-runs babel-compiled objects, Panda's row is generated `css()`, and the
-Pandwind row includes `css()` + `tw()` + cross-engine `cx()`.
+runs babel-compiled objects, and Panda's row is generated `css()`.
 
-| runtime                                    |      min |    gzip | what ships                              |
-| ------------------------------------------ | -------: | ------: | --------------------------------------- |
-| pandwind `css()` + `tw()` + `cx()`         | 20.23 KB | 7.80 KB | current combined runtime                |
-| `@stylexjs/stylex` 0.19.0                  |  4.06 KB | 1.74 KB | runtime only (compile happens in babel) |
-| `@pandacss/core` 1.12.0 generated `css()`  |  13.4 KB | 5.31 KB | panda runtime engine + tokens           |
-| `@emotion/css` 11.13.5                     |  15.3 KB | 6.25 KB | emotion core (chakra's engine)          |
-| `@chakra-ui/react` 3.36.1 (react external) |  30.1 KB | 12.5 KB | chakra + emotion it pulls in            |
-| `tailwind-merge` 3.6.0                     |  27.0 KB | 8.47 KB | merge function alone                    |
-| `tokenami`                                 |        0 |      ~0 | compile-time only, nothing ships        |
+Real applications rarely ship all of Pandwind at once, so the Pandwind rows
+are the individual lanes an application pays for; `css()` + `tw()` +
+`cx()` is the combined shape and is the least common of them. Each lane is
+a real import bundle: `createCss(preset)` from `pandwind/css`,
+`createTw()` from `pandwind/tw`, and `createCx({ css })` from
+`pandwind/cx`. The `pandwind/unsafe/css` variants save roughly 2.5 KB gzip
+by dropping the preset resolver and are listed in the per-import table above.
+
+| runtime                                      |      min |    gzip | what ships                              |
+| -------------------------------------------- | -------: | ------: | --------------------------------------- |
+| pandwind `css()` (preset)                    | 13.10 KB | 5.19 KB | preset-bound atom engine                |
+| pandwind `tw()`                              |  2.80 KB | 1.31 KB | variant join syntax alone               |
+| pandwind `css()` + `tw()`                   | 15.79 KB | 6.17 KB | the common two-lane app                 |
+| pandwind `css()` + `cx()`                   | 20.03 KB | 7.77 KB | atom registry + cross-engine merge      |
+| pandwind `css()` + `tw()` + `cx()`        | 22.72 KB | 8.74 KB | current combined runtime                |
+| pandwind compiler-pruned `css.class()`       |  5.88 KB | 2.52 KB | literals + shared engine, post-extraction |
+| pandwind fully extracted `css()`             |    81 B |    98 B | emitted literals only                   |
+| `@stylexjs/stylex` 0.19.0                    |  4.06 KB | 1.74 KB | runtime only (compile happens in babel) |
+| `@pandacss/core` 1.12.0 generated `css()`    |  13.4 KB | 5.31 KB | panda runtime engine + tokens           |
+| `@emotion/css` 11.13.5                       |  15.3 KB | 6.25 KB | emotion core (chakra's engine)          |
+| `@chakra-ui/react` 3.36.1 (react external)   |  30.1 KB | 12.5 KB | chakra + emotion it pulls in            |
+| `tailwind-merge` 3.6.0                       |  27.0 KB | 8.47 KB | merge function alone                    |
+| `tokenami`                                   |        0 |      ~0 | compile-time only, nothing ships        |
+
+The compiler-pruned row is what a production app pays once the Vite compiler
+has erased every literal call: the same shared engine with only the emitted
+literals and the attachments that inlined calls still need.
 
 Alternative-library values are the supplied reference run, not a release
 budget. Re-run that external rig before making a new ecosystem comparison;
-the Pandwind row above is the repo-owned snapshot.
+the Pandwind rows above are the repo-owned snapshot.
 
 ## No silent regressions
 

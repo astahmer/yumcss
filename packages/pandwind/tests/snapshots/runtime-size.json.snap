@@ -5,7 +5,19 @@
   },
   "createCss(preset), fallback": {
     "min": 13099,
-    "gz": 5187
+    "gz": 5185
+  },
+  "createCss(preset) + tw()": {
+    "min": 15792,
+    "gz": 6169
+  },
+  "createCss(preset) + cx()": {
+    "min": 20032,
+    "gz": 7770
+  },
+  "createCss(preset) + tw() + cx()": {
+    "min": 22724,
+    "gz": 8735
   },
   "createUnsafeCss(), fallback": {
     "min": 10599,
