@@ -61,7 +61,7 @@ export interface PruneOptions {
 	themeBlock: string;
 	/** Source files to scan for tw() class usage. */
 	files: readonly string[];
-	/** The app's generated tw.ts entry (exact runtime instance). */
+	/** The app's generated tw.ts runtime entry (exact runtime instance). */
 	twEntry: string;
 	/** Base directory for Tailwind module resolution. */
 	base: string;

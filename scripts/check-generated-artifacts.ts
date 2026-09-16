@@ -10,6 +10,8 @@ const codemodCli = resolve(repositoryRoot, "packages/codemod/dist/cli.js");
 const generatedFiles = [
 	"types.d.ts",
 	"tw.ts",
+	"tw.runtime.ts",
+	"tw.build.ts",
 	"bridge.ts",
 	"pandwind.interop.json",
 	"pandwind.generated.json",
@@ -32,7 +34,14 @@ const apps: readonly GeneratedApp[] = [
 		root: resolve(repositoryRoot, "examples/example"),
 		source: resolve(repositoryRoot, "examples/example/src/tailwind.css"),
 		tokens: "@pandwind/example-preset",
-		formatFiles: ["bridge.ts", "pandwind-theme.css", "pandwind.interop.json"],
+		formatFiles: [
+			"tw.ts",
+			"tw.runtime.ts",
+			"tw.build.ts",
+			"bridge.ts",
+			"pandwind-theme.css",
+			"pandwind.interop.json",
+		],
 	},
 	{
 		name: "playground",
@@ -40,7 +49,14 @@ const apps: readonly GeneratedApp[] = [
 		root: resolve(repositoryRoot, "apps/playground"),
 		source: resolve(repositoryRoot, "apps/playground/src/tailwind.css"),
 		tokens: "@pandwind/example-preset",
-		formatFiles: ["types.d.ts", "tw.ts", "bridge.ts", "pandwind-theme.css"],
+		formatFiles: [
+			"types.d.ts",
+			"tw.ts",
+			"tw.runtime.ts",
+			"tw.build.ts",
+			"bridge.ts",
+			"pandwind-theme.css",
+		],
 	},
 ];
 
@@ -113,6 +129,8 @@ const checkApp = (app: GeneratedApp): void => {
 			artifacts: [
 				["types.d.ts", GeneratedArtifactOwnershipTag.Editor],
 				["tw.ts", GeneratedArtifactOwnershipTag.Runtime],
+				["tw.runtime.ts", GeneratedArtifactOwnershipTag.Runtime],
+				["tw.build.ts", GeneratedArtifactOwnershipTag.BuildOnly],
 				["pandwind.interop.json", GeneratedArtifactOwnershipTag.BuildOnly],
 				["pandwind-theme.css", GeneratedArtifactOwnershipTag.Runtime],
 				["pandwind.agents.json", GeneratedArtifactOwnershipTag.Editor],

@@ -9,7 +9,7 @@ import {
 	BRIDGE_PROPS,
 	type UtilityBridge,
 } from "../tw/index.ts";
-import { extractTwConfig } from "pandwind/vite/inline";
+import { extractTwConfigFromSources } from "pandwind/vite/inline";
 import type {
 	AdapterConfigContext,
 	AdapterConditionCatalog,
@@ -853,8 +853,12 @@ export const cx = createCx({ css });
 `;
 }
 
-function bridgeSource(bridge: UtilityBridge, twSource: string, presetImport: string): string {
-	const config = extractTwConfig(twSource);
+function bridgeSource(
+	bridge: UtilityBridge,
+	twSources: readonly string[],
+	presetImport: string,
+): string {
+	const config = extractTwConfigFromSources(twSources);
 	if (config === undefined) throw new Error("codemod: generated tw config is not readable");
 	return `import { createTwAdapter } from "pandwind/tw";
 import { preset } from "${presetImport}";
@@ -904,7 +908,11 @@ function loadGeneratedMeta(
 	const temp = mkdtempSync(join(tmpdir(), "pandwind-codemod-meta-"));
 	try {
 		for (const file of files) {
-			if (!/\/(?:types\.d\.ts|tw\.ts|bridge\.ts|pandwind\.interop\.json)$/u.test(`/${file.path}`))
+			if (
+				!/\/(?:types\.d\.ts|tw\.ts|tw\.runtime\.ts|tw\.build\.ts|bridge\.ts|pandwind\.interop\.json)$/u.test(
+					`/${file.path}`,
+				)
+			)
 				continue;
 			const output = resolve(temp, file.path.slice(directory.length + 1));
 			const parent = dirname(output);
@@ -1018,20 +1026,30 @@ export async function createPandwindProjectSupport(
 		});
 		const types = projectFile(directory, "types.d.ts");
 		const tw = projectFile(directory, "tw.ts");
+		const twRuntime = projectFile(directory, "tw.runtime.ts");
+		const twBuild = projectFile(directory, "tw.build.ts");
 		const bridgeFile = projectFile(directory, "bridge.ts");
 		const theme = buildThemeBlock(sourceConfig.tokenCatalog?.groups ?? {});
 		const interop = buildPandwindInteropArtifact({
 			typesDts: generated.typesDts,
 			twTs: generated.twTs,
+			twRuntimeTs: generated.twRuntimeTs,
+			twBuildTs: generated.twBuildTs,
 			bridge,
 			...(theme === "" ? {} : { themeBlock: theme }),
 		});
 		derivedFiles.push(
 			generatedFile(types, generated.typesDts, "Tailwind-derived typed tw() metadata"),
-			generatedFile(tw, generated.twTs, "Tailwind-derived tw() runtime"),
+			generatedFile(tw, generated.twTs, "Tailwind-derived tw() runtime entry"),
+			generatedFile(twRuntime, generated.twRuntimeTs, "Tailwind-derived dynamic tw() metadata"),
+			generatedFile(twBuild, generated.twBuildTs, "Tailwind-derived build metadata"),
 			generatedFile(
 				bridgeFile,
-				bridgeSource(bridge, generated.twTs, "./preset"),
+				bridgeSource(
+					bridge,
+					[generated.twTs, generated.twRuntimeTs, generated.twBuildTs],
+					"./preset",
+				),
 				"Tailwind-derived css() utility bridge",
 			),
 			generatedFile(

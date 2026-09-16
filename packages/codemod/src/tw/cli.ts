@@ -306,12 +306,12 @@ const defaultHandlers: TwCliHandlers = {
 				inputs: [{ path: command.cssEntry, content: readFileSync(command.cssEntry, "utf8") }],
 			});
 			console.log(
-				`pandwind: generated types.d.ts (${source.utilityCount} utilities, ${source.variantCount} variants), tw.ts, and bridge.ts (${bridge.propertyCount} properties)`,
+				`pandwind: generated types.d.ts (${source.utilityCount} utilities, ${source.variantCount} variants), tw.ts, tw.runtime.ts, tw.build.ts, and bridge.ts (${bridge.propertyCount} properties)`,
 			);
 			return;
 		}
 		console.log(
-			`pandwind: generated types.d.ts (${source.utilityCount} utilities, ${source.variantCount} variants) and tw.ts`,
+			`pandwind: generated types.d.ts (${source.utilityCount} utilities, ${source.variantCount} variants), tw.ts, tw.runtime.ts, and tw.build.ts`,
 		);
 	},
 	async scan(command) {

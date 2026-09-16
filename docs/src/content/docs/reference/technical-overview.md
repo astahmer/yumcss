@@ -69,12 +69,17 @@ class, so value changes do not create unbounded rules.
 
 ```text
 tw(style object)
-  → generated typed runtime (src/tw.ts)
+  → generated typed entry (src/tw.ts) + optional runtime metadata
   → utility/value lookup
   → conflict + composition policy
   → deterministic class string
   → Tailwind emits CSS
 ```
+
+`tw.build.ts` is a separate build-only catalog consumed by Vite and codemod
+tooling; it never enters the runtime graph. Static calls are folded before
+bundling, while dynamic calls retain the generated runtime metadata needed for
+their conflict semantics.
 
 The generated runtime is produced by the codegen pipeline, not hand-written by
 the application. Use this compatibility lane when Tailwind already owns the

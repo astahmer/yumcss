@@ -11,7 +11,7 @@
 		{
 			"path": "src/bridge.ts",
 			"ownership": "optional",
-			"hash": "57a906772319b82850c12e593182390967c8fdb6e55b8e1faf31c02c94f8b625"
+			"hash": "ad8c22b67e4b9445767a86ff925bfe68513ee1ce6ff94ec10d2b5896c33a84e0"
 		},
 		{
 			"path": "src/pandwind-theme.css",
@@ -24,9 +24,19 @@
 			"hash": "ef2b452b19f76d0b4c8f1457fcd584d01c823e10f74a7a779de2e9d2ec66dbad"
 		},
 		{
+			"path": "src/tw.build.ts",
+			"ownership": "build-only",
+			"hash": "5c3f32ff21b443ba9603f11ddd4795a076efe6baafd2cc8c0bbd2f5868ec5e1c"
+		},
+		{
+			"path": "src/tw.runtime.ts",
+			"ownership": "runtime",
+			"hash": "8716dbd7ed70471956725f457414b9ffc2240e04829766d7ae80e1e6d2e24e5e"
+		},
+		{
 			"path": "src/tw.ts",
 			"ownership": "runtime",
-			"hash": "ae0c223507c25f09218fdb06ce8c96c369dbf68d85e07593081e74da1b9366d1"
+			"hash": "84b801cb92489db2947fc78c504b7e979c6bcfd36732a763b0783490c1f9a423"
 		},
 		{
 			"path": "src/types.d.ts",

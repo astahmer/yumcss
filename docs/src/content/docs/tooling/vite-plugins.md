@@ -14,8 +14,8 @@ Statically inlines literal `tw({ ... })` calls with literal arguments into
 plain class strings before Tailwind's scanner sees them:
 
 - the runtime cost becomes zero for static calls;
-- the runtime, conflict map and variant metadata tree-shake out of the bundle
-  (the generated `tw.ts` is marked `@__PURE__`);
+- the generated runtime entry and metadata tree-shake out of the bundle (the
+  generated `tw.ts` is marked `@__PURE__`);
 - an optional generated `bridge.ts` is not pulled into the bundle unless the
   project explicitly imports its `twAdapter` as a Tailwind class strategy;
 - dynamic calls keep working through the runtime;

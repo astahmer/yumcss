@@ -48,7 +48,7 @@ export type UtilityBridge = Record<string, Record<string, string>>;
  * @since 0.1.0
  */
 export interface TwAdapterOptions {
-	/** Variant metadata from the generated `tw.ts` (join separators). */
+	/** Variant metadata from generated tw runtime artifacts (join separators). */
 	variants: TwVariantsMeta;
 	/** Generated `(property, resolved value) -> utility` map. */
 	bridge: UtilityBridge;

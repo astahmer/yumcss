@@ -12,16 +12,11 @@
  */
 import { describe, expect, test } from "vitest";
 import type { TwConfig } from "../src/vite/inline.ts";
-import { extractTwConfig } from "../src/vite/inline.ts";
 import { inlineCxCalls } from "../src/vite/cx-inline.ts";
-import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
+import { readGeneratedTwConfig } from "./helpers/generated-tw.ts";
 
-const twSource = readFileSync(
-	resolve(import.meta.dirname, "../../../examples/example/src/tw.ts"),
-	"utf8",
-);
-const config: TwConfig = extractTwConfig(twSource)!;
+const config: TwConfig = readGeneratedTwConfig(resolve(import.meta.dirname, "../../../examples/example/src"));
 
 /** ~30 realistic module sources. Each entry lists its EXPECTED foldability. */
 interface CorpusEntry {

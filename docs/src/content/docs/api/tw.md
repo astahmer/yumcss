@@ -38,14 +38,19 @@ Pandwind does not hide a second Tailwind theme behind it.
 ## What gets generated
 
 - **`pandwind-codemod tw generate`** — loads your `tailwind.css` through Tailwind's own design
-  system (`@tailwindcss/node`) and generates two files next to it:
+  system (`@tailwindcss/node`) and generates the typed helper plus its companion artifacts next
+  to it:
   - `types.d.ts` — one key per utility with literal value unions (including
     opacity modifiers like `bg-red-500/50`), recursive variant nesting, and
     the open-ended `(string & {})` escape hatch for arbitrary values.
-  - `tw.ts` — the typed `tw` instance, wired with the variant metadata, the
-    utility **conflict map**, and the list of **composing** utilities. Pandwind
-    does not import this generated module automatically; a project only pays
-    for it when its source imports `tw()` or its generated conflict metadata.
+  - `tw.ts` — the small typed runtime entry imported by application code.
+  - `tw.runtime.ts` — runtime-only variant, conflict, composition, and token-remap metadata for
+    dynamic `tw()` and generated conflict-aware `cx()` calls.
+  - `tw.build.ts` — build-only wildcard candidate metadata read by Vite and codemod tooling; it
+    is never imported by runtime bindings. Pandwind does not import these generated modules
+    automatically. Static calls folded by `pandwindVite()` remove the entry and both companions
+    from the browser graph; genuinely dynamic `tw()`/generated `cx()` calls opt into the runtime
+    metadata they need.
   - `bridge.ts` when `--bridge` is enabled — an optional build-time and
     migration artifact for the Tailwind `ClassNameStrategy`. Pandwind does not
     import it automatically; it enters the runtime graph only when the project
@@ -69,9 +74,9 @@ Pandwind does not hide a second Tailwind theme behind it.
   warning.
 - **`pandwindVite()`** — statically inlines literal `tw({ ... })` calls with
   literal arguments into plain class strings before Tailwind's scanner sees
-  them. The runtime cost becomes zero and the whole runtime + conflict map
-  tree-shake out of the bundle (the generated `tw.ts` is marked `@__PURE__`).
-  Dynamic calls keep working through the runtime, with the same
+  them. The runtime cost becomes zero and the generated runtime entry plus
+  metadata tree-shake out of the bundle (the generated `tw.ts` is marked
+  `@__PURE__`). Dynamic calls keep working through the runtime, with the same
   verification-gate behavior: finite candidates are collected for the
   scanner, unverified tokens surface through the plugin's `onUnresolved`
   lane instead of silently disappearing.

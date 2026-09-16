@@ -13,7 +13,6 @@
  * - condition nesting (`_hover` in either nesting order) collapses to one
  *   canonical class with its rule attached.
  */
-import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { parse, type Rule, type Root } from "postcss";
 import { describe, expect, test } from "vitest";
@@ -25,8 +24,8 @@ import { escapeIdentifier } from "../src/css/hash.ts";
 import { createCx } from "../src/cx/index.ts";
 import { createDesignCss } from "../src/design/index.ts";
 import { examplePreset } from "@pandwind/example-preset";
-import { extractTwConfig } from "../src/vite/inline.ts";
 import { PostCssNodeKind } from "./helpers/postcss-node-kind.ts";
+import { readGeneratedTwConfig } from "./helpers/generated-tw.ts";
 
 const strategy = createNamedAtomsStrategy();
 
@@ -117,9 +116,7 @@ describe("sheet-backed contract", () => {
 
 describe("cx() merging survives the mode switch", () => {
 	const dss = createDesignCss(examplePreset, { className: strategy });
-	const real = extractTwConfig(
-		readFileSync(resolve(import.meta.dirname, "../../../examples/example/src/tw.ts"), "utf8"),
-	)!;
+	const real = readGeneratedTwConfig(resolve(import.meta.dirname, "../../../examples/example/src"));
 	const cx = createCx({
 		css: dss,
 		variants: real.variants,

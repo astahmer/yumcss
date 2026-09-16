@@ -29,7 +29,6 @@
  * sheet-backed mode.
  */
 import { parse, type Rule, type Root } from "postcss";
-import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
 import { createUnsafeCss } from "../src/unsafe/css.ts";
@@ -38,8 +37,8 @@ import { createStylesheet } from "../src/css/create-stylesheet.ts";
 import { escapeIdentifier } from "../src/css/hash.ts";
 import { createCx } from "../src/cx/index.ts";
 import { examplePreset } from "@pandwind/example-preset";
-import { extractTwConfig } from "../src/vite/inline.ts";
 import { PostCssNodeKind } from "./helpers/postcss-node-kind.ts";
+import { readGeneratedTwConfig } from "./helpers/generated-tw.ts";
 
 const MODES = [
 	{ name: "hash-atoms", strategy: undefined },
@@ -86,11 +85,7 @@ function makeMode(strategy: (typeof MODES)[number]["strategy"]) {
 	const css = createUnsafeCss({ className: strategy });
 	const sheet = createStylesheet(examplePreset, { className: strategy });
 
-	const twSource = readFileSync(
-		resolve(import.meta.dirname, "../../../examples/example/src/tw.ts"),
-		"utf8",
-	);
-	const real = extractTwConfig(twSource)!;
+	const real = readGeneratedTwConfig(resolve(import.meta.dirname, "../../../examples/example/src"));
 	const cx = createCx({
 		css: css as never,
 		variants: real.variants,

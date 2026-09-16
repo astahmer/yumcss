@@ -20,6 +20,8 @@ src/
   main.tsx
   tailwind.css
   tw.ts                 # generated — do not edit
+  tw.runtime.ts         # generated runtime metadata — do not edit
+  tw.build.ts            # generated build metadata — do not edit
   types.d.ts            # generated — do not edit
 ```
 
@@ -62,9 +64,12 @@ pnpm exec pandwind-codemod tw generate ./src/tailwind.css ./src
 ```
 
 The generated `src/tw.ts` follows the utilities and values that Tailwind
-actually loaded. This is why editor autocomplete stays useful when the theme
-changes. Keep generated files in source control if your team reviews them;
-never hand-edit them.
+actually loaded. Codegen also writes `src/tw.runtime.ts` for dynamic runtime
+metadata and `src/tw.build.ts` for build-only candidate metadata. The runtime
+entry is small, and the build-only file is never imported by runtime code.
+This is why editor autocomplete stays useful when the theme changes. Keep
+generated files in source control if your team reviews them; never hand-edit
+them.
 
 ## 4. Configure Vite
 

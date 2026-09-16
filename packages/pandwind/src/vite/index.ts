@@ -18,7 +18,7 @@ import { NodeKind } from "../ast-node-kind.ts";
  * runtime. Calls with dynamic arguments keep working through the runtime and
  * can still be covered by the `pandwind-codemod tw scan` safelist.
  */
-import { basename } from "node:path";
+import { basename, dirname, resolve } from "node:path";
 import { SOURCE_SCANNER_SERVICE } from "../source-scanner.ts";
 import { createSourceWorkspace } from "../source-workspace.ts";
 import { walk } from "../tw/literal.ts";
@@ -30,7 +30,7 @@ import { createPandwindEngineContext, type PandwindEngineContext } from "./engin
 import type { ClassNameStrategy } from "../css/class-name-strategy.ts";
 import type { CssPreset } from "./css-extract.ts";
 import {
-	extractTwConfig,
+	extractTwConfigFromSources,
 	inlineTwCalls,
 	OnUnresolvedTag,
 	type OnUnresolved,
@@ -245,9 +245,15 @@ export function createInlineTwPluginCore(options: PandwindViteOptions = {}): Inl
 		if (resolved === null || resolved === undefined) return undefined;
 		const cached = configCache.get(resolved.id);
 		if (cached !== undefined) return cached;
-		const sourceCode = sourceWorkspace.read([resolved.id])[0]?.source;
-		if (sourceCode === undefined) return undefined;
-		const config = extractTwConfig(sourceCode);
+		const generatedSources = sourceWorkspace
+			.read([
+				resolved.id,
+				resolve(dirname(resolved.id), "tw.runtime.ts"),
+				resolve(dirname(resolved.id), "tw.build.ts"),
+			])
+			.map(({ source }) => source);
+		if (generatedSources.length === 0) return undefined;
+		const config = extractTwConfigFromSources(generatedSources);
 		if (config !== undefined) configCache.set(resolved.id, config);
 		return config;
 	};

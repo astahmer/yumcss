@@ -16,24 +16,20 @@
  * The tw-pass composition is covered too: folded `tw({ ... })` strings
  * participate as plain arguments to a subsequent cx() fold.
  */
-import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
 import { createCx } from "../src/cx/index.ts";
 import type { CxInput } from "../src/cx/index.ts";
-import { extractTwConfig, inlineTwCalls } from "../src/vite/inline.ts";
+import { inlineTwCalls } from "../src/vite/inline.ts";
 import { findCxImports, inlineCxCalls } from "../src/vite/cx-inline.ts";
 import {
 	createInlineTwPluginCore,
 	createPandwindEngineContext,
 	pandwindVite,
 } from "../src/vite/index.ts";
+import { readGeneratedTwConfig } from "./helpers/generated-tw.ts";
 
-const twSource = readFileSync(
-	resolve(import.meta.dirname, "../../../examples/example/src/tw.ts"),
-	"utf8",
-);
-const config = extractTwConfig(twSource)!;
+const config = readGeneratedTwConfig(resolve(import.meta.dirname, "../../../examples/example/src"));
 
 const runtimeCx = createCx({
 	conflicts: config.conflicts,

@@ -22,19 +22,14 @@
  * comes from an inline mulberry32 PRNG with fixed seeds — fully reproducible,
  * no dependencies added.
  */
-import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
 import { createUnsafeCss } from "../src/unsafe/css.ts";
 import { createCx } from "../src/cx/index.ts";
 import type { CxInput } from "../src/cx/index.ts";
-import { extractTwConfig } from "../src/vite/inline.ts";
+import { readGeneratedTwConfig } from "./helpers/generated-tw.ts";
 
-const twSource = readFileSync(
-	resolve(import.meta.dirname, "../../../examples/example/src/tw.ts"),
-	"utf8",
-);
-const real = extractTwConfig(twSource)!;
+const real = readGeneratedTwConfig(resolve(import.meta.dirname, "../../../examples/example/src"));
 
 /** Deterministic PRNG (mulberry32). Fixed seeds -> reproducible corpora. */
 function mulberry32(seed: number): () => number {

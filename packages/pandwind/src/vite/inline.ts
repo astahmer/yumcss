@@ -53,7 +53,7 @@ interface CallNode extends OxcNode {
 }
 
 /**
- * The generated tw.ts serializes wildcard value sets as arrays; strict
+ * The generated tw.build.ts serializes wildcard value sets as arrays; strict
  * candidate verification needs Set membership. Normalize at the extraction
  * boundary so the TwConfig contract always sees Sets.
  */
@@ -75,11 +75,21 @@ function normalizeWildcardValues(raw: unknown): Record<string, ReadonlySet<strin
 }
 
 /**
- * Extract the `createTw({ variants, conflicts, compose })` config from a
- * generated `tw.ts` source. The generated shape is stable, so a plain oxc
- * parse + literal evaluation is enough — no type info needed.
+ * Extract the `createTw({ variants, conflicts, compose })` config from
+ * generated tw entry and companion sources. The generated shape is stable,
+ * so a plain oxc parse + literal evaluation is enough — no type info needed.
  */
 export function extractTwConfig(source: string): TwConfig | undefined {
+	return extractTwConfigFromSources([source]);
+}
+
+/**
+ * Extract generated tw metadata from the entry, runtime, and build artifacts.
+ * The sources are combined only for tooling; runtime modules never import the
+ * build-only artifact.
+ */
+export function extractTwConfigFromSources(sources: readonly string[]): TwConfig | undefined {
+	const source = sources.join("\n");
 	const result = SOURCE_SCANNER_SERVICE.parse({ file: "tw.ts", source });
 	let config: TwConfig | undefined;
 

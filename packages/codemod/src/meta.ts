@@ -6,7 +6,8 @@
  *
  * - `types.d.ts` — the tw() object keys (interface entries) and each named
  *   value union's literal members;
- * - `tw.ts` — variant names + join separators, and the conflict map whose
+ * - `tw.ts` + `tw.runtime.ts` + `tw.build.ts` — variant names + join
+ *   separators, the conflict map whose
  *   per-value CSS property lists are the ground truth for disambiguating
  *   overloaded utilities (`text-blue-500` -> ["color"] -> `textColor`,
  *   `text-lg` -> ["font-size","line-height"] -> `textSize`);
@@ -15,7 +16,7 @@
  *   values. Pandwind does not import this artifact automatically; it is a
  *   runtime dependency only when an app explicitly selects its `twAdapter`.
  */
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 // Single source of truth for key -> emitted-utility mapping (textColor -> "text").
@@ -209,6 +210,13 @@ export function loadMetaFromSources(options: LoadMetaOptions): PandwindMeta {
 	const typesDts =
 		options.typesDtsPath === undefined ? undefined : readFileSync(options.typesDtsPath, "utf8");
 	const twTs = options.twTsPath === undefined ? undefined : readFileSync(options.twTsPath, "utf8");
+	const twRuntimePath = resolve(metadataDir, "tw.runtime.ts");
+	const twBuildPath = resolve(metadataDir, "tw.build.ts");
+	const twRuntimeTs = existsSync(twRuntimePath) ? readFileSync(twRuntimePath, "utf8") : undefined;
+	const twBuildTs = existsSync(twBuildPath) ? readFileSync(twBuildPath, "utf8") : undefined;
+	const twSources = [twTs, twRuntimeTs, twBuildTs].flatMap((source) =>
+		source === undefined ? [] : [source],
+	);
 	if (interop === undefined && (typesDts === undefined || twTs === undefined)) {
 		throw new Error(
 			"codemod: generated metadata requires pandwind.interop.json or both types.d.ts and tw.ts",
@@ -243,7 +251,7 @@ export function loadMetaFromSources(options: LoadMetaOptions): PandwindMeta {
 					),
 		variants:
 			interop === undefined
-				? parseVariants(twTs!)
+				? parseVariants(twSources.join("\n"))
 				: new Map(
 						Object.entries(interop.tw.variants).map(([name, value]) => [
 							name,
@@ -252,7 +260,7 @@ export function loadMetaFromSources(options: LoadMetaOptions): PandwindMeta {
 					),
 		conflicts:
 			interop === undefined
-				? parseConflicts(twTs!)
+				? parseConflicts(twSources.join("\n"))
 				: new Map(Object.entries(interop.tw.conflicts ?? {})),
 		bridgeInverse:
 			options.bridgePath !== undefined

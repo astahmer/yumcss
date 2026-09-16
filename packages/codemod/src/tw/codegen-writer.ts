@@ -6,12 +6,14 @@ import {
 	GeneratedArtifactOwnershipTag,
 	type GeneratedArtifactInput,
 } from "./artifact-manifest.ts";
-import { extractTwConfig } from "pandwind/vite/inline";
+import { extractTwConfigFromSources } from "pandwind/vite/inline";
 import { buildPandwindInteropArtifact } from "./interop-artifact.ts";
 
 export interface GeneratedDesignSystem {
 	readonly typesDts: string;
 	readonly twTs: string;
+	readonly twRuntimeTs: string;
+	readonly twBuildTs: string;
 	readonly themeBlock: string;
 	readonly utilityCount: number;
 	readonly variantCount: number;
@@ -28,12 +30,16 @@ export class CodegenArtifactWriter {
 	write(artifacts: GeneratedDesignSystem, options: CodegenWriteOptions): void {
 		writeFileSync(resolve(options.outDir, "types.d.ts"), artifacts.typesDts);
 		writeFileSync(resolve(options.outDir, "tw.ts"), artifacts.twTs);
+		writeFileSync(resolve(options.outDir, "tw.runtime.ts"), artifacts.twRuntimeTs);
+		writeFileSync(resolve(options.outDir, "tw.build.ts"), artifacts.twBuildTs);
 		writeFileSync(
 			resolve(options.outDir, "pandwind.interop.json"),
 			`${JSON.stringify(
 				buildPandwindInteropArtifact({
 					typesDts: artifacts.typesDts,
 					twTs: artifacts.twTs,
+					twRuntimeTs: artifacts.twRuntimeTs,
+					twBuildTs: artifacts.twBuildTs,
 					themeBlock: artifacts.themeBlock,
 				}),
 				null,
@@ -41,7 +47,11 @@ export class CodegenArtifactWriter {
 			)}\n`,
 		);
 		if (options.agents === true) {
-			const config = extractTwConfig(artifacts.twTs);
+			const config = extractTwConfigFromSources([
+				artifacts.twTs,
+				artifacts.twRuntimeTs,
+				artifacts.twBuildTs,
+			]);
 			if (config === undefined)
 				throw new Error("pandwind-codemod tw generate: could not extract config for agents.json");
 			const doc = buildAgentsDocument({
@@ -67,6 +77,8 @@ export class CodegenArtifactWriter {
 		const files = [
 			["types.d.ts", GeneratedArtifactOwnershipTag.Editor],
 			["tw.ts", GeneratedArtifactOwnershipTag.Runtime],
+			["tw.runtime.ts", GeneratedArtifactOwnershipTag.Runtime],
+			["tw.build.ts", GeneratedArtifactOwnershipTag.BuildOnly],
 			["pandwind.interop.json", GeneratedArtifactOwnershipTag.BuildOnly],
 			["pandwind-theme.css", GeneratedArtifactOwnershipTag.Runtime],
 			["pandwind.agents.json", GeneratedArtifactOwnershipTag.Editor],

@@ -15,15 +15,10 @@ import { describe, expect, test } from "vitest";
 import { twMerge } from "tailwind-merge";
 import { createUnsafeCss } from "../src/unsafe/css.ts";
 import { createCx } from "../src/cx/index.ts";
-import { extractTwConfig } from "../src/vite/inline.ts";
-import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
+import { readGeneratedTwConfig } from "./helpers/generated-tw.ts";
 
-const twSource = readFileSync(
-	resolve(import.meta.dirname, "../../../examples/example/src/tw.ts"),
-	"utf8",
-);
-const real = extractTwConfig(twSource)!;
+const real = readGeneratedTwConfig(resolve(import.meta.dirname, "../../../examples/example/src"));
 
 const css = createUnsafeCss();
 const cx = createCx({

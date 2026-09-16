@@ -1586,7 +1586,7 @@ export const bridge = {
 	translate: { none: "translate-none" },
 } as const;
 
-/** Variant metadata mirrored from the generated tw.ts. */
+/** Variant metadata mirrored from the generated tw runtime artifacts. */
 export const variants = {
 	"*": { join: ":" },
 	"**": { join: ":" },

@@ -26,12 +26,17 @@ const exampleTwModule = resolve(pkgRoot, "../../examples/example/src/tw.ts");
  * remains still carries the full createTw metadata the inline pass extracts.
  */
 function writeJsTwModule(dir: string): string {
-	let src = readFileSync(exampleTwModule, "utf8");
+	const generatedDirectory = resolve(pkgRoot, "../../examples/example/src");
+	let src = [
+		readFileSync(resolve(generatedDirectory, "tw.runtime.ts"), "utf8"),
+		readFileSync(resolve(generatedDirectory, "tw.build.ts"), "utf8"),
+		readFileSync(exampleTwModule, "utf8"),
+	].join("\n");
 	src = src.replace(/^import [^\n]*$/gm, "");
 	src = src.replace(/createTw<[^>(]*>\(/, "createTw(");
 	// plain .js fixture: strip TS-only annotations from the generated module
 	src = src.replace(/: string\[\]/g, "");
-	src = src.replace("__pandwindConfig: TwOptions = {", "__pandwindConfig = {");
+	src = src.replace(/: TwOptions = \{/g, " = {");
 	const target = join(dir, "tw.js");
 	writeFileSync(target, src);
 	return target;

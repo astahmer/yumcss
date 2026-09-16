@@ -21,6 +21,8 @@ src/
     index.ts
   styles.ts             # primary createCss/createDesignCss bindings
   tw.ts                 # optional generated Tailwind runtime binding
+  tw.runtime.ts         # generated runtime metadata for dynamic tw/cx
+  tw.build.ts            # generated build-only candidate metadata
   bridge.ts             # optional generated Tailwind class strategy
   tailwind.css          # optional Tailwind input
 ```
@@ -31,6 +33,12 @@ Vite, codegen, and codemods should all consume that same module.
 The generated `bridge.ts` is not imported automatically by Pandwind. It stays
 build-time/migration metadata unless the application explicitly selects its
 `twAdapter` for Tailwind class output.
+
+The generated `tw.ts` entry is intentionally small. `tw.runtime.ts` is loaded
+only when dynamic `tw()` or generated conflict-aware `cx()` calls remain in the
+runtime graph; `tw.build.ts` is read by Vite and codemod tooling and is never a
+runtime import. With `pandwindVite()`, static calls are folded to class strings
+before bundling, so both metadata companions are tree-shaken away.
 
 ## 2. Define tokens
 

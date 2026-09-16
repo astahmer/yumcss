@@ -1,0 +1,14 @@
+{
+  "generated tw (dynamic)": {
+    "min": 261354,
+    "gz": 30219
+  },
+  "generated cx (dynamic)": {
+    "min": 290507,
+    "gz": 40250
+  },
+  "generated tw+cx (static)": {
+    "min": 51,
+    "gz": 71
+  }
+}

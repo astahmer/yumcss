@@ -8,7 +8,7 @@
 		"prebuild": "pnpm run tw:generate && pnpm run tw:scan",
 		"build": "tsc -b && vite build",
 		"typecheck": "tsc --noEmit",
-		"tw:generate": "pnpm exec pandwind-codemod tw generate ./src/tailwind.css ./src --tokens @pandwind/example-preset --preset-import @pandwind/example-preset --preset-export examplePreset --bridge && pnpm exec oxfmt ./src/bridge.ts ./src/pandwind-theme.css ./src/pandwind.interop.json && pnpm exec pandwind-codemod tw manifest ./src ./src/tailwind.css",
+		"tw:generate": "pnpm exec pandwind-codemod tw generate ./src/tailwind.css ./src --tokens @pandwind/example-preset --preset-import @pandwind/example-preset --preset-export examplePreset --bridge && pnpm exec oxfmt ./src/types.d.ts ./src/tw.ts ./src/tw.runtime.ts ./src/tw.build.ts ./src/bridge.ts ./src/pandwind-theme.css ./src/pandwind.interop.json && pnpm exec pandwind-codemod tw manifest ./src ./src/tailwind.css",
 		"tw:prune": "pnpm exec pandwind-codemod tw prune ./src/pandwind-theme.css ./src/tw.ts ./src",
 		"tw:scan": "pnpm exec pandwind-codemod tw scan ./src/tw.ts ./src ./src/pandwind.safelist.css"
 	},

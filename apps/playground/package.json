@@ -11,7 +11,7 @@
 		"build": "tsc --noEmit && vite build",
 		"typecheck": "pnpm run editor:types:check && tsc --noEmit",
 		"test": "vitest run --config vitest.config.ts",
-		"tw:generate": "pnpm exec pandwind-codemod tw generate ./src/tailwind.css ./src --tokens @pandwind/example-preset --preset-import @pandwind/example-preset --preset-export examplePreset --bridge && pnpm exec oxfmt ./src/types.d.ts ./src/tw.ts ./src/bridge.ts ./src/pandwind-theme.css && pnpm exec pandwind-codemod tw manifest ./src ./src/tailwind.css"
+		"tw:generate": "pnpm exec pandwind-codemod tw generate ./src/tailwind.css ./src --tokens @pandwind/example-preset --preset-import @pandwind/example-preset --preset-export examplePreset --bridge && pnpm exec oxfmt ./src/types.d.ts ./src/tw.ts ./src/tw.runtime.ts ./src/tw.build.ts ./src/bridge.ts ./src/pandwind-theme.css && pnpm exec pandwind-codemod tw manifest ./src ./src/tailwind.css"
 	},
 	"dependencies": {
 		"@ark-ui/react": "5.39.0",

@@ -5,11 +5,14 @@ import { performance } from "node:perf_hooks";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { createCx } from "./src/cx/index.ts";
-import { extractTwConfig } from "./src/vite/inline.ts";
+import { extractTwConfigFromSources } from "./src/vite/inline.ts";
 
 const app = resolve(import.meta.dirname, "../../examples/example");
-const twSource = readFileSync(resolve(app, "src/tw.ts"), "utf8");
-const meta = extractTwConfig(twSource)!;
+const meta = extractTwConfigFromSources([
+	readFileSync(resolve(app, "src/tw.ts"), "utf8"),
+	readFileSync(resolve(app, "src/tw.runtime.ts"), "utf8"),
+	readFileSync(resolve(app, "src/tw.build.ts"), "utf8"),
+])!;
 
 const cx = createCx({
 	css: undefined as never,

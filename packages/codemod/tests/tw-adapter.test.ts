@@ -23,7 +23,7 @@ import { createTwAdapter } from "pandwind/tw";
 import { generateUtilityBridge } from "../src/tw/bridge.ts";
 import { compileStyles } from "pandwind/tw/compile";
 import { generateDesignSystem } from "../src/tw/generate-types.ts";
-import { extractTwConfig } from "pandwind/vite/inline";
+import { extractTwConfigFromSources } from "pandwind/vite/inline";
 import { compileClasses, rulesForClass } from "./helpers/tailwind-proof.ts";
 
 const BASE = import.meta.dirname;
@@ -49,8 +49,8 @@ const THEME_ENTRY = `
 
 async function setUp() {
 	const bridge = await generateUtilityBridge(THEME_ENTRY, BASE);
-	const { twTs } = await generateDesignSystem(THEME_ENTRY, BASE);
-	const config = extractTwConfig(twTs)!;
+	const { twTs, twRuntimeTs, twBuildTs } = await generateDesignSystem(THEME_ENTRY, BASE);
+	const config = extractTwConfigFromSources([twTs, twRuntimeTs, twBuildTs])!;
 	const adapter = createTwAdapter({ preset: examplePreset, variants: config.variants, bridge });
 	const css = createCss(examplePreset, { className: adapter });
 	const unsafeCss = createUnsafeCss({ className: adapter });

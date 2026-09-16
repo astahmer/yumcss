@@ -17,11 +17,12 @@
  * - "full"/"partial" totals are cross-checked against the actual passes'
  *   eliminated counts (see analyze.test.ts).
  */
+import { dirname, resolve } from "node:path";
 import { SOURCE_SCANNER_SERVICE, type SourceScanResult } from "pandwind/source";
 import { createSourceWorkspace } from "pandwind/source/workspace";
 import { bindingIsShadowedOrWritten } from "pandwind/vite/cross-module-consts";
 import { collectModuleConstants, evalStaticCx, type ConstantScope } from "pandwind/vite/cx-inline";
-import { extractTwConfig, inlineTwCalls, type TwConfig } from "pandwind/vite/inline";
+import { extractTwConfigFromSources, inlineTwCalls, type TwConfig } from "pandwind/vite/inline";
 import { compileStyles, type TwNestedStyles } from "pandwind/tw/compile";
 import { evalLiteral, walk, type OxcNode } from "pandwind/tw/literal";
 import { NodeKind } from "pandwind/tw/literal";
@@ -463,8 +464,15 @@ function lineOf(lineStarts: Array<number>, offset: number): number {
 
 /** Load a generated tw module's config from disk. */
 export function loadTwConfig(twPath: string): TwConfig {
-	const source = createSourceWorkspace().read([twPath])[0]?.source;
-	const config = source === undefined ? undefined : extractTwConfig(source);
+	const generatedSources = createSourceWorkspace()
+		.read([
+			twPath,
+			resolve(dirname(twPath), "tw.runtime.ts"),
+			resolve(dirname(twPath), "tw.build.ts"),
+		])
+		.map(({ source }) => source);
+	const config =
+		generatedSources.length === 0 ? undefined : extractTwConfigFromSources(generatedSources);
 	if (config === undefined) {
 		throw new Error(`pandwind analyze: could not extract tw config from ${twPath}`);
 	}

@@ -4,16 +4,22 @@
  *
  * Loads the Tailwind design system from a CSS entry (via `@tailwindcss/node`),
  * introspects functional/static utilities, value completions and variants, then
- * writes two files next to the CSS entry:
+ * writes generated files next to the CSS entry:
  *
  * - `types.d.ts` — `WindVariants`: one key per utility + recursive variant keys,
  *   with literal value unions so the editor autocompletes real Tailwind classes.
- * - `tw.ts` — a typed `tw` instance wired with the design-system variant metadata.
+ * - `tw.ts` — the small typed `tw` entry;
+ * - `tw.runtime.ts` — runtime metadata for dynamic `tw()` and `cx()` calls;
+ * - `tw.build.ts` — build-only wildcard candidate metadata.
  *
  */
 
 import { camelCaseProperty } from "./camelcase-property.ts";
-import { TailwindTypeEmitter, utilityKey as emittedUtilityKey } from "./codegen-emitter.ts";
+import {
+	TailwindTypeEmitter,
+	utilityKey as emittedUtilityKey,
+	type GeneratedTwSources,
+} from "./codegen-emitter.ts";
 import { TailwindUtilityCatalog } from "./codegen-catalog.ts";
 import { loadTailwindDesignSystem, type TailwindDesignSystem } from "./design-system-cache.ts";
 
@@ -47,6 +53,8 @@ export interface DesignSystemCodegenDependencies {
 export interface GeneratedDesignSystemSource {
 	readonly typesDts: string;
 	readonly twTs: string;
+	readonly twRuntimeTs: string;
+	readonly twBuildTs: string;
 	/**
 	 * Selectors supplied by Tailwind's own variant registry. Consumers that
 	 * materialize a Pandwind preset can use these to preserve custom and
@@ -103,7 +111,7 @@ export interface GenerateDesignSystemOptions {
 }
 
 /**
- * Generate the two artifact files for a CSS entry. Exported so tests and
+ * Generate the generated artifact files for a CSS entry. Exported so tests and
  * tooling can reuse it without writing to disk.
  */
 class DefaultDesignSystemCodegen implements DesignSystemCodegen {
@@ -148,13 +156,22 @@ class DefaultDesignSystemCodegen implements DesignSystemCodegen {
 				emittedUtilityKey(name, camelCaseProperty).replace(/^"|"$/g, ""),
 			),
 		);
+		const twSources: GeneratedTwSources = this.emitter.runtime(
+			variants,
+			conflicts,
+			compose,
+			wildcardValues,
+			valueTokens,
+		);
 		return {
 			typesDts: `${header}
 ${this.emitter.utilities(types, modifierCapable)}
 
 ${this.emitter.variants(variants, utilityKeyNames)}
 `,
-			twTs: this.emitter.runtime(variants, conflicts, compose, wildcardValues, valueTokens),
+			twTs: twSources.entry,
+			twRuntimeTs: twSources.runtime,
+			twBuildTs: twSources.build,
 			variantConditions: collectVariantConditions(system),
 			utilityCount: types.size,
 			variantCount: variants.length,

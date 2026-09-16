@@ -405,8 +405,9 @@ bridge generation refreshes the optional bridge section from the compiled
 design system. Pandwind does not import generated `bridge.ts` automatically;
 only an explicit `twAdapter` selection adds it to an application's runtime
 graph. Migration tooling consumes that artifact when present and only falls
-back to parsing `types.d.ts`/`tw.ts` for projects generated before the artifact
-was introduced. The artifact is the project-context boundary; it must never
+back to parsing `types.d.ts`/`tw.ts` and their companion metadata for projects
+generated before the artifact was introduced. The artifact is the
+project-context boundary; it must never
 contain assumptions about the example application.
 
 `pandwind.agents.json` points to this artifact in `generatedFrom` using paths
@@ -1288,7 +1289,8 @@ contract, not authoring APIs, and their evidence is the pruner test rather
 than a public usage example.
 
 Generated Tailwind artifacts are checked with `pnpm run generated:check`. The
-check regenerates `tw.ts`, `types.d.ts`, `bridge.ts`, the theme, and interop
+check regenerates `tw.ts`, `tw.runtime.ts`, `tw.build.ts`, `types.d.ts`,
+`bridge.ts`, the theme, and interop
 metadata in a temporary directory, formats the source artifacts with the
 repository formatter, normalizes only machine-local artifact paths, and
 compares the result with the checked-in files. A failure names the source CSS

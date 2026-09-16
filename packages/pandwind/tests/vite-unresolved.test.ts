@@ -4,18 +4,14 @@
  * token vocabulary) and no-CSS tokens (render unstyled). Collected by
  * inlineTwCalls / inlineCxCalls when enabled, reported by the plugin core.
  */
-import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
-import { extractTwConfig, inlineTwCalls } from "../src/vite/inline.ts";
+import { inlineTwCalls } from "../src/vite/inline.ts";
 import { inlineCxCalls } from "../src/vite/cx-inline.ts";
 import { collectUnresolvedTokens, tokenHasCss } from "../src/vite/unresolved.ts";
+import { readGeneratedTwConfig } from "./helpers/generated-tw.ts";
 
-const twSource = readFileSync(
-	resolve(import.meta.dirname, "../../../examples/example/src/tw.ts"),
-	"utf8",
-) as string;
-const config = extractTwConfig(twSource)!;
+const config = readGeneratedTwConfig(resolve(import.meta.dirname, "../../../examples/example/src"));
 
 describe("tokenHasCss", () => {
 	test("known utilities have CSS", () => {

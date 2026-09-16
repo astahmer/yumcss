@@ -79,6 +79,10 @@ pnpm exec pandwind-analyze \
 	"src/**/*.{ts,tsx}"
 ```
 
+When `src/tw.ts` comes from codegen, the analyzer also reads adjacent
+`tw.runtime.ts` and `tw.build.ts` artifacts; the build-only catalog is never
+treated as a browser runtime dependency.
+
 Use it to track:
 
 - static versus runtime style calls;

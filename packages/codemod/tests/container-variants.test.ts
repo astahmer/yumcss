@@ -15,7 +15,7 @@
 import { compile } from "@tailwindcss/node";
 import { parse, type Root } from "postcss";
 import { describe, expect, test } from "vitest";
-import { extractTwConfig } from "pandwind/vite/inline";
+import { extractTwConfigFromSources } from "pandwind/vite/inline";
 import { createTw } from "pandwind/tw";
 import { createCx } from "pandwind/cx";
 import { generateDesignSystem } from "../src/tw/generate-types.ts";
@@ -29,7 +29,7 @@ const CSS = `@import "tailwindcss";
 
 async function makeEngine() {
 	const gen = await generateDesignSystem(CSS, import.meta.dirname);
-	const cfg = extractTwConfig(gen.twTs)!;
+	const cfg = extractTwConfigFromSources([gen.twTs, gen.twRuntimeTs, gen.twBuildTs])!;
 	return {
 		gen,
 		tw: createTw({ variants: cfg.variants, conflicts: cfg.conflicts, compose: cfg.compose }),

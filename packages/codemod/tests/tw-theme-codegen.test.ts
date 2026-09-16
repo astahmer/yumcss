@@ -164,6 +164,8 @@ describe("typegen integration", () => {
 		const explicitEmpty = await generateDesignSystem(css, srcDir, { themeBlock: "" });
 		expect(explicitEmpty.typesDts).toBe(without.typesDts);
 		expect(explicitEmpty.twTs).toBe(without.twTs);
+		expect(explicitEmpty.twRuntimeTs).toBe(without.twRuntimeTs);
+		expect(explicitEmpty.twBuildTs).toBe(without.twBuildTs);
 	});
 
 	test("generation with the same injected block is byte-deterministic", async () => {
@@ -171,6 +173,8 @@ describe("typegen integration", () => {
 		const b = await generateDesignSystem(css, srcDir, { themeBlock: THEME_BLOCK });
 		expect(a.typesDts).toBe(b.typesDts);
 		expect(a.twTs).toBe(b.twTs);
+		expect(a.twRuntimeTs).toBe(b.twRuntimeTs);
+		expect(a.twBuildTs).toBe(b.twBuildTs);
 	});
 });
 

@@ -1,18 +1,13 @@
-import { readFileSync } from "node:fs";
-import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
+import { resolve } from "node:path";
 import { createUnsafeCss } from "../src/unsafe/css.ts";
 import { createDesignCss } from "../src/design/index.ts";
 import { createCx } from "../src/cx/index.ts";
 import { examplePreset } from "@pandwind/example-preset";
-import { extractTwConfig } from "../src/vite/inline.ts";
 import { tw } from "../../../examples/example/src/tw.ts";
+import { readGeneratedTwConfig } from "./helpers/generated-tw.ts";
 
-const twSource = readFileSync(
-	resolve(import.meta.dirname, "../../../examples/example/src/tw.ts"),
-	"utf8",
-);
-const real = extractTwConfig(twSource)!;
+const real = readGeneratedTwConfig(resolve(import.meta.dirname, "../../../examples/example/src"));
 
 const css = createUnsafeCss();
 const dss = createDesignCss(examplePreset);

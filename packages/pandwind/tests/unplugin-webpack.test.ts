@@ -19,11 +19,16 @@ const packageRoot = resolve(import.meta.dirname, "..");
 const exampleTwModule = resolve(packageRoot, "../../examples/example/src/tw.ts");
 
 function writeJsTwModule(dir: string): string {
-	let source = readFileSync(exampleTwModule, "utf8");
+	const generatedDirectory = resolve(packageRoot, "../../examples/example/src");
+	let source = [
+		readFileSync(resolve(generatedDirectory, "tw.runtime.ts"), "utf8"),
+		readFileSync(resolve(generatedDirectory, "tw.build.ts"), "utf8"),
+		readFileSync(exampleTwModule, "utf8"),
+	].join("\n");
 	source = source.replace(/^import [^\n]*$/gm, "");
 	source = source.replace(/createTw<[^>(]*>\(/, "createTw(");
 	source = source.replace(/: string\[\]/g, "");
-	source = source.replace("__pandwindConfig: TwOptions = {", "__pandwindConfig = {");
+	source = source.replace(/: TwOptions = \{/g, " = {");
 	const target = join(dir, "tw.js");
 	writeFileSync(target, source);
 	return target;

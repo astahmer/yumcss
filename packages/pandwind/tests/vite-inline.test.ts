@@ -1,17 +1,21 @@
-import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
-import { extractTwConfig, inlineTwCalls } from "../src/vite/inline.ts";
+import { extractTwConfig, extractTwConfigFromSources, inlineTwCalls } from "../src/vite/inline.ts";
 import { createTw } from "../src/tw/runtime.ts";
+import { readGeneratedTwConfig, readGeneratedTwSources } from "./helpers/generated-tw.ts";
 
-const twSource = readFileSync(
-	resolve(import.meta.dirname, "../../../examples/example/src/tw.ts"),
-	"utf8",
-);
-const config = extractTwConfig(twSource);
+const generatedDirectory = resolve(import.meta.dirname, "../../../examples/example/src");
+const generatedSources = readGeneratedTwSources(generatedDirectory);
+const config = readGeneratedTwConfig(generatedDirectory);
 
 describe("extractTwConfig", () => {
-	test("extracts variants, conflicts and compose from the generated tw.ts", () => {
+	test("keeps the runtime entry separate from companion metadata", () => {
+		expect(generatedSources).toHaveLength(3);
+		expect(extractTwConfig(generatedSources[0]!)).toBeUndefined();
+		expect(extractTwConfigFromSources(generatedSources)).toEqual(config);
+	});
+
+	test("extracts variants, conflicts and compose from generated tw artifacts", () => {
 		expect(config).toBeDefined();
 		expect(Object.keys(config!.variants).length).toBeGreaterThan(0);
 		expect(config!.variants.group?.join).toBe("-");

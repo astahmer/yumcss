@@ -8,15 +8,15 @@ import { NodeKind } from "../ast-node-kind.ts";
  * evaluates every literal `tw({ ... })` call in the app source using the same
  * typed `tw` instance the app imports and writes exactly those candidates.
  */
-import { basename } from "node:path";
-import { readFileSync, writeFileSync } from "node:fs";
+import { basename, dirname, resolve } from "node:path";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { SOURCE_SCANNER_SERVICE } from "../source-scanner.ts";
 import { createSourceWorkspace, type SourceWorkspace } from "../source-workspace.ts";
 import { findCxImports } from "../vite/cx-inline.ts";
 import { collectCxClassCandidates, pushVerifiedCandidate } from "../vite/cx-call-rewriter.ts";
 import { collectModuleConstants } from "../vite/cx-static-evaluator.ts";
 import { tokenHasExactCss, type UnresolvedToken, createLineIndex } from "../vite/unresolved.ts";
-import { extractTwConfig } from "../vite/inline.ts";
+import { extractTwConfigFromSources } from "../vite/inline.ts";
 import { evalLiteral, evalLiteralValues, isTwCall, walk, type OxcNode } from "./literal.ts";
 
 export interface TwScanOptions {
@@ -58,7 +58,12 @@ class DefaultTwClassCollector implements TwClassCollector {
 		// conflict metadata instead. Verify its finite class candidates
 		// through the same strict catalog the vite lane uses so scan output
 		// stays identical to what the bundler lane would have registered.
-		const config = extractTwConfig(readFileSync(twEntry, "utf8"));
+		const generatedSources = [
+			twEntry,
+			resolve(dirname(twEntry), "tw.runtime.ts"),
+			resolve(dirname(twEntry), "tw.build.ts"),
+		].flatMap((path) => (existsSync(path) ? [readFileSync(path, "utf8")] : []));
+		const config = extractTwConfigFromSources(generatedSources);
 		const unresolvedTokens: UnresolvedToken[] = [];
 
 		for (const { path: file, source, scan } of workspace.read(files)) {

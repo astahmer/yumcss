@@ -33,20 +33,20 @@ describe("typegen", () => {
 			emitter: {
 				utilities: () => "utilities",
 				variants: () => "variants",
-				runtime: () => "runtime",
+				runtime: () => ({ entry: "runtime", runtime: "runtime metadata", build: "build metadata" }),
 			},
 		});
 		const output = await generator.generate("", ".");
 		expect(output.typesDts).toContain("utilities");
 		expect(output.twTs).toBe("runtime");
+		expect(output.twRuntimeTs).toBe("runtime metadata");
+		expect(output.twBuildTs).toBe("build metadata");
 		expect(calls).toEqual(["conflicts", "expand", "modifiers"]);
 	});
 
 	test("generates utilities, variants and runtime metadata", async () => {
-		const { typesDts, twTs, utilityCount, variantCount } = await generateDesignSystem(
-			css,
-			resolve(app, "src"),
-		);
+		const { typesDts, twTs, twRuntimeTs, twBuildTs, utilityCount, variantCount } =
+			await generateDesignSystem(css, resolve(app, "src"));
 
 		expect(utilityCount).toBeGreaterThan(200);
 		expect(variantCount).toBeGreaterThan(50);
@@ -91,17 +91,20 @@ describe("typegen", () => {
 			expect(typesDts, `missing generated type for sub-key ${key}`).toContain(`"${key}"?:`);
 		}
 
-		expect(twTs).toContain('group: { join: "-" }');
-		expect(twTs).toContain('"@": { join: "" }');
-		expect(twTs).toContain("export const __pandwindBuildMetadata");
-		const configStart = twTs.indexOf("export const __pandwindConfig");
-		const buildMetadataStart = twTs.indexOf("export const __pandwindBuildMetadata");
-		expect(configStart).toBeGreaterThanOrEqual(0);
-		expect(buildMetadataStart).toBeGreaterThan(configStart);
-		expect(twTs.slice(configStart, buildMetadataStart)).not.toContain("wildcardValues");
+		expect(twTs).toContain('from "./tw.runtime.ts"');
+		expect(twTs).toContain("createTw");
+		expect(twTs).not.toContain("conflicts");
+		expect(twTs).not.toContain("wildcardValues");
+		expect(twTs).not.toContain("__pandwindBuildMetadata");
+		expect(twRuntimeTs).toContain('group: { join: "-" }');
+		expect(twRuntimeTs).toContain('"@": { join: "" }');
+		expect(twRuntimeTs).toContain("export const __pandwindRuntimeConfig");
+		expect(twRuntimeTs).not.toContain("wildcardValues");
+		expect(twBuildTs).toContain("export const __pandwindBuildMetadata");
+		expect(twBuildTs).toContain("wildcardValues");
 		// Every variant is emitted now (default `:` joins included) so the
 		// tailwind css() adapter can look any condition up.
-		const variantsBlock = twTs.slice(0, twTs.indexOf("conflicts:"));
+		const variantsBlock = twRuntimeTs.slice(0, twRuntimeTs.indexOf("conflicts:"));
 		expect(variantsBlock).toContain('hover: { join: ":" }');
 		expect(variantsBlock).toContain('sm: { join: ":" }');
 		// `before` stays out of the variants block (pseudo-element, not a

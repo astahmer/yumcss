@@ -10,7 +10,7 @@
  * Verdict = diff of RULE SETS (selector + sorted declarations), immune to
  * candidate-extraction noise because unknown tokens emit no rules.
  */
-import { globSync, readFileSync } from "node:fs";
+import { existsSync, globSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { gzipSync } from "node:zlib";
 import { compile } from "@tailwindcss/node";
@@ -18,13 +18,18 @@ import { parse } from "postcss";
 import { parseSync } from "oxc-parser";
 import { evalLiteral } from "pandwind/tw/literal";
 import { createTw } from "pandwind/tw";
-import { extractTwConfig } from "pandwind/vite/inline";
+import { extractTwConfigFromSources } from "pandwind/vite/inline";
 
 const KUMO = "/tmp/pandwind-kumo-dogfood/packages/kumo/src";
 const BEFORE = "/tmp/kumo-src-before";
 const META = "/tmp/kumo-meta";
 
-const meta = extractTwConfig(readFileSync(resolve(META, "tw.ts"), "utf8"))!;
+const meta = extractTwConfigFromSources(
+	["tw.ts", "tw.runtime.ts", "tw.build.ts"].flatMap((name) => {
+		const path = resolve(META, name);
+		return existsSync(path) ? [readFileSync(path, "utf8")] : [];
+	}),
+)!;
 const twFn = createTw({
 	variants: meta.variants,
 	conflicts: meta.conflicts,

@@ -53,8 +53,12 @@ Tailwind's own design system (`@tailwindcss/node`) and writes:
 - `<out-dir>/types.d.ts` — one key per utility, literal value unions
   (including opacity modifiers), recursive variant nesting, `(string & {})`
   escape hatch.
-- `<out-dir>/tw.ts` — the typed `tw` instance wired with variants, the
-  conflict map and composing utilities; marked `@__PURE__`.
+- `<out-dir>/tw.ts` — the small typed `tw` runtime entry; marked `@__PURE__`.
+- `<out-dir>/tw.runtime.ts` — runtime variant, conflict, composition and
+  token-remap metadata used by dynamic `tw()`/generated conflict-aware
+  `cx()` calls.
+- `<out-dir>/tw.build.ts` — build-only wildcard candidate metadata read by Vite
+  and codemod tooling; runtime bindings never import it.
 - With `--tokens <module-path>` — also emits `pandwind-theme.css` (the DTCG →
   Tailwind v4 `@theme` bridge) and injects token-derived values into the
   generated unions. Accepts a bare groups object, `{ tokens }`, or any export

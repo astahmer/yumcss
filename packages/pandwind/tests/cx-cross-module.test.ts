@@ -27,13 +27,9 @@ import {
 import { inlineCxCalls } from "../src/vite/cx-inline.ts";
 import { pandwindVite } from "../src/vite/index.ts";
 import type { ConstantScope } from "../src/vite/cx-inline.ts";
-import { extractTwConfig } from "../src/vite/inline.ts";
+import { readGeneratedTwConfig } from "./helpers/generated-tw.ts";
 
-const twSource = readFileSync(
-	resolve(import.meta.dirname, "../../../examples/example/src/tw.ts"),
-	"utf8",
-);
-const config = extractTwConfig(twSource)!;
+const config = readGeneratedTwConfig(resolve(import.meta.dirname, "../../../examples/example/src"));
 const FIXTURES = resolve(import.meta.dirname, "fixtures/cx-cross-module");
 
 function analyzeFile(path: string): ModuleExportAnalysis {

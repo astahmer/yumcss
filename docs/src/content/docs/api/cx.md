@@ -28,10 +28,11 @@ import { createCss } from "pandwind/css";
 import { createCx } from "pandwind/cx";
 
 import { examplePreset } from "@pandwind/example-preset";
-import { __pandwindConfig, tw } from "./tw";
+import { tw } from "./tw";
+import { __pandwindRuntimeConfig } from "./tw.runtime";
 
 const css = createCss(examplePreset);
-const cx = createCx({ css, ...__pandwindConfig });
+const cx = createCx({ css, ...__pandwindRuntimeConfig });
 
 const knownStyles = css({ color: "blue", padding: 4 }, { color: "navy" });
 const knownProps = css.props(knownStyles);
@@ -40,6 +41,12 @@ const directClass = css.class({ color: "navy", padding: 4 });
 cx(tw({ bg: "red-500" }), "px-4", knownStyles, directClass, "bg-blue-500");
 // "px-4 bg-blue-500 <color atom>" — bg-red-500 lost to bg-blue-500
 ```
+
+`tw.runtime.ts` is the generated conflict metadata used by dynamic `tw()`
+and conflict-aware `cx()` calls. `tw.build.ts` is tooling-only and is never a
+runtime import. When `pandwindVite()` folds all calls to literals, both
+generated metadata files are removed from the browser bundle; a genuinely
+dynamic call pays for the metadata needed to preserve its runtime semantics.
 
 Tailwind classes are parsed against the generated conflict map (variant
 scoped, compose-aware, last-wins per canonical CSS property — never a

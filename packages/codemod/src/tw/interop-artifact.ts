@@ -1,4 +1,4 @@
-import { extractTwConfig, type TwConfig } from "pandwind/vite/inline";
+import { extractTwConfigFromSources, type TwConfig } from "pandwind/vite/inline";
 import type { UtilityBridge } from "pandwind/tw";
 import { UTILITY_SUBKEYS } from "pandwind/tw/compile";
 
@@ -38,6 +38,8 @@ export interface PandwindInteropArtifact {
 export interface BuildPandwindInteropArtifactOptions {
 	readonly typesDts: string;
 	readonly twTs: string;
+	readonly twRuntimeTs?: string;
+	readonly twBuildTs?: string;
 	readonly bridge?: UtilityBridge;
 	readonly themeBlock?: string;
 }
@@ -94,7 +96,11 @@ function themeMetadata(themeBlock: string): PandwindInteropArtifact["theme"] {
 export function buildPandwindInteropArtifact(
 	options: BuildPandwindInteropArtifactOptions,
 ): PandwindInteropArtifact {
-	const config = extractTwConfig(options.twTs);
+	const config = extractTwConfigFromSources([
+		options.twTs,
+		...(options.twRuntimeTs === undefined ? [] : [options.twRuntimeTs]),
+		...(options.twBuildTs === undefined ? [] : [options.twBuildTs]),
+	]);
 	if (config === undefined) throw new Error("pandwind interop: could not read generated tw config");
 	return {
 		schema: PANDWIND_INTEROP_SCHEMA,

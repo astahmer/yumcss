@@ -23,12 +23,14 @@
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { BRIDGE_PROPS, generateUtilityBridge } from "./bridge.ts";
-import { extractTwConfig } from "pandwind/vite/inline";
+import { extractTwConfigFromSources } from "pandwind/vite/inline";
 import { buildPandwindInteropArtifact } from "./interop-artifact.ts";
 
 export interface GenerateTwBridgeOptions {
 	readonly cssEntry: string;
 	readonly twFile: string;
+	readonly twRuntimeFile?: string;
+	readonly twBuildFile?: string;
 	readonly outFile: string;
 	readonly presetImport: string;
 	readonly presetExport: string;
@@ -68,8 +70,17 @@ class DefaultTwBridgeGenerator implements TwBridgeGenerator {
 			values,
 		});
 
+		const runtimeFile = options.twRuntimeFile ?? resolve(dirname(options.twFile), "tw.runtime.ts");
+		const buildFile = options.twBuildFile ?? resolve(dirname(options.twFile), "tw.build.ts");
 		const twSource = readFileSync(options.twFile, "utf8");
-		const config = extractTwConfig(twSource);
+		const twRuntimeSource = existsSync(runtimeFile) ? readFileSync(runtimeFile, "utf8") : undefined;
+		const twBuildSource = existsSync(buildFile) ? readFileSync(buildFile, "utf8") : undefined;
+		const twSources = [
+			twSource,
+			...(twRuntimeSource === undefined ? [] : [twRuntimeSource]),
+			...(twBuildSource === undefined ? [] : [twBuildSource]),
+		];
+		const config = extractTwConfigFromSources(twSources);
 		if (config === undefined) {
 			throw new Error(`pandwind: could not read the tw() config from ${options.twFile}`);
 		}
@@ -84,7 +95,7 @@ import { ${options.presetExport} } from "${options.presetImport}";
 /** (property, resolved value) -> Tailwind utility, scoped to the preset. */
 export const bridge = ${JSON.stringify(bridge)} as const;
 
-/** Variant metadata mirrored from the generated tw.ts. */
+/** Variant metadata mirrored from the generated tw runtime artifacts. */
 export const variants = ${JSON.stringify(config.variants)} as const;
 
 /** css() class strategy: emit the same utilities tw() emits. */
@@ -104,6 +115,8 @@ export const twAdapter = createTwAdapter({
 			const artifact = buildPandwindInteropArtifact({
 				typesDts: readFileSync(typesPath, "utf8"),
 				twTs: twSource,
+				twRuntimeTs: twRuntimeSource,
+				twBuildTs: twBuildSource,
 				bridge,
 				themeBlock: existsSync(themePath) ? readFileSync(themePath, "utf8") : "",
 			});
