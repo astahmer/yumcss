@@ -358,7 +358,7 @@ const assertNoRegression = (
 			);
 		}
 		const checks: [keyof Metrics, number][] = [["instantiations", tolerance.instantiations]];
-		if (sameEnvironment) {
+		if (sameEnvironment && workload.samples === previous.samples) {
 			checks.push(
 				["memoryUsedKiB", tolerance.memoryUsedKiB],
 				["checkTimeSeconds", tolerance.checkTimeSeconds],
