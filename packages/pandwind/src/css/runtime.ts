@@ -286,18 +286,13 @@ export function createRuntimeCss<
 >(
 	preset: TPreset,
 	options: RuntimeCssOptions = {},
-): RuntimeCssFn<
-	TypedStyleObject<TPreset["_config"], TPreset["tokens"], TPreset>,
-	TypedDynamicStyleObject<TPreset>
-> {
+): RuntimeCssFn<TypedStyleObject<TPreset>, TypedDynamicStyleObject<TPreset>> {
 	const runtime = runtimeOptions(preset, options);
-	const css = createCss(preset, runtime.cssOptions) as CssFn<
-		TypedStyleObject<TPreset["_config"], TPreset["tokens"], TPreset>
-	>;
+	const css = createCss(preset, runtime.cssOptions) as CssFn<TypedStyleObject<TPreset>>;
 	runtime.registerVars(css as unknown as CssFn<StyleObject>);
 	const flushed = withRuntimeFlush(css as unknown as CssFn<StyleObject>, runtime);
 	return Object.assign(flushed, { sheet: runtime.sheet }) as RuntimeCssFn<
-		TypedStyleObject<TPreset["_config"], TPreset["tokens"], TPreset>,
+		TypedStyleObject<TPreset>,
 		TypedDynamicStyleObject<TPreset>
 	>;
 }

@@ -10,10 +10,10 @@
   "updatedAt": "2026-09-16",
   "metrics": {
     "files": 738,
-    "instantiations": 401063,
-    "memoryUsedKiB": 317942,
-    "checkTimeSeconds": 0.228,
-    "totalTimeSeconds": 0.299
+    "instantiations": 303591,
+    "memoryUsedKiB": 305985,
+    "checkTimeSeconds": 0.212,
+    "totalTimeSeconds": 0.29
   },
   "tolerances": {
     "instantiations": 0.1,

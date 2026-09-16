@@ -78,10 +78,7 @@ const ALL_RUNTIME_METHODS = [
 export function createCss<TPreset extends TypedPreset>(
 	preset: TPreset,
 	options?: CreateCssOptions,
-): CssFn<
-	TypedStyleObject<TPreset["_config"], TPreset["tokens"], TPreset>,
-	TypedDynamicStyleObject<TPreset>
->;
+): CssFn<TypedStyleObject<TPreset>, TypedDynamicStyleObject<TPreset>>;
 export function createCss(preset: TypedPreset, options: CreateCssOptions = {}): CssFn<StyleObject> {
 	if (!isPreset(preset)) {
 		throw new Error(

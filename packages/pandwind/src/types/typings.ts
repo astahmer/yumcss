@@ -438,11 +438,15 @@ type Nested<TStyle, TConds extends string> = TStyle & {
 	[K in AnySelector | TConds]?: Nested<TStyle, TConds>;
 };
 
-type ThemeConds<
-	TConfig extends object,
-	TPreset extends CssPreset<TConfig>,
-	TKeys = keyof TPreset["conditions"],
-> = TKeys extends string ? TKeys : never;
+type TypedStylePreset = {
+	_config: object;
+	tokens: AnyTokens;
+	conditions: AnyConditions;
+	properties: object;
+	strict: boolean;
+};
+
+type ThemeConds<TPreset extends TypedStylePreset> = Extract<keyof TPreset["conditions"], string>;
 
 type ConfigPropertyNames<TConfig> = [keyof TConfig] extends [never]
 	? string
@@ -457,6 +461,19 @@ type ConfigPropertyValue<TConfig, PropName extends string> = PropName extends ke
 type InitialCssTypesValues<TConfig, TAll, PropName extends string> = TAll extends true
 	? ConfigPropertyValue<TConfig, PropName>
 	: never;
+
+type PresetStylePropertyNames<TPreset extends TypedStylePreset> =
+	| (TPreset["properties"] extends { $all: true }
+			? Exclude<ConfigPropertyNames<TPreset["_config"]>, "colorPalette">
+			: never)
+	| Exclude<Extract<keyof TPreset["properties"], string>, "$all" | "colorPalette">
+	| ([ColorPaletteNames<TPreset>] extends [never] ? never : "colorPalette");
+
+type PresetPaletteProperty<TPreset extends TypedStylePreset> = [
+	ColorPaletteNames<TPreset>,
+] extends [never]
+	? { colorPalette?: never }
+	: {};
 
 declare const ErrorSymbol: unique symbol;
 
@@ -476,39 +493,24 @@ declare const ErrorSymbol: unique symbol;
  * });
  * ```
  *
- * @typeParam TConfig - The CSS property configuration.
- * @typeParam TTokens - The preset token groups.
  * @typeParam TPreset - The complete preset metadata.
  * @typeParam TConds - The condition keys accepted by nested styles.
  * @category styling
  * @since 0.1.0
  */
 export type TypedStyleObject<
-	TConfig extends object,
-	TTokens extends AnyTokens,
-	TPreset extends CssPreset<TConfig>,
-	TConds extends string = ThemeConds<TConfig, TPreset>,
-	TAll = TPreset["properties"] extends { $all: true } ? true : false,
-	TList extends string = Exclude<
-		Extract<keyof TPreset["properties"], string>,
-		"$all" | "colorPalette"
-	>,
-	TPaletteList extends string = [ColorPaletteNames<TPreset>] extends [never]
-		? never
-		: "colorPalette",
-	TPropList extends string = TAll extends true
-		? Exclude<ConfigPropertyNames<TConfig>, "colorPalette"> | TList | TPaletteList
-		: TList | TPaletteList,
+	TPreset extends TypedStylePreset,
+	TConds extends string = ThemeConds<TPreset>,
 > = Nested<
 	{
-		[PropName in TPropList]?: PropName extends "colorPalette"
+		[PropName in PresetStylePropertyNames<TPreset>]?: PropName extends "colorPalette"
 			? ConditionalValue<ColorPaletteNames<TPreset>, TConds>
-			: PropName extends ConfigPropertyNames<TConfig>
+			: PropName extends ConfigPropertyNames<TPreset["_config"]>
 				? PropName extends keyof TPreset["properties"]
 					? ConditionalValue<
 							PropValue<
-								TConfig,
-								TTokens,
+								TPreset["_config"],
+								TPreset["tokens"],
 								PropName,
 								TPreset["properties"][PropName],
 								TPreset["strict"],
@@ -516,14 +518,17 @@ export type TypedStyleObject<
 							>,
 							TConds
 						>
-					: ConditionalValue<InitialCssTypesValues<TConfig, TAll, PropName>, TConds>
+					: ConditionalValue<
+							InitialCssTypesValues<
+								TPreset["_config"],
+								TPreset["properties"] extends { $all: true } ? true : false,
+								PropName
+							>,
+							TConds
+						>
 				: "Not a part of the `TConfig` interface" & {
 						_error: typeof ErrorSymbol;
 					};
-	} & {
-		colorPalette?: [ColorPaletteNames<TPreset>] extends [never]
-			? never
-			: ConditionalValue<ColorPaletteNames<TPreset>, TConds>;
-	},
+	} & PresetPaletteProperty<TPreset>,
 	TConds
 >;

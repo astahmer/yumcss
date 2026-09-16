@@ -213,6 +213,4 @@ export function createCssRuntime(
 
 /** Add preset-derived style typing to a runtime callable without changing its implementation. */
 export type TypedRuntimeCssFunction<TPreset extends TypedPreset> = RuntimeCssFunction &
-	((
-		...styles: Array<TypedStyleObject<TPreset["_config"], TPreset["tokens"], TPreset>>
-	) => CompiledStyles);
+	((...styles: Array<TypedStyleObject<TPreset>>) => CompiledStyles);

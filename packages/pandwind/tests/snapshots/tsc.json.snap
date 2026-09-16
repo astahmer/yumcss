@@ -18,12 +18,12 @@
 			"samples": 3,
 			"metrics": {
 				"files": 227,
-				"symbols": 76123,
-				"types": 19513,
-				"instantiations": 40143,
-				"memoryUsedKiB": 65960,
-				"checkTimeSeconds": 0.051,
-				"totalTimeSeconds": 0.078
+				"symbols": 76091,
+				"types": 19421,
+				"instantiations": 40048,
+				"memoryUsedKiB": 65957,
+				"checkTimeSeconds": 0.044,
+				"totalTimeSeconds": 0.069
 			}
 		},
 		{
@@ -34,12 +34,12 @@
 			"samples": 3,
 			"metrics": {
 				"files": 230,
-				"symbols": 81486,
-				"types": 14291,
-				"instantiations": 23910,
-				"memoryUsedKiB": 69032,
-				"checkTimeSeconds": 0.008,
-				"totalTimeSeconds": 0.04
+				"symbols": 81563,
+				"types": 14267,
+				"instantiations": 23623,
+				"memoryUsedKiB": 68985,
+				"checkTimeSeconds": 0.007,
+				"totalTimeSeconds": 0.034
 			}
 		},
 		{
@@ -50,12 +50,12 @@
 			"samples": 3,
 			"metrics": {
 				"files": 228,
-				"symbols": 76337,
-				"types": 20054,
-				"instantiations": 40596,
-				"memoryUsedKiB": 66305,
-				"checkTimeSeconds": 0.043,
-				"totalTimeSeconds": 0.071
+				"symbols": 76416,
+				"types": 20027,
+				"instantiations": 40670,
+				"memoryUsedKiB": 66312,
+				"checkTimeSeconds": 0.048,
+				"totalTimeSeconds": 0.084
 			}
 		},
 		{
@@ -66,12 +66,12 @@
 			"samples": 3,
 			"metrics": {
 				"files": 240,
-				"symbols": 85267,
-				"types": 17451,
-				"instantiations": 31545,
-				"memoryUsedKiB": 72145,
-				"checkTimeSeconds": 0.01,
-				"totalTimeSeconds": 0.037
+				"symbols": 85234,
+				"types": 17408,
+				"instantiations": 31272,
+				"memoryUsedKiB": 72110,
+				"checkTimeSeconds": 0.013,
+				"totalTimeSeconds": 0.039
 			}
 		},
 		{
@@ -82,12 +82,12 @@
 			"samples": 3,
 			"metrics": {
 				"files": 252,
-				"symbols": 91897,
-				"types": 29842,
-				"instantiations": 75732,
-				"memoryUsedKiB": 82825,
-				"checkTimeSeconds": 0.028,
-				"totalTimeSeconds": 0.056
+				"symbols": 90997,
+				"types": 22082,
+				"instantiations": 42165,
+				"memoryUsedKiB": 78620,
+				"checkTimeSeconds": 0.017,
+				"totalTimeSeconds": 0.045
 			}
 		},
 		{
@@ -98,12 +98,12 @@
 			"samples": 3,
 			"metrics": {
 				"files": 233,
-				"symbols": 84982,
-				"types": 16577,
-				"instantiations": 30436,
-				"memoryUsedKiB": 71877,
+				"symbols": 85057,
+				"types": 16551,
+				"instantiations": 30162,
+				"memoryUsedKiB": 71910,
 				"checkTimeSeconds": 0.01,
-				"totalTimeSeconds": 0.043
+				"totalTimeSeconds": 0.037
 			}
 		},
 		{
@@ -114,10 +114,10 @@
 			"samples": 3,
 			"metrics": {
 				"files": 225,
-				"symbols": 68248,
-				"types": 3862,
-				"instantiations": 3359,
-				"memoryUsedKiB": 56818,
+				"symbols": 68244,
+				"types": 3871,
+				"instantiations": 3395,
+				"memoryUsedKiB": 56843,
 				"checkTimeSeconds": 0.003,
 				"totalTimeSeconds": 0.028
 			}
@@ -130,12 +130,12 @@
 			"samples": 3,
 			"metrics": {
 				"files": 279,
-				"symbols": 96072,
-				"types": 31261,
-				"instantiations": 77126,
-				"memoryUsedKiB": 86812,
-				"checkTimeSeconds": 0.03,
-				"totalTimeSeconds": 0.057
+				"symbols": 95322,
+				"types": 23513,
+				"instantiations": 43753,
+				"memoryUsedKiB": 82516,
+				"checkTimeSeconds": 0.016,
+				"totalTimeSeconds": 0.05
 			}
 		}
 	],
