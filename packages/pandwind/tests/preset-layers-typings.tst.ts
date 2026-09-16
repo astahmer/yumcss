@@ -1,13 +1,13 @@
 import { expect, test } from "tstyche";
 import { createCss } from "../src/css/create-css.ts";
-import { basePreset } from "../src/preset/base.ts";
+import { csstypePreset } from "../src/preset/csstype.ts";
 import { defaultPreset } from "../src/preset/default.ts";
 
-test("base preset exposes raw structural CSS without a stock token catalog", () => {
-	const css = createCss(basePreset);
+test("csstype preset exposes raw structural CSS without a stock token catalog", () => {
+	const css = createCss(csstypePreset);
 
-	expect(basePreset.tokens).type.toBe<{}>();
-	expect(basePreset.properties).type.toBe<{ readonly $all: true }>();
+	expect(csstypePreset.tokens).type.toBe<{}>();
+	expect(csstypePreset.properties).type.toBe<{ readonly $all: true }>();
 	expect(
 		css.class({ display: "flex", padding: "1rem", _hover: { color: "red.500" } }),
 	).type.toBe<string>();

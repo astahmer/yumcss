@@ -20,11 +20,11 @@ ordinary app should have a discoverable ready-to-use preset.
 
 ## 2. Goals
 
-- Add a tokenless `basePreset` containing the structural property and condition
+- Add a tokenless `csstypePreset` containing the structural property and condition
   contract.
 - Add a ready-to-use `defaultPreset` containing the existing stock Pandwind
   token-aware property mappings.
-- Publish both through dedicated `pandwind/preset/base` and
+- Publish both through dedicated `pandwind/preset/csstype` and
   `pandwind/preset/default` subpaths without creating another package.
 - Keep `examplePreset` in `@pandwind/example-preset` as a rich showcase fixture,
   and make its role clear in docs and examples.
@@ -49,14 +49,14 @@ ordinary app should have a discoverable ready-to-use preset.
 
 ```ts
 import { createCss } from "pandwind/css";
-import { basePreset } from "pandwind/preset/base";
+import { csstypePreset } from "pandwind/preset/csstype";
 import { defaultPreset } from "pandwind/preset/default";
 
-const structuralCss = createCss(basePreset);
+const structuralCss = createCss(csstypePreset);
 const appCss = createCss(defaultPreset);
 ```
 
-`basePreset` will expose the common property names with open CSS values and no
+`csstypePreset` will expose the common property names with open CSS values and no
 opinionated token groups. `defaultPreset` will use the existing built-in
 token-aware property mappings. The root `pandwind/preset` entry
 will expose the shared builders/catalog values and the two named presets as
@@ -69,11 +69,11 @@ will be split so the base subpath does not import the default token mappings.
 
 ### Data model
 
-- `basePreset`: `define.preset({ config: {}, tokens: {} }, { strict: true,
-conditions: presetConditions, properties: baseProperties })`.
+- `csstypePreset`: `define.preset({ config: {}, tokens: {} }, { strict: true,
+conditions: presetConditions, properties: csstypeProperties })`.
 - `defaultPreset`: `define.preset({ config: {}, tokens: {} }, { strict: true,
 conditions: presetConditions, properties: presetProperties })`.
-- `baseProperties`: the structural property-name catalog, with no embedded
+- `csstypeProperties`: the structural property-name catalog, with no embedded
   stock token maps.
 - `presetProperties`: the existing token-aware default property catalog.
 - `examplePreset`: unchanged semantically and still composed in its separate
@@ -101,7 +101,7 @@ CSS behavior.
 
 1. Add this plan and record the decision in a focused JJ revision.
 2. Split the structural property catalog from the token-aware default catalog;
-   introduce `basePreset` and rename the built-in preset to `defaultPreset`.
+   introduce `csstypePreset` and rename the built-in preset to `defaultPreset`.
 3. Add package exports/build entries and root re-exports, then migrate all
    repository consumers and remove the obsolete name.
 4. Add runtime and type tests proving base has no stock token groups, default
@@ -126,7 +126,7 @@ CSS behavior.
 
 ## 7. Validation and acceptance criteria
 
-- [x] `pandwind/preset/base` exports `basePreset` and its declarations contain
+- [x] `pandwind/preset/csstype` exports `csstypePreset` and its declarations contain
       no stock token catalog dependency.
 - [x] `pandwind/preset/default` exports `defaultPreset` with the current
       token-aware CSS behavior.

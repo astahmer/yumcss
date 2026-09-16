@@ -2,10 +2,10 @@ import type { StandardProperties } from "csstype";
 import { define } from "../types/define-preset.export.ts";
 import { presetConditions } from "./conditions.ts";
 
-const baseCssConfig: StandardProperties = {};
+const csstypeCssConfig: StandardProperties = {};
 
 /**
- * Structural property declaration for the tokenless Pandwind base preset.
+ * Structural property declaration for the tokenless Pandwind `csstype` preset.
  *
  * `$all` exposes the properties from the `csstype` config without attaching
  * any stock token maps. Use this when the application owns its token catalog
@@ -14,10 +14,10 @@ const baseCssConfig: StandardProperties = {};
  * @category presets
  * @since 0.1.0
  */
-export const baseProperties = define.properties({ $all: true });
+export const csstypeProperties = define.properties({ $all: true });
 
-/** The inferred structural property declaration of {@link baseProperties}. */
-export type BaseProperties = typeof baseProperties;
+/** The inferred structural property declaration of {@link csstypeProperties}. */
+export type CsstypeProperties = typeof csstypeProperties;
 
 /**
  * Tokenless structural preset for applications that provide their own values.
@@ -25,23 +25,23 @@ export type BaseProperties = typeof baseProperties;
  * @example
  * ```ts
  * import { createCss } from "pandwind/css";
- * import { basePreset } from "pandwind/preset/base";
+ * import { csstypePreset } from "pandwind/preset/csstype";
  *
- * const css = createCss(basePreset);
+ * const css = createCss(csstypePreset);
  * css.class({ display: "flex", padding: "1rem" });
  * ```
  *
  * @category presets
  * @since 0.1.0
  */
-export const basePreset = define.preset(
-	{ config: baseCssConfig, tokens: {} },
+export const csstypePreset = define.preset(
+	{ config: csstypeCssConfig, tokens: {} },
 	{
 		strict: true,
 		conditions: presetConditions,
-		properties: baseProperties,
+		properties: csstypeProperties,
 	},
 );
 
-/** The inferred type of {@link basePreset}. */
-export type BasePreset = typeof basePreset;
+/** The inferred type of {@link csstypePreset}. */
+export type CsstypePreset = typeof csstypePreset;

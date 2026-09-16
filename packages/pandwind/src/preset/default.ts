@@ -9,7 +9,7 @@ const defaultCssConfig: PandwindProperties = {};
  *
  * This is the opinionated built-in layer: its property definitions include
  * Pandwind's stock colors, spacing, sizing, typography, border, radius, and
- * related scales. Use {@link basePreset} when those values should be supplied
+ * related scales. Use {@link csstypePreset} when those values should be supplied
  * by the application instead.
  *
  * @example

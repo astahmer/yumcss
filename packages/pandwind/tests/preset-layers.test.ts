@@ -1,16 +1,16 @@
 import { expect, test } from "vitest";
 import { createCss } from "../src/css/create-css.ts";
 import { createStylesheet } from "../src/css/create-stylesheet.ts";
-import { basePreset, baseProperties } from "../src/preset/base.ts";
+import { csstypePreset, csstypeProperties } from "../src/preset/csstype.ts";
 import { defaultPreset } from "../src/preset/default.ts";
 
-test("base preset is a tokenless structural contract", () => {
-	expect(baseProperties).toEqual({ $all: true });
-	expect(basePreset.tokens).toEqual({});
-	expect(basePreset.properties).toEqual({ $all: true });
+test("csstype preset is a tokenless structural contract", () => {
+	expect(csstypeProperties).toEqual({ $all: true });
+	expect(csstypePreset.tokens).toEqual({});
+	expect(csstypePreset.properties).toEqual({ $all: true });
 
-	const css = createCss(basePreset);
-	const output = createStylesheet(basePreset).generate([
+	const css = createCss(csstypePreset);
+	const output = createStylesheet(csstypePreset).generate([
 		css.raw({ color: "red.500", padding: "1rem" }),
 	]);
 

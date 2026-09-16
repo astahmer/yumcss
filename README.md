@@ -125,7 +125,7 @@ builds that contract step by step.
 
 Pandwind has three intentionally separate preset tiers:
 
-- `basePreset` from `pandwind/preset/base` is tokenless. It supplies the
+- `csstypePreset` from `pandwind/preset/csstype` is tokenless. It supplies the
   structural CSS and condition contract while your application owns the values.
 - `defaultPreset` from `pandwind/preset/default` is the ready-to-use Pandwind
   layer with the stock property-to-token scales.
@@ -133,7 +133,7 @@ Pandwind has three intentionally separate preset tiers:
   with semantic tokens, palettes, and theme scopes; it is not the default
   application preset.
 
-Use the base layer for a deliberately BYO design system, the default layer for
+Use the csstype layer for a deliberately BYO design system, the default layer for
 an ordinary Pandwind app, and the example package only when exploring the
 repository's complete token composition patterns.
 

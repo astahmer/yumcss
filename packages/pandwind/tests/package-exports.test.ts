@@ -16,7 +16,7 @@ const entries = [
 	"pandwind/tw",
 	"pandwind/cx",
 	"pandwind/preset",
-	"pandwind/preset/base",
+	"pandwind/preset/csstype",
 	"pandwind/preset/default",
 	"pandwind/design",
 	"pandwind/vite",
@@ -100,13 +100,14 @@ describe("pandwind package boundary", () => {
 		});
 	});
 
-	test("exposes explicit base and default preset subpaths", async () => {
-		const baseApi = await import("pandwind/preset/base");
-		const defaultApi = await import("pandwind/preset/default");
+	test("exposes explicit csstype and default preset subpaths", async () => {
+		const csstypeApi = await import(await import.meta.resolve("pandwind/preset/csstype"));
+		const defaultApi = await import(await import.meta.resolve("pandwind/preset/default"));
 
-		expect(baseApi.basePreset.properties).toEqual({ $all: true });
+		expect(csstypeApi.csstypePreset.properties).toEqual({ $all: true });
 		expect(defaultApi.defaultPreset.properties).toHaveProperty("padding");
 		expect("pandwindPreset" in defaultApi).toBe(false);
+		expect(() => import.meta.resolve("pandwind/preset/base")).toThrow();
 	});
 
 	test("does not expose the codemod-owned recipe runtime", () => {

@@ -10,7 +10,7 @@
 				"./css/runtime",
 				"./cx",
 				"./preset",
-				"./preset/base",
+				"./preset/csstype",
 				"./preset/default",
 				"./design",
 				"./tw",

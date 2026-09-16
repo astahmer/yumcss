@@ -32,7 +32,7 @@ reference.
 
 Pandwind ships two small built-in preset layers:
 
-- `basePreset` from `pandwind/preset/base` provides structural CSS properties
+- `csstypePreset` from `pandwind/preset/csstype` provides structural CSS properties
   and conditions without opinionated token scales.
 - `defaultPreset` from `pandwind/preset/default` provides the ready-to-use
   Pandwind property and stock scale mappings.

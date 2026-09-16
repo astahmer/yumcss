@@ -1,5 +1,5 @@
 /**
- * Default selector and media-condition map shared by {@link basePreset} and
+ * Default selector and media-condition map shared by {@link csstypePreset} and
  * {@link defaultPreset}.
  *
  * Its keys are the nested condition names accepted by preset-aware styles;

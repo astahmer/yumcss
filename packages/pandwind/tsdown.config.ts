@@ -11,7 +11,7 @@ export default defineConfig({
 		"src/css/panda-adapter.ts",
 		"src/css/unocss-adapter.ts",
 		"src/cx/index.ts",
-		"src/preset/base.ts",
+		"src/preset/csstype.ts",
 		"src/preset/default.ts",
 		"src/preset/index.ts",
 		"src/stack/index.ts",

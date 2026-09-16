@@ -2,7 +2,7 @@ import { createNamedAtomsStrategy } from "pandwind/css";
 import { createRuntimeCss, createRuntimeDesignCss } from "pandwind/css/runtime";
 import { createCx } from "pandwind/cx";
 import { define } from "pandwind/preset";
-import { basePreset } from "pandwind/preset/base";
+import { csstypePreset } from "pandwind/preset/csstype";
 import { defaultPreset } from "pandwind/preset/default";
 import { examplePreset } from "@pandwind/example-preset";
 
@@ -30,8 +30,8 @@ export const SANDBOX_MODULES = {
 	"pandwind/preset": {
 		define,
 	},
-	"pandwind/preset/base": {
-		basePreset,
+	"pandwind/preset/csstype": {
+		csstypePreset,
 	},
 	"pandwind/preset/default": {
 		defaultPreset,

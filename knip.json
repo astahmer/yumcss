@@ -23,7 +23,7 @@
 			"entry": [
 				"src/index.ts",
 				"src/{css,cx,preset,stack,design,recipe,host,tw,vite}/index.ts",
-				"src/preset/base.ts",
+				"src/preset/csstype.ts",
 				"src/preset/default.ts",
 				"src/{unplugin,source-scanner,rn,opentui}.ts",
 				"src/css/create-stylesheet.ts",
