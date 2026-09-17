@@ -23,6 +23,10 @@
 		"min": 85900,
 		"gz": 16100
 	},
+	"createCss(pandaPreset)": {
+		"min": 45350,
+		"gz": 13050
+	},
 	"createCss(defaultPreset)": {
 		"min": 29900,
 		"gz": 10650

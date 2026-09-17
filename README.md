@@ -123,19 +123,23 @@ builds that contract step by step.
 
 ### Choose a preset layer
 
-Pandwind has six intentionally separate preset tiers:
+Pandwind has seven intentionally separate preset tiers:
 
 - `csstypePreset` from `pandwind/preset/csstype` is tokenless. It supplies the
   structural CSS and condition contract while your application owns the values.
 - `defaultPreset` from `pandwind/preset/default` is the ready-to-use Pandwind
   layer with the stock property-to-token scales and no color palette: bring your
   own colors as literals or tokens.
-- `tailwindPreset` from `pandwind/preset/tailwindcss` is the ecosystem layer:
-  Tailwind v4's colors, scales, and breakpoints as a preset, generated from the
-  installed `tailwindcss` package.
-- `chakraPreset` from `pandwind/preset/chakra` is the other ecosystem layer:
-  Chakra UI v3's token scales, light / dark semantic color roles, and conditions
-  as a preset, generated from the installed `@chakra-ui/react` package.
+- `tailwindPreset` from `pandwind/preset/tailwindcss` is the Tailwind ecosystem
+  layer: Tailwind v4's colors, scales, and breakpoints as a preset, generated
+  from the installed `tailwindcss` package.
+- `chakraPreset` from `pandwind/preset/chakra` is the Chakra UI ecosystem
+  layer: Chakra UI v3's token scales, light / dark semantic color roles, and
+  conditions as a preset, generated from the installed `@chakra-ui/react`
+  package.
+- `pandaPreset` from `pandwind/preset/panda` is the Panda CSS ecosystem layer:
+  Panda CSS's token scales, conditions, and breakpoints as a preset, generated
+  from the installed `@pandacss/config` resolver.
 - `shadcnPreset` / `createShadcnPreset(options)` from `pandwind/preset/shadcn`
   is the parameterized layer: shadcn/ui's registry color roles, radius
   multipliers, and font variables, resolved from the create-page selections and
@@ -144,11 +148,12 @@ Pandwind has six intentionally separate preset tiers:
   with semantic tokens, palettes, and theme scopes; it is not the default
   application preset.
 
-Use the csstype layer for a deliberately BYO design system, the default layer for
-an ordinary Pandwind app, the Tailwind layer when Tailwind v4's vocabulary is the
-target, the Chakra layer when Chakra UI v3's is, the shadcn layer when a
-shadcn/ui project's registry variables are, and the example package only when
-exploring the repository's complete token composition patterns.
+Use the csstype layer for a deliberately BYO design system, the default layer
+for an ordinary Pandwind app, the Tailwind layer when Tailwind v4's vocabulary
+is the target, the Chakra layer when Chakra UI v3's is, the Panda layer when
+Panda CSS's is, the shadcn layer when a shadcn/ui project's registry variables
+are, and the example package only when exploring the repository's complete token
+composition patterns.
 
 The preset tiers are independent of the baseline stylesheet a project imports:
 `pandwind/reset/<ecosystem>` ships an ecosystem's own reset as a plain CSS

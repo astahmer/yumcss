@@ -72,6 +72,20 @@
 		},
 		{
 			"packageName": "pandwind",
+			"exportPaths": ["./preset/panda"],
+			"owner": "runtime",
+			"maturity": "experimental",
+			"dependencies": [],
+			"externalContract": true,
+			"evidence": [
+				"packages/pandwind/package.json",
+				"packages/pandwind/tests/preset-panda.test.ts",
+				"docs/src/content/docs/api/presets.md"
+			],
+			"note": "Ecosystem starter preset: Panda CSS's token scales, conditions, and breakpoints as authored data, generated from the pinned @pandacss/config resolver."
+		},
+		{
+			"packageName": "pandwind",
 			"exportPaths": ["./reset/tailwindcss"],
 			"owner": "runtime",
 			"maturity": "experimental",

@@ -29,6 +29,7 @@
 				"src/preset/tailwindcss.ts",
 				"src/preset/chakra.ts",
 				"src/preset/shadcn.ts",
+				"src/preset/panda.ts",
 				"src/reset/*.css",
 				"src/{unplugin,source-scanner,rn,opentui}.ts",
 				"src/css/create-stylesheet.ts",

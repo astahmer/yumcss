@@ -198,17 +198,17 @@ New subpaths require the full surface ritual, in one revision:
 - [x] `createShadcnPreset(options)` reproduces the create-page selections for
       style, base color, theme, chart color, and fonts, with parity tests
       against the generated CSS-variable block.
-- [ ] `tailwindPreset` and `pandaPreset` are generated from their installed
+- [x] `tailwindPreset` and `pandaPreset` are generated from their installed
       upstream packages by checked-in `scripts/promote-*.ts` generators.
-- [ ] Every reset subpath resolves from the packed tarball, ships its `.css`
+- [x] Every reset subpath resolves from the packed tarball, ships its `.css`
       asset, and carries a provenance and license header.
-- [ ] Default-path size is unchanged; each new subpath has its own measured
+- [x] Default-path size is unchanged; each new subpath has its own measured
       size row and budget in the docs and the size test.
-- [ ] `test:tsc` shows the preset factories do not regress the type-graph
+- [x] `test:tsc` shows the preset factories do not regress the type-graph
       budget for ordinary `createCss(preset)` consumers.
-- [ ] Package surface evidence, `knip`, docs, README, and playground editor
+- [x] Package surface evidence, `knip`, docs, README, and playground editor
       types are updated in the same revisions.
-- [ ] JJ revisions are focused, described, and the final working-copy revision
+- [x] JJ revisions are focused, described, and the final working-copy revision
       is empty.
 
 ## 7. Resolved decisions
@@ -225,8 +225,9 @@ New subpaths require the full surface ritual, in one revision:
    variant, because CSS values are opaque to the runtime and a converted twin
    would be a second source of truth.
 4. **Order:** latest Tailwind, then latest Chakra, then
-   `createShadcnPreset`. Panda and StyleX follow only after those measure
-   acceptably.
+   `createShadcnPreset`, then Panda. Panda measured at 44,877 B minified /
+   12,888 B gzip and shipped (§7.29); StyleX is skipped with a recorded
+   reason (§7.30).
 5. **Reset scope:** one subpath per ecosystem reset, because the maintainer
    expects them to be used separately. Nothing is split further: a reset is
    whole, and overlapping box-model rules are merged rather than emitted as
@@ -378,6 +379,103 @@ New subpaths require the full surface ritual, in one revision:
     because Pandwind's own `transition` map (`none`/`slow`/`fast`) is not
     Chakra's vocabulary.
 
+20. **Panda sources of truth.** `pandwind/preset/panda` is generated from the
+    installed `@pandacss/config@1.12.1` by `scripts/promote-panda-preset.ts`.
+    The resolver is handed an absolute config path that need not exist, so no
+    project override can reach the checked-in module: `theme.tokens` owns the
+    authored scales, `theme.breakpoints` the five pixel widths, the resolved
+    `conditions` map the 107 selectors, and the `transition` and
+    `transitionProperty` utilities the two keyword vocabularies. The generated
+    header names the provenance and the deliberate divergences.
+21. **Static groups versus the two composed groups.** Fifteen groups ship
+    Pandwind's static token shape (`aspectRatios`, `borders`, `easings`,
+    `durations`, `radii`, `fontWeights`, `lineHeights`, `fonts`,
+    `letterSpacings`, `fontSizes`, `shadows`, `colors`, `spacing`, `sizes`,
+    `animations`) and hold 415 values. `transitions` and
+    `transitionProperties` are composed by the generator (§7.26) and are the
+    two groups Panda's `theme.tokens` does not publish. Every static value is
+    asserted equal to what the installed resolver renders for the same path.
+22. **Property bindings are derived, not transcribed.** `pandaProperties`
+    carries 144 bindings: 116 follow from a utility's own `values` key naming a
+    shipped group, and 28 are hand bindings because their utilities are aliases
+    rather than scale readers — the thirteen sizing shorthands (`width`,
+    `height`, `min*`, `max*`, `blockSize`, `inlineSize`, `flexBasis`), the
+    thirteen spacing ones (`margin*`, `inset`, `borderSpacing`), and the two
+    composed transition vocabularies. Group sizes: `spacing` 69, `colors` 23,
+    `sizes` 14, `borders` 12, `radii` 9, `durations` 4, `easings` 2,
+    `shadows` 2, and one each for `aspectRatios`, `animations`, `fonts`,
+    `fontSizes`, `fontWeights`, `letterSpacings`, `lineHeights`,
+    `transitions`, `transitionProperties`. A utility that resolves against a
+    scale but names no CSS property Pandwind declares — `borderBottomRadius`,
+    `borderSpacingX`/`Y`, `boxShadowColor`, `divideColor`, `focusRingColor`,
+    `focusRingOffset`, `gradientFrom`/`To`/`Via`, `textShadowColor`, and the
+    five side radii — is not bound and is asserted as its own list, because a
+    binding for it would be inert data.
+23. **Properties Panda has no token scale for keep Pandwind's bindings.**
+    `borderWidth`, `outlineWidth`, and `zIndex` ship Pandwind's own groups
+    (`none`, `1px`, `2px`, `4px`, `8px` for the widths), `cursor` and
+    `opacity` stay `true`, `outlineOffset` reads `spacing`, `scrollbarWidth`
+    reads `sizes`, and `filter` / `backdropFilter` stay literal because Panda
+    reaches its blur values only through `--blur` custom properties.
+24. **Conditions and breakpoints.** All 107 Panda conditions ship as
+    `_<name>`, including `_hover = "&:is(:hover, [data-hover])"`,
+    `_icon = "& :where(svg)"`,
+    `_placeholder = "&::placeholder, &[data-placeholder]"`, and
+    `_dark = ".dark &"`. `pandaConditions` ends at 112 keys: the 107 upstream
+    conditions, the 89 stock `presetConditions` — none dropped, and Panda's
+    selector winning wherever the two maps disagree — and the five
+    breakpoints, which Panda does not model as conditions and which join as
+    `@media (min-width: …)` so the stylesheet's ordering policy can still
+    place narrower rules before wider ones regardless of scan order.
+25. **Colors carry the `$` sigil and ship no `colorPalette` map.** The 26
+    color roots keep Panda's order (`current`, `black`, `white`,
+    `transparent`, then the 22 hues) and 246 values. Every key is spelled
+    `$name`, which is what makes an authored `color: "$red.500"` a token
+    reference, and the bare canonical spelling stays accepted as well;
+    `"$red.500"` resolves to `#ef4444` and `transparent` ships Panda's
+    `rgb(0 0 0 / 0)`. No `colorPalette` map ships: Panda's palette mechanism
+    is a recipe-time concern and Pandwind has no recipe lane.
+26. **Transitions are composed, not transcribed.** As with Chakra (§7.19),
+    Panda reaches its `transition` and `transitionProperty` scales only
+    through utilities that take a keyword. The generator flattens each
+    `transition` keyword into the single `property duration timing` shorthand
+    Pandwind binds, so `transitions.colors` is seven properties with
+    `150ms cubic-bezier(0.4, 0, 0.2, 1)`, and it ships the
+    `transitionProperty` keyword lists verbatim as their own group, so
+    `transitionProperties.colors` is
+    `"color, background-color, border-color, outline-color, text-decoration-color, fill, stroke"`.
+    Neither group is padded with keywords the other utility owns, and
+    `transitionProperty` does not exist in stock Pandwind at all, so this
+    preset is its only source.
+27. **Dropped scales.** `blurs` is dropped whole: Panda reaches it only
+    through its `blur` / `backdropBlur` utilities, which write `--blur`
+    custom properties instead of a CSS property Pandwind binds.
+    `keyframes`, `textStyles`, `containerSizes`, the patterns, and the
+    recipes are dropped for the same reason — Pandwind binds no property to
+    them — so the `animations` group ships its four names and a project that
+    writes `animation: "spin"` still declares its own `@keyframes` rule,
+    which §7.15 already set as the policy for Chakra.
+28. **Dotted steps ship as authored.** Panda writes `spacing` and `sizes`
+    with dotted steps (`"0.5"`, `"1.5"`, … through `"5.5"`), and the
+    preset keeps them rather than renumbering them, so an authored
+    `padding: "0.5"` resolves the value Panda would write for the same key.
+29. **Measured lane.** `createCss(pandaPreset)`: 44,877 B minified /
+    12,888 B gzip, budgeted at 45,350 / 13,050 — between `tailwindPreset`
+    (40,558 / 13,243) and `chakraPreset` (51,370 / 13,884). The whole catalog
+    ships because esbuild cannot drop unreferenced object entries; a
+    hand-pruned subset would be a second source of truth.
+30. **StyleX is skipped, with a recorded reason.** StyleX publishes no token
+    preset to generate one from, and the community bridge
+    (`@stylexjs/open-props`) is deprecated, so there is no upstream source of
+    truth for a `pandwind/preset/stylex` and no reset of its own to port.
+    `pandwind/reset/pandwind` is the documented stand-in for a project leaving
+    StyleX (§4.2), and the docs already say so.
+31. **Naming.** `reset` and `preset` differ by one letter, and the maintainer
+    rejected "preflight" as the replacement, so both subpaths keep their
+    current spelling and the distinction lives in
+    `docs/src/content/docs/api/resets.md` ("Reset versus preset"). Revisit
+    after this lane if the pair keeps reading as a typo.
+
 ## 8. Approval gate
 
 `AGENTS.md` freezes the user-facing API and requires a written plan plus an
@@ -527,9 +625,44 @@ presets:generate` / `presets:check`) into
     `:root` / `.dark` declarations and that `tokens: "used"` prunes to the
     referenced roles.
 
-Remaining lanes, in the order §7.4 fixes:
+- **Panda CSS preset** — `feat(preset): generate and ship the Panda CSS starter
+preset`.
+  - The data is generated from the installed `@pandacss/config@1.12.1` by
+    `scripts/promote-panda-preset.ts`, chained into
+    `pnpm run presets:generate` / `pnpm run presets:check`, into
+    `packages/pandwind/src/preset/generated/panda-theme.ts`. The resolver is
+    handed an absolute config path that need not exist, so no project override
+    can reach the checked-in module, and the generated header records the
+    provenance and the deliberate divergences.
+  - `pandwind/preset/panda` exports `pandaPreset`, `pandaTokens`,
+    `pandaProperties`, and `pandaConditions`, and is deliberately absent from
+    `src/preset/index.ts` for the same reason as the Tailwind and Chakra
+    subpaths. It is recorded in `plans/evidence/package-surface.json`, mapped
+    in `packages/pandwind/package.json`, built by `tsdown.config.ts`, listed
+    in `knip.json`, and resolved from the packed tarball by
+    `tests/package-exports.test.ts` and `tests/packed-consumer.test.ts`.
+  - Measured lane `createCss(pandaPreset)`: 44,877 B minified / 12,888 B
+    gzip, between `tailwindPreset`'s 40,558 / 13,243 and `chakraPreset`'s
+    51,370 / 13,884, budgeted at 45,350 / 13,050. The whole catalog ships
+    because esbuild cannot drop unreferenced object entries, and the row lives
+    in `docs/src/content/docs/api/presets.md`,
+    `docs/src/content/docs/reference/size.md`,
+    `docs/src/content/docs/reference/benchmarks.md`, `PERF.md`, and the
+    committed size snapshot.
+  - `tests/preset-panda.test.ts` checks the 415 static values and the two
+    composed groups against Panda's own resolver, the 107 upstream conditions
+    and the five breakpoints, and the 144 property bindings;
+    `tests/helpers/panda-preset-oracle.ts` resolves the same configuration
+    through the installed package, so the parity suite compares against Panda
+    rather than a second transcription.
+  - No playground change is needed: `apps/playground/src/generated/` is
+    produced from the workspace-linked package and is gitignored, so
+    `pnpm --filter playground run editor:types` already picks the subpath up.
 
-- [ ] `pandwind/preset/{panda,stylex}`.
-- [ ] `pandwind/reset/{tailwindcss,panda,stylex}` plus Pandwind's own minimal
-      reset, including the `reset` versus `preset` naming note the maintainer
-      asked for.
+Remaining lanes:
+
+- [x] `pandwind/preset/panda` — shipped, §7.20–§7.29.
+- [x] `pandwind/reset/{tailwindcss,panda,pandwind}` — shipped, including the
+      `reset` versus `preset` naming note the maintainer asked for (§7.31).
+- [ ] `pandwind/preset/stylex` and `pandwind/reset/stylex` — skipped with a
+      recorded reason (§7.30); revisit only if a maintainer asks.

@@ -160,6 +160,7 @@ test("runtime entries stay stylex-sized", async () => {
 		"createCss(tailwindPreset)": bundle("runtime-preset-tailwindcss.ts"),
 		"createCss(chakraPreset)": bundle("runtime-preset-chakra.ts"),
 		"createCss(shadcnPreset)": bundle("runtime-preset-shadcn.ts"),
+		"createCss(pandaPreset)": bundle("runtime-preset-panda.ts"),
 		"createCss(defaultPreset)": bundle("runtime-preset-css.ts"),
 		// The palette fixture keeps a full token catalog, so these lanes measure
 		// a preset whose tokens resolve to named colors.

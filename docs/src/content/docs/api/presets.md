@@ -48,6 +48,7 @@ contract does not silently become a design-token contract:
 | `defaultPreset`      | `pandwind/preset/default`     | the ordinary Pandwind app with stock scales, no palette      |
 | `tailwindPreset`     | `pandwind/preset/tailwindcss` | Tailwind v4's vocabulary in `css()`                          |
 | `chakraPreset`       | `pandwind/preset/chakra`      | Chakra UI v3's vocabulary and color modes, widest catalog    |
+| `pandaPreset`        | `pandwind/preset/panda`       | Panda CSS's token scales, conditions, and `$`-sigiled colors |
 | `shadcnPreset`       | `pandwind/preset/shadcn`      | shadcn/ui's registry roles, radii, and fonts, widest catalog |
 | `createShadcnPreset` | `pandwind/preset/shadcn`      | the same preset, parameterized by the create-page selections |
 | `examplePreset`      | `@pandwind/example-preset`    | the repository's rich semantic-token and palette showcase    |
@@ -85,14 +86,13 @@ weights, leading, tracking, radii, shadows, text shadows, containers, z-indexes,
 animations, transitions, and the five breakpoint conditions are generated from
 the installed `tailwindcss` package, so a Tailwind v4 project reads
 `$slate-700` and `md` from `css()` without transcribing a theme. It ships
-that theme whole because a runtime reads the preset object, which makes it the
-that theme whole because a runtime reads the preset object, so the catalog, not
-the engine, is what a `createCss(tailwindPreset)` bundle pays for: it is
+that theme whole because a runtime reads the preset object, so the catalog,
+not the engine, is what a `createCss(tailwindPreset)` bundle pays for: it is
 40.56 KB min / 13.24 KB gzip against 24.10 KB / 8.68 KB for `defaultPreset`.
 Reach for it when Tailwind's vocabulary is the migration target, and for
 `defaultPreset` when a smaller catalog is enough.
 
-The Chakra preset is the other ecosystem layer: its static scales (colors,
+The Chakra preset is another ecosystem layer: its static scales (colors,
 spacing, sizes, radii, shadows, typography, borders, aspect ratios, animations,
 cursors, durations, easings, and z-indexes), its 104 condition selectors, its
 five breakpoints, and its light / dark semantic color roles are generated from
@@ -104,6 +104,23 @@ components use. Because it ships the static scales and the semantic layer
 together, a `createCss(chakraPreset)` bundle is 51.37 KB min / 13.88 KB gzip
 against 40.56 KB / 13.24 KB for `createCss(tailwindPreset)`. Reach for it when a
 Chakra project's token names and color modes are the migration target.
+
+The Panda preset is the third generated ecosystem layer: its token scales
+(colors, spacing, sizes, radii, shadows, typography, aspect ratios, easings,
+durations, animations, borders, and Panda's two transition keyword
+vocabularies), its 107 condition selectors, and its five breakpoints are
+resolved from the installed `@pandacss/config` against Panda's stock
+configuration rather than transcribed, and the 144 properties it binds follow
+the scale Panda's own utility reads. A Panda project therefore reads
+`$red.500`, `padding: 4`, and `md` from `css()`. Colors keep their authored
+Panda names with Pandwind's `$` sigil, which is what makes `color:
+"$red.500"` a token reference. The scales that reach CSS only through a
+custom property (`blurs`) or that need `@keyframes` bodies the project owns
+(`keyframes`, `textStyles`, `containerSizes`, patterns, and recipes) are
+absent. A `createCss(pandaPreset)` bundle is 44.88 KB min / 12.89 KB gzip
+against 40.56 KB / 13.24 KB for `createCss(tailwindPreset)`. Reach for it
+when a Panda project's token names, conditions, and breakpoints are the
+migration target.
 
 The shadcn preset is the parameterized layer: `createShadcnPreset(options)`
 takes the [create page](https://ui.shadcn.com/create) selections — base color,
