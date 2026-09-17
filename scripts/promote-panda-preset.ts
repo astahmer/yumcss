@@ -68,14 +68,18 @@ export interface PandaConfigLoader {
 }
 
 /**
- * Token scales Panda owns but Pandwind cannot reach.
+ * Token scales whose declarations would be unreachable bytes.
  *
  * "blurs" is deliberately absent: Panda reads that scale only through its
  * "blur" and "backdropBlur" utilities, which write a --blur custom property
- * instead of a CSS property, so no property binding could resolve the group
- * and its :root declarations would be unreachable bytes.
+ * instead of a CSS property, so no property binding could resolve the group.
+ *
+ * "animations" is absent because each entry is a shorthand whose @keyframes
+ * body lives in Panda's theme.keyframes, which this preset drops: shipping
+ * "spin 1s linear infinite" would name an animation no stylesheet declares,
+ * and the project owns those bodies.
  */
-const droppedTokenGroups = new Set(["blurs"]);
+const droppedTokenGroups = new Set(["blurs", "animations"]);
 
 const collapsed = (value: string): string => value.replaceAll(/\s+/gu, " ").trim();
 
@@ -223,8 +227,9 @@ export const renderPandaPresetModule = async (): Promise<{
 		"// backdropBlur utilities, which set --blur and --backdrop-blur custom",
 		"// properties rather than CSS properties,",
 		"// theme.keyframes, theme.textStyles, theme.containerSizes, the patterns, and the",
-		"// recipes are absent because Pandwind binds no property to them, so a project",
-		'// that writes animation: "spin" declares its own @keyframes,',
+		"// recipes are absent because Pandwind binds no property to them, and the",
+		"// animations group goes with theme.keyframes, because a shorthand whose body",
+		"// no stylesheet declares is a dangling reference rather than a usable token,",
 		"// and the transitions group is composed, not transcribed: each keyword of",
 		"// Panda's transition utility carries a property list, a duration, and an",
 		"// easing, which the single shorthand Pandwind binds joins back together per",

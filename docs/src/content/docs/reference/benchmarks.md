@@ -86,9 +86,9 @@ ceilings are in `runtime-budget.json`. Values below use decimal KB
 | `createCss(minimal preset)`                    | 13.08 KB |  5.18 KB |
 | `createCss(csstypePreset)`                     | 17.57 KB |  6.49 KB |
 | `createCss(defaultPreset)`                     | 24.10 KB |  8.68 KB |
-| `createCss(tailwindPreset)`                    | 40.56 KB | 13.24 KB |
-| `createCss(chakraPreset)`                      | 51.37 KB | 13.88 KB |
-| `createCss(pandaPreset)`                       | 44.63 KB | 12.86 KB |
+| `createCss(tailwindPreset)`                    | 40.31 KB | 13.17 KB |
+| `createCss(chakraPreset)`                      | 51.17 KB | 13.81 KB |
+| `createCss(pandaPreset)`                       | 44.42 KB | 12.79 KB |
 | `createCss(shadcnPreset)`                      | 85.08 KB | 15.95 KB |
 | `createCss(fixturePreset)`, test fixture       | 27.43 KB |  9.73 KB |
 | `createUnsafeCss()` fallback                   | 10.60 KB |  4.27 KB |
@@ -112,9 +112,9 @@ measured shape matches a project that imports a named-color preset. The
 `shadcnPreset`, and the fixture preset) because the preset, not the engine, is
 what moves that number; the per-lane rows show what an application that does not
 need every engine actually ships, and `shadcnPreset` is the widest catalog of
-the eight at 85.08 KB min / 15.95 KB gzip, ahead of `chakraPreset` at 51.37 KB
-min / 13.88 KB gzip, `pandaPreset` at 44.63 KB min / 12.86 KB gzip, and
-`tailwindPreset` at 40.56 KB min / 13.24 KB gzip. The internal
+the eight at 85.08 KB min / 15.95 KB gzip, ahead of `chakraPreset` at 51.17 KB
+min / 13.81 KB gzip, `pandaPreset` at 44.42 KB min / 12.79 KB gzip, and
+`tailwindPreset` at 40.31 KB min / 13.17 KB gzip. The internal
 `createCssRuntime()` row has no public method attachments; it is included to
 show the shared engine's base cost, not as an application entry point. Fully
 extracted static calls remain below 100 bytes.

@@ -15,8 +15,9 @@
 // backdropBlur utilities, which set --blur and --backdrop-blur custom
 // properties rather than CSS properties,
 // theme.keyframes, theme.textStyles, theme.containerSizes, the patterns, and the
-// recipes are absent because Pandwind binds no property to them, so a project
-// that writes animation: "spin" declares its own @keyframes,
+// recipes are absent because Pandwind binds no property to them, and the
+// animations group goes with theme.keyframes, because a shorthand whose body
+// no stylesheet declares is a dangling reference rather than a usable token,
 // and the transitions group is composed, not transcribed: each keyword of
 // Panda's transition utility carries a property list, a duration, and an
 // easing, which the single shorthand Pandwind binds joins back together per
@@ -464,12 +465,6 @@ export const pandaTheme = {
 			"min": "min-content",
 			"max": "max-content",
 			"fit": "fit-content"
-		},
-		"animations": {
-			"spin": "spin 1s linear infinite",
-			"ping": "ping 1s cubic-bezier(0, 0, 0.2, 1) infinite",
-			"pulse": "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
-			"bounce": "bounce 1s infinite"
 		}
 	},
 	"transitions": {

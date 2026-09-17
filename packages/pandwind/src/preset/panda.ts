@@ -28,9 +28,10 @@ const {
  * binding could read the group.
  *
  * `theme.keyframes`, `theme.textStyles`,
- * `theme.containerSizes`, the patterns, and the recipes are absent as
- * well: Pandwind binds no property to them, so a project that writes
- * `animation: "spin"` declares its own `@keyframes`.
+ * `theme.containerSizes`, the patterns, and the recipes are absent as well, and
+ * the `animations` scale goes with them: an `animation` shorthand whose
+ * `@keyframes` body no stylesheet declares is a dangling reference, so a
+ * project that animates writes the shorthand and the body it names.
  *
  * @category tokens
  * @since 0.1.0
@@ -218,8 +219,6 @@ export const pandaProperties = define.properties({
 	textEmphasisColor: boundTo("colors"),
 
 	aspectRatio: boundTo("aspectRatios"),
-
-	animation: boundTo("animations"),
 
 	animationDelay: boundTo("durations"),
 	animationDuration: boundTo("durations"),

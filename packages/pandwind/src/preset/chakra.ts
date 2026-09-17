@@ -47,6 +47,11 @@ const chakraTokenConditions = {
  * through its `blur` utility, which writes a `--blur` custom property rather
  * than a CSS property, so no property binding could read the group.
  *
+ * Chakra's `animations` scale is absent as well: each entry is a shorthand
+ * whose `@keyframes` body Chakra keeps in its own `theme.keyframes`, which this
+ * preset does not ship, so the token would name an animation no stylesheet
+ * declares and the project owns the body.
+ *
  * `transitions` and `transitionProperties` are composed rather than read:
  * Chakra reaches both scales through a utility whose members are keyword lists.
  * The members of `transition` each expand to a property list, a duration, and
@@ -78,7 +83,7 @@ const boundTo = (group: ChakraTokenGroup) => ({ $tokens: group, $strictness: "in
  * It is {@link presetProperties} with every scale Chakra owns rebound to the
  * matching group from {@link chakraTokens}: colors, shadows, typography,
  * radii, composite borders, sizing, spacing, z-index, aspect ratios,
- * animations, transitions, cursors, durations, and easings. The offsets and the
+ * transitions, cursors, durations, and easings. The offsets and the
  * scroll margin, scroll padding, and their block and inline forms follow
  * Chakra's spacing scale rather than Pandwind's sizing scale, and
  * `borderWidth*`, `outline`, and `outlineWidth` stay on the stock Pandwind
@@ -189,7 +194,6 @@ export const chakraProperties = define.properties({
 	stroke: boundTo("colors"),
 	zIndex: boundTo("zIndex"),
 	aspectRatio: boundTo("aspectRatios"),
-	animation: boundTo("animations"),
 	cursor: boundTo("cursor"),
 	transition: boundTo("transitions"),
 	transitionProperty: boundTo("transitionProperties"),

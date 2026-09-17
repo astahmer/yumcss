@@ -67,10 +67,13 @@ interface ChakraConfig {
  * `blur` utility, which writes a `--blur` custom property instead of a CSS
  * property, so no Pandwind property binding can read the group and its `:root`
  * declarations would be unreachable bytes.
+ *
+ * `animations` is absent for the same reason: each entry is a shorthand whose
+ * `@keyframes` body Chakra keeps in `theme.keyframes`, which this preset does
+ * not ship, so the token would name an animation no stylesheet declares.
  */
 const staticTokenGroups = [
 	"aspectRatios",
-	"animations",
 	"borders",
 	"colors",
 	"cursor",

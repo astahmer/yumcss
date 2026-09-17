@@ -174,10 +174,6 @@ export const renderTailwindPresetModule = async (): Promise<{
 			]),
 		),
 		breakpoints,
-		animations: mergeSorted(
-			themeRecord("--animate"),
-			staticUtilities([["none", "animate-none", "animation"]]),
-		),
 		transitions,
 		zIndices: staticUtilities([
 			["auto", "z-auto", "z-index"],

@@ -225,8 +225,8 @@ New subpaths require the full surface ritual, in one revision:
    variant, because CSS values are opaque to the runtime and a converted twin
    would be a second source of truth.
 4. **Order:** latest Tailwind, then latest Chakra, then
-   `createShadcnPreset`, then Panda. Panda measured at 44,628 B minified /
-   12,858 B gzip and shipped (§7.29); StyleX is skipped with a recorded
+   `createShadcnPreset`, then Panda. Panda measured at 44,424 B minified /
+   12,788 B gzip and shipped (§7.29); StyleX is skipped with a recorded
    reason (§7.30).
 5. **Reset scope:** one subpath per ecosystem reset, because the maintainer
    expects them to be used separately. Nothing is split further: a reset is
@@ -337,11 +337,13 @@ New subpaths require the full surface ritual, in one revision:
     spells its last role `focus-ring` while Pandwind builds the suffix
     verbatim, so the preset maps it to `focusRing` and the divergence is
     asserted in the parity test.
-15. **Keyframes are deferred.** Chakra ships 33 keyframes and its `animations`
-    tokens reference them by name, but a Pandwind preset has no keyframes hook,
-    so the preset ships the `animations` group and documents that the
-    `@keyframes` bodies must come from the project or from a future reset
-    lane. Shipping 33 unconsumed keyframe strings would be dead data.
+15. **Keyframes are deferred, so `animations` is dropped.** Chakra ships 33
+    keyframes and its `animations` tokens reference them by name, but a
+    Pandwind preset has no keyframes hook, so a shipped shorthand names an
+    animation no stylesheet declares and shipping 33 unconsumed keyframe
+    strings would be dead data. The group is absent and the project owns both
+    the shorthand and the `@keyframes` body. Superseded: the first shipped cut
+    carried the group's four names; §7.32 records the drop.
 16. **Slash-containing size keys.** Chakra's `sizes` group carries fraction
     keys (`1/2`, `1/3`, …) and Pandwind reads `/` as its color
     opacity modifier. The generator renames them to the `1-2`, `1-3` form and
@@ -390,23 +392,23 @@ New subpaths require the full surface ritual, in one revision:
     `conditions` map the 107 selectors, and the `transition` and
     `transitionProperty` utilities the two keyword vocabularies. The generated
     header names the provenance and the deliberate divergences.
-21. **Static groups versus the two composed groups.** Fifteen groups ship
+21. **Static groups versus the two composed groups.** Fourteen groups ship
     Pandwind's static token shape (`aspectRatios`, `borders`, `easings`,
     `durations`, `radii`, `fontWeights`, `lineHeights`, `fonts`,
-    `letterSpacings`, `fontSizes`, `shadows`, `colors`, `spacing`, `sizes`,
-    `animations`) and hold 415 values. `transitions` and
+    `letterSpacings`, `fontSizes`, `shadows`, `colors`, `spacing`, `sizes`)
+    and hold 411 values. `transitions` and
     `transitionProperties` are composed by the generator (§7.26) and are the
     two groups Panda's `theme.tokens` does not publish. Every static value is
     asserted equal to what the installed resolver renders for the same path.
 22. **Property bindings are derived, not transcribed.** `pandaProperties`
-    carries 144 bindings: 116 follow from a utility's own `values` key naming a
+    carries 143 bindings: 115 follow from a utility's own `values` key naming a
     shipped group, and 28 are hand bindings because their utilities are aliases
     rather than scale readers — the thirteen sizing shorthands (`width`,
     `height`, `min*`, `max*`, `blockSize`, `inlineSize`, `flexBasis`), the
     thirteen spacing ones (`margin*`, `inset`, `borderSpacing`), and the two
     composed transition vocabularies. Group sizes: `spacing` 69, `colors` 23,
     `sizes` 14, `borders` 12, `radii` 9, `durations` 4, `easings` 2,
-    `shadows` 2, and one each for `aspectRatios`, `animations`, `fonts`,
+    `shadows` 2, and one each for `aspectRatios`, `fonts`,
     `fontSizes`, `fontWeights`, `letterSpacings`, `lineHeights`,
     `transitions`, `transitionProperties`. A utility that resolves against a
     scale but names no CSS property Pandwind declares — `borderBottomRadius`,
@@ -459,16 +461,16 @@ New subpaths require the full surface ritual, in one revision:
     custom properties instead of a CSS property Pandwind binds.
     `keyframes`, `textStyles`, `containerSizes`, the patterns, and the
     recipes are dropped for the same reason — Pandwind binds no property to
-    them — so the `animations` group ships its four names and a project that
-    writes `animation: "spin"` still declares its own `@keyframes` rule,
-    which §7.15 already set as the policy for Chakra.
+    them — and the `animations` group goes with them, so a project that writes
+    `animation: "spin"` declares both the shorthand and its own `@keyframes`
+    rule, the policy §7.15 set for Chakra and §7.32 unified across the presets.
 28. **Dotted steps ship as authored.** Panda writes `spacing` and `sizes`
     with dotted steps (`"0.5"`, `"1.5"`, … through `"5.5"`), and the
     preset keeps them rather than renumbering them, so an authored
     `padding: "0.5"` resolves the value Panda would write for the same key.
-29. **Measured lane.** `createCss(pandaPreset)`: 44,628 B minified /
-    12,858 B gzip, budgeted at 45,350 / 13,050 — between `tailwindPreset`
-    (40,558 / 13,243) and `chakraPreset` (51,370 / 13,884). The whole catalog
+29. **Measured lane.** `createCss(pandaPreset)`: 44,424 B minified /
+    12,788 B gzip, budgeted at 45,350 / 13,050 — between `tailwindPreset`
+    (40,314 / 13,169) and `chakraPreset` (51,166 / 13,810). The whole catalog
     ships because esbuild cannot drop unreferenced object entries; a
     hand-pruned subset would be a second source of truth.
 30. **StyleX is skipped, with a recorded reason.** StyleX publishes no token
@@ -482,6 +484,17 @@ New subpaths require the full surface ritual, in one revision:
     current spelling and the distinction lives in
     `docs/src/content/docs/api/resets.md` ("Reset versus preset"). Revisit
     after this lane if the pair keeps reading as a typo.
+32. **Animations groups dropped.** No starter preset ships an `animations`
+    group. Tailwind's `--animate`, Chakra's `animations`, and Panda's
+    `animations` scales are all shorthands whose `@keyframes` bodies live in
+    the upstream project's own stylesheet rather than in the theme data a
+    preset reads, so a bound `animation` token named an animation nothing
+    declared. The maintainer's call was to drop the group rather than ship
+    dead names, which also removes the `animation` property binding from all
+    three presets (`animationDelay`, `animationDuration`, and
+    `animationTimingFunction` keep their `durations` / `easings` bindings).
+    A build-time `keyframes()` utility that emits project-authored
+    `@keyframes` is the follow-up lane (§9).
 
 ## 8. Approval gate
 
@@ -512,7 +525,7 @@ surface`.
     `packages/pandwind/package.json`, built by `tsdown.config.ts`, listed in
     `knip.json`, and resolved from the packed tarball by
     `tests/package-exports.test.ts` and `tests/packed-consumer.test.ts`.
-  - Measured lane `createCss(tailwindPreset)`: 40,558 B minified / 13,243 B
+  - Measured lane `createCss(tailwindPreset)`: 40,314 B minified / 13,169 B
     gzip against `defaultPreset`'s 24,100 / 8,680, budgeted at 41,000 /
     13,350. The whole catalog ships because esbuild cannot drop unreferenced
     object entries; a hand-pruned subset would be a second source of truth.
@@ -574,7 +587,7 @@ presets:generate` / `presets:check`) into
     in `packages/pandwind/package.json`, built by `tsdown.config.ts`, listed
     in `knip.json`, and resolved from the packed tarball by
     `tests/package-exports.test.ts` and `tests/packed-consumer.test.ts`.
-  - Measured lane `createCss(chakraPreset)`: 51,370 B minified / 13,884 B gzip,
+  - Measured lane `createCss(chakraPreset)`: 51,166 B minified / 13,810 B gzip,
     the widest catalog Pandwind ships, budgeted at 51,900 / 14,000. The
     semantic layer is why the minified size is far above Tailwind's while gzip
     stays close: the light / dark pairs repeat the same selectors and
@@ -648,28 +661,48 @@ preset`.
     in `packages/pandwind/package.json`, built by `tsdown.config.ts`, listed
     in `knip.json`, and resolved from the packed tarball by
     `tests/package-exports.test.ts` and `tests/packed-consumer.test.ts`.
-  - Measured lane `createCss(pandaPreset)`: 44,628 B minified / 12,858 B
-    gzip, between `tailwindPreset`'s 40,558 / 13,243 and `chakraPreset`'s
-    51,370 / 13,884, budgeted at 45,350 / 13,050. The whole catalog ships
+  - Measured lane `createCss(pandaPreset)`: 44,424 B minified / 12,788 B
+    gzip, between `tailwindPreset`'s 40,314 / 13,169 and `chakraPreset`'s
+    51,166 / 13,810, budgeted at 45,350 / 13,050. The whole catalog ships
     because esbuild cannot drop unreferenced object entries, and the row lives
     in `docs/src/content/docs/api/presets.md`,
     `docs/src/content/docs/reference/size.md`,
     `docs/src/content/docs/reference/benchmarks.md`, `PERF.md`, and the
     committed size snapshot.
-  - `tests/preset-panda.test.ts` checks the 415 static values and the two
+  - `tests/preset-panda.test.ts` checks the 411 static values and the two
     composed groups against Panda's own resolver, the 107 upstream conditions
-    and the five breakpoints, and the 144 property bindings;
+    and the five breakpoints, and the 143 property bindings;
     `tests/helpers/panda-preset-oracle.ts` resolves the same configuration
     through the installed package, so the parity suite compares against Panda
     rather than a second transcription.
   - No playground change is needed: `apps/playground/src/generated/` is
     produced from the workspace-linked package and is gitignored, so
     `pnpm --filter playground run editor:types` already picks the subpath up.
+- **Animations groups dropped** — `feat(preset): drop the animations token
+group from every starter preset` (§7.32).
+  - Tailwind's `--animate`, Chakra's `animations`, and Panda's `animations`
+    scales and the `animation` property binding that read them are gone from
+    all three generators and all three shipped modules, so no preset advertises
+    a shorthand whose `@keyframes` body nothing declares.
+  - The measured lanes moved down with the catalogs: `tailwindPreset`
+    40,558 → 40,314 min / 13,243 → 13,169 gzip, `chakraPreset` 51,370 →
+    51,166 / 13,884 → 13,810, `pandaPreset` 44,628 → 44,424 / 12,858 →
+    12,788. The committed size snapshot, `PERF.md`, `size.md`,
+    `benchmarks.md`, and `docs/src/content/docs/api/presets.md` carry the new
+    rows; the regression budgets are unchanged.
+  - `tests/preset-panda.test.ts` drops the group from its static-group list
+    (411 values, 143 bindings), `tests/preset-chakra.test.ts` drops it from
+    its key list and group counts, and `tests/preset-tailwindcss.test.ts` loses
+    its `--animate` namespace lane and the `animate-none` candidate.
 
 Remaining lanes:
 
 - [x] `pandwind/preset/panda` — shipped, §7.20–§7.29.
 - [x] `pandwind/reset/{tailwindcss,panda,pandwind}` — shipped, including the
       `reset` versus `preset` naming note the maintainer asked for (§7.31).
+- [ ] A build-time `keyframes()` utility that emits project-authored
+      `@keyframes` and returns the animation name the preset-free
+      `animation` shorthand can reference — the follow-up the `animations`
+      drop leaves open (§7.32).
 - [ ] `pandwind/preset/stylex` and `pandwind/reset/stylex` — skipped with a
       recorded reason (§7.30); revisit only if a maintainer asks.

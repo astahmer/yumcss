@@ -135,12 +135,6 @@ const namespaceLanes: ReadonlyArray<{
 		utility: "max-w",
 		property: "max-width",
 	},
-	{
-		tokens: tailwindTokens.animations,
-		namespace: "--animate",
-		utility: "animate",
-		property: "animation",
-	},
 ];
 
 /**
@@ -155,7 +149,6 @@ const namespaceExtras: Record<string, ReadonlyArray<string>> = {
 	"--shadow": ["none"],
 	"--text-shadow": ["none"],
 	"--container": ["none", "prose"],
-	"--animate": ["none"],
 };
 
 const BREAKPOINTS = Object.keys(tailwindcssTheme.breakpoints);
@@ -236,7 +229,6 @@ describe("tailwindcss preset parity with the installed compiler", () => {
 			"shadow-md",
 			"max-w-none",
 			"max-w-prose",
-			"animate-none",
 			"text-shadow-none",
 			"leading-none",
 			"transition-none",
@@ -248,7 +240,6 @@ describe("tailwindcss preset parity with the installed compiler", () => {
 		expect(tailwindTokens.radii.full).toBe(declarationOf(root, "rounded-full", "border-radius"));
 		expect(tailwindTokens.containers.none).toBe(declarationOf(root, "max-w-none", "max-width"));
 		expect(tailwindTokens.containers.prose).toBe(declarationOf(root, "max-w-prose", "max-width"));
-		expect(tailwindTokens.animations.none).toBe(declarationOf(root, "animate-none", "animation"));
 		expect(tailwindTokens.textShadows.none).toBe(
 			declarationOf(root, "text-shadow-none", "text-shadow"),
 		);

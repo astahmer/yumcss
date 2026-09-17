@@ -23,6 +23,9 @@
  * - transitionProperties ships verbatim: that utility already names the list.
  * - The blurs group is absent, because Chakra reaches it only through its blur
  *   utility, which writes a --blur custom property instead of a CSS property.
+ * - The animations group is absent for the same reason: each entry is a
+ *   shorthand whose @keyframes body Chakra keeps in its own theme.keyframes,
+ *   which this preset does not ship.
  * - zIndex.base is declared as 0 yet resolves to nothing through system.token,
  *   so the parity sweep compares it against the declared theme leaf instead.
  * - textEmphasisColor is the one bound property Chakra's runtime utility map
@@ -52,7 +55,6 @@ import { chakraOracle } from "./helpers/chakra-oracle.ts";
 /** Token groups the generator reads straight from Chakra's theme.tokens. */
 const STATIC_TOKEN_GROUPS = [
 	"aspectRatios",
-	"animations",
 	"borders",
 	"colors",
 	"cursor",
@@ -153,7 +155,6 @@ describe("chakra preset data", () => {
 	test("the catalog carries every generated scale and nothing else", () => {
 		expect(Object.keys(chakraTokens)).toEqual([
 			"aspectRatios",
-			"animations",
 			"borders",
 			"colors",
 			"cursor",
@@ -178,7 +179,6 @@ describe("chakra preset data", () => {
 			),
 		).toEqual({
 			aspectRatios: 6,
-			animations: 4,
 			borders: 5,
 			colors: 243,
 			cursor: 8,
@@ -349,7 +349,7 @@ describe("chakra preset parity with the installed system", () => {
 			}
 		}
 
-		expect(checked).toBe(350);
+		expect(checked).toBe(346);
 		expect(skipped).toBe(110);
 		expect(mismatches).toEqual(["zIndex.base (zIndex.base): Chakra undefined !== preset 0"]);
 	});
@@ -391,7 +391,7 @@ describe("chakra preset parity with the installed system", () => {
 			divergences.set(property, (divergences.get(property) ?? 0) + 1);
 		}
 
-		expect(checked).toBe(4379);
+		expect(checked).toBe(4375);
 		expect(skipped).toBe(1541);
 		// textEmphasisColor is the only property Chakra's runtime utility map omits:
 		// it returns the authored color instead of the custom property every other

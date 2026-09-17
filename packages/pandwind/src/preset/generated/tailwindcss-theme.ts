@@ -403,13 +403,6 @@ export const tailwindcssTheme = {
 		"sm": "640px",
 		"xl": "1280px"
 	},
-	"animations": {
-		"bounce": "bounce 1s infinite",
-		"none": "none",
-		"ping": "ping 1s cubic-bezier(0, 0, 0.2, 1) infinite",
-		"pulse": "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
-		"spin": "spin 1s linear infinite"
-	},
 	"transitions": {
 		"all": "all 150ms cubic-bezier(0.4, 0, 0.2, 1)",
 		"colors": "color 150ms cubic-bezier(0.4, 0, 0.2, 1), background-color 150ms cubic-bezier(0.4, 0, 0.2, 1), border-color 150ms cubic-bezier(0.4, 0, 0.2, 1), outline-color 150ms cubic-bezier(0.4, 0, 0.2, 1), text-decoration-color 150ms cubic-bezier(0.4, 0, 0.2, 1), fill 150ms cubic-bezier(0.4, 0, 0.2, 1), stroke 150ms cubic-bezier(0.4, 0, 0.2, 1)",

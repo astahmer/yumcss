@@ -33,12 +33,6 @@ export const chakraTheme = {
 			"ultrawide": "18 / 5",
 			"wide": "16 / 9"
 		},
-		"animations": {
-			"bounce": "bounce 1s infinite",
-			"ping": "ping 1s cubic-bezier(0, 0, 0.2, 1) infinite",
-			"pulse": "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
-			"spin": "spin 1s linear infinite"
-		},
 		"borders": {
 			"lg": "4px solid",
 			"md": "2px solid",

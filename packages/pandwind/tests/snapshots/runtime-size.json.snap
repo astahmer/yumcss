@@ -12,20 +12,20 @@
     "gz": 6490
   },
   "createCss(tailwindPreset)": {
-    "min": 40558,
-    "gz": 13243
+    "min": 40314,
+    "gz": 13169
   },
   "createCss(chakraPreset)": {
-    "min": 51370,
-    "gz": 13884
+    "min": 51166,
+    "gz": 13810
   },
   "createCss(shadcnPreset)": {
     "min": 85075,
     "gz": 15948
   },
   "createCss(pandaPreset)": {
-    "min": 44628,
-    "gz": 12858
+    "min": 44424,
+    "gz": 12788
   },
   "createCss(defaultPreset)": {
     "min": 24100,

@@ -22,8 +22,9 @@
  *   and backdropBlur utilities, which write --blur custom properties instead
  *   of a CSS property.
  * - keyframes, textStyles, containerSizes, the patterns, and the recipes are
- *   absent, because Pandwind binds no property to them: a project that writes
- *   animation: "spin" declares its own @keyframes rule.
+ *   absent, because Pandwind binds no property to them, and the animations
+ *   group goes with keyframes: a shorthand whose body nothing declares is a
+ *   dangling reference rather than a usable token.
  */
 import { readFileSync } from "node:fs";
 import { parse } from "postcss";
@@ -59,8 +60,7 @@ const STATIC_TOKEN_GROUPS = [
 	"colors",
 	"spacing",
 	"sizes",
-	"animations",
-] as const;
+ ] as const;
 
 /** Scale names Panda publishes through a utility instead of a token group. */
 const COMPOSED_GROUPS = ["transitions", "transitionProperties"];
@@ -261,7 +261,6 @@ describe("panda preset data", () => {
 			colors: 246,
 			spacing: 36,
 			sizes: 53,
-			animations: 4,
 			transitions: 10,
 			transitionProperties: 5,
 		});
@@ -437,7 +436,7 @@ describe("panda preset parity with the installed package", () => {
 			}
 		}
 
-		expect(checked).toBe(415);
+		expect(checked).toBe(411);
 		expect(unpaired).toEqual([...COMPOSED_GROUPS]);
 		expect(mismatches).toEqual([]);
 	});
@@ -462,9 +461,9 @@ describe("panda preset parity with the installed package", () => {
 			([property, group]) => shippedGroups.has(property) && shippedGroups.get(property) !== group,
 		);
 
-		expect(boundProperties).toHaveLength(144);
-		expect(derivable.size).toBe(132);
-		expect(boundProperties.length - handBindings.length).toBe(116);
+		expect(boundProperties).toHaveLength(143);
+		expect(derivable.size).toBe(131);
+		expect(boundProperties.length - handBindings.length).toBe(115);
 		expect(Object.fromEntries(handBindings)).toEqual(
 			Object.fromEntries(
 				Object.entries(HAND_BINDINGS).flatMap(([group, properties]) =>
@@ -490,7 +489,6 @@ describe("panda preset parity with the installed package", () => {
 			easings: 2,
 			shadows: 2,
 			aspectRatios: 1,
-			animations: 1,
 			fonts: 1,
 			fontSizes: 1,
 			fontWeights: 1,
@@ -628,8 +626,10 @@ describe("panda preset runtime resolution", () => {
 
 	test("the bound shorthands reach their scale and keep raw CSS available", () => {
 		expect(atomicOf({ border: "none" })).toContain("border:var(--");
-		expect(atomicOf({ animation: "spin" })).toContain("animation:var(--");
 		expect(atomicOf({ animationDuration: "fast" })).toContain("animation-duration:var(--");
+		expect(atomicOf({ animation: "spin 1s linear infinite" })).toContain(
+			"animation:spin 1s linear infinite",
+		);
 		expect(atomicOf({ scrollbarWidth: "thin" })).toContain("scrollbar-width:thin");
 		expect(atomicOf({ padding: 4 })).toContain("padding:4px");
 		expect(atomicOf({ padding: "1.5" })).toContain("padding:var(--");

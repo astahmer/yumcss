@@ -18,7 +18,6 @@ const {
 	textShadows,
 	containers,
 	breakpoints,
-	animations,
 	transitions,
 	zIndices,
 } = tailwindcssTheme;
@@ -43,7 +42,6 @@ export const tailwindTokens = define.tokens({
 	shadows,
 	textShadows,
 	containers,
-	animations,
 	transitions,
 	zIndices,
 });
@@ -93,7 +91,6 @@ export const tailwindProperties = define.properties({
 	minWidth: boundTo("containers"),
 	maxWidth: boundTo("containers"),
 	zIndex: boundTo("zIndices"),
-	animation: boundTo("animations"),
 	transition: boundTo("transitions"),
 	color: boundTo("colors"),
 	background: boundTo("colors"),
@@ -150,12 +147,17 @@ export type TailwindConditions = typeof tailwindConditions;
  * knows, resolved by Pandwind's runtime.
  *
  * Colors, fonts, text sizes, weights, leading, tracking, radii, shadows, text
- * shadows, containers, z-indexes, animations, transitions, and the five
+ * shadows, containers, z-indexes, transitions, and the five
  * breakpoint conditions come from the installed `tailwindcss` package through
  * {@link tailwindcssTheme}, so the preset tracks the pinned Tailwind version
  * instead of a transcribed list. Colors keep Tailwind's authored OKLCH values,
  * including the out-of-sRGB stops, because a CSS value is opaque to the runtime
  * and a converted twin would be a second source of truth.
+ *
+ * Tailwind's `--animate` scale is absent: each entry is a shorthand whose
+ * `@keyframes` body lives in Tailwind's own theme CSS rather than in the theme
+ * data a preset reads, so the token would name an animation no stylesheet
+ * declares and the project owns the body.
  *
  * Bound namespaces resolve to Tailwind's values and emit their `:root` custom
  * properties, matching what Tailwind's own `@theme` output publishes; pass
