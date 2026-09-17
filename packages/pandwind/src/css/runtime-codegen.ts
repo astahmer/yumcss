@@ -14,6 +14,7 @@ export const CssRuntimeMethodTag = {
 	Props: "props",
 	Group: "group",
 	Input: "input",
+	Keyframes: "keyframes",
 } as const;
 
 export type CssRuntimeMethod = (typeof CssRuntimeMethodTag)[keyof typeof CssRuntimeMethodTag];
@@ -26,6 +27,7 @@ export const CSS_RUNTIME_METHODS = [
 	CssRuntimeMethodTag.Props,
 	CssRuntimeMethodTag.Group,
 	CssRuntimeMethodTag.Input,
+	CssRuntimeMethodTag.Keyframes,
 ] as const satisfies readonly CssRuntimeMethod[];
 
 const isCssRuntimeMethod = (value: string): value is CssRuntimeMethod =>

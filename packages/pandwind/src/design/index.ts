@@ -84,6 +84,7 @@ export const createDesignCss = <TPreset extends DesignPreset>(
 
 	dss.props = engine.props;
 	dss.input = engine.input;
+	dss.keyframes = engine.keyframes;
 
 	dss.group = ((groups: Record<string, Maybe<Design> | ((...args: any[]) => Design)>) => {
 		const resolved = Object.create(null) as Record<

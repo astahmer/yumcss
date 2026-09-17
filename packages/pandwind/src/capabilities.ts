@@ -46,10 +46,16 @@ export const CSS_IN_JS_CAPABILITIES = [
 			"The DOM-optional runtime sheet registers deterministic global semantic rules; authored CSS imports remain observable through tooling.",
 	},
 	{
-		feature: "keyframes-font-face",
+		feature: "keyframes",
+		status: "partial",
+		detail:
+			"Literal css.keyframes({...}) bodies emit deterministic @keyframes rules at build time; non-literal bodies stay on the runtime call with an actionable diagnostic.",
+	},
+	{
+		feature: "font-face",
 		status: "runtime",
 		detail:
-			"The runtime sheet registers keyframes and font-face semantic rules with stable ordering; authored CSS imports remain observable through tooling.",
+			"The runtime sheet registers @font-face semantic rules with stable ordering; authored CSS imports remain observable through tooling.",
 	},
 	{
 		feature: "layers-supports-property",

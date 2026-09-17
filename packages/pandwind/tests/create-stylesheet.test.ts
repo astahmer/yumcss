@@ -399,3 +399,48 @@ test("css property-based conditionals", () => {
   `,
 	);
 });
+
+test("processKeyframes emits one deterministic rule per canonical body", () => {
+	const sheet = createStylesheet(examplePreset, {}, { tokens: "used" });
+	const name = sheet.processKeyframes({ from: { opacity: 0 }, to: { opacity: 1 } });
+
+	expect(name.startsWith("pw-kf-")).toBe(true);
+	expect(sheet.processKeyframes({ "0%": { opacity: 0 }, "100%": { opacity: 1 } })).toBe(name);
+	expect(sheet.processKeyframes({ to: { opacity: 1 }, from: { opacity: 0 } })).toBe(name);
+	expect(sheet.gen.keyframesEntries()).toHaveLength(1);
+	expect(sheet.gen.keyframes()).toMatchInlineSnapshot(
+		`"@keyframes pw-kf-8ozw3w{0%{opacity:0}100%{opacity:1}}"`,
+	);
+});
+
+test("keyframe steps resolve preset tokens into the used token set", () => {
+	const preset = {
+		conditions: {},
+		properties: { $all: true, color: { $tokens: "colors" } },
+		strict: true,
+		tokens: { colors: { $brand: "#123456", $accent: "#654321", $unused: "#abcdef" } },
+	} as never;
+	const sheet = createStylesheet(preset, {}, { tokens: "used" });
+	sheet.processKeyframes({ from: { color: "$brand" }, to: { color: "$accent" } });
+
+	const keyframes = sheet.gen.keyframes();
+	const referenced = keyframes.match(/var\(--[^)]+\)/g) ?? [];
+	expect(referenced).toHaveLength(2);
+
+	const tokens = sheet.gen.tokens();
+	for (const reference of new Set(referenced)) {
+		expect(tokens).toContain(reference.slice(4, -1));
+	}
+	expect(tokens).toContain("#123456");
+	expect(tokens).toContain("#654321");
+	// Only the referenced tokens are emitted, not the whole palette.
+	expect(tokens).not.toContain("#abcdef");
+});
+
+test("keyframe steps reject nested conditions instead of dropping them", () => {
+	const sheet = createStylesheet(examplePreset, {});
+
+	expect(() => sheet.processKeyframes({ from: { _hover: { opacity: 1 } } })).toThrow(
+		"a keyframe step has no selector",
+	);
+});

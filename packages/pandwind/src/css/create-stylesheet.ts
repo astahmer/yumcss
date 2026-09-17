@@ -9,6 +9,7 @@ import {
 	isEmptyCondition,
 } from "../backends/css.ts";
 import { createHashFn, dashCase, escapeIdentifier, hashCssVar } from "./hash.ts";
+import { keyframeName, normalizeKeyframeSteps, type KeyframeBody } from "./keyframes.ts";
 import { getPropertyPriority } from "./property-priorities.ts";
 import {
 	buildTokenMaps,
@@ -161,6 +162,7 @@ export const createStylesheet = (
 	};
 
 	const cssVars = new Map<string, TokenDeclaration>();
+	const keyframesCache = new Map<string, Rule>();
 
 	const tokenMaps = buildTokenMaps(preset, debug);
 	const colorPaletteMaps = buildColorPaletteMaps(preset, tokenMaps.flatTokens, debug);
@@ -244,6 +246,59 @@ export const createStylesheet = (
 		return localCache;
 	};
 
+	/**
+	 * Resolve one declaration to its emitted `property:value` form and record
+	 * the preset token paths it uses. Atomic rules and keyframe steps share
+	 * this path so both lanes resolve tokens identically.
+	 */
+	const resolveDeclaration = (
+		property: string,
+		normalizedValue: string,
+		rawProperty: string,
+	): string => {
+		const tokenGroup = tokenMaps.groupByProp.get(property);
+		const tokenNames = tokenMaps.tokensByProp.get(property);
+		if (tokenNames?.has(normalizedValue)) {
+			// `tokenNames` contains every accepted spelling, including aliases
+			// such as `brand` for a preset key `$brand`. Track the canonical
+			// preset path so used-token emission keeps the variable declaration
+			// for whichever spelling the caller authored.
+			const tokenPath = tokenMaps.flatTokens.get(
+				`${tokenGroup ?? rawProperty}.${normalizedValue}`,
+			)?.path;
+			if (tokenPath !== undefined) {
+				for (const dependency of tokenDependencyPaths(tokenMaps, tokenPath)) {
+					if (usedTokenPaths.has(dependency)) continue;
+					usedTokenPaths.add(dependency);
+					tokensCache = undefined;
+				}
+			}
+		}
+		const colorPaletteValue = isColorProperty(property)
+			? colorPaletteMaps.values.get(normalizedValue)
+			: undefined;
+		return [
+			dashCase(property),
+			colorPaletteValue ?? resolveTokenValue(tokenMaps, property, normalizedValue),
+		].join(":");
+	};
+
+	/** One declaration, or the reversed fallback chain a firstThatWorks value encodes. */
+	const resolveDeclarations = (
+		property: string,
+		normalizedValue: string,
+		rawProperty: string,
+	): string => {
+		const fallbackValues = decodeFirstThatWorks(normalizedValue);
+		if (fallbackValues === undefined)
+			return resolveDeclaration(property, normalizedValue, rawProperty);
+		return fallbackValues
+			.map((value) => normalizeCssValue(property, value))
+			.toReversed()
+			.map((value) => resolveDeclaration(property, value, rawProperty))
+			.join(";");
+	};
+
 	const processNormalizedStyle = (
 		orderedKey: string,
 		normalizedValue: string,
@@ -266,31 +321,7 @@ export const createStylesheet = (
 			if (property === "colorPalette") {
 				throw new Error("pandwind: firstThatWorks cannot be used with the colorPalette selector.");
 			}
-			const declaration = fallbackValues
-				.map((value) => normalizeCssValue(property, value))
-				.toReversed()
-				.map((value) => {
-					const tokenGroup = tokenMaps.groupByProp.get(property);
-					const tokenNames = tokenMaps.tokensByProp.get(property);
-					if (tokenNames?.has(value)) {
-						const tokenPath = tokenMaps.flatTokens.get(
-							`${tokenGroup ?? atomic.prop!}.${value}`,
-						)?.path;
-						if (tokenPath !== undefined) {
-							for (const dependency of tokenDependencyPaths(tokenMaps, tokenPath)) {
-								if (usedTokenPaths.has(dependency)) continue;
-								usedTokenPaths.add(dependency);
-								tokensCache = undefined;
-							}
-						}
-					}
-					const colorPaletteValue = isColorProperty(property)
-						? colorPaletteMaps.values.get(value)
-						: undefined;
-					const resolved = colorPaletteValue ?? resolveTokenValue(tokenMaps, property, value);
-					return [dashCase(property), resolved].join(":");
-				})
-				.join(";");
+			const declaration = resolveDeclarations(property, normalizedValue, atomic.prop!);
 			const className =
 				preparedClassName !== undefined && isSafeClassName(preparedClassName)
 					? preparedClassName
@@ -333,34 +364,13 @@ export const createStylesheet = (
 			localCache.set(pairId, rule);
 			return;
 		}
-		const tokenGroup = tokenMaps.groupByProp.get(property);
-		const tokenNames = tokenMaps.tokensByProp.get(property);
-		if (tokenNames?.has(normalizedValue)) {
-			// `tokenNames` contains every accepted spelling, including aliases
-			// such as `brand` for a preset key `$brand`. Track the canonical
-			// preset path so used-token emission keeps the variable declaration
-			// for whichever spelling the caller authored.
-			const tokenPath = tokenMaps.flatTokens.get(
-				`${tokenGroup ?? atomic.prop!}.${normalizedValue}`,
-			)?.path;
-			if (tokenPath !== undefined) {
-				for (const dependency of tokenDependencyPaths(tokenMaps, tokenPath)) {
-					if (usedTokenPaths.has(dependency)) continue;
-					usedTokenPaths.add(dependency);
-					tokensCache = undefined;
-				}
-			}
-		}
-		const colorPaletteValue = isColorProperty(property)
-			? colorPaletteMaps.values.get(normalizedValue)
-			: undefined;
-		const value = colorPaletteValue ?? resolveTokenValue(tokenMaps, property, normalizedValue);
+		const declaration = resolveDeclaration(property, normalizedValue, atomic.prop!);
 		const className =
 			preparedClassName !== undefined && isSafeClassName(preparedClassName)
 				? preparedClassName
 				: classNameFor(orderedKey, normalizedValue);
 
-		const css = serializeStyle([dashCase(property), value].join(":"), {
+		const css = serializeStyle(declaration, {
 			...atomic.conditions,
 			className: `.${escapeIdentifier(className)}`,
 		});
@@ -391,6 +401,45 @@ export const createStylesheet = (
 		const merged = assign(...styles);
 		const flat = flattenStyle(merged);
 		return processFlatStyles(flat);
+	};
+
+	/**
+	 * Emit the `@keyframes` rule for an authored step body and return the
+	 * animation name the `animation` shorthand references. The name is derived
+	 * from the canonical body, so the runtime factory and this build lane agree
+	 * without shared state.
+	 */
+	const processKeyframes = (body: KeyframeBody): string => {
+		const name = keyframeName(body, namespace);
+		if (keyframesCache.has(name)) return name;
+		const steps: string[] = [];
+		for (const { name: step, declarations } of normalizeKeyframeSteps(body)) {
+			const flat =
+				typeof declarations === "object" && declarations !== null ? flattenStyle(declarations) : {};
+			const resolved: string[] = [];
+			for (const flatKey of Object.keys(flat).toSorted()) {
+				if (flatKey.includes("__")) {
+					// A step has no selector, so a nested condition could only be
+					// dropped silently. Authored CSS remains the fallback.
+					throw new Error(
+						`pandwind: keyframe step '${step}' cannot nest '${flatKey}'; a keyframe step has no selector.`,
+					);
+				}
+				const value = flat[flatKey]!;
+				if (!isCompilableCssValue(value)) continue;
+				const property = cssPropertyFromKey(flatKey, preset.conditions);
+				resolved.push(
+					resolveDeclarations(property, normalizeFirstThatWorks(property, value), property),
+				);
+			}
+			steps.push(`${step}{${resolved.join(";")}}`);
+		}
+		keyframesCache.set(name, {
+			id: name,
+			css: `@keyframes ${escapeIdentifier(name)}{${steps.join("")}}`,
+			priority: 0,
+		});
+		return name;
 	};
 
 	/**
@@ -480,6 +529,20 @@ export const createStylesheet = (
 				.map((token) => token.declaration)
 				.join("\n"));
 		},
+		/**
+		 * `@keyframes` rules with identity. They are order-independent against
+		 * class rules and stay outside the priority bands, so they are emitted
+		 * in name order instead of through the ordering policy.
+		 */
+		keyframesEntries: (): Rule[] =>
+			Array.from(keyframesCache.values()).toSorted((left, right) =>
+				left.id.localeCompare(right.id),
+			),
+		keyframes: () =>
+			gen
+				.keyframesEntries()
+				.map((rule) => rule.css)
+				.join("\n"),
 		atomic: () => {
 			return orderedRuleSections()
 				.atomic.map((v) => v.css)
@@ -515,15 +578,20 @@ export const createStylesheet = (
 		processStyles(styles);
 
 		const tokensCss = gen.tokens();
+		const keyframesCss = gen.keyframes();
 		const atomicCss = gen.atomic();
 
-		return wrapCascadeLayer([tokensCss, atomicCss].filter(Boolean).join("\n"), options.cascade);
+		return wrapCascadeLayer(
+			[tokensCss, keyframesCss, atomicCss].filter(Boolean).join("\n"),
+			options.cascade,
+		);
 	};
 
 	return {
 		cache,
 		process: processStyles,
 		processPrepared: processPreparedStyles,
+		processKeyframes,
 		processVarKey,
 		gen,
 		generate,

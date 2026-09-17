@@ -363,6 +363,12 @@
 			"import": "./dist/css/runtime-method-input.js",
 			"default": "./dist/css/runtime-method-input.js"
 		},
+		"./_runtime/css-keyframes": {
+			"pandwind": "./src/css/runtime-method-keyframes.ts",
+			"types": "./dist/css/runtime-method-keyframes.d.ts",
+			"import": "./dist/css/runtime-method-keyframes.js",
+			"default": "./dist/css/runtime-method-keyframes.js"
+		},
 		"./package.json": "./package.json"
 	},
 	"publishConfig": {

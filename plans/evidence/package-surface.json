@@ -284,7 +284,8 @@
 				"./_runtime/css-raw",
 				"./_runtime/css-props",
 				"./_runtime/css-group",
-				"./_runtime/css-input"
+				"./_runtime/css-input",
+				"./_runtime/css-keyframes"
 			],
 			"owner": "runtime",
 			"maturity": "stable",

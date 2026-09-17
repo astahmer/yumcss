@@ -20,9 +20,11 @@ import {
 import { attachClass } from "./runtime-method-class.ts";
 import { attachGroup } from "./runtime-method-group.ts";
 import { attachInput } from "./runtime-method-input.ts";
+import { attachKeyframes } from "./runtime-method-keyframes.ts";
 import { attachProps } from "./runtime-method-props.ts";
 import { attachRaw } from "./runtime-method-raw.ts";
 import { attachVars } from "./runtime-method-vars.ts";
+import type { KeyframeBody } from "./keyframes.ts";
 import type { ClassNameStrategy } from "./class-name-strategy.ts";
 import type { VarsOutput } from "./var-compiler.ts";
 import { validateColorPaletteValue } from "./color-palette-validation.ts";
@@ -56,6 +58,7 @@ const ALL_RUNTIME_METHODS = [
 	attachProps,
 	attachGroup,
 	attachInput,
+	attachKeyframes,
 ] as const;
 
 /**
@@ -87,7 +90,8 @@ const ALL_RUNTIME_METHODS = [
  *
  * @param preset - Preset metadata defining the token and condition vocabulary.
  * @param options - CSS backend options.
- * @returns A callable compiler with `class`, `vars`, `raw`, `props`, and `group`.
+ * @returns A callable compiler with `class`, `vars`, `raw`, `props`, `group`,
+ * and `keyframes`.
  * @category factories
  * @since 0.1.0
  */
@@ -188,7 +192,8 @@ type PropsInput =
 	| undefined;
 
 /**
- * Callable CSS compiler with class, variable, raw, props, and group projections.
+ * Callable CSS compiler with class, variable, raw, props, group, and keyframes
+ * projections.
  *
  * @category styling
  * @since 0.1.0
@@ -311,6 +316,29 @@ export interface CssFn<
 	 * ```
 	 */
 	input: (name: string) => never;
+	/**
+	 * Declare a component-local `@keyframes` body and receive the animation name
+	 * its emitted rule registers under.
+	 *
+	 * A literal body is folded to that name in the bundled source, so the
+	 * declarations stay in the generated stylesheet and never ship to the
+	 * browser. The name is derived from the body itself, so the build, the
+	 * server render, and the client all agree without a registry or counter.
+	 *
+	 * Each step is an ordinary declaration map, so preset token references
+	 * resolve and their custom properties join the emitted tokens. A step has
+	 * no selector, so conditions inside one are rejected at build time.
+	 *
+	 * @example
+	 * ```ts
+	 * const spin = css.keyframes({
+	 *   from: { transform: "rotate(0deg)" },
+	 *   to: { transform: "rotate(360deg)" },
+	 * });
+	 * const style = css.raw({ animation: `${spin} 1s linear infinite` });
+	 * ```
+	 */
+	keyframes: (body: KeyframeBody) => string;
 }
 
 /**
