@@ -4,64 +4,64 @@
     "gz": 2522
   },
   "createCss(minimal preset), fallback": {
-    "min": 13084,
-    "gz": 5176
+    "min": 13717,
+    "gz": 5425
   },
   "createCss(csstypePreset)": {
-    "min": 17574,
-    "gz": 6490
+    "min": 18207,
+    "gz": 6743
   },
   "createCss(tailwindPreset)": {
-    "min": 40314,
-    "gz": 13169
+    "min": 40947,
+    "gz": 13417
   },
   "createCss(chakraPreset)": {
-    "min": 51166,
-    "gz": 13810
+    "min": 51799,
+    "gz": 14062
   },
   "createCss(shadcnPreset)": {
-    "min": 85075,
-    "gz": 15948
+    "min": 85708,
+    "gz": 16197
   },
   "createCss(pandaPreset)": {
-    "min": 44424,
-    "gz": 12788
+    "min": 45057,
+    "gz": 13037
   },
   "createCss(defaultPreset)": {
-    "min": 24100,
-    "gz": 8680
+    "min": 24733,
+    "gz": 8932
   },
   "createCss(fixturePreset)": {
-    "min": 27425,
-    "gz": 9731
+    "min": 28058,
+    "gz": 9983
   },
   "createCss(fixturePreset) + tw()": {
-    "min": 30114,
-    "gz": 10724
+    "min": 30747,
+    "gz": 10974
   },
   "createCss(fixturePreset) + cx()": {
-    "min": 34380,
-    "gz": 12371
+    "min": 35013,
+    "gz": 12617
   },
   "createCss(fixturePreset) + tw() + cx()": {
-    "min": 37057,
-    "gz": 13324
+    "min": 37690,
+    "gz": 13577
   },
   "createUnsafeCss(), fallback": {
-    "min": 10599,
-    "gz": 4266
+    "min": 11231,
+    "gz": 4513
   },
   "createRuntimeCss(preset), live sheet": {
-    "min": 33733,
-    "gz": 12498
+    "min": 34367,
+    "gz": 12743
   },
   "createUnsafeCss(), static output after extraction": {
     "min": 81,
     "gz": 98
   },
   "createUnsafeCss(), dynamic fallback": {
-    "min": 10587,
-    "gz": 4263
+    "min": 11219,
+    "gz": 4509
   },
   "createUnsafeCss(), compiler-pruned call": {
     "min": 5817,
@@ -104,27 +104,27 @@
     "gz": 3008
   },
   "cx": {
-    "min": 17537,
-    "gz": 6837
+    "min": 18170,
+    "gz": 7084
   },
   "all (createUnsafeCss+tw+cx)": {
-    "min": 20227,
-    "gz": 7801
+    "min": 20860,
+    "gz": 8057
   },
   "stylesheet generator (build-time only)": {
-    "min": 21087,
-    "gz": 8181
+    "min": 22177,
+    "gz": 8585
   },
   "unsafe css subpath only": {
-    "min": 10607,
-    "gz": 4270
+    "min": 11239,
+    "gz": 4516
   },
   "root barrel, tw only": {
     "min": 2800,
     "gz": 1314
   },
   "root barrel, cx + unsafe css": {
-    "min": 17533,
-    "gz": 6856
+    "min": 18166,
+    "gz": 7100
   }
 }

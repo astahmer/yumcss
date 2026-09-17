@@ -13,15 +13,15 @@
 	},
 	"createCss(tailwindPreset)": {
 		"min": 41000,
-		"gz": 13350
+		"gz": 13600
 	},
 	"createCss(chakraPreset)": {
 		"min": 51900,
-		"gz": 14000
+		"gz": 14250
 	},
 	"createCss(shadcnPreset)": {
 		"min": 85900,
-		"gz": 16100
+		"gz": 16350
 	},
 	"createCss(pandaPreset)": {
 		"min": 45350,
@@ -124,7 +124,7 @@
 		"gz": 8100
 	},
 	"stylesheet generator (build-time only)": {
-		"min": 22000,
+		"min": 22400,
 		"gz": 8600
 	}
 }

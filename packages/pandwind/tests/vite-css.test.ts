@@ -102,7 +102,9 @@ test("diagnoseCssSources reports unsupported constructs and missed extraction", 
 	const code = `
 		import { css } from "./design";
 		const color = "$blue-500";
+		const spin = { from: { opacity: 0 } };
 		css.keyframes({ from: { opacity: 0 } });
+		css.keyframes(spin);
 		css.class({ $text: { color } });
 	`;
 	const diagnostics = extract().diagnose(code, "src/card.tsx", new Set(["css"]));
@@ -110,13 +112,13 @@ test("diagnoseCssSources reports unsupported constructs and missed extraction", 
 	expect(diagnostics).toHaveLength(2);
 	expect(diagnostics[0]).toMatchObject({
 		kind: "unsupported-construct",
-		line: 4,
-		message: expect.stringContaining("keyframes"),
-		suggestion: expect.stringContaining("css.class"),
+		line: 6,
+		message: "css.keyframes needs one static object literal body.",
+		suggestion: expect.stringContaining("authored CSS"),
 	});
 	expect(diagnostics[1]).toMatchObject({
 		kind: "missing-extraction",
-		line: 5,
+		line: 7,
 		message: expect.stringContaining("dynamic"),
 		suggestion: expect.stringContaining("css.vars"),
 	});
@@ -124,22 +126,22 @@ test("diagnoseCssSources reports unsupported constructs and missed extraction", 
 		[
 		  {
 		    "column": 3,
-		    "end": 105,
+		    "end": 169,
 		    "file": "src/card.tsx",
 		    "kind": "unsupported-construct",
-		    "line": 4,
-		    "message": "Authored keyframes are not extracted yet.",
-		    "start": 66,
-		    "suggestion": "Use css.class/css.raw for declarations, or keep this rule in authored CSS until build-time support is added.",
+		    "line": 6,
+		    "message": "css.keyframes needs one static object literal body.",
+		    "start": 150,
+		    "suggestion": "Keep every step and declaration literal, or keep the @keyframes rule in authored CSS.",
 		  },
 		  {
 		    "column": 3,
-		    "end": 140,
+		    "end": 204,
 		    "file": "src/card.tsx",
 		    "kind": "missing-extraction",
-		    "line": 5,
+		    "line": 7,
 		    "message": "css.class has dynamic argument(s); only literal style objects enter the generated stylesheet.",
-		    "start": 109,
+		    "start": 173,
 		    "suggestion": "Keep the style shape literal for build-time extraction, or use css.vars for dynamic values and verify the runtime path.",
 		  },
 		]
@@ -331,7 +333,7 @@ test("css extraction façade accepts substituted policy ports", () => {
 	};
 	const artifacts: CssArtifactExtractor = {
 		extract: () => [],
-		extractFile: () => ({ sources: [], varKeys: ["runtime__color"] }),
+		extractFile: () => ({ sources: [], varKeys: ["runtime__color"], keyframes: [] }),
 	};
 	const diagnostics: CssDiagnosticReporter = { diagnose: () => [] };
 	const service = createCssExtractionService({
@@ -346,6 +348,7 @@ test("css extraction façade accepts substituted policy ports", () => {
 	expect(service.extractFile("ignored", "ignored.ts")).toEqual({
 		sources: [],
 		varKeys: ["runtime__color"],
+		keyframes: [],
 	});
 	expect(service.inline("code", "ignored.ts", new Set(["css"]))).toEqual({
 		code: "code!",
@@ -378,7 +381,7 @@ test("the shared source service composes the extraction façade", () => {
 			extract: () => [],
 			extractFile: () => {
 				calls.push("extract");
-				return { sources: [], varKeys: [] };
+				return { sources: [], varKeys: [], keyframes: [] };
 			},
 		},
 	});
@@ -988,6 +991,67 @@ test("static direct factory calls are marked pure for bundler elimination", () =
 		import { createUnsafeCss } from "../../src/unsafe/css.ts";
 		const css = createUnsafeCss();
 		const card = css.class({ color: "red" });
+	`;
+	const result = extract().inline(code, "app.ts", new Set(["css"]));
+
+	expect(result.inlined).toBe(1);
+	expect(result.code).toContain("/* @__PURE__ */ createUnsafeCss()");
+});
+
+test("extractCssFile records literal keyframe bodies with their provenance", () => {
+	const code = `
+		import { css } from "./css";
+		css({ $text: { color: "$blue-500" } });
+		const spin = css.keyframes({ from: { transform: "rotate(0deg)" }, to: { transform: "rotate(360deg)" } });
+		css.keyframes({ from: { opacity: 0 } });
+		const fade = { from: { opacity: 0 } };
+		css.keyframes(fade);
+	`;
+	const names = scan(["css"]).findImports(code, "app.ts");
+	const combined = extract(["css"]).extractFile(code, "app.ts");
+
+	expect(combined.keyframes).toHaveLength(2);
+	expect(combined.keyframes[0]).toMatchObject({
+		body: { from: { transform: "rotate(0deg)" }, to: { transform: "rotate(360deg)" } },
+		provenance: { file: "app.ts", callKind: "css.keyframes", line: 4 },
+	});
+	expect(combined.keyframes[1]).toMatchObject({
+		body: { from: { opacity: 0 } },
+		provenance: { callKind: "css.keyframes", line: 5 },
+	});
+	expect(combined.sources).toEqual(extract().extract(code, "app.ts", names));
+	expect(combined.varKeys).toEqual(scan().findVarKeys(code, "app.ts", names));
+});
+
+test("a literal keyframes call folds to the name literal the sheet emits", () => {
+	const code = `
+		import { css } from "./design";
+		export const spin = css.keyframes({ from: { opacity: 0 }, to: { opacity: 1 } });
+	`;
+	const result = extract().inline(code, "app.ts", new Set(["css"]));
+
+	expect(result.inlined).toBe(1);
+	expect(result.code).toContain('export const spin = "pw-kf-');
+	expect(result.code).not.toContain("css.keyframes");
+});
+
+test("a dynamic keyframes body keeps the runtime call", () => {
+	const code = `
+		import { css } from "./design";
+		const fade = { from: { opacity: 0 } };
+		export const spin = css.keyframes(fade);
+	`;
+	const result = extract().inline(code, "app.ts", new Set(["css"]));
+
+	expect(result.inlined).toBe(0);
+	expect(result.code).toBe(code);
+});
+
+test("a keyframes-only module still marks the factory pure", () => {
+	const code = `
+		import { createUnsafeCss } from "../../src/unsafe/css.ts";
+		const css = createUnsafeCss();
+		export const spin = css.keyframes({ from: { opacity: 0 } });
 	`;
 	const result = extract().inline(code, "app.ts", new Set(["css"]));
 

@@ -60,7 +60,7 @@ const STATIC_TOKEN_GROUPS = [
 	"colors",
 	"spacing",
 	"sizes",
- ] as const;
+] as const;
 
 /** Scale names Panda publishes through a utility instead of a token group. */
 const COMPOSED_GROUPS = ["transitions", "transitionProperties"];

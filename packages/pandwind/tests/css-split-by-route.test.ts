@@ -22,10 +22,13 @@ const makeProject = (): string => {
 		"src/routes/admin/admin.tsx": `
 			import { css } from "../design";
 			export const a = css.class({ $layout: { flow: "stackY" }, $frame: { w: "20" } });
+			export const spin = css.keyframes({ from: { opacity: 0 }, to: { opacity: 1 } });
+			export const slide = css.keyframes({ from: { transform: "translateX(0)" } });
 		`,
 		"src/routes/user/user.tsx": `
 			import { css } from "../design";
 			export const b = css.class({ $layout: { flow: "stackY" }, $frame: { h: "12" } });
+			export const spin = css.keyframes({ to: { opacity: 1 }, from: { opacity: 0 } });
 		`,
 		"src/common.ts": `
 			import { css } from "./design";
@@ -75,6 +78,22 @@ describe("splitByRoute", () => {
 		const user = plugin.load("\0pandwind:css.css?route=user") as string;
 		expect(user).toContain("height:");
 		expect(user).not.toContain("width:20px");
+	});
+
+	test("keyframes shared across routes stay common, exclusives stay in their route", () => {
+		const dir = makeProject();
+		const plugin = pluginFor(dir);
+		const base = plugin.load("\0pandwind:css.css") as string;
+		const admin = plugin.load("\0pandwind:css.css?route=admin") as string;
+		const user = plugin.load("\0pandwind:css.css?route=user") as string;
+
+		const spin = /@keyframes pw-kf-[a-z0-9]+\{0%\{opacity:0\}100%\{opacity:1\}\}/u.exec(base)?.[0];
+		expect(spin).toBeDefined();
+		expect(base).not.toContain("translateX");
+		expect(admin).toContain("translateX(0)");
+		expect(admin).not.toContain(spin!);
+		expect(user).not.toContain(spin!);
+		expect(user).not.toContain("translateX");
 	});
 
 	test("configured Stack declarations stay in their owning route chunk", () => {
