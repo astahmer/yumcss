@@ -278,6 +278,21 @@ export type ColorPaletteDefinitions<TTokens extends AnyTokens = AnyTokens> = {
 	readonly [TName: string]: ColorPaletteSource<TTokens>;
 };
 
+/**
+ * Custom properties a preset declares for its ecosystem's own stylesheet.
+ *
+ * Keys are the property name without its `--` prefix, because that is how the
+ * upstream ecosystems author their records and what their own stylesheet
+ * generators prefix. `light` renders under `:root` and `dark` under the
+ * ecosystem's dark selector.
+ */
+export interface CssVariableBlocks {
+	/** Unconditional and light-mode properties, rendered under `:root`. */
+	readonly light: Readonly<Record<string, string>>;
+	/** Dark-mode properties, rendered under the dark-mode selector. */
+	readonly dark: Readonly<Record<string, string>>;
+}
+
 /** Runtime and typing metadata consumed by Pandwind CSS factories.
  *
  * @typeParam TConfig - The project's CSS property configuration.
@@ -308,6 +323,17 @@ export interface CssPreset<
 	 * or other token groups.
 	 */
 	colorPalettes?: TColorPalettes;
+	/**
+	 * Custom properties the ecosystem's own stylesheet expects, such as the
+	 * `--background` / `--radius` roles a shadcn/ui project already reads.
+	 *
+	 * This is interop data, not compiler output: the stylesheet compiler
+	 * publishes a preset's token custom properties and never declares these, so
+	 * the reset layer, a design-system bridge, or the project's own stylesheet
+	 * renders them. Tokens that reference one of these properties resolve only
+	 * once that block is applied.
+	 */
+	cssVariables?: CssVariableBlocks;
 }
 
 /** Values portion passed to {@link define.preset}. */
