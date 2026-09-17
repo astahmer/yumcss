@@ -267,7 +267,7 @@ Lower is smaller. Sizes are decimal KB (1 KB = 1,000 bytes); exact byte values r
 |   25 | createCss(fixturePreset) + tw()                   | preset-bound full catalog |         30.11 |     10.72 |
 |   26 | createCss(fixturePreset) + cx()                   | preset-bound full catalog |         34.38 |     12.37 |
 |   27 | createRuntimeCss(preset), live sheet              | live sheet                |         33.73 |     12.50 |
-|   28 | createCss(pandaPreset)                            | preset-bound panda        |         44.88 |     12.89 |
+|   28 | createCss(pandaPreset)                            | preset-bound panda        |         44.63 |     12.86 |
 |   29 | createCss(tailwindPreset)                         | preset-bound tailwind     |         40.56 |     13.24 |
 |   30 | createCss(fixturePreset) + tw() + cx()            | preset-bound full catalog |         37.06 |     13.32 |
 |   31 | createCss(chakraPreset)                           | preset-bound chakra       |         51.37 |     13.88 |

@@ -83,24 +83,19 @@ const leafValue = (leaf: PandaTokenLeaf): string =>
 	Array.isArray(leaf.value) ? leaf.value.map(collapsed).join(", ") : collapsed(String(leaf.value));
 
 /**
- * Color keys carry the $ sigil the CSS runtime reads as a token reference, so
- * color: "$red.500" resolves. The bare red.500 spelling stays valid as its
- * canonical alias, which is the path Panda itself uses.
+ * Flatten one scale's dotted paths. Keys stay the paths Panda itself writes
+ * (`red.500`, `gray.100`), so the authored value and the generated key are the
+ * same string and no sigil respells the same token twice.
  */
-const tokenKey = (group: string, name: string): string => (group === "colors" ? "$" + name : name);
-
-const flattenGroup = (
-	group: string,
-	entries: Record<string, PandaTokenEntry>,
-): Record<string, string> => {
+const flattenGroup = (entries: Record<string, PandaTokenEntry>): Record<string, string> => {
 	const flat: Record<string, string> = {};
 	for (const [name, entry] of Object.entries(entries)) {
 		if (isTokenLeaf(entry)) {
-			flat[tokenKey(group, name)] = leafValue(entry);
+			flat[name] = leafValue(entry);
 			continue;
 		}
 		for (const [nestedName, leaf] of Object.entries(entry)) {
-			flat[tokenKey(group, name + "." + nestedName)] = leafValue(leaf);
+			flat[name + "." + nestedName] = leafValue(leaf);
 		}
 	}
 	return flat;
@@ -194,7 +189,7 @@ export const renderPandaPresetModule = async (): Promise<{
 	const tokens = Object.fromEntries(
 		Object.entries(config.theme.tokens)
 			.filter(([group]) => !droppedTokenGroups.has(group))
-			.map(([group, entries]) => [group, flattenGroup(group, entries)]),
+			.map(([group, entries]) => [group, flattenGroup(entries)]),
 	) as Record<string, Record<string, string>>;
 
 	const conditions = Object.fromEntries(
@@ -224,9 +219,6 @@ export const renderPandaPresetModule = async (): Promise<{
 		"// them.",
 		"//",
 		"// Divergences from Panda's own output, all asserted by the parity test:",
-		"// every colors key carries Pandwind's $ sigil ($red.500, $gray.100), which is",
-		'// what makes the authored color: "$red.500" a token reference; the bare',
-		"// red.500 spelling stays valid as its canonical alias,",
 		"// the blurs group is absent because Panda reaches it only through its blur and",
 		"// backdropBlur utilities, which set --blur and --backdrop-blur custom",
 		"// properties rather than CSS properties,",

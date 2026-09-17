@@ -12,11 +12,8 @@
  *    definitions or one of the documented hand bindings, so a scale this
  *    preset binds cannot drift out from under the parity suite.
  *
- * Five deliberate normalizations are asserted rather than byte-equal ports:
+ * Four deliberate normalizations are asserted rather than byte-equal ports:
  *
- * - Colors carry Pandwind's $ sigil, which is what makes an authored
- *   color: "$red.500" a token reference; the bare red.500 spelling stays
- *   valid as Panda's own canonical path.
  * - The transitions group is composed, not transcribed: each keyword of
  *   Panda's transition utility expands to a property list plus a duration and
  *   an easing, which the single shorthand Pandwind binds joins back together.
@@ -270,10 +267,8 @@ describe("panda preset data", () => {
 		});
 	});
 
-	test("Panda's color roots keep their authored order behind the sigil", () => {
-		expect([
-			...new Set(Object.keys(pandaTokens.colors).map((key) => key.slice(1).split(".")[0])),
-		]).toEqual([
+	test("Panda's color roots keep their authored order", () => {
+		expect([...new Set(Object.keys(pandaTokens.colors).map((key) => key.split(".")[0]))]).toEqual([
 			"current",
 			"black",
 			"white",
@@ -301,13 +296,10 @@ describe("panda preset data", () => {
 			"gray",
 			"slate",
 		]);
-		expect(Object.keys(pandaTokens.colors).every((key) => key.startsWith("$"))).toBe(true);
-		expect(
-			Object.keys(pandaTokens.colors).every((key) => key.slice(1).split(".").length <= 2),
-		).toBe(true);
-		expect("red.500" in pandaTokens.colors).toBe(false);
-		expect(pandaTokens.colors["$red.500"]).toBe("#ef4444");
-		expect(pandaTokens.colors.$transparent).toBe("rgb(0 0 0 / 0)");
+		expect(Object.keys(pandaTokens.colors).some((key) => key.startsWith("$"))).toBe(false);
+		expect(Object.keys(pandaTokens.colors).every((key) => key.split(".").length <= 2)).toBe(true);
+		expect(pandaTokens.colors["red.500"]).toBe("#ef4444");
+		expect(pandaTokens.colors.transparent).toBe("rgb(0 0 0 / 0)");
 	});
 
 	test("Panda's dotted scale steps ship as authored", () => {
@@ -436,12 +428,11 @@ describe("panda preset parity with the installed package", () => {
 				continue;
 			}
 			for (const [name, shipped] of Object.entries(values)) {
-				const path = group === "colors" ? name.slice(1) : name;
 				checked += 1;
-				const expected = publishedGroup.get(path);
+				const expected = publishedGroup.get(name);
 				if (expected !== shipped)
 					mismatches.push(
-						group + "." + path + ": Panda " + String(expected) + " !== preset " + shipped,
+						group + "." + name + ": Panda " + String(expected) + " !== preset " + shipped,
 					);
 			}
 		}
@@ -593,8 +584,8 @@ describe("panda preset parity with the installed package", () => {
 describe("panda preset runtime resolution", () => {
 	test("bound properties resolve into custom properties instead of literals", () => {
 		const atomic = atomicOf({
-			color: "$red.500",
-			backgroundColor: "$gray.100",
+			color: "red.500",
+			backgroundColor: "gray.100",
 			padding: 4,
 			gap: "1.5",
 			borderRadius: "md",
@@ -608,19 +599,23 @@ describe("panda preset runtime resolution", () => {
 		expect(atomic).toContain("border-radius:var(--");
 		expect(atomic).toContain("height:var(--");
 		expect(atomic).not.toContain("#ef4444");
-		expect(atomic).not.toContain(pandaTokens.colors["$gray.100"]);
+		expect(atomic).not.toContain(pandaTokens.colors["gray.100"]);
 
 		const sheet = createStylesheet(pandaPreset);
-		sheet.process([pandaCss.raw({ color: "$red.500" })]);
+		sheet.process([pandaCss.raw({ color: "red.500" })]);
 		const tokens = sheet.gen.tokens();
 		expect(tokens).toContain("#ef4444");
 		expect(tokens).toContain(":root");
 	});
 
-	test("the bare Panda path aliases the sigiled token", () => {
-		expect(declarationsOf(atomicOf({ color: "red.500" }))).toEqual(
-			declarationsOf(atomicOf({ color: "$red.500" })),
-		);
+	test("Panda's own path is the token, and a sigiled spelling stays a literal", () => {
+		const token = declarationsOf(atomicOf({ color: "red.500" }));
+		const literal = declarationsOf(atomicOf({ color: "$red.500" }));
+
+		expect(token).toHaveLength(1);
+		expect(token[0]?.prop).toBe("color");
+		expect(token[0]?.value.startsWith("var(--")).toBe(true);
+		expect(literal).toEqual([{ prop: "color", value: "$red.500" }]);
 	});
 
 	test("the properties outside Panda's token scales still resolve as lengths", () => {
@@ -643,8 +638,8 @@ describe("panda preset runtime resolution", () => {
 	test("Panda's states, breakpoints, and dark class drive the selectors", () => {
 		const atomic = atomicOf({
 			md: { fontSize: "lg" },
-			_dark: { color: "$gray.100" },
-			_hover: { color: "$gray.100" },
+			_dark: { color: "gray.100" },
+			_hover: { color: "gray.100" },
 			_icon: { display: "none" },
 		});
 
@@ -674,7 +669,7 @@ describe("panda preset runtime resolution", () => {
 	test('tokens: "used" emits only what the styles reference', () => {
 		const full = createStylesheet(pandaPreset).gen.tokens();
 		const used = createStylesheet(pandaPreset, {}, { tokens: "used" });
-		used.process([pandaCss.raw({ color: "$red.500" })]);
+		used.process([pandaCss.raw({ color: "red.500" })]);
 
 		expect(used.gen.tokens()).toContain("#ef4444");
 		expect(used.gen.tokens().length).toBeLessThan(full.length / 100);

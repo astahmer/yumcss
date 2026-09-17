@@ -225,8 +225,8 @@ New subpaths require the full surface ritual, in one revision:
    variant, because CSS values are opaque to the runtime and a converted twin
    would be a second source of truth.
 4. **Order:** latest Tailwind, then latest Chakra, then
-   `createShadcnPreset`, then Panda. Panda measured at 44,877 B minified /
-   12,888 B gzip and shipped (§7.29); StyleX is skipped with a recorded
+   `createShadcnPreset`, then Panda. Panda measured at 44,628 B minified /
+   12,858 B gzip and shipped (§7.29); StyleX is skipped with a recorded
    reason (§7.30).
 5. **Reset scope:** one subpath per ecosystem reset, because the maintainer
    expects them to be used separately. Nothing is split further: a reset is
@@ -430,14 +430,18 @@ New subpaths require the full surface ritual, in one revision:
     breakpoints, which Panda does not model as conditions and which join as
     `@media (min-width: …)` so the stylesheet's ordering policy can still
     place narrower rules before wider ones regardless of scan order.
-25. **Colors carry the `$` sigil and ship no `colorPalette` map.** The 26
+25. **Colors ship Panda's own paths and no `colorPalette` map.** The 26
     color roots keep Panda's order (`current`, `black`, `white`,
     `transparent`, then the 22 hues) and 246 values. Every key is spelled
-    `$name`, which is what makes an authored `color: "$red.500"` a token
-    reference, and the bare canonical spelling stays accepted as well;
-    `"$red.500"` resolves to `#ef4444` and `transparent` ships Panda's
+    `name`, the spelling Panda itself writes, so `color: "red.500"` is the
+    token reference and resolves to `#ef4444`; `transparent` ships Panda's
     `rgb(0 0 0 / 0)`. No `colorPalette` map ships: Panda's palette mechanism
-    is a recipe-time concern and Pandwind has no recipe lane.
+    is a recipe-time concern and Pandwind has no recipe lane. Superseded: the
+    first shipped cut carried the `$` sigil with the bare path as its alias,
+    which `resolveTokenValue`'s verbatim match made the only way to spell
+    `"$red.500"` as a token; the maintainer dropped the sigil because a Panda
+    project writes the bare path, so the preset now accepts exactly one
+    spelling per token and `color: "$red.500"` passes through as a literal.
 26. **Transitions are composed, not transcribed.** As with Chakra (§7.19),
     Panda reaches its `transition` and `transitionProperty` scales only
     through utilities that take a keyword. The generator flattens each
@@ -462,8 +466,8 @@ New subpaths require the full surface ritual, in one revision:
     with dotted steps (`"0.5"`, `"1.5"`, … through `"5.5"`), and the
     preset keeps them rather than renumbering them, so an authored
     `padding: "0.5"` resolves the value Panda would write for the same key.
-29. **Measured lane.** `createCss(pandaPreset)`: 44,877 B minified /
-    12,888 B gzip, budgeted at 45,350 / 13,050 — between `tailwindPreset`
+29. **Measured lane.** `createCss(pandaPreset)`: 44,628 B minified /
+    12,858 B gzip, budgeted at 45,350 / 13,050 — between `tailwindPreset`
     (40,558 / 13,243) and `chakraPreset` (51,370 / 13,884). The whole catalog
     ships because esbuild cannot drop unreferenced object entries; a
     hand-pruned subset would be a second source of truth.
@@ -644,7 +648,7 @@ preset`.
     in `packages/pandwind/package.json`, built by `tsdown.config.ts`, listed
     in `knip.json`, and resolved from the packed tarball by
     `tests/package-exports.test.ts` and `tests/packed-consumer.test.ts`.
-  - Measured lane `createCss(pandaPreset)`: 44,877 B minified / 12,888 B
+  - Measured lane `createCss(pandaPreset)`: 44,628 B minified / 12,858 B
     gzip, between `tailwindPreset`'s 40,558 / 13,243 and `chakraPreset`'s
     51,370 / 13,884, budgeted at 45,350 / 13,050. The whole catalog ships
     because esbuild cannot drop unreferenced object entries, and the row lives

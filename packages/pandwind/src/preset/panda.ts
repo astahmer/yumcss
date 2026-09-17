@@ -18,9 +18,9 @@ const {
  * The scales are Panda's `theme.tokens` and its two transition keyword
  * vocabularies, read from the installed package through its own config
  * resolver, so the catalog tracks the pinned Panda version instead of a
- * transcribed list. Colors keep their authored Panda names with Pandwind's $
- * sigil, which is what makes the authored `color: "$red.500"` a token
- * reference.
+ * transcribed list. Color keys are Panda's own token paths (`red.500`), so the
+ * authored `color: "red.500"` is the spelling Panda itself writes and no
+ * second, sigiled spelling of the same token exists.
  *
  * Panda's `blurs` scale is deliberately absent: Panda reaches it only
  * through its `blur` and `backdropBlur` utilities, which write a
@@ -309,7 +309,7 @@ export type PandaConditions = typeof pandaConditions;
  * const css = createCss(pandaPreset);
  * css.class({
  *   padding: 4,
- *   color: "$red.500",
+ *   color: "red.500",
  *   transition: "colors",
  *   md: { fontSize: "lg" },
  * });

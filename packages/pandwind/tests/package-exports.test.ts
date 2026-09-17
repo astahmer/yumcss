@@ -169,7 +169,7 @@ describe("pandwind package boundary", () => {
 			$tokens: "colors",
 			$strictness: "inherits",
 		});
-		expect(pandaApi.pandaTokens.colors).toHaveProperty("$red.500");
+		expect(pandaApi.pandaTokens.colors).toHaveProperty("red.500");
 		expect(() => import.meta.resolve("pandwind/preset/base")).toThrow();
 	});
 

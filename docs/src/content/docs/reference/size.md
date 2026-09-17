@@ -26,7 +26,7 @@ The compact snapshot-derived typecheck and size summary is in
 | `createCss(defaultPreset)` runtime         | 24.10 KB |  8.68 KB |
 | `createCss(tailwindPreset)` runtime        | 40.56 KB | 13.24 KB |
 | `createCss(chakraPreset)` runtime          | 51.37 KB | 13.88 KB |
-| `createCss(pandaPreset)` runtime           | 44.88 KB | 12.89 KB |
+| `createCss(pandaPreset)` runtime           | 44.63 KB | 12.86 KB |
 | `createCss(shadcnPreset)` runtime          | 85.08 KB | 15.95 KB |
 | `createCss(csstypePreset)` runtime         | 17.57 KB |  6.49 KB |
 | `createCss(minimal preset)` runtime        | 13.08 KB |  5.18 KB |
@@ -76,7 +76,7 @@ same size gate checks these tree-shaken entry points:
 | `pandwind/css` — createCss(defaultPreset)  | 24.10 KB |  8.68 KB |
 | `pandwind/css` — createCss(tailwindPreset) | 40.56 KB | 13.24 KB |
 | `pandwind/css` — createCss(chakraPreset)   | 51.37 KB | 13.88 KB |
-| `pandwind/css` — createCss(pandaPreset)    | 44.88 KB | 12.89 KB |
+| `pandwind/css` — createCss(pandaPreset)    | 44.63 KB | 12.86 KB |
 | `pandwind/css` — createCss(shadcnPreset)   | 85.08 KB | 15.95 KB |
 | `pandwind/css` — createCss(csstypePreset)  | 17.57 KB |  6.49 KB |
 | `pandwind/css` — createCss(minimal preset) | 13.08 KB |  5.18 KB |
@@ -159,7 +159,7 @@ The `css()` lane appears once per preset because the preset, not the engine, is
 what moves it: 13.08 KB min with the minimal preset, 17.57 KB once the
 structural `csstypePreset` supplies the CSS property vocabulary, 24.10 KB once
 `defaultPreset` adds Pandwind's stock scale groups and its property bindings,
-40.56 KB with `tailwindPreset`, 51.37 KB with `chakraPreset`, 44.88 KB with
+40.56 KB with `tailwindPreset`, 51.37 KB with `chakraPreset`, 44.63 KB with
 `pandaPreset`, and 85.08 KB with
 `shadcnPreset`, the widest catalog Pandwind ships: shadcn's color roles for
 every base color in both modes, its radius multipliers, and its font variables.
@@ -181,7 +181,7 @@ named-color preset ships.
 | pandwind `css()` (fixture preset)            | 27.43 KB |  9.73 KB | fixture palette + resolver + engine       |
 | pandwind `css()` (tailwindPreset)            | 40.56 KB | 13.24 KB | Tailwind v4 catalog + resolver + engine   |
 | pandwind `css()` (chakraPreset)              | 51.37 KB | 13.88 KB | Chakra v3 catalog + resolver + engine     |
-| pandwind `css()` (pandaPreset)               | 44.88 KB | 12.89 KB | Panda CSS catalog + resolver + engine     |
+| pandwind `css()` (pandaPreset)               | 44.63 KB | 12.86 KB | Panda CSS catalog + resolver + engine     |
 | pandwind `css()` (shadcnPreset)              | 85.08 KB | 15.95 KB | shadcn registry roles + resolver + engine |
 | pandwind `css()` (csstypePreset)             | 17.57 KB |  6.49 KB | property vocabulary + resolver + engine   |
 | pandwind `css()` (minimal preset)            | 13.08 KB |  5.18 KB | resolver + atom engine only               |
