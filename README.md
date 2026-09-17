@@ -128,7 +128,8 @@ Pandwind has three intentionally separate preset tiers:
 - `csstypePreset` from `pandwind/preset/csstype` is tokenless. It supplies the
   structural CSS and condition contract while your application owns the values.
 - `defaultPreset` from `pandwind/preset/default` is the ready-to-use Pandwind
-  layer with the stock property-to-token scales.
+  layer with the stock property-to-token scales and no color palette: bring your
+  own colors as literals or tokens.
 - `examplePreset` from `@pandwind/example-preset` is a rich repository showcase
   with semantic tokens, palettes, and theme scopes; it is not the default
   application preset.

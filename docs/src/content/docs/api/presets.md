@@ -45,14 +45,17 @@ contract does not silently become a design-token contract:
 | preset          | import                     | use it for                                                |
 | --------------- | -------------------------- | --------------------------------------------------------- |
 | `csstypePreset` | `pandwind/preset/csstype`  | tokenless structural CSS with values owned by your app    |
-| `defaultPreset` | `pandwind/preset/default`  | the ordinary Pandwind app with stock scales               |
+| `defaultPreset` | `pandwind/preset/default`  | the ordinary Pandwind app with stock scales, no palette   |
 | `examplePreset` | `@pandwind/example-preset` | the repository's rich semantic-token and palette showcase |
 
 The csstype preset uses the common `csstype` property grammar and default
-conditions, but its `tokens` map and property-token bindings are empty. A
-value such as `"red.500"` therefore remains authored CSS. The default preset
-keeps Pandwind's stock property mappings, so the same value can resolve through
-the built-in scale:
+conditions, but its `tokens` map and property-token bindings are empty, so
+every value stays authored CSS. The default preset keeps Pandwind's stock
+property mappings and its spacing, radius, shadow, and typography scales, but
+it ships no color palette: color properties accept the CSS-wide keywords
+(`transparent`, `currentColor`, `inherit`, `black`, `white`) and any
+authored CSS color. A name such as `"red.500"` therefore stays authored CSS in
+both presets:
 
 ```ts
 import { createCss } from "pandwind/css";
@@ -63,13 +66,15 @@ const csstypeCss = createCss(csstypePreset);
 const defaultCss = createCss(defaultPreset);
 
 csstypeCss.class({ color: "red.500", padding: "1rem" });
-defaultCss.class({ color: "red.500", padding: 4 });
+defaultCss.class({ color: "#e53e3e", padding: 4 });
+defaultCss.class({ color: "currentColor" });
 ```
 
 Use `csstypePreset` when the application or a published design system supplies its
 own token catalog. Use `defaultPreset` when you want Pandwind's ready-to-use
-values. The example package is deliberately separate and should remain a
-showcase fixture rather than an implicit default dependency.
+scales and a bring-your-own palette. The example package is deliberately
+separate and should remain a showcase fixture rather than an implicit default
+dependency.
 
 ## A complete typed preset
 

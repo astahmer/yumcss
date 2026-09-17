@@ -7,10 +7,13 @@ const defaultCssConfig: PandwindProperties = {};
 /**
  * Ready-to-use property and condition preset for standard Pandwind CSS.
  *
- * This is the opinionated built-in layer: its property definitions include
- * Pandwind's stock colors, spacing, sizing, typography, border, radius, and
- * related scales. Use {@link csstypePreset} when those values should be supplied
- * by the application instead.
+ * This is the built-in structural layer: its property definitions include
+ * Pandwind's stock spacing, sizing, typography, border, radius, and related
+ * scales. It ships no color palette, so a color property accepts a CSS-wide
+ * keyword token or any authored CSS color value; import a palette preset such
+ * as `pandwind/preset/tailwindcss` when the project should also resolve named
+ * colors. Use {@link csstypePreset} when every value should be supplied by the
+ * application instead.
  *
  * @example
  * ```ts
@@ -18,7 +21,7 @@ const defaultCssConfig: PandwindProperties = {};
  * import { defaultPreset } from "pandwind/preset/default";
  *
  * const css = createCss(defaultPreset);
- * css.class({ display: "flex", padding: 4 });
+ * css.class({ display: "flex", padding: 4, color: "#e53e3e" });
  * ```
  *
  * @category presets

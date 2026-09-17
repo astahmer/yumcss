@@ -3,6 +3,7 @@ import { createCss } from "../src/css/create-css.ts";
 import { createStylesheet } from "../src/css/create-stylesheet.ts";
 import { csstypePreset, csstypeProperties } from "../src/preset/csstype.ts";
 import { defaultPreset } from "../src/preset/default.ts";
+import { legacyPreset } from "./fixtures/legacy-preset.ts";
 
 test("csstype preset is a tokenless structural contract", () => {
 	expect(csstypeProperties).toEqual({ $all: true });
@@ -25,9 +26,34 @@ test("default preset retains the stock token-aware property contract", () => {
 
 	const css = createCss(defaultPreset);
 	const output = createStylesheet(defaultPreset).generate([
-		css.raw({ color: "red.500", padding: 4 }),
+		css.raw({ color: "#e53e3e", padding: 4 }),
 	]);
 
 	expect(output).toContain("color:#e53e3e");
 	expect(output).toContain("padding:4px");
+});
+
+test("default preset resolves CSS-wide color keywords and leaves colors authored", () => {
+	const css = createCss(defaultPreset);
+	const output = createStylesheet(defaultPreset).generate([
+		css.raw({ color: "currentColor", backgroundColor: "transparent", borderColor: "red.500" }),
+	]);
+
+	expect(output).toContain("color:currentColor");
+	expect(output).toContain("background-color:transparent");
+	expect(output).toContain("border-color:red.500");
+	expect(output).not.toContain(":root");
+});
+
+test("legacy fixture preset still resolves the retired Chakra v1 palette", () => {
+	expect(legacyPreset.tokens).toEqual({});
+
+	const css = createCss(legacyPreset);
+	const output = createStylesheet(legacyPreset).generate([
+		css.raw({ color: "red.500", backgroundColor: "blue.500" }),
+	]);
+
+	expect(output).toContain("color:#e53e3e");
+	expect(output).toContain("background-color:#3182ce");
+	expect(output).not.toContain(":root");
 });

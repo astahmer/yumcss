@@ -7,4 +7,4 @@ const css = createCss(defaultPreset);
 const tw = createTw<Record<string, unknown>>({});
 const cx = createCx({ css });
 
-export const a = cx(tw({ bg: "red-500", p: "4" }), css.class({ color: "red.500" }), "flex");
+export const a = cx(tw({ bg: "red-500", p: "4" }), css.class({ color: "#e53e3e" }), "flex");

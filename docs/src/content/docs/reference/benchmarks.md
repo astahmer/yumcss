@@ -85,20 +85,20 @@ ceilings are in `runtime-budget.json`. Values below use decimal KB
 | `createCssRuntime()` core (internal)           |  5.82 KB |  2.52 KB |
 | `createCss(minimal preset)`                    | 13.08 KB |  5.18 KB |
 | `createCss(csstypePreset)`                     | 17.57 KB |  6.49 KB |
-| `createCss(defaultPreset)`                     | 27.13 KB |  9.65 KB |
+| `createCss(defaultPreset)`                     | 24.10 KB |  8.68 KB |
 | `createUnsafeCss()` fallback                   | 10.60 KB |  4.27 KB |
 | `tw()`                                         |  2.80 KB |  1.31 KB |
 | `cx()` plain strings                           |  7.03 KB |  3.01 KB |
 | `cx()` + CSS atom registry                     | 17.54 KB |  6.84 KB |
-| `createCss(defaultPreset)` + `tw()`            | 29.82 KB | 10.65 KB |
-| `createCss(defaultPreset)` + `cx()`            | 34.08 KB | 12.28 KB |
-| `createCss(defaultPreset)` + `tw()` + `cx()`   | 36.76 KB | 13.26 KB |
+| `createCss(defaultPreset)` + `tw()`            | 26.79 KB |  9.67 KB |
+| `createCss(defaultPreset)` + `cx()`            | 31.05 KB | 11.31 KB |
+| `createCss(defaultPreset)` + `tw()` + `cx()`   | 33.73 KB | 12.26 KB |
 | all direct runtime entries (`unsafeCss+tw+cx`) | 20.23 KB |  7.80 KB |
 | `createRuntimeCss(preset)` + sheet             | 33.73 KB | 12.50 KB |
 
 The combined direct runtime is 20.23 KB min / 7.80 KB gzip in this record for
 the unsafe `createUnsafeCss()` + `tw()` + `cx()` shape; the preset-bound
-combination of the same lanes is 36.76 KB min / 13.26 KB gzip because it also
+combination of the same lanes is 33.73 KB min / 12.26 KB gzip because it also
 carries the preset-aware resolver and `defaultPreset`'s stock token catalog.
 The `css()` lane is measured with three presets (minimal, `csstypePreset`,
 `defaultPreset`) because the preset, not the engine, is what moves that number;

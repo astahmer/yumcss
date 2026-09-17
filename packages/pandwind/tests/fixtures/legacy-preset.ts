@@ -1,19 +1,17 @@
-/**
- * Built-in color tokens used by the standard Pandwind preset.
- *
- * Values follow the Chakra UI v1 foundations palette verbatim. They are kept
- * unchanged so a preset-derived `$token` keeps the meaning it had in the
- * source design system that pinned that scale; projects that want a different
- * palette supply their own `colors` group instead.
- *
- * The `$` prefix is the authored spelling accepted by strict preset-aware
- * styles. Reuse this data when composing a smaller preset or define a custom
- * token group with {@link define.tokens}.
- *
- * @category tokens
- * @since 0.1.0
- */
-export const colors = {
+// The Chakra UI v1 foundations palette and its color-property bindings, exactly
+// as the shipped default preset carried them before palettes moved to their own
+// preset subpaths. It lives here as a test fixture so behavior and typing tests
+// keep a preset that resolves named color tokens; the shipped defaultPreset no
+// longer carries a palette.
+//
+// https://github.com/chakra-ui/chakra-ui/blob/05b19899b02e17b4ee16045c9e5065fa835f0159/packages/components/theme/src/foundations/colors.ts
+import { presetConditions } from "../../src/preset/conditions.ts";
+import { presetProperties, type PandwindProperties } from "../../src/preset/properties.ts";
+import { define } from "../../src/types/define-preset.export.ts";
+
+const legacyCssConfig: PandwindProperties = {};
+
+const chakraV1Colors = {
 	transparent: "transparent",
 	current: "currentColor",
 	black: "#000000",
@@ -140,5 +138,30 @@ export const colors = {
 	"pink.900": "#521b41",
 };
 
-/** The inferred type of the built-in {@link colors} catalog. */
-export type Colors = typeof colors;
+const legacyProperties = define.properties({
+	...presetProperties,
+	textDecorationColor: chakraV1Colors,
+	textEmphasisColor: chakraV1Colors,
+	color: chakraV1Colors,
+	background: chakraV1Colors,
+	backgroundColor: chakraV1Colors,
+	borderColor: chakraV1Colors,
+	borderInlineEndColor: chakraV1Colors,
+	borderTopColor: chakraV1Colors,
+	borderBottomColor: chakraV1Colors,
+	borderLeftColor: chakraV1Colors,
+	borderRightColor: chakraV1Colors,
+	outlineColor: chakraV1Colors,
+	fill: chakraV1Colors,
+	stroke: chakraV1Colors,
+});
+
+/** Test-only preset: Pandwind's stock scales plus the retired Chakra v1 palette. */
+export const legacyPreset = define.preset(
+	{ config: legacyCssConfig, tokens: {} },
+	{
+		strict: true,
+		conditions: presetConditions,
+		properties: legacyProperties,
+	},
+);

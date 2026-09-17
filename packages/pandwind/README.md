@@ -35,7 +35,8 @@ Pandwind ships two small built-in preset layers:
 - `csstypePreset` from `pandwind/preset/csstype` provides structural CSS properties
   and conditions without opinionated token scales.
 - `defaultPreset` from `pandwind/preset/default` provides the ready-to-use
-  Pandwind property and stock scale mappings.
+  Pandwind property and stock scale mappings. It ships no color palette, so
+  colors stay authored literals or your own tokens.
 
 The repository's `@pandwind/example-preset` is intentionally separate: it is a
 rich semantic-token and color-palette showcase, not an implicit dependency of

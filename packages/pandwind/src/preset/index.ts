@@ -6,7 +6,6 @@
 export * from "../types/typings.ts";
 export { define } from "../types/define-preset.export.ts";
 export * from "./csstype.ts";
-export * from "./colors.ts";
 export * from "./conditions.ts";
 export * from "./default.ts";
 export * from "./properties.ts";

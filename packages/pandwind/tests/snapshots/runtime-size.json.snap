@@ -12,20 +12,20 @@
     "gz": 6490
   },
   "createCss(defaultPreset)": {
-    "min": 27126,
-    "gz": 9650
+    "min": 24100,
+    "gz": 8680
   },
   "createCss(defaultPreset) + tw()": {
-    "min": 29816,
-    "gz": 10653
+    "min": 26790,
+    "gz": 9667
   },
   "createCss(defaultPreset) + cx()": {
-    "min": 34080,
-    "gz": 12281
+    "min": 31054,
+    "gz": 11314
   },
   "createCss(defaultPreset) + tw() + cx()": {
-    "min": 36756,
-    "gz": 13260
+    "min": 33732,
+    "gz": 12263
   },
   "createUnsafeCss(), fallback": {
     "min": 10599,

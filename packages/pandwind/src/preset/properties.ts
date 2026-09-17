@@ -1,6 +1,11 @@
 import { define } from "../types/define-preset.export.ts";
 import { tokens } from "./tokens.ts";
 
+// The default preset ships no palette, so color properties inline the CSS-wide
+// color keywords and inherit the raw CSS value type. A palette preset binds
+// `$tokens: "colors"` to its own group instead of reusing this map verbatim.
+const colors = { $strictness: "inherits", ...tokens.colors } as const;
+
 /**
  * Default CSS property-to-token map used by {@link defaultPreset}.
  *
@@ -28,8 +33,8 @@ export const presetProperties = define.properties({
 	fontStyle: true,
 	textTransform: true,
 	textDecoration: true,
-	textDecorationColor: tokens.colors,
-	textEmphasisColor: tokens.colors,
+	textDecorationColor: colors,
+	textEmphasisColor: colors,
 	textUnderlineOffset: true,
 	//
 	position: true,
@@ -153,7 +158,7 @@ export const presetProperties = define.properties({
 	borderLeft: tokens.borders,
 	borderRight: tokens.borders,
 	borderCollapse: true,
-	borderInlineEndColor: tokens.colors,
+	borderInlineEndColor: colors,
 	borderStartStartRadius: tokens.radii,
 	borderStartEndRadius: tokens.radii,
 	borderEndStartRadius: tokens.radii,
@@ -168,17 +173,17 @@ export const presetProperties = define.properties({
 	outlineWidth: tokens.borders,
 	outlineOffset: tokens.sizes,
 	// colors props
-	color: tokens.colors,
-	background: tokens.colors,
-	backgroundColor: tokens.colors,
-	borderColor: tokens.colors,
-	borderTopColor: tokens.colors,
-	borderBottomColor: tokens.colors,
-	borderLeftColor: tokens.colors,
-	borderRightColor: tokens.colors,
-	outlineColor: tokens.colors,
-	fill: tokens.colors,
-	stroke: tokens.colors,
+	color: colors,
+	background: colors,
+	backgroundColor: colors,
+	borderColor: colors,
+	borderTopColor: colors,
+	borderBottomColor: colors,
+	borderLeftColor: colors,
+	borderRightColor: colors,
+	outlineColor: colors,
+	fill: colors,
+	stroke: colors,
 	// transform props
 	transform: true,
 	transformOrigin: true,

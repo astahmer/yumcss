@@ -23,7 +23,7 @@ The compact snapshot-derived typecheck and size summary is in
 
 | entry                                      |      min |     gzip |
 | ------------------------------------------ | -------: | -------: |
-| `createCss(defaultPreset)` runtime         | 27.13 KB |  9.65 KB |
+| `createCss(defaultPreset)` runtime         | 24.10 KB |  8.68 KB |
 | `createCss(csstypePreset)` runtime         | 17.57 KB |  6.49 KB |
 | `createCss(minimal preset)` runtime        | 13.08 KB |  5.18 KB |
 | `createUnsafeCss()` fallback runtime       | 10.60 KB |  4.27 KB |
@@ -63,7 +63,7 @@ same size gate checks these tree-shaken entry points:
 
 | fixture / import                           |      min |    gzip |
 | ------------------------------------------ | -------: | ------: |
-| `pandwind/css` — createCss(defaultPreset)  | 27.13 KB | 9.65 KB |
+| `pandwind/css` — createCss(defaultPreset)  | 24.10 KB | 8.68 KB |
 | `pandwind/css` — createCss(csstypePreset)  | 17.57 KB | 6.49 KB |
 | `pandwind/css` — createCss(minimal preset) | 13.08 KB | 5.18 KB |
 | `pandwind/unsafe/css` — createUnsafeCss    | 10.60 KB | 4.27 KB |
@@ -143,23 +143,24 @@ table above.
 
 The `css()` lane appears once per preset because the preset, not the engine, is
 what moves it: 13.08 KB min with the minimal preset, 17.57 KB once the
-structural `csstypePreset` supplies the CSS property vocabulary, and 27.13 KB
-once `defaultPreset` adds Pandwind's stock token catalog. A runtime lane ships
-that catalog as authored data, which makes the catalog about as expensive as
-adding both `tw()` and `cx()` to the unsafe runtime (9.56 KB min / 3.16 KB gzip
-against 9.63 KB / 3.53 KB). An application that needs the smallest `css()`
-runtime supplies its own preset and its own tokens, or extracts its calls
-statically. The combination rows below use `defaultPreset`.
+structural `csstypePreset` supplies the CSS property vocabulary, and 24.10 KB
+once `defaultPreset` adds Pandwind's stock token catalog and its property
+bindings. A runtime lane ships that preset as authored data, which prices the
+preset at 6.53 KB min / 2.19 KB gzip over the `csstypePreset` lane, against
+9.63 KB / 3.53 KB for adding both `tw()` and `cx()` to the unsafe runtime. An
+application that needs the smallest `css()` runtime supplies its own preset and
+its own tokens, or extracts its calls statically. The combination rows below
+use `defaultPreset`.
 
 | runtime                                    |      min |     gzip | what ships                                |
 | ------------------------------------------ | -------: | -------: | ----------------------------------------- |
-| pandwind `css()` (defaultPreset)           | 27.13 KB |  9.65 KB | stock tokens + resolver + atom engine     |
+| pandwind `css()` (defaultPreset)           | 24.10 KB |  8.68 KB | stock tokens + resolver + atom engine     |
 | pandwind `css()` (csstypePreset)           | 17.57 KB |  6.49 KB | property vocabulary + resolver + engine   |
 | pandwind `css()` (minimal preset)          | 13.08 KB |  5.18 KB | resolver + atom engine only               |
 | pandwind `tw()`                            |  2.80 KB |  1.31 KB | variant join syntax alone                 |
-| pandwind `css()` + `tw()`                  | 29.82 KB | 10.65 KB | the common two-lane app                   |
-| pandwind `css()` + `cx()`                  | 34.08 KB | 12.28 KB | atom registry + cross-engine merge        |
-| pandwind `css()` + `tw()` + `cx()`         | 36.76 KB | 13.26 KB | combined runtime                          |
+| pandwind `css()` + `tw()`                  | 26.79 KB |  9.67 KB | the common two-lane app                   |
+| pandwind `css()` + `cx()`                  | 31.05 KB | 11.31 KB | atom registry + cross-engine merge        |
+| pandwind `css()` + `tw()` + `cx()`         | 33.73 KB | 12.26 KB | combined runtime                          |
 | pandwind compiler-pruned `css.class()`     |  5.88 KB |  2.52 KB | literals + shared engine, post-extraction |
 | pandwind fully extracted `css()`           |     81 B |     98 B | emitted literals only                     |
 | `@stylexjs/stylex` 0.19.0                  |  4.06 KB |  1.74 KB | runtime only (compile happens in babel)   |

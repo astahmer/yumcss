@@ -262,11 +262,11 @@ Lower is smaller. Sizes are decimal KB (1 KB = 1,000 bytes); exact byte values r
 |   20 | root barrel, cx + unsafe css                      | tree-shaken barrel      |         17.53 |      6.86 |
 |   21 | all (createUnsafeCss+tw+cx)                       | runtime                 |         20.23 |      7.80 |
 |   22 | stylesheet generator (build-time only)            | build-time only         |         21.09 |      8.18 |
-|   23 | createCss(defaultPreset)                          | preset-bound default    |         27.13 |      9.65 |
-|   24 | createCss(defaultPreset) + tw()                   | preset-bound default    |         29.82 |     10.65 |
-|   25 | createCss(defaultPreset) + cx()                   | preset-bound default    |         34.08 |     12.28 |
-|   26 | createRuntimeCss(preset), live sheet              | live sheet              |         33.73 |     12.50 |
-|   27 | createCss(defaultPreset) + tw() + cx()            | preset-bound default    |         36.76 |     13.26 |
+|   23 | createCss(defaultPreset)                          | preset-bound default    |         24.10 |      8.68 |
+|   24 | createCss(defaultPreset) + tw()                   | preset-bound default    |         26.79 |      9.67 |
+|   25 | createCss(defaultPreset) + cx()                   | preset-bound default    |         31.05 |     11.31 |
+|   26 | createCss(defaultPreset) + tw() + cx()            | preset-bound default    |         33.73 |     12.26 |
+|   27 | createRuntimeCss(preset), live sheet              | live sheet              |         33.73 |     12.50 |
 
 ## Generated Tailwind metadata size
 

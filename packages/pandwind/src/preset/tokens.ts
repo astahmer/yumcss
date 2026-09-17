@@ -1,8 +1,22 @@
-import { colors } from "./colors.ts";
-
-// Every group below is the Chakra UI v1 foundations value set, with the
+// The scale groups below are the Chakra UI v1 foundations value set, with the
 // permalink that fixes the exact upstream revision, so a reader can diff a
 // value against its origin instead of guessing the scale this preset follows.
+// They are kept because the 4px spacing grid, radius, shadow, and typography
+// ramps are the shared baseline for Tailwind, Panda, and Chakra alike; a
+// preset that wants its ecosystem's exact numbers ships its own group.
+
+// No color palette ships with the default preset. A palette is the
+// design-system identity, and every palette this package offers lives in its
+// own preset subpath (`pandwind/preset/tailwindcss`, `pandwind/preset/chakra`,
+// ...). Only the CSS-wide color keywords remain, and `presetProperties` inlines
+// them as literal values so the default path emits no color custom properties.
+const colors = {
+	transparent: "transparent",
+	currentColor: "currentColor",
+	inherit: "inherit",
+	black: "#000000",
+	white: "#ffffff",
+} as const;
 
 // https://github.com/chakra-ui/chakra-ui/blob/05b19899b02e17b4ee16045c9e5065fa835f0159/packages/components/theme/src/foundations/typography.ts#L1-L64
 const typography = {
@@ -208,7 +222,9 @@ const sizes = {
 /**
  * Built-in token catalog used by {@link defaultPreset}'s property mappings.
  *
- * The raw values can also be reused as input when composing a derived preset.
+ * It carries the shared scale groups plus the CSS-wide color keywords, and no
+ * palette. The raw values can also be reused as input when composing a derived
+ * preset.
  *
  * @category tokens
  * @since 0.1.0

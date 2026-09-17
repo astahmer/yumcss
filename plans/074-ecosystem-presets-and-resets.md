@@ -1,6 +1,6 @@
 # Feature Plan: Ecosystem starter presets and reset stylesheets
 
-**Status:** Proposed — blocked on explicit maintainer go-ahead
+**Status:** Approved — implementing; see §7 for the resolved decisions
 **Created:** 2026-09-17
 **Owner:** Pandwind maintainers
 
@@ -8,11 +8,13 @@
 
 Two gaps show up as soon as someone tries Pandwind on an existing project:
 
-1. **No starter preset per ecosystem.** The built-in `defaultPreset` carries a
-   Chakra v1 flavor (colors lowered and provenance annotated in `nlvnmzly`),
-   and `csstypePreset` is deliberately structural-only. A Tailwind project, a
-   Panda project, or a shadcn/ui project has to hand-write a preset before it
-   can use `css()` with its own vocabulary.
+1. **No starter preset per ecosystem.** The built-in `defaultPreset` carried a
+   Chakra v1 palette (colors lowered and provenance annotated in `nlvnmzly`)
+   until the palette-drop revision removed it: the remaining Chakra v1 flavor
+   is the shared scale groups, and every palette now belongs to a preset
+   subpath. `csstypePreset` is deliberately structural-only. A Tailwind
+   project, a Panda project, or a shadcn/ui project still has to hand-write a
+   preset before it can use `css()` with its own vocabulary.
 2. **No baseline stylesheet.** Every ecosystem ships a reset/preflight
    (Tailwind's `@tailwindcss/preflight`, Panda's `preflight`, StyleX's docs
    guidance). Pandwind ships none, so adopting projects keep two resets or
@@ -27,9 +29,9 @@ ecosystem benchmark exists and can measure their type-graph cost". That
 benchmark now exists (`runtime-size.test.ts`, `tsc-performance` /
 `test:tsc`), so the deferral condition is met.
 
-Nothing in this plan is implemented yet. The measured size lanes in
-`docs/src/content/docs/reference/size.md` (`xoonysyt`) give the baseline the
-new presets will be measured against.
+Only the palette drop is implemented so far. The measured size lanes in
+`docs/src/content/docs/reference/size.md` (`xoonysyt`, refreshed by the
+palette drop) give the baseline the new presets will be measured against.
 
 ## 2. Goals
 
@@ -50,8 +52,10 @@ new presets will be measured against.
 
 ## 3. Non-goals
 
-- Do not change `defaultPreset`, `csstypePreset`, `createCss`, `tw`, `cx`, or
-  any existing export.
+- Do not change `csstypePreset`, `createCss`, `tw`, `cx`, or any existing
+  export. `defaultPreset` keeps its property contract and stock scale groups;
+  the only change to it is the removal of the Chakra v1 palette, which is what
+  the palette-drop revision did.
 - Do not replace Chakra v1 stock values in `defaultPreset` with Tailwind v4
   values. That is a separate product decision; this plan adds new presets
   beside it, and the shadcn/Tailwind presets are the migration path.
@@ -175,8 +179,9 @@ New subpaths require the full surface ritual, in one revision:
   first; treat code encode/decode as a separate, explicitly-owned codec with
   round-trip tests, or skip it and document the gap.
 - **Surface creep.** Four presets and four resets is eight new subpaths.
-  Mitigation: ship the Tailwind preset and the Tailwind/StyleX resets first,
-  measure, then add the rest only if the cost is acceptable.
+  Mitigation: ship latest Tailwind, then latest Chakra, then
+  `createShadcnPreset`, measuring each before the next, and add Panda and
+  StyleX only if the cost is acceptable.
 - **Semantic mismatch.** Tailwind v4 spacing is multiplicative and Panda's
   scales differ; a preset can look right in docs and diverge at unusual
   values. Mitigation: per-preset parity tests against the upstream package's
@@ -184,8 +189,10 @@ New subpaths require the full surface ritual, in one revision:
 
 ## 6. Acceptance criteria
 
-- [ ] A plan-level decision is recorded: which presets and which resets ship
-      first, with measured numbers for each.
+- [x] A plan-level decision is recorded: which presets and which resets ship
+      first, with measured numbers for each (§7).
+- [x] `defaultPreset` ships no color palette; its retired Chakra v1 palette
+      lives on as a test fixture.
 - [ ] `createShadcnPreset(options)` reproduces the create-page selections for
       style, base color, theme, chart color, and fonts, with parity tests
       against the generated CSS-variable block.
@@ -202,19 +209,31 @@ New subpaths require the full surface ritual, in one revision:
 - [ ] JJ revisions are focused, described, and the final working-copy revision
       is empty.
 
-## 7. Open questions
+## 7. Resolved decisions
 
-1. **Where do resets live?** Inside `pandwind` on `pandwind/reset/*`, or in a
-   separate `@pandwind/reset` package so third-party CSS license text and
-   upstream drift stay out of the core package?
-2. **shadcn `--preset` codec:** mirror the undocumented upstream encoding, or
-   accept an options object only and document the missing code interchange?
-3. **Gamut:** ship Tailwind v4's OKLCH values as authored, or also publish an
-   sRGB-converted variant for consumers whose target browsers lack OKLCH?
-4. **Which presets first?** Tailwind v4 + shadcn cover the largest audience;
-   Panda is arguably already served by the migration path.
-5. **Reset scope:** full preflight parity (forms, media, selection) or the
-   box-model and typography basics only?
+1. **Resets live inside `pandwind`** on `pandwind/reset/*`. The maintainer
+   chose in-package subpaths over a separate `@pandwind/reset` package, so
+   upstream CSS license and provenance notices ship with the presets that
+   consume them.
+2. **shadcn `--preset` codec:** the maintainer did not ask for the code
+   interchange, so the factory ships an options object first. Encoding and
+   decoding stay a separate, explicitly-owned codec with round-trip tests if
+   they are ever wanted.
+3. **Gamut:** ship Tailwind v4's OKLCH values as authored. No sRGB-converted
+   variant, because CSS values are opaque to the runtime and a converted twin
+   would be a second source of truth.
+4. **Order:** latest Tailwind, then latest Chakra, then
+   `createShadcnPreset`. Panda and StyleX follow only after those measure
+   acceptably.
+5. **Reset scope:** one subpath per ecosystem reset, because the maintainer
+   expects them to be used separately. Nothing is split further: a reset is
+   whole, and overlapping box-model rules are merged rather than emitted as
+   separate layered fragments. Pandwind also ships its own minimal reset.
+6. **Retired palette:** the Chakra v1 palette the default preset used to carry
+   is gone from `defaultPreset` and is not re-shipped. It survives only as
+   the test fixture `packages/pandwind/tests/fixtures/legacy-preset.ts`, so
+   behavior and typing tests keep a preset whose color values resolve through
+   named tokens.
 
 ## 8. Approval gate
 
