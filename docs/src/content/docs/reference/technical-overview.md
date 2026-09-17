@@ -203,9 +203,9 @@ runAdapterMigration(source, options)
 ```
 
 The flat `SwapIR` remains the fast path for simple object/call rewrites. Rich
-programs use the versioned semantic IR for globals, keyframes, font faces,
-layers, supports, selectors, nesting, ordering, dynamics, themes, and
-component subjects. Both paths preserve provenance and explicit residuals.
+programs use the versioned semantic IR for globals, font faces, layers,
+supports, selectors, nesting, ordering, dynamics, themes, and component
+subjects. Both paths preserve provenance and explicit residuals.
 
 ### Adapter shape
 

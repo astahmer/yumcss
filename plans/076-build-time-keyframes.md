@@ -94,7 +94,7 @@ untyped lane stays complete.
 
 ### 4.2 The name
 
-``${namespace}-kf-${hash}`` (namespace defaults to `pw`), where the hash is taken over a
+`${namespace}-kf-${hash}` (namespace defaults to `pw`), where the hash is taken over a
 canonical form of the authored body:
 
 - step keys normalized: `from` → `0%`, `to` → `100%`;
@@ -219,3 +219,32 @@ Landed as its own described revision.
   and size tests, plus the docs, capability ledger, size snapshot, and
   `PERF.md` rows.
 
+### Completion pass
+
+Everything above is landed and green. The follow-up work closed the remaining
+gaps:
+
+1. **Canonical-name coverage** — `packages/pandwind/tests/css-keyframes.test.ts`
+   pins factory determinism, step/declaration order independence, the
+   `namespace` prefix, and `canonicalKeyframeBody`.
+2. **Vite lane** — `tests/vite-css.test.ts` proves provenance ranges, the
+   literal fold (`inlined === 1`, name string only), an unchanged dynamic body,
+   and that a keyframes-only module still receives the pure `createUnsafeCss()`
+   call.
+3. **Route splitting** — `tests/css-split-by-route.test.ts` shares one `spin`
+   rule between two routes while an admin-exclusive `slide` stays in its own
+   route bucket.
+4. **Analyzer diagnostics** — `packages/analyze/tests/cli-json.test.ts` covers
+   static and dynamic `css.keyframes` sources; the residual set is exactly
+   `missing-extraction` plus `unsupported-construct(@keyframes rule in authored CSS)`.
+5. **Size evidence** — `runtime-budget.json`, both runtime size snapshots, and
+   `PERF.md` were re-measured. The flat attachment costs roughly 633 min / 250
+   gzip bytes on every full-surface `createCss` entry and roughly 1090 min / 404
+   gzip bytes on the build-time-only stylesheet generator; the compiler-pruned
+   and generated runtime lanes are unchanged, so modules that never call
+   `keyframes` do not pay for it.
+6. **Surface and docs** — `./_runtime/css-keyframes` is recorded in
+   `plans/evidence/package-surface.json` (95 exports across 5 packages), and the
+   API, authored-CSS, scorecard, getting-started, why, adoption, component-library,
+   technical-overview, and limitations docs describe the split between authored
+   CSS and the component-local keyframes lane.

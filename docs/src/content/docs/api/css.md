@@ -239,6 +239,7 @@ they differ only in what they hand back:
 | `css.props(...)`              | `{ className, style }` — spread onto an element                                           | combining compiled maps, `vars()` outputs, or a component's `xcss` prop in one shot                                                                  |
 | `css.group({ btn: { ... } })` | named map of compiled outputs                                                             | pre-compiling a set of related styles behind one name                                                                                                |
 | `css.input(name)`             | `"input>$name"` marker                                                                    | referencing a `$input` value inside a dynamic group; the Vite extractor emits its structural `var(...)` rule                                         |
+| `css.keyframes({ ... })`      | `"pw-kf-1a2b3c4d"` — deterministic animation name                                         | a component-local animation body; the build emits the matching `@keyframes` rule (see [At-rules](#at-rules-local-conditions-versus-global-css))      |
 
 Notes that hold for all of them:
 
@@ -372,11 +373,12 @@ Pandwind has two deliberately different at-rule lanes. Use a typed style
 condition when the rule belongs to an element; use authored CSS or the
 explicit runtime sheet when it changes the stylesheet itself:
 
-| Need                                                      | Use                                                       | What happens                                                                                                                                                               |
-| --------------------------------------------------------- | --------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Viewport, container, or feature conditions on a component | `@media`, `@container`, or `@supports` in a style object  | The condition is emitted around the component's extracted atomic rule.                                                                                                     |
-| Browser-global registration and definitions               | Authored CSS                                              | The host CSS toolchain owns `@property`, `@font-face`, `@keyframes`, resets, and global selectors; `cascade: "layers"` is the opt-in wrapper for Pandwind-generated rules. |
-| A rule is created at runtime or collected during SSR      | `createRuntimeCss()` plus `sheet.registerSemanticRules()` | The runtime sheet serializes an explicit semantic rule and can mount, snapshot, or hydrate it.                                                                             |
+| Need                                                      | Use                                                       | What happens                                                                                                                                                 |
+| --------------------------------------------------------- | --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Viewport, container, or feature conditions on a component | `@media`, `@container`, or `@supports` in a style object  | The condition is emitted around the component's extracted atomic rule.                                                                                       |
+| Browser-global registration and definitions               | Authored CSS                                              | The host CSS toolchain owns `@property`, `@font-face`, resets, and global selectors; `cascade: "layers"` is the opt-in wrapper for Pandwind-generated rules. |
+| A component-local animation body                          | `css.keyframes({ ... })`                                  | The build emits a deterministic `@keyframes` rule into the Pandwind stylesheet and returns the animation name; see below.                                    |
+| A rule is created at runtime or collected during SSR      | `createRuntimeCss()` plus `sheet.registerSemanticRules()` | The runtime sheet serializes an explicit semantic rule and can mount, snapshot, or hydrate it.                                                               |
 
 For example, `@container` is a normal typed condition on a local class:
 
@@ -426,6 +428,40 @@ use a typed `css.group()`/`css.input()` style for the changing value. See
 [Authored CSS on the web](/reference/authored-css/) for that split and the
 complete support boundary. `analyze` and the inspector record explicit CSS
 imports, but do not scan arbitrary CSS and infer a Pandwind API from them.
+
+#### Component-local keyframes
+
+`@keyframes` is the one registration a component usually owns alone, so it
+has a build-time carrier. `css.keyframes({ ... })` takes an ordinary step
+map and returns the animation name the emitted rule registers under:
+
+```tsx
+const spin = css.keyframes({
+	from: { transform: "rotate(0deg)" },
+	to: { transform: "rotate(360deg)" },
+});
+
+const spinner = css.class({ animation: `${spin} 1s linear infinite` });
+```
+
+The name is derived from the body, not from a counter or registry, so the
+build, the server render, and the client all agree without any handshake, and
+two modules that author the same animation share one rule. Steps resolve
+preset tokens like any other declaration, so `$blue-500` inside a step emits
+its custom property in the used-token block. `from`/`to` and `0%`/`100%`,
+step order, and declaration order are all normalized, so equivalent bodies
+produce one name and one rule.
+
+A literal body is folded to its name string at build time, so the
+declarations never ship to the browser and a module whose only CSS use is a
+keyframe drops the factory entirely. A step has no selector, so conditions
+inside one (`_hover`, `@media`) are rejected at build time rather than
+silently dropped; a body the extractor cannot prove literal stays on the
+runtime call and is reported as an unsupported construct.
+
+This lane is deliberately narrower than authored CSS. It covers
+component-local animations only; keep resets, `@font-face`, `@property`,
+cascade layers, and global selectors in the authored CSS lane above.
 
 Pandwind does not provide a recipe API. If you need variant selection, use an
 external CVA-style package with the class strings returned by `css()` and

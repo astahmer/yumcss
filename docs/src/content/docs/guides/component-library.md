@@ -172,10 +172,12 @@ stylesheet without pretending they are static.
 
 ## Authored CSS and escape hatches
 
-Some components need keyframes, global rules, fonts, or browser-specific
-features. Keep those in an explicit authored CSS file, export it as a named
-entry, and include it in the component's validation fixtures. The analyzer
-should be able to distinguish authored CSS from generated atoms.
+Some components need global rules, fonts, or browser-specific features. Keep
+those in an explicit authored CSS file, export it as a named entry, and
+include it in the component's validation fixtures. A component-local
+animation is the exception: use `css.keyframes()` so the build emits the
+`@keyframes` rule with the rest of the generated CSS. The analyzer should be
+able to distinguish authored CSS from generated atoms.
 
 ## Test the library as a product
 

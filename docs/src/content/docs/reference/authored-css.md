@@ -1,6 +1,6 @@
 ---
 title: Authored CSS on the web
-description: The explicit CSS lane for globals, keyframes, fonts, and other browser stylesheet primitives.
+description: The explicit CSS lane for globals, fonts, layers, and other browser stylesheet primitives.
 sidebar:
   order: 5
 ---
@@ -12,18 +12,23 @@ their parsing, ordering, and emission:
 ```tsx
 // src/main.tsx
 import "./globals.css";
-import "@acme/brand/keyframes.css";
+import "@acme/brand/animations.css";
 import "./app";
 ```
 
 Use this lane for things that are not element-local atomic declarations:
 
 - global selectors and resets;
-- `@keyframes` and `animation` definitions;
 - `@font-face` declarations;
 - cascade layers, `@supports`, `@property`, and other authored at-rules;
 - complex selectors or vendor-specific CSS that should remain recognizable as
   CSS.
+
+A component-local animation is the exception: `css.keyframes({ ... })` returns
+a deterministic animation name and lets the build emit the matching
+`@keyframes` rule into the Pandwind stylesheet, so the body never ships as a
+runtime call. Everything above stays authored CSS. See
+[`css.keyframes`](/api/css/#component-local-keyframes).
 
 ### Registering a typed custom property
 
@@ -86,11 +91,10 @@ const className = css.class({
 });
 ```
 
-Do not try to express a global rule as `css.global(...)` or a keyframe as a
-special object. Those primitives are intentionally not part of the frozen
-Pandwind API. An authored CSS import is explicit, portable across the web
-toolchain, and also usable by a library consumer without requiring a runtime
-stylesheet registry.
+Do not try to express a global rule as `css.global(...)`. Global selectors are
+intentionally not part of the frozen Pandwind API. An authored CSS import is
+explicit, portable across the web toolchain, and also usable by a library
+consumer without requiring a runtime stylesheet registry.
 
 ## Sharing tokens with authored CSS
 

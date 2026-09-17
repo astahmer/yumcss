@@ -84,9 +84,10 @@ export function Card() {
 }
 ```
 
-Use `css.vars()` when a value is only known at runtime. Keep global rules,
-fonts, and keyframes in ordinary authored CSS; they are part of the web
-platform, not a missing Pandwind feature.
+Use `css.vars()` when a value is only known at runtime. Use `css.keyframes()`
+for a component-local animation, and keep global rules, fonts, and layers in
+ordinary authored CSS; they are part of the web platform, not a missing
+Pandwind feature.
 
 ## The Tailwind compatibility path
 

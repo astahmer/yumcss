@@ -20,8 +20,9 @@ adoption simplicity, real-world proof, and scope discipline.
   or intentionally mixing styling ecosystems.
 - "This is not actually zero-runtime CSS." Dynamic `tw()` values require
   safelisting or runtime handling. Dynamic `css()` values use `css.vars()`.
-  Globals, keyframes, fonts, layers, and complex selectors often remain
-  authored CSS or runtime rules. The limitations are documented in
+  Globals, fonts, layers, and complex selectors often remain authored CSS or
+  runtime rules; component-local keyframes have a build-time lane
+  (`css.keyframes`). The limitations are documented in
   `docs/src/content/docs/reference/limitations.md` and the CSS scorecard.
 - "The setup is too dependent on generated files." A normal Tailwind lane
   generates `tw.ts`, `tw.runtime.ts`, `tw.build.ts`, `types.d.ts`, and theme
@@ -33,7 +34,7 @@ adoption simplicity, real-world proof, and scope discipline.
   ownership, and raw/gzip budget check. Generated project files remain a real
   adoption cost.
 - "The core package is too large conceptually." The repository currently
-  exposes 94 exported paths across five packages, including experimental
+  exposes 95 exported paths across five packages, including experimental
   integrations and tooling. The runtime package no longer hard-depends on
   Tailwind's loader, Oxc, PostCSS, Unplugin, or CAC, but the product still
   asks users to understand more lanes than a focused styling library would.
