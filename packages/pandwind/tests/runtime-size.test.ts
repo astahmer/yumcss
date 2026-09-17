@@ -155,10 +155,12 @@ const updatingSnapshots = (): boolean => {
 test("runtime entries stay stylex-sized", async () => {
 	const sizes = {
 		"createCssRuntime() core (internal)": bundle("runtime-css-base.ts"),
-		"createCss(preset), fallback": bundle("runtime-css-preset.ts"),
-		"createCss(preset) + tw()": bundle("runtime-preset-tw.ts"),
-		"createCss(preset) + cx()": bundle("runtime-preset-cx.ts"),
-		"createCss(preset) + tw() + cx()": bundle("runtime-preset-all.ts"),
+		"createCss(minimal preset), fallback": bundle("runtime-css-preset.ts"),
+		"createCss(csstypePreset)": bundle("runtime-preset-csstype.ts"),
+		"createCss(defaultPreset)": bundle("runtime-preset-css.ts"),
+		"createCss(defaultPreset) + tw()": bundle("runtime-preset-tw.ts"),
+		"createCss(defaultPreset) + cx()": bundle("runtime-preset-cx.ts"),
+		"createCss(defaultPreset) + tw() + cx()": bundle("runtime-preset-all.ts"),
 		"createUnsafeCss(), fallback": bundle("runtime-css.ts"),
 		"createRuntimeCss(preset), live sheet": bundle("runtime-css-sheet.ts"),
 		"createUnsafeCss(), static output after extraction":

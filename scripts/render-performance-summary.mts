@@ -368,7 +368,9 @@ const sizeKind = (name: string): string => {
 	if (name === "stylesheet generator (build-time only)") return "build-time only";
 	if (name.includes("compiler-pruned")) return "compiler-pruned";
 	if (name.startsWith("createCssRuntime")) return "internal core";
-	if (name.startsWith("createCss(preset)")) return "preset-bound fallback";
+	if (name.startsWith("createCss(minimal preset)")) return "preset-bound fallback";
+	if (name.startsWith("createCss(csstypePreset)")) return "preset-bound structural";
+	if (name.startsWith("createCss(defaultPreset)")) return "preset-bound default";
 	if (name.startsWith("createRuntimeCss")) return "live sheet";
 	if (name.includes("generated")) return "generated runtime";
 	if (name.startsWith("createUnsafeCss")) return "unsafe fallback";

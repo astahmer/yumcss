@@ -83,24 +83,27 @@ ceilings are in `runtime-budget.json`. Values below use decimal KB
 | entry                                          | minified |     gzip |
 | ---------------------------------------------- | -------: | -------: |
 | `createCssRuntime()` core (internal)           |  5.82 KB |  2.52 KB |
-| `createCss(preset)` fallback                   | 13.10 KB |  5.19 KB |
+| `createCss(minimal preset)`                    | 13.08 KB |  5.18 KB |
+| `createCss(csstypePreset)`                     | 17.57 KB |  6.49 KB |
+| `createCss(defaultPreset)`                     | 27.13 KB |  9.65 KB |
 | `createUnsafeCss()` fallback                   | 10.60 KB |  4.27 KB |
 | `tw()`                                         |  2.80 KB |  1.31 KB |
 | `cx()` plain strings                           |  7.03 KB |  3.01 KB |
 | `cx()` + CSS atom registry                     | 17.54 KB |  6.84 KB |
-| `createCss(preset)` + `tw()`                   | 15.79 KB |  6.17 KB |
-| `createCss(preset)` + `cx()`                   | 20.03 KB |  7.77 KB |
-| `createCss(preset)` + `tw()` + `cx()`         | 22.72 KB |  8.74 KB |
+| `createCss(defaultPreset)` + `tw()`            | 29.82 KB | 10.65 KB |
+| `createCss(defaultPreset)` + `cx()`            | 34.08 KB | 12.28 KB |
+| `createCss(defaultPreset)` + `tw()` + `cx()`   | 36.76 KB | 13.26 KB |
 | all direct runtime entries (`unsafeCss+tw+cx`) | 20.23 KB |  7.80 KB |
 | `createRuntimeCss(preset)` + sheet             | 33.73 KB | 12.50 KB |
 
 The combined direct runtime is 20.23 KB min / 7.80 KB gzip in this record for
 the unsafe `createUnsafeCss()` + `tw()` + `cx()` shape; the preset-bound
-combination of the same lanes is 22.72 KB min / 8.74 KB gzip because it also
-carries the preset-aware resolver. The preset-bound `createCss(preset)`
-fallback is measured on its own for the same reason, and the per-lane rows show
-what an application that does not need every engine actually ships. The
-internal `createCssRuntime()` row has no public method
+combination of the same lanes is 36.76 KB min / 13.26 KB gzip because it also
+carries the preset-aware resolver and `defaultPreset`'s stock token catalog.
+The `css()` lane is measured with three presets (minimal, `csstypePreset`,
+`defaultPreset`) because the preset, not the engine, is what moves that number;
+the per-lane rows show what an application that does not need every engine
+actually ships. The internal `createCssRuntime()` row has no public method
 attachments; it is included to show the shared engine's base cost, not as an
 application entry point. Fully extracted static calls remain below 100 bytes.
 

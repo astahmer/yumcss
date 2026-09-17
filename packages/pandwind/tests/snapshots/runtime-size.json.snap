@@ -3,21 +3,29 @@
     "min": 5817,
     "gz": 2522
   },
-  "createCss(preset), fallback": {
-    "min": 13099,
-    "gz": 5185
+  "createCss(minimal preset), fallback": {
+    "min": 13084,
+    "gz": 5176
   },
-  "createCss(preset) + tw()": {
-    "min": 15792,
-    "gz": 6169
+  "createCss(csstypePreset)": {
+    "min": 17574,
+    "gz": 6490
   },
-  "createCss(preset) + cx()": {
-    "min": 20032,
-    "gz": 7770
+  "createCss(defaultPreset)": {
+    "min": 27126,
+    "gz": 9650
   },
-  "createCss(preset) + tw() + cx()": {
-    "min": 22724,
-    "gz": 8735
+  "createCss(defaultPreset) + tw()": {
+    "min": 29816,
+    "gz": 10653
+  },
+  "createCss(defaultPreset) + cx()": {
+    "min": 34080,
+    "gz": 12281
+  },
+  "createCss(defaultPreset) + tw() + cx()": {
+    "min": 36756,
+    "gz": 13260
   },
   "createUnsafeCss(), fallback": {
     "min": 10599,
