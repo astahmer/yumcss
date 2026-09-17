@@ -11,6 +11,7 @@ it preflight, and StyleX leaves it to the application. Pandwind publishes the
 same baseline as a plain CSS asset per ecosystem, so a project that moved its
 style objects to Pandwind does not keep a second engine, or a hand-written
 normalize, only to keep that baseline.
+For an engine that ships none, Pandwind publishes its own baseline instead.
 
 A reset is a stylesheet, not a preset. It is copied into `dist/reset/` at build
 time, so it adds CSS bytes to the stylesheet output and nothing to the
@@ -21,6 +22,7 @@ any type.
 | ------------- | ---------------------------- | --------------------------------------------------------------- |
 | `tailwindcss` | `pandwind/reset/tailwindcss` | Tailwind v4's Preflight, ported from `tailwindcss@4.3.3`        |
 | `panda`       | `pandwind/reset/panda`       | Panda CSS's preflight, ported from `@pandacss/generator@1.12.1` |
+| `pandwind`    | `pandwind/reset/pandwind`    | Pandwind's own baseline, authored in this repository            |
 
 ```ts
 import "pandwind/reset/tailwindcss";
@@ -66,6 +68,31 @@ is the only thing that should decide which one a project reaches for:
 A project that imports both is not pairing them; it is picking a vocabulary
 and a baseline, one at a time.
 
+## When the engine ships no baseline
+
+StyleX is the clearest case: it ships no reset of its own, and its
+[installation guide](https://stylexjs.com/docs/learn/installation/vite/) leaves
+the baseline to the application's global stylesheet. A project in that position
+imports `pandwind/reset/pandwind`, the one reset here that is authored in this
+repository instead of ported, and therefore the one with no upstream to diff
+against. It covers the box model Pandwind's own bindings address and nothing
+else:
+
+- the declarations `borderWidth`, `borderStyle`, and `borderColor` depend on,
+  because Pandwind emits them as three independent properties and a bare
+  `borderWidth: 2` stays invisible until something supplies
+  `border-style: solid`
+- the box model itself: `border-box` sizing, the user-agent margins on body and
+  the block elements that carry them, replaced media as blocks that fit their
+  container, form controls that inherit the surrounding type, and collapsed
+  table borders
+
+It declares no font stack, no color, and no custom property, so it composes
+with any preset. It also leaves typography and list markers alone, because
+heading sizes and bullet indents are design decisions the project has already
+made; a project that wants a flattened typographic baseline wants one of the
+ports instead.
+
 ## Cascade layers
 
 Every shipped reset wraps its rules in `@layer reset`, and the ported header
@@ -96,11 +123,13 @@ declare module "pandwind/reset/tailwindcss";
 
 ## Provenance and license
 
-Each reset is a port with a header that names the upstream file, links the
-pinned revision, repeats the upstream license notice, and lists every
-deliberate difference from upstream. A ported reset is never a verbatim copy.
+Each reset carries a header that names where its rules come from: the upstream
+file and pinned revision for a port, this repository for Pandwind's own. The
+header repeats the license notice and lists every deliberate difference from
+upstream. A ported reset is never a verbatim copy.
 
-| reset         | upstream                                    | license                                |
-| ------------- | ------------------------------------------- | -------------------------------------- |
-| `tailwindcss` | `tailwindcss@4.3.3` `preflight.css`         | MIT, Copyright (c) Tailwind Labs, Inc. |
-| `panda`       | `@pandacss/generator@1.12.1` `reset-css.ts` | MIT, Copyright (c) 2023 Segun Adebayo  |
+| reset         | upstream                                    | license                                   |
+| ------------- | ------------------------------------------- | ----------------------------------------- |
+| `tailwindcss` | `tailwindcss@4.3.3` `preflight.css`         | MIT, Copyright (c) Tailwind Labs, Inc.    |
+| `panda`       | `@pandacss/generator@1.12.1` `reset-css.ts` | MIT, Copyright (c) 2023 Segun Adebayo     |
+| `pandwind`    | none, authored here (StyleX ships no reset) | MIT, Copyright (c) 2026 Alexandre Stahmer |

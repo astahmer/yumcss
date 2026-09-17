@@ -1,0 +1,117 @@
+/*
+ * Pandwind reset: Pandwind's own baseline, authored for Pandwind rather than
+ * ported from an engine. StyleX ships no reset at all and its installation
+ * guide leaves the baseline to the application's global stylesheet
+ * (https://stylexjs.com/docs/learn/installation/vite/), so a project that
+ * moves its style objects to Pandwind has nothing to keep. This is the
+ * smallest stylesheet that covers what Pandwind's own property bindings
+ * assume, for those projects and for anyone who wants one baseline instead of
+ * three.
+ *
+ * It is structural, never typographic. Four things it deliberately does not
+ * do, unlike the ecosystem ports beside it:
+ *
+ *   1. It leaves typography alone. Heading sizes, list markers, link color,
+ *      and the codepoint case of `strong` are design decisions the project
+ *      has already made in its own stylesheet, so the reset does not flatten
+ *      them. A project that wants Tailwind's or Panda's flattened baseline
+ *      imports that reset instead.
+ *   2. It ships no font stack and no color. Nothing here reads a theme token
+ *      or an ecosystem variable; every value is a keyword.
+ *   3. It keeps list markers and their indent, because nothing Pandwind emits
+ *      depends on a list being unmarked.
+ *   4. It declares no custom property, so it composes with any preset.
+ *
+ * What it does cover is the box model Pandwind's bindings address directly:
+ * `borderWidth`, `borderStyle`, and `borderColor` are three independent
+ * properties, so a bare `borderWidth: 2` is invisible until something
+ * supplies `border-style: solid`, exactly as in Tailwind and Panda.
+ *
+ * MIT License - Copyright (c) 2026 Alexandre Stahmer
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
+@layer reset {
+	*,
+	::before,
+	::after,
+	::backdrop,
+	::file-selector-button {
+		box-sizing: border-box;
+		border-width: 0;
+		border-style: solid;
+		border-color: currentcolor;
+	}
+
+	body,
+	h1,
+	h2,
+	h3,
+	h4,
+	h5,
+	h6,
+	p,
+	figure,
+	blockquote,
+	dl,
+	dd,
+	pre,
+	ol,
+	ul,
+	menu,
+	fieldset {
+		margin: 0;
+	}
+
+	img,
+	svg,
+	video,
+	canvas,
+	audio,
+	iframe,
+	embed,
+	object {
+		display: block;
+		vertical-align: middle;
+	}
+
+	img,
+	video {
+		max-width: 100%;
+		height: auto;
+	}
+
+	button,
+	input,
+	optgroup,
+	select,
+	textarea,
+	::file-selector-button {
+		font: inherit;
+		color: inherit;
+		letter-spacing: inherit;
+	}
+
+	table {
+		border-collapse: collapse;
+		border-color: inherit;
+		text-indent: 0;
+	}
+}

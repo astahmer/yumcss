@@ -201,6 +201,25 @@ Alternative-library values are the supplied reference run, not a release
 budget. Re-run that external rig before making a new ecosystem comparison;
 the Pandwind rows above are the repo-owned snapshot.
 
+## Reset stylesheets (CSS bytes, no JavaScript)
+
+A reset is a stylesheet, so importing one from a runtime lane leaves every
+number above unchanged: it ships no JavaScript and no type. Its cost is the
+stylesheet bytes a project serves, measured per file at gzip level 6 like the
+rest of this page.
+
+| reset                        |      raw |    gzip |
+| ---------------------------- | -------: | ------: |
+| `pandwind/reset/tailwindcss` | 11.25 KB | 4.22 KB |
+| `pandwind/reset/panda`       |  6.46 KB | 2.87 KB |
+| `pandwind/reset/pandwind`    |  3.46 KB | 1.81 KB |
+
+The raw figure includes each file's provenance header, the upstream permalink,
+and the list of deliberate divergences; gzip reduces that prose to almost
+nothing, which is why the raw and gzip ratios here differ from the JavaScript
+rows. The three resets also overlap: a project imports the one baseline that
+matches the engine it came from, not all three.
+
 ## No silent regressions
 
 `packages/pandwind/tests/runtime-size.test.ts` enforces three layers:

@@ -102,6 +102,21 @@
 		},
 		{
 			"packageName": "pandwind",
+			"exportPaths": ["./reset/pandwind"],
+			"owner": "runtime",
+			"maturity": "experimental",
+			"dependencies": [],
+			"externalContract": true,
+			"evidence": [
+				"packages/pandwind/package.json",
+				"packages/pandwind/src/reset/pandwind.css",
+				"packages/pandwind/tests/packed-consumer.test.ts",
+				"docs/src/content/docs/api/resets.md"
+			],
+			"note": "Reset stylesheet: Pandwind's own authored baseline (no upstream port) for engines that ship no reset, shipped as a plain CSS asset in the @layer reset layer."
+		},
+		{
+			"packageName": "pandwind",
 			"exportPaths": [
 				"./css/named",
 				"./css/stylex",

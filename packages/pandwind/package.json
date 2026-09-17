@@ -125,6 +125,10 @@
 			"pandwind": "./src/reset/panda.css",
 			"default": "./dist/reset/panda.css"
 		},
+		"./reset/pandwind": {
+			"pandwind": "./src/reset/pandwind.css",
+			"default": "./dist/reset/pandwind.css"
+		},
 		"./stack": {
 			"pandwind": "./src/stack/index.ts",
 			"types": "./dist/stack/index.d.ts",

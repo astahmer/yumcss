@@ -30,6 +30,7 @@ const entries = [
 	"pandwind/preset/shadcn",
 	"pandwind/reset/tailwindcss",
 	"pandwind/reset/panda",
+	"pandwind/reset/pandwind",
 	"pandwind/design",
 	"pandwind/vite",
 	"pandwind/unplugin",
@@ -193,6 +194,18 @@ describe("pandwind package boundary", () => {
 		expect(css).toContain("@layer reset {");
 		expect(css).toContain("border-color: var(--global-color-border, currentcolor);");
 		expect(css).toContain("MIT License - Copyright (c) 2023 Segun Adebayo");
+	});
+
+	test("ships Pandwind's own baseline as a stylesheet asset", () => {
+		expect(packageManifest.exports["./reset/pandwind"]).toEqual({
+			pandwind: "./src/reset/pandwind.css",
+			default: "./dist/reset/pandwind.css",
+		});
+		const css = readFileSync(new URL("../src/reset/pandwind.css", import.meta.url), "utf8");
+		expect(css).toContain("@layer reset {");
+		expect(css).toContain("border-style: solid;");
+		expect(css).toContain("MIT License - Copyright (c) 2026 Alexandre Stahmer");
+		expect(css).not.toContain("var(--");
 	});
 
 	test("keeps build-only packages out of runtime dependencies", () => {

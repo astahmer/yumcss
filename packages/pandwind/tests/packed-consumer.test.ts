@@ -86,6 +86,7 @@ describe("packed Pandwind consumer", () => {
 			const packedShadcnPresetPath = consumerRequire.resolve("pandwind/preset/shadcn");
 			const packedTailwindResetPath = consumerRequire.resolve("pandwind/reset/tailwindcss");
 			const packedPandaResetPath = consumerRequire.resolve("pandwind/reset/panda");
+			const packedPandwindResetPath = consumerRequire.resolve("pandwind/reset/pandwind");
 			const [
 				{ pandwindCssVite },
 				{ define },
@@ -124,6 +125,8 @@ describe("packed Pandwind consumer", () => {
 			expect(readFileSync(packedPandaResetPath, "utf8")).toContain(
 				"--global-color-border, currentcolor",
 			);
+			expect(packedPandwindResetPath).toMatch(/dist\/reset\/pandwind\.css$/);
+			expect(readFileSync(packedPandwindResetPath, "utf8")).toContain("box-sizing: border-box;");
 			const preset = define.preset(
 				{ config: {}, tokens: {} },
 				{ strict: false, properties: { $all: true }, conditions: {} },
