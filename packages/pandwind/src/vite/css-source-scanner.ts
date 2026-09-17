@@ -1,4 +1,5 @@
 import { SOURCE_SCANNER_SERVICE, type SourceScannerService } from "../source-scanner.ts";
+import { isLiteralKeyframeBody } from "../css/keyframes.ts";
 import { evalLiteral, type OxcNode, walk } from "../tw/literal.ts";
 import { memberName } from "./ast-walk.ts";
 import type {
@@ -94,10 +95,11 @@ const isMemberCall = (callee: OxcNode | null, names: ReadonlySet<string>): boole
 	if (callee?.type !== NodeKind.MemberExpression) return false;
 	const object = (callee as { object?: OxcNode | null }).object;
 	const property = (callee as { property?: { name?: string } | null }).property;
+	const member = property?.name;
 	return (
 		object?.type === NodeKind.Identifier &&
 		names.has((object as { name?: string }).name ?? "") &&
-		(property?.name === "class" || property?.name === "raw" || property?.name === "group")
+		(member === "class" || member === "raw" || member === "group" || member === "keyframes")
 	);
 };
 
@@ -126,7 +128,9 @@ const callKind = (
 	if (isReactStrictDomCreateCall(callee, reactStrictDom.cssNames)) return "css.create";
 	if (!isMemberCall(callee, names)) return undefined;
 	const member = memberName(callee);
-	return member === "class" || member === "raw" || member === "group" ? `css.${member}` : undefined;
+	return member === "class" || member === "raw" || member === "group" || member === "keyframes"
+		? `css.${member}`
+		: undefined;
 };
 
 const isObjectLiteral = (
@@ -398,7 +402,6 @@ export class CssDiagnosticScanner implements CssDiagnosticReporter {
 		const diagnostics: CssDiagnostic[] = [];
 		const unsupported = new Map([
 			["global", "Authored global rules are not extracted yet."],
-			["keyframes", "Authored keyframes are not extracted yet."],
 			["fontFace", "Authored @font-face rules are not extracted yet."],
 			["layer", "Authored layers are not extracted yet."],
 			["supports", "Authored @supports rules are not extracted yet."],
@@ -426,6 +429,22 @@ export class CssDiagnosticScanner implements CssDiagnosticReporter {
 			const member = memberName(call.callee);
 			const start = call.start;
 			const position = location(code, start);
+			if (member === "keyframes") {
+				const body = evalLiteral(call.arguments[0] as never, undefined, evaluateCall);
+				if (call.arguments.length !== 1 || !isLiteralKeyframeBody(body)) {
+					diagnostics.push({
+						kind: "unsupported-construct",
+						file: id,
+						start,
+						end: call.end,
+						...position,
+						message: "css.keyframes needs one static object literal body.",
+						suggestion:
+							"Keep every step and declaration literal, or keep the @keyframes rule in authored CSS.",
+					});
+				}
+				return;
+			}
 			if (member !== undefined && unsupported.has(member)) {
 				diagnostics.push({
 					kind: "unsupported-construct",

@@ -80,7 +80,9 @@ describe("runCli --json", () => {
 			"a.ts": `import { css } from "./design";
 const tone = "$blue-500";
 export const a = css.class({ color: tone });
-css.keyframes({ from: { opacity: 0 } });`,
+export const spin = css.keyframes({ from: { opacity: 0 }, to: { opacity: 1 } });
+const fade = { from: { opacity: 0 } };
+export const fadeName = css.keyframes(fade);`,
 		});
 		const output = await runCli(["**/*.ts", "--tw", twPath, "--root", root, "--json"]);
 		const doc = JSON.parse(output) as {
@@ -113,12 +115,24 @@ css.keyframes({ from: { opacity: 0 } });`,
 				callKind: "css.class",
 				staticArguments: 0,
 			}),
+			expect.objectContaining({
+				file: "a.ts",
+				callKind: "css.keyframes",
+				staticArguments: 1,
+				dynamicArguments: 0,
+			}),
+			expect.objectContaining({
+				file: "a.ts",
+				callKind: "css.keyframes",
+				staticArguments: 0,
+				dynamicArguments: 1,
+			}),
 		]);
 		expect(doc.cssDiagnostics).toEqual([
 			expect.objectContaining({ kind: "missing-extraction" }),
 			expect.objectContaining({
 				kind: "unsupported-construct",
-				suggestion: expect.stringContaining("css.class"),
+				suggestion: expect.stringContaining("@keyframes rule in authored CSS"),
 			}),
 		]);
 		const human = await runCli(["**/*.ts", "--tw", twPath, "--root", root]);
@@ -162,17 +176,29 @@ css.keyframes({ from: { opacity: 0 } });`,
 			      "suggestion": "Keep the style shape literal for build-time extraction, or use css.vars for dynamic values and verify the runtime path.",
 			    },
 			    {
-			      "column": 1,
+			      "column": 25,
 			      "file": "a.ts",
 			      "kind": "unsupported-construct",
-			      "line": 4,
-			      "message": "Authored keyframes are not extracted yet.",
-			      "suggestion": "Use css.class/css.raw for declarations, or keep this rule in authored CSS until build-time support is added.",
+			      "line": 6,
+			      "message": "css.keyframes needs one static object literal body.",
+			      "suggestion": "Keep every step and declaration literal, or keep the @keyframes rule in authored CSS.",
 			    },
 			  ],
 			  "cssSources": [
 			    {
 			      "callKind": "css.class",
+			      "dynamicArguments": 1,
+			      "file": "a.ts",
+			      "staticArguments": 0,
+			    },
+			    {
+			      "callKind": "css.keyframes",
+			      "dynamicArguments": 0,
+			      "file": "a.ts",
+			      "staticArguments": 1,
+			    },
+			    {
+			      "callKind": "css.keyframes",
 			      "dynamicArguments": 1,
 			      "file": "a.ts",
 			      "staticArguments": 0,

@@ -1,5 +1,6 @@
 import type { OxcNode } from "../tw/literal.ts";
 import type { ClassNameStrategy } from "../css/class-name-strategy.ts";
+import type { KeyframeBody } from "../css/keyframes.ts";
 import type {
 	AnyCssConfig,
 	AnyTokens,
@@ -16,7 +17,14 @@ export interface CssSourceProvenance {
 	readonly end: number;
 	readonly line: number;
 	readonly column: number;
-	readonly callKind: "css" | "css.class" | "css.raw" | "css.group" | "css.create" | "pattern";
+	readonly callKind:
+		| "css"
+		| "css.class"
+		| "css.raw"
+		| "css.group"
+		| "css.keyframes"
+		| "css.create"
+		| "pattern";
 }
 
 export interface CssCallSite extends CssSourceProvenance {
@@ -60,9 +68,15 @@ export interface ExtractedCssStyle {
 	readonly provenance: CssSourceProvenance;
 }
 
+export interface ExtractedKeyframe {
+	readonly body: KeyframeBody;
+	readonly provenance: CssSourceProvenance;
+}
+
 export interface CssFileExtraction {
 	readonly sources: ExtractedCssStyle[];
 	readonly varKeys: string[];
+	readonly keyframes: ExtractedKeyframe[];
 }
 
 export interface InlineCssResult {

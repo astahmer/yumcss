@@ -1,5 +1,6 @@
 import type { CssPreset } from "./css-extract.ts";
 import type { CssSourceService } from "./css-source-service.ts";
+import type { CssFileExtraction } from "./css-extraction-contracts.ts";
 import { createSourceWorkspace, type SourceWorkspace } from "../source-workspace.ts";
 
 interface CssSourceWorkspaceEntry {
@@ -7,6 +8,7 @@ interface CssSourceWorkspaceEntry {
 	readonly mtimeMs: number;
 	readonly sources: ReturnType<CssSourceService["extract"]>;
 	readonly varKeys: string[];
+	readonly keyframes: CssFileExtraction["keyframes"];
 }
 
 export interface CssSourceWorkspace {

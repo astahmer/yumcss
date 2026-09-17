@@ -1,4 +1,5 @@
 import { resolveDesignStyle } from "../design/resolve.ts";
+import { isLiteralKeyframeBody } from "../css/keyframes.ts";
 import {
 	evalLiteral,
 	evalLiteralValues,
@@ -14,7 +15,9 @@ import type {
 	CssFileExtraction,
 	CssPatternAdapter,
 	CssPreset,
+	CssSourceProvenance,
 	ExtractedCssStyle,
+	ExtractedKeyframe,
 } from "./css-extraction-contracts.ts";
 import type { CssSourceScanner } from "./css-extraction-contracts.ts";
 import { NodeKind, PropertyKindTag, VariableDeclarationKindTag } from "../ast-node-kind.ts";
@@ -131,8 +134,17 @@ export class DesignCssArtifactExtractor implements CssArtifactExtractor {
 	}
 
 	extract(code: string, id: string, names: ReadonlySet<string>): ExtractedCssStyle[] {
+		return this.extractAll(code, id, names).sources;
+	}
+
+	private extractAll(
+		code: string,
+		id: string,
+		names: ReadonlySet<string>,
+	): { sources: ExtractedCssStyle[]; keyframes: ExtractedKeyframe[] } {
 		const parsed = this.parse(id, code);
 		const sources: ExtractedCssStyle[] = [];
+		const keyframes: ExtractedKeyframe[] = [];
 		const reactStrictDom = findReactStrictDomBindings(parsed);
 		const evaluateCall = createFirstThatWorksEvaluator(findFirstThatWorksBindings(parsed));
 		// Finite-candidate discovery needs same-module constants; built lazily
@@ -180,6 +192,15 @@ export class DesignCssArtifactExtractor implements CssArtifactExtractor {
 				this.extractNamedStyles(sources, code, id, call, evaluateCall);
 				return;
 			}
+			if (kind === "css.keyframes") {
+				const body = evalLiteral(call.arguments[0] as never, undefined, evaluateCall);
+				if (isLiteralKeyframeBody(body))
+					keyframes.push({
+						body,
+						provenance: this.provenance(code, id, call, "css.keyframes"),
+					});
+				return;
+			}
 			for (const argument of call.arguments) {
 				if (kind === "css.group") {
 					const groupStyles = this.extractInputGroupStyles(argument, names, evaluateCall);
@@ -216,7 +237,7 @@ export class DesignCssArtifactExtractor implements CssArtifactExtractor {
 			}
 		});
 		for (const pattern of this.patterns) sources.push(...pattern.extract(code, id, this.preset));
-		return sources;
+		return { sources, keyframes };
 	}
 
 	/**
@@ -250,9 +271,11 @@ export class DesignCssArtifactExtractor implements CssArtifactExtractor {
 
 	extractFile(code: string, id: string): CssFileExtraction {
 		const names = this.scanner.findImports(code, id);
-		if (names.size === 0) return { sources: [], varKeys: [] };
+		if (names.size === 0) return { sources: [], varKeys: [], keyframes: [] };
+		const extracted = this.extractAll(code, id, names);
 		return {
-			sources: this.extract(code, id, names),
+			sources: extracted.sources,
+			keyframes: extracted.keyframes,
 			varKeys: [...this.scanner.findVarKeys(code, id, names)],
 		};
 	}
@@ -337,18 +360,27 @@ export class DesignCssArtifactExtractor implements CssArtifactExtractor {
 		kind: ExtractedCssStyle["provenance"]["callKind"],
 		style: Record<string, unknown>,
 	): void {
-		const before = code.slice(0, call.start);
 		sources.push({
 			style: resolveDesignStyle(style, this.preset.tokens),
-			provenance: {
-				file: id,
-				start: call.start,
-				end: call.end,
-				line: before.split("\n").length,
-				column: call.start - (before.lastIndexOf("\n") + 1) + 1,
-				callKind: kind,
-			},
+			provenance: this.provenance(code, id, call, kind),
 		});
+	}
+
+	private provenance(
+		code: string,
+		id: string,
+		call: CallNode,
+		kind: ExtractedCssStyle["provenance"]["callKind"],
+	): CssSourceProvenance {
+		const before = code.slice(0, call.start);
+		return {
+			file: id,
+			start: call.start,
+			end: call.end,
+			line: before.split("\n").length,
+			column: call.start - (before.lastIndexOf("\n") + 1) + 1,
+			callKind: kind,
+		};
 	}
 
 	private parse(id: string, code: string): OxcNode {
@@ -368,7 +400,7 @@ export class DesignCssArtifactExtractor implements CssArtifactExtractor {
 		if (isReactStrictDomCreateCall(callee, reactStrictDomNames)) return "css.create";
 		return object?.type === NodeKind.Identifier &&
 			names.has((object as { name?: string }).name ?? "") &&
-			(member === "class" || member === "raw" || member === "group")
+			(member === "class" || member === "raw" || member === "group" || member === "keyframes")
 			? `css.${member}`
 			: undefined;
 	}

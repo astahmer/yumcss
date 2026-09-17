@@ -42,6 +42,7 @@ const render = (
 	atomic: readonly PandwindLibRule[],
 	vars: readonly PandwindLibRule[],
 	tokens: string,
+	keyframes: string,
 	cascade: PandwindCssViteOptions["cascade"],
 	priorityUniverse: readonly PandwindLibRule[] = [...atomic, ...vars],
 ): string => {
@@ -55,6 +56,7 @@ const render = (
 	);
 	const body = [
 		tokens,
+		keyframes,
 		decorated
 			.slice(0, orderedAtomic.length)
 			.map((entry) => entry.css)
@@ -228,6 +230,7 @@ export function createCssExtractorPluginCore(
 			mergeTokenEntries(sheet.gen.tokenEntries(), externalTokens)
 				.map((entry) => entry.declaration)
 				.join("\n"),
+			sheet.gen.keyframes(),
 			options.cascade,
 			[...sheet.gen.atomicEntries(), ...sheet.gen.varEntries(), ...externalAtomic, ...externalVars],
 		);
@@ -268,6 +271,7 @@ export function createCssExtractorPluginCore(
 		for (const file of files) {
 			const entry = workspace.scan(file);
 			for (const { style } of entry.sources) sheet.process([style]);
+			for (const { body } of entry.keyframes) sheet.processKeyframes(body);
 			sheet.processPrepared(options.engine?.preparedStyles.get(file) ?? []);
 			for (const key of entry.varKeys) sheet.processVarKey(key);
 			for (const key of carriedVarKeys.get(file) ?? []) sheet.processVarKey(key);
@@ -279,18 +283,16 @@ export function createCssExtractorPluginCore(
 	};
 
 	/** Cached styles/var-keys for one file (re-scanning on mtime change). */
-	const scanFile = (
-		file: string,
-	): { sources: ReturnType<typeof sourceService.extract>; varKeys: string[] } => {
-		return workspace.scan(file);
-	};
+	const scanFile = (file: string) => workspace.scan(file);
 
 	interface BucketSheet {
 		tokenEntries: Array<{ declaration: string; priority: number }>;
 		atomicIds: Set<string>;
 		varIds: Set<string>;
+		keyframeIds: Set<string>;
 		atomic: Array<{ id: string; css: string; priority: number }>;
 		vars: Array<{ id: string; css: string; priority: number }>;
+		keyframes: Array<{ id: string; css: string; priority: number }>;
 	}
 
 	/** Build a sheet from ONLY the given files and list its rule identities. */
@@ -299,20 +301,24 @@ export function createCssExtractorPluginCore(
 		for (const file of files) {
 			const entry = scanFile(file);
 			for (const { style } of entry.sources) sheet.process([style]);
+			for (const { body } of entry.keyframes) sheet.processKeyframes(body);
 			sheet.processPrepared(options.engine?.preparedStyles.get(file) ?? []);
 			for (const key of entry.varKeys) sheet.processVarKey(key);
 			for (const key of carriedVarKeys.get(file) ?? []) sheet.processVarKey(key);
 		}
 		const atomic = sheet.gen.atomicEntries();
 		const vars = sheet.gen.varEntries();
-		// Ids are namespaced by kind ("a:"/"v:") so the shared-rule
+		const keyframes = sheet.gen.keyframesEntries();
+		// Ids are namespaced by kind ("a:"/"v:"/"k:") so the shared-rule
 		// intersection can count them in one map without collisions.
 		return {
 			tokenEntries: sheet.gen.tokenEntries(),
 			atomicIds: new Set(atomic.map((e) => `a:${e.id}`)),
 			varIds: new Set(vars.map((e) => `v:${e.id}`)),
+			keyframeIds: new Set(keyframes.map((e) => `k:${e.id}`)),
 			atomic,
 			vars,
+			keyframes,
 		};
 	};
 
@@ -347,7 +353,7 @@ export function createCssExtractorPluginCore(
 		const seenIn = new Map<string, number>();
 		for (const [name, bucket] of buckets) {
 			if (name === COMMON_BUCKET) continue;
-			for (const id of [...bucket.atomicIds, ...bucket.varIds]) {
+			for (const id of [...bucket.atomicIds, ...bucket.varIds, ...bucket.keyframeIds]) {
 				seenIn.set(id, (seenIn.get(id) ?? 0) + 1);
 			}
 		}
@@ -355,8 +361,10 @@ export function createCssExtractorPluginCore(
 		for (const rule of externalAtomic) sharedIds.add(`a:${rule.id}`);
 		for (const rule of externalVars) sharedIds.add(`v:${rule.id}`);
 
-		const pickCommon = (entries: BucketSheet["atomic"], kind: "a" | "v"): BucketSheet["atomic"] =>
-			entries.filter((e) => sharedIds.has(`${kind}:${e.id}`));
+		const pickCommon = <TEntry extends { readonly id: string }>(
+			entries: readonly TEntry[],
+			kind: "a" | "v" | "k",
+		): TEntry[] => entries.filter((entry) => sharedIds.has(`${kind}:${entry.id}`));
 
 		const commonBucket = buckets.get(COMMON_BUCKET)!;
 		const anyBucket = buckets.get(routes[0]!.name)!;
@@ -378,6 +386,10 @@ export function createCssExtractorPluginCore(
 			[...pickCommon(anyBucket.vars, "v"), ...commonBucket.vars],
 			externalVars,
 		).toSorted((a, b) => a.priority - b.priority);
+		const commonKeyframes = mergeEntries(
+			[...pickCommon(anyBucket.keyframes, "k"), ...commonBucket.keyframes],
+			[],
+		);
 		const priorityUniverse = [...buckets.values()].flatMap((bucket) => [
 			...bucket.atomic,
 			...bucket.vars,
@@ -388,6 +400,7 @@ export function createCssExtractorPluginCore(
 			commonAtomic,
 			commonVars,
 			tokenEntries.map((entry) => entry.declaration).join("\n"),
+			commonKeyframes.map((entry) => entry.css).join("\n"),
 			options.cascade,
 			priorityUniverse,
 		);
@@ -397,7 +410,18 @@ export function createCssExtractorPluginCore(
 			if (name === COMMON_BUCKET) continue;
 			const atomic = bucket.atomic.filter((e) => !sharedIds.has(`a:${e.id}`));
 			const vars = bucket.vars.filter((e) => !sharedIds.has(`v:${e.id}`));
-			out.set(name, render(atomic, vars, "", options.cascade, priorityUniverse));
+			const keyframes = bucket.keyframes.filter((e) => !sharedIds.has(`k:${e.id}`));
+			out.set(
+				name,
+				render(
+					atomic,
+					vars,
+					"",
+					keyframes.map((entry) => entry.css).join("\n"),
+					options.cascade,
+					priorityUniverse,
+				),
+			);
 		}
 		const value = { common, routes: out };
 		splitCache = { files, value };

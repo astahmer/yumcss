@@ -14,7 +14,15 @@ const cwd = "/fixture/project";
 
 describe("pandwind-codemod runtime command", () => {
 	test("parses stable method selections and safe defaults", () => {
-		expect(parseRuntimeMethods()).toEqual(["class", "vars", "raw", "props", "group", "input"]);
+		expect(parseRuntimeMethods()).toEqual([
+			"class",
+			"vars",
+			"raw",
+			"props",
+			"group",
+			"input",
+			"keyframes",
+		]);
 		expect(parseRuntimeMethods("group, input")).toEqual(["vars", "group", "input"]);
 		expect(parseRuntimeMethods("call")).toEqual([]);
 		const callOnly = generateRuntimeCssModule([]);
@@ -35,7 +43,7 @@ describe("pandwind-codemod runtime command", () => {
 		expect(parseRuntimeCommand([], cwd)).toEqual({
 			command: RuntimeCommand.Generate,
 			outFile: `${cwd}/${DEFAULT_RUNTIME_CSS_OUTPUT}`,
-			methods: ["class", "vars", "raw", "props", "group", "input"],
+			methods: ["class", "vars", "raw", "props", "group", "input", "keyframes"],
 			check: false,
 			cwd,
 		});

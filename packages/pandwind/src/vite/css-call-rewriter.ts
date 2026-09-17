@@ -1,4 +1,5 @@
 import { createUnsafeCss } from "../unsafe/css.ts";
+import { isLiteralKeyframeBody } from "../css/keyframes.ts";
 import { resolveDesignStyle } from "../design/resolve.ts";
 import {
 	evalLiteral,
@@ -128,6 +129,29 @@ export class StaticCssCallRewriter implements CssCallRewriter {
 				if (node.type !== NodeKind.CallExpression) return;
 				const call = node as CallNode;
 				const callee = call.callee;
+				const memberCallee =
+					callee?.type === NodeKind.MemberExpression
+						? (callee as {
+								object?: { type?: string; name?: string } | null;
+								property?: { name?: string } | null;
+							})
+						: undefined;
+				if (
+					memberCallee?.property?.name === "keyframes" &&
+					memberCallee.object?.type === NodeKind.Identifier &&
+					names.has(memberCallee.object.name ?? "")
+				) {
+					// The body does not ship: the whole call folds to the name the
+					// sheet emits, so a keyframes-only module drops the factory too.
+					const body = evaluateCssLiteral(call.arguments[0] as never);
+					if (!isLiteralKeyframeBody(body)) return;
+					edits.push({
+						start: call.start,
+						end: call.end,
+						text: JSON.stringify(engine.keyframes(body)),
+					});
+					return;
+				}
 				let kind: "map" | "class" | "group" | undefined;
 				let carrierName: string | undefined;
 				if (
