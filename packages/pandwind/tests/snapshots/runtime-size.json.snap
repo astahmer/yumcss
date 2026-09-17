@@ -15,6 +15,10 @@
     "min": 40558,
     "gz": 13243
   },
+  "createCss(chakraPreset)": {
+    "min": 51370,
+    "gz": 13884
+  },
   "createCss(defaultPreset)": {
     "min": 24100,
     "gz": 8680
