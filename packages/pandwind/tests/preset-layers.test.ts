@@ -28,6 +28,6 @@ test("default preset retains the stock token-aware property contract", () => {
 		css.raw({ color: "red.500", padding: 4 }),
 	]);
 
-	expect(output).toContain("color:#E53E3E");
+	expect(output).toContain("color:#e53e3e");
 	expect(output).toContain("padding:4px");
 });

@@ -1,5 +1,9 @@
 import { colors } from "./colors.ts";
 
+// Every group below is the Chakra UI v1 foundations value set, with the
+// permalink that fixes the exact upstream revision, so a reader can diff a
+// value against its origin instead of guessing the scale this preset follows.
+
 // https://github.com/chakra-ui/chakra-ui/blob/05b19899b02e17b4ee16045c9e5065fa835f0159/packages/components/theme/src/foundations/typography.ts#L1-L64
 const typography = {
 	letterSpacings: {
@@ -184,13 +188,6 @@ const largeSizes = {
 	prose: "60ch",
 } as const;
 
-const container = {
-	sm: "640px",
-	md: "768px",
-	lg: "1024px",
-	xl: "1280px",
-} as const;
-
 const percentsRecord = {
 	auto: "auto",
 	"0%": "0%",
@@ -200,26 +197,6 @@ const percentsRecord = {
 	"100%": "100%",
 	"100vh": "100vh",
 	"100vw": "100vw",
-} as const;
-
-const positions = {
-	auto: "auto",
-	"0": "0",
-	"-50%": "-50%",
-	"0%": "0%",
-	"50%": "50%",
-	"100%": "100%",
-} as const;
-
-const aligns = {
-	stretch: "stretch",
-	start: "flex-start",
-	center: "center",
-	end: "flex-end",
-	baseline: "baseline",
-	"space-around": "space-around",
-	"space-between": "space-between",
-	"space-evenly": "space-evenly",
 } as const;
 
 const sizes = {
@@ -239,16 +216,12 @@ const sizes = {
 export const tokens = {
 	colors,
 	space,
-	// breakpoints,
-	container,
 	borders,
 	radii,
 	sizes,
 	typography,
 	zIndices,
 	shadows,
-	positions,
-	aligns,
 } as const;
 
 /** The inferred type of the built-in {@link tokens} catalog. */

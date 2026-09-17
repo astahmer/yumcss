@@ -14,12 +14,7 @@ export const presetProperties = define.properties({
 	display: true,
 	boxShadow: tokens.shadows,
 	textShadow: tokens.shadows,
-	opacity: {
-		"0": "0",
-		"0.4": "0.6",
-		"0.6": "0.6",
-		"1": "1",
-	},
+	opacity: true,
 	cursor: true,
 	pointerEvents: true,
 	userSelect: true,
