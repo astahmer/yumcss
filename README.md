@@ -123,20 +123,24 @@ builds that contract step by step.
 
 ### Choose a preset layer
 
-Pandwind has three intentionally separate preset tiers:
+Pandwind has four intentionally separate preset tiers:
 
 - `csstypePreset` from `pandwind/preset/csstype` is tokenless. It supplies the
   structural CSS and condition contract while your application owns the values.
 - `defaultPreset` from `pandwind/preset/default` is the ready-to-use Pandwind
   layer with the stock property-to-token scales and no color palette: bring your
   own colors as literals or tokens.
+- `tailwindPreset` from `pandwind/preset/tailwindcss` is the ecosystem layer:
+  Tailwind v4's colors, scales, and breakpoints as a preset, generated from the
+  installed `tailwindcss` package.
 - `examplePreset` from `@pandwind/example-preset` is a rich repository showcase
   with semantic tokens, palettes, and theme scopes; it is not the default
   application preset.
 
 Use the csstype layer for a deliberately BYO design system, the default layer for
-an ordinary Pandwind app, and the example package only when exploring the
-repository's complete token composition patterns.
+an ordinary Pandwind app, the Tailwind layer when Tailwind v4's vocabulary is the
+target, and the example package only when exploring the repository's complete
+token composition patterns.
 
 ## If you already use Tailwind: typed utility objects
 

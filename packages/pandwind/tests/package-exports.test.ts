@@ -23,6 +23,7 @@ const entries = [
 	"pandwind/preset",
 	"pandwind/preset/csstype",
 	"pandwind/preset/default",
+	"pandwind/preset/tailwindcss",
 	"pandwind/design",
 	"pandwind/vite",
 	"pandwind/unplugin",
@@ -129,13 +130,19 @@ describe("pandwind package boundary", () => {
 		});
 	});
 
-	test("exposes explicit csstype and default preset subpaths", async () => {
+	test("exposes explicit csstype, default, and tailwindcss preset subpaths", async () => {
 		const csstypeApi = await import(await import.meta.resolve("pandwind/preset/csstype"));
 		const defaultApi = await import(await import.meta.resolve("pandwind/preset/default"));
+		const tailwindApi = await import(await import.meta.resolve("pandwind/preset/tailwindcss"));
 
 		expect(csstypeApi.csstypePreset.properties).toEqual({ $all: true });
 		expect(defaultApi.defaultPreset.properties).toHaveProperty("padding");
 		expect("pandwindPreset" in defaultApi).toBe(false);
+		expect(tailwindApi.tailwindPreset.properties.backgroundColor).toEqual({
+			$tokens: "colors",
+			$strictness: "inherits",
+		});
+		expect(tailwindApi.tailwindTokens.colors).toHaveProperty("$slate-700");
 		expect(() => import.meta.resolve("pandwind/preset/base")).toThrow();
 	});
 

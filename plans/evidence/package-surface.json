@@ -30,6 +30,20 @@
 		},
 		{
 			"packageName": "pandwind",
+			"exportPaths": ["./preset/tailwindcss"],
+			"owner": "runtime",
+			"maturity": "experimental",
+			"dependencies": [],
+			"externalContract": true,
+			"evidence": [
+				"packages/pandwind/package.json",
+				"packages/pandwind/tests/preset-tailwindcss.test.ts",
+				"docs/src/content/docs/api/presets.md"
+			],
+			"note": "Ecosystem starter preset: Tailwind v4's theme namespaces and breakpoints as authored data, generated from the pinned tailwindcss package."
+		},
+		{
+			"packageName": "pandwind",
 			"exportPaths": [
 				"./css/named",
 				"./css/stylex",

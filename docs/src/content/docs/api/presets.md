@@ -42,11 +42,12 @@ form keeps a small preset easy to read.
 Pandwind keeps its built-in choices in explicit tiers so a structural CSS
 contract does not silently become a design-token contract:
 
-| preset          | import                     | use it for                                                |
-| --------------- | -------------------------- | --------------------------------------------------------- |
-| `csstypePreset` | `pandwind/preset/csstype`  | tokenless structural CSS with values owned by your app    |
-| `defaultPreset` | `pandwind/preset/default`  | the ordinary Pandwind app with stock scales, no palette   |
-| `examplePreset` | `@pandwind/example-preset` | the repository's rich semantic-token and palette showcase |
+| preset           | import                        | use it for                                                |
+| ---------------- | ----------------------------- | --------------------------------------------------------- |
+| `csstypePreset`  | `pandwind/preset/csstype`     | tokenless structural CSS with values owned by your app    |
+| `defaultPreset`  | `pandwind/preset/default`     | the ordinary Pandwind app with stock scales, no palette   |
+| `tailwindPreset` | `pandwind/preset/tailwindcss` | Tailwind v4's vocabulary in `css()`, largest catalog      |
+| `examplePreset`  | `@pandwind/example-preset`    | the repository's rich semantic-token and palette showcase |
 
 The csstype preset uses the common `csstype` property grammar and default
 conditions, but its `tokens` map and property-token bindings are empty, so
@@ -75,6 +76,17 @@ own token catalog. Use `defaultPreset` when you want Pandwind's ready-to-use
 scales and a bring-your-own palette. The example package is deliberately
 separate and should remain a showcase fixture rather than an implicit default
 dependency.
+
+The Tailwind preset is the ecosystem layer: its colors, fonts, text sizes,
+weights, leading, tracking, radii, shadows, text shadows, containers, z-indexes,
+animations, transitions, and the five breakpoint conditions are generated from
+the installed `tailwindcss` package, so a Tailwind v4 project reads
+`$slate-700` and `md` from `css()` without transcribing a theme. It ships
+that theme whole because a runtime reads the preset object, which makes it the
+widest catalog Pandwind publishes — a `createCss(tailwindPreset)` bundle is
+40.56 KB min / 13.24 KB gzip against 24.10 KB / 8.68 KB for `defaultPreset`.
+Reach for it when Tailwind's vocabulary is the migration target, and for
+`defaultPreset` when a smaller catalog is enough.
 
 ## A complete typed preset
 

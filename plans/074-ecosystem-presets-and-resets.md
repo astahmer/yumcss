@@ -1,6 +1,7 @@
 # Feature Plan: Ecosystem starter presets and reset stylesheets
 
-**Status:** Approved — implementing; see §7 for the resolved decisions
+**Status:** Approved — implementing; see §7 for the resolved decisions and §9
+for what has landed
 **Created:** 2026-09-17
 **Owner:** Pandwind maintainers
 
@@ -29,9 +30,10 @@ ecosystem benchmark exists and can measure their type-graph cost". That
 benchmark now exists (`runtime-size.test.ts`, `tsc-performance` /
 `test:tsc`), so the deferral condition is met.
 
-Only the palette drop is implemented so far. The measured size lanes in
-`docs/src/content/docs/reference/size.md` (`xoonysyt`, refreshed by the
-palette drop) give the baseline the new presets will be measured against.
+The palette drop and the Tailwind v4 preset have shipped (§9); the measured
+size lanes in `docs/src/content/docs/reference/size.md` (`xoonysyt`,
+refreshed by the palette drop) give the baseline the remaining presets are
+measured against.
 
 ## 2. Goals
 
@@ -241,3 +243,50 @@ New subpaths require the full surface ritual, in one revision:
 explicit maintainer go-ahead before new surface lands. This document is the
 plan; implementation starts only after the go-ahead, and the answers to §7
 decide the first revision's scope.
+
+## 9. Progress
+
+Landed lanes, oldest first, each as its own described revision.
+
+- **Plan and resolved decisions** — `docs: propose ecosystem starter presets and
+  reset stylesheets` (`pvyyklyq`).
+- **Tailwind v4 preset** — `feat(preset): generate and ship the Tailwind v4
+  starter preset` plus `feat(preset): publish the Tailwind preset package
+  surface`.
+  - The data is generated from the installed `tailwindcss@4.3.3` by
+    `scripts/promote-tailwind-preset.ts` (`pnpm run presets:generate` /
+    `pnpm run presets:check`, the check wired into `pnpm run check`) into
+    `packages/pandwind/src/preset/generated/tailwindcss-theme.ts`, so
+    upstream drift is a reviewable diff.
+  - `pandwind/preset/tailwindcss` exports `tailwindPreset`,
+    `tailwindTokens`, `tailwindProperties`, and `tailwindConditions`, and
+    is deliberately absent from `src/preset/index.ts` so the default import
+    graph stays small. The subpath is recorded in
+    `plans/evidence/package-surface.json`, mapped in
+    `packages/pandwind/package.json`, built by `tsdown.config.ts`, listed in
+    `knip.json`, and resolved from the packed tarball by
+    `tests/package-exports.test.ts` and `tests/packed-consumer.test.ts`.
+  - Measured lane `createCss(tailwindPreset)`: 40,558 B minified / 13,243 B
+    gzip against `defaultPreset`'s 24,100 / 8,680, budgeted at 41,000 /
+    13,350. The whole catalog ships because esbuild cannot drop unreferenced
+    object entries; a hand-pruned subset would be a second source of truth.
+    Rows live in `docs/src/content/docs/reference/size.md`,
+    `benchmarks.md`, and `PERF.md`.
+  - `tests/preset-tailwindcss.test.ts` checks every authored scale against the
+    installed package, asserts that the five breakpoints are the ones upstream
+    publishes, and asserts the min-width form against Tailwind's own
+    `>= 40rem` output.
+  - No playground change is needed: `apps/playground/src/generated/` is
+    produced from the workspace-linked package and is gitignored, so
+    `pnpm --filter playground run editor:types` already picks the subpath up.
+
+Remaining lanes, in the order §7.4 fixes:
+
+- [ ] `pandwind/preset/chakra` from the installed `@chakra-ui/react` 3.x
+      theme, after the Tailwind numbers above.
+- [ ] `createShadcnPreset(options)` on `pandwind/preset/shadcn`, emitting the
+      `:root` / `.dark` block as `preset.cssVariables`.
+- [ ] `pandwind/preset/{panda,stylex}`.
+- [ ] `pandwind/reset/{tailwindcss,panda,stylex}` plus Pandwind's own minimal
+      reset, including the `reset` versus `preset` naming note the maintainer
+      asked for.
