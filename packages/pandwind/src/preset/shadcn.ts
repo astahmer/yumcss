@@ -133,11 +133,10 @@ const radiusForStyle = (style: ShadcnStyleName, radius: ShadcnRadiusName): Shadc
 	return radius;
 };
 
-const assertSupported = (selection: Pick<ShadcnConfig, "baseColor" | "theme" | "chartColor">): void => {
-	if (
-		unsupportedNames.has(selection.baseColor) ||
-		!baseColorNames.has(selection.baseColor)
-	)
+const assertSupported = (
+	selection: Pick<ShadcnConfig, "baseColor" | "theme" | "chartColor">,
+): void => {
+	if (unsupportedNames.has(selection.baseColor) || !baseColorNames.has(selection.baseColor))
 		throw new Error(
 			`shadcn publishes no values for the "${selection.baseColor}" base color; choose one of ${shadcnTheme.baseColorNames.join(", ")}.`,
 		);
@@ -218,8 +217,7 @@ export const shadcnColorVariables = (
 	}
 
 	const radiusOverride = radiusValues[config.radius];
-	light.radius =
-		radiusOverride !== "" ? radiusOverride : (light.radius ?? defaultRadiusValue);
+	light.radius = radiusOverride !== "" ? radiusOverride : (light.radius ?? defaultRadiusValue);
 
 	return { light, dark };
 };

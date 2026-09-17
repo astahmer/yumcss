@@ -16,7 +16,9 @@ import { inlineCxCalls } from "../src/vite/cx-inline.ts";
 import { resolve } from "node:path";
 import { readGeneratedTwConfig } from "./helpers/generated-tw.ts";
 
-const config: TwConfig = readGeneratedTwConfig(resolve(import.meta.dirname, "../../../examples/example/src"));
+const config: TwConfig = readGeneratedTwConfig(
+	resolve(import.meta.dirname, "../../../examples/example/src"),
+);
 
 /** ~30 realistic module sources. Each entry lists its EXPECTED foldability. */
 interface CorpusEntry {

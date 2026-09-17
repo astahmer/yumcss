@@ -25,18 +25,18 @@ file dependency through package installation.
 The current evidence is in
 [`panda-website-installed-proof.json`](./panda-website-installed-proof.json).
 
-| Dimension | Result |
-| --- | --- |
-| Migrated source files | 159 scanned, 87 changed |
-| Converted Panda calls | 154 `css()` calls and 86 factory elements |
-| Typed residuals | 5 (`dynamic`: 3, `unknown-value`: 2) |
-| Remaining Panda imports | 0 |
-| Source and target typecheck | passed |
-| Source and target Next build | passed; 200 prerendered routes |
-| SSR HTTP proof | 200 routes; source and target status/body checks passed |
-| RSC proof | 98 routes returned non-empty `text/x-component` streams |
-| Browser proof | 98 routes rendered equivalent visible text; `/` and `/showcase` included |
-| CSS size | 88,977 bytes source; 82,798 bytes target |
+| Dimension                    | Result                                                                   |
+| ---------------------------- | ------------------------------------------------------------------------ |
+| Migrated source files        | 159 scanned, 87 changed                                                  |
+| Converted Panda calls        | 154 `css()` calls and 86 factory elements                                |
+| Typed residuals              | 5 (`dynamic`: 3, `unknown-value`: 2)                                     |
+| Remaining Panda imports      | 0                                                                        |
+| Source and target typecheck  | passed                                                                   |
+| Source and target Next build | passed; 200 prerendered routes                                           |
+| SSR HTTP proof               | 200 routes; source and target status/body checks passed                  |
+| RSC proof                    | 98 routes returned non-empty `text/x-component` streams                  |
+| Browser proof                | 98 routes rendered equivalent visible text; `/` and `/showcase` included |
+| CSS size                     | 88,977 bytes source; 82,798 bytes target                                 |
 
 The browser comparison uses visible `innerText` with whitespace removed. This
 keeps the check about rendered content while allowing atomic CSS to change

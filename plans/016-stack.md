@@ -6,13 +6,13 @@ strategies, codegen entries) are untouched.
 
 ## Props surface (closed, typed)
 
-| prop        | values                                                            | classes                   |
-| ----------- | ----------------------------------------------------------------- | ------------------------- |
-| `direction` | `row` \| `column` \| `row-reverse` \| `column-reverse`            | `flex-row`, `flex-col`, … |
-| `gap`       | string/number (`"4"` → `gap-4` in the default lane; CSS value in a factory) | `gap-*` or `gap` |
-| `padding`   | string/number (`"6"` → `p-6` in the default lane; CSS value in a factory)   | `p-*` or `padding` |
-| `align`     | `start` \| `center` \| `end` \| `stretch` \| `baseline`           | `items-*`                 |
-| `justify`   | `start` \| `center` \| `end` \| `between` \| `around` \| `evenly` | `justify-*`               |
+| prop        | values                                                                      | classes                   |
+| ----------- | --------------------------------------------------------------------------- | ------------------------- |
+| `direction` | `row` \| `column` \| `row-reverse` \| `column-reverse`                      | `flex-row`, `flex-col`, … |
+| `gap`       | string/number (`"4"` → `gap-4` in the default lane; CSS value in a factory) | `gap-*` or `gap`          |
+| `padding`   | string/number (`"6"` → `p-6` in the default lane; CSS value in a factory)   | `p-*` or `padding`        |
+| `align`     | `start` \| `center` \| `end` \| `stretch` \| `baseline`                     | `items-*`                 |
+| `justify`   | `start` \| `center` \| `end` \| `between` \| `around` \| `evenly`           | `justify-*`               |
 
 Every result starts with `flex` (display). Mapping order is deterministic
 (flex → direction → gap → padding → align → justify) so folded output is

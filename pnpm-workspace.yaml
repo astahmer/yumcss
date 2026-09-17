@@ -12,8 +12,8 @@ allowBuilds:
   msgpackr-extract: true
   sharp: true
 minimumReleaseAgeExclude:
-  - '@stylexjs/stylex@0.19.1'
+  - "@stylexjs/stylex@0.19.1"
   - next-yak@9.10.0
   - yak-swc@9.10.0
-  - '@stylexjs/babel-plugin@0.19.1'
-  - '@stylexjs/shared@0.19.1'
+  - "@stylexjs/babel-plugin@0.19.1"
+  - "@stylexjs/shared@0.19.1"

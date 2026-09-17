@@ -8,10 +8,10 @@ the reference HEAD before reporting results.
 
 ## Lanes
 
-| Lane                | Pandwind API  | Proof                              |
-| ------------------- | ------------- | ---------------------------------- |
-| Tailwind-compatible | `tw({...})`   | [`tw.md`](./tw.md)                 |
-| Static CSS          | `css({...})`  | [`css.md`](./css.md)               |
+| Lane                | Pandwind API | Proof                              |
+| ------------------- | ------------ | ---------------------------------- |
+| Tailwind-compatible | `tw({...})`  | [`tw.md`](./tw.md)                 |
+| Static CSS          | `css({...})` | [`css.md`](./css.md)               |
 | Design CSS          | `dss({...})` | [`design-css.md`](./design-css.md) |
 
 Each lane is generated from the same pinned source and disposable copy. The

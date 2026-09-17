@@ -26,11 +26,7 @@
  *   multipliers a generated project stylesheet publishes.
  */
 import { shadcnTheme } from "../../src/preset/generated/shadcn-theme.ts";
-import type {
-	ShadcnConfig,
-	ShadcnRadiusName,
-	ShadcnStyleName,
-} from "../../src/preset/shadcn.ts";
+import type { ShadcnConfig, ShadcnRadiusName, ShadcnStyleName } from "../../src/preset/shadcn.ts";
 
 const chartRoles = ["chart-1", "chart-2", "chart-3", "chart-4", "chart-5"] as const;
 
@@ -50,8 +46,7 @@ export interface ShadcnOracleVariables {
  */
 const declare = (variables: Record<string, string>, name: string): string => {
 	const value = variables[name];
-	if (value === undefined)
-		throw new Error("The generated shadcn data declares no --" + name + ".");
+	if (value === undefined) throw new Error("The generated shadcn data declares no --" + name + ".");
 	return value;
 };
 
@@ -133,11 +128,8 @@ export const inheritedHeadingFont = (font: ShadcnConfig["font"]): string =>
  * `inherit`), in which case `--font-heading` points at the body font's own
  * variable.
  */
-export const buildRegistryBaseThemeVars = (
-	config: ShadcnConfig,
-): Record<string, string> => {
-	const normalizedHeading =
-		config.fontHeading === config.font ? "inherit" : config.fontHeading;
+export const buildRegistryBaseThemeVars = (config: ShadcnConfig): Record<string, string> => {
+	const normalizedHeading = config.fontHeading === config.font ? "inherit" : config.fontHeading;
 	return normalizedHeading === "inherit"
 		? { "--font-heading": inheritedHeadingFont(config.font) }
 		: {};
@@ -168,10 +160,7 @@ export const buildCssRule = (
  * contents are the stylesheet a project would have pasted from the create
  * page, selector order included.
  */
-export const buildThemeCssText = (
-	blocks: ShadcnOracleBlocks,
-	pointer: boolean,
-): string => {
+export const buildThemeCssText = (blocks: ShadcnOracleBlocks, pointer: boolean): string => {
 	const pointerCss =
 		"@layer base {\n  " + shadcnTheme.pointerSelector + " {\n    cursor: pointer;\n  }\n}\n";
 	return [

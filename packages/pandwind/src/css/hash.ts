@@ -6,13 +6,12 @@ export { dashCase };
 export const createHashFn = (debug: boolean) => {
 	const hashFn = debug
 		? (key: string, value: string) => {
-			const readable = concatPair(key, value);
-			return /\s/.test(readable) || readable.includes("\u0000")
-				? murmurHash(`${key}\u0000${value}`)
-				: readable;
-		}
-		: (key: string, value: string) =>
-				murmurHash(concatPair(key, value));
+				const readable = concatPair(key, value);
+				return /\s/.test(readable) || readable.includes("\u0000")
+					? murmurHash(`${key}\u0000${value}`)
+					: readable;
+			}
+		: (key: string, value: string) => murmurHash(concatPair(key, value));
 
 	return hashFn;
 };

@@ -33,11 +33,11 @@ the arena's migrated app and in the mixed API cases in the build-time lane.
 
 The dynamic fallback is still useful, but it is a different product shape:
 
-| API      | Current direct-call evidence | Static literal behavior                                 | Honest conclusion                                                          |
-| -------- | ---------------------------: | ------------------------------------------------------- | -------------------------------------------------------------------------- |
-| `tw()`   |     **1.12M ops/sec** median | Extractable; dynamic calls retain runtime compilation   | Fastest Pandwind style-object API in this sample                           |
+| API     | Current direct-call evidence | Static literal behavior                                 | Honest conclusion                                                          |
+| ------- | ---------------------------: | ------------------------------------------------------- | -------------------------------------------------------------------------- |
+| `tw()`  |     **1.12M ops/sec** median | Extractable; dynamic calls retain runtime compilation   | Fastest Pandwind style-object API in this sample                           |
 | `dss()` |     **534K ops/sec** median* | Extractable after design-vocabulary resolution          | More work than `tw()` because it resolves `$frame`/`$text` semantics first |
-| `css()`  |      **422K ops/sec** median | Extractable; compiler-pruned calls pay no style runtime | General CSS fallback is slower but remains small and fully expressive      |
+| `css()` |      **422K ops/sec** median | Extractable; compiler-pruned calls pay no style runtime | General CSS fallback is slower but remains small and fully expressive      |
 
 \* `dss()` is an exploratory current-process measurement using the example
 preset, not yet a committed benchmark snapshot or an external-harness lane.
@@ -46,11 +46,11 @@ preset, not yet a committed benchmark snapshot or an external-harness lane.
 
 For the current direct-call sample, higher throughput ranks as follows:
 
-| Rank | API      |        Median |
-| ---: | -------- | ------------: |
-|    1 | `tw()`   | 1.12M ops/sec |
+| Rank | API     |        Median |
+| ---: | ------- | ------------: |
+|    1 | `tw()`  | 1.12M ops/sec |
 |    2 | `dss()` |  534K ops/sec |
-|    3 | `css()`  |  422K ops/sec |
+|    3 | `css()` |  422K ops/sec |
 
 This ranking describes repeated dynamic-ish calls in one process. It does not
 describe production performance for literal calls, because the compiler
@@ -68,7 +68,7 @@ formal league table:
 | Pandwind `cx()` current snapshot  |          6.17M | Warm class-string merge; included for context     |
 | `tailwind-merge()`                |          2.62M | Precomputed class-string merge                    |
 | Pandwind `tw()` current snapshot  |          1.12M | Style-object compilation fallback                 |
-| Pandwind `dss()` exploratory     |           534K | Design vocabulary resolution plus CSS compilation |
+| Pandwind `dss()` exploratory      |           534K | Design vocabulary resolution plus CSS compilation |
 | Emotion `css()`                   |           472K | Runtime hashing/cache path                        |
 | Pandwind `css()` current snapshot |           422K | General CSS-object compilation fallback           |
 | Panda generated `css()`           |           429K | Runtime system walk                               |
@@ -194,10 +194,10 @@ budget**. This report does not refresh the snapshot or alter runtime code.
 | ------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Is Pandwind's static strategy competitive with compile-time libraries?   | **Architecturally yes; externally unranked until it is a real benchmark lane.**                                                                                               |
 | Is `tw()` the fastest Pandwind style-object fallback?                    | **Yes in the current local sample.**                                                                                                                                          |
-| Is `dss()` slower than `tw()`?                                          | **Yes in the exploratory sample, due to design-token/vocabulary resolution.**                                                                                                 |
+| Is `dss()` slower than `tw()`?                                           | **Yes in the exploratory sample, due to design-token/vocabulary resolution.**                                                                                                 |
 | Is `css()` the most flexible fallback?                                   | **Yes; its lower throughput buys general CSS expressiveness.**                                                                                                                |
 | Can we claim Pandwind wins `css-in-js-bench` or `css-in-js-arena` today? | **We can claim measured wins on specific axes, not a universal win.** The build-time lane ranks strongly; the runtime `cx()` lane is slower than specialized merge libraries. |
-| What remains unmeasured here?                                            | A dedicated `dss()` workload and a clean WPD/browser rank in `css-in-js-bench`; the arena already has bytes, SSR, build, layout, and screenshot evidence.                    |
+| What remains unmeasured here?                                            | A dedicated `dss()` workload and a clean WPD/browser rank in `css-in-js-bench`; the arena already has bytes, SSR, build, layout, and screenshot evidence.                     |
 
 The defensible TL;DR is: **Pandwind now has measured local lanes in both
 external harnesses. Its static build-time lane is competitive—rank 1 on some

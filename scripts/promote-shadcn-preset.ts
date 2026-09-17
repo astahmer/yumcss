@@ -98,7 +98,11 @@ const assertUpstream = (condition: boolean, message: string): void => {
 	if (!condition) throw new Error(message);
 };
 
-const assertSubset = (label: string, values: ReadonlyArray<string>, allowed: ReadonlyArray<string>): void => {
+const assertSubset = (
+	label: string,
+	values: ReadonlyArray<string>,
+	allowed: ReadonlyArray<string>,
+): void => {
 	const unknown = values.filter((value) => !allowed.includes(value));
 	assertUpstream(
 		unknown.length === 0,
@@ -247,7 +251,10 @@ const bundleReference = async (): Promise<ShadcnReferenceModule> => {
 	}
 };
 
-const installedVocabulary = async (): Promise<{ vocabulary: ShadcnVocabulary; version: string }> => {
+const installedVocabulary = async (): Promise<{
+	vocabulary: ShadcnVocabulary;
+	version: string;
+}> => {
 	const presetEntry = requireFromPandwind.resolve("shadcn/preset");
 	return {
 		vocabulary: (await import(pathToFileURL(presetEntry).href)) as ShadcnVocabulary,
@@ -323,7 +330,10 @@ export const renderShadcnPresetModule = async (): Promise<{
 	assertSubset("menu colors", menuColorValues, vocabulary.PRESET_MENU_COLORS);
 	assertUpstream(
 		styleNames.length === vocabulary.PRESET_STYLES.length,
-		"the registry publishes " + styleNames.length + " styles, the CLI " + vocabulary.PRESET_STYLES.length,
+		"the registry publishes " +
+			styleNames.length +
+			" styles, the CLI " +
+			vocabulary.PRESET_STYLES.length,
 	);
 
 	// The registry ships no CSS variables for these two names while the CLI still
@@ -354,14 +364,14 @@ export const renderShadcnPresetModule = async (): Promise<{
 		);
 	}
 	for (const theme of registry.THEMES) {
-		const overlays = [
-			...Object.keys(theme.cssVars.light),
-			...Object.keys(theme.cssVars.dark),
-		];
+		const overlays = [...Object.keys(theme.cssVars.light), ...Object.keys(theme.cssVars.dark)];
 		const foreign = overlays.filter((key) => !paletteLightKeys.has(key) && key !== "chart-1");
 		assertUpstream(
 			foreign.length === 0,
-			"the " + theme.name + " overlay declares keys the palette does not own: " + foreign.join(", "),
+			"the " +
+				theme.name +
+				" overlay declares keys the palette does not own: " +
+				foreign.join(", "),
 		);
 	}
 
@@ -396,7 +406,10 @@ export const renderShadcnPresetModule = async (): Promise<{
 			]),
 		),
 		themes: Object.fromEntries(
-			registry.THEMES.map((theme) => [theme.name, { light: theme.cssVars.light, dark: theme.cssVars.dark }]),
+			registry.THEMES.map((theme) => [
+				theme.name,
+				{ light: theme.cssVars.light, dark: theme.cssVars.dark },
+			]),
 		),
 		baseColorNames,
 		themeNames,

@@ -1,743 +1,743 @@
 {
-  "schema": "pandwind.styling-size/1",
-  "source": "runner/benchmark.mts",
-  "updatedAt": "2026-09-16",
-  "samples": 1,
-  "environment": {
-    "platform": "darwin",
-    "arch": "arm64",
-    "node": "v24.20.0",
-    "vite": "8.2.2",
-    "esbuild": "0.28.2"
-  },
-  "packages": {
-    "@babel/core": "7.29.7",
-    "@emotion/css": "11.13.5",
-    "@linaria/core": "8.2.0",
-    "@pandacss/dev": "1.12.1",
-    "@stylexjs/babel-plugin": "0.19.1",
-    "@stylexjs/stylex": "0.19.1",
-    "@tailwindcss/vite": "4.3.3",
-    "@unocss/preset-wind3": "66.10.0",
-    "@unocss/vite": "66.10.0",
-    "@vanilla-extract/css": "1.21.2",
-    "@vanilla-extract/sprinkles": "1.7.1",
-    "@vanilla-extract/vite-plugin": "5.2.6",
-    "@wyw-in-js/vite": "2.5.1",
-    "esbuild": "0.28.2",
-    "goober": "2.1.19",
-    "pandwind": "workspace:*",
-    "styled-components": "6.5.3",
-    "tailwindcss": "4.3.3",
-    "unocss": "66.10.0",
-    "vite": "8.2.2"
-  },
-  "workloads": [
-    {
-      "library": "emotion",
-      "category": "runtime",
-      "buildMode": "Vite + emotion",
-      "cssDelivery": "injected",
-      "arbitraryRuntimeValues": true,
-      "samples": 1,
-      "baseline": {
-        "js": {
-          "min": 947,
-          "gz": 495
-        },
-        "css": {
-          "min": 0,
-          "gz": 0
-        },
-        "total": {
-          "min": 947,
-          "gz": 495
-        }
-      },
-      "styled": {
-        "js": {
-          "min": 18197,
-          "gz": 6796
-        },
-        "css": {
-          "min": 0,
-          "gz": 0
-        },
-        "total": {
-          "min": 18197,
-          "gz": 6796
-        }
-      },
-      "delta": {
-        "js": {
-          "min": 17250,
-          "gz": 6301
-        },
-        "css": {
-          "min": 0,
-          "gz": 0
-        },
-        "total": {
-          "min": 17250,
-          "gz": 6301
-        }
-      }
-    },
-    {
-      "library": "goober",
-      "category": "runtime",
-      "buildMode": "Vite + goober",
-      "cssDelivery": "injected",
-      "arbitraryRuntimeValues": true,
-      "samples": 1,
-      "baseline": {
-        "js": {
-          "min": 947,
-          "gz": 495
-        },
-        "css": {
-          "min": 0,
-          "gz": 0
-        },
-        "total": {
-          "min": 947,
-          "gz": 495
-        }
-      },
-      "styled": {
-        "js": {
-          "min": 4949,
-          "gz": 1729
-        },
-        "css": {
-          "min": 0,
-          "gz": 0
-        },
-        "total": {
-          "min": 4949,
-          "gz": 1729
-        }
-      },
-      "delta": {
-        "js": {
-          "min": 4002,
-          "gz": 1234
-        },
-        "css": {
-          "min": 0,
-          "gz": 0
-        },
-        "total": {
-          "min": 4002,
-          "gz": 1234
-        }
-      }
-    },
-    {
-      "library": "pandwind-css",
-      "category": "runtime",
-      "buildMode": "Vite + pandwind/css",
-      "cssDelivery": "none",
-      "arbitraryRuntimeValues": true,
-      "samples": 1,
-      "baseline": {
-        "js": {
-          "min": 947,
-          "gz": 495
-        },
-        "css": {
-          "min": 0,
-          "gz": 0
-        },
-        "total": {
-          "min": 947,
-          "gz": 495
-        }
-      },
-      "styled": {
-        "js": {
-          "min": 19229,
-          "gz": 6590
-        },
-        "css": {
-          "min": 0,
-          "gz": 0
-        },
-        "total": {
-          "min": 19229,
-          "gz": 6590
-        }
-      },
-      "delta": {
-        "js": {
-          "min": 18282,
-          "gz": 6095
-        },
-        "css": {
-          "min": 0,
-          "gz": 0
-        },
-        "total": {
-          "min": 18282,
-          "gz": 6095
-        }
-      }
-    },
-    {
-      "library": "pandwind-runtime",
-      "category": "runtime",
-      "buildMode": "Vite + pandwind/css/runtime",
-      "cssDelivery": "injected",
-      "arbitraryRuntimeValues": true,
-      "samples": 1,
-      "baseline": {
-        "js": {
-          "min": 947,
-          "gz": 495
-        },
-        "css": {
-          "min": 0,
-          "gz": 0
-        },
-        "total": {
-          "min": 947,
-          "gz": 495
-        }
-      },
-      "styled": {
-        "js": {
-          "min": 40217,
-          "gz": 13913
-        },
-        "css": {
-          "min": 0,
-          "gz": 0
-        },
-        "total": {
-          "min": 40217,
-          "gz": 13913
-        }
-      },
-      "delta": {
-        "js": {
-          "min": 39270,
-          "gz": 13418
-        },
-        "css": {
-          "min": 0,
-          "gz": 0
-        },
-        "total": {
-          "min": 39270,
-          "gz": 13418
-        }
-      }
-    },
-    {
-      "library": "pandwind-unsafe",
-      "category": "runtime",
-      "buildMode": "Vite + pandwind/unsafe/css",
-      "cssDelivery": "none",
-      "arbitraryRuntimeValues": true,
-      "samples": 1,
-      "baseline": {
-        "js": {
-          "min": 947,
-          "gz": 495
-        },
-        "css": {
-          "min": 0,
-          "gz": 0
-        },
-        "total": {
-          "min": 947,
-          "gz": 495
-        }
-      },
-      "styled": {
-        "js": {
-          "min": 13767,
-          "gz": 4858
-        },
-        "css": {
-          "min": 0,
-          "gz": 0
-        },
-        "total": {
-          "min": 13767,
-          "gz": 4858
-        }
-      },
-      "delta": {
-        "js": {
-          "min": 12820,
-          "gz": 4363
-        },
-        "css": {
-          "min": 0,
-          "gz": 0
-        },
-        "total": {
-          "min": 12820,
-          "gz": 4363
-        }
-      }
-    },
-    {
-      "library": "styled-components",
-      "category": "runtime",
-      "buildMode": "Vite + styled.div",
-      "cssDelivery": "injected",
-      "arbitraryRuntimeValues": true,
-      "samples": 1,
-      "baseline": {
-        "js": {
-          "min": 947,
-          "gz": 495
-        },
-        "css": {
-          "min": 0,
-          "gz": 0
-        },
-        "total": {
-          "min": 947,
-          "gz": 495
-        }
-      },
-      "styled": {
-        "js": {
-          "min": 30456,
-          "gz": 12418
-        },
-        "css": {
-          "min": 0,
-          "gz": 0
-        },
-        "total": {
-          "min": 30456,
-          "gz": 12418
-        }
-      },
-      "delta": {
-        "js": {
-          "min": 29509,
-          "gz": 11923
-        },
-        "css": {
-          "min": 0,
-          "gz": 0
-        },
-        "total": {
-          "min": 29509,
-          "gz": 11923
-        }
-      }
-    },
-    {
-      "library": "linaria",
-      "category": "static",
-      "buildMode": "Linaria Vite plugin",
-      "cssDelivery": "extracted",
-      "arbitraryRuntimeValues": false,
-      "samples": 1,
-      "baseline": {
-        "js": {
-          "min": 947,
-          "gz": 495
-        },
-        "css": {
-          "min": 0,
-          "gz": 0
-        },
-        "total": {
-          "min": 947,
-          "gz": 495
-        }
-      },
-      "styled": {
-        "js": {
-          "min": 1034,
-          "gz": 577
-        },
-        "css": {
-          "min": 2272,
-          "gz": 420
-        },
-        "total": {
-          "min": 3306,
-          "gz": 997
-        }
-      },
-      "delta": {
-        "js": {
-          "min": 87,
-          "gz": 82
-        },
-        "css": {
-          "min": 2272,
-          "gz": 420
-        },
-        "total": {
-          "min": 2359,
-          "gz": 502
-        }
-      }
-    },
-    {
-      "library": "panda",
-      "category": "static",
-      "buildMode": "Panda codegen/cssgen + Vite",
-      "cssDelivery": "extracted",
-      "arbitraryRuntimeValues": false,
-      "samples": 1,
-      "baseline": {
-        "js": {
-          "min": 947,
-          "gz": 495
-        },
-        "css": {
-          "min": 1,
-          "gz": 21
-        },
-        "total": {
-          "min": 948,
-          "gz": 516
-        }
-      },
-      "styled": {
-        "js": {
-          "min": 16008,
-          "gz": 5881
-        },
-        "css": {
-          "min": 744,
-          "gz": 303
-        },
-        "total": {
-          "min": 16752,
-          "gz": 6184
-        }
-      },
-      "delta": {
-        "js": {
-          "min": 15061,
-          "gz": 5386
-        },
-        "css": {
-          "min": 743,
-          "gz": 282
-        },
-        "total": {
-          "min": 15804,
-          "gz": 5668
-        }
-      }
-    },
-    {
-      "library": "pandwind",
-      "category": "static",
-      "buildMode": "Vite + pandwindCssVite",
-      "cssDelivery": "extracted",
-      "arbitraryRuntimeValues": false,
-      "samples": 1,
-      "baseline": {
-        "js": {
-          "min": 947,
-          "gz": 495
-        },
-        "css": {
-          "min": 1,
-          "gz": 21
-        },
-        "total": {
-          "min": 948,
-          "gz": 516
-        }
-      },
-      "styled": {
-        "js": {
-          "min": 4624,
-          "gz": 1638
-        },
-        "css": {
-          "min": 878,
-          "gz": 431
-        },
-        "total": {
-          "min": 5502,
-          "gz": 2069
-        }
-      },
-      "delta": {
-        "js": {
-          "min": 3677,
-          "gz": 1143
-        },
-        "css": {
-          "min": 877,
-          "gz": 410
-        },
-        "total": {
-          "min": 4554,
-          "gz": 1553
-        }
-      }
-    },
-    {
-      "library": "sprinkles",
-      "category": "static",
-      "buildMode": "Vanilla Extract Vite plugin",
-      "cssDelivery": "extracted",
-      "arbitraryRuntimeValues": false,
-      "samples": 1,
-      "baseline": {
-        "js": {
-          "min": 947,
-          "gz": 495
-        },
-        "css": {
-          "min": 0,
-          "gz": 0
-        },
-        "total": {
-          "min": 947,
-          "gz": 495
-        }
-      },
-      "styled": {
-        "js": {
-          "min": 7694,
-          "gz": 1980
-        },
-        "css": {
-          "min": 1957,
-          "gz": 396
-        },
-        "total": {
-          "min": 9651,
-          "gz": 2376
-        }
-      },
-      "delta": {
-        "js": {
-          "min": 6747,
-          "gz": 1485
-        },
-        "css": {
-          "min": 1957,
-          "gz": 396
-        },
-        "total": {
-          "min": 8704,
-          "gz": 1881
-        }
-      }
-    },
-    {
-      "library": "stylex",
-      "category": "static",
-      "buildMode": "StyleX Babel transform + Vite",
-      "cssDelivery": "extracted",
-      "arbitraryRuntimeValues": false,
-      "samples": 1,
-      "baseline": {
-        "js": {
-          "min": 947,
-          "gz": 495
-        },
-        "css": {
-          "min": 0,
-          "gz": 0
-        },
-        "total": {
-          "min": 947,
-          "gz": 495
-        }
-      },
-      "styled": {
-        "js": {
-          "min": 1844,
-          "gz": 682
-        },
-        "css": {
-          "min": 782,
-          "gz": 343
-        },
-        "total": {
-          "min": 2626,
-          "gz": 1025
-        }
-      },
-      "delta": {
-        "js": {
-          "min": 897,
-          "gz": 187
-        },
-        "css": {
-          "min": 782,
-          "gz": 343
-        },
-        "total": {
-          "min": 1679,
-          "gz": 530
-        }
-      }
-    },
-    {
-      "library": "tailwind",
-      "category": "static",
-      "buildMode": "Tailwind CSS Vite plugin",
-      "cssDelivery": "extracted",
-      "arbitraryRuntimeValues": false,
-      "samples": 1,
-      "baseline": {
-        "js": {
-          "min": 947,
-          "gz": 495
-        },
-        "css": {
-          "min": 4198,
-          "gz": 1418
-        },
-        "total": {
-          "min": 5145,
-          "gz": 1913
-        }
-      },
-      "styled": {
-        "js": {
-          "min": 2011,
-          "gz": 647
-        },
-        "css": {
-          "min": 5281,
-          "gz": 1773
-        },
-        "total": {
-          "min": 7292,
-          "gz": 2420
-        }
-      },
-      "delta": {
-        "js": {
-          "min": 1064,
-          "gz": 152
-        },
-        "css": {
-          "min": 1083,
-          "gz": 355
-        },
-        "total": {
-          "min": 2147,
-          "gz": 507
-        }
-      }
-    },
-    {
-      "library": "unocss",
-      "category": "static",
-      "buildMode": "UnoCSS Vite plugin",
-      "cssDelivery": "extracted",
-      "arbitraryRuntimeValues": false,
-      "samples": 1,
-      "baseline": {
-        "js": {
-          "min": 947,
-          "gz": 495
-        },
-        "css": {
-          "min": 1040,
-          "gz": 357
-        },
-        "total": {
-          "min": 1987,
-          "gz": 852
-        }
-      },
-      "styled": {
-        "js": {
-          "min": 2011,
-          "gz": 647
-        },
-        "css": {
-          "min": 1822,
-          "gz": 635
-        },
-        "total": {
-          "min": 3833,
-          "gz": 1282
-        }
-      },
-      "delta": {
-        "js": {
-          "min": 1064,
-          "gz": 152
-        },
-        "css": {
-          "min": 782,
-          "gz": 278
-        },
-        "total": {
-          "min": 1846,
-          "gz": 430
-        }
-      }
-    },
-    {
-      "library": "vanilla-extract",
-      "category": "static",
-      "buildMode": "Vanilla Extract Vite plugin",
-      "cssDelivery": "extracted",
-      "arbitraryRuntimeValues": false,
-      "samples": 1,
-      "baseline": {
-        "js": {
-          "min": 947,
-          "gz": 495
-        },
-        "css": {
-          "min": 0,
-          "gz": 0
-        },
-        "total": {
-          "min": 947,
-          "gz": 495
-        }
-      },
-      "styled": {
-        "js": {
-          "min": 1103,
-          "gz": 572
-        },
-        "css": {
-          "min": 1826,
-          "gz": 340
-        },
-        "total": {
-          "min": 2929,
-          "gz": 912
-        }
-      },
-      "delta": {
-        "js": {
-          "min": 156,
-          "gz": 77
-        },
-        "css": {
-          "min": 1826,
-          "gz": 340
-        },
-        "total": {
-          "min": 1982,
-          "gz": 417
-        }
-      }
-    }
-  ],
-  "tolerances": {
-    "pandwind": {
-      "relative": 0.1,
-      "absoluteBytes": 128
-    }
-  }
+	"schema": "pandwind.styling-size/1",
+	"source": "runner/benchmark.mts",
+	"updatedAt": "2026-09-16",
+	"samples": 1,
+	"environment": {
+		"platform": "darwin",
+		"arch": "arm64",
+		"node": "v24.20.0",
+		"vite": "8.2.2",
+		"esbuild": "0.28.2"
+	},
+	"packages": {
+		"@babel/core": "7.29.7",
+		"@emotion/css": "11.13.5",
+		"@linaria/core": "8.2.0",
+		"@pandacss/dev": "1.12.1",
+		"@stylexjs/babel-plugin": "0.19.1",
+		"@stylexjs/stylex": "0.19.1",
+		"@tailwindcss/vite": "4.3.3",
+		"@unocss/preset-wind3": "66.10.0",
+		"@unocss/vite": "66.10.0",
+		"@vanilla-extract/css": "1.21.2",
+		"@vanilla-extract/sprinkles": "1.7.1",
+		"@vanilla-extract/vite-plugin": "5.2.6",
+		"@wyw-in-js/vite": "2.5.1",
+		"esbuild": "0.28.2",
+		"goober": "2.1.19",
+		"pandwind": "workspace:*",
+		"styled-components": "6.5.3",
+		"tailwindcss": "4.3.3",
+		"unocss": "66.10.0",
+		"vite": "8.2.2"
+	},
+	"workloads": [
+		{
+			"library": "emotion",
+			"category": "runtime",
+			"buildMode": "Vite + emotion",
+			"cssDelivery": "injected",
+			"arbitraryRuntimeValues": true,
+			"samples": 1,
+			"baseline": {
+				"js": {
+					"min": 947,
+					"gz": 495
+				},
+				"css": {
+					"min": 0,
+					"gz": 0
+				},
+				"total": {
+					"min": 947,
+					"gz": 495
+				}
+			},
+			"styled": {
+				"js": {
+					"min": 18197,
+					"gz": 6796
+				},
+				"css": {
+					"min": 0,
+					"gz": 0
+				},
+				"total": {
+					"min": 18197,
+					"gz": 6796
+				}
+			},
+			"delta": {
+				"js": {
+					"min": 17250,
+					"gz": 6301
+				},
+				"css": {
+					"min": 0,
+					"gz": 0
+				},
+				"total": {
+					"min": 17250,
+					"gz": 6301
+				}
+			}
+		},
+		{
+			"library": "goober",
+			"category": "runtime",
+			"buildMode": "Vite + goober",
+			"cssDelivery": "injected",
+			"arbitraryRuntimeValues": true,
+			"samples": 1,
+			"baseline": {
+				"js": {
+					"min": 947,
+					"gz": 495
+				},
+				"css": {
+					"min": 0,
+					"gz": 0
+				},
+				"total": {
+					"min": 947,
+					"gz": 495
+				}
+			},
+			"styled": {
+				"js": {
+					"min": 4949,
+					"gz": 1729
+				},
+				"css": {
+					"min": 0,
+					"gz": 0
+				},
+				"total": {
+					"min": 4949,
+					"gz": 1729
+				}
+			},
+			"delta": {
+				"js": {
+					"min": 4002,
+					"gz": 1234
+				},
+				"css": {
+					"min": 0,
+					"gz": 0
+				},
+				"total": {
+					"min": 4002,
+					"gz": 1234
+				}
+			}
+		},
+		{
+			"library": "pandwind-css",
+			"category": "runtime",
+			"buildMode": "Vite + pandwind/css",
+			"cssDelivery": "none",
+			"arbitraryRuntimeValues": true,
+			"samples": 1,
+			"baseline": {
+				"js": {
+					"min": 947,
+					"gz": 495
+				},
+				"css": {
+					"min": 0,
+					"gz": 0
+				},
+				"total": {
+					"min": 947,
+					"gz": 495
+				}
+			},
+			"styled": {
+				"js": {
+					"min": 19229,
+					"gz": 6590
+				},
+				"css": {
+					"min": 0,
+					"gz": 0
+				},
+				"total": {
+					"min": 19229,
+					"gz": 6590
+				}
+			},
+			"delta": {
+				"js": {
+					"min": 18282,
+					"gz": 6095
+				},
+				"css": {
+					"min": 0,
+					"gz": 0
+				},
+				"total": {
+					"min": 18282,
+					"gz": 6095
+				}
+			}
+		},
+		{
+			"library": "pandwind-runtime",
+			"category": "runtime",
+			"buildMode": "Vite + pandwind/css/runtime",
+			"cssDelivery": "injected",
+			"arbitraryRuntimeValues": true,
+			"samples": 1,
+			"baseline": {
+				"js": {
+					"min": 947,
+					"gz": 495
+				},
+				"css": {
+					"min": 0,
+					"gz": 0
+				},
+				"total": {
+					"min": 947,
+					"gz": 495
+				}
+			},
+			"styled": {
+				"js": {
+					"min": 40217,
+					"gz": 13913
+				},
+				"css": {
+					"min": 0,
+					"gz": 0
+				},
+				"total": {
+					"min": 40217,
+					"gz": 13913
+				}
+			},
+			"delta": {
+				"js": {
+					"min": 39270,
+					"gz": 13418
+				},
+				"css": {
+					"min": 0,
+					"gz": 0
+				},
+				"total": {
+					"min": 39270,
+					"gz": 13418
+				}
+			}
+		},
+		{
+			"library": "pandwind-unsafe",
+			"category": "runtime",
+			"buildMode": "Vite + pandwind/unsafe/css",
+			"cssDelivery": "none",
+			"arbitraryRuntimeValues": true,
+			"samples": 1,
+			"baseline": {
+				"js": {
+					"min": 947,
+					"gz": 495
+				},
+				"css": {
+					"min": 0,
+					"gz": 0
+				},
+				"total": {
+					"min": 947,
+					"gz": 495
+				}
+			},
+			"styled": {
+				"js": {
+					"min": 13767,
+					"gz": 4858
+				},
+				"css": {
+					"min": 0,
+					"gz": 0
+				},
+				"total": {
+					"min": 13767,
+					"gz": 4858
+				}
+			},
+			"delta": {
+				"js": {
+					"min": 12820,
+					"gz": 4363
+				},
+				"css": {
+					"min": 0,
+					"gz": 0
+				},
+				"total": {
+					"min": 12820,
+					"gz": 4363
+				}
+			}
+		},
+		{
+			"library": "styled-components",
+			"category": "runtime",
+			"buildMode": "Vite + styled.div",
+			"cssDelivery": "injected",
+			"arbitraryRuntimeValues": true,
+			"samples": 1,
+			"baseline": {
+				"js": {
+					"min": 947,
+					"gz": 495
+				},
+				"css": {
+					"min": 0,
+					"gz": 0
+				},
+				"total": {
+					"min": 947,
+					"gz": 495
+				}
+			},
+			"styled": {
+				"js": {
+					"min": 30456,
+					"gz": 12418
+				},
+				"css": {
+					"min": 0,
+					"gz": 0
+				},
+				"total": {
+					"min": 30456,
+					"gz": 12418
+				}
+			},
+			"delta": {
+				"js": {
+					"min": 29509,
+					"gz": 11923
+				},
+				"css": {
+					"min": 0,
+					"gz": 0
+				},
+				"total": {
+					"min": 29509,
+					"gz": 11923
+				}
+			}
+		},
+		{
+			"library": "linaria",
+			"category": "static",
+			"buildMode": "Linaria Vite plugin",
+			"cssDelivery": "extracted",
+			"arbitraryRuntimeValues": false,
+			"samples": 1,
+			"baseline": {
+				"js": {
+					"min": 947,
+					"gz": 495
+				},
+				"css": {
+					"min": 0,
+					"gz": 0
+				},
+				"total": {
+					"min": 947,
+					"gz": 495
+				}
+			},
+			"styled": {
+				"js": {
+					"min": 1034,
+					"gz": 577
+				},
+				"css": {
+					"min": 2272,
+					"gz": 420
+				},
+				"total": {
+					"min": 3306,
+					"gz": 997
+				}
+			},
+			"delta": {
+				"js": {
+					"min": 87,
+					"gz": 82
+				},
+				"css": {
+					"min": 2272,
+					"gz": 420
+				},
+				"total": {
+					"min": 2359,
+					"gz": 502
+				}
+			}
+		},
+		{
+			"library": "panda",
+			"category": "static",
+			"buildMode": "Panda codegen/cssgen + Vite",
+			"cssDelivery": "extracted",
+			"arbitraryRuntimeValues": false,
+			"samples": 1,
+			"baseline": {
+				"js": {
+					"min": 947,
+					"gz": 495
+				},
+				"css": {
+					"min": 1,
+					"gz": 21
+				},
+				"total": {
+					"min": 948,
+					"gz": 516
+				}
+			},
+			"styled": {
+				"js": {
+					"min": 16008,
+					"gz": 5881
+				},
+				"css": {
+					"min": 744,
+					"gz": 303
+				},
+				"total": {
+					"min": 16752,
+					"gz": 6184
+				}
+			},
+			"delta": {
+				"js": {
+					"min": 15061,
+					"gz": 5386
+				},
+				"css": {
+					"min": 743,
+					"gz": 282
+				},
+				"total": {
+					"min": 15804,
+					"gz": 5668
+				}
+			}
+		},
+		{
+			"library": "pandwind",
+			"category": "static",
+			"buildMode": "Vite + pandwindCssVite",
+			"cssDelivery": "extracted",
+			"arbitraryRuntimeValues": false,
+			"samples": 1,
+			"baseline": {
+				"js": {
+					"min": 947,
+					"gz": 495
+				},
+				"css": {
+					"min": 1,
+					"gz": 21
+				},
+				"total": {
+					"min": 948,
+					"gz": 516
+				}
+			},
+			"styled": {
+				"js": {
+					"min": 4624,
+					"gz": 1638
+				},
+				"css": {
+					"min": 878,
+					"gz": 431
+				},
+				"total": {
+					"min": 5502,
+					"gz": 2069
+				}
+			},
+			"delta": {
+				"js": {
+					"min": 3677,
+					"gz": 1143
+				},
+				"css": {
+					"min": 877,
+					"gz": 410
+				},
+				"total": {
+					"min": 4554,
+					"gz": 1553
+				}
+			}
+		},
+		{
+			"library": "sprinkles",
+			"category": "static",
+			"buildMode": "Vanilla Extract Vite plugin",
+			"cssDelivery": "extracted",
+			"arbitraryRuntimeValues": false,
+			"samples": 1,
+			"baseline": {
+				"js": {
+					"min": 947,
+					"gz": 495
+				},
+				"css": {
+					"min": 0,
+					"gz": 0
+				},
+				"total": {
+					"min": 947,
+					"gz": 495
+				}
+			},
+			"styled": {
+				"js": {
+					"min": 7694,
+					"gz": 1980
+				},
+				"css": {
+					"min": 1957,
+					"gz": 396
+				},
+				"total": {
+					"min": 9651,
+					"gz": 2376
+				}
+			},
+			"delta": {
+				"js": {
+					"min": 6747,
+					"gz": 1485
+				},
+				"css": {
+					"min": 1957,
+					"gz": 396
+				},
+				"total": {
+					"min": 8704,
+					"gz": 1881
+				}
+			}
+		},
+		{
+			"library": "stylex",
+			"category": "static",
+			"buildMode": "StyleX Babel transform + Vite",
+			"cssDelivery": "extracted",
+			"arbitraryRuntimeValues": false,
+			"samples": 1,
+			"baseline": {
+				"js": {
+					"min": 947,
+					"gz": 495
+				},
+				"css": {
+					"min": 0,
+					"gz": 0
+				},
+				"total": {
+					"min": 947,
+					"gz": 495
+				}
+			},
+			"styled": {
+				"js": {
+					"min": 1844,
+					"gz": 682
+				},
+				"css": {
+					"min": 782,
+					"gz": 343
+				},
+				"total": {
+					"min": 2626,
+					"gz": 1025
+				}
+			},
+			"delta": {
+				"js": {
+					"min": 897,
+					"gz": 187
+				},
+				"css": {
+					"min": 782,
+					"gz": 343
+				},
+				"total": {
+					"min": 1679,
+					"gz": 530
+				}
+			}
+		},
+		{
+			"library": "tailwind",
+			"category": "static",
+			"buildMode": "Tailwind CSS Vite plugin",
+			"cssDelivery": "extracted",
+			"arbitraryRuntimeValues": false,
+			"samples": 1,
+			"baseline": {
+				"js": {
+					"min": 947,
+					"gz": 495
+				},
+				"css": {
+					"min": 4198,
+					"gz": 1418
+				},
+				"total": {
+					"min": 5145,
+					"gz": 1913
+				}
+			},
+			"styled": {
+				"js": {
+					"min": 2011,
+					"gz": 647
+				},
+				"css": {
+					"min": 5281,
+					"gz": 1773
+				},
+				"total": {
+					"min": 7292,
+					"gz": 2420
+				}
+			},
+			"delta": {
+				"js": {
+					"min": 1064,
+					"gz": 152
+				},
+				"css": {
+					"min": 1083,
+					"gz": 355
+				},
+				"total": {
+					"min": 2147,
+					"gz": 507
+				}
+			}
+		},
+		{
+			"library": "unocss",
+			"category": "static",
+			"buildMode": "UnoCSS Vite plugin",
+			"cssDelivery": "extracted",
+			"arbitraryRuntimeValues": false,
+			"samples": 1,
+			"baseline": {
+				"js": {
+					"min": 947,
+					"gz": 495
+				},
+				"css": {
+					"min": 1040,
+					"gz": 357
+				},
+				"total": {
+					"min": 1987,
+					"gz": 852
+				}
+			},
+			"styled": {
+				"js": {
+					"min": 2011,
+					"gz": 647
+				},
+				"css": {
+					"min": 1822,
+					"gz": 635
+				},
+				"total": {
+					"min": 3833,
+					"gz": 1282
+				}
+			},
+			"delta": {
+				"js": {
+					"min": 1064,
+					"gz": 152
+				},
+				"css": {
+					"min": 782,
+					"gz": 278
+				},
+				"total": {
+					"min": 1846,
+					"gz": 430
+				}
+			}
+		},
+		{
+			"library": "vanilla-extract",
+			"category": "static",
+			"buildMode": "Vanilla Extract Vite plugin",
+			"cssDelivery": "extracted",
+			"arbitraryRuntimeValues": false,
+			"samples": 1,
+			"baseline": {
+				"js": {
+					"min": 947,
+					"gz": 495
+				},
+				"css": {
+					"min": 0,
+					"gz": 0
+				},
+				"total": {
+					"min": 947,
+					"gz": 495
+				}
+			},
+			"styled": {
+				"js": {
+					"min": 1103,
+					"gz": 572
+				},
+				"css": {
+					"min": 1826,
+					"gz": 340
+				},
+				"total": {
+					"min": 2929,
+					"gz": 912
+				}
+			},
+			"delta": {
+				"js": {
+					"min": 156,
+					"gz": 77
+				},
+				"css": {
+					"min": 1826,
+					"gz": 340
+				},
+				"total": {
+					"min": 1982,
+					"gz": 417
+				}
+			}
+		}
+	],
+	"tolerances": {
+		"pandwind": {
+			"relative": 0.1,
+			"absoluteBytes": 128
+		}
+	}
 }
