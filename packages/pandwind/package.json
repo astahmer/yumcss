@@ -105,6 +105,12 @@
 			"import": "./dist/preset/tailwindcss.js",
 			"default": "./dist/preset/tailwindcss.js"
 		},
+		"./preset/chakra": {
+			"pandwind": "./src/preset/chakra.ts",
+			"types": "./dist/preset/chakra.d.ts",
+			"import": "./dist/preset/chakra.js",
+			"default": "./dist/preset/chakra.js"
+		},
 		"./stack": {
 			"pandwind": "./src/stack/index.ts",
 			"types": "./dist/stack/index.d.ts",

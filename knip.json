@@ -27,6 +27,7 @@
 				"src/preset/csstype.ts",
 				"src/preset/default.ts",
 				"src/preset/tailwindcss.ts",
+				"src/preset/chakra.ts",
 				"src/{unplugin,source-scanner,rn,opentui}.ts",
 				"src/css/create-stylesheet.ts",
 				"src/css/stylesheet-lowering.ts",

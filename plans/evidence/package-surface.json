@@ -44,6 +44,20 @@
 		},
 		{
 			"packageName": "pandwind",
+			"exportPaths": ["./preset/chakra"],
+			"owner": "runtime",
+			"maturity": "experimental",
+			"dependencies": [],
+			"externalContract": true,
+			"evidence": [
+				"packages/pandwind/package.json",
+				"packages/pandwind/tests/preset-chakra.test.ts",
+				"docs/src/content/docs/api/presets.md"
+			],
+			"note": "Ecosystem starter preset: Chakra UI v3's token scales, color-mode semantic tokens, and conditions as authored data, generated from the pinned @chakra-ui/react package."
+		},
+		{
+			"packageName": "pandwind",
 			"exportPaths": [
 				"./css/named",
 				"./css/stylex",

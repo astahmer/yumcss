@@ -17,6 +17,7 @@ export default defineConfig({
 		"src/preset/csstype.ts",
 		"src/preset/default.ts",
 		"src/preset/tailwindcss.ts",
+		"src/preset/chakra.ts",
 		"src/preset/index.ts",
 		"src/stack/index.ts",
 		"src/stack/react.tsx",
