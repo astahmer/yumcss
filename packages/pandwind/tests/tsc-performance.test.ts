@@ -43,7 +43,7 @@ const SCENARIOS = [
 		name: "css.default",
 		fixture: "tests/fixtures/tsc/css-default.ts",
 		category: "css",
-		description: "default preset with repeated static css and class calls",
+		description: "fixture preset with a named palette and repeated static css and class calls",
 	},
 	{
 		name: "css.preset",

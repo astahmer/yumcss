@@ -14,15 +14,15 @@ These are the repo-owned package, example-app, and public-API records.
 | ------------------------ | -------------: | -----------: | --------: |
 | package                  |        313,040 |      311,771 |     0.328 |
 | example app              |        172,628 |      311,726 |     0.365 |
-| API css.real-world.usage |         74,340 |       83,119 |     0.047 |
-| API app                  |         43,021 |       82,275 |     0.023 |
-| API css.dynamic          |         38,371 |       65,141 |     0.050 |
-| API css.generated        |         24,229 |       68,755 |     0.011 |
-| API css.unsafe           |         10,049 |       58,433 |     0.007 |
-| API dss                  |         29,761 |       71,367 |     0.014 |
-| API css.runtime          |         41,549 |       78,065 |     0.043 |
-| API cx                   |         28,383 |       70,751 |     0.014 |
-| API tw                   |          3,153 |       56,872 |     0.004 |
+| API css.real-world.usage |         75,785 |       83,315 |     0.079 |
+| API app                  |         42,972 |       81,517 |     0.044 |
+| API css.dynamic          |         32,172 |       62,026 |     0.015 |
+| API css.generated        |         23,692 |       68,262 |     0.014 |
+| API css.unsafe           |         10,053 |       58,404 |     0.009 |
+| API dss                  |         29,560 |       70,832 |     0.022 |
+| API css.runtime          |         41,686 |       77,556 |     0.077 |
+| API cx                   |         28,488 |       70,317 |     0.039 |
+| API tw                   |          3,157 |       56,910 |     0.010 |
 
 ## Pandwind API typecheck ranking
 
@@ -32,49 +32,49 @@ Every first-class API lane has its own fresh-process row; lower is better. The p
 
 | Rank | API                  | Category    | Check (s) | Instantiations | Memory (KiB) |
 | ---: | -------------------- | ----------- | --------: | -------------: | -----------: |
-|    1 | tw                   | tailwind    |     0.004 |          3,153 |       56,872 |
-|    2 | css.unsafe           | css         |     0.007 |         10,049 |       58,433 |
-|    3 | preset               | preset      |     0.008 |          9,134 |       62,248 |
-|    4 | tw.root              | tailwind    |     0.010 |         11,801 |       62,592 |
-|    5 | css.real-world.theme | css         |     0.010 |         21,586 |       63,893 |
-|    6 | css.generated        | css         |     0.011 |         24,229 |       68,755 |
-|    7 | css.preset           | css         |     0.014 |         20,312 |       67,504 |
-|    8 | strategies           | adapters    |     0.014 |         27,498 |       69,324 |
-|    9 | cx                   | composition |     0.014 |         28,383 |       70,751 |
-|   10 | dss                  | design      |     0.014 |         29,761 |       71,367 |
-|   11 | platforms            | platform    |     0.015 |         28,112 |       71,013 |
-|   12 | app                  | app         |     0.023 |         43,021 |       82,275 |
-|   13 | dss.runtime          | runtime     |     0.026 |         39,953 |       77,927 |
-|   14 | stack                | layout      |     0.037 |         50,621 |       89,687 |
-|   15 | tooling              | tooling     |     0.041 |         68,395 |      142,634 |
-|   16 | css.runtime          | runtime     |     0.043 |         41,549 |       78,065 |
-|   17 | css.real-world.usage | css         |     0.047 |         74,340 |       83,119 |
-|   18 | css.dynamic          | css         |     0.050 |         38,371 |       65,141 |
-|   19 | css.default          | css         |     0.091 |         38,213 |       64,959 |
+|    1 | preset               | preset      |     0.005 |          9,160 |       61,807 |
+|    2 | css.unsafe           | css         |     0.009 |         10,053 |       58,404 |
+|    3 | tw                   | tailwind    |     0.010 |          3,157 |       56,910 |
+|    4 | css.preset           | css         |     0.010 |         21,459 |       67,304 |
+|    5 | tw.root              | tailwind    |     0.011 |         11,805 |       62,600 |
+|    6 | platforms            | platform    |     0.011 |         28,299 |       70,555 |
+|    7 | css.generated        | css         |     0.014 |         23,692 |       68,262 |
+|    8 | css.dynamic          | css         |     0.015 |         32,172 |       62,026 |
+|    9 | css.real-world.theme | css         |     0.018 |         21,612 |       63,456 |
+|   10 | stack                | layout      |     0.021 |         51,334 |       89,655 |
+|   11 | dss                  | design      |     0.022 |         29,560 |       70,832 |
+|   12 | strategies           | adapters    |     0.023 |         27,172 |       68,679 |
+|   13 | cx                   | composition |     0.039 |         28,488 |       70,317 |
+|   14 | app                  | app         |     0.044 |         42,972 |       81,517 |
+|   15 | css.default          | css         |     0.055 |         35,486 |       63,774 |
+|   16 | tooling              | tooling     |     0.058 |         68,927 |      142,359 |
+|   17 | dss.runtime          | runtime     |     0.059 |         40,611 |       77,545 |
+|   18 | css.runtime          | runtime     |     0.077 |         41,686 |       77,556 |
+|   19 | css.real-world.usage | css         |     0.079 |         75,785 |       83,315 |
 
 ### By type instantiations
 
 | Rank | API                  | Category    | Instantiations | Memory (KiB) | Check (s) |
 | ---: | -------------------- | ----------- | -------------: | -----------: | --------: |
-|    1 | tw                   | tailwind    |          3,153 |       56,872 |     0.004 |
-|    2 | preset               | preset      |          9,134 |       62,248 |     0.008 |
-|    3 | css.unsafe           | css         |         10,049 |       58,433 |     0.007 |
-|    4 | tw.root              | tailwind    |         11,801 |       62,592 |     0.010 |
-|    5 | css.preset           | css         |         20,312 |       67,504 |     0.014 |
-|    6 | css.real-world.theme | css         |         21,586 |       63,893 |     0.010 |
-|    7 | css.generated        | css         |         24,229 |       68,755 |     0.011 |
-|    8 | strategies           | adapters    |         27,498 |       69,324 |     0.014 |
-|    9 | platforms            | platform    |         28,112 |       71,013 |     0.015 |
-|   10 | cx                   | composition |         28,383 |       70,751 |     0.014 |
-|   11 | dss                  | design      |         29,761 |       71,367 |     0.014 |
-|   12 | css.default          | css         |         38,213 |       64,959 |     0.091 |
-|   13 | css.dynamic          | css         |         38,371 |       65,141 |     0.050 |
-|   14 | dss.runtime          | runtime     |         39,953 |       77,927 |     0.026 |
-|   15 | css.runtime          | runtime     |         41,549 |       78,065 |     0.043 |
-|   16 | app                  | app         |         43,021 |       82,275 |     0.023 |
-|   17 | stack                | layout      |         50,621 |       89,687 |     0.037 |
-|   18 | tooling              | tooling     |         68,395 |      142,634 |     0.041 |
-|   19 | css.real-world.usage | css         |         74,340 |       83,119 |     0.047 |
+|    1 | tw                   | tailwind    |          3,157 |       56,910 |     0.010 |
+|    2 | preset               | preset      |          9,160 |       61,807 |     0.005 |
+|    3 | css.unsafe           | css         |         10,053 |       58,404 |     0.009 |
+|    4 | tw.root              | tailwind    |         11,805 |       62,600 |     0.011 |
+|    5 | css.preset           | css         |         21,459 |       67,304 |     0.010 |
+|    6 | css.real-world.theme | css         |         21,612 |       63,456 |     0.018 |
+|    7 | css.generated        | css         |         23,692 |       68,262 |     0.014 |
+|    8 | strategies           | adapters    |         27,172 |       68,679 |     0.023 |
+|    9 | platforms            | platform    |         28,299 |       70,555 |     0.011 |
+|   10 | cx                   | composition |         28,488 |       70,317 |     0.039 |
+|   11 | dss                  | design      |         29,560 |       70,832 |     0.022 |
+|   12 | css.dynamic          | css         |         32,172 |       62,026 |     0.015 |
+|   13 | css.default          | css         |         35,486 |       63,774 |     0.055 |
+|   14 | dss.runtime          | runtime     |         40,611 |       77,545 |     0.059 |
+|   15 | css.runtime          | runtime     |         41,686 |       77,556 |     0.077 |
+|   16 | app                  | app         |         42,972 |       81,517 |     0.044 |
+|   17 | stack                | layout      |         51,334 |       89,655 |     0.021 |
+|   18 | tooling              | tooling     |         68,927 |      142,359 |     0.058 |
+|   19 | css.real-world.usage | css         |         75,785 |       83,315 |     0.079 |
 
 ## Ecosystem typecheck ranking — stress workload
 
