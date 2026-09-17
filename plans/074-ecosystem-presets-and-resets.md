@@ -236,6 +236,147 @@ New subpaths require the full surface ritual, in one revision:
    the test fixture `packages/pandwind/tests/fixtures/legacy-preset.ts`, so
    behavior and typing tests keep a preset whose color values resolve through
    named tokens.
+7. **Chakra sources of truth.** `pandwind/preset/chakra` is generated from the
+   installed `@chakra-ui/react` by `scripts/promote-chakra-preset.ts`.
+   `defaultConfig.theme` owns the scales and `defaultConfig.conditions`
+   (104 keys) owns the conditions; `theme.conditions` does not exist at all.
+   `getPreflightCss` is undefined — the global stylesheet is
+   `defaultConfig.globalCss`, and it belongs to the future
+   `pandwind/reset/chakra` lane instead of this preset. Probing must go
+   through `system.css(style)`, which returns a flat declaration object:
+   reading `out.css` returns `undefined` and produced a false conclusion
+   during reconnaissance.
+8. **Static groups versus conditional groups.** Every Chakra token entry is a
+   `{ value }` record and hues nest one level deeper, so the generator flattens
+   `group.key.key2.value` into dotted keys (`"$gray.50"`, `"$whiteAlpha.50"`,
+   `"$bg.subtle"`, `"$fg.muted"`). Every `colors` key carries Pandwind's `$`
+   sigil, because `resolveTokenValue` matches the authored value verbatim:
+   without the sigil the generated key would be the only accepted spelling and
+   the `$gray.700` this preset documents would leak through as a literal. With
+   it, `tokenNameAliases` also registers the bare canonical form, so both
+   `"$gray.700"` and `"gray.700"` resolve to the same token. Non-color groups
+   stay bare (`"lg"`, `"md"`, `"10"`), matching the Tailwind lane, where only
+   the color namespace is sigiled.
+   Static groups ship through `define.tokens` and emit under `:root`. The
+   mode-dependent groups (`semanticTokens.colors`, `semanticTokens.shadows`,
+   `semanticTokens.radii`) ship through `defineSemanticTokens`, which merges
+   into an existing group rather than replacing it, so one `colors` group holds
+   the static palette and the semantic roles at once and a single `color`
+   binding resolves both `gray.500` and `bg.subtle`.
+9. **Light and dark selectors.** The token conditions are
+   `_light: ":root &, .light &"` and
+   `_dark: ".dark &, .dark .chakra-theme:not(.light) &"`, which is exactly what
+   Chakra emits, and `base: ""` joins the preset condition map so
+   `defineSemanticTokens` accepts it. `presetConditions` is spread first and
+   every Chakra condition overlays it, so Chakra semantics win where the two
+   disagree (`:first-of-type` over `:first-child`), while `_dark` and
+   `_light` keep the Chakra selectors the semantic tokens depend on.
+10. **Embedded references resolve at generation time.** All 112 `{...}`
+    references in Chakra's theme point at static tokens, and Pandwind passes an
+    embedded reference through unresolved. The generator therefore substitutes
+    the literal: `{colors.gray.900}` becomes the hex read from the same theme,
+    and `{colors.gray.900/10}` becomes
+    `color-mix(in srgb, <hex> 10%, transparent)`, which is the declaration
+    `system.css` emits with its own `--chakra-*` variable inlined. A
+    whole-value reference (`radii.l1 = "{radii.xs}"`) stays a Pandwind token
+    reference, because Pandwind does declare that variable. No generated value
+    ever names a `--chakra-*` variable, since Pandwind never declares one.
+11. **Value normalizations.** Chakra's `blurs` scale is dropped whole, not
+    normalized: it reaches CSS only through Chakra's `blur` utility, which
+    writes a `--blur` custom property rather than a property Pandwind binds,
+    so its `:root` declarations would be bytes no authored style could read.
+    Numeric `lineHeights` and `zIndex` are stringified,
+    because Pandwind token groups are string records. Composite
+    `borders.*` (`"1px solid"`) bind only to the `border` properties that
+    accept a shorthand. `l1`/`l2`/`l3` stay whole-value references. Negative
+    spacing stays literal, because Chakra ships no negative tokens and
+    `presetConditions` has no negative-spacing override.
+12. **Property bindings.** Chakra's own compile table drives the property map:
+    `padding*`/`margin*`/`gap*`/`inset*`/`top`/`right`/`bottom`/`left`/
+    `scrollMargin*`/`borderSpacing` read `spacing`;
+    `width`/`height`/`min*`/`max*`/`flexBasis` read `sizes`;
+    `borderRadius` and its eight corner variants read `radii`; `border` plus
+    the four sides read `borders`; `boxShadow` and `textShadow` read
+    `shadows`; the typography properties read their matching group; `color`
+    and the twelve other color properties read `colors`; `zIndex`,
+    `aspectRatio`, `animation`, `cursor`, `transitionDuration`, and
+    `transitionTimingFunction` read their own group with named keys only
+    (`zIndex: "10"` stays literal upstream and here). The preset rebinds
+    `inset*` and the four offsets from Pandwind's `sizes` to `spacing`,
+    because Chakra reads those properties from its spacing scale — a real
+    semantic difference, not a spelling one. The scroll family follows the
+    same probe rather than one blanket rule: `scrollMargin` and its four
+    physical sides, `scrollPadding` and its four physical sides, and the
+    `scrollPaddingInline` / `scrollPaddingBlock` shorthands all resolve to
+    `var(--chakra-spacing-4)` upstream and therefore bind `spacing`. The
+    logical `scrollMarginInline` / `scrollMarginBlock` /
+    `scrollMarginInlineStart` / `scrollPaddingInlineStart` /
+    `scrollPaddingBlockStart` forms emit the raw length `4` and stay
+    unbound, because binding a property Chakra treats as a raw length would
+    accept token names upstream rejects. `borderWidth*` and
+    `borderBlockWidth` / `borderInlineWidth` keep Pandwind's own `borders`
+    group (`none`, `1px`, `2px`, `4px`, `8px`), which is a width scale,
+    while `chakraTokens.borders` holds `1px solid` composites that are only
+    valid for the `border` shorthand; `outline`, `outlineWidth`, and
+    `outlineOffset` keep their stock bindings too, because Chakra has no
+    utility entry for those properties at all. `transition` and
+    `transitionProperty` bind to the composed groups §7.19 describes.
+13. **Condition map.** All 104 Chakra conditions ship as `_<name>`, including
+    the array-valued `hover` (hover-capable media query plus the state
+    selector) and the raw `dark`/`light` entries, which the token conditions
+    replace with Chakra's own two-selector form. Chakra's breakpoints
+    (`sm`–`2xl`) are not conditions upstream; they join the map as
+    `@media (min-width: …)` using the pixel widths from
+    `theme.breakpoints`, which keeps the stylesheet's ordering policy able to
+    place narrower rules first regardless of scan order.
+14. **Color palettes.** `defineColorPalettes` is sourced from the 16 static
+    color roots plus the semantic `bg`, `fg`, and `border` roots. The four
+    singleton roots (`transparent`, `current`, `black`, `white`) map to the
+    empty suffix and therefore to the virtual `colorPalette` token. Chakra
+    spells its last role `focus-ring` while Pandwind builds the suffix
+    verbatim, so the preset maps it to `focusRing` and the divergence is
+    asserted in the parity test.
+15. **Keyframes are deferred.** Chakra ships 33 keyframes and its `animations`
+    tokens reference them by name, but a Pandwind preset has no keyframes hook,
+    so the preset ships the `animations` group and documents that the
+    `@keyframes` bodies must come from the project or from a future reset
+    lane. Shipping 33 unconsumed keyframe strings would be dead data.
+16. **Slash-containing size keys.** Chakra's `sizes` group carries fraction
+    keys (`1/2`, `1/3`, …) and Pandwind reads `/` as its color
+    opacity modifier. The generator renames them to the `1-2`, `1-3` form and
+    the parity test asserts the rename, so no token name can be parsed as a
+    slash modifier.
+17. **Documented divergences.** `blur` and `backdropBlur` are Chakra
+    utilities backed by `--blur`/`--backdrop-blur`, not CSS properties, so
+    `chakraProperties` does not bind them and `filter`/`backdropFilter` stay
+    literal. `scrollbarWidth` stays `true` (Chakra reads it from `sizes`,
+    but its documented values are the `thin`/`auto` keywords). `textEmphasisColor`
+    stays bound to `colors`, which is a Pandwind-side addition over Chakra's
+    literal handling. `backgroundColor`/`background` emit one declaration where
+    Chakra also writes its `--bg-currentcolor` plumbing.
+18. **Fixture lane unchanged.** `packages/pandwind/tests/fixtures/runtime-preset-css.ts`
+    keeps importing `defaultPreset` with hex literals; it exercises the
+    authored-literal path rather than a named palette, so the palette drop does
+    not reach it. The named-palette lane is `runtime-preset-cx.ts`,
+    `runtime-preset-legacy.ts`, and `runtime-preset-all.ts`, which all read
+    the `legacyPreset` fixture from §7.6.
+19. **Transitions are composed, not transcribed.** Chakra reaches its
+    `transition` and `transitionProperty` scales only through utilities that
+    take a keyword: `transition: "colors"` expands to a property list plus a
+    duration and an easing, and `transitionProperty: "colors"` writes a bare
+    property list. Pandwind binds one property to one token value, so the
+    generator flattens every `transition` keyword into the single
+    `property duration timing` shorthand a project writes by hand
+    (`all 150ms cubic-bezier(0.4, 0, 0.2, 1)`) and ships the
+    `transitionProperty` keyword lists verbatim as their own group. Each
+    group is therefore exactly the vocabulary its own utility accepts — nine
+    keywords plus `none` for the shorthand, five keywords for the property
+    list — and neither group is padded with keywords the other utility owns.
+    `transitionProperty: "all"` is not a Chakra value, so it stays authored
+    CSS, which the group's inherited strictness already accepts. Both groups
+    are composed in the generator instead of reading a stock Pandwind group,
+    because Pandwind's own `transition` map (`none`/`slow`/`fast`) is not
+    Chakra's vocabulary.
 
 ## 8. Approval gate
 
@@ -249,10 +390,10 @@ decide the first revision's scope.
 Landed lanes, oldest first, each as its own described revision.
 
 - **Plan and resolved decisions** — `docs: propose ecosystem starter presets and
-  reset stylesheets` (`pvyyklyq`).
+reset stylesheets` (`pvyyklyq`).
 - **Tailwind v4 preset** — `feat(preset): generate and ship the Tailwind v4
-  starter preset` plus `feat(preset): publish the Tailwind preset package
-  surface`.
+starter preset` plus `feat(preset): publish the Tailwind preset package
+surface`.
   - The data is generated from the installed `tailwindcss@4.3.3` by
     `scripts/promote-tailwind-preset.ts` (`pnpm run presets:generate` /
     `pnpm run presets:check`, the check wired into `pnpm run check`) into
@@ -281,7 +422,7 @@ Landed lanes, oldest first, each as its own described revision.
     `pnpm --filter playground run editor:types` already picks the subpath up.
 
 - **Generated preset data leaves the formatter** — `fix(preset): keep generated
-  preset data out of the formatter`.
+preset data out of the formatter`.
   - `scripts/promote-tailwind-preset.ts` writes the theme as
     `JSON.stringify(theme, null, "\t")`, so an oxfmt-formatted checked-in
     module made `pnpm run check` (which formats before it checks) and
@@ -289,7 +430,7 @@ Landed lanes, oldest first, each as its own described revision.
     joins `.oxfmtrc.json`'s `ignorePatterns` and the module is regenerated.
 
 - **Retired palette as the measured fixture** — `test(bench): measure the retired
-  palette preset as a fixture` plus `docs: describe the fixture-lane size rows`.
+palette preset as a fixture` plus `docs: describe the fixture-lane size rows`.
   - §7.6 removed the Chakra v1 palette from `defaultPreset`, so the lanes that
     used to measure `defaultPreset` against named color tokens now import
     `legacyPreset`. The runtimes keep exercising token resolution while the
@@ -303,10 +444,48 @@ Landed lanes, oldest first, each as its own described revision.
     `scripts/render-performance-summary.mts`, `PERF.md`, and the two size
     references.
 
+- **Chakra UI v3 preset** — `feat(preset): generate and ship the Chakra UI v3
+starter preset` plus `feat(preset): publish the Chakra preset package
+surface`, `test(preset): pin the Chakra preset to the installed system`,
+  `test(bench): measure the Chakra preset as a size lane`, and `docs: document
+the Chakra preset lane`.
+  - The data is generated from the installed `@chakra-ui/react` by
+    `scripts/promote-chakra-preset.ts` (chained into `pnpm run
+presets:generate` / `presets:check`) into
+    `packages/pandwind/src/preset/generated/chakra-theme.ts`. The generator
+    reads `defaultConfig` through Chakra's own `createSystem`, so the static
+    scales, the 104 condition selectors, the five breakpoints, and the
+    light / dark semantic color roles are all upstream values.
+  - `pandwind/preset/chakra` exports `chakraPreset`, `chakraTokens`,
+    `chakraProperties`, and `chakraConditions`, and is deliberately absent
+    from `src/preset/index.ts` for the same reason as the Tailwind subpath.
+    The subpath is recorded in `plans/evidence/package-surface.json`, mapped
+    in `packages/pandwind/package.json`, built by `tsdown.config.ts`, listed
+    in `knip.json`, and resolved from the packed tarball by
+    `tests/package-exports.test.ts` and `tests/packed-consumer.test.ts`.
+  - Measured lane `createCss(chakraPreset)`: 51,370 B minified / 13,884 B gzip,
+    the widest catalog Pandwind ships, budgeted at 51,900 / 14,000. The
+    semantic layer is why the minified size is far above Tailwind's while gzip
+    stays close: the light / dark pairs repeat the same selectors and
+    `color-mix(...)` values. The whole catalog ships because esbuild cannot
+    drop unreferenced object entries.
+  - Divergences from Chakra's own output are asserted, not described only:
+    every colors key carries Pandwind's `$` sigil (the bare `gray.700`
+    spelling stays valid as its canonical alias), `sizes.1/2` ships as
+    `1-2` because Pandwind reads a slash as its opacity modifier, and
+    `blurs` is absent because Chakra reaches it only through a utility that
+    writes a `--blur` custom property rather than a CSS property.
+    `tests/helpers/chakra-oracle.ts` resolves the same paths through a live
+    `createSystem` so the parity test compares against the installed system
+    rather than a second transcription.
+  - `tests/preset-chakra.test.ts` also pins the composed
+    `transitions` / `transitionProperties` groups, the palette order (with
+    `gray` last so the default palette wins the virtual names), and the
+    runtime resolution of `$gray.700`, `$bg`, and `$bg.subtle` for both
+    the full and `tokens: "used"` compiler modes.
+
 Remaining lanes, in the order §7.4 fixes:
 
-- [ ] `pandwind/preset/chakra` from the installed `@chakra-ui/react` 3.x
-      theme, after the Tailwind numbers above.
 - [ ] `createShadcnPreset(options)` on `pandwind/preset/shadcn`, emitting the
       `:root` / `.dark` block as `preset.cssVariables`.
 - [ ] `pandwind/preset/{panda,stylex}`.
