@@ -123,7 +123,7 @@ builds that contract step by step.
 
 ### Choose a preset layer
 
-Pandwind has four intentionally separate preset tiers:
+Pandwind has five intentionally separate preset tiers:
 
 - `csstypePreset` from `pandwind/preset/csstype` is tokenless. It supplies the
   structural CSS and condition contract while your application owns the values.
@@ -133,14 +133,17 @@ Pandwind has four intentionally separate preset tiers:
 - `tailwindPreset` from `pandwind/preset/tailwindcss` is the ecosystem layer:
   Tailwind v4's colors, scales, and breakpoints as a preset, generated from the
   installed `tailwindcss` package.
+- `chakraPreset` from `pandwind/preset/chakra` is the other ecosystem layer:
+  Chakra UI v3's token scales, light / dark semantic color roles, and conditions
+  as a preset, generated from the installed `@chakra-ui/react` package.
 - `examplePreset` from `@pandwind/example-preset` is a rich repository showcase
   with semantic tokens, palettes, and theme scopes; it is not the default
   application preset.
 
 Use the csstype layer for a deliberately BYO design system, the default layer for
 an ordinary Pandwind app, the Tailwind layer when Tailwind v4's vocabulary is the
-target, and the example package only when exploring the repository's complete
-token composition patterns.
+target, the Chakra layer when Chakra UI v3's is, and the example package only
+when exploring the repository's complete token composition patterns.
 
 ## If you already use Tailwind: typed utility objects
 

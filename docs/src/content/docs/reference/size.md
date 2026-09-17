@@ -25,6 +25,7 @@ The compact snapshot-derived typecheck and size summary is in
 | ------------------------------------------ | -------: | -------: |
 | `createCss(defaultPreset)` runtime         | 24.10 KB |  8.68 KB |
 | `createCss(tailwindPreset)` runtime        | 40.56 KB | 13.24 KB |
+| `createCss(chakraPreset)` runtime          | 51.37 KB | 13.88 KB |
 | `createCss(csstypePreset)` runtime         | 17.57 KB |  6.49 KB |
 | `createCss(minimal preset)` runtime        | 13.08 KB |  5.18 KB |
 | `createUnsafeCss()` fallback runtime       | 10.60 KB |  4.27 KB |
@@ -55,8 +56,9 @@ cannot drop token entries an application never reads), so the catalog, not the
 engine, is the heavy part of a `css()` bundle that imports a large preset. The
 runtime-sheet row uses the minimal preset fixture, so an application whose
 preset carries a large catalog should read the `createCss(defaultPreset)` row as
-the closer analogue, and a Tailwind v4 project should read the
-`createCss(tailwindPreset)` row.
+the closer analogue, a Tailwind v4 project should read the
+`createCss(tailwindPreset)` row, and a Chakra UI v3 project the
+`createCss(chakraPreset)` row.
 
 ## Pay-per-API and compiler pruning
 
@@ -68,6 +70,7 @@ same size gate checks these tree-shaken entry points:
 | ------------------------------------------ | -------: | -------: |
 | `pandwind/css` — createCss(defaultPreset)  | 24.10 KB |  8.68 KB |
 | `pandwind/css` — createCss(tailwindPreset) | 40.56 KB | 13.24 KB |
+| `pandwind/css` — createCss(chakraPreset)   | 51.37 KB | 13.88 KB |
 | `pandwind/css` — createCss(csstypePreset)  | 17.57 KB |  6.49 KB |
 | `pandwind/css` — createCss(minimal preset) | 13.08 KB |  5.18 KB |
 | `pandwind/unsafe/css` — createUnsafeCss    | 10.60 KB |  4.27 KB |
@@ -149,10 +152,11 @@ The `css()` lane appears once per preset because the preset, not the engine, is
 what moves it: 13.08 KB min with the minimal preset, 17.57 KB once the
 structural `csstypePreset` supplies the CSS property vocabulary, 24.10 KB once
 `defaultPreset` adds Pandwind's stock scale groups and its property bindings,
-and 40.56 KB with `tailwindPreset`, whose Tailwind v4 data is the widest
-catalog Pandwind ships — every palette color, radius, shadow, and blur rides
-along as authored data, because esbuild cannot drop object entries that a live
-preset never reads. A runtime lane ships its preset as authored data:
+40.56 KB with `tailwindPreset`, and 51.37 KB with `chakraPreset`, the widest
+catalog Pandwind ships: Chakra's static scales plus its light / dark semantic
+color roles. Every palette color, radius, shadow, blur, and role rides along as
+authored data, because esbuild cannot drop object entries that a live preset
+never reads. A runtime lane ships its preset as authored data:
 `defaultPreset` costs 6.53 KB min / 2.19 KB gzip over the `csstypePreset` lane,
 against 9.63 KB / 3.53 KB for adding both `tw()` and `cx()` to the unsafe
 runtime. An application that needs the smallest `css()` runtime supplies its
@@ -167,6 +171,7 @@ a named-color preset ships.
 | pandwind `css()` (defaultPreset)            | 24.10 KB |  8.68 KB | stock scales + resolver + atom engine     |
 | pandwind `css()` (legacy fixture)           | 27.43 KB |  9.73 KB | fixture palette + resolver + engine       |
 | pandwind `css()` (tailwindPreset)           | 40.56 KB | 13.24 KB | Tailwind v4 catalog + resolver + engine   |
+| pandwind `css()` (chakraPreset)             | 51.37 KB | 13.88 KB | Chakra v3 catalog + resolver + engine     |
 | pandwind `css()` (csstypePreset)            | 17.57 KB |  6.49 KB | property vocabulary + resolver + engine   |
 | pandwind `css()` (minimal preset)           | 13.08 KB |  5.18 KB | resolver + atom engine only               |
 | pandwind `tw()`                             |  2.80 KB |  1.31 KB | variant join syntax alone                 |

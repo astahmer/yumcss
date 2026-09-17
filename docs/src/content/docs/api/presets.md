@@ -46,7 +46,8 @@ contract does not silently become a design-token contract:
 | ---------------- | ----------------------------- | --------------------------------------------------------- |
 | `csstypePreset`  | `pandwind/preset/csstype`     | tokenless structural CSS with values owned by your app    |
 | `defaultPreset`  | `pandwind/preset/default`     | the ordinary Pandwind app with stock scales, no palette   |
-| `tailwindPreset` | `pandwind/preset/tailwindcss` | Tailwind v4's vocabulary in `css()`, largest catalog      |
+| `tailwindPreset` | `pandwind/preset/tailwindcss` | Tailwind v4's vocabulary in `css()`                       |
+| `chakraPreset`   | `pandwind/preset/chakra`      | Chakra UI v3's vocabulary and color modes, widest catalog |
 | `examplePreset`  | `@pandwind/example-preset`    | the repository's rich semantic-token and palette showcase |
 
 The csstype preset uses the common `csstype` property grammar and default
@@ -87,6 +88,18 @@ widest catalog Pandwind publishes — a `createCss(tailwindPreset)` bundle is
 40.56 KB min / 13.24 KB gzip against 24.10 KB / 8.68 KB for `defaultPreset`.
 Reach for it when Tailwind's vocabulary is the migration target, and for
 `defaultPreset` when a smaller catalog is enough.
+
+The Chakra preset is the other ecosystem layer: its static scales (colors,
+spacing, sizes, radii, shadows, typography, borders, aspect ratios, animations,
+cursors, durations, easings, and z-indexes), its 104 condition selectors, its
+five breakpoints, and its light / dark semantic color roles are generated from
+the installed `@chakra-ui/react` package. The semantic colors keep their
+light / dark pairs, so a bound property emits ``:root`and`.dark`declarations and switches with Chakra's own color-mode class rather than a
+runtime theme object, and`colorPalette`resolves the role names Chakra's own
+components use. Because it ships the static scales and the semantic layer
+together, it is the widest catalog Pandwind publishes — a`createCss(chakraPreset)`bundle is 51.37 KB min / 13.88 KB gzip against
+40.56 KB / 13.24 KB for`createCss(tailwindPreset)`. Reach for it when a
+Chakra project's token names and color modes are the migration target.
 
 ## A complete typed preset
 
