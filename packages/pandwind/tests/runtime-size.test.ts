@@ -159,9 +159,12 @@ test("runtime entries stay stylex-sized", async () => {
 		"createCss(csstypePreset)": bundle("runtime-preset-csstype.ts"),
 		"createCss(tailwindPreset)": bundle("runtime-preset-tailwindcss.ts"),
 		"createCss(defaultPreset)": bundle("runtime-preset-css.ts"),
-		"createCss(defaultPreset) + tw()": bundle("runtime-preset-tw.ts"),
-		"createCss(defaultPreset) + cx()": bundle("runtime-preset-cx.ts"),
-		"createCss(defaultPreset) + tw() + cx()": bundle("runtime-preset-all.ts"),
+		// The retired Chakra v1 palette survives as a test fixture, so these
+		// lanes measure a preset that carries a full token catalog.
+		"createCss(legacyPreset)": bundle("runtime-preset-legacy.ts"),
+		"createCss(legacyPreset) + tw()": bundle("runtime-preset-tw.ts"),
+		"createCss(legacyPreset) + cx()": bundle("runtime-preset-cx.ts"),
+		"createCss(legacyPreset) + tw() + cx()": bundle("runtime-preset-all.ts"),
 		"createUnsafeCss(), fallback": bundle("runtime-css.ts"),
 		"createRuntimeCss(preset), live sheet": bundle("runtime-css-sheet.ts"),
 		"createUnsafeCss(), static output after extraction":

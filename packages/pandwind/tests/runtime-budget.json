@@ -19,15 +19,19 @@
 		"min": 29900,
 		"gz": 10650
 	},
-	"createCss(defaultPreset) + tw()": {
+	"createCss(legacyPreset)": {
+		"min": 29900,
+		"gz": 10650
+	},
+	"createCss(legacyPreset) + tw()": {
 		"min": 32800,
 		"gz": 11750
 	},
-	"createCss(defaultPreset) + cx()": {
+	"createCss(legacyPreset) + cx()": {
 		"min": 37500,
 		"gz": 13550
 	},
-	"createCss(defaultPreset) + tw() + cx()": {
+	"createCss(legacyPreset) + tw() + cx()": {
 		"min": 40450,
 		"gz": 14600
 	},

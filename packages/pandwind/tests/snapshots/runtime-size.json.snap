@@ -19,17 +19,21 @@
     "min": 24100,
     "gz": 8680
   },
-  "createCss(defaultPreset) + tw()": {
-    "min": 26790,
-    "gz": 9667
+  "createCss(legacyPreset)": {
+    "min": 27425,
+    "gz": 9731
   },
-  "createCss(defaultPreset) + cx()": {
-    "min": 31054,
-    "gz": 11314
+  "createCss(legacyPreset) + tw()": {
+    "min": 30114,
+    "gz": 10724
   },
-  "createCss(defaultPreset) + tw() + cx()": {
-    "min": 33732,
-    "gz": 12263
+  "createCss(legacyPreset) + cx()": {
+    "min": 34380,
+    "gz": 12372
+  },
+  "createCss(legacyPreset) + tw() + cx()": {
+    "min": 37057,
+    "gz": 13324
   },
   "createUnsafeCss(), fallback": {
     "min": 10599,
