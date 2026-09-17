@@ -360,7 +360,10 @@ New subpaths require the full surface ritual, in one revision:
     authored-literal path rather than a named palette, so the palette drop does
     not reach it. The named-palette lane is `runtime-preset-cx.ts`,
     `runtime-preset-fixture.ts`, and `runtime-preset-all.ts`, which all read
-    the `fixturePreset` fixture from §7.6.
+    the `fixturePreset` fixture from §7.6. The type-graph scenario in
+    `packages/pandwind/tests/fixtures/tsc/css-default.ts` reads the same
+    fixture, so it measures a named-palette workload again instead of the
+    authored-literal one the palette drop left it with.
 19. **Transitions are composed, not transcribed.** Chakra reaches its
     `transition` and `transitionProperty` scales only through utilities that
     take a keyword: `transition: "colors"` expands to a property list plus a
