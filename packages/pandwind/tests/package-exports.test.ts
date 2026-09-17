@@ -32,6 +32,7 @@ const entries = [
 	"pandwind/reset/tailwindcss",
 	"pandwind/reset/panda",
 	"pandwind/reset/pandwind",
+	"pandwind/prose/tailwindcss",
 	"pandwind/design",
 	"pandwind/vite",
 	"pandwind/unplugin",
@@ -213,6 +214,21 @@ describe("pandwind package boundary", () => {
 		expect(css).toContain("border-style: solid;");
 		expect(css).toContain("MIT License - Copyright (c) 2026 Alexandre Stahmer");
 		expect(css).not.toContain("var(--");
+	});
+
+	test("ships the Tailwind prose stylesheet as a stylesheet asset", () => {
+		expect(packageManifest.exports["./prose/tailwindcss"]).toEqual({
+			pandwind: "./src/prose/tailwindcss.css",
+			default: "./dist/prose/tailwindcss.css",
+		});
+		const css = readFileSync(new URL("../src/prose/tailwindcss.css", import.meta.url), "utf8");
+		expect(css).toContain("@layer prose {");
+		expect(css).toContain(".prose {");
+		expect(css).toContain(".prose-invert");
+		expect(css).toContain("--tw-prose-invert-td-borders:");
+		expect(css).not.toContain("@layer utilities {");
+		expect(css).not.toContain('[class~="not-prose"]');
+		expect(css).toContain("MIT License — Copyright (c) Tailwind Labs, Inc.");
 	});
 
 	test("keeps build-only packages out of runtime dependencies", () => {

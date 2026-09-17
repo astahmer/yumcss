@@ -88,6 +88,7 @@ describe("packed Pandwind consumer", () => {
 			const packedTailwindResetPath = consumerRequire.resolve("pandwind/reset/tailwindcss");
 			const packedPandaResetPath = consumerRequire.resolve("pandwind/reset/panda");
 			const packedPandwindResetPath = consumerRequire.resolve("pandwind/reset/pandwind");
+			const packedTailwindProsePath = consumerRequire.resolve("pandwind/prose/tailwindcss");
 			const [
 				{ pandwindCssVite },
 				{ define },
@@ -134,6 +135,8 @@ describe("packed Pandwind consumer", () => {
 			);
 			expect(packedPandwindResetPath).toMatch(/dist\/reset\/pandwind\.css$/);
 			expect(readFileSync(packedPandwindResetPath, "utf8")).toContain("box-sizing: border-box;");
+			expect(packedTailwindProsePath).toMatch(/dist\/prose\/tailwindcss\.css$/);
+			expect(readFileSync(packedTailwindProsePath, "utf8")).toContain("@layer prose {");
 			const preset = define.preset(
 				{ config: {}, tokens: {} },
 				{ strict: false, properties: { $all: true }, conditions: {} },

@@ -137,6 +137,10 @@
 			"pandwind": "./src/reset/pandwind.css",
 			"default": "./dist/reset/pandwind.css"
 		},
+		"./prose/tailwindcss": {
+			"pandwind": "./src/prose/tailwindcss.css",
+			"default": "./dist/prose/tailwindcss.css"
+		},
 		"./stack": {
 			"pandwind": "./src/stack/index.ts",
 			"types": "./dist/stack/index.d.ts",
@@ -382,6 +386,7 @@
 	},
 	"devDependencies": {
 		"@tailwindcss/node": "4.3.3",
+		"@tailwindcss/typography": "0.5.20",
 		"@types/node": "26.4.1",
 		"@types/react": "19.2.18",
 		"@types/react-dom": "19.2.7",

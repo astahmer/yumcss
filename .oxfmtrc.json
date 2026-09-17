@@ -8,6 +8,7 @@
 		"**/examples/example/src/tw.ts",
 		"**/apps/playground/src/generated/**",
 		"**/packages/pandwind/src/preset/generated/**",
+		"**/packages/pandwind/src/prose/*.css",
 		"**/packages/codemod/tests/routes/**",
 		"**/packages/codemod/tests/roundtrips/**",
 		"apps/playground/src/pandwind.interop.json",

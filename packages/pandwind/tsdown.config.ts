@@ -66,5 +66,8 @@ export default defineConfig({
 	outExtensions: () => ({ js: ".js" }),
 	unbundle: true,
 	clean: true,
-	copy: [{ from: "src/reset/*.css", to: "dist/reset" }],
+	copy: [
+		{ from: "src/reset/*.css", to: "dist/reset" },
+		{ from: "src/prose/*.css", to: "dist/prose" },
+	],
 });

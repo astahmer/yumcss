@@ -131,6 +131,21 @@
 		},
 		{
 			"packageName": "pandwind",
+			"exportPaths": ["./prose/tailwindcss"],
+			"owner": "runtime",
+			"maturity": "experimental",
+			"dependencies": [],
+			"externalContract": true,
+			"evidence": [
+				"packages/pandwind/package.json",
+				"packages/pandwind/src/prose/tailwindcss.css",
+				"packages/pandwind/tests/packed-consumer.test.ts",
+				"docs/src/content/docs/api/prose.md"
+			],
+			"note": "Prose stylesheet: the Tailwind Typography scale (core, four size modifiers, invert, and 22 color themes) compiled from @tailwindcss/typography through the pinned tailwindcss compiler, shipped as a plain CSS asset in the @layer prose layer."
+		},
+		{
+			"packageName": "pandwind",
 			"exportPaths": [
 				"./css/named",
 				"./css/stylex",
