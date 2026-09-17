@@ -87,28 +87,31 @@ ceilings are in `runtime-budget.json`. Values below use decimal KB
 | `createCss(csstypePreset)`                     | 17.57 KB |  6.49 KB |
 | `createCss(defaultPreset)`                     | 24.10 KB |  8.68 KB |
 | `createCss(tailwindPreset)`                    | 40.56 KB | 13.24 KB |
+| `createCss(legacyPreset)`, test fixture        | 27.43 KB |  9.73 KB |
 | `createUnsafeCss()` fallback                   | 10.60 KB |  4.27 KB |
 | `tw()`                                         |  2.80 KB |  1.31 KB |
 | `cx()` plain strings                           |  7.03 KB |  3.01 KB |
 | `cx()` + CSS atom registry                     | 17.54 KB |  6.84 KB |
-| `createCss(defaultPreset)` + `tw()`            | 26.79 KB |  9.67 KB |
-| `createCss(defaultPreset)` + `cx()`            | 31.05 KB | 11.31 KB |
-| `createCss(defaultPreset)` + `tw()` + `cx()`   | 33.73 KB | 12.26 KB |
+| `createCss(legacyPreset)` + `tw()`             | 30.11 KB | 10.72 KB |
+| `createCss(legacyPreset)` + `cx()`             | 34.38 KB | 12.37 KB |
+| `createCss(legacyPreset)` + `tw()` + `cx()`    | 37.06 KB | 13.32 KB |
 | all direct runtime entries (`unsafeCss+tw+cx`) | 20.23 KB |  7.80 KB |
 | `createRuntimeCss(preset)` + sheet             | 33.73 KB | 12.50 KB |
 
 The combined direct runtime is 20.23 KB min / 7.80 KB gzip in this record for
 the unsafe `createUnsafeCss()` + `tw()` + `cx()` shape; the preset-bound
-combination of the same lanes is 33.73 KB min / 12.26 KB gzip because it also
-carries the preset-aware resolver and `defaultPreset`'s stock token catalog.
-The `css()` lane is measured with four presets (minimal, `csstypePreset`,
-`defaultPreset`, `tailwindPreset`) because the preset, not the engine, is what
-moves that number; the per-lane rows show what an application that does not need
-every engine actually ships, and `tailwindPreset` is the widest catalog of the
-four at 40.56 KB min / 13.24 KB gzip. The internal `createCssRuntime()` row has
-no public method attachments; it is included to show the shared engine's base
-cost, not as an application entry point. Fully extracted static calls remain
-below 100 bytes.
+combination of the same lanes is 37.06 KB min / 13.32 KB gzip because it also
+carries the preset-aware resolver and its preset's whole catalog. Those rows use
+`legacyPreset`, the test fixture that keeps the retired Chakra v1 palette, so
+the measured shape matches a project that imports a named-color preset. The
+`css()` lane is measured with five presets (minimal, `csstypePreset`,
+`defaultPreset`, `tailwindPreset`, and the legacy fixture) because the preset,
+not the engine, is what moves that number; the per-lane rows show what an
+application that does not need every engine actually ships, and `tailwindPreset`
+is the widest catalog of the five at 40.56 KB min / 13.24 KB gzip. The internal
+`createCssRuntime()` row has no public method attachments; it is included to
+show the shared engine's base cost, not as an application entry point. Fully
+extracted static calls remain below 100 bytes.
 
 Generated Tailwind conflict metadata is a separate opt-in lane. The compact
 conflict artifact itself is **22.37 KB min / 7.23 KB gzip**; a conflict-only

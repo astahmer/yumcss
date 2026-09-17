@@ -280,6 +280,29 @@ Landed lanes, oldest first, each as its own described revision.
     produced from the workspace-linked package and is gitignored, so
     `pnpm --filter playground run editor:types` already picks the subpath up.
 
+- **Generated preset data leaves the formatter** — `fix(preset): keep generated
+  preset data out of the formatter`.
+  - `scripts/promote-tailwind-preset.ts` writes the theme as
+    `JSON.stringify(theme, null, "\t")`, so an oxfmt-formatted checked-in
+    module made `pnpm run check` (which formats before it checks) and
+    `pnpm run presets:check` disagree on every run. The generated directory
+    joins `.oxfmtrc.json`'s `ignorePatterns` and the module is regenerated.
+
+- **Retired palette as the measured fixture** — `test(bench): measure the retired
+  palette preset as a fixture` plus `docs: describe the fixture-lane size rows`.
+  - §7.6 removed the Chakra v1 palette from `defaultPreset`, so the lanes that
+    used to measure `defaultPreset` against named color tokens now import
+    `legacyPreset`. The runtimes keep exercising token resolution while the
+    shipped default preset keeps its palette-free catalog.
+  - Measured: `createCss(legacyPreset)` 27,425 B minified / 9,731 B gzip,
+    `+ tw()` 30,114 / 10,724, `+ cx()` 34,380 / 12,372, `+ tw() + cx()`
+    37,057 / 13,324. `createCss(defaultPreset)` stays at 24,100 / 8,680
+    because that row never carried a palette.
+  - The rename reaches `runtime-size.test.ts`, `runtime-budget.json`, the
+    committed snapshot, the `preset-bound full catalog` kind in
+    `scripts/render-performance-summary.mts`, `PERF.md`, and the two size
+    references.
+
 Remaining lanes, in the order §7.4 fixes:
 
 - [ ] `pandwind/preset/chakra` from the installed `@chakra-ui/react` 3.x

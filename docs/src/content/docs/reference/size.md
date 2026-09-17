@@ -48,14 +48,15 @@ Fully extracted static calls remain below 100 bytes.
 The preset-bound `css()` rows run the same engine with a different preset, and
 the preset is what moves the number: the minimal preset (open property catalog,
 no tokens) is the engine plus resolver floor, `csstypePreset` swaps in the
-structural CSS property vocabulary, and `defaultPreset` adds Pandwind's own
-stock token catalog on top of that. A runtime lane ships its preset object
-whole (esbuild cannot drop token entries an application never reads), so the
-catalog, not the engine, is the heavy part of a `css()` bundle that imports a
-large preset. The runtime-sheet row uses the minimal preset fixture, so an
-application whose preset carries a large token catalog should read the
-`createCss(defaultPreset)` row as the closer analogue, and a Tailwind v4 project
-should read the `createCss(tailwindPreset)` row.
+structural CSS property vocabulary, and `defaultPreset` adds Pandwind's stock
+scale groups (spacing, sizes, radii, shadows, typography) on top of that while
+shipping no palette. A runtime lane ships its preset object whole (esbuild
+cannot drop token entries an application never reads), so the catalog, not the
+engine, is the heavy part of a `css()` bundle that imports a large preset. The
+runtime-sheet row uses the minimal preset fixture, so an application whose
+preset carries a large catalog should read the `createCss(defaultPreset)` row as
+the closer analogue, and a Tailwind v4 project should read the
+`createCss(tailwindPreset)` row.
 
 ## Pay-per-API and compiler pruning
 
@@ -147,7 +148,7 @@ table above.
 The `css()` lane appears once per preset because the preset, not the engine, is
 what moves it: 13.08 KB min with the minimal preset, 17.57 KB once the
 structural `csstypePreset` supplies the CSS property vocabulary, 24.10 KB once
-`defaultPreset` adds Pandwind's stock token catalog and its property bindings,
+`defaultPreset` adds Pandwind's stock scale groups and its property bindings,
 and 40.56 KB with `tailwindPreset`, whose Tailwind v4 data is the widest
 catalog Pandwind ships — every palette color, radius, shadow, and blur rides
 along as authored data, because esbuild cannot drop object entries that a live
@@ -156,26 +157,30 @@ preset never reads. A runtime lane ships its preset as authored data:
 against 9.63 KB / 3.53 KB for adding both `tw()` and `cx()` to the unsafe
 runtime. An application that needs the smallest `css()` runtime supplies its
 own preset and its own tokens, or extracts its calls statically. The combination
-rows below use `defaultPreset`.
+rows below use `legacyPreset`, a test fixture whose only difference from
+`defaultPreset` is that it still carries the retired Chakra v1 palette; they
+measure a palette-resolving preset, which is the shape an application importing
+a named-color preset ships.
 
-| runtime                                    |      min |     gzip | what ships                                |
-| ------------------------------------------ | -------: | -------: | ----------------------------------------- |
-| pandwind `css()` (defaultPreset)           | 24.10 KB |  8.68 KB | stock tokens + resolver + atom engine     |
-| pandwind `css()` (tailwindPreset)          | 40.56 KB | 13.24 KB | Tailwind v4 catalog + resolver + engine   |
-| pandwind `css()` (csstypePreset)           | 17.57 KB |  6.49 KB | property vocabulary + resolver + engine   |
-| pandwind `css()` (minimal preset)          | 13.08 KB |  5.18 KB | resolver + atom engine only               |
-| pandwind `tw()`                            |  2.80 KB |  1.31 KB | variant join syntax alone                 |
-| pandwind `css()` + `tw()`                  | 26.79 KB |  9.67 KB | the common two-lane app                   |
-| pandwind `css()` + `cx()`                  | 31.05 KB | 11.31 KB | atom registry + cross-engine merge        |
-| pandwind `css()` + `tw()` + `cx()`         | 33.73 KB | 12.26 KB | combined runtime                          |
-| pandwind compiler-pruned `css.class()`     |  5.88 KB |  2.52 KB | literals + shared engine, post-extraction |
-| pandwind fully extracted `css()`           |     81 B |     98 B | emitted literals only                     |
-| `@stylexjs/stylex` 0.19.0                  |  4.06 KB |  1.74 KB | runtime only (compile happens in babel)   |
-| `@pandacss/core` 1.12.0 generated `css()`  |  13.4 KB |  5.31 KB | panda runtime engine + tokens             |
-| `@emotion/css` 11.13.5                     |  15.3 KB |  6.25 KB | emotion core (chakra's engine)            |
-| `@chakra-ui/react` 3.36.1 (react external) |  30.1 KB |  12.5 KB | chakra + emotion it pulls in              |
-| `tailwind-merge` 3.6.0                     |  27.0 KB |  8.47 KB | merge function alone                      |
-| `tokenami`                                 |        0 |       ~0 | compile-time only, nothing ships          |
+| runtime                                     |      min |     gzip | what ships                                |
+| ------------------------------------------- | -------: | -------: | ----------------------------------------- |
+| pandwind `css()` (defaultPreset)            | 24.10 KB |  8.68 KB | stock scales + resolver + atom engine     |
+| pandwind `css()` (legacy fixture)           | 27.43 KB |  9.73 KB | fixture palette + resolver + engine       |
+| pandwind `css()` (tailwindPreset)           | 40.56 KB | 13.24 KB | Tailwind v4 catalog + resolver + engine   |
+| pandwind `css()` (csstypePreset)            | 17.57 KB |  6.49 KB | property vocabulary + resolver + engine   |
+| pandwind `css()` (minimal preset)           | 13.08 KB |  5.18 KB | resolver + atom engine only               |
+| pandwind `tw()`                             |  2.80 KB |  1.31 KB | variant join syntax alone                 |
+| pandwind `css()` (legacy) + `tw()`          | 30.11 KB | 10.72 KB | the common two-lane app                   |
+| pandwind `css()` (legacy) + `cx()`          | 34.38 KB | 12.37 KB | atom registry + cross-engine merge        |
+| pandwind `css()` (legacy) + `tw()` + `cx()` | 37.06 KB | 13.32 KB | combined runtime                          |
+| pandwind compiler-pruned `css.class()`      |  5.88 KB |  2.52 KB | literals + shared engine, post-extraction |
+| pandwind fully extracted `css()`            |     81 B |     98 B | emitted literals only                     |
+| `@stylexjs/stylex` 0.19.0                   |  4.06 KB |  1.74 KB | runtime only (compile happens in babel)   |
+| `@pandacss/core` 1.12.0 generated `css()`   |  13.4 KB |  5.31 KB | panda runtime engine + tokens             |
+| `@emotion/css` 11.13.5                      |  15.3 KB |  6.25 KB | emotion core (chakra's engine)            |
+| `@chakra-ui/react` 3.36.1 (react external)  |  30.1 KB |  12.5 KB | chakra + emotion it pulls in              |
+| `tailwind-merge` 3.6.0                      |  27.0 KB |  8.47 KB | merge function alone                      |
+| `tokenami`                                  |        0 |       ~0 | compile-time only, nothing ships          |
 
 The compiler-pruned row is what a production app pays once the Vite compiler
 has erased every literal call: the same shared engine with only the emitted
