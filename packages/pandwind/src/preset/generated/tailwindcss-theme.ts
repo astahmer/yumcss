@@ -10,8 +10,8 @@
 // License: MIT (https://github.com/tailwindlabs/tailwindcss/blob/main/LICENSE)
 
 export const tailwindcssTheme = {
-	version: "4.3.3",
-	colors: {
+	"version": "4.3.3",
+	"colors": {
 		"$amber-100": "oklch(96.2% 0.059 95.617)",
 		"$amber-200": "oklch(92.4% 0.12 95.746)",
 		"$amber-300": "oklch(87.9% 0.169 91.605)",
@@ -23,7 +23,7 @@ export const tailwindcssTheme = {
 		"$amber-800": "oklch(47.3% 0.137 46.201)",
 		"$amber-900": "oklch(41.4% 0.112 45.904)",
 		"$amber-950": "oklch(27.9% 0.077 45.635)",
-		$black: "#000",
+		"$black": "#000",
 		"$blue-100": "oklch(93.2% 0.032 255.585)",
 		"$blue-200": "oklch(88.2% 0.059 254.128)",
 		"$blue-300": "oklch(80.9% 0.105 251.813)",
@@ -277,7 +277,7 @@ export const tailwindcssTheme = {
 		"$violet-800": "oklch(43.2% 0.232 292.759)",
 		"$violet-900": "oklch(38% 0.189 293.745)",
 		"$violet-950": "oklch(28.3% 0.141 291.089)",
-		$white: "#fff",
+		"$white": "#fff",
 		"$yellow-100": "oklch(97.3% 0.071 103.193)",
 		"$yellow-200": "oklch(94.5% 0.129 101.54)",
 		"$yellow-300": "oklch(90.5% 0.182 98.111)",
@@ -299,14 +299,14 @@ export const tailwindcssTheme = {
 		"$zinc-700": "oklch(37% 0.013 285.805)",
 		"$zinc-800": "oklch(27.4% 0.006 286.033)",
 		"$zinc-900": "oklch(21% 0.006 285.885)",
-		"$zinc-950": "oklch(14.1% 0.005 285.823)",
+		"$zinc-950": "oklch(14.1% 0.005 285.823)"
 	},
-	fontFamilies: {
-		mono: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
-		sans: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', 'Noto Sans', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'",
-		serif: "ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif",
+	"fontFamilies": {
+		"mono": "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
+		"sans": "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', 'Noto Sans', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'",
+		"serif": "ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif"
 	},
-	fontSizes: {
+	"fontSizes": {
 		"2xl": "1.5rem",
 		"3xl": "1.875rem",
 		"4xl": "2.25rem",
@@ -315,71 +315,71 @@ export const tailwindcssTheme = {
 		"7xl": "4.5rem",
 		"8xl": "6rem",
 		"9xl": "8rem",
-		base: "1rem",
-		lg: "1.125rem",
-		sm: "0.875rem",
-		xl: "1.25rem",
-		xs: "0.75rem",
+		"base": "1rem",
+		"lg": "1.125rem",
+		"sm": "0.875rem",
+		"xl": "1.25rem",
+		"xs": "0.75rem"
 	},
-	fontWeights: {
-		black: "900",
-		bold: "700",
-		extrabold: "800",
-		extralight: "200",
-		light: "300",
-		medium: "500",
-		normal: "400",
-		semibold: "600",
-		thin: "100",
+	"fontWeights": {
+		"black": "900",
+		"bold": "700",
+		"extrabold": "800",
+		"extralight": "200",
+		"light": "300",
+		"medium": "500",
+		"normal": "400",
+		"semibold": "600",
+		"thin": "100"
 	},
-	lineHeights: {
-		loose: "2",
-		none: "1",
-		normal: "1.5",
-		relaxed: "1.625",
-		snug: "1.375",
-		tight: "1.25",
+	"lineHeights": {
+		"loose": "2",
+		"none": "1",
+		"normal": "1.5",
+		"relaxed": "1.625",
+		"snug": "1.375",
+		"tight": "1.25"
 	},
-	letterSpacings: {
-		normal: "0em",
-		tight: "-0.025em",
-		tighter: "-0.05em",
-		wide: "0.025em",
-		wider: "0.05em",
-		widest: "0.1em",
+	"letterSpacings": {
+		"normal": "0em",
+		"tight": "-0.025em",
+		"tighter": "-0.05em",
+		"wide": "0.025em",
+		"wider": "0.05em",
+		"widest": "0.1em"
 	},
-	radii: {
+	"radii": {
 		"2xl": "1rem",
 		"3xl": "1.5rem",
 		"4xl": "2rem",
-		full: "calc(infinity * 1px)",
-		lg: "0.5rem",
-		md: "0.375rem",
-		none: "0",
-		sm: "0.25rem",
-		xl: "0.75rem",
-		xs: "0.125rem",
+		"full": "calc(infinity * 1px)",
+		"lg": "0.5rem",
+		"md": "0.375rem",
+		"none": "0",
+		"sm": "0.25rem",
+		"xl": "0.75rem",
+		"xs": "0.125rem"
 	},
-	shadows: {
+	"shadows": {
 		"2xl": "0 25px 50px -12px rgb(0 0 0 / 0.25)",
 		"2xs": "0 1px rgb(0 0 0 / 0.05)",
-		inner: "inset 0 2px 4px 0 rgb(0 0 0 / 0.05)",
-		lg: "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
-		md: "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
-		none: "none",
-		sm: "0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)",
-		xl: "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)",
-		xs: "0 1px 2px 0 rgb(0 0 0 / 0.05)",
+		"inner": "inset 0 2px 4px 0 rgb(0 0 0 / 0.05)",
+		"lg": "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
+		"md": "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
+		"none": "none",
+		"sm": "0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)",
+		"xl": "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)",
+		"xs": "0 1px 2px 0 rgb(0 0 0 / 0.05)"
 	},
-	textShadows: {
+	"textShadows": {
 		"2xs": "0px 1px 0px rgb(0 0 0 / 0.15)",
-		lg: "0px 1px 2px rgb(0 0 0 / 0.1), 0px 3px 2px rgb(0 0 0 / 0.1), 0px 4px 8px rgb(0 0 0 / 0.1)",
-		md: "0px 1px 1px rgb(0 0 0 / 0.1), 0px 1px 2px rgb(0 0 0 / 0.1), 0px 2px 4px rgb(0 0 0 / 0.1)",
-		none: "none",
-		sm: "0px 1px 0px rgb(0 0 0 / 0.075), 0px 1px 1px rgb(0 0 0 / 0.075), 0px 2px 2px rgb(0 0 0 / 0.075)",
-		xs: "0px 1px 1px rgb(0 0 0 / 0.2)",
+		"lg": "0px 1px 2px rgb(0 0 0 / 0.1), 0px 3px 2px rgb(0 0 0 / 0.1), 0px 4px 8px rgb(0 0 0 / 0.1)",
+		"md": "0px 1px 1px rgb(0 0 0 / 0.1), 0px 1px 2px rgb(0 0 0 / 0.1), 0px 2px 4px rgb(0 0 0 / 0.1)",
+		"none": "none",
+		"sm": "0px 1px 0px rgb(0 0 0 / 0.075), 0px 1px 1px rgb(0 0 0 / 0.075), 0px 2px 2px rgb(0 0 0 / 0.075)",
+		"xs": "0px 1px 1px rgb(0 0 0 / 0.2)"
 	},
-	containers: {
+	"containers": {
 		"2xl": "42rem",
 		"2xs": "18rem",
 		"3xl": "48rem",
@@ -388,45 +388,43 @@ export const tailwindcssTheme = {
 		"5xl": "64rem",
 		"6xl": "72rem",
 		"7xl": "80rem",
-		lg: "32rem",
-		md: "28rem",
-		none: "none",
-		prose: "65ch",
-		sm: "24rem",
-		xl: "36rem",
-		xs: "20rem",
+		"lg": "32rem",
+		"md": "28rem",
+		"none": "none",
+		"prose": "65ch",
+		"sm": "24rem",
+		"xl": "36rem",
+		"xs": "20rem"
 	},
-	breakpoints: {
+	"breakpoints": {
 		"2xl": "1536px",
-		lg: "1024px",
-		md: "768px",
-		sm: "640px",
-		xl: "1280px",
+		"lg": "1024px",
+		"md": "768px",
+		"sm": "640px",
+		"xl": "1280px"
 	},
-	animations: {
-		bounce: "bounce 1s infinite",
-		none: "none",
-		ping: "ping 1s cubic-bezier(0, 0, 0.2, 1) infinite",
-		pulse: "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
-		spin: "spin 1s linear infinite",
+	"animations": {
+		"bounce": "bounce 1s infinite",
+		"none": "none",
+		"ping": "ping 1s cubic-bezier(0, 0, 0.2, 1) infinite",
+		"pulse": "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+		"spin": "spin 1s linear infinite"
 	},
-	transitions: {
-		all: "all 150ms cubic-bezier(0.4, 0, 0.2, 1)",
-		colors:
-			"color 150ms cubic-bezier(0.4, 0, 0.2, 1), background-color 150ms cubic-bezier(0.4, 0, 0.2, 1), border-color 150ms cubic-bezier(0.4, 0, 0.2, 1), outline-color 150ms cubic-bezier(0.4, 0, 0.2, 1), text-decoration-color 150ms cubic-bezier(0.4, 0, 0.2, 1), fill 150ms cubic-bezier(0.4, 0, 0.2, 1), stroke 150ms cubic-bezier(0.4, 0, 0.2, 1)",
-		none: "none",
-		opacity: "opacity 150ms cubic-bezier(0.4, 0, 0.2, 1)",
-		shadow: "box-shadow 150ms cubic-bezier(0.4, 0, 0.2, 1)",
-		transform:
-			"transform 150ms cubic-bezier(0.4, 0, 0.2, 1), translate 150ms cubic-bezier(0.4, 0, 0.2, 1), scale 150ms cubic-bezier(0.4, 0, 0.2, 1), rotate 150ms cubic-bezier(0.4, 0, 0.2, 1)",
+	"transitions": {
+		"all": "all 150ms cubic-bezier(0.4, 0, 0.2, 1)",
+		"colors": "color 150ms cubic-bezier(0.4, 0, 0.2, 1), background-color 150ms cubic-bezier(0.4, 0, 0.2, 1), border-color 150ms cubic-bezier(0.4, 0, 0.2, 1), outline-color 150ms cubic-bezier(0.4, 0, 0.2, 1), text-decoration-color 150ms cubic-bezier(0.4, 0, 0.2, 1), fill 150ms cubic-bezier(0.4, 0, 0.2, 1), stroke 150ms cubic-bezier(0.4, 0, 0.2, 1)",
+		"none": "none",
+		"opacity": "opacity 150ms cubic-bezier(0.4, 0, 0.2, 1)",
+		"shadow": "box-shadow 150ms cubic-bezier(0.4, 0, 0.2, 1)",
+		"transform": "transform 150ms cubic-bezier(0.4, 0, 0.2, 1), translate 150ms cubic-bezier(0.4, 0, 0.2, 1), scale 150ms cubic-bezier(0.4, 0, 0.2, 1), rotate 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 	},
-	zIndices: {
+	"zIndices": {
 		"0": "0",
 		"10": "10",
 		"20": "20",
 		"30": "30",
 		"40": "40",
 		"50": "50",
-		auto: "auto",
-	},
+		"auto": "auto"
+	}
 } as const;
