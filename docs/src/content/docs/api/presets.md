@@ -42,13 +42,15 @@ form keeps a small preset easy to read.
 Pandwind keeps its built-in choices in explicit tiers so a structural CSS
 contract does not silently become a design-token contract:
 
-| preset           | import                        | use it for                                                |
-| ---------------- | ----------------------------- | --------------------------------------------------------- |
-| `csstypePreset`  | `pandwind/preset/csstype`     | tokenless structural CSS with values owned by your app    |
-| `defaultPreset`  | `pandwind/preset/default`     | the ordinary Pandwind app with stock scales, no palette   |
-| `tailwindPreset` | `pandwind/preset/tailwindcss` | Tailwind v4's vocabulary in `css()`                       |
-| `chakraPreset`   | `pandwind/preset/chakra`      | Chakra UI v3's vocabulary and color modes, widest catalog |
-| `examplePreset`  | `@pandwind/example-preset`    | the repository's rich semantic-token and palette showcase |
+| preset               | import                        | use it for                                                   |
+| -------------------- | ----------------------------- | ------------------------------------------------------------ |
+| `csstypePreset`      | `pandwind/preset/csstype`     | tokenless structural CSS with values owned by your app       |
+| `defaultPreset`      | `pandwind/preset/default`     | the ordinary Pandwind app with stock scales, no palette      |
+| `tailwindPreset`     | `pandwind/preset/tailwindcss` | Tailwind v4's vocabulary in `css()`                          |
+| `chakraPreset`       | `pandwind/preset/chakra`      | Chakra UI v3's vocabulary and color modes, widest catalog    |
+| `shadcnPreset`       | `pandwind/preset/shadcn`      | shadcn/ui's registry roles, radii, and fonts, widest catalog |
+| `createShadcnPreset` | `pandwind/preset/shadcn`      | the same preset, parameterized by the create-page selections |
+| `examplePreset`      | `@pandwind/example-preset`    | the repository's rich semantic-token and palette showcase    |
 
 The csstype preset uses the common `csstype` property grammar and default
 conditions, but its `tokens` map and property-token bindings are empty, so
@@ -84,7 +86,8 @@ animations, transitions, and the five breakpoint conditions are generated from
 the installed `tailwindcss` package, so a Tailwind v4 project reads
 `$slate-700` and `md` from `css()` without transcribing a theme. It ships
 that theme whole because a runtime reads the preset object, which makes it the
-widest catalog Pandwind publishes — a `createCss(tailwindPreset)` bundle is
+that theme whole because a runtime reads the preset object, so the catalog, not
+the engine, is what a `createCss(tailwindPreset)` bundle pays for: it is
 40.56 KB min / 13.24 KB gzip against 24.10 KB / 8.68 KB for `defaultPreset`.
 Reach for it when Tailwind's vocabulary is the migration target, and for
 `defaultPreset` when a smaller catalog is enough.
@@ -94,12 +97,30 @@ spacing, sizes, radii, shadows, typography, borders, aspect ratios, animations,
 cursors, durations, easings, and z-indexes), its 104 condition selectors, its
 five breakpoints, and its light / dark semantic color roles are generated from
 the installed `@chakra-ui/react` package. The semantic colors keep their
-light / dark pairs, so a bound property emits ``:root`and`.dark`declarations and switches with Chakra's own color-mode class rather than a
-runtime theme object, and`colorPalette`resolves the role names Chakra's own
+light / dark pairs, so a bound property emits `:root` and `.dark` declarations
+and switches with Chakra's own color-mode class rather than a
+runtime theme object, and `colorPalette` resolves the role names Chakra's own
 components use. Because it ships the static scales and the semantic layer
-together, it is the widest catalog Pandwind publishes — a`createCss(chakraPreset)`bundle is 51.37 KB min / 13.88 KB gzip against
-40.56 KB / 13.24 KB for`createCss(tailwindPreset)`. Reach for it when a
+together, a `createCss(chakraPreset)` bundle is 51.37 KB min / 13.88 KB gzip
+against 40.56 KB / 13.24 KB for `createCss(tailwindPreset)`. Reach for it when a
 Chakra project's token names and color modes are the migration target.
+
+The shadcn preset is the parameterized layer: `createShadcnPreset(options)`
+takes the [create page](https://ui.shadcn.com/create) selections — base color,
+theme, chart color, style, heading and body font, radius, menu accent, menu
+color, and the pointer switch — and composes their registry color roles, radius
+multipliers, and font variables into one preset. `shadcnPreset` is the same
+factory called with the registry's own defaults; `resolveShadcnConfig(options)`
+returns the fully resolved selection; `shadcnThemesForBaseColor(baseColor)`
+lists the themes a base color may take; and `shadcnDeclarations(config)`
+returns the `:root` / `.dark` custom property block plus the optional pointer
+rule, which the preset exposes as `cssVariables`. That block is what keeps the
+project's registry components reading the same values Pandwind resolves.
+Because the preset carries every base color's light and dark roles rather than
+one resolved theme, it is the widest catalog Pandwind publishes: a
+`createCss(shadcnPreset)` bundle is 85.08 KB min / 15.95 KB gzip against
+51.37 KB / 13.88 KB for `createCss(chakraPreset)`. Reach for it when a
+shadcn/ui project's registry variables are the migration target.
 
 ## A complete typed preset
 

@@ -195,7 +195,7 @@ New subpaths require the full surface ritual, in one revision:
       first, with measured numbers for each (§7).
 - [x] `defaultPreset` ships no color palette; its retired Chakra v1 palette
       lives on as a test fixture.
-- [ ] `createShadcnPreset(options)` reproduces the create-page selections for
+- [x] `createShadcnPreset(options)` reproduces the create-page selections for
       style, base color, theme, chart color, and fonts, with parity tests
       against the generated CSS-variable block.
 - [ ] `tailwindPreset` and `pandaPreset` are generated from their installed
@@ -484,10 +484,45 @@ presets:generate` / `presets:check`) into
     runtime resolution of `$gray.700`, `$bg`, and `$bg.subtle` for both
     the full and `tokens: "used"` compiler modes.
 
+- **shadcn/ui preset** — `build: pin shadcn 4.19.0 and zod for the preset
+generator`, `feat(preset): generate the shadcn starter preset data`,
+  `feat(preset): declare the cssVariables preset contract`, and the surface,
+  test, and size revision that adds the preset itself.
+  - The data is generated from the pinned `shadcn` 4.19.0 checkout by
+    `scripts/promote-shadcn-preset.ts` (chained into `pnpm run
+presets:generate` / `presets:check`) into
+    `packages/pandwind/src/preset/generated/shadcn-theme.ts`. The generator
+    reads the registry's base-color properties, its theme accents, its font
+    definitions, its radius styles, and the create page's own default
+    configuration, so the preset tracks that revision instead of a transcribed
+    list.
+  - `pandwind/preset/shadcn` exports `createShadcnPreset`,
+    `resolveShadcnConfig`, `shadcnThemesForBaseColor`, `shadcnDeclarations`,
+    `shadcnColorVariables`, `shadcnFontVariables`, the resolved
+    `shadcnPreset`, `shadcnTokens`, `shadcnProperties`,
+    `shadcnConditions`, and `shadcnColorRoles`. It is deliberately absent
+    from `src/preset/index.ts`, and the subpath is recorded in
+    `plans/evidence/package-surface.json`, mapped in
+    `packages/pandwind/package.json`, built by `tsdown.config.ts`, listed in
+    `knip.json`, and resolved from the packed tarball by
+    `tests/package-exports.test.ts` and `tests/packed-consumer.test.ts`.
+  - `define.preset` now carries an optional `cssVariables` block
+    (`CssVariableBlocks`) so the `:root` / `.dark` declarations a project's
+    registry components read travel with the preset that resolves those same
+    values.
+  - Measured lane `createCss(shadcnPreset)`: 85.08 KB min / 15.95 KB gzip,
+    the widest catalog Pandwind ships, budgeted at 85.9 KB / 16.1 KB. It ships
+    every base color's light and dark roles because the factory has to compose
+    them at runtime; the catalog is the cost, not the engine.
+  - `tests/helpers/shadcn-oracle.ts` resolves the same configuration through
+    the generated data, so `tests/preset-shadcn.test.ts` compares each
+    selection against the create page's own variable set rather than a second
+    transcription, and the runtime tests assert that a bound property emits
+    `:root` / `.dark` declarations and that `tokens: "used"` prunes to the
+    referenced roles.
+
 Remaining lanes, in the order §7.4 fixes:
 
-- [ ] `createShadcnPreset(options)` on `pandwind/preset/shadcn`, emitting the
-      `:root` / `.dark` block as `preset.cssVariables`.
 - [ ] `pandwind/preset/{panda,stylex}`.
 - [ ] `pandwind/reset/{tailwindcss,panda,stylex}` plus Pandwind's own minimal
       reset, including the `reset` versus `preset` naming note the maintainer
