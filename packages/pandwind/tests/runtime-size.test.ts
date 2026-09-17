@@ -161,12 +161,12 @@ test("runtime entries stay stylex-sized", async () => {
 		"createCss(chakraPreset)": bundle("runtime-preset-chakra.ts"),
 		"createCss(shadcnPreset)": bundle("runtime-preset-shadcn.ts"),
 		"createCss(defaultPreset)": bundle("runtime-preset-css.ts"),
-		// The retired Chakra v1 palette survives as a test fixture, so these
-		// lanes measure a preset that carries a full token catalog.
-		"createCss(legacyPreset)": bundle("runtime-preset-legacy.ts"),
-		"createCss(legacyPreset) + tw()": bundle("runtime-preset-tw.ts"),
-		"createCss(legacyPreset) + cx()": bundle("runtime-preset-cx.ts"),
-		"createCss(legacyPreset) + tw() + cx()": bundle("runtime-preset-all.ts"),
+		// The palette fixture keeps a full token catalog, so these lanes measure
+		// a preset whose tokens resolve to named colors.
+		"createCss(fixturePreset)": bundle("runtime-preset-fixture.ts"),
+		"createCss(fixturePreset) + tw()": bundle("runtime-preset-tw.ts"),
+		"createCss(fixturePreset) + cx()": bundle("runtime-preset-cx.ts"),
+		"createCss(fixturePreset) + tw() + cx()": bundle("runtime-preset-all.ts"),
 		"createUnsafeCss(), fallback": bundle("runtime-css.ts"),
 		"createRuntimeCss(preset), live sheet": bundle("runtime-css-sheet.ts"),
 		"createUnsafeCss(), static output after extraction":

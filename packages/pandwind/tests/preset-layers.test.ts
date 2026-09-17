@@ -3,7 +3,7 @@ import { createCss } from "../src/css/create-css.ts";
 import { createStylesheet } from "../src/css/create-stylesheet.ts";
 import { csstypePreset, csstypeProperties } from "../src/preset/csstype.ts";
 import { defaultPreset } from "../src/preset/default.ts";
-import { legacyPreset } from "./fixtures/legacy-preset.ts";
+import { fixturePreset } from "./fixtures/fixture-preset.ts";
 
 test("csstype preset is a tokenless structural contract", () => {
 	expect(csstypeProperties).toEqual({ $all: true });
@@ -45,11 +45,11 @@ test("default preset resolves CSS-wide color keywords and leaves colors authored
 	expect(output).not.toContain(":root");
 });
 
-test("legacy fixture preset still resolves the retired Chakra v1 palette", () => {
-	expect(legacyPreset.tokens).toEqual({});
+test("fixture preset still resolves its named palette", () => {
+	expect(fixturePreset.tokens).toEqual({});
 
-	const css = createCss(legacyPreset);
-	const output = createStylesheet(legacyPreset).generate([
+	const css = createCss(fixturePreset);
+	const output = createStylesheet(fixturePreset).generate([
 		css.raw({ color: "red.500", backgroundColor: "blue.500" }),
 	]);
 

@@ -1,9 +1,9 @@
 import { createCss } from "../../src/css/index.ts";
 import { createCx } from "../../src/cx/index.ts";
 import { createTw } from "../../src/tw/index.ts";
-import { legacyPreset } from "./legacy-preset.ts";
+import { fixturePreset } from "./fixture-preset.ts";
 
-const css = createCss(legacyPreset);
+const css = createCss(fixturePreset);
 const tw = createTw<Record<string, unknown>>({});
 const cx = createCx({ css });
 

@@ -232,8 +232,8 @@ New subpaths require the full surface ritual, in one revision:
    whole, and overlapping box-model rules are merged rather than emitted as
    separate layered fragments. Pandwind also ships its own minimal reset.
 6. **Retired palette:** the Chakra v1 palette the default preset used to carry
-   is gone from `defaultPreset` and is not re-shipped. It survives only as
-   the test fixture `packages/pandwind/tests/fixtures/legacy-preset.ts`, so
+   is gone from `defaultPreset` and is not re-shipped. Its values survive only
+   as the test fixture `packages/pandwind/tests/fixtures/fixture-preset.ts`, so
    behavior and typing tests keep a preset whose color values resolve through
    named tokens.
 7. **Chakra sources of truth.** `pandwind/preset/chakra` is generated from the
@@ -358,8 +358,8 @@ New subpaths require the full surface ritual, in one revision:
     keeps importing `defaultPreset` with hex literals; it exercises the
     authored-literal path rather than a named palette, so the palette drop does
     not reach it. The named-palette lane is `runtime-preset-cx.ts`,
-    `runtime-preset-legacy.ts`, and `runtime-preset-all.ts`, which all read
-    the `legacyPreset` fixture from §7.6.
+    `runtime-preset-fixture.ts`, and `runtime-preset-all.ts`, which all read
+    the `fixturePreset` fixture from §7.6.
 19. **Transitions are composed, not transcribed.** Chakra reaches its
     `transition` and `transitionProperty` scales only through utilities that
     take a keyword: `transition: "colors"` expands to a property list plus a
@@ -429,20 +429,26 @@ preset data out of the formatter`.
     `pnpm run presets:check` disagree on every run. The generated directory
     joins `.oxfmtrc.json`'s `ignorePatterns` and the module is regenerated.
 
-- **Retired palette as the measured fixture** — `test(bench): measure the retired
+- **Palette fixture as its own measured lane** — `test(bench): measure the retired
 palette preset as a fixture` plus `docs: describe the fixture-lane size rows`.
   - §7.6 removed the Chakra v1 palette from `defaultPreset`, so the lanes that
     used to measure `defaultPreset` against named color tokens now import
-    `legacyPreset`. The runtimes keep exercising token resolution while the
+    `fixturePreset`. The runtimes keep exercising token resolution while the
     shipped default preset keeps its palette-free catalog.
-  - Measured: `createCss(legacyPreset)` 27,425 B minified / 9,731 B gzip,
-    `+ tw()` 30,114 / 10,724, `+ cx()` 34,380 / 12,372, `+ tw() + cx()`
+  - Measured: `createCss(fixturePreset)` 27,425 B minified / 9,731 B gzip,
+    `+ tw()` 30,114 / 10,724, `+ cx()` 34,380 / 12,371, `+ tw() + cx()`
     37,057 / 13,324. `createCss(defaultPreset)` stays at 24,100 / 8,680
     because that row never carried a palette.
   - The rename reaches `runtime-size.test.ts`, `runtime-budget.json`, the
     committed snapshot, the `preset-bound full catalog` kind in
     `scripts/render-performance-summary.mts`, `PERF.md`, and the two size
     references.
+  - Maintainer follow-up (§7.6): the fixture is named `fixturePreset` in
+    `tests/fixtures/fixture-preset.ts`, its identifiers read as fixture
+    vocabulary rather than one specific upstream, and the Chakra attribution
+    the generated values came from is no longer cited from the fixture or the
+    two size references. Nothing in the numbers moved: only the fixture's name,
+    its bundle-lane keys, and the prose that describes them.
 
 - **Chakra UI v3 preset** — `feat(preset): generate and ship the Chakra UI v3
 starter preset` plus `feat(preset): publish the Chakra preset package

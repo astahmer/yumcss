@@ -27,19 +27,19 @@
     "min": 24100,
     "gz": 8680
   },
-  "createCss(legacyPreset)": {
+  "createCss(fixturePreset)": {
     "min": 27425,
     "gz": 9731
   },
-  "createCss(legacyPreset) + tw()": {
+  "createCss(fixturePreset) + tw()": {
     "min": 30114,
     "gz": 10724
   },
-  "createCss(legacyPreset) + cx()": {
+  "createCss(fixturePreset) + cx()": {
     "min": 34380,
-    "gz": 12372
+    "gz": 12371
   },
-  "createCss(legacyPreset) + tw() + cx()": {
+  "createCss(fixturePreset) + tw() + cx()": {
     "min": 37057,
     "gz": 13324
   },
