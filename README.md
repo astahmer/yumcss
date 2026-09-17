@@ -150,6 +150,11 @@ target, the Chakra layer when Chakra UI v3's is, the shadcn layer when a
 shadcn/ui project's registry variables are, and the example package only when
 exploring the repository's complete token composition patterns.
 
+The preset tiers are independent of the baseline stylesheet a project imports:
+`pandwind/reset/<ecosystem>` ships an ecosystem's own reset as a plain CSS
+asset, so an adopting project does not keep a second engine only to keep its
+baseline. See [Reset stylesheets](./docs/src/content/docs/api/resets.md).
+
 ## If you already use Tailwind: typed utility objects
 
 Use this path when Tailwind already owns your stylesheet or when you

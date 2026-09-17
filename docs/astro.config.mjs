@@ -64,6 +64,10 @@ export default defineConfig({
 							items: ["api/presets"],
 						},
 						{
+							label: "Baseline stylesheets — reset",
+							items: ["api/resets"],
+						},
+						{
 							label: "Shared tools — cx() and themes",
 							items: ["api/cx", "api/theming"],
 						},

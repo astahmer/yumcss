@@ -6,8 +6,10 @@ const packageManifest = JSON.parse(
 ) as {
 	readonly repository: { readonly directory: string };
 	readonly dependencies: Readonly<Record<string, string>>;
+	readonly sideEffects: readonly string[];
 	readonly peerDependencies: Readonly<Record<string, string>>;
 	readonly peerDependenciesMeta: Readonly<Record<string, { readonly optional?: boolean }>>;
+	readonly exports: Readonly<Record<string, unknown>>;
 };
 
 const entries = [
@@ -26,6 +28,8 @@ const entries = [
 	"pandwind/preset/tailwindcss",
 	"pandwind/preset/chakra",
 	"pandwind/preset/shadcn",
+	"pandwind/reset/tailwindcss",
+	"pandwind/reset/panda",
 	"pandwind/design",
 	"pandwind/vite",
 	"pandwind/unplugin",
@@ -163,6 +167,32 @@ describe("pandwind package boundary", () => {
 
 	test("does not expose the codemod-owned recipe runtime", () => {
 		expect(() => import.meta.resolve("pandwind/recipe")).toThrow();
+	});
+
+	test("ships ecosystem resets as stylesheet assets", () => {
+		expect(packageManifest.exports["./reset/tailwindcss"]).toEqual({
+			pandwind: "./src/reset/tailwindcss.css",
+			default: "./dist/reset/tailwindcss.css",
+		});
+		const css = readFileSync(new URL("../src/reset/tailwindcss.css", import.meta.url), "utf8");
+		expect(css).toContain("@layer reset {");
+		expect(css).toContain("box-sizing: border-box;");
+		expect(css).toContain("MIT License — Copyright (c) Tailwind Labs, Inc.");
+	});
+
+	test("keeps stylesheet assets side-effectful for bundlers", () => {
+		expect(packageManifest.sideEffects).toEqual(["*.css"]);
+	});
+
+	test("ships the Panda reset as a stylesheet asset", () => {
+		expect(packageManifest.exports["./reset/panda"]).toEqual({
+			pandwind: "./src/reset/panda.css",
+			default: "./dist/reset/panda.css",
+		});
+		const css = readFileSync(new URL("../src/reset/panda.css", import.meta.url), "utf8");
+		expect(css).toContain("@layer reset {");
+		expect(css).toContain("border-color: var(--global-color-border, currentcolor);");
+		expect(css).toContain("MIT License - Copyright (c) 2023 Segun Adebayo");
 	});
 
 	test("keeps build-only packages out of runtime dependencies", () => {

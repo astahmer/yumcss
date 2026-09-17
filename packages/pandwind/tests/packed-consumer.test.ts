@@ -84,6 +84,8 @@ describe("packed Pandwind consumer", () => {
 			const packedTailwindPresetPath = consumerRequire.resolve("pandwind/preset/tailwindcss");
 			const packedChakraPresetPath = consumerRequire.resolve("pandwind/preset/chakra");
 			const packedShadcnPresetPath = consumerRequire.resolve("pandwind/preset/shadcn");
+			const packedTailwindResetPath = consumerRequire.resolve("pandwind/reset/tailwindcss");
+			const packedPandaResetPath = consumerRequire.resolve("pandwind/reset/panda");
 			const [
 				{ pandwindCssVite },
 				{ define },
@@ -116,6 +118,12 @@ describe("packed Pandwind consumer", () => {
 				$strictness: "inherits",
 			});
 			expect(shadcnPreset.cssVariables.dark).toHaveProperty("background");
+			expect(packedTailwindResetPath).toMatch(/dist\/reset\/tailwindcss\.css$/);
+			expect(readFileSync(packedTailwindResetPath, "utf8")).toContain("@layer reset {");
+			expect(packedPandaResetPath).toMatch(/dist\/reset\/panda\.css$/);
+			expect(readFileSync(packedPandaResetPath, "utf8")).toContain(
+				"--global-color-border, currentcolor",
+			);
 			const preset = define.preset(
 				{ config: {}, tokens: {} },
 				{ strict: false, properties: { $all: true }, conditions: {} },

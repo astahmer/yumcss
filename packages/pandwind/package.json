@@ -13,7 +13,7 @@
 		"LICENSE"
 	],
 	"type": "module",
-	"sideEffects": false,
+	"sideEffects": ["*.css"],
 	"exports": {
 		".": {
 			"pandwind": "./src/index.ts",
@@ -116,6 +116,14 @@
 			"types": "./dist/preset/shadcn.d.ts",
 			"import": "./dist/preset/shadcn.js",
 			"default": "./dist/preset/shadcn.js"
+		},
+		"./reset/tailwindcss": {
+			"pandwind": "./src/reset/tailwindcss.css",
+			"default": "./dist/reset/tailwindcss.css"
+		},
+		"./reset/panda": {
+			"pandwind": "./src/reset/panda.css",
+			"default": "./dist/reset/panda.css"
 		},
 		"./stack": {
 			"pandwind": "./src/stack/index.ts",

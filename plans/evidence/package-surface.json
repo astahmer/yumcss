@@ -72,6 +72,36 @@
 		},
 		{
 			"packageName": "pandwind",
+			"exportPaths": ["./reset/tailwindcss"],
+			"owner": "runtime",
+			"maturity": "experimental",
+			"dependencies": [],
+			"externalContract": true,
+			"evidence": [
+				"packages/pandwind/package.json",
+				"packages/pandwind/src/reset/tailwindcss.css",
+				"packages/pandwind/tests/packed-consumer.test.ts",
+				"docs/src/content/docs/api/resets.md"
+			],
+			"note": "Reset stylesheet: Tailwind v4's preflight ported with a provenance and license header, shipped as a plain CSS asset in the @layer reset layer."
+		},
+		{
+			"packageName": "pandwind",
+			"exportPaths": ["./reset/panda"],
+			"owner": "runtime",
+			"maturity": "experimental",
+			"dependencies": [],
+			"externalContract": true,
+			"evidence": [
+				"packages/pandwind/package.json",
+				"packages/pandwind/src/reset/panda.css",
+				"packages/pandwind/tests/packed-consumer.test.ts",
+				"docs/src/content/docs/api/resets.md"
+			],
+			"note": "Reset stylesheet: Panda CSS's preflight ported from @pandacss/generator with a provenance and license header, shipped as a plain CSS asset in the @layer reset layer."
+		},
+		{
+			"packageName": "pandwind",
 			"exportPaths": [
 				"./css/named",
 				"./css/stylex",
