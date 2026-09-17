@@ -159,6 +159,7 @@ test("runtime entries stay stylex-sized", async () => {
 		"createCss(csstypePreset)": bundle("runtime-preset-csstype.ts"),
 		"createCss(tailwindPreset)": bundle("runtime-preset-tailwindcss.ts"),
 		"createCss(chakraPreset)": bundle("runtime-preset-chakra.ts"),
+		"createCss(shadcnPreset)": bundle("runtime-preset-shadcn.ts"),
 		"createCss(defaultPreset)": bundle("runtime-preset-css.ts"),
 		// The retired Chakra v1 palette survives as a test fixture, so these
 		// lanes measure a preset that carries a full token catalog.

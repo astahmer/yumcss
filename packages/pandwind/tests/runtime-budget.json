@@ -19,6 +19,10 @@
 		"min": 51900,
 		"gz": 14000
 	},
+	"createCss(shadcnPreset)": {
+		"min": 85900,
+		"gz": 16100
+	},
 	"createCss(defaultPreset)": {
 		"min": 29900,
 		"gz": 10650

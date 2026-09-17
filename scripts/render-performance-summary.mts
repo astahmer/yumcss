@@ -372,6 +372,7 @@ const sizeKind = (name: string): string => {
 	if (name.startsWith("createCss(csstypePreset)")) return "preset-bound structural";
 	if (name.startsWith("createCss(tailwindPreset)")) return "preset-bound tailwind";
 	if (name.startsWith("createCss(chakraPreset)")) return "preset-bound chakra";
+	if (name.startsWith("createCss(shadcnPreset)")) return "preset-bound shadcn";
 	if (name.startsWith("createCss(defaultPreset)")) return "preset-bound default";
 	if (name.startsWith("createCss(legacyPreset)")) return "preset-bound full catalog";
 	if (name.startsWith("createRuntimeCss")) return "live sheet";
