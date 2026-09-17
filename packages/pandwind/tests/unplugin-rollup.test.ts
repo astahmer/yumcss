@@ -10,37 +10,13 @@
  */
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join, resolve } from "node:path";
+import { join } from "node:path";
 import { rollup } from "rollup";
 import { describe, expect, test } from "vitest";
 import { examplePreset } from "@pandwind/example-preset";
 import { pandwindRollup, pandwindUnpluginCss } from "../src/unplugin.ts";
+import { writeJsTwModule } from "./helpers/generated-tw.ts";
 import { RollupOutputKind } from "./helpers/rollup-output-kind.ts";
-
-const pkgRoot = resolve(import.meta.dirname, "..");
-const exampleTwModule = resolve(pkgRoot, "../../examples/example/src/tw.ts");
-
-/**
- * The generated tw module is TypeScript (rollup parses JS only), so derive a
- * plain-JS twin for the fixture: strip imports and the type parameter. What
- * remains still carries the full createTw metadata the inline pass extracts.
- */
-function writeJsTwModule(dir: string): string {
-	const generatedDirectory = resolve(pkgRoot, "../../examples/example/src");
-	let src = [
-		readFileSync(resolve(generatedDirectory, "tw.runtime.ts"), "utf8"),
-		readFileSync(resolve(generatedDirectory, "tw.build.ts"), "utf8"),
-		readFileSync(exampleTwModule, "utf8"),
-	].join("\n");
-	src = src.replace(/^import [^\n]*$/gm, "");
-	src = src.replace(/createTw<[^>(]*>\(/, "createTw(");
-	// plain .js fixture: strip TS-only annotations from the generated module
-	src = src.replace(/: string\[\]/g, "");
-	src = src.replace(/: TwOptions = \{/g, " = {");
-	const target = join(dir, "tw.js");
-	writeFileSync(target, src);
-	return target;
-}
 
 describe("pandwindRollup", () => {
 	test("folds tw() calls in a real rollup build", async () => {
