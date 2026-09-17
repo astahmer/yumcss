@@ -25,6 +25,7 @@ const entries = [
 	"pandwind/preset/default",
 	"pandwind/preset/tailwindcss",
 	"pandwind/preset/chakra",
+	"pandwind/preset/shadcn",
 	"pandwind/design",
 	"pandwind/vite",
 	"pandwind/unplugin",
@@ -131,11 +132,12 @@ describe("pandwind package boundary", () => {
 		});
 	});
 
-	test("exposes explicit csstype, default, tailwindcss, and chakra preset subpaths", async () => {
+	test("exposes explicit csstype, default, tailwindcss, chakra, and shadcn preset subpaths", async () => {
 		const csstypeApi = await import(await import.meta.resolve("pandwind/preset/csstype"));
 		const defaultApi = await import(await import.meta.resolve("pandwind/preset/default"));
 		const tailwindApi = await import(await import.meta.resolve("pandwind/preset/tailwindcss"));
 		const chakraApi = await import(await import.meta.resolve("pandwind/preset/chakra"));
+		const shadcnApi = await import(await import.meta.resolve("pandwind/preset/shadcn"));
 
 		expect(csstypeApi.csstypePreset.properties).toEqual({ $all: true });
 		expect(defaultApi.defaultPreset.properties).toHaveProperty("padding");
@@ -150,6 +152,12 @@ describe("pandwind package boundary", () => {
 			$strictness: "inherits",
 		});
 		expect(chakraApi.chakraTokens.colors).toHaveProperty("$gray.700");
+		expect(shadcnApi.shadcnPreset.properties.backgroundColor).toEqual({
+			$tokens: "colors",
+			$strictness: "inherits",
+		});
+		expect(shadcnApi.shadcnTokens.colors).toHaveProperty("$primary");
+		expect(shadcnApi.shadcnPreset.cssVariables.light).toHaveProperty("radius");
 		expect(() => import.meta.resolve("pandwind/preset/base")).toThrow();
 	});
 

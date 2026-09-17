@@ -58,6 +58,20 @@
 		},
 		{
 			"packageName": "pandwind",
+			"exportPaths": ["./preset/shadcn"],
+			"owner": "runtime",
+			"maturity": "experimental",
+			"dependencies": [],
+			"externalContract": true,
+			"evidence": [
+				"packages/pandwind/package.json",
+				"packages/pandwind/tests/preset-shadcn.test.ts",
+				"docs/src/content/docs/api/presets.md"
+			],
+			"note": "Ecosystem starter preset: shadcn/ui's registry color roles, radius and font variables, and create-page selections as authored data, generated from the pinned shadcn/ui checkout."
+		},
+		{
+			"packageName": "pandwind",
 			"exportPaths": [
 				"./css/named",
 				"./css/stylex",

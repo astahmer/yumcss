@@ -111,6 +111,12 @@
 			"import": "./dist/preset/chakra.js",
 			"default": "./dist/preset/chakra.js"
 		},
+		"./preset/shadcn": {
+			"pandwind": "./src/preset/shadcn.ts",
+			"types": "./dist/preset/shadcn.d.ts",
+			"import": "./dist/preset/shadcn.js",
+			"default": "./dist/preset/shadcn.js"
+		},
 		"./stack": {
 			"pandwind": "./src/stack/index.ts",
 			"types": "./dist/stack/index.d.ts",

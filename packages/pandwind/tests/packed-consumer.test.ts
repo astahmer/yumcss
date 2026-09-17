@@ -83,6 +83,7 @@ describe("packed Pandwind consumer", () => {
 			const packedDefaultPresetPath = consumerRequire.resolve("pandwind/preset/default");
 			const packedTailwindPresetPath = consumerRequire.resolve("pandwind/preset/tailwindcss");
 			const packedChakraPresetPath = consumerRequire.resolve("pandwind/preset/chakra");
+			const packedShadcnPresetPath = consumerRequire.resolve("pandwind/preset/shadcn");
 			const [
 				{ pandwindCssVite },
 				{ define },
@@ -90,6 +91,7 @@ describe("packed Pandwind consumer", () => {
 				{ defaultPreset },
 				{ tailwindPreset },
 				{ chakraPreset },
+				{ shadcnPreset },
 			] = await Promise.all([
 				import(pathToFileURL(packedVitePath).href),
 				import(pathToFileURL(packedPresetPath).href),
@@ -97,6 +99,7 @@ describe("packed Pandwind consumer", () => {
 				import(pathToFileURL(packedDefaultPresetPath).href),
 				import(pathToFileURL(packedTailwindPresetPath).href),
 				import(pathToFileURL(packedChakraPresetPath).href),
+				import(pathToFileURL(packedShadcnPresetPath).href),
 			]);
 			expect(csstypePreset.properties).toEqual({ $all: true });
 			expect(defaultPreset.properties).toHaveProperty("padding");
@@ -108,6 +111,11 @@ describe("packed Pandwind consumer", () => {
 				$tokens: "colors",
 				$strictness: "inherits",
 			});
+			expect(shadcnPreset.properties.backgroundColor).toEqual({
+				$tokens: "colors",
+				$strictness: "inherits",
+			});
+			expect(shadcnPreset.cssVariables.dark).toHaveProperty("background");
 			const preset = define.preset(
 				{ config: {}, tokens: {} },
 				{ strict: false, properties: { $all: true }, conditions: {} },
