@@ -68,6 +68,10 @@ export default defineConfig({
 							items: ["api/resets"],
 						},
 						{
+							label: "Prose stylesheets — pandwind/prose",
+							items: ["api/prose"],
+						},
+						{
 							label: "Shared tools — cx() and themes",
 							items: ["api/cx", "api/theming"],
 						},

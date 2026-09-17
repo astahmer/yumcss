@@ -64,6 +64,10 @@ is the only thing that should decide which one a project reaches for:
 - A **reset** (`pandwind/reset/<ecosystem>`) is a stylesheet that runs before
   the author's CSS and flattens what the browser already applies. It ships as
   CSS and changes nothing about what a style object may say.
+- A **prose** stylesheet (`pandwind/prose/<ecosystem>`) styles a subtree the
+  author marks with a class, which is what rendered markdown needs: headings,
+  lists, tables, and code blocks nobody authored by hand. It ships as CSS and
+  adds no property binding. See [Prose stylesheets](/api/prose/).
 
 A project that imports both is not pairing them; it is picking a vocabulary
 and a baseline, one at a time.
