@@ -99,6 +99,12 @@
 			"import": "./dist/preset/default.js",
 			"default": "./dist/preset/default.js"
 		},
+		"./preset/tailwindcss": {
+			"pandwind": "./src/preset/tailwindcss.ts",
+			"types": "./dist/preset/tailwindcss.d.ts",
+			"import": "./dist/preset/tailwindcss.js",
+			"default": "./dist/preset/tailwindcss.js"
+		},
 		"./stack": {
 			"pandwind": "./src/stack/index.ts",
 			"types": "./dist/stack/index.d.ts",
@@ -358,6 +364,7 @@
 		"rollup": "4.63.1",
 		"solid-js": "1.9.15",
 		"tailwind-merge": "3.6.0",
+		"tailwindcss": "4.3.3",
 		"tsdown": "0.23.0",
 		"tstyche": "7.2.3",
 		"typescript": "7.0.2",

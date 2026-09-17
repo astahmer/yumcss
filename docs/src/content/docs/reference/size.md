@@ -24,6 +24,7 @@ The compact snapshot-derived typecheck and size summary is in
 | entry                                      |      min |     gzip |
 | ------------------------------------------ | -------: | -------: |
 | `createCss(defaultPreset)` runtime         | 24.10 KB |  8.68 KB |
+| `createCss(tailwindPreset)` runtime        | 40.56 KB | 13.24 KB |
 | `createCss(csstypePreset)` runtime         | 17.57 KB |  6.49 KB |
 | `createCss(minimal preset)` runtime        | 13.08 KB |  5.18 KB |
 | `createUnsafeCss()` fallback runtime       | 10.60 KB |  4.27 KB |
@@ -44,16 +45,17 @@ public method attachments and is included only to show the shared engine's base
 cost; applications should use `createCss()` or `createUnsafeCss()` instead.
 Fully extracted static calls remain below 100 bytes.
 
-The three `css()` rows run the same engine with a different preset, and the
-preset is what moves the number: the minimal preset (open property catalog, no
-tokens) is the engine plus resolver floor, `csstypePreset` swaps in the
+The preset-bound `css()` rows run the same engine with a different preset, and
+the preset is what moves the number: the minimal preset (open property catalog,
+no tokens) is the engine plus resolver floor, `csstypePreset` swaps in the
 structural CSS property vocabulary, and `defaultPreset` adds Pandwind's own
 stock token catalog on top of that. A runtime lane ships its preset object
 whole (esbuild cannot drop token entries an application never reads), so the
 catalog, not the engine, is the heavy part of a `css()` bundle that imports a
 large preset. The runtime-sheet row uses the minimal preset fixture, so an
 application whose preset carries a large token catalog should read the
-`createCss(defaultPreset)` row as the closer analogue.
+`createCss(defaultPreset)` row as the closer analogue, and a Tailwind v4 project
+should read the `createCss(tailwindPreset)` row.
 
 ## Pay-per-API and compiler pruning
 
@@ -61,17 +63,18 @@ Each engine has its own subpath export, and the root barrel is side-effect
 free. `css()` is subpath-only — the root barrel carries `tw()` + `cx()` — so the
 same size gate checks these tree-shaken entry points:
 
-| fixture / import                           |      min |    gzip |
-| ------------------------------------------ | -------: | ------: |
-| `pandwind/css` — createCss(defaultPreset)  | 24.10 KB | 8.68 KB |
-| `pandwind/css` — createCss(csstypePreset)  | 17.57 KB | 6.49 KB |
-| `pandwind/css` — createCss(minimal preset) | 13.08 KB | 5.18 KB |
-| `pandwind/unsafe/css` — createUnsafeCss    | 10.60 KB | 4.27 KB |
-| `pandwind/tw` — tw() only                  |  2.80 KB | 1.31 KB |
-| `pandwind/cx` — cx() plain strings         |  7.03 KB | 3.01 KB |
-| `pandwind/cx` — cx() with atom registry    | 17.54 KB | 6.84 KB |
-| root barrel, tw only                       |  2.80 KB | 1.31 KB |
-| root barrel, cx + CSS                      | 17.53 KB | 6.86 KB |
+| fixture / import                           |      min |     gzip |
+| ------------------------------------------ | -------: | -------: |
+| `pandwind/css` — createCss(defaultPreset)  | 24.10 KB |  8.68 KB |
+| `pandwind/css` — createCss(tailwindPreset) | 40.56 KB | 13.24 KB |
+| `pandwind/css` — createCss(csstypePreset)  | 17.57 KB |  6.49 KB |
+| `pandwind/css` — createCss(minimal preset) | 13.08 KB |  5.18 KB |
+| `pandwind/unsafe/css` — createUnsafeCss    | 10.60 KB |  4.27 KB |
+| `pandwind/tw` — tw() only                  |  2.80 KB |  1.31 KB |
+| `pandwind/cx` — cx() plain strings         |  7.03 KB |  3.01 KB |
+| `pandwind/cx` — cx() with atom registry    | 17.54 KB |  6.84 KB |
+| root barrel, tw only                       |  2.80 KB |  1.31 KB |
+| root barrel, cx + CSS                      | 17.53 KB |  6.86 KB |
 
 Compiler-pruned and static fixtures are smaller still:
 
@@ -143,18 +146,22 @@ table above.
 
 The `css()` lane appears once per preset because the preset, not the engine, is
 what moves it: 13.08 KB min with the minimal preset, 17.57 KB once the
-structural `csstypePreset` supplies the CSS property vocabulary, and 24.10 KB
-once `defaultPreset` adds Pandwind's stock token catalog and its property
-bindings. A runtime lane ships that preset as authored data, which prices the
-preset at 6.53 KB min / 2.19 KB gzip over the `csstypePreset` lane, against
-9.63 KB / 3.53 KB for adding both `tw()` and `cx()` to the unsafe runtime. An
-application that needs the smallest `css()` runtime supplies its own preset and
-its own tokens, or extracts its calls statically. The combination rows below
-use `defaultPreset`.
+structural `csstypePreset` supplies the CSS property vocabulary, 24.10 KB once
+`defaultPreset` adds Pandwind's stock token catalog and its property bindings,
+and 40.56 KB with `tailwindPreset`, whose Tailwind v4 data is the widest
+catalog Pandwind ships — every palette color, radius, shadow, and blur rides
+along as authored data, because esbuild cannot drop object entries that a live
+preset never reads. A runtime lane ships its preset as authored data:
+`defaultPreset` costs 6.53 KB min / 2.19 KB gzip over the `csstypePreset` lane,
+against 9.63 KB / 3.53 KB for adding both `tw()` and `cx()` to the unsafe
+runtime. An application that needs the smallest `css()` runtime supplies its
+own preset and its own tokens, or extracts its calls statically. The combination
+rows below use `defaultPreset`.
 
 | runtime                                    |      min |     gzip | what ships                                |
 | ------------------------------------------ | -------: | -------: | ----------------------------------------- |
 | pandwind `css()` (defaultPreset)           | 24.10 KB |  8.68 KB | stock tokens + resolver + atom engine     |
+| pandwind `css()` (tailwindPreset)          | 40.56 KB | 13.24 KB | Tailwind v4 catalog + resolver + engine   |
 | pandwind `css()` (csstypePreset)           | 17.57 KB |  6.49 KB | property vocabulary + resolver + engine   |
 | pandwind `css()` (minimal preset)          | 13.08 KB |  5.18 KB | resolver + atom engine only               |
 | pandwind `tw()`                            |  2.80 KB |  1.31 KB | variant join syntax alone                 |

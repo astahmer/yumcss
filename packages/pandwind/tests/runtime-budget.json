@@ -11,6 +11,10 @@
 		"min": 19400,
 		"gz": 7150
 	},
+	"createCss(tailwindPreset)": {
+		"min": 41000,
+		"gz": 13350
+	},
 	"createCss(defaultPreset)": {
 		"min": 29900,
 		"gz": 10650

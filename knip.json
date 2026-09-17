@@ -26,6 +26,7 @@
 				"src/{css,cx,preset,stack,design,recipe,host,tw,vite}/index.ts",
 				"src/preset/csstype.ts",
 				"src/preset/default.ts",
+				"src/preset/tailwindcss.ts",
 				"src/{unplugin,source-scanner,rn,opentui}.ts",
 				"src/css/create-stylesheet.ts",
 				"src/css/stylesheet-lowering.ts",

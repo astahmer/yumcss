@@ -267,6 +267,7 @@ Lower is smaller. Sizes are decimal KB (1 KB = 1,000 bytes); exact byte values r
 |   25 | createCss(defaultPreset) + cx()                   | preset-bound default    |         31.05 |     11.31 |
 |   26 | createCss(defaultPreset) + tw() + cx()            | preset-bound default    |         33.73 |     12.26 |
 |   27 | createRuntimeCss(preset), live sheet              | live sheet              |         33.73 |     12.50 |
+|   28 | createCss(tailwindPreset)                         | preset-bound tailwind   |         40.56 |     13.24 |
 
 ## Generated Tailwind metadata size
 

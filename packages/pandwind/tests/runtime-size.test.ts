@@ -157,6 +157,7 @@ test("runtime entries stay stylex-sized", async () => {
 		"createCssRuntime() core (internal)": bundle("runtime-css-base.ts"),
 		"createCss(minimal preset), fallback": bundle("runtime-css-preset.ts"),
 		"createCss(csstypePreset)": bundle("runtime-preset-csstype.ts"),
+		"createCss(tailwindPreset)": bundle("runtime-preset-tailwindcss.ts"),
 		"createCss(defaultPreset)": bundle("runtime-preset-css.ts"),
 		"createCss(defaultPreset) + tw()": bundle("runtime-preset-tw.ts"),
 		"createCss(defaultPreset) + cx()": bundle("runtime-preset-cx.ts"),
