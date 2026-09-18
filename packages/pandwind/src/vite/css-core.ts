@@ -368,6 +368,9 @@ export function createCssExtractorPluginCore(
 		const sharedIds = new Set([...seenIn.entries()].filter(([, n]) => n >= 2).map(([id]) => id));
 		for (const rule of externalAtomic) sharedIds.add(`a:${rule.id}`);
 		for (const rule of externalVars) sharedIds.add(`v:${rule.id}`);
+		const routeBuckets = [...buckets.entries()]
+			.filter(([name]) => name !== COMMON_BUCKET)
+			.map(([, bucket]) => bucket);
 
 		const pickCommon = <TEntry extends { readonly id: string }>(
 			entries: readonly TEntry[],
@@ -375,7 +378,6 @@ export function createCssExtractorPluginCore(
 		): TEntry[] => entries.filter((entry) => sharedIds.has(`${kind}:${entry.id}`));
 
 		const commonBucket = buckets.get(COMMON_BUCKET)!;
-		const anyBucket = buckets.get(routes[0]!.name)!;
 		const tokenEntries = Array.from(
 			new Map(
 				[...buckets.values(), { tokenEntries: externalTokens }]
@@ -387,15 +389,18 @@ export function createCssExtractorPluginCore(
 			return priority === 0 ? a.declaration.localeCompare(b.declaration) : priority;
 		});
 		const commonAtomic = mergeEntries(
-			[...pickCommon(anyBucket.atomic, "a"), ...commonBucket.atomic],
+			[...routeBuckets.flatMap((bucket) => pickCommon(bucket.atomic, "a")), ...commonBucket.atomic],
 			externalAtomic,
 		).toSorted((a, b) => a.priority - b.priority);
 		const commonVars = mergeEntries(
-			[...pickCommon(anyBucket.vars, "v"), ...commonBucket.vars],
+			[...routeBuckets.flatMap((bucket) => pickCommon(bucket.vars, "v")), ...commonBucket.vars],
 			externalVars,
 		).toSorted((a, b) => a.priority - b.priority);
 		const commonKeyframes = mergeEntries(
-			[...pickCommon(anyBucket.keyframes, "k"), ...commonBucket.keyframes],
+			[
+				...routeBuckets.flatMap((bucket) => pickCommon(bucket.keyframes, "k")),
+				...commonBucket.keyframes,
+			],
 			[],
 		);
 		const priorityUniverse = [...buckets.values()].flatMap((bucket) => [

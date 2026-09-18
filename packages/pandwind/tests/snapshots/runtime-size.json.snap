@@ -64,36 +64,36 @@
     "gz": 4700
   },
   "createUnsafeCss(), compiler-pruned call": {
-    "min": 6107,
-    "gz": 2608
+    "min": 6415,
+    "gz": 2674
   },
   "createUnsafeCss(), compiler-pruned class": {
-    "min": 6168,
-    "gz": 2626
+    "min": 6476,
+    "gz": 2694
   },
   "createUnsafeCss(), compiler-pruned vars": {
-    "min": 8528,
-    "gz": 3487
+    "min": 8836,
+    "gz": 3554
   },
   "createUnsafeCss(), generated call": {
-    "min": 6047,
-    "gz": 2573
+    "min": 6355,
+    "gz": 2639
   },
   "createUnsafeCss(), generated class": {
-    "min": 6102,
-    "gz": 2593
+    "min": 6410,
+    "gz": 2658
   },
   "createUnsafeCss(), generated vars": {
-    "min": 8463,
-    "gz": 3454
+    "min": 8771,
+    "gz": 3519
   },
   "createUnsafeCss(), generated class+vars": {
-    "min": 8519,
-    "gz": 3473
+    "min": 8828,
+    "gz": 3534
   },
   "createUnsafeCss(), generated all": {
-    "min": 10816,
-    "gz": 4312
+    "min": 11121,
+    "gz": 4377
   },
   "tw": {
     "min": 2800,

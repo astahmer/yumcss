@@ -28,7 +28,12 @@ const makeProject = (): string => {
 		"src/routes/user/user.tsx": `
 			import { css } from "../design";
 			export const b = css.class({ $layout: { flow: "stackY" }, $frame: { h: "12" } });
+			export const sharedLater = css.class({ $frame: { w: "26" } });
 			export const spin = css.keyframes({ to: { opacity: 1 }, from: { opacity: 0 } });
+		`,
+		"src/routes/reports/reports.tsx": `
+			import { css } from "../../design";
+			export const sharedLater = css.class({ $frame: { w: "26" } });
 		`,
 		"src/common.ts": `
 			import { css } from "./design";
@@ -49,6 +54,7 @@ const pluginFor = (dir: string) =>
 		splitByRoute: [
 			{ match: /\/routes\/admin\//, name: "admin" },
 			{ match: /\/routes\/user\//, name: "user" },
+			{ match: /\/routes\/reports\//, name: "reports" },
 		],
 	});
 
@@ -94,6 +100,18 @@ describe("splitByRoute", () => {
 		expect(admin).not.toContain(spin!);
 		expect(user).not.toContain(spin!);
 		expect(user).not.toContain("translateX");
+	});
+
+	test("rules shared by later route buckets stay in the common sheet", () => {
+		const dir = makeProject();
+		const plugin = pluginFor(dir);
+		const base = plugin.load("\0pandwind:css.css") as string;
+		const user = plugin.load("\0pandwind:css.css?route=user") as string;
+		const reports = plugin.load("\0pandwind:css.css?route=reports") as string;
+
+		expect(base).toContain("width:26px");
+		expect(user).not.toContain("width:26px");
+		expect(reports).not.toContain("width:26px");
 	});
 
 	test("configured Stack declarations stay in their owning route chunk", () => {
