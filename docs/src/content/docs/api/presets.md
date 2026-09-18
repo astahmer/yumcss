@@ -32,6 +32,33 @@ system. The safe `pandwind/css` entrypoint requires that preset. If properties
 are discovered at runtime, import `createUnsafeCss` from
 `pandwind/unsafe/css`; its lack of a catalog is then visible at the call site.
 
+A preset can carry two separate custom-property contracts. `cssVariables` owns
+flat browser-global values, condition-aware values, and optional `@property`
+registrations. `tokenVariables` optionally names the variables generated from
+token groups. Token variables remain hashed by default; pass
+`{ tokenVariableNames: "authored" }` to use the mapped names instead:
+
+```ts
+import { createCss } from "pandwind/css";
+import { define, type PandwindProperties } from "pandwind/preset";
+
+const cssConfig: PandwindProperties = {};
+const preset = define.preset(
+	{ config: cssConfig, tokens: { colors: { "$brand-500": "#2563eb" } } },
+	{
+		conditions: {},
+		properties: { $all: true, color: { $tokens: "colors" } },
+		tokenVariables: { colors: { "$brand-500": "brand-500" } },
+	},
+);
+
+const css = createCss(preset, { tokenVariableNames: "authored" });
+```
+
+Authored mappings omit the leading `--`; CSS punctuation is escaped when the
+declaration and its `var(...)` reference are emitted. Mappings may be partial,
+so an unmapped token keeps its hashed fallback.
+
 Use `define.theme` when a theme is named, exported, or composed independently.
 When the theme is only passed to one `define.preset` call, inline the
 `{ config, tokens }` object. Both forms are equivalent at runtime; the direct
@@ -143,7 +170,12 @@ returns the flat custom-variable contract plus the optional pointer rule. The
 compiler emits those variables using the preset's condition names. Pass
 `{ tokenVariableNames: "authored" }` to emit the registry's names for shadcn's
 colors, fonts, and radii; the default remains hashed and does not change
-existing output.
+existing output. Authored mappings use the exact token keys (including a `$`
+sigil when the preset declares one) and omit the leading `--`: dashes remain
+literal, while punctuation such as `.` or `/` is CSS-escaped in declarations
+and `var(...)` references. Whitespace, NUL characters, leading `--`, and
+duplicate names fail closed; tokens without a mapping keep their hashed
+fallback.
 Because the preset carries every base color's light and dark roles rather than
 one resolved theme, it is the widest catalog Pandwind publishes: a
 `createCss(shadcnPreset)` bundle is 85.08 KB min / 15.95 KB gzip against

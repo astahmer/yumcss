@@ -2,6 +2,7 @@ import { expect, test } from "vitest";
 import { createUnsafeCss } from "../src/unsafe/css.ts";
 import { createStylesheet } from "../src/css/create-stylesheet.ts";
 import { createRuntimeStylesheet } from "../src/css/runtime-stylesheet.ts";
+import { createRuntimeCss, createRuntimeSheet } from "../src/css/runtime.ts";
 import { examplePreset } from "@pandwind/example-preset";
 
 test("can emit only token declarations referenced by extracted styles", () => {
@@ -86,6 +87,65 @@ test("authored token names are opt-in and collisions fail closed", () => {
 	expect(() => createStylesheet(collisionPreset, { tokenVariableNames: "authored" })).toThrow(
 		"Ambiguous authored token variable",
 	);
+});
+
+test("authored token names preserve dashed and escaped punctuation across build and runtime", () => {
+	const preset = {
+		conditions: {},
+		properties: { $all: true, color: { $tokens: "custom" } },
+		strict: true,
+		tokens: {
+			custom: {
+				"$gray.700": "#374151",
+				"$space-2": "0.5rem",
+				$10px: "10px",
+				"$slash/name": "value",
+			},
+		},
+		tokenVariables: {
+			custom: {
+				"$gray.700": "gray.700",
+				"$space-2": "space-2",
+				$10px: "10px",
+				"$slash/name": "slash/name",
+			},
+		},
+	} as never;
+
+	const build = createStylesheet(preset, { tokenVariableNames: "authored" }).gen.tokens();
+	const runtime = createRuntimeStylesheet(preset, { tokenVariableNames: "authored" }).gen.tokens();
+	const runtimeSheet = createRuntimeSheet({ autoMount: false });
+	const runtimeCss = createRuntimeCss(preset, {
+		sheet: runtimeSheet,
+		tokenVariableNames: "authored",
+	});
+	for (const token of ["$gray.700", "$space-2", "$10px", "$slash/name"]) {
+		runtimeCss.class({ color: token });
+	}
+
+	for (const name of ["gray\\.700", "space-2", "\\31 0px", "slash\\/name"]) {
+		expect(build).toContain(`--${name}:`);
+		expect(runtime).toContain(`--${name}:`);
+		expect(runtimeSheet.css()).toContain(`var(--${name})`);
+	}
+});
+
+test("malformed authored token variable names fail closed", () => {
+	const invalidNames = ["", "has space", "--already-prefixed", "has\u0000nul", null];
+
+	for (const name of invalidNames) {
+		const preset = {
+			conditions: {},
+			properties: { $all: true },
+			strict: true,
+			tokens: { custom: { $value: "red" } },
+			tokenVariables: { custom: { $value: name } },
+		} as never;
+
+		expect(() => createStylesheet(preset, { tokenVariableNames: "authored" })).toThrow(
+			"Invalid authored token variable name",
+		);
+	}
 });
 
 test("css gen simple prop", () => {

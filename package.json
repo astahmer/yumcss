@@ -69,6 +69,7 @@
 		"release:smoke": "for p in pandwind codemod analyze devtools lint-plugin; do node scripts/release/smoke-pack.mjs packages/$p || exit 1; done",
 		"test:e2e:playground": "pnpm exec bddgen test && pnpm exec playwright test",
 		"test:e2e:studio": "pnpm exec bddgen -c playwright.studio.config.ts test && pnpm exec playwright test -c playwright.studio.config.ts",
+		"test:e2e:authored-tokens": "nub scripts/verify-authored-token-browser.ts",
 		"release:check": "node scripts/release/check-publish-ready.mjs",
 		"release:publish": "bash scripts/release/publish-all.sh"
 	},

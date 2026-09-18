@@ -29,6 +29,7 @@ pnpm run pivot:proof
 pnpm run pivot:proof:adapter-output
 pnpm run pivot:proof:chakra
 pnpm run test:e2e:playground
+pnpm run test:e2e:authored-tokens
 pnpm --filter pandwind-codemod run test:e2e
 ```
 
@@ -39,6 +40,11 @@ compete for the same ports or terminal state.
 `test:e2e:playground` generates the Playwright-BDD specs from the `.feature`
 files, starts the playground, and checks the migration lab plus editor typing
 experience in Chromium.
+
+`test:e2e:authored-tokens` generates a preset stylesheet and checks it in real
+Chromium. It covers authored custom-property names containing dots, dashes,
+slashes, and leading digits by asserting both the browser's custom-property
+values and the computed styles driven through `var(...)`.
 
 `test:coverage` runs V8 coverage for the three core packages and fails when a
 package falls below its checked-in threshold. Coverage directories are local

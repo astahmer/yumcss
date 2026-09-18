@@ -346,7 +346,11 @@ export interface CssPreset<
 	 * property with `syntax`, `inherits`, and `initialValue`.
 	 */
 	cssVariables?: CssVariables;
-	/** Optional authored custom-property names for the compiler's opt-in mode. */
+	/**
+	 * Optional custom-property suffixes for the compiler's opt-in authored mode.
+	 * Names omit `--`; whitespace, NUL, and a leading `--` are rejected, while
+	 * CSS punctuation is escaped in emitted declarations and references.
+	 */
 	tokenVariables?: TokenVariables;
 }
 

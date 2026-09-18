@@ -4,47 +4,47 @@
     "gz": 2699
   },
   "createCss(minimal preset), fallback": {
-    "min": 14948,
-    "gz": 5798
+    "min": 14975,
+    "gz": 5797
   },
   "createCss(csstypePreset)": {
-    "min": 19439,
-    "gz": 7125
+    "min": 19466,
+    "gz": 7124
   },
   "createCss(tailwindPreset)": {
-    "min": 42170,
+    "min": 42197,
     "gz": 13802
   },
   "createCss(chakraPreset)": {
-    "min": 53022,
-    "gz": 14465
+    "min": 53049,
+    "gz": 14463
   },
   "createCss(shadcnPreset)": {
-    "min": 87154,
-    "gz": 16638
+    "min": 87181,
+    "gz": 16635
   },
   "createCss(pandaPreset)": {
-    "min": 46280,
+    "min": 46307,
     "gz": 13418
   },
   "createCss(defaultPreset)": {
-    "min": 25950,
-    "gz": 9309
+    "min": 25977,
+    "gz": 9311
   },
   "createCss(fixturePreset)": {
-    "min": 29261,
-    "gz": 10362
+    "min": 29288,
+    "gz": 10363
   },
   "createCss(fixturePreset) + tw()": {
-    "min": 31947,
-    "gz": 11345
+    "min": 31974,
+    "gz": 11346
   },
   "createCss(fixturePreset) + cx()": {
-    "min": 36217,
-    "gz": 12985
+    "min": 36245,
+    "gz": 12986
   },
   "createCss(fixturePreset) + tw() + cx()": {
-    "min": 38896,
+    "min": 38924,
     "gz": 13943
   },
   "createUnsafeCss(), fallback": {
@@ -52,8 +52,8 @@
     "gz": 4701
   },
   "createRuntimeCss(preset), live sheet": {
-    "min": 36805,
-    "gz": 13491
+    "min": 36832,
+    "gz": 13492
   },
   "createUnsafeCss(), static output after extraction": {
     "min": 81,
@@ -112,8 +112,8 @@
     "gz": 8244
   },
   "stylesheet generator (build-time only)": {
-    "min": 24521,
-    "gz": 9276
+    "min": 24548,
+    "gz": 9280
   },
   "unsafe css subpath only": {
     "min": 11857,
