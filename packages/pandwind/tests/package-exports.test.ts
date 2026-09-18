@@ -152,23 +152,23 @@ describe("pandwind package boundary", () => {
 		expect("pandwindPreset" in defaultApi).toBe(false);
 		expect(tailwindApi.tailwindPreset.properties.backgroundColor).toEqual({
 			$tokens: "colors",
-			$strictness: "inherits",
+			$strict: true,
 		});
 		expect(tailwindApi.tailwindTokens.colors).toHaveProperty("$slate-700");
 		expect(chakraApi.chakraPreset.properties.backgroundColor).toEqual({
 			$tokens: "colors",
-			$strictness: "inherits",
+			$strict: true,
 		});
 		expect(chakraApi.chakraTokens.colors).toHaveProperty("$gray.700");
 		expect(shadcnApi.shadcnPreset.properties.backgroundColor).toEqual({
 			$tokens: "colors",
-			$strictness: "inherits",
+			$strict: true,
 		});
 		expect(shadcnApi.shadcnTokens.colors).toHaveProperty("$primary");
-		expect(shadcnApi.shadcnPreset.cssVariables.light).toHaveProperty("radius");
+		expect(shadcnApi.shadcnPreset.cssVariables).toHaveProperty("radius");
 		expect(pandaApi.pandaPreset.properties.backgroundColor).toEqual({
 			$tokens: "colors",
-			$strictness: "inherits",
+			$strict: true,
 		});
 		expect(pandaApi.pandaTokens.colors).toHaveProperty("red.500");
 		expect(() => import.meta.resolve("pandwind/preset/base")).toThrow();

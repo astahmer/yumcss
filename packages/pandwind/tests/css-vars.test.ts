@@ -47,8 +47,8 @@ const varsPreset = define.preset(
 		strict: true,
 		conditions: { _hover: "&:hover" },
 		properties: {
-			color: { $tokens: "colors", $strictness: "inherits" },
-			width: { $tokens: "sizes", $strictness: "inherits" },
+			color: { $tokens: "colors", $strict: false },
+			width: { $tokens: "sizes", $strict: false },
 		},
 	},
 );

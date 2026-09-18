@@ -1,7 +1,6 @@
-import { pairs } from "../lib/utils.ts";
 import { tokenNameAliases } from "../lib/token-path.ts";
-import type { CssConfigReturn } from "../types/typings.ts";
-import { hashCssVar } from "./hash.ts";
+import type { CssConfigReturn, TokenVariableNames } from "../types/typings.ts";
+import { createTokenVariableName } from "./token-variable-names.ts";
 
 type RuntimeToken = string | undefined;
 
@@ -22,9 +21,11 @@ const addAlias = (paths: Map<string, string>, key: string, path: string): void =
 export const createRuntimeTokenResolver = (
 	preset: CssConfigReturn,
 	debug = false,
+	tokenVariableNames: TokenVariableNames = "hashed",
 ): ((property: string, value: string) => string) => {
 	const paths = new Map<string, string>();
 	const groups = new Map<string, RuntimeTokenGroup>();
+	const tokenVariableName = createTokenVariableName(preset, debug, tokenVariableNames);
 	for (const group of Object.keys(preset.tokens ?? {})) {
 		const values = preset.tokens?.[group];
 		if (values === undefined || typeof values === "function") continue;
@@ -33,7 +34,7 @@ export const createRuntimeTokenResolver = (
 			const value = values[name];
 			if (value === undefined) continue;
 			const path = `${group}.${name}`;
-			const resolved = `var(--${hashCssVar(pairs.join([group, name]), debug)})`;
+			const resolved = `var(--${tokenVariableName(group, name)})`;
 			for (const alias of tokenNameAliases(name)) {
 				addAlias(paths, `${group}.${alias}`, path);
 				names.set(alias, resolved);
@@ -58,7 +59,7 @@ export const createRuntimeTokenResolver = (
 			propertyValues.set(property, values);
 		}
 		for (const name of Object.keys(propertyValue)) {
-			if (name === "$strictness" || name === "$tokens") continue;
+			if (name === "$strict" || name === "$tokens") continue;
 			const path = `${property}.${name}`;
 			for (const alias of tokenNameAliases(name)) addAlias(paths, `${property}.${alias}`, path);
 			const value = propertyValue[name];

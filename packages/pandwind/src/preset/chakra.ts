@@ -75,7 +75,8 @@ type ChakraTokenGroup = TokenGroupKey<ChakraTokens>;
 // values for spacing and sizing often enough that a token-only vocabulary
 // would reject ordinary styles, which is the same reason `defaultPreset`
 // inherits on colors.
-const boundTo = (group: ChakraTokenGroup) => ({ $tokens: group, $strictness: "inherits" }) as const;
+const boundTo = (group: ChakraTokenGroup) => ({ $tokens: group, $strict: false }) as const;
+const strictBoundTo = (group: ChakraTokenGroup) => ({ $tokens: group, $strict: true }) as const;
 
 /**
  * Property vocabulary of {@link chakraPreset}.
@@ -178,20 +179,20 @@ export const chakraProperties = define.properties({
 	scrollPaddingLeft: boundTo("spacing"),
 	scrollPaddingInline: boundTo("spacing"),
 	scrollPaddingBlock: boundTo("spacing"),
-	color: boundTo("colors"),
-	background: boundTo("colors"),
-	backgroundColor: boundTo("colors"),
-	borderColor: boundTo("colors"),
-	borderTopColor: boundTo("colors"),
-	borderRightColor: boundTo("colors"),
-	borderBottomColor: boundTo("colors"),
-	borderLeftColor: boundTo("colors"),
-	borderInlineEndColor: boundTo("colors"),
-	outlineColor: boundTo("colors"),
-	textDecorationColor: boundTo("colors"),
-	textEmphasisColor: boundTo("colors"),
-	fill: boundTo("colors"),
-	stroke: boundTo("colors"),
+	color: strictBoundTo("colors"),
+	background: strictBoundTo("colors"),
+	backgroundColor: strictBoundTo("colors"),
+	borderColor: strictBoundTo("colors"),
+	borderTopColor: strictBoundTo("colors"),
+	borderRightColor: strictBoundTo("colors"),
+	borderBottomColor: strictBoundTo("colors"),
+	borderLeftColor: strictBoundTo("colors"),
+	borderInlineEndColor: strictBoundTo("colors"),
+	outlineColor: strictBoundTo("colors"),
+	textDecorationColor: strictBoundTo("colors"),
+	textEmphasisColor: strictBoundTo("colors"),
+	fill: strictBoundTo("colors"),
+	stroke: strictBoundTo("colors"),
 	zIndex: boundTo("zIndex"),
 	aspectRatio: boundTo("aspectRatios"),
 	cursor: boundTo("cursor"),

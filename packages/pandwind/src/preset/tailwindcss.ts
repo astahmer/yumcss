@@ -54,8 +54,8 @@ type TailwindTokenGroup = TokenGroupKey<TailwindTokens>;
 // Every bound namespace keeps raw CSS available: a Tailwind project writes
 // arbitrary values often enough that a token-only vocabulary would reject
 // ordinary styles, which is the same reason `defaultPreset` inherits on colors.
-const boundTo = (group: TailwindTokenGroup) =>
-	({ $tokens: group, $strictness: "inherits" }) as const;
+const boundTo = (group: TailwindTokenGroup) => ({ $tokens: group, $strict: false }) as const;
+const strictBoundTo = (group: TailwindTokenGroup) => ({ $tokens: group, $strict: true }) as const;
 
 /**
  * Property vocabulary of {@link tailwindPreset}.
@@ -92,20 +92,20 @@ export const tailwindProperties = define.properties({
 	maxWidth: boundTo("containers"),
 	zIndex: boundTo("zIndices"),
 	transition: boundTo("transitions"),
-	color: boundTo("colors"),
-	background: boundTo("colors"),
-	backgroundColor: boundTo("colors"),
-	borderColor: boundTo("colors"),
-	borderTopColor: boundTo("colors"),
-	borderRightColor: boundTo("colors"),
-	borderBottomColor: boundTo("colors"),
-	borderLeftColor: boundTo("colors"),
-	borderInlineEndColor: boundTo("colors"),
-	outlineColor: boundTo("colors"),
-	textDecorationColor: boundTo("colors"),
-	textEmphasisColor: boundTo("colors"),
-	fill: boundTo("colors"),
-	stroke: boundTo("colors"),
+	color: strictBoundTo("colors"),
+	background: strictBoundTo("colors"),
+	backgroundColor: strictBoundTo("colors"),
+	borderColor: strictBoundTo("colors"),
+	borderTopColor: strictBoundTo("colors"),
+	borderRightColor: strictBoundTo("colors"),
+	borderBottomColor: strictBoundTo("colors"),
+	borderLeftColor: strictBoundTo("colors"),
+	borderInlineEndColor: strictBoundTo("colors"),
+	outlineColor: strictBoundTo("colors"),
+	textDecorationColor: strictBoundTo("colors"),
+	textEmphasisColor: strictBoundTo("colors"),
+	fill: strictBoundTo("colors"),
+	stroke: strictBoundTo("colors"),
 });
 
 /** The inferred property-vocabulary type of {@link tailwindProperties}. */

@@ -214,7 +214,7 @@ test("Vite contracts keep shared engines, resolvers, options, and plugin hooks t
 	expect(vitePlugin.name).type.toBe<string>();
 	expect(cssPlugin.name).type.toBe<string>();
 	expect(engine.foldLiteralStyle({ color: "red" })).type.toBe<string | null>();
-	expect(css.class({ color: "red" })).type.toBe<string>();
+	expect(css.class({ $raw: { color: "red" } })).type.toBe<string>();
 	expect(foldStackElements("<Stack gap={4} />", "/project/src/app.tsx", { engine })).type.toBe<{
 		code: string;
 		folded: number;

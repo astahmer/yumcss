@@ -51,7 +51,8 @@ type PandaTokenGroup = TokenGroupKey<PandaTokens>;
 // values for spacing and sizing often enough that a token-only vocabulary
 // would reject ordinary styles, which is the same reason `defaultPreset`
 // inherits on colors.
-const boundTo = (group: PandaTokenGroup) => ({ $tokens: group, $strictness: "inherits" }) as const;
+const boundTo = (group: PandaTokenGroup) => ({ $tokens: group, $strict: false }) as const;
+const strictBoundTo = (group: PandaTokenGroup) => ({ $tokens: group, $strict: true }) as const;
 
 /**
  * Property vocabulary of {@link pandaPreset}.
@@ -194,29 +195,29 @@ export const pandaProperties = define.properties({
 	textIndent: boundTo("spacing"),
 	top: boundTo("spacing"),
 
-	WebkitTextFillColor: boundTo("colors"),
-	accentColor: boundTo("colors"),
-	background: boundTo("colors"),
-	backgroundColor: boundTo("colors"),
-	borderBlockColor: boundTo("colors"),
-	borderBlockEndColor: boundTo("colors"),
-	borderBlockStartColor: boundTo("colors"),
-	borderBottomColor: boundTo("colors"),
-	borderColor: boundTo("colors"),
-	borderInlineColor: boundTo("colors"),
-	borderInlineEndColor: boundTo("colors"),
-	borderInlineStartColor: boundTo("colors"),
-	borderLeftColor: boundTo("colors"),
-	borderRightColor: boundTo("colors"),
-	borderTopColor: boundTo("colors"),
-	caretColor: boundTo("colors"),
-	color: boundTo("colors"),
-	fill: boundTo("colors"),
-	outlineColor: boundTo("colors"),
-	scrollbarColor: boundTo("colors"),
-	stroke: boundTo("colors"),
-	textDecorationColor: boundTo("colors"),
-	textEmphasisColor: boundTo("colors"),
+	WebkitTextFillColor: strictBoundTo("colors"),
+	accentColor: strictBoundTo("colors"),
+	background: strictBoundTo("colors"),
+	backgroundColor: strictBoundTo("colors"),
+	borderBlockColor: strictBoundTo("colors"),
+	borderBlockEndColor: strictBoundTo("colors"),
+	borderBlockStartColor: strictBoundTo("colors"),
+	borderBottomColor: strictBoundTo("colors"),
+	borderColor: strictBoundTo("colors"),
+	borderInlineColor: strictBoundTo("colors"),
+	borderInlineEndColor: strictBoundTo("colors"),
+	borderInlineStartColor: strictBoundTo("colors"),
+	borderLeftColor: strictBoundTo("colors"),
+	borderRightColor: strictBoundTo("colors"),
+	borderTopColor: strictBoundTo("colors"),
+	caretColor: strictBoundTo("colors"),
+	color: strictBoundTo("colors"),
+	fill: strictBoundTo("colors"),
+	outlineColor: strictBoundTo("colors"),
+	scrollbarColor: strictBoundTo("colors"),
+	stroke: strictBoundTo("colors"),
+	textDecorationColor: strictBoundTo("colors"),
+	textEmphasisColor: strictBoundTo("colors"),
 
 	aspectRatio: boundTo("aspectRatios"),
 

@@ -20,7 +20,7 @@ Use this lane for things that are not element-local atomic declarations:
 
 - global selectors and resets;
 - `@font-face` declarations;
-- cascade layers, `@supports`, `@property`, and other authored at-rules;
+- cascade layers, `@supports`, and other authored at-rules;
 - complex selectors or vendor-specific CSS that should remain recognizable as
   CSS.
 
@@ -33,7 +33,9 @@ runtime call. Everything above stays authored CSS. See
 ### Registering a typed custom property
 
 `@property` describes a browser-global custom property: its syntax, inheritance
-behavior, and initial value. Keep that registration in the authored CSS lane:
+behavior, and initial value. A preset can own that registration through its
+flat `cssVariables` contract; keep it in authored CSS when it is not preset
+data:
 
 ```css
 @property --progress {

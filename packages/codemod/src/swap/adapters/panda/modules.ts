@@ -420,13 +420,13 @@ export function renderPandaPreset(
 		...conditions,
 	};
 	const conditionJson = JSON.stringify(conditionValues, null, "\t");
-	const propertyDefinitions: Record<string, true | { $tokens: string; $strictness: "inherits" }> = {
+	const propertyDefinitions: Record<string, true | { $tokens: string; $strict: false }> = {
 		...PANDWIND_RAW_PROPERTIES,
 	};
 	for (const [property, group] of Object.entries(PANDWIND_TOKEN_PROPERTIES)) {
 		const tokenGroup = tokenGroupFor(group, theme.tokens);
 		if (Object.hasOwn(theme.tokens, tokenGroup))
-			propertyDefinitions[property] = { $tokens: tokenGroup, $strictness: "inherits" };
+			propertyDefinitions[property] = { $tokens: tokenGroup, $strict: false };
 	}
 	const propertyJson = JSON.stringify(propertyDefinitions, null, "\t");
 	const appSemanticDeclaration = hasAppSemanticTokens

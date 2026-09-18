@@ -8,7 +8,9 @@ import {
 import type { CssConfigReturn, TokenDeclaration } from "../types/typings.ts";
 import { createVarCompiler, varConditionPart } from "./var-compiler.ts";
 import type { CreateCssOptions } from "./runtime-base.ts";
-import { createHashFn, dashCase, escapeIdentifier, hashCssVar } from "./hash.ts";
+import { createHashFn, dashCase, escapeIdentifier } from "./hash.ts";
+import { normalizeCssVariables } from "./css-variables.ts";
+import { createTokenVariableName } from "./token-variable-names.ts";
 import { getPropertyPriority } from "./property-priorities.ts";
 import {
 	buildRuntimeTokenMaps,
@@ -62,6 +64,7 @@ export const createRuntimeStylesheet = (
 	);
 	const hashFn = options.hashFn ?? createHashFn(Boolean(options.debug));
 	const debug = Boolean(options.debug);
+	const tokenVariableName = createTokenVariableName(preset, debug, options.tokenVariableNames);
 
 	// Sheet-backed strategies own the class names of the declarations they
 	// map — the generated selectors must match what the runtime emits.
@@ -87,7 +90,7 @@ export const createRuntimeStylesheet = (
 		return sort ? parts.sort() : parts;
 	};
 
-	const tokenMaps = buildRuntimeTokenMaps(preset, debug);
+	const tokenMaps = buildRuntimeTokenMaps(preset, debug, options.tokenVariableNames);
 	const colorPaletteMaps =
 		preset.colorPalettes === undefined
 			? undefined
@@ -103,7 +106,7 @@ export const createRuntimeStylesheet = (
 		for (const tokenName of Object.keys(groupTokens)) {
 			const tokenValue = groupTokens[tokenName];
 			if (tokenValue === undefined) continue;
-			const cssVarHash = hashCssVar(pairs.join([group, tokenName]), debug);
+			const cssVarHash = tokenVariableName(group, tokenName);
 			const tokenPath = `${group}.${tokenName}`;
 
 			if (typeof tokenValue === "object") {
@@ -153,9 +156,41 @@ export const createRuntimeStylesheet = (
 		}
 	}
 
+	const normalizedCssVariables = normalizeCssVariables(preset.cssVariables);
+	for (const entry of normalizedCssVariables.values) {
+		if (entry.condition !== "base" && !Object.hasOwn(preset.conditions, entry.condition))
+			throw new Error(`Unknown condition '${entry.condition}' in css variable '--${entry.name}'`);
+		const resolved = entry.condition === "base" ? "" : preset.conditions[entry.condition]!;
+		const resolvedList = (Array.isArray(resolved) ? resolved : [resolved]).filter(
+			(part): part is string => Boolean(part),
+		);
+		const conditions = Object.assign(createConditionsBucket(), {
+			className: "",
+			parentSelectors: resolvedList.length ? [] : [":root "],
+		});
+		resolvedList.forEach((selector) => parseCondition(selector, conditions));
+		const priorities = resolvedList.map((part) =>
+			getPropertyPriority(isSelfSelector(part) ? part.slice(1) : part),
+		);
+		cssVars.set(`cssVariables.${entry.name}.${entry.condition}`, {
+			declaration: genCSSRule(cssVar.declaration(entry.name, entry.value), conditions),
+			priority: priorities.reduce((acc, priority) => acc + priority, 0),
+		});
+	}
+
+	const cssVariableRegistrations = normalizedCssVariables.registrations
+		.map(
+			({ name, descriptor }) =>
+				`@property --${escapeIdentifier(name)}{syntax:${descriptor.syntax};inherits:${String(descriptor.inherits)};initial-value:${descriptor.initialValue}}`,
+		)
+		.toSorted();
+
 	let tokensCache: string | undefined;
 	const tokens = (): string =>
-		(tokensCache ??= Array.from(cssVars.values())
+		(tokensCache ??= [
+			...cssVariableRegistrations.map((declaration) => ({ declaration, priority: 0 })),
+			...Array.from(cssVars.values()),
+		]
 			.toSorted((a, b) => {
 				const priority = a.priority - b.priority;
 				if (priority === 0) return a.declaration.localeCompare(b.declaration);

@@ -183,7 +183,7 @@ export const examplePreset = define.preset(theme, {
 		display: true,
 		margin: true,
 		color: {
-			$strictness: "inherits",
+			$strict: false,
 			...tokens.colors,
 		},
 		backgroundColor: tokens.colors,
@@ -193,7 +193,7 @@ export const examplePreset = define.preset(theme, {
 			...tokens.spacing,
 		},
 		marginTop: {
-			// $strictness: "inherits",
+			// $strict: false,
 			$tokens: "spacing",
 		},
 		width: {

@@ -243,35 +243,35 @@ Lower is smaller. Sizes are decimal KB (1 KB = 1,000 bytes); exact byte values r
 |    1 | createUnsafeCss(), static output after extraction | static output             |          0.08 |      0.10 |
 |    2 | root barrel, tw only                              | tree-shaken barrel        |          2.80 |      1.31 |
 |    3 | tw                                                | runtime                   |          2.80 |      1.31 |
-|    4 | createUnsafeCss(), generated call                 | generated runtime         |          5.76 |      2.46 |
-|    5 | createUnsafeCss(), generated class                | generated runtime         |          5.81 |      2.48 |
-|    6 | createUnsafeCss(), compiler-pruned call           | compiler-pruned           |          5.82 |      2.50 |
-|    7 | createUnsafeCss(), compiler-pruned class          | compiler-pruned           |          5.88 |      2.52 |
-|    8 | createCssRuntime() core (internal)                | internal core             |          5.82 |      2.52 |
+|    4 | createUnsafeCss(), generated call                 | generated runtime         |          6.05 |      2.57 |
+|    5 | createUnsafeCss(), generated class                | generated runtime         |          6.10 |      2.59 |
+|    6 | createUnsafeCss(), compiler-pruned call           | compiler-pruned           |          6.11 |      2.61 |
+|    7 | createUnsafeCss(), compiler-pruned class          | compiler-pruned           |          6.17 |      2.63 |
+|    8 | createCssRuntime() core (internal)                | internal core             |          6.42 |      2.70 |
 |    9 | cx, plain                                         | runtime                   |          7.03 |      3.01 |
-|   10 | createUnsafeCss(), generated vars                 | generated runtime         |          8.17 |      3.34 |
-|   11 | createUnsafeCss(), generated class+vars           | generated runtime         |          8.23 |      3.36 |
-|   12 | createUnsafeCss(), compiler-pruned vars           | compiler-pruned           |          8.24 |      3.38 |
-|   13 | createUnsafeCss(), generated all                  | generated runtime         |         10.50 |      4.19 |
-|   14 | createUnsafeCss(), dynamic fallback               | unsafe fallback           |         11.22 |      4.51 |
-|   15 | createUnsafeCss(), fallback                       | unsafe fallback           |         11.23 |      4.51 |
-|   16 | unsafe css subpath only                           | tree-shaken subpath       |         11.24 |      4.52 |
-|   17 | createCss(minimal preset), fallback               | preset-bound fallback     |         13.72 |      5.43 |
-|   18 | createCss(csstypePreset)                          | preset-bound structural   |         18.21 |      6.74 |
-|   19 | cx                                                | runtime                   |         18.17 |      7.08 |
-|   20 | root barrel, cx + unsafe css                      | tree-shaken barrel        |         18.17 |      7.10 |
-|   21 | all (createUnsafeCss+tw+cx)                       | runtime                   |         20.86 |      8.06 |
-|   22 | stylesheet generator (build-time only)            | build-time only           |         22.18 |      8.59 |
-|   23 | createCss(defaultPreset)                          | preset-bound default      |         24.73 |      8.93 |
-|   24 | createCss(fixturePreset)                          | preset-bound full catalog |         28.06 |      9.98 |
-|   25 | createCss(fixturePreset) + tw()                   | preset-bound full catalog |         30.75 |     10.97 |
-|   26 | createCss(fixturePreset) + cx()                   | preset-bound full catalog |         35.01 |     12.62 |
-|   27 | createRuntimeCss(preset), live sheet              | live sheet                |         34.37 |     12.74 |
-|   28 | createCss(pandaPreset)                            | preset-bound panda        |         45.06 |     13.04 |
-|   29 | createCss(tailwindPreset)                         | preset-bound tailwind     |         40.95 |     13.42 |
-|   30 | createCss(fixturePreset) + tw() + cx()            | preset-bound full catalog |         37.69 |     13.58 |
-|   31 | createCss(chakraPreset)                           | preset-bound chakra       |         51.80 |     14.06 |
-|   32 | createCss(shadcnPreset)                           | preset-bound shadcn       |         85.71 |     16.20 |
+|   10 | createUnsafeCss(), generated vars                 | generated runtime         |          8.46 |      3.45 |
+|   11 | createUnsafeCss(), generated class+vars           | generated runtime         |          8.52 |      3.47 |
+|   12 | createUnsafeCss(), compiler-pruned vars           | compiler-pruned           |          8.53 |      3.49 |
+|   13 | createUnsafeCss(), generated all                  | generated runtime         |         10.82 |      4.31 |
+|   14 | createUnsafeCss(), dynamic fallback               | unsafe fallback           |         11.84 |      4.70 |
+|   15 | createUnsafeCss(), fallback                       | unsafe fallback           |         11.85 |      4.70 |
+|   16 | unsafe css subpath only                           | tree-shaken subpath       |         11.86 |      4.71 |
+|   17 | createCss(minimal preset), fallback               | preset-bound fallback     |         14.95 |      5.80 |
+|   18 | createCss(csstypePreset)                          | preset-bound structural   |         19.44 |      7.13 |
+|   19 | cx                                                | runtime                   |         18.79 |      7.28 |
+|   20 | root barrel, cx + unsafe css                      | tree-shaken barrel        |         18.79 |      7.29 |
+|   21 | all (createUnsafeCss+tw+cx)                       | runtime                   |         21.48 |      8.24 |
+|   22 | stylesheet generator (build-time only)            | build-time only           |         24.52 |      9.28 |
+|   23 | createCss(defaultPreset)                          | preset-bound default      |         25.95 |      9.31 |
+|   24 | createCss(fixturePreset)                          | preset-bound full catalog |         29.26 |     10.36 |
+|   25 | createCss(fixturePreset) + tw()                   | preset-bound full catalog |         31.95 |     11.35 |
+|   26 | createCss(fixturePreset) + cx()                   | preset-bound full catalog |         36.22 |     12.99 |
+|   27 | createCss(pandaPreset)                            | preset-bound panda        |         46.28 |     13.42 |
+|   28 | createRuntimeCss(preset), live sheet              | live sheet                |         36.81 |     13.49 |
+|   29 | createCss(tailwindPreset)                         | preset-bound tailwind     |         42.17 |     13.80 |
+|   30 | createCss(fixturePreset) + tw() + cx()            | preset-bound full catalog |         38.90 |     13.94 |
+|   31 | createCss(chakraPreset)                           | preset-bound chakra       |         53.02 |     14.47 |
+|   32 | createCss(shadcnPreset)                           | preset-bound shadcn       |         87.15 |     16.64 |
 
 ## Generated Tailwind metadata size
 
@@ -283,9 +283,9 @@ These rows are separate from the native CSS runtime: static generated calls eras
 |    2 | generated tw (dynamic)                  |          4.45 |      1.74 |
 |    3 | generated conflict metadata (opt-in)    |         22.37 |      7.23 |
 |    4 | generated conflict cx (dynamic, no css) |         29.37 |     10.18 |
-|    5 | example dss+cx (no tw metadata)         |         32.41 |     11.99 |
-|    6 | explicit conflict cx (dynamic)          |         54.73 |     19.14 |
-|    7 | generated tw runtime metadata (opt-in)  |        177.07 |     19.43 |
+|    5 | example dss+cx (no tw metadata)         |         33.32 |     12.32 |
+|    6 | generated tw runtime metadata (opt-in)  |        177.07 |     19.43 |
+|    7 | explicit conflict cx (dynamic)          |         55.64 |     19.48 |
 
 ## Ecosystem bundle-size comparison
 

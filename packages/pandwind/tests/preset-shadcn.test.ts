@@ -45,7 +45,9 @@ import {
 	createShadcnPreset,
 	shadcnColorRoles,
 	shadcnConditions,
+	shadcnColorVariables,
 	shadcnDeclarations,
+	shadcnFontVariables,
 	shadcnPreset,
 	shadcnProperties,
 	shadcnThemesForBaseColor,
@@ -63,7 +65,6 @@ import {
 } from "../../../scripts/reference-workspace.ts";
 import {
 	buildRegistryBaseThemeVars,
-	buildThemeCssText,
 	buildThemeForPreset,
 	effectiveRadius,
 } from "./helpers/shadcn-oracle.ts";
@@ -115,7 +116,7 @@ const resolved = (options: ShadcnPresetOptions = {}): ShadcnConfig => resolveSha
 const isStockColorBinding = (binding: unknown): boolean =>
 	typeof binding === "object" &&
 	binding !== null &&
-	"$strictness" in binding &&
+	Object.hasOwn(binding, "transparent") &&
 	!("$tokens" in binding);
 
 const configurationLabel = (options: ShadcnPresetOptions): string => {
@@ -134,33 +135,17 @@ const configurationLabel = (options: ShadcnPresetOptions): string => {
 };
 
 /**
- * Compare one configuration's declared blocks against the create page.
- *
- * The light block is a superset by design: it carries the font variables and
- * the radius multipliers a generated project stylesheet publishes, so the
- * assertion is that every property the create page declares is present with
- * the same value and that nothing else was invented.
+ * Compare one configuration's token data against the create page.
  */
 const expectCreatePageEnvironment = (options: ShadcnPresetOptions): void => {
 	const config = resolved(options);
 	const label = configurationLabel(options);
 	const expected = buildThemeForPreset(config);
+	const colors = shadcnColorVariables(config);
 	const { cssVariables } = shadcnDeclarations(config);
-	const fontKeys = Object.keys(shadcnDeclarations(config).cssVariables.light).filter((key) =>
-		key.startsWith("font-"),
-	);
-	const multiplierKeys = Object.keys(shadcnTheme.radiusMultipliers);
-	const accounted = new Set([...Object.keys(expected.light), ...fontKeys, ...multiplierKeys]);
-
-	expect(Object.keys(cssVariables.dark).toSorted(), label).toEqual(
-		Object.keys(expected.dark).toSorted(),
-	);
-	expect(Object.keys(cssVariables.light).toSorted(), label).toEqual([...accounted].toSorted());
-
-	for (const [name, value] of Object.entries(expected.light))
-		expect(cssVariables.light[name], label + " light --" + name).toBe(value);
-	for (const [name, value] of Object.entries(expected.dark))
-		expect(cssVariables.dark[name], label + " dark --" + name).toBe(value);
+	expect(colors.light, label).toMatchObject(expected.light);
+	expect(colors.dark, label).toEqual(expected.dark);
+	expect(cssVariables).toEqual({ radius: colors.light.radius });
 };
 
 describe("shadcn preset data", () => {
@@ -222,9 +207,7 @@ describe("shadcn preset data", () => {
 				value.includes("var(--radius)"),
 			),
 		).toBe(true);
-		expect(shadcnDeclarations(resolved()).cssVariables.light.radius).toBe(
-			shadcnTheme.defaultRadiusValue,
-		);
+		expect(shadcnDeclarations(resolved()).cssVariables.radius).toBe(shadcnTheme.defaultRadiusValue);
 	});
 
 	test("a base color can only be themed by itself or by an accent", () => {
@@ -305,7 +288,7 @@ describe("shadcn preset parity with the create page", () => {
 
 	test("the chart color overrides both modes", () => {
 		const config = resolved({ baseColor: "neutral", theme: "neutral", chartColor: "red" });
-		const { light, dark } = shadcnDeclarations(config).cssVariables;
+		const { light, dark } = shadcnColorVariables(config);
 		const red = shadcnTheme.themes.red;
 
 		for (const index of [1, 2, 3, 4, 5]) {
@@ -316,8 +299,8 @@ describe("shadcn preset parity with the create page", () => {
 	});
 
 	test("a bold menu accent restates primary into the accent roles", () => {
-		const subtle = shadcnDeclarations(resolved({ theme: "red" })).cssVariables;
-		const bold = shadcnDeclarations(resolved({ theme: "red", menuAccent: "bold" })).cssVariables;
+		const subtle = shadcnColorVariables(resolved({ theme: "red" }));
+		const bold = shadcnColorVariables(resolved({ theme: "red", menuAccent: "bold" }));
 
 		expect(bold.light.accent).toBe(bold.light.primary);
 		expect(bold.light["accent-foreground"]).toBe(bold.light["primary-foreground"]);
@@ -344,19 +327,17 @@ describe("shadcn preset parity with the create page", () => {
 					});
 
 		expect(
-			shadcnDeclarations(resolved({ style: "lyra", radius: "large" })).cssVariables.light.radius,
+			shadcnDeclarations(resolved({ style: "lyra", radius: "large" })).cssVariables.radius,
 		).toBe(shadcnTheme.radiusValues.none);
 		expect(
-			shadcnDeclarations(resolved({ style: "rhea", radius: "large" })).cssVariables.light.radius,
-		).toBe(shadcnDeclarations(resolved({ radius: "default" })).cssVariables.light.radius);
+			shadcnDeclarations(resolved({ style: "rhea", radius: "large" })).cssVariables.radius,
+		).toBe(shadcnDeclarations(resolved({ radius: "default" })).cssVariables.radius);
 	});
 
 	test("--font-heading inherits the body font's own variable", () => {
-		const inherited = shadcnDeclarations(resolved({ font: "inter" })).cssVariables.light;
-		const own = shadcnDeclarations(resolved({ font: "inter", fontHeading: "geist" })).cssVariables
-			.light;
-		const spelled = shadcnDeclarations(resolved({ font: "inter", fontHeading: "inter" }))
-			.cssVariables.light;
+		const inherited = shadcnFontVariables(resolved({ font: "inter" }));
+		const own = shadcnFontVariables(resolved({ font: "inter", fontHeading: "geist" }));
+		const spelled = shadcnFontVariables(resolved({ font: "inter", fontHeading: "inter" }));
 
 		expect(inherited["font-heading"]).toBe("var(" + shadcnTheme.fonts.inter.variable + ")");
 		expect(spelled["font-heading"]).toBe(inherited["font-heading"]);
@@ -367,8 +348,7 @@ describe("shadcn preset parity with the create page", () => {
 		expect(buildRegistryBaseThemeVars(resolved({ fontHeading: "geist" }))).toEqual({});
 
 		for (const font of shadcnTheme.fontOrder) {
-			const light = shadcnDeclarations(resolved({ font, fontHeading: "inherit" })).cssVariables
-				.light;
+			const light = shadcnFontVariables(resolved({ font, fontHeading: "inherit" }));
 			const bodyFont = shadcnTheme.fonts[font];
 			expect(light[bodyFont.variable.slice("--".length)]).toBe(bodyFont.family);
 			expect(light["font-heading"]).toBe("var(" + bodyFont.variable + ")");
@@ -377,27 +357,15 @@ describe("shadcn preset parity with the create page", () => {
 
 	test("the preset's blocks render to the create page's stylesheet", () => {
 		const config = resolved({ pointer: true });
-		const { cssVariables } = shadcnDeclarations(config);
-		const css = buildThemeCssText(
-			{
-				light: cssVariables.light,
-				dark: cssVariables.dark,
-			},
-			config.pointer,
-		);
+		const preset = createShadcnPreset(config);
+		const css = createStylesheet(preset, { tokenVariableNames: "authored" }).generate([
+			createCss(preset).raw({ color: "$background" }),
+		]);
 
-		expect(css.indexOf(":root {")).toBe(0);
-		expect(css).toContain("\n.dark {");
-		expect(css.indexOf(":root {")).toBeLessThan(css.indexOf(".dark {"));
-		expect(css).toContain(
-			"--" + "background: " + shadcnTheme.baseColors.neutral.light.background + ";",
-		);
-		expect(css).toContain(
-			"@layer base {\n  " + shadcnTheme.pointerSelector + " {\n    cursor: pointer;\n  }\n}\n",
-		);
-		expect(
-			buildThemeCssText({ light: cssVariables.light, dark: cssVariables.dark }, false),
-		).not.toContain("cursor: pointer");
+		expect(css).toContain(":root {--background:");
+		expect(css).toContain(".dark {--background:");
+		expect(css).toContain("--radius:");
+		expect(css).toContain("--background: " + shadcnTheme.baseColors.neutral.light.background + ";");
 	});
 
 	test("the pointer rule is opt-in and stays out of the blocks", () => {
@@ -405,9 +373,9 @@ describe("shadcn preset parity with the create page", () => {
 		expect(shadcnDeclarations(resolved({ pointer: true })).pointerCss).toContain(
 			shadcnTheme.pointerSelector,
 		);
-		expect(
-			Object.keys(shadcnDeclarations(resolved({ pointer: true })).cssVariables.light),
-		).not.toContain("cursor");
+		expect(shadcnDeclarations(resolved({ pointer: true })).cssVariables).not.toHaveProperty(
+			"cursor",
+		);
 	});
 });
 
@@ -463,7 +431,7 @@ describe("shadcn preset runtime resolution", () => {
 		expect(usedTokens).toContain(shadcnTheme.baseColors.neutral.light.foreground);
 		expect(usedTokens).toContain(shadcnTheme.baseColors.neutral.dark.foreground);
 		expect(usedTokens).not.toContain(shadcnTheme.baseColors.neutral.light.primary);
-		expect(usedTokens.split("\n")).toHaveLength(2);
+		expect(usedTokens.split("\n")).toHaveLength(3);
 		expect(usedTokens.length).toBeLessThan(full.length / 10);
 	});
 
@@ -489,7 +457,7 @@ describe("shadcn preset runtime resolution", () => {
 		expect(themed.chartColor).toBe("zinc");
 		expect(charted.theme).toBe("stone");
 		expect(charted.chartColor).toBe("stone");
-		expect(shadcnDeclarations(charted).cssVariables.light["chart-1"]).toBe(
+		expect(shadcnColorVariables(charted).light["chart-1"]).toBe(
 			shadcnTheme.themes.stone.light["chart-1"],
 		);
 		expectCreatePageEnvironment({ baseColor: "stone" });

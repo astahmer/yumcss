@@ -49,7 +49,7 @@ describe("deriveProjectGovernanceContext", () => {
 			tokens: { colors: { red: "#ff0000" }, spacing: { "4": "4px" } },
 			properties: {
 				display: true,
-				color: { $strictness: "inherits", red: "#ff0000" },
+				color: { $strict: false, red: "#ff0000" },
 				backgroundColor: { red: "#ff0000" },
 				padding: { $tokens: "spacing" },
 			},

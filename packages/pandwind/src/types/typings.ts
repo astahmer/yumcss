@@ -91,16 +91,17 @@ type MaybeColorOpacity<TName, Value> = TName extends ColorPropertyName
 
 type PropConfigValues<TConfig, TName extends keyof TConfig, TTokens> =
 	| true
-	| (Record<string, TConfig[TName]> & {
-			$strictness?: "inherits";
+	| ({
+			/** Set false when this token binding intentionally accepts config values. */
+			$strict?: boolean;
 			$tokens?: TokenGroupKey<TTokens>;
-	  });
+	  } & Record<string, TConfig[TName] | string | boolean | TokenGroupKey<TTokens> | undefined>);
 
 /**
  * Maps CSS properties to raw values or named token groups in a preset.
  *
  * `true` uses the CSS config; `$tokens` binds a token group; `$all` includes
- * all configured properties; `$strictness: "inherits"` also allows raw values.
+ * all configured properties; `$strict: false` also allows CSS config values.
  *
  * @typeParam TConfig - The CSS property configuration.
  * @typeParam TTokens - The token groups available to the preset.
@@ -286,12 +287,27 @@ export type ColorPaletteDefinitions<TTokens extends AnyTokens = AnyTokens> = {
  * generators prefix. `light` renders under `:root` and `dark` under the
  * ecosystem's dark selector.
  */
-export interface CssVariableBlocks {
-	/** Unconditional and light-mode properties, rendered under `:root`. */
-	readonly light: Readonly<Record<string, string>>;
-	/** Dark-mode properties, rendered under the dark-mode selector. */
-	readonly dark: Readonly<Record<string, string>>;
+/** A CSS custom property registration emitted as an `@property` rule. */
+export interface CssVariableDescriptor {
+	readonly syntax: string;
+	readonly inherits: boolean;
+	readonly initialValue: string;
 }
+
+/** A flat custom-property value or a condition-aware value map. */
+export type CssVariableValue = string | CssVariableDescriptor | Readonly<Record<string, string>>;
+
+/** Custom properties a preset declares for its ecosystem's stylesheet. */
+export type CssVariables = Readonly<Record<string, CssVariableValue>>;
+
+/** How token custom-property names are selected by a CSS compiler. */
+export type TokenVariableNames = "hashed" | "authored";
+
+/** Authored custom-property names, keyed by token group and token name. */
+export type TokenVariables = Readonly<Record<string, Readonly<Record<string, string>>>>;
+
+/** CSS-wide values remain available on every preset-bound CSS property. */
+export type CssWideValue = "inherit" | "initial" | "revert" | "revert-layer" | "unset";
 
 /** Runtime and typing metadata consumed by Pandwind CSS factories.
  *
@@ -325,15 +341,13 @@ export interface CssPreset<
 	colorPalettes?: TColorPalettes;
 	/**
 	 * Custom properties the ecosystem's own stylesheet expects, such as the
-	 * `--background` / `--radius` roles a shadcn/ui project already reads.
-	 *
-	 * This is interop data, not compiler output: the stylesheet compiler
-	 * publishes a preset's token custom properties and never declares these, so
-	 * the reset layer, a design-system bridge, or the project's own stylesheet
-	 * renders them. Tokens that reference one of these properties resolve only
-	 * once that block is applied.
+	 * `--radius` root value a shadcn/ui project already reads. Keys omit `--`.
+	 * Values may use condition names from `conditions`, or register a typed
+	 * property with `syntax`, `inherits`, and `initialValue`.
 	 */
-	cssVariables?: CssVariableBlocks;
+	cssVariables?: CssVariables;
+	/** Optional authored custom-property names for the compiler's opt-in mode. */
+	tokenVariables?: TokenVariables;
 }
 
 /** Values portion passed to {@link define.preset}. */
@@ -366,7 +380,7 @@ export interface CssConfigReturn<
 type AuthoredValueName = string | number;
 
 type ExplicitTokenNames<Value> = Extract<
-	Exclude<keyof Value, "$strictness" | "$tokens">,
+	Exclude<keyof Value, "$strict" | "$tokens">,
 	AuthoredValueName
 >;
 
@@ -467,7 +481,7 @@ type StrictValue<
 	Value,
 	TPreset,
 > = Value extends {
-	$strictness: "inherits";
+	$strict: false;
 }
 	?
 			| MaybeColorOpacity<
@@ -481,6 +495,7 @@ type StrictValue<
 		>;
 
 type PropValue<TConfig, TTokens extends AnyTokens, TName extends string, Value, Strict, TPreset> =
+	| CssWideValue
 	| FirstThatWorksValue
 	| (Value extends boolean
 			? ConfigPropertyValue<TConfig, TName>
@@ -595,6 +610,8 @@ export type TypedStyleObject<
 				: "Not a part of the `TConfig` interface" & {
 						_error: typeof ErrorSymbol;
 					};
-	} & PresetPaletteProperty<TPreset>,
+	} & PresetPaletteProperty<TPreset> & {
+			readonly $raw?: TypedRawStyleObject<TPreset>;
+		},
 	TConds
 >;

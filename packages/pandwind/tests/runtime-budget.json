@@ -4,28 +4,28 @@
 		"gz": 3800
 	},
 	"createCss(minimal preset), fallback": {
-		"min": 14400,
-		"gz": 5700
+		"min": 15200,
+		"gz": 6000
 	},
 	"createCss(csstypePreset)": {
-		"min": 19400,
-		"gz": 7150
+		"min": 20000,
+		"gz": 7400
 	},
 	"createCss(tailwindPreset)": {
-		"min": 41000,
-		"gz": 13600
+		"min": 43000,
+		"gz": 14000
 	},
 	"createCss(chakraPreset)": {
-		"min": 51900,
-		"gz": 14250
+		"min": 53500,
+		"gz": 15000
 	},
 	"createCss(shadcnPreset)": {
-		"min": 85900,
-		"gz": 16350
+		"min": 88000,
+		"gz": 17000
 	},
 	"createCss(pandaPreset)": {
-		"min": 45350,
-		"gz": 13050
+		"min": 47000,
+		"gz": 14000
 	},
 	"createCss(defaultPreset)": {
 		"min": 29900,
@@ -52,8 +52,8 @@
 		"gz": 5400
 	},
 	"createRuntimeCss(preset), live sheet": {
-		"min": 36000,
-		"gz": 13200
+		"min": 38000,
+		"gz": 14000
 	},
 	"createUnsafeCss(), static output after extraction": {
 		"min": 100,
@@ -124,7 +124,7 @@
 		"gz": 8100
 	},
 	"stylesheet generator (build-time only)": {
-		"min": 22400,
-		"gz": 8600
+		"min": 25000,
+		"gz": 9500
 	}
 }

@@ -15,7 +15,7 @@ test("css gen simple prop", () => {
 			properties: {
 				$all: true,
 				color: {
-					$strictness: "inherits",
+					$strict: false,
 					"blue.300": "#0000ff",
 				},
 

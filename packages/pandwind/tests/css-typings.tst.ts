@@ -65,10 +65,10 @@ test("createCss rejects invalid finite CSS keywords", () => {
 test("PandwindProperties exposes a curated CSS contract with an explicit csstype escape hatch", () => {
 	const common: PandwindProperties = {
 		display: "flex",
-		padding: "1rem",
+		padding: 16,
 		alignItems: "center",
 		position: "relative",
-		overflow: "hidden auto",
+		overflow: "inherit",
 	};
 	const modernDisplay: PandwindProperties = { display: "inline-flex" };
 	const invalid: PandwindProperties = {

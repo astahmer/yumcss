@@ -19,7 +19,7 @@ const colorPalettes = semanticTokens.defineColorPalettes({
 });
 const properties = define.properties({
 	display: true,
-	color: { $tokens: "colors", $strictness: "inherits" },
+	color: { $tokens: "colors", $strict: false },
 	padding: { $tokens: "spacing" },
 	borderRadius: { $tokens: "radii" },
 });

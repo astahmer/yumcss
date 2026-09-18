@@ -1,5 +1,5 @@
 import { define } from "../types/define-preset.export.ts";
-import type { CssVariableBlocks, TokenGroupKey } from "../types/typings.ts";
+import type { CssVariables, TokenGroupKey } from "../types/typings.ts";
 import { presetConditions } from "./conditions.ts";
 import { shadcnTheme } from "./generated/shadcn-theme.ts";
 import { presetProperties, type PandwindProperties } from "./properties.ts";
@@ -89,7 +89,7 @@ export interface ShadcnConfig {
 
 /** The custom property blocks a shadcn project's stylesheet declares. */
 export interface ShadcnDeclarations {
-	readonly cssVariables: CssVariableBlocks;
+	readonly cssVariables: CssVariables;
 	readonly pointerCss: string | undefined;
 }
 
@@ -303,33 +303,37 @@ const colorTokens = (config: ShadcnConfig): ShadcnColorTokens => {
 const tokenConditions = { base: "", _dark: ".dark &" } as const;
 
 /**
- * The custom property blocks one configuration declares.
+ * The non-token custom properties one configuration declares.
  *
  * Radius multipliers keep the `calc(var(--radius) * n)` form the shadcn
- * stylesheet publishes, so `--radius` has to be declared alongside them; that
- * is why the preset exposes these as interop data instead of resolving the
- * multipliers to lengths. The pointer rule is the base rule the create page
- * injects with the theme, present only when the configuration asks for it.
+ * stylesheet publishes, so `--radius` has to be declared alongside them. The
+ * color, radius, and font tokens can opt into their authored registry names
+ * with `tokenVariableNames: "authored"`; the pointer rule is the base rule the
+ * create page injects with the theme, present only when requested.
  */
 export const shadcnDeclarations = (config: ShadcnConfig): ShadcnDeclarations => ({
 	cssVariables: {
-		light: {
-			...shadcnFontVariables(config),
-			...shadcnTheme.radiusMultipliers,
-			...shadcnColorVariables(config).light,
-		},
-		dark: shadcnColorVariables(config).dark,
+		radius: shadcnColorVariables(config).light.radius ?? "0.625rem",
 	},
 	pointerCss: config.pointer
 		? `@layer base {\n  ${shadcnTheme.pointerSelector} {\n    cursor: pointer;\n  }\n}\n`
 		: undefined,
 });
 
+const shadcnTokenVariables = (config: ShadcnConfig) => ({
+	colors: Object.fromEntries(Object.keys(colorTokens(config)).map((name) => [name, name.slice(1)])),
+	radii: Object.fromEntries(
+		Object.keys(shadcnTheme.radiusMultipliers).map((name) => [name, `radius-${name}`]),
+	),
+	fonts: Object.fromEntries(Object.keys(fontTokens(config)).map((name) => [name, `font-${name}`])),
+});
+
 // Every bound scale keeps raw CSS available: a shadcn project writes arbitrary
 // values for colors and radii often enough that a token-only vocabulary would
 // reject ordinary styles, which is the same reason `defaultPreset` inherits on
 // colors.
-const boundTo = (group: ShadcnTokenGroup) => ({ $tokens: group, $strictness: "inherits" }) as const;
+const boundTo = (group: ShadcnTokenGroup) => ({ $tokens: group, $strict: false }) as const;
+const strictBoundTo = (group: ShadcnTokenGroup) => ({ $tokens: group, $strict: true }) as const;
 
 /**
  * Property vocabulary of {@link shadcnPreset}.
@@ -354,20 +358,20 @@ export const shadcnProperties = define.properties({
 	borderStartEndRadius: boundTo("radii"),
 	borderEndStartRadius: boundTo("radii"),
 	borderEndEndRadius: boundTo("radii"),
-	color: boundTo("colors"),
-	background: boundTo("colors"),
-	backgroundColor: boundTo("colors"),
-	borderColor: boundTo("colors"),
-	borderTopColor: boundTo("colors"),
-	borderRightColor: boundTo("colors"),
-	borderBottomColor: boundTo("colors"),
-	borderLeftColor: boundTo("colors"),
-	borderInlineEndColor: boundTo("colors"),
-	outlineColor: boundTo("colors"),
-	textDecorationColor: boundTo("colors"),
-	textEmphasisColor: boundTo("colors"),
-	fill: boundTo("colors"),
-	stroke: boundTo("colors"),
+	color: strictBoundTo("colors"),
+	background: strictBoundTo("colors"),
+	backgroundColor: strictBoundTo("colors"),
+	borderColor: strictBoundTo("colors"),
+	borderTopColor: strictBoundTo("colors"),
+	borderRightColor: strictBoundTo("colors"),
+	borderBottomColor: strictBoundTo("colors"),
+	borderLeftColor: strictBoundTo("colors"),
+	borderInlineEndColor: strictBoundTo("colors"),
+	outlineColor: strictBoundTo("colors"),
+	textDecorationColor: strictBoundTo("colors"),
+	textEmphasisColor: strictBoundTo("colors"),
+	fill: strictBoundTo("colors"),
+	stroke: strictBoundTo("colors"),
 });
 
 /** The inferred property-vocabulary type of {@link shadcnProperties}. */
@@ -405,6 +409,7 @@ const buildShadcnPreset = (config: ShadcnConfig) => {
 			},
 		),
 		...shadcnDeclarations(config),
+		tokenVariables: shadcnTokenVariables(config),
 	};
 };
 
@@ -439,11 +444,10 @@ export const createShadcnPreset = (options: ShadcnPresetOptions = {}) =>
  * pairs, so a bound property emits `:root` and `.dark` declarations and
  * switches with shadcn's own class.
  *
- * The registry's color values are written as `--background` and friends while
- * Pandwind emits its own hashed properties, so this preset is paired with the
- * `:root` / `.dark` block {@link createShadcnPreset} returns as
- * `cssVariables`: that block is what keeps the project's registry components
- * reading the same values Pandwind resolves.
+ * The registry's color, radius, and font names are available through the
+ * opt-in `tokenVariableNames: "authored"` compiler option. The preset's flat
+ * `cssVariables` contract keeps the genuine non-token `--radius` root value
+ * available for the multiplier tokens.
  *
  * Bound scales resolve to the registry's values and emit their custom
  * properties; pass `tokens: "used"` to the stylesheet compiler when a project

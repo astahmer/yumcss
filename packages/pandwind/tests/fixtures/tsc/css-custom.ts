@@ -49,8 +49,8 @@ const colorPalettes = themedTokens.defineColorPalettes({
 const properties = define.properties({
 	display: true,
 	alignItems: true,
-	color: { $tokens: "colors", $strictness: "inherits" },
-	backgroundColor: { $tokens: "colors", $strictness: "inherits" },
+	color: { $tokens: "colors", $strict: false },
+	backgroundColor: { $tokens: "colors", $strict: false },
 	padding: { $tokens: "spacing" },
 	gap: { $tokens: "spacing" },
 	borderRadius: { $tokens: "radii" },

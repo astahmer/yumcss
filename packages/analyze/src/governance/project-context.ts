@@ -34,7 +34,7 @@ export interface DerivedProjectContext {
 /**
  * Per-property classification of the official `properties` surface:
  * - `true` / list form: unconstrained — every CSS value stays type-legal;
- * - `$strictness: "inherits"`: raw values stay allowed by declaration;
+ * - `$strict: false`: raw values stay allowed by declaration;
  * - token-constrained objects (`$tokens` or declared literal value sets):
  *   strict mode makes non-declared literals violations, and declared
  *   non-token literal keys become per-property raw escape hatches.
@@ -50,7 +50,7 @@ function derivePolicySnapshot(
 	for (const prop of Object.keys(properties).toSorted()) {
 		const value = properties[prop];
 		if (!isRecord(value)) continue;
-		if (value.$strictness === "inherits") continue;
+		if (value.$strict === false) continue;
 		const constrained =
 			typeof value.$tokens === "string" ||
 			Object.keys(value).some((k) => !k.startsWith("$") && typeof value[k] === "string");

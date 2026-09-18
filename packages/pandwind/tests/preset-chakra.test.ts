@@ -544,7 +544,7 @@ describe("chakra preset runtime resolution", () => {
 		expect("scrollMarginInline" in chakraProperties).toBe(false);
 		expect(chakraProperties.scrollMarginTop).toEqual({
 			$tokens: "spacing",
-			$strictness: "inherits",
+			$strict: false,
 		});
 	});
 

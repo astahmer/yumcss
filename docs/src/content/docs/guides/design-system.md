@@ -96,9 +96,9 @@ const theme = define.theme({
 
 const properties = define.properties({
 	$all: true,
-	backgroundColor: { $tokens: "colors", $strictness: "inherits" },
-	color: { $tokens: "colors", $strictness: "inherits" },
-	padding: { $tokens: "spacing", $strictness: "inherits" },
+	backgroundColor: { $tokens: "colors", $strict: false },
+	color: { $tokens: "colors", $strict: false },
+	padding: { $tokens: "spacing", $strict: false },
 });
 
 export const preset = define.preset(theme, {

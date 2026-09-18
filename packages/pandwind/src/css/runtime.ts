@@ -128,7 +128,8 @@ function runtimeSheetFor(preset: CssConfigReturn, options: RuntimeCssOptions): R
 		options.className !== undefined ||
 		options.debug !== undefined ||
 		options.hashFn !== undefined ||
-		options.cascade !== undefined
+		options.cascade !== undefined ||
+		options.tokenVariableNames !== undefined
 	)
 		return createRuntimeSheet({ cascade: options.cascade });
 	const globalObject = globalThis as RuntimeGlobal;

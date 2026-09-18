@@ -51,6 +51,7 @@ import { type CssFactoryKind, type CssFactoryMetadata } from "../css/factory-met
 import type { CssFn } from "../css/create-css.ts";
 import type { ClassNameStrategy } from "../css/class-name-strategy.ts";
 import type { CssCascadeMode } from "../css/cascade.ts";
+import type { TokenVariableNames } from "../types/typings.ts";
 import {
 	checkPandwindLibCompatibility,
 	validatePandwindLibArtifact,
@@ -127,6 +128,8 @@ export interface PandwindCssViteOptions {
 	 * plugin's own generated stylesheet — the virtual module serves it.
 	 */
 	className?: ClassNameStrategy;
+	/** Match the CSS factory's opt-in authored token variable names. */
+	tokenVariableNames?: TokenVariableNames;
 	/**
 	 * Shared engine context (createPandwindEngineContext). When supplied it
 	 * must carry the same preset, and its class-name strategy wins over

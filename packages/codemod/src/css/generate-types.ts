@@ -93,7 +93,7 @@ const paletteValueNames = (preset: CssConfigReturn): string[] => {
 const propertyTokenNames = (tokens: RecordValue, property: unknown): string[] => {
 	if (property === true || !isRecord(property)) return [];
 	const explicitTokenNames = Object.keys(property)
-		.filter((key) => key !== "$strictness" && key !== "$tokens")
+		.filter((key) => key !== "$strict" && key !== "$tokens")
 		.flatMap(authoredKey)
 		.toSorted();
 	const referencedTokenNames =
@@ -102,9 +102,7 @@ const propertyTokenNames = (tokens: RecordValue, property: unknown): string[] =>
 };
 
 const hasOpenValues = (preset: CssConfigReturn, property: unknown): boolean =>
-	preset.strict !== true ||
-	property === true ||
-	(isRecord(property) && property.$strictness === "inherits");
+	preset.strict !== true || property === true || (isRecord(property) && property.$strict === false);
 
 const propertyValue = (
 	preset: CssConfigReturn,

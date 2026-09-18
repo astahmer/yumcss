@@ -4,7 +4,7 @@ import { tokens } from "./tokens.ts";
 // The default preset ships no palette, so color properties inline the CSS-wide
 // color keywords and inherit the raw CSS value type. A palette preset binds
 // `$tokens: "colors"` to its own group instead of reusing this map verbatim.
-const colors = { $strictness: "inherits", ...tokens.colors } as const;
+const colors = tokens.colors;
 
 /**
  * Default CSS property-to-token map used by {@link defaultPreset}.
@@ -215,14 +215,7 @@ type PresetProperties = typeof presetProperties;
 type StandardPropertyName = Exclude<keyof PresetProperties, "$all">;
 
 /** Common CSS values keep autocomplete without expanding csstype's full keyword graph. */
-export type PandwindCssValue =
-	| "inherit"
-	| "initial"
-	| "revert"
-	| "revert-layer"
-	| "unset"
-	| (string & {})
-	| number;
+export type PandwindCssValue = "inherit" | "initial" | "revert" | "revert-layer" | "unset" | number;
 
 type PandwindFinitePropertyValues = {
 	display:

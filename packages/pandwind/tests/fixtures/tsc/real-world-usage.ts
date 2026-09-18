@@ -15,7 +15,10 @@ const createButton = (tone: Tone, compact: boolean) =>
 	css.class({
 		display: "inline-flex",
 		alignItems: "center",
-		justifyContent: "center",
+		$raw: {
+			justifyContent: "center",
+			transition: "background-color, border-color, color",
+		},
 		gap: compact ? 2 : 3,
 		paddingBlock: compact ? 2 : 3,
 		paddingInline: compact ? 3 : 4,
@@ -29,7 +32,6 @@ const createButton = (tone: Tone, compact: boolean) =>
 		fontSize: compact ? "sm" : "md",
 		fontWeight: "semibold",
 		lineHeight: "tight",
-		transition: "background-color, border-color, color",
 		transitionDuration: "normal",
 		transitionTimingFunction: "standard",
 		_hover: {
@@ -37,7 +39,7 @@ const createButton = (tone: Tone, compact: boolean) =>
 			borderColor: "colorPalette.emphasized",
 		},
 		_focusVisible: { boxShadow: "focus" },
-		_disabled: { opacity: 0.5, cursor: "not-allowed" },
+		_disabled: { opacity: 0.5, $raw: { cursor: "not-allowed" } },
 		sm: { paddingInline: compact ? 3 : 5 },
 		motionReduce: { transitionDuration: "instant" },
 	});
@@ -175,7 +177,7 @@ const table = css.class({
 	color: "text",
 	fontSize: "sm",
 	lineHeight: "normal",
-	overflow: "hidden",
+	$raw: { overflow: "hidden" },
 });
 
 const dialog = css.class({
@@ -183,7 +185,7 @@ const dialog = css.class({
 	inset: 0,
 	width: "full",
 	maxWidth: "32",
-	margin: "auto",
+	$raw: { margin: "auto" },
 	padding: 8,
 	backgroundColor: "surface",
 	border: "hairline",
@@ -209,7 +211,7 @@ const toast = css.class({
 	boxShadow: "lg",
 	color: "textStrong",
 	zIndex: "toast",
-	lg: { inset: "auto", right: 6, bottom: 6 },
+	lg: { $raw: { inset: "auto" }, right: 6, bottom: 6 },
 });
 
 const codeBlock = css.class({
@@ -222,7 +224,7 @@ const codeBlock = css.class({
 	fontSize: "sm",
 	lineHeight: "relaxed",
 	letterSpacing: "normal",
-	overflowX: "auto",
+	$raw: { overflowX: "auto" },
 	_dark: { backgroundColor: "surface" },
 });
 

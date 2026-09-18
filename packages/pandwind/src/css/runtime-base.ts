@@ -5,11 +5,13 @@ import type {
 	CssConfigReturn,
 	DefinePresetOptions,
 	StyleObject,
+	TokenVariableNames,
 	TypedStyleObject,
 } from "../types/typings.ts";
 import { createCssBackend, type CssBackendOptions } from "../backends/css.ts";
 import { ATOM_REGISTRY, type AtomRegistry } from "./atoms.ts";
 import { isCompilableCssValue } from "./first-that-works.ts";
+import { expandRawStyle } from "./raw.ts";
 
 /**
  * Options shared by the public CSS factories.
@@ -17,9 +19,15 @@ import { isCompilableCssValue } from "./first-that-works.ts";
  * @category styling
  * @since 0.1.0
  */
-export interface CreateCssOptions extends CssBackendOptions {}
+export interface CreateCssOptions extends CssBackendOptions {
+	/** Use preset-authored token variable names when they are declared. */
+	tokenVariableNames?: TokenVariableNames;
+}
 
 type TypedPreset = CssConfigReturn<DefinePresetOptions<AnyCssConfig, AnyTokens>>;
+
+const isStyleObject = (value: unknown): value is StyleObject =>
+	typeof value === "object" && value !== null && !Array.isArray(value);
 
 /** Atomic declaration names mapped to emitted class names. */
 export type CompiledStyles = Record<string, string>;
@@ -70,6 +78,7 @@ export interface RuntimeCssContext {
 	readonly compileStyles: (...styles: Array<StyleObject>) => CompiledStyles;
 	readonly compileClass: (...styles: Array<StyleObject>) => string;
 	readonly flatten: (style: StyleObject) => FlatStyles;
+	readonly expandRaw: (style: StyleObject) => StyleObject;
 	readonly assign: (...styles: Array<StyleObject>) => StyleObject;
 	readonly resolveRuntimeValue?: (property: string, value: string) => string;
 }
@@ -77,13 +86,8 @@ export interface RuntimeCssContext {
 /** One independently replaceable method installation for the CSS runtime. */
 export type RuntimeCssAttachment = (css: RuntimeCssFunction, context: RuntimeCssContext) => void;
 
-const isStyleObject = (value: unknown): value is StyleObject =>
-	typeof value === "object" && value !== null && !Array.isArray(value);
-
-const emptyStyle = Object.create(null) as StyleObject;
-
 const normalizeStyleInput = (style: unknown): StyleObject => {
-	if (!isStyleObject(style)) return emptyStyle;
+	if (!isStyleObject(style)) return Object.create(null) as StyleObject;
 	return style;
 };
 
@@ -118,20 +122,21 @@ export function createCssRuntime(
 		return backend.declare(key, value);
 	};
 	const compileStyles = (...styles: Array<StyleObject>): CompiledStyles => {
-		if (styles.length === 1 && isFlatStyle(styles[0])) {
+		const expandedStyles = styles.map((style) => expandRawStyle(style));
+		if (expandedStyles.length === 1 && isFlatStyle(expandedStyles[0])) {
 			const compiled = Object.create(null) as CompiledStyles;
-			for (const key of Object.keys(styles[0])) {
-				const value = styles[0][key];
+			for (const key of Object.keys(expandedStyles[0])) {
+				const value = expandedStyles[0][key];
 				if (isCompilableCssValue(value)) compiled[key] = declare(key, value);
 			}
 			Object.defineProperty(compiled, "$$css", { value: true, enumerable: false });
 			return compiled;
 		}
 		let source: StyleObject;
-		if (styles.length === 1) {
-			source = normalizeStyleInput(styles[0]);
+		if (expandedStyles.length === 1) {
+			source = normalizeStyleInput(expandedStyles[0]);
 		} else {
-			source = assign(...styles.map(normalizeStyleInput));
+			source = assign(...expandedStyles.map(normalizeStyleInput));
 		}
 		const flat = flattenStyle(source, true);
 		const compiled = Object.create(null) as CompiledStyles;
@@ -143,17 +148,18 @@ export function createCssRuntime(
 		return compiled;
 	};
 	const compileClass = (...styles: Array<StyleObject>): string => {
-		if (styles.length === 1 && isFlatStyle(styles[0])) {
+		const expandedStyles = styles.map((style) => expandRawStyle(style));
+		if (expandedStyles.length === 1 && isFlatStyle(expandedStyles[0])) {
 			let className = "";
-			for (const key of Object.keys(styles[0])) {
-				const value = styles[0][key];
+			for (const key of Object.keys(expandedStyles[0])) {
+				const value = expandedStyles[0][key];
 				if (!isCompilableCssValue(value)) continue;
 				if (className) className += " ";
 				className += declare(key, value);
 			}
 			return className;
 		}
-		const compiled = compileStyles(...styles);
+		const compiled = compileStyles(...expandedStyles);
 		let className = "";
 		for (const key of Object.keys(compiled)) {
 			if (className) className += " ";
@@ -170,7 +176,8 @@ export function createCssRuntime(
 		validate,
 		compileStyles,
 		compileClass,
-		flatten: (style) => flattenStyle(style, true),
+		flatten: (style) => flattenStyle(expandRawStyle(style), true),
+		expandRaw: expandRawStyle,
 		assign: assign as (...styles: Array<StyleObject>) => StyleObject,
 		resolveRuntimeValue,
 	};

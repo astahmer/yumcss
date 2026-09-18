@@ -45,7 +45,7 @@ export const theme = <TTheme extends DefinePresetOptions>(theme: TTheme) => them
 /**
  * Combine theme values with the condition and property metadata used by CSS factories.
  *
- * `strict: true` exposes mapped token names; `$strictness: "inherits"` also
+ * `strict: true` exposes mapped token names; `$strict: false` also
  * allows the property's raw CSS values.
  * `colorPalettes` adds named color roles that can be selected with
  * `colorPalette` and consumed as `colorPalette.<role>` values.
@@ -225,7 +225,7 @@ export const conditions = <T extends AnyConditions>(cond: T) => cond;
  * Preserve the property-to-token vocabulary used by a preset.
  *
  * Use `$tokens` for a token group, `$all` for all configured properties, and
- * `$strictness: "inherits"` when a mapped property also accepts raw CSS values.
+ * `$strict: false` when a mapped property also accepts raw CSS values.
  * `true` uses the corresponding CSS config values, while `$all` adds property
  * names only and does not create token bindings.
  *
@@ -235,7 +235,7 @@ export const conditions = <T extends AnyConditions>(cond: T) => cond;
  *
  * const properties = define.properties({
  *   $all: true,
- *   backgroundColor: { $tokens: "colors", $strictness: "inherits" },
+ *   backgroundColor: { $tokens: "colors", $strict: false },
  *   padding: { $tokens: "spacing" },
  * });
  * ```

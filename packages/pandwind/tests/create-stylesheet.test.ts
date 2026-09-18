@@ -1,6 +1,7 @@
 import { expect, test } from "vitest";
 import { createUnsafeCss } from "../src/unsafe/css.ts";
 import { createStylesheet } from "../src/css/create-stylesheet.ts";
+import { createRuntimeStylesheet } from "../src/css/runtime-stylesheet.ts";
 import { examplePreset } from "@pandwind/example-preset";
 
 test("can emit only token declarations referenced by extracted styles", () => {
@@ -33,6 +34,58 @@ test("emits a used token declaration for every accepted token spelling", () => {
 
 		expect(sheet.gen.tokens()).toContain("#123456");
 	}
+});
+
+test("emits flat cssVariables through preset conditions and registrations", () => {
+	const preset = {
+		conditions: { _dark: ".dark &", md: "@media (min-width: 768px)" },
+		properties: { $all: true },
+		strict: true,
+		tokens: {},
+		cssVariables: {
+			radius: "1rem",
+			accent: { base: "red", _dark: "blue", md: "green" },
+			progress: { syntax: "<number>", inherits: false, initialValue: "0" },
+		},
+	} as never;
+
+	const build = createStylesheet(preset).gen.tokens();
+	const runtime = createRuntimeStylesheet(preset).gen.tokens();
+
+	expect(build).toContain(":root {--radius: 1rem;}");
+	expect(build).toContain(".dark {--accent: blue;}");
+	expect(build).toContain("@media (min-width: 768px)");
+	expect(build).toContain("@property --progress{syntax:<number>;inherits:false;initial-value:0}");
+	expect(runtime).toContain(":root {--radius: 1rem;}");
+	expect(runtime).toContain(".dark {--accent: blue;}");
+	expect(runtime).toContain("@property --progress{syntax:<number>;inherits:false;initial-value:0}");
+});
+
+test("authored token names are opt-in and collisions fail closed", () => {
+	const preset = {
+		conditions: {},
+		properties: { $all: true, color: { $tokens: "colors" } },
+		strict: true,
+		tokens: { colors: { $brand: "red" } },
+		tokenVariables: { colors: { $brand: "brand" } },
+	} as never;
+
+	const hashed = createStylesheet(preset).gen.tokens();
+	const authored = createStylesheet(preset, { tokenVariableNames: "authored" }).gen.tokens();
+
+	expect(hashed).toContain("--");
+	expect(hashed).not.toContain("--brand: red");
+	expect(authored).toContain("--brand: red");
+	const collisionPreset = {
+		conditions: {},
+		properties: { $all: true, color: { $tokens: "colors" } },
+		strict: true,
+		tokens: { colors: { $brand: "red", $other: "blue" } },
+		tokenVariables: { colors: { $brand: "brand", $other: "brand" } },
+	} as never;
+	expect(() => createStylesheet(collisionPreset, { tokenVariableNames: "authored" })).toThrow(
+		"Ambiguous authored token variable",
+	);
 });
 
 test("css gen simple prop", () => {

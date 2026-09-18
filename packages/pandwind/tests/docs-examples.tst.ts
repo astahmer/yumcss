@@ -93,9 +93,9 @@ test("docs example narrows the curated CSS contract with Pick", () => {
 			strict: true,
 			conditions: {},
 			properties: {
-				backgroundColor: { $tokens: "colors", $strictness: "inherits" },
-				color: { $tokens: "colors", $strictness: "inherits" },
-				padding: { $tokens: "spacing", $strictness: "inherits" },
+				backgroundColor: { $tokens: "colors", $strict: false },
+				color: { $tokens: "colors", $strict: false },
+				padding: { $tokens: "spacing", $strict: false },
 			},
 		},
 	);
@@ -104,7 +104,7 @@ test("docs example narrows the curated CSS contract with Pick", () => {
 	expect(
 		css.class({
 			backgroundColor: "$brand-500",
-			color: "var(--runtime-ink)",
+			$raw: { color: "var(--runtime-ink)" },
 			padding: 4,
 		}),
 	).type.toBe<string>();
@@ -148,7 +148,7 @@ test("preset docs cover strict, inherited, and open property bindings", () => {
 			conditions: {},
 			properties: {
 				$all: true,
-				color: { $tokens: "colors", $strictness: "inherits" },
+				color: { $tokens: "colors", $strict: false },
 				padding: { $tokens: "spacing" },
 			},
 		},
@@ -156,7 +156,7 @@ test("preset docs cover strict, inherited, and open property bindings", () => {
 	const inheritedCss = createCss(inheritedPreset);
 	expect(
 		inheritedCss.class({
-			color: "var(--brand)",
+			$raw: { color: "var(--brand)" },
 			padding: 4,
 		}),
 	).type.toBe<string>();
@@ -174,7 +174,7 @@ test("preset docs cover strict, inherited, and open property bindings", () => {
 		},
 	);
 	const openCss = createCss(openPreset);
-	expect(openCss.class({ color: "var(--brand)", padding: 4 })).type.toBe<string>();
+	expect(openCss.class({ $raw: { color: "var(--brand)" }, padding: 4 })).type.toBe<string>();
 });
 
 test("preset docs distinguish token paths from resolved values", () => {

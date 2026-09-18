@@ -1,6 +1,5 @@
-import { pairs } from "../lib/utils.ts";
-import type { CssConfigReturn } from "../types/typings.ts";
-import { hashCssVar } from "./hash.ts";
+import type { CssConfigReturn, TokenVariableNames } from "../types/typings.ts";
+import { createTokenVariableName } from "./token-variable-names.ts";
 
 type RuntimeTokenValue = string | Record<string, string>;
 
@@ -24,7 +23,11 @@ const isRecord = (value: unknown): value is Record<string, unknown> =>
 	typeof value === "object" && value !== null && !Array.isArray(value);
 
 /** Build only the token indexes consumed by the runtime stylesheet. */
-export function buildRuntimeTokenMaps(preset: CssConfigReturn, debug: boolean): RuntimeTokenMaps {
+export function buildRuntimeTokenMaps(
+	preset: CssConfigReturn,
+	debug: boolean,
+	tokenVariableNames: TokenVariableNames = "hashed",
+): RuntimeTokenMaps {
 	const tokensByProp = new Map<string, Set<string>>();
 	const groupByProp = new Map<string, string>();
 	const flatTokens = new Map<string, RuntimeToken>();
@@ -37,6 +40,7 @@ export function buildRuntimeTokenMaps(preset: CssConfigReturn, debug: boolean): 
 	};
 
 	const presetTokens = preset.tokens ?? {};
+	const tokenVariableName = createTokenVariableName(preset, debug, tokenVariableNames);
 	const presetProperties = preset.properties ?? {};
 	for (const group of Object.keys(presetTokens)) {
 		const groupTokenValues = presetTokens[group];
@@ -48,7 +52,7 @@ export function buildRuntimeTokenMaps(preset: CssConfigReturn, debug: boolean): 
 			if (tokenValue === undefined) continue;
 			const token: RuntimeToken = {
 				value: tokenValue,
-				cssVar: `var(--${hashCssVar(pairs.join([group, tokenName]), debug)})`,
+				cssVar: `var(--${tokenVariableName(group, tokenName)})`,
 			};
 			for (const alias of tokenNameAliases(tokenName)) {
 				groupTokens.add(alias);
@@ -62,7 +66,7 @@ export function buildRuntimeTokenMaps(preset: CssConfigReturn, debug: boolean): 
 		const property = propertyValue;
 
 		for (const token of Object.keys(property)) {
-			if (token === "$strictness") continue;
+			if (token === "$strict") continue;
 			if (token === "$tokens") {
 				const group = property.$tokens;
 				if (typeof group !== "string") continue;

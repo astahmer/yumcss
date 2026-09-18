@@ -177,9 +177,12 @@ const styles = {
 	alignItems: "center",
 	gap: 4,
 	padding: 8,
-	color: "blue.500",
-	backgroundColor: "gray.50",
-	_hover: { color: "blue.600", padding: 12 },
+	$raw: {
+		color: "blue.500",
+		backgroundColor: "gray.50",
+		_hover: { color: "blue.600" },
+	},
+	_hover: { padding: 12 },
 } satisfies Parameters<typeof cssDefault>[0];
 const presetStyles = {
 	display: "flex",
@@ -190,8 +193,7 @@ const defaultStyles = {
 	display: "grid",
 	gap: 4,
 	padding: 6,
-	color: "blue.600",
-	backgroundColor: "gray.50",
+	$raw: { color: "blue.600", backgroundColor: "gray.50" },
 } satisfies Parameters<typeof cssDefault.class>[0];
 const fallbackStyles = {
 	padding: firstThatWorks("1rem", "0.5rem", 4),
@@ -563,7 +565,7 @@ const SCENARIOS: readonly RuntimeScenarioDefinition[] = [
 		category: "composition",
 		description: "configured CSS atom conflict composition",
 		iterations: 30_000,
-		run: () => void cssCx(mergedMap, cssDefault({ color: "blue.600" })),
+			run: () => void cssCx(mergedMap, cssDefault({ $raw: { color: "blue.600" } })),
 	},
 	{
 		name: "cx.vars",

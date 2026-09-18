@@ -19,7 +19,7 @@ test("default preset exposes the stock property-token vocabulary", () => {
 
 	expect(defaultPreset.tokens).type.toBe<{}>();
 	expect(css.class({ color: "currentColor", padding: 4 })).type.toBe<string>();
-	expect(css.class({ color: "oklch(0.637 0.237 25.331)" })).type.toBe<string>();
+	expect(css.class({ $raw: { color: "oklch(0.637 0.237 25.331)" } })).type.toBe<string>();
 });
 
 test("fixture preset keeps the named palette vocabulary", () => {

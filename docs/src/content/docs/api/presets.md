@@ -139,9 +139,11 @@ multipliers, and font variables into one preset. `shadcnPreset` is the same
 factory called with the registry's own defaults; `resolveShadcnConfig(options)`
 returns the fully resolved selection; `shadcnThemesForBaseColor(baseColor)`
 lists the themes a base color may take; and `shadcnDeclarations(config)`
-returns the `:root` / `.dark` custom property block plus the optional pointer
-rule, which the preset exposes as `cssVariables`. That block is what keeps the
-project's registry components reading the same values Pandwind resolves.
+returns the flat custom-variable contract plus the optional pointer rule. The
+compiler emits those variables using the preset's condition names. Pass
+`{ tokenVariableNames: "authored" }` to emit the registry's names for shadcn's
+colors, fonts, and radii; the default remains hashed and does not change
+existing output.
 Because the preset carries every base color's light and dark roles rather than
 one resolved theme, it is the widest catalog Pandwind publishes: a
 `createCss(shadcnPreset)` bundle is 85.08 KB min / 15.95 KB gzip against
@@ -170,9 +172,9 @@ const tokens = define.tokens({
 
 const properties = define.properties({
 	$all: true,
-	backgroundColor: { $tokens: "colors", $strictness: "inherits" },
-	color: { $tokens: "colors", $strictness: "inherits" },
-	padding: { $tokens: "spacing", $strictness: "inherits" },
+	backgroundColor: { $tokens: "colors", $strict: false },
+	color: { $tokens: "colors", $strict: false },
+	padding: { $tokens: "spacing", $strict: false },
 });
 
 const cssConfig: PandwindProperties = {};
@@ -194,13 +196,13 @@ const css = createCss(preset);
 css.class({
 	backgroundColor: "$brand-500",
 	padding: 4,
-	color: "var(--runtime-ink)",
+	$raw: { color: "var(--runtime-ink)" },
 	_hover: { backgroundColor: "$surface" },
 });
 ```
 
 The `$tokens` entries bind a CSS property to a token group. The
-`$strictness: "inherits"` entries deliberately allow both that token group
+`$strict: false` entries deliberately allow both that token group
 and the raw value type from Pandwind's curated `PandwindProperties` contract.
 
 ## Bring your own CSS type
@@ -229,9 +231,9 @@ const cardPreset = define.preset(
 		strict: true,
 		conditions: {},
 		properties: {
-			backgroundColor: { $tokens: "colors", $strictness: "inherits" },
-			color: { $tokens: "colors", $strictness: "inherits" },
-			padding: { $tokens: "spacing", $strictness: "inherits" },
+			backgroundColor: { $tokens: "colors", $strict: false },
+			color: { $tokens: "colors", $strict: false },
+			padding: { $tokens: "spacing", $strict: false },
 		},
 	},
 );
@@ -329,7 +331,7 @@ not automatically bind every token group to every property.
 ```ts
 const properties = define.properties({
 	$all: true,
-	color: { $tokens: "colors", $strictness: "inherits" },
+	color: { $tokens: "colors", $strict: false },
 });
 
 // color accepts the colors group and raw PandwindProperties["color"] values.
@@ -340,23 +342,24 @@ const properties = define.properties({
 This distinction keeps `$all` useful for a general CSS preset without making
 unrelated tokens valid for every CSS property.
 
-## How `strict` and `$strictness` combine
+## How `strict` and `$strict` combine
 
 For a mapped property such as
 `backgroundColor: { $tokens: "colors" }`, the value rules are:
 
-| preset setting                                | accepted values                                                  |
-| --------------------------------------------- | ---------------------------------------------------------------- |
-| `strict: true`                                | token names from the mapped group (plus color opacity modifiers) |
-| `strict: false`                               | token names and raw values from `config`                         |
-| `strict: true` with `$strictness: "inherits"` | token names and raw values from `config` for that property       |
-| property value `true`                         | raw values from `config`, regardless of `strict`                 |
+| preset setting                       | accepted values                                                  |
+| ------------------------------------ | ---------------------------------------------------------------- |
+| `strict: true`                       | token names from the mapped group (plus color opacity modifiers) |
+| `strict: false`                      | token names and raw values from `config`                         |
+| `strict: true` with `$strict: false` | token names and raw values from `config` for that property       |
+| property value `true`                | raw values from `config`, regardless of `strict`                 |
 
 Use `strict: true` when the preset is the design-system boundary and every
 mapped value should be intentional. Use `strict: false` for an open preset or
-when raw CSS values are part of the contract. Use `$strictness: "inherits"`
+when raw CSS values are part of the contract. Use `$strict: false`
 when most of the preset is strict but one mapped property needs a controlled
-raw escape without giving up its token names.
+raw escape without giving up its token names. For an untyped style subtree,
+use `$raw: { ... }` instead.
 
 The distinction is visible at the call site:
 
@@ -369,7 +372,7 @@ css.class({ backgroundColor: "var(--brand-from-host)" });
 
 The second call is valid in the complete preset above because that property
 explicitly inherits the raw `PandwindProperties` value type. Remove
-`$strictness: "inherits"` and the same call becomes a type error while the
+`$strict: false` and the same call becomes a type error while the
 token call remains valid.
 
 ## Theme values and semantic/component layers

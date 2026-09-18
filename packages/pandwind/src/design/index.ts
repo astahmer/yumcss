@@ -57,27 +57,31 @@ type Maybe<T> = T | undefined | null | false;
 export const createDesignCss = <TPreset extends DesignPreset>(
 	preset: TPreset,
 	options: CreateCssOptions = {},
-): CssFn<DesignStyleObject<TPreset>, DesignDynamicStyleObject<TPreset>> => {
-	const engine = createCss(preset, options) as unknown as CssFn<StyleObject, DynamicStyleObject>;
-	type Design = DesignStyleObject<TPreset>;
+): CssFn<DesignStyleObject<TPreset>, DesignDynamicStyleObject<TPreset>, StyleObject> => {
+	type PresetDesign = DesignStyleObject<TPreset>;
+	const engine = createCss(preset, options) as unknown as CssFn<
+		StyleObject,
+		DynamicStyleObject,
+		StyleObject
+	>;
 
-	const resolve = (style: Design): StyleObject =>
+	const resolve = (style: PresetDesign): StyleObject =>
 		resolveDesignStyle(style as unknown as Record<string, unknown>, preset.tokens);
 
-	const dss = (...styles: Array<Maybe<Design>>) =>
-		engine(...(styles.filter(Boolean) as Array<Design>).map(resolve));
+	const dss = (...styles: Array<Maybe<PresetDesign>>) =>
+		engine(...(styles.filter(Boolean) as Array<PresetDesign>).map(resolve));
 
-	dss.class = (...styles: Array<Maybe<Design>>) =>
-		engine.class(...(styles.filter(Boolean) as Array<Design>).map(resolve));
+	dss.class = (...styles: Array<Maybe<PresetDesign>>) =>
+		engine.class(...(styles.filter(Boolean) as Array<PresetDesign>).map(resolve));
 
-	dss.raw = (...styles: Array<Maybe<Design>>) =>
-		engine.raw(...(styles.filter(Boolean) as Array<Design>).map(resolve));
+	dss.raw = (...styles: Array<Maybe<PresetDesign>>) =>
+		engine.raw(...(styles.filter(Boolean) as Array<PresetDesign>).map(resolve));
 
 	// Dynamic values ride inline custom properties; design-layer tokens are
 	// resolved first so the inline value is concrete.
-	dss.vars = (...styles: Array<Maybe<Design>>) => {
+	dss.vars = (...styles: Array<Maybe<PresetDesign>>) => {
 		const resolvedStyles = assign(
-			...(styles.filter(Boolean) as Array<Design>).map(resolve),
+			...(styles.filter(Boolean) as Array<PresetDesign>).map(resolve),
 		) as StyleObject;
 		return engine.vars(resolvedStyles as never);
 	};
@@ -86,7 +90,9 @@ export const createDesignCss = <TPreset extends DesignPreset>(
 	dss.input = engine.input;
 	dss.keyframes = engine.keyframes;
 
-	dss.group = ((groups: Record<string, Maybe<Design> | ((...args: any[]) => Design)>) => {
+	dss.group = ((
+		groups: Record<string, Maybe<PresetDesign> | ((...args: any[]) => PresetDesign)>,
+	) => {
 		const resolved = Object.create(null) as Record<
 			string,
 			StyleObject | ((...args: any[]) => StyleObject)
@@ -112,7 +118,7 @@ export const createDesignCss = <TPreset extends DesignPreset>(
 		options,
 	});
 
-	return dss as CssFn<Design, DesignDynamicStyleObject<TPreset>>;
+	return dss as CssFn<PresetDesign, DesignDynamicStyleObject<TPreset>, StyleObject>;
 };
 
 export type { DesignDynamicStyleObject, DesignPreset, DesignStyleObject } from "./types.ts";

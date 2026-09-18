@@ -8,7 +8,7 @@ import {
 	isColorProperty,
 	isEmptyCondition,
 } from "../backends/css.ts";
-import { createHashFn, dashCase, escapeIdentifier, hashCssVar } from "./hash.ts";
+import { createHashFn, dashCase, escapeIdentifier } from "./hash.ts";
 import { keyframeName, normalizeKeyframeSteps, type KeyframeBody } from "./keyframes.ts";
 import { getPropertyPriority } from "./property-priorities.ts";
 import {
@@ -40,6 +40,9 @@ import {
 	normalizeFirstThatWorks,
 } from "./first-that-works.ts";
 import { normalizeCssValue } from "./value-normalization.ts";
+import { normalizeCssVariables } from "./css-variables.ts";
+import { createTokenVariableName } from "./token-variable-names.ts";
+import { expandRawStyle } from "./raw.ts";
 
 export { decodeAtomicPath } from "./stylesheet-lowering.ts";
 export { getPropertyPriority } from "./property-priorities.ts";
@@ -128,6 +131,7 @@ export const createStylesheet = (
 
 	const hashFn = options.hashFn ?? createHashFn(Boolean(options.debug));
 	const debug = Boolean(options.debug);
+	const tokenVariableName = createTokenVariableName(preset, debug, options.tokenVariableNames);
 
 	// Sheet-backed strategies own the class names of the declarations they
 	// map — the generated selectors must match what the runtime emits.
@@ -164,7 +168,7 @@ export const createStylesheet = (
 	const cssVars = new Map<string, TokenDeclaration>();
 	const keyframesCache = new Map<string, Rule>();
 
-	const tokenMaps = buildTokenMaps(preset, debug);
+	const tokenMaps = buildTokenMaps(preset, debug, options.tokenVariableNames);
 	const colorPaletteMaps = buildColorPaletteMaps(preset, tokenMaps.flatTokens, debug);
 	const usedTokenPaths = new Set<string>();
 	let tokensCache: string | undefined;
@@ -178,7 +182,7 @@ export const createStylesheet = (
 		for (const tokenName of Object.keys(groupTokens)) {
 			const tokenValue = groupTokens[tokenName];
 			if (tokenValue === undefined) continue;
-			const cssVarHash = hashCssVar(pairs.join([group, tokenName]), debug);
+			const cssVarHash = tokenVariableName(group, tokenName);
 			const tokenPath = `${group}.${tokenName}`;
 
 			if (typeof tokenValue === "object") {
@@ -228,6 +232,35 @@ export const createStylesheet = (
 			});
 		}
 	}
+
+	const normalizedCssVariables = normalizeCssVariables(preset.cssVariables);
+	for (const entry of normalizedCssVariables.values) {
+		if (entry.condition !== "base" && !Object.hasOwn(preset.conditions, entry.condition))
+			throw new Error(`Unknown condition '${entry.condition}' in css variable '--${entry.name}'`);
+		const resolved = entry.condition === "base" ? "" : preset.conditions[entry.condition]!;
+		const resolvedList = (Array.isArray(resolved) ? resolved : [resolved]).filter(
+			(part): part is string => Boolean(part),
+		);
+		const conditions = Object.assign(conditionPolicy.create(), {
+			className: "",
+			parentSelectors: resolvedList.length ? [] : [":root "],
+		});
+		resolvedList.forEach((selector) => conditionPolicy.parse(selector, conditions));
+		const priorities = resolvedList.map((part) =>
+			getPropertyPriority(isSelfSelector(part) ? part.slice(1) : part),
+		);
+		cssVars.set(`cssVariables.${entry.name}.${entry.condition}`, {
+			declaration: serializer.serialize(cssVar.declaration(entry.name, entry.value), conditions),
+			priority: priorities.reduce((acc, priority) => acc + priority, 0),
+		});
+	}
+
+	const cssVariableRegistrations = normalizedCssVariables.registrations
+		.map(
+			({ name, descriptor }) =>
+				`@property --${escapeIdentifier(name)}{syntax:${descriptor.syntax};inherits:${String(descriptor.inherits)};initial-value:${descriptor.initialValue}}`,
+		)
+		.toSorted();
 
 	const processFlatStyles = (style: FlatStyles) => {
 		const localCache = new Map<string, Rule>();
@@ -398,7 +431,7 @@ export const createStylesheet = (
 	};
 
 	const processStyles = (styles: Array<StyleObject>) => {
-		const merged = assign(...styles);
+		const merged = assign(...styles.map((style) => expandRawStyle(style)));
 		const flat = flattenStyle(merged);
 		return processFlatStyles(flat);
 	};
@@ -506,6 +539,7 @@ export const createStylesheet = (
 		Array.from(cssVars.entries())
 			.filter(([path]) => {
 				if (tokenEmission === "all") return true;
+				if (path.startsWith("cssVariables.")) return true;
 				for (const usedPath of usedTokenPaths) {
 					if (path === usedPath || path.startsWith(`${usedPath}.`)) return true;
 				}
@@ -525,8 +559,11 @@ export const createStylesheet = (
 			// unlike atomic and var rules, this map never changes after creation.
 			// Keep the serialized form so runtime `css()` calls do not repeatedly
 			// allocate, sort, and join the same root declarations.
-			return (tokensCache ??= tokenEntries()
-				.map((token) => token.declaration)
+			return (tokensCache ??= [
+				...cssVariableRegistrations,
+				...tokenEntries().map((token) => token.declaration),
+			]
+				.filter(Boolean)
 				.join("\n"));
 		},
 		/**

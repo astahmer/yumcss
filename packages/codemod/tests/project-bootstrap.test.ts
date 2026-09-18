@@ -173,7 +173,7 @@ describe("Pandwind project bootstrap", () => {
 		const preset = support.files.find((file) => file.path === "pandwind/preset.ts")?.content;
 		expect(preset).toContain('"color": {');
 		expect(preset).toContain('"$tokens": "colors"');
-		expect(preset).toContain('"$strictness": "inherits"');
+		expect(preset).toContain('"$strict": false');
 		expect(preset).toContain('"padding": {');
 		expect(preset).toContain('"$tokens": "spacing"');
 		expect(preset).toContain('"brand": "#123456"');

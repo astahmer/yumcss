@@ -512,17 +512,17 @@ describe("panda preset parity with the installed package", () => {
 			"4px": "4px",
 			"8px": "8px",
 		});
-		expect(pandaProperties.outlineOffset).toEqual({ $tokens: "spacing", $strictness: "inherits" });
-		expect(pandaProperties.scrollbarWidth).toEqual({ $tokens: "sizes", $strictness: "inherits" });
-		expect(pandaProperties.border).toEqual({ $tokens: "borders", $strictness: "inherits" });
+		expect(pandaProperties.outlineOffset).toEqual({ $tokens: "spacing", $strict: false });
+		expect(pandaProperties.scrollbarWidth).toEqual({ $tokens: "sizes", $strict: false });
+		expect(pandaProperties.border).toEqual({ $tokens: "borders", $strict: false });
 		expect(Object.hasOwn(presetProperties, "transitionProperty")).toBe(false);
 		expect(pandaProperties.transitionProperty).toEqual({
 			$tokens: "transitionProperties",
-			$strictness: "inherits",
+			$strict: false,
 		});
 		expect(pandaProperties.transition).toEqual({
 			$tokens: "transitions",
-			$strictness: "inherits",
+			$strict: false,
 		});
 		expect(
 			Object.values(presetProperties).filter(

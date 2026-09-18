@@ -6,6 +6,7 @@ import type {
 	DynamicStyleObject,
 	StyleObject,
 	TypedDynamicStyleObject,
+	TypedRawStyleObject,
 	TypedStyleObject,
 } from "../types/typings.ts";
 import {
@@ -45,8 +46,12 @@ const isPreset = (value: CreateCssOptions | TypedPreset): value is TypedPreset =
 
 const runtimeTokenName = /^[$a-zA-Z0-9_.-]+$/u;
 
-const createRuntimeValueResolver = (preset: TypedPreset, debug: boolean) => {
-	const resolveToken = createRuntimeTokenResolver(preset, debug);
+const createRuntimeValueResolver = (
+	preset: TypedPreset,
+	debug: boolean,
+	tokenVariableNames: CreateCssOptions["tokenVariableNames"],
+) => {
+	const resolveToken = createRuntimeTokenResolver(preset, debug, tokenVariableNames);
 	return (property: string, value: string) =>
 		runtimeTokenName.test(value) ? resolveToken(property, value) : value;
 };
@@ -104,7 +109,7 @@ const createPresetCss = (preset: TypedPreset, options: CreateCssOptions): CssFn<
 	const css = createCssRuntime(
 		{ ...options, conditions: preset.conditions },
 		ALL_RUNTIME_METHODS,
-		createRuntimeValueResolver(preset, Boolean(options.debug)),
+		createRuntimeValueResolver(preset, Boolean(options.debug), options.tokenVariableNames),
 		(key, value) => {
 			if (cssPropertyFromKey(key, preset.conditions) === "colorPalette")
 				validateColorPaletteValue(preset, value);
@@ -119,7 +124,7 @@ const createPresetCss = (preset: TypedPreset, options: CreateCssOptions): CssFn<
 export function createCss<TPreset extends TypedPreset>(
 	preset: TPreset,
 	options?: CreateCssOptions,
-): CssFn<TypedStyleObject<TPreset>, TypedDynamicStyleObject<TPreset>>;
+): CssFn<TypedStyleObject<TPreset>, TypedDynamicStyleObject<TPreset>, TypedRawStyleObject<TPreset>>;
 export function createCss(preset: TypedPreset, options: CreateCssOptions = {}): CssFn<StyleObject> {
 	return createPresetCss(preset, options);
 }
@@ -201,6 +206,7 @@ type PropsInput =
 export interface CssFn<
 	TStyles extends StyleObject = StyleObject,
 	TDynamicStyles = DynamicStyleObject,
+	TRawStyles extends StyleObject = StyleObject,
 > {
 	/**
 	 * Compose authored style objects into an atomic declaration map.
@@ -251,7 +257,7 @@ export interface CssFn<
 	 * const style = css.raw({ color: "red" }, { padding: 8 });
 	 * ```
 	 */
-	raw: (...styles: Array<TStyles>) => StyleObject;
+	raw: (...styles: Array<TRawStyles>) => StyleObject;
 	/**
 	 * Normalize styles and class strings into props for a host element.
 	 * Pass compiled maps from `css(...)` here when a component accepts a

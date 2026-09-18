@@ -15,8 +15,9 @@ import type {
 	SemanticToken,
 	SimpleToken,
 	Token,
+	TokenVariableNames,
 } from "../types/typings.ts";
-import { hashCssVar } from "./hash.ts";
+import { createTokenVariableName } from "./token-variable-names.ts";
 import { tokenNameAliases } from "../lib/token-path.ts";
 
 export interface TokenMaps {
@@ -35,6 +36,7 @@ const isRecord = (value: unknown): value is Record<string, unknown> =>
 export function buildTokenMaps(
 	preset: CssConfigReturn<DefinePresetOptions>,
 	debug: boolean,
+	tokenVariableNames: TokenVariableNames = "hashed",
 ): TokenMaps {
 	const tokensByProp = new Map<string, Set<string>>();
 	const flatTokens = new Map<string, Token>();
@@ -50,6 +52,7 @@ export function buildTokenMaps(
 	const groupByProp = new Map<string, string>();
 
 	const presetTokens = preset.tokens ?? {};
+	const tokenVariableName = createTokenVariableName(preset, debug, tokenVariableNames);
 	const presetProperties = preset.properties ?? {};
 	for (const group of Object.keys(presetTokens)) {
 		const groupTokenValues = presetTokens[group];
@@ -61,7 +64,7 @@ export function buildTokenMaps(
 			const tokenValue = groupTokenValues[tokenName];
 			if (tokenValue === undefined) continue;
 			const hash = pairs.join([group, tokenName]);
-			const cssVarHash = hashCssVar(pairs.join([group, tokenName]), debug);
+			const cssVarHash = tokenVariableName(group, tokenName);
 			const tokenPath = `${group}.${tokenName}`;
 
 			const token: Token = {
@@ -84,7 +87,7 @@ export function buildTokenMaps(
 		if (!isRecord(propertyConfig)) continue;
 
 		for (const token of Object.keys(propertyConfig)) {
-			if (token === "$strictness") continue;
+			if (token === "$strict") continue;
 
 			// Add every token of that group to the list of tokens for that prop
 			if (token === "$tokens") {
@@ -233,7 +236,8 @@ export function resolveTokenValue(
 export function createTokenResolver(
 	preset: CssConfigReturn<DefinePresetOptions>,
 	debug = false,
+	tokenVariableNames: TokenVariableNames = "hashed",
 ): (prop: string, value: string) => string {
-	const maps = buildTokenMaps(preset, debug);
+	const maps = buildTokenMaps(preset, debug, tokenVariableNames);
 	return (prop, value) => resolveTokenValue(maps, prop, value);
 }
