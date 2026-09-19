@@ -1,4 +1,4 @@
-import type { CssCascadeMode } from "./cascade.ts";
+import type { CssCascade } from "./cascade.ts";
 
 /** Runtime sheets are created with `createRuntimeSheet` from `pandwind/css/runtime`. */
 
@@ -98,7 +98,7 @@ export interface RuntimeSheetOptions {
 	readonly document?: RuntimeDocument;
 	readonly nonce?: string;
 	/** Cascade strategy for the rules rendered by this sheet. */
-	readonly cascade?: CssCascadeMode;
+	readonly cascade?: CssCascade;
 }
 
 /** Replaceable deduplicating store for flat runtime rules. */

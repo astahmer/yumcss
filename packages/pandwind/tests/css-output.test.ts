@@ -179,6 +179,36 @@ test("can opt into a native Pandwind cascade layer", () => {
 	expect(output).toBe("@layer pandwind{.display__none{display:none}}");
 });
 
+test("can opt into a named native cascade layer", () => {
+	const preset = define.preset(
+		{ config: {} as StandardLonghandProperties, tokens: {} },
+		{ strict: true, properties: { $all: true }, conditions: {} },
+	);
+	const css = createUnsafeCss({ debug: true });
+	const output = createStylesheet(preset, {
+		debug: true,
+		cascade: { mode: "layers", layer: "app.utilities" },
+	}).generate([css.raw({ display: "none" } as never)]);
+
+	expect(output).toBe("@layer app.utilities{.display__none{display:none}}");
+});
+
+test("rejects unsafe native cascade layer names", () => {
+	const preset = define.preset(
+		{ config: {} as StandardLonghandProperties, tokens: {} },
+		{ strict: true, properties: { $all: true }, conditions: {} },
+	);
+	const css = createUnsafeCss({ debug: true });
+	const sheet = createStylesheet(preset, {
+		debug: true,
+		cascade: { mode: "layers", layer: "app;evil" },
+	});
+
+	expect(() => sheet.generate([css.raw({ display: "none" } as never)])).toThrow(
+		"cascade layer must be a non-empty dotted CSS identifier path",
+	);
+});
+
 test("keeps vendor-prefixed line clamp unitless", () => {
 	const preset = define.preset(
 		{ config: {} as StandardLonghandProperties, tokens: {} },

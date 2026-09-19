@@ -1,6 +1,6 @@
 import type { AtomRegistry } from "../css/atoms.ts";
 import type { ClassNameStrategy } from "../css/class-name-strategy.ts";
-import type { CssCascadeMode } from "../css/cascade.ts";
+import type { CssCascade } from "../css/cascade.ts";
 import { createHashFn } from "../css/hash.ts";
 import type { StyleBackend } from "./types.ts";
 import { isEncodedFirstThatWorks, normalizeFirstThatWorks } from "../css/first-that-works.ts";
@@ -19,9 +19,10 @@ export interface CssBackendOptions {
 	/**
 	 * Opt into a host-override cascade strategy. `specificity` follows
 	 * StyleX's `:not(#\#)` priority levels; `layers` wraps output in the
-	 * native `@layer pandwind` layer.
+	 * the native `@layer pandwind` layer. Pass `{ mode: "layers", layer }`
+	 * to select a different layer name.
 	 */
-	cascade?: CssCascadeMode;
+	cascade?: CssCascade;
 	/**
 	 * Namespace for Pandwind-owned dynamic-value carriers and custom properties.
 	 * Defaults to `pw`; caller-owned class-name strategies are not rewritten.

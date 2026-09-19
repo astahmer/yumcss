@@ -4,6 +4,7 @@ import { dirname, join, resolve } from "node:path";
 import { expect, test } from "vitest";
 import { createTwAdapter } from "../src/tw/adapter.ts";
 import { createUnsafeCss } from "../src/unsafe/css.ts";
+import { createCss } from "../src/css/create-css.ts";
 import { firstThatWorks } from "../src/css/index.ts";
 import { createNamedAtomsStrategy } from "../src/css/named-atoms-strategy.ts";
 import { createStyleXAdapter } from "../src/css/stylex-adapter.ts";
@@ -710,9 +711,10 @@ test("pandwindCssVite does not evaluate same-named local fallback helpers", () =
 });
 
 test.each([
-	["specificity", ":not(#\\#)"],
-	["layers", "@layer pandwind{"],
-] as const)("pandwindCssVite applies the %s cascade mode", (cascade, marker) => {
+	["specificity", "specificity", ":not(#\\#)"],
+	["layers", "layers", "@layer pandwind{"],
+	["named layers", { mode: "layers", layer: "app.utilities" }, "@layer app.utilities{"],
+] as const)("pandwindCssVite applies the %s cascade mode", (_label, cascade, marker) => {
 	const dir = makeProject({
 		"src/css.ts":
 			'import { createUnsafeCss } from "pandwind/unsafe/css"; export const css = createUnsafeCss();',
@@ -721,6 +723,24 @@ test.each([
 	try {
 		const plugin = pandwindCssVite(examplePreset, { root: dir, cascade });
 		expect(loadGenerated(plugin)).toContain(marker);
+	} finally {
+		rmSync(dir, { recursive: true, force: true });
+	}
+});
+
+test("pandwindCssVite inherits a named layer from the CSS composition", () => {
+	const dir = makeProject({
+		"src/css.ts":
+			'import { createUnsafeCss } from "pandwind/unsafe/css"; export const css = createUnsafeCss();',
+		"src/app.tsx": 'import { css } from "./css"; export const card = css.class({ color: "red" });',
+	});
+	try {
+		const css = createCss(examplePreset, {
+			cascade: { mode: "layers", layer: "app.utilities" },
+		});
+		const plugin = pandwindCssVite(css, { root: dir });
+
+		expect(loadGenerated(plugin)).toContain("@layer app.utilities{");
 	} finally {
 		rmSync(dir, { recursive: true, force: true });
 	}

@@ -1,7 +1,40 @@
 /** CSS cascade strategies for generated Pandwind rules. */
 export type CssCascadeMode = "specificity" | "layers";
 
-const CASCADE_LAYER_NAME = "pandwind";
+/** Options for a named native cascade layer for generated Pandwind rules. */
+export interface CssCascadeLayerOptions {
+	readonly mode: "layers";
+	readonly layer: string;
+}
+
+/** Cascade policy accepted by CSS factories, sheets, and extractors. */
+export type CssCascade = CssCascadeMode | CssCascadeLayerOptions;
+
+export const DEFAULT_CASCADE_LAYER = "pandwind";
+
+const CASCADE_LAYER_SEGMENT =
+	/^(?:-?(?:[A-Za-z_]|[^\u0000-\u007F])(?:[A-Za-z0-9_-]|[^\u0000-\u007F])*|--(?:[A-Za-z0-9_-]|[^\u0000-\u007F])+)$/u;
+
+export const isValidCascadeLayerName = (value: string): boolean =>
+	value.length > 0 && value.split(".").every((segment) => CASCADE_LAYER_SEGMENT.test(segment));
+
+export interface ResolvedCssCascade {
+	readonly mode: CssCascadeMode | undefined;
+	readonly layer: string | undefined;
+}
+
+export const resolveCssCascade = (cascade: CssCascade | undefined): ResolvedCssCascade => {
+	if (cascade === undefined) return { mode: undefined, layer: undefined };
+	if (cascade === "specificity") return { mode: "specificity", layer: undefined };
+	if (cascade === "layers") return { mode: "layers", layer: DEFAULT_CASCADE_LAYER };
+	if (
+		cascade.mode !== "layers" ||
+		typeof cascade.layer !== "string" ||
+		!isValidCascadeLayerName(cascade.layer)
+	)
+		throw new Error("pandwind: cascade layer must be a non-empty dotted CSS identifier path");
+	return { mode: "layers", layer: cascade.layer };
+};
 
 const SPECIFICITY_MARKER = ":not(#\\#)";
 
@@ -21,9 +54,10 @@ export const addSpecificityLevel = (css: string, level: number): string => {
 /** Decorate a complete rule set with stable StyleX-like priority bands. */
 export const decorateCascadeRules = <TRule extends { css: string; priority: number }>(
 	rules: readonly TRule[],
-	mode: CssCascadeMode | undefined,
+	cascade: CssCascade | undefined,
 	priorityUniverse: readonly TRule[] = rules,
 ): readonly TRule[] => {
+	const { mode } = resolveCssCascade(cascade);
 	if (mode !== "specificity" || rules.length === 0) return rules;
 	const priorities = Array.from(new Set(priorityUniverse.map((rule) => rule.priority))).toSorted(
 		(left, right) => left - right,
@@ -38,5 +72,7 @@ export const decorateCascadeRules = <TRule extends { css: string; priority: numb
 	});
 };
 
-export const wrapCascadeLayer = (css: string, mode: CssCascadeMode | undefined): string =>
-	mode === "layers" && css !== "" ? `@layer ${CASCADE_LAYER_NAME}{${css}}` : css;
+export const wrapCascadeLayer = (css: string, cascade: CssCascade | undefined): string => {
+	const { mode, layer } = resolveCssCascade(cascade);
+	return mode === "layers" && css !== "" ? `@layer ${layer}{${css}}` : css;
+};

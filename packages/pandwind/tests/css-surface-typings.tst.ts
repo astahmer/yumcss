@@ -117,7 +117,7 @@ test("runtime sheet contracts keep SSR, semantic rules, and DOM ports typed", ()
 		autoMount: false,
 		document,
 		nonce: "nonce",
-		cascade: "layers",
+		cascade: { mode: "layers", layer: "app.utilities" },
 	};
 	const rule: RuntimeRule = { id: "button", css: ".button{color:red}", priority: 0 };
 	const declaration: RuntimeDeclaration = { property: "opacity", value: 0.5 };

@@ -215,6 +215,17 @@ describe("runtime CSS-in-JS sheet", () => {
 		expect(output).toContain(".display__none{display:none}");
 	});
 
+	test("supports a named native cascade layer for runtime declarations", () => {
+		const css = createRuntimeCss(examplePreset, {
+			cascade: { mode: "layers", layer: "app.utilities" },
+			debug: true,
+		});
+
+		css.class({ display: "none" });
+
+		expect(css.sheet.css().startsWith("@layer app.utilities{")).toBe(true);
+	});
+
 	test("keeps non-selector semantic rules valid with specificity precedence", () => {
 		const sheet = createRuntimeSheet({ autoMount: false, cascade: "specificity" });
 

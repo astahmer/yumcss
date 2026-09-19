@@ -50,7 +50,7 @@ import { readCssFactoryMetadata } from "./css-factory-metadata.ts";
 import { type CssFactoryKind, type CssFactoryMetadata } from "../css/factory-metadata.ts";
 import type { CssFn } from "../css/create-css.ts";
 import type { ClassNameStrategy } from "../css/class-name-strategy.ts";
-import type { CssCascadeMode } from "../css/cascade.ts";
+import type { CssCascade } from "../css/cascade.ts";
 import type { TokenVariableNames } from "../types/typings.ts";
 import {
 	checkPandwindLibCompatibility,
@@ -60,7 +60,7 @@ import {
 
 export interface PandwindCssViteOptions {
 	/** Match host stylesheet precedence with StyleX specificity or a native layer. */
-	cascade?: CssCascadeMode;
+	cascade?: CssCascade;
 	/**
 	 * Import sources that point at the css() module. Defaults to any source
 	 * whose basename is `css` or `design` (`./css`, `./design.ts`, ...).
