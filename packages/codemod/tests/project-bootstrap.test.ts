@@ -57,6 +57,7 @@ describe("Pandwind project bootstrap", () => {
 		expect(preset).not.toContain("AnyCssConfig");
 		expect(preset).not.toContain("preset.tokens");
 		expect(preset).toContain("const properties = define.properties({");
+		expect(preset).not.toContain('"$strict": false');
 		expect(preset).toContain('"display": true');
 		expect(preset).not.toContain('"$all": true');
 	});
@@ -173,7 +174,7 @@ describe("Pandwind project bootstrap", () => {
 		const preset = support.files.find((file) => file.path === "pandwind/preset.ts")?.content;
 		expect(preset).toContain('"color": {');
 		expect(preset).toContain('"$tokens": "colors"');
-		expect(preset).toContain('"$strict": false');
+		expect(preset).not.toContain('"$strict": false');
 		expect(preset).toContain('"padding": {');
 		expect(preset).toContain('"$tokens": "spacing"');
 		expect(preset).toContain('"brand": "#123456"');

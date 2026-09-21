@@ -71,12 +71,13 @@ export type ChakraTokens = typeof chakraTokens;
 
 type ChakraTokenGroup = TokenGroupKey<ChakraTokens>;
 
-// Every bound scale keeps raw CSS available: a Chakra project writes arbitrary
-// values for spacing and sizing often enough that a token-only vocabulary
-// would reject ordinary styles, which is the same reason `defaultPreset`
-// inherits on colors.
-const boundTo = (group: ChakraTokenGroup) => ({ $tokens: group, $strict: false }) as const;
-const strictBoundTo = (group: ChakraTokenGroup) => ({ $tokens: group, $strict: true }) as const;
+// Bound scales are token-only by default. Use `$raw` at a call site for a
+// one-off authored value, or `$strict: false` only for an intentionally open
+// application-owned property map.
+const boundTo = <const TGroup extends ChakraTokenGroup>(group: TGroup) => ({
+	$tokens: group,
+});
+const strictBoundTo = boundTo;
 
 /**
  * Property vocabulary of {@link chakraPreset}.

@@ -51,11 +51,12 @@ export type TailwindTokens = typeof tailwindTokens;
 
 type TailwindTokenGroup = TokenGroupKey<TailwindTokens>;
 
-// Every bound namespace keeps raw CSS available: a Tailwind project writes
-// arbitrary values often enough that a token-only vocabulary would reject
-// ordinary styles, which is the same reason `defaultPreset` inherits on colors.
-const boundTo = (group: TailwindTokenGroup) => ({ $tokens: group, $strict: false }) as const;
-const strictBoundTo = (group: TailwindTokenGroup) => ({ $tokens: group, $strict: true }) as const;
+// Bound namespaces are token-only by default. Use `$raw` at a call site for a
+// one-off authored value, or `$strict: false` only for an intentionally open
+// application-owned property map.
+const tokenBinding = <const TGroup extends TailwindTokenGroup>(group: TGroup) => ({
+	$tokens: group,
+});
 
 /**
  * Property vocabulary of {@link tailwindPreset}.
@@ -72,40 +73,40 @@ const strictBoundTo = (group: TailwindTokenGroup) => ({ $tokens: group, $strict:
  */
 export const tailwindProperties = define.properties({
 	...presetProperties,
-	boxShadow: boundTo("shadows"),
-	textShadow: boundTo("textShadows"),
-	fontFamily: boundTo("fontFamilies"),
-	fontSize: boundTo("fontSizes"),
-	fontWeight: boundTo("fontWeights"),
-	lineHeight: boundTo("lineHeights"),
-	letterSpacing: boundTo("letterSpacings"),
-	borderRadius: boundTo("radii"),
-	borderTopLeftRadius: boundTo("radii"),
-	borderTopRightRadius: boundTo("radii"),
-	borderBottomLeftRadius: boundTo("radii"),
-	borderBottomRightRadius: boundTo("radii"),
-	borderStartStartRadius: boundTo("radii"),
-	borderStartEndRadius: boundTo("radii"),
-	borderEndStartRadius: boundTo("radii"),
-	borderEndEndRadius: boundTo("radii"),
-	minWidth: boundTo("containers"),
-	maxWidth: boundTo("containers"),
-	zIndex: boundTo("zIndices"),
-	transition: boundTo("transitions"),
-	color: strictBoundTo("colors"),
-	background: strictBoundTo("colors"),
-	backgroundColor: strictBoundTo("colors"),
-	borderColor: strictBoundTo("colors"),
-	borderTopColor: strictBoundTo("colors"),
-	borderRightColor: strictBoundTo("colors"),
-	borderBottomColor: strictBoundTo("colors"),
-	borderLeftColor: strictBoundTo("colors"),
-	borderInlineEndColor: strictBoundTo("colors"),
-	outlineColor: strictBoundTo("colors"),
-	textDecorationColor: strictBoundTo("colors"),
-	textEmphasisColor: strictBoundTo("colors"),
-	fill: strictBoundTo("colors"),
-	stroke: strictBoundTo("colors"),
+	boxShadow: tokenBinding("shadows"),
+	textShadow: tokenBinding("textShadows"),
+	fontFamily: tokenBinding("fontFamilies"),
+	fontSize: tokenBinding("fontSizes"),
+	fontWeight: tokenBinding("fontWeights"),
+	lineHeight: tokenBinding("lineHeights"),
+	letterSpacing: tokenBinding("letterSpacings"),
+	borderRadius: tokenBinding("radii"),
+	borderTopLeftRadius: tokenBinding("radii"),
+	borderTopRightRadius: tokenBinding("radii"),
+	borderBottomLeftRadius: tokenBinding("radii"),
+	borderBottomRightRadius: tokenBinding("radii"),
+	borderStartStartRadius: tokenBinding("radii"),
+	borderStartEndRadius: tokenBinding("radii"),
+	borderEndStartRadius: tokenBinding("radii"),
+	borderEndEndRadius: tokenBinding("radii"),
+	minWidth: tokenBinding("containers"),
+	maxWidth: tokenBinding("containers"),
+	zIndex: tokenBinding("zIndices"),
+	transition: tokenBinding("transitions"),
+	color: tokenBinding("colors"),
+	background: tokenBinding("colors"),
+	backgroundColor: tokenBinding("colors"),
+	borderColor: tokenBinding("colors"),
+	borderTopColor: tokenBinding("colors"),
+	borderRightColor: tokenBinding("colors"),
+	borderBottomColor: tokenBinding("colors"),
+	borderLeftColor: tokenBinding("colors"),
+	borderInlineEndColor: tokenBinding("colors"),
+	outlineColor: tokenBinding("colors"),
+	textDecorationColor: tokenBinding("colors"),
+	textEmphasisColor: tokenBinding("colors"),
+	fill: tokenBinding("colors"),
+	stroke: tokenBinding("colors"),
 });
 
 /** The inferred property-vocabulary type of {@link tailwindProperties}. */

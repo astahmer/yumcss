@@ -183,7 +183,6 @@ export const examplePreset = define.preset(theme, {
 		display: true,
 		margin: true,
 		color: {
-			$strict: false,
 			...tokens.colors,
 		},
 		backgroundColor: tokens.colors,
@@ -193,7 +192,6 @@ export const examplePreset = define.preset(theme, {
 			...tokens.spacing,
 		},
 		marginTop: {
-			// $strict: false,
 			$tokens: "spacing",
 		},
 		width: {
