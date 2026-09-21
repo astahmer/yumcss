@@ -32,6 +32,12 @@ system. The safe `pandwind/css` entrypoint requires that preset. If properties
 are discovered at runtime, import `createUnsafeCss` from
 `pandwind/unsafe/css`; its lack of a catalog is then visible at the call site.
 
+`define.preset` defaults to `strict: true`. Mapped properties therefore accept
+their declared token names by default; opt out deliberately with
+`strict: false`, or open one mapped property with `$strict: false`. Use
+`$raw` or the unsafe entrypoint for values that are intentionally outside the
+design-system contract.
+
 A preset can carry two separate custom-property contracts. `cssVariables` owns
 flat browser-global values, condition-aware values, and optional `@property`
 registrations. `tokenVariables` optionally names the variables generated from
