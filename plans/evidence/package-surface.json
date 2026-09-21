@@ -285,7 +285,9 @@
 				"./_runtime/css-props",
 				"./_runtime/css-group",
 				"./_runtime/css-input",
-				"./_runtime/css-keyframes"
+				"./_runtime/css-keyframes",
+				"./_runtime/css-preset",
+				"./_runtime/css-design"
 			],
 			"owner": "runtime",
 			"maturity": "stable",
