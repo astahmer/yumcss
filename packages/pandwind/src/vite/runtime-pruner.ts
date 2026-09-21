@@ -1,8 +1,8 @@
 import { SOURCE_SCANNER_SERVICE } from "../source-scanner.ts";
 import { canonicalTokenName } from "../lib/token-path.ts";
 import { isDesignModuleKey, type DesignModuleKey } from "../design/contracts.ts";
-import { walkWithParent, type OxcNode } from "../tw/literal.ts";
-import { ImportKindTag, NodeKind } from "../ast-node-kind.ts";
+import { evalLiteralValues, walkWithParent, type OxcNode } from "../tw/literal.ts";
+import { ImportKindTag, NodeKind, VariableDeclarationKindTag } from "../ast-node-kind.ts";
 import {
 	CSS_RUNTIME_METHODS,
 	CssRuntimeFactoryTag,
@@ -136,6 +136,82 @@ interface RuntimeStyleUsage {
 	sliceable: boolean;
 }
 
+interface ConstantInitializer {
+	readonly declarationStart: number;
+	readonly init: OxcNode;
+}
+
+const topLevelConstantInitializers = (
+	program: OxcNode,
+): ReadonlyMap<string, ConstantInitializer> => {
+	const initializers = new Map<string, ConstantInitializer>();
+	for (const statement of (program as { body?: OxcNode[] }).body ?? []) {
+		if (
+			statement.type !== NodeKind.VariableDeclaration ||
+			(statement as { kind?: string }).kind !== VariableDeclarationKindTag.Const
+		)
+			continue;
+		for (const declaration of (statement as { declarations?: OxcNode[] }).declarations ?? []) {
+			const binding = declaration as {
+				id?: { type?: string; name?: string; start?: number };
+				init?: OxcNode | null;
+			};
+			if (
+				binding.id?.type !== NodeKind.Identifier ||
+				binding.id.name === undefined ||
+				binding.id.start === undefined ||
+				binding.init === undefined ||
+				binding.init === null
+			)
+				continue;
+			initializers.set(binding.id.name, {
+				declarationStart: binding.id.start,
+				init: binding.init,
+			});
+		}
+	}
+	return initializers;
+};
+
+const finiteValuesFor = (
+	node: OxcNode | null | undefined,
+	initializers: ReadonlyMap<string, ConstantInitializer>,
+	seen = new Set<string>(),
+): readonly unknown[] | undefined => {
+	if (node?.type === NodeKind.Identifier) {
+		const name = identifierName(node);
+		const initializer = name === undefined ? undefined : initializers.get(name);
+		const nodeStart = (node as { start?: number }).start;
+		if (
+			name === undefined ||
+			initializer === undefined ||
+			seen.has(name) ||
+			nodeStart === undefined ||
+			nodeStart < initializer.declarationStart
+		)
+			return undefined;
+		const nextSeen = new Set(seen);
+		nextSeen.add(name);
+		return finiteValuesFor(initializer.init, initializers, nextSeen);
+	}
+	return evalLiteralValues(node as never)?.values;
+};
+
+const isFiniteRuntimeValue = (value: unknown): boolean =>
+	typeof value === "string" || (typeof value === "number" && Number.isFinite(value));
+
+const addFiniteValues = (
+	usage: RuntimeStyleUsage,
+	property: string,
+	values: readonly unknown[],
+): void => {
+	if (values.length === 0 || values.some((value) => !isFiniteRuntimeValue(value))) {
+		usage.dynamicProperties.add(property);
+		return;
+	}
+	for (const value of values) addLiteralValue(usage, property, value);
+};
+
 const addLiteralValue = (usage: RuntimeStyleUsage, property: string, value: unknown): void => {
 	if (typeof value !== "string" && !(typeof value === "number" && Number.isFinite(value))) {
 		usage.dynamicProperties.add(property);
@@ -159,6 +235,7 @@ const addDesignProperty = (
 const collectStyleObject = (
 	node: OxcNode,
 	usage: RuntimeStyleUsage,
+	initializers: ReadonlyMap<string, ConstantInitializer>,
 	designModule?: DesignModuleKey,
 ): void => {
 	if (!usage.sliceable) return;
@@ -195,17 +272,24 @@ const collectStyleObject = (
 		const nestedDesignModule = isDesignModuleKey(key) ? key : isRaw ? undefined : designModule;
 		if (value?.type === NodeKind.ObjectExpression) {
 			if (!isCondition && !isRaw && !isDesignModuleKey(key)) usage.dynamicProperties.add(key);
-			collectStyleObject(value, usage, nestedDesignModule);
+			collectStyleObject(value, usage, initializers, nestedDesignModule);
 		} else if (value?.type === NodeKind.ArrayExpression) {
 			if (!isCondition && !isRaw) usage.dynamicProperties.add(key);
 			for (const element of (value as { elements?: OxcNode[] }).elements ?? []) {
 				if (element?.type === NodeKind.Literal)
 					addLiteralValue(usage, key, (element as { value?: unknown }).value);
 				else if (element?.type === NodeKind.ObjectExpression)
-					collectStyleObject(element, usage, nestedDesignModule);
+					collectStyleObject(element, usage, initializers, nestedDesignModule);
 				else usage.dynamicProperties.add(key);
 			}
 		} else {
+			if (!isCondition && !isRaw) {
+				const finiteValues = finiteValuesFor(value, initializers);
+				if (finiteValues !== undefined) {
+					addFiniteValues(usage, key, finiteValues);
+					continue;
+				}
+			}
 			if (isCondition || isRaw) usage.sliceable = false;
 			else usage.dynamicProperties.add(key);
 		}
@@ -215,11 +299,16 @@ const collectStyleObject = (
 const collectStyleArguments = (
 	argumentsList: readonly OxcNode[],
 	usage: RuntimeStyleUsage,
+	initializers: ReadonlyMap<string, ConstantInitializer>,
 ): void => {
-	for (const argument of argumentsList) collectStyleObject(argument, usage);
+	for (const argument of argumentsList) collectStyleObject(argument, usage, initializers);
 };
 
-const collectGroupArgument = (argument: OxcNode | undefined, usage: RuntimeStyleUsage): void => {
+const collectGroupArgument = (
+	argument: OxcNode | undefined,
+	usage: RuntimeStyleUsage,
+	initializers: ReadonlyMap<string, ConstantInitializer>,
+): void => {
 	if (argument?.type !== NodeKind.ObjectExpression) {
 		usage.sliceable = false;
 		return;
@@ -234,7 +323,8 @@ const collectGroupArgument = (argument: OxcNode | undefined, usage: RuntimeStyle
 			usage.sliceable = false;
 			return;
 		}
-		if (group.value?.type === NodeKind.ObjectExpression) collectStyleObject(group.value, usage);
+		if (group.value?.type === NodeKind.ObjectExpression)
+			collectStyleObject(group.value, usage, initializers);
 		else if (group.value?.type !== NodeKind.Literal) usage.sliceable = false;
 	}
 };
@@ -249,6 +339,7 @@ const usageFor = (program: OxcNode, local: string): Usage => {
 		designProperties: new Map(),
 		sliceable: true,
 	};
+	const initializers = topLevelConstantInitializers(program);
 	let escaped = false;
 	const declarations = new Set<number>();
 
@@ -274,14 +365,14 @@ const usageFor = (program: OxcNode, local: string): Usage => {
 			if (direct || member !== undefined) {
 				if (member !== undefined) methods.add(member);
 				if (member === CssRuntimeMethodTag.Group)
-					collectGroupArgument(call.arguments?.[0], styleUsage);
+					collectGroupArgument(call.arguments?.[0], styleUsage, initializers);
 				else if (
 					direct ||
 					member === CssRuntimeMethodTag.Class ||
 					member === CssRuntimeMethodTag.Vars ||
 					member === CssRuntimeMethodTag.Raw
 				)
-					collectStyleArguments(call.arguments ?? [], styleUsage);
+					collectStyleArguments(call.arguments ?? [], styleUsage, initializers);
 			}
 		}
 		if (node.type !== NodeKind.Identifier) return;

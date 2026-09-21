@@ -128,6 +128,32 @@ describe("runtime pruning", () => {
 		expect(loaded).not.toContain('"spacing"');
 	});
 
+	test("projects every candidate from a finite dynamic token expression", () => {
+		const pruner = createRuntimePruningTransform({ preset: examplePreset });
+		const source =
+			'import { createDesignCss } from "pandwind/design";\n' +
+			'import { examplePreset } from "@pandwind/example-preset";\n' +
+			"const css = createDesignCss(examplePreset);\n" +
+			"const tone = getTone();\n" +
+			'const color = tone === "primary" ? "$blue-500" : "$red-500";\n' +
+			'export const styles = css.class({ $frame: { fill: tone === "primary" ? "$blue-500" : "$red-500", stroke: color } });';
+
+		const result = pruner.transform(source, ID);
+		const virtualSource = result?.code.match(/pandwind:runtime\/css\?[^"']+/u)?.[0];
+		const virtual = pruner.resolveId(virtualSource!);
+		const loaded = pruner.load(virtual!);
+		const explanation = explainRuntimePruning({ code: source, id: ID, preset: examplePreset });
+
+		expect(loaded).toContain('"tokens":{"colors":{"$blue-500"');
+		expect(loaded).toContain('"$red-500"');
+		expect(loaded).not.toContain('"$gray-900"');
+		expect(loaded).not.toContain('"$blue-600"');
+		expect(explanation[0]).toMatchObject({
+			status: "preset-projected",
+			projectedTokenGroups: { colors: 2 },
+		});
+	});
+
 	test("keeps a complete design token group for dynamic design values", () => {
 		const pruner = createRuntimePruningTransform({ preset: examplePreset });
 		const source =

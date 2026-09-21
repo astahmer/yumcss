@@ -181,10 +181,14 @@ css.class({
 
 The report keeps the `color` token group conservatively, projects only
 `spacing.2`, and records the `class` method plus the two property names. A
-literal `color: "blue.100"` would project only that color entry. A dynamic
-spread or opaque `$raw` object reports `fallback-dynamic-shape` and retains the
-full preset path. The command explains one source module at a time; the Vite
-plugin is the authority that applies the same analysis during a real bundle.
+literal `color: "blue.100"` would project only that color entry. Bounded
+expressions are narrowed too: `color: tone === "primary" ? "$blue-500" :
+"$red-500"` keeps exactly those two candidates, including when the expression
+is assigned to a top-level `const`. Calls, unbounded identifiers, dynamic
+spreads, and opaque `$raw` objects remain conservative; the latter reports
+`fallback-dynamic-shape` and retains the full preset path. The command explains
+one source module at a time; the Vite plugin is the authority that applies the
+same analysis during a real bundle.
 
 This report is complementary to `pandwind-codemod lib build`. `lib build`
 publishes extracted CSS rules and used token declarations for a component
