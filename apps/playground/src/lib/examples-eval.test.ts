@@ -494,6 +494,32 @@ describe("example catalog evaluates end to end", () => {
 		});
 	});
 
+	it("keeps the runtime-pruning example's static and dynamic boundary visible", () => {
+		const example = EXAMPLES.find((candidate) => candidate.path === "/runtime-pruning");
+		const variant = example?.variants[0];
+		expect(example?.preview.controls).toMatchObject([
+			{ id: "color", prop: "color", initialValue: "$gray-900" },
+		]);
+		expect(variant).toBeDefined();
+		if (example === undefined || variant === undefined) return;
+
+		const source = applyPreviewControls(variant.files[0]!.code, example.preview.controls, {
+			color: "$red-500",
+		});
+		const result = evalPlayground(makeInput(source));
+		expect(result.ok).toBe(true);
+		if (!result.ok) return;
+
+		expect(source).toContain('backgroundColor: "$blue-100"');
+		expect(source).toContain("color: props.color");
+		expect(source).toContain("padding: 8");
+		expect(result.styleMappings.map((mapping) => mapping.property)).toEqual(
+			expect.arrayContaining(["color", "backgroundColor", "padding", "borderRadius"]),
+		);
+		expect(result.sheets.some((sheet) => sheet.rules.length > 0)).toBe(true);
+		expect(result.rendered).toMatchObject({ type: "article" });
+	});
+
 	it("makes viewport and container breakpoints visible in their specimens", () => {
 		const responsive = EXAMPLES.find((example) => example.path === "/responsive");
 		const responsiveVariant = responsive?.variants[0];

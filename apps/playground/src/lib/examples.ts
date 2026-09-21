@@ -241,8 +241,8 @@ const Button = (props: ButtonProps) => (
 								color: "$white",
 								borderRadius: "lg",
 								padding: props.size === "lg" ? 16 : 8,
-								fontSize: props.size === "lg" ? "1.125rem" : "1rem",
-		})}
+								$raw: { fontSize: props.size === "lg" ? "1.125rem" : "1rem" },
+							})}
 	>
 		{props.tone === "danger" ? "Delete" : "Continue"}
 	</button>
@@ -344,6 +344,62 @@ const Alert = (props: AlertProps) => {
 };
 
 export default <Alert tone="danger" color="#fef08a" />`,
+		),
+	},
+	{
+		path: "/runtime-pruning",
+		title: "Runtime pruning",
+		blurb: "static atoms inline while dynamic values keep a tiny carrier",
+		group: "core",
+		note: "This example shows the lowered host shape for a mixed call: background, padding, and radius are one static class, while color travels through css.vars() and css.props(). The authored mixed css.class() form and its Vite rewrite are documented in the Vite guide; run runtime explain to inspect the bundle projection.",
+		preview: makePreview(
+			"card",
+			"Pruned card",
+			"Static token declarations stay in the stylesheet while the text color changes at runtime.",
+			undefined,
+			[
+				{
+					type: "select",
+					id: "color",
+					prop: "color",
+					label: "Text color",
+					initialValue: "$gray-900",
+					options: [
+						{ label: "gray-900", value: "$gray-900" },
+						{ label: "red-500", value: "$red-500" },
+					],
+					description:
+						"Changes only the runtime text color; the token-backed declarations remain static.",
+				},
+			],
+		),
+		variants: oneVariant(
+			PlaygroundApi.Css,
+			"Example.tsx",
+			`import { createCss } from "pandwind/css";
+import { examplePreset } from "@pandwind/example-preset";
+
+const css = createCss(examplePreset);
+
+const staticClass = css.class({
+	backgroundColor: "$blue-100",
+	padding: 8,
+	borderRadius: "lg",
+});
+
+type CardProps = { color: string };
+
+const Card = (props: CardProps) => {
+	const dynamicProps = css.props(css.vars({ color: props.color }), staticClass);
+	return (
+		<article {...dynamicProps}>
+			<strong>Static atoms, dynamic value</strong>
+			<p>Only text color needs a runtime carrier in the production bundle.</p>
+		</article>
+	);
+};
+
+export default <Card color="$gray-900" />`,
 		),
 	},
 	{
