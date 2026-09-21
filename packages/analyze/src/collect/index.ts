@@ -48,6 +48,8 @@ export type {
 	ShapeCategory,
 	SpecificityBucket,
 	StyleUsageReport,
+	StyleValueCoverage,
+	StyleValueCoverageSummary,
 	TokenGovernanceReport,
 	ThemeVar,
 	TokenSection,

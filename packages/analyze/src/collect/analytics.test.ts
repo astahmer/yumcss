@@ -46,6 +46,43 @@ describe("analyzeStyleUsage", () => {
 		expect(report.topPropertyValues.some((c) => c.combo.includes('rounded: "xl"'))).toBe(true);
 	});
 
+	test("reports token versus literal coverage per file", () => {
+		expect(report.valueCoverage).toMatchObject({
+			tokenValues: 4,
+			literalValues: 5,
+			dynamicValues: 0,
+			tokenPct: 44,
+			literalPct: 56,
+		});
+		expect(report.fileValueCoverage).toEqual([
+			{
+				file: "a.tsx",
+				tokenValues: 4,
+				literalValues: 5,
+				dynamicValues: 0,
+				tokenPct: 44,
+				literalPct: 56,
+			},
+		]);
+	});
+
+	test("excludes dynamic expressions from the percentage denominator", () => {
+		const dynamic = analyzeStyleUsage([
+			{
+				file: "dynamic.tsx",
+				content: `css.class({ color: value, padding: getPadding(), gap: "2" })`,
+			},
+		]);
+		expect(dynamic.fileValueCoverage[0]).toEqual({
+			file: "dynamic.tsx",
+			tokenValues: 0,
+			literalValues: 1,
+			dynamicValues: 2,
+			tokenPct: 0,
+			literalPct: 100,
+		});
+	});
+
 	test("conditions classified responsive/pseudo/media", () => {
 		const kinds = Object.fromEntries(report.conditions.map((c) => [c.name, c.kind]));
 		expect(kinds.hover).toBe("pseudo");

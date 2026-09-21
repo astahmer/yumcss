@@ -33,6 +33,20 @@ export interface StyleUsageReport {
 	topPropertyValues: Array<{ combo: string; count: number }>;
 	conditions: ConditionUsage[];
 	conditionBreakdown: Record<"responsive" | "pseudo" | "media" | "other", number>;
+	valueCoverage: StyleValueCoverageSummary;
+	fileValueCoverage: Array<StyleValueCoverage>;
+}
+
+export interface StyleValueCoverageSummary {
+	tokenValues: number;
+	literalValues: number;
+	dynamicValues: number;
+	tokenPct: number;
+	literalPct: number;
+}
+
+export interface StyleValueCoverage extends StyleValueCoverageSummary {
+	file: string;
 }
 
 export interface ContrastWarning {

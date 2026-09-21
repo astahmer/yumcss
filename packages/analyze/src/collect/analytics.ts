@@ -12,7 +12,13 @@
  * Pure string analysis — brace-matched extraction, no AST dependency.
  */
 
-import type { ConditionUsage, StyleUsageReport, UsageCount } from "./types.ts";
+import type {
+	ConditionUsage,
+	StyleUsageReport,
+	StyleValueCoverage,
+	StyleValueCoverageSummary,
+	UsageCount,
+} from "./types.ts";
 
 const RESPONSIVE = /^(sm|md|lg|xl|2xl|min|max|maxMd|maxLg)(:|$)/;
 const PSEUDO =
@@ -48,9 +54,55 @@ interface Collected {
 	combos: Map<string, number>;
 	conditions: Map<string, number>;
 	tokens: Map<string, number>;
+	valueCoverage: ValueCoverageCounts;
 }
 
-function walkObject(body: string, collected: Collected): void {
+interface ValueCoverageCounts {
+	tokenValues: number;
+	literalValues: number;
+	dynamicValues: number;
+}
+
+const createValueCoverageCounts = (): ValueCoverageCounts => ({
+	tokenValues: 0,
+	literalValues: 0,
+	dynamicValues: 0,
+});
+
+const createCollected = (): Collected => ({
+	properties: new Map(),
+	combos: new Map(),
+	conditions: new Map(),
+	tokens: new Map(),
+	valueCoverage: createValueCoverageCounts(),
+});
+
+const mergeValueCoverage = (target: ValueCoverageCounts, source: ValueCoverageCounts): void => {
+	target.tokenValues += source.tokenValues;
+	target.literalValues += source.literalValues;
+	target.dynamicValues += source.dynamicValues;
+};
+
+function classifyValue(rawValue: string): keyof ValueCoverageCounts {
+	const value = rawValue.trim();
+	const unquoted = value.replace(/^["']|["']$/g, "");
+	if (unquoted.startsWith("$")) return "tokenValues";
+	if (
+		(value.startsWith('"') && value.endsWith('"')) ||
+		(value.startsWith("'") && value.endsWith("'")) ||
+		(value.startsWith("`") && value.endsWith("`") && !value.includes("${")) ||
+		/^-?(?:\d|\.\d)/.test(value) ||
+		/^(?:true|false|null)$/.test(value)
+	)
+		return "literalValues";
+	return "dynamicValues";
+}
+
+function walkObject(
+	body: string,
+	collected: Collected,
+	valueCoverage = collected.valueCoverage,
+): void {
 	let segment = "";
 	const flushTopLevel = (): void => {
 		const trimmed = segment.trim();
@@ -70,6 +122,7 @@ function walkObject(body: string, collected: Collected): void {
 		collected.properties.set(key, (collected.properties.get(key) ?? 0) + 1);
 		const value = rawValue.replace(/\s+/g, " ");
 		collected.combos.set(`${key}: ${value}`, (collected.combos.get(`${key}: ${value}`) ?? 0) + 1);
+		valueCoverage[classifyValue(value)]++;
 		const unquoted = value.replace(/^["']|["']$/g, "");
 		if (unquoted.startsWith("$")) {
 			const token = unquoted.split(/[\s/[\]]/)[0]!;
@@ -115,7 +168,7 @@ function walkObject(body: string, collected: Collected): void {
 				if (body[i] === "{") innerDepth++;
 				else if (body[i] === "}") innerDepth--;
 			}
-			walkObject(body.slice(innerStart, i), collected);
+			walkObject(body.slice(innerStart, i), collected, valueCoverage);
 			continue;
 		}
 		if (ch === ",") {
@@ -136,25 +189,33 @@ function topUsage(map: Map<string, number>, cap: number): UsageCount[] {
 		.slice(0, cap);
 }
 
+const toCoverage = (counts: ValueCoverageCounts): StyleValueCoverageSummary => {
+	const known = counts.tokenValues + counts.literalValues;
+	return {
+		...counts,
+		tokenPct: known === 0 ? 0 : Math.round((counts.tokenValues / known) * 100),
+		literalPct: known === 0 ? 0 : Math.round((counts.literalValues / known) * 100),
+	};
+};
+
 export function analyzeStyleUsage(
 	files: Array<{ file: string; content: string }>,
 	tokenUniverse?: ReadonlyArray<string>,
 ): StyleUsageReport {
-	const collected: Collected = {
-		properties: new Map(),
-		combos: new Map(),
-		conditions: new Map(),
-		tokens: new Map(),
-	};
+	const collected = createCollected();
+	const fileValueCoverage: Array<StyleValueCoverage> = [];
 	let sitesScanned = 0;
 	for (const file of files) {
+		const fileCoverage = createValueCoverageCounts();
 		for (const match of file.content.matchAll(CALL_REGEX)) {
 			const open = (match.index ?? 0) + match[0].length - 1;
 			const body = matchBlock(file.content, open);
 			if (body === null) continue;
 			sitesScanned++;
-			walkObject(body, collected);
+			walkObject(body, collected, fileCoverage);
 		}
+		mergeValueCoverage(collected.valueCoverage, fileCoverage);
+		fileValueCoverage.push({ file: file.file, ...toCoverage(fileCoverage) });
 	}
 
 	const tokenUsage = [...collected.tokens.entries()]
@@ -189,6 +250,8 @@ export function analyzeStyleUsage(
 		topPropertyValues,
 		conditions: conditions.slice(0, 30),
 		conditionBreakdown: breakdown,
+		valueCoverage: toCoverage(collected.valueCoverage),
+		fileValueCoverage: fileValueCoverage.toSorted((a, b) => a.file.localeCompare(b.file)),
 	};
 }
 
