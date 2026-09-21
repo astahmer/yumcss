@@ -235,6 +235,8 @@ test("isCssSource matches css/design basenames", () => {
 	const matchers = ["css", "design"];
 	expect(scan(matchers).matches("./design")).toBe(true);
 	expect(scan(matchers).matches("../css.ts")).toBe(true);
+	expect(scan(matchers).matches("./css.generated.ts")).toBe(true);
+	expect(scan(matchers).matches("pandwind/css.generated")).toBe(true);
 	expect(scan(matchers).matches("pandwind/design")).toBe(true);
 	expect(scan(matchers).matches("./styles")).toBe(false);
 });

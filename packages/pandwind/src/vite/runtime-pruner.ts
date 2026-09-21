@@ -3,16 +3,17 @@ import { walkWithParent, type OxcNode } from "../tw/literal.ts";
 import { ImportKindTag, NodeKind } from "../ast-node-kind.ts";
 import {
 	CSS_RUNTIME_METHODS,
+	CssRuntimeFactoryTag,
 	normalizeCssRuntimeMethods,
 	renderCssRuntimeModule,
+	type CssRuntimeFactory,
 	type CssRuntimeMethod,
 } from "../css/runtime-codegen.ts";
 import { identifierName, memberName as genericMemberName } from "./ast-walk.ts";
 
 const VIRTUAL_PREFIX = "pandwind:runtime/css";
-const VIRTUAL_ID_PREFIX = `\0${VIRTUAL_PREFIX}?methods=`;
 const CSS_RUNTIME_SOURCES =
-	/(?:^|\/)pandwind\/(?:css(?:\/(?:index|create-css))?|unsafe\/css)(?:\.[cm]?[jt]s)?$/;
+	/(?:^|\/)pandwind\/(?:css(?:\/(?:index|create-css|generated))?|unsafe\/css|design)(?:\.[cm]?[jt]s)?$/;
 
 interface ImportSpecifierNode {
 	type?: string;
@@ -52,6 +53,7 @@ interface RuntimeImport {
 	sourceStart: number;
 	sourceEnd: number;
 	local: string;
+	factory: CssRuntimeFactory;
 }
 
 interface Usage {
@@ -59,12 +61,35 @@ interface Usage {
 	readonly escaped: boolean;
 }
 
+const factoryForImport = (
+	specifier: ImportSpecifierNode,
+	declaration: ImportNode,
+): CssRuntimeFactory | undefined => {
+	if (
+		declaration.importKind === ImportKindTag.Type ||
+		specifier.importKind === ImportKindTag.Type ||
+		specifier.type !== NodeKind.ImportSpecifier ||
+		specifier.local?.name === undefined
+	)
+		return undefined;
+	const source = declaration.source?.value ?? "";
+	const imported = specifier.imported?.name;
+	if (imported === "createUnsafeCss" && source.endsWith("/unsafe/css"))
+		return CssRuntimeFactoryTag.Unsafe;
+	if (
+		imported === "createCss" &&
+		(source.endsWith("/css") || source.endsWith("/css/index"))
+	)
+		return CssRuntimeFactoryTag.Preset;
+	if (imported === "createGeneratedCss" && source.endsWith("/css/generated"))
+		return CssRuntimeFactoryTag.Generated;
+	if (imported === "createDesignCss" && source.endsWith("/design"))
+		return CssRuntimeFactoryTag.Design;
+	return undefined;
+};
+
 const isCreateCssImport = (specifier: ImportSpecifierNode, declaration: ImportNode): boolean =>
-	declaration.importKind !== ImportKindTag.Type &&
-	specifier.importKind !== ImportKindTag.Type &&
-	specifier.type === NodeKind.ImportSpecifier &&
-	specifier.imported?.name === "createUnsafeCss" &&
-	specifier.local?.name !== undefined;
+	factoryForImport(specifier, declaration) !== undefined;
 
 const isCssRuntimeSource = (source: string): boolean => CSS_RUNTIME_SOURCES.test(source);
 
@@ -155,8 +180,9 @@ const collectImports = (program: OxcNode): RuntimeImport[] => {
 		);
 		if (hasOtherRuntimeImport) return;
 		for (const specifier of declaration.specifiers ?? []) {
-			if (!isCreateCssImport(specifier, declaration)) continue;
-			imports.push({ sourceStart, sourceEnd, local: specifier.local!.name! });
+			const factory = factoryForImport(specifier, declaration);
+			if (factory === undefined) continue;
+			imports.push({ sourceStart, sourceEnd, local: specifier.local!.name!, factory });
 		}
 	});
 	return imports;
@@ -174,13 +200,32 @@ const methodsFor = (program: OxcNode, local: string): Set<CssRuntimeMethod> | un
 	return new Set(normalizeCssRuntimeMethods([...methods]));
 };
 
-const virtualIdFor = (methods: ReadonlySet<CssRuntimeMethod>): string =>
-	`${VIRTUAL_PREFIX}?methods=${normalizeCssRuntimeMethods([...methods]).join(",")}`;
+const virtualIdFor = (
+	factory: CssRuntimeFactory,
+	methods: ReadonlySet<CssRuntimeMethod>,
+): string => {
+	const methodQuery = normalizeCssRuntimeMethods([...methods]).join(",");
+	if (factory === CssRuntimeFactoryTag.Unsafe)
+		return `${VIRTUAL_PREFIX}?methods=${methodQuery}`;
+	return `${VIRTUAL_PREFIX}?factory=${factory}&methods=${methodQuery}`;
+};
 
-const parseMethods = (id: string): CssRuntimeMethod[] => {
-	const raw = id.slice(`${VIRTUAL_ID_PREFIX}`.length).split(",");
+const parseRuntimeModule = (
+	id: string,
+): { factory: CssRuntimeFactory; methods: CssRuntimeMethod[] } => {
+	const queryStart = id.indexOf("?");
+	const query = queryStart === -1 ? "" : id.slice(queryStart + 1);
+	const params = new URLSearchParams(query);
+	const raw = params.get("methods")?.split(",") ?? [];
 	const selected = CSS_RUNTIME_METHODS.filter((method) => raw.includes(method));
-	return normalizeCssRuntimeMethods(selected);
+	const factoryValue = params.get("factory");
+	const factory =
+		factoryValue === CssRuntimeFactoryTag.Preset ||
+		factoryValue === CssRuntimeFactoryTag.Generated ||
+		factoryValue === CssRuntimeFactoryTag.Design
+			? factoryValue
+			: CssRuntimeFactoryTag.Unsafe;
+	return { factory, methods: normalizeCssRuntimeMethods(selected) };
 };
 
 export interface RuntimePruningTransform {
@@ -208,7 +253,7 @@ export const createRuntimePruningTransform = (): RuntimePruningTransform => {
 				const replacement = {
 					start: runtimeImport.sourceStart,
 					end: runtimeImport.sourceEnd,
-					text: JSON.stringify(virtualIdFor(methods)),
+					text: JSON.stringify(virtualIdFor(runtimeImport.factory, methods)),
 				};
 				replacements.set(`${replacement.start}:${replacement.end}`, replacement);
 			}
@@ -224,11 +269,12 @@ export const createRuntimePruningTransform = (): RuntimePruningTransform => {
 			return source.startsWith(VIRTUAL_PREFIX) ? `\0${source}` : null;
 		},
 		load(id) {
-			if (!id.startsWith(VIRTUAL_ID_PREFIX)) return null;
+			if (!id.startsWith(`\0${VIRTUAL_PREFIX}?`)) return null;
 			const cached = runtimeModuleCache.get(id);
 			if (cached !== undefined) return cached;
 			if (runtimeModuleCache.size >= runtimeModuleCacheLimit) runtimeModuleCache.clear();
-			const module = renderCssRuntimeModule(parseMethods(id));
+			const parsed = parseRuntimeModule(id);
+			const module = renderCssRuntimeModule(parsed.methods, { factory: parsed.factory });
 			runtimeModuleCache.set(id, module);
 			return module;
 		},

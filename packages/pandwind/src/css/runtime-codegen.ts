@@ -19,6 +19,17 @@ export const CssRuntimeMethodTag = {
 
 export type CssRuntimeMethod = (typeof CssRuntimeMethodTag)[keyof typeof CssRuntimeMethodTag];
 
+/** Factory implementations that can share a specialized attachment module. */
+export const CssRuntimeFactoryTag = {
+	Unsafe: "unsafe",
+	Preset: "preset",
+	Generated: "generated",
+	Design: "design",
+} as const;
+
+export type CssRuntimeFactory =
+	(typeof CssRuntimeFactoryTag)[keyof typeof CssRuntimeFactoryTag];
+
 /** Stable registry order used for method ids, imports, and generated output. */
 export const CSS_RUNTIME_METHODS = [
 	CssRuntimeMethodTag.Class,
@@ -58,17 +69,39 @@ export const normalizeCssRuntimeMethods = (methods: readonly string[]): CssRunti
 export interface RenderCssRuntimeModuleOptions {
 	/** Add the typed `createUnsafeCss` contract used by explicit generated files. */
 	readonly typed?: boolean;
+	/** Select the public factory implemented by the specialized module. */
+	readonly factory?: CssRuntimeFactory;
 }
 
-const renderRuntimeImports = (methods: readonly CssRuntimeMethod[]): string[] => [
-	'import { createCssRuntime } from "pandwind/_runtime/css-base";',
+const renderRuntimeImports = (
+	methods: readonly CssRuntimeMethod[],
+	factory: CssRuntimeFactory,
+): string[] => [
+	`import { ${factory === CssRuntimeFactoryTag.Unsafe ? "createCssRuntime" : factory === CssRuntimeFactoryTag.Design ? "createDesignCssRuntime" : "createPresetCssRuntime"} } from "pandwind/_runtime/${factory === CssRuntimeFactoryTag.Unsafe ? "css-base" : factory === CssRuntimeFactoryTag.Design ? "css-design" : "css-preset"}";`,
 	...methods.map(
 		(method) => `import { ${attachmentName(method)} } from "pandwind/_runtime/css-${method}";`,
 	),
 ];
 
-const renderRuntimeFactory = (methods: readonly CssRuntimeMethod[]): string =>
-	`export const createUnsafeCss = (options) => createCssRuntime(options, [${methods.map(attachmentName).join(", ")}]);`;
+const renderRuntimeFactory = (
+	methods: readonly CssRuntimeMethod[],
+	factory: CssRuntimeFactory,
+): string => {
+	const attachments = methods.map(attachmentName).join(", ");
+	if (factory === CssRuntimeFactoryTag.Unsafe)
+		return `export const createUnsafeCss = (options = {}) => createCssRuntime(options, [${attachments}]);`;
+	const factoryName =
+		factory === CssRuntimeFactoryTag.Design
+			? "createDesignCssRuntime"
+			: "createPresetCssRuntime";
+	const exportName =
+		factory === CssRuntimeFactoryTag.Design
+			? "createDesignCss"
+			: factory === CssRuntimeFactoryTag.Generated
+				? "createGeneratedCss"
+				: "createCss";
+	return `export const ${exportName} = (preset, options = {}) => ${factoryName}(preset, options, [${attachments}]);`;
+};
 
 const renderTypedRuntime = (methods: readonly CssRuntimeMethod[]): string[] => {
 	const methodType =
@@ -90,8 +123,11 @@ export const renderCssRuntimeModule = (
 	options: RenderCssRuntimeModuleOptions = {},
 ): string => {
 	const normalized = normalizeCssRuntimeMethods(methods);
-	const lines = renderRuntimeImports(normalized);
+	const factory = options.factory ?? CssRuntimeFactoryTag.Unsafe;
+	const lines = renderRuntimeImports(normalized, factory);
 	if (options.typed === true) {
+		if (factory !== CssRuntimeFactoryTag.Unsafe)
+			throw new Error("Typed CSS runtime modules only support createUnsafeCss.");
 		lines.push(
 			"",
 			...renderTypedRuntime(normalized).map((line) =>
@@ -99,7 +135,7 @@ export const renderCssRuntimeModule = (
 			),
 		);
 	} else {
-		lines.push(renderRuntimeFactory(normalized));
+		lines.push(renderRuntimeFactory(normalized, factory));
 	}
 	return `${lines.join("\n")}\n`;
 };

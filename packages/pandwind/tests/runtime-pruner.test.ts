@@ -57,12 +57,42 @@ describe("runtime pruning", () => {
 		).toBeNull();
 	});
 
-	test("does not replace preset-bound createCss with an unbound runtime", () => {
+	test("specializes preset-bound createCss without losing preset resolution", () => {
 		const pruner = createRuntimePruningTransform();
 		const source =
-			'import { createCss } from "pandwind/css";\nconst css = createCss(preset);\nexport const styles = css({ color: runtimeColor });';
+			'import { createCss } from "pandwind/css";\nconst css = createCss(preset);\nexport const styles = css.class({ color: "red" });';
 
-		expect(pruner.transform(source, ID)).toBeNull();
+		const result = pruner.transform(source, ID);
+		expect(result?.code).toContain("factory=preset&methods=class");
+		const virtual = pruner.resolveId("pandwind:runtime/css?factory=preset&methods=class");
+		expect(virtual).not.toBeNull();
+		const loaded = pruner.load(virtual!);
+		expect(loaded).toContain("pandwind/_runtime/css-preset");
+		expect(loaded).toContain("pandwind/_runtime/css-class");
+		expect(loaded).not.toContain("pandwind/_runtime/css-vars");
+	});
+
+	test("specializes generated and design factories with their public factory identity", () => {
+		const pruner = createRuntimePruningTransform();
+		const generated = pruner.transform(
+			'import { createGeneratedCss } from "pandwind/css/generated";\nconst css = createGeneratedCss(preset);\nconst animation = css.keyframes({ from: { opacity: 0 }, to: { opacity: 1 } });',
+			ID,
+		);
+		expect(generated?.code).toContain("factory=generated&methods=keyframes");
+		const generatedVirtual = pruner.resolveId(
+			"pandwind:runtime/css?factory=generated&methods=keyframes",
+		);
+		expect(pruner.load(generatedVirtual!)).toContain("createGeneratedCss");
+
+		const design = pruner.transform(
+			'import { createDesignCss } from "pandwind/design";\nconst css = createDesignCss(preset);\nconst styles = css.class({ $frame: { fill: "red" } });',
+			ID,
+		);
+		expect(design?.code).toContain("factory=design&methods=class");
+		const designVirtual = pruner.resolveId(
+			"pandwind:runtime/css?factory=design&methods=class",
+		);
+		expect(pruner.load(designVirtual!)).toContain("createDesignCss");
 	});
 
 	test("is wired into the bundler-agnostic css plugin", () => {

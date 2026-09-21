@@ -1,21 +1,9 @@
-import { createCss, type CreateCssOptions, type CssFn } from "../css/create-css.ts";
-import { ATOM_REGISTRY, type AtomRegistry } from "../css/atoms.ts";
-import { attachCssFactoryMetadata, CssFactoryKind } from "../css/factory-metadata.ts";
-import { assign } from "../lib/utils.ts";
-import type { DynamicStyleObject, StyleObject } from "../types/typings.ts";
-import { resolveDesignStyle } from "./resolve.ts";
+import { ALL_RUNTIME_METHODS } from "../css/runtime-methods.ts";
+import { createDesignCssRuntime } from "./runtime.ts";
+import type { CreateCssOptions } from "../css/runtime-base.ts";
+import type { CssFn } from "../css/create-css.ts";
+import type { StyleObject } from "../types/typings.ts";
 import type { DesignDynamicStyleObject, DesignPreset, DesignStyleObject } from "./types.ts";
-
-/**
- * Intent-oriented CSS factory and style types for `pandwind/design`.
- *
- * Use `pandwind/css` when ordinary CSS property names are the better fit.
- *
- * @category design system
- * @since 0.1.0
- */
-
-type Maybe<T> = T | undefined | null | false;
 
 /**
  * Create a preset-aware CSS function with `$frame`, `$layout`, and `$text` modules.
@@ -58,67 +46,11 @@ export const createDesignCss = <TPreset extends DesignPreset>(
 	preset: TPreset,
 	options: CreateCssOptions = {},
 ): CssFn<DesignStyleObject<TPreset>, DesignDynamicStyleObject<TPreset>, StyleObject> => {
-	type PresetDesign = DesignStyleObject<TPreset>;
-	const engine = createCss(preset, options) as unknown as CssFn<
-		StyleObject,
-		DynamicStyleObject,
+	return createDesignCssRuntime(preset, options, ALL_RUNTIME_METHODS) as unknown as CssFn<
+		DesignStyleObject<TPreset>,
+		DesignDynamicStyleObject<TPreset>,
 		StyleObject
 	>;
-
-	const resolve = (style: PresetDesign): StyleObject =>
-		resolveDesignStyle(style as unknown as Record<string, unknown>, preset.tokens);
-
-	const dss = (...styles: Array<Maybe<PresetDesign>>) =>
-		engine(...(styles.filter(Boolean) as Array<PresetDesign>).map(resolve));
-
-	dss.class = (...styles: Array<Maybe<PresetDesign>>) =>
-		engine.class(...(styles.filter(Boolean) as Array<PresetDesign>).map(resolve));
-
-	dss.raw = (...styles: Array<Maybe<PresetDesign>>) =>
-		engine.raw(...(styles.filter(Boolean) as Array<PresetDesign>).map(resolve));
-
-	// Dynamic values ride inline custom properties; design-layer tokens are
-	// resolved first so the inline value is concrete.
-	dss.vars = (...styles: Array<Maybe<PresetDesign>>) => {
-		const resolvedStyles = assign(
-			...(styles.filter(Boolean) as Array<PresetDesign>).map(resolve),
-		) as StyleObject;
-		return engine.vars(resolvedStyles as never);
-	};
-
-	dss.props = engine.props;
-	dss.input = engine.input;
-	dss.keyframes = engine.keyframes;
-
-	dss.group = ((
-		groups: Record<string, Maybe<PresetDesign> | ((...args: any[]) => PresetDesign)>,
-	) => {
-		const resolved = Object.create(null) as Record<
-			string,
-			StyleObject | ((...args: any[]) => StyleObject)
-		>;
-		for (const key of Object.keys(groups)) {
-			const value = groups[key];
-			if (typeof value === "function") {
-				resolved[key] = (...args: any[]) => resolve(value(...args));
-			} else if (value) {
-				resolved[key] = resolve(value);
-			}
-		}
-		return engine.group(resolved as never);
-	}) as never;
-
-	// Share the inner engine's atom registry so cx can resolve design atoms.
-	(dss as CssFn & { [ATOM_REGISTRY]?: AtomRegistry })[ATOM_REGISTRY] = (
-		engine as CssFn & { [ATOM_REGISTRY]?: AtomRegistry }
-	)[ATOM_REGISTRY];
-	attachCssFactoryMetadata(dss, {
-		kind: CssFactoryKind.Design,
-		preset,
-		options,
-	});
-
-	return dss as CssFn<PresetDesign, DesignDynamicStyleObject<TPreset>, StyleObject>;
 };
 
 export type { DesignDynamicStyleObject, DesignPreset, DesignStyleObject } from "./types.ts";

@@ -74,10 +74,15 @@ const cssSourceMatches = (source: string, matchers: readonly (string | RegExp)[]
 		typeof matcher === "string"
 			? source === matcher ||
 				source.endsWith(`/${matcher}`) ||
+				source.endsWith(`/${matcher}.generated`) ||
 				source.endsWith(`/${matcher}.ts`) ||
 				source.endsWith(`/${matcher}.tsx`) ||
+				source.endsWith(`/${matcher}.generated.ts`) ||
+				source.endsWith(`/${matcher}.generated.tsx`) ||
 				source.endsWith(`/${matcher}.js`) ||
-				source.endsWith(`/${matcher}.jsx`)
+				source.endsWith(`/${matcher}.jsx`) ||
+				source.endsWith(`/${matcher}.generated.js`) ||
+				source.endsWith(`/${matcher}.generated.jsx`)
 			: matcher.test(source),
 	);
 

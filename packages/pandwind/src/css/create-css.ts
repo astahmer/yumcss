@@ -1,8 +1,4 @@
 import type {
-	AnyCssConfig,
-	AnyTokens,
-	CssConfigReturn,
-	DefinePresetOptions,
 	DynamicStyleObject,
 	StyleObject,
 	TypedDynamicStyleObject,
@@ -11,60 +7,21 @@ import type {
 } from "../types/typings.ts";
 import {
 	createCssRuntime,
+	type AnyInput,
 	type CompiledStyles,
 	type CreateCssOptions,
-	type AnyInput,
 	type DynamicFn,
 	type DynamicReturn,
 	type DynamicStyles,
 } from "./runtime-base.ts";
-import { attachClass } from "./runtime-method-class.ts";
-import { attachGroup } from "./runtime-method-group.ts";
-import { attachInput } from "./runtime-method-input.ts";
-import { attachKeyframes } from "./runtime-method-keyframes.ts";
-import { attachProps } from "./runtime-method-props.ts";
-import { attachRaw } from "./runtime-method-raw.ts";
-import { attachVars } from "./runtime-method-vars.ts";
 import type { KeyframeBody } from "./keyframes.ts";
 import type { ClassNameStrategy } from "./class-name-strategy.ts";
 import type { VarsOutput } from "./var-compiler.ts";
-import { validateColorPaletteValue } from "./color-palette-validation.ts";
-import { cssPropertyFromKey } from "../backends/css.ts";
-import { createRuntimeTokenResolver } from "./runtime-token-resolver.ts";
+import { ALL_RUNTIME_METHODS } from "./runtime-methods.ts";
+import { createPresetCssRuntime, type TypedPreset } from "./runtime-preset.ts";
 
 export type { ClassNameStrategy };
 export type { CreateCssOptions } from "./runtime-base.ts";
-
-type TypedPreset = CssConfigReturn<DefinePresetOptions<AnyCssConfig, AnyTokens>>;
-
-const isPreset = (value: CreateCssOptions | TypedPreset): value is TypedPreset =>
-	typeof value === "object" &&
-	value !== null &&
-	"conditions" in value &&
-	"properties" in value &&
-	"strict" in value;
-
-const runtimeTokenName = /^[$a-zA-Z0-9_.-]+$/u;
-
-const createRuntimeValueResolver = (
-	preset: TypedPreset,
-	debug: boolean,
-	tokenVariableNames: CreateCssOptions["tokenVariableNames"],
-) => {
-	const resolveToken = createRuntimeTokenResolver(preset, debug, tokenVariableNames);
-	return (property: string, value: string) =>
-		runtimeTokenName.test(value) ? resolveToken(property, value) : value;
-};
-
-const ALL_RUNTIME_METHODS = [
-	attachVars,
-	attachClass,
-	attachRaw,
-	attachProps,
-	attachGroup,
-	attachInput,
-	attachKeyframes,
-] as const;
 
 /**
  * Create the typed CSS function used by the public `css()` lane.
@@ -101,23 +58,7 @@ const ALL_RUNTIME_METHODS = [
  * @since 0.1.0
  */
 const createPresetCss = (preset: TypedPreset, options: CreateCssOptions): CssFn<StyleObject> => {
-	if (!isPreset(preset)) {
-		throw new Error(
-			'pandwind/css: createCss requires a preset. For unbound or runtime-discovered styles, import createUnsafeCss from "pandwind/unsafe/css".',
-		);
-	}
-	const css = createCssRuntime(
-		{ ...options, conditions: preset.conditions },
-		ALL_RUNTIME_METHODS,
-		createRuntimeValueResolver(preset, Boolean(options.debug), options.tokenVariableNames),
-		(key, value) => {
-			if (cssPropertyFromKey(key, preset.conditions) === "colorPalette")
-				validateColorPaletteValue(preset, value);
-		},
-	);
-	Object.defineProperty(css, Symbol.for("pandwind.css-factory"), {
-		value: { kind: "css", preset, options },
-	});
+	const css = createPresetCssRuntime(preset, options, ALL_RUNTIME_METHODS);
 	return css as unknown as CssFn<StyleObject>;
 };
 

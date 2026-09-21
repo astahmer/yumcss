@@ -20,6 +20,8 @@ interface OxcSpecifier {
 
 const importedFactoryKind = (source: string, name: string): CssFactoryKindType | undefined => {
 	if (source === "pandwind/css" && name === "createCss") return CssFactoryKind.Css;
+	if (source === "pandwind/css/generated" && name === "createGeneratedCss")
+		return CssFactoryKind.Css;
 	if (source === "pandwind/unsafe/css" && name === "createUnsafeCss") return CssFactoryKind.Css;
 	if (source === "pandwind/design" && name === "createDesignCss") return CssFactoryKind.Design;
 	return undefined;

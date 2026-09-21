@@ -327,6 +327,18 @@
 			"import": "./dist/css/runtime-codegen.js",
 			"default": "./dist/css/runtime-codegen.js"
 		},
+		"./_runtime/css-preset": {
+			"pandwind": "./src/css/runtime-preset.ts",
+			"types": "./dist/css/runtime-preset.d.ts",
+			"import": "./dist/css/runtime-preset.js",
+			"default": "./dist/css/runtime-preset.js"
+		},
+		"./_runtime/css-design": {
+			"pandwind": "./src/design/runtime.ts",
+			"types": "./dist/design/runtime.d.ts",
+			"import": "./dist/design/runtime.js",
+			"default": "./dist/design/runtime.js"
+		},
 		"./_runtime/css-class": {
 			"pandwind": "./src/css/runtime-method-class.ts",
 			"types": "./dist/css/runtime-method-class.d.ts",
