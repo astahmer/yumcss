@@ -805,11 +805,11 @@ const dynamicHostCarrier = (
 		];
 	});
 	if (descriptors.length !== dynamicNames.size) return undefined;
+	const staticClasses: string[] = [];
+	if (staticClass !== null && staticClass !== undefined) staticClasses.push(staticClass);
+	if (additionalStaticClass !== undefined) staticClasses.push(additionalStaticClass);
 	return {
-		text: renderDirectCarrier(code, dynamicProperties, descriptors, [
-			...(staticClass === undefined ? [] : [staticClass]),
-			...(additionalStaticClass === undefined ? [] : [additionalStaticClass]),
-		]),
+		text: renderDirectCarrier(code, dynamicProperties, descriptors, staticClasses),
 		varKeys: [...dynamicNames],
 	};
 };
