@@ -334,7 +334,8 @@ const shadcnTokenVariables = (config: ShadcnConfig) => ({
 const boundTo = <const TGroup extends ShadcnTokenGroup>(group: TGroup) => ({
 	$tokens: group,
 });
-const strictBoundTo = boundTo;
+const strictBoundTo = <const TGroup extends ShadcnTokenGroup>(group: TGroup) =>
+	({ $tokens: group, $strict: true }) as const;
 
 /**
  * Property vocabulary of {@link shadcnPreset}.
