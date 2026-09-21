@@ -69,6 +69,46 @@ export function coverageToJson(data: StudioPayload): string {
 	return `${JSON.stringify(data.coverage, null, "\t")}\n`;
 }
 
+const csvCell = (value: string | number): string => {
+	const text = String(value);
+	return /[",\n]/u.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
+};
+
+/** Per-file fold and authored-value coverage for spreadsheets and CI artifacts. */
+export function coverageToCsv(data: StudioPayload): string {
+	const coverageByFile = new Map(
+		(data.analytics?.fileValueCoverage ?? []).map((coverage) => [coverage.file, coverage]),
+	);
+	const header = [
+		"file",
+		"eliminated_pct",
+		"cx_calls",
+		"cx_folded_full",
+		"cx_folded_partial",
+		"cx_runtime",
+		"token_pct",
+		"literal_pct",
+		"dynamic_values",
+		"missing_css",
+	];
+	const rows = data.coverage.files.map((file) => {
+		const valueCoverage = coverageByFile.get(file.file);
+		return [
+			file.file,
+			file.eliminatedPct,
+			file.cxCalls,
+			file.cxFoldedFull,
+			file.cxFoldedPartial,
+			file.cxRuntime,
+			valueCoverage?.tokenPct ?? "",
+			valueCoverage?.literalPct ?? "",
+			valueCoverage?.dynamicValues ?? "",
+			file.missingCssCount,
+		].map(csvCell);
+	});
+	return `${[header.map(csvCell), ...rows].map((row) => row.join(",")).join("\n")}\n`;
+}
+
 /** Human-readable Markdown report: summary, per-file stats, warnings. */
 export function coverageToMarkdown(data: StudioPayload): string {
 	const c = data.coverage;
@@ -83,10 +123,17 @@ export function coverageToMarkdown(data: StudioPayload): string {
 	lines.push(`| tw calls folded | ${c.twFolded}/${c.totalTwCalls} |`);
 
 	lines.push("", "## Per-file stats", "");
-	lines.push("| file | eliminated % | cx calls | missing css |", "| --- | --- | --- | --- |");
+	lines.push(
+		"| file | eliminated % | cx calls | token % | literal % | dynamic values | missing css |",
+		"| --- | --- | --- | --- | --- | --- | --- |",
+	);
+	const coverageByFile = new Map(
+		(data.analytics?.fileValueCoverage ?? []).map((coverage) => [coverage.file, coverage]),
+	);
 	for (const f of c.files) {
+		const valueCoverage = coverageByFile.get(f.file);
 		lines.push(
-			`| ${f.file} | ${f.eliminatedPct}% | ${f.cxRuntime === 0 && f.cxCalls === 0 ? "—" : `${f.cxFoldedFull}/${f.cxFoldedPartial}/${f.cxRuntime}`} | ${f.missingCssCount} |`,
+			`| ${f.file} | ${f.eliminatedPct}% | ${f.cxRuntime === 0 && f.cxCalls === 0 ? "—" : `${f.cxFoldedFull}/${f.cxFoldedPartial}/${f.cxRuntime}`} | ${valueCoverage?.tokenPct ?? "—"}% | ${valueCoverage?.literalPct ?? "—"}% | ${valueCoverage?.dynamicValues ?? "—"} | ${f.missingCssCount} |`,
 		);
 	}
 
@@ -182,6 +229,7 @@ export const InspectorExport = {
 	themeVarsToCss,
 	utilitiesToJson,
 	coverageToJson,
+	coverageToCsv,
 	coverageToMarkdown,
 	coverageToHtml,
 	downloadFile,

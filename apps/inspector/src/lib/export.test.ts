@@ -1,6 +1,7 @@
 /** Export serializer tests — DTCG mapping, css vars, markdown, round-trip. */
 import { afterEach, describe, expect, test, vi } from "vitest";
 import {
+	coverageToCsv,
 	coverageToJson,
 	coverageToMarkdown,
 	downloadFile,
@@ -175,6 +176,41 @@ describe("coverageToMarkdown", () => {
 	test("keeps every file row present", () => {
 		expect(md).toContain("| b.tsx | 0% |");
 	});
+});
+
+test("coverageToCsv emits per-file fold and value coverage", () => {
+	const csv = coverageToCsv({
+		...payload,
+		analytics: {
+			sitesScanned: 2,
+			tokenUsage: [],
+			unusedTokens: [],
+			topProperties: [],
+			topPropertyValues: [],
+			conditions: [],
+			conditionBreakdown: { responsive: 0, pseudo: 0, media: 0, other: 0 },
+			valueCoverage: {
+				tokenValues: 2,
+				literalValues: 1,
+				dynamicValues: 1,
+				tokenPct: 67,
+				literalPct: 33,
+			},
+			fileValueCoverage: [
+				{
+					file: "a.tsx",
+					tokenValues: 2,
+					literalValues: 1,
+					dynamicValues: 1,
+					tokenPct: 67,
+					literalPct: 33,
+				},
+			],
+		},
+	});
+	expect(csv).toContain("file,eliminated_pct,cx_calls");
+	expect(csv).toContain("a.tsx,100,2,2,0,0,67,33,1,0");
+	expect(csv).toContain("b.tsx,0,1,0,0,1,,,,1");
 });
 
 test("downloadFile creates an object URL, sets filename, clicks, revokes", () => {

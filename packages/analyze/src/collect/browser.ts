@@ -10,4 +10,12 @@ export {
 	parseUtilityUnions,
 } from "./parsers.ts";
 export type { ThemeVarCategory } from "./parsers.ts";
-export type { CollectPayload, ThemeVar, TokenSection, UtilityUnion } from "./types.ts";
+export type {
+	CollectPayload,
+	StyleUsageReport,
+	StyleValueCoverage,
+	StyleValueCoverageSummary,
+	ThemeVar,
+	TokenSection,
+	UtilityUnion,
+} from "./types.ts";
