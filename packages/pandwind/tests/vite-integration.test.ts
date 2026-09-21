@@ -391,6 +391,56 @@ export const className = css.class({ backgroundColor: "$green-500" });
 });
 
 describe("build", () => {
+	test("runtime pruning survives a real Vite production bundle", async () => {
+		const dir = mkdtempSync(join(tmpdir(), "pandwind-runtime-vite-"));
+		try {
+			mkdirSync(join(dir, "node_modules", "@pandwind"), { recursive: true });
+			symlinkSync(PACKAGE_ROOT, join(dir, "node_modules", "pandwind"), "dir");
+			symlinkSync(
+				resolve(PACKAGE_ROOT, "../../examples/pandwind-example-preset"),
+				join(dir, "node_modules", "@pandwind", "example-preset"),
+				"dir",
+			);
+			writeFileSync(
+				join(dir, "app.ts"),
+				`
+import { createCss } from "pandwind/css";
+import { examplePreset } from "@pandwind/example-preset";
+
+const css = createCss(examplePreset);
+export const className = css.class({ color: "$red-500" });
+console.log(className);
+`,
+			);
+			const result = await build({
+				root: dir,
+				plugins: [pandwindVite({ css: { preset: examplePreset } })],
+				logLevel: "silent",
+				build: {
+					write: false,
+					minify: false,
+					rollupOptions: { input: join(dir, "app.ts") },
+				},
+			});
+			const output = (
+				Array.isArray(result) ? result : "output" in result ? result.output : []
+			) as Array<{ type: (typeof RollupOutputKind)[keyof typeof RollupOutputKind]; code?: string }>;
+			const code = output
+				.filter((chunk) => chunk.type === RollupOutputKind.Chunk)
+				.map((chunk) => chunk.code!)
+				.join("\n");
+
+			expect(code).toContain("createPresetCssRuntime");
+			expect(code).toContain("$red-500");
+			expect(code).not.toContain("$blue-600");
+			expect(code).not.toContain("createDesignCssRuntime");
+			expect(code).not.toContain("attachKeyframes");
+			expect(code).not.toContain("createCss(examplePreset)");
+		} finally {
+			rmSync(dir, { recursive: true, force: true });
+		}
+	});
+
 	test("inlined classes land in the JS bundle and the stylesheet in the CSS asset", async () => {
 		const result = await build({
 			root: project.dir,
