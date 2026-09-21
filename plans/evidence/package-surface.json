@@ -250,6 +250,21 @@
 		},
 		{
 			"packageName": "pandwind",
+			"exportPaths": ["./vite/runtime-pruner"],
+			"owner": "tooling",
+			"maturity": "stable",
+			"dependencies": ["oxc-parser"],
+			"externalContract": false,
+			"evidence": [
+				"packages/pandwind/package.json",
+				"packages/pandwind/src/vite/runtime-pruner.ts",
+				"packages/codemod/src/runtime/cli.ts",
+				"docs/src/content/docs/tooling/codegen.md"
+			],
+			"note": "Tooling-only runtime-pruning explanation; it is not part of the browser runtime contract."
+		},
+		{
+			"packageName": "pandwind",
 			"exportPaths": [
 				"./vite/css-extract",
 				"./vite/cross-module-consts",
