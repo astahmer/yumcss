@@ -80,6 +80,24 @@ test("define.preset JSDoc example preserves a custom typed vocabulary", () => {
 	expect(css.class({ backgroundColor: "$brand-500", padding: 4 })).type.toBe<string>();
 });
 
+test("define.preset defaults to strict token values", () => {
+	const tokens = define.tokens({ colors: { "$brand-500": "#2563eb" } });
+	const preset = define.preset(
+		{ config: {}, tokens },
+		{ conditions: {}, properties: { color: { $tokens: "colors" } } },
+	);
+	const css = createCss(preset);
+
+	expect(preset.strict).type.toBe<true>();
+	expect(css.class({ color: "$brand-500" })).type.toBe<string>();
+	expect(
+		css.class({
+			// @ts-expect-error not assignable
+			color: "#2563eb",
+		}),
+	).type.toBe<string>();
+});
+
 test("docs example narrows the curated CSS contract with Pick", () => {
 	type CardProperties = Pick<PandwindProperties, "backgroundColor" | "color" | "padding">;
 	const tokens = define.tokens({
