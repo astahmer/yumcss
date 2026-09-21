@@ -77,8 +77,7 @@ type ChakraTokenGroup = TokenGroupKey<ChakraTokens>;
 const boundTo = <const TGroup extends ChakraTokenGroup>(group: TGroup) => ({
 	$tokens: group,
 });
-const strictBoundTo = <const TGroup extends ChakraTokenGroup>(group: TGroup) =>
-	({ $tokens: group, $strict: true }) as const;
+const strictBoundTo = boundTo;
 
 /**
  * Property vocabulary of {@link chakraPreset}.

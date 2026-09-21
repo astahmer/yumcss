@@ -57,8 +57,6 @@ type TailwindTokenGroup = TokenGroupKey<TailwindTokens>;
 const tokenBinding = <const TGroup extends TailwindTokenGroup>(group: TGroup) => ({
 	$tokens: group,
 });
-const strictTokenBinding = <const TGroup extends TailwindTokenGroup>(group: TGroup) =>
-	({ $tokens: group, $strict: true }) as const;
 
 /**
  * Property vocabulary of {@link tailwindPreset}.
@@ -95,20 +93,20 @@ export const tailwindProperties = define.properties({
 	maxWidth: tokenBinding("containers"),
 	zIndex: tokenBinding("zIndices"),
 	transition: tokenBinding("transitions"),
-	color: strictTokenBinding("colors"),
-	background: strictTokenBinding("colors"),
-	backgroundColor: strictTokenBinding("colors"),
-	borderColor: strictTokenBinding("colors"),
-	borderTopColor: strictTokenBinding("colors"),
-	borderRightColor: strictTokenBinding("colors"),
-	borderBottomColor: strictTokenBinding("colors"),
-	borderLeftColor: strictTokenBinding("colors"),
-	borderInlineEndColor: strictTokenBinding("colors"),
-	outlineColor: strictTokenBinding("colors"),
-	textDecorationColor: strictTokenBinding("colors"),
-	textEmphasisColor: strictTokenBinding("colors"),
-	fill: strictTokenBinding("colors"),
-	stroke: strictTokenBinding("colors"),
+	color: tokenBinding("colors"),
+	background: tokenBinding("colors"),
+	backgroundColor: tokenBinding("colors"),
+	borderColor: tokenBinding("colors"),
+	borderTopColor: tokenBinding("colors"),
+	borderRightColor: tokenBinding("colors"),
+	borderBottomColor: tokenBinding("colors"),
+	borderLeftColor: tokenBinding("colors"),
+	borderInlineEndColor: tokenBinding("colors"),
+	outlineColor: tokenBinding("colors"),
+	textDecorationColor: tokenBinding("colors"),
+	textEmphasisColor: tokenBinding("colors"),
+	fill: tokenBinding("colors"),
+	stroke: tokenBinding("colors"),
 });
 
 /** The inferred property-vocabulary type of {@link tailwindProperties}. */

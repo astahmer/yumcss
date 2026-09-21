@@ -53,8 +53,7 @@ type PandaTokenGroup = TokenGroupKey<PandaTokens>;
 const boundTo = <const TGroup extends PandaTokenGroup>(group: TGroup) => ({
 	$tokens: group,
 });
-const strictBoundTo = <const TGroup extends PandaTokenGroup>(group: TGroup) =>
-	({ $tokens: group, $strict: true }) as const;
+const strictBoundTo = boundTo;
 
 /**
  * Property vocabulary of {@link pandaPreset}.
