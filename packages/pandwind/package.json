@@ -213,6 +213,12 @@
 			"import": "./dist/vite/css-extract.js",
 			"default": "./dist/vite/css-extract.js"
 		},
+		"./vite/css-inline-analysis": {
+			"pandwind": "./src/vite/css-inline-analysis.ts",
+			"types": "./dist/vite/css-inline-analysis.d.ts",
+			"import": "./dist/vite/css-inline-analysis.js",
+			"default": "./dist/vite/css-inline-analysis.js"
+		},
 		"./vite/lib-artifact": {
 			"pandwind": "./src/vite/lib-artifact.ts",
 			"types": "./dist/vite/lib-artifact.d.ts",
